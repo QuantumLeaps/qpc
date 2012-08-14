@@ -1,0 +1,384 @@
+[HIMDBVersion]
+2.0
+[DATABASE_VERSION]
+"2.8" 
+[PROJECT_DETAILS]
+"qp_rx600" "D:\software\qpc\ports\rx\vanilla\gnu" "D:\software\qpc\ports\rx\vanilla\gnu\qp_rx600.hwp" "RX" "KPIT GNURX [ELF]" "Library" "RX600" "Other" 
+[INFORMATION]
+"No project information available" 
+[TOOL_CHAIN]
+"KPIT GNURX [ELF] Toolchain" "v12.01" 
+[CONFIGURATIONS]
+"Debug" "D:\software\qpc\ports\rx\vanilla\gnu\Debug" 
+"Release" "D:\software\qpc\ports\rx\vanilla\gnu\Release" 
+"Spy" "D:\software\qpc\ports\rx\vanilla\gnu\Spy" 
+[BUILD_PHASES]
+"GNU Assembler" 1 
+"GNU Compiler" 1 
+[TOOL_ENVIRONMENT]
+[EXTENSIONS]
+"Absolute file" "ABS" 
+"Archive File" "A" 
+"Assembly include file" "INC" 
+"Assembly list file" "LIS" 
+"Assembly source file" "S" 
+"Assembly source file" "SRC" 
+"Binary file" "BIN" 
+"C header file" "H" 
+"C list file" "LST" 
+"C source file" "C" 
+"C++ header file" "HPP" 
+"C++ list file" "LPP" 
+"C++ source file" "CC" 
+"C++ source file" "CP" 
+"C++ source file" "CPP" 
+"CPU information file" "CPU" 
+"Calling information file" "CAL" 
+"Debug information file" "DBG" 
+"Expanded assembly source file" "EXP" 
+"Hex file" "HEX" 
+"Library file" "LIB" 
+"Library information file" "LBP" 
+"Linkage map file" "MAP" 
+"Object file" "OBJ" 
+"Optimize map file" "bls" 
+"Preprocess Assembly file" "ASM" 
+"Preprocessed C source file" "P" 
+"Preprocessed C++ source file" "PP" 
+"Profile file" "PRO" 
+"Relocatable file" "REL" 
+"Rts information file" "RTS" 
+"S-Record file" "MOT" 
+"Stack information file" "SNI" 
+"TD include object file" "RTI" 
+[FILE_GROUPS]
+"Absolute file" "BIN" "NONE" "" 
+"Archive File" "BIN" "NONE" "" 
+"Assembly include file" "TEXT" "EDITOR" "" 
+"Assembly list file" "TEXT" "EDITOR" "" 
+"Assembly source file" "TEXT" "EDITOR" "" 
+"Binary file" "BIN" "NONE" "" 
+"C header file" "TEXT" "EDITOR" "" 
+"C list file" "TEXT" "EDITOR" "" 
+"C source file" "TEXT" "EDITOR" "" 
+"C++ header file" "TEXT" "EDITOR" "" 
+"C++ list file" "TEXT" "EDITOR" "" 
+"C++ source file" "TEXT" "EDITOR" "" 
+"CPU information file" "BIN" "NONE" "" 
+"Calling information file" "BIN" "NONE" "" 
+"Debug information file" "BIN" "NONE" "" 
+"Expanded assembly source file" "TEXT" "EDITOR" "" 
+"Hex file" "TEXT" "EDITOR" "" 
+"Library file" "BIN" "NONE" "" 
+"Library information file" "TEXT" "EDITOR" "" 
+"Linkage map file" "TEXT" "EDITOR" "" 
+"Object file" "BIN" "NONE" "" 
+"Optimize map file" "BIN" "NONE" "" 
+"Preprocess Assembly file" "TEXT" "EDITOR" "" 
+"Preprocessed C source file" "TEXT" "EDITOR" "" 
+"Preprocessed C++ source file" "TEXT" "EDITOR" "" 
+"Profile file" "BIN" "NONE" "" 
+"Relocatable file" "BIN" "NONE" "" 
+"Rts information file" "BIN" "NONE" "" 
+"S-Record file" "TEXT" "EDITOR" "" 
+"Stack information file" "BIN" "NONE" "" 
+"TD include object file" "BIN" "NONE" "" 
+[ASSOCIATED_APPLICATIONS]
+[TOOLCHAIN_PHASE]
+"GNU Assembler" 
+"GNU Compiler" 
+[UTILITY_PHASE]
+[CUSTOM_PHASES]
+[CUSTOM_PHASE_INPUT_GROUP]
+[CUSTOM_PHASE_OUTPUT_SYNTAX]
+[BUILD_ORDER]
+"GNU Compiler" 1 
+"GNU Assembler" 1 
+[BUILD_PHASE_DETAILS]
+"GNU Assembler" "Assembly source file" 1 
+"GNU Compiler" "C source file|C++ source file|Preprocess Assembly file" 1 
+[BUILD_FILE_ORDER_Assembly source file]
+"GNU Assembler" 1 
+[BUILD_FILE_ORDER_C source file]
+"GNU Compiler" 1 
+[BUILD_FILE_ORDER_C++ source file]
+"GNU Compiler" 1 
+[BUILD_FILE_ORDER_Preprocess Assembly file]
+"GNU Compiler" 1 
+[SCRAP]
+"Project Generator Setup File" "" 
+[MAPPINGS]
+"Assembly source file" "GNU Assembler" "GNU Compiler" 
+[PROJECT_FILES]
+"D:\software\qpc\qep\source\qep.c" "User" "qep" 2 
+"D:\software\qpc\qep\source\qep_pkg.h" "User" "qep" 2 
+"D:\software\qpc\qep\source\qfsm_dis.c" "User" "qep" 2 
+"D:\software\qpc\qep\source\qfsm_ini.c" "User" "qep" 2 
+"D:\software\qpc\qep\source\qhsm_dis.c" "User" "qep" 2 
+"D:\software\qpc\qep\source\qhsm_in.c" "User" "qep" 2 
+"D:\software\qpc\qep\source\qhsm_ini.c" "User" "qep" 2 
+"D:\software\qpc\qep\source\qhsm_top.c" "User" "qep" 2 
+"D:\software\qpc\qf\source\qa_defer.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qa_fifo.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qa_get_.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qa_lifo.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qa_sub.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qa_usub.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qa_usuba.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qeq_fifo.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qeq_get.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qeq_init.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qeq_lifo.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qf_act.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qf_gc.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qf_log2.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qf_new.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qf_pkg.h" "User" "qf" 2 
+"D:\software\qpc\qf\source\qf_pool.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qf_psini.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qf_pspub.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qf_pwr2.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qf_tick.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qmp_get.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qmp_init.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qmp_put.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qte_arm.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qte_ctor.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qte_ctr.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qte_darm.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qte_rarm.c" "User" "qf" 2 
+"D:\software\qpc\qf\source\qvanilla.c" "User" "qf" 2 
+"D:\software\qpc\qs\source\qs.c" "User" "qs" 2 
+"D:\software\qpc\qs\source\qs_.c" "User" "qs" 2 
+"D:\software\qpc\qs\source\qs_blk.c" "User" "qs" 2 
+"D:\software\qpc\qs\source\qs_byte.c" "User" "qs" 2 
+"D:\software\qpc\qs\source\qs_f32.c" "User" "qs" 2 
+"D:\software\qpc\qs\source\qs_f64.c" "User" "qs" 2 
+"D:\software\qpc\qs\source\qs_mem.c" "User" "qs" 2 
+"D:\software\qpc\qs\source\qs_pkg.h" "User" "qs" 2 
+"D:\software\qpc\qs\source\qs_str.c" "User" "qs" 2 
+"D:\software\qpc\qs\source\qs_u64.c" "User" "qs" 2 
+[FOLDER]
+"C header file" "C header file" 
+"C source file" "C source file" 
+"qep" "qep" 
+"qf" "qf" 
+"qs" "qs" 
+[GENERAL_DATA_PROJECT]
+"USE_CUSTOM_LINKAGE_ORDER" "0" 
+[ON_DEMAND_COMPONENTS_LOADED]
+[SYNC_SESSION_NAMES]
+[SESSIONS]
+"DefaultSession" "D:\software\qpc\ports\rx\vanilla\gnu\DefaultSession.hsf" 0 
+[GENERAL_DATA_SESSION_DefaultSession]
+[OPTIONS_Debug_GNU Assembler]
+"Assembly source file" "00f6bcbe28bfcc10" 3 
+[OPTIONS_Debug_GNU Compiler]
+"C source file" "0dddc7e458bfcc10" 1 
+"C++ source file" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qep\source\qep.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qep\source\qfsm_dis.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qep\source\qfsm_ini.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_dis.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_in.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_ini.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_top.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qa_defer.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qa_fifo.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qa_get_.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qa_lifo.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qa_sub.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qa_usub.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qa_usuba.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_fifo.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_get.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_init.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_lifo.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qf_act.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qf_gc.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qf_log2.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qf_new.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qf_pool.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qf_psini.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qf_pspub.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qf_pwr2.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qf_tick.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qmp_get.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qmp_init.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qmp_put.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qte_arm.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qte_ctor.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qte_ctr.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qte_darm.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qte_rarm.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qf\source\qvanilla.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qs\source\qs.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qs\source\qs_.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qs\source\qs_blk.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qs\source\qs_byte.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qs\source\qs_f32.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qs\source\qs_f64.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qs\source\qs_mem.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qs\source\qs_str.c" "0dddc7e458bfcc10" 1 
+"D:\software\qpc\qs\source\qs_u64.c" "0dddc7e458bfcc10" 1 
+"Preprocess Assembly file" "0dddc7e458bfcc10" 2 
+[OPTIONS_Debug]
+"" 0 
+"[V|VERSION|2] [S|INCDIR|^"$(PROJDIR)\.^"|^"$(PROJDIR)\..\..\..\..\include^"] [S|DEFINES|DEBUG] [S|OUTPUT|OBJECT] [S|OBJPATH|^"$(CONFIGDIR)\$(FILELEAF).o^"] [B|DEBUG|1] [S|DEBUGFT|Native] [I|DEBUGLV|2] [S|ALIGN4|ALL] [B|OPTIMIZE|0] [B|LTO|0] [I|OPTLV|2] [S|APPTXT|^"-Wa,-gdwarf2^"] [S|CPUTYPE|RX600] [S|ENDIAN|LITTLE] [S|CPU|Other] [I|RMINTREGVAL|0] [I|RMMAXCONSTVAL|0] [I|RMMAXVARSVAL|0] [S|PROJECTTYPE|LIBPROJECT] [B|DOOPTLIB|1]
+" 2 
+"[V|VERSION|2] [S|INCDIR|^"$(PROJDIR)\.^"|^"$(PROJDIR)\..\..\..\..\include^"] [S|DEFINES|DEBUG] [S|OUTPUT|OBJECT] [S|OBJPATH|^"$(CONFIGDIR)\$(FILELEAF).o^"] [B|DEBUG|1] [S|DEBUGFT|Native] [I|DEBUGLV|2] [S|ALIGN4|ALL] [B|OPTIMIZE|0] [B|LTO|0] [I|OPTLV|2] [S|CPUTYPE|RX600] [S|ENDIAN|LITTLE] [S|CPU|Other] [I|RMINTREGVAL|0] [I|RMMAXCONSTVAL|0] [I|RMMAXVARSVAL|0] [S|PROJECTTYPE|LIBPROJECT] [B|DOOPTLIB|1]
+" 1 
+"[V|VERSION|2] [S|OBJPATH|^"$(CONFIGDIR)\$(FILELEAF).o^"] [I|DEBUGLV|2] [B|LINCHLS|1] [B|LINCASS|1] [B|LINCSYM|1] [S|LFILE|^"$(CONFIGDIR)\$(FILELEAF).^"] [S|PROJECTTYPE|LIBPROJECT] [S|INCDIR|^"$(PROJDIR)^"] [S|CPUTYPE|RX600] [S|ENDIAN|LITTLE] [S|CPU|] " 3 
+[EXCLUDED_FILES_Debug]
+"D:\software\qpc\qs\source\qs.c" 
+"D:\software\qpc\qs\source\qs_.c" 
+"D:\software\qpc\qs\source\qs_blk.c" 
+"D:\software\qpc\qs\source\qs_byte.c" 
+"D:\software\qpc\qs\source\qs_f32.c" 
+"D:\software\qpc\qs\source\qs_f64.c" 
+"D:\software\qpc\qs\source\qs_mem.c" 
+"D:\software\qpc\qs\source\qs_str.c" 
+"D:\software\qpc\qs\source\qs_u64.c" 
+[LINKAGE_ORDER_Debug]
+[GENERAL_DATA_CONFIGURATION_Debug]
+[OPTIONS_Release_GNU Assembler]
+"Assembly source file" "00f6bcbe28bfcc10" 2 
+[OPTIONS_Release_GNU Compiler]
+"C source file" "02e1b66658bfcc10" 1 
+"C++ source file" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qep\source\qep.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qep\source\qfsm_dis.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qep\source\qfsm_ini.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_dis.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_in.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_ini.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_top.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qa_defer.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qa_fifo.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qa_get_.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qa_lifo.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qa_sub.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qa_usub.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qa_usuba.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_fifo.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_get.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_init.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_lifo.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qf_act.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qf_gc.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qf_log2.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qf_new.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qf_pool.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qf_psini.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qf_pspub.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qf_pwr2.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qf_tick.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qmp_get.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qmp_init.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qmp_put.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qte_arm.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qte_ctor.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qte_ctr.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qte_darm.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qte_rarm.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qf\source\qvanilla.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qs\source\qs.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qs\source\qs_.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qs\source\qs_blk.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qs\source\qs_byte.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qs\source\qs_f32.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qs\source\qs_f64.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qs\source\qs_mem.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qs\source\qs_str.c" "02e1b66658bfcc10" 1 
+"D:\software\qpc\qs\source\qs_u64.c" "02e1b66658bfcc10" 1 
+"Preprocess Assembly file" "02e1b66658bfcc10" 1 
+[OPTIONS_Release]
+"" 0 
+"[V|VERSION|2] [S|INCDIR|^"$(PROJDIR)\.^"|^"$(PROJDIR)\..\..\..\..\include^"] [S|DEFINES|RELEASE] [S|OUTPUT|OBJECT] [S|OBJPATH|^"$(CONFIGDIR)\$(FILELEAF).o^"] [B|DEBUG|0] [S|DEBUGFT|Native] [I|DEBUGLV|2] [S|ALIGN4|ALL] [B|OPTIMIZE|1] [B|LTO|0] [I|OPTLV|2] [S|CPUTYPE|RX600] [S|ENDIAN|LITTLE] [S|CPU|Other] [I|RMINTREGVAL|0] [I|RMMAXCONSTVAL|0] [I|RMMAXVARSVAL|0] [S|PROJECTTYPE|LIBPROJECT] [B|DOOPTLIB|1]
+" 1 
+"[V|VERSION|2] [S|OBJPATH|^"$(CONFIGDIR)\$(FILELEAF).o^"] [I|DEBUGLV|0] [B|LINCHLS|1] [B|LINCASS|1] [B|LINCSYM|1] [S|LFILE|^"$(CONFIGDIR)\$(FILELEAF).^"] [S|PROJECTTYPE|LIBPROJECT] [S|INCDIR|^"$(PROJDIR)^"] [S|CPUTYPE|RX600] [S|ENDIAN|LITTLE] [S|CPU|] " 2 
+[EXCLUDED_FILES_Release]
+"D:\software\qpc\qs\source\qs.c" 
+"D:\software\qpc\qs\source\qs_.c" 
+"D:\software\qpc\qs\source\qs_blk.c" 
+"D:\software\qpc\qs\source\qs_byte.c" 
+"D:\software\qpc\qs\source\qs_f32.c" 
+"D:\software\qpc\qs\source\qs_f64.c" 
+"D:\software\qpc\qs\source\qs_mem.c" 
+"D:\software\qpc\qs\source\qs_str.c" 
+"D:\software\qpc\qs\source\qs_u64.c" 
+[LINKAGE_ORDER_Release]
+[GENERAL_DATA_CONFIGURATION_Release]
+[OPTIONS_Spy_GNU Assembler]
+"Assembly source file" "00f6bcbe28bfcc10" 3 
+[OPTIONS_Spy_GNU Compiler]
+"C source file" "06dac56958bfcc10" 1 
+"C++ source file" "06dac56958bfcc10" 1 
+"D:\software\qpc\qep\source\qep.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qep\source\qfsm_dis.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qep\source\qfsm_ini.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_dis.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_in.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_ini.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qep\source\qhsm_top.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qa_defer.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qa_fifo.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qa_get_.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qa_lifo.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qa_sub.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qa_usub.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qa_usuba.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_fifo.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_get.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_init.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qeq_lifo.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qf_act.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qf_gc.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qf_log2.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qf_new.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qf_pool.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qf_psini.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qf_pspub.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qf_pwr2.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qf_tick.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qmp_get.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qmp_init.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qmp_put.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qte_arm.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qte_ctor.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qte_ctr.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qte_darm.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qte_rarm.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qf\source\qvanilla.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qs\source\qs.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qs\source\qs_.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qs\source\qs_blk.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qs\source\qs_byte.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qs\source\qs_f32.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qs\source\qs_f64.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qs\source\qs_mem.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qs\source\qs_str.c" "06dac56958bfcc10" 1 
+"D:\software\qpc\qs\source\qs_u64.c" "06dac56958bfcc10" 1 
+"Preprocess Assembly file" "06dac56958bfcc10" 2 
+[OPTIONS_Spy]
+"" 0 
+"[V|VERSION|2] [S|INCDIR|^"$(PROJDIR)\.^"|^"$(PROJDIR)\..\..\..\..\include^"] [S|DEFINES|Q_SPY] [S|OUTPUT|OBJECT] [S|OBJPATH|^"$(CONFIGDIR)\$(FILELEAF).o^"] [B|DEBUG|1] [S|DEBUGFT|Native] [I|DEBUGLV|2] [S|ALIGN4|ALL] [B|OPTIMIZE|0] [B|LTO|0] [I|OPTLV|2] [S|APPTXT|^"-Wa,-gdwarf2^"] [S|CPUTYPE|RX600] [S|ENDIAN|LITTLE] [S|CPU|Other] [I|RMINTREGVAL|0] [I|RMMAXCONSTVAL|0] [I|RMMAXVARSVAL|0] [S|PROJECTTYPE|LIBPROJECT] [B|DOOPTLIB|1]
+" 2 
+"[V|VERSION|2] [S|INCDIR|^"$(PROJDIR)\.^"|^"$(PROJDIR)\..\..\..\..\include^"] [S|DEFINES|Q_SPY] [S|OUTPUT|OBJECT] [S|OBJPATH|^"$(CONFIGDIR)\$(FILELEAF).o^"] [B|DEBUG|1] [S|DEBUGFT|Native] [I|DEBUGLV|2] [S|ALIGN4|ALL] [B|OPTIMIZE|0] [B|LTO|0] [I|OPTLV|2] [S|CPUTYPE|RX600] [S|ENDIAN|LITTLE] [S|CPU|Other] [I|RMINTREGVAL|0] [I|RMMAXCONSTVAL|0] [I|RMMAXVARSVAL|0] [S|PROJECTTYPE|LIBPROJECT] [B|DOOPTLIB|1]
+" 1 
+"[V|VERSION|2] [S|OBJPATH|^"$(CONFIGDIR)\$(FILELEAF).o^"] [I|DEBUGLV|2] [B|LINCHLS|1] [B|LINCASS|1] [B|LINCSYM|1] [S|LFILE|^"$(CONFIGDIR)\$(FILELEAF).^"] [S|PROJECTTYPE|LIBPROJECT] [S|INCDIR|^"$(PROJDIR)^"] [S|CPUTYPE|RX600] [S|ENDIAN|LITTLE] [S|CPU|] " 3 
+[EXCLUDED_FILES_Spy]
+[LINKAGE_ORDER_Spy]
+[GENERAL_DATA_CONFIGURATION_Spy]
+[GENERAL_DATA_CONFIGURATION_SESSION_Debug_DefaultSession]
+[SESSION_DATA_CONFIGURATION_SESSION_Debug_DefaultSession]
+"MEMORY_MAPPING_OPTIONS" "" 
+[GENERAL_DATA_CONFIGURATION_SESSION_Release_DefaultSession]
+[SESSION_DATA_CONFIGURATION_SESSION_Release_DefaultSession]
+"MEMORY_MAPPING_OPTIONS" "" 
+[GENERAL_DATA_CONFIGURATION_SESSION_Spy_DefaultSession]
+[SESSION_DATA_CONFIGURATION_SESSION_Spy_DefaultSession]
+"MEMORY_MAPPING_OPTIONS" "" 
+[EXT_DEBUGGER_INFO]
+0 "" "" "" "" 
+[END]

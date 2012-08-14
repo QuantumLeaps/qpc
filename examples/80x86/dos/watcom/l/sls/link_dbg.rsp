@@ -1,0 +1,1 @@
+Name dbg\sls.exe File dbg\bsp.obj,dbg\main.obj,dbg\num_ent.obj,dbg\ui.obj,dbg\ui_help.obj,dbg\ui_nu_lr.obj,dbg\ui_num.obj,dbg\video.obj Library ..\..\..\..\..\..\ports\80x86\dos\watcom\l\dbg\qf.lib,..\..\..\..\..\..\ports\80x86\dos\watcom\l\dbg\qep.lib

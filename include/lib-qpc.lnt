@@ -1,0 +1,250 @@
+//////////////////////////////////////////////////////////////////////////////
+// Product: PC-Lint 9.x option file for linting QP/C applications
+// Last Updated for Version: 4.5.02
+// Date of the Last Update:  Jul 25, 2012
+//
+//                    Q u a n t u m     L e a P s
+//                    ---------------------------
+//                    innovating embedded systems
+//
+// Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+//
+// This program is open source software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// Alternatively, this program may be distributed and modified under the
+// terms of Quantum Leaps commercial licenses, which expressly supersede
+// the GNU General Public License and are specifically designed for
+// licensees interested in retaining the proprietary status of their code.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
+// Contact information:
+// Quantum Leaps Web sites: http://www.quantum-leaps.com
+//                          http://www.state-machine.com
+// e-mail:                  info@quantum-leaps.com
+//////////////////////////////////////////////////////////////////////////////
+
+// general (evt.h)
+-emacro((960), Q_DIM)         // MISRA04-17.4(req) pointer arithmetic
+-emacro(923, Q_UINT2PTR_CAST) // MISRA04-11.1(req) cast from int to pointer
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ Q_DIM,
+ Q_UINT2PTR_CAST)
+-emacro(866, Q_DIM)           // Unusual use of 'SYM' in argument to sizeof
+
+// Assertions
+-estring(960, l_this_file)    // MISRA04-8.7(req) could use block scope
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ Q_ASSERT,
+ Q_ASSERT_ID,
+ Q_ALLEGE,
+ Q_ALLEGE_ID,
+ Q_ERROR,
+ Q_ERROR_ID,
+ Q_REQUIRE,
+ Q_REQUIRE_ID,
+ Q_ENSURE,
+ Q_ENSURE_ID,
+ Q_INVARIANT,
+ Q_INVARIANT_ID,
+ Q_ASSERT_COMPILE,
+ Q_DEFINE_THIS_MODULE)
+-emacro(522,                  // Highest operation lacks side-effects 
+ Q_ASSERT,
+ Q_ERROR,
+ Q_ALLEGE)
+-function(exit, Q_onAssert)   // give Q_onAssert() the semantics of "exit"
+-estring(752,Q_assert_compile) // not referenced
+
+// QEP
+-emacro(960,                  // MISRA04-12.10(req) comma operator used
+ Q_TRAN,
+ Q_SUPER)
+-emacro(929,                  // MISRA04-11.4(adv) cast pointer to pointer
+ Q_STATE_CAST,
+ Q_TRAN,
+ Q_SUPER,
+ Q_EVT_CAST)
+-emacro(740,                  // MISRA04-1.2(req) pointer cast
+ Q_STATE_CAST,                // (incompatible indirect types)
+ Q_TRAN,
+ Q_SUPER)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ Q_ROM_BYTE,
+ QFsm_ctor,
+ QFsm_state,
+ QHsm_ctor,
+ QHsm_state,
+ Q_IGNORED,
+ Q_HANDLED,
+ Q_UNHANDLED,
+ Q_TRAN,
+ Q_SUPER,
+ Q_STATE_CAST,
+ Q_EVT_CAST)
+-emacro(717,                  // do ... while(0)
+ QFsm_ctor,
+ QHsm_ctor)
+
+// QF
+-emacro(950,                  // MISRA04-2.1(req) assembly language 
+ QF_INT_DISABLE,
+ QF_INT_ENABLE,
+ QF_CRIT_ENTRY,
+ QF_CRIT_EXIT)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QF_INT_DISABLE,
+ QF_INT_ENABLE,
+ QF_CRIT_ENTRY,
+ QF_CRIT_EXIT,
+ QF_TICK,
+ QF_PUBLISH,
+ QF_MPOOL_EL,
+ QACTIVE_POST,
+ Q_NEW)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QEQueue_getNFree,
+ QPSet8_isEmpty,
+ QPSet8_notEmpty,
+ QPSet8_hasElement,
+ QPSet8_insert,
+ QPSet8_remove,
+ QPSet8_findMax,
+ QPSet64_isEmpty,
+ QPSet64_notEmpty,
+ QPSet64_hasElement,
+ QPSet64_insert,
+ QPSet64_remove,
+ QPSet64_findMax,
+ QActive_ctor,
+ QTimeEvt_postIn,
+ QTimeEvt_postEvery)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QF_QS_CRIT_EXIT,
+ QF_QS_CRIT_ENTRY,
+ QF_QS_CRIT_EXIT,
+ QF_QS_ISR_ENTRY,
+ QF_QS_ISR_EXIT,
+ QF_QS_ACTION)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QACTIVE_EQUEUE_WAIT_,
+ QACTIVE_EQUEUE_SIGNAL_,
+ QACTIVE_EQUEUE_ONEMPTY_,
+ QF_EPOOL_INIT_,
+ QF_EPOOL_EVENT_SIZE_,
+ QF_EPOOL_GET_,
+ QF_EPOOL_PUT_,
+ QF_ACTIVE_CTOR_,
+ QF_ACTIVE_INIT_,
+ QF_ACTIVE_DISPATCH_)
+-emacro(929, Q_NEW)           // MISRA04-11.4(adv) cast from pointer to pointer
+-emacro(717,                  // do ... while(0)
+ QPSet64_insert,
+ QPSet64_remove,
+ QPSet64_findMax,
+ QTimeEvt_postIn,
+ QTimeEvt_postEvery)
+-esym(641, *Signals)          // Converting enum '*Signals' to 'int'
+-esym(754, sto_)              // local structure member 'sto' not referenced
+
+// QK
+-emacro(950,                  // MISRA04-2.1(req) assembly language 
+ QK_ISR_ENTRY,
+ QK_ISR_EXIT)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QK_ISR_ENTRY,
+ QK_ISR_EXIT,
+ QK_EXT_SAVE,
+ QK_EXT_RESTORE,
+ QK_TLS)
+
+// QS
+-emacro(506, QS_*)            // MISRA04-13.7(req) constant value boolean
+                              // MISRA04-14.1(req) no unreachable code
+-emacro(774, QS_*)            // MISRA04-13.7(req) 'if' always True
+                              // MISRA04-14.1(req) no unreachable code
+-emacro(923,                  // MISRA04-11.3(req) cast from pointer to int
+ QS_OBJ_,
+ QS_FUN_)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QS_INIT,
+ QS_EXIT,
+ QS_DUMP,
+ QS_RESET,
+ QS_FILTER_ON,
+ QS_FILTER_OFF,
+ QS_FILTER_SM_OBJ,
+ QS_FILTER_AO_OBJ,
+ QS_FILTER_MP_OBJ,
+ QS_FILTER_EQ_OBJ,
+ QS_FILTER_TE_OBJ,
+ QS_FILTER_AP_OBJ,
+ QS_GET_BYTE,
+ QS_GET_BLOCK,
+ QS_BEGIN,
+ QS_END,
+ QS_BEGIN_NOCRIT,
+ QS_END_NOCRIT)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QS_I8,
+ QS_U8,
+ QS_I16,
+ QS_U16,
+ QS_I32,
+ QS_I64,
+ QS_U32,
+ QS_F32,
+ QS_F64,
+ QS_U64,
+ QS_U32_HEX,
+ QS_STR,
+ QS_OBJ,
+ QS_FUN,
+ QS_SIG_DICTIONARY,
+ QS_OBJ_DICTIONARY,
+ QS_FUN_DICTIONARY,
+ QS_USR_DICTIONARY,
+ QS_ASSERTION,
+ QS_FLUSH,
+ QS_STR_ROM,
+ QS_MEM,
+ QS_SIG)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QS_CRIT_ENTRY_,
+ QS_CRIT_EXIT_,
+ QS_BEGIN_,
+ QS_END_,
+ QS_BEGIN_NOCRIT_,
+ QS_END_NOCRIT_,
+ QS_U8_,
+ QS_U16_,
+ QS_U32_,
+ QS_U64_,
+ QS_STR_,
+ QS_STR_ROM_,
+ QS_TIME_,
+ QS_SIG_,
+ QS_EVS_,
+ QS_OBJ_,
+ QS_FUN_,
+ QS_EQC_,
+ QS_MPC_,
+ QS_MPS_,
+ QS_TEC_)
+-emacro(717, QS_*)            // do ... while(0);
+
+
+// Miscallaneous
+-estring(793,6)   // ANSI/ISO limit of 6 significant chars exceeded
+-e546             // Suspicious use of &
+
+

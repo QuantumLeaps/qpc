@@ -1,0 +1,137 @@
+
+--- Module:   D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c (C)
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 48 1 Info 726: Extraneous comma ignored
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 55 20 Note 970: Use of modifier or type 'char' outside of a typedef [MISRA 2004 Rule 6.3, advisory]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 55 38 Note 970: Use of modifier or type 'int' outside of a typedef [MISRA 2004 Rule 6.3, advisory]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 58 8 Note 970: Use of modifier or type 'unsigned' outside of a typedef [MISRA 2004 Rule 6.3, advisory]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 81 38 Note 960: Violates MISRA 2004 Required Rule 10.5, Operators '~' and '<<' require recasting to underlying type for sub-integers
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 97 28 Note 960: Violates MISRA 2004 Required Rule 10.5, Operators '~' and '<<' require recasting to underlying type for sub-integers
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 125 61 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 129 61 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 135 5 Info 744: switch statement has no default [MISRA 2004 Rule 15.3, required]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 135 5 Note 960: Violates MISRA 2004 Required Rule 15.3, default missing from switch statement
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 154 30 Note 960: Violates MISRA 2004 Required Rule 12.7, Bitwise operator applied to signed underlying type: <<
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 154 30 Info 835: A zero has been given as right argument to operator '<<'
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 154 42 Note 960: Violates MISRA 2004 Required Rule 12.7, Bitwise operator applied to signed underlying type: <<
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 154 43 Note 960: Violates MISRA 2004 Required Rule 12.7, Bitwise operator applied to signed underlying type: |
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 154 43 Note 960: Violates MISRA 2004 Required Rule 12.7, Bitwise operator applied to signed underlying type: |
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 154 43 Note 960: Violates MISRA 2004 Required Rule 12.7, Bitwise operator applied to signed underlying type: |
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 154 43 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 162 22 Note 960: Violates MISRA 2004 Required Rule 10.5, Operators '~' and '<<' require recasting to underlying type for sub-integers
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 162 35 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 164 20 Note 960: Violates MISRA 2004 Required Rule 10.5, Operators '~' and '<<' require recasting to underlying type for sub-integers
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 167 25 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 168 48 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 168 51 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 169 48 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 169 51 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 173 32 Info 731: Boolean argument to equal/not equal
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 173 32 Warning 506: Constant value Boolean [MISRA 2004 Rule 13.7, required], [MISRA 2004 Rule 14.1, required]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 173 32 Info 774: Boolean within 'if' always evaluates to False [Reference: file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c: line 173] [MISRA 2004 Rule 13.7, required]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 173 1 Info 831: Reference cited in prior message
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 182 5 Note 970: Use of modifier or type 'char' outside of a typedef [MISRA 2004 Rule 6.3, advisory]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 183 20 Note 960: Violates MISRA 2004 Required Rule 17.4, pointer arithmetic other than array indexing used
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 185 42 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 185 44 Note 961: Violates MISRA 2004 Advisory Rule 12.1, dependence placed on C's operator precedence; operators: '*' and '+'
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 185 45 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 185 46 Note 960: Violates MISRA 2004 Required Rule 10.1, Prohibited Implicit Conversion: Non-constant argument to function
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 185 46 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion of complex integer expression
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 185 49 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 194 48 Note 961: Violates MISRA 2004 Advisory Rule 12.6, boolean expression required for operator: '?'; the -strong(B,...) option can help provide Boolean-by-enforcement
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 194 54 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 194 57 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 201 35 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 216 56 Warning 534: Ignoring return value of function 'SysTick_Config(uint32_t)' (compare with line 1140, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\cmsis\core_cm3.h) [Encompasses MISRA 2004 Rule 16.10, required]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\cmsis\core_cm3.h" 1140 1 Info 830: Location cited in prior message
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 219 50 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 219 50 Warning 641: Converting enum 'ISR_Priorities' to 'int'
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 220 52 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 220 52 Warning 641: Converting enum 'ISR_Priorities' to 'int'
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 232 22 Note 960: Violates MISRA 2004 Required Rule 10.5, Operators '~' and '<<' require recasting to underlying type for sub-integers
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 232 34 Note 960: Violates MISRA 2004 Required Rule 10.5, Operators '~' and '<<' require recasting to underlying type for sub-integers
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 233 22 Note 960: Violates MISRA 2004 Required Rule 10.5, Operators '~' and '<<' require recasting to underlying type for sub-integers
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 233 35 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 268 20 Note 970: Use of modifier or type 'char' outside of a typedef [MISRA 2004 Rule 6.3, advisory]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 268 38 Note 970: Use of modifier or type 'int' outside of a typedef [MISRA 2004 Rule 6.3, advisory]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 402 1 Info 793: ANSI/ISO limit of 511 'external identifiers' exceeded -- processing is unaffected
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 50 1 Info 750: local macro 'UART_FR_TXFE' (line 50, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not referenced
+
+--- Module:   D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c (C)
+
+--- Module:   D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\philo.c (C)
+
+--- Module:   D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c (C)
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c" 94 29 Warning 522: Highest operation, function 'BSP_terminate', lacks side-effects [MISRA 2004 Rule 14.2, required]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c" 101 20 Warning 527: Unreachable code at token 'status' [MISRA 2004 Rule 14.1, required]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c" 209 20 Warning 527: Unreachable code at token 'status' [MISRA 2004 Rule 14.1, required]
+ Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: SystemFrequency
+ Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: l_table
+ Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: l_subscrSto
+ Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: l_smlPoolSto
+ Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: AO_Philo
+ Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: l_philoQueueSto
+ Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: l_tableQueueSto
+
+/// Start of Pass 2 ///
+
+--- Module:   D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c (C)
+
+--- Module:   D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c (C)
+
+--- Module:   D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\philo.c (C)
+
+--- Module:   D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c (C)
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c" 94 29 Warning 522: Highest operation, function 'BSP_terminate', lacks side-effects [MISRA 2004 Rule 14.2, required]
+
+--- Global Wrap-up
+
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 53 1 Info 765: external 'SysTick_Handler(void)' (line 53, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\software\qpc\include\qk.h" 238 1 Warning 526: Symbol 'QK_intNest_' (line 238, file D:\software\qpc\include\qk.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qf.h" 1040 1 Warning 526: Symbol 'QF_new_(QEvtSize, enum_t)' (line 1040, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 205 1 Info 759: header declaration for symbol 'BSP_randomSeed(uint32_t)' defined at (line 205, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be moved from header to module
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 205 1 Info 765: external 'BSP_randomSeed(uint32_t)' (line 205, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 214 1 Info 759: header declaration for symbol 'QF_onStartup(void)' defined at (line 214, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be moved from header to module
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 214 1 Info 765: external 'QF_onStartup(void)' (line 214, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 225 1 Info 759: header declaration for symbol 'QF_onCleanup(void)' defined at (line 225, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be moved from header to module
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 225 1 Info 765: external 'QF_onCleanup(void)' (line 225, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\software\qpc\include\qf.h" 737 1 Warning 526: Symbol 'QF_poolInit(void *, uint32_t, uint32_t)' (line 737, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qf.h" 704 1 Warning 526: Symbol 'QF_psInit(QSubscrList *, uint32_t)' (line 704, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qf.h" 872 1 Warning 526: Symbol 'QF_publish(const QEvt *)' (line 872, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qf.h" 761 1 Warning 526: Symbol 'QF_run(void)' (line 761, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qf.h" 279 1 Warning 526: Symbol 'QActive_postFIFO(QActive *, const QEvt *)' (line 279, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qf.h" 223 1 Warning 526: Symbol 'QActive_start(QActive *, uint8_t, const QEvt **, uint32_t, void *, uint32_t, const QEvt *)' (line 223, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qf.h" 343 1 Warning 526: Symbol 'QActive_subscribe(const QActive *, enum_t)' (line 343, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qep.h" 230 1 Warning 526: Symbol 'QHsm_top(const void *, const QEvt *)' (line 230, file D:\software\qpc\include\qep.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qf.h" 918 1 Warning 526: Symbol 'QF_tick(void)' (line 918, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 228 1 Info 759: header declaration for symbol 'QK_onIdle(void)' defined at (line 228, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be moved from header to module
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 228 1 Info 765: external 'QK_onIdle(void)' (line 228, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\software\qpc\include\qf.h" 640 1 Warning 526: Symbol 'QTimeEvt_arm_(QTimeEvt *, QActive *, QTimeEvtCtr)' (line 640, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qf.h" 540 1 Warning 526: Symbol 'QTimeEvt_ctor(QTimeEvt *, enum_t)' (line 540, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 55 1 Info 765: external 'assert_failed(const char *, int)' (line 55, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 54 1 Info 765: external 'GPIOPortA_IRQHandler(void)' (line 54, file D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\software\qpc\include\qf.h" 678 1 Warning 526: Symbol 'QF_init(void)' (line 678, file D:\software\qpc\include\qf.h, module D:\software\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+"D:\software\qpc\include\qep.h" 310 1 Info 769: global enumeration constant 'QReservedSignals::Q_INIT_SIG' (line 310, file D:\software\qpc\include\qep.h) not referenced
+ Note 974: Worst case function for stack usage: 'Table_serving' is finite, requires 75 bytes total stack in calling 'BSP_displayPhilStat'. See +stack for a full report. [MISRA 2004 Rule 16.2, required]
+
+Count   Type    Number  Text
+
+1       Warning 506     Constant value Boolean
+2       Warning 522     Highest operation, ___ '___', lacks side-effects
+14      Warning 526     Symbol '___' (___) not defined
+2       Warning 527     Unreachable code at token '___'
+1       Warning 534     Ignoring return value of function '___' (compare with ___)
+2       Warning 641     Converting enum '___' to '___'
+1       Info    726     Extraneous comma ignored
+1       Info    731     Boolean argument to equal/not equal
+1       Info    744     switch statement has no default
+1       Info    750     local macro '___' (___) not referenced
+4       Info    759     header declaration for symbol '___' defined at (___) could be moved from header to module
+7       Info    765     external '___' (___) could be made static
+1       Info    769     global enumeration constant '___' (___) not referenced
+1       Info    774     Boolean within '___' always evaluates to ___
+1       Info    793     ANSI/ISO limit of ___ '___' exceeded -- processing is unaffected
+1       Info    835     A zero has been given as ___ argument to operator '___'
+41      Note    960     Violates MISRA 2004 Required Rule ___, ___
+2       Note    961     Violates MISRA 2004 Advisory Rule ___, ___
+6       Note    970     Use of modifier or type '___' outside of a typedef
+1       Note    974     Worst case function for stack usage: ___ See +stack for a full report.

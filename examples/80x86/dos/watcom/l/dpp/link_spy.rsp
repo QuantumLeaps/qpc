@@ -1,0 +1,1 @@
+Name spy\dpp.exe File spy\bsp.obj,spy\main.obj,spy\philo.obj,spy\table.obj Library ..\..\..\..\..\..\ports\80x86\dos\watcom\l\spy\qf.lib,..\..\..\..\..\..\ports\80x86\dos\watcom\l\spy\qep.lib,..\..\..\..\..\..\ports\80x86\dos\watcom\l\spy\qs.lib 

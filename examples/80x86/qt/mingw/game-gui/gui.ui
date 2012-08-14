@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Gui</class>
+ <widget class="QDialog" name="Gui">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>801</width>
+    <height>369</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>&quot;Fly 'n' Shoot&quot; game on EK-LM3S811</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>res/qp.ico</normaloff>res/qp.ico</iconset>
+  </property>
+  <widget class="QLabel" name="m_background">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>10</y>
+     <width>791</width>
+     <height>291</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="gui.qrc">:/res/EK-LM3S811.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="m_button">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>217</y>
+     <width>41</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/res/EK-BTN_UP.png</normaloff>:/res/EK-BTN_UP.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>43</width>
+     <height>45</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="m_quit">
+   <property name="geometry">
+    <rect>
+     <x>690</x>
+     <y>330</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </widget>
+  <widget class="QLCDNumber" name="m_score">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>300</y>
+     <width>131</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="numDigits">
+    <number>4</number>
+   </property>
+  </widget>
+  <widget class="PixelLabel" name="m_display">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>135</y>
+     <width>192</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="m_LED">
+   <property name="geometry">
+    <rect>
+     <x>611</x>
+     <y>55</y>
+     <width>29</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>res/LED_OFF.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>330</y>
+     <width>46</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>MPool[0]:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="m_epoolLabel">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>330</y>
+     <width>46</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>?</string>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PixelLabel</class>
+   <extends>QLabel</extends>
+   <header>pixellabel.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>m_button</tabstop>
+  <tabstop>m_quit</tabstop>
+ </tabstops>
+ <resources>
+  <include location="gui.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>m_quit</sender>
+   <signal>clicked()</signal>
+   <receiver>Gui</receiver>
+   <slot>onQuit()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>725</x>
+     <y>341</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>571</x>
+     <y>315</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_button</sender>
+   <signal>pressed()</signal>
+   <receiver>Gui</receiver>
+   <slot>onBtnPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>569</x>
+     <y>236</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>447</x>
+     <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_button</sender>
+   <signal>released()</signal>
+   <receiver>Gui</receiver>
+   <slot>onBtnReleased()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>585</x>
+     <y>248</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>343</x>
+     <y>335</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Gui</sender>
+   <signal>finished(int)</signal>
+   <receiver>Gui</receiver>
+   <slot>onQuit()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>196</x>
+     <y>356</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>193</x>
+     <y>324</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onBtnPressed()</slot>
+  <slot>onBtnReleased()</slot>
+  <slot>onQuit()</slot>
+ </slots>
+</ui>

@@ -1,0 +1,319 @@
+[HIMDBVersion]
+2.0
+[DATABASE_VERSION]
+"2.8" 
+[PROJECT_DETAILS]
+"lwip_qk_yrdkrx62n" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip_qk_yrdkrx62n.hwp" "RX" "Renesas RX Standard" "Application" "RX600" "RX63N" 
+[INFORMATION]
+"No project information available" 
+[TOOL_CHAIN]
+"Renesas RX Standard Toolchain" "1.2.0.0" 
+[CONFIGURATIONS]
+"Debug" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Debug" 
+"Release" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Release" 
+"Spy" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Spy" 
+[BUILD_PHASES]
+"Renesas OptLinker" 1 
+"Renesas RX Assembler" 1 
+"Renesas RX C/C++ Compiler" 1 
+"Renesas RX C/C++ Library Generator" 1 
+"Renesas RX Configurator" 1 
+[TOOL_ENVIRONMENT]
+[EXTENSIONS]
+"Absolute file" "ABS" 
+"Assembly include file" "INC" 
+"Assembly list file" "LST" 
+"Assembly source file" "S" 
+"Assembly source file" "SRC" 
+"Binary file" "BIN" 
+"C header file" "H" 
+"C source file" "C" 
+"C++ header file" "HPP" 
+"C++ source file" "CC" 
+"C++ source file" "CP" 
+"C++ source file" "CPP" 
+"CPU information file" "CPU" 
+"Calling information file" "CAL" 
+"Configuration file" "CFG" 
+"Debug information file" "DBG" 
+"Hex file" "HEX" 
+"Library file" "LIB" 
+"Library information file" "LBP" 
+"Linkage map file" "MAP" 
+"Linkage symbol file" "FSY" 
+"Object file" "OBJ" 
+"Optimize map file" "bls" 
+"Preprocessed C source file" "P" 
+"Preprocessed C++ source file" "PP" 
+"Relocatable file" "REL" 
+"Rts information file" "RTS" 
+"S-Record file" "MOT" 
+"Stack information file" "SNI" 
+"TD include object file" "RTI" 
+[FILE_GROUPS]
+"Absolute file" "BIN" "NONE" "" 
+"Assembly include file" "TEXT" "EDITOR" "" 
+"Assembly list file" "TEXT" "EDITOR" "" 
+"Assembly source file" "TEXT" "EDITOR" "" 
+"Binary file" "BIN" "NONE" "" 
+"C header file" "TEXT" "EDITOR" "" 
+"C source file" "TEXT" "EDITOR" "" 
+"C++ header file" "TEXT" "EDITOR" "" 
+"C++ source file" "TEXT" "EDITOR" "" 
+"CPU information file" "BIN" "NONE" "" 
+"Calling information file" "BIN" "NONE" "" 
+"Configuration file" "TEXT" "EDITOR" "" 
+"Debug information file" "BIN" "NONE" "" 
+"Hex file" "TEXT" "EDITOR" "" 
+"Library file" "BIN" "NONE" "" 
+"Library information file" "TEXT" "EDITOR" "" 
+"Linkage map file" "TEXT" "EDITOR" "" 
+"Linkage symbol file" "TEXT" "EDITOR" "" 
+"Object file" "BIN" "NONE" "" 
+"Optimize map file" "BIN" "NONE" "" 
+"Preprocessed C source file" "TEXT" "EDITOR" "" 
+"Preprocessed C++ source file" "TEXT" "EDITOR" "" 
+"Relocatable file" "BIN" "NONE" "" 
+"Rts information file" "BIN" "NONE" "" 
+"S-Record file" "TEXT" "EDITOR" "" 
+"Stack information file" "BIN" "NONE" "" 
+"TD include object file" "BIN" "NONE" "" 
+[ASSOCIATED_APPLICATIONS]
+[TOOLCHAIN_PHASE]
+"Renesas OptLinker" 
+"Renesas RX Assembler" 
+"Renesas RX C/C++ Compiler" 
+"Renesas RX C/C++ Library Generator" 
+"Renesas RX Configurator" 
+[UTILITY_PHASE]
+[CUSTOM_PHASES]
+[CUSTOM_PHASE_INPUT_GROUP]
+[CUSTOM_PHASE_OUTPUT_SYNTAX]
+[BUILD_ORDER]
+"Renesas RX C/C++ Library Generator" 1 
+"Renesas RX C/C++ Compiler" 1 
+"Renesas RX Assembler" 1 
+"Renesas OptLinker" 1 
+"Renesas RX Configurator" 0 
+[BUILD_PHASE_DETAILS]
+"Renesas OptLinker" "Object file|Library file|Relocatable file" 0 
+"Renesas RX Assembler" "Assembly source file|Linkage symbol file" 1 
+"Renesas RX C/C++ Compiler" "C source file|C++ source file" 1 
+"Renesas RX C/C++ Library Generator" "" 0 
+"Renesas RX Configurator" "Configuration file" 0 
+[BUILD_FILE_ORDER_Assembly source file]
+"Renesas RX Assembler" 1 
+[BUILD_FILE_ORDER_C source file]
+"Renesas RX C/C++ Compiler" 1 
+[BUILD_FILE_ORDER_C++ source file]
+"Renesas RX C/C++ Compiler" 1 
+[BUILD_FILE_ORDER_Linkage symbol file]
+"Renesas RX Assembler" 1 
+[SCRAP]
+"Project Generator Setup File" "" 
+[MAPPINGS]
+"Assembly source file" "Renesas RX Assembler" "Renesas RX C/C++ Compiler" 
+"Library file" "Renesas OptLinker" "Renesas RX C/C++ Library Generator" 
+"Object file" "Renesas OptLinker" "Renesas RX Assembler" 
+"Object file" "Renesas OptLinker" "Renesas RX C/C++ Compiler" 
+[PROJECT_FILES]
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\Glyph.c" "User" "Glyph" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\Glyph.h" "User" "Glyph" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\GlyphRegister.c" "User" "Glyph" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\Glyph_cfg.h" "User" "Glyph" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\YRDKRX62N_RSPI0.c" "User" "Glyph" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\YRDKRX62N_RSPI0.h" "User" "Glyph" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\font_helvr10.c" "User" "Glyph" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\okaya_lcd.c" "User" "Glyph" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\okaya_lcd.h" "User" "Glyph" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\bsp.c" "User" "C source file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\bsp.h" "User" "C header file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\dbsct.c" "User" "C source file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\dpp.h" "User" "C header file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip.c" "User" "C source file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip_port\netif\eth_driver.c" "User" "lwip_port" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip_port\netif\eth_driver.h" "User" "lwip_port" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip_port\netif\phy.c" "User" "lwip_port" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwipmgr.c" "User" "C source file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\main.c" "User" "C source file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\philo.c" "User" "C source file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\resetprg.c" "User" "C source file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\table.c" "User" "C source file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\vecttbl.c" "User" "C source file" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\fs.c" "User" "webserver" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\fs.h" "User" "webserver" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\fsdata.h" "User" "webserver" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\httpd.c" "User" "webserver" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\httpd.h" "User" "webserver" 2 
+[FOLDER]
+"C header file" "C header file" 
+"C source file" "C source file" 
+"Glyph" "Glyph" 
+"lwip_port" "lwip_port" 
+"webserver" "webserver" 
+[GENERAL_DATA_PROJECT]
+"ParallelOn" "1" 
+"USE_CUSTOM_LINKAGE_ORDER" "0" 
+[ON_DEMAND_COMPONENTS_LOADED]
+[SYNC_SESSION_NAMES]
+[SESSIONS]
+"DefaultSession" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\DefaultSession.hsf" 0 
+"SessionRX600_Segger_J-Link" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\SessionRX600_Segger_J-Link.hsf" 0 
+[GENERAL_DATA_SESSION_DefaultSession]
+[GENERAL_DATA_SESSION_SessionRX600_Segger_J-Link]
+[OPTIONS_Debug_Renesas OptLinker]
+"Single Shot" "00f79850eaf1dc10" 5 
+[OPTIONS_Debug_Renesas RX Assembler]
+"Assembly source file" "0640546c37dfcc10" 4 
+"Linkage symbol file" "0640546c37dfcc10" 4 
+[OPTIONS_Debug_Renesas RX C/C++ Compiler]
+"C source file" "0d5244771f01dc10" 2 
+"C++ source file" "0d5244771f01dc10" 3 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\Glyph.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\GlyphRegister.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\YRDKRX62N_RSPI0.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\font_helvr10.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\okaya_lcd.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\bsp.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\dbsct.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip_port\netif\eth_driver.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip_port\netif\phy.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwipmgr.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\main.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\philo.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\resetprg.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\table.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\vecttbl.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\fs.c" "0d5244771f01dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\httpd.c" "0d5244771f01dc10" 2 
+[OPTIONS_Debug_Renesas RX C/C++ Library Generator]
+"Single Shot" "08e95e7a0d81dc10" 1 
+[OPTIONS_Debug_Renesas RX Configurator]
+"Single Shot" "03bdd4cfc5b0dc10" 6 
+[OPTIONS_Debug]
+"" 0 
+"[V|VERSION|1] [B|COMMAND|1] [S|SPEC|UITRON4] [S|OUTPUTPATH|^"$(CONFIGDIR)^"] [S|CPU|RX600] [S|ENDIAN|LITTLE] [S|FINT_REGISTER|0]" 6 
+"[V|VERSION|1] [B|DEBUG|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).obj^"] [B|LISTFILE|0] [S|CPU|RX600] [S|ENDIAN|LITTLE] [S|FINT_REGISTER|0]" 4 
+"[V|VERSION|1] [S|LANG|CPP] [B|SJIS|1] [S|INCLUDE|^"$(PROJDIR)\.^"|^"$(PROJDIR)\Glyph^"|^"$(PROJDIR)\lwip_port^"|^"$(PROJDIR)\webserver^"|^"$(QPC)\include^"|^"$(QPC)\ports\rx\qk\renesas^"|^"$(LWIP)\src^"|^"$(LWIP)\src\include^"|^"$(LWIP)\src\include\ipv4^"] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).obj^"] [B|DEBUG|1] [S|OPTIMIZE|0] [B|SIZE|1] [B|MAP|0] [I|INLINE|100] [I|LOOP|2] [S|MISRA2004|ALL] [S|MISRA2004RULEFILE|^"$(CONFIGDIR)\$(PROJECTNAME).rde^"] [S|CPU|RX600] [S|BASE|00000000=NONE] [I|PID|16] [B|SAVE_ACC|1]
+" 3 
+"[V|VERSION|1] [S|LANG|C] [B|SJIS|1] [S|INCLUDE|^"$(PROJDIR)\.^"|^"$(PROJDIR)\Glyph^"|^"$(PROJDIR)\lwip_port^"|^"$(PROJDIR)\webserver^"|^"$(QPC)\include^"|^"$(QPC)\ports\rx\qk\renesas^"|^"$(LWIP)\src^"|^"$(LWIP)\src\include^"|^"$(LWIP)\src\include\ipv4^"] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).obj^"] [B|DEBUG|1] [S|OPTIMIZE|0] [B|SIZE|1] [B|MAP|0] [I|INLINE|100] [I|LOOP|2] [S|MISRA2004|ALL] [S|MISRA2004RULEFILE|^"$(CONFIGDIR)\$(PROJECTNAME).rde^"] [S|CPU|RX600] [S|BASE|00000000=NONE] [I|PID|16] [B|SAVE_ACC|1]
+" 2 
+"[V|VERSION|1] [S|MODE|BUILD/CHANGED] [S|EXISTOUTPUTPATH|^"$(CONFIGDIR)\$(PROJECTNAME).lib^"] [S|LANG|C99] [B|RUNTIME|1] [B|STRING|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(PROJECTNAME).lib^"] [B|SIZE|1] [I|INLINE|100] [I|LOOP|2] [S|CPU|RX600] [S|BASE|00000000=NONE] [I|PID|16] [B|SAVE_ACC|1]
+" 1 
+"[V|VERSION|6] [S|INPUTLIBRARY|^"\software\qpc\ports\rx\qk\renesas\Debug\qp_rx600.lib^"] [S|FORM|STYPE] [S|BYTE_COUNT_VALUE|FF] [B|DEBUG|1] [S|ROM|(D,R)|(D_1,R_1)|(D_2,R_2)] [S|CRC|NONE|DEFAULT|00000000] [B|LIST|1] [S|LIST|^"$(CONFIGDIR)\$(PROJECTNAME).map^"] [S|SHOW|METHODCUSTOM|] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).mot^"] [I|SPACE|^"FF^"] [B|OPTIMIZE|0] [S|START|SU,SI,B_1,R_1,B_2,R_2,B,R,B_EDMAC_DESC(00)|C_1,C_2,C,C$*,L*,D*,P,W*(0FFF80000)|FIXEDVECT(0FFFFFF90)] [S|MEMORY|HIGH]
+" 5 
+[EXCLUDED_FILES_Debug]
+[LINKAGE_ORDER_Debug]
+[GENERAL_DATA_CONFIGURATION_Debug]
+[OPTIONS_Release_Renesas OptLinker]
+"Single Shot" "07ac55cfc5b0dc10" 5 
+[OPTIONS_Release_Renesas RX Assembler]
+"Assembly source file" "0640546c37dfcc10" 4 
+"Linkage symbol file" "0640546c37dfcc10" 4 
+[OPTIONS_Release_Renesas RX C/C++ Compiler]
+"C source file" "09065e28c9e0dc10" 2 
+"C++ source file" "09065e28c9e0dc10" 3 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\Glyph.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\GlyphRegister.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\YRDKRX62N_RSPI0.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\font_helvr10.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\okaya_lcd.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\bsp.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\dbsct.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip_port\netif\eth_driver.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip_port\netif\phy.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwipmgr.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\main.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\philo.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\resetprg.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\table.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\vecttbl.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\fs.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\httpd.c" "09065e28c9e0dc10" 2 
+[OPTIONS_Release_Renesas RX C/C++ Library Generator]
+"Single Shot" "000c897d70efcc10" 1 
+[OPTIONS_Release_Renesas RX Configurator]
+"Single Shot" "03bdd4cfc5b0dc10" 6 
+[OPTIONS_Release]
+"" 0 
+"[V|VERSION|1] [B|COMMAND|1] [S|SPEC|UITRON4] [S|OUTPUTPATH|^"$(CONFIGDIR)^"] [S|CPU|RX600] [S|ENDIAN|LITTLE] [S|FINT_REGISTER|0]" 6 
+"[V|VERSION|1] [B|DEBUG|0] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).obj^"] [B|LISTFILE|0] [S|CPU|RX600] [S|ENDIAN|LITTLE] [S|FINT_REGISTER|0]" 4 
+"[V|VERSION|1] [S|LANG|CPP] [B|SJIS|1] [S|INCLUDE|^"$(QPC)\include^"|^"$(QPC)\ports\rx\qk\renesas^"] [S|DEFINE|NDEBUG] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).obj^"] [B|SIZE|1] [B|MAP|0] [I|INLINE|100] [I|LOOP|2] [S|MISRA2004|ALL] [S|MISRA2004RULEFILE|^"$(CONFIGDIR)\$(PROJECTNAME).rde^"] [S|CPU|RX600] [S|BASE|00000000=NONE] [I|PID|16] [B|SAVE_ACC|1]
+" 3 
+"[V|VERSION|1] [S|LANG|C] [B|SJIS|1] [S|INCLUDE|^"$(QPC)\include^"|^"$(QPC)\ports\rx\qk\renesas^"] [S|DEFINE|NDEBUG] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).obj^"] [B|SIZE|1] [B|MAP|0] [I|INLINE|100] [I|LOOP|2] [S|MISRA2004|ALL] [S|MISRA2004RULEFILE|^"$(CONFIGDIR)\$(PROJECTNAME).rde^"] [S|CPU|RX600] [S|BASE|00000000=NONE] [I|PID|16] [B|SAVE_ACC|1]
+" 2 
+"[V|VERSION|1] [S|MODE|BUILD/CHANGED] [S|EXISTOUTPUTPATH|^"$(CONFIGDIR)\$(PROJECTNAME).lib^"] [B|RUNTIME|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(PROJECTNAME).lib^"] [B|SIZE|1] [I|INLINE|100] [I|LOOP|2] [S|CPU|RX600] [S|BASE|00000000=NONE] [I|PID|16] [B|SAVE_ACC|1]
+" 1 
+"[V|VERSION|6] [S|INPUTLIBRARY|^"\software\qpc\ports\rx\qk\renesas\Release\qp_rx600.lib^"] [S|FORM|STYPE] [S|BYTE_COUNT_VALUE|FF] [B|DEBUG|0] [S|ROM|(D,R)|(D_1,R_1)|(D_2,R_2)] [S|CRC|NONE|DEFAULT|00000000] [B|LIST|1] [S|LIST|^"$(CONFIGDIR)\$(PROJECTNAME).map^"] [S|SHOW|METHODCUSTOM|] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).mot^"] [I|SPACE|^"FF^"] [B|OPTIMIZE|0] [S|START|SI,SU,B_1,R_1,B_2,R_2,B,R(00)|C_1,C_2,C,C$*,L*,D*,P,W*(0FFF80000)|FIXEDVECT(0FFFFFF90)] [S|MEMORY|HIGH]
+" 5 
+[EXCLUDED_FILES_Release]
+[LINKAGE_ORDER_Release]
+[GENERAL_DATA_CONFIGURATION_Release]
+[OPTIONS_Spy_Renesas OptLinker]
+"Single Shot" "07ac55cfc5b0dc10" 5 
+[OPTIONS_Spy_Renesas RX Assembler]
+"Assembly source file" "0640546c37dfcc10" 4 
+"Linkage symbol file" "0640546c37dfcc10" 4 
+[OPTIONS_Spy_Renesas RX C/C++ Compiler]
+"C source file" "09065e28c9e0dc10" 2 
+"C++ source file" "09065e28c9e0dc10" 3 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\Glyph.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\GlyphRegister.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\YRDKRX62N_RSPI0.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\font_helvr10.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\Glyph\okaya_lcd.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\bsp.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\dbsct.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip_port\netif\eth_driver.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwip_port\netif\phy.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\lwipmgr.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\main.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\philo.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\resetprg.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\table.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\vecttbl.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\fs.c" "09065e28c9e0dc10" 2 
+"D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx62n\webserver\httpd.c" "09065e28c9e0dc10" 2 
+[OPTIONS_Spy_Renesas RX C/C++ Library Generator]
+"Single Shot" "000c897d70efcc10" 1 
+[OPTIONS_Spy_Renesas RX Configurator]
+"Single Shot" "03bdd4cfc5b0dc10" 6 
+[OPTIONS_Spy]
+"" 0 
+"[V|VERSION|1] [B|COMMAND|1] [S|SPEC|UITRON4] [S|OUTPUTPATH|^"$(CONFIGDIR)^"] [S|CPU|RX600] [S|ENDIAN|LITTLE] [S|FINT_REGISTER|0]" 6 
+"[V|VERSION|1] [B|DEBUG|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).obj^"] [B|LISTFILE|0] [S|CPU|RX600] [S|ENDIAN|LITTLE] [S|FINT_REGISTER|0]" 4 
+"[V|VERSION|1] [S|LANG|CPP] [B|SJIS|1] [S|INCLUDE|^"$(QPC)\include^"|^"$(QPC)\ports\rx\qk\renesas^"] [S|DEFINE|Q_SPY] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).obj^"] [B|DEBUG|1] [B|SIZE|1] [B|MAP|0] [I|INLINE|100] [I|LOOP|2] [S|MISRA2004|ALL] [S|MISRA2004RULEFILE|^"$(CONFIGDIR)\$(PROJECTNAME).rde^"] [S|CPU|RX600] [S|BASE|00000000=NONE] [I|PID|16] [B|SAVE_ACC|1]
+" 3 
+"[V|VERSION|1] [S|LANG|C] [B|SJIS|1] [S|INCLUDE|^"$(QPC)\include^"|^"$(QPC)\ports\rx\qk\renesas^"] [S|DEFINE|Q_SPY] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).obj^"] [B|DEBUG|1] [B|SIZE|1] [B|MAP|0] [I|INLINE|100] [I|LOOP|2] [S|MISRA2004|ALL] [S|MISRA2004RULEFILE|^"$(CONFIGDIR)\$(PROJECTNAME).rde^"] [S|CPU|RX600] [S|BASE|00000000=NONE] [I|PID|16] [B|SAVE_ACC|1]
+" 2 
+"[V|VERSION|1] [S|MODE|BUILD/CHANGED] [S|EXISTOUTPUTPATH|^"$(CONFIGDIR)\$(PROJECTNAME).lib^"] [B|RUNTIME|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(PROJECTNAME).lib^"] [B|SIZE|1] [I|INLINE|100] [I|LOOP|2] [S|CPU|RX600] [S|BASE|00000000=NONE] [I|PID|16] [B|SAVE_ACC|1]
+" 1 
+"[V|VERSION|6] [S|INPUTLIBRARY|^"\software\qpc\ports\rx\qk\renesas\Spy\qp_rx600.lib^"] [S|FORM|STYPE] [S|BYTE_COUNT_VALUE|FF] [B|DEBUG|1] [S|ROM|(D,R)|(D_1,R_1)|(D_2,R_2)] [S|CRC|NONE|DEFAULT|00000000] [B|LIST|1] [S|LIST|^"$(CONFIGDIR)\$(PROJECTNAME).map^"] [S|SHOW|METHODCUSTOM|] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).mot^"] [I|SPACE|^"FF^"] [B|OPTIMIZE|0] [S|START|SI,SU,B_1,R_1,B_2,R_2,B,R(00)|C_1,C_2,C,C$*,L*,D*,P,W*(0FFF80000)|FIXEDVECT(0FFFFFF90)] [S|MEMORY|HIGH]
+" 5 
+[EXCLUDED_FILES_Spy]
+[LINKAGE_ORDER_Spy]
+[GENERAL_DATA_CONFIGURATION_Spy]
+[GENERAL_DATA_CONFIGURATION_SESSION_Debug_DefaultSession]
+[SESSION_DATA_CONFIGURATION_SESSION_Debug_DefaultSession]
+"MEMORY_MAPPING_OPTIONS" "" 
+[GENERAL_DATA_CONFIGURATION_SESSION_Debug_SessionRX600_Segger_J-Link]
+[SESSION_DATA_CONFIGURATION_SESSION_Debug_SessionRX600_Segger_J-Link]
+"MEMORY_MAPPING_OPTIONS" "Unknown Options" 
+[GENERAL_DATA_CONFIGURATION_SESSION_Release_DefaultSession]
+[SESSION_DATA_CONFIGURATION_SESSION_Release_DefaultSession]
+"MEMORY_MAPPING_OPTIONS" "" 
+[GENERAL_DATA_CONFIGURATION_SESSION_Release_SessionRX600_Segger_J-Link]
+[SESSION_DATA_CONFIGURATION_SESSION_Release_SessionRX600_Segger_J-Link]
+"MEMORY_MAPPING_OPTIONS" "Unknown Options" 
+[GENERAL_DATA_CONFIGURATION_SESSION_Spy_DefaultSession]
+[SESSION_DATA_CONFIGURATION_SESSION_Spy_DefaultSession]
+"MEMORY_MAPPING_OPTIONS" "" 
+[GENERAL_DATA_CONFIGURATION_SESSION_Spy_SessionRX600_Segger_J-Link]
+[SESSION_DATA_CONFIGURATION_SESSION_Spy_SessionRX600_Segger_J-Link]
+"MEMORY_MAPPING_OPTIONS" "Unknown Options" 
+[EXT_DEBUGGER_INFO]
+0 "" "" "" "" 
+[END]

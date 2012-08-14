@@ -1,0 +1,1 @@
+Name dbg\qhsmtst.exe File dbg\main.obj,dbg\qhsmtst.obj Library ..\..\..\..\..\..\ports\80x86\dos\watcom\l\dbg\qep.lib

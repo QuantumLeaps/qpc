@@ -1,0 +1,2 @@
+Name dbg\game.exe File dbg\bsp.obj,dbg\main.obj,dbg\mine1.obj,dbg\mine2.obj,dbg\missile.obj,dbg\ship.obj,dbg\tunnel.obj,dbg\video.obj Library ..\..\..\..\..\..\ports\80x86\qk\watcom\l\dbg\qf.lib,..\..\..\..\..\..\ports\80x86\qk\watcom\l\dbg\qep.lib,..\..\..\..\..\..\ports\80x86\qk\watcom\l\dbg\qk.lib
+

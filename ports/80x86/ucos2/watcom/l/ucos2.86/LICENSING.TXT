@@ -1,0 +1,11 @@
+µC/OS-II is a product of Micriµm, Inc. and requires a license to embed it in
+a commercial product. Please refer to the Micriµm website at: 
+
+http://www.micrium.com
+
+for more information regarding the licensing of µC/OS-II.
+
+This binary distribution of µC/OS-II v2.86 is pre-configured for QF and
+compiled with the Open Watcom C/C++ compiler.
+
+ 

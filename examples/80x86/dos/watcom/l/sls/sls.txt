@@ -1,0 +1,310 @@
+QSPY host application 4.0.00
+Copyright (c) Quantum Leaps, LLC.
+Thu Oct 02 18:42:50 2008
+
+-T 4
+-O 4
+-F 4
+-S 1
+-E 2
+-Q 1
+-P 2
+-B 2
+-C 2
+
+           MP.INIT: Obj=11341B84 nBlocks=   5
+           Obj Dic: 11341B70->l_uiQueueSto
+           Obj Dic: 11341B84->l_smlPoolSto
+           Sig Dic: 00000004,Obj=00000000 ->QUIT_SIG
+           EQ.INIT: Obj=l_uiQueueSto Len= 5
+0000021476 AO.ADD : Active=11341AE0 Prio= 1
+0000021495 AO.SUB : Active=11341AE0 Sig=QUIT_SIG
+           Obj Dic: 11341AE0->&l_ui
+           Fun Dic: 09460469->&UI_top_handler
+           Fun Dic: 094606CD->&UI_top_final
+           Fun Dic: 09DD000C->&UI_num_handler
+           Fun Dic: 09DD00F6->&UI_num_sd_handler
+           Fun Dic: 0A40000E->&UI_num_lr_handler
+           Fun Dic: 09B50052->&UI_help_handler
+           Sig Dic: 00000006,Obj=11341AE0 ->C_SIG
+           Sig Dic: 00000007,Obj=11341AE0 ->CE_SIG
+           Sig Dic: 00000008,Obj=11341AE0 ->DIGIT_0_SIG
+           Sig Dic: 00000009,Obj=11341AE0 ->DIGIT_1_9_SIG
+           Sig Dic: 0000000A,Obj=11341AE0 ->POINT_SIG
+           Sig Dic: 0000000B,Obj=11341AE0 ->NEG_SIG
+           Sig Dic: 0000000C,Obj=11341AE0 ->ENTER_SIG
+           Sig Dic: 0000000D,Obj=11341AE0 ->UP_SIG
+           Sig Dic: 0000000E,Obj=11341AE0 ->DOWN_SIG
+           Sig Dic: 0000000F,Obj=11341AE0 ->HELP_SIG
+           Q_INIT : Obj=l_ui Source=0C580003 Target=UI_num_handler
+           Q_ENTRY: Obj=l_ui State=UI_top_handler
+           Obj Dic: 11341AF7->&me->num_entry
+           Q_ENTRY: Obj=l_ui State=UI_num_handler
+           Fun Dic: 0AC7035C->&NumEntry_top
+           Fun Dic: 0AC704C2->&NumEntry_negative
+           Fun Dic: 0AC703F0->&NumEntry_zero
+           Fun Dic: 0AC70544->&NumEntry_integer
+           Fun Dic: 0AC705B4->&NumEntry_fraction
+           Sig Dic: 00000006,Obj=11341AF7 ->C_SIG
+           Sig Dic: 00000008,Obj=11341AF7 ->DIGIT_0_SIG
+           Sig Dic: 00000009,Obj=11341AF7 ->DIGIT_1_9_SIG
+           Sig Dic: 0000000A,Obj=11341AF7 ->POINT_SIG
+           Sig Dic: 0000000B,Obj=11341AF7 ->NEG_SIG
+           Q_INIT : Obj=me->num_entry Source=0C580003 Target=NumEntry_zero
+0000029519 ==>Init: Obj=me->num_entry New=NumEntry_zero
+           Q_INIT : Obj=l_ui Source=UI_num_handler Target=UI_num_sd_handler
+0000029609 ==>Tran: Obj=me->num_entry Sig=C_SIG Source=NumEntry_top New=NumEntry_zero
+           Q_ENTRY: Obj=l_ui State=UI_num_sd_handler
+0000029636 ==>Init: Obj=l_ui New=UI_num_sd_handler
+0012166895 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0012166913 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0012166930 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0012168676 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0012168699 ==>Tran: Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_zero New=NumEntry_integer
+0012168716 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0012168731 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0012168747 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0012901922 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0012901940 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0012901958 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0012903696 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0012903716 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_integer
+0012903733 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0012903748 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0012903764 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0013678699 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0013678719 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0013678740 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0013680477 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0013680497 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_integer
+0013680513 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0013680530 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0013680545 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0015967290 NEW    : Evt(Sig=POINT_SIG, size=    3)
+0015967308 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0015967324 AO.FIFO: Obj=l_ui Evt(Sig=POINT_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0015969063 AO.GETL: Active= l_ui Evt(Sig=POINT_SIG, Pool=1, Ref= 1)
+0015969085 ==>Tran: Obj=me->num_entry Sig=POINT_SIG Source=NumEntry_integer New=NumEntry_fraction
+0015969102 Intern : Obj=l_ui Sig=POINT_SIG Source=UI_num_sd_handler
+0015969119 GC     : Evt(Sig=POINT_SIG, Pool=1, Ref= 1)
+0015969134 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0017095503 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0017095522 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0017095539 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0017097275 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0017097295 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_fraction
+0017097310 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0017097327 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0017097343 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0017620289 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0017620308 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0017620325 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0017622062 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0017622082 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_fraction
+0017622098 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0017622115 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0017622130 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0019721826 AO.FIFO: Obj=l_ui Evt(Sig=ENTER_SIG, Pool=0, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0019723569 AO.GETL: Active= l_ui Evt(Sig=ENTER_SIG, Pool=0, Ref= 0)
+0019723646 ==>Tran: Obj=me->num_entry Sig=C_SIG Source=NumEntry_top New=NumEntry_zero
+0019723668 Intern : Obj=l_ui Sig=ENTER_SIG Source=UI_num_sd_handler
+0021753057 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0021753076 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0021753092 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0021754831 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0021754852 ==>Tran: Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_zero New=NumEntry_integer
+0021754869 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0021754886 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0021754900 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0023653294 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0023653313 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0023653330 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0023655069 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0023655088 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_integer
+0023655105 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0023655122 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0023655136 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0024771989 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0024772007 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0024772024 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0024815434 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0024815453 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_integer
+0024815470 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0024815487 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0024815501 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0025745310 NEW    : Evt(Sig=POINT_SIG, size=    3)
+0025745328 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0025745344 AO.FIFO: Obj=l_ui Evt(Sig=POINT_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0025747080 AO.GETL: Active= l_ui Evt(Sig=POINT_SIG, Pool=1, Ref= 1)
+0025747103 ==>Tran: Obj=me->num_entry Sig=POINT_SIG Source=NumEntry_integer New=NumEntry_fraction
+0025747122 Intern : Obj=l_ui Sig=POINT_SIG Source=UI_num_sd_handler
+0025747138 GC     : Evt(Sig=POINT_SIG, Pool=1, Ref= 1)
+0025747153 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0026733471 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0026733489 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0026733506 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0026735244 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0026735264 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_fraction
+0026735280 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0026735297 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0026735311 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0027444735 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0027444759 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0027444783 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0027446546 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0027446574 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_fraction
+0027446594 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0027446614 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0027446635 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0028099974 AO.FIFO: Obj=l_ui Evt(Sig=ENTER_SIG, Pool=0, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0028101739 AO.GETL: Active= l_ui Evt(Sig=ENTER_SIG, Pool=0, Ref= 0)
+0028101816 ==>Tran: Obj=me->num_entry Sig=C_SIG Source=NumEntry_top New=NumEntry_zero
+0028101840 Intern : Obj=l_ui Sig=ENTER_SIG Source=UI_num_sd_handler
+0030196796 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0030196820 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0030196844 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0030198603 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0030198627 ==>Tran: Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_zero New=NumEntry_integer
+0030198645 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0030198661 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0030198676 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0030912731 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0030912749 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0030912767 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0030914504 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0030914524 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_integer
+0030914540 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0030914556 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0030914572 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0034324795 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0034324813 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0034324830 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0034326568 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0034326587 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_integer
+0034326604 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0034326620 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0034326635 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0035322587 NEW    : Evt(Sig=POINT_SIG, size=    3)
+0035322604 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0035322622 AO.FIFO: Obj=l_ui Evt(Sig=POINT_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0035366031 AO.GETL: Active= l_ui Evt(Sig=POINT_SIG, Pool=1, Ref= 1)
+0035366052 ==>Tran: Obj=me->num_entry Sig=POINT_SIG Source=NumEntry_integer New=NumEntry_fraction
+0035366069 Intern : Obj=l_ui Sig=POINT_SIG Source=UI_num_sd_handler
+0035366086 GC     : Evt(Sig=POINT_SIG, Pool=1, Ref= 1)
+0035366101 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0036104064 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0036104083 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0036104099 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0036105835 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0036105855 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_fraction
+0036105872 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_sd_handler
+0036105888 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0036105903 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0037540856 AO.FIFO: Obj=l_ui Evt(Sig=ENTER_SIG, Pool=0, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0037542598 AO.GETL: Active= l_ui Evt(Sig=ENTER_SIG, Pool=0, Ref= 0)
+0037542639 ==>Tran: Obj=me->num_entry Sig=C_SIG Source=NumEntry_top New=NumEntry_zero
+0037542657 Intern : Obj=l_ui Sig=ENTER_SIG Source=UI_num_sd_handler
+0044881057 AO.FIFO: Obj=l_ui Evt(Sig=DOWN_SIG, Pool=0, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0044882819 AO.GETL: Active= l_ui Evt(Sig=DOWN_SIG, Pool=0, Ref= 0)
+           Q_EXIT : Obj=l_ui State=UI_num_sd_handler
+0044882913 ==>Tran: Obj=me->num_entry Sig=C_SIG Source=NumEntry_top New=NumEntry_zero
+0044882934 ==>Tran: Obj=me->num_entry Sig=C_SIG Source=NumEntry_top New=NumEntry_zero
+           Q_ENTRY: Obj=l_ui State=UI_num_lr_handler
+           Fun Dic: 0A400453->&UI_num_lr_xy_x_entry
+           Fun Dic: 0A400539->&UI_num_lr_xy_y_entry
+           Q_INIT : Obj=l_ui Source=UI_num_lr_handler Target=UI_num_lr_xy_x_entry
+0044940667 ==>Tran: Obj=me->num_entry Sig=C_SIG Source=NumEntry_top New=NumEntry_zero
+           Q_ENTRY: Obj=l_ui State=UI_num_lr_xy_x_entry
+0044940693 ==>Tran: Obj=l_ui Sig=DOWN_SIG Source=UI_num_sd_handler New=UI_num_lr_xy_x_entry
+0050772588 NEW    : Evt(Sig=NEG_SIG, size=    3)
+0050772607 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0050772629 AO.FIFO: Obj=l_ui Evt(Sig=NEG_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0050774370 AO.GETL: Active= l_ui Evt(Sig=NEG_SIG, Pool=1, Ref= 1)
+0050774391 ==>Tran: Obj=me->num_entry Sig=NEG_SIG Source=NumEntry_zero New=NumEntry_negative
+0050774408 Intern : Obj=l_ui Sig=NEG_SIG Source=UI_num_lr_handler
+0050774424 GC     : Evt(Sig=NEG_SIG, Pool=1, Ref= 1)
+0050774439 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0052083713 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0052083736 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0052083757 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0052085530 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0052085554 ==>Tran: Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_negative New=NumEntry_integer
+0052085577 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_lr_handler
+0052085598 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0052085613 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0056029454 NEW    : Evt(Sig=POINT_SIG, size=    3)
+0056029478 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0056029499 AO.FIFO: Obj=l_ui Evt(Sig=POINT_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0056031252 AO.GETL: Active= l_ui Evt(Sig=POINT_SIG, Pool=1, Ref= 1)
+0056031274 ==>Tran: Obj=me->num_entry Sig=POINT_SIG Source=NumEntry_integer New=NumEntry_fraction
+0056031291 Intern : Obj=l_ui Sig=POINT_SIG Source=UI_num_lr_handler
+0056031308 GC     : Evt(Sig=POINT_SIG, Pool=1, Ref= 1)
+0056031322 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0057255299 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0057255317 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0057255335 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0057257071 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0057257091 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_fraction
+0057257108 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_lr_handler
+0057257123 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0057257139 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0060803708 AO.FIFO: Obj=l_ui Evt(Sig=ENTER_SIG, Pool=0, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0060870985 AO.GETL: Active= l_ui Evt(Sig=ENTER_SIG, Pool=0, Ref= 0)
+           Q_EXIT : Obj=l_ui State=UI_num_lr_xy_x_entry
+0060871022 ==>Tran: Obj=me->num_entry Sig=C_SIG Source=NumEntry_top New=NumEntry_zero
+           Q_ENTRY: Obj=l_ui State=UI_num_lr_xy_y_entry
+0060871041 ==>Tran: Obj=l_ui Sig=ENTER_SIG Source=UI_num_lr_xy_x_entry New=UI_num_lr_xy_y_entry
+0063892926 NEW    : Evt(Sig=NEG_SIG, size=    3)
+0063892944 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0063892962 AO.FIFO: Obj=l_ui Evt(Sig=NEG_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0063894706 AO.GETL: Active= l_ui Evt(Sig=NEG_SIG, Pool=1, Ref= 1)
+0063894728 ==>Tran: Obj=me->num_entry Sig=NEG_SIG Source=NumEntry_zero New=NumEntry_negative
+0063894744 Intern : Obj=l_ui Sig=NEG_SIG Source=UI_num_lr_handler
+0063894761 GC     : Evt(Sig=NEG_SIG, Pool=1, Ref= 1)
+0063894775 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0064946079 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0064946098 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0064946115 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+*** Incorrect record past seq=253
+*** Dropped   1 records
+0064989546 ==>Tran: Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_negative New=NumEntry_integer
+0064989562 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_lr_handler
+0064989579 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0064989593 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0066644919 NEW    : Evt(Sig=POINT_SIG, size=    3)
+0066644938 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0066644955 AO.FIFO: Obj=l_ui Evt(Sig=POINT_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0066646692 AO.GETL: Active= l_ui Evt(Sig=POINT_SIG, Pool=1, Ref= 1)
+0066646713 ==>Tran: Obj=me->num_entry Sig=POINT_SIG Source=NumEntry_integer New=NumEntry_fraction
+0066646730 Intern : Obj=l_ui Sig=POINT_SIG Source=UI_num_lr_handler
+0066646747 GC     : Evt(Sig=POINT_SIG, Pool=1, Ref= 1)
+0066646761 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0067557515 NEW    : Evt(Sig=DIGIT_1_9_SIG, size=    3)
+0067557534 MP.GET : Obj=l_smlPoolSto nFree=   4 nMin=   4
+0067557551 AO.FIFO: Obj=l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0067559289 AO.GETL: Active= l_ui Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0067559309 Intern : Obj=me->num_entry Sig=DIGIT_1_9_SIG Source=NumEntry_fraction
+0067559326 Intern : Obj=l_ui Sig=DIGIT_1_9_SIG Source=UI_num_lr_handler
+0067559342 GC     : Evt(Sig=DIGIT_1_9_SIG, Pool=1, Ref= 1)
+0067559357 MP.PUT : Obj=l_smlPoolSto nFree=   5
+0074447693 AO.FIFO: Obj=l_ui Evt(Sig=ENTER_SIG, Pool=0, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0074491112 AO.GETL: Active= l_ui Evt(Sig=ENTER_SIG, Pool=0, Ref= 0)
+0074491173 ==>Tran: Obj=me->num_entry Sig=C_SIG Source=NumEntry_top New=NumEntry_zero
+           Q_EXIT : Obj=l_ui State=UI_num_lr_xy_y_entry
+0074491201 ==>Tran: Obj=me->num_entry Sig=C_SIG Source=NumEntry_top New=NumEntry_zero
+           Q_ENTRY: Obj=l_ui State=UI_num_lr_xy_x_entry
+0074491221 ==>Tran: Obj=l_ui Sig=ENTER_SIG Source=UI_num_lr_xy_y_entry New=UI_num_lr_xy_x_entry
+0080462185 AO.FIFO: Obj=l_ui Evt(Sig=HELP_SIG, Pool=0, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0080529463 AO.GETL: Active= l_ui Evt(Sig=HELP_SIG, Pool=0, Ref= 0)
+           Q_EXIT : Obj=l_ui State=UI_num_lr_xy_x_entry
+           Q_EXIT : Obj=l_ui State=UI_num_lr_handler
+           Q_EXIT : Obj=l_ui State=UI_num_handler
+           Q_ENTRY: Obj=l_ui State=UI_help_handler
+0080529558 ==>Tran: Obj=l_ui Sig=HELP_SIG Source=UI_num_handler New=UI_help_handler
+0084670969 AO.FIFO: Obj=l_ui Evt(Sig=DOWN_SIG, Pool=0, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0084714379 AO.GETL: Active= l_ui Evt(Sig=DOWN_SIG, Pool=0, Ref= 0)
+0084714407 Intern : Obj=l_ui Sig=DOWN_SIG Source=UI_help_handler
+0085709454 AO.FIFO: Obj=l_ui Evt(Sig=DOWN_SIG, Pool=0, Ref= 0) Queue(nUsed=  5, nMax=  5)
+0085711186 AO.GETL: Active= l_ui Evt(Sig=DOWN_SIG, Pool=0, Ref= 0)
+0085711214 Intern : Obj=l_ui Sig=DOWN_SIG Source=UI_help_handler
+0097312648 PUBLISH: Evt(Sig=QUIT_SIG, Pool=0, Ref= 0)

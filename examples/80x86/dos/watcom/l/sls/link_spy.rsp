@@ -1,0 +1,1 @@
+Name spy\sls.exe File spy\bsp.obj,spy\main.obj,spy\num_ent.obj,spy\ui.obj,spy\ui_help.obj,spy\ui_nu_lr.obj,spy\ui_num.obj,spy\video.obj Library ..\..\..\..\..\..\ports\80x86\dos\watcom\l\spy\qf.lib,..\..\..\..\..\..\ports\80x86\dos\watcom\l\spy\qep.lib,..\..\..\..\..\..\ports\80x86\dos\watcom\l\spy\qs.lib

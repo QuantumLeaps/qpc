@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?>
+
+<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="lwip-qk-ev-lm3s6965" buildProperties="" description="" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516" name="Debug" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516.336441587" name="/" resourcePath="">
+						<toolChain id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1406365130" name="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug">
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.board.691929813" name="Board" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.board"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.memory.349490100" name="Profile" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.memory"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.hosting.494359693" name="Hosting" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.hosting"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.cpu.890081313" name="Processor" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.cpu"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.endian.586739225" name="Endianness" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.endian"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.thumb.779548515" name="ARM/Thumb Mode" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.thumb"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.float-abi.214872757" name="Hard/Soft Float" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.float-abi"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.fpu.103805154" name="FPU" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.fpu"/>
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.platform.exe.debug.1848417947" name="Debug Platform" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.platform.exe.debug"/>
+							<builder id="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.builder.exe.debug.48198620" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.builder.exe.debug"/>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.compiler.exe.debug.313048433" name="Sourcery G++ C Compiler" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+								<inputType id="com.codesourcery.arm_none_eabi.cdt.debug.core.c.compiler.exe.debug.input.1578726236" superClass="com.codesourcery.arm_none_eabi.cdt.debug.core.c.compiler.exe.debug.input"/>
+							</tool>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.822428169" name="Sourcery G++ C++ Compiler" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.assembler.exe.debug.120413987" name="Sourcery G++ Assembler" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.assembler.exe.debug">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1578140459" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.linker.exe.debug.1229413606" name="Sourcery G++ C Linker" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.4624031" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1227570966" name="Sourcery G++ C++ Linker" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.objcopy.exe.debug.1814797919" name="Sourcery G++ Objcopy" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.objcopy.exe.debug"/>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+		</cconfiguration>
+		<cconfiguration id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516.273838395">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516.273838395" moduleId="org.eclipse.cdt.core.settings" name="Release">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="lwip-qk-ev-lm3s6965" buildProperties="" description="" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516.273838395" name="Release" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516.273838395." name="/" resourcePath="">
+						<toolChain id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.451457184" name="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug">
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.board.422243972" name="Board" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.board"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.memory.644124900" name="Profile" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.memory"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.hosting.164984415" name="Hosting" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.hosting"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.cpu.249394878" name="Processor" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.cpu"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.endian.926952680" name="Endianness" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.endian"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.thumb.204858197" name="ARM/Thumb Mode" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.thumb"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.float-abi.1951247331" name="Hard/Soft Float" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.float-abi"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.fpu.846696269" name="FPU" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.fpu"/>
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.platform.exe.debug.587698482" name="Debug Platform" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.platform.exe.debug"/>
+							<builder arguments="CONF=rel" command="cs-make" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.builder.exe.debug.2023146800" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.builder.exe.debug"/>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.compiler.exe.debug.628691323" name="Sourcery G++ C Compiler" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+								<inputType id="com.codesourcery.arm_none_eabi.cdt.debug.core.c.compiler.exe.debug.input.348897038" superClass="com.codesourcery.arm_none_eabi.cdt.debug.core.c.compiler.exe.debug.input"/>
+							</tool>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.926758788" name="Sourcery G++ C++ Compiler" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.assembler.exe.debug.1321266404" name="Sourcery G++ Assembler" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.assembler.exe.debug">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1437273281" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.linker.exe.debug.414423967" name="Sourcery G++ C Linker" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.1303590806" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.987246588" name="Sourcery G++ C++ Linker" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.objcopy.exe.debug.1069380586" name="Sourcery G++ Objcopy" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.objcopy.exe.debug"/>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+		</cconfiguration>
+		<cconfiguration id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516.911904596">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516.911904596" moduleId="org.eclipse.cdt.core.settings" name="Spy">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="lwip-qk-ev-lm3s6965" buildProperties="" description="" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516.911904596" name="Spy" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1367573516.911904596." name="/" resourcePath="">
+						<toolChain id="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug.1221125211" name="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.toolchain.gnu.exe.debug">
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.board.363193713" name="Board" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.board"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.memory.957518853" name="Profile" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.memory"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.hosting.588029152" name="Hosting" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.hosting"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.cpu.216356226" name="Processor" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.cpu"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.endian.1000656257" name="Endianness" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.endian"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.thumb.1523380048" name="ARM/Thumb Mode" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.thumb"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.float-abi.1379846755" name="Hard/Soft Float" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.float-abi"/>
+							<option id="com.codesourcery.arm_none_eabi.exe.debug.general.fpu.1212272046" name="FPU" superClass="com.codesourcery.arm_none_eabi.exe.debug.general.fpu"/>
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.platform.exe.debug.1748574285" name="Debug Platform" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.platform.exe.debug"/>
+							<builder arguments="CONF=spy" command="cs-make" id="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.builder.exe.debug.1262449237" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.target.gnu.builder.exe.debug"/>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.compiler.exe.debug.294726530" name="Sourcery G++ C Compiler" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+								<inputType id="com.codesourcery.arm_none_eabi.cdt.debug.core.c.compiler.exe.debug.input.1999606307" superClass="com.codesourcery.arm_none_eabi.cdt.debug.core.c.compiler.exe.debug.input"/>
+							</tool>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.978670936" name="Sourcery G++ C++ Compiler" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.assembler.exe.debug.483918746" name="Sourcery G++ Assembler" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.assembler.exe.debug">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1417114164" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.linker.exe.debug.571510906" name="Sourcery G++ C Linker" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.114906605" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1286316736" name="Sourcery G++ C++ Linker" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
+							<tool id="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.objcopy.exe.debug.2767575" name="Sourcery G++ Objcopy" superClass="com.codesourcery.arm_none_eabi.cdt.managedbuild.tool.gnu.objcopy.exe.debug"/>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="lwip-qk-ev-lm3s6965.null.1564046898" name="lwip-qk-ev-lm3s6965" usesSysroot="false"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
+		<profile id="com.codesourcery.arm_none_eabi.cdt.debug.core.SGPPManagedMakePerProjectProfileC">
+			<buildOutputProvider>
+				<openAction enabled="false" filePath=""/>
+				<parser enabled="false"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="arm-none-eabi-gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="com.codesourcery.arm_none_eabi.cdt.debug.core.SGPPManagedMakePerProjectProfileCPP">
+			<buildOutputProvider>
+				<openAction enabled="false" filePath=""/>
+				<parser enabled="false"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="arm-none-eabi-g++" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
+			<buildOutputProvider>
+				<openAction enabled="true" filePath=""/>
+				<parser enabled="true"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
+			<buildOutputProvider>
+				<openAction enabled="true" filePath=""/>
+				<parser enabled="true"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="makefileGenerator">
+				<runAction arguments="-f ${project_name}_scd.mk" command="make" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfile">
+			<buildOutputProvider>
+				<openAction enabled="true" filePath=""/>
+				<parser enabled="true"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP">
+			<buildOutputProvider>
+				<openAction enabled="true" filePath=""/>
+				<parser enabled="true"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.cpp" command="g++" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC">
+			<buildOutputProvider>
+				<openAction enabled="true" filePath=""/>
+				<parser enabled="true"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.c" command="gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfile">
+			<buildOutputProvider>
+				<openAction enabled="true" filePath=""/>
+				<parser enabled="true"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileCPP">
+			<buildOutputProvider>
+				<openAction enabled="true" filePath=""/>
+				<parser enabled="true"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.cpp" command="g++" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+		<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileC">
+			<buildOutputProvider>
+				<openAction enabled="true" filePath=""/>
+				<parser enabled="true"/>
+			</buildOutputProvider>
+			<scannerInfoProvider id="specsFile">
+				<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.c" command="gcc" useDefault="true"/>
+				<parser enabled="true"/>
+			</scannerInfoProvider>
+		</profile>
+	</storageModule>
+	<storageModule moduleId="refreshScope"/>
+</cproject>

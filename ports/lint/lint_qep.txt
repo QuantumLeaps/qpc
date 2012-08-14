@@ -1,0 +1,153 @@
+
+--- Module:   D:\qp\qpc\qep\source\qep.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qfsm_dis.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qfsm_ini.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qhsm_dis.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qhsm_in.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qhsm_ini.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qhsm_top.c (C)
+
+/// Start of Pass 2 ///
+
+--- Module:   D:\qp\qpc\qep\source\qep.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qfsm_dis.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qfsm_ini.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qhsm_dis.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qhsm_in.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qhsm_ini.c (C)
+
+--- Module:   D:\qp\qpc\qep\source\qhsm_top.c (C)
+
+--- Global Wrap-up
+
+"D:\qp\qpc\ports\lint\stdint.h" 38 1 Info 756: global typedef 'uint32_t' (line 38, file D:\qp\qpc\ports\lint\stdint.h) not referenced
+"D:\qp\qpc\include\qevt.h" 200 1 Info 756: global typedef 'QEvent' (line 200, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 151 1 Info 756: global typedef 'float32_t' (line 151, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 154 1 Info 756: global typedef 'float64_t' (line 154, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 157 1 Info 756: global typedef 'enum_t' (line 157, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\qep\source\qep.c" 52 1 Info 759: header declaration for symbol 'QEP_getVersion(void)' defined at (line 52, file D:\qp\qpc\qep\source\qep.c) could be moved from header to module
+"D:\qp\qpc\qep\source\qep.c" 52 1 Info 765: external 'QEP_getVersion(void)' (line 52, file D:\qp\qpc\qep\source\qep.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\qep\source\qep.c" 52 1 Info 714: Symbol 'QEP_getVersion(void)' (line 52, file D:\qp\qpc\qep\source\qep.c) not referenced
+"D:\qp\qpc\qep\source\qfsm_dis.c" 47 1 Info 759: header declaration for symbol 'QFsm_dispatch(QFsm *, const QEvt *)' defined at (line 47, file D:\qp\qpc\qep\source\qfsm_dis.c) could be moved from header to module
+"D:\qp\qpc\qep\source\qfsm_dis.c" 47 1 Info 765: external 'QFsm_dispatch(QFsm *, const QEvt *)' (line 47, file D:\qp\qpc\qep\source\qfsm_dis.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\qep\source\qfsm_dis.c" 47 1 Info 714: Symbol 'QFsm_dispatch(QFsm *, const QEvt *)' (line 47, file D:\qp\qpc\qep\source\qfsm_dis.c) not referenced
+"D:\qp\qpc\qep\source\qfsm_ini.c" 47 1 Info 759: header declaration for symbol 'QFsm_init(QFsm *, const QEvt *)' defined at (line 47, file D:\qp\qpc\qep\source\qfsm_ini.c) could be moved from header to module
+"D:\qp\qpc\qep\source\qfsm_ini.c" 47 1 Info 765: external 'QFsm_init(QFsm *, const QEvt *)' (line 47, file D:\qp\qpc\qep\source\qfsm_ini.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\qep\source\qfsm_ini.c" 47 1 Info 714: Symbol 'QFsm_init(QFsm *, const QEvt *)' (line 47, file D:\qp\qpc\qep\source\qfsm_ini.c) not referenced
+"D:\qp\qpc\qep\source\qhsm_dis.c" 47 1 Info 759: header declaration for symbol 'QHsm_dispatch(QHsm *, const QEvt *)' defined at (line 47, file D:\qp\qpc\qep\source\qhsm_dis.c) could be moved from header to module
+"D:\qp\qpc\qep\source\qhsm_dis.c" 47 1 Info 765: external 'QHsm_dispatch(QHsm *, const QEvt *)' (line 47, file D:\qp\qpc\qep\source\qhsm_dis.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\qep\source\qhsm_dis.c" 47 1 Info 714: Symbol 'QHsm_dispatch(QHsm *, const QEvt *)' (line 47, file D:\qp\qpc\qep\source\qhsm_dis.c) not referenced
+"D:\qp\qpc\qep\source\qhsm_ini.c" 47 1 Info 759: header declaration for symbol 'QHsm_init(QHsm *, const QEvt *)' defined at (line 47, file D:\qp\qpc\qep\source\qhsm_ini.c) could be moved from header to module
+"D:\qp\qpc\qep\source\qhsm_ini.c" 47 1 Info 765: external 'QHsm_init(QHsm *, const QEvt *)' (line 47, file D:\qp\qpc\qep\source\qhsm_ini.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\qep\source\qhsm_ini.c" 47 1 Info 714: Symbol 'QHsm_init(QHsm *, const QEvt *)' (line 47, file D:\qp\qpc\qep\source\qhsm_ini.c) not referenced
+"D:\qp\qpc\qep\source\qhsm_in.c" 47 1 Info 759: header declaration for symbol 'QHsm_isIn(QHsm *, QStateHandler)' defined at (line 47, file D:\qp\qpc\qep\source\qhsm_in.c) could be moved from header to module
+"D:\qp\qpc\qep\source\qhsm_in.c" 47 1 Info 765: external 'QHsm_isIn(QHsm *, QStateHandler)' (line 47, file D:\qp\qpc\qep\source\qhsm_in.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\qep\source\qhsm_in.c" 47 1 Info 714: Symbol 'QHsm_isIn(QHsm *, QStateHandler)' (line 47, file D:\qp\qpc\qep\source\qhsm_in.c) not referenced
+"D:\qp\qpc\ports\lint\stdint.h" 33 1 Info 756: global typedef 'int16_t' (line 33, file D:\qp\qpc\ports\lint\stdint.h) not referenced
+"D:\qp\qpc\include\qassert.h" 88 1 Warning 526: Symbol 'Q_onAssert(const char_t *, int_t)' (line 88, file D:\qp\qpc\include\qassert.h, module D:\qp\qpc\qep\source\qfsm_dis.c) not defined
+"D:\qp\qpc\ports\lint\stdint.h" 34 1 Info 756: global typedef 'int32_t' (line 34, file D:\qp\qpc\ports\lint\stdint.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 82 1 Info 755: global macro 'QS_MEM' (line 82, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 110 1 Info 755: global macro 'QS_MPC_' (line 110, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 111 1 Info 755: global macro 'QS_MPS_' (line 111, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 84 1 Info 755: global macro 'QS_OBJ' (line 84, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 88 1 Info 755: global macro 'QS_OBJ_DICTIONARY' (line 88, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qep.h" 295 1 Info 755: global macro 'Q_UNHANDLED' (line 295, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qassert.h" 194 1 Info 755: global macro 'Q_ENSURE' (line 194, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qassert.h" 201 1 Info 755: global macro 'Q_ENSURE_ID' (line 201, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 91 1 Info 755: global macro 'QS_ASSERTION' (line 91, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qassert.h" 129 1 Info 755: global macro 'Q_ASSERT_ID' (line 129, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qassert.h" 223 1 Info 755: global macro 'Q_ASSERT_COMPILE' (line 223, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 52 1 Info 755: global macro 'QS_RESET' (line 52, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 65 1 Info 755: global macro 'QS_BEGIN' (line 65, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 67 1 Info 755: global macro 'QS_BEGIN_NOCRIT' (line 67, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 98 1 Info 755: global macro 'QS_BEGIN_NOCRIT_' (line 98, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qep.h" 272 1 Info 755: global macro 'Q_TRAN' (line 272, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 83 1 Info 755: global macro 'QS_SIG' (line 83, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 87 1 Info 755: global macro 'QS_SIG_DICTIONARY' (line 87, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 80 1 Info 755: global macro 'QS_STR' (line 80, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 81 1 Info 755: global macro 'QS_STR_ROM' (line 81, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 118 1 Info 755: global macro 'QF_QS_ACTION' (line 118, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 114 1 Info 755: global macro 'QF_QS_CRIT_ENTRY' (line 114, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 115 1 Info 755: global macro 'QF_QS_CRIT_EXIT' (line 115, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 116 1 Info 755: global macro 'QF_QS_ISR_ENTRY' (line 116, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 117 1 Info 755: global macro 'QF_QS_ISR_EXIT' (line 117, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qep.h" 112 1 Info 755: global macro 'QFsm_ctor' (line 112, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 51 1 Info 755: global macro 'QS_DUMP' (line 51, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 112 1 Info 755: global macro 'QS_TEC_' (line 112, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qassert.h" 161 1 Info 755: global macro 'Q_ERROR' (line 161, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qassert.h" 171 1 Info 755: global macro 'Q_ERROR_ID' (line 171, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qassert.h" 208 1 Info 755: global macro 'Q_INVARIANT' (line 208, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qassert.h" 215 1 Info 755: global macro 'Q_INVARIANT_ID' (line 215, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qassert.h" 187 1 Info 755: global macro 'Q_REQUIRE_ID' (line 187, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 66 1 Info 755: global macro 'QS_END' (line 66, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 68 1 Info 755: global macro 'QS_END_NOCRIT' (line 68, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 99 1 Info 755: global macro 'QS_END_NOCRIT_' (line 99, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 106 1 Info 755: global macro 'QS_EVS_' (line 106, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 109 1 Info 755: global macro 'QS_EQC_' (line 109, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 50 1 Info 755: global macro 'QS_EXIT' (line 50, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 73 1 Info 755: global macro 'QS_U16' (line 73, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 101 1 Info 755: global macro 'QS_U16_' (line 101, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 75 1 Info 755: global macro 'QS_U32' (line 75, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 79 1 Info 755: global macro 'QS_U32_HEX' (line 79, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 102 1 Info 755: global macro 'QS_U32_' (line 102, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 78 1 Info 755: global macro 'QS_U64' (line 78, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 103 1 Info 755: global macro 'QS_U64_' (line 103, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 71 1 Info 755: global macro 'QS_U8' (line 71, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 90 1 Info 755: global macro 'QS_USR_DICTIONARY' (line 90, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 100 1 Info 755: global macro 'QS_U8_' (line 100, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qep.h" 284 1 Info 755: global macro 'Q_SUPER' (line 284, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 180 1 Info 755: global macro 'QHsm_ctor' (line 180, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 184 1 Info 755: global macro 'QHsm_state' (line 184, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 245 1 Info 755: global macro 'Q_HANDLED' (line 245, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 54 1 Info 755: global macro 'QS_FILTER_OFF' (line 54, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 76 1 Info 755: global macro 'QS_F32' (line 76, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 77 1 Info 755: global macro 'QS_F64' (line 77, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 56 1 Info 755: global macro 'QS_FILTER_AO_OBJ' (line 56, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 57 1 Info 755: global macro 'QS_FILTER_MP_OBJ' (line 57, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 58 1 Info 755: global macro 'QS_FILTER_EQ_OBJ' (line 58, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 60 1 Info 755: global macro 'QS_FILTER_AP_OBJ' (line 60, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 53 1 Info 755: global macro 'QS_FILTER_ON' (line 53, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 55 1 Info 755: global macro 'QS_FILTER_SM_OBJ' (line 55, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 59 1 Info 755: global macro 'QS_FILTER_TE_OBJ' (line 59, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 92 1 Info 755: global macro 'QS_FLUSH' (line 92, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 85 1 Info 755: global macro 'QS_FUN' (line 85, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 89 1 Info 755: global macro 'QS_FUN_DICTIONARY' (line 89, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qassert.h" 99 1 Info 755: global macro 'Q_DEFINE_THIS_FILE' (line 99, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 62 1 Info 755: global macro 'QS_GET_BYTE' (line 62, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 63 1 Info 755: global macro 'QS_GET_BLOCK' (line 63, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qep.h" 303 1 Info 755: global macro 'Q_EVT_CAST' (line 303, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 49 1 Info 755: global macro 'QS_INIT' (line 49, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 70 1 Info 755: global macro 'QS_I8' (line 70, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 72 1 Info 755: global macro 'QS_I16' (line 72, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 74 1 Info 755: global macro 'QS_I32' (line 74, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qevt.h" 186 1 Info 755: global macro 'Q_DIM' (line 186, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qassert.h" 153 1 Info 755: global macro 'Q_ALLEGE_ID' (line 153, file D:\qp\qpc\include\qassert.h) not referenced
+"D:\qp\qpc\include\qevt.h" 196 1 Info 755: global macro 'Q_UINT2PTR_CAST' (line 196, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 173 1 Info 768: global struct member 'QEvtTag::sig' (line 173, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 174 1 Info 768: global struct member 'QEvtTag::poolId_' (line 174, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 175 1 Info 768: global struct member 'QEvtTag::refCtr_' (line 175, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qep.h" 311 1 Info 769: global enumeration constant 'QReservedSignals::Q_USER_SIG' (line 311, file D:\qp\qpc\include\qep.h) not referenced
+ Note 974: Worst case function for stack usage: 'QFsm_dispatch' is non-deterministic, calls through a function pointer. See +stack for a full report. [MISRA 2004 Rule 16.2, required]
+
+Count   Type    Number  Text
+
+1       Warning 526     Symbol '___' (___) not defined
+6       Info    714     Symbol '___' (___) not referenced
+77      Info    755     global macro '___' (___) not referenced
+7       Info    756     global typedef '___' (___) not referenced
+6       Info    759     header declaration for symbol '___' defined at (___) could be moved from header to module
+6       Info    765     external '___' (___) could be made static
+3       Info    768     global struct member '___' (___) not referenced
+1       Info    769     global enumeration constant '___' (___) not referenced
+1       Note    974     Worst case function for stack usage: ___ See +stack for a full report.

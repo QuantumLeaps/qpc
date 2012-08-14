@@ -1,0 +1,2 @@
+Name dbg\dpp.exe File dbg\bsp.obj,dbg\main.obj,dbg\philo.obj,dbg\table.obj,dbg\video.obj Library ..\..\..\..\..\..\ports\80x86\qk\watcom\l\dbg\qf.lib,..\..\..\..\..\..\ports\80x86\qk\watcom\l\dbg\qep.lib,..\..\..\..\..\..\ports\80x86\qk\watcom\l\dbg\qk.lib
+

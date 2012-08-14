@@ -1,0 +1,1 @@
+Name spy\game.exe File spy\bsp.obj,spy\main.obj,spy\mine1.obj,spy\mine2.obj,spy\missile.obj,spy\ship.obj,spy\tunnel.obj,spy\video.obj Library ..\..\..\..\..\..\ports\80x86\qk\watcom\l\spy\qf.lib,..\..\..\..\..\..\ports\80x86\qk\watcom\l\spy\qep.lib,..\..\..\..\..\..\ports\80x86\qk\watcom\l\spy\qk.lib,..\..\..\..\..\..\ports\80x86\qk\watcom\l\spy\qs.lib

@@ -1,0 +1,136 @@
+<!-- Copyright (c) 2002-2009 Quantum Leaps, LLC. All rights reserved. -->
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="content-type" content="text/html;charset=ISO-8869-1">
+<TITLE>QP/lwIP integration</TITLE>
+<LINK href="style.css" type=text/css rel=Stylesheet>
+<LINK rel="icon" href="img/favicon.ico" type="image/x-icon" />
+</HEAD>
+
+<BODY>
+<A NAME="Top"></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD id=masthead noWrap align=left><A href="http://www.state-machine.com"><IMG 
+      title="Quantum Leaps - innovating embedded systems" alt="Quantum Leaps - innovating embedded systems" 
+      src="img/logo_ql.gif" border=0></A>
+    </TD>
+    <TD width="100%"></TD>
+    <TD nowrap>
+    <B>Quantum Leaps, LLC</B><br>
+    <A HREF="mailto:info@quantum-leaps.com">info@quantum-leaps.com</A><br>
+    <A HREF="http://www.state-machine.com">www.state-machine.com</A>
+    </TD>
+  </TR>
+  </TBODY>
+  <TR>
+    <TD colspan="3" noWrap bgcolor=#c0c0c0>
+      <BIG>&nbsp;&nbsp;<B>Home</B>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<A HREF="ssi_demo.shtm">SSI Demo</A>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<A HREF="cgi_demo.htm">CGI Demo</A>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<A HREF="udp_demo.htm">UDP Demo</A></BIG>
+    </TD>
+    <TD width="100%" bgcolor=#c0c0c0></TD>
+  </TR>
+  <TR><TD colspan=3 bgColor="#909090" height=1></TD>
+  </TBODY>
+</TABLE>
+   
+<!--  BEGIN_CONTENT -->
+<br>
+<A NAME="About"></A>
+<H1>About This Website</H1>
+
+<A HREF="http://www.state-machine.com/lwip/AN_QP_and_lwIP.pdf" TARGET="_blank"><IMG SRC="img/AN_QP_and_lwIP.jpg" ALT="Application Note (1.4MB PDF)" border="0" align="right" hspace="10" vspace="5"></A>
+
+<P>This website was served by the lightweight TCP/IP stack called <FONT color=#0000cc><B>lwIP</B></FONT> (version <B>1.3.0</B>) running on top of the <FONT color=#0000cc><B>QP&trade;</B></FONT> state machine framework, which are both briefly described <A HREF="#QP">below</A>.
+</P>
+<P>The example provides an HTTP server with simple <A HREF="ssi_demo.shtm">Server Side Include (SSI)</A> and <A HREF="cgi_demo.htm">Common Gateway Interface (CGI)</A>  capability, so that dynamic web pages can be served and the pages can send data or commands to the target. Internal file system for web pages and updated Perl script for generating the HTML-files and images is also provided.
+</P>
+<P>The lwIP code is initially configured in this example to use <B>DHCP</B> to obtain the IP address, so it assumes the presence of a DHCP server, such as a typical Ethernet router. By modifying the <CODE>lwipopts.h</CODE> header file, the application can also be configured to optain the IP address via <B>AUTOIP</B> (as described in RFC 3927), or to use a static IP address. The example also demonstrates <A HREF="udp_demo.htm">UDP</A>. A UDP test application for sending and receiving UDP packets (on Windows and Linux hosts) is provided.
+</P>
+<P>Please refer to the Quantum Leaps Application Note: <A HREF="http://www.state-machine.com/lwip/AN_QP_and_lwIP.pdf" TARGET="_blank">"QP and lwIP TCP/IP Stack"</A> for more information. The Application Note in PDF is provided in the QP-lwIP example code.
+</P>
+
+<A HREF="#Top"><IMG SRC="img/arrow.gif" ALT="to top" BORDER="0" HSPACE="4" VSPACE="4">Top of page</A><br>
+<br>
+
+<A NAME="Port"></A>
+<H1>About the QP-lwIP Integration</H1>
+
+<A HREF="http://www.state-machine.com/lwip" TARGET="_blank"><IMG SRC="img/logo_lwip_qp.jpg" ALT="QP-lwIP" border="0" align="left" hspace="10" vspace="5"></A>
+
+<P>The <FONT color=#0000cc><B>QP-lwIP</B></FONT> integration has been carefully designed for <B>hard real-time</B> control-type applications, in which the TCP/IP stack is used to monitor and configure the device as well as to provide remote user interface (e.g., by means of a web browser). In particular, The <FONT color=#0000cc><B>lwIP</B></FONT> stack, which is <B>not preemptive</B>, is strictly encapsulated inside a dedicated active object (LwIP-Manager), so no interrupt locking is necessary, which critical for low interrupt latency. Also, the Ethernet interrupt service routine (ISR) runs very fast and only signals the task level (the ISR does not perform lengthy copy operations at all). This means that hard-real-time processing can be done at the task level, especially when you use a preemptive QK kernel for executing your <FONT color=#0000cc><B>QP&trade;</B></FONT> application. 
+</P>
+<P>The <FONT color=#0000cc><B>QP-lwIP</B></FONT> integration has been also carefully designed for <B>portability</B>. All hardware-specific code is clearly separated in the Ethernet/lwIP <B>device driver</B> with the clean interface to the rest of the application. 
+</P>
+<A HREF="#Top"><IMG SRC="img/arrow.gif" ALT="to top" BORDER="0" HSPACE="4" VSPACE="4">Top of page</A><br>
+<br>
+
+<A NAME="QP"></A>
+<H1>About QP State Machine Frameworks</H1>
+<A HREF="http://www.state-machine.com/products/QP_datasheet.pdf" TARGET="_blank"><IMG SRC="img/QP_datasheet.gif" ALT="QP datasheet (1.4MB PDF)" border="0" align="left" hspace="10" vspace="5"></A>
+ 
+<P><FONT color=#0000cc><B>QP&trade;</B></FONT> is a family of very lightweight, <A HREF="http://www.state-machine.com/licensing/index.htm" target="_blank">open source</A>, state machine-based frameworks for embedded microprocessors, microcontrollers, and DSPs. <FONT color=#0000cc><B>QP</B></FONT> enables developing well-structured embedded applications as a set of concurrently executing hierarchical state machines (UML statecharts). With <FONT color=#0000cc><B>QP</B></FONT>, coding of modern state machines directly in C or C++ is a non-issue. No big design automation tools are needed.
+</P>
+
+<A HREF="http://www.state-machine.com/psicc2/index.htm" TARGET="_blank"><img alt="Practical UML Statecharts in C/C++, 2nd Ed." src="img/PSiCC2.gif" border="0" hspace="10" vspace="5" align="right"></A> 
+
+<P>Current versions of <FONT color=#0000cc><B>QP</B></FONT> are: <A HREF="http://www.state-machine.com/products/qpc.htm" target="_blank">QP/C&trade;</A> and <A HREF="http://www.state-machine.com/products/qpcpp.htm" target="_blank">QP/C++&trade;</A>, which require about 4KB of code and a few hundred bytes of RAM, and the ultra-lightweight <A HREF="http://www.state-machine.com/products/qpn.htm" target="_blank">QP-nano</A>, which requires only 1-2KB of code and just several bytes of RAM.
+</P>
+<P><FONT color=#0000cc><B>QP</B></FONT> can work with or without a traditional OS/RTOS. In the standalone configuration, <FONT color=#0000cc><B>QP</B></FONT> can completely <B>replace</B> a traditional RTOS. <FONT color=#0000cc><B>QP</B></FONT> includes a simple non-preemptive scheduler and a fully preemptive kernel (QK). The QP/C and QP/C++ frameworks can also work with a traditional OS/RTOS to take advantage of existing device drivers, communication stacks, and other middleware.
+</P>
+<P>All versions of <FONT color=#0000cc><B>QP</B></FONT> are described in detail in the book <A HREF="http://www.state-machine.com/psicc2" target="_blank"><EM><I>Practical UML Statecharts in C/C++, Second Edition: Event-Driven Programming for Embedded Systems</I></EM></A> by Dr. Miro Samek, (ISBN: 978-0750687065). <FONT color=#0000cc><B>QP</B></FONT> has a strong user community and has been applied worldwide by some of the largest
+<A HREF="http://www.state-machine.com/home/customers.htm" target="_blank">companies</A> in their respective industries, such as: consumer electronics, telecommunications equipment, industrial automation, transportation systems, medical devices, national defense, and many more. 
+</P>
+<P><FONT color=#0000cc><B>QP</B></FONT> is licensed under the GPL version 2 open source license as well as under commercial closed-source licenses, which are expressly designed for users, who wish to retain the proprietary character of their code. More information about <FONT color=#0000cc><B>QP</B></FONT> can be found at the <FONT color=#0000cc><B>QP</B></FONT> homepage at <a href="http://www.state-machine.com" target="_blank">http://www.state-machine.com</a>.
+</P>   
+
+<A HREF="#Top"><IMG SRC="img/arrow.gif" ALT="to top" BORDER="0" HSPACE="4" VSPACE="4">Top of page</A><br>
+<br>
+
+<A NAME="lwIP"></A>
+<H1>About lwIP TCP/IP Stack</H1>
+
+<A href="http://www.sics.se" target="_blank"><IMG title="SICS" alt="SICS--home of lwIP" src="img/logo_sics.gif" border=0 ALIGN="right"></A>
+
+<P><FONT color=#0000cc><B>lwIP</B></FONT> is a light-weight implementation of the TCP/IP protocol suite that was originally written by Adam Dunkels at the Computer and Networks Architectures (CNA) lab of the <A href="http://www.sics.se" target="_blank">Swedish Institute of Computer Science</A> but now is being actively developed by a team of developers distributed world-wide headed by Kieran Mansley.
+</P>
+<P><FONT color=#0000cc><B>lwIP</B></FONT> is available under a BSD-style open source license in C source code format and can be downloaded from the development homepage at <A href="http://savannah.nongnu.org/projects/lwip" target="_blank">http://savannah.nongnu.org/projects/lwip</A>. The focus of the lwIP is to reduce the RAM usage while still having a full scale TCP/IP implementation. This makes lwIP suitable for use in embedded systems with tens of kilobytes of RAM and around 40 KB of code ROM.
+</P> 
+<P>Since its release, <FONT color=#0000cc><B>lwIP</B></FONT> has spurred a lot of interest and is today being used in many commercial products. lwIP has been ported to multiple platforms and operating systems and can be run either with or without an underlying OS. lwIP includes the following protocols and features (lwIP version 1.3.0):
+</P>
+<UL> 
+<LI><B>IP</B> (Internet Protocol) including packet forwarding over multiple network interfaces</LI>
+<LI><B>ICMP</B> (Internet Control Message Protocol) for network maintenance and debugging</LI>
+<LI><B>IGMP</B> (Internet Group Management Protocol) for multicast traffic management</LI>
+<LI><B>UDP</B> (User Datagram Protocol) including experimental UDP-lite extensions</LI>
+<LI><B>TCP</B> (Transmission Control Protocol) with congestion control, RTT estimation and fast recovery/fast retransmit</LI>
+<LI><B>Native event-driven API</B> for enhanced performance (<B>ideal</B> for QP)</LI>
+<LI><B>DNS</B> (Domain names resolver</LI>
+<LI><B>SNMP</B> (Simple Network Management Protocol)</LI>
+<LI><B>DHCP</B> (Dynamic Host Configuration Protocol)</LI>
+<LI><B>AUTOIP</B> (for IPv4, conform with RFC 3927)</LI>
+<LI><B>PPP</B> (Point-to-Point Protocol)</LI>
+<LI><B>ARP</B> (Address Resolution Protocol) for Ethernet</LI> 
+</UL>
+
+<A HREF="#Top"><IMG SRC="img/arrow.gif" ALT="to top" BORDER="0" HSPACE="4" VSPACE="4">Top of page</A><br>
+<br>
+
+<TABLE id="footer" cellSpacing=0 cellPadding=0 width="100%"
+background="img/footer.jpg" bgColor=#003399 border=0>
+  <TR VALIGN="middle">
+    <TD height=32>&nbsp;&nbsp;
+      <A href="http://www.state-machine.com/home/about.htm">About Quantum Leaps</A> |
+      <A href="http://www.state-machine.com/home/contact.htm">Contact Information</A>
+    </TD>
+    <TD align="right">
+    &copy; 2002-2009 <B><BIG>q</BIG>uantum&nbsp;<BIG>L</BIG><SUP>e</SUP>a<BIG>p</BIG>s</B>. All rights reserved.&nbsp;&nbsp;
+    </TD>
+  </TR>
+</TABLE>
+
+</BODY>
+</HTML>

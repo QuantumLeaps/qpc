@@ -1,0 +1,102 @@
+<!-- Copyright (c) 2002-2009 Quantum Leaps, LLC. All rights reserved. -->
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="content-type" content="text/html;charset=ISO-8869-1">
+<TITLE>QP/lwIP--CGI Demo</TITLE>
+<LINK href="style.css" type=text/css rel=Stylesheet>
+<LINK rel="icon" href="img/favicon.ico" type="image/x-icon" />
+</HEAD>
+
+<BODY>
+<A NAME="Top"></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD id=masthead noWrap align=left><A href="http://www.state-machine.com"><IMG 
+      title="Quantum Leaps - innovating embedded systems" alt="Quantum Leaps - innovating embedded systems" 
+      src="img/logo_ql.gif" border=0></A>
+    </TD>
+    <TD width="100%"></TD>
+    <TD nowrap>
+    <B>Quantum Leaps, LLC</B><br>
+    <A HREF="mailto:info@quantum-leaps.com">info@quantum-leaps.com</A><br>
+    <A HREF="http://www.state-machine.com">www.state-machine.com</A>
+    </TD>
+  </TR>
+  </TBODY>
+  <TR>
+    <TD colspan="3" noWrap align=left bgcolor=#c0c0c0>
+      <BIG>&nbsp;&nbsp;<A HREF="index.htm">Home</A>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<A HREF="ssi_demo.shtm">SSI Demo</A>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<B>CGI Demo</B>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<A HREF="udp_demo.htm">UDP Demo</A></BIG>
+    </TD>
+    <TD width="100%" bgcolor=#c0c0c0></TD>
+  </TR>
+  <TR><TD colspan=3 bgColor="#909090" height=1></TD>
+  </TBODY>
+</TABLE>
+   
+<!--  BEGIN_CONTENT -->
+<br>
+<A NAME="About"></A>
+<H1>About CGI Support</H1>
+ 
+<A HREF="http://www.state-machine.com/lwip" TARGET="_blank"><IMG SRC="img/logo_lwip_qp.jpg" ALT="QP-lwIP" border="0" align="left" hspace="10" vspace="5"></A>
+
+<P>The HTTP server that comes with <FONT color=#0000cc><B>lwIP</B></FONT> has been extended to support rudimentary <B>Common Gateway Interface (CGI)</B> facility. To enable the CGI support in the <FONT color=#0000cc><B>lwIP-HTTP</B></FONT> server, you need to define the macro <CODE>INCLUDE_HTTPD_CGI</CODE> in the <CODE>lwipopts.h</CODE> header file. You must also provide the mapping between CGI requests (strings) and CGI callback functions and register this mapping by calling the <CODE>http_set_cgi_handlers()</CODE> function.
+</P>
+
+<A HREF="http://www.state-machine.com/lwip/AN_QP_and_lwIP.pdf" TARGET="_blank"><IMG SRC="img/AN_QP_and_lwIP.jpg" ALT="Application Note (1.4MB PDF)" border="0" align="right" hspace="10" vspace="5"></A>
+
+<P>The CGI implemented in the <FONT color=#0000cc><B>lwIP-HTTP</B></FONT> works currently only with the GET method, which encodes all parameters within the URI rather than in a block following the request. Attempts to use the POST method will result in the request being ignored.
+</P>
+<P>After receiving a CGI request, the <FONT color=#0000cc><B>lwIP-HTTP</B></FONT> server will scan all registered requests (strings) and call the corresponding CGI callback function, if the match is found. The <FONT color=#0000cc><B>lwIP-HTTP</B></FONT> server will also parse the CGI request parameters and will pass them to the CGI callback function. Currently the maximum number of CGI parameters cannot exceed 16, but you can re-define this limit by changing the macro <CODE>MAX_CGI_PARAMS</CODE> in the <CODE>http.h</CODE> header file.  
+<P> 
+<P>Please refer to the Quantum Leaps Application Note: <A HREF="http://www.state-machine.com/lwip/AN_QP_and_lwIP.pdf" TARGET="_blank">"QP and lwIP TCP/IP Stack"</A> for more information. The Application Note in PDF is provided in the QP-lwIP example code.
+</P>
+
+<A HREF="#Top"><IMG SRC="img/arrow.gif" ALT="to top" BORDER="0" HSPACE="4" VSPACE="4">Top of page</A><br>
+<br>
+
+<A NAME="Example"></A>
+<H1>CGI Example</H1>
+
+<P>The following form demonstrates sending commands to your embedded target via the <FONT color=#0000cc><B>lwIP-HTTP</B></FONT> server. The form contains a text control, which allows you to type some text to be displayed on the screen in the target board. You send the command by pressing the <B>Submit</B> button. In response, the <FONT color=#0000cc><B>lwIP-HTTP</B></FONT> server will execute the command in the target and will serve the <CODE>thank_you.htm</CODE> page.
+</P>
+
+<form name="CGI Example" method="GET" action="display.cgi">
+<table summary="cgi example" width="95%" cellspacing=4 cellpadding=1 border=0 align="center" valign="middle">
+  <tr align="left">
+    <td colspan="2" bgcolor="#ffff66" align="center"><b>CGI Example</b>
+    </td>
+  </tr>
+  <tr bgcolor="#e0e0e0" align="left">
+    <td width="150px">&nbsp;&nbsp;Screen text:&nbsp;
+    </td>
+    <td>
+      &nbsp; <input type="text" name="text" size="10" maxlength="10">&nbsp;
+        <input type="submit" name="submit" value="Submit" ><br>
+    </td>
+  </tr>
+</table>
+</form>
+
+<A HREF="#Top"><IMG SRC="img/arrow.gif" ALT="to top" BORDER="0" HSPACE="4" VSPACE="4">Top of page</A><br>
+<br>
+
+<TABLE id="footer" cellSpacing=0 cellPadding=0 width="100%"
+background="img/footer.jpg" bgColor=#003399 border=0>
+  <TR VALIGN="middle">
+    <TD height=32>&nbsp;&nbsp;
+      <A href="http://www.state-machine.com/home/about.htm">About Quantum Leaps</A> |
+      <A href="http://www.state-machine.com/home/contact.htm">Contact Information</A>
+    </TD>
+    <TD align="right">
+    &copy; 2002-2009 <B><BIG>q</BIG>uantum&nbsp;<BIG>L</BIG><SUP>e</SUP>a<BIG>p</BIG>s</B>. All rights reserved.&nbsp;&nbsp;
+    </TD>
+  </TR>
+</TABLE>
+
+</BODY>
+</HTML>

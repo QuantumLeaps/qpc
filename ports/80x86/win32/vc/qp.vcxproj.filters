@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\qf\source\qa_defer.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qa_get_.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qa_sub.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qa_usub.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qa_usuba.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qep\source\qep.c">
+      <Filter>qep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qeq_fifo.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qeq_get.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qeq_init.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qeq_lifo.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qf_act.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qf_gc.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qf_log2.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qf_new.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qf_pool.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qf_psini.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qf_pspub.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qf_pwr2.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qf_tick.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qep\source\qfsm_dis.c">
+      <Filter>qep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qep\source\qfsm_ini.c">
+      <Filter>qep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qep\source\qhsm_dis.c">
+      <Filter>qep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qep\source\qhsm_in.c">
+      <Filter>qep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qep\source\qhsm_ini.c">
+      <Filter>qep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qep\source\qhsm_top.c">
+      <Filter>qep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qmp_get.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qmp_init.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qmp_put.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qs\source\qs.c">
+      <Filter>qs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qs\source\qs_.c">
+      <Filter>qs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qs\source\qs_blk.c">
+      <Filter>qs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qs\source\qs_byte.c">
+      <Filter>qs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qs\source\qs_f32.c">
+      <Filter>qs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qs\source\qs_f64.c">
+      <Filter>qs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qs\source\qs_mem.c">
+      <Filter>qs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qs\source\qs_str.c">
+      <Filter>qs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qs\source\qs_u64.c">
+      <Filter>qs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qte_arm.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qte_ctor.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qte_ctr.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qte_darm.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qte_rarm.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="qf_port.c" />
+    <ClCompile Include="..\..\..\..\qf\source\qa_fifo.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\qf\source\qa_lifo.c">
+      <Filter>qf</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_gui.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="qs_port.h" />
+    <ClInclude Include="..\..\..\..\qep\source\qep_pkg.h">
+      <Filter>qep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\qf\source\qf_pkg.h">
+      <Filter>qf</Filter>
+    </ClInclude>
+    <ClInclude Include="qf_port.h" />
+    <ClInclude Include="qep_port.h" />
+    <ClInclude Include="win32_gui.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="qs">
+      <UniqueIdentifier>{9bcbf910-2ae7-46d4-a3f5-43fc08830f8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="qf">
+      <UniqueIdentifier>{98cedddf-da67-49d7-b8d9-a27af527ca48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="qep">
+      <UniqueIdentifier>{63dcc33b-6fac-4b8b-b75f-58ccec54aac0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

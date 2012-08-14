@@ -1,0 +1,180 @@
+/*
+/* TI File $Revision: /main/3 $                                          */
+/* Checkin $Date: October 29, 2008   13:26:49 $                        */
+/*******************************************************************     */
+/* File: DSP2802x_peripheral.gel                                         */
+/* Description: Adds '2802x registers to the GEL menu in                 */
+/*   Code Composer Studio using the structures defined in the DSP2802x   */
+/*   header files.  The user must have the symbols (.out file)           */
+/*   loaded from a project using the DSP28 structures in order for       */
+/*   these menu items to work.  If symbols are not loaded, the           */
+/*   watch window will report "Identifier not found."                    */
+/*                                                                    
+//#####################################################################
+// $TI Release: 2802x Header Files V1.00 $
+// $Release Date: November 10, 2008 $
+//#####################################################################
+*/
+
+/* Add a space line to the GEL menu */
+menuitem "____________________________________";
+hotmenu _() {}
+
+/********************************************************************/
+/* All 2802x Peripheral Structures for those using the 2802x Headers
+/********************************************************************/
+menuitem "Watch DSP2802x Peripheral Structures";                    
+
+hotmenu All_Peripherals_Regs()
+{
+    GEL_WatchAdd("AdcRegs");
+    GEL_WatchAdd("AdcResult");
+    GEL_WatchAdd("CsmRegs");
+    GEL_WatchAdd("CsmPwl");
+    GEL_WatchAdd("Comp1Regs");
+    GEL_WatchAdd("Comp2Regs");
+    GEL_WatchAdd("CpuTimer0Regs");
+    GEL_WatchAdd("CpuTimer1Regs");
+    GEL_WatchAdd("CpuTimer2Regs");
+    GEL_WatchAdd("DevEmuRegs");
+    GEL_WatchAdd("EPwm1Regs");
+    GEL_WatchAdd("EPwm2Regs");
+    GEL_WatchAdd("EPwm3Regs");
+    GEL_WatchAdd("EPwm4Regs");
+    GEL_WatchAdd("ECap1Regs");                        
+    GEL_WatchAdd("EmuKey");
+    GEL_WatchAdd("EmuBMode");
+    GEL_WatchAdd("Flash_CPUScaleFactor");
+    GEL_WatchAdd("Flash_CallbackPtr");                        
+    GEL_WatchAdd("FlashRegs");
+    GEL_WatchAdd("XIntruptRegs");
+    GEL_WatchAdd("FlashRegs");
+    GEL_WatchAdd("GpioCtrlRegs");
+    GEL_WatchAdd("GpioDataRegs");
+    GEL_WatchAdd("GpioIntRegs");
+    GEL_WatchAdd("I2caRegs");
+    GEL_WatchAdd("NmiIntruptRegs");
+    GEL_WatchAdd("PartIdRegs");
+    GEL_WatchAdd("PieCtrlRegs");
+    GEL_WatchAdd("PieVectTable");
+    GEL_WatchAdd("SciaRegs");
+    GEL_WatchAdd("SpiaRegs");    
+    GEL_WatchAdd("SysCtrlRegs");
+}
+hotmenu _______________________() {}
+hotmenu ADC_Regs()
+{
+    GEL_WatchAdd("AdcRegs");
+    GEL_WatchAdd("AdcResult");
+}
+hotmenu Boot_Vars()
+{
+    GEL_WatchAdd("EmuKey");
+    GEL_WatchAdd("EmuBMode");
+    GEL_WatchAdd("Flash_CPUScaleFactor");
+    GEL_WatchAdd("Flash_CallbackPtr");
+
+}
+hotmenu Code_Security_Module_Regs()
+{
+    GEL_WatchAdd("CsmRegs");
+    GEL_WatchAdd("CsmPwl");
+}
+hotmenu Comparator1_Regs()
+{
+    GEL_WatchAdd("Comp1Regs");
+}
+hotmenu Comparator2_Regs()
+{
+    GEL_WatchAdd("Comp2Regs");
+}
+hotmenu CPU_Timer0_Regs()
+{
+    GEL_WatchAdd("CpuTimer0Regs");
+}
+hotmenu CPU_Timer1_Regs()
+{
+    GEL_WatchAdd("CpuTimer1Regs");
+}
+hotmenu CPU_Timer2_Regs()
+{
+    GEL_WatchAdd("CpuTimer2Regs");
+}
+hotmenu Device_Emulation_Regs()
+{
+    GEL_WatchAdd("DevEmuRegs");
+    GEL_WatchAdd("PartIdRegs");
+}
+hotmenu EPwm1_Regs()
+{
+    GEL_WatchAdd("EPwm1Regs");
+}
+hotmenu EPwm2_Regs()
+{
+    GEL_WatchAdd("EPwm2Regs");
+}
+hotmenu EPwm3_Regs()
+{
+    GEL_WatchAdd("EPwm3Regs");
+}
+hotmenu EPwm4_Regs()
+{
+    GEL_WatchAdd("EPwm4Regs");
+}
+hotmenu ECAP1_Regs()
+{
+    GEL_WatchAdd("ECap1Regs");
+}
+hotmenu External_Interrupt_Regs()
+{
+    GEL_WatchAdd("XIntruptRegs");
+}
+hotmenu Flash_and_OTP_Regs()
+{
+    GEL_WatchAdd("FlashRegs");
+}
+hotmenu GPIO_CTRL_Regs()
+{
+    GEL_WatchAdd("GpioCtrlRegs");
+}
+hotmenu GPIO_DATA_Regs()
+{
+    GEL_WatchAdd("GpioDataRegs");
+}
+hotmenu GPIO_INT_Regs()
+{
+    GEL_WatchAdd("GpioIntRegs");
+}
+hotmenu I2CA_Regs()
+{
+    GEL_WatchAdd("I2caRegs");
+}
+hotmenu NMI_Interrupt_Regs()
+{
+    GEL_WatchAdd("NmiIntruptRegs");
+}
+hotmenu PIE_Control_Regs()
+{
+    GEL_WatchAdd("PieCtrlRegs");
+}
+hotmenu SCIA_Regs()
+{
+    GEL_WatchAdd("SciaRegs");
+}
+hotmenu SPIA_Regs()
+{
+    GEL_WatchAdd("SpiaRegs");
+}
+hotmenu System_and_Control_Regs()
+{
+    GEL_WatchAdd("SysCtrlRegs");
+}
+
+  
+
+/*
+//===========================================================================
+// End of file.
+//===========================================================================
+*/
+

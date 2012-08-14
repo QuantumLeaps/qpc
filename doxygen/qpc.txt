@@ -1,0 +1,338 @@
+/**
+\anchor main_page
+\mainpage QP/C Reference Manual
+
+\image html qp_banner.jpg
+
+- \ref overview
+- \ref starting
+- \ref PSiCC2
+- \ref licensing
+- \ref contact
+
+- \ref files_page
+- \ref rev_page
+
+\section overview QP Overview
+
+Quantum Platform (<strong>%QP</strong>) is a family of very lightweight, open
+source, state machine-based frameworks for embedded systems. QP enables
+developing well-structured embedded applications as a set of concurrently
+executing hierarchical state machines (UML statecharts). With QP, coding of
+modern state machines directly in C or C++ is a non-issue. <STRONG>No big
+tools</STRONG> are needed.
+
+\image html qp_components.jpg
+
+- \subpage qep_page
+- \subpage qf_page
+- \subpage qk_page
+- \subpage qs_page
+- http://www.state-machine.com/doxygen/qspy/index.html 
+
+Current versions of %QP include: QP/C and QP/C++, which require 3-4KB of code
+and a few hundred bytes of RAM, and the ultra-lightweight <A
+HREF="http://www.state-machine.com/products/">QP-nano</A>, which
+requires only 1-2KB of code and just several bytes of RAM.
+
+QP can work with or without a traditional OS/RTOS. In the simplest
+configuration, QP can completely <strong>replace</strong> a traditional RTOS.
+QP includes a simple non-preemptive scheduler and a fully preemptive kernel
+(<strong>%QK</strong>), which have been ported to several popular CPUs and
+compilers including: ARM7/ARM9, ARM Cortex-M3, 80x86, Nios-II, MSP430, M16C,
+AVR, 80251, and others (see
+http://www.state-machine.com/downloads/).
+
+QP/C and QP/C++ can also work with a traditional OS/RTOS to take advantage of
+existing device drivers, communication stacks, and other middleware. QP has
+been ported to Linux/BSD, Windows, VxWorks, uC/OS-II, and other popular
+OS/RTOS (see http://www.state-machine.com/downloads/).
+
+\image html qp_datasheet.gif
+
+The <strong>QP Datasheet</strong>
+(see http://www.state-machine.com/products/QP_datasheet.pdf)
+provides a concise summary of QP features and benefits.
+
+Since its publication in 2002, hundreds of projects around the world have been
+using QP in all kinds of applications, such as consumer, medical, industrial,
+wireless, networking, research, defense, robotics, automotive, space
+exploration, and many others.
+
+QP is available for download from the following websites:
+- Quantum Leaps website: http://www.state-machine.com/downloads
+- SourceForge.net webiste: https://sourceforge.net/projects/qpc
+
+<HR>
+
+\section starting Getting Started with QP/C
+
+QP/C is distributed in a simple platform-independent ZIP file or in a
+self-extracing Windows executable. Either way, installing QP/C requires simply
+decompressing the provided archive into a directory of your choice (e.g.,
+\c qpc for QP/C). The Section \ref files_page describes the content of the
+standard QP/C distribution.
+
+The <STRONG>QP/C Tutorial</STRONG> explains all steps necessary to develop a
+non-trivial QP/C application. The Tutorial is based on Chapter 1 of
+<I>Practical UML Statecharts in C/C++, Second Edition</I>.
+
+\image html qp_tutorial.jpg
+
+- \subpage tutorial_page
+    - \ref installing
+    - \ref lets_play
+    - \ref main_function
+    - \ref design
+    - \ref active_objects
+    - \ref events
+    - \ref coding_hsm
+    - \ref execution
+    - \ref tracing
+    - \ref comparison
+    - \ref summary
+
+<HR>
+
+
+\section PSiCC2 Practical UML Statecharts in C/C++, Second Edition
+
+All versions of QP are described in detail in the book <I>Practical UML
+Statecharts in C/C++, Second Edition: Event-Driven Programming for Embedded
+Systems</I>, Newnes 2008 (ISBN-10: 0750687061, ISBN-13: 978-0750687065).
+
+\image html PSiCC2_250x200.jpg
+
+The book bridges the gap between high-level abstract concepts of the Unified
+Modeling Language (UML) and the actual programming aspects of modern
+hierarchical state machines (UML statecharts).
+
+This book is presented in two parts. In Part I, you get a practical
+description of the relevant state machine concepts starting from traditional
+finite state automata to modern UML state machines followed by state machine
+coding techniques with the %QEP hierarchical event processor as well as
+several state-machine design patterns, all illustrated with executable
+examples.
+
+In Part II, you find a detailed design study of the %QF real-time framework,
+%QK preemptive kernel, and %QS software tracing, which are indispensable for
+combining concurrent, event-driven state machines into robust systems. In
+addition to its value as a reference to the %QP event-driven platform, Part II
+explans the key event-driven programming concepts such as inversion of control
+("Hollywood Principle"), blocking versus non-blocking code, run-to-completion
+(RTC) execution semantics, the importance of event queues, dealing with time,
+and the role of state machines to maintain the context from one event to the
+next. This background is designed to help software developers in making the
+transition from the traditional sequential to the modern event-driven
+programming, which can be one of the trickiest paradigm shifts.
+
+- Visit the accompanying website to the book at
+http://www.state-machine.com/psicc2/
+- Order the book from Amazon.com at
+http://www.amazon.com/exec/obidos/ASIN/0750687061/quantumleap06-20
+
+<HR>
+
+
+\section licensing Licensing Policy for QP
+
+All versions of the QP software are available under <A
+HREF="http://www.state-machine.com/licensing/">dual licensing</A> model, in
+which both the open source software distribution mechanism and traditional
+closed source software licensing models are combined.
+
+\subsection open Open Source Licensing
+
+All versions of the QP software are available under the  \ref gpl2_page
+(GPL2), as published by the Free Software Foundation and included in every
+distribution of the QP software. The GPL2 license is probably the best known
+and most established open source license. It is fully compatible with the Open
+Source Definition, is endorsed by the Free Software Foundation, and has been
+approved by the Open Source Initiative.
+
+Please note that GPL2 applies to software based not upon how it is used but
+upon how it is distributed. In this respect GPL2 can be restrictive, because
+GPL2 Section 2(b) requires that if you distribute the original software or any
+derivative works based on the software under copyright law, you must release
+all such derivative works also under the terms of the GPL2 open source
+license. GPL2 clearly specifies that distributing the original software or any
+derivative works based upon it in binary form (e.g., embedded inside devices)
+also represents distribution of the software.
+
+To read more about open source licensing for QP or QP-nano, or to
+contribute work to the open source community, please visit the following
+website:
+
+- http://www.state-machine.com/licensing/open.php
+- \ref gpl2_page
+
+or please contact Quantum Leaps, LLC via the following e-mail address:
+
+- info@quantum-leaps.com
+
+
+\subsection closed Closed Source Licensing
+
+If you are developing and distributing traditional <b>closed source</b>
+applications, you might purchase one of the Quantum Leaps commercial licenses,
+which are specifically designed for users interested in retaining the
+proprietary status of their code. This alternative licensing is possible,
+because Quantum Leaps, LLC owns all intellectual property in the QP and
+QP-nano software and as the copyright owner can license the software any
+number of ways. The Quantum Leaps commercial licenses expressly supersede the
+\ref gpl2_page open source license. This means that when you license the
+software under a commercial license, you specifically do not use the software
+under the open source license and therefore you are not subject to any of its
+terms.
+
+To read more about the commercial licensing options, pricing, technical
+support, and to request a commercial license, please visit the following
+website:
+
+- http://www.state-machine.com/licensing
+
+or please contact Quantum Leaps, LLC via the following e-mail address:
+
+- info@quantum-leaps.com
+
+<HR>
+
+\section contact Contact Information
+
+- Quantum Leaps Web site:  http://www.state-machine.com
+- Quantum Leaps licensing: http://www.state-machine.com/licensing
+- Quantum Leaps downloads: http://www.state-machine.com/downloads
+- e-mail: info@quantum-leaps.com
+- Skype: quantum-leaps (US Eastern Standard Time)
+- Toll-free: 1-866-450-LEAP (US Eastern Standard Time)
+
+\image html logo_ql_TM.jpg
+Copyright &copy; 2002-2011 Quantum Leaps, LLC. All Rights Reserved.\n
+http://www.state-machine.com
+*/
+
+/**
+\page qep_page QEP Hierarchical Event Processor
+
+\image html logo_qep_TM.jpg
+
+Quantum Event Processor&tm; (%QEP) is a generic, portable, and reusable
+hierarchical event processor that processes events according to the general
+semantics of UML state machines [<A
+HREF="http://www.omg.org/docs/ptc/03-08-02.pdf">UML document
+ptc/03-08-02</A>]. %QEP&tm; allows you to map UML state diagrams directly and
+clearly to code without the assistance of complex tools. It allows you to
+create better designs because you can think in terms of events, states, and
+transitions directly at the level of the C or C++ programming language. The
+resulting code is smaller, cleaner, more robust, and simpler to understand and
+maintain. The testing is faster, more rigorous, and more complete because
+state machine approach cleanly defines a limited state space for the system
+and constraints the possible transitions among the states.
+
+%QEP&tm; provides facilities for executing <STRONG>Hierarchical State
+Machines</STRONG> (HSMs) as well as the simpler traditional <STRONG>Finite
+State Machines</STRONG> (FSMs). %QEP can operate with almost any event queuing
+and dispatching mechanisms, which are also necessary components of a
+hypothetical state machine [<A
+HREF="http://www.omg.org/docs/ptc/03-08-02.pdf">ptc/03-08-02</A>]. For
+example, %QEP can be used with virtually any event-driven environment, such as
+any Graphical User Interface system. When used in the domain of real-time
+embedded (RTE) systems, %QEP can be combined with other <STRONG>QP</STRONG>
+components designed specifically for RTE systems. %QEP has been used in
+hundreds of event-driven applications worldwide and is described in Part 1 of
+the book \ref PSiCC2, Newnes 2008.
+
+Please refer to Section \ref coding_hsm in the \ref tutorial_page for
+information on coding UML-compliant hierarchical state machines with QEP.
+
+\image html logo_ql_TM.jpg
+Copyright &copy; 2002-2011 Quantum Leaps, LLC. All Rights Reserved.\n
+http://www.state-machine.com
+*/
+
+/**
+\page qf_page QF Real-Time Framework
+
+\image html logo_qf_TM.jpg
+
+Quantum Frameowrk&tm; (%QF) is a reusable event-driven application framework
+for executing concurrent state machines specifically designed for real-time
+embedded (RTE) systems. The use of QF generally simplifies the design of
+event-driven software by allowing the application to be divided into multiple
+active objects  that the framework manages. Active objects in %QF are
+encapsulated tasks (each embedding a state machine and an event queue) that
+communicate with one another asynchronously by sending and receiving events.
+Within an active object, events are processed sequentially in a
+run-to-completion (RTC) fashion, while %QF encapsulates all the details of
+thread-safe event exchange and queuing.
+
+Most of %QF&tm; is written in portable ANSI-C, with microprocessor-specific,
+compiler-specific, or op-erating system-specific code kept to a minimum for
+ease of portability. %QF is designed to work with Quantum Event Processor
+(%QEP) and a Real Time Operating System (RTOS) of your choice, or even with
+just "main+ISRs" configuration. The framework is very compact, typically
+taking up about 4KB of code and data (including the \ref
+qep_page). %QF has been used in hundreds of event-driven applications
+worldwide and is described in Part 2 of the book \ref PSiCC2, Newnes 2008.
+
+Please refer to the \ref tutorial_page for information on implementing
+event-driven applications with the QF real-time framework and other components
+of the QP event-driven platform.
+
+
+\image html logo_ql_TM.jpg
+Copyright &copy; 2002-2011 Quantum Leaps, LLC. All Rights Reserved.\n
+http://www.state-machine.com
+*/
+
+/**
+\page qk_page QK Preemptive Run-To-Completion Kernel
+
+\image html logo_qk_TM.jpg
+
+Quantum Kernel&tm; (%QK) is a tiny preemptive real-time kernel specifically
+designed for executing independent tasks in a run-to-completion (RTC) fashion.
+As it turns out, the RTC-style processing universally applied in the \ref
+qf_page, and no need for blocking of active objects, allow %QK to be extremely
+simple and utilize only a single stack for all tasks and interrupts.
+
+%QK&tm; is not a standalone product but rather it requires a compatible
+version of %QF. %QK doesn't provide event queues, active objects, or even
+lookup tables used by the scheduler, because these elements are already part
+of the %QF. %QK is described in Chapter 10 of the book \ref PSiCC2, Newnes
+2008.
+
+The \ref execution part of the QP Tutorial describes how to use the QK kernel
+in an example.
+
+\image html logo_ql_TM.jpg
+Copyright &copy; 2002-2011 Quantum Leaps, LLC. All Rights Reserved.\n
+http://www.state-machine.com
+*/
+
+/**
+\page qs_page QS Software Tracing Instrumentation (Target Component)
+
+\image html logo_qs_TM.jpg
+
+Quantum Spy&tm; (%QS) is a real-time tracing instrumentation built into the
+\ref qep_page, the \ref qf_page, and the \ref qk_page components and also
+available to the Application code. %QS allows you to gain unprecedented
+visibility into your application by selectively logging almost all interesting
+events occurring within state machines, the framework, the kernel, and your
+application code. %QS event logging is minimally intrusive, offers precise
+time-stamping, sophisticated runtime filtering of events, and good data
+compression. %QS can be configured to send the real-time data out of the
+serial or Ethernet port of the target device, or even write the data to a
+file. %QS is described in Chapter 11 of the book \ref PSiCC2, Newnes 2008.
+
+Every software tracing system consists of a target component and a host
+component. Section \ref execution of the \ref tutorial_page describes how to
+enable the QS target component in an example. The host component for the %QS
+software tracing system is the <STRONG>QSPY host application</STRONG>.
+Section \ref qspy_page describes how to use the QSPY host application.
+
+\image html logo_ql_TM.jpg
+Copyright &copy; 2002-2011 Quantum Leaps, LLC. All Rights Reserved.\n
+http://www.state-machine.com
+*/

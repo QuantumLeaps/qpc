@@ -1,0 +1,1906 @@
+QSPY host application 4.0.00
+Copyright (c) Quantum Leaps, LLC.
+Mon Jun 09 16:15:53 2008
+
+-T 4
+-O 2
+-F 2
+-S 1
+-E 1
+-Q 1
+-P 1
+-B 1
+-C 2
+
+           Obj Dic: 0000016C->l_smlPoolSto
+           Obj Dic: 00000130->l_tableQueueSto
+           Obj Dic: 0000013A->l_philoQueueSto[0]
+           Obj Dic: 00000144->l_philoQueueSto[1]
+           Obj Dic: 0000014E->l_philoQueueSto[2]
+           Obj Dic: 00000158->l_philoQueueSto[3]
+           Obj Dic: 00000162->l_philoQueueSto[4]
+           Obj Dic: 0000028D->&l_philo[0]
+           Obj Dic: 0000029A->&l_philo[0].timeEvt
+           Obj Dic: 000002A6->&l_philo[1]
+           Obj Dic: 000002B3->&l_philo[1].timeEvt
+           Obj Dic: 000002BF->&l_philo[2]
+           Obj Dic: 000002CC->&l_philo[2].timeEvt
+           Obj Dic: 000002D8->&l_philo[3]
+           Obj Dic: 000002E5->&l_philo[3].timeEvt
+           Obj Dic: 000002F1->&l_philo[4]
+           Obj Dic: 000002FE->&l_philo[4].timeEvt
+           Fun Dic: 000004DF->&Philo_initial
+           Fun Dic: 0000066D->&Philo_thinking
+           Fun Dic: 000006D0->&Philo_hungry
+           Fun Dic: 0000068E->&Philo_eating
+           Sig Dic: 00000008,Obj=0000028D ->HUNGRY_SIG
+           Sig Dic: 00000009,Obj=0000028D ->TIMEOUT_SIG
+           Q_INIT : Obj=l_philo[0] Source=00001430 Target=Philo_thinking
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000000000 ==>Init: Obj=l_philo[0] New=Philo_thinking
+           Sig Dic: 00000008,Obj=000002A6 ->HUNGRY_SIG
+           Sig Dic: 00000009,Obj=000002A6 ->TIMEOUT_SIG
+           Q_INIT : Obj=l_philo[1] Source=00001430 Target=Philo_thinking
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000000000 ==>Init: Obj=l_philo[1] New=Philo_thinking
+           Sig Dic: 00000008,Obj=000002BF ->HUNGRY_SIG
+           Sig Dic: 00000009,Obj=000002BF ->TIMEOUT_SIG
+           Q_INIT : Obj=l_philo[2] Source=00001430 Target=Philo_thinking
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000000000 ==>Init: Obj=l_philo[2] New=Philo_thinking
+           Sig Dic: 00000008,Obj=000002D8 ->HUNGRY_SIG
+           Sig Dic: 00000009,Obj=000002D8 ->TIMEOUT_SIG
+           Q_INIT : Obj=l_philo[3] Source=00001430 Target=Philo_thinking
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000000000 ==>Init: Obj=l_philo[3] New=Philo_thinking
+           Sig Dic: 00000008,Obj=000002F1 ->HUNGRY_SIG
+           Sig Dic: 00000009,Obj=000002F1 ->TIMEOUT_SIG
+           Q_INIT : Obj=l_philo[4] Source=00001430 Target=Philo_thinking
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000000000 ==>Init: Obj=l_philo[4] New=Philo_thinking
+           Obj Dic: 0000030A->&l_table
+           Fun Dic: 00001430->&QHsm_top
+           Fun Dic: 00000725->&Table_initial
+           Fun Dic: 000007FB->&Table_serving
+           Sig Dic: 00000005,Obj=00000000 ->DONE_SIG
+           Sig Dic: 00000004,Obj=00000000 ->EAT_SIG
+           Sig Dic: 00000006,Obj=00000000 ->TERMINATE_SIG
+           Sig Dic: 00000008,Obj=0000030A ->HUNGRY_SIG
+           Q_INIT : Obj=l_table Source=QHsm_top Target=Table_serving
+0000000000 ==>Init: Obj=l_table New=Table_serving
+           TICK   : Ctr=         1
+           TICK   : Ctr=         2
+           TICK   : Ctr=         3
+           TICK   : Ctr=         4
+           TICK   : Ctr=         5
+           TICK   : Ctr=         6
+*** Incorrect record past seq= 62
+*** Dropped  20 records
+0000001111 User000: 2 eating   
+0000001112 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000001114 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000001115 QK_sche: prio= 3, pin=  0
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+0000001116 ==>Tran: Obj=l_philo[2] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0000001117 QK_sche: prio= 2, pin=  0
+0000001119 QK_sche: prio= 6, pin=  2
+0000001119 User000: 1 hungry   
+0000001121 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000001122 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000001123 QK_sche: prio= 1, pin=  0
+0000001124 QK_sche: prio= 6, pin=  1
+0000001125 User000: 0 hungry   
+0000001126 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000001128 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=         8
+           TICK   : Ctr=         9
+           TICK   : Ctr=        10
+           TICK   : Ctr=        11
+*** Dropped   3 records
+0000001874 User000: 4 thinking 
+0000001876 User000: 0 eating   
+0000001877 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000001879 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000001880 QK_sche: prio= 3, pin=  0
+0000001881 QK_sche: prio= 6, pin=  3
+0000001882 User000: 2 thinking 
+0000001884 User000: 3 eating   
+0000001885 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000001886 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+0000001888 ==>Tran: Obj=l_philo[3] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           Q_EXIT : Obj=l_philo[2] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000001890 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000001891 QK_sche: prio= 1, pin=  0
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000001892 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=        13
+           TICK   : Ctr=        14
+           TICK   : Ctr=        15
+           TICK   : Ctr=        16
+           TICK   : Ctr=        17
+0000002652 QK_sche: prio= 4, pin=  0
+0000002654 QK_sche: prio= 6, pin=  4
+0000002654 User000: 3 thinking 
+0000002656 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[3] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000002658 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000002659 QK_sche: prio= 1, pin=  0
+0000002660 QK_sche: prio= 6, pin=  1
+0000002661 User000: 0 thinking 
+*** Incorrect record past seq=143
+*** Dropped   5 records
+           Q_EXIT : Obj=l_philo[0] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000002668 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        18
+           TICK   : Ctr=        19
+0000002964 QK_sche: prio= 5, pin=  0
+0000002966 QK_sche: prio= 6, pin=  5
+0000002966 User000: 4 hungry   
+0000002968 User000: 4 eating   
+0000002969 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000002970 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000002971 QK_sche: prio= 5, pin=  0
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+0000002973 ==>Tran: Obj=l_philo[4] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0000002974 QK_sche: prio= 3, pin=  0
+0000002975 QK_sche: prio= 6, pin=  3
+0000002976 User000: 2 hungry   
+0000002977 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000002979 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        20
+           TICK   : Ctr=        21
+           TICK   : Ctr=        22
+0000003432 QK_sche: prio= 2, pin=  0
+0000003433 QK_sche: prio= 6, pin=  2
+0000003434 User000: 1 thinking 
+0000003436 User000: 2 eating   
+0000003437 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000003438 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq=179
+*** Dropped   9 records
+0000003748 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000003750 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000003751 QK_sche: prio= 4, pin=  0
+0000003752 QK_sche: prio= 6, pin=  4
+0000003753 User000: 3 hungry   
+0000003754 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000003756 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000003757 QK_sche: prio= 1, pin=  0
+0000003758 QK_sche: prio= 6, pin=  1
+0000003758 User000: 0 hungry   
+0000003760 User000: 0 eating   
+0000003761 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000003763 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000003763 QK_sche: prio= 1, pin=  0
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000003765 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=        25
+           TICK   : Ctr=        26
+           TICK   : Ctr=        27
+0000004212 QK_sche: prio= 3, pin=  0
+0000004213 QK_sche: prio= 6, pin=  3
+0000004214 User000: 2 thinking 
+0000004216 User000: 3 eating   
+0000004217 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000004218 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq=218
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000004222 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        28
+           TICK   : Ctr=        29
+0000004524 QK_sche: prio= 2, pin=  0
+0000004526 QK_sche: prio= 6, pin=  2
+0000004526 User000: 1 hungry   
+0000004528 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000004529 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000004530 QK_sche: prio= 1, pin=  0
+0000004531 QK_sche: prio= 6, pin=  1
+0000004532 User000: 0 thinking 
+0000004534 User000: 1 eating   
+0000004535 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000004536 QK_sche: prio= 2, pin=  1
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+*** Incorrect record past seq=237
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000004540 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        30
+           TICK   : Ctr=        31
+0000004836 QK_sche: prio= 5, pin=  0
+0000004837 QK_sche: prio= 6, pin=  5
+0000004838 User000: 4 hungry   
+0000004840 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000004841 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        32
+0000004992 QK_sche: prio= 4, pin=  0
+0000004993 QK_sche: prio= 6, pin=  4
+*** Incorrect record past seq=252
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000005002 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        33
+           TICK   : Ctr=        34
+0000005304 QK_sche: prio= 3, pin=  0
+0000005306 QK_sche: prio= 6, pin=  3
+0000005306 User000: 2 hungry   
+0000005308 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000005309 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000005310 QK_sche: prio= 2, pin=  0
+0000005311 QK_sche: prio= 6, pin=  2
+0000005312 User000: 1 thinking 
+0000005314 User000: 2 eating   
+0000005315 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000005316 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq= 20
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000005320 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        35
+           TICK   : Ctr=        36
+0000005616 QK_sche: prio= 1, pin=  0
+0000005618 QK_sche: prio= 6, pin=  1
+0000005618 User000: 0 hungry   
+0000005620 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000005621 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        37
+0000005772 QK_sche: prio= 5, pin=  0
+0000005773 QK_sche: prio= 6, pin=  5
+*** Incorrect record past seq= 35
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000005782 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=        38
+           TICK   : Ctr=        39
+0000006084 QK_sche: prio= 4, pin=  0
+0000006086 QK_sche: prio= 6, pin=  4
+0000006086 User000: 3 hungry   
+0000006088 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000006089 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000006090 QK_sche: prio= 3, pin=  0
+0000006091 QK_sche: prio= 6, pin=  3
+0000006092 User000: 2 thinking 
+0000006094 User000: 3 eating   
+0000006095 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000006096 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq= 59
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000006100 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        40
+           TICK   : Ctr=        41
+0000006396 QK_sche: prio= 2, pin=  0
+0000006397 QK_sche: prio= 6, pin=  2
+0000006398 User000: 1 hungry   
+0000006400 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000006401 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        42
+0000006552 QK_sche: prio= 1, pin=  0
+0000006553 QK_sche: prio= 6, pin=  1
+*** Incorrect record past seq= 74
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000006562 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        43
+           TICK   : Ctr=        44
+0000006864 QK_sche: prio= 5, pin=  0
+0000006866 QK_sche: prio= 6, pin=  5
+0000006866 User000: 4 hungry   
+0000006868 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000006869 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000006870 QK_sche: prio= 4, pin=  0
+0000006871 QK_sche: prio= 6, pin=  4
+0000006872 User000: 3 thinking 
+0000006874 User000: 4 eating   
+0000006875 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000006876 QK_sche: prio= 5, pin=  4
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+*** Incorrect record past seq= 98
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000006880 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        45
+           TICK   : Ctr=        46
+0000007176 QK_sche: prio= 3, pin=  0
+0000007177 QK_sche: prio= 6, pin=  3
+0000007178 User000: 2 hungry   
+0000007180 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000007181 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        47
+0000007332 QK_sche: prio= 2, pin=  0
+0000007333 QK_sche: prio= 6, pin=  2
+*** Incorrect record past seq=113
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000007342 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        48
+           TICK   : Ctr=        49
+0000007645 QK_sche: prio= 5, pin=  0
+0000007646 QK_sche: prio= 6, pin=  5
+0000007646 User000: 4 thinking 
+0000007648 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000007650 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000007651 QK_sche: prio= 1, pin=  0
+0000007652 QK_sche: prio= 6, pin=  1
+0000007653 User000: 0 hungry   
+0000007654 User000: 0 eating   
+0000007655 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+*** Incorrect record past seq=137
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000007659 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=        50
+           TICK   : Ctr=        51
+0000007956 QK_sche: prio= 4, pin=  0
+0000007957 QK_sche: prio= 6, pin=  4
+0000007958 User000: 3 hungry   
+0000007960 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000007961 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        52
+0000008112 QK_sche: prio= 3, pin=  0
+0000008113 QK_sche: prio= 6, pin=  3
+*** Incorrect record past seq=152
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000008122 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        53
+           TICK   : Ctr=        54
+0000008424 QK_sche: prio= 2, pin=  0
+0000008426 QK_sche: prio= 6, pin=  2
+0000008426 User000: 1 hungry   
+0000008428 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000008429 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000008430 QK_sche: prio= 1, pin=  0
+0000008431 QK_sche: prio= 6, pin=  1
+0000008432 User000: 0 thinking 
+0000008434 User000: 1 eating   
+0000008435 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000008436 QK_sche: prio= 2, pin=  1
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+*** Incorrect record past seq=176
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000008440 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        55
+           TICK   : Ctr=        56
+0000008736 QK_sche: prio= 5, pin=  0
+0000008737 QK_sche: prio= 6, pin=  5
+0000008738 User000: 4 hungry   
+0000008740 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000008741 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        57
+0000008892 QK_sche: prio= 4, pin=  0
+0000008893 QK_sche: prio= 6, pin=  4
+*** Incorrect record past seq=191
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000008902 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        58
+           TICK   : Ctr=        59
+0000009204 QK_sche: prio= 3, pin=  0
+0000009206 QK_sche: prio= 6, pin=  3
+0000009206 User000: 2 hungry   
+0000009208 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000009209 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000009210 QK_sche: prio= 2, pin=  0
+0000009211 QK_sche: prio= 6, pin=  2
+0000009212 User000: 1 thinking 
+0000009214 User000: 2 eating   
+0000009215 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000009216 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq=215
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000009220 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        60
+           TICK   : Ctr=        61
+0000009516 QK_sche: prio= 1, pin=  0
+0000009517 QK_sche: prio= 6, pin=  1
+0000009518 User000: 0 hungry   
+0000009520 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000009521 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        62
+0000009672 QK_sche: prio= 5, pin=  0
+0000009673 QK_sche: prio= 6, pin=  5
+*** Incorrect record past seq=230
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000009682 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=        63
+           TICK   : Ctr=        64
+0000009984 QK_sche: prio= 4, pin=  0
+0000009986 QK_sche: prio= 6, pin=  4
+0000009986 User000: 3 hungry   
+0000009988 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000009989 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000009990 QK_sche: prio= 3, pin=  0
+0000009991 QK_sche: prio= 6, pin=  3
+0000009992 User000: 2 thinking 
+0000009994 User000: 3 eating   
+0000009995 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000009996 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq=254
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000010000 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        65
+           TICK   : Ctr=        66
+0000010296 QK_sche: prio= 2, pin=  0
+0000010297 QK_sche: prio= 6, pin=  2
+0000010298 User000: 1 hungry   
+0000010300 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000010301 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        67
+0000010452 QK_sche: prio= 1, pin=  0
+0000010453 QK_sche: prio= 6, pin=  1
+*** Incorrect record past seq= 13
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000010462 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        68
+           TICK   : Ctr=        69
+0000010764 QK_sche: prio= 5, pin=  0
+0000010766 QK_sche: prio= 6, pin=  5
+0000010766 User000: 4 hungry   
+0000010768 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000010769 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000010770 QK_sche: prio= 4, pin=  0
+0000010771 QK_sche: prio= 6, pin=  4
+0000010772 User000: 3 thinking 
+0000010774 User000: 4 eating   
+0000010775 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000010776 QK_sche: prio= 5, pin=  4
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+*** Incorrect record past seq= 37
+*** Dropped   3 records
+0000010780 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        70
+           TICK   : Ctr=        71
+0000011076 QK_sche: prio= 3, pin=  0
+0000011077 QK_sche: prio= 6, pin=  3
+0000011078 User000: 2 hungry   
+0000011080 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000011081 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        72
+0000011232 QK_sche: prio= 2, pin=  0
+0000011233 QK_sche: prio= 6, pin=  2
+*** Incorrect record past seq= 52
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000011242 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        73
+           TICK   : Ctr=        74
+0000011545 QK_sche: prio= 5, pin=  0
+0000011546 QK_sche: prio= 6, pin=  5
+0000011546 User000: 4 thinking 
+0000011548 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000011550 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000011551 QK_sche: prio= 1, pin=  0
+0000011552 QK_sche: prio= 6, pin=  1
+0000011553 User000: 0 hungry   
+0000011554 User000: 0 eating   
+0000011555 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+*** Incorrect record past seq= 76
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000011559 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=        75
+           TICK   : Ctr=        76
+0000011856 QK_sche: prio= 4, pin=  0
+0000011857 QK_sche: prio= 6, pin=  4
+0000011858 User000: 3 hungry   
+0000011860 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000011861 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        77
+0000012012 QK_sche: prio= 3, pin=  0
+0000012013 QK_sche: prio= 6, pin=  3
+*** Incorrect record past seq= 91
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000012022 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        78
+           TICK   : Ctr=        79
+0000012324 QK_sche: prio= 2, pin=  0
+0000012326 QK_sche: prio= 6, pin=  2
+0000012326 User000: 1 hungry   
+0000012328 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000012329 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000012330 QK_sche: prio= 1, pin=  0
+0000012331 QK_sche: prio= 6, pin=  1
+0000012332 User000: 0 thinking 
+0000012334 User000: 1 eating   
+0000012335 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000012336 QK_sche: prio= 2, pin=  1
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+*** Incorrect record past seq=115
+*** Dropped   3 records
+0000012340 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        80
+           TICK   : Ctr=        81
+0000012636 QK_sche: prio= 5, pin=  0
+0000012637 QK_sche: prio= 6, pin=  5
+0000012638 User000: 4 hungry   
+0000012640 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000012641 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        82
+0000012792 QK_sche: prio= 4, pin=  0
+0000012793 QK_sche: prio= 6, pin=  4
+*** Incorrect record past seq=130
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000012802 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        83
+           TICK   : Ctr=        84
+0000013104 QK_sche: prio= 3, pin=  0
+0000013106 QK_sche: prio= 6, pin=  3
+0000013106 User000: 2 hungry   
+0000013108 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000013109 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000013110 QK_sche: prio= 2, pin=  0
+0000013111 QK_sche: prio= 6, pin=  2
+0000013112 User000: 1 thinking 
+0000013114 User000: 2 eating   
+0000013115 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000013116 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq=154
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000013120 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        85
+           TICK   : Ctr=        86
+0000013416 QK_sche: prio= 1, pin=  0
+0000013417 QK_sche: prio= 6, pin=  1
+0000013418 User000: 0 hungry   
+0000013420 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000013421 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        87
+0000013572 QK_sche: prio= 5, pin=  0
+0000013573 QK_sche: prio= 6, pin=  5
+*** Incorrect record past seq=169
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000013582 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=        88
+           TICK   : Ctr=        89
+0000013884 QK_sche: prio= 4, pin=  0
+0000013886 QK_sche: prio= 6, pin=  4
+0000013886 User000: 3 hungry   
+0000013888 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000013889 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000013890 QK_sche: prio= 3, pin=  0
+0000013891 QK_sche: prio= 6, pin=  3
+0000013892 User000: 2 thinking 
+0000013894 User000: 3 eating   
+0000013895 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000013896 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq=193
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000013900 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        90
+           TICK   : Ctr=        91
+0000014196 QK_sche: prio= 2, pin=  0
+0000014197 QK_sche: prio= 6, pin=  2
+0000014198 User000: 1 hungry   
+0000014200 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000014201 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        92
+0000014352 QK_sche: prio= 1, pin=  0
+0000014353 QK_sche: prio= 6, pin=  1
+*** Incorrect record past seq=208
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000014362 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        93
+           TICK   : Ctr=        94
+0000014664 QK_sche: prio= 5, pin=  0
+0000014666 QK_sche: prio= 6, pin=  5
+0000014666 User000: 4 hungry   
+0000014668 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000014669 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000014670 QK_sche: prio= 4, pin=  0
+0000014671 QK_sche: prio= 6, pin=  4
+0000014672 User000: 3 thinking 
+0000014674 User000: 4 eating   
+0000014675 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000014676 QK_sche: prio= 5, pin=  4
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+*** Incorrect record past seq=232
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000014680 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        95
+           TICK   : Ctr=        96
+0000014976 QK_sche: prio= 3, pin=  0
+0000014977 QK_sche: prio= 6, pin=  3
+0000014978 User000: 2 hungry   
+0000014980 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000014981 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=        97
+0000015132 QK_sche: prio= 2, pin=  0
+0000015133 QK_sche: prio= 6, pin=  2
+*** Incorrect record past seq=247
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000015142 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=        98
+           TICK   : Ctr=        99
+0000015444 QK_sche: prio= 5, pin=  0
+0000015446 QK_sche: prio= 6, pin=  5
+0000015446 User000: 4 thinking 
+0000015448 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000015450 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000015451 QK_sche: prio= 1, pin=  0
+0000015452 QK_sche: prio= 6, pin=  1
+0000015453 User000: 0 hungry   
+0000015454 User000: 0 eating   
+0000015455 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+*** Incorrect record past seq= 15
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000015459 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       100
+           TICK   : Ctr=       101
+0000015756 QK_sche: prio= 4, pin=  0
+0000015757 QK_sche: prio= 6, pin=  4
+0000015758 User000: 3 hungry   
+0000015760 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000015761 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       102
+0000015912 QK_sche: prio= 3, pin=  0
+0000015913 QK_sche: prio= 6, pin=  3
+*** Incorrect record past seq= 30
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000015922 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       103
+           TICK   : Ctr=       104
+0000016224 QK_sche: prio= 2, pin=  0
+0000016226 QK_sche: prio= 6, pin=  2
+0000016226 User000: 1 hungry   
+0000016228 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000016229 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000016230 QK_sche: prio= 1, pin=  0
+0000016231 QK_sche: prio= 6, pin=  1
+0000016232 User000: 0 thinking 
+0000016234 User000: 1 eating   
+0000016235 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000016236 QK_sche: prio= 2, pin=  1
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+*** Incorrect record past seq= 54
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000016240 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       105
+           TICK   : Ctr=       106
+0000016536 QK_sche: prio= 5, pin=  0
+0000016537 QK_sche: prio= 6, pin=  5
+0000016538 User000: 4 hungry   
+0000016540 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000016541 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       107
+0000016692 QK_sche: prio= 4, pin=  0
+0000016693 QK_sche: prio= 6, pin=  4
+*** Incorrect record past seq= 69
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000016702 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       108
+           TICK   : Ctr=       109
+0000017004 QK_sche: prio= 3, pin=  0
+0000017006 QK_sche: prio= 6, pin=  3
+0000017006 User000: 2 hungry   
+0000017008 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000017009 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000017010 QK_sche: prio= 2, pin=  0
+0000017011 QK_sche: prio= 6, pin=  2
+0000017012 User000: 1 thinking 
+0000017014 User000: 2 eating   
+0000017015 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000017016 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq= 93
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000017020 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       110
+           TICK   : Ctr=       111
+0000017316 QK_sche: prio= 1, pin=  0
+0000017317 QK_sche: prio= 6, pin=  1
+0000017318 User000: 0 hungry   
+0000017320 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000017321 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       112
+0000017472 QK_sche: prio= 5, pin=  0
+0000017473 QK_sche: prio= 6, pin=  5
+*** Incorrect record past seq=108
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000017482 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       113
+           TICK   : Ctr=       114
+0000017784 QK_sche: prio= 4, pin=  0
+0000017786 QK_sche: prio= 6, pin=  4
+0000017786 User000: 3 hungry   
+0000017788 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000017789 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000017790 QK_sche: prio= 3, pin=  0
+0000017791 QK_sche: prio= 6, pin=  3
+0000017792 User000: 2 thinking 
+0000017794 User000: 3 eating   
+0000017795 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000017796 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq=132
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000017800 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       115
+           TICK   : Ctr=       116
+0000018096 QK_sche: prio= 2, pin=  0
+0000018097 QK_sche: prio= 6, pin=  2
+0000018098 User000: 1 hungry   
+0000018100 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000018101 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       117
+0000018252 QK_sche: prio= 1, pin=  0
+0000018253 QK_sche: prio= 6, pin=  1
+*** Incorrect record past seq=147
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000018262 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       118
+           TICK   : Ctr=       119
+0000018564 QK_sche: prio= 5, pin=  0
+0000018566 QK_sche: prio= 6, pin=  5
+0000018566 User000: 4 hungry   
+0000018568 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000018569 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000018570 QK_sche: prio= 4, pin=  0
+0000018571 QK_sche: prio= 6, pin=  4
+0000018572 User000: 3 thinking 
+0000018574 User000: 4 eating   
+0000018575 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000018576 QK_sche: prio= 5, pin=  4
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+*** Incorrect record past seq=171
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000018580 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       120
+           TICK   : Ctr=       121
+0000018876 QK_sche: prio= 3, pin=  0
+0000018877 QK_sche: prio= 6, pin=  3
+0000018878 User000: 2 hungry   
+0000018880 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000018881 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       122
+0000019032 QK_sche: prio= 2, pin=  0
+0000019033 QK_sche: prio= 6, pin=  2
+*** Incorrect record past seq=186
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000019042 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       123
+           TICK   : Ctr=       124
+0000019344 QK_sche: prio= 5, pin=  0
+0000019346 QK_sche: prio= 6, pin=  5
+0000019346 User000: 4 thinking 
+0000019348 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000019350 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000019351 QK_sche: prio= 1, pin=  0
+0000019352 QK_sche: prio= 6, pin=  1
+0000019353 User000: 0 hungry   
+0000019354 User000: 0 eating   
+0000019355 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+*** Incorrect record past seq=210
+*** Dropped   3 records
+0000019359 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       125
+           TICK   : Ctr=       126
+0000019656 QK_sche: prio= 4, pin=  0
+0000019658 QK_sche: prio= 6, pin=  4
+0000019658 User000: 3 hungry   
+0000019660 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000019661 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       127
+0000019812 QK_sche: prio= 3, pin=  0
+0000019813 QK_sche: prio= 6, pin=  3
+*** Incorrect record past seq=225
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000019822 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       128
+           TICK   : Ctr=       129
+0000020124 QK_sche: prio= 2, pin=  0
+0000020126 QK_sche: prio= 6, pin=  2
+0000020126 User000: 1 hungry   
+0000020128 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000020129 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000020130 QK_sche: prio= 1, pin=  0
+0000020131 QK_sche: prio= 6, pin=  1
+0000020132 User000: 0 thinking 
+0000020134 User000: 1 eating   
+0000020135 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000020136 QK_sche: prio= 2, pin=  1
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+*** Incorrect record past seq=249
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000020140 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       130
+           TICK   : Ctr=       131
+0000020436 QK_sche: prio= 5, pin=  0
+0000020437 QK_sche: prio= 6, pin=  5
+0000020438 User000: 4 hungry   
+0000020440 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000020441 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       132
+0000020592 QK_sche: prio= 4, pin=  0
+0000020593 QK_sche: prio= 6, pin=  4
+*** Incorrect record past seq=  8
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000020602 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       133
+           TICK   : Ctr=       134
+0000020904 QK_sche: prio= 3, pin=  0
+0000020906 QK_sche: prio= 6, pin=  3
+0000020906 User000: 2 hungry   
+0000020908 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000020909 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000020910 QK_sche: prio= 2, pin=  0
+0000020911 QK_sche: prio= 6, pin=  2
+0000020912 User000: 1 thinking 
+0000020914 User000: 2 eating   
+0000020915 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000020916 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq= 32
+*** Dropped   3 records
+0000020920 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       135
+           TICK   : Ctr=       136
+0000021216 QK_sche: prio= 1, pin=  0
+0000021217 QK_sche: prio= 6, pin=  1
+0000021218 User000: 0 hungry   
+0000021220 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000021221 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       137
+0000021372 QK_sche: prio= 5, pin=  0
+0000021373 QK_sche: prio= 6, pin=  5
+*** Incorrect record past seq= 47
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000021382 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       138
+           TICK   : Ctr=       139
+0000021685 QK_sche: prio= 4, pin=  0
+0000021686 QK_sche: prio= 6, pin=  4
+0000021686 User000: 3 hungry   
+0000021688 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000021689 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000021690 QK_sche: prio= 3, pin=  0
+0000021691 QK_sche: prio= 6, pin=  3
+0000021692 User000: 2 thinking 
+0000021694 User000: 3 eating   
+0000021695 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000021696 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq= 71
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000021700 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       140
+           TICK   : Ctr=       141
+0000021996 QK_sche: prio= 2, pin=  0
+0000021997 QK_sche: prio= 6, pin=  2
+0000021998 User000: 1 hungry   
+0000022000 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000022001 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       142
+0000022152 QK_sche: prio= 1, pin=  0
+0000022153 QK_sche: prio= 6, pin=  1
+*** Incorrect record past seq= 86
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000022162 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       143
+           TICK   : Ctr=       144
+0000022464 QK_sche: prio= 5, pin=  0
+0000022466 QK_sche: prio= 6, pin=  5
+0000022466 User000: 4 hungry   
+0000022468 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000022469 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000022470 QK_sche: prio= 4, pin=  0
+0000022471 QK_sche: prio= 6, pin=  4
+0000022472 User000: 3 thinking 
+0000022474 User000: 4 eating   
+0000022475 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000022476 QK_sche: prio= 5, pin=  4
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+*** Incorrect record past seq=110
+*** Dropped   3 records
+0000022480 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       145
+           TICK   : Ctr=       146
+0000022776 QK_sche: prio= 3, pin=  0
+0000022777 QK_sche: prio= 6, pin=  3
+0000022778 User000: 2 hungry   
+0000022780 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000022781 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       147
+0000022932 QK_sche: prio= 2, pin=  0
+0000022933 QK_sche: prio= 6, pin=  2
+*** Incorrect record past seq=125
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000022942 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       148
+           TICK   : Ctr=       149
+0000023245 QK_sche: prio= 5, pin=  0
+0000023246 QK_sche: prio= 6, pin=  5
+0000023246 User000: 4 thinking 
+0000023248 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000023250 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000023251 QK_sche: prio= 1, pin=  0
+0000023252 QK_sche: prio= 6, pin=  1
+0000023253 User000: 0 hungry   
+0000023254 User000: 0 eating   
+0000023255 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+*** Incorrect record past seq=149
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000023259 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       150
+           TICK   : Ctr=       151
+0000023556 QK_sche: prio= 4, pin=  0
+0000023558 QK_sche: prio= 6, pin=  4
+0000023558 User000: 3 hungry   
+0000023560 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000023561 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       152
+0000023712 QK_sche: prio= 3, pin=  0
+0000023713 QK_sche: prio= 6, pin=  3
+*** Incorrect record past seq=164
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000023722 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       153
+           TICK   : Ctr=       154
+0000024024 QK_sche: prio= 2, pin=  0
+0000024026 QK_sche: prio= 6, pin=  2
+0000024026 User000: 1 hungry   
+0000024028 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000024029 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000024030 QK_sche: prio= 1, pin=  0
+0000024031 QK_sche: prio= 6, pin=  1
+0000024032 User000: 0 thinking 
+0000024034 User000: 1 eating   
+0000024035 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000024036 QK_sche: prio= 2, pin=  1
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+*** Incorrect record past seq=188
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000024040 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       155
+           TICK   : Ctr=       156
+0000024336 QK_sche: prio= 5, pin=  0
+0000024337 QK_sche: prio= 6, pin=  5
+0000024338 User000: 4 hungry   
+0000024340 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000024341 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       157
+0000024492 QK_sche: prio= 4, pin=  0
+0000024493 QK_sche: prio= 6, pin=  4
+*** Incorrect record past seq=203
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000024502 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       158
+           TICK   : Ctr=       159
+0000024804 QK_sche: prio= 3, pin=  0
+0000024806 QK_sche: prio= 6, pin=  3
+0000024806 User000: 2 hungry   
+0000024808 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000024809 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000024810 QK_sche: prio= 2, pin=  0
+0000024811 QK_sche: prio= 6, pin=  2
+0000024812 User000: 1 thinking 
+0000024814 User000: 2 eating   
+0000024815 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000024816 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq=227
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000024820 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       160
+           TICK   : Ctr=       161
+0000025116 QK_sche: prio= 1, pin=  0
+0000025117 QK_sche: prio= 6, pin=  1
+0000025118 User000: 0 hungry   
+0000025120 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000025121 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       162
+0000025272 QK_sche: prio= 5, pin=  0
+0000025273 QK_sche: prio= 6, pin=  5
+*** Incorrect record past seq=242
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000025282 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       163
+           TICK   : Ctr=       164
+0000025584 QK_sche: prio= 4, pin=  0
+0000025586 QK_sche: prio= 6, pin=  4
+0000025586 User000: 3 hungry   
+0000025588 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000025589 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000025590 QK_sche: prio= 3, pin=  0
+0000025591 QK_sche: prio= 6, pin=  3
+0000025592 User000: 2 thinking 
+0000025594 User000: 3 eating   
+0000025595 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000025596 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq= 10
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000025600 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       165
+           TICK   : Ctr=       166
+0000025896 QK_sche: prio= 2, pin=  0
+0000025897 QK_sche: prio= 6, pin=  2
+0000025898 User000: 1 hungry   
+0000025900 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000025901 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       167
+0000026052 QK_sche: prio= 1, pin=  0
+0000026053 QK_sche: prio= 6, pin=  1
+*** Incorrect record past seq= 25
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000026062 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       168
+           TICK   : Ctr=       169
+0000026364 QK_sche: prio= 5, pin=  0
+0000026366 QK_sche: prio= 6, pin=  5
+0000026366 User000: 4 hungry   
+0000026368 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000026369 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000026370 QK_sche: prio= 4, pin=  0
+0000026371 QK_sche: prio= 6, pin=  4
+0000026372 User000: 3 thinking 
+0000026374 User000: 4 eating   
+0000026375 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000026376 QK_sche: prio= 5, pin=  4
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+*** Incorrect record past seq= 49
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000026380 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       170
+           TICK   : Ctr=       171
+0000026676 QK_sche: prio= 3, pin=  0
+0000026677 QK_sche: prio= 6, pin=  3
+0000026678 User000: 2 hungry   
+0000026680 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000026681 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       172
+0000026832 QK_sche: prio= 2, pin=  0
+0000026833 QK_sche: prio= 6, pin=  2
+*** Incorrect record past seq= 64
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000026842 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       173
+           TICK   : Ctr=       174
+0000027144 QK_sche: prio= 5, pin=  0
+0000027146 QK_sche: prio= 6, pin=  5
+0000027146 User000: 4 thinking 
+0000027148 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000027150 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000027151 QK_sche: prio= 1, pin=  0
+0000027152 QK_sche: prio= 6, pin=  1
+0000027153 User000: 0 hungry   
+0000027154 User000: 0 eating   
+0000027155 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+*** Incorrect record past seq= 88
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000027159 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       175
+           TICK   : Ctr=       176
+0000027456 QK_sche: prio= 4, pin=  0
+0000027457 QK_sche: prio= 6, pin=  4
+0000027458 User000: 3 hungry   
+0000027460 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000027461 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       177
+0000027612 QK_sche: prio= 3, pin=  0
+0000027613 QK_sche: prio= 6, pin=  3
+*** Incorrect record past seq=103
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000027622 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       178
+           TICK   : Ctr=       179
+0000027924 QK_sche: prio= 2, pin=  0
+0000027926 QK_sche: prio= 6, pin=  2
+0000027926 User000: 1 hungry   
+0000027928 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000027929 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000027930 QK_sche: prio= 1, pin=  0
+0000027931 QK_sche: prio= 6, pin=  1
+0000027932 User000: 0 thinking 
+0000027934 User000: 1 eating   
+0000027935 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000027936 QK_sche: prio= 2, pin=  1
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+*** Incorrect record past seq=127
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000027940 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       180
+           TICK   : Ctr=       181
+0000028236 QK_sche: prio= 5, pin=  0
+0000028237 QK_sche: prio= 6, pin=  5
+0000028238 User000: 4 hungry   
+0000028240 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000028241 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       182
+0000028392 QK_sche: prio= 4, pin=  0
+0000028393 QK_sche: prio= 6, pin=  4
+*** Incorrect record past seq=142
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000028402 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       183
+           TICK   : Ctr=       184
+0000028704 QK_sche: prio= 3, pin=  0
+0000028706 QK_sche: prio= 6, pin=  3
+0000028706 User000: 2 hungry   
+0000028708 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000028709 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000028710 QK_sche: prio= 2, pin=  0
+0000028711 QK_sche: prio= 6, pin=  2
+0000028712 User000: 1 thinking 
+0000028714 User000: 2 eating   
+0000028715 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000028716 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq=166
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000028720 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       185
+           TICK   : Ctr=       186
+0000029016 QK_sche: prio= 1, pin=  0
+0000029017 QK_sche: prio= 6, pin=  1
+0000029018 User000: 0 hungry   
+0000029020 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000029021 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       187
+0000029172 QK_sche: prio= 5, pin=  0
+0000029173 QK_sche: prio= 6, pin=  5
+*** Incorrect record past seq=181
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000029182 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       188
+           TICK   : Ctr=       189
+0000029484 QK_sche: prio= 4, pin=  0
+0000029486 QK_sche: prio= 6, pin=  4
+0000029486 User000: 3 hungry   
+0000029488 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000029489 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000029490 QK_sche: prio= 3, pin=  0
+0000029491 QK_sche: prio= 6, pin=  3
+0000029492 User000: 2 thinking 
+0000029494 User000: 3 eating   
+0000029495 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000029496 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq=205
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000029500 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       190
+           TICK   : Ctr=       191
+0000029796 QK_sche: prio= 2, pin=  0
+0000029797 QK_sche: prio= 6, pin=  2
+0000029798 User000: 1 hungry   
+0000029800 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000029801 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       192
+0000029952 QK_sche: prio= 1, pin=  0
+0000029953 QK_sche: prio= 6, pin=  1
+*** Incorrect record past seq=220
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000029962 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       193
+           TICK   : Ctr=       194
+0000030264 QK_sche: prio= 5, pin=  0
+0000030266 QK_sche: prio= 6, pin=  5
+0000030266 User000: 4 hungry   
+0000030268 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000030269 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000030270 QK_sche: prio= 4, pin=  0
+0000030271 QK_sche: prio= 6, pin=  4
+0000030272 User000: 3 thinking 
+0000030274 User000: 4 eating   
+0000030275 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000030276 QK_sche: prio= 5, pin=  4
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+*** Incorrect record past seq=244
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000030280 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       195
+           TICK   : Ctr=       196
+0000030576 QK_sche: prio= 3, pin=  0
+0000030577 QK_sche: prio= 6, pin=  3
+0000030578 User000: 2 hungry   
+0000030580 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000030581 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       197
+0000030732 QK_sche: prio= 2, pin=  0
+0000030733 QK_sche: prio= 6, pin=  2
+*** Incorrect record past seq=  3
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000030742 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       198
+           TICK   : Ctr=       199
+0000031044 QK_sche: prio= 5, pin=  0
+0000031046 QK_sche: prio= 6, pin=  5
+0000031046 User000: 4 thinking 
+0000031048 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000031050 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000031051 QK_sche: prio= 1, pin=  0
+0000031052 QK_sche: prio= 6, pin=  1
+0000031053 User000: 0 hungry   
+0000031054 User000: 0 eating   
+0000031055 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+*** Incorrect record past seq= 27
+*** Dropped   3 records
+0000031059 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       200
+           TICK   : Ctr=       201
+0000031356 QK_sche: prio= 4, pin=  0
+0000031357 QK_sche: prio= 6, pin=  4
+0000031358 User000: 3 hungry   
+0000031360 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000031361 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       202
+0000031512 QK_sche: prio= 3, pin=  0
+0000031513 QK_sche: prio= 6, pin=  3
+*** Incorrect record past seq= 42
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000031522 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       203
+           TICK   : Ctr=       204
+0000031824 QK_sche: prio= 2, pin=  0
+0000031826 QK_sche: prio= 6, pin=  2
+0000031826 User000: 1 hungry   
+0000031828 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000031829 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000031830 QK_sche: prio= 1, pin=  0
+0000031831 QK_sche: prio= 6, pin=  1
+0000031832 User000: 0 thinking 
+0000031834 User000: 1 eating   
+0000031835 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000031836 QK_sche: prio= 2, pin=  1
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+*** Incorrect record past seq= 66
+*** Dropped   4 records
+           TICK   : Ctr=       205
+           TICK   : Ctr=       206
+0000032136 QK_sche: prio= 5, pin=  0
+0000032138 QK_sche: prio= 6, pin=  5
+0000032138 User000: 4 hungry   
+0000032140 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000032141 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       207
+0000032292 QK_sche: prio= 4, pin=  0
+0000032293 QK_sche: prio= 6, pin=  4
+*** Incorrect record past seq= 81
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000032302 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       208
+           TICK   : Ctr=       209
+0000032604 QK_sche: prio= 3, pin=  0
+0000032606 QK_sche: prio= 6, pin=  3
+0000032606 User000: 2 hungry   
+0000032608 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000032609 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000032610 QK_sche: prio= 2, pin=  0
+0000032611 QK_sche: prio= 6, pin=  2
+0000032612 User000: 1 thinking 
+0000032614 User000: 2 eating   
+0000032615 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000032616 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq=105
+*** Dropped   3 records
+0000032620 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       210
+           TICK   : Ctr=       211
+0000032916 QK_sche: prio= 1, pin=  0
+0000032917 QK_sche: prio= 6, pin=  1
+0000032918 User000: 0 hungry   
+0000032920 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000032921 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       212
+0000033072 QK_sche: prio= 5, pin=  0
+0000033073 QK_sche: prio= 6, pin=  5
+*** Incorrect record past seq=120
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000033082 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       213
+           TICK   : Ctr=       214
+0000033385 QK_sche: prio= 4, pin=  0
+0000033386 QK_sche: prio= 6, pin=  4
+0000033386 User000: 3 hungry   
+0000033388 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000033389 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000033390 QK_sche: prio= 3, pin=  0
+0000033391 QK_sche: prio= 6, pin=  3
+0000033392 User000: 2 thinking 
+0000033394 User000: 3 eating   
+0000033395 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000033396 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq=144
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000033400 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       215
+           TICK   : Ctr=       216
+0000033696 QK_sche: prio= 2, pin=  0
+0000033697 QK_sche: prio= 6, pin=  2
+0000033698 User000: 1 hungry   
+0000033700 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000033701 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       217
+0000033852 QK_sche: prio= 1, pin=  0
+0000033853 QK_sche: prio= 6, pin=  1
+*** Incorrect record past seq=159
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000033862 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       218
+           TICK   : Ctr=       219
+0000034164 QK_sche: prio= 5, pin=  0
+0000034166 QK_sche: prio= 6, pin=  5
+0000034166 User000: 4 hungry   
+0000034168 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000034169 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000034170 QK_sche: prio= 4, pin=  0
+0000034171 QK_sche: prio= 6, pin=  4
+0000034172 User000: 3 thinking 
+0000034174 User000: 4 eating   
+0000034175 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000034176 QK_sche: prio= 5, pin=  4
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+*** Incorrect record past seq=183
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000034180 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       220
+           TICK   : Ctr=       221
+0000034476 QK_sche: prio= 3, pin=  0
+0000034477 QK_sche: prio= 6, pin=  3
+0000034478 User000: 2 hungry   
+0000034480 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000034481 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       222
+0000034632 QK_sche: prio= 2, pin=  0
+0000034633 QK_sche: prio= 6, pin=  2
+*** Incorrect record past seq=198
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000034642 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       223
+           TICK   : Ctr=       224
+0000034944 QK_sche: prio= 5, pin=  0
+0000034946 QK_sche: prio= 6, pin=  5
+0000034946 User000: 4 thinking 
+0000034948 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000034950 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000034951 QK_sche: prio= 1, pin=  0
+0000034952 QK_sche: prio= 6, pin=  1
+0000034953 User000: 0 hungry   
+0000034954 User000: 0 eating   
+0000034955 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+*** Incorrect record past seq=222
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000034959 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       225
+           TICK   : Ctr=       226
+0000035256 QK_sche: prio= 4, pin=  0
+0000035257 QK_sche: prio= 6, pin=  4
+0000035258 User000: 3 hungry   
+0000035260 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000035261 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       227
+0000035412 QK_sche: prio= 3, pin=  0
+0000035413 QK_sche: prio= 6, pin=  3
+*** Incorrect record past seq=237
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000035422 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       228
+           TICK   : Ctr=       229
+0000035724 QK_sche: prio= 2, pin=  0
+0000035726 QK_sche: prio= 6, pin=  2
+0000035726 User000: 1 hungry   
+0000035728 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000035729 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000035730 QK_sche: prio= 1, pin=  0
+0000035731 QK_sche: prio= 6, pin=  1
+0000035732 User000: 0 thinking 
+0000035734 User000: 1 eating   
+0000035735 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000035736 QK_sche: prio= 2, pin=  1
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+*** Incorrect record past seq=  5
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000035740 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       230
+           TICK   : Ctr=       231
+0000036036 QK_sche: prio= 5, pin=  0
+0000036037 QK_sche: prio= 6, pin=  5
+0000036038 User000: 4 hungry   
+0000036040 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000036041 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       232
+0000036192 QK_sche: prio= 4, pin=  0
+0000036193 QK_sche: prio= 6, pin=  4
+*** Incorrect record past seq= 20
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000036202 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       233
+           TICK   : Ctr=       234
+0000036504 QK_sche: prio= 3, pin=  0
+0000036506 QK_sche: prio= 6, pin=  3
+0000036506 User000: 2 hungry   
+0000036508 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000036509 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000036510 QK_sche: prio= 2, pin=  0
+0000036511 QK_sche: prio= 6, pin=  2
+0000036512 User000: 1 thinking 
+0000036514 User000: 2 eating   
+0000036515 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000036516 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq= 44
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000036520 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       235
+           TICK   : Ctr=       236
+0000036816 QK_sche: prio= 1, pin=  0
+0000036817 QK_sche: prio= 6, pin=  1
+0000036818 User000: 0 hungry   
+0000036820 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000036821 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       237
+0000036972 QK_sche: prio= 5, pin=  0
+0000036973 QK_sche: prio= 6, pin=  5
+*** Incorrect record past seq= 59
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000036982 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       238
+           TICK   : Ctr=       239
+0000037284 QK_sche: prio= 4, pin=  0
+0000037286 QK_sche: prio= 6, pin=  4
+0000037286 User000: 3 hungry   
+0000037288 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000037289 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000037290 QK_sche: prio= 3, pin=  0
+0000037291 QK_sche: prio= 6, pin=  3
+0000037292 User000: 2 thinking 
+0000037294 User000: 3 eating   
+0000037295 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000037296 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq= 83
+*** Dropped   3 records
+0000037300 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       240
+           TICK   : Ctr=       241
+0000037596 QK_sche: prio= 2, pin=  0
+0000037597 QK_sche: prio= 6, pin=  2
+0000037598 User000: 1 hungry   
+0000037600 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000037601 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       242
+0000037752 QK_sche: prio= 1, pin=  0
+0000037753 QK_sche: prio= 6, pin=  1
+*** Incorrect record past seq= 98
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000037762 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       243
+           TICK   : Ctr=       244
+0000038064 QK_sche: prio= 5, pin=  0
+0000038066 QK_sche: prio= 6, pin=  5
+0000038066 User000: 4 hungry   
+0000038068 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000038069 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000038070 QK_sche: prio= 4, pin=  0
+0000038071 QK_sche: prio= 6, pin=  4
+0000038072 User000: 3 thinking 
+0000038074 User000: 4 eating   
+0000038075 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000038076 QK_sche: prio= 5, pin=  4
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+*** Incorrect record past seq=122
+*** Dropped   3 records
+0000038080 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       245
+           TICK   : Ctr=       246
+0000038376 QK_sche: prio= 3, pin=  0
+0000038378 QK_sche: prio= 6, pin=  3
+0000038378 User000: 2 hungry   
+0000038380 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000038381 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       247
+0000038532 QK_sche: prio= 2, pin=  0
+0000038533 QK_sche: prio= 6, pin=  2
+*** Incorrect record past seq=137
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000038542 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       248
+           TICK   : Ctr=       249
+0000038844 QK_sche: prio= 5, pin=  0
+0000038846 QK_sche: prio= 6, pin=  5
+0000038846 User000: 4 thinking 
+0000038848 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000038850 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000038851 QK_sche: prio= 1, pin=  0
+0000038852 QK_sche: prio= 6, pin=  1
+0000038853 User000: 0 hungry   
+0000038854 User000: 0 eating   
+0000038855 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+*** Incorrect record past seq=161
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000038859 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       250
+           TICK   : Ctr=       251
+0000039156 QK_sche: prio= 4, pin=  0
+0000039157 QK_sche: prio= 6, pin=  4
+0000039158 User000: 3 hungry   
+0000039160 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000039161 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       252
+0000039312 QK_sche: prio= 3, pin=  0
+0000039313 QK_sche: prio= 6, pin=  3
+*** Incorrect record past seq=176
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000039322 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       253
+           TICK   : Ctr=       254
+0000039624 QK_sche: prio= 2, pin=  0
+0000039626 QK_sche: prio= 6, pin=  2
+0000039626 User000: 1 hungry   
+0000039628 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000039629 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000039630 QK_sche: prio= 1, pin=  0
+0000039631 QK_sche: prio= 6, pin=  1
+0000039632 User000: 0 thinking 
+0000039634 User000: 1 eating   
+0000039635 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000039636 QK_sche: prio= 2, pin=  1
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+*** Incorrect record past seq=200
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000039640 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       255
+           TICK   : Ctr=       256
+0000039936 QK_sche: prio= 5, pin=  0
+0000039937 QK_sche: prio= 6, pin=  5
+0000039938 User000: 4 hungry   
+0000039940 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000039941 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       257
+0000040092 QK_sche: prio= 4, pin=  0
+0000040093 QK_sche: prio= 6, pin=  4
+*** Incorrect record past seq=215
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000040102 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       258
+           TICK   : Ctr=       259
+0000040404 QK_sche: prio= 3, pin=  0
+0000040406 QK_sche: prio= 6, pin=  3
+0000040406 User000: 2 hungry   
+0000040408 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000040409 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000040410 QK_sche: prio= 2, pin=  0
+0000040411 QK_sche: prio= 6, pin=  2
+0000040412 User000: 1 thinking 
+0000040414 User000: 2 eating   
+0000040415 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000040416 QK_sche: prio= 3, pin=  2
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+*** Incorrect record past seq=239
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000040420 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       260
+           TICK   : Ctr=       261
+0000040716 QK_sche: prio= 1, pin=  0
+0000040717 QK_sche: prio= 6, pin=  1
+0000040718 User000: 0 hungry   
+0000040720 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000040721 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       262
+0000040872 QK_sche: prio= 5, pin=  0
+0000040873 QK_sche: prio= 6, pin=  5
+*** Incorrect record past seq=254
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000040882 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       263
+           TICK   : Ctr=       264
+0000041184 QK_sche: prio= 4, pin=  0
+0000041186 QK_sche: prio= 6, pin=  4
+0000041186 User000: 3 hungry   
+0000041188 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000041189 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000041190 QK_sche: prio= 3, pin=  0
+0000041191 QK_sche: prio= 6, pin=  3
+0000041192 User000: 2 thinking 
+0000041194 User000: 3 eating   
+0000041195 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000041196 QK_sche: prio= 4, pin=  3
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+*** Incorrect record past seq= 22
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000041200 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       265
+           TICK   : Ctr=       266
+0000041496 QK_sche: prio= 2, pin=  0
+0000041497 QK_sche: prio= 6, pin=  2
+0000041498 User000: 1 hungry   
+0000041500 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000041501 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       267
+0000041652 QK_sche: prio= 1, pin=  0
+0000041653 QK_sche: prio= 6, pin=  1
+*** Incorrect record past seq= 37
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000041662 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       268
+           TICK   : Ctr=       269
+0000041964 QK_sche: prio= 5, pin=  0
+0000041966 QK_sche: prio= 6, pin=  5
+0000041966 User000: 4 hungry   
+0000041968 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000041969 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000041970 QK_sche: prio= 4, pin=  0
+0000041971 QK_sche: prio= 6, pin=  4
+0000041972 User000: 3 thinking 
+0000041974 User000: 4 eating   
+0000041975 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000041976 QK_sche: prio= 5, pin=  4
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+*** Incorrect record past seq= 61
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000041980 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       270
+           TICK   : Ctr=       271
+0000042276 QK_sche: prio= 3, pin=  0
+0000042277 QK_sche: prio= 6, pin=  3
+0000042278 User000: 2 hungry   
+0000042280 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000042281 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       272
+0000042432 QK_sche: prio= 2, pin=  0
+0000042433 QK_sche: prio= 6, pin=  2
+*** Incorrect record past seq= 76
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000042442 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       273
+           TICK   : Ctr=       274
+0000042744 QK_sche: prio= 5, pin=  0
+0000042746 QK_sche: prio= 6, pin=  5
+0000042746 User000: 4 thinking 
+0000042748 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000042750 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000042751 QK_sche: prio= 1, pin=  0
+0000042752 QK_sche: prio= 6, pin=  1
+0000042753 User000: 0 hungry   
+0000042754 User000: 0 eating   
+0000042755 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+*** Incorrect record past seq=100
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000042759 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           TICK   : Ctr=       275
+           TICK   : Ctr=       276
+0000043056 QK_sche: prio= 4, pin=  0
+0000043057 QK_sche: prio= 6, pin=  4
+0000043058 User000: 3 hungry   
+0000043060 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000043061 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+           TICK   : Ctr=       277
+0000043212 QK_sche: prio= 3, pin=  0
+0000043213 QK_sche: prio= 6, pin=  3
+*** Incorrect record past seq=115
+*** Dropped   7 records
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000043222 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+           TICK   : Ctr=       278
+           TICK   : Ctr=       279
+0000043525 QK_sche: prio= 2, pin=  0
+0000043526 QK_sche: prio= 6, pin=  2
+0000043526 User000: 1 hungry   
+0000043528 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000043529 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000043530 QK_sche: prio= 1, pin=  0
+0000043531 QK_sche: prio= 6, pin=  1
+0000043532 User000: 0 thinking 

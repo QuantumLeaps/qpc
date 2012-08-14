@@ -1,0 +1,143 @@
+//////////////////////////////////////////////////////////////////////////////
+// Product: PC-Lint 9.x option file for linting QP/C
+// Last Updated for Version: 4.5.00
+// Date of the Last Update:  May 18, 2012
+//
+//                    Q u a n t u m     L e a P s
+//                    ---------------------------
+//                    innovating embedded systems
+//
+// Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+//
+// This software may be distributed and modified under the terms of the GNU
+// General Public License version 2 (GPL) as published by the Free Software
+// Foundation and appearing in the file GPL.TXT included in the packaging of
+// this file. Please note that GPL Section 2[b] requires that all works based
+// on this software must also be made publicly available under the terms of
+// the GPL ("Copyleft").
+//
+// Alternatively, this software may be distributed and modified under the
+// terms of Quantum Leaps commercial licenses, which expressly supersede
+// the GPL and are specifically designed for licensees interested in
+// retaining the proprietary status of their code.
+//
+// Contact information:
+// Quantum Leaps Web site:  http://www.quantum-leaps.com
+// e-mail:                  info@quantum-leaps.com
+//////////////////////////////////////////////////////////////////////////////
+
+// library headers
++libclass()       // lint all header files, including "foreign"
+//-vf             // print names of all source files
+
++fdi              // start #include search in directory of the including file
+-i.               // QP/C port includes
+-i../../include   // QP/C includes
+
+-si4              // sizeof(int) 
+-ss2              // sizeof(short)
+-spD4             // sizeof(void *)
+-spP4             // sizeof(function pointer)
+
+
+au-misra2.lnt     // MISRA-C:2004 options
+au-ds.lnt         // Dan Saks recommendations
+lib-qpc.lnt       // QP/C options
+-strong(AXJ)      // Strong type checking
+
+
+// QEP
+-estring(961,     // MISRA04-19.7(adv) function-like macro
+ QEP_TRIG_,
+ QEP_ENTER_,
+ QEP_EXIT_)
+-emacro(960,      // MISRA04-14.3(req) null statement not in line by itself
+ QEP_ENTER_,
+ QEP_EXIT_)
+-efunc(778, QEP_getVersion)   // Constant expression evaluates to 0
+-efunc(835, QEP_getVersion)   // 0 as left argument to operator '+'
+-efunc(632, QHsm_init)        // Assignment to strong type 'QStateHandler'
+
+// QF
+-emacro(960,                  // MISRA04-11.5(req) cast away const
+ QF_EVT_REF_CTR_INC_,
+ QF_EVT_REF_CTR_DEC_,
+ QF_EPOOL_PUT_)
+-emacro(960, QF_PTR_AT_)      // MISRA04-17.4(req) pointer arithmetic
+-estring(960, QF_readySet_)   // MISRA04-8.7(req) could use block scope
+-emacro(946, QF_PTR_RANGE_)   // MISRA04-17.2(req),17.3(req)
+                              // Relation or subtraction applied to pointers
+-emacro(929,                  // MISRA04-11.4(adv) cast pointer to pointer
+ QF_EVT_REF_CTR_INC_,
+ QF_EVT_REF_CTR_DEC_,
+ QF_EPOOL_PUT_)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QF_EVT_REF_CTR_INC_,
+ QF_EVT_REF_CTR_DEC_,
+ QF_EVT_POOL_ID_,
+ QF_EVT_REF_CTR_,
+ QF_PTR_AT_,
+ QF_CRIT_ENTRY_,
+ QF_CRIT_EXIT_,
+ QF_PTR_RANGE_,
+ QF_MPOOL_EL)
+-efunc(818,                   // MISRA04-16.7(adv) 'stkSto' could be const
+ QActive_start,
+ QActive_stop)
+-efunc(527, QF_run)           // MISRA04-14.17(req) Unreachable code
+-efunc(778, QF_getVersion)    // Constant expression evaluates to 0
+-efunc(835, QF_getVersion)    // 0 as left argument to operator '+'
+-efunc(550, QF_tick)          // Symbol 'dummy' not accessed
+-emacro({717},                // do ... while(0);
+ QACTIVE_EQUEUE_SIGNAL_,
+ QACTIVE_EQUEUE_ONEMPTY_) 
+
+// QK
+-efunc(778, QK_getVersion)    // Constant expression evaluates to 0
+-efunc(835, QK_getVersion)    // 0 as left argument to operator '+'
+
+// QS -- the following options are needed only when Q_SPY is defined
+-emacro(960,                  // MISR04-17.4(req), pointer arithmetic
+ QS_PTR_AT_,
+ QS_PTR_INC_)
+-efunc(960,                   // MISRA04-18.4(req) declaration of union
+ QS_f32,
+ QS_f64)
+-estring(960, QS_seq_)        // MISRA04-8.7(req) could use block scope
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QS_INSERT_BYTE,
+ QS_INSERT_ESC_BYTE,
+ QS_INSERT_CHKSUM_BYTE,
+ QS_PTR_AT_,
+ QS_PTR_INC_)
+-emacro(506,                  // MISRA04-13.7(req) & 14.1(req)
+ QS_BEGIN_,
+ QS_BEGIN_NOCRIT_)
+-emacro(923,                  // MISRA04-11.1(req) & 11.3(req)
+ QS_OBJ_,
+ QS_FUN_)
+-emacro(572,                  // MISRA04-12.8(req) excessive shift value
+ QS_BEGIN_,
+ QS_BEGIN_NOCRIT_)
+-emacro(961, QS_TEC_)         // MISRA04-12.13(adv)
+-efunc(778, QS_getVersion)    // Constant expression evaluates to 0
+-efunc(835, QS_getVersion)    // 0 as left argument to operator '+'
+-emacro(774,                  // Boolean within 'if' always False
+ QS_BEGIN_,
+ QS_BEGIN_NOCRIT_)
+-emacro(778,                  // expression evaluates to 0 in operation '>>'
+ QS_BEGIN_,
+ QS_BEGIN_NOCRIT_)
+-emacro(845,                  // The right argument of '<<' is zero
+ QS_BEGIN_,
+ QS_BEGIN_NOCRIT_)
+-emacro(725,                  // Expected positive indentation
+ QS_END_,
+ QS_END_NOCRIT_)
+-emacro(778, QS_BEGIN_NOCRIT_)// zero in operation '&'
+
+// Warning 537 "Repeated include file" is generated only for QEP source code
+// This warning is redundant, because all QP header files are protected
+// by #ifndef xxx_h ... #endif preprocessor checks.
+-e537                         // Repeated include file (checked by 451)
+

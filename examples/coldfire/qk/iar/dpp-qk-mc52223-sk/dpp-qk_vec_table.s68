@@ -1,0 +1,311 @@
+;------------------------------------------------------------------------------
+;       Vectors table for ColdFire M52223
+;       adapted for QK by Quantum Leaps, LLC
+;
+;       This module defines the interrupt vectors.
+;
+;------------------------------------------------------------------------------
+;       Copyright 2007 IAR Systems. All rights reserved.
+;       Copyright 2008 Quantum Leaps, LLC
+;       $Revision: $
+;------------------------------------------------------------------------------
+
+        PROGRAM ?COLDFIRE_VECTOR_TABLE
+
+        EXTERN  ReservedHandler
+        EXTERN  AccessErrorHandler
+        EXTERN  AddressErrorHandler
+        EXTERN  InllegalInstrHandler
+        EXTERN  DivByZeroHandler
+        EXTERN  PrivViolationHandler
+        EXTERN  TraceHandler
+        EXTERN  UnimplemLineA_OpcOdeHandler
+        EXTERN  UnimplemLineF_OpcOdeHandler
+        EXTERN  DebugHandler
+        EXTERN  FormatErrorHandler
+        EXTERN  SpuriousIntrHandler
+        EXTERN  Trap0Handler
+        EXTERN  Trap1Handler
+        EXTERN  Trap2Handler
+        EXTERN  Trap3Handler
+        EXTERN  Trap4Handler
+        EXTERN  Trap5Handler
+        EXTERN  Trap6Handler
+        EXTERN  Trap7Handler
+        EXTERN  Trap8Handler
+        EXTERN  Trap9Handler
+        EXTERN  Trap10Handler
+        EXTERN  Trap11Handler
+        EXTERN  Trap12Handler
+        EXTERN  Trap13Handler
+        EXTERN  Trap14Handler
+        EXTERN  Trap15Handler
+
+;------------------------------------------------------------------------------
+;       Interrupt Veneers
+;------------------------------------------------------------------------------
+
+        RSEG    RCODE:CODE(1)
+        EXTERN  PIT0_IntrHandler
+PIT0_IntrVeneer:
+        MOVE.W  #0x2700,SR
+        JMP     (PIT0_IntrHandler).L
+
+        COMMON  INTVEC:CODE(2)
+        ORG     0x8
+        DC32    AccessErrorHandler           ;; 2   0x008 Access error
+        DC32    AddressErrorHandler          ;; 3   0x00C Address error
+        DC32    InllegalInstrHandler         ;; 4   0x010 Illegal instruction
+        DC32    DivByZeroHandler             ;; 5   0x014 Divide by zero
+        DC32    ReservedHandler              ;; 6   0x018 reserved
+        DC32    ReservedHandler              ;; 7   0x01C reserved
+        DC32    PrivViolationHandler         ;; 8   0x020 Privilege violation
+        DC32    TraceHandler                 ;; 9   0x024 Trace
+        DC32    UnimplemLineA_OpcOdeHandler  ;; 10  0x028 Unimplemented line-a opcode
+        DC32    UnimplemLineF_OpcOdeHandler  ;; 11  0x02C Unimplemented line-f opcode
+        DC32    DebugHandler                 ;; 12  0x030 Debug interrupt
+        DC32    ReservedHandler              ;; 13  0x034 reserved
+        DC32    FormatErrorHandler           ;; 14  0x038 Format error
+        DC32    ReservedHandler              ;; 15  0x03C reserved
+        DC32    ReservedHandler              ;; 16  0x040 reserved
+        DC32    ReservedHandler              ;; 17  0x044 reserved
+        DC32    ReservedHandler              ;; 18  0x048 reserved
+        DC32    ReservedHandler              ;; 19  0x04C reserved
+        DC32    ReservedHandler              ;; 20  0x050 reserved
+        DC32    ReservedHandler              ;; 21  0x054 reserved
+        DC32    ReservedHandler              ;; 22  0x058 reserved
+        DC32    ReservedHandler              ;; 23  0x05C reserved
+        DC32    SpuriousIntrHandler          ;; 24  0x060 Spurious interrupt
+        DC32    ReservedHandler              ;; 25  0x064 reserved
+        DC32    ReservedHandler              ;; 26  0x068 reserved
+        DC32    ReservedHandler              ;; 27  0x06C reserved
+        DC32    ReservedHandler              ;; 28  0x070 reserved
+        DC32    ReservedHandler              ;; 29  0x074 reserved
+        DC32    ReservedHandler              ;; 30  0x078 reserved
+        DC32    ReservedHandler              ;; 31  0x07C reserved
+        DC32    Trap0Handler                 ;; 32  0x080 Trap #  0 instructions
+        DC32    Trap1Handler                 ;; 33  0x084 Trap #  1 instructions
+        DC32    Trap2Handler                 ;; 34  0x088 Trap #  2 instructions
+        DC32    Trap3Handler                 ;; 35  0x08C Trap #  3 instructions
+        DC32    Trap4Handler                 ;; 36  0x090 Trap #  4 instructions
+        DC32    Trap5Handler                 ;; 37  0x094 Trap #  5 instructions
+        DC32    Trap6Handler                 ;; 38  0x098 Trap #  6 instructions
+        DC32    Trap7Handler                 ;; 39  0x09C Trap #  7 instructions
+        DC32    Trap8Handler                 ;; 40  0x0A0 Trap #  8 instructions
+        DC32    Trap9Handler                 ;; 41  0x0A4 Trap #  9 instructions
+        DC32    Trap10Handler                ;; 42  0x0A8 Trap # 10 instructions
+        DC32    Trap11Handler                ;; 43  0x0AC Trap # 11 instructions
+        DC32    Trap12Handler                ;; 44  0x0B0 Trap # 12 instructions
+        DC32    Trap13Handler                ;; 45  0x0B4 Trap # 13 instructions
+        DC32    Trap14Handler                ;; 46  0x0B8 Trap # 14 instructions
+        DC32    Trap15Handler                ;; 47  0x0BC Trap # 15 instructions
+        DC32    ReservedHandler              ;; 48  0x0C0 reserved
+        DC32    ReservedHandler              ;; 49  0x0C4 reserved
+        DC32    ReservedHandler              ;; 50  0x0C8 reserved
+        DC32    ReservedHandler              ;; 51  0x0CC reserved
+        DC32    ReservedHandler              ;; 52  0x0D0 reserved
+        DC32    ReservedHandler              ;; 53  0x0D4 reserved
+        DC32    ReservedHandler              ;; 54  0x0D8 reserved
+        DC32    ReservedHandler              ;; 55  0x0DC reserved
+        DC32    ReservedHandler              ;; 56  0x0E0 reserved
+        DC32    ReservedHandler              ;; 57  0x0E4 reserved
+        DC32    ReservedHandler              ;; 58  0x0E8 reserved
+        DC32    ReservedHandler              ;; 59  0x0EC reserved
+        DC32    ReservedHandler              ;; 60  0x0F0 reserved
+        DC32    ReservedHandler              ;; 61  0x0F4 reserved
+        DC32    ReservedHandler              ;; 62  0x0F8 reserved
+        DC32    ReservedHandler              ;; 63  0x0FC reserved
+        DC32    ReservedHandler              ;; 64  0x100 reserved
+        DC32    ReservedHandler              ;; 65  0x104 Edge port flag 1
+        DC32    ReservedHandler              ;; 66  0x108 Edge port flag 2
+        DC32    ReservedHandler              ;; 67  0x10C Edge port flag 3
+        DC32    ReservedHandler              ;; 68  0x110 Edge port flag 4
+        DC32    ReservedHandler              ;; 69  0x114 Edge port flag 5
+        DC32    ReservedHandler              ;; 70  0x118 Edge port flag 6
+        DC32    ReservedHandler              ;; 71  0x11C Edge port flag 7
+        DC32    ReservedHandler              ;; 72  0x120 Software watchdog timeout
+        DC32    ReservedHandler              ;; 73  0x124 DMA Channel 0 transfer complete
+        DC32    ReservedHandler              ;; 74  0x128 DMA Channel 1 transfer complete
+        DC32    ReservedHandler              ;; 75  0x12C DMA Channel 2 transfer complete
+        DC32    ReservedHandler              ;; 76  0x130 DMA Channel 3 transfer complete
+        DC32    ReservedHandler              ;; 77  0x134 UART0 interrupt
+        DC32    ReservedHandler              ;; 78  0x138 UART1 interrupt
+        DC32    ReservedHandler              ;; 79  0x13C UART2 interrupt
+        DC32    ReservedHandler              ;; 80  0x140 reserved
+        DC32    ReservedHandler              ;; 81  0x144 I2C interrupt
+        DC32    ReservedHandler              ;; 82  0x148 QSPI interrupt
+        DC32    ReservedHandler              ;; 83  0x14C DTIM0 interrupt
+        DC32    ReservedHandler              ;; 84  0x150 DTIM1 interrupt
+        DC32    ReservedHandler              ;; 85  0x154 DTIM2 interrupt
+        DC32    ReservedHandler              ;; 86  0x158 DTIM3 interrupt
+        DC32    ReservedHandler              ;; 87  0x15C reserved
+        DC32    ReservedHandler              ;; 88  0x160 reserved
+        DC32    ReservedHandler              ;; 89  0x164 reserved
+        DC32    ReservedHandler              ;; 90  0x168 reserved
+        DC32    ReservedHandler              ;; 91  0x16C reserved
+        DC32    ReservedHandler              ;; 92  0x170 reserved
+        DC32    ReservedHandler              ;; 93  0x174 reserved
+        DC32    ReservedHandler              ;; 94  0x178 reserved
+        DC32    ReservedHandler              ;; 95  0x17C reserved
+        DC32    ReservedHandler              ;; 96  0x180 reserved
+        DC32    ReservedHandler              ;; 97  0x184 reserved
+        DC32    ReservedHandler              ;; 98  0x188 reserved
+        DC32    ReservedHandler              ;; 99  0x18C reserved
+        DC32    ReservedHandler              ;; 100 0x190 reserved
+        DC32    ReservedHandler              ;; 101 0x194 reserved
+        DC32    ReservedHandler              ;; 102 0x198 reserved
+        DC32    ReservedHandler              ;; 103 0x19C reserved
+        DC32    ReservedHandler              ;; 104 0x1A0 reserved
+        DC32    ReservedHandler              ;; 105 0x1A4 Timer overflow
+        DC32    ReservedHandler              ;; 106 0x1A8 Pulse accumulator input
+        DC32    ReservedHandler              ;; 107 0x1AC Pulse accumulator overflow
+        DC32    ReservedHandler              ;; 108 0x1B0 Timer channel 1
+        DC32    ReservedHandler              ;; 109 0x1B4 Timer channel 2
+        DC32    ReservedHandler              ;; 110 0x1B8 Timer channel 3
+        DC32    ReservedHandler              ;; 111 0x1BC Timer channel 0
+        DC32    ReservedHandler              ;; 112 0x1C0 LVD
+        DC32    ReservedHandler              ;; 113 0x1C4 ADCA conversion complete
+        DC32    ReservedHandler              ;; 114 0x1C8 ADCB conversion complete
+        DC32    ReservedHandler              ;; 115 0x1CC ADC Interrupt
+        DC32    ReservedHandler              ;; 116 0x1D0 PWM Interrupt
+        DC32    ReservedHandler              ;; 117 0x1D4 USB Interrupt
+        DC32    ReservedHandler              ;; 118 0x1D8 reserved
+        DC32    PIT0_IntrVeneer              ;; 119 0x1DC <-- PIT0 interrupt flag
+        DC32    ReservedHandler              ;; 120 0x1E0 PIT1 interrupt flag
+        DC32    ReservedHandler              ;; 121 0x1E4 reserved
+        DC32    ReservedHandler              ;; 122 0x1E8 reserved
+        DC32    ReservedHandler              ;; 123 0x1EC SGFM buffer empty
+        DC32    ReservedHandler              ;; 124 0x1F0 SGFM command complete
+        DC32    ReservedHandler              ;; 125 0x1F4 Protection violation
+        DC32    ReservedHandler              ;; 126 0x1F8 Access error
+        DC32    ReservedHandler              ;; 127 0x1FC RTC Interrupt
+        DC32    ReservedHandler              ;; 128 0x200 reserved
+        DC32    ReservedHandler              ;; 129 0x204 reserved
+        DC32    ReservedHandler              ;; 130 0x208 reserved
+        DC32    ReservedHandler              ;; 131 0x20C reserved
+        DC32    ReservedHandler              ;; 132 0x210 reserved
+        DC32    ReservedHandler              ;; 133 0x214 reserved
+        DC32    ReservedHandler              ;; 134 0x218 reserved
+        DC32    ReservedHandler              ;; 135 0x21C reserved
+        DC32    ReservedHandler              ;; 136 0x220 reserved
+        DC32    ReservedHandler              ;; 137 0x224 reserved
+        DC32    ReservedHandler              ;; 138 0x228 reserved
+        DC32    ReservedHandler              ;; 139 0x22C reserved
+        DC32    ReservedHandler              ;; 140 0x230 reserved
+        DC32    ReservedHandler              ;; 141 0x234 reserved
+        DC32    ReservedHandler              ;; 142 0x238 reserved
+        DC32    ReservedHandler              ;; 143 0x23C reserved
+        DC32    ReservedHandler              ;; 144 0x240 reserved
+        DC32    ReservedHandler              ;; 145 0x244 reserved
+        DC32    ReservedHandler              ;; 146 0x248 reserved
+        DC32    ReservedHandler              ;; 147 0x24C reserved
+        DC32    ReservedHandler              ;; 148 0x250 reserved
+        DC32    ReservedHandler              ;; 149 0x254 reserved
+        DC32    ReservedHandler              ;; 150 0x258 reserved
+        DC32    ReservedHandler              ;; 151 0x25C reserved
+        DC32    ReservedHandler              ;; 152 0x260 reserved
+        DC32    ReservedHandler              ;; 153 0x264 reserved
+        DC32    ReservedHandler              ;; 154 0x268 reserved
+        DC32    ReservedHandler              ;; 155 0x26C reserved
+        DC32    ReservedHandler              ;; 156 0x270 reserved
+        DC32    ReservedHandler              ;; 157 0x274 reserved
+        DC32    ReservedHandler              ;; 158 0x278 reserved
+        DC32    ReservedHandler              ;; 159 0x27C reserved
+        DC32    ReservedHandler              ;; 160 0x280 reserved
+        DC32    ReservedHandler              ;; 161 0x284 reserved
+        DC32    ReservedHandler              ;; 162 0x288 reserved
+        DC32    ReservedHandler              ;; 163 0x28C reserved
+        DC32    ReservedHandler              ;; 164 0x290 reserved
+        DC32    ReservedHandler              ;; 165 0x294 reserved
+        DC32    ReservedHandler              ;; 166 0x298 reserved
+        DC32    ReservedHandler              ;; 167 0x29C reserved
+        DC32    ReservedHandler              ;; 168 0x2A0 reserved
+        DC32    ReservedHandler              ;; 169 0x2A4 reserved
+        DC32    ReservedHandler              ;; 170 0x2A8 reserved
+        DC32    ReservedHandler              ;; 171 0x2AC reserved
+        DC32    ReservedHandler              ;; 172 0x2B0 reserved
+        DC32    ReservedHandler              ;; 173 0x2B4 reserved
+        DC32    ReservedHandler              ;; 174 0x2B8 reserved
+        DC32    ReservedHandler              ;; 175 0x2BC reserved
+        DC32    ReservedHandler              ;; 176 0x2C0 reserved
+        DC32    ReservedHandler              ;; 177 0x2C4 reserved
+        DC32    ReservedHandler              ;; 178 0x2C8 reserved
+        DC32    ReservedHandler              ;; 179 0x2CC reserved
+        DC32    ReservedHandler              ;; 180 0x2D0 reserved
+        DC32    ReservedHandler              ;; 181 0x2D4 reserved
+        DC32    ReservedHandler              ;; 182 0x2D8 reserved
+        DC32    ReservedHandler              ;; 183 0x2DC reserved
+        DC32    ReservedHandler              ;; 184 0x2E0 reserved
+        DC32    ReservedHandler              ;; 185 0x2E4 reserved
+        DC32    ReservedHandler              ;; 186 0x2E8 reserved
+        DC32    ReservedHandler              ;; 187 0x2EC reserved
+        DC32    ReservedHandler              ;; 188 0x2F0 reserved
+        DC32    ReservedHandler              ;; 189 0x2F4 reserved
+        DC32    ReservedHandler              ;; 190 0x2F8 reserved
+        DC32    ReservedHandler              ;; 191 0x2FC reserved
+        DC32    ReservedHandler              ;; 192 0x300 reserved
+        DC32    ReservedHandler              ;; 193 0x304 reserved
+        DC32    ReservedHandler              ;; 194 0x308 reserved
+        DC32    ReservedHandler              ;; 195 0x30C reserved
+        DC32    ReservedHandler              ;; 196 0x310 reserved
+        DC32    ReservedHandler              ;; 197 0x314 reserved
+        DC32    ReservedHandler              ;; 198 0x318 reserved
+        DC32    ReservedHandler              ;; 199 0x31C reserved
+        DC32    ReservedHandler              ;; 200 0x320 reserved
+        DC32    ReservedHandler              ;; 201 0x324 reserved
+        DC32    ReservedHandler              ;; 202 0x328 reserved
+        DC32    ReservedHandler              ;; 203 0x32C reserved
+        DC32    ReservedHandler              ;; 204 0x330 reserved
+        DC32    ReservedHandler              ;; 205 0x334 reserved
+        DC32    ReservedHandler              ;; 206 0x338 reserved
+        DC32    ReservedHandler              ;; 207 0x33C reserved
+        DC32    ReservedHandler              ;; 208 0x340 reserved
+        DC32    ReservedHandler              ;; 209 0x344 reserved
+        DC32    ReservedHandler              ;; 210 0x348 reserved
+        DC32    ReservedHandler              ;; 211 0x34C reserved
+        DC32    ReservedHandler              ;; 212 0x350 reserved
+        DC32    ReservedHandler              ;; 213 0x354 reserved
+        DC32    ReservedHandler              ;; 214 0x358 reserved
+        DC32    ReservedHandler              ;; 215 0x35C reserved
+        DC32    ReservedHandler              ;; 216 0x360 reserved
+        DC32    ReservedHandler              ;; 217 0x364 reserved
+        DC32    ReservedHandler              ;; 218 0x368 reserved
+        DC32    ReservedHandler              ;; 219 0x36C reserved
+        DC32    ReservedHandler              ;; 220 0x370 reserved
+        DC32    ReservedHandler              ;; 221 0x374 reserved
+        DC32    ReservedHandler              ;; 222 0x378 reserved
+        DC32    ReservedHandler              ;; 223 0x37C reserved
+        DC32    ReservedHandler              ;; 224 0x380 reserved
+        DC32    ReservedHandler              ;; 225 0x384 reserved
+        DC32    ReservedHandler              ;; 226 0x388 reserved
+        DC32    ReservedHandler              ;; 227 0x38C reserved
+        DC32    ReservedHandler              ;; 228 0x390 reserved
+        DC32    ReservedHandler              ;; 229 0x394 reserved
+        DC32    ReservedHandler              ;; 230 0x398 reserved
+        DC32    ReservedHandler              ;; 231 0x39C reserved
+        DC32    ReservedHandler              ;; 232 0x3A0 reserved
+        DC32    ReservedHandler              ;; 233 0x3A4 reserved
+        DC32    ReservedHandler              ;; 234 0x3A8 reserved
+        DC32    ReservedHandler              ;; 235 0x3AC reserved
+        DC32    ReservedHandler              ;; 236 0x3B0 reserved
+        DC32    ReservedHandler              ;; 237 0x3B4 reserved
+        DC32    ReservedHandler              ;; 238 0x3B8 reserved
+        DC32    ReservedHandler              ;; 239 0x3BC reserved
+        DC32    ReservedHandler              ;; 240 0x3C0 reserved
+        DC32    ReservedHandler              ;; 241 0x3C4 reserved
+        DC32    ReservedHandler              ;; 242 0x3C8 reserved
+        DC32    ReservedHandler              ;; 243 0x3CC reserved
+        DC32    ReservedHandler              ;; 244 0x3D0 reserved
+        DC32    ReservedHandler              ;; 245 0x3D4 reserved
+        DC32    ReservedHandler              ;; 246 0x3D8 reserved
+        DC32    ReservedHandler              ;; 247 0x3DC reserved
+        DC32    ReservedHandler              ;; 248 0x3E0 reserved
+        DC32    ReservedHandler              ;; 249 0x3E4 reserved
+        DC32    ReservedHandler              ;; 250 0x3E8 reserved
+        DC32    ReservedHandler              ;; 251 0x3EC reserved
+        DC32    ReservedHandler              ;; 252 0x3F0 reserved
+        DC32    ReservedHandler              ;; 253 0x3F4 reserved
+        DC32    ReservedHandler              ;; 254 0x3F8 reserved
+        DC32    ReservedHandler              ;; 255 0x3FC reserved
+
+        END

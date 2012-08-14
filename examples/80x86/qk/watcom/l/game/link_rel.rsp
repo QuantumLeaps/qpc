@@ -1,0 +1,1 @@
+Name rel\game.exe File rel\bsp.obj,rel\main.obj,rel\mine1.obj,rel\mine2.obj,rel\missile.obj,rel\ship.obj,rel\tunnel.obj,rel\video.obj Library ..\..\..\..\..\..\ports\80x86\qk\watcom\l\rel\qf.lib,..\..\..\..\..\..\ports\80x86\qk\watcom\l\rel\qep.lib,..\..\..\..\..\..\ports\80x86\qk\watcom\l\rel\qk.lib

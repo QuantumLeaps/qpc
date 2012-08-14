@@ -1,0 +1,7 @@
+
+--- Module:   ..\bsp.c (C)
+
+    
+         _
+#include "qp_port.h"
+..\bsp.c  28  Error 322: Unable to open include file 'qp_port.h'

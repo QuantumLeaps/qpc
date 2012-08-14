@@ -1,0 +1,438 @@
+/**
+\page files_page Directories and Files in the QP/C Distribution
+
+The following annotated directory tree lists the most important directories
+and files provided in the standard QP distribution. The explanation section
+immediately following the directory tree explains the structure in more
+detail.
+
+\code
+ (1) qpc\                 - QP/C root directory
+       |
+ (2)   +-qpc.chm          - "QP/C Reference Manual" in CHM Help format
+       |
+ (3)   +-doxygen\         - QP documentation generated with Doxygen
+       | +-html\          - "QP/C Reference Manual" in HTML format
+ (4)   | | +-index.html   - The HTML index page for the "QP/C Reference Manual"
+       | | +- . . .
+       | +-Doxyfile       - Doxygen configuration file to generate the Manual
+       | +- . . .
+       |
+ (5)   +-examples\        - QP examples
+ (6)   | +-80x86\         - Examples for the 80x86 processor
+ (7)   | | +-dos\         - Examples for DOS with the "vanilla" cooperative kernel
+ (8)   | | | +-watcom\    - Examples with the Open Watcom compiler
+ (9)   | | | | +-l\       - Examples using the Large memory model
+(10)   | | | | | +-dpp\   - Dining Philosopher Problem (DPP) example for DOS
+       | | | | | | +-dbg\ - Debug build
+       | | | | | | | +-dpp.exe - Debug executable
+(11)   | | | | | | +-rel\      - Release build
+       | | | | | | | +-dpp.exe - Release executable
+(12)   | | | | | | +-spy\      - Spy build (with QS tracing instrumentation)
+       | | | | | | | +-dpp.exe - Spy executable
+(13)   | | | | | | +-make.bat  - batch script to build the application
+       | | | | | |
+       | | | | | +-game\       - "Fly 'n' Shoot" game example
+       | | | | | | +-dbg\      - Debug build
+       | | | | | | | +-GAME.EXE   - Debug executable
+       | | | | | | +-make.bat  - batch script to build the application
+       | | | | | | +-game.h    - The application header file
+       | | | | | | +-bsp.c     - BSP for the application
+       | | | | | | +-main.c    - main() function
+       | | | | | |
+       | | | | | +-calc\    - Calculator example
+       | | | | | +-qhsmtst\ - QHsmTst example (PSiCC2  in Chapter 2)
+       | | | | | |
+(14)   | | | | | +-comp\    - "Orthogonal Component" pattern (PSiCC2 Chapter 5)
+       | | | | | +-defer\   - "Deferred Event" pattern (PSiCC2 Chapter 5)
+       | | | | | +-history\ - "Transition to History" pattern (PSiCC2 Chapter 5)
+       | | | | | +-hook\    - "Ultimate Hook" pattern (Chapter 5)
+       | | | | | +-reminder\ - "Reminder" pattern (PSiCC2 Chapter 5)
+       | | |
+(15)   | | +-qk\          - Examples for the QK preemptive kernel
+(16)   | | +-ucos2\       - Examples for the µC/OS-II RTOS
+       | | |
+(17)   | | +-linux\       - Examples for Linux (POSIX)
+       | | | +-gnu\       - Examples with the GNU compiler
+       | | | | +-dpp\     - Dining Philosopher Problem (DPP) example for Linux
+       | | | | | +-dbg\   - Debug build
+       | | | | | +-rel\      - Release build
+       | | | | | +-spy\      - Spy build (with software instrumentation)
+(18)   | | | | | +-Makefile  - GNU Makefile to build the DPP application
+       | | | | | +-. . .
+       | |
+(19)   | +-arm-cortex\    - Examples for ARM Cortex processor
+       | | +-vanilla\     - Examples for the cooperative "vanilla" kernel
+       | | | +-iar\       - Examples with the IAR compiler
+       | | | | +-dpp-ev-lm3s811\  - DPP example for for EV-LM3S811 board
+       | | | | +-game-ev-lm3s811\ - "Fly 'n' Shoot" example for EV-LM3S811 board
+       | | | | +-. . .    - Other examples for ARM Cortex
+       | | | +-gnu\       - Examples with the GNU compiler (Code Sourcery G++)
+       | | | | +-dpp-ev-lm3s811\  - DPP example for for EV-LM3S811 board
+       | | | | +-game-ev-lm3s811\ - "Fly 'n' Shoot" example for EV-LM3S811 board
+       | | | | +-. . .    - Other examples for ARM Cortex
+       | | |
+       | | +-qk\          - Examples for the preemptive QK kernel
+       | | | +-iar\       - Examples with the IAR compiler
+       | | | | +-dpp-qk-ev-lm3s811\  - DPP example for for EV-LM3S811 board
+       | | | | +-game-qk-ev-lm3s811\ - "Fly 'n' Shoot" example for EV-LM3S811 board
+       | | | | +-. . .    - Other examples for ARM Cortex
+       | | | +-gnu\       - Examples with the GNU compiler (Code Sourcery G++)
+       | | | | +-dpp-qk-ev-lm3s811\  - DPP example for for EV-LM3S811 board
+       | | | | +-game-qk-ev-lm3s811\ - "Fly 'n' Shoot" example for EV-LM3S811 board
+       | | | | +-. . .    - Other examples for ARM Cortex
+       | |
+       | +-. . .          - Examples for other CPUs and compiler
+       |
+(20)   +-include\         - QP platform-independent header files
+       | +-qassert.h      - QP assertions
+       | +-qep.h          - QEP platform-independent interface
+       | +-qf.h           - QF platform-independent interface
+       | +-qk.h           - QK platform-independent interface
+       | +-qs.h           - QS platform-independent active interface
+       | +-qs_dummy.h     - QS platform-independent inactive interface
+       | +-qequeue.h      - QF native event queue facility
+       | +-qmpool.h       - QF native memory pool facility
+       | +-qpset.h        - QF native priority set facility
+       | +-qvanilla.h     - QF native "vanilla" cooperative kernel interface
+       |
+(21)   +-qep\             - QEP hierarchical event processor
+       | +-source\        - QEP platform-independent source code (*.c files)
+       | | +- . . .
+       |
+(22)   +-qf\              - QF real-time framework
+       | +-source\        - QF platform-independent source code (*.c files)
+       | | +- . . .
+       |
+(23)   +-qk\              - QK preemptive kernel
+       | +-source\        - QK platform-independent source code (*.c files)
+       | | +- . . .
+       |
+(24)   +-qs\              - QS software tracing (target component)
+       | +-source\        - QS platform-independent source code (*.c files)
+       | | +- . . .
+       |
+(25)   +-ports\           - Platform-specific QP ports
+(26)   | +-80x86\         - Ports to the 80x86 processor
+(27)   | | +-dos\         - Ports to DOS with the "vanilla" cooperative kernel
+(28)   | | | +-watcom\    - Ports with the Open Watcom compiler
+(29)   | | | | +-l\       - Ports using the Large memory model
+(30)   | | | | | +-dbg\   - Debug build
+(31)   | | | | | | +-qf.lib   - QF  library
+(32)   | | | | | | +-qep.lib  - QEP library
+       | | | | | +-rel\   - Release build
+       | | | | | +-spy\   - Spy build (with software instrumentation)
+       | | | | | | +-qep.lib  - QEP library
+       | | | | | | +-qf.lib   - QF  library
+       | | | | | | +-qs.lib   - QS  library
+       | | | | | |
+(33)   | | | | | +-make.bat   - batch script for building the QP libraries
+(34)   | | | | | +-qep_port.h - QEP platform-dependent include file
+(35)   | | | | | +-qf_port.h  - QF  platform-dependent include file
+(36)   | | | | | +-qs_port.h  - QS  platform-dependent include file
+(37)   | | | | | +-qp_port.h  - QP  platform-dependent include file
+       | | |
+       | | +-qk\          - Ports to the QK preemptive kernel
+       | | | +-. . .
+       | | |
+       | | +-ucos2\       - Ports to the MicroC/OS-II RTOS
+       | | | +-watcom\    - Ports with the Open Watcom compiler
+       | | | | +-l\       - Ports using the Large memory model
+(38)   | | | | | +-ucos2.86\  - MicroC/OS-II v2.86 object code and header files
+(39)   | | | | | +-src\       - Port-specific source files
+(40)   | | | | | | +-qf_port.c - QF port to µC/OS-II source file
+       | | | | | +-. . .
+       | | |
+       | | +-linux\       - Ports to the Linux operating system (POSIX)
+       | | | +-gnu\       - Ports with the GNU compiler
+       | | | | +-src\         - Port-specific source files
+       | | | | | +- qf_port.c - QF port to Linux source file
+       | | | | +-. . .
+       | |
+       | +-arm-cortex\    - Ports to the ARM Cortex processor
+       | | +-vanilla\     - Ports to the cooperative "vanilla" kernel
+       | | | +-iar\       - Ports with the IAR compiler
+       | | | | | +-dbg\   - Debug build
+       | | | | | +-rel\   - Release build
+       | | | | | +-spy\   - Spy build (with software instrumentation)
+       | | | | | +-make_cortex-m3.bat - batch script for building QP libraries
+       | | | | | +-qep_port.h - QEP platform-dependent include file
+       | | | | | +-qf_port.h  - QF  platform-dependent include file
+       | | | | | +-qs_port.h  - QS  platform-dependent include file
+       | | | | | +-qp_port.h  - QP  platform-dependent include file
+       | | | . . .
+       | | | +-gnu\       - Ports with the GNU compiler (Code Sourcery G++)
+       | | | | | +-dbg\   - Debug build
+       | | | | | +-rel\   - Release build
+       | | | | | +-spy\   - Spy build (with software instrumentation)
+       | | | | | +-make_cortex-m3_cs.bat - batch script for building QP libraries
+       | | | | | +-qep_port.h - QEP platform-dependent include file
+       | | | | | +-qf_port.h  - QF  platform-dependent include file
+       | | | | | +-qs_port.h  - QS  platform-dependent include file
+       | | | | | +-qp_port.h  - QP  platform-dependent include file
+       | | | . . .
+       | | +-qk\          - Ports to the preemptive QK kernel
+       | |   +-iar\       - Ports with the IAR compiler
+       | |   +-gnu\       - Ports with the GNU compiler (Code Sourcery G++)
+       | +-. . .          - Ports to other CPUs
+       |
+(41)   +-tools\           - QP-related tools for the host machine
+(42)   | +-qspy\          - QSPY host application
+       | | +-include\     - QSPY header files
+       | | +-source\      - QSPY platform-independent source files
+(43)   | | +-linux\       - QSPY port to Linux
+       | | | +-gnu\       - QSPY port with the GNU compiler
+       | | | | +-rel\     - Release build
+       | | | | | +-qspy       - Linux executable (not provided -- must be built)
+(44)   | | | | +-Makefile     - GNU Makefile to bulid QSPY for Linux
+(45)   | | +-win32\       - QSPY ports to Win32
+(46)   | | | +-mingw\     - QSPY port with the open source MinGW GNU compiler
+       | | | | +-rel\     - Release build
+       | | | | | +-qspy.exe   - Windows executable (console app)
+       | | | | +-Makefile     - GNU Makefile to bulid QSPY for Win32 under MinGW
+       | | | +-vc2008\    - QSPY port with Visual C++ 2008
+(47)   | | | | +-Release\ - Release build
+       | | | | | +-qspy.exe   - Windows executable (console app)
+       | | | | +-qspy.sln     - Visual C++ solution to build QSPY
+(48)   | | | +-vc6\       - QSPY port with Visual C++ 6.0
+       | | | | +-Release\ - Release build
+       | | | | | +-qspy.exe   - Windows executable (console app)
+       | | | | +-qspy.dsw     - Visual C++ 6.0 workspace to build QSPY
+(49)   | | +-matlab\      - MATLAB scripts to import QSPY data to MATLAB
+
+\endcode
+
+\li (1) Every QP version, such as QP/C, QP/C++, ir QP-nano resides in the
+separate directory branch, called henceforth QP Root Directory. The essential
+element of the design is that the QP Root Directory can be "plugged into" any
+branch of a hierarchical file system and you can move the QP Root Directory
+around, or even have multiple versions of the QP Root Directories. You can
+also freely choose the name of the QP Root Directory, although I recommend the
+directory names \c qpc\\ for QP/C and \c qpcpp\\ for QP/C++. The ability to
+relocate the QP Root Directory means that only relative paths should be used
+in the Makefiles, build scripts, workspaces, or project files.
+
+\li (2) The file qpc.chm contains the "QP/C Reference Manual" in CHM format.
+
+\li (3) The \c doxygen\\ directory contains this "QP/C Reference Manual"
+generated with the Doxygen utility.
+
+\li (4) The \c html\\ subdirectory contains this HTML verions of the "QP/C
+Reference Manual". In particular, the file index.html is the index page of the
+Manual.
+
+\li (5) The \c examples\\ directory contains the application examples that are
+included in the standard QP/C distribution. The structure of the \c examples\\
+(and also \c ports\\ directory) is the most complicated because of the large
+number of choices available, such as CPU architectures, compilers, operating
+systems, and compiler options. Each of those choices is represented as a
+separate level of nesting in a hierarchical directory tree, so that each
+dimension in the multi-dimensional space of options can be extended
+independently from the others. Also, the directory branch for each QP port is
+individually customizable, so each branch can represent only choices relevant
+for a given CPU, operating system, compiler, etc.
+
+\li (6) The CPU architecture is placed as the first level of nesting within
+the \c examples\\ directory. Examples of CPU architectures are: 80x86, ARM,
+ARM Cortex, AVR, MSP430, M16C, etc. Please note that a separate directory
+is needed whenever the CPU architecture is significantly different. For
+example, even though the traditional ARM and the new ARM Cortex are
+related, the differences are significant enough to require a separate
+directory branch for ARM and ARM Cortex.
+
+\li (7) The second level of nesting, under the CPU architecture, is the
+operating system used. For example, in the 80x86 architecture, QP can operate
+under DOS (with the "vanilla" cooperative kernel), under the QK preemptive
+kernel, under the MicroC/OS-II RTOS, or under Linux (and perhaps other OSs,
+such as Win32).
+
+\note The ordering of directory levels reflects the embedded focus in the QP
+design. In most standalone QF applications the CPU architecture is typically
+more important than the RTOS/OS. For general-purpose operating systems, such
+as Linux, the reversed order (operating system at a higher level than the CPU
+architecture) would perhaps feel more natural.
+
+\li (8) The next level of nesting, under each operating system directory, is
+the directory for the compiler used. For example, the DOS port can be compiled
+with the Open Watcom or perhaps with Borland C++. Similarly, the port
+to ARM Cortex with QK kernel can be compiled with the IAR, RealView, or GNU
+compilers.
+
+\li (9) In some ports, the compiler can emit code for various modes of the
+CPU. For example, a compiler for 80x86 under DOS can produce small, compact,
+large, or huge memory models. These different modes result in incompatible
+object code, and therefore each of them requires a separate branch. Please
+note that the compiler options level is optional. For example, the ARM Cortex
+CPU branch does not need the compiler options level.
+
+\li (10) Finally, the example application is located in its own directory. For
+example, the \c dpp\\ directory contains the "Dining Philosopher Problem"
+application example for this particular CPU/Kernel/Compiler/Options
+combinations.
+
+\li (11) The \c dpp\\dbg\\ subdirectory contains the object files and the
+executable for the Debug configuration.
+
+\li (12) The \c dpp\\rel\\ subdirectory contains the object files and the
+executable for the Release configuration.
+
+\li (13) The \c dpp\\spy\\ subdirectory contains the object files and the
+executable for the Spy configuration (with the \ref qs_page).
+
+\li (14) All five state designed patterns described in Chapter 5 of \ref
+PSiCC2 (PSiCC2) are provided.
+
+\li (15) The directory \c qk\\ contains examples for the QK preemptive kernel.
+
+\li (16) The directory \c ucos2\\ contains examples for the MicroC/OS-II RTOS.
+
+\li (17) The directory \c linux\\ contains examples for the Linux operating
+system.
+
+\note The port to Linux also runs on many POSIX-compliant OSes/RTOSes, such as
+BSD, Solaris, MacOS X, and QNX.
+
+\li (18) The Makefile for building POSIX port is provided.
+
+\li (19) The directory \c arm-cortex\\ contains QP examples for ARM Cortex.
+
+\li (20) The directory \c include\\ contains platform-independent header files
+for QP all components. You need to point your C/C++ compiler to include files
+from this directory.
+
+\li (21-24) The platform-independent source code of each QP component is
+located in the separate directory. The sources files are only needed to
+re-build QP libraries, but you don't need to include these directories in the
+compiler's search path to build applications.
+
+\li (25) The directory \c ports\\ contains platform-dependent header files and
+libraries to be used by QP applications. This directory structure is the most
+complicated because of the large number of choices available, such as CPU
+architectures, compilers, operating systems, and compiler options. Each of
+those choices is represented as a separate level of nesting in a hierarchical
+directory tree, so that each dimension in the multi-dimensional space of
+options can be extended independently from the others. Also, the directory
+branch for each port is individually customizable, so each branch can
+represent only choices relevant for a given CPU, operating system, compiler,
+etc.
+
+\li (26) The CPU architecture is placed as the first level of nesting within
+the \c ports\\ directory. Examples of CPU architectures are: 80x86, ARM Cortex,
+ARM, AVR, MSP430, M16C, etc. Please note that a separate directory is needed
+whenever the CPU architecture is significantly different. For example, even
+though the traditional ARM and the new ARM Cortex are related, the
+differences are significant enough to require a separate directory branch for
+ARM and ARM Cortex.
+
+\li (27) The second level of nesting, under the CPU architecture, is the
+operating system used. For example, in the 80x86 architecture, QP can operate
+under DOS (with the "vanilla" cooperative kernel), under the QK preemptive
+kernel, under the MicroC/OS-II RTOS, or under Linux (and perhaps other OSs,
+such as Win32).
+
+\note The ordering of directory levels reflects the embedded focus in the QP
+design. In most standalone QF applications the CPU architecture is typically
+more important than the RTOS/OS. For general-purpose operating systems, such
+as Linux, the reversed order (operating system at a higher level than the CPU
+architecture) would perhaps feel more natural.
+
+\li (28) The next level of nesting, under each operating system directory, is
+the directory for the compiler used. For example, the DOS port can be compiled
+with the Open Watcom or perhaps with Borland C++. Similarly, the port
+to ARM Cortex with QK kernel can be compiled with the IAR, RealView, or GNU
+compilers.
+
+\li (29) In some ports, the compiler can emit code for various modes of the
+CPU. For example, a compiler for 80x86 under DOS can produce small, compact,
+large, or huge memory models. These different modes result in incompatible
+object code, and therefore each of them requires a separate branch. Please
+note that the compiler options level is optional. For example, the ARM Cortex
+CPU branch does not need the compiler options level.
+
+\li (30) Finally, the QP libraries can be compiled with different compile-time
+switches and optimization options. For example, the \c dbg\\ directory holds
+the Debug configuration, which contains the symbolic debug information.
+
+\li (31) Each specific build directory contains the QP library files. The
+actual library names should comply with the conventions used on a particular
+platform. For example, on Linux the libraries are typically named \c libXXX.a
+(e.g., \c libqep.a, \c libqf.a, etc.).
+
+\li (32) The \c rel\\ directory holds the Release configuration, which
+typically does not contain debug information but might use aggressive
+optimizations for best performance.
+
+\li (33) The standard QP ports often contain a simple \c make.bat script or a
+Makefile for building all the QP libraries for the port. You typically can
+choose the build configuration by providing a target to the make.bat script or
+to the Makefile. The default target is "dbg". Other possible targets are
+"rel", and "spy". The following table summarizes the targets accepted by the
+make.bat scripts or the Makefiles.
+
+<TABLE SUMMARY="Build Targets" cellSpacing=4 cellPadding=1 border=0
+ALIGN="center" VALIGN="middle">
+  <TR bgColor="#c8cedc" ALIGN="center">
+      <TD width="20"><B>&nbsp;Build Configuration</B></TD>
+      <TD width="20"><B>&nbsp;Build Command</B></TD>
+  </TR>
+
+  <TR bgColor="#ffffcc">
+    <TD>&nbsp;Debug&nbsp;</TD>
+    <TD>make</TD>
+  </TR>
+
+  <TR bgColor="#ffffdd">
+    <TD>&nbsp;Release&nbsp;</TD>
+    <TD>make rel</TD>
+  </TR>
+
+  <TR bgColor="#ffffcc">
+    <TD>&nbsp;Spy&nbsp;</TD>
+    <TD>make spy</TD>
+  </TR>
+</TABLE>
+
+\li (34) The qep_port.h header file contains platform-specific definitions of
+macros and typedef's for the QEP component.
+
+\li (35) The qf_port.h header file contains platform-specific definitions of
+macros and typedef's for the QF component.
+
+\li (36) The qk_port.h header file contains platform-specific definitions of
+macros and typedef's for the QK component.
+
+\li (37) The qs_port.h header file contains platform-specific definitions of
+macros and typedef's for the QS component.
+
+\li (38) The subdirectory \c ucos2.86\\ contains the headers and object files
+of MicroC/OS-II v2.86, compiled for 80x86 with the Open Watcom compiler.
+This directory is provided only to allow you re-building the example
+applications based on the QF port to MicroC/OS-II. Typically, however, you
+will need to obtain the MicroC/OS-II source code to re-build it for the actual
+processor you're using.
+
+\li (39-40) QP ports to an external RTOS or OS, such as MicroC/OS-II or Linux
+require some "glue-code" to bolt the QF framework to the external RTOS/OS.
+This source code is placed in the file qf_port.c in the subdirectory \c src\\.
+
+\li (41) The directory \c tools\\ contains host-resident tools used for QP
+(see \ref qspy_page).
+
+\li (42) The directory \c qspy\\ contains the portable QSPY host utility.
+
+\li (43) The subdirectory \c linux\\ contains QSPY port to Linux.
+
+\li (44) The \c Makefile for building Linux QSPY executable is provided.
+
+\li (45) The subdirectory \c win32\\ contains QSPY port to Win32.
+
+\li (46-48) The Windows version of QSPY can be build with three different
+compilers.
+
+\li (49) The subdirectory \c matlab\\ contains scripts to import QSPY data to
+MATLAB. You need to place this directory on the MATLAB path to convenietly
+access the scripts.
+
+\image html logo_ql_TM.jpg
+Copyright &copy; 2002-2011 Quantum Leaps, LLC. All Rights Reserved.
+*/

@@ -1,0 +1,1 @@
+Name dbg\calc2.exe File dbg\bsp.obj,dbg\main2.obj,dbg\calc1.obj,dbg\calc2.obj Library ..\..\..\..\..\..\ports\80x86\dos\watcom\l\dbg\qep.lib

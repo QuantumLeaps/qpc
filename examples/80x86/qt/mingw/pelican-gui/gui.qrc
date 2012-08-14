@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/crossing.png</file>
+        <file>res/cars_grn.png</file>
+        <file>res/cars_ylw.png</file>
+        <file>res/cars_red.png</file>
+        <file>res/cars_blank.png</file>
+        <file>res/peds_walk.png</file>
+        <file>res/peds_dont.png</file>
+        <file>res/peds_blank.png</file>
+        <file>res/BTN_UP.png</file>
+        <file>res/BTN_DWN.png</file>
+    </qresource>
+</RCC>

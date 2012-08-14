@@ -1,0 +1,283 @@
+[HIMDBVersion]
+2.0
+[DATABASE_VERSION]
+"2.8" 
+[PROJECT_DETAILS]
+"dpp_qk_rskr8c25" "C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25" "C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\dpp_qk_rskr8c25.hwp" "M16C" "Renesas M16C Standard" "C source startup Application" "R8C/Tiny" "R8C/25" 
+[INFORMATION]
+"No project information available" 
+[TOOL_CHAIN]
+"Renesas M16C Standard Toolchain" "5.44.00" 
+[CONFIGURATIONS]
+"Debug" "C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\Debug" 
+"Release" "C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\Release" 
+"Spy" "C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\Spy" 
+[BUILD_PHASES]
+"Renesas M16C Assembler" 1 
+"Renesas M16C C Compiler" 1 
+"Renesas M16C Configurator" 1 
+"Renesas M16C Librarian" 1 
+"Renesas M16C Linker" 1 
+"Renesas M16C Stype Converter" 1 
+[TOOL_ENVIRONMENT]
+[EXTENSIONS]
+"Absolute file" "X30" 
+"Absolute list file" "ALS" 
+"Assembler error tag file" "ATG" 
+"Assembly include file" "INC" 
+"Assembly list file" "LST" 
+"Assembly source file" "A30" 
+"Branch Information file" "JIN" 
+"C header file" "H" 
+"C source file" "C" 
+"Configuration file" "CFG" 
+"Cross reference file" "XRF" 
+"Hex file" "HEX" 
+"ID file" "ID" 
+"Library file" "LIB" 
+"Library list file" "LLS" 
+"Linkage error tag file" "LTG" 
+"Linkage map file" "MAP" 
+"Preprocessed C source file" "I" 
+"Relocatable file" "R30" 
+"S-Record file" "MOT" 
+"Sni file" "SNI" 
+"Systemcall file" "MRC" 
+[FILE_GROUPS]
+"Absolute file" "BIN" "NONE" "" 
+"Absolute list file" "TEXT" "EDITOR" "" 
+"Assembler error tag file" "TEXT" "EDITOR" "" 
+"Assembly include file" "TEXT" "EDITOR" "" 
+"Assembly list file" "TEXT" "EDITOR" "" 
+"Assembly source file" "TEXT" "EDITOR" "" 
+"Branch Information file" "TEXT" "EDITOR" "" 
+"C header file" "TEXT" "EDITOR" "" 
+"C source file" "TEXT" "EDITOR" "" 
+"Configuration file" "TEXT" "EDITOR" "" 
+"Cross reference file" "TEXT" "EDITOR" "" 
+"Hex file" "TEXT" "EDITOR" "" 
+"ID file" "TEXT" "EDITOR" "" 
+"Library file" "BIN" "NONE" "" 
+"Library list file" "TEXT" "EDITOR" "" 
+"Linkage error tag file" "TEXT" "EDITOR" "" 
+"Linkage map file" "TEXT" "EDITOR" "" 
+"Preprocessed C source file" "TEXT" "EDITOR" "" 
+"Relocatable file" "BIN" "NONE" "" 
+"S-Record file" "TEXT" "EDITOR" "" 
+"Sni file" "TEXT" "EDITOR" "" 
+"Systemcall file" "TEXT" "EDITOR" "" 
+[ASSOCIATED_APPLICATIONS]
+[TOOLCHAIN_PHASE]
+"Renesas M16C Assembler" 
+"Renesas M16C C Compiler" 
+"Renesas M16C Configurator" 
+"Renesas M16C Librarian" 
+"Renesas M16C Linker" 
+"Renesas M16C Stype Converter" 
+[UTILITY_PHASE]
+[CUSTOM_PHASES]
+[CUSTOM_PHASE_INPUT_GROUP]
+[CUSTOM_PHASE_OUTPUT_SYNTAX]
+[BUILD_ORDER]
+"Renesas M16C C Compiler" 1 
+"Renesas M16C Assembler" 1 
+"Renesas M16C Linker" 1 
+"Renesas M16C Stype Converter" 1 
+"Renesas M16C Librarian" 0 
+"Renesas M16C Configurator" 0 
+[BUILD_PHASE_DETAILS]
+"Renesas M16C Assembler" "Assembly source file" 1 
+"Renesas M16C C Compiler" "C source file" 1 
+"Renesas M16C Configurator" "Configuration file" 0 
+"Renesas M16C Librarian" "Relocatable file" 0 
+"Renesas M16C Linker" "Relocatable file" 0 
+"Renesas M16C Stype Converter" "Absolute file" 0 
+[BUILD_FILE_ORDER_Assembly source file]
+"Renesas M16C Assembler" 1 
+[BUILD_FILE_ORDER_C source file]
+"Renesas M16C C Compiler" 1 
+[SCRAP]
+"Project Generator Setup File" "" 
+[MAPPINGS]
+"Absolute file" "Renesas M16C Stype Converter" "Renesas M16C Linker" 
+"Assembly source file" "Renesas M16C Assembler" "Renesas M16C C Compiler" 
+"Relocatable file" "Renesas M16C Librarian" "Renesas M16C Assembler" 
+"Relocatable file" "Renesas M16C Librarian" "Renesas M16C C Compiler" 
+"Relocatable file" "Renesas M16C Linker" "Renesas M16C Assembler" 
+"Relocatable file" "Renesas M16C Linker" "Renesas M16C C Compiler" 
+[PROJECT_FILES]
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\bsp.c" "User" "C source file" 2 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\cstartdef.h" "User" "Startup" 2 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\firm.c" "User" "Startup" 2 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\firm_ram.c" "User" "Startup" 2 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\fvector.c" "User" "Startup" 2 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\heap.c" "User" "Startup" 2 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\initsct.c" "User" "Startup" 2 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\main.c" "User" "C source file" 2 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\philo.c" "User" "C source file" 2 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\resetprg.c" "User" "Startup" 2 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\table.c" "User" "C source file" 2 
+[FOLDER]
+"C source file" "C source file" 
+"Startup" "Startup" 
+[GENERAL_DATA_PROJECT]
+"FDT_AutoConnect" "0" 
+"FDT_BaseDevice" "" 
+"FDT_BaudRate" "" 
+"FDT_BlockLockConnect" "1" 
+"FDT_BlockLockDisconnect" "1" 
+"FDT_BootMode" "FALSE" 
+"FDT_CKM" "0" 
+"FDT_CKP" "0" 
+"FDT_ClockMode" "0" 
+"FDT_ClockSync" "00000000" 
+"FDT_Comments" "" 
+"FDT_ConnectionResetSuppression" "FFFFFFFF" 
+"FDT_Device" "" 
+"FDT_DoReadbackVerification" "No" 
+"FDT_DoSecurityProtection" "Prompt" 
+"FDT_DoSecurityProtectionLevel" "00" 
+"FDT_Frequency" "0.0000" 
+"FDT_Interface" "" 
+"FDT_InternalClock" "FALSE" 
+"FDT_KernelPath" "" 
+"FDT_KernelResident" "FALSE" 
+"FDT_McuId" "0" 
+"FDT_MessageLevel" "0" 
+"FDT_PinOutputs" "00000000" 
+"FDT_PinSettings" "00000000" 
+"FDT_Port" "" 
+"FDT_Protection" "0" 
+"FDT_Protocol" "" 
+"FDT_ReinterrogateGenericDevice" "No" 
+"FDT_ResetOnDisconnect" "No" 
+"FDT_ResetPinOutputs" "00000000" 
+"FDT_ResetPinSettings" "00000000" 
+"FDT_UPMPinSettings" "00000000" 
+"FDT_UseDefaultBaudRate" "FALSE" 
+"FDT_UseInternalKernel" "TRUE" 
+"FDT_UserPinOutputs" "00000000" 
+"FDT_UserPinSettings" "00000000" 
+"USE_CUSTOM_LINKAGE_ORDER" "0" 
+[ON_DEMAND_COMPONENTS_LOADED]
+[SYNC_SESSION_NAMES]
+[SESSIONS]
+"SessionR8C_E8_SYSTEM" "C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\SessionR8C_E8_SYSTEM.hsf" 0 
+[GENERAL_DATA_SESSION_SessionR8C_E8_SYSTEM]
+[OPTIONS_Debug_Renesas M16C Assembler]
+"Assembly source file" "03a09b9b28009c10" 2 
+[OPTIONS_Debug_Renesas M16C C Compiler]
+"C source file" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\bsp.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\firm.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\firm_ram.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\fvector.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\heap.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\initsct.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\main.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\philo.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\resetprg.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\table.c" "05340b824c909c10" 1 
+[OPTIONS_Debug_Renesas M16C Configurator]
+"Single Shot" "057b210d3c909c10" 6 
+[OPTIONS_Debug_Renesas M16C Librarian]
+"Single Shot" "057b210d3c909c10" 5 
+[OPTIONS_Debug_Renesas M16C Linker]
+"Single Shot" "05340b824c909c10" 3 
+[OPTIONS_Debug_Renesas M16C Stype Converter]
+"Single Shot" "0582510d3c909c10" 4 
+[OPTIONS_Debug]
+"" 0 
+"[V|VERSION|1] [B|COMMAND|1] [S|SPEC|UITRON3] " 6 
+"[V|VERSION|1] [B|DATALENGTH|1] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).mot^"] [S|CPU|R8C] " 4 
+"[V|VERSION|1] [S|INCLUDE|^"$(PROJDIR)\.^"|^"$(PROJDIR)\..\..\..\..\..\include^"|^"$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30^"] [S|DEFINE|__E8__] [S|OUTPUT|OBJECTCODE] [B|INSPECTOR|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).r30^"] [S|CPU|R8C]
+" 1 
+"[V|VERSION|1] [S|LIST|LM] [B|INSPECTOR|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).r30^"] [S|CPU|R8C] " 2 
+"[V|VERSION|1] [S|MODE|CREATE|] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).lib^"] " 5 
+"[V|VERSION|3] [S|INPUTLIBRARY|^"L=r8clib^"|^"L=$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30\dbg\qk_r8c.lib^"|^"L=$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30\dbg\qf_r8c.lib^"|^"L=$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30\dbg\qep_r8c.lib^"] [B|DEBUG|1] [B|MAP-S|1] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).x30^"] [S|SECTION_ORDER|^"data_SE=0400|bss_SE|data_SO|bss_SO|data_NE|bss_NE|data_NO|bss_NO|stack|istack|heap_NE|FirmRam_NE=0B80|FirmArea_NE=08000|rom_NE|rom_NO|data_SEI|data_SOI|data_NEI|data_NOI|switch_table|program|interrupt|vector=0FEDC^"] [B|STARTUPLINK|1] [S|CPU|R8C]
+" 3 
+[EXCLUDED_FILES_Debug]
+[LINKAGE_ORDER_Debug]
+[GENERAL_DATA_CONFIGURATION_Debug]
+[OPTIONS_Release_Renesas M16C Assembler]
+"Assembly source file" "03a09b9b28009c10" 2 
+[OPTIONS_Release_Renesas M16C C Compiler]
+"C source file" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\bsp.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\firm.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\firm_ram.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\fvector.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\heap.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\initsct.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\main.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\philo.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\resetprg.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\table.c" "05340b824c909c10" 1 
+[OPTIONS_Release_Renesas M16C Configurator]
+"Single Shot" "057b210d3c909c10" 6 
+[OPTIONS_Release_Renesas M16C Librarian]
+"Single Shot" "057b210d3c909c10" 5 
+[OPTIONS_Release_Renesas M16C Linker]
+"Single Shot" "05340b824c909c10" 3 
+[OPTIONS_Release_Renesas M16C Stype Converter]
+"Single Shot" "057b210d3c909c10" 4 
+[OPTIONS_Release]
+"" 0 
+"[V|VERSION|1] [B|COMMAND|1] [S|SPEC|UITRON3] " 6 
+"[V|VERSION|1] [B|DATALENGTH|1] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).mot^"] [S|CPU|R8C] " 4 
+"[V|VERSION|1] [S|INCLUDE|^"$(PROJDIR)\.^"|^"$(PROJDIR)\..\..\..\..\..\include^"|^"$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30^"] [S|DEFINE|__E8__|NDEBUG] [S|OUTPUT|OBJECTCODE] [B|INSPECTOR|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).r30^"] [S|OPTIMIZE|5] [S|CPU|R8C]
+" 1 
+"[V|VERSION|1] [S|LIST|L|M] [B|INSPECTOR|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).r30^"] [S|CPU|R8C] " 2 
+"[V|VERSION|1] [S|MODE|CREATE|] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).lib^"] " 5 
+"[V|VERSION|3] [S|INPUTLIBRARY|^"L=r8clib^"|^"L=$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30\rel\qk_r8c.lib^"|^"L=$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30\rel\qf_r8c.lib^"|^"L=$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30\rel\qep_r8c.lib^"] [B|DEBUG|1] [B|MAP-S|1] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).x30^"] [S|SECTION_ORDER|^"data_SE=0400|bss_SE|data_SO|bss_SO|data_NE|bss_NE|data_NO|bss_NO|stack|istack|heap_NE|FirmRam_NE=0B80|FirmArea_NE=08000|rom_NE|rom_NO|data_SEI|data_SOI|data_NEI|data_NOI|switch_table|program|interrupt|vector=0FEDC^"] [B|STARTUPLINK|1] [S|CPU|R8C]
+" 3 
+[EXCLUDED_FILES_Release]
+[LINKAGE_ORDER_Release]
+[GENERAL_DATA_CONFIGURATION_Release]
+[OPTIONS_Spy_Renesas M16C Assembler]
+"Assembly source file" "03a09b9b28009c10" 2 
+[OPTIONS_Spy_Renesas M16C C Compiler]
+"C source file" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\bsp.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\firm.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\firm_ram.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\fvector.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\heap.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\initsct.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\main.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\philo.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\resetprg.c" "05340b824c909c10" 1 
+"C:\software\qpc\examples\m16c\qk\nc30\dpp_qk_rskr8c25\table.c" "05340b824c909c10" 1 
+[OPTIONS_Spy_Renesas M16C Configurator]
+"Single Shot" "057b210d3c909c10" 6 
+[OPTIONS_Spy_Renesas M16C Librarian]
+"Single Shot" "057b210d3c909c10" 5 
+[OPTIONS_Spy_Renesas M16C Linker]
+"Single Shot" "05340b824c909c10" 3 
+[OPTIONS_Spy_Renesas M16C Stype Converter]
+"Single Shot" "057b210d3c909c10" 4 
+[OPTIONS_Spy]
+"" 0 
+"[V|VERSION|1] [B|COMMAND|1] [S|SPEC|UITRON3] " 6 
+"[V|VERSION|1] [B|DATALENGTH|1] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).mot^"] [S|CPU|R8C] " 4 
+"[V|VERSION|1] [S|INCLUDE|^"$(PROJDIR)\.^"|^"$(PROJDIR)\..\..\..\..\..\include^"|^"$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30^"] [S|DEFINE|__E8__|Q_SPY] [S|OUTPUT|OBJECTCODE] [B|INSPECTOR|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).r30^"] [S|CPU|R8C]
+" 1 
+"[V|VERSION|1] [S|LIST|LM] [B|INSPECTOR|1] [S|OUTPUTPATH|^"$(CONFIGDIR)\$(FILELEAF).r30^"] [S|CPU|R8C] " 2 
+"[V|VERSION|1] [S|MODE|CREATE|] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).lib^"] " 5 
+"[V|VERSION|3] [S|INPUTLIBRARY|^"L=r8clib^"|^"L=$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30\spy\qk_r8c.lib^"|^"L=$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30\spy\qf_r8c.lib^"|^"L=$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30\spy\qep_r8c.lib^"|^"L=$(PROJDIR)\..\..\..\..\..\ports\m16c\qk\nc30\spy\qs_r8c.lib^"] [B|DEBUG|1] [B|MAP-S|1] [S|OUTPUT|^"$(CONFIGDIR)\$(PROJECTNAME).x30^"] [S|SECTION_ORDER|^"data_SE=0400|bss_SE|data_SO|bss_SO|data_NE|bss_NE|data_NO|bss_NO|stack|istack|heap_NE|FirmRam_NE=0B80|FirmArea_NE=08000|rom_NE|rom_NO|data_SEI|data_SOI|data_NEI|data_NOI|switch_table|program|interrupt|vector=0FEDC^"] [B|STARTUPLINK|1] [S|CPU|R8C]
+" 3 
+[EXCLUDED_FILES_Spy]
+[LINKAGE_ORDER_Spy]
+[GENERAL_DATA_CONFIGURATION_Spy]
+[GENERAL_DATA_CONFIGURATION_SESSION_Debug_SessionR8C_E8_SYSTEM]
+[SESSION_DATA_CONFIGURATION_SESSION_Debug_SessionR8C_E8_SYSTEM]
+"MEMORY_MAPPING_OPTIONS" "" 
+[GENERAL_DATA_CONFIGURATION_SESSION_Release_SessionR8C_E8_SYSTEM]
+[SESSION_DATA_CONFIGURATION_SESSION_Release_SessionR8C_E8_SYSTEM]
+"MEMORY_MAPPING_OPTIONS" "" 
+[GENERAL_DATA_CONFIGURATION_SESSION_Spy_SessionR8C_E8_SYSTEM]
+[SESSION_DATA_CONFIGURATION_SESSION_Spy_SessionR8C_E8_SYSTEM]
+"MEMORY_MAPPING_OPTIONS" "" 
+[EXT_DEBUGGER_INFO]
+0 "" "" "" "" 
+[END]

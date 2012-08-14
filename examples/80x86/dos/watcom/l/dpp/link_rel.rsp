@@ -1,0 +1,1 @@
+Name rel\dpp.exe File rel\bsp.obj,rel\main.obj,rel\philo.obj,rel\table.obj Library ..\..\..\..\..\..\ports\80x86\dos\watcom\l\rel\qf.lib,..\..\..\..\..\..\ports\80x86\dos\watcom\l\rel\qep.lib

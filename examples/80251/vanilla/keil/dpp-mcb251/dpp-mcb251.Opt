@@ -1,0 +1,106 @@
+### uVision2 Project, (C) Keil Software
+### Do not modify !
+
+ cExt (*.c)
+ aExt (*.a*; *.src)
+ oExt (*.obj)
+ lExt (*.lib)
+ tExt (*.txt)
+ pExt (*.plm)
+ CppX (*.cpp)
+ DaveTm { 0,0,0,0,0,0,0,0 }
+
+Target (Debug), 0x0001 // Tools: 'MCS-251'
+Target (Release), 0x0001 // Tools: 'MCS-251'
+Target (Spy), 0x0001 // Tools: 'MCS-251'
+GRPOPT 1,(Source Code),1,0,0
+GRPOPT 2,(Startup Code),1,0,0
+GRPOPT 3,(Header Files),1,0,0
+GRPOPT 4,(QP-dbg),1,0,0
+GRPOPT 5,(QP-rel),1,0,0
+GRPOPT 6,(QP-spy),1,0,0
+
+OPTFFF 1,1,1,419430400,0,0,0,0,<.\bsp.c><bsp.c> 
+OPTFFF 1,2,1,603979776,0,0,0,0,<.\main.c><main.c> 
+OPTFFF 1,3,1,0,0,0,0,0,<.\table.c><table.c> 
+OPTFFF 1,4,1,0,0,0,0,0,<.\philo.c><philo.c> 
+OPTFFF 1,5,1,1006632960,0,0,0,0,<.\isr.c><isr.c> 
+OPTFFF 2,6,2,150994944,0,0,0,0,<.\START251.A51><START251.A51> 
+OPTFFF 3,7,5,0,0,0,0,0,<.\bsp.h><bsp.h> 
+OPTFFF 3,8,5,0,0,0,0,0,<.\dpp.h><dpp.h> 
+OPTFFF 4,9,4,0,0,0,0,0,<..\..\..\..\..\ports\80251\vanilla\keil\dbg\QF.LIB><QF.LIB> 
+OPTFFF 4,10,4,0,0,0,0,0,<..\..\..\..\..\ports\80251\vanilla\keil\dbg\QEP.LIB><QEP.LIB> 
+OPTFFF 5,11,4,0,0,0,0,0,<..\..\..\..\..\ports\80251\vanilla\keil\rel\QF.LIB><QF.LIB> 
+OPTFFF 5,12,4,0,0,0,0,0,<..\..\..\..\..\ports\80251\vanilla\keil\rel\QEP.LIB><QEP.LIB> 
+OPTFFF 6,13,4,0,0,0,0,0,<..\..\..\..\..\ports\80251\vanilla\keil\spy\QS.LIB><QS.LIB> 
+OPTFFF 6,14,4,0,0,0,0,0,<..\..\..\..\..\ports\80251\vanilla\keil\spy\QEP.LIB><QEP.LIB> 
+OPTFFF 6,15,4,0,0,0,0,0,<..\..\..\..\..\ports\80251\vanilla\keil\spy\QF.LIB><QF.LIB> 
+
+
+TARGOPT 1, (Debug)
+ CLK251=12000000
+  OPTTT 1,1,1,0
+  OPTHX 0,65535,0,0,0
+  OPTLX 120,65,8,<.\dbg\>
+  OPTOX 16
+  OPTLT 0,0,1,0,1,1,1,1,1,0,1,0
+  OPTXL 1,1,1,1,1,1,1,0,1
+  OPTFL 1,0,1
+  OPTBL 0,(Add on databooks)<DATASHTS\ADDBOOKS.PDF>
+  OPTBL 1,(Data Sheet)<DATASHTS\INTEL\8xC251Sx_DS.PDF>
+  OPTBL 2,(User's Manual)<DATASHTS\INTEL\8xC251Sx_UM.PDF>
+  OPTDL (S251.DLL)()(DP51.DLL)(-p251S)(S251.DLL)()(TP51.DLL)(-p251S)
+  OPTDBG 48126,-1,()()()()()()()()()() (BIN\MON251.DLL)()()()
+  OPTKEY 0,(MON251)(-S1 -B57600 -O4096)
+  OPTMM 1,0,(c:0x11b1)
+  OPTMM 2,0,(\measure\save_record)
+  OPTDF 0x84
+  OPTLE <>
+  OPTLC <>
+EndOpt
+
+TARGOPT 2, (Release)
+ CLK251=16000000
+  OPTTT 1,1,1,0
+  OPTHX 0,65535,0,0,0
+  OPTLX 120,65,8,<.\rel\>
+  OPTOX 16
+  OPTLT 0,0,1,0,1,1,1,1,1,0,1,0
+  OPTXL 1,1,1,1,1,1,1,0,1
+  OPTFL 1,0,0
+  OPTBL 0,(Add on databooks)<DATASHTS\ADDBOOKS.PDF>
+  OPTBL 1,(Data Sheet)<DATASHTS\INTEL\8xC251Sx_DS.PDF>
+  OPTBL 2,(User's Manual)<DATASHTS\INTEL\8xC251Sx_UM.PDF>
+  OPTDL (S251.DLL)()(DP51.DLL)(-p251S)(S251.DLL)()(TP51.DLL)(-p251S)
+  OPTDBG 48126,-1,()()()()()()()()()() (BIN\MON251.DLL)()()()
+  OPTKEY 0,(MON251)(-S1 -B57600 -O4096)
+  OPTMM 1,0,(c:0x11b1)
+  OPTMM 2,0,(\measure\save_record)
+  OPTDF 0x84
+  OPTLE <>
+  OPTLC <>
+EndOpt
+
+TARGOPT 3, (Spy)
+ CLK251=16000000
+  OPTTT 1,1,1,0
+  OPTHX 0,65535,0,0,0
+  OPTLX 120,65,8,<.\spy\>
+  OPTOX 16
+  OPTLT 0,0,1,0,1,1,1,1,1,0,1,0
+  OPTXL 1,1,1,1,1,1,1,0,1
+  OPTFL 1,0,0
+  OPTBL 0,(Add on databooks)<DATASHTS\ADDBOOKS.PDF>
+  OPTBL 1,(Data Sheet)<DATASHTS\INTEL\8xC251Sx_DS.PDF>
+  OPTBL 2,(User's Manual)<DATASHTS\INTEL\8xC251Sx_UM.PDF>
+  OPTDL (S251.DLL)()(DP51.DLL)(-p251S)(S251.DLL)()(TP51.DLL)(-p251S)
+  OPTDBG 48126,-1,()()()()()()()()()() (BIN\MON251.DLL)()()()
+  OPTKEY 0,(MON251)(-S1 -B57600 -O4096)
+  OPTMM 1,0,(d:0x00)
+  OPTMM 2,0,(\measure\save_record)
+  OPTSY 10,1,(*)
+  OPTDF 0x84
+  OPTLE <>
+  OPTLC <>
+EndOpt
+

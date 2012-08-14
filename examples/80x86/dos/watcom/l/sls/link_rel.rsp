@@ -1,0 +1,1 @@
+Name rel\sls.exe File rel\bsp.obj,rel\main.obj,rel\num_ent.obj,rel\ui.obj,rel\ui_help.obj,rel\ui_nu_lr.obj,rel\ui_num.obj,rel\video.obj Library ..\..\..\..\..\..\ports\80x86\dos\watcom\l\rel\qf.lib,..\..\..\..\..\..\ports\80x86\dos\watcom\l\rel\qep.lib

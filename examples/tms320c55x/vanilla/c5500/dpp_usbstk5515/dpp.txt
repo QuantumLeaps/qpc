@@ -1,0 +1,454 @@
+QSPY host application 4.3.10
+Copyright (c) Quantum Leaps, LLC.
+Wed Feb 15 12:41:46 2012
+
+-T 4
+-O 4
+-F 4
+-S 2
+-E 2
+-Q 1
+-P 2
+-B 2
+-C 2
+
+*** Dropped 255 records
+           ???    : Rec=  0, Len= 26
+*** Dropped   1 records
+           Obj Dic: 000000000000BC34->l_smlPoolSto
+           Obj Dic: 000000000000BBF0->l_tableQueueSto
+           Obj Dic: 000000000000BBFA->l_philoQueueSto[0]
+           Obj Dic: 000000000000BC04->l_philoQueueSto[1]
+           Obj Dic: 000000000000BC0E->l_philoQueueSto[2]
+           Obj Dic: 000000000000BC18->l_philoQueueSto[3]
+           Obj Dic: 000000000000BC22->l_philoQueueSto[4]
+           Obj Dic: 000000000000BB6C->&l_philo[0]
+           Obj Dic: 000000000000BB7A->&l_philo[0].timeEvt
+           Obj Dic: 000000000000BB86->&l_philo[1]
+           Obj Dic: 000000000000BB94->&l_philo[1].timeEvt
+           Obj Dic: 000000000000BBA0->&l_philo[2]
+           Obj Dic: 000000000000BBAE->&l_philo[2].timeEvt
+           Obj Dic: 000000000000BBBA->&l_philo[3]
+           Obj Dic: 000000000000BBC8->&l_philo[3].timeEvt
+           Obj Dic: 000000000000BBD4->&l_philo[4]
+           Obj Dic: 000000000000BBE2->&l_philo[4].timeEvt
+           Fun Dic: 0000000000012C9F->&Philo_initial
+           Fun Dic: 0000000000012BEB->&Philo_thinking
+           Fun Dic: 00000000000130B5->&Philo_hungry
+           Fun Dic: 0000000000013172->&Philo_eating
+           Sig Dic: 00000008,Obj=000000000000BB6C ->HUNGRY_SIG
+           Sig Dic: 00000009,Obj=000000000000BB6C ->TIMEOUT_SIG
+           Q_INIT : Obj=l_philo[0] Source=00016875 Target=Philo_thinking
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000038301 ==>Init: Obj=l_philo[0] New=Philo_thinking
+           Sig Dic: 00000008,Obj=000000000000BB86 ->HUNGRY_SIG
+           Sig Dic: 00000009,Obj=000000000000BB86 ->TIMEOUT_SIG
+           Q_INIT : Obj=l_philo[1] Source=00016875 Target=Philo_thinking
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000044174 ==>Init: Obj=l_philo[1] New=Philo_thinking
+           Sig Dic: 00000008,Obj=000000000000BBA0 ->HUNGRY_SIG
+           Sig Dic: 00000009,Obj=000000000000BBA0 ->TIMEOUT_SIG
+           Q_INIT : Obj=l_philo[2] Source=00016875 Target=Philo_thinking
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+*** Bad checksum at seq= 36, id=  4
+*** Bad checksum at seq= 36, id=  0
+*** Dropped   1 records
+           Sig Dic: 00000008,Obj=000000000000BBBA ->HUNGRY_SIG
+           Sig Dic: 00000009,Obj=000000000000BBBA ->TIMEOUT_SIG
+           Q_INIT : Obj=l_philo[3] Source=00016875 Target=Philo_thinking
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000055919 ==>Init: Obj=l_philo[3] New=Philo_thinking
+           Sig Dic: 00000008,Obj=000000000000BBD4 ->HUNGRY_SIG
+           Sig Dic: 00000009,Obj=000000000000BBD4 ->TIMEOUT_SIG
+           Q_INIT : Obj=l_philo[4] Source=00016875 Target=Philo_thinking
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000061791 ==>Init: Obj=l_philo[4] New=Philo_thinking
+           Obj Dic: 000000000000BCA6->&l_table
+           Fun Dic: 0000000000016875->&QHsm_top
+           Fun Dic: 00000000000140ED->&Table_initial
+           Fun Dic: 0000000000013E9B->&Table_serving
+           Sig Dic: 00000005,Obj=0000000000000000 ->DONE_SIG
+           Sig Dic: 00000004,Obj=0000000000000000 ->EAT_SIG
+           Sig Dic: 00000006,Obj=0000000000000000 ->TERMINATE_SIG
+           Sig Dic: 00000008,Obj=000000000000BCA6 ->HUNGRY_SIG
+           Q_INIT : Obj=l_table Source=QHsm_top Target=Table_serving
+0000075827 ==>Init: Obj=l_table New=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0000469257 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000469279 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+0000469298 ==>Tran: Obj=l_philo[4] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0000469320 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000469332 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0000469343 Ignored: Obj=l_philo[3] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0000469363 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000469386 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0000469397 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_eating
+0000469407 Ignored: Obj=l_philo[3] Sig=EAT_SIG Active=Philo_hungry
+0000469417 Ignored: Obj=l_philo[2] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+0000469436 ==>Tran: Obj=l_philo[2] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0000469457 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000469470 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0000469481 Ignored: Obj=l_philo[1] Sig=EAT_SIG Active=Philo_hungry
+0000469491 Ignored: Obj=l_philo[1] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0000469511 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0000469523 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0000469535 Ignored: Obj=l_philo[0] Sig=EAT_SIG Active=Philo_hungry
+0000469546 Ignored: Obj=l_philo[0] Sig=EAT_SIG Active=Philo_hungry
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0000626060 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000626082 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000626092 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0000626102 Ignored: Obj=l_philo[3] Sig=EAT_SIG Active=Philo_hungry
+           Q_EXIT : Obj=l_philo[2] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0000626129 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000626152 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000626163 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+0000626182 ==>Tran: Obj=l_philo[3] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0000626193 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0000626203 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0000626213 Ignored: Obj=l_philo[1] Sig=EAT_SIG Active=Philo_hungry
+0000626223 Ignored: Obj=l_philo[1] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0000626242 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0000626254 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_eating
+           Q_EXIT : Obj=l_philo[3] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0000782860 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000782873 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[0] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0000782901 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000782923 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0000782933 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0000782943 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+0000782953 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+0000782971 ==>Tran: Obj=l_philo[1] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0000782983 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+           Q_EXIT : Obj=l_philo[1] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0000939659 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0000939672 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0001018053 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0001018074 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+0001018094 ==>Tran: Obj=l_philo[4] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0001018105 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0001018125 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0001018148 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0001018158 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_eating
+0001018168 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+0001018178 Ignored: Obj=l_philo[2] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+0001018197 ==>Tran: Obj=l_philo[2] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0001018208 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0001018218 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0001018228 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+*** Bad checksum at seq=139, id=  5
+*** Bad checksum at seq=139, id= 15
+*** Dropped   1 records
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0001174863 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0001174875 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+*** Bad checksum at seq=145, id=  6
+*** Bad checksum at seq=145, id=  0
+*** Bad checksum at seq=145, id=  5
+*** Dropped   2 records
+           Q_EXIT : Obj=l_philo[2] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0001174936 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0001174959 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0001174969 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+0001174988 ==>Tran: Obj=l_philo[3] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0001174999 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0001175009 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0001175029 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0001175051 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0001175062 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0001175071 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_eating
+0001175081 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0001175090 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0001175101 Ignored: Obj=l_philo[0] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0001175120 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           Q_EXIT : Obj=l_philo[3] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0001331661 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0001331674 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0001331695 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0001331707 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[0] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0001331735 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0001331757 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0001331768 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0001331777 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+0001331787 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+0001331806 ==>Tran: Obj=l_philo[1] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0001331817 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+           Q_EXIT : Obj=l_philo[1] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0001488459 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0001488472 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0001566853 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0001566874 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+0001566893 ==>Tran: Obj=l_philo[4] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0001566905 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0001566925 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0001566947 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0001566958 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_eating
+0001566967 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+0001566978 Ignored: Obj=l_philo[2] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+0001566996 ==>Tran: Obj=l_philo[2] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0001567008 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0001567017 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0001567027 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+0001567038 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0001723663 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0001723675 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0001723695 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0001723708 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[2] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0001723736 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0001723758 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0001723769 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+0001723788 ==>Tran: Obj=l_philo[3] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0001723799 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0001723808 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0001723828 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0001723850 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0001723861 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0001723871 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_eating
+0001723880 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0001723890 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0001723900 Ignored: Obj=l_philo[0] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0001723920 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           Q_EXIT : Obj=l_philo[3] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0001880461 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0001880474 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0001880495 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0001880508 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[0] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0001880535 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0001880558 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0001880568 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0001880578 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+0001880587 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+0001880606 ==>Tran: Obj=l_philo[1] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0001880617 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+           Q_EXIT : Obj=l_philo[1] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0002037259 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0002037272 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0002115653 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0002115674 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+0002115694 ==>Tran: Obj=l_philo[4] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0002115705 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0002115725 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0002115748 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0002115758 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_eating
+0002115768 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+0002115778 Ignored: Obj=l_philo[2] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+0002115797 ==>Tran: Obj=l_philo[2] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0002115808 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0002115818 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0002115827 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+0002115838 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0002272463 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0002272475 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0002272496 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0002272508 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[2] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0002272536 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0002272559 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0002272569 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+0002272588 ==>Tran: Obj=l_philo[3] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0002272599 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0002272609 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0002272629 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0002272651 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0002272661 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0002272671 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_eating
+0002272680 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0002272690 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0002272700 Ignored: Obj=l_philo[0] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+*** Bad checksum at seq= 39, id=  6
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0002429262 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0002429275 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0002429295 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0002429308 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[0] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0002429336 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0002429358 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0002429368 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0002429378 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+0002429388 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+0002429406 ==>Tran: Obj=l_philo[1] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0002429417 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+           Q_EXIT : Obj=l_philo[1] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+0002586059 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0002586072 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0002664454 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0002664474 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+0002664494 ==>Tran: Obj=l_philo[4] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0002664505 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0002664525 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0002664548 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0002664558 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_eating
+0002664568 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+0002664578 Ignored: Obj=l_philo[2] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+0002664597 ==>Tran: Obj=l_philo[2] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0002664608 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0002664618 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0002664628 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+0002664638 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0002821263 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0002821275 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0002821296 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0002821309 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[2] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0002821336 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0002821359 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0002821369 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+0002821388 ==>Tran: Obj=l_philo[3] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0002821399 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0002821409 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0002821429 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0002821451 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0002821462 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0002821471 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_eating
+*** Bad checksum at seq=100, id=  5
+*** Bad checksum at seq=100, id=  0
+*** Dropped   1 records
+0002821490 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0002821500 Ignored: Obj=l_philo[0] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0002821520 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+           Q_EXIT : Obj=l_philo[3] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[3] State=Philo_thinking
+0002978061 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0002978074 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[1] State=Philo_hungry
+0002978095 ==>Tran: Obj=l_philo[1] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0002978107 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[0] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[0] State=Philo_thinking
+0002978135 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0002978157 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0002978168 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0002978177 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+0002978187 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[1] State=Philo_eating
+0002978206 ==>Tran: Obj=l_philo[1] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0002978217 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+           Q_EXIT : Obj=l_philo[1] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[1] State=Philo_thinking
+*** Bad checksum at seq=124, id=139
+*** Bad checksum at seq=124, id=  0
+*** Bad checksum at seq=124, id=152
+*** Dropped   2 records
+           Q_ENTRY: Obj=l_philo[4] State=Philo_hungry
+0003213254 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0003213274 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[4] State=Philo_eating
+0003213294 ==>Tran: Obj=l_philo[4] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0003213305 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[2] State=Philo_hungry
+0003213325 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0003213348 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0003213359 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_eating
+0003213368 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_thinking
+0003213378 Ignored: Obj=l_philo[2] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[2] State=Philo_eating
+0003213397 ==>Tran: Obj=l_philo[2] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0003213409 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0003213418 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0003213428 Intern : Obj=l_philo[0] Sig=EAT_SIG Source=Philo_thinking
+*** Bad checksum at seq=143, id=  5
+*** Bad checksum at seq=143, id= 49
+*** Dropped   1 records
+           Q_EXIT : Obj=l_philo[4] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[4] State=Philo_thinking
+0003370063 ==>Tran: Obj=l_philo[4] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0003370075 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+           Q_ENTRY: Obj=l_philo[3] State=Philo_hungry
+0003370095 ==>Tran: Obj=l_philo[3] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0003370108 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+           Q_EXIT : Obj=l_philo[2] State=Philo_eating
+           Q_ENTRY: Obj=l_philo[2] State=Philo_thinking
+0003370136 ==>Tran: Obj=l_philo[2] Sig=TIMEOUT_SIG Source=Philo_eating New=Philo_thinking
+0003370158 Intern : Obj=l_table Sig=DONE_SIG Source=Table_serving
+0003370169 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[3] State=Philo_eating
+0003370188 ==>Tran: Obj=l_philo[3] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating
+0003370199 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0003370208 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+           Q_ENTRY: Obj=l_philo[0] State=Philo_hungry
+0003370228 ==>Tran: Obj=l_philo[0] Sig=TIMEOUT_SIG Source=Philo_thinking New=Philo_hungry
+0003370250 Intern : Obj=l_table Sig=HUNGRY_SIG Source=Table_serving
+0003370261 Intern : Obj=l_philo[4] Sig=EAT_SIG Source=Philo_thinking
+0003370271 Intern : Obj=l_philo[3] Sig=EAT_SIG Source=Philo_eating
+0003370280 Intern : Obj=l_philo[2] Sig=EAT_SIG Source=Philo_thinking
+0003370290 Intern : Obj=l_philo[1] Sig=EAT_SIG Source=Philo_thinking
+0003370300 Ignored: Obj=l_philo[0] Sig=EAT_SIG Active=Philo_hungry
+           Q_ENTRY: Obj=l_philo[0] State=Philo_eating
+0003370320 ==>Tran: Obj=l_philo[0] Sig=EAT_SIG Source=Philo_hungry New=Philo_eating

@@ -1,0 +1,4 @@
+arch/       - Architecture-specific files.
+netif/      - Network interface drivers for Stellaris devices.
+
+See also the FILES file in each subdirectory.

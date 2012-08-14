@@ -1,0 +1,31 @@
+BODY {
+  FONT-SIZE: 75%; MARGIN: 10px; COLOR: #000000; FONT-FAMILY: Geneva, Arial, Helvetica, sans-serif;
+}
+TD {
+  FONT-SIZE: 75%; 
+}
+P {
+  MARGIN-TOP: 0em; MARGIN-BOTTOM: 8px;
+}
+H1 {
+  FONT-SIZE: 120%; COLOR: #003399; MARGIN-TOP: 1em; MARGIN-BOTTOM: 10px; BORDER-BOTTOM: red 1px solid
+}
+H2 {
+  FONT-SIZE: 110%; COLOR: #003399; MARGIN-TOP: 1em; MARGIN-BOTTOM: 8px
+}
+H3 {
+  FONT-SIZE: 100%; COLOR: #003399; MARGIN-TOP: 1em; MARGIN-BOTTOM: 8px
+}
+A:link {
+  COLOR: #003399
+}
+A:visited {
+  COLOR: #660099
+}
+#footer {
+  COLOR: #ffffff; BORDER-TOP: #0000cc 1px; BORDER-BOTTOM: #000000 1px solid;
+}
+#footer A {
+  COLOR: #ffffff; MARGIN-TOP: 4px; MARGIN-RIGHT: 2px
+}
+

@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# AvrStudio Solution File, Format Version 11.00
+Project("{D1100916-62DA-4D80-A9B4-55A1E7CCEEB3}") = "dpp-stk600-atmega2560", "dpp-stk600-atmega2560.avrgccproj", "{190B0DAE-2461-4B7F-B59D-A91C6294DB75}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+		Spy|AVR = Spy|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{190B0DAE-2461-4B7F-B59D-A91C6294DB75}.Debug|AVR.ActiveCfg = Debug|AVR
+		{190B0DAE-2461-4B7F-B59D-A91C6294DB75}.Debug|AVR.Build.0 = Debug|AVR
+		{190B0DAE-2461-4B7F-B59D-A91C6294DB75}.Release|AVR.ActiveCfg = Release|AVR
+		{190B0DAE-2461-4B7F-B59D-A91C6294DB75}.Release|AVR.Build.0 = Release|AVR
+		{190B0DAE-2461-4B7F-B59D-A91C6294DB75}.Spy|AVR.ActiveCfg = Spy|AVR
+		{190B0DAE-2461-4B7F-B59D-A91C6294DB75}.Spy|AVR.Build.0 = Spy|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
