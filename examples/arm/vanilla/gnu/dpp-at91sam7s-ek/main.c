@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Jul 04, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -39,24 +39,20 @@
 /* Local-scope objects -----------------------------------------------------*/
 static QEvt const *l_tableQueueSto[N_PHILO];
 static QEvt const *l_philoQueueSto[N_PHILO][N_PHILO];
-static QSubscrList   l_subscrSto[MAX_PUB_SIG];
+static QSubscrList l_subscrSto[MAX_PUB_SIG];
 
-static union SmallEvents {
-    void   *e0;                                       /* minimum event size */
-    uint8_t e1[sizeof(TableEvt)];
-    /* ... other event types to go into this pool */
-} l_smlPoolSto[2*N_PHILO];              /* storage for the small event pool */
+/* storage for event pools... */
+static QF_MPOOL_EL(TableEvt) l_smlPoolSto[2U*N_PHILO];        /* small pool */
 
 /*..........................................................................*/
-int main(void) {
+int_t main(void) {
     uint8_t n;
 
     Philo_ctor();             /* instantiate all Philosopher active objects */
     Table_ctor();                    /* instantiate the Table active object */
 
-    BSP_init();           /* initialize the Board Support Package */
-
     QF_init();     /* initialize the framework and the underlying RT kernel */
+    BSP_init();                                       /* initialize the BSP */
 
                                                   /* object dictionaries... */
     QS_OBJ_DICTIONARY(l_smlPoolSto);
@@ -72,14 +68,14 @@ int main(void) {
                                                /* initialize event pools... */
     QF_poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
 
-    for (n = 0; n < N_PHILO; ++n) {          /* start the active objects... */
-        QActive_start(AO_Philo[n], (uint8_t)(n + 1),
+    for (n = 0U; n < N_PHILO; ++n) {         /* start the active objects... */
+        QActive_start(AO_Philo[n], (uint8_t)(n + 1U),
                       l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
-                      (void *)0, 0, (QEvt *)0);
+                      (void *)0, 0U, (QEvt *)0);
     }
-    QActive_start(AO_Table, (uint8_t)(N_PHILO + 1),
+    QActive_start(AO_Table, (uint8_t)(N_PHILO + 1U),
                   l_tableQueueSto, Q_DIM(l_tableQueueSto),
-                  (void *)0, 0, (QEvt *)0);
+                  (void *)0, 0U, (QEvt *)0);
 
-    return QF_run();                              /* run the QF application */
+    return (int_t)QF_run();                        /* run the QF application */
 }

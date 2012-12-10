@@ -1,33 +1,46 @@
 /*****************************************************************************
-* Product: Board Support Package for LPC-P123X
-* Last Updated for Version: 4.3.00
-* Date of the Last Update:  Nov 08, 2011
+* Product: Board Support Package for LPC-P123X board, Vanilla kernel
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 08, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2011 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
 *
-* This software may be distributed and modified under the terms of the GNU
-* General Public License version 2 (GPL) as published by the Free Software
-* Foundation and appearing in the file GPL.TXT included in the packaging of
-* this file. Please note that GPL Section 2[b] requires that all works based
-* on this software must also be made publicly available under the terms of
-* the GPL ("Copyleft").
+* This program is open source software: you can redistribute it and/or
+* modify it under the terms of the GNU General Public License as published
+* by the Free Software Foundation, either version 2 of the License, or
+* (at your option) any later version.
 *
-* Alternatively, this software may be distributed and modified under the
+* Alternatively, this program may be distributed and modified under the
 * terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GPL and are specifically designed for licensees interested in
-* retaining the proprietary status of their code.
+* the GNU General Public License and are specifically designed for
+* licensees interested in retaining the proprietary status of their code.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web site:  http://www.quantum-leaps.com
+* Quantum Leaps Web sites: http://www.quantum-leaps.com
+*                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
 #include "qp_port.h"
 #include "dpp.h"
 #include "bsp.h"
+
+#include <iolpc2138.h>      /* IAR-compiler header file for the LPC2138 I/O */
+
+#include "lpc_data_type.h"
+#include "drv_hd44780.h"
+#include "drv_hd44780_cnfg.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -35,9 +48,22 @@ Q_DEFINE_THIS_FILE
 #pragma diag_suppress=Ta022     /* possible ROM access <ptr> from __ramfunc */
 #pragma diag_suppress=Ta023         /* call to non __ramfunc from __ramfunc */
 
+                                                                /* OSC [Hz] */
+#define FOSC              14745600
+                                                           /* Core clk [Hz] */
+#define CCLK              (FOSC*4)
+                                /* Peripheral clk -- the same as core clock */
+#define PCLK              CCLK
+
+/* Local objects -----------------------------------------------------------*/
+static unsigned  l_rnd;                                      /* random seed */
+
 typedef void (*IntVector)(void);           /* IntVector pointer-to-function */
 
+int __low_level_init(void);                                    /* prototype */
+
 #ifdef Q_SPY
+    static uint32_t l_tickTime;
     static uint8_t const l_ISR_tick = 0;
     enum AppRecords {                 /* application-specific trace records */
         PHILO_STAT = QS_USER
@@ -65,7 +91,7 @@ __arm __ramfunc void BSP_fiq(void) {
 static __arm __ramfunc void ISR_tick(void) {
     T1IR = 0x1;                               /* clear the interrupt source */
 #ifdef Q_SPY
-    QS_tickTime += (CCLK / (32 * BSP_TICKS_PER_SEC));
+    l_tickTime += (CCLK / (32 * BSP_TICKS_PER_SEC));
 #endif
     QF_TICK(&l_ISR_tick);
 }
@@ -85,6 +111,7 @@ __arm void QF_onStartup(void) {
     *(uint32_t volatile *)0x2C = (uint32_t)&QF_pAbort;
     *(uint32_t volatile *)0x30 = (uint32_t)&QF_dAbort;
     *(uint32_t volatile *)0x34 = (uint32_t)&QF_reserved;
+
     *(uint32_t volatile *)0x38 = (uint32_t)&QF_irq;
     *(uint32_t volatile *)0x3C = (uint32_t)&QF_fiq;
 
@@ -191,17 +218,40 @@ void BSP_init(void) {
     LightInit();                                          /* Backlight Init */
     LightCntr(LIGHT_FAST, LIGHT_ON);
 
-    HD44780_StrShow((HD44780_XY_DEF)1, (HD44780_XY_DEF)1, "Quantum-Leaps");
+    HD44780_StrShow((HD44780_XY_DEF)1, (HD44780_XY_DEF)1, "Quantum Leaps");
     HD44780_StrShow((HD44780_XY_DEF)1, (HD44780_XY_DEF)2, "0 ,1 ,2 ,3 ,4  ");
+
+    BSP_randomSeed(1234);
 
     if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
         Q_ERROR();
     }
-
+    QS_RESET();
     QS_OBJ_DICTIONARY(&l_ISR_tick);
 }
 /*..........................................................................*/
-__arm __ramfunc void QF_onIdle(void) {         /* NOTE: interrupts DISABLED */
+void BSP_terminate(int16_t result) {
+    (void)result;
+}
+/*..........................................................................*/
+void BSP_displayPaused(uint8_t paused) {
+    (void)paused;
+}
+/*..........................................................................*/
+uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
+    /* "Super-Duper" Linear Congruential Generator (LCG)
+    * LCG(2^32, 3*7*11*13*23, 0, seed)
+    */
+    l_rnd = l_rnd * (3*7*11*13*23);
+    return l_rnd >> 8;
+}
+/*..........................................................................*/
+void BSP_randomSeed(uint32_t seed) {
+    l_rnd = seed;
+}
+
+/*..........................................................................*/
+__arm __ramfunc void QF_onIdle(void) {   /* called with interrupts DISABLED */
 #ifdef Q_SPY                     /* use the idle cycles for QS transmission */
 
     QF_INT_ENABLE();
@@ -223,6 +273,7 @@ __arm __ramfunc void QF_onIdle(void) {         /* NOTE: interrupts DISABLED */
 // get control of the MCU again!!!
     /* an interrupt starts the CPU clock again */
     QF_INT_ENABLE();       /* enable interrupts as soon as CPU clock starts */
+
 #else
 
     QF_INT_ENABLE();
@@ -233,7 +284,7 @@ __arm __ramfunc void QF_onIdle(void) {         /* NOTE: interrupts DISABLED */
 void QF_onCleanup(void) {
 }
 /*..........................................................................*/
-void BSP_displyPhilStat(uint8_t n, char const *stat) {
+void BSP_displayPhilStat(uint8_t n, char const *stat) {
     HD44780_CharShow((HD44780_XY_DEF)(3*n + 2), (HD44780_XY_DEF)2, stat[0]);
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
@@ -241,9 +292,7 @@ void BSP_displyPhilStat(uint8_t n, char const *stat) {
         QS_STR(stat);                                 /* Philosopher status */
     QS_END()
 }
-/*..........................................................................*/
-void BSP_busyDelay(void) {
-}
+
 /*..........................................................................*/
 __arm void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
     QF_INT_DISABLE();         /* make sure that all interrupts are disabled */
@@ -267,7 +316,7 @@ void Dly100us(void *arg) {
 #define QS_BUF_SIZE        (2*1024)
 #define BAUD_RATE          115200
 
-QSTimeCtr QS_tickTime;                           /* keeps timetsamp at tick */
+QSTimeCtr l_tickTime;                           /* keeps timetsamp at tick */
 
 /*..........................................................................*/
 static uint8_t UART_config(uint32_t baud) {
@@ -356,7 +405,7 @@ void QS_onFlush(void) {
 /* NOTE: getTime is invoked within a critical section (inetrrupts disabled) */
 QSTimeCtr QS_onGetTime(void) {
     static QSTimeCtr l_lastTime;
-    QSTimeCtr now = QS_tickTime + T1TC;
+    QSTimeCtr now = l_tickTime + T1TC;
 
     if (l_lastTime > now) {                 /* are we going "back" in time? */
         now += (CCLK / (32 * BSP_TICKS_PER_SEC));    /* assume one rollover */

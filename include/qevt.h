@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 25, 2012
+* Last Updated for Version: 4.5.03
+* Date of the Last Update:  Nov 25, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -51,7 +51,7 @@
 * a 1-digit major version number, Y is a 1-digit minor version number, and
 * ZZ is a 2-digit release number.
 */
-#define QP_VERSION      0x4502U
+#define QP_VERSION      0x4503U
 
 #ifndef Q_ROM
     /** \brief Macro to specify compiler-specific directive for placing a

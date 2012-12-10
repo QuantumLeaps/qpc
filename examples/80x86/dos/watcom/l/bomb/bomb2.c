@@ -1,6 +1,6 @@
 /*****************************************************************************
 * Product:  Time Bomb Example with "State Table"
-* Last Updated for Version: 4.1.01
+* Last Updated for Version: 4.5.03
 * Date of the Last Update:  Nov 04, 2009
 *
 *                    Q u a n t u m     L e a P s
@@ -58,8 +58,7 @@ typedef struct Bomb2Tag {                                   /* the Bomb FSM */
 
 void Bomb2_ctor(Bomb2 *me, uint8_t defuse);            /* the "constructor" */
 
-void Bomb2_initial     (Bomb2 *me);               /* the initial transition */
-
+void Bomb2_initial     (Bomb2 *me, Event const *e);   /* initial transition */
 void Bomb2_setting_UP  (Bomb2 *me, Event const *e);  /* transition function */
 void Bomb2_setting_DOWN(Bomb2 *me, Event const *e);  /* transition function */
 void Bomb2_setting_ARM (Bomb2 *me, Event const *e);  /* transition function */
@@ -86,7 +85,8 @@ void Bomb2_ctor(Bomb2 *me, uint8_t defuse) {
     me->defuse = defuse;                      /* set the secret defuse code */
 }
 /*..........................................................................*/
-void Bomb2_initial(Bomb2 *me) {
+void Bomb2_initial(Bomb2 *me, Event const *e) {
+    (void)e;           /* avoid the compiler warning about unused parameter */
     me->timeout = INIT_TIMEOUT;
     TRAN(SETTING_STATE);
 }

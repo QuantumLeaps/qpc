@@ -67,7 +67,7 @@
         </option>
         <option>
           <name>GenRTConfigPath</name>
-          <state>$TOOLKIT_DIR$\LIB\dlrxfllsn.h</state>
+          <state>$TOOLKIT_DIR$\LIB\dlrxflln.h</state>
         </option>
         <option>
           <name>GenLibInFormatter</name>
@@ -692,7 +692,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\CONFIG\lnkr5f52108.icf</state>
+          <state>$TOOLKIT_DIR$\CONFIG\lnkr5f562n8.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -748,9 +748,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\rx\qk\iar\dbg\libqep_RX600.a</state>
-          <state>$_QPC_$\ports\rx\qk\iar\dbg\libqf_RX600.a</state>
-          <state>$_QPC_$\ports\rx\qk\iar\dbg\libqk_RX600.a</state>
+          <state>$_QPC_$\ports\rx\qk\iar\dbg\libqp_RX600.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -1642,9 +1640,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\rx\qk\iar\dbg\libqep_RX600.a</state>
-          <state>$_QPC_$\ports\rx\qk\iar\dbg\libqf_RX600.a</state>
-          <state>$_QPC_$\ports\rx\qk\iar\dbg\libqk_RX600.a</state>
+          <state>$_QPC_$\ports\rx\qk\iar\dbg\libqp_RX600.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -2536,10 +2532,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\rx\qk\iar\spy\libqep_RX600.a</state>
-          <state>$_QPC_$\ports\rx\qk\iar\spy\libqf_RX600.a</state>
-          <state>$_QPC_$\ports\rx\qk\iar\spy\libqk_RX600.a</state>
-          <state>$_QPC_$\ports\rx\qk\iar\spy\libqs_RX600.a</state>
+          <state>$_QPC_$\ports\rx\qk\iar\spy\libqp_RX600.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>

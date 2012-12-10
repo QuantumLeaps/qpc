@@ -748,8 +748,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\rx\vanilla\iar\dbg\libqep_RX600.a</state>
-          <state>$_QPC_$\ports\rx\vanilla\iar\dbg\libqf_RX600.a</state>
+          <state>$_QPC_$\ports\rx\vanilla\iar\dbg\libqp_RX600.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -1641,8 +1640,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\rx\vanilla\iar\rel\libqep_RX600.a</state>
-          <state>$_QPC_$\ports\rx\vanilla\iar\rel\libqf_RX600.a</state>
+          <state>$_QPC_$\ports\rx\vanilla\iar\rel\libqp_RX600.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -2534,9 +2532,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\rx\vanilla\iar\spy\libqep_RX600.a</state>
-          <state>$_QPC_$\ports\rx\vanilla\iar\spy\libqf_RX600.a</state>
-          <state>$_QPC_$\ports\rx\vanilla\iar\spy\libqs_RX600.a</state>
+          <state>$_QPC_$\ports\rx\vanilla\iar\spy\libqp_RX600.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>

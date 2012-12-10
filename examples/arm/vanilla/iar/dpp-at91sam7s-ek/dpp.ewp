@@ -29,7 +29,7 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>19</version>
+          <version>20</version>
           <state>0</state>
         </option>
         <option>
@@ -87,7 +87,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>6.30.1.53141</state>
+          <state>6.40.4.54214</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -137,12 +137,12 @@
         </option>
         <option>
           <name>GFPUCoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>0</state>
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>0</state>
         </option>
         <option>
@@ -162,6 +162,10 @@
         <version>28</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
+        <option>
+          <name>CCOptimizationNoSizeConstraints</name>
+          <state>0</state>
+        </option>
         <option>
           <name>CCDefines</name>
           <state>ewarm</state>
@@ -607,7 +611,7 @@
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>14</version>
+        <version>15</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -688,7 +692,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>D:\software\qpc\examples\arm\vanilla\iar\dpp-at91sam7s-ek\at91SAM7S64.icf</state>
+          <state>at91SAM7S64.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -736,8 +740,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\arm\vanilla\iar\dbg\qep_ARM7TDMI.a</state>
-          <state>$_QPC_$\ports\arm\vanilla\iar\dbg\qf_ARM7TDMI.a</state>
+          <state>$_QPC_$\ports\arm\vanilla\iar\dbg\libqp_ARM7TDMI.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -774,10 +777,6 @@
         </option>
         <option>
           <name>CrcAlign</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>CrcAlgo</name>
           <state>1</state>
         </option>
         <option>
@@ -882,6 +881,16 @@
           <name>IlinkStackCallGraphFile</name>
           <state></state>
         </option>
+        <option>
+          <name>CrcAlgorithm</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CrcUnitSize</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -938,7 +947,7 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>19</version>
+          <version>20</version>
           <state>0</state>
         </option>
         <option>
@@ -1046,12 +1055,12 @@
         </option>
         <option>
           <name>GFPUCoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>0</state>
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>0</state>
         </option>
         <option>
@@ -1071,6 +1080,10 @@
         <version>28</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
+        <option>
+          <name>CCOptimizationNoSizeConstraints</name>
+          <state>0</state>
+        </option>
         <option>
           <name>CCDefines</name>
           <state>ewarm</state>
@@ -1517,7 +1530,7 @@
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>14</version>
+        <version>15</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -1646,8 +1659,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\arm\vanilla\iar\rel\qep_ARM7TDMI.a</state>
-          <state>$_QPC_$\ports\arm\vanilla\iar\rel\qf_ARM7TDMI.a</state>
+          <state>$_QPC_$\ports\arm\vanilla\iar\rel\libqp_ARM7TDMI.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -1684,10 +1696,6 @@
         </option>
         <option>
           <name>CrcAlign</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>CrcAlgo</name>
           <state>1</state>
         </option>
         <option>
@@ -1792,6 +1800,16 @@
           <name>IlinkStackCallGraphFile</name>
           <state></state>
         </option>
+        <option>
+          <name>CrcAlgorithm</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CrcUnitSize</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -1848,7 +1866,7 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>19</version>
+          <version>20</version>
           <state>0</state>
         </option>
         <option>
@@ -1956,12 +1974,12 @@
         </option>
         <option>
           <name>GFPUCoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>0</state>
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>0</state>
         </option>
         <option>
@@ -1981,6 +1999,10 @@
         <version>28</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
+        <option>
+          <name>CCOptimizationNoSizeConstraints</name>
+          <state>0</state>
+        </option>
         <option>
           <name>CCDefines</name>
           <state>ewarm</state>
@@ -2427,7 +2449,7 @@
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>14</version>
+        <version>15</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -2556,9 +2578,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\arm\vanilla\iar\spy\qep_ARM7TDMI.a</state>
-          <state>$_QPC_$\ports\arm\vanilla\iar\spy\qf_ARM7TDMI.a</state>
-          <state>$_QPC_$\ports\arm\vanilla\iar\spy\qs_ARM7TDMI.a</state>
+          <state>$_QPC_$\ports\arm\vanilla\iar\spy\libqp_ARM7TDMI.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -2595,10 +2615,6 @@
         </option>
         <option>
           <name>CrcAlign</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>CrcAlgo</name>
           <state>1</state>
         </option>
         <option>
@@ -2702,6 +2718,16 @@
         <option>
           <name>IlinkStackCallGraphFile</name>
           <state></state>
+        </option>
+        <option>
+          <name>CrcAlgorithm</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CrcUnitSize</name>
+          <version>0</version>
+          <state>0</state>
         </option>
       </data>
     </settings>

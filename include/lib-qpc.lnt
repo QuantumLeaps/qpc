@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last Updated for Version: 4.5.02
-// Date of the Last Update:  Jul 25, 2012
+// Last Updated for Version: 4.5.03
+// Date of the Last Update:  Dec 01, 2012
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -113,6 +113,7 @@
  Q_NEW)
 -estring(961,                 // MISRA04-19.7(adv) function-like macro
  QEQueue_getNFree,
+ QEQueue_isEmpty,
  QPSet8_isEmpty,
  QPSet8_notEmpty,
  QPSet8_hasElement,

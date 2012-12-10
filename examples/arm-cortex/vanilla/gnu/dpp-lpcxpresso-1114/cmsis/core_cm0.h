@@ -1,8 +1,8 @@
 /**************************************************************************//**
  * @file     core_cm0.h
  * @brief    CMSIS Cortex-M0 Core Peripheral Access Layer Header File
- * @version  V3.00
- * @date     27. January 2012
+ * @version  V3.01
+ * @date     13. March 2012
  *
  * @note
  * Copyright (C) 2009-2012 ARM Limited. All rights reserved.
@@ -54,7 +54,7 @@
 
 /*  CMSIS CM0 definitions */
 #define __CM0_CMSIS_VERSION_MAIN  (0x03)                                   /*!< [31:16] CMSIS HAL main version   */
-#define __CM0_CMSIS_VERSION_SUB   (0x00)                                   /*!< [15:0]  CMSIS HAL sub version    */
+#define __CM0_CMSIS_VERSION_SUB   (0x01)                                   /*!< [15:0]  CMSIS HAL sub version    */
 #define __CM0_CMSIS_VERSION       ((__CM0_CMSIS_VERSION_MAIN << 16) | \
                                     __CM0_CMSIS_VERSION_SUB          )     /*!< CMSIS HAL version number         */
 
@@ -103,7 +103,9 @@
   #endif
 
 #elif defined ( __TASKING__ )
-    /* add preprocessor checks */
+  #if defined __FPU_VFP__
+    #error "Compiler generates FPU instructions for a device without an FPU (check __FPU_PRESENT)"
+  #endif
 #endif
 
 #include <stdint.h>                      /* standard types definitions                      */

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.03
+* Date of the Last Update:  Sep 26, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -228,6 +228,20 @@ QEvt const *QEQueue_get(QEQueue * const me);
 * \sa QActive_defer(), QActive_recall()
 */
 #define QEQueue_getNFree(me_) ((me_)->nFree)
+
+/** \brief "raw" thread-safe QF event queue operation to find out
+* if the queue is empty
+*
+* \note This operation needs to be used with caution because the
+* queue status can change unexpectedly. The main intent for using
+* this operation is in conjunction with event deferral. In this
+* case the queue is accessed only from a single thread (by a single AO),
+* so no other entitiy can post events to the queue.
+*
+* \sa QActive_defer(), QActive_recall()
+*/
+#define QEQueue_isEmpty(me_) ((me_)->frontEvt == (QEvt const *)0)
+
 
 /* friend class QF */
 /* friend class QActive */

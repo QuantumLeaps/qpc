@@ -1,0 +1,26 @@
+{
+	"folders":
+	[
+		{
+			"path": "/D/projects/qp_android_dpp"
+		},
+		{
+			"path": "/D/projects/qpc/include"
+		},
+		{
+			"path": "/D/projects/qpc/ports/arm/android/gnu"
+		},
+		{
+			"path": "/D/projects/android-ndk-r8b/platforms/android-9/arch-arm"
+		},
+		{
+			"path": "/D/projects/android-ndk-r8b/sources/android"
+		},
+		{
+			"path": "/D/projects/qpc"
+		},
+		{
+			"path": "/D/projects/qtools/qspy"
+		}
+	]
+}

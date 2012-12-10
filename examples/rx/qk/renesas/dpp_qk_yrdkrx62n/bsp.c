@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: BSP for YRDKRX62N board, QK kernel, Renesas RX Standard Toolchain
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Product: BSP for YRDKRX62N board, QK kenrel, Renesas RX Standard Toolchain
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 17, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -56,6 +56,9 @@ enum InterruptPriorities {
 #define PCLK_FREQ         48000000U
 #define TICK_COUNT_VAL    (PCLK_FREQ / 128U / BSP_TICKS_PER_SEC)
 
+/* local variables ---------------------------------------------------------*/
+static uint32_t l_rnd;                                       /* random seed */
+
 /* Q-Spy -------------------------------------------------------------------*/
 #ifdef Q_SPY
 
@@ -65,7 +68,7 @@ enum InterruptPriorities {
     uint8_t const QS_CMT0_isr  = 0U;       /* identifies event source */
     uint8_t const QS_IRQ8_isr  = 0U;       /* identifies event source */
     uint8_t const QS_IRQ9_isr  = 0U;       /* identifies event source */
-    uint8_t const QS_IRQ10_isr = 0U;       /* identifies event source */
+    uint8_t const QS_IRQ12_isr = 0U;       /* identifies event source */
 
     #define UART_BAUD_RATE      115200U
 
@@ -92,7 +95,7 @@ static void CMT0_isr(void) {
 void IRQ8_isr(void) {
     QK_ISR_ENTRY();          /* inform the QK kernel about entering the ISR */
 
-    QACTIVE_POST(AO_Philo[0], Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
+    QACTIVE_POST(AO_Table, Q_NEW(QEvt, PAUSE_SIG),
                  &QS_IRQ8_isr);
     QK_ISR_EXIT();            /* inform the QK kernel about exiting the ISR */
 }
@@ -101,17 +104,17 @@ void IRQ8_isr(void) {
 void IRQ9_isr(void) {
     QK_ISR_ENTRY();          /* inform the QK kernel about entering the ISR */
 
-    QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG),    /* for testing... */
+    QACTIVE_POST(AO_Philo[0], Q_NEW(QEvt, MAX_PUB_SIG),   /* for testing... */
                  &QS_IRQ9_isr);
     QK_ISR_EXIT();            /* inform the QK kernel about exiting the ISR */
 }
 /*..........................................................................*/
-#pragma interrupt (IRQ10_isr (vect = VECT(ICU, IRQ10)))
-void IRQ10_isr(void) {
+#pragma interrupt (IRQ12_isr (vect = VECT(ICU, IRQ12)))
+void IRQ12_isr(void) {
     QK_ISR_ENTRY();          /* inform the QK kernel about entering the ISR */
 
     QACTIVE_POST(AO_Philo[0], Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
-                 &QS_IRQ10_isr);
+                 &QS_IRQ12_isr);
     QK_ISR_EXIT();            /* inform the QK kernel about exiting the ISR */
 }
 
@@ -129,25 +132,23 @@ void BSP_init(void) {
     */
     PORT4.DDR.BYTE = 0;
 
+    BSP_randomSeed(1234U);
+
     if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
         Q_ERROR();
     }
-
+    QS_RESET();
     QS_OBJ_DICTIONARY(&QS_CMT0_isr);
     QS_OBJ_DICTIONARY(&QS_IRQ8_isr);
     QS_OBJ_DICTIONARY(&QS_IRQ9_isr);
-    QS_OBJ_DICTIONARY(&QS_IRQ10_isr);
+    QS_OBJ_DICTIONARY(&QS_IRQ12_isr);
 }
 /*..........................................................................*/
-void BSP_busyDelay(void) {
-    /* limit for the loop counter in busyDelay() */
-    static uint32_t l_delay = 0UL;
-    uint32_t volatile i = l_delay;
-    while (i-- > 0UL) {                                   /* busy-wait loop */
-    }
+void BSP_terminate(int16_t result) {
+    (void)result;
 }
 /*..........................................................................*/
-void BSP_displyPhilStat(uint8_t n, char const *stat) {
+void BSP_displayPhilStat(uint8_t n, char const *stat) {
                          /* turn LED on when eating and off when not eating */
     uint8_t on_off = (stat[0] == 'e' ? LED_ON : LED_OFF);
     switch (n) {
@@ -165,6 +166,23 @@ void BSP_displyPhilStat(uint8_t n, char const *stat) {
     QS_END()
 }
 /*..........................................................................*/
+void BSP_displayPaused(uint8_t paused) {
+    LED11 = (paused != 0U) ? LED_ON : LED_OFF;
+}
+/*..........................................................................*/
+uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
+    /* "Super-Duper" Linear Congruential Generator (LCG)
+    * LCG(2^32, 3*7*11*13*23, 0, seed)
+    */
+    l_rnd = l_rnd * (3*7*11*13*23);
+    return l_rnd >> 8;
+}
+/*..........................................................................*/
+void BSP_randomSeed(uint32_t seed) {
+    l_rnd = seed;
+}
+
+/*..........................................................................*/
 void QF_onStartup(void) {
     /* set the interrupt priorities, (manual 11.2.3) */
     IPR(CMT0,)     = TICK_INT_PRIORITY;
@@ -175,7 +193,7 @@ void QF_onStartup(void) {
     /* enable GPIO interrupts ...*/
     /* configure interrupts for SW1 (IRQ8) */
     PORT4.ICR.BIT.B0 = 1U;                  /* enable input buffer for P4.0 */
-    ICU.IRQCR[8].BIT.IRQMD = 1U;                   /* falling edge (11.2.8) */
+    ICU.IRQCR[8].BIT.IRQMD = 3U;          /* rising & falling edge (11.2.8) */
     IEN(ICU, IRQ8) = 1U;                /* enable interrupt source (11.2.2) */
 
     /* configure interrupts for SW2 (IRQ9) */
@@ -220,6 +238,7 @@ void QK_onIdle(void) {
     QF_INT_ENABLE();
 
 #ifdef Q_SPY
+
     /* RX62N has no TX FIFO, just a Transmit Data Register (TDR) */
     if (SCI2.SSR.BIT.TEND) {                        /* Is SMC's TDR Empty? */
         uint16_t b;
@@ -290,7 +309,7 @@ uint8_t QS_onStartup(void const *arg) {
 
     /* Initialize QS timing variables */
     QS_tickPeriod_ = TICK_COUNT_VAL;
-    QS_tickTime_   = 0U;                   /* count up timer starts at zero */
+    QS_tickTime_   = 0;                    /* count up timer starts at zero */
 
                                                  /* setup the QS filters... */
     QS_FILTER_ON(QS_ALL_RECORDS);

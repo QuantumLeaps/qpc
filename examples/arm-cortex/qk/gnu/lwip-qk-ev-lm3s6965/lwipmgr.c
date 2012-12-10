@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: lwIP-Manager Active Object
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 03, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------

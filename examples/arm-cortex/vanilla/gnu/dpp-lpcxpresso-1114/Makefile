@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP application, Vanilla, LPCXpresso-1114, GNU/CodeRed
 # Last Updated for Version: 4.5.02
-# Date of the Last Update:  Jan 13, 2012
+# Date of the Last Update:  Nov 07, 2012
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -90,8 +90,7 @@ INCLUDES  = -I"$(QPC)"/include	\
 	-Ilpc11xx_lib/inc
 
 # defines
-DEFINES = -D__REDLIB__ \
-	-D__USE_CMSIS=CMSISv1p30_LPC11xx
+DEFINES = -D__REDLIB__
 
 ARM_CORE = cortex-m0
 
@@ -103,7 +102,7 @@ ARM_CORE = cortex-m0
 ASM_SRCS :=
 
 # C source files
-C_SRCS := startup_LPC11.c \
+C_SRCS := startup_LPC11xx.c \
 	$(wildcard *.c) \
 	system_LPC11xx.c \
 	clkconfig.c \

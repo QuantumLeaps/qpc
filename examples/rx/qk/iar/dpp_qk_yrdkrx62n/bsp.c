@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: BSP for YRDKRX62N board, QK Kernel
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 17, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -52,7 +52,7 @@ enum InterruptPriorities {
 };
 
                            /* Number of timer ticks for each OS kernel tick */
-#define TICK_COUNT_VAL ((TICK_TIMER_FREQ) / (BSP_TICKS_PER_SEC))
+#define TICK_COUNT_VAL ((TICK_TIMER_FREQ) / BSP_TICKS_PER_SEC)
 
 /* On board LEDs -----------------------------------------------------------*/
 #define  LED04                  (PORTD.DR.BIT.B5)
@@ -77,7 +77,7 @@ enum InterruptPriorities {
 #define  BSP_LED_IDLE_ON()      (LED12 = LED_ON)
 #define  BSP_LED_IDLE_OFF()     (LED12 = LED_OFF)
 
-/* On board Buttonss -------------------------------------------------------*/
+/* On board Buttons --------------------------------------------------------*/
 enum GPIOIntTriggerType {        /* GPIO interrupt triggers (manual 11.2.8) */
     IT_LOW_LEVEL           = 0,
     IT_FALLING_EDGE        = 1,
@@ -113,6 +113,9 @@ enum GPIOIntTriggerType {        /* GPIO interrupt triggers (manual 11.2.8) */
 
 #endif
 
+/* Local variables ---------------------------------------------------------*/
+static uint32_t l_rnd;                                       /* random seed */
+
 /*..........................................................................*/
 void __exit(int status) {
     (void)status;                          /* suppress the compiler warning */
@@ -135,7 +138,7 @@ static __interrupt void tickISR(void) {
 static __interrupt void sw1ISR(void) {
     QK_ISR_ENTRY();          /* inform the QK kernel about entering the ISR */
 
-    QACTIVE_POST(AO_Philo[0], Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
+    QACTIVE_POST(AO_Table, Q_NEW(QEvt, PAUSE_SIG),
                  &l_sw1ISR);
     QK_ISR_EXIT();            /* inform the QK kernel about exiting the ISR */
 }
@@ -180,25 +183,23 @@ void BSP_init(void) {
     */
     PORT4.DDR.BYTE = 0;
 
+    BSP_randomSeed(1234U);
+
     if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
         Q_ERROR();
     }
-
+    QS_RESET();
     QS_OBJ_DICTIONARY(&l_tickISR);
     QS_OBJ_DICTIONARY(&l_sw1ISR);
     QS_OBJ_DICTIONARY(&l_sw2ISR);
     QS_OBJ_DICTIONARY(&l_sw3ISR);
 }
 /*..........................................................................*/
-void BSP_busyDelay(void) {
-    /* limit for the loop counter in busyDelay() */
-    static uint32_t l_delay = 0UL;
-    uint32_t volatile i = l_delay;
-    while (i-- > 0UL) {                                   /* busy-wait loop */
-    }
+void BSP_terminate(int16_t result) {
+    (void)result;
 }
 /*..........................................................................*/
-void BSP_displyPhilStat(uint8_t n, char const *stat) {
+void BSP_displayPhilStat(uint8_t n, char const *stat) {
                          /* turn LED on when eating and off when not eating */
     uint8_t on_off = (stat[0] == 'e' ? LED_ON : LED_OFF);
     switch (n) {
@@ -216,6 +217,23 @@ void BSP_displyPhilStat(uint8_t n, char const *stat) {
     QS_END()
 }
 /*..........................................................................*/
+void BSP_displayPaused(uint8_t paused) {
+    LED11 = (paused != 0U) ? LED_ON : LED_OFF;
+}
+/*..........................................................................*/
+uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
+    /* "Super-Duper" Linear Congruential Generator (LCG)
+    * LCG(2^32, 3*7*11*13*23, 0, seed)
+    */
+    l_rnd = l_rnd * (3*7*11*13*23);
+    return l_rnd >> 8;
+}
+/*..........................................................................*/
+void BSP_randomSeed(uint32_t seed) {
+    l_rnd = seed;
+}
+
+/*..........................................................................*/
 void QF_onStartup(void) {
     /* set the interrupt priorities, (manual 11.2.3) */
     IPR(CMT0,)     = TICK_INT_PRIORITY;
@@ -226,7 +244,7 @@ void QF_onStartup(void) {
     /* enable GPIO interrupts ...*/
     /* configure interrupts for SW1 (IRQ8) */
     PORT4.ICR.BIT.B0 = 1 ;                  /* enable input buffer for P4.0 */
-    ICU.IRQCR[8].BIT.IRQMD = IT_FALLING_EDGE;      /* falling edge (11.2.8) */
+    ICU.IRQCR[8].BIT.IRQMD = IT_RISING_FALLING_EDGE;            /* (11.2.8) */
     IEN(ICU, IRQ8) = 1;                 /* enable interrupt source (11.2.2) */
 
     /* configure interrupts for SW2 (IRQ9) */

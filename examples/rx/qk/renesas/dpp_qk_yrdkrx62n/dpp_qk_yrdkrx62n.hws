@@ -3,12 +3,12 @@
 [DATABASE_VERSION]
 "11.0" 
 [WORKSPACE_DETAILS]
-"dpp_qk_yrdkrx62n" "D:\software\qpc\examples\rx\qk\renesas\dpp_qk_yrdkrx62n" "D:\software\qpc\examples\rx\qk\renesas\dpp_qk_yrdkrx62n\dpp_qk_yrdkrx62n.hws" "RX" "Renesas RX Standard" 
+"dpp_qk_yrdkrx62n" "D:\qp\qpc\examples\rx\qk\renesas\dpp_qk_yrdkrx62n" "D:\qp\qpc\examples\rx\qk\renesas\dpp_qk_yrdkrx62n\dpp_qk_yrdkrx62n.hws" "RX" "Renesas RX Standard" 
 [SHARED_WORKSPACE_CONTROL_STATUS]
 "" "" "" 
 "" "" "" 
 [PROJECTS]
-"dpp_qk_yrdkrx62n" "D:\software\qpc\examples\rx\qk\renesas\dpp_qk_yrdkrx62n" "D:\software\qpc\examples\rx\qk\renesas\dpp_qk_yrdkrx62n\dpp_qk_yrdkrx62n.hwp" 0 
+"dpp_qk_yrdkrx62n" "D:\qp\qpc\examples\rx\qk\renesas\dpp_qk_yrdkrx62n" "D:\qp\qpc\examples\rx\qk\renesas\dpp_qk_yrdkrx62n\dpp_qk_yrdkrx62n.hwp" 0 
 [INFORMATION]
 "No workspace information available" 
 [SCRAP]
@@ -19,6 +19,7 @@
 [GENERAL_DATA_PROJECT]
 [USERMENUTOOLS]
 [CUSTOMPLACEHOLDERS]
+"QPC" "QP/C" "d:\qp\qpc" 
 [MAKEFILE_BUILD_INFO]
 "$(WORKSPDIR)\make\$(PROJECTNAME)_$(CONFIGNAME).mak" "" "$(WORKSPDIR)\make" 0 0 0 
 [VD_CONFIGURATION_OPTIONS]

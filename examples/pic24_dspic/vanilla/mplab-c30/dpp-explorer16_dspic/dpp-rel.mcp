@@ -32,7 +32,6 @@ file_004=.
 file_005=.
 file_006=.
 file_007=.
-file_008=.
 [GENERATED_FILES]
 file_000=no
 file_001=no
@@ -42,7 +41,6 @@ file_004=no
 file_005=no
 file_006=no
 file_007=no
-file_008=no
 [OTHER_FILES]
 file_000=no
 file_001=no
@@ -52,7 +50,6 @@ file_004=no
 file_005=no
 file_006=no
 file_007=no
-file_008=no
 [FILE_INFO]
 file_000=bsp.c
 file_001=main.c
@@ -60,9 +57,8 @@ file_002=philo.c
 file_003=table.c
 file_004=bsp.h
 file_005=dpp.h
-file_006=..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\rel\libqf_33FJ256GP710.a
-file_007=..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\rel\libqep_33FJ256GP710.a
-file_008=p33FJ256GP710.gld
+file_006=..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\rel\libqp_33FJ256GP710.a
+file_007=p33FJ256GP710.gld
 [SUITE_INFO]
 suite_guid={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 suite_state=

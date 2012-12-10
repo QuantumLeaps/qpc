@@ -2,79 +2,79 @@
 MagicCookie={0b13fe8c-dfe0-40eb-8900-6712719559a7}
 Version=1.0
 [File000]
-Location=D:\software\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\bsp.o
+Location=D:\qp\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\bsp.o
 Folder=Intermediary
 DeviceName=PIC24FJ128GA010
 LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
 LanguageToolLocation=C:\tools\Microchip\mplab-c30\bin\pic30-gcc.exe
 PPAD=$(BINDIR)|spy||$(TMPDIR)|spy||$(AINDIR)||$(INCDIR)|.;..\..\..\..\..\include;..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30||$(LIBDIR)||$(LKRDIR)||
-SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqf_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqep_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqs_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
+SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqp_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
 SuiteArgsString=
 ToolArgsString=-g -Wall -DQ_SPY -O1
 TraceCmdString=
 DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_ICD2=1
 [File001]
-Location=D:\software\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\main.o
+Location=D:\qp\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\main.o
 Folder=Intermediary
 DeviceName=PIC24FJ128GA010
 LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
 LanguageToolLocation=C:\tools\Microchip\mplab-c30\bin\pic30-gcc.exe
 PPAD=$(BINDIR)|spy||$(TMPDIR)|spy||$(AINDIR)||$(INCDIR)|.;..\..\..\..\..\include;..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30||$(LIBDIR)||$(LKRDIR)||
-SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqf_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqep_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqs_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
+SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqp_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
 SuiteArgsString=
 ToolArgsString=-g -Wall -DQ_SPY -O1
 TraceCmdString=
 DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_ICD2=1
 [File002]
-Location=D:\software\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\philo.o
+Location=D:\qp\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\philo.o
 Folder=Intermediary
 DeviceName=PIC24FJ128GA010
 LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
 LanguageToolLocation=C:\tools\Microchip\mplab-c30\bin\pic30-gcc.exe
 PPAD=$(BINDIR)|spy||$(TMPDIR)|spy||$(AINDIR)||$(INCDIR)|.;..\..\..\..\..\include;..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30||$(LIBDIR)||$(LKRDIR)||
-SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqf_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqep_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqs_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
+SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqp_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
 SuiteArgsString=
 ToolArgsString=-g -Wall -DQ_SPY -O1
 TraceCmdString=
 DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_ICD2=1
 [File003]
-Location=D:\software\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\table.o
+Location=D:\qp\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\table.o
 Folder=Intermediary
 DeviceName=PIC24FJ128GA010
 LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
 LanguageToolLocation=C:\tools\Microchip\mplab-c30\bin\pic30-gcc.exe
 PPAD=$(BINDIR)|spy||$(TMPDIR)|spy||$(AINDIR)||$(INCDIR)|.;..\..\..\..\..\include;..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30||$(LIBDIR)||$(LKRDIR)||
-SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqf_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqep_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqs_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
+SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqp_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
 SuiteArgsString=
 ToolArgsString=-g -Wall -DQ_SPY -O1
 TraceCmdString=
 DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_ICD2=1
 [File004]
-Location=D:\software\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\dpp-spy.cof
+Location=D:\qp\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\dpp-spy.cof
 Folder=Output
 DeviceName=PIC24FJ128GA010
 LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 LanguageToolID={433C3D55-811D-409D-A6BF-159CF9355B42}
 LanguageToolLocation=C:\tools\Microchip\mplab-c30\bin\pic30-ld.exe
 PPAD=$(BINDIR)|spy||$(TMPDIR)|spy||$(AINDIR)||$(INCDIR)|.;..\..\..\..\..\include;..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30||$(LIBDIR)||$(LKRDIR)||
-SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqf_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqep_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqs_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
+SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqp_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
 SuiteArgsString=
 ToolArgsString=-o"$(BINDIR_)$(TARGETBASE).$(TARGETSUFFIX)" -Map="$(BINDIR_)$(TARGETBASE).map" --report-mem
 TraceCmdString=
 DebugOptions=--defsym=__MPLAB_DEBUG=1 --defsym=__MPLAB_DEBUGGER_ICD2=1 --defsym=__ICD2RAM=1
 [File005]
-Location=D:\software\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\dpp-spy.hex
+Location=D:\qp\qpc\examples\pic24_dspic\vanilla\mplab-c30\dpp-explorer16_pic24\spy\dpp-spy.hex
 Folder=Output
 DeviceName=PIC24FJ128GA010
 LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 LanguageToolID={433C3D55-811D-409D-A6BF-159CF9355B42}
 LanguageToolLocation=C:\tools\Microchip\mplab-c30\bin\pic30-ld.exe
 PPAD=$(BINDIR)|spy||$(TMPDIR)|spy||$(AINDIR)||$(INCDIR)|.;..\..\..\..\..\include;..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30||$(LIBDIR)||$(LKRDIR)||
-SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqf_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqep_24FJ128GA010.a|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqs_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
+SOLK=<src>|bsp.c|main.c|philo.c|table.c||<obj>||<lib>|..\..\..\..\..\ports\pic24_dspic\vanilla\mplab-c30\spy\libqp_24FJ128GA010.a||<lkr>|p24FJ128GA010.gld||
 SuiteArgsString=
 ToolArgsString=-o"$(BINDIR_)$(TARGETBASE).$(TARGETSUFFIX)" -Map="$(BINDIR_)$(TARGETBASE).map" --report-mem
 TraceCmdString=

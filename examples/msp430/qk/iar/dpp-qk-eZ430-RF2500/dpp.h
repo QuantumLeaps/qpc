@@ -20,10 +20,10 @@ enum DPPSignals {
    MAX_SIG                                               /* the last signal */
 };
 
-/* $(Events::TableEvt) .....................................................*/
+/* @(/1/0) .................................................................*/
 typedef struct TableEvtTag {
 /* protected: */
-    QEvent super;
+    QEvt super;
 
 /* public: */
     uint8_t philoNum;
@@ -32,8 +32,10 @@ typedef struct TableEvtTag {
 
 enum { N_PHILO = 5 };                             /* number of philosophers */
 
+/* @(/2/4) .................................................................*/
 void Philo_ctor(void);
 
+/* @(/2/5) .................................................................*/
 void Table_ctor(void);
 
 

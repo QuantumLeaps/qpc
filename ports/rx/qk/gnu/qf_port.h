@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QF/C, Renesas RX, QK port, GNU-RX (KPIT) compiler
-* Last Updated for Version: 4.4.00
-* Date of the Last Update:  Mar 06, 2012
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 17, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -9,27 +9,34 @@
 *
 * Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
 *
-* This software may be distributed and modified under the terms of the GNU
-* General Public License version 2 (GPL) as published by the Free Software
-* Foundation and appearing in the file GPL.TXT included in the packaging of
-* this file. Please note that GPL Section 2[b] requires that all works based
-* on this software must also be made publicly available under the terms of
-* the GPL ("Copyleft").
+* This program is open source software: you can redistribute it and/or
+* modify it under the terms of the GNU General Public License as published
+* by the Free Software Foundation, either version 2 of the License, or
+* (at your option) any later version.
 *
-* Alternatively, this software may be distributed and modified under the
+* Alternatively, this program may be distributed and modified under the
 * terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GPL and are specifically designed for licensees interested in
-* retaining the proprietary status of their code.
+* the GNU General Public License and are specifically designed for
+* licensees interested in retaining the proprietary status of their code.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web site:  http://www.quantum-leaps.com
+* Quantum Leaps Web sites: http://www.quantum-leaps.com
+*                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
 #ifndef qf_port_h
 #define qf_port_h
 
-                 /* The maximum number of active objects in the application */
-#define QF_MAX_ACTIVE               63
+     /* The maximum number of active objects in the application, see NOTE01 */
+#define QF_MAX_ACTIVE               32
                     /* The maximum number of event pools in the application */
 #define QF_MAX_EPOOL                6
                                          /* QF interrupt disabling/enabling */
@@ -37,7 +44,7 @@
 #define QF_INT_ENABLE()             __asm volatile ("SETPSW I")
 
                                           /* QF critical section entry/exit */
-/* QF_CRIT_STAT_TYPE not defined: unconditional interrupt unlocking, NOTE01 */
+/* QF_CRIT_STAT_TYPE not defined: unconditional interrupt unlocking, NOTE02 */
 #define QF_CRIT_ENTRY(dummy)        QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)         QF_INT_ENABLE()
 
@@ -48,6 +55,10 @@
 
 /*****************************************************************************
 * NOTE01:
+* The maximum number of active objects QF_MAX_ACTIVE can be increased
+* up to 63, if necessary. Here it is set to a lower level to save some RAM.
+*
+* NOTE02:
 * This policy does not allow to nest critical sections. Therefore interrupts
 * must be enabled in ISRs before calling any QP service. This should be no
 * problem, because if interrupts nesting is not desired, the interrupts can

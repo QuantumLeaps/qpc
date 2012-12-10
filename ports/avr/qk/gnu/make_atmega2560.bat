@@ -1,29 +1,36 @@
 @echo off
 :: ==========================================================================
-:: Product: QP/C buld script for AVR, QK port, GNU compiler
-:: Last Updated for Version: 4.3.00
-:: Date of the Last Update:  Dec 10, 2011
+:: Product: QP/C buld script for AVR, Vanilla port, GNU compiler
+:: Last Updated for Version: 4.5.02
+:: Date of the Last Update:  Sep 16, 2012
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2011 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
 ::
-:: This software may be distributed and modified under the terms of the GNU
-:: General Public License version 2 (GPL) as published by the Free Software
-:: Foundation and appearing in the file GPL.TXT included in the packaging of
-:: this file. Please note that GPL Section 2[b] requires that all works based
-:: on this software must also be made publicly available under the terms of
-:: the GPL ("Copyleft").
+:: This program is open source software: you can redistribute it and/or
+:: modify it under the terms of the GNU General Public License as published
+:: by the Free Software Foundation, either version 2 of the License, or
+:: (at your option) any later version.
 ::
-:: Alternatively, this software may be distributed and modified under the
+:: Alternatively, this program may be distributed and modified under the
 :: terms of Quantum Leaps commercial licenses, which expressly supersede
-:: the GPL and are specifically designed for licensees interested in
-:: retaining the proprietary status of their code.
+:: the GNU General Public License and are specifically designed for
+:: licensees interested in retaining the proprietary status of their code.
+::
+:: This program is distributed in the hope that it will be useful,
+:: but WITHOUT ANY WARRANTY; without even the implied warranty of
+:: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+:: GNU General Public License for more details.
+::
+:: You should have received a copy of the GNU General Public License
+:: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: Quantum Leaps Web site:  http://www.quantum-leaps.com
+:: Quantum Leaps Web sites: http://www.quantum-leaps.com
+::                          http://www.state-machine.com
 :: e-mail:                  info@quantum-leaps.com
 :: ==========================================================================
 setlocal
@@ -31,7 +38,7 @@ setlocal
 :: adjust the following path to the location where you've installed
 :: the WinAVR toolset...
 ::
-if "%GNU_AVR%"=="" set GNU_AVR=C:\tools\Atmel\AVR_Studio_5.0\AVR Toolchain
+if "%GNU_AVR%"=="" set GNU_AVR=C:\tools\Atmel\Studio_6.0\extensions\Atmel\AVRGCC\3.4.0.65\AVRToolchain
 
 set PATH=%GNU_AVR%\bin;%PATH%
 
@@ -50,19 +57,20 @@ set TARGET_MCU=atmega2560
 if "%1"=="" (
     @echo default selected
     set BINDIR=dbg
-    set CCFLAGS=-c -g3 -O1 -fdata-sections -ffunction-sections -Wall -std=gnu99 -fshort-enums -mmcu=%TARGET_MCU% -Wall
+    set CCFLAGS=-c -g3 -O1 -fdata-sections -ffunction-sections -Wall -c -std=gnu99 -fshort-enums -mmcu=%TARGET_MCU% -Wall
 )
 if "%1"=="rel" (
     @echo rel selected
     set BINDIR=rel
-    set CCFLAGS=-c -DNDEBUG -c -Os -fdata-sections -ffunction-sections -Wall -std=gnu99 -fshort-enums -mmcu=%TARGET_MCU% -Wall -mmcu=%TARGET_MCU% -Wall
+    set CCFLAGS=-c -DNDEBUG -c -Os -fdata-sections -ffunction-sections -Wall -c -std=gnu99 -fshort-enums -mmcu=%TARGET_MCU% -Wall -mmcu=%TARGET_MCU% -Wall
 )
 if "%1"=="spy" (
     @echo spy selected
     set BINDIR=spy
-    set CCFLAGS=-c -g3 -DQ_SPY -O1 -fdata-sections -ffunction-sections -Wall -std=gnu99 -fshort-enums -mmcu=%TARGET_MCU% -Wall
+    set CCFLAGS=-c -g3 -DQ_SPY -O1 -fdata-sections -ffunction-sections -Wall -c -std=gnu99 -fshort-enums -mmcu=%TARGET_MCU% -Wall
 )
 
+mkdir %BINDIR%
 set LIBDIR=%BINDIR%
 set LIBFLAGS=rs
 erase %LIBDIR%\libqp_%TARGET_MCU%.a

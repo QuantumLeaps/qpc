@@ -29,7 +29,7 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>19</version>
+          <version>20</version>
           <state>14</state>
         </option>
         <option>
@@ -87,7 +87,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>6.30.1.53141</state>
+          <state>6.40.4.54214</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -99,7 +99,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>STR912F	ST STR912F</state>
+          <state>STR912Fx44	ST STR912Fx44</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -137,12 +137,12 @@
         </option>
         <option>
           <name>GFPUCoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>14</state>
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>14</state>
         </option>
         <option>
@@ -162,6 +162,10 @@
         <version>28</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
+        <option>
+          <name>CCOptimizationNoSizeConstraints</name>
+          <state>0</state>
+        </option>
         <option>
           <name>CCDefines</name>
           <state></state>
@@ -608,7 +612,7 @@
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>14</version>
+        <version>15</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -737,8 +741,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\arm\vanilla\iar\dbg\qep_ARM966E-S.a</state>
-          <state>$_QPC_$\ports\arm\vanilla\iar\dbg\qf_ARM966E-S.a</state>
+          <state>$_QPC_$\ports\arm\vanilla\iar\dbg\libqp_ARM966E-S.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -775,10 +778,6 @@
         </option>
         <option>
           <name>CrcAlign</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>CrcAlgo</name>
           <state>1</state>
         </option>
         <option>
@@ -883,6 +882,16 @@
           <name>IlinkStackCallGraphFile</name>
           <state></state>
         </option>
+        <option>
+          <name>CrcAlgorithm</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CrcUnitSize</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -939,7 +948,7 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>19</version>
+          <version>20</version>
           <state>14</state>
         </option>
         <option>
@@ -1047,12 +1056,12 @@
         </option>
         <option>
           <name>GFPUCoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>14</state>
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>14</state>
         </option>
         <option>
@@ -1072,6 +1081,10 @@
         <version>28</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
+        <option>
+          <name>CCOptimizationNoSizeConstraints</name>
+          <state>0</state>
+        </option>
         <option>
           <name>CCDefines</name>
           <state>NDEBUG</state>
@@ -1518,7 +1531,7 @@
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>14</version>
+        <version>15</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -1647,8 +1660,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\arm\vanilla\iar\rel\qep_ARM966E-S.a</state>
-          <state>$_QPC_$\ports\arm\vanilla\iar\rel\qf_ARM966E-S.a</state>
+          <state>$_QPC_$\ports\arm\vanilla\iar\rel\libqp_ARM966E-S.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -1685,10 +1697,6 @@
         </option>
         <option>
           <name>CrcAlign</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>CrcAlgo</name>
           <state>1</state>
         </option>
         <option>
@@ -1793,6 +1801,16 @@
           <name>IlinkStackCallGraphFile</name>
           <state></state>
         </option>
+        <option>
+          <name>CrcAlgorithm</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CrcUnitSize</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -1849,7 +1867,7 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>19</version>
+          <version>20</version>
           <state>14</state>
         </option>
         <option>
@@ -1957,12 +1975,12 @@
         </option>
         <option>
           <name>GFPUCoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>14</state>
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>19</version>
+          <version>20</version>
           <state>14</state>
         </option>
         <option>
@@ -1982,6 +2000,10 @@
         <version>28</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
+        <option>
+          <name>CCOptimizationNoSizeConstraints</name>
+          <state>0</state>
+        </option>
         <option>
           <name>CCDefines</name>
           <state>Q_SPY</state>
@@ -2428,7 +2450,7 @@
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>14</version>
+        <version>15</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -2557,9 +2579,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$_QPC_$\ports\arm\vanilla\iar\spy\qep_ARM966E-S.a</state>
-          <state>$_QPC_$\ports\arm\vanilla\iar\spy\qf_ARM966E-S.a</state>
-          <state>$_QPC_$\ports\arm\vanilla\iar\spy\qs_ARM966E-S.a</state>
+          <state>$_QPC_$\ports\arm\vanilla\iar\spy\libqp_ARM966E-S.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -2596,10 +2616,6 @@
         </option>
         <option>
           <name>CrcAlign</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>CrcAlgo</name>
           <state>1</state>
         </option>
         <option>
@@ -2704,6 +2720,16 @@
           <name>IlinkStackCallGraphFile</name>
           <state></state>
         </option>
+        <option>
+          <name>CrcAlgorithm</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CrcUnitSize</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -2752,6 +2778,10 @@
           <version>28</version>
           <wantNonLocal>0</wantNonLocal>
           <debug>1</debug>
+          <option>
+            <name>CCOptimizationNoSizeConstraints</name>
+            <state>0</state>
+          </option>
           <option>
             <name>CCDefines</name>
             <state></state>
@@ -2991,6 +3021,10 @@
           <wantNonLocal>0</wantNonLocal>
           <debug>0</debug>
           <option>
+            <name>CCOptimizationNoSizeConstraints</name>
+            <state>0</state>
+          </option>
+          <option>
             <name>CCDefines</name>
             <state>NDEBUG</state>
           </option>
@@ -3228,6 +3262,10 @@
           <version>28</version>
           <wantNonLocal>0</wantNonLocal>
           <debug>1</debug>
+          <option>
+            <name>CCOptimizationNoSizeConstraints</name>
+            <state>0</state>
+          </option>
           <option>
             <name>CCDefines</name>
             <state>Q_SPY</state>

@@ -190,7 +190,7 @@ void  INT_Excep_IRQ7(void){ }
 void  INT_Excep_IRQ8(void) {
     QF_ISR_ENTRY();  /* inform the QF Vanilla kernel about entering the ISR */
 
-    QACTIVE_POST(AO_Philo[0], Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
+    QACTIVE_POST(AO_Table, Q_NEW(QEvt, PAUSE_SIG),
                  &QS_Excep_IRQ8);
     QF_ISR_EXIT();    /* inform the QF Vanilla kernel about exiting the ISR */
 }

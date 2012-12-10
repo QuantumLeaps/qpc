@@ -3,12 +3,12 @@
 [DATABASE_VERSION]
 "11.0" 
 [WORKSPACE_DETAILS]
-"lwip_qk_yrdkrx63n" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx63n" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx63n\lwip_qk_yrdkrx63n.hws" "RX" "Renesas RX Standard" 
+"lwip_qk_yrdkrx63n" "D:\qp\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx63n" "D:\qp\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx63n\lwip_qk_yrdkrx63n.hws" "RX" "Renesas RX Standard" 
 [SHARED_WORKSPACE_CONTROL_STATUS]
 "" "" "" 
 "" "" "" 
 [PROJECTS]
-"lwip_qk_yrdkrx63n" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx63n" "D:\software\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx63n\lwip_qk_yrdkrx63n.hwp" 0 
+"lwip_qk_yrdkrx63n" "D:\qp\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx63n" "D:\qp\qpc\examples\rx\qk\renesas\lwip_qk_yrdkrx63n\lwip_qk_yrdkrx63n.hwp" 0 
 [INFORMATION]
 "No workspace information available" 
 [SCRAP]
@@ -19,6 +19,8 @@
 [GENERAL_DATA_PROJECT]
 [USERMENUTOOLS]
 [CUSTOMPLACEHOLDERS]
+"LWIP" "lwIP" "d:\software\lwip-1.4.0" 
+"QPC" "QP/C" "d:\qp\qpc" 
 [MAKEFILE_BUILD_INFO]
 "$(WORKSPDIR)\make\$(PROJECTNAME)_$(CONFIGNAME).mak" "" "$(WORKSPDIR)\make" 0 0 0 
 [VD_CONFIGURATION_OPTIONS]

@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: BSP for YRDKRX63N board, Vanilla, Renesas RX Standard Toolchain
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Product: BSP for YRDKRX63N board, QK kenrel, Renesas RX Standard Toolchain
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 17, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -56,6 +56,9 @@ enum InterruptPriorities {
 #define PCLK_FREQ         48000000U
 #define TICK_COUNT_VAL    (PCLK_FREQ / 128U / BSP_TICKS_PER_SEC)
 
+/* local variables ---------------------------------------------------------*/
+static uint32_t l_rnd;                                       /* random seed */
+
 /* Q-Spy -------------------------------------------------------------------*/
 #ifdef Q_SPY
 
@@ -92,7 +95,7 @@ static void CMT0_isr(void) {
 void IRQ8_isr(void) {
     QK_ISR_ENTRY();          /* inform the QK kernel about entering the ISR */
 
-    QACTIVE_POST(AO_Philo[0], Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
+    QACTIVE_POST(AO_Table, Q_NEW(QEvt, PAUSE_SIG),
                  &QS_IRQ8_isr);
     QK_ISR_EXIT();            /* inform the QK kernel about exiting the ISR */
 }
@@ -101,7 +104,7 @@ void IRQ8_isr(void) {
 void IRQ9_isr(void) {
     QK_ISR_ENTRY();          /* inform the QK kernel about entering the ISR */
 
-    QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG),    /* for testing... */
+    QACTIVE_POST(AO_Philo[0], Q_NEW(QEvt, MAX_PUB_SIG),   /* for testing... */
                  &QS_IRQ9_isr);
     QK_ISR_EXIT();            /* inform the QK kernel about exiting the ISR */
 }
@@ -146,26 +149,23 @@ void BSP_init(void) {
     MPC.P41PFS.BYTE = 0x40U;    /* P41 is used as IRQ pin */
     MPC.P44PFS.BYTE = 0x40U;    /* P44 is used as IRQ pin */
 
+    BSP_randomSeed(1234U);
 
     if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
         Q_ERROR();
     }
-
+    QS_RESET();
     QS_OBJ_DICTIONARY(&QS_CMT0_isr);
     QS_OBJ_DICTIONARY(&QS_IRQ8_isr);
     QS_OBJ_DICTIONARY(&QS_IRQ9_isr);
     QS_OBJ_DICTIONARY(&QS_IRQ12_isr);
 }
 /*..........................................................................*/
-void BSP_busyDelay(void) {
-    /* limit for the loop counter in busyDelay() */
-    static uint32_t l_delay = 0UL;
-    uint32_t volatile i = l_delay;
-    while (i-- > 0UL) {                                   /* busy-wait loop */
-    }
+void BSP_terminate(int16_t result) {
+    (void)result;
 }
 /*..........................................................................*/
-void BSP_displyPhilStat(uint8_t n, char const *stat) {
+void BSP_displayPhilStat(uint8_t n, char const *stat) {
                          /* turn LED on when eating and off when not eating */
     uint8_t on_off = (stat[0] == 'e' ? LED_ON : LED_OFF);
     switch (n) {
@@ -182,6 +182,23 @@ void BSP_displyPhilStat(uint8_t n, char const *stat) {
         QS_STR(stat);                                 /* Philosopher status */
     QS_END()
 }
+/*..........................................................................*/
+void BSP_displayPaused(uint8_t paused) {
+    LED11 = (paused != 0U) ? LED_ON : LED_OFF;
+}
+/*..........................................................................*/
+uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
+    /* "Super-Duper" Linear Congruential Generator (LCG)
+    * LCG(2^32, 3*7*11*13*23, 0, seed)
+    */
+    l_rnd = l_rnd * (3*7*11*13*23);
+    return l_rnd >> 8;
+}
+/*..........................................................................*/
+void BSP_randomSeed(uint32_t seed) {
+    l_rnd = seed;
+}
+
 /*..........................................................................*/
 void QF_onStartup(void) {
 
@@ -205,7 +222,7 @@ void QF_onStartup(void) {
 
 
     /* setup the Switch interrupts... */
-    ICU.IRQCR[ 8].BIT.IRQMD = 0x01U;         /* set IRQ type (falling edge) */
+    ICU.IRQCR[ 8].BIT.IRQMD = 0x03U;  /* IRQ type: raising and falling edge */
     ICU.IRQCR[ 9].BIT.IRQMD = 0x01U;
     ICU.IRQCR[12].BIT.IRQMD = 0x01U;
 

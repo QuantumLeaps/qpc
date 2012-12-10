@@ -3,12 +3,12 @@
 [DATABASE_VERSION]
 "11.0" 
 [WORKSPACE_DETAILS]
-"qp" "D:\software\qpc\ports\rx\vanilla\renesas" "D:\software\qpc\ports\rx\vanilla\renesas\qp.hws" "RX" "Renesas RX Standard" 
+"qp" "D:\qp\qpc\ports\rx\vanilla\renesas" "D:\qp\qpc\ports\rx\vanilla\renesas\qp.hws" "RX" "Renesas RX Standard" 
 [SHARED_WORKSPACE_CONTROL_STATUS]
 "" "" "" 
 "" "" "" 
 [PROJECTS]
-"qp_rx600" "D:\software\qpc\ports\rx\vanilla\renesas" "D:\software\qpc\ports\rx\vanilla\renesas\qp_rx600.hwp" 0 
+"qp_rx600" "D:\qp\qpc\ports\rx\vanilla\renesas" "D:\qp\qpc\ports\rx\vanilla\renesas\qp_rx600.hwp" 0 
 [INFORMATION]
 "No workspace information available" 
 [SCRAP]

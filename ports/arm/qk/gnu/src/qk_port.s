@@ -1,34 +1,40 @@
 /*****************************************************************************
 * Product:  QK port to ARM, QK, with GNU toolset
-* Last Updated for Version: 4.3.00
-* Date of the Last Update:  Nov 06, 2011
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Nov 09, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2011 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
 *
-* This software may be distributed and modified under the terms of the GNU
-* General Public License version 2 (GPL) as published by the Free Software
-* Foundation and appearing in the file GPL.TXT included in the packaging of
-* this file. Please note that GPL Section 2[b] requires that all works based
-* on this software must also be made publicly available under the terms of
-* the GPL ("Copyleft").
+* This program is open source software: you can redistribute it and/or
+* modify it under the terms of the GNU General Public License as published
+* by the Free Software Foundation, either version 2 of the License, or
+* (at your option) any later version.
 *
-* Alternatively, this software may be distributed and modified under the
+* Alternatively, this program may be distributed and modified under the
 * terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GPL and are specifically designed for licensees interested in
-* retaining the proprietary status of their code.
+* the GNU General Public License and are specifically designed for
+* licensees interested in retaining the proprietary status of their code.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web site:  http://www.quantum-leaps.com
+* Quantum Leaps Web sites: http://www.quantum-leaps.com
+*                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
 
-    .equ    NO_INT,      0xC0   /* mask to disable interrupts (FIQ and IRQ) */
-    .equ    NO_IRQ,      0x80   /* mask to disable interrupts (FIQ and IRQ) */
-    .equ    NO_FIQ,      0x40   /* mask to disable interrupts (FIQ and IRQ) */
+    .equ    NO_IRQ,      0x80   /* mask to disable interrupts (IRQ) */
+    .equ    NO_FIQ,      0x40   /* mask to disable interrupts (FIQ) */
     .equ    FIQ_MODE,    0x11
     .equ    IRQ_MODE,    0x12
     .equ    SYS_MODE,    0x1F
@@ -46,29 +52,41 @@
 
 
 /*****************************************************************************
-* unsigned int QF_int_lock_SYS(void);
+* unsigned int QF_int_disable_SYS(void);
 */
-    .global QF_int_lock_SYS
-    .func   QF_int_lock_SYS
-QF_int_lock_SYS:
-    MRS     r0,cpsr             /* get the original CPSR in r0 to return */
-    MSR     cpsr_c,#(SYS_MODE | NO_INT) /* disable both IRQ/FIQ */
-    BX      lr                  /* return the original CPSR in r0 */
+    .global QF_int_disable_SYS
+    .func   QF_int_disable_SYS
+QF_int_disable_SYS:
+    MRS     r0,cpsr             /* get the original CPSR in r0 to return  */
+    MSR     cpsr_c,#(SYS_MODE | NO_IRQ) /* disable IRQ only, FIQ enabled! */
+    BX      lr                  /* return the original CPSR in r0         */
 
-    .size   QF_int_lock_SYS, . - QF_int_lock_SYS
+    .size   QF_int_disable_SYS, . - QF_int_disable_SYS
     .endfunc
 
 
 /*****************************************************************************
-* void QF_int_unlock_SYS(unsigned int key);
+* void QF_int_enable_SYS(unsigned int key);
 */
-    .global QF_int_unlock_SYS
-    .func   QF_int_unlock_SYS
-QF_int_unlock_SYS:
+    .global QF_int_enable_SYS
+    .func   QF_int_enable_SYS
+QF_int_enable_SYS:
     MSR     cpsr_c,r0           /* restore the original CPSR from r0 */
     BX      lr                  /* return to ARM or THUMB */
 
-    .size   QF_int_unlock_SYS, . - QF_int_unlock_SYS
+    .size   QF_int_enable_SYS, . - QF_int_enable_SYS
+    .endfunc
+
+
+/*****************************************************************************
+* void QK_init();
+*/
+    .global QK_init
+    .func   QK_init
+QK_init:
+    BX      lr                  /* return to ARM or THUMB */
+
+    .size   QK_init, . - QK_init
     .endfunc
 
 
@@ -94,15 +112,13 @@ QK_irq:
     MSR     cpsr_c,#(IRQ_MODE | NO_IRQ) /* IRQ mode, IRQ disabled */
     STMFD   r0!,{r13,r14}       /* finish saving the context (r0_SYS,r1_SYS)*/
 
-    MSR     cpsr_c,#(SYS_MODE | NO_INT) /* SYSTEM mode, IRQ/FIQ disabled */
+    MSR     cpsr_c,#(SYS_MODE | NO_IRQ) /* SYSTEM mode, IRQ disabled */
 /* IRQ entry }}} */
 
     LDR     r0,=QK_intNest_     /* load address in already saved r0 */
     LDRB    r12,[r0]            /* load original QK_intNest_ into saved r12 */
     ADD     r12,r12,#1          /* increment the nesting level */
     STRB    r12,[r0]            /* store the value in QK_intNest_ */
-
-    MSR     cpsr_c,#(SYS_MODE | NO_IRQ) /* enable FIQ */
 
     /* NOTE: BSP_irq might re-enable IRQ interrupts (the FIQ is enabled
     * already), if IRQs are prioritized by the interrupt controller.
@@ -111,7 +127,7 @@ QK_irq:
     MOV     lr,pc               /* copy the return address to link register */
     BX      r12                 /* call the C IRQ-handler (ARM/THUMB) */
 
-    MSR     cpsr_c,#(SYS_MODE | NO_INT) /* make sure IRQ/FIQ are disabled */
+    MSR     cpsr_c,#(SYS_MODE | NO_IRQ) /* make sure IRQ are disabled */
     LDR     r0,=QK_intNest_     /* load address */
     LDRB    r12,[r0]            /* load original QK_intNest_ into saved r12 */
     SUBS    r12,r12,#1          /* decrement the nesting level */
@@ -133,7 +149,7 @@ QK_irq_exit:
     MOV     r0,sp               /* make sp_SYS visible to IRQ mode */
     ADD     sp,sp,#(8*4)        /* fake unstacking 8 registers from sp_SYS */
 
-    MSR     cpsr_c,#(IRQ_MODE | NO_INT) /* IRQ mode, both IRQ/FIQ disabled */
+    MSR     cpsr_c,#(IRQ_MODE | NO_IRQ) /* IRQ mode, IRQ disabled */
     MOV     sp,r0               /* copy sp_SYS to sp_IRQ */
     LDR     r0,[sp,#(7*4)]      /* load the saved SPSR from the stack */
     MSR     spsr_cxsf,r0        /* copy it into spsr_IRQ */
@@ -145,89 +161,6 @@ QK_irq_exit:
 /* IRQ exit }}} */
 
     .size   QK_irq, . - QK_irq
-    .endfunc
-
-
-/*****************************************************************************
-* void QK_fiq(void);
-*/
-    .global QK_fiq
-    .func   QK_fiq
-    .align  3
-QK_fiq:
-/* FIQ entry {{{ */
-    MOV     r13,r0              /* save r0 in r13_FIQ */
-    SUB     r0,lr,#4            /* put return address in r0_SYS */
-    MOV     lr,r1               /* save r1 in r14_FIQ (lr) */
-    MRS     r1,spsr             /* put the SPSR in r1_SYS */
-
-    MSR     cpsr_c,#(SYS_MODE | NO_INT) /* SYSTEM mode, IRQ/FIQ disabled */
-    STMFD   sp!,{r0,r1}         /* save SPSR and PC on SYS stack */
-    STMFD   sp!,{r2-r3,r12,lr}  /* save APCS-clobbered regs on SYS stack */
-    MOV     r0,sp               /* make the sp_SYS visible to FIQ mode */
-    SUB     sp,sp,#(2*4)        /* make room for stacking (r0_SYS, SPSR) */
-
-    MSR     cpsr_c,#(FIQ_MODE | NO_INT) /* FIQ mode, IRQ/FIQ disabled */
-    STMFD   r0!,{r13,r14}       /* finish saving the context (r0_SYS,r1_SYS)*/
-
-    MSR     cpsr_c,#(SYS_MODE | NO_INT) /* SYSTEM mode, IRQ/FIQ disabled */
-/* FIQ entry }}} */
-
-    LDR     r0,=QK_intNest_     /* load address in already saved r0 */
-    LDRB    r12,[r0]            /* load original QK_intNest_ into saved r12 */
-    ADD     r12,r12,#1          /* increment interrupt nesting */
-    STRB    r12,[r0]            /* store the value in QK_intNest_ */
-
-
-    /* NOTE:
-    * Because FIQ is typically NOT prioritized by the interrupt controller
-    * BSP_fiq must not enable IRQ/FIQ to avoid priority inversions!
-    */
-    LDR     r12,=BSP_fiq
-    MOV     lr,pc               /* copy the return address to link register */
-    BX      r12                 /* call the C FIQ-handler (ARM/THUMB) */
-
-
-    MSR     cpsr_c,#(SYS_MODE | NO_INT) /* make sure IRQ/FIQ are disabled */
-    LDR     r0,=QK_intNest_     /* load address */
-    LDRB    r12,[r0]            /* load original QK_intNest_ into saved r12 */
-    SUBS    r12,r12,#1          /* decrement the nesting level */
-    STRB    r12,[r0]            /* store the value in QK_intNest_ */
-    BNE     QK_fiq_exit         /* branch if interrupt nesting not zero */
-
-    LDR     r0,[sp,#(7*4)]      /* load the saved SPSR from the stack */
-    AND     r0,r0,#0x1F         /* isolate the SPSR mode bits in r0 */
-    CMP     r0,#IRQ_MODE        /* see if we interrupted IRQ mode */
-    BEQ     QK_fiq_exit         /* branch if interrutped IRQ */
-
-    /* We have interrupted a task. Call QK scheduler to handle preemptions */
-    LDR     r12,=QK_schedPrio_
-    MOV     lr,pc               /* copy the return address to link register */
-    BX      r12                 /* call QK_schedPrio_ (ARM/THUMB) */
-    CMP     r0,#0               /* check the returned priority */
-    BEQ     QK_fiq_exit         /* branch if priority zero */
-
-    LDR     r12,=QK_sched_
-    MOV     lr,pc               /* copy the return address to link register */
-    BX      r12                 /* call QK_sched_ (ARM/THUMB) */
-
-QK_fiq_exit:
-/* FIQ exit {{{ */              /* both IRQ/FIQ disabled (see NOTE above) */
-    MOV     r0,sp               /* make sp_SYS visible to FIQ mode */
-    ADD     sp,sp,#(8*4)        /* fake unstacking 8 registers from sp_SYS */
-
-    MSR     cpsr_c,#(FIQ_MODE | NO_INT) /* FIQ mode, IRQ/FIQ disabled */
-    MOV     sp,r0               /* copy sp_SYS to sp_FIQ */
-    LDR     r0,[sp,#(7*4)]      /* load the saved SPSR from the stack */
-    MSR     spsr_cxsf,r0        /* copy it into spsr_FIQ */
-
-    LDMFD   sp,{r0-r3,r12,lr}^  /* unstack all saved USER/SYSTEM registers */
-    NOP                         /* can't access banked reg immediately */
-    LDR     lr,[sp,#(6*4)]      /* load return address from the SYS stack */
-    MOVS    pc,lr               /* return restoring CPSR from SPSR */
-/* FIQ exit }}} */
-
-    .size   QK_fiq, . - QK_fiq
     .endfunc
 
 
@@ -304,6 +237,18 @@ QF_reserved:
     .endfunc
 
 /*****************************************************************************
+* void QF_fiq_dummy(void);
+*/
+    .global QF_fiq_dummy
+    .func   QF_fiq_dummy
+    .align  3
+QF_fiq_dummy:
+    LDR     r0,=Csting_fiq
+    B       QF_except
+    .size   QF_fiq_dummy, . - QF_fiq_dummy
+    .endfunc
+
+/*****************************************************************************
 * void QF_except(void);
 */
     .global QF_except
@@ -312,7 +257,7 @@ QF_reserved:
 QF_except:
     /* r0 is set to the string with the exception name */
     SUB     r1,lr,#4            /* set line number to the exception address */
-    MSR     cpsr_c,#(SYS_MODE | NO_INT) /* SYSTEM mode, IRQ/FIQ disabled */
+    MSR     cpsr_c,#(SYS_MODE | NO_IRQ | NO_FIQ) /* SYSTEM,IRQ/FIQ disabled */
     LDR     r12,=Q_onAssert
     MOV     lr,pc               /* store the return address */
     BX      r12                 /* call the assertion-handler (ARM/THUMB) */
@@ -327,6 +272,7 @@ Csting_swi:         .string  "Software Int"
 Csting_pAbort:      .string  "Prefetch Abort"
 Csting_dAbort:      .string  "Data Abort"
 Csting_reserved:    .string  "Reserved"
+Csting_fiq:         .string  "FIQ dummy"
 
     .size   QF_except, . - QF_except
     .endfunc

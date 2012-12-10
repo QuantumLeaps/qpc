@@ -250,19 +250,17 @@ void QActive_start(QActive * const me, uint8_t prio,
     void QActive_postFIFO(QActive * const me, QEvt const * const e,
                           void const * const sender);
 
-
     /** \brief Invoke the direct event posting facility QActive_postFIFO().
     * This macro is the recommended way of posting events, because it provides
     * the vital information for software tracing and avoids any overhead when
     * the tracing is disabled.
     *
-    *
     * This macro takes the last argument \a sender_, which is a pointer to
-    * the sender object. This argument is actually only used when QS software
+    * the sender object. This argument is actually only used when QS
     * tracing is disabled (macro #Q_SPY is defined). When QS software
-    * tracing is not enabled, the macro calls QF_publish() without the
-    * \a sender_ argument, so the overhead of passing this extra argument
-    * is entirely avoided.
+    * tracing is not enabled, the macro calls QActive_postFIFO() without
+    * the \a sender_ argument, so the overhead of passing this extra
+    * argument is entirely avoided.
     *
     * \note the pointer to the sender object is not necessarily a poiner
     * to an active object. In fact, if QACTIVE_POST() is called from an

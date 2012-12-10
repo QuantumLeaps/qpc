@@ -1,7 +1,7 @@
 /*****************************************************************************
 * BSP for Explorer 16 board with dsPIC33FJ256GP710, QK kernel
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 26, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -38,13 +38,16 @@
 
 Q_DEFINE_THIS_FILE
 
-                  /* prmiary oscillator frequency for the Explorer 16 board */
-#define BSP_PRIMARY_OSC_HZ      8000000UL
-                                  /* CPU frequency after the PLL (FOSC / 2) */
-#define BSP_FCY_HZ              25000000UL
-                 /* system clock tick period in CPU clocks / TMR2 prescaler */
-#define BSP_TMR2_PERIOD         (BSP_FCY_HZ / 8 / BSP_TICKS_PER_SEC)
+_FOSCSEL(FNOSC_FRC);              /* set flash configuration for the device */
+_FOSC(FCKSM_CSDCMD & OSCIOFNC_ON & POSCMD_NONE);
+_FWDT(FWDTEN_OFF);
 
+                             /* frequency of the FRC oscillator for dsPICFJ */
+#define FOSC_HZ                 7370000.0
+                                       /* instruction cycle clock frequency */
+#define FCY_HZ                  (FOSC_HZ / 2.0)
+                 /* system clock tick period in CPU clocks / TMR2 prescaler */
+#define BSP_TMR2_PERIOD         ((uint16_t)(FCY_HZ / BSP_TICKS_PER_SEC))
 
 static uint8_t const l_led[] = {
     (1 << 0),                            /* LED D3 on the Explorer 16 board */
@@ -86,7 +89,7 @@ QK_ISR(no_auto_psv) _T2Interrupt() {
 
     QF_TICK(&l_T2Interrupt);          /* handle all armed time events in QF */
 
-    QK_ISR_EXIT();                  /* inform QK-nano about exiting the ISR */
+    QK_ISR_EXIT();                       /* inform QK about exiting the ISR */
 }
 /*..........................................................................*/
 QK_ISR(auto_psv) _INT0Interrupt() {
@@ -96,7 +99,7 @@ QK_ISR(auto_psv) _INT0Interrupt() {
 
     QACTIVE_POST(AO_Table, &eat_evt, &l_INT0Interrupt);
 
-    QK_ISR_EXIT();                  /* inform QK-nano about exiting the ISR */
+    QK_ISR_EXIT();                       /* inform QK about exiting the ISR */
 }
 
 
@@ -107,20 +110,21 @@ void BSP_init(void) {
     LATA  = 0xFF00;            /* set LEDs (D3-D10/RA0-RA7) drive state low */
     TRISA = 0xFF00;             /* set LED pins (D3-D10/RA0-RA7) as outputs */
 
-    if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
+    if (QS_INIT((void *)0) == 0U) {   /* initialize the QS software tracing */
         Q_ERROR();
     }
+    QS_RESET();
     QS_OBJ_DICTIONARY(&l_T2Interrupt);
     QS_OBJ_DICTIONARY(&l_INT0Interrupt);
 }
 /*..........................................................................*/
-void QF_onStartup(void) {                 /* entered with interrupts locked */
-    T2CON  = 0x0010;    /* Internal Osc (Fcy), 16 bit mode, prescaler = 1:8 */
-    TMR2   = 0;      /* Start counting from 0 and clear the prescaler count */
-    PR2    = BSP_TMR2_PERIOD - 1;                    /* set the TMR2 period */
-    _T2IP  = TIMER2_ISR_PRIO;             /* set Timer 2 interrupt priority */
-    _T2IF  = 0;                          /* clear the interrupt for Timer 2 */
-    _T2IE  = 1;                             /* enable interrupt for Timer 2 */
+void QF_onStartup(void) {
+    T2CON = 0x0000U;  /* Use Internal Osc (Fcy), 16 bit mode, prescaler = 1 */
+    TMR2  = 0x0000U; /* Start counting from 0 and clear the prescaler count */
+    PR2   = (uint16_t)(BSP_TMR2_PERIOD - 1U);              /* Timer2 period */
+    _T2IP = TIMER2_ISR_PRIO;              /* set Timer 2 interrupt priority */
+    _T2IF = 0;                           /* clear the interrupt for Timer 2 */
+    _T2IE = 1;                              /* enable interrupt for Timer 2 */
     T2CONbits.TON = 1;                                     /* start Timer 2 */
 
     INTCON2bits.INT0EP = 0;              /* INT0 interrupt on positive edge */
@@ -181,8 +185,8 @@ void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
 /*--------------------------------------------------------------------------*/
 #ifdef Q_SPY
 
-#define QS_BUF_SIZE        1024U
-#define BAUD_RATE          38400U
+#define QS_BUF_SIZE        1024
+#define QS_BAUD_RATE       38400.0
 
 uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[QS_BUF_SIZE];            /* buffer for Quantum Spy */
@@ -191,9 +195,9 @@ uint8_t QS_onStartup(void const *arg) {
 
                  /* initialize the UART2 for transmitting the QS trace data */
     TRISFbits.TRISF5 = 0;                     /* set UART2 TX pin as output */
-    U2MODE = 0x0000;                               /* enable high baud rate */
+    U2MODE = 0x0000;                                /* enable low baud rate */
     U2STA  = 0x0000;                         /* use default settings of 8N1 */
-    U2BRG  = ((BSP_FCY_HZ / 16 / BAUD_RATE) - 1);    /* baud rate generator */
+    U2BRG  = (uint16_t)((FCY_HZ / (4.0 * QS_BAUD_RATE)) - 1.0 + 0.5);
     U2MODEbits.UARTEN = 1;
     U2STAbits.UTXEN   = 1;
 

@@ -1,29 +1,36 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C buld script for ARM, Vanilla port, GNU toolchain
-:: Last Updated for Version: 4.3.00
-:: Date of the Last Update:  Nov 06, 2011
+:: Last Updated for Version: 4.5.02
+:: Date of the Last Update:  Oct 07, 2012
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2011 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
 ::
-:: This software may be distributed and modified under the terms of the GNU
-:: General Public License version 2 (GPL) as published by the Free Software
-:: Foundation and appearing in the file GPL.TXT included in the packaging of
-:: this file. Please note that GPL Section 2[b] requires that all works based
-:: on this software must also be made publicly available under the terms of
-:: the GPL ("Copyleft").
+:: This program is open source software: you can redistribute it and/or
+:: modify it under the terms of the GNU General Public License as published
+:: by the Free Software Foundation, either version 2 of the License, or
+:: (at your option) any later version.
 ::
-:: Alternatively, this software may be distributed and modified under the
+:: Alternatively, this program may be distributed and modified under the
 :: terms of Quantum Leaps commercial licenses, which expressly supersede
-:: the GPL and are specifically designed for licensees interested in
-:: retaining the proprietary status of their code.
+:: the GNU General Public License and are specifically designed for
+:: licensees interested in retaining the proprietary status of their code.
+::
+:: This program is distributed in the hope that it will be useful,
+:: but WITHOUT ANY WARRANTY; without even the implied warranty of
+:: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+:: GNU General Public License for more details.
+::
+:: You should have received a copy of the GNU General Public License
+:: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: Quantum Leaps Web site:  http://www.quantum-leaps.com
+:: Quantum Leaps Web sites: http://www.quantum-leaps.com
+::                          http://www.state-machine.com
 :: e-mail:                  info@quantum-leaps.com
 :: ==========================================================================
 setlocal
@@ -31,13 +38,13 @@ setlocal
 :: define the GNU_ARM environment variable to point to the location 
 :: where you've installed the GNU ARM toolset or adjust the following 
 :: set instruction 
-if "%GNU_ARM%"=="" set GNU_ARM=C:/tools/devkitPro/devkitARM
+if "%GNU_ARM%"=="" set GNU_ARM=C:\tools\devkitPro\devkitARM
 
 set PATH=%GNU_ARM%\bin;%PATH%
 
-set CC=arm-eabi-gcc
-set ASM=arm-eabi-as
-set LIB=arm-eabi-ar
+set CC=arm-none-eabi-gcc
+set ASM=arm-none-eabi-as
+set LIB=arm-none-eabi-ar
 
 set QP_INCDIR=..\..\..\..\include
 set QP_PRTDIR=.
@@ -63,8 +70,10 @@ if "%1"=="spy" (
     set ASMFLAGS=-g -mcpu=%ARM_CORE% -mthumb-interwork
 )
 
+mkdir %BINDIR%
 set LIBDIR=%BINDIR%
 set LIBFLAGS=rs
+erase %LIBDIR%\libqp_%ARM_CORE%.a
 
 :: QEP ----------------------------------------------------------------------
 set SRCDIR=..\..\..\..\qep\source
@@ -79,7 +88,7 @@ set CCINC=-I%QP_PRTDIR% -I%QP_INCDIR% -I%SRCDIR%
 %CC% -mthumb %CCFLAGS% %CCINC% %SRCDIR%\qhsm_top.c -o%BINDIR%\qhsm_top.o
 %CC% -mthumb %CCFLAGS% %CCINC% %SRCDIR%\qhsm_in.c  -o%BINDIR%\qhsm_in.o
 
-%LIB% %LIBFLAGS% %LIBDIR%\libqep_%ARM_CORE%.a %BINDIR%\qep.o %BINDIR%\qfsm_ini.o %BINDIR%\qfsm_dis.o %BINDIR%\qhsm_ini.o %BINDIR%\qhsm_dis.o %BINDIR%\qhsm_top.o %BINDIR%\qhsm_in.o
+%LIB% %LIBFLAGS% %LIBDIR%\libqp_%ARM_CORE%.a %BINDIR%\qep.o %BINDIR%\qfsm_ini.o %BINDIR%\qfsm_dis.o %BINDIR%\qhsm_ini.o %BINDIR%\qhsm_dis.o %BINDIR%\qhsm_top.o %BINDIR%\qhsm_in.o
 @echo off
 erase %BINDIR%\*.o
 
@@ -119,7 +128,7 @@ set CCINC=-I%QP_PRTDIR% -I%QP_INCDIR% -I%SRCDIR%
 %CC% -marm   %CCFLAGS% %CCINC% %SRCDIR%\qvanilla.c -o%BINDIR%\qvanilla.o  
 %ASM% src\qf_port.s -o %BINDIR%\qf_port.o %ASMFLAGS%
 
-%LIB% %LIBFLAGS% %LIBDIR%\libqf_%ARM_CORE%.a %BINDIR%\qa_defer.o %BINDIR%\qa_fifo.o %BINDIR%\qa_lifo.o %BINDIR%\qa_get_.o %BINDIR%\qa_sub.o %BINDIR%\qa_usub.o %BINDIR%\qa_usuba.o %BINDIR%\qeq_fifo.o %BINDIR%\qeq_get.o %BINDIR%\qeq_init.o %BINDIR%\qeq_lifo.o %BINDIR%\qf_act.o %BINDIR%\qf_gc.o %BINDIR%\qf_log2.o %BINDIR%\qf_new.o %BINDIR%\qf_pool.o %BINDIR%\qf_psini.o %BINDIR%\qf_pspub.o %BINDIR%\qf_pwr2.o %BINDIR%\qf_tick.o %BINDIR%\qmp_get.o %BINDIR%\qmp_init.o %BINDIR%\qmp_put.o %BINDIR%\qte_ctor.o %BINDIR%\qte_arm.o %BINDIR%\qte_darm.o %BINDIR%\qte_rarm.o %BINDIR%\qte_ctr.o %BINDIR%\qvanilla.o %BINDIR%\qf_port.o
+%LIB% %LIBFLAGS% %LIBDIR%\libqp_%ARM_CORE%.a %BINDIR%\qa_defer.o %BINDIR%\qa_fifo.o %BINDIR%\qa_lifo.o %BINDIR%\qa_get_.o %BINDIR%\qa_sub.o %BINDIR%\qa_usub.o %BINDIR%\qa_usuba.o %BINDIR%\qeq_fifo.o %BINDIR%\qeq_get.o %BINDIR%\qeq_init.o %BINDIR%\qeq_lifo.o %BINDIR%\qf_act.o %BINDIR%\qf_gc.o %BINDIR%\qf_log2.o %BINDIR%\qf_new.o %BINDIR%\qf_pool.o %BINDIR%\qf_psini.o %BINDIR%\qf_pspub.o %BINDIR%\qf_pwr2.o %BINDIR%\qf_tick.o %BINDIR%\qmp_get.o %BINDIR%\qmp_init.o %BINDIR%\qmp_put.o %BINDIR%\qte_ctor.o %BINDIR%\qte_arm.o %BINDIR%\qte_darm.o %BINDIR%\qte_rarm.o %BINDIR%\qte_ctr.o %BINDIR%\qvanilla.o %BINDIR%\qf_port.o
 @echo off
 erase %BINDIR%\*.o
 
@@ -139,7 +148,7 @@ set CCINC=-I%QP_PRTDIR% -I%QP_INCDIR% -I%SRCDIR%
 %CC% -marm   %CCFLAGS% %CCINC% %SRCDIR%\qs_mem.c  -o%BINDIR%\qs_mem.o 
 %CC% -marm   %CCFLAGS% %CCINC% %SRCDIR%\qs_str.c  -o%BINDIR%\qs_str.o 
 
-%LIB% %LIBFLAGS% %LIBDIR%\libqs_%ARM_CORE%.a %BINDIR%\qs.o %BINDIR%\qs_.o %BINDIR%\qs_blk.o %BINDIR%\qs_byte.o %BINDIR%\qs_f32.o %BINDIR%\qs_f64.o %BINDIR%\qs_mem.o %BINDIR%\qs_str.o
+%LIB% %LIBFLAGS% %LIBDIR%\libqp_%ARM_CORE%.a %BINDIR%\qs.o %BINDIR%\qs_.o %BINDIR%\qs_blk.o %BINDIR%\qs_byte.o %BINDIR%\qs_f32.o %BINDIR%\qs_f64.o %BINDIR%\qs_mem.o %BINDIR%\qs_str.o
 @echo off
 erase %BINDIR%\*.o
 

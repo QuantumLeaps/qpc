@@ -3,12 +3,12 @@
 [DATABASE_VERSION]
 "11.0" 
 [WORKSPACE_DETAILS]
-"qp_rx600" "D:\software\qpc\ports\rx\vanilla\gnu" "D:\software\qpc\ports\rx\vanilla\gnu\qp.hws" "RX" "KPIT GNURX [ELF]" 
+"qp_rx600" "D:\qp\qpc\ports\rx\vanilla\gnu" "D:\qp\qpc\ports\rx\vanilla\gnu\qp.hws" "RX" "KPIT GNURX [ELF]" 
 [SHARED_WORKSPACE_CONTROL_STATUS]
 "" "" "" 
 "" "" "" 
 [PROJECTS]
-"qp_rx600" "D:\software\qpc\ports\rx\vanilla\gnu" "D:\software\qpc\ports\rx\vanilla\gnu\qp_rx600.hwp" 0 
+"qp_rx600" "D:\qp\qpc\ports\rx\vanilla\gnu" "D:\qp\qpc\ports\rx\vanilla\gnu\qp_rx600.hwp" 0 
 [INFORMATION]
 "No workspace information available" 
 [SCRAP]

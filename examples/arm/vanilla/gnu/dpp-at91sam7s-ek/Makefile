@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: QDK/C for AT91SAM7S-EK, Vainlla kernel, GNU toolset
-# Last Updated for Version: 4.4.00
-# Date of the Last Update:  Feb 26, 2012
+# Product: Makefile for QP/C, AT91SAM7S-EK, DevKit Pro (GNU), Vanilla
+# Last Updated for Version: 4.5.02
+# Date of the Last Update:  Nov 13, 2012
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -9,22 +9,45 @@
 #
 # Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
 #
-# This software may be distributed and modified under the terms of the GNU
-# General Public License version 2 (GPL) as published by the Free Software
-# Foundation and appearing in the file GPL.TXT included in the packaging of
-# this file. Please note that GPL Section 2[b] requires that all works based
-# on this software must also be made publicly available under the terms of
-# the GPL ("Copyleft").
+# This program is open source software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published
+# by the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
 #
-# Alternatively, this software may be distributed and modified under the
+# Alternatively, this program may be distributed and modified under the
 # terms of Quantum Leaps commercial licenses, which expressly supersede
-# the GPL and are specifically designed for licensees interested in
-# retaining the proprietary status of their code.
+# the GNU General Public License and are specifically designed for
+# licensees interested in retaining the proprietary status of their code.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# Quantum Leaps Web site:  http://www.quantum-leaps.com
+# Quantum Leaps Web sites: http://www.quantum-leaps.com
+#                          http://www.state-machine.com
 # e-mail:                  info@quantum-leaps.com
 ##############################################################################
+# examples of invoking this Makefile:
+# building configurations: Debug (default), Release, and Spy
+# mingw32-make
+# mingw32-make CONF=rel
+#
+# cleaning configurations: Debug (default), Release, and Spy
+# mingw32-make clean
+# mingw32-make CONF=rel clean
+
+#-----------------------------------------------------------------------------
+# NOTE: the Makefile expects that the QPN environment variable is defined
+# and points to the QP-nano installation directory
+#
+ifndef QPN
+$(error The QPN environment variable must be defined)
+endif
 
 #-----------------------------------------------------------------------------
 # tools
@@ -33,129 +56,202 @@ ifeq ($(GNU_ARM),)
 GNU_ARM = C:/tools/devkitPro/devkitARM/bin
 endif
 
-CC    := $(GNU_ARM)/arm-eabi-gcc
-CPP   := $(GNU_ARM)/arm-eabi-g++
-ASM   := $(GNU_ARM)/arm-eabi-as
-LINK  := $(GNU_ARM)/arm-eabi-gcc
-BIN   := $(GNU_ARM)/arm-eabi-objcopy
+CC    := $(GNU_ARM)/arm-none-eabi-gcc
+CPP   := $(GNU_ARM)/arm-none-eabi-g++
+AS    := $(GNU_ARM)/arm-none-eabi-as
+LINK  := $(GNU_ARM)/arm-none-eabi-gcc
+BIN   := $(GNU_ARM)/arm-none-eabi-objcopy
 RM    := rm -rf
 MKDIR := mkdir
 
-QP_INCDIR = $(QPC)/include
-QP_PRTDIR = $(QPC)/ports/arm/vanilla/gnu
-QP_LIBDIR = $(QP_PRTDIR)/$(BINDIR)
-BLDDIR    = .
+#-----------------------------------------------------------------------------
+# directories
+#
+QP_PORT_DIR := $(QPC)/ports/arm/vanilla/gnu
+APP_DIR     := .
+LIB_DIR     :=
 
-CCINC   = -I$(QP_INCDIR) -I$(QP_PRTDIR) -I$(BLDDIR)
+# source directories
+VPATH = $(APP_DIR)
 
-APP_DEP = $(BLDDIR)/bsp.h \
-	$(BLDDIR)/dpp.h
-	
-APP_NAME = dpp
+# Output file basename
+OUTPUT    := dpp
+
+# include directories
+INCLUDES  = -I"$(QPC)"/include	\
+	-I$(QP_PORT_DIR) \
+	-I.
+
+# defines
+DEFINES =
+
 ARM_CORE = arm7tdmi
 
+#-----------------------------------------------------------------------------
+# files
+#
+
+# assembler source files
+ASM_SRCS := $(wildcard *.s)
+
+# C ARM source files
+C_ARM_SRCS := isr.c bsp.c
+
+# C THUMB source files
+C_THUMB_SRCS := low_level_init.c main.c philo.c table.c
+
+
+# C++ ARM source files
+CPP_ARM_SRCS :=
+
+# C++ THUMB source files
+CPP_THUMB_SRCS :=
+
+LD_SCRIPT := dpp.ld
+LIBS    := -lqp_$(ARM_CORE)
+
+#-----------------------------------------------------------------------------
+# build options for various configurations
+#
 
 ifeq (rel, $(CONF))       # Release configuration ............................
 
-BINDIR   = rel
+BIN_DIR := rel
 
-CCFLAGS = -c -mcpu=$(ARM_CORE) -mthumb-interwork -Os \
-	-mlong-calls -ffunction-sections -Wall -DNDBEBUG -o$@
+ASFLAGS = -mcpu=$(ARM_CORE) -mthumb-interwork
 
-ASMFLAGS = -mcpu=$(ARM_CORE) -mthumb-interwork -o$@
+CFLAGS = -Os -mcpu=$(ARM_CORE) -mthumb-interwork $(INCLUDES) $(DEFINES) \
+	-mlong-calls -ffunction-sections -Wall -DNDBEBUG
 
-LINKFLAGS = -T .\$(APP_NAME).ld -o $(BINDIR)\$(APP_NAME).elf \
-	-Wl,-Map,$(BINDIR)\$(APP_NAME).map,--cref,--gc-sections
+CPPFLAGS = -Os -mcpu=$(ARM_CORE) -mthumb-interwork $(INCLUDES) $(DEFINES) \
+	-fno-rtti -fno-exceptions \
+	-mlong-calls -ffunction-sections -Wall -DNDBEBUG
 
-else ifeq (spy, $(CONF))  # Spy configuration ................................
+LINKFLAGS = -T$(LD_SCRIPT) \
+	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections \
+	-L$(QP_PORT_DIR)/$(BIN_DIR)
 
-BINDIR   = spy
+else
 
-QS_LIB = $(QP_LIBDIR)/libqs_$(ARM_CORE).a
+ifeq (spy, $(CONF))  # Spy configuration ................................
 
-CCFLAGS = -g -c -mcpu=$(ARM_CORE) -mthumb-interwork -O \
-	-mlong-calls -ffunction-sections -Wall -DQ_SPY -o$@
+BIN_DIR := spy
 
-ASMFLAGS = -g -mcpu=$(ARM_CORE) -mthumb-interwork -o$@
+ASFLAGS = -g -mcpu=$(ARM_CORE) -mthumb-interwork
 
-LINKFLAGS = -T .\$(APP_NAME).ld -o $(BINDIR)\$(APP_NAME).elf \
-	-Wl,-Map,$(BINDIR)\$(APP_NAME).map,--cref,--gc-sections
+CFLAGS = -g -O -mcpu=$(ARM_CORE) -mthumb-interwork $(INCLUDES) $(DEFINES) \
+	-mlong-calls -ffunction-sections -Wall -DQ_SPY
 
-else                     # default Debug configuration .......................
+CPPFLAGS = -g -O -mcpu=$(ARM_CORE) -mthumb-interwork $(INCLUDES) $(DEFINES) \
+	-fno-rtti -fno-exceptions \
+	-mlong-calls -ffunction-sections -Wall -DQ_SPY
 
-BINDIR   = dbg
+LINKFLAGS = -T$(LD_SCRIPT) \
+	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections \
+	-L$(QP_PORT_DIR)/$(BIN_DIR)
 
-CCFLAGS = -g -c -mcpu=$(ARM_CORE) -mthumb-interwork -O \
-	-mlong-calls -ffunction-sections -Wall -o$@
+else                # default Debug configuration .......................
 
-ASMFLAGS = -g -mcpu=$(ARM_CORE) -mthumb-interwork -o$@
+BIN_DIR := dbg
 
-LINKFLAGS = -T .\$(APP_NAME).ld -o $(BINDIR)\$(APP_NAME).elf \
-	-Wl,-Map,$(BINDIR)\$(APP_NAME).map,--cref,--gc-sections
+ASFLAGS = -g -mcpu=$(ARM_CORE) -mthumb-interwork
+
+CFLAGS = -g -O -mcpu=$(ARM_CORE) -mthumb-interwork $(INCLUDES) $(DEFINES) \
+	-mlong-calls -ffunction-sections -Wall
+
+CPPFLAGS = -g -O -mcpu=$(ARM_CORE) -mthumb-interwork $(INCLUDES) $(DEFINES) \
+	-fno-rtti -fno-exceptions \
+	-mlong-calls -ffunction-sections -Wall
+
+LINKFLAGS = -T$(LD_SCRIPT) \
+	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections \
+	-L$(QP_PORT_DIR)/$(BIN_DIR)
+
+endif
 
 endif
 
 
-#.............................................................................
-.PHONY: all
+ASM_OBJS       := $(patsubst %.s,%.o,$(ASM_SRCS))
+C_ARM_OBJS     := $(patsubst %.c,%.oa,$(C_ARM_SRCS))
+CPP_ARM_OBJS   := $(patsubst %.cpp,%.oa,$(CPP_ARM_SRCS))
+C_THUMB_OBJS   := $(patsubst %.c,%.ot,$(C_THUMB_SRCS))
+CPP_THUMB_OBJS := $(patsubst %.cpp,%.ot,$(CPP_THUMB_SRCS))
 
-all: $(BINDIR)/$(APP_NAME).elf
+TARGET_BIN         := $(BIN_DIR)/$(OUTPUT).bin
+TARGET_ELF         := $(BIN_DIR)/$(OUTPUT).elf
+ASM_OBJS_EXT       := $(addprefix $(BIN_DIR)/, $(ASM_OBJS))
+C_ARM_OBJS_EXT     := $(addprefix $(BIN_DIR)/, $(C_ARM_OBJS))
+C_THUMB_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_THUMB_OBJS))
+C_DEPS_EXT         := $(patsubst %.oa, %.d, $(C_ARM_OBJS_EXT))
+C_DEPS_EXT         += $(patsubst %.ot, %.d, $(C_THUMB_OBJS_EXT))
+CPP_ARM_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(CPP_ARM_OBJS))
+CPP_THUMB_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_THUMB_OBJS))
+CPP_DEPS_EXT       := $(patsubst %.oa, %.d, $(CPP_ARM_OBJS_EXT))
+CPP_DEPS_EXT       += $(patsubst %.ot, %.d, $(CPP_THUMB_OBJS_EXT))
 
-$(BINDIR)/$(APP_NAME).elf : \
-	./$(APP_NAME).ld \
-	$(BINDIR)/startup.o \
-	$(BINDIR)/low_level_init.o \
-	$(BINDIR)/main.o \
-	$(BINDIR)/bsp.o \
-	$(BINDIR)/isr.o \
-	$(BINDIR)/philo.o \
-	$(BINDIR)/table.o \
-	$(BINDIR)/no_heap.o	\
-	$(QP_LIBDIR)/libqf_$(ARM_CORE).a \
-	$(QP_LIBDIR)/libqep_$(ARM_CORE).a \
-	$(QS_LIB)
-	$(LINK) \
-	$(BINDIR)/startup.o \
-	$(BINDIR)/low_level_init.o \
-	$(BINDIR)/main.o \
-	$(BINDIR)/bsp.o \
-	$(BINDIR)/isr.o \
-	$(BINDIR)/philo.o \
-	$(BINDIR)/table.o \
-	$(BINDIR)/no_heap.o	\
-	$(QP_LIBDIR)/libqf_$(ARM_CORE).a \
-	$(QP_LIBDIR)/libqep_$(ARM_CORE).a \
-	$(QS_LIB) \
-	$(LINKFLAGS)
+#-----------------------------------------------------------------------------
+# rules
+#
 
-$(BINDIR)/startup.o: $(BLDDIR)/startup.s $(APP_DEP)
-	$(ASM) $(ASMFLAGS) $<
+all: $(BIN_DIR) $(TARGET_ELF)
+#all: $(BIN_DIR) $(TARGET_BIN)
 
-$(BINDIR)/low_level_init.o: $(BLDDIR)/low_level_init.c $(APP_DEP)
-	$(CC) -marm   $(CCFLAGS) $(CCINC) $<
+$(BIN_DIR):
+	@echo
+	mkdir -p $@
 
-$(BINDIR)/main.o: $(BLDDIR)/main.c $(APP_DEP)
-	$(CC) -mthumb $(CCFLAGS) $(CCINC) $<
+$(TARGET_BIN): $(TARGET_ELF)
+	$(BIN) -O binary $< $@
 
-$(BINDIR)/bsp.o: $(BLDDIR)/bsp.c $(APP_DEP)
-	$(CC) -marm   $(CCFLAGS) $(CCINC) $<
+$(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_ARM_OBJS_EXT) $(CPP_ARM_OBJS_EXT) \
+	$(C_THUMB_OBJS_EXT) $(CPP_THUMB_OBJS_EXT)
+	$(LINK) $(LINKFLAGS) -o $@ $^ $(LIBS)
 
-$(BINDIR)/isr.o: $(BLDDIR)/isr.c $(APP_DEP)
-	$(CC) -marm   $(CCFLAGS) $(CCINC) $<
+$(BIN_DIR)/%.d : %.c
+	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
-$(BINDIR)/philo.o: $(BLDDIR)/philo.c $(APP_DEP)
-	$(CC) -mthumb $(CCFLAGS) $(CCINC) $<
+$(BIN_DIR)/%.d : %.cpp
+	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
 
-$(BINDIR)/table.o: $(BLDDIR)/table.c $(APP_DEP)
-	$(CC) -mthumb $(CCFLAGS) $(CCINC) $<
+$(BIN_DIR)/%.o : %.s
+	$(AS) $(ASFLAGS) $< -o $@
 
-$(BINDIR)/no_heap.o: $(BLDDIR)/no_heap.c $(APP_DEP)
-	$(CC) -mthumb $(CCFLAGS) $(CCINC) $<
+$(BIN_DIR)/%.oa : %.c
+	$(CC) $(CFLAGS) -marm -c $< -o $@
+
+$(BIN_DIR)/%.ot : %.c
+	$(CC) $(CFLAGS) -mthumb -c $< -o $@
+
+$(BIN_DIR)/%.oa : %.cpp
+	$(CPP) $(CPPFLAGS) -marm -c $< -o $@
+
+$(BIN_DIR)/%.ot : %.cpp
+	$(CPP) $(CPPFLAGS) -mthumb -c $< -o $@
+
+-include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
 
 
 .PHONY : clean
 clean:
-	-$(RM) $(BINDIR)/*.o \
-	$(BINDIR)/*.elf \
-	$(BINDIR)/*.map
-
+	-$(RM) $(BIN_DIR)/*.o $(BIN_DIR)/*.oa $(BIN_DIR)/*.ot \
+	$(BIN_DIR)/*.d \
+	$(BIN_DIR)/*.bin \
+	$(BIN_DIR)/*.elf \
+	$(BIN_DIR)/*.map
+	
+show:
+	@echo CONF = $(CONF)
+	@echo ASM_SRCS = $(ASM_SRCS)
+	@echo C_ARM_SRCS = $(C_ARM_SRCS)
+	@echo C_THUMB_SRCS = $(C_THUMB_SRCS)
+	@echo CPP_ARM_SRCS = $(CPP_ARM_SRCS)
+	@echo CPP_THUMB_SRCS = $(CPP_THUMB_SRCS)
+	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
+	@echo C_ARM_OBJS_EXT = $(C_ARM_OBJS_EXT)
+	@echo C_THUMB_OBJS_EXT = $(C_THUMB_OBJS_EXT)
+	@echo CPP_ARM_OBJS_EXT = $(CPP_ARM_OBJS_EXT)
+	@echo CPP_THUMB_OBJS_EXT = $(CPP_THUMB_OBJS_EXT)
+	@echo C_DEPS_EXT = $(C_DEPS_EXT)
+	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
+	@echo TARGET_ELF = $(TARGET_ELF)

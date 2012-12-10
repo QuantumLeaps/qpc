@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: BSP for DPP on eZ430-RF2500, QK kernel, TI CCS MSP430 compiler
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 09, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -36,7 +36,12 @@
 #include "dpp.h"
 #include "bsp.h"
 
+#include <msp430x22x4.h>                             /* MSP430 variant used */
+
 Q_DEFINE_THIS_FILE
+
+/* Local-scope objects -----------------------------------------------------*/
+static uint32_t l_rnd;                                       /* random seed */
 
 #define BSP_MCK       8000000U
 #define BSP_SMCLK     8000000U
@@ -44,6 +49,7 @@ Q_DEFINE_THIS_FILE
 
 #define LED0_on()     (P1OUT |= (uint8_t)BIT0)
 #define LED0_off()    (P1OUT &= (uint8_t)~BIT0)
+#define LED0_toggle() (P1OUT ^= (uint8_t)BIT0)
 
 #define LED1_on()     (P1OUT |= (uint8_t)BIT1)
 #define LED1_off()    (P1OUT &= (uint8_t)~BIT1)
@@ -56,7 +62,6 @@ Q_DEFINE_THIS_FILE
         PHILO_STAT = QS_USER
     };
 #endif
-
 
 /*..........................................................................*/
 #pragma vector = TIMERA0_VECTOR
@@ -113,12 +118,46 @@ void BSP_init(void) {
     P1IES  |=  BIT2;                     /* interrupt edge select high->low */
     P1IFG  &= ~BIT2;                              /* clear interrupt source */
 
+    BSP_randomSeed(1234U);
+
     if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
         Q_ERROR();
     }
-
+    QS_RESET();
     QS_OBJ_DICTIONARY(&l_timerA_ISR);
 }
+/*..........................................................................*/
+void BSP_terminate(int16_t result) {
+    (void)result;
+}
+/*..........................................................................*/
+void BSP_displayPhilStat(uint8_t n, char const *stat) {
+    (void)n;
+    (void)stat;
+    LED0_toggle();
+
+    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
+        QS_U8(1, n);                                  /* Philosopher number */
+        QS_STR(stat);                                 /* Philosopher status */
+    QS_END()
+}
+/*..........................................................................*/
+void BSP_displayPaused(uint8_t paused) {
+    (void)paused;
+}
+/*..........................................................................*/
+uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
+    /* "Super-Duper" Linear Congruential Generator (LCG)
+    * LCG(2^32, 3*7*11*13*23, 0, seed)
+    */
+    l_rnd = l_rnd * (3U*7U*11U*13U*23U);
+    return l_rnd >> 8;
+}
+/*..........................................................................*/
+void BSP_randomSeed(uint32_t seed) {
+    l_rnd = seed;
+}
+
 /*..........................................................................*/
 void QF_onStartup(void) {
     TACCTL0 = CCIE;                       /* Timer_A CCR0 interrupt enabled */
@@ -159,22 +198,6 @@ void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
     QF_INT_DISABLE();             /* make sure that interrupts are disabled */
     for (;;) {
     }
-}
-/*..........................................................................*/
-void BSP_displyPhilStat(uint8_t n, char const *stat) {
-    if (n == 0) {                                           /* for Philo[0] */
-        if (stat[0] == 'e') {                    /* ON when Philo[0] eating */
-            LED0_on();
-        }
-        else {
-            LED0_off();
-        }
-    }
-
-    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
-        QS_U8(1, n);                                  /* Philosopher number */
-        QS_STR(stat);                                 /* Philosopher status */
-    QS_END()
 }
 
 /*--------------------------------------------------------------------------*/

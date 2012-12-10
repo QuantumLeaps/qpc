@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: BSP for YRDKRX62N board, Vanilla, GNU-RX compiler
-* Last Updated for Version: 4.4.00
-* Date of the Last Update:  Mar 06, 2012
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 17, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -9,20 +9,27 @@
 *
 * Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
 *
-* This software may be distributed and modified under the terms of the GNU
-* General Public License version 2 (GPL) as published by the Free Software
-* Foundation and appearing in the file GPL.TXT included in the packaging of
-* this file. Please note that GPL Section 2[b] requires that all works based
-* on this software must also be made publicly available under the terms of
-* the GPL ("Copyleft").
+* This program is open source software: you can redistribute it and/or
+* modify it under the terms of the GNU General Public License as published
+* by the Free Software Foundation, either version 2 of the License, or
+* (at your option) any later version.
 *
-* Alternatively, this software may be distributed and modified under the
+* Alternatively, this program may be distributed and modified under the
 * terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GPL and are specifically designed for licensees interested in
-* retaining the proprietary status of their code.
+* the GNU General Public License and are specifically designed for
+* licensees interested in retaining the proprietary status of their code.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web site:  http://www.quantum-leaps.com
+* Quantum Leaps Web sites: http://www.quantum-leaps.com
+*                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
 #include "qp_port.h"
@@ -87,6 +94,9 @@ enum GPIOIntTriggerType {        /* GPIO interrupt triggers (manual 11.2.8) */
 #define BSP_CLKDIV              512U                   /* See manual 21.2.3 */
 #define TICK_TIMER_FREQ         (PCLK_FREQ / BSP_CLKDIV)
 
+static uint32_t l_rnd;                                       /* random seed */
+
+/* Q-Spy -------------------------------------------------------------------*/
 #ifdef Q_SPY
 
     QSTimeCtr QS_tickTime_;
@@ -138,15 +148,11 @@ void BSP_init(void) {
     QS_OBJ_DICTIONARY(&QS_Excep_IRQ10);
 }
 /*..........................................................................*/
-void BSP_busyDelay(void) {
-    /* limit for the loop counter in busyDelay() */
-    static uint32_t l_delay = 0UL;
-    uint32_t volatile i = l_delay;
-    while (i-- > 0UL) {                                   /* busy-wait loop */
-    }
+void BSP_terminate(int16_t result) {
+    (void)result;
 }
 /*..........................................................................*/
-void BSP_displyPhilStat(uint8_t n, char const *stat) {
+void BSP_displayPhilStat(uint8_t n, char const *stat) {
                          /* turn LED on when eating and off when not eating */
     uint8_t on_off = (stat[0] == 'e' ? LED_ON : LED_OFF);
     switch (n) {
@@ -164,6 +170,23 @@ void BSP_displyPhilStat(uint8_t n, char const *stat) {
     QS_END()
 }
 /*..........................................................................*/
+void BSP_displayPaused(uint8_t paused) {
+    LED11 = (paused != 0U) ? LED_ON : LED_OFF;
+}
+/*..........................................................................*/
+uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
+    /* "Super-Duper" Linear Congruential Generator (LCG)
+    * LCG(2^32, 3*7*11*13*23, 0, seed)
+    */
+    l_rnd = l_rnd * (3*7*11*13*23);
+    return l_rnd >> 8;
+}
+/*..........................................................................*/
+void BSP_randomSeed(uint32_t seed) {
+    l_rnd = seed;
+}
+
+/*..........................................................................*/
 void QF_onStartup(void) {
     /* set the interrupt priorities, (manual 11.2.3) */
     IPR(CMT0,)     = TICK_INT_PRIORITY;
@@ -174,7 +197,7 @@ void QF_onStartup(void) {
     /* enable GPIO interrupts ...*/
     /* configure interrupts for SW1 (IRQ8) */
     PORT4.ICR.BIT.B0 = 1 ;                  /* enable input buffer for P4.0 */
-    ICU.IRQCR[8].BIT.IRQMD = IT_FALLING_EDGE;      /* falling edge (11.2.8) */
+    ICU.IRQCR[8].BIT.IRQMD = IT_RISING_FALLING_EDGE;            /* (11.2.8) */
     IEN(ICU, IRQ8) = 1;                 /* enable interrupt source (11.2.2) */
 
     /* configure interrupts for SW2 (IRQ9) */

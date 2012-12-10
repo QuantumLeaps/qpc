@@ -1,37 +1,52 @@
 /*****************************************************************************
-* Product: QDK/C_ARM-GNU_AT91SAM7S-EK, QK port
-* Last Updated for Version: 4.3.00
-* Date of the Last Update:  Nov 08, 2011
+* Product: BSP for DPP example on AT91SAM7S-EK, QK kernel
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 08, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2011 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
 *
-* This software may be distributed and modified under the terms of the GNU
-* General Public License version 2 (GPL) as published by the Free Software
-* Foundation and appearing in the file GPL.TXT included in the packaging of
-* this file. Please note that GPL Section 2[b] requires that all works based
-* on this software must also be made publicly available under the terms of
-* the GPL ("Copyleft").
+* This program is open source software: you can redistribute it and/or
+* modify it under the terms of the GNU General Public License as published
+* by the Free Software Foundation, either version 2 of the License, or
+* (at your option) any later version.
 *
-* Alternatively, this software may be distributed and modified under the
+* Alternatively, this program may be distributed and modified under the
 * terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GPL and are specifically designed for licensees interested in
-* retaining the proprietary status of their code.
+* the GNU General Public License and are specifically designed for
+* licensees interested in retaining the proprietary status of their code.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web site:  http://www.quantum-leaps.com
+* Quantum Leaps Web sites: http://www.quantum-leaps.com
+*                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
 #include "qp_port.h"
 #include "dpp.h"
 #include "bsp.h"
 
+#include <AT91SAM7S64.H>                        /* AT91SAMT7S64 definitions */
+
 Q_DEFINE_THIS_FILE
 
+
 /* Local objects -----------------------------------------------------------*/
+static unsigned  l_rnd;                                      /* random seed */
+
+                                     /* Maseter Clock (PLLRC div by 2) [Hz] */
+#define MCK               47923200
+
 uint32_t const l_led[] = {
     (1 << 0),                                     /* LED D1 on AT91SAM7S-EK */
     (1 << 1),                                     /* LED D2 on AT91SAM7S-EK */
@@ -43,10 +58,7 @@ uint32_t const l_led[] = {
 #define LED_ON(num_)       (AT91C_BASE_PIOA->PIO_CODR = l_led[num_])
 #define LED_OFF(num_)      (AT91C_BASE_PIOA->PIO_SODR = l_led[num_])
 
-typedef void (*IntVector)(void);           /* IntVector pointer-to-function */
-
 #ifdef Q_SPY
-    uint8_t const QS_tickIRQ = 0;
     enum AppRecords {                 /* application-specific trace records */
         PHILO_STAT = QS_USER
     };
@@ -54,8 +66,68 @@ typedef void (*IntVector)(void);           /* IntVector pointer-to-function */
 #endif
 
 /*..........................................................................*/
-void QK_init(void) {
+void BSP_init(void) {
+    uint32_t i;
+
+    for (i = 0; i < Q_DIM(l_led); ++i) {          /* initialize the LEDs... */
+        AT91C_BASE_PIOA->PIO_PER = l_led[i];                  /* enable pin */
+        AT91C_BASE_PIOA->PIO_OER = l_led[i];     /* configure as output pin */
+        LED_OFF(i);                                   /* extinguish the LED */
+    }
+                /* configure Advanced Interrupt Controller (AIC) of AT91... */
+    AT91C_BASE_AIC->AIC_IDCR = ~0;                /* disable all interrupts */
+    AT91C_BASE_AIC->AIC_ICCR = ~0;                  /* clear all interrupts */
+    for (i = 0; i < 8; ++i) {
+        AT91C_BASE_AIC->AIC_EOICR = 0;           /* write AIC_EOICR 8 times */
+    }
+
+                             /* set the desired ticking rate for the PIT... */
+    i = (MCK / 16 / BSP_TICKS_PER_SEC) - 1;
+    AT91C_BASE_PITC->PITC_PIMR = (AT91C_PITC_PITEN | AT91C_PITC_PITIEN | i);
+
+    BSP_randomSeed(1234U);
+
+    if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
+        Q_ERROR();
+    }
+    QS_RESET();
 }
+/*..........................................................................*/
+void BSP_terminate(int16_t result) {
+    (void)result;
+}
+/*..........................................................................*/
+void BSP_displayPhilStat(uint8_t n, char const *stat) {
+    if (stat[0] == (uint8_t)'e') {           /* is this Philosopher eating? */
+        LED_ON(n);
+    }
+    else {                                /* this Philosopher is not eating */
+        LED_OFF(n);
+    }
+
+    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
+        QS_U8(1, n);                                  /* Philosopher number */
+        QS_STR(stat);                                 /* Philosopher status */
+    QS_END()
+}
+/*..........................................................................*/
+void BSP_displayPaused(uint8_t paused) {
+    (void)paused;
+}
+/*..........................................................................*/
+uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
+    /* "Super-Duper" Linear Congruential Generator (LCG)
+    * LCG(2^32, 3*7*11*13*23, 0, seed)
+    */
+    l_rnd = l_rnd * (3*7*11*13*23);
+    return l_rnd >> 8;
+}
+/*..........................................................................*/
+void BSP_randomSeed(uint32_t seed) {
+    l_rnd = seed;
+}
+
+
 /*..........................................................................*/
 __attribute__ ((section (".text.fastcode")))
 void QK_onIdle(void) {
@@ -77,58 +149,14 @@ void QK_onIdle(void) {
         }
         QF_INT_ENABLE();
     }
-
 #elif defined NDEBUG /* only if not debugging (idle mode hinders debugging) */
     AT91C_BASE_PMC->PMC_SCDR = 1;/* Power-Management: disable the CPU clock */
     /* NOTE: an interrupt starts the CPU clock again */
 #endif
 }
 /*..........................................................................*/
-void BSP_init(void) {
-    uint32_t i;
-
-    for (i = 0; i < Q_DIM(l_led); ++i) {          /* initialize the LEDs... */
-        AT91C_BASE_PIOA->PIO_PER = l_led[i];                  /* enable pin */
-        AT91C_BASE_PIOA->PIO_OER = l_led[i];     /* configure as output pin */
-        LED_OFF(i);                                   /* extinguish the LED */
-    }
-                /* configure Advanced Interrupt Controller (AIC) of AT91... */
-    AT91C_BASE_AIC->AIC_IDCR = ~0;                /* disable all interrupts */
-    AT91C_BASE_AIC->AIC_ICCR = ~0;                  /* clear all interrupts */
-    for (i = 0; i < 8; ++i) {
-        AT91C_BASE_AIC->AIC_EOICR = 0;           /* write AIC_EOICR 8 times */
-    }
-
-                             /* set the desired ticking rate for the PIT... */
-    i = (MCK / 16 / BSP_TICKS_PER_SEC) - 1;
-    AT91C_BASE_PITC->PITC_PIMR = (AT91C_PITC_PITEN | AT91C_PITC_PITIEN | i);
-
-    if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
-        Q_ERROR();
-    }
-
-    QS_OBJ_DICTIONARY(&QS_tickIRQ);
-}
-/*..........................................................................*/
-void BSP_busyDelay(void) {
-}
-/*..........................................................................*/
-void BSP_displyPhilStat(uint8_t n, char const *stat) {
-    if (stat[0] == (uint8_t)'e') {           /* is this Philosopher eating? */
-        LED_ON(n);
-    }
-    else {                                /* this Philosopher is not eating */
-        LED_OFF(n);
-    }
-
-    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
-        QS_U8(1, n);                                  /* Philosopher number */
-        QS_STR(stat);                                 /* Philosopher status */
-    QS_END()
-}
-/*..........................................................................*/
 void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
-    QF_INT_DISABLE();
+    QF_INT_DISABLE();                             /* disable all interrupts */
     for (;;) {                            /* hang here in the for-ever loop */
     }
 }

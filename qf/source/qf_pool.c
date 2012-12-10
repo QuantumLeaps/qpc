@@ -58,6 +58,7 @@ void QF_poolInit(void * const poolSto, uint32_t const poolSize,
              || (QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - (uint8_t)1])
                  < (QEvtSize)evtSize));
                 /* perfom the platform-dependent initialization of the pool */
-    QF_EPOOL_INIT_(QF_pool_[QF_maxPool_], poolSto, poolSize, evtSize);
+    QF_EPOOL_INIT_(QF_pool_[QF_maxPool_],
+                   poolSto, poolSize, (QEvtSize)evtSize);
     ++QF_maxPool_;                                         /* one more pool */
 }

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP-lwIP, EK-LM36965, QK, GNU/Sourcery G++
 # Last Updated for Version: lwIP-1.4.0/QP-4.5.02
-# Date of the Last Update:  Jul 26, 2012
+# Date of the Last Update:  Oct 03, 2012
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -52,6 +52,14 @@ $(error The QPC environment variable must be defined)
 endif
 
 #-----------------------------------------------------------------------------
+# NOTE: the Makefile expects that the LWIP environment variable is defined
+# and points to the lwIP installation directory
+#
+ifndef LWIP
+$(error The LWIP environment variable must be defined)
+endif
+
+#-----------------------------------------------------------------------------
 # tools
 #
 ifeq ($(GNU_ARM),)
@@ -90,9 +98,9 @@ INCLUDES  = -I$(QPC)/include	\
 	-I$(CMSIS_DIR) \
 	-Ilwip_port \
 	-Iwebserver \
-	-I ../../../../../../lwip-1.4.0/src/include \
-	-I ../../../../../../lwip-1.4.0/src/include/ipv4 \
-	-I ../../../../../../lwip-1.4.0/src
+	-I $(LWIP)/src/include \
+	-I $(LWIP)/src/include/ipv4 \
+	-I $(LWIP)/src
 
 # defines
 DEFINES =

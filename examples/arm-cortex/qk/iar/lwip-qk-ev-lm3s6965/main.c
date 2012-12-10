@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP with lwIP application
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.02
+* Date of the Last Update:  Oct 06, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -42,18 +42,8 @@ static QEvt const *l_philoQueueSto[N_PHILO][N_PHILO];
 static QEvt const *l_lwIPMgrQueueSto[10];
 static QSubscrList   l_subscrSto[MAX_PUB_SIG];
 
-static union SmallEvents {
-    void   *e0;                                       /* minimum event size */
-    uint8_t e1[sizeof(QEvt)];
-    uint8_t e2[sizeof(TableEvt)];
-    /* ... other event types to go into this pool */
-} l_smlPoolSto[20];                     /* storage for the small event pool */
-
-static union MediumEvents {
-    void   *e0;                                       /* minimum event size */
-    uint8_t e1[sizeof(TextEvt)];
-    /* ... other event types to go into this pool */
-} l_medPoolSto[4];                     /* storage for the medium event pool */
+static QF_MPOOL_EL(TableEvt) l_smlPoolSto[20];          /* small event pool */
+static QF_MPOOL_EL(TextEvt)  l_medPoolSto[4];           /* med.  event pool */
 
 /*..........................................................................*/
 int main(void) {

@@ -4,6 +4,15 @@
 QP/C Revision History
 =====================
 
+\section qpc_4_5_03 Version 4.5.03 (Product) Release date: Nov 27, 2012
+
+This release changes the directory structure of QP ports to various
+operating systems, such as POSIX (Linux, BSD, etc.), Win32 (Windows),
+Qt, etc. The OS ports are moved from the ports\80x86\ directory one
+level up to ports\. Also, the OS examples are moved from the
+exampels\80x86\ directory one level up to examples\.
+
+
 \section qpc_4_5_02 Version 4.5.02 (Product) Release date: Aug 04, 2012
 
 The main purpose of this release is better, more comprehensive

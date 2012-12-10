@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C/C++
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 4.5.03
+* Date of the Last Update:  Nov 30, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -64,32 +64,6 @@
     #define Q_ERROR_ID(id_)             ((void)0)
 
 #else                  /* Q_NASSERT not defined--assertion checking enabled */
-
-    #ifdef __cplusplus
-        extern "C" {
-    #endif
-
-    /** \brief Type for line numbers.
-    *
-    * This typedef specifies strong type for line numbers. The use of this
-    * type, rather than plain 'int', is in compliance with the MISRA-C 2004
-    * Rule 6.3(adv).
-    */
-    typedef int int_t;
-
-    /** callback invoked in case the condition passed to #Q_ASSERT,
-    * #Q_REQUIRE, #Q_ENSURE, #Q_ERROR, #Q_ALLEGE as well as #Q_ASSERT_ID,
-    * #Q_REQUIRE_ID, #Q_ENSURE_ID, #Q_ERROR_ID, and #Q_ALLEGE_ID evaluates
-    * to FALSE.
-    *
-    * \param file name where the assertion failed
-    * \param line number at which the assertion failed
-    */
-    void Q_onAssert(char_t const Q_ROM * const Q_ROM_VAR file, int_t line);
-
-    #ifdef __cplusplus
-        }
-    #endif
 
     /** Place this macro at the top of each C/C++ module to define the file
     * name string using __FILE__ (NOTE: __FILE__ might contain lengthy path
@@ -158,7 +132,7 @@
     * \sa #Q_ERROR_ID
     */
     #define Q_ERROR() \
-        Q_onAssert(l_this_file, (int_t)__LINE__)
+        Q_onAssert(&l_this_file[0], (int_t)__LINE__)
 
     /** Assertion that always calls the Q_onAssert() callback if
     * ever executed. This assertion style is better suited for unit
@@ -171,6 +145,30 @@
         Q_onAssert(l_this_file, (int_t)(id_))
 
 #endif                                                         /* Q_NASSERT */
+
+#ifdef __cplusplus
+    extern "C" {
+#endif
+
+/** \brief Type for line numbers.
+*
+* This typedef specifies strong type for line numbers. The use of this type,
+* rather than plain 'int', is in compliance with MISRA-C 2004 Rule 6.3(adv).
+*/
+typedef int int_t;
+
+/** callback invoked in case the condition passed to #Q_ASSERT, #Q_REQUIRE,
+* #Q_ENSURE, #Q_ERROR, #Q_ALLEGE as well as #Q_ASSERT_ID, #Q_REQUIRE_ID,
+* #Q_ENSURE_ID, #Q_ERROR_ID, and #Q_ALLEGE_ID evaluates to FALSE.
+*
+* \param file file name where the assertion failed
+* \param line line number at which the assertion failed
+*/
+void Q_onAssert(char_t const Q_ROM * const Q_ROM_VAR file, int_t line);
+
+#ifdef __cplusplus
+    }
+#endif
 
 /** Assertion that checks for a precondition. This macro is equivalent to
 * #Q_ASSERT, except the name provides a better documentation of the

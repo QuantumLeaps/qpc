@@ -41,11 +41,7 @@ static QEvt const *l_tableQueueSto[N_PHILO];
 static QEvt const *l_philoQueueSto[N_PHILO][N_PHILO];
 //static QSubscrList   l_subscrSto[MAX_PUB_SIG];
 
-static union SmallEvents {
-    void   *e0;                                       /* minimum event size */
-    uint8_t e1[sizeof(TableEvt)];
-    /* ... other event types to go into this pool */
-} l_smlPoolSto[2*N_PHILO];              /* storage for the small event pool */
+static QF_MPOOL_EL(TableEvt) l_smlPoolSto[2U*N_PHILO];        /* small pool */
 
 /*..........................................................................*/
 int main(void) {
@@ -72,12 +68,12 @@ int main(void) {
                                                /* initialize event pools... */
     QF_poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
 
-    for (n = 0; n < N_PHILO; ++n) {          /* start the active objects... */
-        QActive_start(AO_Philo[n], (uint8_t)(n + 1),
+    for (n = 0U; n < N_PHILO; ++n) {         /* start the active objects... */
+        QActive_start(AO_Philo[n], (uint8_t)(n + 1U),
                       l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
                       (void *)0, 0, (QEvt *)0);
     }
-    QActive_start(AO_Table, (uint8_t)(N_PHILO + 1),
+    QActive_start(AO_Table, (uint8_t)(N_PHILO + 1U),
                   l_tableQueueSto, Q_DIM(l_tableQueueSto),
                   (void *)0, 0, (QEvt *)0);
 
