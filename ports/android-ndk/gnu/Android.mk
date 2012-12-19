@@ -36,7 +36,8 @@ $(QF_SRCDIR)/qf_tick.c $(QF_SRCDIR)/qmp_get.c \
 $(QF_SRCDIR)/qmp_init.c $(QF_SRCDIR)/qmp_put.c \
 $(QF_SRCDIR)/qte_ctor.c $(QF_SRCDIR)/qte_arm.c \
 $(QF_SRCDIR)/qte_darm.c $(QF_SRCDIR)/qte_rarm.c \
-$(QF_SRCDIR)/qte_ctr.c src/qf_port.c
+$(QF_SRCDIR)/qte_ctr.c \
+qf_port.c
 include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -61,12 +62,14 @@ $(QF_SRCDIR)/qf_tick.c $(QF_SRCDIR)/qmp_get.c \
 $(QF_SRCDIR)/qmp_init.c $(QF_SRCDIR)/qmp_put.c \
 $(QF_SRCDIR)/qte_ctor.c $(QF_SRCDIR)/qte_arm.c \
 $(QF_SRCDIR)/qte_darm.c $(QF_SRCDIR)/qte_rarm.c \
-$(QF_SRCDIR)/qte_ctr.c src/qf_port.c \
+$(QF_SRCDIR)/qte_ctr.c \
+qf_port.c \
 $(QS_SRCDIR)/qs.c \
 $(QS_SRCDIR)/qs_.c $(QS_SRCDIR)/qs_blk.c \
 $(QS_SRCDIR)/qs_byte.c $(QS_SRCDIR)/qs_f32.c \
 $(QS_SRCDIR)/qs_f64.c $(QS_SRCDIR)/qs_mem.c \
-$(QS_SRCDIR)/qs_str.c src/qs_port.c $(QSPY_SRCDIR)/qspy.c
+$(QS_SRCDIR)/qs_str.c $(QSPY_SRCDIR)/qspy.c \
+qs_port.c
 include $(BUILD_STATIC_LIBRARY)
 
 

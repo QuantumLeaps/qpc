@@ -3,7 +3,7 @@
 # Please NDK_MODULE_PATH enviroment variable to point to one diretory 
 # above qpc root dir.
 QP_INCDIR      := $(QPC)/include
-QP_PORT_INCDIR := $(QPC)/ports/android/gnu
+QP_PORT_INCDIR := $(QPC)/ports/android-ndk/gnu
 QSPY_INCDIR    := $(QTOOLS)/qspy/include
 
 LOCAL_PATH := $(call my-dir)
@@ -27,4 +27,4 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue qpc-qspy
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-$(call import-module,qpc/ports/android/gnu)
+$(call import-module,qpc/ports/android-ndk/gnu)

@@ -11,7 +11,7 @@
   <class name="Philo" superclass="qpc::QActive">
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
    <statechart>
-    <initial target="../1">
+    <initial target="../1/1">
      <action>static uint8_t registered = (uint8_t)0; /* starts off with 0, per C-standard */
 (void)e; /* suppress the compiler warning about unused parameter */
 if (registered == (uint8_t)0) {
@@ -39,37 +39,32 @@ QS_SIG_DICTIONARY(TIMEOUT_SIG, me); /* signal for each Philos */
 QActive_subscribe(&amp;me-&gt;super, EAT_SIG);
 QActive_subscribe(&amp;me-&gt;super, TERMINATE_SIG);
 </action>
-     <initial_glyph conn="2,3,5,0,20,4">
+     <initial_glyph conn="2,2,5,1,33,12,-14">
       <action box="0,-2,6,2"/>
      </initial_glyph>
     </initial>
-    <state name="state1">
-     <initial target="../2">
-      <initial_glyph conn="23,14,5,1,-4">
-       <action box="0,-2,6,2"/>
-      </initial_glyph>
-     </initial>
+    <state name="active">
      <tran trig="TERMINATE">
       <action>QActive_stop(&amp;me-&gt;super);</action>
-      <tran_glyph conn="1,68,3,-1,16">
-       <action box="0,-2,6,2"/>
+      <tran_glyph conn="2,9,3,-1,19">
+       <action box="0,-2,10,2"/>
       </tran_glyph>
      </tran>
      <state name="thinking">
       <entry>QTimeEvt_postIn(&amp;me-&gt;timeEvt, &amp;me-&gt;super, THINK_TIME);</entry>
-      <tran trig="TIMEOUT" target="../../3">
-       <tran_glyph conn="2,19,3,1,20,13,-3">
+      <tran trig="TIMEOUT" target="../../2">
+       <tran_glyph conn="4,19,3,1,20,13,-3">
         <action box="0,-2,6,2"/>
        </tran_glyph>
       </tran>
       <tran trig="EAT, DONE">
        <action>/* EAT or DONE must be for other Philos than this one */
 Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
-       <tran_glyph conn="2,24,3,-1,13">
+       <tran_glyph conn="4,24,3,-1,13">
         <action box="0,-2,14,2"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="2,12,17,16">
+      <state_glyph node="4,12,17,16">
        <entry box="1,2,5,2"/>
       </state_glyph>
      </state>
@@ -78,24 +73,24 @@ Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
 pe-&gt;philoNum = PHILO_ID(me);
 QACTIVE_POST(AO_Table, &amp;pe-&gt;super, me);</entry>
       <tran trig="EAT">
-       <choice target="../../../4">
+       <choice target="../../../3">
         <guard>Q_EVT_CAST(TableEvt)-&gt;philoNum == PHILO_ID(me)</guard>
-        <choice_glyph conn="15,37,5,1,7,13,-3">
+        <choice_glyph conn="13,37,5,1,11,13,-3">
          <action box="1,0,19,4"/>
         </choice_glyph>
        </choice>
-       <tran_glyph conn="2,37,3,-1,13">
+       <tran_glyph conn="4,37,3,-1,9">
         <action box="0,-2,14,2"/>
        </tran_glyph>
       </tran>
       <tran trig="DONE">
        <action>/* DONE must be for other Philos than this one */
 Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
-       <tran_glyph conn="2,43,3,-1,14">
-        <action box="0,-2,14,2"/>
+       <tran_glyph conn="4,43,3,-1,13">
+        <action box="0,-2,8,2"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="2,30,17,16">
+      <state_glyph node="4,30,17,16">
        <entry box="1,2,5,2"/>
       </state_glyph>
      </state>
@@ -104,26 +99,26 @@ Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
       <exit>TableEvt *pe = Q_NEW(TableEvt, DONE_SIG);
 pe-&gt;philoNum = PHILO_ID(me);
 QF_PUBLISH(&amp;pe-&gt;super, me);</exit>
-      <tran trig="TIMEOUT" target="../../2">
-       <tran_glyph conn="2,58,3,1,22,-41,-5">
+      <tran trig="TIMEOUT" target="../../1">
+       <tran_glyph conn="4,58,3,1,22,-41,-5">
         <action box="0,-2,6,2"/>
        </tran_glyph>
       </tran>
       <tran trig="EAT, DONE">
        <action>/* EAT or DONE must be for other Philos than this one */
 Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
-       <tran_glyph conn="2,62,3,-1,13">
+       <tran_glyph conn="4,62,3,-1,13">
         <action box="0,-2,14,2"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="2,48,17,18">
+      <state_glyph node="4,48,17,18">
        <entry box="1,2,5,2"/>
        <exit box="1,4,5,2"/>
       </state_glyph>
      </state>
-     <state_glyph node="1,7,35,63"/>
+     <state_glyph node="2,4,30,66"/>
     </state>
-    <state_diagram size="40,73"/>
+    <state_diagram size="38,72"/>
    </statechart>
   </class>
   <class name="Table" superclass="qpc::QActive">
@@ -163,7 +158,7 @@ for (n = 0U; n &lt; N_PHILO; ++n) {
      <tran trig="TERMINATE">
       <action>QActive_stop(&amp;me-&gt;super);</action>
       <tran_glyph conn="2,11,3,-1,14">
-       <action box="0,-2,11,4"/>
+       <action box="0,-2,20,4"/>
       </tran_glyph>
      </tran>
      <tran trig="EAT">

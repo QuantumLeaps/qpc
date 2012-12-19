@@ -25,7 +25,7 @@ typedef struct PhiloTag {
 
 /* protected: */
 static QState Philo_initial(Philo * const me, QEvt const * const e);
-static QState Philo_state1(Philo * const me, QEvt const * const e);
+static QState Philo_active(Philo * const me, QEvt const * const e);
 static QState Philo_thinking(Philo * const me, QEvt const * const e);
 static QState Philo_hungry(Philo * const me, QEvt const * const e);
 static QState Philo_eating(Philo * const me, QEvt const * const e);
@@ -97,18 +97,13 @@ static QState Philo_initial(Philo * const me, QEvt const * const e) {
     QActive_subscribe(&me->super, EAT_SIG);
     QActive_subscribe(&me->super, TERMINATE_SIG);
 
-    return Q_TRAN(&Philo_state1);
+    return Q_TRAN(&Philo_thinking);
 }
 /* @(/2/0/1/1) .............................................................*/
-static QState Philo_state1(Philo * const me, QEvt const * const e) {
+static QState Philo_active(Philo * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         /* @(/2/0/1/1/0) */
-        case Q_INIT_SIG: {
-            status = Q_TRAN(&Philo_thinking);
-            break;
-        }
-        /* @(/2/0/1/1/1) */
         case TERMINATE_SIG: {
             QActive_stop(&me->super);
             status = Q_HANDLED();
@@ -121,22 +116,22 @@ static QState Philo_state1(Philo * const me, QEvt const * const e) {
     }
     return status;
 }
-/* @(/2/0/1/1/2) ...........................................................*/
+/* @(/2/0/1/1/1) ...........................................................*/
 static QState Philo_thinking(Philo * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
-        /* @(/2/0/1/1/2) */
+        /* @(/2/0/1/1/1) */
         case Q_ENTRY_SIG: {
             QTimeEvt_postIn(&me->timeEvt, &me->super, THINK_TIME);
             status = Q_HANDLED();
             break;
         }
-        /* @(/2/0/1/1/2/0) */
+        /* @(/2/0/1/1/1/0) */
         case TIMEOUT_SIG: {
             status = Q_TRAN(&Philo_hungry);
             break;
         }
-        /* @(/2/0/1/1/2/1) */
+        /* @(/2/0/1/1/1/1) */
         case EAT_SIG: /* intentionally fall through */
         case DONE_SIG: {
             /* EAT or DONE must be for other Philos than this one */
@@ -145,17 +140,17 @@ static QState Philo_thinking(Philo * const me, QEvt const * const e) {
             break;
         }
         default: {
-            status = Q_SUPER(&Philo_state1);
+            status = Q_SUPER(&Philo_active);
             break;
         }
     }
     return status;
 }
-/* @(/2/0/1/1/3) ...........................................................*/
+/* @(/2/0/1/1/2) ...........................................................*/
 static QState Philo_hungry(Philo * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
-        /* @(/2/0/1/1/3) */
+        /* @(/2/0/1/1/2) */
         case Q_ENTRY_SIG: {
             TableEvt *pe = Q_NEW(TableEvt, HUNGRY_SIG);
             pe->philoNum = PHILO_ID(me);
@@ -163,9 +158,9 @@ static QState Philo_hungry(Philo * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
-        /* @(/2/0/1/1/3/0) */
+        /* @(/2/0/1/1/2/0) */
         case EAT_SIG: {
-            /* @(/2/0/1/1/3/0/0) */
+            /* @(/2/0/1/1/2/0/0) */
             if (Q_EVT_CAST(TableEvt)->philoNum == PHILO_ID(me)) {
                 status = Q_TRAN(&Philo_eating);
             }
@@ -174,7 +169,7 @@ static QState Philo_hungry(Philo * const me, QEvt const * const e) {
             }
             break;
         }
-        /* @(/2/0/1/1/3/1) */
+        /* @(/2/0/1/1/2/1) */
         case DONE_SIG: {
             /* DONE must be for other Philos than this one */
             Q_ASSERT(Q_EVT_CAST(TableEvt)->philoNum != PHILO_ID(me));
@@ -182,23 +177,23 @@ static QState Philo_hungry(Philo * const me, QEvt const * const e) {
             break;
         }
         default: {
-            status = Q_SUPER(&Philo_state1);
+            status = Q_SUPER(&Philo_active);
             break;
         }
     }
     return status;
 }
-/* @(/2/0/1/1/4) ...........................................................*/
+/* @(/2/0/1/1/3) ...........................................................*/
 static QState Philo_eating(Philo * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
-        /* @(/2/0/1/1/4) */
+        /* @(/2/0/1/1/3) */
         case Q_ENTRY_SIG: {
             QTimeEvt_postIn(&me->timeEvt, &me->super, EAT_TIME);
             status = Q_HANDLED();
             break;
         }
-        /* @(/2/0/1/1/4) */
+        /* @(/2/0/1/1/3) */
         case Q_EXIT_SIG: {
             TableEvt *pe = Q_NEW(TableEvt, DONE_SIG);
             pe->philoNum = PHILO_ID(me);
@@ -206,12 +201,12 @@ static QState Philo_eating(Philo * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
-        /* @(/2/0/1/1/4/0) */
+        /* @(/2/0/1/1/3/0) */
         case TIMEOUT_SIG: {
             status = Q_TRAN(&Philo_thinking);
             break;
         }
-        /* @(/2/0/1/1/4/1) */
+        /* @(/2/0/1/1/3/1) */
         case EAT_SIG: /* intentionally fall through */
         case DONE_SIG: {
             /* EAT or DONE must be for other Philos than this one */
@@ -220,7 +215,7 @@ static QState Philo_eating(Philo * const me, QEvt const * const e) {
             break;
         }
         default: {
-            status = Q_SUPER(&Philo_state1);
+            status = Q_SUPER(&Philo_active);
             break;
         }
     }
