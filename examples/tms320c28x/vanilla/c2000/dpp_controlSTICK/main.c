@@ -41,14 +41,14 @@ static QEvt const *l_tableQueueSto[N_PHILO];
 static QEvt const *l_philoQueueSto[N_PHILO][N_PHILO];
 static QSubscrList   l_subscrSto[MAX_PUB_SIG];
 
-static union SmallEvent {
-    void *min_size;
-    TableEvt te;
-    /* other event types to go into this pool */
+static union SmallEvents {
+    void   *e0;                                       /* minimum event size */
+    uint8_t e1[sizeof(TableEvt)];
+    /* ... other event types to go into this pool */
 } l_smlPoolSto[2*N_PHILO];              /* storage for the small event pool */
 
 /*..........................................................................*/
-int main(int argc, char *argv[]) {
+int main(void) {
     uint8_t n;
 
     Philo_ctor();             /* instantiate all Philosopher active objects */

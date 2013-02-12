@@ -158,7 +158,7 @@ QState AlarmClock_mode24hr(AlarmClock * const me, QEvt const * const e) {
             }
             printf("%02d:%02d\n",
                    me->current_time/60, me->current_time%60);
-            ((QEvt *)&pe)->sig = TIME_SIG;
+            pe.super.sig    = TIME_SIG;
             pe.current_time = me->current_time;
                       /* synchronously dispatch to the orthogonal component */
             Alarm_dispatch(&me->alarm, (QEvt *)&pe);

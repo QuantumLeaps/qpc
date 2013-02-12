@@ -1,14 +1,14 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C buld script for ARM Cortex-M0, Vanilla port, Code Sourcery
-:: Last Updated for Version: 4.5.02
-:: Date of the Last Update:  Jul 25, 2012
+:: Last Updated for Version: 4.5.04
+:: Date of the Last Update:  Feb 07, 2013
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 ::
 :: This program is open source software: you can redistribute it and/or
 :: modify it under the terms of the GNU General Public License as published
@@ -52,19 +52,19 @@ set ARM_CORE=cortex-m0
 if "%1"=="" (
     echo default selected
     set BINDIR=%QP_PRTDIR%\dbg
-    set CCFLAGS=-g -c -mcpu=%ARM_CORE% -mthumb -Wall -O
+    set CCFLAGS=-g -c -mcpu=%ARM_CORE% -mthumb -DARM_ARCH_V6M -Wall -O
     set ASMFLAGS=-g -mcpu=%ARM_CORE%
 )
 if "%1"=="rel" (
     echo rel selected
     set BINDIR=%QP_PRTDIR%\rel
-    set CCFLAGS=-c -mcpu=%ARM_CORE% -mthumb -Wall -Os -DNDEBUG
+    set CCFLAGS=-c -mcpu=%ARM_CORE% -mthumb -DARM_ARCH_V6M -Wall -Os -DNDEBUG
     set ASMFLAGS=-mcpu=%ARM_CORE%
 )
 if "%1"=="spy" (
     echo spy selected
     set BINDIR=%QP_PRTDIR%\spy
-    set CCFLAGS=-g -c -mcpu=%ARM_CORE% -mthumb -Wall -O -DQ_SPY
+    set CCFLAGS=-g -c -mcpu=%ARM_CORE% -mthumb -DARM_ARCH_V6M -Wall -O -DQ_SPY
     set ASMFLAGS=-g -mcpu=%ARM_CORE%
 )
 

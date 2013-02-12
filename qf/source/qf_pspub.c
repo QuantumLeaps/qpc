@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 04, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -74,7 +74,7 @@ void QF_publish(QEvt const * const e, void const * const sender)
     {
         uint8_t tmp = QF_subscrList_[e->sig].bits[0];
         while (tmp != (uint8_t)0) {
-            uint8_t p = Q_ROM_BYTE(QF_log2Lkup[tmp]);
+            uint8_t p = QF_LOG2(tmp);
             tmp &= Q_ROM_BYTE(QF_invPwr2Lkup[p]);   /* clear subscriber bit */
             Q_ASSERT(QF_active_[p] != (QActive *)0);  /* must be registered */
 
@@ -90,7 +90,7 @@ void QF_publish(QEvt const * const e, void const * const sender)
             --i;
             tmp = QF_PTR_AT_(QF_subscrList_, e->sig).bits[i];
             while (tmp != (uint8_t)0) {
-                uint8_t p = Q_ROM_BYTE(QF_log2Lkup[tmp]);
+                uint8_t p = QF_LOG2(tmp);
                 tmp &= Q_ROM_BYTE(QF_invPwr2Lkup[p]);/*clear subscriber bit */
                 p = (uint8_t)(p + (uint8_t)(i << 3));/* adjust the priority */
                 Q_ASSERT(QF_active_[p] != (QActive *)0);/*must be registered*/

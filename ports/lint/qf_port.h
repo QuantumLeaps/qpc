@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QF/C port for Lint with QK, Generic C compiler
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 01, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -128,7 +128,7 @@
 * The valid #QF_MPOOL_SIZ_SIZE values of 1, 2, or 4, correspond to
 * ::QMPoolSize of uint8_t, uint16_t, and uint32_t, respectively. The
 * ::QMPoolSize data type determines the dynamic range of block-sizes that
-* the native ::QMPool can hanle.
+* the native ::QMPool can handle.
 * \sa #QF_EVENT_SIZ_SIZE, ::QMPool
 *
 * \note Once you choose a certain value of #QF_MPOOL_SIZ_SIZE, you must

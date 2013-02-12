@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QK/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 4.4.04
+* Date of the Last Update:  Feb 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -58,7 +58,7 @@ uint8_t QK_schedPrio_(void) {
 
 #ifdef QK_NO_MUTEX
     if (p <= QK_currPrio_) {                    /* do we have a preemption? */
-#else                                /* QK priority-ceiling mutexes allowed */
+#else                                  /* QK priority-ceiling mutex allowed */
     if ((p <= QK_currPrio_) || (p <= QK_ceilingPrio_)) {
 #endif
         p = (uint8_t)0;

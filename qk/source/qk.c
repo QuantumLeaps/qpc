@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QK/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  May 17, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 01, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -54,6 +54,9 @@ Q_DEFINE_THIS_MODULE("qk")
                                       /* start with the QK scheduler locked */
 uint8_t QK_currPrio_ = (uint8_t)(QF_MAX_ACTIVE + 1);
 uint8_t QK_intNest_;                       /* start with nesting level of 0 */
+
+/*..........................................................................*/
+static void initialize(void);
 
 /*..........................................................................*/
 char_t const Q_ROM * Q_ROM_VAR QK_getVersion(void) {

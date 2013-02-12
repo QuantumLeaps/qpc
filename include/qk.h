@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 01, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -66,7 +66,7 @@
     * the native QF event queue when the queue is empty
     *
     * In QK, the OS object is used to hold the per-thread flags, which might
-    * be used, for example, to rembember the thread attributes (e.g.,
+    * be used, for example, to remember the thread attributes (e.g.,
     * if the thread uses a floating point co-processor). The OS object value
     * is set on per-thread basis in QActive_start(). Later, the extended
     * context switch macros (QK_EXT_SAVE() and QK_EXT_RESTORE()) might use
@@ -105,7 +105,7 @@
 * using.
 */
 #define QACTIVE_EQUEUE_WAIT_(me_) \
-    Q_ASSERT((me_)->eQueue.frontEvt != (QEvt *)0)
+    (Q_ASSERT((me_)->eQueue.frontEvt != (QEvt *)0))
 
 #if (QF_MAX_ACTIVE <= 8)
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
@@ -119,7 +119,7 @@
     } while (0)
 
     #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-        QPSet8_remove(&QK_readySet_, (me_)->prio)
+        (QPSet8_remove(&QK_readySet_, (me_)->prio))
 #else
     /** \brief Platform-dependent macro defining how QF should signal the
     * active object task that an event has just arrived.
@@ -180,7 +180,7 @@
 * the underlying kernel/OS you're using.
 */
 #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-    QMPool_init(&(p_), (poolSto_), (poolSize_), (QMPoolSize)(evtSize_))
+    (QMPool_init(&(p_), (poolSto_), (poolSize_), (QMPoolSize)(evtSize_)))
 
 /** \brief Platform-dependent macro defining how QF should obtain the
 * event pool block-size
@@ -247,7 +247,7 @@ void QK_init(void);
 
 /** \brief QK idle callback (customized in BSPs for QK)
 *
-* QK_onIdle() is called continously by the QK idle loop. This callback
+* QK_onIdle() is called continuously by the QK idle loop. This callback
 * gives the application an opportunity to enter a power-saving CPU mode,
 * or perform some other idle processing.
 *

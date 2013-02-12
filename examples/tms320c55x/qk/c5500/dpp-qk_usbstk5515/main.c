@@ -1,5 +1,5 @@
 /*****************************************************************************
-* Product: QDPP example
+* Product: DPP example
 * Last Updated for Version: 4.5.00
 * Date of the Last Update:  May 18, 2012
 *

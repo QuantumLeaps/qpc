@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP application, QK, LPCXpresso-1343, GNU/CodeRed
-# Last Updated for Version: 4.5.02
-# Date of the Last Update:  Nov 07, 2012
+# Last Updated for Version: 4.5.04
+# Date of the Last Update:  Jan 30, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -135,7 +135,7 @@ CPPFLAGS = -mcpu=$(ARM_CORE) -mthumb \
 	-Os $(INCLUDES) $(DEFINES) -DNDEBUG
 
 LINKFLAGS = -T$(LD_SCRIPT) -mcpu=$(ARM_CORE) -mthumb -nostdlib -Xlinker \
-	-Map=$(BIN_DIR)/$(OUTPUT).map --gc-sections \
+	-Map=$(BIN_DIR)/$(OUTPUT).map \
 	-L$(QP_PORT_DIR)/$(BIN_DIR)
 
 else
@@ -154,7 +154,7 @@ CPPFLAGS = -mcpu=$(ARM_CORE) -mthumb -Wall \
 	-g -O $(INCLUDES) $(DEFINES) -DQ_SPY
 
 LINKFLAGS = -T$(LD_SCRIPT) -mcpu=$(ARM_CORE) -mthumb -nostdlib -Xlinker \
-	-Map=$(BIN_DIR)/$(OUTPUT).map --gc-sections \
+	-Map=$(BIN_DIR)/$(OUTPUT).map \
 	-L$(QP_PORT_DIR)/$(BIN_DIR)
 
 else                # default Debug configuration .......................
@@ -171,7 +171,7 @@ CPPFLAGS = -mcpu=$(ARM_CORE) -mthumb \
 	-g -O $(INCLUDES) $(DEFINES)
 
 LINKFLAGS = -T$(LD_SCRIPT) -mcpu=$(ARM_CORE) -mthumb -nostdlib -Xlinker \
-	-Map=$(BIN_DIR)/$(OUTPUT).map --gc-sections \
+	-Map=$(BIN_DIR)/$(OUTPUT).map \
 	-L$(QP_PORT_DIR)/$(BIN_DIR)
 
 endif

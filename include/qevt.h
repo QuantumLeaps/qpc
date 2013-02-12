@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.03
-* Date of the Last Update:  Nov 25, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 92, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -51,13 +51,13 @@
 * a 1-digit major version number, Y is a 1-digit minor version number, and
 * ZZ is a 2-digit release number.
 */
-#define QP_VERSION      0x4503U
+#define QP_VERSION      0x4504U
 
 #ifndef Q_ROM
     /** \brief Macro to specify compiler-specific directive for placing a
     * constant object in ROM.
     *
-    * Many compilers for 8-bit Harvard-architecture MCUs provide non-stanard
+    * Many compilers for 8-bit Harvard-architecture MCUs provide non-standard
     * extensions to support placement of objects in different memories.
     * In order to conserve the precious RAM, QP uses the Q_ROM macro for
     * all constant objects that can be allocated in ROM.
@@ -92,7 +92,7 @@
     *
     * Some compilers for Harvard-architecture MCUs, such as gcc for AVR, do
     * not generate correct code for accessing data allocated in the program
-    * space (ROM). The workaround for such compilers is to explictly add
+    * space (ROM). The workaround for such compilers is to explicitly add
     * assembly code to access each data element allocated in the program
     * space. The macro Q_ROM_BYTE() retrieves a byte from the given ROM
     * address.
@@ -182,6 +182,14 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 #endif
 
 /****************************************************************************/
+/** \brief Perform downcast of an event onto a subclass of QEvt \a class_
+*
+* This macro encapsulates the downcast of QEvt pointers, which violates
+* MISRA-C 2004 rule 11.4(advisory). This macro helps to localize this
+* deviation.
+*/
+#define Q_EVT_CAST(class_) ((class_ const *)e)
+
 /** helper macro to calculate static dimension of a 1-dim array \a array_ */
 #define Q_DIM(array_) (sizeof(array_) / sizeof(array_[0]))
 
@@ -197,7 +205,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 
 /****************************************************************************/
 #ifndef Q_NQEVENT
-    typedef QEvt QEvent;             /**< typedef for backwards compatibity */
+    typedef QEvt QEvent;          /**< typedef for backwards compatibility */
 #endif
 
 #endif                                                            /* qevt_h */

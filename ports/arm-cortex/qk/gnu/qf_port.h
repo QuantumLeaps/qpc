@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QF/C, Cortex-M3, QK port, GNU compiler
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  May 14, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 05, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,6 +48,10 @@
 /* QF_CRIT_STAT_TYPE not defined: unconditional interrupt unlocking" policy */
 #define QF_CRIT_ENTRY(dummy)        __asm volatile ("cpsid i")
 #define QF_CRIT_EXIT(dummy)         __asm volatile ("cpsie i")
+
+#ifndef ARM_ARCH_V6M                              /* not Cortex-M0/M0+/M1 ? */
+    #define QF_LOG2(n_) ((uint8_t)(32U - __builtin_clz(n_)))
+#endif
 
 #include "qep_port.h"                                           /* QEP port */
 #include "qk_port.h"                                             /* QK port */

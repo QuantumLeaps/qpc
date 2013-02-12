@@ -57,11 +57,13 @@ void QS_str_ROM(char_t const Q_ROM * Q_ROM_VAR s) {
     uint8_t b;
     QS_INSERT_BYTE((uint8_t)QS_STR_T)
     QS_chksum_ = (uint8_t)(QS_chksum_ + (uint8_t)QS_STR_T);
-    while ((b = (uint8_t)Q_ROM_BYTE(*s)) != (uint8_t)0) {
+    b = (uint8_t)Q_ROM_BYTE(*s);
+    while (b != (uint8_t)0) {
                                     /* ASCII characters don't need escaping */
         QS_INSERT_BYTE(b)
         QS_chksum_ = (uint8_t)(QS_chksum_ + b);
         QS_PTR_INC_(s);
+        b = (uint8_t)Q_ROM_BYTE(*s);
     }
     QS_INSERT_BYTE((uint8_t)0)
 }

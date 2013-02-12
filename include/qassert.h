@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C/C++
 * Last Updated for Version: 4.5.03
-* Date of the Last Update:  Nov 30, 2012
+* Date of the Last Update:  Jan 16, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -94,7 +94,7 @@
     * to FALSE. The argument \a id_ is the ID number (unique within
     * the file) of the assertion. This assertion style is better suited
     * for unit testig, because it avoids the volatility of line numbers
-    * for indentifying assertions.
+    * for identifying assertions.
     * \note the \a test_ is NOT evaluated if assertions are disabled with
     * the Q_NASSERT switch.
     * \sa #Q_ASSERT
@@ -116,8 +116,8 @@
     /** General purpose assertion that ALWAYS evaluates the \a test_
     * argument and calls the Q_onAssert() callback if the \a test_
     * evaluates to FALSE. This assertion style is better suited
-    * for unit testig, because it avoids the volatility of line numbers
-    * for indentifying assertions.
+    * for unit testing, because it avoids the volatility of line numbers
+    * for identifying assertions.
     * \note the \a test_ argument IS always evaluated even when assertions
     * are disabled with the Q_NASSERT macro. When the Q_NASSERT macro is
     * defined, the Q_onAssert() callback is NOT called, even if the
@@ -136,8 +136,8 @@
 
     /** Assertion that always calls the Q_onAssert() callback if
     * ever executed. This assertion style is better suited for unit
-    * testig, because it avoids the volatility of line numbers for
-    * indentifying assertions.
+    * testing, because it avoids the volatility of line numbers for
+    * identifying assertions.
     * \note can be disabled with the Q_NASSERT switch.
     * \sa #Q_ERROR
     */

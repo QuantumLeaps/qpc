@@ -42,7 +42,7 @@
 
 /*..........................................................................*/
 QState QHsm_top(void const * const me, QEvt const * const e) {
-    (void)me;             /* supress the "unused argument" compiler warning */
-    (void)e;              /* supress the "unused argument" compiler warning */
+    (void)me;            /* suppress the "unused argument" compiler warning */
+    (void)e;             /* suppress the "unused argument" compiler warning */
     return Q_IGNORED();                 /* the top state ignores all events */
 }

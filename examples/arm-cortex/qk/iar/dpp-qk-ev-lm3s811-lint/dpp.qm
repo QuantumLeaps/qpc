@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="2.2.00">
+<model version="2.2.03">
  <documentation>Dining Philosopher Problem example</documentation>
  <framework name="qpc"/>
  <package name="Events" stereotype="0x01">
@@ -375,9 +375,9 @@ $declare(AOs::Philo)
 static Philo l_philo[N_PHILO];   /* storage for all Philos */
 
 #define THINK_TIME  \
-    (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + (BSP_TICKS_PER_SEC/2U))
+    ((QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + (BSP_TICKS_PER_SEC/2U)))
 #define EAT_TIME    \
-    (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + BSP_TICKS_PER_SEC)
+    ((QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + BSP_TICKS_PER_SEC))
 
 /* helper macro to provide the ID of Philo &quot;me_&quot; */
 #define PHILO_ID(me_)    ((uint8_t)((me_) - l_philo))

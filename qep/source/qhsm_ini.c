@@ -76,7 +76,7 @@ void QHsm_init(QHsm * const me, QEvt const * const e) {
         Q_ASSERT(ip < (int8_t)QEP_MAX_NEST_DEPTH_);
 
         do {        /* retrace the entry path in reverse (desired) order... */
-            QEP_ENTER_(path[ip])                          /* enter path[ip] */
+            QEP_ENTER_(path[ip]);                         /* enter path[ip] */
             --ip;
         } while (ip >= (int8_t)0);
 

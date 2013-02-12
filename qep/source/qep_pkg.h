@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 01, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -43,7 +43,7 @@
 
 #include "qep_port.h"                                           /* QEP port */
 
-extern QEvt const QEP_reservedEvt_[];   /**< preallocated reserved events */
+extern QEvt const QEP_reservedEvt_[4];    /**< preallocated reserved events */
 
 /** internal QEP constants */
 enum QEPConst {
@@ -57,25 +57,27 @@ enum QEPConst {
 
 /** helper macro to trigger reserved event in an HSM */
 #define QEP_TRIG_(state_, sig_) \
-    ((*(state_))(me, &QEP_reservedEvt_[sig_]))
+    ((*(state_))(me, &QEP_reservedEvt_[(sig_)]))
 
 /** helper macro to trigger exit action in an HSM */
-#define QEP_EXIT_(state_) \
-    if (QEP_TRIG_(state_, Q_EXIT_SIG) == Q_RET_HANDLED) { \
+#define QEP_EXIT_(state_) do { \
+    if (QEP_TRIG_((state_), Q_EXIT_SIG) == Q_RET_HANDLED) { \
         QS_BEGIN_(QS_QEP_STATE_EXIT, QS_smObj_, me) \
             QS_OBJ_(me); \
             QS_FUN_(state_); \
         QS_END_() \
-    }
+    } \
+} while (0)
 
 /** helper macro to trigger entry action in an HSM */
-#define QEP_ENTER_(state_) \
-    if (QEP_TRIG_(state_, Q_ENTRY_SIG) == Q_RET_HANDLED) { \
+#define QEP_ENTER_(state_) do { \
+    if (QEP_TRIG_((state_), Q_ENTRY_SIG) == Q_RET_HANDLED) { \
         QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_smObj_, me) \
             QS_OBJ_(me); \
             QS_FUN_(state_); \
         QS_END_() \
-    }
+    } \
+} while (0)
 
 #endif                                                         /* qep_pkg_h */
 

@@ -2,7 +2,7 @@ The Makefile provided with this project assumes that the
 QP/C framework has been istalled on your machine
 and the environment variable QPC has been defined.
 
-Additionally, to build the Debug configuration, the Qtools
+Additionally, to build the SPY configuration, the Qtools
 collectin must be also istalled on your machine and the
 environment variable QTOOLS has been defined.
 
@@ -13,7 +13,7 @@ You need to edit the ~/.bash_profile file to add the
 following line:
 
 export QPC=~/qpc
-export QPC=~/qtools
+export QTOOLS=~/qtools
 
 assuming that you have installed QP/C into ~/qpc and
 Qtools into ~/qtools.
@@ -25,7 +25,7 @@ You need to edit the ~/.profile file to add the
 following line:
 
 export QPC=~/qpc
-export QPC=~/qtools
+export QTOOLS=~/qtools
 
 assuming that you have installed QP/C into ~/qpc and
 Qtools into ~/qtools.

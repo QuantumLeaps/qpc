@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.01
-* Date of the Last Update:  Jun 13, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 01, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -181,7 +181,7 @@ typedef struct QFsmTag QHsm;
 
 /** \brief Obtain the current active state from a HSM (read only).
 */
-#define QHsm_state(me_) Q_STATE_CAST((me_)->state)
+#define QHsm_state(me_) (Q_STATE_CAST((me_)->state))
 
 /** \brief Performs the second step of HSM initialization by triggering the
 * top-most initial transition.
@@ -210,7 +210,7 @@ void QHsm_init(QHsm * const me, QEvt const * const e);
 void QHsm_dispatch(QHsm * const me, QEvt const * const e);
 
 /** \brief Tests if a given state is part of the current active state
-* configuratioin
+* configuration
 *
 * \param me is the pointer the state machine structure derived from ::QHsm.
 * \param state is a pointer to the state handler function, e.g., &QCalc_on.
@@ -293,14 +293,6 @@ QState QHsm_top(void const * const me, QEvt const * const e);
 * and there is no other explicit way of handling the event.
 */
 #define Q_UNHANDLED()      (Q_RET_UNHANDLED)
-
-/** \brief Perform downcast of an event onto a subclass of QEvt \a class_
-*
-* This macro encapsulates the downcast of QEvt pointers, which violates
-* MISRA-C 2004 rule 11.4(advisory). This macro helps to localize this
-* deviation.
-*/
-#define Q_EVT_CAST(class_) ((class_ const *)e)
 
 /****************************************************************************/
 /** \brief QEP reserved signals */

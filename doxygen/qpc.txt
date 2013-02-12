@@ -68,10 +68,10 @@ QP is available for download from the following websites:
 \section starting Getting Started with QP/C
 
 QP/C is distributed in a simple platform-independent ZIP file or in a
-self-extracing Windows executable. Either way, installing QP/C requires simply
-decompressing the provided archive into a directory of your choice (e.g.,
-\c qpc for QP/C). The Section \ref files_page describes the content of the
-standard QP/C distribution.
+self-extracting Windows executable. Either way, installing QP/C requires
+simply decompressing the provided archive into a directory of your choice
+(e.g., \c qpc for QP/C). The Section \ref files_page describes the content
+of the standard QP/C distribution.
 
 The <STRONG>QP/C Tutorial</STRONG> explains all steps necessary to develop a
 non-trivial QP/C application. The Tutorial is based on Chapter 1 of
@@ -118,7 +118,7 @@ In Part II, you find a detailed design study of the %QF real-time framework,
 %QK preemptive kernel, and %QS software tracing, which are indispensable for
 combining concurrent, event-driven state machines into robust systems. In
 addition to its value as a reference to the %QP event-driven platform, Part II
-explans the key event-driven programming concepts such as inversion of control
+explains the key event-driven programming concepts such as inversion of control
 ("Hollywood Principle"), blocking versus non-blocking code, run-to-completion
 (RTC) execution semantics, the importance of event queues, dealing with time,
 and the role of state machines to maintain the context from one event to the
@@ -267,7 +267,7 @@ run-to-completion (RTC) fashion, while %QF encapsulates all the details of
 thread-safe event exchange and queuing.
 
 Most of %QF&tm; is written in portable ANSI-C, with microprocessor-specific,
-compiler-specific, or op-erating system-specific code kept to a minimum for
+compiler-specific, or operating system-specific code kept to a minimum for
 ease of portability. %QF is designed to work with Quantum Event Processor
 (%QEP) and a Real Time Operating System (RTOS) of your choice, or even with
 just "main+ISRs" configuration. The framework is very compact, typically
@@ -296,7 +296,7 @@ As it turns out, the RTC-style processing universally applied in the \ref
 qf_page, and no need for blocking of active objects, allow %QK to be extremely
 simple and utilize only a single stack for all tasks and interrupts.
 
-%QK&tm; is not a standalone product but rather it requires a compatible
+%QK is not a standalone product but rather it requires a compatible
 version of %QF. %QK doesn't provide event queues, active objects, or even
 lookup tables used by the scheduler, because these elements are already part
 of the %QF. %QK is described in Chapter 10 of the book \ref PSiCC2, Newnes
@@ -306,7 +306,7 @@ The \ref execution part of the QP Tutorial describes how to use the QK kernel
 in an example.
 
 \image html logo_ql_TM.jpg
-Copyright &copy; 2002-2011 Quantum Leaps, LLC. All Rights Reserved.\n
+Copyright &copy; 2002-2013 Quantum Leaps, LLC. All Rights Reserved.\n
 http://www.state-machine.com
 */
 

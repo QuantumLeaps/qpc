@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QS/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 01, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -89,7 +89,7 @@ typedef uint16_t QSCtr;
 * arithmetic other than array indexing. Encapsulating this violation in a
 * macro allows to selectively suppress this specific deviation.
 */
-#define QS_PTR_AT_(i_) (QS_ring_[i_])
+#define QS_PTR_AT_(i_) (QS_ring_[(i_)])
 
 /** \brief Internal QS macro to increment the given pointer argument \a ptr_
 *
@@ -117,7 +117,7 @@ typedef uint16_t QSCtr;
     *
     * Some compilers for Harvard-architecture MCUs, such as gcc for AVR, do
     * not generate correct code for accessing data allocated in the program
-    * space (ROM). The workaround for such compilers is to explictly add
+    * space (ROM). The workaround for such compilers is to explicitly add
     * assembly code to access each data element allocated in the program
     * space. The macro Q_ROM_BYTE() retrieves a byte from the given ROM
     * address.

@@ -10,6 +10,10 @@ framework. For example, assuming that you have installed QP/C into
 the directory C:\qp\qpc, you should define the environment variable
 QPC to C:\qp\qpc, as described below.
 
+Additionally, to build the SPY configuration, the Qtools collection
+must be also istalled on your machine and the environment variable
+QTOOLS has been defined.
+
 
 The QP Libraries
 ----------------
@@ -35,7 +39,8 @@ This opens the dialog "System Properties". Click the
 
 To add a new environment variable, click the "New..." button
 in the System variables section and provide the variable name
-(e.g., QPC) and value (e.g., C:\qp\qpc).
+(e.g., QPC) and value (e.g., C:\qp\qpc) as well as QTOOLS and
+value (e.g., C:\tools\qtools).
 
 
 ****

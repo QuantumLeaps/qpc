@@ -1,14 +1,14 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C buld script for ARM Cortex-M3, QK port, IAR compiler
-:: Last Updated for Version: 4.5.02
-:: Date of the Last Update:  Jul 25, 2012
+:: Last Updated for Version: 4.5.04
+:: Date of the Last Update:  Jan 30, 2013
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 ::
 :: This program is open source software: you can redistribute it and/or
 :: modify it under the terms of the GNU General Public License as published
@@ -39,7 +39,7 @@ setlocal
 :: where you've installed the IAR toolset or adjust the following 
 :: set instruction 
 ::if "%IAR_ARM%"=="" set IAR_ARM="C:\Program Files\IAR Systems\Embedded Workbench 6.30"
-if "%IAR_ARM%"=="" set IAR_ARM="C:\tools\IAR\ARM_KS_6.40"
+if "%IAR_ARM%"=="" set IAR_ARM="C:\tools\IAR\ARM_6.5"
 
 set PATH=%IAR_ARM%\arm\bin;%IAR_ARM%\common\bin;%PATH%
 
@@ -139,7 +139,7 @@ set CCINC=-I%QP_PRTDIR% -I%QP_INCDIR% -I%SRCDIR%
 %CC% %CCFLAGS% %CCINC% -o%BINDIR%\ %SRCDIR%\qk.c
 %CC% %CCFLAGS% %CCINC% -o%BINDIR%\ %SRCDIR%\qk_sched.c
 %CC% %CCFLAGS% %CCINC% -o%BINDIR%\ %SRCDIR%\qk_mutex.c
-%ASM% %ASMFLAGS%  -o %BINDIR%\qk_port.o src\qk_port.s
+%ASM% %ASMFLAGS%  -o %BINDIR%\qk_port.o qk_port.s
 
 %LIB% %LIBFLAGS% %LIBDIR%\libqp_%ARM_CORE%.a %BINDIR%\qk.o %BINDIR%\qk_sched.o %BINDIR%\qk_mutex.o %BINDIR%\qk_port.o
 @echo off

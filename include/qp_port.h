@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 01, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -46,11 +46,11 @@
 
               /* device driver signal offset at the top of the signal range */
 #if (Q_SIGNAL_SIZE == 1)
-    #define DEV_DRIVER_SIG  (QSignal)(0xFFU - 8U)
+    #define Q_DEV_DRIVER_SIG  ((QSignal)(0xFFU - 8U))
 #elif (Q_SIGNAL_SIZE == 2)
-    #define DEV_DRIVER_SIG  (QSignal)(0xFFFFU - 32U)
+    #define Q_DEV_DRIVER_SIG  ((QSignal)(0xFFFFU - 32U))
 #elif (Q_SIGNAL_SIZE == 4)
-    #define DEV_DRIVER_SIG  (QSignal)(0xFFFFFFFFU - 256U)
+    #define Q_DEV_DRIVER_SIG  ((QSignal)(0xFFFFFFFFU - 256U))
 #else
     #error "Q_SIGNAL_SIZE not defined or incorrect"
 #endif

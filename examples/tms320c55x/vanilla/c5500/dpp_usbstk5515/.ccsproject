@@ -6,7 +6,9 @@
 <deviceEndianness value="big"/>
 <codegenToolVersion value="4.4.0"/>
 <isElfFormat value="false"/>
-<connection value="common/targetdb/connections/TIXDS100v2_Connection.xml"/>
+<connection value="common/targetdb/connections/SDPROTRACEUSB_Connection.xml"/>
 <rts value="libc.a"/>
 <templateProperties value="id=com.ti.common.project.core.emptyProjectTemplate,"/>
+<deviceFamily value="C5500"/>
+<isTargetManual value="false"/>
 </projectOptions>

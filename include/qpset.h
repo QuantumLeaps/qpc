@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 11, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -55,7 +55,7 @@
 * to manage up to 8 tasks.
 */
 typedef struct QPSet8Tag {
-    uint8_t bits;       /**< \brief bimask representing elements of the set */
+    uint8_t bits;       /**< \brief bitmask representing elements of the set */
 } QPSet8;
 
 /** \brief the macro evaluates to TRUE if the priority set \a me has elements
@@ -70,23 +70,22 @@ typedef struct QPSet8Tag {
 * has element \a n_.
 */
 #define QPSet8_hasElement(me_, n_) \
-    (((me_)->bits & Q_ROM_BYTE(QF_pwr2Lkup[n_])) != 0)
+    (((me_)->bits & Q_ROM_BYTE(QF_pwr2Lkup[(n_)])) != 0)
 
 /** \brief insert element \a n_ into the set \a me_, n_= 1..8
 */
 #define QPSet8_insert(me_, n_) \
-    ((me_)->bits |= Q_ROM_BYTE(QF_pwr2Lkup[n_]))
+    ((me_)->bits |= Q_ROM_BYTE(QF_pwr2Lkup[(n_)]))
 
 /** \brief remove element n_ from the set \a me_, n_= 1..8
 */
 #define QPSet8_remove(me_, n_) \
-    ((me_)->bits &= Q_ROM_BYTE(QF_invPwr2Lkup[n_]))
+    ((me_)->bits &= Q_ROM_BYTE(QF_invPwr2Lkup[(n_)]))
 
 /** \brief find the maximum element in the set, and assign it to n_,
 * \note if the set \a me_ is empty, \a n_ is set to zero.
 */
-#define QPSet8_findMax(me_, n_) \
-    ((n_) = Q_ROM_BYTE(QF_log2Lkup[(me_)->bits]))
+#define QPSet8_findMax(me_, n_) ((n_) = QF_LOG2((me_)->bits))
 
 
 /****************************************************************************/
@@ -132,34 +131,34 @@ typedef struct QPSet64Tag {
 
 /** \brief the macro evaluates to TRUE if the priority set \a me_ has elements
 */
-#define QPSet64_isEmpty(me_)    QPSet8_isEmpty(&(me_)->super)
+#define QPSet64_isEmpty(me_)    (QPSet8_isEmpty(&(me_)->super))
 
 /** \brief the macro evaluates to TRUE if the priority set \a me is empty
 */
-#define QPSet64_notEmpty(me_)   QPSet8_notEmpty(&(me_)->super)
+#define QPSet64_notEmpty(me_)   (QPSet8_notEmpty(&(me_)->super))
 
 /** \brief the macro evaluates to TRUE if the priority set \a me_
 * has element \a n_.
 */
 #define QPSet64_hasElement(me_, n_) \
-    QPSet8_hasElement(&(me_)->subset[Q_ROM_BYTE(QF_div8Lkup[n_])], n_)
+    (QPSet8_hasElement(&(me_)->subset[Q_ROM_BYTE(QF_div8Lkup[(n_)])], (n_)))
 
 /** \brief insert element \a n_ into the set \a me_, n_= 1..64
 */
 #define QPSet64_insert(me_, n_) do { \
     QPSet8_insert(&(me_)->super, \
-                  (uint8_t)(Q_ROM_BYTE(QF_div8Lkup[n_]) + (uint8_t)1)); \
-    QPSet8_insert(&(me_)->subset[Q_ROM_BYTE(QF_div8Lkup[n_])], n_); \
+                  (uint8_t)(Q_ROM_BYTE(QF_div8Lkup[(n_)]) + (uint8_t)1)); \
+    QPSet8_insert(&(me_)->subset[Q_ROM_BYTE(QF_div8Lkup[(n_)])], (n_)); \
 } while (0)
 
 /** \brief remove element n_ from the set \a me_, n_= 1..64
 */
 #define QPSet64_remove(me_, n_) do { \
-    if (QPSet8_remove(&(me_)->subset[Q_ROM_BYTE(QF_div8Lkup[n_])], n_) \
+    if (QPSet8_remove(&(me_)->subset[Q_ROM_BYTE(QF_div8Lkup[(n_)])], (n_)) \
         == (uint8_t)0) \
     { \
         QPSet8_remove(&(me_)->super, \
-                      (uint8_t)(Q_ROM_BYTE(QF_div8Lkup[n_]) + (uint8_t)1)); \
+                     (uint8_t)(Q_ROM_BYTE(QF_div8Lkup[(n_)]) + (uint8_t)1)); \
     } \
 } while (0)
 
@@ -168,9 +167,9 @@ typedef struct QPSet64Tag {
 */
 #define QPSet64_findMax(me_, n_) do { \
     if (QPSet64_notEmpty(me_)) { \
-        (n_) = (uint8_t)(Q_ROM_BYTE(QF_log2Lkup[(me_)->super.bits]) \
+        (n_) = (uint8_t)(QF_LOG2((me_)->super.bits) \
                          - (uint8_t)1); \
-        (n_) = (uint8_t)(Q_ROM_BYTE(QF_log2Lkup[(me_)->subset[n_].bits]) \
+        (n_) = (uint8_t)(QF_LOG2((me_)->subset[(n_)].bits) \
                          + (uint8_t)((n_) << 3)); \
     } \
     else { \

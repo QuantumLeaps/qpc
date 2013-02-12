@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 25, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 05, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -93,7 +93,7 @@
     * completely customized class that has nothing to do with QHsm or QFsm.
     * The QF_ACTIVE_SUPER_ struct must provide functions XXX_init() and
     * XXX_dispatch(), consistent with the signatures of QHsm_init() and
-    * QHsm_dispatch(). But the implementatin of these functions is
+    * QHsm_dispatch(). But the implementation of these functions is
     * completely open.
     *
     * \sa \ref derivation
@@ -101,19 +101,19 @@
     #define QF_ACTIVE_SUPER_               QHsm
 
     /** \brief The "constructor" of the base structure for ::QActive.
-    * \note this macro must be consistenet with #QF_ACTIVE_SUPER_ definition.
+    * \note this macro must be consistent with #QF_ACTIVE_SUPER_ definition.
     */
     #define QF_ACTIVE_CTOR_(me_, initial_) QHsm_ctor((me_), (initial_))
 
     /** \brief The initialization of the ::QActive state machine.
-    * \note this macro must be consistenet with #QF_ACTIVE_SUPER_ definition.
+    * \note this macro must be consistent with #QF_ACTIVE_SUPER_ definition.
     */
-    #define QF_ACTIVE_INIT_(me_, e_)       QHsm_init((me_), (e_))
+    #define QF_ACTIVE_INIT_(me_, e_)       (QHsm_init((me_), (e_)))
 
     /** \brief The dispatching events to the ::QActive state machine.
-    * \note this macro must be consistenet with #QF_ACTIVE_SUPER_ definition.
+    * \note this macro must be consistent with #QF_ACTIVE_SUPER_ definition.
     */
-    #define QF_ACTIVE_DISPATCH_(me_, e_)   QHsm_dispatch((me_), (e_))
+    #define QF_ACTIVE_DISPATCH_(me_, e_)   (QHsm_dispatch((me_), (e_)))
 
     /** \brief The argument of the base class' constructor.
     */
@@ -206,12 +206,12 @@ typedef struct QActiveTag {
 * queue used by this active object.
 * \a stkSto and \a stkSize are the stack storage and size in bytes. Please
 * note that a per-active object stack is used only when the underlying OS
-* requies it. If the stack is not required, or the underlying OS allocates
+* requires it. If the stack is not required, or the underlying OS allocates
 * the stack internally, the \a stkSto should be NULL and/or \a stkSize
 * should be 0.
 * \a ie is an optional initialization event that can be used to pass
-* additional startup data to the active object. (Pass NULL if your active
-* object does not expect the initialization event).
+* additional initialization data to the active object. (Pass NULL if your
+* active object does not expect the initialization event).
 *
 * \note This function is strongly OS-dependent and must be defined in the
 * QF port to a particular platform.
@@ -227,7 +227,7 @@ void QActive_start(QActive * const me, uint8_t prio,
 
 #ifdef Q_SPY
 
-    /** \brief Posts an event \a e directly to the event queue of the acitve
+    /** \brief Posts an event \a e directly to the event queue of the active
     * object \a me using the First-In-First-Out (FIFO) policy.
     *
     * \note this function should be called only via the macro #QACTIVE_POST
@@ -262,7 +262,7 @@ void QActive_start(QActive * const me, uint8_t prio,
     * the \a sender_ argument, so the overhead of passing this extra
     * argument is entirely avoided.
     *
-    * \note the pointer to the sender object is not necessarily a poiner
+    * \note the pointer to the sender object is not necessarily a pointer
     * to an active object. In fact, if QACTIVE_POST() is called from an
     * interrupt or other context, you can create a unique object just to
     * unambiguously identify the publisher of the event.
@@ -270,12 +270,12 @@ void QActive_start(QActive * const me, uint8_t prio,
     * \sa ::QActive_postFIFO().
     */
     #define QACTIVE_POST(me_, e_, sender_) \
-        QActive_postFIFO((me_), (e_), (void const *)(sender_))
+        (QActive_postFIFO((me_), (e_), (void const *)(sender_)))
 
 #else
 
     void QActive_postFIFO(QActive * const me, QEvt const * const e);
-    #define QACTIVE_POST(me_, e_, dummy_) QActive_postFIFO((me_), (e_))
+    #define QACTIVE_POST(me_, e_, dummy_) (QActive_postFIFO((me_), (e_)))
 
 #endif
 
@@ -686,9 +686,9 @@ void QF_init(void);
 *
 * The array of subscriber-lists is indexed by signals and provides mapping
 * between the signals and subscriber-lists. The subscriber-lists are bitmasks
-* of type ::QSubscrList, each bit in the bitmask corresponding to the unique
-* priority of an active object. The size of the ::QSubscrList bitmask depends
-* on the value of the #QF_MAX_ACTIVE macro.
+* of type ::QSubscrList, each bit in the bit mask corresponding to the unique
+* priority of an active object. The size of the ::QSubscrList bit mask
+* depends on the value of the #QF_MAX_ACTIVE macro.
 *
 * \note The publish-subscribe facilities are optional, meaning that you
 * might choose not to use publish-subscribe. In that case calling QF_psInit()
@@ -749,7 +749,7 @@ void QF_poolInit(void * const poolSto, uint32_t const poolSize,
 * for the given application. All QF ports must implement QF_run().
 *
 * \note When the Quantum Kernel (QK) is used as the underlying real-time
-* kernel for the QF, all platfrom dependencies are handled in the QK, so
+* kernel for the QF, all platform dependencies are handled in the QK, so
 * no porting of QF is necessary. In other words, you only need to recompile
 * the QF platform-independent code with the compiler for your platform, but
 * you don't need to provide any platform-specific implementation (so, no
@@ -763,7 +763,7 @@ int16_t QF_run(void);
 *
 * This function stops the QF application. After calling this function,
 * QF attempts to gracefully stop the  application. This graceful shutdown
-* might take some time to complete. The typical use of this funcition is
+* might take some time to complete. The typical use of this function is
 * for terminating the QF application to return back to the operating
 * system or for handling fatal errors that require shutting down
 * (and possibly re-setting) the system.
@@ -814,7 +814,7 @@ void QF_onCleanup(void);
 * QF_onIdle() MUST enable the interrupts internally, but not before
 * putting the CPU into the low-power mode. (Ideally, enabling interrupts and
 * low-power mode should happen atomically). At the very least, the function
-* MUST enable interrupts, otherwise interrups will remain disabled
+* MUST enable interrupts, otherwise interrupts will remain disabled
 * permanently.
 *
 * \note QF_onIdle() is only used by the non-preemptive "Vanilla" scheduler
@@ -822,7 +822,7 @@ void QF_onCleanup(void);
 * QF is combined with QK, the QK idle loop calls a different function
 * QK_onIdle(), with different semantics than QF_onIdle(). When QF is
 * combined with a 3rd-party RTOS or kernel, the idle processing mechanism
-* of the RTOS or kernal is used instead of QF_onIdle().
+* of the RTOS or kernel is used instead of QF_onIdle().
 */
 void QF_onIdle(void);
 
@@ -835,9 +835,9 @@ void QF_onIdle(void);
     * This function is designed to be callable from any part of the system,
     * including ISRs, device drivers, and active objects.
     *
-    * In the general case, event publishing requires multi-casting the
+    * In the general case, event publishing requires multicasting the
     * event to multiple subscribers. This happens in the caller's thread with
-    * the scheduler locked to prevent preemptions during the multi-casting
+    * the scheduler locked to prevent preemption during the multicasting
     * process. (Please note that the interrupts are not locked.)
     *
     * \note this function should be called only via the macro #QF_PUBLISH
@@ -856,19 +856,19 @@ void QF_onIdle(void);
     * \a sender_ argument, so the overhead of passing this extra argument
     * is entirely avoided.
     *
-    * \note the pointer to the sender object is not necessarily a poiner
+    * \note the pointer to the sender object is not necessarily a pointer
     * to an active object. In fact, if QF_PUBLISH() is called from an
     * interrupt or other context, you can create a unique object just to
     * unambiguously identify the publisher of the event.
     *
     * \sa ::QF_publish().
     */
-    #define QF_PUBLISH(e_, sender_)  QF_publish((e_), (void const *)(sender_))
-
+    #define QF_PUBLISH(e_, sender_) \
+        (QF_publish((e_), (void const *)(sender_)))
 #else
 
     void QF_publish(QEvt const * const e);
-    #define QF_PUBLISH(e_, dummy_)   QF_publish(e_)
+    #define QF_PUBLISH(e_, dummy_)   (QF_publish(e_))
 
 #endif
 
@@ -902,19 +902,19 @@ void QF_onIdle(void);
     * arguments, so the overhead of passing this extra argument is
     * entirely avoided.
     *
-    * \note the pointer to the sender object is not necessarily a poiner
+    * \note the pointer to the sender object is not necessarily a pointer
     * to an active object. In fact, typically QF_TICK() will be called from
     * an interrupt, in which case you would create a unique object just to
     * unambiguously identify the ISR as the sender of the time events.
     *
     * \sa ::QF_tick().
     */
-    #define QF_TICK(sender_)              QF_tick(sender_)
+    #define QF_TICK(sender_)              (QF_tick(sender_))
 
 #else
 
     void QF_tick(void);
-    #define QF_TICK(dummy_)               QF_tick()
+    #define QF_TICK(dummy_)               (QF_tick())
 
 #endif
 
@@ -1031,8 +1031,8 @@ uint32_t QF_getQueueMargin(uint8_t const prio);
     * \include qf_post.c
     */
     #define Q_NEW(evtT_, sig_, ...) \
-        evtT_##_ctor((evtT_ *)QF_new_((QEvtSize)sizeof(evtT_)), \
-                     (sig_), ##__VA_ARGS__)
+        (evtT_##_ctor((evtT_ *)QF_new_((QEvtSize)sizeof(evtT_)), \
+                      (sig_), ##__VA_ARGS__))
 #else
 
     QEvt *QF_new_(QEvtSize const evtSize, enum_t const sig);
@@ -1066,16 +1066,9 @@ uint32_t QF_getQueueMargin(uint8_t const prio);
 */
 void QF_gc(QEvt const * const e);
 
-/** \brief Lookup table for (log2(n) + 1), where n is the index
-* into the table.
-*
-* This lookup delivers the 1-based number of the most significant 1-bit
-* of a byte.
-*
-* \note Index range n = 0..255. The first index (n == 0) should never be used.
-*/
-extern uint8_t const Q_ROM Q_ROM_VAR QF_log2Lkup[256];
 
+/****************************************************************************/
+/* Useful lookup tables ...*/
 /** \brief Lookup table for (1 << ((n-1) % 8)), where n is the index
 * into the table.
 *
@@ -1096,11 +1089,35 @@ extern uint8_t const Q_ROM Q_ROM_VAR QF_invPwr2Lkup[65];
 */
 extern uint8_t const Q_ROM Q_ROM_VAR QF_div8Lkup[65];
 
+/* Log-base-2 calculations ...*/
+#ifndef QF_LOG2
+
+    /** \brief Macro to return (log2(n_) + 1), where \a n_ = 0..255.
+    *
+    * This macro delivers the 1-based number of the most significant 1-bit
+    * of a byte. This macro can be re-implemented in the QP ports, if the CPU
+    * supports special instructions, such as CLZ (count leading zeros).
+    *
+    * If the macro is not defined in the port, the default implementation
+    * uses a lookup table.
+    */
+    #define QF_LOG2(n_) (Q_ROM_BYTE(QF_log2Lkup[(n_)]))
+
+    /** \brief Lookup table for (log2(n) + 1), where n is the index
+    * into the table.
+    *
+    * This lookup delivers the 1-based number of the most significant 1-bit
+    * of a byte.
+    */
+    extern uint8_t const Q_ROM Q_ROM_VAR QF_log2Lkup[256];
+
+#endif                                                           /* QF_LOG2 */
+
 
 /** \brief array of registered active objects
 *
 * \note Not to be used by Clients directly, only in ports of QF
 */
-extern QActive *QF_active_[];
+extern QActive *QF_active_[QF_MAX_ACTIVE + 1];
 
 #endif                                                              /* qf_h */

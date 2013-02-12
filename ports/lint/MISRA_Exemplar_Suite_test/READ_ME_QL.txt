@@ -12,11 +12,22 @@ First, you need to open the file lin.bat in this folder and adjust
 the symbol PC_LINT_DIR at the top of the file to the PC-Lint directory
 on *your* system.
 
-Next, you need to downlaod the file: 
+Next, you need to download the MISRA-C Exemplar Suite, which requires
+registration.
+
+Point your browser to the MISRA Bulletin Board:
+
+http://www.misra.org.uk/forum: 
+
+Next click on the "Register" button at the top-right corner
+(or Login if you are already registered)
+
+After registration, scroll down the Resources Section. Click on the
+MISRA C Resources, which opens a new page. On this page, click on the
+"MISRA C Exemplar Suite" topic and download the file: 
 
 MISRA-C_exemplar_suite_2007_07_17.zip 
 
-from MISRA (www.misra.org.uk), which is free, but requires registration.
 
 After the download, you need to unzip the archive into *this* directory.
 
@@ -33,7 +44,7 @@ saved in the file lint_MES.txt.
 
 You can adjust the PC-Lint options by editing the file options.lnt.
 Initially, this file activates only the au-misra2.lnt option file.
-But you can also uncoment the QP/C options file lib-qpc.lnt. This
+But you can also uncomment the QP/C options file lib-qpc.lnt. This
 way you can observe and compare what difference does this option file
 introduce.
 
@@ -53,5 +64,5 @@ Web      :  http://www.quantum-leaps.com
 e-mail   :  info@quantum-leaps.com
 Toll-free:  1-866-450-LEAP (US Eastern Standard Time)
 
-Last updated: 27-Jan-2012
+Last updated: 02-Feb-2013
  

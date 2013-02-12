@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: BSP for DPP example, Vanilla, TMS320C5515 eZdsp USB stick
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.03
+* Date of the Last Update:  Jan 17, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -39,6 +39,7 @@
 #include "csl_intc.h"
 #include "csl_pll.h"
 #include "csl_gpio.h"
+#include "csl_rtc.h"
 #include "cslr_tim.h"
 #include "cslr_sysctrl.h"
 
@@ -57,6 +58,7 @@ static uint16_t const l_userLED[] = {
 #define ULED_ON            0U
 #define ULED_OFF           1U
 
+static uint32_t    l_rnd;                                     /* random seed */
 static CSL_GpioObj l_gpioObj;
 
 /* User LEDs */
@@ -126,6 +128,7 @@ void BSP_init(void) {
     CSL_SYSCTRL_REGS->PRCR   = 0x00BFU;
 
     ULED_init();                              /* configure the User LEDs... */
+    BSP_randomSeed(1234U);
 
     IRQ_globalDisable();
     IRQ_disableAll();                         /* disable all the interrupts */
@@ -146,15 +149,55 @@ void BSP_init(void) {
     QS_OBJ_DICTIONARY(&l_TINT_isr);
 }
 /*..........................................................................*/
+void BSP_terminate(int16_t result) {
+    (void)result;
+}
+/*..........................................................................*/
+void BSP_displayPhilStat(uint8_t n, char_t const *stat) {
+    if (n < Q_DIM(l_userLED)) {
+        ULED_set(n, (stat[0] == 'e') ? ULED_ON : ULED_OFF);
+    }
+
+    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
+        QS_U8(1, n);                                  /* Philosopher number */
+        QS_STR(stat);                                 /* Philosopher status */
+    QS_END()
+}
+/*..........................................................................*/
+void BSP_displayPaused(uint8_t paused) {
+    (void)paused;
+}
+/*..........................................................................*/
+uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
+    /* "Super-Duper" Linear Congruential Generator (LCG)
+    * LCG(2^32, 3*7*11*13*23, 0, seed)
+    */
+    l_rnd = l_rnd * (3U*7U*11U*13U*23U);
+    return l_rnd >> 8;
+}
+/*..........................................................................*/
+void BSP_randomSeed(uint32_t seed) {
+    l_rnd = seed;
+}
+/*--------------------------------------------------------------------------*/
+void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+    /* Next two lines are for debug only to halt the processor here.
+    * YOU need to change this policy for the production release!
+    */
+    QF_INT_DISABLE();
+    for(;;) {
+    }
+}
+
+/*..........................................................................*/
 void QF_onStartup(void) {
                       /* configuration of Timer0 as the system clock tick...*/
-    CSL_TIM_0_REGS->TCR = 0x802EU;  /* autoReload | prescaler = 4096 (1011) */
     CSL_TIM_0_REGS->TIMPRD1 = (CPU_CLOCK_HZ / 4096U) / BSP_TICKS_PER_SEC;
     CSL_TIM_0_REGS->TIMPRD2 = 0U;
     CSL_TIM_0_REGS->TIMCNT1 = 0U;
     CSL_TIM_0_REGS->TIMCNT2 = 0U;
     CSL_SYSCTRL_REGS->TIAFR = 0x0007U;      /* clear timer aggregation reg. */
-    CSL_TIM_0_REGS->TCR    |= 0x0001U;                      /* start Timer0 */
+    CSL_TIM_0_REGS->TCR     = 0x802FU;     /* autoReload | prescaler = 4096 */
     IRQ_enable(TINT_EVENT);                    /* enable the TINT interrupt */
 
     /* setup the RTC interrupt for testing */
@@ -206,30 +249,7 @@ void QF_onIdle(void) {
 
 #endif
 }
-/*..........................................................................*/
-void BSP_displyPhilStat(uint8_t n, char const *stat) {
-    if (n < Q_DIM(l_userLED)) {
-        ULED_set(n, (stat[0] == 'e') ? ULED_ON : ULED_OFF);
-    }
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
-        QS_U8(1, n);                                  /* Philosopher number */
-        QS_STR(stat);                                 /* Philosopher status */
-    QS_END()
-}
-/*..........................................................................*/
-void BSP_busyDelay(void) {
-    /* implement some busy-waiting dealy to stress-test the DPP application */
-}
-/*--------------------------------------------------------------------------*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
-    /* Next two lines are for debug only to halt the processor here.
-    * YOU need to change this policy for the production release!
-    */
-    QF_INT_DISABLE();
-    for(;;) {
-    }
-}
 /*..........................................................................*/
 static void ULED_init(void) {
     CSL_Status status;
@@ -297,7 +317,6 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(QS_OBJ_DIC);
     QS_FILTER_ON(QS_FUN_DIC);
 
-    QS_FILTER_ON(QS_QEP_STATE_EMPTY);
     QS_FILTER_ON(QS_QEP_STATE_ENTRY);
     QS_FILTER_ON(QS_QEP_STATE_EXIT);
     QS_FILTER_ON(QS_QEP_STATE_INIT);
@@ -305,6 +324,8 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(QS_QEP_INTERN_TRAN);
     QS_FILTER_ON(QS_QEP_TRAN);
     QS_FILTER_ON(QS_QEP_IGNORED);
+    QS_FILTER_ON(QS_QEP_DISPATCH);
+    QS_FILTER_ON(QS_QEP_UNHANDLED);
 
 //    QS_FILTER_ON(QS_QF_ACTIVE_ADD);
 //    QS_FILTER_ON(QS_QF_ACTIVE_REMOVE);

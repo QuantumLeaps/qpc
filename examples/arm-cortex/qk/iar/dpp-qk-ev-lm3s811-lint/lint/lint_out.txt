@@ -1,6 +1,7 @@
 
 --- Module:   D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c (C)
-"D:\qp\qpc\include\qequeue.h" 243 9 Note 961: Violates MISRA 2004 Advisory Rule 19.7, Function-like macro defined: 'QEQueue_isEmpty' 
+"D:\qp\qpc\ports\arm-cortex\qk\iar\qf_port.h" 51 58 Warning 553: Undefined preprocessor variable '__ARM7M__', assumed 0 [MISRA 2004 Rule 19.11, required]
+"D:\qp\qpc\ports\arm-cortex\qk\iar\qf_port.h" 51 58 Warning 553: Undefined preprocessor variable '__ARM6M__', assumed 0 [MISRA 2004 Rule 19.11, required]
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 48 1 Info 726: Extraneous comma ignored
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 55 20 Note 970: Use of modifier or type 'char' outside of a typedef [MISRA 2004 Rule 6.3, advisory]
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 55 38 Note 970: Use of modifier or type 'int' outside of a typedef [MISRA 2004 Rule 6.3, advisory]
@@ -11,6 +12,8 @@
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 129 61 Note 960: Violates MISRA 2004 Required Rule 10.1, Implicit conversion changes signedness
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 135 5 Info 744: switch statement has no default [MISRA 2004 Rule 15.3, required]
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 135 5 Note 960: Violates MISRA 2004 Required Rule 15.3, default missing from switch statement
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 136 17 Note 923: cast from unsigned int to pointer [Encompasses MISRA 2004 Rule 11.1, required], [MISRA 2004 Rule 11.3, advisory]
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 145 17 Note 923: cast from unsigned int to pointer [Encompasses MISRA 2004 Rule 11.1, required], [MISRA 2004 Rule 11.3, advisory]
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 154 30 Note 960: Violates MISRA 2004 Required Rule 12.7, Bitwise operator applied to signed underlying type: <<
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 154 30 Info 835: A zero has been given as right argument to operator '<<'
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 154 42 Note 960: Violates MISRA 2004 Required Rule 12.7, Bitwise operator applied to signed underlying type: <<
@@ -58,23 +61,27 @@
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 50 1 Info 750: local macro 'UART_FR_TXFE' (line 50, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not referenced
 
 --- Module:   D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c (C)
-"D:\qp\qpc\include\qequeue.h" 243 9 Note 961: Violates MISRA 2004 Advisory Rule 19.7, Function-like macro defined: 'QEQueue_isEmpty' 
+"D:\qp\qpc\ports\arm-cortex\qk\iar\qf_port.h" 51 58 Warning 553: Undefined preprocessor variable '__ARM7M__', assumed 0 [MISRA 2004 Rule 19.11, required]
+"D:\qp\qpc\ports\arm-cortex\qk\iar\qf_port.h" 51 58 Warning 553: Undefined preprocessor variable '__ARM6M__', assumed 0 [MISRA 2004 Rule 19.11, required]
 
 --- Module:   D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\philo.c (C)
-"D:\qp\qpc\include\qequeue.h" 243 9 Note 961: Violates MISRA 2004 Advisory Rule 19.7, Function-like macro defined: 'QEQueue_isEmpty' 
+"D:\qp\qpc\ports\arm-cortex\qk\iar\qf_port.h" 51 58 Warning 553: Undefined preprocessor variable '__ARM7M__', assumed 0 [MISRA 2004 Rule 19.11, required]
+"D:\qp\qpc\ports\arm-cortex\qk\iar\qf_port.h" 51 58 Warning 553: Undefined preprocessor variable '__ARM6M__', assumed 0 [MISRA 2004 Rule 19.11, required]
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\philo.c" 38 9 Note 960: Violates MISRA 2004 Required Rule 20.2, Re-use of C90 identifier pattern: EAT_TIME
 
 --- Module:   D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c (C)
-"D:\qp\qpc\include\qequeue.h" 243 9 Note 961: Violates MISRA 2004 Advisory Rule 19.7, Function-like macro defined: 'QEQueue_isEmpty' 
+"D:\qp\qpc\ports\arm-cortex\qk\iar\qf_port.h" 51 58 Warning 553: Undefined preprocessor variable '__ARM7M__', assumed 0 [MISRA 2004 Rule 19.11, required]
+"D:\qp\qpc\ports\arm-cortex\qk\iar\qf_port.h" 51 58 Warning 553: Undefined preprocessor variable '__ARM6M__', assumed 0 [MISRA 2004 Rule 19.11, required]
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c" 94 29 Warning 522: Highest operation, function 'BSP_terminate', lacks side-effects [MISRA 2004 Rule 14.2, required]
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c" 101 20 Warning 527: Unreachable code at token 'status' [MISRA 2004 Rule 14.1, required]
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c" 209 20 Warning 527: Unreachable code at token 'status' [MISRA 2004 Rule 14.1, required]
- Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: SystemFrequency
- Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: l_table
- Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: l_subscrSto
- Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: l_smlPoolSto
- Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: AO_Philo
- Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: l_philoQueueSto
- Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: l_tableQueueSto
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\cmsis\system_lm3s.h" 34 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'SystemFrequency' at location line 34, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\cmsis\system_lm3s.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c" 40 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'l_table' at location line 40, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\table.c
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c" 42 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'l_subscrSto' at location line 42, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c" 45 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'l_smlPoolSto' at location line 45, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\dpp.h" 44 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'AO_Philo' at location line 44, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\dpp.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c" 41 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'l_philoQueueSto' at location line 41, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c" 40 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'l_tableQueueSto' at location line 40, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\main.c
 
 /// Start of Pass 2 ///
 
@@ -89,33 +96,93 @@
 
 --- Global Wrap-up
 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_log2Lkup' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_getVersion' 
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 53 1 Info 765: external 'SysTick_Handler(void)' (line 53, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\include\qk.h" 238 1 Warning 526: Symbol 'QK_intNest_' (line 238, file D:\qp\qpc\include\qk.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_intNest_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_init' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_noTimeEvtsActive' 
 "D:\qp\qpc\include\qf.h" 1038 1 Warning 526: Symbol 'QF_new_(QEvtSize, enum_t)' (line 1038, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_new_' 
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 205 1 Info 759: header declaration for symbol 'BSP_randomSeed(uint32_t)' defined at (line 205, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be moved from header to module
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 205 1 Info 765: external 'BSP_randomSeed(uint32_t)' (line 205, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QEP_getVersion' 
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 214 1 Info 759: header declaration for symbol 'QF_onStartup(void)' defined at (line 214, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be moved from header to module
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 214 1 Info 765: external 'QF_onStartup(void)' (line 214, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 225 1 Info 759: header declaration for symbol 'QF_onCleanup(void)' defined at (line 225, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be moved from header to module
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 225 1 Info 765: external 'QF_onCleanup(void)' (line 225, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_onIdle' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_pwr2Lkup' 
 "D:\qp\qpc\include\qf.h" 735 1 Warning 526: Symbol 'QF_poolInit(void *, uint32_t, uint32_t)' (line 735, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_poolInit' 
 "D:\qp\qpc\include\qf.h" 702 1 Warning 526: Symbol 'QF_psInit(QSubscrList *, uint32_t)' (line 702, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_psInit' 
 "D:\qp\qpc\include\qf.h" 870 1 Warning 526: Symbol 'QF_publish(const QEvt *)' (line 870, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_publish' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_add_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_active_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QFsm_dispatch' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QFsm_init' 
 "D:\qp\qpc\include\qf.h" 759 1 Warning 526: Symbol 'QF_run(void)' (line 759, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_run' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_remove_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_mutexLock' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_mutexUnlock' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_defer' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_get_' 
 "D:\qp\qpc\include\qf.h" 277 1 Warning 526: Symbol 'QActive_postFIFO(QActive *, const QEvt *)' (line 277, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_postFIFO' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_postLIFO' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_recall' 
 "D:\qp\qpc\include\qf.h" 223 1 Warning 526: Symbol 'QActive_start(QActive *, uint8_t, const QEvt **, uint32_t, void *, uint32_t, const QEvt *)' (line 223, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_start' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_stop' 
 "D:\qp\qpc\include\qf.h" 341 1 Warning 526: Symbol 'QActive_subscribe(const QActive *, enum_t)' (line 341, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_subscribe' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_unsubscribe' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_unsubscribeAll' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_stop' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_dispatch' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_init' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_isIn' 
 "D:\qp\qpc\include\qep.h" 230 1 Warning 526: Symbol 'QHsm_top(const void *, const QEvt *)' (line 230, file D:\qp\qpc\include\qep.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_top' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_div8Lkup' 
 "D:\qp\qpc\include\qf.h" 916 1 Warning 526: Symbol 'QF_tick(void)' (line 916, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_tick' 
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 228 1 Info 759: header declaration for symbol 'QK_onIdle(void)' defined at (line 228, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be moved from header to module
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 228 1 Info 765: external 'QK_onIdle(void)' (line 228, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\include\qf.h" 638 1 Warning 526: Symbol 'QTimeEvt_arm_(QTimeEvt *, QActive *, QTimeEvtCtr)' (line 638, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_arm_' 
 "D:\qp\qpc\include\qf.h" 538 1 Warning 526: Symbol 'QTimeEvt_ctor(QTimeEvt *, enum_t)' (line 538, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_ctor' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_ctr' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_disarm' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_rearm' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QEQueue_get' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QEQueue_init' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QEQueue_postFIFO' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QEQueue_postLIFO' 
 "D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 55 1 Info 765: external 'assert_failed(const char *, int)' (line 55, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
-"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 54 1 Info 765: external 'GPIOPortA_IRQHandler(void)' (line 54, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_readySet_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_getVersion' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_getPoolMargin' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_gc' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_getPortVersion' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_getQueueMargin' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMPool_get' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMPool_init' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMPool_put' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_currPrio_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_schedExt_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_schedPrio_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_sched_' 
 "D:\qp\qpc\include\qf.h" 676 1 Warning 526: Symbol 'QF_init(void)' (line 676, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) not defined
-"D:\qp\qpc\include\qep.h" 310 1 Info 769: global enumeration constant 'QReservedSignals::Q_INIT_SIG' (line 310, file D:\qp\qpc\include\qep.h) not referenced
- Note 974: Worst case function for stack usage: 'Table_serving' is finite, requires 75 bytes total stack in calling 'BSP_displayPhilStat'. See +stack for a full report. [MISRA 2004 Rule 16.2, required]
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_init' 
+"D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c" 54 1 Info 765: external 'GPIOPortA_IRQHandler(void)' (line 54, file D:\qp\qpc\examples\arm-cortex\qk\iar\dpp-qk-ev-lm3s811-lint\bsp.c) could be made static [MISRA 2004 Rule 8.10, required]
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_invPwr2Lkup' 
+"D:\qp\qpc\include\qep.h" 302 1 Info 769: global enumeration constant 'QReservedSignals::Q_INIT_SIG' (line 302, file D:\qp\qpc\include\qep.h) not referenced
 
 Count   Type    Number  Text
 
@@ -124,6 +191,7 @@ Count   Type    Number  Text
 14      Warning 526     Symbol '___' (___) not defined
 2       Warning 527     Unreachable code at token '___'
 1       Warning 534     Ignoring return value of function '___' (compare with ___)
+8       Warning 553     Undefined preprocessor variable '___', assumed 0
 2       Warning 641     Converting enum '___' to '___'
 1       Info    726     Extraneous comma ignored
 1       Info    731     Boolean argument to equal/not equal
@@ -133,9 +201,9 @@ Count   Type    Number  Text
 7       Info    765     external '___' (___) could be made static
 1       Info    769     global enumeration constant '___' (___) not referenced
 1       Info    774     Boolean within '___' always evaluates to ___
-1       Info    793     ANSI/ISO limit of ___ '___' exceeded -- processing is unaffected
+1       Info    793     ANSI/ISO limit of ___ '___'___ exceeded -- processing is unaffected
 1       Info    835     A zero has been given as ___ argument to operator '___'
-41      Note    960     Violates MISRA 2004 Required Rule ___, ___
-6       Note    961     Violates MISRA 2004 Advisory Rule ___, ___
+2       Note    923     cast from ___ to ___
+103     Note    960     Violates MISRA 2004 Required Rule ___, ___
+2       Note    961     Violates MISRA 2004 Advisory Rule ___, ___
 6       Note    970     Use of modifier or type '___' outside of a typedef
-1       Note    974     Worst case function for stack usage: ___ See +stack for a full report.

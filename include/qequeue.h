@@ -173,7 +173,7 @@ typedef struct QEQueueTag {
 * of the ring buffer in the units of event-pointers.
 *
 * \note The actual capacity of the queue is qLen + 1, because of the extra
-* location fornEvt.
+* location forntEvt.
 */
 void QEQueue_init(QEQueue * const me,
                   QEvt const *qSto[], QEQueueCtr const qLen);
@@ -236,7 +236,7 @@ QEvt const *QEQueue_get(QEQueue * const me);
 * queue status can change unexpectedly. The main intent for using
 * this operation is in conjunction with event deferral. In this
 * case the queue is accessed only from a single thread (by a single AO),
-* so no other entitiy can post events to the queue.
+* so no other entity can post events to the queue.
 *
 * \sa QActive_defer(), QActive_recall()
 */

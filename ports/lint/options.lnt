@@ -1,28 +1,35 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last Updated for Version: 4.5.00
-// Date of the Last Update:  May 18, 2012
+// Last Updated for Version: 4.5.04
+// Date of the Last Update:  Feb 01, 2013
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
 //                    innovating embedded systems
 //
-// Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 //
-// This software may be distributed and modified under the terms of the GNU
-// General Public License version 2 (GPL) as published by the Free Software
-// Foundation and appearing in the file GPL.TXT included in the packaging of
-// this file. Please note that GPL Section 2[b] requires that all works based
-// on this software must also be made publicly available under the terms of
-// the GPL ("Copyleft").
+// This program is open source software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
 //
-// Alternatively, this software may be distributed and modified under the
+// Alternatively, this program may be distributed and modified under the
 // terms of Quantum Leaps commercial licenses, which expressly supersede
-// the GPL and are specifically designed for licensees interested in
-// retaining the proprietary status of their code.
+// the GNU General Public License and are specifically designed for
+// licensees interested in retaining the proprietary status of their code.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// Quantum Leaps Web site:  http://www.quantum-leaps.com
+// Quantum Leaps Web sites: http://www.quantum-leaps.com
+//                          http://www.state-machine.com
 // e-mail:                  info@quantum-leaps.com
 //////////////////////////////////////////////////////////////////////////////
 
@@ -47,11 +54,14 @@ lib-qpc.lnt       // QP/C options
 
 
 // QEP
--estring(961,     // MISRA04-19.7(adv) function-like macro
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
  QEP_TRIG_,
  QEP_ENTER_,
  QEP_EXIT_)
--emacro(960,      // MISRA04-14.3(req) null statement not in line by itself
+-emacro(960,                  // MISRA04-14.3(req) null not in line by itself
+ QEP_ENTER_,
+ QEP_EXIT_)
+-emacro(717,                  // do ... while(0);
  QEP_ENTER_,
  QEP_EXIT_)
 -efunc(778, QEP_getVersion)   // Constant expression evaluates to 0
@@ -81,6 +91,13 @@ lib-qpc.lnt       // QP/C options
  QF_CRIT_EXIT_,
  QF_PTR_RANGE_,
  QF_MPOOL_EL)
+-esym(960,                    // MISRA04-19.4(req) Disallowed macro definition
+ QF_EPOOL_TYPE_,
+ QF_ACTIVE_SUPER_,
+ QF_ACTIVE_STATE_,
+ QF_CRIT_STAT_,
+ QF_PTR_AT_,
+ QACTIVE_EQUEUE_ONEMPTY_)
 -efunc(818,                   // MISRA04-16.7(adv) 'stkSto' could be const
  QActive_start,
  QActive_stop)
@@ -90,12 +107,16 @@ lib-qpc.lnt       // QP/C options
 -efunc(550, QF_tick)          // Symbol 'dummy' not accessed
 -emacro({717},                // do ... while(0);
  QACTIVE_EQUEUE_SIGNAL_,
- QACTIVE_EQUEUE_ONEMPTY_) 
+ QACTIVE_EQUEUE_ONEMPTY_)
+-esym(960, 8.8)   // MISRA04-8.8(req) Seems to be checked incorrectly...
 
 // QK
 -efunc(778, QK_getVersion)    // Constant expression evaluates to 0
 -efunc(835, QK_getVersion)    // 0 as left argument to operator '+'
-
+-esym(960,                    // MISRA04-19.4(req) Disallowed macro definition
+ QF_CRIT_ENTRY_,
+ QF_CRIT_EXIT_)
+ 
 // QS -- the following options are needed only when Q_SPY is defined
 -emacro(960,                  // MISR04-17.4(req), pointer arithmetic
  QS_PTR_AT_,
@@ -119,6 +140,14 @@ lib-qpc.lnt       // QP/C options
 -emacro(572,                  // MISRA04-12.8(req) excessive shift value
  QS_BEGIN_,
  QS_BEGIN_NOCRIT_)
+-esym(960,                    // MISRA04-19.4(req) Disallowed macro definition
+ QS_BEGIN_,
+ QS_END_,
+ QS_BEGIN_NOCRIT_,
+ QS_END_NOCRIT_,
+ QS_INSERT_BYTE,
+ QS_INSERT_ESC_BYTE,
+ QS_INSERT_CHKSUM_BYTE)
 -emacro(961, QS_TEC_)         // MISRA04-12.13(adv)
 -efunc(778, QS_getVersion)    // Constant expression evaluates to 0
 -efunc(835, QS_getVersion)    // 0 as left argument to operator '+'

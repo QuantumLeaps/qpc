@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 4.5.01
-* Date of the Last Update:  Jun 13, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 01, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -101,7 +101,7 @@ void QHsm_dispatch(QHsm * const me, QEvt const * const e) {
         t = path[0];                            /* target of the transition */
 
         if (s == t) {      /* (a) check source==target (transition to self) */
-            QEP_EXIT_(s)                                 /* exit the source */
+            QEP_EXIT_(s);                                /* exit the source */
             ip = (int8_t)0;                             /* enter the target */
         }
         else {
@@ -116,13 +116,13 @@ void QHsm_dispatch(QHsm * const me, QEvt const * const e) {
 
                                   /* (c) check source->super==target->super */
                 if (me->temp == t) {
-                    QEP_EXIT_(s)                         /* exit the source */
+                    QEP_EXIT_(s);                        /* exit the source */
                     ip = (int8_t)0;                     /* enter the target */
                 }
                 else {
                                          /* (d) check source->super==target */
                     if (me->temp == path[0]) {
-                        QEP_EXIT_(s)                     /* exit the source */
+                        QEP_EXIT_(s);                    /* exit the source */
                     }
                     else { /* (e) check rest of source==target->super->super..
                             * and store the entry path along the way
@@ -152,7 +152,7 @@ void QHsm_dispatch(QHsm * const me, QEvt const * const e) {
                                             /* entry path must not overflow */
                             Q_ASSERT(ip < (int8_t)QEP_MAX_NEST_DEPTH_);
 
-                            QEP_EXIT_(s)                /* exit the source */
+                            QEP_EXIT_(s);                /* exit the source */
 
                                 /* (f) check the rest of source->super
                                  *                  == target->super->super...
@@ -211,7 +211,7 @@ void QHsm_dispatch(QHsm * const me, QEvt const * const e) {
         }
                     /* retrace the entry path in reverse (desired) order... */
         for (; ip >= (int8_t)0; --ip) {
-            QEP_ENTER_(path[ip])                          /* enter path[ip] */
+            QEP_ENTER_(path[ip]);                         /* enter path[ip] */
         }
         t = path[0];                      /* stick the target into register */
         me->temp = t;                              /* update the next state */
@@ -240,7 +240,7 @@ void QHsm_dispatch(QHsm * const me, QEvt const * const e) {
             Q_ASSERT(ip < (int8_t)QEP_MAX_NEST_DEPTH_);
 
             do {    /* retrace the entry path in reverse (correct) order... */
-                QEP_ENTER_(path[ip])                      /* enter path[ip] */
+                QEP_ENTER_(path[ip]);                     /* enter path[ip] */
                 --ip;
             } while (ip >= (int8_t)0);
 

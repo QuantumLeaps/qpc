@@ -82,7 +82,7 @@ void SysTick_Handler(void) {
     static uint8_t  debounce_state = 0U;
     uint32_t btn;
 
-    QK_ISR_ENTRY();                      /* infrom QK about entering an ISR */
+    QK_ISR_ENTRY();                      /* inform QK about entering an ISR */
 
 #ifdef Q_SPY
     {
@@ -133,11 +133,11 @@ void SysTick_Handler(void) {
             debounce_state = 0U;              /* transition back to state 0 */
             break;
     }
-    QK_ISR_EXIT();                        /* infrom QK about exiting an ISR */
+    QK_ISR_EXIT();                        /* inform QK about exiting an ISR */
 }
 /*..........................................................................*/
 void GPIOPortA_IRQHandler(void) {
-    QK_ISR_ENTRY();                      /* infrom QK about entering an ISR */
+    QK_ISR_ENTRY();                      /* inform QK about entering an ISR */
 
     QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG),    /* for testing... */
                  &l_GPIOPortA_IRQHandler);

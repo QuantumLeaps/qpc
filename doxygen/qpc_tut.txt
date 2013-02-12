@@ -357,7 +357,7 @@ the kit and make sure that the Power LED is on (see \ref F2s2 "Figure 2-2").
 Next, you need to launch the IAR Embedded Workbench and open the workspace
 game-ev-lm3s81eww located in \c
 &lt;qpc&gt;\\examples\\arm-cortex\\vanilla\\iar\\game-ev-lm3s811\\ directory.
-At this point your screen should look similar to the screenshot shown in
+At this point your screen should look similar to the screen shot shown in
 \ref F2s3 "Figure 2-3". The game-ev-lm3s811 project is set up to use the LMI FTDI
 debugger, which is the piece of hardware integrated on the LM3S811 board (see
 \ref F2s2 "Figure 2-2"). You can verify this setup by opening the "Options"
@@ -436,9 +436,9 @@ example, \ref L3s1 "Listing 3-1"(21) refers to the label (21) in
  (3) #include "game.h"                                       /* this application */
 
      /* Local-scope objects -----------------------------------------------------*/
- (4) static QEvent const * l_missileQueueSto[2];                  /* event queue */
- (5) static QEvent const * l_shipQueueSto[3];                     /* event queue */
- (6) static QEvent const * l_tunnelQueueSto[GAME_MINES_MAX + 5];  /* event queue */
+ (4) static QEvt const * l_missileQueueSto[2];                  /* event queue */
+ (5) static QEvt const * l_shipQueueSto[3];                     /* event queue */
+ (6) static QEvt const * l_tunnelQueueSto[GAME_MINES_MAX + 5];  /* event queue */
  (7) static ObjectPosEvt   l_smlPoolSto[GAME_MINES_MAX + 8];  /* small-size pool */
  (8) static ObjectImageEvt l_medPoolSto[GAME_MINES_MAX + 8]; /* medium-size pool */
  (9) static QSubscrList    l_subscrSto[MAX_PUB_SIG];        /* publish-subscribe */
@@ -464,17 +464,17 @@ example, \ref L3s1 "Listing 3-1"(21) refers to the label (21) in
                        1,                                   /* priority (lowest) */
                        l_missileQueueSto, Q_DIM(l_missileQueueSto), /* evt queue */
                        (void *)0, 0,                      /* no per-thread stack */
-                       (QEvent *)0);                  /* no initialization event */
+                       (QEvt *)0);                  /* no initialization event */
 (19)     QActive_start(AO_Ship,      /* global pointer to the Ship active object */
                        2,                                            /* priority */
                        l_shipQueueSto,    Q_DIM(l_shipQueueSto),    /* evt queue */
                        (void *)0, 0,                      /* no per-thread stack */
-                       (QEvent *)0);                  /* no initialization event */
+                       (QEvt *)0);                  /* no initialization event */
 (20)     QActive_start(AO_Tunnel,  /* global pointer to the Tunnel active object */
                        3,                                            /* priority */
                        l_tunnelQueueSto,  Q_DIM(l_tunnelQueueSto),  /* evt queue */
                        (void *)0, 0,                      /* no per-thread stack */
-                       (QEvent *)0);                  /* no initialization event */
+                       (QEvt *)0);                  /* no initialization event */
 
 (21)     QF_run();                                     /* run the QF application */
     }
@@ -517,7 +517,7 @@ one event must necessarily complete before processing the next event.
 objects used in the application. Here the storage is provided at compile time
 through the statically allocated arrays of immutable (const) pointers to
 events, because QF event queues hold just pointers to events, not events
-themselves. Events are represented as instances of the QEvent structure
+themselves. Events are represented as instances of the QEvt structure
 declared in the qp_port.h header file. Each event queue of an active object
 can have a different size and you need to decide this size based on your
 knowledge of the application. I discuss the event queues in Chapters 6 and 7
@@ -1188,7 +1188,7 @@ additional quantitative information about the occurrence in form of event
 parameters. For example, the \c PLAYER_SHIP_MOVE signal is accompanied by the
 parameters <TT>(x, y)</TT> that contain the quantitative information as to
 where exactly to move the Ship.  In QP, events are represented as instances of
-the QEvent structure provided by the framework. Specifically, the QEvent
+the QEvt structure provided by the framework. Specifically, the QEvt
 structure contains the member sig, to represent the signal of that event.
 Event parameters are added in the process of inheritance, as described in the
 sidebar \ref derivation.
@@ -1233,25 +1233,25 @@ defined in file game.h.</STRONG>
      };
 
  (5) typedef struct ObjectPosEvtTag {
- (6)     QEvent super;                                /* extend the QEvent class */
+ (6)     QEvt super;                                /* extend the QEvt class */
  (7)     uint8_t x;                              /* the x-position of the object */
  (8)     uint8_t y;                              /* new y-position of the object */
      } ObjectPosEvt;
 
      typedef struct ObjectImageEvtTag {
-         QEvent super;                                /* extend the QEvent class */
+         QEvt super;                                /* extend the QEvt class */
          uint8_t x;                              /* the x-position of the object */
          int8_t  y;                              /* the y-position of the object */
          uint8_t bmp;                   /* the bitmap ID representing the object */
      } ObjectImageEvt;
 
      typedef struct MineEvtTag {
-         QEvent super;                                /* extend the QEvent class */
+         QEvt super;                                /* extend the QEvt class */
          uint8_t id;                                       /* the ID of the Mine */
      } MineEvt;
 
      typedef struct ScoreEvtTag {
-         QEvent super;                                /* extend the QEvent class */
+         QEvt super;                                /* extend the QEvt class */
          uint16_t score;                                    /* the current score */
      } ScoreEvt;
 
@@ -1291,7 +1291,7 @@ in the application.
 \li (5) The event structure \c ObjectPosEvt defines a "class" of events that
 convey the object's position on the display in the event parameters.
 
-\li (6) The structure \c ObjectPosEvt derives from the base structure QEvent, as
+\li (6) The structure \c ObjectPosEvt derives from the base structure QEvt, as
 explained in the sidebar \ref derivation.
 
 \li (7-8) The structure \c ObjectPosEvt adds parameters \c x and \c y, which are
@@ -1352,7 +1352,7 @@ posting from active objects in the state machine code.
 in bsp.c for the ARM-Cortex board.</STRONG>
 \code
  (1) void ISR_SysTick(void) {
- (2)     static QEvent const tickEvt = { TIME_TICK_SIG, 0 };
+ (2)     static QEvt const tickEvt = { TIME_TICK_SIG, 0 };
  (3)     QF_publish(&tickEvt);      /* publish the tick event to all subscribers */
  (4)     QF_tick();                             /* process all armed time events */
      }
@@ -1378,7 +1378,7 @@ in bsp.c for the ARM-Cortex board.</STRONG>
  (9)         ObjectPosEvt *ope = Q_NEW(ObjectPosEvt, PLAYER_SHIP_MOVE_SIG);
 (10)         ope->x = (uint8_t)GAME_SHIP_X;               /* x-position is fixed */
 (11)         ope->y = (uint8_t)tmp;
-(12)         QActive_postFIFO(AO_ship, (QEvent *)ope);    /* post to the Ship AO */
+(12)         QActive_postFIFO(AO_ship, (QEvt *)ope);    /* post to the Ship AO */
              wheel = tmp;                 /* save the last position of the wheel */
          }
          . . .
@@ -1493,12 +1493,12 @@ of data members enlisted after the base structure member super, as shown in
 (10) } Ship;                          /* the typedef-ed name for the Ship struct */
 
                                                    /* state handler functions... */
-(11) static QState Ship_active   (Ship *me, QEvent const *e);
-(12) static QState Ship_parked   (Ship *me, QEvent const *e);
-(13) static QState Ship_flying   (Ship *me, QEvent const *e);
-(14) static QState Ship_exploding(Ship *me, QEvent const *e);
+(11) static QState Ship_active   (Ship *me, QEvt const *e);
+(12) static QState Ship_parked   (Ship *me, QEvt const *e);
+(13) static QState Ship_flying   (Ship *me, QEvt const *e);
+(14) static QState Ship_exploding(Ship *me, QEvt const *e);
 
-(15) static QState Ship_initial  (Ship *me, QEvent const *e);
+(15) static QState Ship_initial  (Ship *me, QEvt const *e);
 
 (16) static Ship l_ship;          /* the sole instance of the Ship active object */
 
@@ -1575,7 +1575,7 @@ structure, rather than the specific Ship structure. The power of an "opaque"
 pointer is that it allows me to completely hide the definition of the Ship
 structure and make it inaccessible to the rest of the application. Still, the
 other application components can access the Ship object to post events
-directly to it via the QActive_postFIFO(QActive *me, QEvent const *e)
+directly to it via the QActive_postFIFO(QActive *me, QEvt const *e)
 function.
 
 \section step2 7.2 Step 2: Initializing the State Machine
@@ -1608,7 +1608,7 @@ in ship.c.</STRONG>
  (5)     me->y = GAME_SHIP_Y;
      }
      /*..........................................................................*/
- (6) QState Ship_initial(Ship *me, QEvent const *e) {          /* initialization */
+ (6) QState Ship_initial(Ship *me, QEvt const *e) {          /* initialization */
  (7)     QActive_subscribe((QActive *)me, TIME_TICK_SIG);
  (8)     QActive_subscribe((QActive *)me, PLAYER_TRIGGER_SIG);
 
@@ -1666,7 +1666,7 @@ following the listing highlights the important implementation techniques.
 <STRONG>Listing 7-3 State handler functions for states "active" and "flying"
 in ship.c.</STRONG>
 \code
- (1) QState Ship_active(Ship *me, QEvent const *e) {
+ (1) QState Ship_active(Ship *me, QEvt const *e) {
  (2)     switch (e->sig) {
  (3)         case Q_INIT_SIG: {                     /* nested initial transition */
  (4)             /* any actions associated with the initial transition */
@@ -1681,7 +1681,7 @@ in ship.c.</STRONG>
 (10)     return Q_SUPER(&QHsm_top);                     /* return the superstate */
      }
      /*..........................................................................*/
-     QState Ship_flying(Ship *me, QEvent const *e) {
+     QState Ship_flying(Ship *me, QEvt const *e) {
          switch (e->sig) {
 (11)         case Q_ENTRY_SIG: {
 (12)             ScoreEvt *sev;
@@ -1689,7 +1689,7 @@ in ship.c.</STRONG>
                  me->score = 0;                               /* reset the score */
 (13)             sev = Q_NEW(ScoreEvt, SCORE_SIG);
 (14)             sev->score = me->score;
-(15)             QActive_postFIFO(AO_Tunnel, (QEvent *)sev);
+(15)             QActive_postFIFO(AO_Tunnel, (QEvt *)sev);
 (16)             return Q_HANDLED();
              }
              case TIME_TICK_SIG: {
@@ -1698,14 +1698,14 @@ in ship.c.</STRONG>
                  oie->x   = me->x;
                  oie->y   = me->y;
                  oie->bmp = SHIP_BMP;
-                 QActive_postFIFO(AO_Tunnel, (QEvent *)oie);
+                 QActive_postFIFO(AO_Tunnel, (QEvt *)oie);
 
                  ++me->score;  /* increment the score for surviving another tick */
 
                  if ((me->score % 10) == 0) {           /* is the score "round"? */
                      ScoreEvt *sev = Q_NEW(ScoreEvt, SCORE_SIG);
                      sev->score = me->score;
-                     QActive_postFIFO(AO_Tunnel, (QEvent *)sev);
+                     QActive_postFIFO(AO_Tunnel, (QEvt *)sev);
                  }
                  return Q_HANDLED();
              }
@@ -1713,7 +1713,7 @@ in ship.c.</STRONG>
                  ObjectPosEvt *ope = Q_NEW(ObjectPosEvt, MISSILE_FIRE_SIG);
                  ope->x = me->x;
                  ope->y = me->y + SHIP_HEIGHT - 1;
-                 QActive_postFIFO(AO_Missile, (QEvent *)ope);
+                 QActive_postFIFO(AO_Missile, (QEvt *)ope);
                  return Q_HANDLED();
              }
              case DESTROYED_MINE_SIG: {
@@ -1732,7 +1732,7 @@ in ship.c.</STRONG>
 \endcode
 
 \li (1) Each state handler must have the same signature, that is, it must take
-two parameters: the state machine pointer "me" and the pointer to QEvent. The
+two parameters: the state machine pointer "me" and the pointer to QEvt. The
 keyword const before the '*' in the event pointer declaration means that the
 event pointed to by that pointer cannot be changed inside the state handler
 function (i.e., the event is read-only). A state handler function must return
@@ -1764,7 +1764,7 @@ represent a "malformed" state machine.
 
 \li (7-8) You access the data members of the Ship state machine via the "me"
 argument of the state handler function. You access the event parameters via
-the "e" argument. You need to cast the event pointer from the generic QEvent
+the "e" argument. You need to cast the event pointer from the generic QEvt
 base class to the specific event structure expected for the
 PLAYER_SHIP_MOVE_SIG, which is ObjectPosEvt in this case.
 
@@ -2241,8 +2241,8 @@ Inheritance is the ability to derive new structures based on existing
 structures in order to reuse and organize code. You can implement single
 inheritance in C very simply by literally embedding the base structure as the
 first member of the derived structure. For example, \ref FA1 "Figure 1"(a)
-shows the structure ScoreEvt derived from the base structure QEvent by
-embedding the QEvent instance as the first member of ScoreEvt. To make this
+shows the structure ScoreEvt derived from the base structure QEvt by
+embedding the QEvt instance as the first member of ScoreEvt. To make this
 idiom better stand out, I always name the base structure member super.
 
 \anchor FA1 \image html FA1.jpg "Figure 1 (a) Derivation of structures in C, (b) memory alignment, and (c) the UML class diagram."
@@ -2250,15 +2250,15 @@ idiom better stand out, I always name the base structure member super.
 As shown in \ref FA1 "Figure 1"(b), such nesting of structures always aligns
 the data member super at the beginning of every instance of the derived
 structure. In particular, this alignment lets you treat a pointer to the
-derived ScoreEvt structure as a pointer to the QEvent base structure.
+derived ScoreEvt structure as a pointer to the QEvt base structure.
 Consequently, you can always safely pass a pointer to ScoreEvt to any C
-function that expects a pointer to QEvent. (To be strictly correct in C, you
+function that expects a pointer to QEvt. (To be strictly correct in C, you
 should explicitly cast this pointer. In OOP such casting is called upcasting
-and is always safe.) Therefore, all functions designed for the QEvent
+and is always safe.) Therefore, all functions designed for the QEvt
 structure are automatically available to the ScoreEvt structure as well as
-other structures derived from QEvent. \ref FA1 "Figure 1"(c) shows the UML
+other structures derived from QEvt. \ref FA1 "Figure 1"(c) shows the UML
 class diagram depicting the inheritance relationship between ScoreEvt and
-QEvent structures.
+QEvt structures.
 
 QP uses single inheritance quite extensively not just for derivation of events
 with parameters, but also for derivation of state machines and active objects.
@@ -2266,5 +2266,5 @@ Of course, the C++ version of QP uses the native C++ support for class
 inheritance rather than "derivation of structures".
 
 \image html logo_ql_TM.jpg
-Copyright &copy; 2002-2011 Quantum Leaps, LLC. All Rights Reserved.\n
+Copyright &copy; 2002-2013 Quantum Leaps, LLC. All Rights Reserved.\n
 http://www.state-machine.com */

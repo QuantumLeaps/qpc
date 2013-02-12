@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  Calculator Example
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 21, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Jan 07, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -512,6 +512,7 @@ QState Calc_opEntered(Calc * const me, QEvt const * const e) {
             BSP_insert((int)'0');
             BSP_insert((int)'.');
             status = Q_TRAN(&Calc_frac2);
+            break;
         }
         default: {
             status = Q_SUPER(&Calc_on);

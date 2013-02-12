@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 17, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -120,6 +120,6 @@ void QActive_stop(QActive * const me) {
 * QF_onIdle() must be called with interrupts DISABLED because the
 * determination of the idle condition (no events in the queues) can change
 * at any time by an interrupt posting events to a queue. The QF_onIdle()
-* MUST enable interrups internally, perhaps at the same time as putting the
+* MUST enable interrupts internally, perhaps at the same time as putting the
 * CPU into a power-saving mode.
 */
