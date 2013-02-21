@@ -1,0 +1,6 @@
+spy\qs_str.o: ..\..\..\..\qs\source\qs_str.c \
+ ..\..\..\..\qs\source\/qs_pkg.h qs_port.h qf_port.h qep_port.h \
+ ..\..\..\..\include/qep.h ..\..\..\..\include/qevt.h qk_port.h \
+ ..\..\..\..\include/qk.h ..\..\..\..\include/qequeue.h \
+ ..\..\..\..\include/qmpool.h ..\..\..\..\include/qpset.h \
+ ..\..\..\..\include/qf.h ..\..\..\..\include/qs.h

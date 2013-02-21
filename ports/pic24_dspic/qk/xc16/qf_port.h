@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QF/C, PIC24/dsPIC, QK kernel, MPLABX-XC16 compiler
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Oct 15, 2012
+* Last Updated for Version: 4.5.04
+* Date of the Last Update:  Feb 20, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,14 +45,16 @@
 #define QF_TIMEEVT_CTR_SIZE     2
 
                                  /* QF interrupt disable/enable, see NOTE02 */
-#define QF_INT_DISABLE()            __asm__ volatile("disi #0x3FFF")
-#define QF_INT_ENABLE()             __asm__ volatile("disi #0x0000")
+#define QF_INT_DISABLE()            __builtin_disi(0x3FFFU)
+#define QF_INT_ENABLE()             __builtin_disi(0x0000U)
 
                               /* QF critical section entry/exit, see NOTE02 */
 /* QF_CRIT_STAT_TYPE not defined: unconditional interrupt unlocking" policy */
-#define QF_CRIT_ENTRY(dummy)        __asm__ volatile("disi #0x3FFF")
-#define QF_CRIT_EXIT(dummy)         __asm__ volatile("disi #0x0000")
+#define QF_CRIT_ENTRY(dummy)        __builtin_disi(0x3FFFU)
+#define QF_CRIT_EXIT(dummy)         __builtin_disi(0x0000U)
 
+                          /* fast log-base-2 with FBCL instruction, NOTE03  */
+#define QF_LOG2(n_) ((uint8_t)(15 + __builtin_fbcl(n_)))
 
 #include "qep_port.h"                                           /* QEP port */
 #include "qk_port.h"                           /* QK preemptive kernel port */
@@ -86,6 +88,13 @@
 * level. For example, the default priority level for all interrupts is 4 out
 * of reset. If you don't change this level for any interrupt the nesting of
 * interrupt will not occur.
+*
+* NOTE03:
+* The FBCL instruction (Find First Bit Change Left) determines the exponent
+* of a value by detecting the first bit change starting from the value’s sign
+* bit and working towards the LSB. Since the PIC24/dsPIC’s barrel shifter
+* uses negative values to specify a left shift, the FBCL instruction returns
+* the negated exponent of a value. This value added to 15 gives the log-2.
 */
 
 #endif                                                         /* qf_port_h */

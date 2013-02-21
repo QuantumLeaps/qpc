@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?ccsproject version="1.0"?>
+
+<projectOptions>
+<deviceVariant value="Cortex M.LM3S811"/>
+<deviceEndianness value="little"/>
+<codegenToolVersion value="4.6.1"/>
+<isElfFormat value="true"/>
+<rts value="rtsv7M3_T_le_eabi.lib"/>
+<defaultAssemblyOnly value="false"/>
+<isTargetManual value="false"/>
+<deviceFamily value="TMS470"/>
+<connection value="common/targetdb/connections/Stellaris_ICDI_Connection.xml"/>
+</projectOptions>
