@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QS/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -42,19 +42,27 @@
 
 /*..........................................................................*/
 void QS_f32(uint8_t format, float32_t f) {
-                                 /* grab the internal binary representation */
     union F32Rep {
         float32_t f;
         uint32_t  u;
-    } fu32;
-    fu32.f = f;
+    } fu32;                           /* the internal binary representation */
+    uint8_t chksum = QS_priv_.chksum;      /* put in a temporary (register) */
+    uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */
+    QSCtr   head   = QS_priv_.head;        /* put in a temporary (register) */
+    QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
+    int_t   i;
 
-    QS_INSERT_ESC_BYTE(format)
-    QS_INSERT_ESC_BYTE((uint8_t)fu32.u)
-    fu32.u >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)fu32.u)
-    fu32.u >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)fu32.u)
-    fu32.u >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)fu32.u)
+    fu32.f = f;                         /* assign the binary representation */
+
+    QS_priv_.used += (QSCtr)5;                 /* 5 bytes about to be added */
+    QS_INSERT_ESC_BYTE(format)                    /* insert the format byte */
+
+    for (i = (int_t)4; i != (int_t)0; --i) {      /* insert 4 bytes of data */
+        format = (uint8_t)fu32.u;
+        QS_INSERT_ESC_BYTE(format)
+        fu32.u >>= 8;
+    }
+
+    QS_priv_.head   = head;                                /* save the head */
+    QS_priv_.chksum = chksum;                          /* save the checksum */
 }

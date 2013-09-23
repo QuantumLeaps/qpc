@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: Deferred Event state pattern example
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 03, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -127,9 +127,7 @@ QState TServer_idle(TServer *me, QEvt const *e) {
 QState TServer_busy(TServer *me, QEvt const *e) {
     switch (e->sig) {
         case NEW_REQUEST_SIG: {
-            if (QEQueue_getNFree(&me->requestQueue) > 0) {    /* can defer? */
-                                                       /* defer the request */
-                QActive_defer((QActive *)me, &me->requestQueue, e);
+            if (QActive_defer((QActive *)me, &me->requestQueue, e)) {
                 printf("Request #%d deferred;\n",
                        (int)((RequestEvt const *)e)->ref_num);
             }

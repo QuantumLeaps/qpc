@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C port to Win32
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jun 30, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 12, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -69,7 +69,7 @@ int16_t QF_run(void) {
     l_running = (uint8_t)1;
     while (l_running) {
         Sleep(l_tickMsec);                    /* wait for the tick interval */
-        QF_onClockTick();      /* clock tick callback (must call QF_TICK()) */
+        QF_onClockTick();     /* clock tick callback (must call QF_TICKX()) */
     }
     QF_onCleanup();                                     /* cleanup callback */
     QS_EXIT();                               /* cleanup the QSPY connection */
@@ -97,11 +97,11 @@ void QActive_start(QActive * const me, uint8_t prio,
 
     QEQueue_init(&me->eQueue, qSto, (QEQueueCtr)qLen);
     me->osObject = CreateEvent(NULL, FALSE, FALSE, NULL);
-    QF_ACTIVE_INIT_(&me->super, ie);          /* execute initial transition */
+    QMSM_INIT(&me->super, ie);                /* execute initial transition */
 
     /* NOTE: if stkSize==0, Windows allocates default stack size */
     me->thread = CreateThread(NULL, stkSize,
-                                &thread_function, me, 0, &threadId);
+                              &thread_function, me, 0, &threadId);
     Q_ASSERT(me->thread != (HANDLE)0);            /* thread must be created */
 
     switch (me->prio) {              /* remap QF priority to Win32 priority */
@@ -134,7 +134,7 @@ void QActive_stop(QActive * const me) {
 static DWORD WINAPI thread_function(LPVOID arg) {     /* for CreateThread() */
     do {                                   /* QActive_stop() stops the loop */
         QEvt const *e = QActive_get_((QActive *)arg);     /* wait for event */
-        QF_ACTIVE_DISPATCH_((QHsm *)arg, e);     /* dispatch to the AO's SM */
+        QMSM_DISPATCH((QMsm *)arg, e);           /* dispatch to the AO's SM */
         QF_gc(e);    /* check if the event is garbage, and collect it if so */
     } while (((QActive *)arg)->thread != (HANDLE)0);
     QF_remove_((QActive *)arg);/* remove this object from any subscriptions */

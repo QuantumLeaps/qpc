@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 25, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 28, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -40,27 +40,40 @@ Q_DEFINE_THIS_MODULE("qte_ctor")
 /**
 * \file
 * \ingroup qf
-* \brief QTimeEvt_ctor() implementation.
+* \brief QTimeEvt_ctorX() implementation.
 */
 
 /*..........................................................................*/
-void QTimeEvt_ctor(QTimeEvt * const me, enum_t const sig) {
-    Q_REQUIRE(sig >= (enum_t)Q_USER_SIG);                   /* valid signal */
-    me->next = (QTimeEvt *)0;
-    me->act  = (QActive *)0;
-    me->ctr  = (QTimeEvtCtr)0;
+void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
+                    enum_t const sig, uint8_t tickRate)
+{
+    Q_REQUIRE((sig >= (enum_t)Q_USER_SIG)           /* signal must be valid */
+        && (tickRate < (uint8_t)QF_MAX_TICK_RATE));   /* tick rate in range */
+
+    me->next      = (QTimeEvt *)0;
+    me->ctr       = (QTimeEvtCtr)0;
     me->interval  = (QTimeEvtCtr)0;
     me->super.sig = (QSignal)sig;
-
-                                   /* time event must be static, see NOTE01 */
-    QF_EVT_POOL_ID_(&me->super) = (uint8_t)0;    /* not from any event pool */
-    QF_EVT_REF_CTR_(&me->super) = (uint8_t)0;                 /* not linked */
+    me->act       = act;                                      /* see NOTE01 */
+                                   /* time event must be static, see NOTE02 */
+    me->super.poolId_ = (uint8_t)0;              /* not from any event pool */
+    me->super.refCtr_ = tickRate;                             /* see NOTE03 */
 }
 
 /*****************************************************************************
 * NOTE01:
+* For backwards compatibility with QTimeEvt_ctor(), the active object pointer
+* can be uninitialized (NULL) and is _not_ validated in the precondition.
+* The active object pointer is validated in preconditions to QTimeEvt_arm_()
+* and QTimeEvt_rearm().
+*
+* NOTE02:
 * Setting the POOL_ID event attribute to zero is correct only for events not
-* allocated from event pools. In the future releases of QF, time events
-* actually could be allocated dynamically. However, for simplicity in this
-* release of QF, time events are limited to be statically allocated.
+* allocated from event pools, which must be the case for Time Events.
+*
+* NOTE03:
+* The reference counter attribute is not used in static events, so for the
+* Time Events it is reused to hold the tickRate in the bits [0..6] and the
+* linkedFlag in the MSB (bit [7]). The linkedFlag is 0 for time events
+* unlinked from any list and 1 otherwise.
 */

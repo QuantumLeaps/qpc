@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 04, 2013
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 19, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -86,9 +86,12 @@
 #endif
 
 /* package-scope objects ---------------------------------------------------*/
-extern QTimeEvt *QF_timeEvtListHead_; /**< head of linked list of time evts */
+
+/** heads of linked lists of time events, one for every clock tick rate */
+extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
+
 extern QF_EPOOL_TYPE_ QF_pool_[QF_MAX_EPOOL];     /**< allocate event pools */
-extern uint8_t QF_maxPool_;               /**< # of initialized event pools */
+extern uint_t QF_maxPool_;                /**< # of initialized event pools */
 extern QSubscrList *QF_subscrList_;          /**< the subscriber list array */
 extern enum_t QF_maxSignal_;              /**< the maximum published signal */
 
@@ -96,20 +99,15 @@ extern enum_t QF_maxSignal_;              /**< the maximum published signal */
 /** \brief structure representing a free block in the Native QF Memory Pool
 */
 typedef struct QFreeBlockTag {
-    struct QFreeBlockTag *next;
+    struct QFreeBlockTag * volatile next;
 } QFreeBlock;
 
 /* internal helper macros --------------------------------------------------*/
-/** \brief access to the poolId of an event \a e_ */
-#define QF_EVT_POOL_ID_(e_)     ((e_)->poolId_)
 
-/** \brief access to the refCtr of an event \a e_ */
-#define QF_EVT_REF_CTR_(e_)     ((e_)->refCtr_)
-
-/** \brief increment the refCtr of an event \a e_ */
+/** \brief increment the refCtr of an event \a e_ casting const away */
 #define QF_EVT_REF_CTR_INC_(e_) (++((QEvt *)(e_))->refCtr_)
 
-/** \brief decrement the refCtr of an event \a e_ */
+/** \brief decrement the refCtr of an event \a e_ casting const away */
 #define QF_EVT_REF_CTR_DEC_(e_) (--((QEvt *)(e_))->refCtr_)
 
 /** \brief access element at index \a i_ from the base pointer \a base_ */

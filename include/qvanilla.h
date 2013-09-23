@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 13, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -46,37 +46,42 @@
 #include "qpset.h"      /* "Vanilla" kernel uses the native QF priority set */
 
                            /* the event queue type for the "Vanilla" kernel */
-#define QF_EQUEUE_TYPE              QEQueue
+#define QF_EQUEUE_TYPE  QEQueue
 
+/*****************************************************************************
+* interface used only inside QF, but not in applications
+*/
+#ifdef qf_pkg_h
                                         /* native QF event queue operations */
-#define QACTIVE_EQUEUE_WAIT_(me_) \
-    Q_ASSERT((me_)->eQueue.frontEvt != (QEvt *)0)
+    #define QACTIVE_EQUEUE_WAIT_(me_) \
+        Q_ASSERT((me_)->eQueue.frontEvt != (QEvt *)0)
 
-#if (QF_MAX_ACTIVE <= 8)
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-        QPSet8_insert(&QF_readySet_, (me_)->prio)
-
-    #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-        QPSet8_remove(&QF_readySet_, (me_)->prio)
-#else
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-        QPSet64_insert(&QF_readySet_, (me_)->prio)
-
-    #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-        QPSet64_remove(&QF_readySet_, (me_)->prio)
-#endif
+    #if (QF_MAX_ACTIVE <= 8)
+        #define QACTIVE_EQUEUE_SIGNAL_(me_) \
+            QPSet8_insert(&QF_readySet_, (me_)->prio)
+        #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
+            QPSet8_remove(&QF_readySet_, (me_)->prio)
+    #else
+        #define QACTIVE_EQUEUE_SIGNAL_(me_) \
+            QPSet64_insert(&QF_readySet_, (me_)->prio)
+        #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
+            QPSet64_remove(&QF_readySet_, (me_)->prio)
+    #endif
                                          /* native QF event pool operations */
-#define QF_EPOOL_TYPE_              QMPool
-#define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-    QMPool_init(&(p_), (poolSto_), (poolSize_), (QMPoolSize)(evtSize_))
-#define QF_EPOOL_EVENT_SIZE_(p_)    ((p_).blockSize)
-#define QF_EPOOL_GET_(p_, e_)       ((e_) = (QEvt *)QMPool_get(&(p_)))
-#define QF_EPOOL_PUT_(p_, e_)       (QMPool_put(&(p_), (e_)))
+    #define QF_EPOOL_TYPE_              QMPool
+    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+        QMPool_init(&(p_), (poolSto_), (poolSize_), (QMPoolSize)(evtSize_))
+    #define QF_EPOOL_EVENT_SIZE_(p_)    ((p_).blockSize)
+    #define QF_EPOOL_GET_(p_, e_, m_) \
+        ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
+    #define QF_EPOOL_PUT_(p_, e_)       (QMPool_put(&(p_), (e_)))
 
-#if (QF_MAX_ACTIVE <= 8)
-    extern QPSet8  QF_readySet_;         /** QF-ready set of active objects */
-#else
-    extern QPSet64 QF_readySet_;         /** QF-ready set of active objects */
-#endif
+    #if (QF_MAX_ACTIVE <= 8)
+        extern QPSet8 QF_readySet_;                /**< QF-ready set of AOs */
+    #else
+        extern QPSet64 QF_readySet_;               /**< QF-ready set of AOs */
+    #endif
+
+#endif                                                    /* ifdef qf_pkg_h */
 
 #endif                                                        /* qvanilla_h */

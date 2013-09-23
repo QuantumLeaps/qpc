@@ -1,7 +1,7 @@
 ##############################################################################
 # Product:  QP/C, Win32 build, GNU compiler
-# Last Updated for Version: 4.5.03
-# Date of the Last Update:  Nov 25, 2012
+# Last Updated for Version: 5.0.0
+# Date of the Last Update:  Sep 05, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -93,6 +93,7 @@ QS_OBJS = \
 	$(BINDIR)\qs_.o \
 	$(BINDIR)\qs_blk.o \
 	$(BINDIR)\qs_byte.o \
+	$(BINDIR)\qs_dict.o \
 	$(BINDIR)\qs_f32.o \
 	$(BINDIR)\qs_f64.o \
 	$(BINDIR)\qs_mem.o \
@@ -121,9 +122,12 @@ QEP_OBJS = \
 	$(BINDIR)\qhsm_ini.o \
 	$(BINDIR)\qhsm_dis.o \
 	$(BINDIR)\qhsm_top.o \
-	$(BINDIR)\qhsm_in.o
+	$(BINDIR)\qhsm_in.o \
+	$(BINDIR)\qmsm_ini.o \
+	$(BINDIR)\qmsm_dis.o
 
 QF_OBJS = \
+	$(BINDIR)\qa_ctor.o \
 	$(BINDIR)\qa_defer.o \
 	$(BINDIR)\qa_fifo.o \
 	$(BINDIR)\qa_lifo.o \
@@ -144,6 +148,7 @@ QF_OBJS = \
 	$(BINDIR)\qf_pspub.o \
 	$(BINDIR)\qf_pwr2.o \
 	$(BINDIR)\qf_tick.o \
+	$(BINDIR)\qma_ctor.o \
 	$(BINDIR)\qmp_get.o \
 	$(BINDIR)\qmp_init.o \
 	$(BINDIR)\qmp_put.o \
@@ -192,7 +197,16 @@ $(BINDIR)\qhsm_top.o: $(QEP_SRCDIR)\qhsm_top.c
 $(BINDIR)\qhsm_in.o: $(QEP_SRCDIR)\qhsm_in.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
 
+$(BINDIR)\qmsm_ini.o: $(QEP_SRCDIR)\qmsm_ini.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+
+$(BINDIR)\qmsm_dis.o: $(QEP_SRCDIR)\qmsm_dis.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+
 # QF -----------------------------------------
+$(BINDIR)\qa_ctor.o: $(QF_SRCDIR)\qa_ctor.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
+
 $(BINDIR)\qa_defer.o: $(QF_SRCDIR)\qa_defer.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
 
@@ -253,6 +267,9 @@ $(BINDIR)\qf_pwr2.o: $(QF_SRCDIR)\qf_pwr2.c
 $(BINDIR)\qf_tick.o: $(QF_SRCDIR)\qf_tick.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
 
+$(BINDIR)\qma_ctor.o: $(QF_SRCDIR)\qma_ctor.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
+
 $(BINDIR)\qmp_get.o: $(QF_SRCDIR)\qmp_get.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
 
@@ -295,6 +312,9 @@ $(BINDIR)\qs_blk.o: $(QS_SRCDIR)\qs_blk.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
 
 $(BINDIR)\qs_byte.o: $(QS_SRCDIR)\qs_byte.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
+
+$(BINDIR)\qs_dict.o: $(QS_SRCDIR)\qs_dict.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
 
 $(BINDIR)\qs_f32.o: $(QS_SRCDIR)\qs_f32.c

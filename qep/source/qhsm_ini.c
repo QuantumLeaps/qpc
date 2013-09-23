@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 17, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 19, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -44,51 +44,76 @@ Q_DEFINE_THIS_MODULE("qhsm_ini")
 */
 
 /*..........................................................................*/
+void QHsm_ctor(QHsm * const me, QStateHandler initial) {
+    static QMsmVtbl const vtbl = {                    /* QHsm virtual table */
+        &QHsm_init,
+        &QHsm_dispatch
+    };
+    /* do not call the QMsm_ctor() here, see NOTE01 */
+    me->vptr  = &vtbl;
+    me->state.fun = Q_STATE_CAST(&QHsm_top);
+    me->temp.fun  = initial;
+}
+/*..........................................................................*/
 void QHsm_init(QHsm * const me, QEvt const * const e) {
-    QStateHandler t = me->state;
+    QStateHandler t = me->state.fun;
     QS_CRIT_STAT_
 
-    Q_REQUIRE((me->temp != Q_STATE_CAST(0))        /* ctor must be executed */
+    Q_REQUIRE((me->vptr != (QMsmVtbl const *)0)    /* ctor must be executed */
+              && (me->temp.fun != Q_STATE_CAST(0)) /* ctor must be executed */
               && (t == Q_STATE_CAST(&QHsm_top))); /*initial tran. NOT taken */
 
                            /* the top-most initial transition must be taken */
-    Q_ALLEGE((*me->temp)(me, e) == Q_RET_TRAN);
+    Q_ALLEGE((*me->temp.fun)(me, e) == (QState)Q_RET_TRAN);
 
     do {                                        /* drill into the target... */
         QStateHandler path[QEP_MAX_NEST_DEPTH_];
-        int8_t ip = (int8_t)0;               /* transition entry path index */
+        int_t ip = (int_t)0;                 /* transition entry path index */
 
-        QS_BEGIN_(QS_QEP_STATE_INIT, QS_smObj_, me)
+        QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.smObjFilter, me)
             QS_OBJ_(me);                       /* this state machine object */
             QS_FUN_(t);                                 /* the source state */
-            QS_FUN_(me->temp);      /* the target of the initial transition */
+            QS_FUN_(me->temp.fun);  /* the target of the initial transition */
         QS_END_()
 
-        path[0] = me->temp;
-        (void)QEP_TRIG_(me->temp, QEP_EMPTY_SIG_);
-        while (me->temp != t) {
+        path[0] = me->temp.fun;
+        (void)QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
+        while (me->temp.fun != t) {
             ++ip;
-            path[ip] = me->temp;
-            (void)QEP_TRIG_(me->temp, QEP_EMPTY_SIG_);
+            path[ip] = me->temp.fun;
+            (void)QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
         }
-        me->temp = path[0];
+        me->temp.fun = path[0];
                                             /* entry path must not overflow */
-        Q_ASSERT(ip < (int8_t)QEP_MAX_NEST_DEPTH_);
+        Q_ASSERT(ip < (int_t)QEP_MAX_NEST_DEPTH_);
 
         do {        /* retrace the entry path in reverse (desired) order... */
             QEP_ENTER_(path[ip]);                         /* enter path[ip] */
             --ip;
-        } while (ip >= (int8_t)0);
+        } while (ip >= (int_t)0);
 
         t = path[0];                /* current state becomes the new source */
-    } while (QEP_TRIG_(t, Q_INIT_SIG) == Q_RET_TRAN);
+    } while (QEP_TRIG_(t, Q_INIT_SIG) == (QState)Q_RET_TRAN);
 
-    QS_BEGIN_(QS_QEP_INIT_TRAN, QS_smObj_, me)
+    QS_BEGIN_(QS_QEP_INIT_TRAN, QS_priv_.smObjFilter, me)
         QS_TIME_();                                           /* time stamp */
         QS_OBJ_(me);                           /* this state machine object */
         QS_FUN_(t);                                 /* the new active state */
     QS_END_()
 
-    me->state = t;                       /* change the current active state */
-    me->temp  = t;                      /* mark the configuration as stable */
+    me->state.fun = t;                   /* change the current active state */
+    me->temp.fun  = t;                  /* mark the configuration as stable */
 }
+
+/*****************************************************************************
+* NOTE01:
+* QHsm inherits QMsm, so by the "inheritance of structures" convention
+* it should call the constructor of the superclass, i.e., QMsm_ctor().
+* However, this would pull in the QMsmVtbl, which in turn will pull in
+* the code for QMsm_init() and QMsm_dispatch() implemetations. To avoid
+* this code size penalty, in case QMsm is not used in a given project,
+* the QHsm_ctor() performs direct intitialization of the Vtbl, which avoids
+* pulling in the code for QMsm.
+*/
+
+

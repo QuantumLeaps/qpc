@@ -1,5 +1,5 @@
 void tableStart(uint8_t prio,
-                QEvent const *qSto[], uint32_t qLen,
+                QEvt const *qSto[], uint32_t qLen,
                 void *stkSto, uint32_t stkSize)
 {
     static Table table;
@@ -9,5 +9,5 @@ void tableStart(uint8_t prio,
     Table_ctor(&table);
     QActive_start((QActive *)&table, prio,
                   qSto, qLen, stkSto, stkSize,
-                  (QEvent *)0);
+                  (QEvt *)0);
 }

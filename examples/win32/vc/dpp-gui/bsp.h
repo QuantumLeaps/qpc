@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 21, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 26, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -44,5 +44,8 @@ void BSP_terminate(int16_t result);
 
 void BSP_randomSeed(uint32_t seed);                          /* random seed */
 uint32_t BSP_random(void);                       /* pseudo-random generator */
+
+/* Windows-GUI does not use the regular main() */
+#define main()  main_gui()
 
 #endif                                                             /* bsp_h */

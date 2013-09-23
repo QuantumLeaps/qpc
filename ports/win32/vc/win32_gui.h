@@ -1,12 +1,12 @@
 /*****************************************************************************
 * Product: Win32 GUI facilities for building realistic embedded front panels
-* Date of the Last Update:  Jul 28, 2012
+* Date of the Last Update:  Aug 16, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -58,8 +58,8 @@ enum OwnerDrawnButtonAction OwnerDrawnButton_draw(
                                OwnerDrawnButton * const me,
                                LPDRAWITEMSTRUCT lpdis);
 
-/* DotMatrix "class" for drawing graphic displays with up to 24-bit color...*/
-typedef struct DotMatrixTag {
+/* GraphicDisplay class for drawing graphic displays with up to 24-bit color*/
+typedef struct GraphicDisplayTag {
     UINT    width;
     UINT    xScale;
     UINT    height;
@@ -68,18 +68,18 @@ typedef struct DotMatrixTag {
     HWND    hItem;
     BYTE   *bits;
     BYTE    bgColor[3];
-} DotMatrix;
+} GraphicDisplay;
 
-void DotMatrix_init(DotMatrix * const me,
+void GraphicDisplay_init(GraphicDisplay * const me,
                 UINT width,  UINT xScale,
                 UINT height, UINT yScale,
                 HWND hItem,  BYTE const bgColor[3]);
-void DotMatrix_xtor(DotMatrix * const me);
-void DotMatrix_clear(DotMatrix * const me);
-void DotMatrix_setPixel(DotMatrix * const me, UINT x, UINT y,
+void GraphicDisplay_xtor(GraphicDisplay * const me);
+void GraphicDisplay_clear(GraphicDisplay * const me);
+void GraphicDisplay_setPixel(GraphicDisplay * const me, UINT x, UINT y,
                  BYTE const color[3]);
-void DotMatrix_clearPixel(DotMatrix * const me, UINT x, UINT y);
-void DotMatrix_redraw(DotMatrix * const me);
+void GraphicDisplay_clearPixel(GraphicDisplay * const me, UINT x, UINT y);
+void GraphicDisplay_redraw(GraphicDisplay * const me);
 
 /* SegmentDisplay "class" for drawing segment displays, LEDs, etc...........*/
 typedef struct SegmentDisplayTag {

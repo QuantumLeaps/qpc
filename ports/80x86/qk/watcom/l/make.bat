@@ -1,29 +1,36 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C buld script for 80x86, QK port, Open Watcom compiler
-:: Last Updated for Version: 4.2.00
-:: Date of the Last Update:  Jul 08, 2011
+:: Last Updated for Version: 5.0.0
+:: Date of the Last Update:  Aug 24, 2013
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2011 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 ::
-:: This software may be distributed and modified under the terms of the GNU
-:: General Public License version 2 (GPL) as published by the Free Software
-:: Foundation and appearing in the file GPL.TXT included in the packaging of
-:: this file. Please note that GPL Section 2[b] requires that all works based
-:: on this software must also be made publicly available under the terms of
-:: the GPL ("Copyleft").
+:: This program is open source software: you can redistribute it and/or
+:: modify it under the terms of the GNU General Public License as published
+:: by the Free Software Foundation, either version 2 of the License, or
+:: (at your option) any later version.
 ::
-:: Alternatively, this software may be distributed and modified under the
+:: Alternatively, this program may be distributed and modified under the
 :: terms of Quantum Leaps commercial licenses, which expressly supersede
-:: the GPL and are specifically designed for licensees interested in
-:: retaining the proprietary status of their code.
+:: the GNU General Public License and are specifically designed for
+:: licensees interested in retaining the proprietary status of their code.
+::
+:: This program is distributed in the hope that it will be useful,
+:: but WITHOUT ANY WARRANTY; without even the implied warranty of
+:: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+:: GNU General Public License for more details.
+::
+:: You should have received a copy of the GNU General Public License
+:: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: Quantum Leaps Web site:  http://www.quantum-leaps.com
+:: Quantum Leaps Web sites: http://www.quantum-leaps.com
+::                          http://www.state-machine.com
 :: e-mail:                  info@quantum-leaps.com
 :: ===========================================================================
 
@@ -67,6 +74,8 @@ set CCINC=@inc_qep.rsp
 
 @echo on
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qep.obj      %SRCDIR%\qep.c
+%CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qmsm_ini.obj %SRCDIR%\qmsm_ini.c
+%CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qmsm_dis.obj %SRCDIR%\qmsm_dis.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qfsm_ini.obj %SRCDIR%\qfsm_ini.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qfsm_dis.obj %SRCDIR%\qfsm_dis.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qhsm_ini.obj %SRCDIR%\qhsm_ini.c
@@ -77,6 +86,8 @@ set CCINC=@inc_qep.rsp
 erase %LIBDIR%\qep.lib
 %LIB% -n %LIBDIR%\qep
 %LIB% %LIBDIR%\qep +%BINDIR%\qep
+%LIB% %LIBDIR%\qep +%BINDIR%\qmsm_ini
+%LIB% %LIBDIR%\qep +%BINDIR%\qmsm_dis
 %LIB% %LIBDIR%\qep +%BINDIR%\qfsm_ini
 %LIB% %LIBDIR%\qep +%BINDIR%\qfsm_dis
 %LIB% %LIBDIR%\qep +%BINDIR%\qhsm_ini
@@ -90,6 +101,7 @@ set SRCDIR=..\..\..\..\..\qf\source
 set CCINC=@inc_qf.rsp
 
 @echo on
+%CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qa_ctor.obj  %SRCDIR%\qa_ctor.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qa_defer.obj %SRCDIR%\qa_defer.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qa_fifo.obj  %SRCDIR%\qa_fifo.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qa_lifo.obj  %SRCDIR%\qa_lifo.c
@@ -110,6 +122,7 @@ set CCINC=@inc_qf.rsp
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qf_pspub.obj %SRCDIR%\qf_pspub.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qf_pwr2.obj  %SRCDIR%\qf_pwr2.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qf_tick.obj  %SRCDIR%\qf_tick.c
+%CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qma_ctor.obj %SRCDIR%\qma_ctor.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qmp_get.obj  %SRCDIR%\qmp_get.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qmp_init.obj %SRCDIR%\qmp_init.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qmp_put.obj  %SRCDIR%\qmp_put.c
@@ -121,6 +134,7 @@ set CCINC=@inc_qf.rsp
 
 erase %LIBDIR%\qf.lib
 %LIB% -n %LIBDIR%\qf
+%LIB% %LIBDIR%\qf +%BINDIR%\qa_ctor
 %LIB% %LIBDIR%\qf +%BINDIR%\qa_defer
 %LIB% %LIBDIR%\qf +%BINDIR%\qa_fifo
 %LIB% %LIBDIR%\qf +%BINDIR%\qa_lifo
@@ -141,6 +155,7 @@ erase %LIBDIR%\qf.lib
 %LIB% %LIBDIR%\qf +%BINDIR%\qf_pspub
 %LIB% %LIBDIR%\qf +%BINDIR%\qf_pwr2
 %LIB% %LIBDIR%\qf +%BINDIR%\qf_tick
+%LIB% %LIBDIR%\qf +%BINDIR%\qma_ctor
 %LIB% %LIBDIR%\qf +%BINDIR%\qmp_get
 %LIB% %LIBDIR%\qf +%BINDIR%\qmp_init
 %LIB% %LIBDIR%\qf +%BINDIR%\qmp_put
@@ -160,8 +175,8 @@ set CCINC=@inc_qk.rsp
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qk_sched.obj %SRCDIR%\qk_sched.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qk_mutex.obj %SRCDIR%\qk_mutex.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qk_ext.obj   %SRCDIR%\qk_ext.c
-%CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qk_port.obj  src\qk_port.c
-%AS% %ASFLAGS%         -fo=%BINDIR%\fpu.obj      src\fpu.asm
+%CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qk_port.obj  qk_port.c
+%AS% %ASFLAGS%         -fo=%BINDIR%\fpu.obj      fpu.asm
 
 erase %LIBDIR%\qk.lib
 %LIB% -n %LIBDIR%\qk
@@ -185,21 +200,21 @@ set CCINC=@inc_qs.rsp
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_.obj     %SRCDIR%\qs_.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_blk.obj  %SRCDIR%\qs_blk.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_byte.obj %SRCDIR%\qs_byte.c
+%CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_dict.obj %SRCDIR%\qs_dict.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_f32.obj  %SRCDIR%\qs_f32.c
-%CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_f64.obj  %SRCDIR%\qs_f64.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_mem.obj  %SRCDIR%\qs_mem.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_str.obj  %SRCDIR%\qs_str.c
 
 erase %LIBDIR%\qs.lib
 %LIB% -n %LIBDIR%\qs
-%LIB% %LIBDIR%\qs +%BINDIR%\qs.obj
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_.obj
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_blk.obj
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_byte.obj
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_f32.obj
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_f64.obj
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_mem.obj
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_str.obj
+%LIB% %LIBDIR%\qs +%BINDIR%\qs
+%LIB% %LIBDIR%\qs +%BINDIR%\qs_
+%LIB% %LIBDIR%\qs +%BINDIR%\qs_blk
+%LIB% %LIBDIR%\qs +%BINDIR%\qs_byte
+%LIB% %LIBDIR%\qs +%BINDIR%\qs_dict
+%LIB% %LIBDIR%\qs +%BINDIR%\qs_f32
+%LIB% %LIBDIR%\qs +%BINDIR%\qs_mem
+%LIB% %LIBDIR%\qs +%BINDIR%\qs_str
 @echo off
 
 :clean

@@ -63,7 +63,7 @@ void QMPool_put(QMPool * const me, void *b) {
     me->free_head = b;                  /* set as new head of the free list */
     ++me->nFree;                        /* one more free block in this pool */
 
-    QS_BEGIN_NOCRIT_(QS_QF_MPOOL_PUT, QS_mpObj_, me->start)
+    QS_BEGIN_NOCRIT_(QS_QF_MPOOL_PUT, QS_priv_.mpObjFilter, me->start)
         QS_TIME_();                                            /* timestamp */
         QS_OBJ_(me->start);              /* the memory managed by this pool */
         QS_MPC_(me->nFree);        /* the number of free blocks in the pool */

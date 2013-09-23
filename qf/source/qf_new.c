@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 25, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 19, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -46,48 +46,44 @@ Q_DEFINE_THIS_MODULE("qf_new")
 #ifdef Q_EVT_CTOR            /* Provide the constructor for the QEvt class? */
 
 QEvt *QEvt_ctor(QEvt * const me, enum_t const sig) {
+    Q_REQUIRE(me != (QEvt *)0);             /* the me pointer must be valid */
     me->sig = (QSignal)sig;
     return me;
 }
 
-/*..........................................................................*/
-QEvt *QF_new_(QEvtSize const evtSize)
-
-#else
-
-QEvt *QF_new_(QEvtSize const evtSize, enum_t const sig)
-
 #endif
+
+/*..........................................................................*/
+QEvt *QF_newX_(QEvtSize const evtSize,
+               uint16_t const margin, enum_t const sig)
 {
     QEvt *e;
+    uint_t idx;
     QS_CRIT_STAT_
 
               /* find the pool index that fits the requested event size ... */
-    uint8_t idx = (uint8_t)0;
-    while (evtSize > QF_EPOOL_EVENT_SIZE_(QF_pool_[idx])) {
-        ++idx;
-        Q_ASSERT(idx < QF_maxPool_);  /* cannot run out of registered pools */
+    for (idx = (uint_t)0; idx < QF_maxPool_; ++idx) {
+        if (evtSize <= QF_EPOOL_EVENT_SIZE_(QF_pool_[idx])) {
+            break;
+        }
     }
+    Q_ASSERT(idx < QF_maxPool_);      /* cannot run out of registered pools */
 
     QS_BEGIN_(QS_QF_NEW, (void *)0, (void *)0)
         QS_TIME_();                                            /* timestamp */
         QS_EVS_(evtSize);                          /* the size of the event */
-#ifndef Q_EVT_CTOR
         QS_SIG_((QSignal)sig);                   /* the signal of the event */
-#else
-        QS_SIG_(0);
-#endif
     QS_END_()
 
-    QF_EPOOL_GET_(QF_pool_[idx], e);         /* get e -- platform-dependent */
-    Q_ASSERT(e != (QEvt *)0);            /* pool must not run out of events */
+    QF_EPOOL_GET_(QF_pool_[idx], e, margin); /* get e -- platform-dependent */
 
-#ifndef Q_EVT_CTOR
-    e->sig = (QSignal)sig;                     /* set signal for this event */
-#endif
-
-    QF_EVT_POOL_ID_(e) = (uint8_t)(idx + (uint8_t)1);  /* store the pool ID */
-    QF_EVT_REF_CTR_(e) = (uint8_t)0;      /* set the reference counter to 0 */
-
-    return e;
+    if (e != (QEvt *)0) {                     /* was e allocated correctly? */
+        e->sig = (QSignal)sig;                 /* set signal for this event */
+        e->poolId_ = (uint8_t)(idx + (uint_t)1);       /* store the pool ID */
+        e->refCtr_ = (uint8_t)0;          /* set the reference counter to 0 */
+    }
+    else {                                     /* event cannot be allocated */
+        Q_ASSERT(margin != (uint16_t)0);   /* must tollerate bad allocation */
+    }
+    return e;         /* can't be NULL if we can't tollerate bad allocation */
 }

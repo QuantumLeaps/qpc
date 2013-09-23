@@ -1,12 +1,12 @@
 /*****************************************************************************
 * Product: Win32 GUI facilities for building realistic embedded front panels
-* Date of the Last Update:  Jul 28, 2012
+* Date of the Last Update:  Aug 16, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -110,7 +110,7 @@ enum OwnerDrawnButtonAction OwnerDrawnButton_draw(
 }
 
 /*--------------------------------------------------------------------------*/
-void DotMatrix_init(DotMatrix * const me,
+void GraphicDisplay_init(GraphicDisplay * const me,
                     UINT width,  UINT xScale,
                     UINT height, UINT yScale,
                     HWND hItem,  BYTE const bgColor[3])
@@ -141,15 +141,15 @@ void DotMatrix_init(DotMatrix * const me,
                                    (void **)&me->bits, 0, 0);
     DeleteDC(hDC);
 
-    DotMatrix_clear(me);
-    DotMatrix_redraw(me);
+    GraphicDisplay_clear(me);
+    GraphicDisplay_redraw(me);
 }
 /*..........................................................................*/
-void DotMatrix_xtor(DotMatrix * const me) {
+void GraphicDisplay_xtor(GraphicDisplay * const me) {
     DeleteObject(me->hBitmap);
 }
 /*..........................................................................*/
-void DotMatrix_clear(DotMatrix * const me) {
+void GraphicDisplay_clear(GraphicDisplay * const me) {
     UINT n;
     BYTE r = me->bgColor[0];
     BYTE g = me->bgColor[1];
@@ -166,7 +166,7 @@ void DotMatrix_clear(DotMatrix * const me) {
     }
 }
 /*..........................................................................*/
-void DotMatrix_setPixel(DotMatrix * const me, UINT x, UINT y,
+void GraphicDisplay_setPixel(GraphicDisplay * const me, UINT x, UINT y,
                         BYTE const color[3])
 {
     UINT sx, sy;
@@ -186,11 +186,11 @@ void DotMatrix_setPixel(DotMatrix * const me, UINT x, UINT y,
     }
 }
 /*..........................................................................*/
-void DotMatrix_clearPixel(DotMatrix * const me, UINT x, UINT y) {
-    DotMatrix_setPixel(me, x, y, me->bgColor);
+void GraphicDisplay_clearPixel(GraphicDisplay * const me, UINT x, UINT y) {
+    GraphicDisplay_setPixel(me, x, y, me->bgColor);
 }
 /*..........................................................................*/
-void DotMatrix_redraw(DotMatrix * const me) {
+void GraphicDisplay_redraw(GraphicDisplay * const me) {
     SendMessage(me->hItem, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)me->hBitmap);
 }
 

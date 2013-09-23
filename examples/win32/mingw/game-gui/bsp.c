@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, 80x86, Win32
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 29, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,7 +48,7 @@ static HINSTANCE l_hInst;                      /* this application instance */
 static HWND      l_hWnd;                              /* main window handle */
 static LPSTR     l_cmdLine;                      /* the command line string */
 
-static DotMatrix        l_oled; /* the OLED display of the EK-LM3S811 board */
+static GraphicDisplay   l_oled; /* the OLED display of the EK-LM3S811 board */
 static SegmentDisplay   l_userLED;      /* USER LED of the EK-LM3S811 board */
 static SegmentDisplay   l_scoreBoard;      /* segment display for the score */
 static OwnerDrawnButton l_userBtn;   /* USER button of the EK-LM3S811 board */
@@ -96,12 +96,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
     return msg.wParam;
 }
 /*..........................................................................*/
-extern int main_(void);                        /* prototype for appThread() */
+extern int main_gui(void);                     /* prototype for appThread() */
 
 /* thread function for running the application main() */
 static DWORD WINAPI appThread(LPVOID par) {
     (void)par;                                          /* unused parameter */
-    return main_();                               /* run the QF application */
+    return main_gui();                            /* run the QF application */
 }
 /*..........................................................................*/
 static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
@@ -129,7 +129,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
 
         /* Perform initialization after all child windows have been created */
         case WM_INITDIALOG: {
-            DotMatrix_init(&l_oled,
+            GraphicDisplay_init(&l_oled,
                        BSP_SCREEN_WIDTH,  2U,    /* scale horizontally by 2 */
                        BSP_SCREEN_HEIGHT, 2U,      /* scale vertically by 2 */
                        GetDlgItem(hWnd, IDC_LCD), c_offColor);
@@ -217,6 +217,9 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
                             SegmentDisplay_setSegment(&l_userLED, 0U, 0U);
                             break;
                         }
+                        default: {
+                            break;
+                        }
                     }
                     break;
                 }
@@ -289,7 +292,7 @@ void BSP_terminate(int result) {
     QF_stop();                        /* stop the main QF applicatin thread */
     PostQuitMessage(result);            /* post the Quit message to the GUI */
 
-    DotMatrix_xtor(&l_oled);             /* cleanup the l_oled    resources */
+    GraphicDisplay_xtor(&l_oled);        /* cleanup the l_oled    resources */
     OwnerDrawnButton_xtor(&l_userBtn);   /* cleanup the l_userBtn resources */
     SegmentDisplay_xtor(&l_userLED);     /* cleanup the l_userLED resources */
     SegmentDisplay_xtor(&l_scoreBoard); /* cleanup the scoreBoard resources */
@@ -297,19 +300,19 @@ void BSP_terminate(int result) {
 /*..........................................................................*/
 void BSP_drawBitmap(uint8_t const *bitmap) {
     UINT x, y;
-    /* map the EK-LM3S811 OLED pixels to the DotMatrix pixels... */
+    /* map the EK-LM3S811 OLED pixels to the GraphicDisplay pixels... */
     for (y = 0; y < BSP_SCREEN_HEIGHT; ++y) {
         for (x = 0; x < BSP_SCREEN_WIDTH; ++x) {
             uint8_t bits = bitmap[x + (y/8U)*BSP_SCREEN_WIDTH];
             if ((bits & (1U << (y & 0x07U))) != 0U) {
-                DotMatrix_setPixel(&l_oled, x, y, c_onColor);
+                GraphicDisplay_setPixel(&l_oled, x, y, c_onColor);
             }
             else {
-                DotMatrix_clearPixel(&l_oled, x, y);
+                GraphicDisplay_clearPixel(&l_oled, x, y);
             }
         }
     }
-    DotMatrix_redraw(&l_oled);  /* draw the updated DotMatrix on the screen */
+    GraphicDisplay_redraw(&l_oled);           /* redraw the updated display */
 }
 /*..........................................................................*/
 void BSP_drawNString(uint8_t x, uint8_t y, char const *str) {
@@ -417,11 +420,11 @@ void BSP_drawNString(uint8_t x, uint8_t y, char const *str) {
         for (dx = 0U; dx < 5U; ++dx) {
             for (dy = 0U; dy < 8U; ++dy) {
                 if ((ch[dx] & (1U << dy)) != 0U) {
-                    DotMatrix_setPixel(&l_oled, (UINT)(x + dx),
+                    GraphicDisplay_setPixel(&l_oled, (UINT)(x + dx),
                                          (UINT)(y*8U + dy), c_onColor);
                 }
                 else {
-                    DotMatrix_clearPixel(&l_oled, (UINT)(x + dx),
+                    GraphicDisplay_clearPixel(&l_oled, (UINT)(x + dx),
                                            (UINT)(y*8U + dy));
                 }
             }
@@ -429,7 +432,7 @@ void BSP_drawNString(uint8_t x, uint8_t y, char const *str) {
         ++str;
         x += 6;
     }
-    DotMatrix_redraw(&l_oled);  /* draw the updated DotMatrix on the screen */
+    GraphicDisplay_redraw(&l_oled);           /* redraw the updated display */
 }
 /*..........................................................................*/
 void BSP_updateScore(uint16_t score) {
@@ -449,8 +452,8 @@ void BSP_displayOn(void) {
 /*..........................................................................*/
 void BSP_displayOff(void) {
     SegmentDisplay_setSegment(&l_userLED, 0U, 0U);
-    DotMatrix_clear(&l_oled);
-    DotMatrix_redraw(&l_oled);
+    GraphicDisplay_clear(&l_oled);
+    GraphicDisplay_redraw(&l_oled);
 }
 /*..........................................................................*/
 void BSP_playerTrigger(void) {
@@ -548,7 +551,7 @@ uint8_t QS_onStartup(void const *arg) {
     */
     (void)arg;
 
-    QSPY_config((QP_VERSION >> 8),  // version
+    QSPY_config(QP_VERSION,         // version
                 QS_OBJ_PTR_SIZE,    // objPtrSize
                 QS_FUN_PTR_SIZE,    // funPtrSize
                 QS_TIME_SIZE,       // tstampSize
@@ -617,13 +620,21 @@ void QS_onCleanup(void) {
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t nBytes = 1024;
-    uint8_t const *block;
-    QF_CRIT_ENTRY(dummy);
-    while ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+    for (;;) {
+        uint16_t nBytes = 1024;
+        uint8_t const *block;
+
+        QF_CRIT_ENTRY(dummy);
+        block = QS_getBlock(&nBytes);
         QF_CRIT_EXIT(dummy);
-        QSPY_parse(block, nBytes);
-        nBytes = 1024;
+
+        if (block != (uint8_t const *)0) {
+            QSPY_parse(block, nBytes);
+            nBytes = 1024;
+        }
+        else {
+            break;
+        }
     }
 }
 /*..........................................................................*/

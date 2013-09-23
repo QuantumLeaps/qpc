@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 12, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -44,31 +44,31 @@ Q_DEFINE_THIS_MODULE("qa_defer")
 */
 
 /*..........................................................................*/
-void QActive_defer(QActive * const me, QEQueue * const eq,
-                   QEvt const * const e)
+uint8_t QActive_defer(QActive * const me, QEQueue * const eq,
+                      QEvt const * const e)
 {
     (void)me;                 /* avoid compiler warning about 'me' not used */
-    QEQueue_postFIFO(eq, e);
+    return QEQueue_post(eq, e, (uint16_t)1);
 }
 /*..........................................................................*/
 uint8_t QActive_recall(QActive * const me, QEQueue * const eq) {
-    QEvt const *e = QEQueue_get(eq);  /* get an event from deferred queue */
+    QEvt const *e = QEQueue_get(eq);    /* get an event from deferred queue */
     uint8_t recalled;
-    if (e != (QEvt const *)0) {                       /* event available? */
+    if (e != (QEvt const *)0) {                         /* event available? */
         QF_CRIT_STAT_
 
-        QActive_postLIFO(me, e);  /* post it to the front of the AO's queue */
+        QACTIVE_POST_LIFO(me, e); /* post it to the front of the AO's queue */
 
         QF_CRIT_ENTRY_();
 
-        if (QF_EVT_POOL_ID_(e) != (uint8_t)0) {   /* is it a dynamic event? */
+        if (e->poolId_ != (uint8_t)0) {           /* is it a dynamic event? */
 
             /* after posting to the AO's queue the event must be referenced
             * at least twice: once in the deferred event queue (eq->get()
             * did NOT decrement the reference counter) and once in the
             * AO's event queue.
             */
-            Q_ASSERT(QF_EVT_REF_CTR_(e) > (uint8_t)1);
+            Q_ASSERT(e->refCtr_ > (uint8_t)1);
 
             /* we need to decrement the reference counter once, to account
             * for removing the event from the deferred event queue.

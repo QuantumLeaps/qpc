@@ -60,42 +60,25 @@ qpc\                 - QP/C root directory
   | | | | +-dpp-gui\    - Dining Philosopher Problem (DPP) example (GUI)
   | | | | +-game-gui\   - "Fly 'n' Shoot" game example (GUI)
   | |
-  | +-80x86\         - Examples for the 80x86 processor
-  | | +-dos\         - Examples for DOS with the "vanilla" cooperative kernel
-  | | | +-watcom\    - Examples with the Open Watcom compiler
-  | | | | +-l\       - Examples using the Large memory model
-  | | | | | +-dpp\   - Dining Philosopher Problem (DPP) example for DOS
-  | | | | | +-game\       - "Fly 'n' Shoot" game example
-  | | | | | +-calc\    - Calculator example
-  | | | | | +-qhsmtst\ - QHsmTst example (PSiCC2  in Chapter 2)
-  | | | | | +-comp\    - "Orthogonal Component" pattern (PSiCC2 Chapter 5)
-  | | | | | +-defer\   - "Deferred Event" pattern (PSiCC2 Chapter 5)
-  | | | | | +-history\ - "Transition to History" pattern (PSiCC2 Chapter 5)
-  | | | | | +-hook\    - "Ultimate Hook" pattern (Chapter 5)
-  | | | | | +-reminder\ - "Reminder" pattern (PSiCC2 Chapter 5)
-  | | |
-  | | +-qk\          - Examples for the QK preemptive kernel
-  | | +-ucos2\       - Examples for the µC/OS-II RTOS
-  | |
-  | +-arm-cortex\    - Examples for ARM Cortex processor
+  | +-arm-cm\        - Examples for ARM Cortex-M processor
   | | +-vanilla\     - Examples for the cooperative "vanilla" kernel
   | | | +-iar\       - Examples with the IAR compiler
-  | | | | +-dpp-ev-lm3s811\  - DPP example for for EV-LM3S811 board
-  | | | | +-game-ev-lm3s811\ - "Fly 'n' Shoot" example for EV-LM3S811 board
+  | | | | +-dpp_qk-lm3s811\  - DPP example for for EK-LM3S811 board
+  | | | | +-game_qk-lm3s811\ - "Fly 'n' Shoot" example for EK-LM3S811 board
   | | | | +-. . .    - Other examples for ARM Cortex
   | | | +-gnu\       - Examples with the GNU compiler (Code Sourcery G++)
-  | | | | +-dpp-ev-lm3s811\  - DPP example for for EV-LM3S811 board
-  | | | | +-game-ev-lm3s811\ - "Fly 'n' Shoot" example for EV-LM3S811 board
+  | | | | +-dpp_qk-lm3s811\  - DPP example for for EK-LM3S811 board
+  | | | | +-game_qk-lm3s811\ - "Fly 'n' Shoot" example for EK-LM3S811 board
   | | | | +-. . .    - Other examples for ARM Cortex
   | | |
   | | +-qk\          - Examples for the preemptive QK kernel
   | | | +-iar\       - Examples with the IAR compiler
-  | | | | +-dpp-qk-ev-lm3s811\  - DPP example for for EV-LM3S811 board
-  | | | | +-game-qk-ev-lm3s811\ - "Fly 'n' Shoot" example for EV-LM3S811 board
+  | | | | +-dpp-qk_qk-lm3s811\  - DPP example for for EK-LM3S811 board
+  | | | | +-game-qk_qk-lm3s811\ - "Fly 'n' Shoot" example for EK-LM3S811 board
   | | | | +-. . .    - Other examples for ARM Cortex
   | | | +-gnu\       - Examples with the GNU compiler (Code Sourcery G++)
-  | | | | +-dpp-qk-ev-lm3s811\  - DPP example for for EV-LM3S811 board
-  | | | | +-game-qk-ev-lm3s811\ - "Fly 'n' Shoot" example for EV-LM3S811 board
+  | | | | +-dpp-qk_qk-lm3s811\  - DPP example for for EK-LM3S811 board
+  | | | | +-game-qk_qk-lm3s811\ - "Fly 'n' Shoot" example for EK-LM3S811 board
   | | | | +-. . .    - Other examples for ARM Cortex
   | |
   | +-. . .          - Examples for other CPUs and compiler
@@ -113,34 +96,7 @@ qpc\                 - QP/C root directory
   | | |
   | | +-vc\          - Port with the Visual C++ compiler
   | |
-  | +-80x86\         - Ports to the 80x86 processor
-  | | +-dos\         - Ports to DOS with the "vanilla" cooperative kernel
-  | | | +-watcom\    - Ports with the Open Watcom compiler
-  | | | | +-l\       - Ports for the Large memory model
-  | | | | | +-dbg\   - Debug build
-  | | | | | | +-qp.lib - QP  library
-  | | | | | +-rel\   - Release build
-  | | | | | +-spy\   - Spy build (with software instrumentation)
-  | | | | | | +-qp.lib - QP library
-  | | | | | |
-  | | | | | +-make.bat   - batch script for building the QP libraries
-  | | | | | +-qep_port.h - QEP platform-dependent include file
-  | | | | | +-qf_port.h  - QF  platform-dependent include file
-  | | | | | +-qs_port.h  - QS  platform-dependent include file
-  | | |
-  | | +-qk\          - Ports to the QK preemptive kernel
-  | | | +-. . .
-  | | |
-  | | +-ucos2\       - Ports to the MicroC/OS-II RTOS
-  | | | +-watcom\    - Ports with the Open Watcom compiler
-  | | | | +-l\       - Ports using the Large memory model
-  | | | | | +-ucos2.86\  - MicroC/OS-II v2.86 object code and header files
-  | | | | | +-src\       - Port-specific source files
-  | | | | | | +-qf_port.c - QF port to µC/OS-II source file
-  | | | | | +-. . .
-  | | |
-  | |
-  | +-arm-cortex\    - Ports to the ARM Cortex processor
+  | +-arm-cm\        - Ports for ARM Cortex-M processor
   | | +-vanilla\     - Ports to the cooperative "vanilla" kernel
   | | | +-iar\       - Ports with the IAR compiler
   | | | | | +-dbg\   - Debug build
@@ -199,5 +155,5 @@ qpc\                 - QP/C root directory
 \endcode
 
 \image html logo_ql_TM.jpg
-Copyright &copy; 2002-2012 Quantum Leaps, LLC. All Rights Reserved.
+Copyright &copy; 2002-2013 Quantum Leaps, LLC. All Rights Reserved.
 */

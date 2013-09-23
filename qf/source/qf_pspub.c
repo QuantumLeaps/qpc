@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 04, 2013
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -61,11 +61,10 @@ void QF_publish(QEvt const * const e, void const * const sender)
         QS_TIME_();                                        /* the timestamp */
         QS_OBJ_(sender);                               /* the sender object */
         QS_SIG_(e->sig);                         /* the signal of the event */
-        QS_U8_(QF_EVT_POOL_ID_(e));             /* the pool Id of the event */
-        QS_U8_(QF_EVT_REF_CTR_(e));           /* the ref count of the event */
+        QS_2U8_(e->poolId_, e->refCtr_);/* pool Id & ref Count of the event */
     QS_END_NOCRIT_()
 
-    if (QF_EVT_POOL_ID_(e) != (uint8_t)0) {       /* is it a dynamic event? */
+    if (e->poolId_ != (uint8_t)0) {               /* is it a dynamic event? */
         QF_EVT_REF_CTR_INC_(e);      /* increment reference counter, NOTE01 */
     }
     QF_CRIT_EXIT_();
@@ -84,7 +83,7 @@ void QF_publish(QEvt const * const e, void const * const sender)
     }
 #else
     {
-        uint8_t i = (uint8_t)Q_DIM(QF_subscrList_[0].bits);
+        uint_t i = (uint_t)Q_DIM(QF_subscrList_[0].bits);
         do {               /* go through all bytes in the subscription list */
             uint8_t tmp;
             --i;
@@ -98,7 +97,7 @@ void QF_publish(QEvt const * const e, void const * const sender)
                 /* QACTIVE_POST() asserts internally if the queue overflows */
                 QACTIVE_POST(QF_active_[p], e, sender);
             }
-        } while (i != (uint8_t)0);
+        } while (i != (uint_t)0);
     }
 #endif
 

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 02, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 07, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,27 +40,13 @@ Q_DEFINE_THIS_MODULE("qf_act")
 /**
 * \file
 * \ingroup qf
-* \brief QF_active_[], QF_getVersion(), and QF_add_()/QF_remove_()
-* implementation.
+* \brief QF_active_[], and QF_add_()/QF_remove_() implementation.
 */
 
 /* public objects ----------------------------------------------------------*/
 QActive *QF_active_[QF_MAX_ACTIVE + 1];      /* to be used by QF ports only */
 uint8_t QF_intLockNest_;                    /* interrupt-lock nesting level */
 
-/*..........................................................................*/
-char_t const Q_ROM * Q_ROM_VAR QF_getVersion(void) {
-    static char_t const Q_ROM Q_ROM_VAR version[] = {
-        (char_t)((uint8_t)((QP_VERSION >> 12) & 0xFU) + (uint8_t)'0'),
-        (char_t)'.',
-        (char_t)((uint8_t)((QP_VERSION >>  8) & 0xFU) + (uint8_t)'0'),
-        (char_t)'.',
-        (char_t)((uint8_t)((QP_VERSION >>  4) & 0xFU) + (uint8_t)'0'),
-        (char_t)((uint8_t)(QP_VERSION         & 0xFU) + (uint8_t)'0'),
-        (char_t)'\0'
-    };
-    return version;
-}
 /*..........................................................................*/
 void QF_add_(QActive * const a) {
     uint8_t p = a->prio;
@@ -73,7 +59,7 @@ void QF_add_(QActive * const a) {
 
     QF_active_[p] = a;       /* register the active object at this priority */
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_ADD, QS_aoObj_, a)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_ADD, QS_priv_.aoObjFilter, a)
         QS_TIME_();                                            /* timestamp */
         QS_OBJ_(a);                                    /* the active object */
         QS_U8_(p);                     /* the priority of the active object */
@@ -93,7 +79,7 @@ void QF_remove_(QActive const * const a) {
 
     QF_active_[p] = (QActive *)0;             /* free-up the priority level */
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_REMOVE, QS_aoObj_, a)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_REMOVE, QS_priv_.aoObjFilter, a)
         QS_TIME_();                                            /* timestamp */
         QS_OBJ_(a);                                    /* the active object */
         QS_U8_(p);                     /* the priority of the active object */

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QS/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -42,28 +42,51 @@
 
 /*..........................................................................*/
 void QS_str(char_t const *s) {
+    uint8_t b      = (uint8_t)(*s);
+    uint8_t chksum = (uint8_t)(QS_priv_.chksum + (uint8_t)QS_STR_T);
+    uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */
+    QSCtr   head   = QS_priv_.head;        /* put in a temporary (register) */
+    QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
+    QSCtr   used   = QS_priv_.used;        /* put in a temporary (register) */
+
     QS_INSERT_BYTE((uint8_t)QS_STR_T)
-    QS_chksum_ = (uint8_t)(QS_chksum_ + (uint8_t)QS_STR_T);
-    while ((*s) != (char_t)'\0') {
+    while (b != (uint8_t)(0)) {
                                     /* ASCII characters don't need escaping */
-        QS_INSERT_BYTE((uint8_t)(*s))
-        QS_chksum_ = (uint8_t)(QS_chksum_ + (uint8_t)(*s));
+        chksum = (uint8_t)(chksum + b);                  /* update checksum */
+        QS_INSERT_BYTE(b)
         QS_PTR_INC_(s);
+        b = (uint8_t)Q_ROM_BYTE(*s);
+        ++used;
     }
-    QS_INSERT_BYTE((uint8_t)0)
+    QS_INSERT_BYTE((uint8_t)0)                 /* zero-terminate the string */
+    ++used;
+
+    QS_priv_.head   = head;                                /* save the head */
+    QS_priv_.chksum = chksum;                          /* save the checksum */
+    QS_priv_.used   = used;                  /* save # of used buffer space */
 }
 /*..........................................................................*/
 void QS_str_ROM(char_t const Q_ROM * Q_ROM_VAR s) {
-    uint8_t b;
+    uint8_t b      = (uint8_t)Q_ROM_BYTE(*s);
+    uint8_t chksum = (uint8_t)(QS_priv_.chksum + (uint8_t)QS_STR_T);
+    uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */
+    QSCtr   head   = QS_priv_.head;        /* put in a temporary (register) */
+    QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
+    QSCtr   used   = QS_priv_.used;        /* put in a temporary (register) */
+
     QS_INSERT_BYTE((uint8_t)QS_STR_T)
-    QS_chksum_ = (uint8_t)(QS_chksum_ + (uint8_t)QS_STR_T);
-    b = (uint8_t)Q_ROM_BYTE(*s);
-    while (b != (uint8_t)0) {
+    while (b != (uint8_t)(0)) {
                                     /* ASCII characters don't need escaping */
+        chksum = (uint8_t)(chksum + b);                  /* update checksum */
         QS_INSERT_BYTE(b)
-        QS_chksum_ = (uint8_t)(QS_chksum_ + b);
         QS_PTR_INC_(s);
         b = (uint8_t)Q_ROM_BYTE(*s);
+        ++used;
     }
-    QS_INSERT_BYTE((uint8_t)0)
+    QS_INSERT_BYTE((uint8_t)0)                 /* zero-terminate the string */
+    ++used;
+
+    QS_priv_.head   = head;                                /* save the head */
+    QS_priv_.chksum = chksum;                          /* save the checksum */
+    QS_priv_.used   = used;                  /* save # of used buffer space */
 }

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -40,7 +40,7 @@ Q_DEFINE_THIS_MODULE("qa_get_")
 /**
 * \file
 * \ingroup qf
-* \brief QActive_get_() and QF_getQueueMargin() definitions.
+* \brief QActive_get_() and QF_getQueueMin() definitions.
 *
 * \note this source file is only included in the QF library when the native
 * QF active object queue is used (instead of a message queue of an RTOS).
@@ -66,41 +66,39 @@ QEvt const *QActive_get_(QActive * const me) {
 
         ++me->eQueue.nFree;       /* one more free event in the ring buffer */
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET, QS_aoObj_, me)
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET, QS_priv_.aoObjFilter, me)
             QS_TIME_();                                        /* timestamp */
             QS_SIG_(e->sig);                    /* the signal of this event */
             QS_OBJ_(me);                              /* this active object */
-            QS_U8_(QF_EVT_POOL_ID_(e));         /* the pool Id of the event */
-            QS_U8_(QF_EVT_REF_CTR_(e));       /* the ref count of the event */
+            QS_2U8_(e->poolId_, e->refCtr_);         /* pool Id & ref Count */
             QS_EQC_(me->eQueue.nFree);            /* number of free entries */
         QS_END_NOCRIT_()
     }
     else {
-        me->eQueue.frontEvt = (QEvt const *)0;     /* queue becomes empty */
+        me->eQueue.frontEvt = (QEvt const *)0;       /* queue becomes empty */
         QACTIVE_EQUEUE_ONEMPTY_(me);
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST, QS_aoObj_, me)
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST, QS_priv_.aoObjFilter, me)
             QS_TIME_();                                        /* timestamp */
             QS_SIG_(e->sig);                    /* the signal of this event */
             QS_OBJ_(me);                              /* this active object */
-            QS_U8_(QF_EVT_POOL_ID_(e));         /* the pool Id of the event */
-            QS_U8_(QF_EVT_REF_CTR_(e));       /* the ref count of the event */
+            QS_2U8_(e->poolId_, e->refCtr_);         /* pool Id & ref Count */
         QS_END_NOCRIT_()
     }
     QF_CRIT_EXIT_();
     return e;
 }
 /*..........................................................................*/
-uint32_t QF_getQueueMargin(uint8_t const prio) {
-    uint32_t margin;
+uint16_t QF_getQueueMin(uint8_t const prio) {
+    uint16_t min;
     QF_CRIT_STAT_
 
     Q_REQUIRE((prio <= (uint8_t)QF_MAX_ACTIVE)
               && (QF_active_[prio] != (QActive *)0));
 
     QF_CRIT_ENTRY_();
-    margin = (uint32_t)QF_active_[prio]->eQueue.nMin;
+    min = (uint16_t)QF_active_[prio]->eQueue.nMin;
     QF_CRIT_EXIT_();
 
-    return margin;
+    return min;
 }

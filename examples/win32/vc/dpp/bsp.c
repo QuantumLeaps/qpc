@@ -1,13 +1,13 @@
  /*****************************************************************************
 * Product: DPP example, 80x86, Win32
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 04, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -38,6 +38,7 @@
 
 #include <conio.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 Q_DEFINE_THIS_FILE
 
@@ -75,7 +76,7 @@ void QF_onClockTick(void) {
 /*..........................................................................*/
 void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
-    QF_stop();
+    exit(-1);
 }
 /*..........................................................................*/
 void BSP_init(void) {
@@ -107,6 +108,10 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
     QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
         QS_U8(1, n);                                  /* Philosopher number */
         QS_STR(stat);                                 /* Philosopher status */
+        QS_U16(4, n*13);                                            /* test */
+        QS_U32(8, n*1234);                                          /* test */
+        QS_F32(5, n*1234.0f);                                       /* test */
+        QS_F64(8, n*1234.0);                                        /* test */
     QS_END()
 }
 /*..........................................................................*/
@@ -158,8 +163,8 @@ static DWORD WINAPI idleThread(LPVOID par) {/* signature for CreateThread() */
 uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[4*1024];                 // 4K buffer for Quantum Spy
     QS_initBuf(qsBuf, sizeof(qsBuf));
-
-    QSPY_config((QP_VERSION >> 8),  // version
+    (void)arg;
+    QSPY_config(QP_VERSION,         // version
                 QS_OBJ_PTR_SIZE,    // objPtrSize
                 QS_FUN_PTR_SIZE,    // funPtrSize
                 QS_TIME_SIZE,       // tstampSize
@@ -173,6 +178,7 @@ uint8_t QS_onStartup(void const *arg) {
                 (void *)0,
                 (QSPY_CustParseFun)0); // customized parser function
 
+    QS_FILTER_OFF(QS_ALL_RECORDS);
     QS_FILTER_ON(QS_ALL_RECORDS);
 
 //    QS_FILTER_OFF(QS_QEP_STATE_EMPTY);
@@ -190,7 +196,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_OFF(QS_QF_ACTIVE_REMOVE);
     QS_FILTER_OFF(QS_QF_ACTIVE_SUBSCRIBE);
 //    QS_FILTER_OFF(QS_QF_ACTIVE_UNSUBSCRIBE);
-    QS_FILTER_OFF(QS_QF_ACTIVE_POST_FIFO);
+//    QS_FILTER_OFF(QS_QF_ACTIVE_POST_FIFO);
 //    QS_FILTER_OFF(QS_QF_ACTIVE_POST_LIFO);
     QS_FILTER_OFF(QS_QF_ACTIVE_GET);
     QS_FILTER_OFF(QS_QF_ACTIVE_GET_LAST);
@@ -218,8 +224,6 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_OFF(QS_QF_ISR_ENTRY);
     QS_FILTER_OFF(QS_QF_ISR_EXIT);
 
-    QS_RESET();
-
     return CreateThread(NULL, 1024, &idleThread, (void *)0, 0, NULL)
              != (HANDLE)0; /* return the status of creating the idle thread */
 }
@@ -230,13 +234,21 @@ void QS_onCleanup(void) {
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t nBytes = 1024;
-    uint8_t const *block;
-    QF_CRIT_ENTRY(dummy);
-    while ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+    for (;;) {
+        uint16_t nBytes = 1024;
+        uint8_t const *block;
+
+        QF_CRIT_ENTRY(dummy);
+        block = QS_getBlock(&nBytes);
         QF_CRIT_EXIT(dummy);
-        QSPY_parse(block, nBytes);
-        nBytes = 1024;
+
+        if (block != (uint8_t const *)0) {
+            QSPY_parse(block, nBytes);
+            nBytes = 1024;
+        }
+        else {
+            break;
+        }
     }
 }
 /*..........................................................................*/

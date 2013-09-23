@@ -1,13 +1,13 @@
 /*****************************************************************************
-* Product: DPP example, QK version
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Product: DPP example
+* Last Updated for Version: 4.5.05
+* Date of the Last Update:  Mar 22, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -41,11 +41,8 @@ static QEvt const *l_tableQueueSto[N_PHILO];
 static QEvt const *l_philoQueueSto[N_PHILO][N_PHILO];
 static QSubscrList   l_subscrSto[MAX_PUB_SIG];
 
-static union SmallEvents {
-    void   *e0;                                       /* minimum event size */
-    uint8_t e1[sizeof(TableEvt)];
-    /* ... other event types to go into this pool */
-} l_smlPoolSto[2*N_PHILO];              /* storage for the small event pool */
+/* storage for event pools... */
+static QF_MPOOL_EL(TableEvt) l_smlPoolSto[2*N_PHILO];         /* small pool */
 
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
@@ -55,14 +52,8 @@ int main(int argc, char *argv[]) {
 
     QF_init();     /* initialize the framework and the underlying RT kernel */
 
-                                                  /* object dictionaries... */
+                             /* send object dictionaries for event pools... */
     QS_OBJ_DICTIONARY(l_smlPoolSto);
-    QS_OBJ_DICTIONARY(l_tableQueueSto);
-    QS_OBJ_DICTIONARY(l_philoQueueSto[0]);
-    QS_OBJ_DICTIONARY(l_philoQueueSto[1]);
-    QS_OBJ_DICTIONARY(l_philoQueueSto[2]);
-    QS_OBJ_DICTIONARY(l_philoQueueSto[3]);
-    QS_OBJ_DICTIONARY(l_philoQueueSto[4]);
 
     QF_psInit(l_subscrSto, Q_DIM(l_subscrSto));   /* init publish-subscribe */
 

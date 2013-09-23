@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="2.2.00">
+<model version="2.3.2">
  <documentation>&quot;Fly 'n' Shoot&quot; game model from Chapters 1 &amp; 9 of PSiCC2</documentation>
  <framework name="qpc"/>
  <package name="Events" stereotype="0x01">
@@ -147,7 +147,7 @@ if (w &gt; GAME_SCREEN_WIDTH - x_pos) {
 }
 for (x = 0U; x &lt; w; ++x) {
     uint32_t bmp1;
-    if (y_pos &gt;= 0U) {
+    if (y_pos &gt;= 0) {
         bmp1 = (l_bitmap[bmp].bits[x] &lt;&lt; (uint8_t)y_pos);
     }
     else {
@@ -215,8 +215,9 @@ QS_OBJ_DICTIONARY(&amp;l_tunnel.screenTimeEvt);
 QS_FUN_DICTIONARY(&amp;Tunnel_initial);
 QS_FUN_DICTIONARY(&amp;Tunnel_final);
 QS_FUN_DICTIONARY(&amp;Tunnel_active);
-QS_FUN_DICTIONARY(&amp;Tunnel_playing);
+QS_FUN_DICTIONARY(&amp;Tunnel_show_logo);
 QS_FUN_DICTIONARY(&amp;Tunnel_demo);
+QS_FUN_DICTIONARY(&amp;Tunnel_playing);
 QS_FUN_DICTIONARY(&amp;Tunnel_game_over);
 QS_FUN_DICTIONARY(&amp;Tunnel_screen_saver);
 QS_FUN_DICTIONARY(&amp;Tunnel_screen_saver_hide);
@@ -233,7 +234,7 @@ QS_SIG_DICTIONARY(EXPLOSION_SIG,      &amp;l_tunnel);
 QS_SIG_DICTIONARY(SCORE_SIG,          &amp;l_tunnel);
 
 (void)e;  /* avoid the &quot;unreferenced parameter&quot; warning */</action>
-     <initial_glyph conn="3,2,5,1,26,14,-2">
+     <initial_glyph conn="3,2,5,1,25,14,-2">
       <action box="1,-2,11,2"/>
      </initial_glyph>
     </initial>
@@ -242,15 +243,57 @@ QS_SIG_DICTIONARY(SCORE_SIG,          &amp;l_tunnel);
       <action>Q_ASSERT((Q_EVT_CAST(MineEvt)-&gt;id &lt; GAME_MINES_MAX)
          &amp;&amp; (me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] != (QHsm *)0));
 me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] = (QHsm *)0;</action>
-      <tran_glyph conn="3,9,3,-1,14">
+      <tran_glyph conn="2,9,3,-1,14">
        <action box="0,-2,14,2"/>
       </tran_glyph>
      </tran>
      <tran trig="PLAYER_QUIT" target="../../2">
-      <tran_glyph conn="3,12,3,1,62,59,-38">
+      <tran_glyph conn="2,12,3,1,64,76,-40">
        <action box="0,-2,11,2"/>
       </tran_glyph>
      </tran>
+     <state name="show_logo">
+      <entry>QTimeEvt_postEvery(&amp;me-&gt;blinkTimeEvt, (QActive *)me,
+                   BSP_TICKS_PER_SEC/2U); /* 1/2 sec */
+QTimeEvt_postIn(&amp;me-&gt;screenTimeEvt, (QActive *)me,
+                BSP_TICKS_PER_SEC*5U); /* 5 sec timeout */
+me-&gt;blink_ctr = 0U;
+BSP_drawNString(0U, 0U, &quot; Quantum  LeAps &quot;);
+BSP_drawNString(0U, 1U, &quot;state-machine.co&quot;);</entry>
+      <exit>QTimeEvt_disarm(&amp;me-&gt;blinkTimeEvt);
+QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);</exit>
+      <tran trig="SCREEN_TIMEOUT" target="../../3">
+       <tran_glyph conn="4,25,3,1,24,7,-2">
+        <action box="0,-2,13,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="BLINK_TIMEOUT">
+       <action>me-&gt;blink_ctr ^= 1U; /* toggle the blink couner */</action>
+       <choice>
+        <guard>me-&gt;blink_ctr == 0U</guard>
+        <action>BSP_drawNString(6U*9U, 0U,         &quot; LeAps&quot;);
+BSP_drawNString(0U,    1U, &quot;state-machine.co&quot;);</action>
+        <choice_glyph conn="18,22,4,-1,-3,7">
+         <action box="1,-3,15,2"/>
+        </choice_glyph>
+       </choice>
+       <choice>
+        <guard>else</guard>
+        <action>BSP_drawNString(6U*9U, 0U,         &quot;LeaPs &quot;);
+BSP_drawNString(0U,    1U, &quot;tate-machine.com&quot;);</action>
+        <choice_glyph conn="18,22,5,-1,7">
+         <action box="1,0,6,2"/>
+        </choice_glyph>
+       </choice>
+       <tran_glyph conn="4,22,3,-1,14">
+        <action box="0,-2,12,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="4,14,22,14">
+       <entry box="1,2,5,2"/>
+       <exit box="1,4,5,2"/>
+      </state_glyph>
+     </state>
      <state name="demo">
       <entry>me-&gt;last_mine_x = 0U; /* last mine at right edge of the tunnel */
 me-&gt;last_mine_y = 0U;
@@ -273,12 +316,12 @@ me-&gt;blink_ctr = 0U; /* init the blink counter */</entry>
 QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);</exit>
       <tran trig="BLINK_TIMEOUT">
        <action>me-&gt;blink_ctr ^= 1U; /* toggle the blink cunter */</action>
-       <tran_glyph conn="5,26,3,-1,14">
+       <tran_glyph conn="4,42,3,-1,14">
         <action box="0,-2,13,2"/>
        </tran_glyph>
       </tran>
-      <tran trig="SCREEN_TIMEOUT" target="../../5">
-       <tran_glyph conn="5,29,3,3,29">
+      <tran trig="SCREEN_TIMEOUT" target="../../6">
+       <tran_glyph conn="4,45,3,3,28">
         <action box="0,-2,13,2"/>
        </tran_glyph>
       </tran>
@@ -292,16 +335,16 @@ if (me-&gt;blink_ctr != 0U) {
         (GAME_SCREEN_HEIGHT - 8U)/2U);
 }
 BSP_drawBitmap(l_frame);</action>
-       <tran_glyph conn="5,23,3,-1,14">
+       <tran_glyph conn="4,39,3,-1,14">
         <action box="0,-2,12,2"/>
        </tran_glyph>
       </tran>
-      <tran trig="PLAYER_TRIGGER" target="../../3">
-       <tran_glyph conn="5,32,3,1,24,6,-2">
+      <tran trig="PLAYER_TRIGGER" target="../../4">
+       <tran_glyph conn="4,48,3,1,24,7,-2">
         <action box="0,-2,13,2"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="5,14,22,20">
+      <state_glyph node="4,30,22,20">
        <entry box="1,2,6,2"/>
        <exit box="1,4,5,2"/>
       </state_glyph>
@@ -322,7 +365,7 @@ BSP_drawBitmap(l_frame);
 Tunnel_advance(me);
 Tunnel_plantMine(me);
 Tunnel_dispatchToAllMines(me, e);</action>
-       <tran_glyph conn="5,45,3,-1,14">
+       <tran_glyph conn="4,62,3,-1,14">
         <action box="0,-2,9,2"/>
        </tran_glyph>
       </tran>
@@ -338,7 +381,7 @@ if (Tunnel_isWallHit(me, bmp, x, y)) {
 }
 Tunnel_addImageAt(me, bmp, x, y);
 Tunnel_dispatchToAllMines(me, e); /* let Mines check for hits */</action>
-       <tran_glyph conn="5,48,3,-1,14">
+       <tran_glyph conn="4,65,3,-1,14">
         <action box="0,-2,9,2"/>
        </tran_glyph>
       </tran>
@@ -354,7 +397,7 @@ if (Tunnel_isWallHit(me, bmp, x, y)) {
 }
 Tunnel_addImageAt(me, bmp, x, y);
 Tunnel_dispatchToAllMines(me, e); /* let Mines check for hits */</action>
-       <tran_glyph conn="5,51,3,-1,14">
+       <tran_glyph conn="4,68,3,-1,14">
         <action box="0,-2,12,2"/>
        </tran_glyph>
       </tran>
@@ -363,7 +406,7 @@ Tunnel_dispatchToAllMines(me, e); /* let Mines check for hits */</action>
                   Q_EVT_CAST(ObjectImageEvt)-&gt;bmp,
                   Q_EVT_CAST(ObjectImageEvt)-&gt;x,
                   Q_EVT_CAST(ObjectImageEvt)-&gt;y);</action>
-       <tran_glyph conn="5,54,3,-1,14">
+       <tran_glyph conn="4,71,3,-1,14">
         <action box="0,-2,9,2"/>
        </tran_glyph>
       </tran>
@@ -372,7 +415,7 @@ Tunnel_dispatchToAllMines(me, e); /* let Mines check for hits */</action>
                   Q_EVT_CAST(ObjectImageEvt)-&gt;bmp,
                   Q_EVT_CAST(ObjectImageEvt)-&gt;x,
                   Q_EVT_CAST(ObjectImageEvt)-&gt;y);</action>
-       <tran_glyph conn="5,57,3,-1,14">
+       <tran_glyph conn="4,74,3,-1,14">
         <action box="0,-2,11,2"/>
        </tran_glyph>
       </tran>
@@ -383,11 +426,11 @@ Tunnel_dispatchToAllMines(me, e); /* let Mines check for hits */</action>
 */
 me-&gt;minimal_gap = (uint8_t)(GAME_SCREEN_HEIGHT - 3U
                   - Q_EVT_CAST(ScoreEvt)-&gt;score/2000U);</action>
-       <tran_glyph conn="5,60,3,-1,14">
+       <tran_glyph conn="4,77,3,-1,14">
         <action box="0,-2,6,2"/>
        </tran_glyph>
       </tran>
-      <tran trig="GAME_OVER" target="../../4">
+      <tran trig="GAME_OVER" target="../../5">
        <action>uint16_t score = Q_EVT_CAST(ScoreEvt)-&gt;score;
 char str[5];
 BSP_updateScore(score);
@@ -404,11 +447,11 @@ str[2] = '0' + (score % 10U); score /= 10U;
 str[1] = '0' + (score % 10U); score /= 10U;
 str[0] = '0' + (score % 10U);
 BSP_drawNString((GAME_SCREEN_WIDTH - 6U*10U)/2U + 6U*6U, 1U, str);</action>
-       <tran_glyph conn="5,63,3,3,26,-10,3">
+       <tran_glyph conn="4,80,3,3,26,-10,2">
         <action box="0,-2,10,2"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="5,36,22,29">
+      <state_glyph node="4,52,22,30">
        <entry box="1,2,6,2"/>
        <exit box="1,4,5,2"/>
       </state_glyph>
@@ -429,28 +472,28 @@ BSP_drawNString((GAME_SCREEN_WIDTH - 6U*9U)/2, 0U,
                 ((me-&gt;blink_ctr == 0U)
                 ? &quot;Game Over&quot;
                 : &quot;         &quot;));</action>
-       <tran_glyph conn="34,63,3,-1,14">
+       <tran_glyph conn="32,80,3,-1,14">
         <action box="0,-2,12,2"/>
        </tran_glyph>
       </tran>
-      <tran trig="SCREEN_TIMEOUT" target="../../2">
-       <tran_glyph conn="34,60,3,1,27,-11,-30,-18,-4">
+      <tran trig="SCREEN_TIMEOUT" target="../../3">
+       <tran_glyph conn="32,77,3,1,30,-11,-32,-19,-4">
         <action box="0,-2,14,2"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="34,51,25,14">
+      <state_glyph node="32,68,28,14">
        <entry box="1,2,6,2"/>
        <exit box="1,4,5,2"/>
       </state_glyph>
      </state>
      <state name="screen_saver">
       <initial target="../2">
-       <initial_glyph conn="35,18,5,1,20,7,-2">
+       <initial_glyph conn="36,34,5,1,20,8,-2">
         <action box="1,-2,6,2"/>
        </initial_glyph>
       </initial>
-      <tran trig="PLAYER_TRIGGER" target="../../2">
-       <tran_glyph conn="34,21,3,1,27,-8,-30,5,-4">
+      <tran trig="PLAYER_TRIGGER" target="../../3">
+       <tran_glyph conn="32,38,3,1,30,-10,-32,6,-4">
         <action box="0,-2,13,2"/>
        </tran_glyph>
       </tran>
@@ -461,11 +504,11 @@ QTimeEvt_postIn(&amp;me-&gt;screenTimeEvt, (QActive *)me,
        <exit>QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);
 BSP_displayOn(); /* power up the display */</exit>
        <tran trig="SCREEN_TIMEOUT" target="../../3">
-        <tran_glyph conn="36,31,3,1,19,6,-2">
+        <tran_glyph conn="36,48,3,1,20,6,-2">
          <action box="0,-2,13,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="36,23,17,10">
+       <state_glyph node="36,40,18,10">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
@@ -488,18 +531,18 @@ memset(l_frame, (uint8_t)0,
        (GAME_SCREEN_WIDTH * GAME_SCREEN_HEIGHT/8U));
 BSP_drawBitmap(l_frame);</exit>
        <tran trig="SCREEN_TIMEOUT" target="../../2">
-        <tran_glyph conn="36,43,3,1,21,-15,-4">
+        <tran_glyph conn="36,60,3,1,22,-15,-4">
          <action box="0,-2,13,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="36,35,17,10">
+       <state_glyph node="36,52,18,10">
         <entry box="1,2,6,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
       </state>
-      <state_glyph node="34,14,25,33"/>
+      <state_glyph node="32,30,28,34"/>
      </state>
-     <state_glyph node="3,4,60,63"/>
+     <state_glyph node="2,4,62,80"/>
     </state>
     <state name="final">
      <entry>/* clear the screen */
@@ -507,11 +550,11 @@ memset(l_frame, (uint8_t)0,
       (GAME_SCREEN_WIDTH * GAME_SCREEN_HEIGHT/8));
 BSP_drawBitmap(l_frame);
 QF_stop(); /* stop QF and cleanup */</entry>
-     <state_glyph node="3,69,24,5">
+     <state_glyph node="2,86,24,6">
       <entry box="1,2,6,2"/>
      </state_glyph>
     </state>
-    <state_diagram size="67,76"/>
+    <state_diagram size="68,94"/>
    </statechart>
   </class>
   <class name="Ship" superclass="qpc::QActive">
@@ -1307,6 +1350,7 @@ static uint32_t random(void);
 QActive * const AO_Tunnel = (QActive *)&amp;l_tunnel;         /* opaque pointer */
 
 /* helper functions --------------------------------------------------------*/
+
 /*
 * The bitmap for the &quot;Press Button&quot; text:
 *

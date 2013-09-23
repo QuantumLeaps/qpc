@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 17, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 11, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -40,31 +40,54 @@ Q_DEFINE_THIS_MODULE("qfsm_ini")
 /**
 * \file
 * \ingroup qep
-* \brief QFsm_init() implementation.
+* \brief QFsm_ctor() and QFsm_init() implementations.
 */
 
+/*..........................................................................*/
+void QFsm_ctor(QFsm * const me, QStateHandler initial) {
+    static QMsmVtbl const vtbl = {                    /* QFsm virtual table */
+        &QFsm_init,
+        &QFsm_dispatch
+    };
+    /* do not call the QMsm_ctor() here, see NOTE01 */
+    me->vptr = &vtbl;            /* hook the vptr to the QFsm virtual table */
+    me->state.fun = Q_STATE_CAST(0);
+    me->temp.fun  = initial;
+}
 /*..........................................................................*/
 void QFsm_init(QFsm * const me, QEvt const * const e) {
     QS_CRIT_STAT_
 
-    Q_REQUIRE((me->temp != Q_STATE_CAST(0))        /* ctor must be executed */
-              && (me->state == Q_STATE_CAST(0))); /*initial tran. NOT taken */
+    Q_REQUIRE((me->vptr != (QMsmVtbl const *)0)    /* ctor must be executed */
+              && (me->temp.fun != Q_STATE_CAST(0)) /* ctor must be executed */
+              && (me->state.fun == Q_STATE_CAST(0)));/*init tran. NOT taken */
 
-    QS_BEGIN_(QS_QEP_STATE_INIT, QS_smObj_, me)
+    QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.smObjFilter, me)
         QS_OBJ_(me);                           /* this state machine object */
         QS_FUN_(Q_STATE_CAST(0));   /* source state (not defined for a FSM) */
-        QS_FUN_(me->temp);                  /* the target of the transition */
+        QS_FUN_(me->temp.fun);              /* the target of the transition */
     QS_END_()
 
                                  /* execute the top-most initial transition */
-    Q_ALLEGE((*me->temp)(me, e) == Q_RET_TRAN); /* transition must be taken */
+    Q_ALLEGE((*me->temp.fun)(me, e) == (QState)Q_RET_TRAN);/* must be taken */
 
-    (void)QEP_TRIG_(me->temp, Q_ENTRY_SIG);             /* enter the target */
-    me->state = me->temp;                    /* record the new active state */
+    (void)QEP_TRIG_(me->temp.fun, Q_ENTRY_SIG);         /* enter the target */
+    me->state.fun = me->temp.fun;            /* record the new active state */
 
-    QS_BEGIN_(QS_QEP_INIT_TRAN, QS_smObj_, me)
+    QS_BEGIN_(QS_QEP_INIT_TRAN, QS_priv_.smObjFilter, me)
         QS_TIME_();                                           /* time stamp */
         QS_OBJ_(me);                           /* this state machine object */
-        QS_FUN_(me->state);                         /* the new active state */
+        QS_FUN_(me->state.fun);                     /* the new active state */
     QS_END_()
 }
+
+/*****************************************************************************
+* NOTE01:
+* QFsm inherits QMsm, so by the "inheritance of structures" convention
+* it should call the constructor of the superclass, i.e., QMsm_ctor().
+* However, this would pull in the QMsmVtbl, which in turn will pull in
+* the code for QMsm_init() and QMsm_dispatch() implemetations. To avoid
+* this code size penalty, in case QMsm is not used in a given project,
+* the QFsm_ctor() performs direct intitialization of the Vtbl, which avoids
+* pulling in the code for QMsm.
+*/

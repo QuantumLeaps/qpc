@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 19, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -44,42 +44,53 @@ Q_DEFINE_THIS_MODULE("qmp_get")
 */
 
 /*..........................................................................*/
-void *QMPool_get(QMPool * const me) {
+void *QMPool_get(QMPool * const me, uint16_t const margin) {
     QFreeBlock *fb;
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    fb = (QFreeBlock *)me->free_head;           /* get a free block or NULL */
-    if (fb != (QFreeBlock *)0) {                   /* free block available? */
+    if (me->nFree > (QMPoolCtr)margin) {     /* have more free than margin? */
+        fb = (QFreeBlock *)me->free_head;               /* get a free block */
+        Q_ASSERT(fb != (QFreeBlock *)0);    /* free block must be available */
         me->free_head = fb->next;/* adjust list head to the next free block */
-
-        Q_ASSERT(me->nFree > (QMPoolCtr)0);      /* at least one free block */
         --me->nFree;                                 /* one less free block */
-        if (me->nMin > me->nFree) {
-            me->nMin = me->nFree;            /* remember the minimum so far */
+
+        if (me->nMin > me->nFree) {               /* is it the new minimum? */
+            me->nMin = me->nFree;               /* remember the new minimum */
         }
+
+        QS_BEGIN_NOCRIT_(QS_QF_MPOOL_GET, QS_priv_.mpObjFilter, me->start)
+            QS_TIME_();                                        /* timestamp */
+            QS_OBJ_(me->start);          /* the memory managed by this pool */
+            QS_MPC_(me->nFree);    /* the number of free blocks in the pool */
+            QS_MPC_(me->nMin);/* min number of free blocks ever in the pool */
+        QS_END_NOCRIT_()
     }
+    else {                     /* don't have above the margin at this point */
+        fb = (QFreeBlock *)0;
 
-    QS_BEGIN_NOCRIT_(QS_QF_MPOOL_GET, QS_mpObj_, me->start)
-        QS_TIME_();                                            /* timestamp */
-        QS_OBJ_(me->start);              /* the memory managed by this pool */
-        QS_MPC_(me->nFree);        /* the number of free blocks in the pool */
-        QS_MPC_(me->nMin);    /* min number of free blocks ever in the pool */
-    QS_END_NOCRIT_()
-
+        QS_BEGIN_NOCRIT_(QS_QF_MPOOL_GET_ATTEMPT,
+                         QS_priv_.mpObjFilter, me->start)
+            QS_TIME_();                                        /* timestamp */
+            QS_OBJ_(me->start);          /* the memory managed by this pool */
+            QS_MPC_(me->nFree);    /* the number of free blocks in the pool */
+            QS_MPC_((QMPoolCtr)margin);             /* the requested margin */
+        QS_END_NOCRIT_()
+    }
     QF_CRIT_EXIT_();
-    return fb;            /* return the block or NULL pointer to the caller */
+
+    return fb;  /* return the pointer to memory block or NULL to the caller */
 }
 /*..........................................................................*/
-uint32_t QF_getPoolMargin(uint8_t const poolId) {
-    uint32_t margin;
+uint16_t QF_getPoolMin(uint_t const poolId) {
+    uint16_t min;
     QF_CRIT_STAT_
 
-    Q_REQUIRE(((uint8_t)1 <= poolId) && (poolId <= QF_maxPool_));
+    Q_REQUIRE(((uint_t)1 <= poolId) && (poolId <= QF_maxPool_));
 
     QF_CRIT_ENTRY_();
-    margin = (uint32_t)QF_pool_[poolId - (uint8_t)1].nMin;
+    min = (uint16_t)QF_pool_[poolId - (uint_t)1].nMin;
     QF_CRIT_EXIT_();
 
-    return margin;
+    return min;
 }

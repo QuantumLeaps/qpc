@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 02, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 04, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -83,15 +83,14 @@ int16_t QF_run(void) {
             QF_INT_ENABLE();
 
             e = QActive_get_(a);          /* get the next event for this AO */
-            QF_ACTIVE_DISPATCH_(&a->super, e);        /* dispatch to the AO */
+            QMSM_DISPATCH(&a->super, e);              /* dispatch to the AO */
             QF_gc(e); /* determine if event is garbage and collect it if so */
         }
         else {
             QF_onIdle();                                      /* see NOTE01 */
         }
     }
-
-    return (int16_t)0; /* this unreachable return is to make compiler happy */
+    /* return (int16_t)0; */                            /* unreachable code */
 }
 /*..........................................................................*/
 void QActive_start(QActive * const me, uint8_t prio,
@@ -106,7 +105,7 @@ void QActive_start(QActive * const me, uint8_t prio,
     QEQueue_init(&me->eQueue, qSto, (QEQueueCtr)qLen);/* initialize QEQueue */
     me->prio = prio;           /* set the QF priority of this active object */
     QF_add_(me);                     /* make QF aware of this active object */
-    QF_ACTIVE_INIT_(&me->super, ie);          /* execute initial transition */
+    QMSM_INIT(&me->super, ie);                /* execute initial transition */
 
     QS_FLUSH();                       /* flush the trace buffer to the host */
 }

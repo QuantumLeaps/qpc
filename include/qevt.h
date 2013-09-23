@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 92, 2013
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 17, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -47,11 +47,14 @@
 /****************************************************************************/
 /** \brief The current QP version number
 *
-* \return version of the QP as a hex constant constant 0xXYZZ, where X is
-* a 1-digit major version number, Y is a 1-digit minor version number, and
-* ZZ is a 2-digit release number.
+* version of the QP as a hex constant 0x0XYZ, where X is a 1-digit
+* major version number, Y is a 1-digit minor version number, and Z is
+* a 1-digit release number.
 */
-#define QP_VERSION      0x4504U
+#define QP_VERSION      0x0510U
+
+/** \brief The current QP version string */
+#define QP_VERSION_STR  "5.1.0"
 
 #ifndef Q_ROM
     /** \brief Macro to specify compiler-specific directive for placing a
@@ -156,6 +159,12 @@ typedef double float64_t;
 /** typedef for enumerations used for event signals */
 typedef int enum_t;
 
+/** typedef for ints used for line numbers */
+typedef int int_t;
+
+/** typedef for temporary variables, like fast loop counters */
+typedef unsigned int uint_t;
+
 /****************************************************************************/
 /** \brief Event structure.
 *
@@ -165,14 +174,14 @@ typedef int enum_t;
 * The following example illustrates how to add an event parameter by
 * derivation of the QEvt structure. Please note that the QEvt member
 * super_ is defined as the FIRST member of the derived struct.
-* \include qep_qevent.c
+* \include qep_qevt.c
 *
 * \sa \ref derivation
 */
 typedef struct QEvtTag {
     QSignal sig;                          /**< signal of the event instance */
     uint8_t poolId_;                      /**< pool ID (0 for static event) */
-    uint8_t refCtr_;                                 /**< reference counter */
+    uint8_t volatile refCtr_;                        /**< reference counter */
 } QEvt;
 
 #ifdef Q_EVT_CTOR            /* Provide the constructor for the QEvt class? */
@@ -190,7 +199,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 */
 #define Q_EVT_CAST(class_) ((class_ const *)e)
 
-/** helper macro to calculate static dimension of a 1-dim array \a array_ */
+/** \brief helper macro to calculate static dimension of a 1-dim \a array_ */
 #define Q_DIM(array_) (sizeof(array_) / sizeof(array_[0]))
 
 /** \brief Perform cast from unsigned integer \a uint_ to pointer
@@ -205,7 +214,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 
 /****************************************************************************/
 #ifndef Q_NQEVENT
-    typedef QEvt QEvent;          /**< typedef for backwards compatibility */
+    typedef QEvt QEvent;/**< deprecated typedef for backwards compatibility */
 #endif
 
 #endif                                                            /* qevt_h */

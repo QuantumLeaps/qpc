@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, 80x86, Win32-GUI
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 29, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -53,8 +53,6 @@ static OwnerDrawnButton l_pauseBtn;                   /* owner-drawn button */
 
 static unsigned  l_rnd;                                      /* random seed */
 
-int main(void);
-
 #ifdef Q_SPY
     enum {
         PHILO_STAT = QS_USER
@@ -91,12 +89,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
     return msg.wParam;
 }
 /*..........................................................................*/
-extern int main(void);                         /* prototype for appThread() */
+extern int main_gui(void);                     /* prototype for appThread() */
 
 /* thread function for running the application main() */
 static DWORD WINAPI appThread(LPVOID par) {
     (void)par;                                          /* unused parameter */
-    return main();                                /* run the QF application */
+    return main_gui();                            /* run the QF application */
 }
 /*..........................................................................*/
 static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
@@ -313,7 +311,7 @@ static DWORD WINAPI idleThread(LPVOID par) {/* signature for CreateThread() */
 /*..........................................................................*/
 static int custParserFun(QSpyRecord * const qrec) {
     static uint32_t mpool0;
-    int ret = 0;                           /* perform standard QSPY parsing */
+    int ret = 1;                           /* perform standard QSPY parsing */
     switch (qrec->rec) {
         case QS_QF_MPOOL_INIT: {                 /* example record to parse */
             if (mpool0 == 0U) {                                /* MPool[0]? */
@@ -348,7 +346,7 @@ uint8_t QS_onStartup(void const *arg) {
     */
     (void)arg;
 
-    QSPY_config((QP_VERSION >> 8),  // version
+    QSPY_config(QP_VERSION,         // version
                 QS_OBJ_PTR_SIZE,    // objPtrSize
                 QS_FUN_PTR_SIZE,    // funPtrSize
                 QS_TIME_SIZE,       // tstampSize
@@ -417,13 +415,21 @@ void QS_onCleanup(void) {
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t nBytes = 1024;
-    uint8_t const *block;
-    QF_CRIT_ENTRY(dummy);
-    while ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+    for (;;) {
+        uint16_t nBytes = 1024;
+        uint8_t const *block;
+
+        QF_CRIT_ENTRY(dummy);
+        block = QS_getBlock(&nBytes);
         QF_CRIT_EXIT(dummy);
-        QSPY_parse(block, nBytes);
-        nBytes = 1024;
+
+        if (block != (uint8_t const *)0) {
+            QSPY_parse(block, nBytes);
+            nBytes = 1024;
+        }
+        else {
+            break;
+        }
     }
 }
 /*..........................................................................*/

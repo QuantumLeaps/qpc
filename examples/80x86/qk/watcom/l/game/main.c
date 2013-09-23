@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Fly'n'Shoot" game example
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 4.5.05
+* Date of the Last Update:  Mar 22, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -41,20 +41,8 @@ static QEvt const * l_missileQueueSto[2];
 static QEvt const * l_shipQueueSto[3];
 static QEvt const * l_tunnelQueueSto[GAME_MINES_MAX + 5];
 
-static union SmallEvents {
-    void   *e0;                                       /* minimum event size */
-    uint8_t e1[sizeof(QEvt)];
-    /* ... other event types to go into this pool */
-} l_smlPoolSto[10];                     /* storage for the small event pool */
-
-static union MediumEvents {
-    void   *e0;                                       /* minimum event size */
-    uint8_t e1[sizeof(ObjectPosEvt)];
-    uint8_t e2[sizeof(ObjectImageEvt)];
-    uint8_t e3[sizeof(MineEvt)];
-    uint8_t e4[sizeof(ScoreEvt)];
-    /* ... other event types to go into this pool */
-} l_medPoolSto[2*GAME_MINES_MAX + 8];  /* storage for the medium event pool */
+static QF_MPOOL_EL(QEvt)           l_smlPoolSto[10];
+static QF_MPOOL_EL(ObjectImageEvt) l_medPoolSto[2*GAME_MINES_MAX + 10];
 
 static QSubscrList    l_subscrSto[MAX_PUB_SIG];
 
@@ -74,11 +62,6 @@ int main(int argc, char *argv[]) {
     QF_poolInit(l_medPoolSto, sizeof(l_medPoolSto), sizeof(l_medPoolSto[0]));
 
     QF_psInit(l_subscrSto, Q_DIM(l_subscrSto));   /* init publish-subscribe */
-
-                            /* send object dictionaries for event queues... */
-    QS_OBJ_DICTIONARY(l_missileQueueSto);
-    QS_OBJ_DICTIONARY(l_shipQueueSto);
-    QS_OBJ_DICTIONARY(l_tunnelQueueSto);
 
                              /* send object dictionaries for event pools... */
     QS_OBJ_DICTIONARY(l_smlPoolSto);

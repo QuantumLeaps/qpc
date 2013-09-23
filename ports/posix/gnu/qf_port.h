@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QF/C, port to 80x86, POSIX/P-threads
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 25, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 13, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -42,8 +42,9 @@
 
                  /* The maximum number of active objects in the application */
 #define QF_MAX_ACTIVE               63
-                    /* The maximum number of event pools in the application */
-#define QF_MAX_EPOOL                8
+                                   /* The number of system clock tick rates */
+#define QF_MAX_TICK_RATE            2
+
                      /* various QF object sizes configuration for this port */
 #define QF_EVENT_SIZ_SIZE           4
 #define QF_EQUEUE_CTR_SIZE          4
@@ -82,12 +83,12 @@ extern pthread_mutex_t QF_pThreadMutex_;   /* mutex for QF critical section */
     #define QACTIVE_EQUEUE_ONEMPTY_(me_) ((void)0)
 
                                          /* native QF event pool operations */
-    #define QF_EPOOL_TYPE_              QMPool
+    #define QF_EPOOL_TYPE_            QMPool
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
         QMPool_init(&(p_), poolSto_, poolSize_, evtSize_)
-    #define QF_EPOOL_EVENT_SIZE_(p_)    ((p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_)       ((e_) = (QEvt *)QMPool_get(&(p_)))
-    #define QF_EPOOL_PUT_(p_, e_)       (QMPool_put(&(p_), e_))
+    #define QF_EPOOL_EVENT_SIZE_(p_)  ((p_).blockSize)
+    #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
+    #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), e_))
 
 #endif
 

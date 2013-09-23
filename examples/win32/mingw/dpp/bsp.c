@@ -1,13 +1,13 @@
  /*****************************************************************************
 * Product: DPP example, 80x86, Win32
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 04, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -36,24 +36,20 @@
 #include "dpp.h"
 #include "bsp.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>                                           /* Win32 API */
-
 #include <conio.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
+#include <stdlib.h>
 
 Q_DEFINE_THIS_FILE
 
 /* local variables ---------------------------------------------------------*/
-static uint8_t l_running;
 static uint32_t l_rnd;                                       /* random seed */
 
 #ifdef Q_SPY
     enum {
         PHILO_STAT = QS_USER
     };
+    static uint8_t l_running;
     static uint8_t const l_clock_tick = 0U;
 #endif
 
@@ -63,7 +59,6 @@ void QF_onStartup(void) {
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
-    l_running = (uint8_t)0;
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
@@ -81,30 +76,30 @@ void QF_onClockTick(void) {
 /*..........................................................................*/
 void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
-    QF_stop();
+    exit(-1);
 }
 /*..........................................................................*/
-void BSP_init(int argc, char *argv[]) {
-    (void)argc;
-    (void)argv;
+void BSP_init(void) {
 
     printf("Dining Philosopher Problem example"
            "\nQEP %s\nQF  %s\n"
-           "Press p to pause/un-pause\n"
+           "Press 'p' to pause/un-pause\n"
            "Press ESC to quit...\n",
            QEP_getVersion(),
            QF_getVersion());
 
     BSP_randomSeed(1234U);
-    Q_ALLEGE(QS_INIT(argv[0]));
-    QS_RESET();
+    Q_ALLEGE(QS_INIT((void *)0));
     QS_OBJ_DICTIONARY(&l_clock_tick);   /* must be called *after* QF_init() */
     QS_USR_DICTIONARY(PHILO_STAT);
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {
     (void)result;
-    QF_stop();
+#ifdef Q_SPY
+    l_running = (uint8_t)0;                    /* stop the QS output thread */
+#endif
+    QF_stop();                             /* stop the main "ticker thread" */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -135,6 +130,10 @@ void BSP_randomSeed(uint32_t seed) {
 /*--------------------------------------------------------------------------*/
 #ifdef Q_SPY                                         /* define QS callbacks */
 
+#include <time.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>                        /* Win32 API for multithreading */
+
 #include "qspy.h"
 
 /*..........................................................................*/
@@ -160,8 +159,8 @@ static DWORD WINAPI idleThread(LPVOID par) {/* signature for CreateThread() */
 uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[4*1024];                 // 4K buffer for Quantum Spy
     QS_initBuf(qsBuf, sizeof(qsBuf));
-
-    QSPY_config((QP_VERSION >> 8),  // version
+    (void)arg;
+    QSPY_config(QP_VERSION,         // version
                 QS_OBJ_PTR_SIZE,    // objPtrSize
                 QS_FUN_PTR_SIZE,    // funPtrSize
                 QS_TIME_SIZE,       // tstampSize
@@ -227,17 +226,26 @@ uint8_t QS_onStartup(void const *arg) {
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {
+
     QSPY_stop();
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t nBytes = 1024;
-    uint8_t const *block;
-    QF_CRIT_ENTRY(dummy);
-    while ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+    for (;;) {
+        uint16_t nBytes = 1024;
+        uint8_t const *block;
+
+        QF_CRIT_ENTRY(dummy);
+        block = QS_getBlock(&nBytes);
         QF_CRIT_EXIT(dummy);
-        QSPY_parse(block, nBytes);
-        nBytes = 1024;
+
+        if (block != (uint8_t const *)0) {
+            QSPY_parse(block, nBytes);
+            nBytes = 1024;
+        }
+        else {
+            break;
+        }
     }
 }
 /*..........................................................................*/

@@ -91,7 +91,7 @@ void QMPool_init(QMPool * const me, void * const poolSto,
     me->start = poolSto;             /* the original start this pool buffer */
     me->end   = fb;                          /* the last block in this pool */
 
-    QS_BEGIN_(QS_QF_MPOOL_INIT, QS_mpObj_, me->start)
+    QS_BEGIN_(QS_QF_MPOOL_INIT, QS_priv_.mpObjFilter, me->start)
         QS_OBJ_(me->start);              /* the memory managed by this pool */
         QS_MPC_(me->nTot);                    /* the total number of blocks */
     QS_END_()

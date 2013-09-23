@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 01, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Jul 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -61,8 +61,8 @@ enum QEPConst {
 
 /** helper macro to trigger exit action in an HSM */
 #define QEP_EXIT_(state_) do { \
-    if (QEP_TRIG_((state_), Q_EXIT_SIG) == Q_RET_HANDLED) { \
-        QS_BEGIN_(QS_QEP_STATE_EXIT, QS_smObj_, me) \
+    if (QEP_TRIG_((state_), Q_EXIT_SIG) == (QState)Q_RET_HANDLED) { \
+        QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.smObjFilter, me) \
             QS_OBJ_(me); \
             QS_FUN_(state_); \
         QS_END_() \
@@ -71,13 +71,21 @@ enum QEPConst {
 
 /** helper macro to trigger entry action in an HSM */
 #define QEP_ENTER_(state_) do { \
-    if (QEP_TRIG_((state_), Q_ENTRY_SIG) == Q_RET_HANDLED) { \
-        QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_smObj_, me) \
+    if (QEP_TRIG_((state_), Q_ENTRY_SIG) == (QState)Q_RET_HANDLED) { \
+        QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.smObjFilter, me) \
             QS_OBJ_(me); \
             QS_FUN_(state_); \
         QS_END_() \
     } \
 } while (0)
+
+/** \brief Internal QEP macro to increment the given action table \a act_
+*
+* \note Incrementing a pointer violates the MISRA-C 2004 Rule 17.4(req),
+* pointer arithmetic other than array indexing. Encapsulating this violation
+* in a macro allows to selectively suppress this specific deviation.
+*/
+#define QEP_ACT_PTR_INC_(act_) (++(act_))
 
 #endif                                                         /* qep_pkg_h */
 

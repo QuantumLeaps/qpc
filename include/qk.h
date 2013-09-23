@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 01, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -88,126 +88,11 @@
 #endif                                             /* QK_TLS || QK_EXT_SAVE */
 
 #if (QF_MAX_ACTIVE <= 8)
-    extern QPSet8  QK_readySet_;         /** QK ready-set of active objects */
+    extern QPSet8  QK_readySet_;
 #else
-    extern QPSet64 QK_readySet_;         /** QK ready-set of active objects */
+    extern QPSet64 QK_readySet_;                   /**< QK ready-set of AOs */
 #endif
 
-/* QK active object queue implementation ...................................*/
-
-/** \brief Platform-dependent macro defining how QF should block the calling
-* task when the QF native queue is empty
-*
-* \note This is just an example of QACTIVE_EQUEUE_WAIT_ for the QK-port
-* of QF. QK never activates a task that has no events to process, so in this
-* case the macro asserts that the queue is not empty. In other QF ports you
-* need to define the macro appropriately for the underlying kernel/OS you're
-* using.
-*/
-#define QACTIVE_EQUEUE_WAIT_(me_) \
-    (Q_ASSERT((me_)->eQueue.frontEvt != (QEvt *)0))
-
-#if (QF_MAX_ACTIVE <= 8)
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
-        QPSet8_insert(&QK_readySet_, (me_)->prio); \
-        if (QK_intNest_ == (uint8_t)0) { \
-            uint8_t p = QK_schedPrio_(); \
-            if (p != (uint8_t)0) { \
-                QK_sched_(p); \
-            } \
-        } \
-    } while (0)
-
-    #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-        (QPSet8_remove(&QK_readySet_, (me_)->prio))
-#else
-    /** \brief Platform-dependent macro defining how QF should signal the
-    * active object task that an event has just arrived.
-    *
-    * The macro is necessary only when the native QF event queue is used.
-    * The signaling of task involves unblocking the task if it is blocked.
-    *
-    * \note QACTIVE_EQUEUE_SIGNAL_ is called from a critical section.
-    * It might leave the critical section internally, but must restore
-    * the critical section before exiting to the caller.
-    *
-    * \note This is just an example of QACTIVE_EQUEUE_SIGNAL_ for the
-    * QK-port of QF. In other QF ports you need to define the macro
-    * appropriately for the underlying kernel/OS you're using.
-    */
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
-        QPSet64_insert(&QK_readySet_, (me_)->prio); \
-        if (QK_intNest_ == (uint8_t)0) { \
-            uint8_t p = QK_schedPrio_(); \
-            if (p != (uint8_t)0) { \
-                QK_sched_(p); \
-            } \
-        } \
-    } while (0)
-
-    /** \brief Platform-dependent macro defining the action QF should take
-    * when the native QF event queue becomes empty.
-    *
-    * The macro is necessary only when the native QF event queue is used.
-    * The signaling of task involves unblocking the task if it is blocked.
-    *
-    * \note QACTIVE_EQUEUE_ONEMPTY_ is called from a critical section.
-    * It should not leave the critical section.
-    *
-    * \note This is just an example of QACTIVE_EQUEUE_ONEMPTY_ for the
-    * QK-port of QF. In other QF ports you need to define the macro
-    * appropriately for the underlying kernel/OS you're using.
-    */
-    #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-        QPSet64_remove(&QK_readySet_, (me_)->prio)
-#endif
-
-
-/* QK event pool operations ................................................*/
-
-/** \brief This macro defines the type of the event pool used in this QF port.
-*
-* \note This is a specific implementation for the QK-port of QF.
-* In other QF ports you need to define the macro appropriately for
-* the underlying kernel/OS you're using.
-*/
-#define QF_EPOOL_TYPE_              QMPool
-
-/** \brief Platform-dependent macro defining the event pool initialization
-*
-* \note This is a specific implementation for the QK-port of QF.
-* In other QF ports you need to define the macro appropriately for
-* the underlying kernel/OS you're using.
-*/
-#define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-    (QMPool_init(&(p_), (poolSto_), (poolSize_), (QMPoolSize)(evtSize_)))
-
-/** \brief Platform-dependent macro defining how QF should obtain the
-* event pool block-size
-*
-* \note This is a specific implementation for the QK-port of QF.
-* In other QF ports you need to define the macro appropriately for
-* the underlying kernel/OS you're using.
-*/
-#define QF_EPOOL_EVENT_SIZE_(p_)    ((QEvtSize)(p_).blockSize)
-
-/** \brief Platform-dependent macro defining how QF should obtain an event
-* \a e_ from the event pool \a p_
-*
-* \note This is a specific implementation for the QK-port of QF.
-* In other QF ports you need to define the macro appropriately for
-* the underlying kernel/OS you're using.
-*/
-#define QF_EPOOL_GET_(p_, e_)       ((e_) = (QEvt *)QMPool_get(&(p_)))
-
-/** \brief Platform-dependent macro defining how QF should return an event
-* \a e_ to the event pool \a p_
-*
-* \note This is a specific implementation for the QK-port of QF.
-* In other QF ports you need to define the macro appropriately for
-* the underlying kernel/OS you're using.
-*/
-#define QF_EPOOL_PUT_(p_, e_)       (QMPool_put(&(p_), (e_)))
 
 /****************************************************************************/
 /** \brief QK scheduler
@@ -234,8 +119,8 @@ void QK_schedExt_(uint8_t p);
 uint8_t QK_schedPrio_(void);
 
 /* public-scope objects */
-extern uint8_t QK_currPrio_;           /**< current task/interrupt priority */
-extern uint8_t QK_intNest_;                    /**< interrupt nesting level */
+extern uint8_t volatile QK_currPrio_;  /**< current task/interrupt priority */
+extern uint8_t volatile QK_intNest_;           /**< interrupt nesting level */
 
 /****************************************************************************/
 /** \brief QK initialization
@@ -257,16 +142,6 @@ void QK_init(void);
 * \sa QF_onIdle()
 */
 void QK_onIdle(void);
-
-/** \brief get the current QK version number string
-*
-* \return version of the QK as a constant 6-character string of the form
-* x.y.zz, where x is a 1-digit major version number, y is a 1-digit minor
-* version number, and zz is a 2-digit release number.
-*
-* \sa QK_getPortVersion()
-*/
-char_t const Q_ROM * Q_ROM_VAR QK_getVersion(void);
 
 #ifndef QK_NO_MUTEX
 
@@ -301,6 +176,134 @@ char_t const Q_ROM * Q_ROM_VAR QK_getVersion(void);
     void QK_mutexUnlock(QMutex mutex);
 
 #endif                                                          /* QK_MUTEX */
+
+/****************************************************************************/
+/** \brief get the current QK version number string
+*
+* version of QK as a constant 5-character string of the form X.Y.Z,
+* where X is a 1-digit major version number, Y is a 1-digit minor
+* version number, and Z is a 1-digit release number.
+*/
+#define QK_getVersion() (QP_VERSION_STR)
+
+/*****************************************************************************
+* interface used only inside QF, but not in applications
+*/
+#ifdef qf_pkg_h
+
+    /** \brief Platform-dependent macro defining how QF should block the
+    * calling task when the QF native queue is empty
+    *
+    * \note This is just an example of QACTIVE_EQUEUE_WAIT_ for the QK-port
+    * of QF. QK never activates a task that has no events to process, so in
+    * this case the macro asserts that the queue is not empty. In other QF
+    * ports you need to define the macro appropriately for the underlying
+    * kernel/OS you're using.
+    */
+    #define QACTIVE_EQUEUE_WAIT_(me_) \
+        (Q_ASSERT((me_)->eQueue.frontEvt != (QEvt *)0))
+
+    #if (QF_MAX_ACTIVE <= 8)
+        #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
+            QPSet8_insert(&QK_readySet_, (me_)->prio); \
+            if (QK_intNest_ == (uint8_t)0) { \
+                uint8_t p = QK_schedPrio_(); \
+                if (p != (uint8_t)0) { \
+                    QK_sched_(p); \
+                } \
+            } \
+        } while (0)
+
+        #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
+            (QPSet8_remove(&QK_readySet_, (me_)->prio))
+    #else
+        /** \brief Platform-dependent macro defining how QF should signal the
+        * active object task that an event has just arrived.
+        *
+        * The macro is necessary only when the native QF event queue is used.
+        * The signaling of task involves unblocking the task if it is blocked.
+        *
+        * \note QACTIVE_EQUEUE_SIGNAL_ is called from a critical section.
+        * It might leave the critical section internally, but must restore
+        * the critical section before exiting to the caller.
+        *
+        * \note This is just an example of QACTIVE_EQUEUE_SIGNAL_ for the
+        * QK-port of QF. In other QF ports you need to define the macro
+        * appropriately for the underlying kernel/OS you're using.
+        */
+        #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
+            QPSet64_insert(&QK_readySet_, (me_)->prio); \
+            if (QK_intNest_ == (uint8_t)0) { \
+                uint8_t p = QK_schedPrio_(); \
+                if (p != (uint8_t)0) { \
+                    QK_sched_(p); \
+                } \
+            } \
+        } while (0)
+
+        /** \brief Platform-dependent macro defining the action QF should
+        * take when the native QF event queue becomes empty.
+        *
+        * The macro is necessary only when the native QF event queue is used.
+        * The signaling of task involves unblocking the task if it is blocked.
+        *
+        * \note QACTIVE_EQUEUE_ONEMPTY_ is called from a critical section.
+        * It should not leave the critical section.
+        *
+        * \note This is just an example of QACTIVE_EQUEUE_ONEMPTY_ for the
+        * QK-port of QF. In other QF ports you need to define the macro
+        * appropriately for the underlying kernel/OS you're using.
+        */
+        #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
+            QPSet64_remove(&QK_readySet_, (me_)->prio)
+    #endif
+
+    /** \brief This macro defines the type of the event pool used in the
+    * QK kernel.
+    *
+    * \note This is a specific implementation for the QK-port of QF.
+    * In other QF ports you need to define the macro appropriately for
+    * the underlying kernel/OS you're using.
+    */
+    #define QF_EPOOL_TYPE_            QMPool
+
+    /** \brief Platform-dependent macro defining the event pool initialization
+    *
+    * \note This is a specific implementation for the QK-port of QF.
+    * In other QF ports you need to define the macro appropriately for
+    * the underlying kernel/OS you're using.
+    */
+    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+        (QMPool_init(&(p_), (poolSto_), (poolSize_), (QMPoolSize)(evtSize_)))
+
+    /** \brief Platform-dependent macro defining how QF should obtain the
+    * event pool block-size
+    *
+    * \note This is a specific implementation for the QK-port of QF.
+    * In other QF ports you need to define the macro appropriately for
+    * the underlying kernel/OS you're using.
+    */
+    #define QF_EPOOL_EVENT_SIZE_(p_)  ((QEvtSize)(p_).blockSize)
+
+    /** \brief Platform-dependent macro defining how QF should obtain an event
+    * \a e_ from the event pool \a p_ with the free margin \a m_.
+    *
+    * \note This is a specific implementation for the QK-port of QF.
+    * In other QF ports you need to define the macro appropriately for
+    * the underlying kernel/OS you're using.
+    */
+    #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
+
+    /** \brief Platform-dependent macro defining how QF should return an event
+    * \a e_ to the event pool \a p_
+    *
+    * \note This is a specific implementation for the QK-port of QF.
+    * In other QF ports you need to define the macro appropriately for
+    * the underlying kernel/OS you're using.
+    */
+    #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), (e_)))
+
+#endif                                                    /* ifdef qf_pkg_h */
 
 #endif                                                              /* qk_h */
 

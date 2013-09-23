@@ -1,13 +1,13 @@
 ##############################################################################
-# Product: DPP example, POSIX port, GNU compiler
-# Last Updated for Version: 4.5.03
-# Date of the Last Update:  Nov 27, 2012
+# Product: Makefile for QP-POSIX port, GNU compiler
+# Last Updated for Version: 5.0.0
+# Date of the Last Update:  Sep 08, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -43,6 +43,8 @@
 # make CONF=rel clean
 # make CONF=spy clean
 
+PROJECT := dpp
+
 #-----------------------------------------------------------------------------
 # NOTE: the Makefile expects that the QPC environment variable is defined
 # and points to the QP/C installation directory
@@ -54,14 +56,13 @@ endif
 #-----------------------------------------------------------------------------
 # general utilities
 #
-RM = rm
 
 #-----------------------------------------------------------------------------
 #
 CC    := gcc
 CPP   := g++
-LINK  := gcc                                                # for C programs
-#LINK  := g++                                               # for C++ programs
+LINK  := gcc
+RM    := rm
 
 #-----------------------------------------------------------------------------
 # directories
@@ -73,7 +74,7 @@ VPATH = $(APP_DIR) \
 	$(QTOOLS)/qspy/source \
 
 # Output file basename
-OUTPUT    := dpp
+OUTPUT    := $(PROJECT)
 
 # include directories
 INCLUDES  = -I. \
@@ -145,17 +146,17 @@ LINKFLAGS = -L$(QP_PORT_DIR)/$(BIN_DIR) -pthread
 endif
 
 
-ASM_OBJS     := $(patsubst %.s,%.o,$(ASM_SRCS))
-C_OBJS       := $(patsubst %.c,%.o,$(C_SRCS))
-CPP_OBJS     := $(patsubst %.cpp,%.o,$(CPP_SRCS))
+ASM_OBJS     := $(patsubst %.s,%.o,   $(ASM_SRCS))
+C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))
+CPP_OBJS     := $(patsubst %.cpp,%.o, $(CPP_SRCS))
 
 TARGET_BIN   := $(BIN_DIR)/$(OUTPUT).bin
 TARGET_EXE   := $(BIN_DIR)/$(OUTPUT)
 ASM_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(ASM_OBJS))
 C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
-C_DEPS_EXT   := $(patsubst %.o, %.d, $(C_OBJS_EXT))
+C_DEPS_EXT   := $(patsubst %.o,%.d,      $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
-CPP_DEPS_EXT := $(patsubst %.o, %.d, $(CPP_OBJS_EXT))
+CPP_DEPS_EXT := $(patsubst %.o,%.d,      $(CPP_OBJS_EXT))
 
 
 #-----------------------------------------------------------------------------
@@ -167,7 +168,7 @@ all: $(BIN_DIR) $(TARGET_EXE)
 
 $(BIN_DIR):
 	@echo
-	mkdir -p $@
+	mkdir $@
 
 $(TARGET_BIN): $(TARGET_EXE)
 	$(BIN) -O binary $< $@
@@ -176,10 +177,10 @@ $(TARGET_EXE) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LINK) $(LINKFLAGS) -o $@ $^ -lqp
 
 $(BIN_DIR)/%.d : %.c
-	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
+	$(CC) -MM -MT $(@:.d=.o) $(filter-out -c -g, $(CFLAGS)) $< > $@
 
 $(BIN_DIR)/%.d : %.cpp
-	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
+	$(CPP) -MM -MT $(@:.d=.o) $(filter-out -c -g, $(CPPFLAGS)) $< > $@
 
 $(BIN_DIR)/%.o : %.s
 	$(AS) $(ASFLAGS) $< -o $@
@@ -190,7 +191,12 @@ $(BIN_DIR)/%.o : %.c
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
+# include dependency files only if our goal depends on their existence
+ifneq ($(MAKECMDGOALS),clean)
+  ifneq ($(MAKECMDGOALS),show)
 -include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
+  endif
+endif
 
 
 .PHONY : clean
@@ -201,12 +207,12 @@ clean:
 	$(BIN_DIR)/*.map
 	
 show:
-	@echo CONF = $(CONF)
-	@echo ASM_SRCS = $(ASM_SRCS)
-	@echo C_SRCS = $(C_SRCS)
-	@echo CPP_SRCS = $(CPP_SRCS)
+	@echo CONF         = $(CONF)
+	@echo ASM_SRCS     = $(ASM_SRCS)
+	@echo C_SRCS       = $(C_SRCS)
+	@echo CPP_SRCS     = $(CPP_SRCS)
 	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
-	@echo C_OBJS_EXT = $(C_OBJS_EXT)
-	@echo C_DEPS_EXT = $(C_DEPS_EXT)
+	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
-	@echo TARGET_ELF = $(TARGET_ELF)
+	@echo TARGET_ELF   = $(TARGET_ELF)

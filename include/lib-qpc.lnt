@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last Updated for Version: 4.5.04
-// Date of the Last Update:  Feb 04, 2013
+// Last Updated for Version: 5.1.0
+// Date of the Last Update:  Sep 18, 2013
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -49,7 +49,7 @@
 -emacro(866, Q_DIM)           // Unusual use of 'SYM' in argument to sizeof
 
 // Assertions
--estring(960, l_this_file)    // MISRA04-8.7(req) could use block scope
+-estring(960, Q_this_module_) // MISRA04-8.7(req) could use block scope
 -estring(961,                 // MISRA04-19.7(adv) function-like macro
  Q_ASSERT,
  Q_ASSERT_ID,
@@ -64,6 +64,7 @@
  Q_INVARIANT,
  Q_INVARIANT_ID,
  Q_ASSERT_COMPILE,
+ Q_TEST_ASSERT,
  Q_DEFINE_THIS_MODULE)
 -esym(960,                    // MISRA04-19.4(req) Disallowed macro definition
  Q_ALLEGE,
@@ -77,10 +78,11 @@
  Q_INVARIANT,
  Q_INVARIANT_ID,
  Q_DEFINE_THIS_FILE,
- Q_ASSERT_COMPILE)
+ Q_ASSERT_COMPILE,
+ Q_TEST_ASSERT)
 -esym(960,                    // MISRA04-19.10(req) unparenthesized macro par
  Q_DEFINE_THIS_MODULE)
--emacro(522,                  // Highest operation lacks side-effects 
+-emacro(522,                  // Highest operation lacks side-effects
  Q_ASSERT,
  Q_ERROR,
  Q_ALLEGE)
@@ -88,58 +90,76 @@
 -estring(752,Q_assert_compile) // not referenced
 
 // QEP
--emacro(960,                  // MISRA04-12.10(req) comma operator used
- Q_TRAN,
- Q_SUPER)
--emacro(929,                  // MISRA04-11.4(adv) cast pointer to pointer
- Q_STATE_CAST,
- Q_TRAN,
- Q_SUPER)
 -emacro(740,                  // MISRA04-1.2(req) pointer cast
  Q_STATE_CAST,                // (incompatible indirect types)
  Q_TRAN,
  Q_SUPER)
--esym(960,                    // MISRA04-19.4(req) Disallowed macro definition
- QF_ACTIVE_CTOR_,
- QActive_ctor)
--emacro(960, Q_STATE_CAST)    // MISRA04-11.1(req) Conversions involving
+-emacro(929,                  // MISRA04-11.4(adv) cast pointer to pointer
+ Q_STATE_CAST,
+ Q_ACTION_CAST,
+ Q_TRAN,
+ Q_SUPER,
+ QM_INITIAL,
+ QM_TRAN)
+-emacro(960,                  // MISRA04-11.1(req) Conversions involving
+ Q_STATE_CAST,
+ Q_ACTION_CAST)
                               // fun. pointers must be to/from integral types
+-emacro(960,                  // MISRA04-12.10(req) comma operator used
+ Q_TRAN,
+ Q_SUPER,
+ QM_INITIAL,
+ QM_TRAN)
+-estring(960, QMAttrTag)      // MISRA04-18.4(req) declaration of union type
 -estring(961,                 // MISRA04-19.7(adv) function-like macro
  Q_ROM_BYTE,
- QFsm_ctor,
- QFsm_state,
- QHsm_ctor,
  QHsm_state,
  Q_IGNORED,
  Q_HANDLED,
  Q_UNHANDLED,
  Q_TRAN,
  Q_SUPER,
- Q_STATE_CAST)
--emacro(717,                  // do ... while(0)
- QFsm_ctor,
- QHsm_ctor)
+ Q_STATE_CAST,
+ Q_ACTION_CAST,
+ QEP_getVersion)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QMSM_INIT,
+ QMSM_DISPATCH,
+ QM_ENTRY,
+ QM_EXIT,
+ QM_TRAN,
+ QM_INITIAL,
+ QM_SUPER,
+ QM_HANDLED,
+ QM_UNHANDLED)
 
 // QF
--emacro(950,                  // MISRA04-2.1(req) assembly language 
- QF_INT_DISABLE,
- QF_INT_ENABLE,
- QF_CRIT_ENTRY,
- QF_CRIT_EXIT)
--estring(961,                 // MISRA04-19.7(adv) function-like macro
+-emacro(950,                  // MISRA04-2.1(req) assembly language
  QF_INT_DISABLE,
  QF_INT_ENABLE,
  QF_CRIT_ENTRY,
  QF_CRIT_EXIT,
+ QF_LOG2)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ Q_NEW,
+ Q_NEW_X,
+ QF_INT_DISABLE,
+ QF_INT_ENABLE,
+ QF_CRIT_ENTRY,
+ QF_CRIT_EXIT,
+ QF_CRIT_EXIT_NOP,
  QF_TICK,
+ QF_TICK_X,
  QF_PUBLISH,
  QF_MPOOL_EL,
+ QF_LOG2,
+ QACTIVE_START,
  QACTIVE_POST,
- Q_NEW)
+ QACTIVE_POST_X,
+ QACTIVE_POST_LIFO)
 -estring(961,                 // MISRA04-19.7(adv) function-like macro
  QEQueue_getNFree,
  QEQueue_isEmpty,
- QF_LOG2,
  QPSet8_isEmpty,
  QPSet8_notEmpty,
  QPSet8_hasElement,
@@ -152,9 +172,10 @@
  QPSet64_insert,
  QPSet64_remove,
  QPSet64_findMax,
- QActive_ctor,
+ QTimeEvt_ctor,
  QTimeEvt_postIn,
- QTimeEvt_postEvery)
+ QTimeEvt_postEvery,
+ QF_getVersion)
 -estring(961,                 // MISRA04-19.7(adv) function-like macro
  QF_QS_CRIT_EXIT,
  QF_QS_CRIT_ENTRY,
@@ -170,9 +191,10 @@
  QF_EPOOL_EVENT_SIZE_,
  QF_EPOOL_GET_,
  QF_EPOOL_PUT_,
- QF_ACTIVE_CTOR_,
- QF_ACTIVE_INIT_,
- QF_ACTIVE_DISPATCH_)
+ QF_tick,
+ QActive_postFIFO,
+ QEQueue_postFIFO)
+
 -esym(960,                    // MISRA04-19.4(req) Disallowed macro definition
  QF_INT_DISABLE,
  QF_INT_ENABLE,
@@ -187,20 +209,27 @@
  QF_EPOOL_TYPE_,
  QF_ACTIVE_SUPER_,
  QF_ACTIVE_STATE_,
- QPSet8_findMax)
--emacro(929, Q_NEW)           // MISRA04-11.4(adv) cast from pointer to pointer
+ QPSet8_findMax,
+ QTimeEvt_ctor)
+-emacro(929,                  // MISRA04-11.4(adv) cast from pointer to pointer
+ Q_NEW,
+ Q_NEW_X,
+ QACTIVE_POST,
+ QACTIVE_POST_LIFO)
 -emacro(717,                  // do ... while(0)
  QPSet64_insert,
  QPSet64_remove,
  QPSet64_findMax,
  QTimeEvt_postIn,
  QTimeEvt_postEvery)
--esym(960, Q_NEW)             // MISRA04-19.10(req) unparenthesized macro par
+-esym(960,                    // MISRA04-19.10(req) unparenthesized macro par
+ Q_NEW,
+ Q_NEW_X)
 -esym(641, *Signals)          // Converting enum '*Signals' to 'int'
 -esym(754, sto_)              // local structure member 'sto' not referenced
 
 // QK
--emacro(950,                  // MISRA04-2.1(req) assembly language 
+-emacro(950,                  // MISRA04-2.1(req) assembly language
  QK_ISR_ENTRY,
  QK_ISR_EXIT)
 -estring(961,                 // MISRA04-19.7(adv) function-like macro
@@ -208,7 +237,8 @@
  QK_ISR_EXIT,
  QK_EXT_SAVE,
  QK_EXT_RESTORE,
- QK_TLS)
+ QK_TLS,
+ QK_getVersion)
 
 // QS
 -emacro(506, QS_*)            // MISRA04-13.7(req) constant value boolean
@@ -262,6 +292,8 @@
  QS_FUN_DICTIONARY,
  QS_USR_DICTIONARY,
  QS_ASSERTION,
+ QS_TEST_ASSERTION,
+ QS_TEST,
  QS_FLUSH,
  QS_STR_ROM,
  QS_MEM,
@@ -274,6 +306,7 @@
  QS_BEGIN_NOCRIT_,
  QS_END_NOCRIT_,
  QS_U8_,
+ QS_2U8_,
  QS_U16_,
  QS_U32_,
  QS_U64_,
@@ -287,7 +320,8 @@
  QS_EQC_,
  QS_MPC_,
  QS_MPS_,
- QS_TEC_)
+ QS_TEC_,
+ QS_getVersion)
 -esym(960,                    // MISRA04-19.4(req) Disallowed macro definition
  QS_CRIT_STAT_,
  QS_CRIT_ENTRY_,

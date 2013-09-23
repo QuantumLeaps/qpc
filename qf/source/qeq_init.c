@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Mar 16, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -47,7 +47,7 @@ void QEQueue_init(QEQueue * const me, QEvt const *qSto[],
 {
     QS_CRIT_STAT_
 
-    me->frontEvt = (QEvt const *)0;             /* no events in the queue */
+    me->frontEvt = (QEvt const *)0;               /* no events in the queue */
     me->ring     = &qSto[0];            /* the beginning of the ring buffer */
     me->end      = qLen;
     me->head     = (QEQueueCtr)0;
@@ -55,8 +55,8 @@ void QEQueue_init(QEQueue * const me, QEvt const *qSto[],
     me->nFree    = qLen;
     me->nMin     = qLen;
 
-    QS_BEGIN_(QS_QF_EQUEUE_INIT, QS_eqObj_, me)
-        QS_OBJ_(qSto);                               /* this QEQueue object */
+    QS_BEGIN_(QS_QF_EQUEUE_INIT, QS_priv_.eqObjFilter, me)
+        QS_OBJ_(me);                                 /* this QEQueue object */
         QS_EQC_(qLen);                           /* the length of the queue */
     QS_END_()
 }

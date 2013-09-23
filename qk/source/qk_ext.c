@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QK/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 07, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -44,7 +44,7 @@
 */
 
 /*..........................................................................*/
-/* NOTE: the QK scheduler is entered and exited with interrupts LOCKED      */
+/* NOTE: the QK scheduler is entered and exited with interrupts DISABLED    */
 void QK_schedExt_(uint8_t p) {
     uint8_t pin = QK_currPrio_;                /* save the initial priority */
 #ifdef QK_TLS                                 /* thread-local storage used? */
@@ -70,7 +70,7 @@ void QK_schedExt_(uint8_t p) {
             pprev = p;
         }
 #endif
-        QS_BEGIN_NOCRIT_(QS_QK_SCHEDULE, QS_aoObj_, a)
+        QS_BEGIN_NOCRIT_(QS_QK_SCHEDULE, QS_priv_.aoObjFilter, a)
             QS_TIME_();                                        /* timestamp */
             QS_U8_(p);                            /* the priority of the AO */
             QS_U8_(pin);                          /* the preempted priority */
@@ -79,7 +79,7 @@ void QK_schedExt_(uint8_t p) {
         QF_INT_ENABLE();               /* unconditionally enable interrupts */
 
         e = QActive_get_(a);              /* get the next event for this AO */
-        QF_ACTIVE_DISPATCH_(&a->super, e);            /* dispatch to the AO */
+        QMSM_DISPATCH(&a->super, e);                  /* dispatch to the AO */
         QF_gc(e);                /* garbage collect the event, if necessary */
 
         QF_INT_DISABLE();                             /* disable interrupts */
@@ -89,11 +89,19 @@ void QK_schedExt_(uint8_t p) {
 #else
         QPSet64_findMax(&QK_readySet_, p);
 #endif
-#ifdef QK_NO_MUTEX
-    } while (p > pin);          /* is the new priority higher than initial? */
-#else                                /* QK priority-ceiling mutexes allowed */
-    } while ((p > pin) && (p > QK_ceilingPrio_));
+
+        if (p <= pin) {          /* below the current preemption threshold? */
+            p = (uint8_t)0;
+        }
+#ifndef QK_NO_MUTEX
+        else if (p <= QK_ceilingPrio_) {        /* below the mutex ceiling? */
+            p = (uint8_t)0;
+        }
+        else {
+            /* empty */
+        }
 #endif
+    } while (p != (uint8_t)0);
 
     QK_currPrio_ = pin;                     /* restore the initial priority */
 

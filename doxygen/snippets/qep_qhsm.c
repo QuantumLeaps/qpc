@@ -1,5 +1,6 @@
 typedef struct QCalcTag {
-    QHsm super;                                        /* derives from QHsm */
+    QHsm super;       /* inhertits QHsm */
+
     double operand1;
     double operand2;
     char display[DISP_WIDTH + 1];

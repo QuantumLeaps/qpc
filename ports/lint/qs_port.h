@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QS/C port
-* Last Updated for Version: 4.4.00
-* Date of the Last Update:  Jan 15, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 10, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This software may be distributed and modified under the terms of the GNU
 * General Public License version 2 (GPL) as published by the Free Software
@@ -30,10 +30,8 @@
 
 /**
 * \file
-* \ingroup qep qf qk qs
-* \brief QS/C port to QS for a "generic" C compiler.
-*
-* \note This is just an EXAMPLE of a QK port used for "linting" QP.
+* \ingroup qs
+* \brief QS/C port example for a "generic" C compiler.
 */
 
 #define QS_TIME_SIZE            4

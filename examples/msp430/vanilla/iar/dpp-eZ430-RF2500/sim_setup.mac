@@ -1,5 +1,0 @@
-execUserSetup()	{
-    __orderInterrupt("TIMERA0_VECTOR",
-                     320000, 320000, 0, 0, 0, 100 );
-    __message "Set interrupt: TIMERA0_VECTOR";
-}

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,24 +48,25 @@ Q_DEFINE_THIS_MODULE("qa_lifo")
 
 /*..........................................................................*/
 void QActive_postLIFO(QActive * const me, QEvt const * const e) {
+    QEvt const *frontEvt;      /* temporary to avoid UB for volatile access */
     QF_CRIT_STAT_
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_aoObj_, me)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.aoObjFilter, me)
         QS_TIME_();                                            /* timestamp */
         QS_SIG_(e->sig);                        /* the signal of this event */
         QS_OBJ_(me);                                  /* this active object */
-        QS_U8_(QF_EVT_POOL_ID_(e));             /* the pool Id of the event */
-        QS_U8_(QF_EVT_REF_CTR_(e));           /* the ref count of the event */
+        QS_2U8_(e->poolId_, e->refCtr_);/* pool Id & ref Count of the event */
         QS_EQC_(me->eQueue.nFree);                /* number of free entries */
         QS_EQC_(me->eQueue.nMin);             /* min number of free entries */
     QS_END_NOCRIT_()
 
-    if (QF_EVT_POOL_ID_(e) != (uint8_t)0) {          /* is it a pool event? */
+    if (e->poolId_ != (uint8_t)0) {                  /* is it a pool event? */
         QF_EVT_REF_CTR_INC_(e);          /* increment the reference counter */
     }
 
-    if (me->eQueue.frontEvt == (QEvt *)0) {               /* empty queue? */
+    frontEvt = me->eQueue.frontEvt;     /* read volatile into the temporary */
+    if (frontEvt == (QEvt const *)0) {               /* is the queue empty? */
         me->eQueue.frontEvt = e;                  /* deliver event directly */
         QACTIVE_EQUEUE_SIGNAL_(me);               /* signal the event queue */
     }
@@ -78,7 +79,7 @@ void QActive_postLIFO(QActive * const me, QEvt const * const e) {
             me->eQueue.tail = (QEQueueCtr)0;                 /* wrap around */
         }
 
-        QF_PTR_AT_(me->eQueue.ring, me->eQueue.tail) = me->eQueue.frontEvt;
+        QF_PTR_AT_(me->eQueue.ring, me->eQueue.tail) = frontEvt;
         me->eQueue.frontEvt = e;                      /* put event to front */
 
         --me->eQueue.nFree;                 /* update number of free events */

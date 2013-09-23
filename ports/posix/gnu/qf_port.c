@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QF/C port to POSIX/P-threads, GNU
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 25, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 09, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,11 +48,6 @@ static long int l_tickUsec = 10000UL;   /* clock tick in usec (for tv_usec) */
 static uint8_t l_running;
 
 /*..........................................................................*/
-const char *QF_getPortVersion(void) {
-    static const char Q_ROM version[] =  "4.5.02";
-    return version;
-}
-/*..........................................................................*/
 void QF_init(void) {
                           /* lock memory so we're never swapped out to disk */
     /*mlockall(MCL_CURRENT | MCL_FUTURE);          uncomment when supported */
@@ -75,7 +70,7 @@ int16_t QF_run(void) {
 
     l_running = (uint8_t)1;
     while (l_running) {
-        QF_onClockTick();      /* clock tick callback (must call QF_TICK()) */
+        QF_onClockTick();     /* clock tick callback (must call QF_TICKX()) */
 
         timeout.tv_usec = l_tickUsec;      /* set the desired tick interval */
         select(0, 0, 0, 0, &timeout); /* sleep for the desired tick, NOTE05 */
@@ -98,7 +93,7 @@ static void *thread_routine(void *arg) {    /* the expected POSIX signature */
     QActive *act = (QActive *)arg;
     do {                /* loop until m_thread is cleared in QActive_stop() */
         QEvt const *e = QActive_get_(act);            /* wait for the event */
-        QF_ACTIVE_DISPATCH_(&act->super, e);             /* dispatch to  SM */
+        QMSM_DISPATCH(&act->super, e);                /* dispatch to the SM */
         QF_gc(e);    /* check if the event is garbage, and collect it if so */
     } while (act->thread != (uint8_t)0);
     QF_remove_(act);           /* remove this object from any subscriptions */
@@ -122,7 +117,7 @@ void QActive_start(QActive *me, uint8_t prio,
 
     me->prio = prio;
     QF_add_(me);                     /* make QF aware of this active object */
-    QF_ACTIVE_INIT_(&me->super, ie);      /* execute the initial transition */
+    QMSM_INIT(&me->super, ie);            /* execute the initial transition */
 
     QS_FLUSH();                       /* flush the trace buffer to the host */
 

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 11, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 04, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -55,7 +55,7 @@
 * to manage up to 8 tasks.
 */
 typedef struct QPSet8Tag {
-    uint8_t bits;       /**< \brief bitmask representing elements of the set */
+    uint8_t volatile bits;    /**< bitmask representing elements of the set */
 } QPSet8;
 
 /** \brief the macro evaluates to TRUE if the priority set \a me has elements
@@ -101,64 +101,63 @@ typedef struct QPSet8Tag {
 */
 typedef struct QPSet64Tag {
 
-    /** \brief 8-bit superset of 8-bit subsets
+    /** \brief bimask representing 8-element subsets of the set
     *
-    * Each bit in the super.bits set represents a subset (8-elements)
+    * Each bit in the bytes set represents a subset (8-elements)
     * as follows: \n
-    * bit 0 in super.bits is 1 when subset[0] is not empty \n
-    * bit 1 in super.bits is 1 when subset[1] is not empty \n
-    * bit 2 in super.bits is 1 when subset[2] is not empty \n
-    * bit 3 in super.bits is 1 when subset[3] is not empty \n
-    * bit 4 in super.bits is 1 when subset[4] is not empty \n
-    * bit 5 in super.bits is 1 when subset[5] is not empty \n
-    * bit 6 in super.bits is 1 when subset[6] is not empty \n
-    * bit 7 in super.bits is 1 when subset[7] is not empty \n
+    * bit 0 in bytes is 1 when bits[0] is not empty \n
+    * bit 1 in bytes is 1 when bits[1] is not empty \n
+    * bit 2 in bytes is 1 when bits[2] is not empty \n
+    * bit 3 in bytes is 1 when bits[3] is not empty \n
+    * bit 4 in bytes is 1 when bits[4] is not empty \n
+    * bit 5 in bytes is 1 when bits[5] is not empty \n
+    * bit 6 in bytes is 1 when bits[6] is not empty \n
+    * bit 7 in bytes is 1 when bits[7] is not empty \n
     */
-    QPSet8 super;                            /* QPSet64 derives from QPSet8 */
+    uint8_t volatile bytes;
 
-    /** \brief subsets representing elements in the set as follows: \n
-    * subset[0] represent elements  1..8  \n
-    * subset[1] represent elements  9..16 \n
-    * subset[2] represent elements 17..24 \n
-    * subset[3] represent elements 25..32 \n
-    * subset[4] represent elements 33..40 \n
-    * subset[5] represent elements 41..48 \n
-    * subset[6] represent elements 49..56 \n
-    * subset[7] represent elements 57..64 \n
+    /** \brief bits representing elements in the set as follows: \n
+    * bits[0] represent elements  1..8  \n
+    * bits[1] represent elements  9..16 \n
+    * bits[2] represent elements 17..24 \n
+    * bits[3] represent elements 25..32 \n
+    * bits[4] represent elements 33..40 \n
+    * bits[5] represent elements 41..48 \n
+    * bits[6] represent elements 49..56 \n
+    * bits[7] represent elements 57..64 \n
     */
-    QPSet8 subset[8];
+    uint8_t volatile bits[8];
 } QPSet64;
 
 /** \brief the macro evaluates to TRUE if the priority set \a me_ has elements
 */
-#define QPSet64_isEmpty(me_)    (QPSet8_isEmpty(&(me_)->super))
+#define QPSet64_isEmpty(me_)    ((me_)->bytes == (uint8_t)0)
 
 /** \brief the macro evaluates to TRUE if the priority set \a me is empty
 */
-#define QPSet64_notEmpty(me_)   (QPSet8_notEmpty(&(me_)->super))
+#define QPSet64_notEmpty(me_)   ((me_)->bytes != (uint8_t)0)
 
 /** \brief the macro evaluates to TRUE if the priority set \a me_
 * has element \a n_.
 */
 #define QPSet64_hasElement(me_, n_) \
-    (QPSet8_hasElement(&(me_)->subset[Q_ROM_BYTE(QF_div8Lkup[(n_)])], (n_)))
+    (((me_)->bits[Q_ROM_BYTE(QF_div8Lkup[(n_)])] \
+      & Q_ROM_BYTE(QF_pwr2Lkup[(n_)])) != 0U)
 
 /** \brief insert element \a n_ into the set \a me_, n_= 1..64
 */
 #define QPSet64_insert(me_, n_) do { \
-    QPSet8_insert(&(me_)->super, \
-                  (uint8_t)(Q_ROM_BYTE(QF_div8Lkup[(n_)]) + (uint8_t)1)); \
-    QPSet8_insert(&(me_)->subset[Q_ROM_BYTE(QF_div8Lkup[(n_)])], (n_)); \
+    uint8_t m_ = Q_ROM_BYTE(QF_div8Lkup[(n_)]); \
+    (me_)->bits[m_] |= Q_ROM_BYTE(QF_pwr2Lkup[(n_)]); \
+    (me_)->bytes |= Q_ROM_BYTE(QF_pwr2Lkup[m_ + (uint8_t)1]); \
 } while (0)
 
 /** \brief remove element n_ from the set \a me_, n_= 1..64
 */
 #define QPSet64_remove(me_, n_) do { \
-    if (QPSet8_remove(&(me_)->subset[Q_ROM_BYTE(QF_div8Lkup[(n_)])], (n_)) \
-        == (uint8_t)0) \
-    { \
-        QPSet8_remove(&(me_)->super, \
-                     (uint8_t)(Q_ROM_BYTE(QF_div8Lkup[(n_)]) + (uint8_t)1)); \
+    uint8_t m_ = Q_ROM_BYTE(QF_div8Lkup[(n_)]); \
+    if (((me_)->bits[m_] &= Q_ROM_BYTE(QF_invPwr2Lkup[(n_)])) == 0U) { \
+        (me_)->bytes &= Q_ROM_BYTE(QF_invPwr2Lkup[m_ + (uint8_t)1]); \
     } \
 } while (0)
 
@@ -166,10 +165,9 @@ typedef struct QPSet64Tag {
 * \note if the set \a me_ is empty, \a n_ is set to zero.
 */
 #define QPSet64_findMax(me_, n_) do { \
-    if (QPSet64_notEmpty(me_)) { \
-        (n_) = (uint8_t)(QF_LOG2((me_)->super.bits) \
-                         - (uint8_t)1); \
-        (n_) = (uint8_t)(QF_LOG2((me_)->subset[(n_)].bits) \
+    if ((me_)->bytes != (uint8_t)0) { \
+        (n_) = (uint8_t)(QF_LOG2((me_)->bytes) - (uint8_t)1); \
+        (n_) = (uint8_t)(QF_LOG2((me_)->bits[(n_)]) \
                          + (uint8_t)((n_) << 3)); \
     } \
     else { \

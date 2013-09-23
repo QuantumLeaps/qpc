@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 25, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 07, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -60,7 +60,8 @@ void QActive_unsubscribeAll(QActive const * const me) {
              & Q_ROM_BYTE(QF_pwr2Lkup[p])) != (uint8_t)0)
         {
 
-            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_UNSUBSCRIBE, QS_aoObj_, me)
+            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_UNSUBSCRIBE,
+                             QS_priv_.aoObjFilter, me)
                 QS_TIME_();                                    /* timestamp */
                 QS_SIG_((QSignal)sig);          /* the signal of this event */
                 QS_OBJ_(me);                          /* this active object */

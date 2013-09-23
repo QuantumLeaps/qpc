@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QK/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 04, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,7 +48,7 @@
 #endif
 
 /* package-scope objects ---------------------------------------------------*/
-uint8_t QK_ceilingPrio_;                     /* ceiling priority of a mutex */
+uint8_t volatile QK_ceilingPrio_;            /* ceiling priority of a mutex */
 
 /*..........................................................................*/
 QMutex QK_mutexLock(uint8_t prioCeiling) {

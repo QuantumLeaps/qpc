@@ -1,5 +1,6 @@
-typedef struct PhilosopherTag {
-    QActive super;                                  /* derives from QActive */
-    uint8_t num;                              /* number of this philosopher */
-    QTimeEvt timeEvt;                       /* to timeout thining or eating */
-} Philosopher;
+typedef struct PhiloTag {
+    QActive super;       /* inherits QActive */
+
+    QTimeEvt timeEvt;    /* to timeout thining or eating */
+    uint8_t num;         /* this philosopher's number */
+} Philo;

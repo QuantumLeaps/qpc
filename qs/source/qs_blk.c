@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QS/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -41,30 +41,34 @@
 */
 
 /*..........................................................................*/
-/* get up to *pn bytes of contiguous memory */
+/* get up to *pNbytes bytes of contiguous memory */
 uint8_t const *QS_getBlock(uint16_t *pNbytes) {
-    uint8_t *block;
-    if (QS_used_ == (QSCtr)0) {
-        *pNbytes = (uint16_t)0;
-        block = (uint8_t *)0;               /* no bytes to return right now */
+    QSCtr used = QS_priv_.used;            /* put in a temporary (register) */
+    uint8_t *buf;
+    if (used == (QSCtr)0) {
+        *pNbytes = (uint16_t)0;             /* no bytes available right now */
+        buf      = (uint8_t *)0;            /* no bytes available right now */
     }
     else {
-        QSCtr t;
-        QSCtr n = (QSCtr)(QS_end_ - QS_tail_);
-        if (n > QS_used_) {
-            n = QS_used_;
+        QSCtr tail = QS_priv_.tail;        /* put in a temporary (register) */
+        QSCtr end  = QS_priv_.end;         /* put in a temporary (register) */
+        QSCtr n = (QSCtr)(end - tail);
+        if (n > used) {
+            n = used;
         }
         if (n > (QSCtr)(*pNbytes)) {
             n = (QSCtr)(*pNbytes);
         }
-        *pNbytes = (uint16_t)n;
-        QS_used_ = (QSCtr)(QS_used_ - n);
-        t = QS_tail_;
-        QS_tail_ = (QSCtr)(QS_tail_ + n);
-        if (QS_tail_ == QS_end_) {
-            QS_tail_ = (QSCtr)0;
+        *pNbytes = (uint16_t)n;                        /* n-bytes available */
+        buf = QS_priv_.buf;
+        buf = QS_PTR_AT_(tail);                /* the bytes are at the tail */
+
+        QS_priv_.used = (QSCtr)(used - n);
+        tail += n;
+        if (tail == end) {
+            tail = (QSCtr)0;
         }
-        block = &QS_PTR_AT_(t);
+        QS_priv_.tail = tail;
     }
-    return block;
+    return buf;
 }

@@ -1,13 +1,13 @@
 ##############################################################################
 # Product:  QP/C, POSIX port, GNU compiler
-# Last Updated for Version: 4.5.03
-# Date of the Last Update:  Nov 25, 2012
+# Last Updated for Version: 5.0.0
+# Date of the Last Update:  Aug 09, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -45,11 +45,6 @@
 # make CONF=spy clean
 
 #-----------------------------------------------------------------------------
-# general utilities
-#
-RM = rm -f
-
-#-----------------------------------------------------------------------------
 CC  = gcc
 LIB = ar
 
@@ -61,6 +56,7 @@ QS_SRCDIR  = $(QPC)/qs/source
 QP_PRTDIR  = .
 LIBFLAGS   = rs
 QS_OBJS    =
+RM = rm -f
 
 CCINC      = -I$(QP_PRTDIR) -I$(QP_INCDIR)
 
@@ -90,6 +86,7 @@ QS_OBJS = \
 	$(BINDIR)/qs_.o \
 	$(BINDIR)/qs_blk.o \
 	$(BINDIR)/qs_byte.o \
+	$(BINDIR)/qs_dict.o \
 	$(BINDIR)/qs_f32.o \
 	$(BINDIR)/qs_f64.o \
 	$(BINDIR)/qs_mem.o \
@@ -120,6 +117,8 @@ $(BINDIR) :
 # the objects to build =======================================================
 QEP_OBJS = \
 	$(BINDIR)/qep.o \
+	$(BINDIR)/qmsm_ini.o \
+	$(BINDIR)/qmsm_dis.o \
 	$(BINDIR)/qfsm_ini.o \
 	$(BINDIR)/qfsm_dis.o \
 	$(BINDIR)/qhsm_ini.o \
@@ -128,6 +127,7 @@ QEP_OBJS = \
 	$(BINDIR)/qhsm_in.o
 
 QF_OBJS = \
+	$(BINDIR)/qa_ctor.o \
 	$(BINDIR)/qa_defer.o \
 	$(BINDIR)/qa_fifo.o \
 	$(BINDIR)/qa_lifo.o \
@@ -148,6 +148,7 @@ QF_OBJS = \
 	$(BINDIR)/qf_pspub.o \
 	$(BINDIR)/qf_pwr2.o \
 	$(BINDIR)/qf_tick.o \
+	$(BINDIR)/qma_ctor.o \
 	$(BINDIR)/qmp_get.o \
 	$(BINDIR)/qmp_init.o \
 	$(BINDIR)/qmp_put.o \
@@ -177,6 +178,12 @@ $(BINDIR)/libqp.a: 	$(QEP_OBJS) $(QF_OBJS) $(QS_OBJS)
 $(BINDIR)/qep.o: $(QEP_SRCDIR)/qep.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
 
+$(BINDIR)/qmsm_ini.o: $(QEP_SRCDIR)/qmsm_ini.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+
+$(BINDIR)/qmsm_dis.o: $(QEP_SRCDIR)/qmsm_dis.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+
 $(BINDIR)/qfsm_ini.o: $(QEP_SRCDIR)/qfsm_ini.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
 
@@ -196,6 +203,9 @@ $(BINDIR)/qhsm_in.o: $(QEP_SRCDIR)/qhsm_in.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
 
 # QF -----------------------------------------
+$(BINDIR)/qa_ctor.o: $(QF_SRCDIR)/qa_ctor.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
+
 $(BINDIR)/qa_defer.o: $(QF_SRCDIR)/qa_defer.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
 
@@ -256,6 +266,9 @@ $(BINDIR)/qf_pwr2.o: $(QF_SRCDIR)/qf_pwr2.c
 $(BINDIR)/qf_tick.o: $(QF_SRCDIR)/qf_tick.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
 
+$(BINDIR)/qma_ctor.o: $(QF_SRCDIR)/qma_ctor.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
+
 $(BINDIR)/qmp_get.o: $(QF_SRCDIR)/qmp_get.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
 
@@ -295,6 +308,9 @@ $(BINDIR)/qs_blk.o: $(QS_SRCDIR)/qs_blk.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
 
 $(BINDIR)/qs_byte.o: $(QS_SRCDIR)/qs_byte.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
+
+$(BINDIR)/qs_dict.o: $(QS_SRCDIR)/qs_dict.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
 
 $(BINDIR)/qs_f32.o: $(QS_SRCDIR)/qs_f32.c

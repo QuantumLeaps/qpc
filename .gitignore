@@ -31,6 +31,7 @@
 *.Release
 lint*.out
 
+test/
 dbg/
 rel/
 spy/

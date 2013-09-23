@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 02, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 12, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -110,7 +110,7 @@
 typedef struct QMPoolTag {
     /** The head of the linked list of free blocks
     */
-    void *free_head;
+    void * volatile free_head;
 
     /** the original start this pool
     */
@@ -130,7 +130,7 @@ typedef struct QMPoolTag {
 
     /** number of free blocks remaining
     */
-    QMPoolCtr nFree;
+    QMPoolCtr volatile nFree;
 
     /** minimum number of free blocks ever present in this pool
     *
@@ -182,7 +182,7 @@ void QMPool_init(QMPool * const me, void * const poolSto,
 *
 * \sa QMPool_put()
 */
-void *QMPool_get(QMPool * const me);
+void *QMPool_get(QMPool * const me, uint16_t const margin);
 
 /** \brief Returns a memory block back to a memory pool.
 *

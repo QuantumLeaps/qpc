@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 04, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 11, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,7 +45,7 @@ static QSubscrList l_subscrSto[MAX_PUB_SIG];
 static QF_MPOOL_EL(TableEvt) l_smlPoolSto[2U*N_PHILO];        /* small pool */
 
 /*..........................................................................*/
-int_t main(void) {
+int_t main() {
     uint8_t n;
 
     Philo_ctor();             /* instantiate all Philosopher active objects */

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  May 27, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -37,7 +37,7 @@
 /**
 * \file
 * \ingroup qep
-* \brief QEP_reservedEvt_ definition and QEP_getVersion() implementation.
+* \brief QEP_reservedEvt_ definition.
 */
 
 /* Package-scope objects ---------------------------------------------------*/
@@ -47,17 +47,3 @@ QEvt const QEP_reservedEvt_[] = {
     { (QSignal)Q_EXIT_SIG,     (uint8_t)0, (uint8_t)0 },
     { (QSignal)Q_INIT_SIG,     (uint8_t)0, (uint8_t)0 }
 };
-
-/*..........................................................................*/
-char_t const Q_ROM * Q_ROM_VAR QEP_getVersion(void) {
-    static char_t const Q_ROM Q_ROM_VAR version[] = {
-        (char_t)((uint8_t)((QP_VERSION >> 12) & 0xFU) + (uint8_t)'0'),
-        (char_t)'.',
-        (char_t)((uint8_t)((QP_VERSION >>  8) & 0xFU) + (uint8_t)'0'),
-        (char_t)'.',
-        (char_t)((uint8_t)((QP_VERSION >>  4) & 0xFU) + (uint8_t)'0'),
-        (char_t)((uint8_t)(QP_VERSION         & 0xFU) + (uint8_t)'0'),
-        (char_t)'\0'
-    };
-    return version;
-}

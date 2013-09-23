@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QS/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -43,16 +43,19 @@
 /*..........................................................................*/
 uint16_t QS_getByte(void) {
     uint16_t ret;
-    if (QS_used_ == (QSCtr)0) {
+    if (QS_priv_.used == (QSCtr)0) {
         ret = QS_EOD;                                    /* set End-Of-Data */
     }
     else {
-        ret = (uint16_t)QS_PTR_AT_(QS_tail_);     /* set the byte to return */
-        ++QS_tail_;                                     /* advance the tail */
-        if (QS_tail_ == QS_end_) {                     /* tail wrap around? */
-            QS_tail_ = (QSCtr)0;
+        uint8_t *buf = QS_priv_.buf;       /* put in a temporary (register) */
+        QSCtr tail   = QS_priv_.tail;      /* put in a temporary (register) */
+        ret = (uint16_t)(*QS_PTR_AT_(tail));      /* set the byte to return */
+        ++tail;                                         /* advance the tail */
+        if (tail == QS_priv_.end) {                    /* tail wrap around? */
+            tail = (QSCtr)0;
         }
-        --QS_used_;                                   /* one less byte used */
+        QS_priv_.tail = tail;                            /* update the tail */
+        --QS_priv_.used;                              /* one less byte used */
     }
     return ret;                                   /* return the byte or EOD */
 }

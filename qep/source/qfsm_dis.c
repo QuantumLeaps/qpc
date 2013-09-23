@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 4.5.01
-* Date of the Last Update:  Jun 13, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Jul 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,58 +48,58 @@ void QFsm_dispatch(QFsm * const me, QEvt const * const e) {
     QState r;
     QS_CRIT_STAT_
 
-    Q_REQUIRE(me->state == me->temp); /* state configuration must be stable */
+    Q_REQUIRE(me->state.fun == me->temp.fun); /* stable state configuration */
 
-    QS_BEGIN_(QS_QEP_DISPATCH, QS_smObj_, me)
+    QS_BEGIN_(QS_QEP_DISPATCH, QS_priv_.smObjFilter, me)
         QS_TIME_();                                           /* time stamp */
         QS_SIG_(e->sig);                         /* the signal of the event */
         QS_OBJ_(me);                           /* this state machine object */
-        QS_FUN_(me->state);                            /* the current state */
+        QS_FUN_(me->state.fun);                        /* the current state */
     QS_END_()
 
-    r = (*me->state)(me, e);                      /* call the event handler */
-    if (r == Q_RET_TRAN) {                             /* transition taken? */
+    r = (*me->state.fun)(me, e);                  /* call the event handler */
+    if (r == (QState)Q_RET_TRAN) {                     /* transition taken? */
 
-        QS_BEGIN_(QS_QEP_TRAN, QS_smObj_, me)
+        QS_BEGIN_(QS_QEP_TRAN, QS_priv_.smObjFilter, me)
             QS_TIME_();                                       /* time stamp */
             QS_SIG_(e->sig);                     /* the signal of the event */
             QS_OBJ_(me);                       /* this state machine object */
-            QS_FUN_(me->state);             /* the source of the transition */
-            QS_FUN_(me->temp);              /* the target of the transition */
+            QS_FUN_(me->state.fun);         /* the source of the transition */
+            QS_FUN_(me->temp.fun);          /* the target of the transition */
         QS_END_()
 
-        QEP_EXIT_(me->state);                            /* exit the source */
-        QEP_ENTER_(me->temp);                           /* enter the target */
-        me->state = me->temp;                /* record the new active state */
+        QEP_EXIT_(me->state.fun);                        /* exit the source */
+        QEP_ENTER_(me->temp.fun);                       /* enter the target */
+        me->state.fun = me->temp.fun;        /* record the new active state */
     }
     else {                                          /* transition not taken */
 #ifdef Q_SPY
 
-        if (r == Q_RET_UNHANDLED) {
-            QS_BEGIN_(QS_QEP_UNHANDLED, QS_smObj_, me)
+        if (r == (QState)Q_RET_UNHANDLED) {
+            QS_BEGIN_(QS_QEP_UNHANDLED, QS_priv_.smObjFilter, me)
                 QS_SIG_(e->sig);                 /* the signal of the event */
                 QS_OBJ_(me);                   /* this state machine object */
-                QS_FUN_(me->state);                    /* the current state */
+                QS_FUN_(me->state.fun);                /* the current state */
             QS_END_()
         }
 
-        if (r == Q_RET_HANDLED) {
+        if (r == (QState)Q_RET_HANDLED) {
 
-            QS_BEGIN_(QS_QEP_INTERN_TRAN, QS_smObj_, me)
+            QS_BEGIN_(QS_QEP_INTERN_TRAN, QS_priv_.smObjFilter, me)
                 QS_TIME_();                                   /* time stamp */
                 QS_SIG_(e->sig);                 /* the signal of the event */
                 QS_OBJ_(me);                   /* this state machine object */
-                QS_FUN_(me->state);                    /* the current state */
+                QS_FUN_(me->state.fun);                /* the current state */
             QS_END_()
 
         }
         else {
 
-            QS_BEGIN_(QS_QEP_IGNORED, QS_smObj_, me)
+            QS_BEGIN_(QS_QEP_IGNORED, QS_priv_.smObjFilter, me)
                 QS_TIME_();                                   /* time stamp */
                 QS_SIG_(e->sig);                 /* the signal of the event */
                 QS_OBJ_(me);                   /* this state machine object */
-                QS_FUN_(me->state);                    /* the current state */
+                QS_FUN_(me->state.fun);                /* the current state */
             QS_END_()
 
         }

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 01, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 03, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,9 +40,9 @@ Q_DEFINE_THIS_MODULE("qk")
 /**
 * \file
 * \ingroup qk
-* \brief QK_readySet_, QK_currPrio_, and QK_intNest_ definitions and
-* QK_getVersion(), QF_init(), QF_run(), QF_stop(),
-* QActive_start(), QActive_stop() implementations.
+* \brief #QK_readySet_, #QK_currPrio_, and #QK_intNest_ definitions and
+* QF_init(), QF_run(), QF_stop(), QActive_start(), QActive_stop()
+* implementations.
 */
 
 /* Public-scope objects ----------------------------------------------------*/
@@ -52,16 +52,12 @@ Q_DEFINE_THIS_MODULE("qk")
     QPSet64 QK_readySet_;                                   /* QK ready-set */
 #endif
                                       /* start with the QK scheduler locked */
-uint8_t QK_currPrio_ = (uint8_t)(QF_MAX_ACTIVE + 1);
-uint8_t QK_intNest_;                       /* start with nesting level of 0 */
+uint8_t volatile QK_currPrio_ = (uint8_t)(QF_MAX_ACTIVE + 1);
+uint8_t volatile QK_intNest_;              /* start with nesting level of 0 */
 
 /*..........................................................................*/
 static void initialize(void);
 
-/*..........................................................................*/
-char_t const Q_ROM * Q_ROM_VAR QK_getVersion(void) {
-    return QF_getVersion();
-}
 /*..........................................................................*/
 void QF_init(void) {
     QK_init();                              /* might be defined in assembly */
@@ -92,7 +88,7 @@ int16_t QF_run(void) {
         QK_onIdle();                      /* invoke the QK on-idle callback */
     }
 
-    return (int16_t)0; /* this unreachable return is to make compiler happy */
+    /* return (int16_t)0; */                            /* unreachable code */
 }
 /*..........................................................................*/
 void QActive_start(QActive *me, uint8_t prio,
@@ -113,7 +109,7 @@ void QActive_start(QActive *me, uint8_t prio,
     Q_ASSERT((stkSto == (void *)0) && (stkSize == (uint32_t)0));
 #endif
 
-    QF_ACTIVE_INIT_(&me->super, ie);          /* execute initial transition */
+    QMSM_INIT(&me->super, ie);                /* execute initial transition */
 
     QS_FLUSH();                       /* flush the trace buffer to the host */
 }

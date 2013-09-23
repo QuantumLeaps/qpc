@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>res/EK-LM3S811.png</file>
-        <file>res/EK-BTN_UP.png</file>
-        <file>res/EK-BTN_DWN.png</file>
-        <file>res/LED_OFF.png</file>
-        <file>res/LED_ON.png</file>
-    </qresource>
-</RCC>

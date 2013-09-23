@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QK/C port for Lint, Generic C compiler
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 01, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 10, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -38,7 +38,7 @@
 /**
 * \file
 * \ingroup qk
-* \brief QK/C port to QK for a "generic" C compiler.
+* \brief QK/C port example for a "generic" C compiler.
 *
 * \note This is just an EXAMPLE of a QK port used for "linting" the QK.
 */

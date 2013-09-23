@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last Updated for Version: 4.5.04
-// Date of the Last Update:  Feb 01, 2013
+// Last Updated for Version: 4.6.0
+// Date of the Last Update:  Jul 30, 2013
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -54,18 +54,19 @@ lib-qpc.lnt       // QP/C options
 
 
 // QEP
--estring(961,                 // MISRA04-19.7(adv) function-like macro
- QEP_TRIG_,
- QEP_ENTER_,
- QEP_EXIT_)
 -emacro(960,                  // MISRA04-14.3(req) null not in line by itself
  QEP_ENTER_,
  QEP_EXIT_)
+-emacro(960,                  // MISR04-17.4(req), pointer arithmetic
+ QEP_ACT_PTR_INC_)
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QEP_TRIG_,
+ QEP_ENTER_,
+ QEP_EXIT_,
+ QEP_ACT_PTR_INC_)
 -emacro(717,                  // do ... while(0);
  QEP_ENTER_,
  QEP_EXIT_)
--efunc(778, QEP_getVersion)   // Constant expression evaluates to 0
--efunc(835, QEP_getVersion)   // 0 as left argument to operator '+'
 -efunc(632, QHsm_init)        // Assignment to strong type 'QStateHandler'
 
 // QF
@@ -84,8 +85,6 @@ lib-qpc.lnt       // QP/C options
 -estring(961,                 // MISRA04-19.7(adv) function-like macro
  QF_EVT_REF_CTR_INC_,
  QF_EVT_REF_CTR_DEC_,
- QF_EVT_POOL_ID_,
- QF_EVT_REF_CTR_,
  QF_PTR_AT_,
  QF_CRIT_ENTRY_,
  QF_CRIT_EXIT_,
@@ -102,8 +101,6 @@ lib-qpc.lnt       // QP/C options
  QActive_start,
  QActive_stop)
 -efunc(527, QF_run)           // MISRA04-14.17(req) Unreachable code
--efunc(778, QF_getVersion)    // Constant expression evaluates to 0
--efunc(835, QF_getVersion)    // 0 as left argument to operator '+'
 -efunc(550, QF_tick)          // Symbol 'dummy' not accessed
 -emacro({717},                // do ... while(0);
  QACTIVE_EQUEUE_SIGNAL_,
@@ -111,8 +108,6 @@ lib-qpc.lnt       // QP/C options
 -esym(960, 8.8)   // MISRA04-8.8(req) Seems to be checked incorrectly...
 
 // QK
--efunc(778, QK_getVersion)    // Constant expression evaluates to 0
--efunc(835, QK_getVersion)    // 0 as left argument to operator '+'
 -esym(960,                    // MISRA04-19.4(req) Disallowed macro definition
  QF_CRIT_ENTRY_,
  QF_CRIT_EXIT_)
@@ -147,10 +142,13 @@ lib-qpc.lnt       // QP/C options
  QS_END_NOCRIT_,
  QS_INSERT_BYTE,
  QS_INSERT_ESC_BYTE,
- QS_INSERT_CHKSUM_BYTE)
+ QS_INSERT_CHKSUM_BYTE,
+ QS_EQC_,
+ QS_EVS_,
+ QS_MPS_,
+ QS_MPC_,
+ QS_TEC_)
 -emacro(961, QS_TEC_)         // MISRA04-12.13(adv)
--efunc(778, QS_getVersion)    // Constant expression evaluates to 0
--efunc(835, QS_getVersion)    // 0 as left argument to operator '+'
 -emacro(774,                  // Boolean within 'if' always False
  QS_BEGIN_,
  QS_BEGIN_NOCRIT_)

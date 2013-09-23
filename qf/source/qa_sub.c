@@ -56,7 +56,7 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
 
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_SUBSCRIBE, QS_aoObj_, me)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_SUBSCRIBE, QS_priv_.aoObjFilter, me)
         QS_TIME_();                                            /* timestamp */
         QS_SIG_((QSignal)sig);                  /* the signal of this event */
         QS_OBJ_(me);                                  /* this active object */

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QS/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 01, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 16, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -43,44 +43,29 @@
 
 #include "qs_port.h"                                             /* QS port */
 
-/** \brief QS ring buffer counter and offset type */
-typedef uint16_t QSCtr;
-
 /*..........................................................................*/
 /** \brief Internal QS macro to insert an un-escaped byte into
 * the QS buffer
 */
 #define QS_INSERT_BYTE(b_) \
-    QS_PTR_AT_(QS_head_) = (b_); \
-    ++QS_head_; \
-    if (QS_head_ == QS_end_) { \
-        QS_head_ = (QSCtr)0; \
-    } \
-    ++QS_used_;
+    *QS_PTR_AT_(head) = (b_); \
+    ++head; \
+    if (head == end) { \
+        head = (QSCtr)0; \
+    }
 
 /** \brief Internal QS macro to insert an escaped byte into the QS buffer */
 #define QS_INSERT_ESC_BYTE(b_) \
-    QS_chksum_ = (uint8_t)(QS_chksum_ + (b_)); \
-    if (((b_) == QS_FRAME) || ((b_) == QS_ESC)) { \
+    chksum = (uint8_t)(chksum + (b_)); \
+    if (((b_) != QS_FRAME) && ((b_) != QS_ESC)) { \
+        QS_INSERT_BYTE(b_) \
+    } \
+    else { \
         QS_INSERT_BYTE(QS_ESC) \
         QS_INSERT_BYTE((uint8_t)((b_) ^ QS_ESC_XOR)) \
-    } \
-    else { \
-        QS_INSERT_BYTE(b_) \
+        ++QS_priv_.used; \
     }
 
-/** \brief Internal QS macro to insert a escaped checksum byte into
-* the QS buffer
-*/
-#define QS_INSERT_CHKSUM_BYTE() \
-    QS_chksum_ = (uint8_t)~QS_chksum_; \
-    if ((QS_chksum_ == QS_FRAME) || (QS_chksum_ == QS_ESC)) { \
-        QS_INSERT_BYTE(QS_ESC) \
-        QS_INSERT_BYTE((uint8_t)(QS_chksum_ ^ QS_ESC_XOR)) \
-    } \
-    else { \
-        QS_INSERT_BYTE(QS_chksum_) \
-    }
 
 /** \brief Internal QS macro to access the QS ring buffer
 *
@@ -89,7 +74,7 @@ typedef uint16_t QSCtr;
 * arithmetic other than array indexing. Encapsulating this violation in a
 * macro allows to selectively suppress this specific deviation.
 */
-#define QS_PTR_AT_(i_) (QS_ring_[(i_)])
+#define QS_PTR_AT_(i_) (buf + (i_))
 
 /** \brief Internal QS macro to increment the given pointer argument \a ptr_
 *
@@ -129,16 +114,6 @@ typedef uint16_t QSCtr;
     */
     #define Q_ROM_BYTE(rom_var_)   (rom_var_)
 #endif
-
-/*..........................................................................*/
-extern uint8_t *QS_ring_;      /**< pointer to the start of the ring buffer */
-extern QSCtr QS_end_;             /**< offset of the end of the ring buffer */
-extern QSCtr QS_head_;      /**< offset to where next byte will be inserted */
-extern QSCtr QS_tail_;    /**< offset of where next event will be extracted */
-extern QSCtr QS_used_;    /**< number of bytes currently in the ring buffer */
-extern uint8_t QS_seq_;                     /**< the record sequence number */
-extern uint8_t QS_chksum_;          /**< the checksum of the current record */
-extern uint8_t QS_full_;           /**< the ring buffer is temporarily full */
 
 #endif                                                          /* qs_pkg_h */
 

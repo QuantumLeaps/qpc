@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,41 +45,72 @@ Q_DEFINE_THIS_MODULE("qeq_fifo")
 */
 
 /*..........................................................................*/
-void QEQueue_postFIFO(QEQueue * const me, QEvt const * const e) {
+uint8_t QEQueue_post(QEQueue * const me, QEvt const * const e,
+                     uint16_t const margin)
+{
+    uint8_t status;
     QF_CRIT_STAT_
+
+    Q_REQUIRE(e != (QEvt const *)0);                 /* event must be valid */
+
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_FIFO, QS_eqObj_, me)
-        QS_TIME_();                                            /* timestamp */
-        QS_SIG_(e->sig);                        /* the signal of this event */
-        QS_OBJ_(me);                                   /* this queue object */
-        QS_U8_(QF_EVT_POOL_ID_(e));             /* the pool Id of the event */
-        QS_U8_(QF_EVT_REF_CTR_(e));           /* the ref count of the event */
-        QS_EQC_(me->nFree);                       /* number of free entries */
-        QS_EQC_(me->nMin);                    /* min number of free entries */
-    QS_END_NOCRIT_()
+    if (me->nFree > (QEQueueCtr)margin) {     /* required margin available? */
 
-    if (QF_EVT_POOL_ID_(e) != (uint8_t)0) {          /* is it a pool event? */
-        QF_EVT_REF_CTR_INC_(e);          /* increment the reference counter */
-    }
+        QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_FIFO, QS_priv_.eqObjFilter, me)
+            QS_TIME_();                                        /* timestamp */
+            QS_SIG_(e->sig);                    /* the signal of this event */
+            QS_OBJ_(me);                               /* this queue object */
+            QS_2U8_(e->poolId_, e->refCtr_);         /* pool Id & ref Count */
+            QS_EQC_(me->nFree);                   /* number of free entries */
+            QS_EQC_(me->nMin);                /* min number of free entries */
+        QS_END_NOCRIT_()
 
-    if (me->frontEvt == (QEvt const *)0) {         /* is the queue empty? */
-        me->frontEvt = e;                         /* deliver event directly */
-    }
-    else {            /* queue is not empty, leave event in the ring-buffer */
-            /* the queue must be able to accept the event (cannot overflow) */
-        Q_ASSERT(me->nFree != (QEQueueCtr)0);
-
-        QF_PTR_AT_(me->ring, me->head) = e;  /* insert e into buffer (FIFO) */
-        if (me->head == (QEQueueCtr)0) {          /* need to wrap the head? */
-            me->head = me->end;                              /* wrap around */
+        if (e->poolId_ != (uint8_t)0) {              /* is it a pool event? */
+            QF_EVT_REF_CTR_INC_(e);      /* increment the reference counter */
         }
-        --me->head;
 
-        --me->nFree;                        /* update number of free events */
-        if (me->nMin > me->nFree) {
-            me->nMin = me->nFree;                  /* update minimum so far */
+        if (me->frontEvt == (QEvt const *)0) {              /* empty queue? */
+            me->frontEvt = e;                     /* deliver event directly */
         }
+        else {     /* queue is not empty, insert event into the ring-buffer */
+                                /* insert event into the ring buffer (FIFO) */
+            QF_PTR_AT_(me->ring, me->head) = e;     /* insert e into buffer */
+            if (me->head == (QEQueueCtr)0) {      /* need to wrap the head? */
+                me->head = me->end;                          /* wrap around */
+            }
+            --me->head;
+            --me->nFree;                    /* update number of free events */
+
+            if (me->nMin > me->nFree) {
+                me->nMin = me->nFree;              /* update minimum so far */
+            }
+        }
+        status = (uint8_t)1;                   /* event posted successfully */
     }
+    else {
+        Q_ASSERT(margin != (uint16_t)0);    /* can tollerate dropping evts? */
+
+        QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_ATTEMPT, QS_priv_.eqObjFilter, me)
+            QS_TIME_();                                        /* timestamp */
+            QS_SIG_(e->sig);                    /* the signal of this event */
+            QS_OBJ_(me);                               /* this queue object */
+            QS_2U8_(e->poolId_, e->refCtr_);         /* pool Id & ref Count */
+            QS_EQC_(me->nFree);                   /* number of free entries */
+            QS_EQC_((QEQueueCtr)margin);                /* margin requested */
+        QS_END_NOCRIT_()
+
+        status = (uint8_t)0;
+    }
+
     QF_CRIT_EXIT_();
+
+    return status;
 }
+
+/*****************************************************************************
+* NOTE01:
+* The zero value of the 'margin' argument is special and denotes situation
+* when the post() operation is assumed to succeed (event delivery guarantee).
+* An assertion fires, when the event cannot be delivered in this case.
+*/

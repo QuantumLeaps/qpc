@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 01, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 04, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -86,7 +86,7 @@
 #endif
                                                 /* package-scope objects... */
 #ifndef QK_NO_MUTEX
-    extern uint8_t QK_ceilingPrio_;          /**< QK mutex priority ceiling */
+    extern uint8_t volatile QK_ceilingPrio_; /**< QK mutex priority ceiling */
 #endif
 
 /****************************************************************************/

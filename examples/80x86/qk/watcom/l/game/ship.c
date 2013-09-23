@@ -111,7 +111,7 @@ QState Ship_active(Ship *me, QEvt const *e) {
 /*..........................................................................*/
 QState Ship_parked(Ship *me, QEvt const *e) {
     switch (e->sig) {
-        case TAKE_OFF_SIG: {               /* permition to take off granted */
+        case TAKE_OFF_SIG: {              /* permission to take off granted */
             return Q_TRAN(&Ship_flying);
         }
     }

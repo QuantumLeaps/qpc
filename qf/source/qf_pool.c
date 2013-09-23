@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 26, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 19, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,17 +45,17 @@ Q_DEFINE_THIS_MODULE("qf_pool")
 
 /* Package-scope objects ---------------------------------------------------*/
 QF_EPOOL_TYPE_ QF_pool_[QF_MAX_EPOOL];          /* allocate the event pools */
-uint8_t QF_maxPool_;                   /* number of initialized event pools */
+uint_t QF_maxPool_;                    /* number of initialized event pools */
 
 /*..........................................................................*/
 void QF_poolInit(void * const poolSto, uint32_t const poolSize,
                  uint32_t const evtSize)
 {
                       /* cannot exceed the number of available memory pools */
-    Q_REQUIRE(QF_maxPool_ < (uint8_t)Q_DIM(QF_pool_));
+    Q_REQUIRE(QF_maxPool_ < (uint_t)Q_DIM(QF_pool_));
             /* please initialize event pools in ascending order of evtSize: */
-    Q_REQUIRE((QF_maxPool_ == (uint8_t)0)
-             || (QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - (uint8_t)1])
+    Q_REQUIRE((QF_maxPool_ == (uint_t)0)
+             || (QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - (uint_t)1])
                  < (QEvtSize)evtSize));
                 /* perfom the platform-dependent initialization of the pool */
     QF_EPOOL_INIT_(QF_pool_[QF_maxPool_],

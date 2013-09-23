@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 17, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 08, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -49,12 +49,13 @@ QTimeEvtCtr QTimeEvt_ctr(QTimeEvt const * const me) {
     QF_CRIT_ENTRY_();
     ret = me->ctr;
 
-    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_CTR, QS_teObj_, me)
+    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_CTR, QS_priv_.teObjFilter, me)
         QS_TIME_();                                            /* timestamp */
         QS_OBJ_(me);                              /* this time event object */
-        QS_OBJ_(me->act);                              /* the active object */
+        QS_OBJ_(me->act);                                  /* the target AO */
         QS_TEC_(ret);                                /* the current counter */
         QS_TEC_(me->interval);                              /* the interval */
+        QS_U8_((uint8_t)(me->super.refCtr_ & (uint8_t)0x7F));  /* tick rate */
     QS_END_NOCRIT_()
 
     QF_CRIT_EXIT_();

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QS/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,26 +45,32 @@ void QS_f64(uint8_t format, float64_t d) {
     union F64Rep {
         float64_t d;
         struct UInt2 {
-            uint32_t u1, u2;
+            uint32_t u1;
+            uint32_t u2;
         } i;
-    } fu64;
-    fu64.d = d;
+    } fu64;                           /* the internal binary representation */
+    uint8_t chksum = QS_priv_.chksum;
+    uint8_t *buf   = QS_priv_.buf;
+    QSCtr   head   = QS_priv_.head;
+    QSCtr   end    = QS_priv_.end;
+    int_t   i;
 
-    QS_INSERT_ESC_BYTE(format)
+    fu64.d = d;                         /* assign the binary representation */
 
-    QS_INSERT_ESC_BYTE((uint8_t)fu64.i.u1)
-    fu64.i.u1 >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)fu64.i.u1)
-    fu64.i.u1 >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)fu64.i.u1)
-    fu64.i.u1 >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)fu64.i.u1)
+    QS_priv_.used += (QSCtr)9;                 /* 9 bytes about to be added */
+    QS_INSERT_ESC_BYTE(format)                    /* insert the format byte */
 
-    QS_INSERT_ESC_BYTE((uint8_t)fu64.i.u2)
-    fu64.i.u2 >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)fu64.i.u2)
-    fu64.i.u2 >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)fu64.i.u2)
-    fu64.i.u2 >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)fu64.i.u2)
+    for (i = (int_t)4; i != (int_t)0; --i) { /* insert 4 bytes of fu64.i.u1 */
+        format = (uint8_t)fu64.i.u1;
+        QS_INSERT_ESC_BYTE(format)
+        fu64.i.u1 >>= 8;
+    }
+    for (i = (int_t)4; i != (int_t)0; --i) { /* insert 4 bytes of fu64.i.u2 */
+        format = (uint8_t)fu64.i.u2;
+        QS_INSERT_ESC_BYTE(format)
+        fu64.i.u2 >>= 8;
+    }
+
+    QS_priv_.head   = head;                                /* save the head */
+    QS_priv_.chksum = chksum;                          /* save the checksum */
 }

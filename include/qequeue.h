@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.03
-* Date of the Last Update:  Sep 26, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 13, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -100,7 +100,7 @@
 * the active object event queue, which needs to block the active object
 * task when the event queue is empty and unblock it when events are posted
 * to the queue. The interface for the native active object event queue
-* consists of the following functions: QActive_postFIFO(),
+* consists of the following functions: QActive_post(),
 * QActive_postLIFO(), and QActive_get(). Additionally the function
 * QEQueue_init() is used to initialize the queue.
 *
@@ -109,7 +109,7 @@
 * ISRs. The "raw" event queue is not capable of blocking on the get()
 * operation, but is still thread-safe because it uses QF critical section
 * to protect its integrity. The interface for the "raw" thread-safe queue
-* consists of the following functions: QEQueue_postFIFO(),
+* consists of the following functions: QEQueue_post(),
 * QEQueue_postLIFO(), and QEQueue_get(). Additionally the function
 * QEQueue_init() is used to initialize the queue.
 *
@@ -132,7 +132,7 @@ typedef struct QEQueueTag {
     * The additional role of this attribute is to indicate the empty status
     * of the queue. The queue is empty if the frontEvt location is NULL.
     */
-    QEvt const *frontEvt;
+    QEvt const * volatile frontEvt;
 
     /** \brief pointer to the start of the ring buffer
     */
@@ -145,15 +145,15 @@ typedef struct QEQueueTag {
 
     /** \brief offset to where next event will be inserted into the buffer
     */
-    QEQueueCtr head;
+    QEQueueCtr volatile head;
 
     /** \brief offset of where next event will be extracted from the buffer
     */
-    QEQueueCtr tail;
+    QEQueueCtr volatile tail;
 
     /** \brief number of free events in the ring buffer
     */
-    QEQueueCtr nFree;
+    QEQueueCtr volatile nFree;
 
     /** \brief minimum number of free events ever in the ring buffer.
     *
@@ -178,17 +178,26 @@ typedef struct QEQueueTag {
 void QEQueue_init(QEQueue * const me,
                   QEvt const *qSto[], QEQueueCtr const qLen);
 
-/** \brief "raw" thread-safe QF event queue implementation for the
-* First-In-First-Out (FIFO) event posting. You can call this function from
-* any task context or ISR context. Please note that this function uses
-* internally a critical section.
+/** \brief "raw" thread-safe QF event queue implementation for the event
+* posting (FIFO). You can call this function from any task context or ISR
+* context. This function uses internally a critical section.
 *
-* \note The function raises an assertion if the native QF queue becomes
-* full and cannot accept the event.
+* The argument \a margin specifies the minimum number of free entries
+* in the queue that must be available for posting to succeed. The function
+* returns 1 (success) if the posting succeeded (with the provided margin)
+* and 0 (failure) when the posting fails.
+*
+* \note The function raises an assertion if the \a margin is zero and
+* the queue becomes full and cannot accept the event.
 *
 * \sa QEQueue_postLIFO(), QEQueue_get()
 */
-void QEQueue_postFIFO(QEQueue * const me, QEvt const * const e);
+uint8_t QEQueue_post(QEQueue * const me, QEvt const * const e,
+                     uint16_t const margin);
+
+/** \brief Deprecated interface defined for backwards compatibility */
+#define QEQueue_postFIFO(me_, e_) \
+    ((void)QEQueue_post((me_), (e_), (uint16_t)0))
 
 /** \brief "raw" thread-safe QF event queue implementation for the
 * Last-In-First-Out (LIFO) event posting.
@@ -200,7 +209,7 @@ void QEQueue_postFIFO(QEQueue * const me, QEvt const * const e);
 * any task context or ISR context. Please note that this function uses
 * internally a critical section.
 *
-* \sa QEQueue_postFIFO(), QEQueue_get()
+* \sa QEQueue_post(), QEQueue_get()
 */
 void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e);
 
@@ -212,7 +221,7 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e);
 * function from any task context or ISR context. Please note that this
 * function uses internally a critical section.
 *
-* \sa QEQueue_postFIFO(), QEQueue_postLIFO()
+* \sa QEQueue_post(), QEQueue_postLIFO()
 */
 QEvt const *QEQueue_get(QEQueue * const me);
 

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 01, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 10, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -43,6 +43,15 @@
 #else
     #include "qs_dummy.h"                /* QS/C dummy (inactive) interface */
 #endif
+
+/**
+* \file
+* \ingroup qep qf qk qs
+* \brief QP/C public interface.
+*
+* This header file must be included directly or indirectly
+* in all application modules (*.c files) that use QP/C.
+*/
 
               /* device driver signal offset at the top of the signal range */
 #if (Q_SIGNAL_SIZE == 1)

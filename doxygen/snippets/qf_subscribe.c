@@ -1,4 +1,4 @@
-QState Table_initial(Table *me, QEvent const *e) {
+QState Table_initial(Table * const me, QEvt const * const e) {
     uint8_t n;
     (void)e;                               /* suppress the compiler warning */
 

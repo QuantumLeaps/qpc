@@ -1,19 +1,19 @@
-#include "qep.h"                                  /* QEP/C public interface */
-#include "qcalc.h"                           /* QCalc HSM derived from QHsm */
+#include "qep.h"            /* QEP/C public interface */
+#include "qcalc.h"          /* QCalc derived from QHsm */
 
-static QCalc l_qcalc;                           /* an instance of QCalc HSM */
+static QCalc l_qcalc;       /* an instance of QCalc SM */
 
 int main() {
-    QCalc_ctor(&l_qcalc);   /* QCalc HSM "constructor" invokes QHsm_ctor_() */
+    QCalc_ctor(&l_qcalc);   /* QCalc "constructor" invokes QHsm_ctor_() */
 
-    QHsm_init((QHsm *)&l_qcalc, (QEvent *)0); /* trigger initial transition */
+    QMSM_INIT(&l_qcalc.super, (QEvt *)0); /* trigger initial transition */
 
-    for (;;) {                                                /* event loop */
-        QEvent e;
+    for (;;) {              /* event loop */
+        QEvt e;
         . . .
         /* wait for the next event and assign it to the event object e */
         . . .
-        QHsm_dispatch((QHsm *)&l_qcalc, (QEvent *)&e);        /* dispatch e */
+        QMSM_DISPATCH(&l_qcalc.super, &e);  /* dispatch e */
     }
     return 0;
 }

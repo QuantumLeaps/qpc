@@ -1,7 +1,7 @@
 /* thread routine for Win32 _beginthread() */
 static void __cdecl run(void *me) { /* the exact signature for _beginthread */
     do {
-        QEvent const *e;
+        QEvt const *e;
 
         QACTIVE_GET_((QActive *)me, e);               /* wait for the event */
         QF_ACTIVE_DISPATCH_(me, e);   /* dispatch to the active object's SM */

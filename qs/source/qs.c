@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QS/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -33,6 +33,9 @@
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
 #include "qs_pkg.h"
+#include "qassert.h"
+
+Q_DEFINE_THIS_MODULE("qs")
 
 /**
 * \file
@@ -42,99 +45,181 @@
 */
 
 /*..........................................................................*/
-uint8_t QS_glbFilter_[32];                              /* global QS filter */
+QSPriv QS_priv_;                                         /* QS private data */
 
-/*..........................................................................*/
-uint8_t *QS_ring_;               /* pointer to the start of the ring buffer */
-QSCtr QS_end_;                      /* offset of the end of the ring buffer */
-QSCtr QS_head_;               /* offset to where next byte will be inserted */
-QSCtr QS_tail_;              /* offset of where next byte will be extracted */
-QSCtr QS_used_;             /* number of bytes currently in the ring buffer */
-uint8_t QS_seq_;                              /* the record sequence number */
-uint8_t QS_chksum_;                   /* the checksum of the current record */
-uint8_t QS_full_;                    /* the ring buffer is temporarily full */
-
-/*..........................................................................*/
-char_t const Q_ROM * Q_ROM_VAR QS_getVersion(void) {
-    static char_t const Q_ROM Q_ROM_VAR version[] = {
-        (char_t)((uint8_t)((QP_VERSION >> 12) & 0xFU) + (uint8_t)'0'),
-        (char_t)'.',
-        (char_t)((uint8_t)((QP_VERSION >>  8) & 0xFU) + (uint8_t)'0'),
-        (char_t)'.',
-        (char_t)((uint8_t)((QP_VERSION >>  4) & 0xFU) + (uint8_t)'0'),
-        (char_t)((uint8_t)(QP_VERSION         & 0xFU) + (uint8_t)'0'),
-        (char_t)'\0'
-    };
-    return version;
-}
 /*..........................................................................*/
 void QS_initBuf(uint8_t sto[], uint32_t stoSize) {
-    QS_ring_ = &sto[0];
-    QS_end_  = (QSCtr)stoSize;
+    uint8_t *buf = &sto[0];
+
+    Q_REQUIRE(stoSize > (uint32_t)8);  /* the storage size at least 7 bytes */
+
+    QS_priv_.buf  = buf;
+    QS_priv_.end  = (QSCtr)stoSize;
+    QS_priv_.seq  = (uint8_t)0;
+    QS_priv_.head = (QSCtr)0;
+    QS_priv_.tail = (QSCtr)0;
+    QS_priv_.used = (QSCtr)0;
+
+    QS_beginRec((uint8_t)QS_EMPTY);
+    QS_endRec();
+    QS_beginRec((uint8_t)QS_QP_RESET);
+    QS_endRec();
 }
 /*..........................................................................*/
 void QS_filterOn(uint8_t rec) {
     if (rec == QS_ALL_RECORDS) {
         uint8_t i;
-        for (i = (uint8_t)0; i < (uint8_t)sizeof(QS_glbFilter_); ++i) {
-            QS_glbFilter_[i] = (uint8_t)0xFF;
+        for (i = (uint8_t)0;
+             i < (uint8_t)(sizeof(QS_priv_.glbFilter) - 1U);
+             ++i)
+        {
+            QS_priv_.glbFilter[i] = (uint8_t)0xFF;
         }
+        /* never turn the last 3 records on (0x7D, 0x7E, 0x7F) */
+        QS_priv_.glbFilter[sizeof(QS_priv_.glbFilter) - 1U] = (uint8_t)0x1F;
     }
     else {
-        QS_glbFilter_[rec >> 3] |= (uint8_t)(1U << (rec & (uint8_t)0x07));
+        Q_ASSERT(rec < QS_ESC);/*so that record numbers don't need escaping */
+        QS_priv_.glbFilter[rec >> 3] |=
+            (uint8_t)(1U << (rec & (uint8_t)7));
     }
 }
 /*..........................................................................*/
 void QS_filterOff(uint8_t rec) {
     if (rec == QS_ALL_RECORDS) {
-        uint8_t i;
-        for (i = (uint8_t)0; i < (uint8_t)sizeof(QS_glbFilter_); ++i) {
-            QS_glbFilter_[i] = (uint8_t)0;
-        }
+        uint8_t *glbFilter = &QS_priv_.glbFilter[0];
+
+        /* the following unrolled loop is designed to stop collecting trace
+        * very fast in order to prevent overwriting the interesting data.
+        * The code assumes that the size of QS_priv_.glbFilter[] is 16.
+        */
+        Q_ASSERT_COMPILE(sizeof(QS_priv_.glbFilter) == 16U);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
+        *glbFilter = (uint8_t)0;
     }
     else {
-        QS_glbFilter_[rec >> 3] &=
+        Q_ASSERT(rec < QS_ESC);/*so that record numbers don't need escaping */
+        QS_priv_.glbFilter[rec >> 3] &=
             (uint8_t)(~(uint8_t)(1U << (rec & (uint8_t)0x07)));
     }
 }
 /*..........................................................................*/
-void QS_begin(uint8_t rec) {
-    QS_chksum_ = (uint8_t)0;                          /* clear the checksum */
-    ++QS_seq_;                      /* always increment the sequence number */
-    QS_INSERT_ESC_BYTE(QS_seq_)                /* store the sequence number */
-    QS_INSERT_ESC_BYTE(rec)                          /* store the record ID */
+void QS_beginRec(uint8_t rec) {
+    uint8_t b      = (uint8_t)(QS_priv_.seq + (uint8_t)1);
+    uint8_t chksum = (uint8_t)0;                      /* reset the checksum */
+    uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */
+    QSCtr   head   = QS_priv_.head;        /* put in a temporary (register) */
+    QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
+
+    QS_priv_.seq = b;                 /* store the incremented sequence num */
+    QS_priv_.used += (QSCtr)2;                 /* 2 bytes about to be added */
+
+    QS_INSERT_ESC_BYTE(b)
+
+    chksum = (uint8_t)(chksum + rec);                    /* update checksum */
+    QS_INSERT_BYTE(rec)                  /* rec byte does not need escaping */
+
+    QS_priv_.head   = head;                                /* save the head */
+    QS_priv_.chksum = chksum;                          /* save the checksum */
 }
 /*..........................................................................*/
-void QS_end(void) {
-    QS_INSERT_CHKSUM_BYTE()
-    QS_INSERT_BYTE(QS_FRAME)
-    if (QS_used_ > QS_end_) {                 /* overrun over the old data? */
-        QS_tail_ = QS_head_;              /* shift the tail to the old data */
-        QS_used_ = QS_end_;                     /* the whole buffer is used */
+void QS_endRec(void) {
+    uint8_t b    = (uint8_t)(~QS_priv_.chksum);
+    uint8_t *buf = QS_priv_.buf;           /* put in a temporary (register) */
+    QSCtr   head = QS_priv_.head;
+    QSCtr   end  = QS_priv_.end;
+
+    QS_priv_.used += (QSCtr)2;                 /* 2 bytes about to be added */
+
+    if ((b != QS_FRAME) && (b != QS_ESC)) {
+        QS_INSERT_BYTE(b)
+    }
+    else {
+        QS_INSERT_BYTE(QS_ESC)
+        QS_INSERT_BYTE(b ^ QS_ESC_XOR)
+        ++QS_priv_.used;                        /* account for the ESC byte */
+    }
+
+    QS_INSERT_BYTE(QS_FRAME)                 /* do not escape this QS_FRAME */
+
+    QS_priv_.head = head;                                  /* save the head */
+    if (QS_priv_.used > end) {                /* overrun over the old data? */
+        QS_priv_.used = end;                    /* the whole buffer is used */
+        QS_priv_.tail = head;             /* shift the tail to the old data */
     }
 }
 /*..........................................................................*/
 void QS_u8(uint8_t format, uint8_t d) {
+    uint8_t chksum = QS_priv_.chksum;      /* put in a temporary (register) */
+    uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */
+    QSCtr   head   = QS_priv_.head;        /* put in a temporary (register) */
+    QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
+
+    QS_priv_.used += (QSCtr)2;                 /* 2 bytes about to be added */
+
     QS_INSERT_ESC_BYTE(format)
     QS_INSERT_ESC_BYTE(d)
+
+    QS_priv_.head   = head;                                /* save the head */
+    QS_priv_.chksum = chksum;                          /* save the checksum */
 }
 /*..........................................................................*/
 void QS_u16(uint8_t format, uint16_t d) {
+    uint8_t chksum = QS_priv_.chksum;      /* put in a temporary (register) */
+    uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */
+    QSCtr   head   = QS_priv_.head;        /* put in a temporary (register) */
+    QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
+
+    QS_priv_.used += (QSCtr)3;                 /* 3 bytes about to be added */
+
     QS_INSERT_ESC_BYTE(format)
-    QS_INSERT_ESC_BYTE((uint8_t)d)
+
+    format = (uint8_t)d;
+    QS_INSERT_ESC_BYTE(format)
+
     d >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)d)
+    format = (uint8_t)d;
+    QS_INSERT_ESC_BYTE(format)
+
+    QS_priv_.head   = head;                                /* save the head */
+    QS_priv_.chksum = chksum;                          /* save the checksum */
 }
 /*..........................................................................*/
 void QS_u32(uint8_t format, uint32_t d) {
-    QS_INSERT_ESC_BYTE(format)
-    QS_INSERT_ESC_BYTE((uint8_t)d)
-    d >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)d)
-    d >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)d)
-    d >>= 8;
-    QS_INSERT_ESC_BYTE((uint8_t)d)
+    uint8_t chksum = QS_priv_.chksum;      /* put in a temporary (register) */
+    uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */
+    QSCtr   head   = QS_priv_.head;        /* put in a temporary (register) */
+    QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
+    int_t   i;
+
+    QS_priv_.used += (QSCtr)5;                 /* 5 bytes about to be added */
+    QS_INSERT_ESC_BYTE(format)                    /* insert the format byte */
+
+    for (i = (int_t)4; i != (int_t)0; --i) {      /* insert 4 bytes of data */
+        format = (uint8_t)d;
+        QS_INSERT_ESC_BYTE(format)
+        d >>= 8;
+    }
+
+    QS_priv_.head   = head;                                /* save the head */
+    QS_priv_.chksum = chksum;                          /* save the checksum */
 }
 
 

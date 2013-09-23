@@ -1,23 +1,19 @@
-#include "qep.h"                                  /* QEP/C public interface */
-#include "qbomb.h"                           /* QBomb FSM derived from QFsm */
+#include "qep.h"       /* QEP/C public interface */
+#include "qbomb.h"     /* QBomb derived from QFsm */
 
-static QBomb l_qbomb;                           /* an instance of QBomb FSM */
+static QBomb l_qbomb;  /* an instance of QBomb FSM */
 
 int main() {
-    QBombInitEvt ie;                  /* initialization event for QBomb FSM */
+    QBomb_ctor(&l_bomb);   /* QBomb "constructor" invokes QFsm_ctor() */
 
-    QBomb_ctor(&l_qbomb);   /* QBomb FSM "constructor" invokes QFsm_ctor_() */
+    QMSM_INIT(&l_qbomb.super, (QEvt *)0); /* trigger initial transition */
 
-    /* set the initialization event ie */
-
-    QFsm_init((QFsm *)&l_qbomb, &ie);         /* trigger initial transition */
-
-    for (;;) {                                                /* event loop */
-        QEvent e;
+    for (;;) {              /* event loop */
+        QEvt e;
         . . .
         /* wait for the next event and assign it to the event object e */
         . . .
-        QFsm_dispatch((QFsm *)&l_qbomb, &e);       /* dispatch e to l_qbomb */
+        QMSM_DISPATCH(&l_qbomb.super, &e);  /* dispatch e */
     }
     return 0;
 }

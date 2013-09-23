@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK/C
-* Last Updated for Version: 4.4.04
-* Date of the Last Update:  Feb 02, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 07, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,25 +48,27 @@
 uint8_t QK_schedPrio_(void) {
     uint8_t p;               /* highest-priority active object ready to run */
 
-#if (QF_MAX_ACTIVE <= 8)
-        /* determine the priority of the highest-priority task ready to run */
+#if (QF_MAX_ACTIVE <= 8)  /* determine the highest-priority AO ready to run */
     QPSet8_findMax(&QK_readySet_, p);
 #else
-        /* determine the priority of the highest-priority task ready to run */
     QPSet64_findMax(&QK_readySet_, p);
 #endif
 
-#ifdef QK_NO_MUTEX
-    if (p <= QK_currPrio_) {                    /* do we have a preemption? */
-#else                                  /* QK priority-ceiling mutex allowed */
-    if ((p <= QK_currPrio_) || (p <= QK_ceilingPrio_)) {
-#endif
+    if (p <= QK_currPrio_) {     /* below the current preemption threshold? */
         p = (uint8_t)0;
     }
+#ifndef QK_NO_MUTEX
+    else if (p <= QK_ceilingPrio_) {            /* below the mutex ceiling? */
+        p = (uint8_t)0;
+    }
+    else {
+        /* empty */
+    }
+#endif
     return p;
 }
 /*..........................................................................*/
-/* NOTE: the QK scheduler is entered and exited with interrupts LOCKED      */
+/* NOTE: the QK scheduler is entered and exited with interrupts DISABLED    */
 void QK_sched_(uint8_t p) {
     uint8_t pin = QK_currPrio_;                /* save the initial priority */
     QActive *a;
@@ -85,7 +87,7 @@ void QK_sched_(uint8_t p) {
             pprev = p;
         }
 #endif
-        QS_BEGIN_NOCRIT_(QS_QK_SCHEDULE, QS_aoObj_, a)
+        QS_BEGIN_NOCRIT_(QS_QK_SCHEDULE, QS_priv_.aoObjFilter, a)
             QS_TIME_();                                        /* timestamp */
             QS_U8_(p);                            /* the priority of the AO */
             QS_U8_(pin);                          /* the preempted priority */
@@ -94,22 +96,29 @@ void QK_sched_(uint8_t p) {
         QF_INT_ENABLE();               /* unconditionally enable interrupts */
 
         e = QActive_get_(a);              /* get the next event for this AO */
-        QF_ACTIVE_DISPATCH_(&a->super, e);            /* dispatch to the AO */
+        QMSM_DISPATCH(&a->super, e);                  /* dispatch to the AO */
         QF_gc(e);                /* garbage collect the event, if necessary */
 
         QF_INT_DISABLE();                             /* disable interrupts */
 
-#if (QF_MAX_ACTIVE <= 8)  /* determine the highest-priority AO ready to run */
+#if (QF_MAX_ACTIVE <= 8)                /* new highest-prio AO ready to run */
         QPSet8_findMax(&QK_readySet_, p);
 #else
         QPSet64_findMax(&QK_readySet_, p);
 #endif
 
-#ifdef QK_NO_MUTEX
-    } while (p > pin);          /* is the new priority higher than initial? */
-#else                                /* QK priority-ceiling mutexes allowed */
-    } while ((p > pin) && (p > QK_ceilingPrio_));
+        if (p <= pin) {          /* below the current preemption threshold? */
+            p = (uint8_t)0;
+        }
+#ifndef QK_NO_MUTEX
+        else if (p <= QK_ceilingPrio_) {        /* below the mutex ceiling? */
+            p = (uint8_t)0;
+        }
+        else {
+            /* empty */
+        }
 #endif
+    } while (p != (uint8_t)0);
 
     QK_currPrio_ = pin;                     /* restore the initial priority */
 

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QEP/C port for Lint, Generic C compiler
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 01, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Aug 10, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -37,8 +37,8 @@
 
 /**
 * \file
-* \ingroup qep qf qk qs
-* \brief QEP/C port to QK for a "generic" C compiler.
+* \ingroup qep
+* \brief QEP/C port example for a "generic" C compiler.
 *
 * \note This is just an example of a QEP port used for "linting" the QEP.
 */

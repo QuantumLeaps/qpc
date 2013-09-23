@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jun 30, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,12 +48,15 @@ static QF_MPOOL_EL(TableEvt) l_smlPoolSto[2*N_PHILO];         /* small pool */
 int main(int argc, char *argv[]) {
     uint8_t n;
 
+    (void)argc;               /* avoid the warning about an unused argument */
+    (void)argv;               /* avoid the warning about an unused argument */
+
     Philo_ctor();             /* instantiate all Philosopher active objects */
     Table_ctor();                    /* instantiate the Table active object */
 
     QF_init();     /* initialize the framework and the underlying RT kernel */
+    BSP_init();                     /* initialize the Board Support Package */
 
-    BSP_init(argc, argv);           /* initialize the Board Support Package */
                                                   /* object dictionaries... */
     QS_OBJ_DICTIONARY(l_smlPoolSto);
     QS_OBJ_DICTIONARY(l_tableQueueSto);

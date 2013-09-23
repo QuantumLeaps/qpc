@@ -24,7 +24,7 @@ Next click on the "Register" button at the top-right corner
 
 After registration, scroll down the Resources Section. Click on the
 MISRA C Resources, which opens a new page. On this page, click on the
-"MISRA C Exemplar Suite" topic and download the file: 
+"MISRA C Exemplar Suite" topic and download the file:
 
 MISRA-C_exemplar_suite_2007_07_17.zip 
 

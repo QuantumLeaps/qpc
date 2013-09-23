@@ -24,17 +24,20 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
     <CLRSupport>false</CLRSupport>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
     <CLRSupport>false</CLRSupport>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
     <CLRSupport>false</CLRSupport>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -142,6 +145,9 @@
     <ClCompile Include="..\..\..\qep\source\qhsm_in.c" />
     <ClCompile Include="..\..\..\qep\source\qhsm_ini.c" />
     <ClCompile Include="..\..\..\qep\source\qhsm_top.c" />
+    <ClCompile Include="..\..\..\qep\source\qmsm_dis.c" />
+    <ClCompile Include="..\..\..\qep\source\qmsm_ini.c" />
+    <ClCompile Include="..\..\..\qf\source\qa_ctor.c" />
     <ClCompile Include="..\..\..\qf\source\qa_defer.c" />
     <ClCompile Include="..\..\..\qf\source\qa_fifo.c" />
     <ClCompile Include="..\..\..\qf\source\qa_get_.c" />
@@ -162,6 +168,7 @@
     <ClCompile Include="..\..\..\qf\source\qf_pspub.c" />
     <ClCompile Include="..\..\..\qf\source\qf_pwr2.c" />
     <ClCompile Include="..\..\..\qf\source\qf_tick.c" />
+    <ClCompile Include="..\..\..\qf\source\qma_ctor.c" />
     <ClCompile Include="..\..\..\qf\source\qmp_get.c" />
     <ClCompile Include="..\..\..\qf\source\qmp_init.c" />
     <ClCompile Include="..\..\..\qf\source\qmp_put.c" />
@@ -186,6 +193,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\qs\source\qs_dict.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\qs\source\qs_f32.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -203,13 +214,25 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\qs\source\qs_u64.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="qf_port.c" />
     <ClCompile Include="win32_gui.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\include\qassert.h" />
+    <ClInclude Include="..\..\..\include\qep.h" />
+    <ClInclude Include="..\..\..\include\qequeue.h" />
+    <ClInclude Include="..\..\..\include\qevt.h" />
+    <ClInclude Include="..\..\..\include\qf.h" />
+    <ClInclude Include="..\..\..\include\qk.h" />
+    <ClInclude Include="..\..\..\include\qmpool.h" />
+    <ClInclude Include="..\..\..\include\qpset.h" />
+    <ClInclude Include="..\..\..\include\qp_port.h" />
+    <ClInclude Include="..\..\..\include\qs.h" />
+    <ClInclude Include="..\..\..\include\qs_dummy.h" />
+    <ClInclude Include="..\..\..\include\qvanilla.h" />
     <ClInclude Include="..\..\..\qep\source\qep_pkg.h" />
     <ClInclude Include="..\..\..\qf\source\qf_pkg.h" />
     <ClInclude Include="..\..\..\qs\source\qs_pkg.h">

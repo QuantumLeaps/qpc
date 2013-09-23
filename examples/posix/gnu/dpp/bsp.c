@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, POSIX
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 25, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -83,10 +83,10 @@ void QF_onClockTick(void) {
     FD_ZERO(&con);
     FD_SET(0, &con);
     /* check if a console input is available, returns immediately */
-    if (0 != select(1, &con, 0, 0, &timeout)) {  /* any descriptor set? */
+    if (0 != select(1, &con, 0, 0, &timeout)) {      /* any descriptor set? */
         char ch;
         read(0, &ch, 1);
-        if (ch == '\33') {                              /* ESC pressed? */
+        if (ch == '\33') {                                  /* ESC pressed? */
             QF_PUBLISH(Q_NEW(QEvt, TERMINATE_SIG), &l_clock_tick);
         }
         else if (ch == 'p') {
@@ -182,7 +182,7 @@ uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[4*1024];                 // 4K buffer for Quantum Spy
     QS_initBuf(qsBuf, sizeof(qsBuf));
 
-    QSPY_config((QP_VERSION >> 8),  // version
+    QSPY_config(QP_VERSION,         // version
                 QS_OBJ_PTR_SIZE,    // objPtrSize
                 QS_FUN_PTR_SIZE,    // funPtrSize
                 QS_TIME_SIZE,       // tstampSize
@@ -241,8 +241,6 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_OFF(QS_QF_ISR_ENTRY);
     QS_FILTER_OFF(QS_QF_ISR_EXIT);
 
-    QS_RESET();
-
     {
         pthread_attr_t attr;
         struct sched_param param;
@@ -282,13 +280,21 @@ void QS_onCleanup(void) {
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t nBytes = 1024;
-    uint8_t const *block;
-    QF_CRIT_ENTRY(dummy);
-    while ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+    for (;;) {
+        uint16_t nBytes = 1024;
+        uint8_t const *block;
+
+        QF_CRIT_ENTRY(dummy);
+        block = QS_getBlock(&nBytes);
         QF_CRIT_EXIT(dummy);
-        QSPY_parse(block, nBytes);
-        nBytes = 1024;
+
+        if (block != (uint8_t const *)0) {
+            QSPY_parse(block, nBytes);
+            nBytes = 1024;
+        }
+        else {
+            break;
+        }
     }
 }
 /*..........................................................................*/

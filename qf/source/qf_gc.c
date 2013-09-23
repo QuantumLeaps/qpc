@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 01, 2013
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,38 +45,36 @@ Q_DEFINE_THIS_MODULE("qf_gc")
 
 /*..........................................................................*/
 void QF_gc(QEvt const * const e) {
-    if (QF_EVT_POOL_ID_(e) != (uint8_t)0) {       /* is it a dynamic event? */
+    if (e->poolId_ != (uint8_t)0) {               /* is it a dynamic event? */
         QF_CRIT_STAT_
         QF_CRIT_ENTRY_();
 
-        if (QF_EVT_REF_CTR_(e) > (uint8_t)1) {  /* isn't this the last ref? */
+        if (e->refCtr_ > (uint8_t)1) {          /* isn't this the last ref? */
             QF_EVT_REF_CTR_DEC_(e);           /* decrements the ref counter */
 
             QS_BEGIN_NOCRIT_(QS_QF_GC_ATTEMPT, (void *)0, (void *)0)
                 QS_TIME_();                                    /* timestamp */
                 QS_SIG_(e->sig);                 /* the signal of the event */
-                QS_U8_(QF_EVT_POOL_ID_(e));     /* the pool Id of the event */
-                QS_U8_(QF_EVT_REF_CTR_(e));   /* the ref count of the event */
+                QS_2U8_(e->poolId_, e->refCtr_);     /* pool Id & ref Count */
             QS_END_NOCRIT_()
 
             QF_CRIT_EXIT_();
         }
         else {      /* this is the last reference to this event, recycle it */
                                                       /* cannot wrap around */
-            uint8_t idx = (uint8_t)(QF_EVT_POOL_ID_(e) - (uint8_t)1);
+            uint_t idx = (uint_t)e->poolId_ - (uint_t)1;
 
             QS_BEGIN_NOCRIT_(QS_QF_GC, (void *)0, (void *)0)
                 QS_TIME_();                                    /* timestamp */
                 QS_SIG_(e->sig);                 /* the signal of the event */
-                QS_U8_(QF_EVT_POOL_ID_(e));     /* the pool Id of the event */
-                QS_U8_(QF_EVT_REF_CTR_(e));   /* the ref count of the event */
+                QS_2U8_(e->poolId_, e->refCtr_);     /* pool Id & ref Count */
             QS_END_NOCRIT_()
 
             QF_CRIT_EXIT_();
 
             Q_ASSERT(idx < QF_maxPool_);
 
-            QF_EPOOL_PUT_(QF_pool_[idx], (QEvt *)e);  /* cast const away, */
+            QF_EPOOL_PUT_(QF_pool_[idx], (QEvt *)e);    /* cast const away, */
                           /* which is legitimate, because it's a pool event */
         }
     }

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 17, 2012
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 12, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -40,44 +40,57 @@ Q_DEFINE_THIS_MODULE("qte_arm")
 /**
 * \file
 * \ingroup qf
-* \brief QF_timeEvtListHead_ definition;
-* QTimeEvt_arm_() and QF_noTimeEvtsActive implementations.
+* \brief QF_timeEvtHead_ definition;
+* QTimeEvt_armX() implementation.
 */
 
-/* Package-scope objects ---------------------------------------------------*/
-QTimeEvt *QF_timeEvtListHead_;        /* head of linked list of time events */
-
 /*..........................................................................*/
-void QTimeEvt_arm_(QTimeEvt * const me, QActive * const act,
-                   QTimeEvtCtr const nTicks)
+void QTimeEvt_armX(QTimeEvt * const me,
+                   QTimeEvtCtr const nTicks, QTimeEvtCtr const interval)
 {
+    uint8_t tickRate = (uint8_t)(me->super.refCtr_ & (uint8_t)0x7F);
+    QTimeEvtCtr ctr = me->ctr;
     QF_CRIT_STAT_
 
-    Q_REQUIRE((nTicks != (QTimeEvtCtr)0) /* cannot arm a timer with 0 ticks */
-              && (act != (QActive *)0)    /* active object must be provided */
-              && (me->ctr == (QTimeEvtCtr)0)            /* must be disarmed */
+    Q_REQUIRE((me->act != (void *)0)                    /* AO must be valid */
+              && (ctr == (QTimeEvtCtr)0)                /* must be disarmed */
+              && (nTicks != (QTimeEvtCtr)0)      /* cannot arm with 0 ticks */
+              && (tickRate < (uint8_t)QF_MAX_TICK_RATE) /* must be in range */
               && (me->super.sig >= (QSignal)Q_USER_SIG));   /* valid signal */
 
     QF_CRIT_ENTRY_();
     me->ctr = nTicks;
-    me->act = act;
-    if (QF_EVT_REF_CTR_(&me->super) == (uint8_t)0) {         /* not linked? */
-        me->next = QF_timeEvtListHead_;
-        QF_timeEvtListHead_ = me;
-        QF_EVT_REF_CTR_INC_(&me->super);                  /* mark as linked */
+    me->interval = interval;
+                                 /* is the time event unlinked?, see NOTE01 */
+    if ((me->super.refCtr_ & (uint8_t)0x80) == (uint8_t)0) {
+        me->super.refCtr_ |= (uint8_t)0x80;               /* mark as linked */
+        me->next = QF_timeEvtHead_[tickRate].act;             /* see NOTE02 */
+        QF_timeEvtHead_[tickRate].act = me;
     }
 
-    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_ARM, QS_teObj_, me)
+    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_ARM, QS_priv_.teObjFilter, me)
         QS_TIME_();                                            /* timestamp */
         QS_OBJ_(me);                              /* this time event object */
-        QS_OBJ_(act);                                  /* the active object */
+        QS_OBJ_(me->act);                              /* the active object */
         QS_TEC_(nTicks);                             /* the number of ticks */
-        QS_TEC_(me->interval);                              /* the interval */
+        QS_TEC_(interval);                                  /* the interval */
+        QS_U8_(tickRate);                                      /* tick rate */
     QS_END_NOCRIT_()
 
     QF_CRIT_EXIT_();
 }
-/*..........................................................................*/
-uint8_t QF_noTimeEvtsActive(void) { /* must be invoked from a critical sect.*/
-    return (QF_timeEvtListHead_ == (QTimeEvt *)0) ? (uint8_t)1 : (uint8_t)0;
-}
+
+/*****************************************************************************
+* NOTE01:
+* For a duration of a single clock tick of the specified tick rate a time
+* event can be disarmed and yet still linked into the list, because unlinking
+* is performed exclusively in the QF_tickX() function.
+*
+* NOTE02:
+* The time event is initially inserted into the separate "freshly armed"
+* link list based on QF_timeEvtHead_[tickRate].act. Only later, inside
+* the QF_tickX() function, the "freshly armed" list is appended to the
+* main list of armed time events based on QF_timeEvtHead_[tickRate].next.
+* Again, this is to keep any changes to the main list exclusively inside
+* the QF_tickX() function.
+*/

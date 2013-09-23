@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QF/C, port to uC/OS-II, Open Watcom, Large model
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Feb 07, 2013
+* Last Updated for Version: 5.0.0
+* Date of the Last Update:  Sep 13, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,7 +41,7 @@
                  /* The maximum number of active objects in the application */
 #define QF_MAX_ACTIVE               OS_MAX_TASKS
 
-          /* uC/OS-II critical section operations (critical section type 3) */
+  /* uC/OS-II critical section operations (critical section type 3), NOTE01 */
 #define QF_CRIT_STAT_TYPE           OS_CPU_SR
 #define QF_CRIT_ENTRY(stat_)        ((stat_) = OSCPUSaveSR())
 #define QF_CRIT_EXIT(stat_)         OSCPURestoreSR(stat_)
@@ -53,28 +53,43 @@
 /*****************************************************************************
 * interface used only inside QF, but not in applications
 */
+#ifdef qf_pkg_h
 
-typedef struct UCosMemPartTag {      /* uC/OS-II memory pool and block-size */
-    OS_MEM *pool;                                   /* uC/OS-II memory pool */
-    QEvtSize block_size;                    /* the block size of the pool */
-} UCosMemPart;
-
+    typedef struct UCosMemPartTag {  /* uC/OS-II memory pool and block-size */
+        OS_MEM *pool;                               /* uC/OS-II memory pool */
+        QEvtSize block_size;                  /* the block size of the pool */
+    } UCosMemPart;
                                           /* uC/OS-II event pool operations */
-#define QF_EPOOL_TYPE_              UCosMemPart
-#define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) do { \
-    INT8U err; \
-    (p_).block_size = (evtSize_); \
-    (p_).pool = OSMemCreate(poolSto_, (INT32U)((poolSize_)/(evtSize_)), \
-                            (INT32U)(evtSize_), &err); \
-    Q_ASSERT(err == OS_NO_ERR); \
-} while (0)
+    #define QF_EPOOL_TYPE_          UCosMemPart
+    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) do { \
+        INT8U err; \
+        (p_).block_size = (evtSize_); \
+        (p_).pool = OSMemCreate(poolSto_, (INT32U)((poolSize_)/(evtSize_)), \
+                                (INT32U)(evtSize_), &err); \
+        Q_ASSERT(err == OS_NO_ERR); \
+    } while (0)
 
-#define QF_EPOOL_EVENT_SIZE_(p_)    ((p_).block_size)
-#define QF_EPOOL_GET_(p_, e_) do { \
-    INT8U err; \
-    ((e_) = (QEvt *)OSMemGet((p_).pool, &err)); \
-} while (0)
+    #define QF_EPOOL_EVENT_SIZE_(p_) ((p_).block_size)
+    #define QF_EPOOL_GET_(p_, e_, m_) do { \
+        QF_CRIT_STAT_ \
+        QF_CRIT_ENTRY_(); \
+        if ((p_).pool->OSMemNFree > (m_)) { \
+            INT8U err; \
+            (e_) = (QEvt *)OSMemGet((p_).pool, &err); \
+            Q_ASSERT(err == OS_NO_ERR); \
+        } \
+        else { \
+            (e_) = (QEvt *)0; \
+        } \
+        QF_CRIT_EXIT_(); \
+    } while (0)
+    #define QF_EPOOL_PUT_(p_, e_)    OSMemPut((p_).pool, (void *)(e_))
 
-#define QF_EPOOL_PUT_(p_, e_)       OSMemPut((p_).pool, (void *)(e_))
+#endif                                                    /* ifdef qf_pkg_h */
 
 #endif                                                         /* qf_port_h */
+
+/*****************************************************************************
+* NOTE01:
+* The uC/OS critical section must be able to nest.
+*/
