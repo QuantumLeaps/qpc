@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QS/C
 * Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Date of the Last Update:  Sep 23, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -54,7 +54,7 @@ void QS_u8_(uint8_t d) {
     QS_priv_.chksum = chksum;                          /* save the checksum */
 }
 /*..........................................................................*/
-void QS_2u8_(uint8_t d1, uint8_t d2) {
+void QS_u8u8_(uint8_t d1, uint8_t d2) {
     uint8_t chksum = QS_priv_.chksum;      /* put in a temporary (register) */
     uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */
     QSCtr   head   = QS_priv_.head;        /* put in a temporary (register) */

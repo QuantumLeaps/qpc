@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QS/C
 * Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Date of the Last Update:  Sep 23, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -49,17 +49,17 @@ void QS_str(char_t const *s) {
     QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
     QSCtr   used   = QS_priv_.used;        /* put in a temporary (register) */
 
+    used += (QSCtr)2;  /* account for the format byte and the terminating-0 */
     QS_INSERT_BYTE((uint8_t)QS_STR_T)
     while (b != (uint8_t)(0)) {
                                     /* ASCII characters don't need escaping */
         chksum = (uint8_t)(chksum + b);                  /* update checksum */
         QS_INSERT_BYTE(b)
         QS_PTR_INC_(s);
-        b = (uint8_t)Q_ROM_BYTE(*s);
+        b = (uint8_t)(*s);
         ++used;
     }
     QS_INSERT_BYTE((uint8_t)0)                 /* zero-terminate the string */
-    ++used;
 
     QS_priv_.head   = head;                                /* save the head */
     QS_priv_.chksum = chksum;                          /* save the checksum */
@@ -74,6 +74,8 @@ void QS_str_ROM(char_t const Q_ROM * Q_ROM_VAR s) {
     QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
     QSCtr   used   = QS_priv_.used;        /* put in a temporary (register) */
 
+    used += (QSCtr)2;  /* account for the format byte and the terminating-0 */
+
     QS_INSERT_BYTE((uint8_t)QS_STR_T)
     while (b != (uint8_t)(0)) {
                                     /* ASCII characters don't need escaping */
@@ -84,7 +86,6 @@ void QS_str_ROM(char_t const Q_ROM * Q_ROM_VAR s) {
         ++used;
     }
     QS_INSERT_BYTE((uint8_t)0)                 /* zero-terminate the string */
-    ++used;
 
     QS_priv_.head   = head;                                /* save the head */
     QS_priv_.chksum = chksum;                          /* save the checksum */

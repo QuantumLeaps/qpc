@@ -84,9 +84,6 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_onCleanup' 
 "D:\qp\qpc\include\qf.h" 878 1 Info 757: global declarator 'QF_onIdle(void)' (line 878, file D:\qp\qpc\include\qf.h) not referenced
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_onIdle' 
-"D:\qp\qpc\qs\source\qs_.c" 57 1 Info 759: header declaration for symbol 'QS_2u8_(uint8_t, uint8_t)' defined at (line 57, file D:\qp\qpc\qs\source\qs_.c) could be moved from header to module
-"D:\qp\qpc\qs\source\qs_.c" 57 1 Info 765: external 'QS_2u8_(uint8_t, uint8_t)' (line 57, file D:\qp\qpc\qs\source\qs_.c) could be made static [MISRA 2004 Rule 8.10, required]
-"D:\qp\qpc\qs\source\qs_.c" 57 1 Info 714: Symbol 'QS_2u8_(uint8_t, uint8_t)' (line 57, file D:\qp\qpc\qs\source\qs_.c) not referenced
 "D:\qp\qpc\include\qf.h" 786 1 Info 757: global declarator 'QF_poolInit(void *, uint32_t, uint32_t)' (line 786, file D:\qp\qpc\include\qf.h) not referenced
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_poolInit' 
 "D:\qp\qpc\include\qf.h" 753 1 Info 757: global declarator 'QF_psInit(QSubscrList *, uint32_t)' (line 753, file D:\qp\qpc\include\qf.h) not referenced
@@ -134,6 +131,9 @@
 "D:\qp\qpc\qs\source\qs.c" 169 1 Info 759: header declaration for symbol 'QS_u8(uint8_t, uint8_t)' defined at (line 169, file D:\qp\qpc\qs\source\qs.c) could be moved from header to module
 "D:\qp\qpc\qs\source\qs.c" 169 1 Info 765: external 'QS_u8(uint8_t, uint8_t)' (line 169, file D:\qp\qpc\qs\source\qs.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\qs\source\qs.c" 169 1 Info 714: Symbol 'QS_u8(uint8_t, uint8_t)' (line 169, file D:\qp\qpc\qs\source\qs.c) not referenced
+"D:\qp\qpc\qs\source\qs_.c" 57 1 Info 759: header declaration for symbol 'QS_u8u8_(uint8_t, uint8_t)' defined at (line 57, file D:\qp\qpc\qs\source\qs_.c) could be moved from header to module
+"D:\qp\qpc\qs\source\qs_.c" 57 1 Info 765: external 'QS_u8u8_(uint8_t, uint8_t)' (line 57, file D:\qp\qpc\qs\source\qs_.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\qs\source\qs_.c" 57 1 Info 714: Symbol 'QS_u8u8_(uint8_t, uint8_t)' (line 57, file D:\qp\qpc\qs\source\qs_.c) not referenced
 "D:\qp\qpc\qs\source\qs_dict.c" 85 1 Info 759: header declaration for symbol 'QS_usr_dict(enum_t, const char_t *)' defined at (line 85, file D:\qp\qpc\qs\source\qs_dict.c) could be moved from header to module
 "D:\qp\qpc\qs\source\qs_dict.c" 85 1 Info 765: external 'QS_usr_dict(enum_t, const char_t *)' (line 85, file D:\qp\qpc\qs\source\qs_dict.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\qs\source\qs_dict.c" 85 1 Info 714: Symbol 'QS_usr_dict(enum_t, const char_t *)' (line 85, file D:\qp\qpc\qs\source\qs_dict.c) not referenced

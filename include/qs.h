@@ -266,7 +266,7 @@ void QS_u8_(uint8_t d);
 * \note This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_2u8_(uint8_t d1, uint8_t d2);
+void QS_u8u8_(uint8_t d1, uint8_t d2);
 
 /** \brief Output uint16_t data element without format information
 * \note This function is only to be used through macros, never in the
@@ -790,7 +790,7 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_U8_(data_)           (QS_u8_(data_))
 
 /** \brief Internal QS macro to output 2 unformatted uint8_t data elements */
-#define QS_2U8_(data1_, data2_) (QS_2u8_((data1_), (data2_)))
+#define QS_2U8_(data1_, data2_) (QS_u8u8_((data1_), (data2_)))
 
 /** \brief Internal QS macro to output an unformatted uint16_t data element */
 #define QS_U16_(data_)          (QS_u16_(data_))
