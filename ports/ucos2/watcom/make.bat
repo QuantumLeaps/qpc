@@ -1,8 +1,8 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C buld script for uC/OS-II port, Open Watcom compiler
-:: Last Updated for Version: 5.0.0
-:: Date of the Last Update:  Aug 24, 2013
+:: Last Updated for Version: 5.1.0
+:: Date of the Last Update:  Sep 30, 2013
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -78,20 +78,21 @@ set ASFLAGS=-fpi87
 ::===========================================================================
 :compile
 set LIBDIR=%BINDIR%
+erase %LIBDIR%\qp.lib
+%LIB% -n %LIBDIR%\qp
 
 :: uC/OS-II -----------------------------------------------------------------
-if not "%1"=="rel" goto qp
+:: NOTE: uncomment the following block to re-build uC/OS-II from sources
 
-@echo on
-%AS% %ASFLAGS% -fo=%UCOS_PRTDIR%\os_cpu_a.obj %UCOS_PRTDIR%\os_cpu_a.asm
-%CC% %CCFLAGS% @inc_ucos.rsp -fo=%UCOS_PRTDIR%\os_cpu_c.obj %UCOS_PRTDIR%\os_cpu_c.c
-%CC% %CCFLAGS% @inc_ucos.rsp -fo=%UCOS_PRTDIR%\ucos_ii.obj  %UCOS_SRCDIR%\ucos_ii.c
-@echo off
+::@echo on
+::%AS% %ASFLAGS% -fo=%UCOS_PRTDIR%\os_cpu_a.obj %UCOS_PRTDIR%\os_cpu_a.asm
+::%CC% %CCFLAGS% @inc_ucos.rsp -fo=%UCOS_PRTDIR%\os_cpu_c.obj %UCOS_PRTDIR%\os_cpu_c.c
+::%CC% %CCFLAGS% @inc_ucos.rsp -fo=%UCOS_PRTDIR%\ucos_ii.obj  %UCOS_SRCDIR%\ucos_ii.c
+::@echo off
 
-:qp
 
 :: QEP ----------------------------------------------------------------------
-set SRCDIR=..\..\..\..\..\qep\source
+set SRCDIR=..\..\..\qep\source
 set CCINC=@inc_qep.rsp
 
 @echo on
@@ -105,21 +106,19 @@ set CCINC=@inc_qep.rsp
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qhsm_top.obj %SRCDIR%\qhsm_top.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qhsm_in.obj  %SRCDIR%\qhsm_in.c
 
-erase %LIBDIR%\qep.lib
-%LIB% -n %LIBDIR%\qep
-%LIB% %LIBDIR%\qep +%BINDIR%\qep
-%LIB% %LIBDIR%\qep +%BINDIR%\qmsm_ini
-%LIB% %LIBDIR%\qep +%BINDIR%\qmsm_dis
-%LIB% %LIBDIR%\qep +%BINDIR%\qfsm_ini
-%LIB% %LIBDIR%\qep +%BINDIR%\qfsm_dis
-%LIB% %LIBDIR%\qep +%BINDIR%\qhsm_ini
-%LIB% %LIBDIR%\qep +%BINDIR%\qhsm_dis
-%LIB% %LIBDIR%\qep +%BINDIR%\qhsm_top
-%LIB% %LIBDIR%\qep +%BINDIR%\qhsm_in
+%LIB% %LIBDIR%\qp +%BINDIR%\qep
+%LIB% %LIBDIR%\qp +%BINDIR%\qmsm_ini
+%LIB% %LIBDIR%\qp +%BINDIR%\qmsm_dis
+%LIB% %LIBDIR%\qp +%BINDIR%\qfsm_ini
+%LIB% %LIBDIR%\qp +%BINDIR%\qfsm_dis
+%LIB% %LIBDIR%\qp +%BINDIR%\qhsm_ini
+%LIB% %LIBDIR%\qp +%BINDIR%\qhsm_dis
+%LIB% %LIBDIR%\qp +%BINDIR%\qhsm_top
+%LIB% %LIBDIR%\qp +%BINDIR%\qhsm_in
 @echo off
 
 :: QF -----------------------------------------------------------------------
-set SRCDIR=..\..\..\..\..\qf\source
+set SRCDIR=..\..\..\qf\source
 set CCINC=@inc_qf.rsp
 
 @echo on
@@ -145,39 +144,36 @@ set CCINC=@inc_qf.rsp
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qte_ctr.obj  %SRCDIR%\qte_ctr.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qf_port.obj  qf_port.c
 
-erase %LIBDIR%\qf.lib
-%LIB% -n %LIBDIR%\qf
-%LIB% %LIBDIR%\qf +%BINDIR%\qa_ctor
-%LIB% %LIBDIR%\qf +%BINDIR%\qa_defer
-%LIB% %LIBDIR%\qf +%BINDIR%\qa_sub
-%LIB% %LIBDIR%\qf +%BINDIR%\qa_usub
-%LIB% %LIBDIR%\qf +%BINDIR%\qa_usuba
-%LIB% %LIBDIR%\qf +%BINDIR%\qf_act
-%LIB% %LIBDIR%\qf +%BINDIR%\qf_gc
-%LIB% %LIBDIR%\qf +%BINDIR%\qf_log2
-%LIB% %LIBDIR%\qf +%BINDIR%\qf_new
-%LIB% %LIBDIR%\qf +%BINDIR%\qf_pool
-%LIB% %LIBDIR%\qf +%BINDIR%\qf_psini
-%LIB% %LIBDIR%\qf +%BINDIR%\qf_pspub
-%LIB% %LIBDIR%\qf +%BINDIR%\qf_pwr2
-%LIB% %LIBDIR%\qf +%BINDIR%\qf_tick
-%LIB% %LIBDIR%\qf +%BINDIR%\qma_ctor
-%LIB% %LIBDIR%\qf +%BINDIR%\qte_ctor
-%LIB% %LIBDIR%\qf +%BINDIR%\qte_arm
-%LIB% %LIBDIR%\qf +%BINDIR%\qte_darm
-%LIB% %LIBDIR%\qf +%BINDIR%\qte_rarm
-%LIB% %LIBDIR%\qf +%BINDIR%\qte_ctr
-%LIB% %LIBDIR%\qf +%BINDIR%\qf_port
+%LIB% %LIBDIR%\qp +%BINDIR%\qa_ctor
+%LIB% %LIBDIR%\qp +%BINDIR%\qa_defer
+%LIB% %LIBDIR%\qp +%BINDIR%\qa_sub
+%LIB% %LIBDIR%\qp +%BINDIR%\qa_usub
+%LIB% %LIBDIR%\qp +%BINDIR%\qa_usuba
+%LIB% %LIBDIR%\qp +%BINDIR%\qf_act
+%LIB% %LIBDIR%\qp +%BINDIR%\qf_gc
+%LIB% %LIBDIR%\qp +%BINDIR%\qf_log2
+%LIB% %LIBDIR%\qp +%BINDIR%\qf_new
+%LIB% %LIBDIR%\qp +%BINDIR%\qf_pool
+%LIB% %LIBDIR%\qp +%BINDIR%\qf_psini
+%LIB% %LIBDIR%\qp +%BINDIR%\qf_pspub
+%LIB% %LIBDIR%\qp +%BINDIR%\qf_pwr2
+%LIB% %LIBDIR%\qp +%BINDIR%\qf_tick
+%LIB% %LIBDIR%\qp +%BINDIR%\qma_ctor
+%LIB% %LIBDIR%\qp +%BINDIR%\qte_ctor
+%LIB% %LIBDIR%\qp +%BINDIR%\qte_arm
+%LIB% %LIBDIR%\qp +%BINDIR%\qte_darm
+%LIB% %LIBDIR%\qp +%BINDIR%\qte_rarm
+%LIB% %LIBDIR%\qp +%BINDIR%\qte_ctr
+%LIB% %LIBDIR%\qp +%BINDIR%\qf_port
 @echo off
 
 :: QS -----------------------------------------------------------------------
 if not "%1"=="spy" goto clean
 
-set SRCDIR=..\..\..\..\..\qs\source
+set SRCDIR=..\..\..\qs\source
 set CCINC=@inc_qs.rsp
 
 @echo on
-%LIB% -n %LIBDIR%\qs
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs.obj      %SRCDIR%\qs.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_.obj     %SRCDIR%\qs_.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_blk.obj  %SRCDIR%\qs_blk.c
@@ -187,16 +183,14 @@ set CCINC=@inc_qs.rsp
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_mem.obj  %SRCDIR%\qs_mem.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_str.obj  %SRCDIR%\qs_str.c
 
-erase %LIBDIR%\qs.lib
-%LIB% -n %LIBDIR%\qs
-%LIB% %LIBDIR%\qs +%BINDIR%\qs
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_blk
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_byte
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_dict
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_f32
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_mem
-%LIB% %LIBDIR%\qs +%BINDIR%\qs_str
+%LIB% %LIBDIR%\qp +%BINDIR%\qs
+%LIB% %LIBDIR%\qp +%BINDIR%\qs_
+%LIB% %LIBDIR%\qp +%BINDIR%\qs_blk
+%LIB% %LIBDIR%\qp +%BINDIR%\qs_byte
+%LIB% %LIBDIR%\qp +%BINDIR%\qs_dict
+%LIB% %LIBDIR%\qp +%BINDIR%\qs_f32
+%LIB% %LIBDIR%\qp +%BINDIR%\qs_mem
+%LIB% %LIBDIR%\qp +%BINDIR%\qs_str
 @echo off
 
 :clean

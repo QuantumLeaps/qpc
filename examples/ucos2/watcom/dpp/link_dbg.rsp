@@ -1,0 +1,2 @@
+Name dbg\dpp.exe File dbg\bsp.obj,dbg\main.obj,dbg\philo.obj,dbg\table.obj,dbg\video.obj,..\..\..\..\ports\ucos2\watcom\ucos2.86\OS_CPU_A.OBJ,..\..\..\..\ports\ucos2\watcom\ucos2.86\OS_CPU_C.OBJ,..\..\..\..\ports\ucos2\watcom\ucos2.86\UCOS_II.OBJ Library ..\..\..\..\ports\ucos2\watcom\dbg\qp.lib
+

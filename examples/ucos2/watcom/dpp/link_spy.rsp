@@ -1,0 +1,1 @@
+Name spy\dpp.exe File spy\bsp.obj,spy\main.obj,spy\philo.obj,spy\table.obj,spy\video.obj,..\..\..\..\ports\ucos2\watcom\ucos2.86\OS_CPU_A.OBJ,..\..\..\..\ports\ucos2\watcom\ucos2.86\OS_CPU_C.OBJ,..\..\..\..\ports\ucos2\watcom\ucos2.86\UCOS_II.OBJ Library ..\..\..\..\ports\ucos2\watcom\spy\qf.lib,..\..\..\..\ports\ucos2\watcom\spy\qp.lib

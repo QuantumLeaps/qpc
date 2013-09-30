@@ -1,14 +1,14 @@
 @echo off
 :: ==========================================================================
 :: Product: DPP example, uC/OS-II/80x86 port, Open Watcom compiler
-:: Last Updated for Version: 4.1.06
-:: Date of the Last Update:  Jan 06, 2011
+:: Last Updated for Version: 5.1.0
+:: Date of the Last Update:  Sep 30, 2013
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2011 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 ::
 :: This software may be distributed and modified under the terms of the GNU
 :: General Public License version 2 (GPL) as published by the Free Software

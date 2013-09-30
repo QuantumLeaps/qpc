@@ -1,0 +1,2 @@
+Name rel\dpp.exe File rel\bsp.obj,rel\main.obj,rel\philo.obj,rel\table.obj,rel\video.obj,..\..\..\..\ports\ucos2\watcom\ucos2.86\OS_CPU_A.OBJ,..\..\..\..\ports\ucos2\watcom\ucos2.86\OS_CPU_C.OBJ,..\..\..\..\ports\ucos2\watcom\ucos2.86\UCOS_II.OBJ Library ..\..\..\..\ports\ucos2\watcom\rel\qp.lib
+
