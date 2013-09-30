@@ -1,16 +1,15 @@
-QState Table_initial(Table * const me, QEvt const * const e) {
+QState Table_initial(Table * const me, QEvt const *) {
     uint8_t n;
-    (void)e;                               /* suppress the compiler warning */
 
-    QS_SIG_DICTIONARY(HUNGRY_SIG, me);/* output signal dictionary QS record */
-    QS_SIG_DICTIONARY(DONE_SIG, me);  /* output signal dictionary QS record */
-    QS_SIG_DICTIONARY(EAT_SIG, 0);    /* output signal dictionary QS record */
+    QS_SIG_DICTIONARY(HUNGRY_SIG, me);   /* output signal dictionary QS record */
+    QS_SIG_DICTIONARY(DONE_SIG, me);     /* output signal dictionary QS record */
+    QS_SIG_DICTIONARY(EAT_SIG, 0);       /* output signal dictionary QS record */
 
-    QS_FUN_DICTIONARY(Table_serving);
+    QS_FUN_DICTIONARY(&Table_serving);
 
-    QActive_subscribe((QActive *)me, HUNGRY_SIG);
-    QActive_subscribe((QActive *)me, DONE_SIG);
-    QActive_subscribe((QActive *)me, TERMINATE_SIG);
+    subscribe(HUNGRY_SIG);
+    subscribe(DONE_SIG);
+    subscribe(TERMINATE_SIG);
 
     for (n = 0; n < N; ++n) {
         me->fork[n] = FREE;

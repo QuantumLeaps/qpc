@@ -1,8 +1,8 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C buld script for 80x86, Vanilla port, Open Watcom compiler
-:: Last Updated for Version: 5.0.0
-:: Date of the Last Update:  Aug 24, 2013
+:: Last Updated for Version: 5.1.0
+:: Date of the Last Update:  Sep 30, 2013
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -66,6 +66,7 @@ set ASFLAGS=-fpi87
 
 ::===========================================================================
 :compile
+mkdir %BINDIR%
 set LIBDIR=%BINDIR%
 
 :: QEP ----------------------------------------------------------------------
@@ -182,6 +183,7 @@ set CCINC=@inc_qs.rsp
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_byte.obj %SRCDIR%\qs_byte.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_dict.obj %SRCDIR%\qs_dict.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_f32.obj  %SRCDIR%\qs_f32.c
+%CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_f64.obj  %SRCDIR%\qs_f64.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_mem.obj  %SRCDIR%\qs_mem.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qs_str.obj  %SRCDIR%\qs_str.c
 
@@ -193,6 +195,7 @@ erase %LIBDIR%\qs.lib
 %LIB% %LIBDIR%\qs +%BINDIR%\qs_byte
 %LIB% %LIBDIR%\qs +%BINDIR%\qs_dict
 %LIB% %LIBDIR%\qs +%BINDIR%\qs_f32
+%LIB% %LIBDIR%\qs +%BINDIR%\qs_f64
 %LIB% %LIBDIR%\qs +%BINDIR%\qs_mem
 %LIB% %LIBDIR%\qs +%BINDIR%\qs_str
 @echo off

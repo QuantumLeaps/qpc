@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QK/C port for Lint, Generic C compiler
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Aug 10, 2013
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -54,7 +54,7 @@
 * is only used in the extended QK scheduler QK_scheduleExt_(). If you define
 * #QK_EXT_SAVE, you also need to provide #QK_EXT_RESTORE and #QK_EXT_TYPE.
 */
-#define QK_EXT_SAVE(act_)      (FPU_save((FPU_context *)(act_)->thread))
+#define QK_EXT_SAVE(act_)      (FPU_save((void *)(act_)->thread))
 
 /** \brief Define the method for restoring the extended context (e.g.,
 * the context of a floating-point co-processor).
@@ -64,13 +64,7 @@
 * is only used in the extended QK scheduler QK_scheduleExt_(). If you define
 * #QK_EXT_RESTORE, you also need to provide #QK_EXT_SAVE and #QK_EXT_TYPE.
 */
-#define QK_EXT_RESTORE(act_)   (FPU_restore((FPU_context *)(act_)->thread))
-
-typedef struct FPU_contextTag {
-    uint8_t  fpu[108];               /* the x87 FPU context takes 108-bytes */
-} FPU_context;
-void FPU_save(FPU_context *ctx);                     /* defined in assembly */
-void FPU_restore(FPU_context *ctx);                  /* defined in assembly */
+#define QK_EXT_RESTORE(act_)   (FPU_restore((void *)(act_)->thread))
 
 /****************************************************************************/
 /* Thread-Local-Storage switching */
@@ -85,13 +79,7 @@ void FPU_restore(FPU_context *ctx);                  /* defined in assembly */
 * QK_schedExt_().
 */
 #define QK_TLS(act_)        \
-    (impure_ptr = (reent *)(act_)->thread)
-
-/* fake struct reent and _impure_ptr elements of Newlib... */
-typedef struct reentTag {
-    uint32_t foo[32];
-} reent;
-extern reent *impure_ptr;
+    (impure_ptr = (void *)(act_)->thread)
 
 /****************************************************************************/
 /* QK interrupt entry and exit */
@@ -127,6 +115,9 @@ extern reent *impure_ptr;
     } \
 } while (0)
 
+void FPU_save(void *ctx);   /**< \brief example of extended context save */
+void FPU_restore(void *ctx);/**< \brief example of extended context restore */
+extern void *impure_ptr;    /**< \brief example of TLS pointer */
 
 #include "qk.h"                 /* QK platform-independent public interface */
 

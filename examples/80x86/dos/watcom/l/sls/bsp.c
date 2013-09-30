@@ -209,7 +209,7 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QF_onIdle(void) {
-    QF_INT_ENABLE();                            /* always enable interrutps */
+    QF_INT_ENABLE();                            /* always enable interrupts */
 #ifdef Q_SPY
     if ((inp(l_uart_base + 5) & (1 << 5)) != 0) {         /* Tx FIFO empty? */
         uint16_t fifo = UART_TXFIFO_DEPTH;    /* depth of the 15550 Tx FIFO */

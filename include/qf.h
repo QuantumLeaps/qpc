@@ -162,12 +162,14 @@ typedef struct QActiveTag {
 typedef struct QActiveVtblTag {
     QMsmVtbl super;                                  /**< inherits QMsmVtbl */
 
+    /** virtual function to start the active object (thread) */
     void (*start)(QActive * const me, uint8_t prio,
                   QEvt const *qSto[], uint32_t qLen,
                   void *stkSto, uint32_t stkSize,
                   QEvt const *ie);
 
 #ifdef Q_SPY
+    /** virtual function to asynchronously post (FIFO) an event to an AO */
     uint8_t (*post)(QActive * const me, QEvt const * const e,
                     uint16_t const margin, void const * const sender);
 #else
@@ -175,6 +177,7 @@ typedef struct QActiveVtblTag {
                     uint16_t const margin);
 #endif
 
+    /** virtual function to asynchronously post (LIFO) an event to an AO */
     void (*postLIFO)(QActive * const me, QEvt const * const e);
 
 } QActiveVtbl;
@@ -935,7 +938,7 @@ void QF_onIdle(void);
     * that it never will get preempted by a task, which is always the case
     * when it is called from an ISR or the highest-priority task.
     *
-    * \note this function should be called only via the macro #QF_TICKX
+    * \note this function should be called only via the macro #QF_TICK_X
     *
     * \sa ::QTimeEvt.
     */

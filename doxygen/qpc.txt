@@ -1,20 +1,8 @@
 /**
 \anchor main_page
-\mainpage QP/C Reference Manual
+\mainpage About QP/C
 
 \image html qp_banner.jpg
-
-- \ref overview
-- \ref tutorial
-- \ref PSiCC2
-- \ref licensing
-- \ref contact
-
-- \ref files_page
-- \ref rev_page
-
-\section overview QP&trade; Overview
-
 
 <a href="http://www.state-machine.com/qm/"><strong>QP&trade; (Quantum Platform)</strong></a> is a family of lightweight, open source software frameworks for building responsive and modular real-time embedded applications as systems of cooperating, event-driven <a href="http://www.state-machine.com/qp/index.php#Active">active objects</a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP&trade; family consists of QP/C, QP/C++, and QP-nano frameworks, which are all strictly quality controlled, superbly documented, and commercially licensable.
 
@@ -24,6 +12,8 @@ All QP&trade; frameworks can run on "bare-metal" single-chip microcontrollers, c
 
 The behavior of active objects is specified in QP by means of <a href="http://en.wikipedia.org/wiki/UML_state_machine">hierarchical state machines (UML statecharts)</a>. The frameworks support manual coding of UML state machines in C or C++ as well as fully automatic code generation by means of the free graphical <a href="http://www.state-machine.com/qm/">QM&trade; modeling tool</a>.
 
+\image html PSiCC2_250x200.jpg
+
 The QP frameworks are used in millions of products worldwide in aerospace, robotics, consumer electronics, wired and wireless telecommunications, industrial automation, transportation, and many more. The QP frameworks and the QM modeling tool receive over <a href="http://sourceforge.net/projects/qpc/files/stats/timeline?dates=2012-08-28+to+2013-08-28">30,000 downloads a year</a> (not even counting downloads of QP ports).
 
 QP is available for download from <a href="http://sourceforge.net/projects/qpc">SourceForge.net</a>--the world's biggest open source repository. The summary of available downloads is also available from <a href="http://www.state-machine.com/downloads">Quantum Leaps download page</a>. 
@@ -32,119 +22,262 @@ For more information about QP, please visit:
 <a href="http://www.state-machine.com/qp"><strong>state-machine.com/qp</strong></a>
 
 <HR>
-\section tutor QP/C Tutorial
+QP/C Licensing
+==============
 
-The \ref tutorial explains all steps necessary to develop a
-non-trivial QP/C application. The Tutorial is based on Chapter 1 of
-<I>Practical UML Statecharts in C/C++, Second Edition</I>.
+QP/C is licensed under the increasingly popular dual licensing model, in which both the open source software distribution mechanism and traditional closed source software distribution models are combined.
 
-\image html qp_tutorial.jpg
+\note If your company has a policy forbidding open source in your product, all QP frameworks can be licensed commercially, in which case you don't use any open source license and you do not violate your policy.
 
-<HR>
-\section PSiCC2 Practical UML Statecharts in C/C++, Second Edition
+Open Source Projects:
+---------------------
+If you are developing and distributing open source applications under the GNU General Public License (GPL), as published by the Free Software Foundation, then you are free to use the Quantum Leaps software under the GPL version 2 of the License, or (at your option) any later version. Please note that GPL requires that all modifications to the original code as well as your application code (Derivative Works as defined in the Copyright Law) must also be released under the terms of the GPL open source license.
 
-All versions of QP are described in detail in the book <I>Practical UML
-Statecharts in C/C++, Second Edition: Event-Driven Programming for Embedded
-Systems</I>, Newnes 2008 (ISBN-10: 0750687061, ISBN-13: 978-0750687065).
-
-\image html PSiCC2_250x200.jpg
-
-The book bridges the gap between high-level abstract concepts of the Unified
-Modeling Language (UML) and the actual programming aspects of modern
-hierarchical state machines (UML statecharts).
-
-This book is presented in two parts. In Part I, you get a practical
-description of the relevant state machine concepts starting from traditional
-finite state automata to modern UML state machines followed by state machine
-coding techniques with the %QEP hierarchical event processor as well as
-several state-machine design patterns, all illustrated with executable
-examples.
-
-In Part II, you find a detailed design study of the %QF real-time framework,
-%QK preemptive kernel, and %QS software tracing, which are indispensable for
-combining concurrent, event-driven state machines into robust systems. In
-addition to its value as a reference to the %QP event-driven platform, Part II
-explains the key event-driven programming concepts such as inversion of control
-("Hollywood Principle"), blocking versus non-blocking code, run-to-completion
-(RTC) execution semantics, the importance of event queues, dealing with time,
-and the role of state machines to maintain the context from one event to the
-next. This background is designed to help software developers in making the
-transition from the traditional sequential to the modern event-driven
-programming, which can be one of the trickiest paradigm shifts.
-
-- Visit the <a href="http://www.state-machine.com/psicc2/">accompanying website to the book</a>
-- Order the book from <a href="http://www.amazon.com/exec/obidos/ASIN/0750687061/quantumleap06-20">Amazon.com</a>.
-
+Closed Source Projects:
+-----------------------
+If you are developing and distributing traditional closed source applications, you can purchase one of Quantum Leaps commercial licenses, which are specifically designed for users interested in retaining the proprietary status of their code. All Quantum Leaps commercial licenses expressly supersede the GPL open source license. This means that when you license Quantum Leaps software under a commercial license, you specifically do not use the software under the open source license and therefore you are not subject to any of its terms. 
 
 <HR>
-\section licensing Licensing Policy for QP
-
-All versions of the QP software are available under <A
-HREF="http://www.state-machine.com/licensing/">dual licensing</A> model, in
-which both the open source software distribution mechanism and traditional
-closed source software licensing models are combined.
-
-\subsection open Open Source Licensing
-
-All versions of the QP software are available under the GNU General Public
-License (GPL), as published by the Free Software Foundation and included in every
-distribution of the QP software. The GPL license is probably the best known
-and most established open source license. It is fully compatible with the Open
-Source Definition, is endorsed by the Free Software Foundation, and has been
-approved by the Open Source Initiative.
-
-Please note that GPL applies to software based not upon how it is used but
-upon how it is distributed. In this respect GPL2 can be restrictive, because
-GPL version2 Section 2(b) requires that if you distribute the original software
-or any derivative works based on the software under copyright law, you must release
-all such derivative works also under the terms of the GPL open source
-license. GPL clearly specifies that distributing the original software or any
-derivative works based upon it in binary form (e.g., embedded inside devices)
-also represents distribution of the software.
-
-To read more about open source licensing for QP/C, QP/C++, or QP-nano,
-please visit the following website:
-
-- http://www.state-machine.com/licensing/open.php
-
-or please contact Quantum Leaps, LLC via the following e-mail address:
-
-- info@quantum-leaps.com
-
-
-\subsection closed Closed Source Licensing
-
-If you are developing and distributing traditional <b>closed source</b>
-applications, you might purchase one of the Quantum Leaps commercial licenses,
-which are specifically designed for users interested in retaining the
-proprietary status of their code. This alternative licensing is possible,
-because Quantum Leaps, LLC owns all intellectual property in the QP and
-QP-nano software and as the copyright owner can license the software any
-number of ways. The Quantum Leaps commercial licenses expressly supersede the
-\ref gpl2_page open source license. This means that when you license the
-software under a commercial license, you specifically do not use the software
-under the open source license and therefore you are not subject to any of its
-terms.
-
-To read more about the commercial licensing options, pricing, technical
-support, and to request a commercial license, please visit the following
-website:
-
-- http://www.state-machine.com/licensing
-
-or please contact Quantum Leaps, LLC via the following e-mail address:
-
-- info@quantum-leaps.com
-
-<HR>
-\section contact Contact Information
-
+Contact Information
+===================
 - Quantum Leaps Web site:   http://www.state-machine.com
 - Quantum Leaps licensing:  http://www.state-machine.com/licensing
 - QP/QM on SourceForge.net: http://sourceforge.net/projects/qpc
 - e-mail: info@quantum-leaps.com
 - Toll-free: 1-866-450-LEAP (US Eastern Standard Time)
 
+<HR>
+\section files Directories and Files
+
+The following annotated directory tree lists the most important directories
+and files provided in the standard QP/C distribution.
+
+\code
+qpc\                 - QP/C root directory
+  |
+  +-qpc.chm          - "QP/C Reference Manual" in CHM Help format
+  |
+  +-doxygen\         - QP documentation generated with Doxygen
+  | +-html\          - "QP/C Reference Manual" in HTML format
+  | | +-index.html   - The HTML index page for the "QP/C Reference Manual"
+  | | +- . . .
+  | +-Doxyfile       - Doxygen configuration file to generate the Manual
+  | +- . . .
+  |
+  +-examples\        - QP examples
+  | | +-posix\       - Examples for POSIX (Linux, BSD, etc.)
+  | | | +-gnu\       - Examples with the GNU compiler
+  | | | | +-dpp\     - Dining Philosopher Problem (DPP) example for Linux
+  | | | | | +-dbg\   - Debug build
+  | | | | | +-rel\     - Release build
+  | | | | | +-spy\     - Spy build (with software instrumentation)
+  | | | | | +-dpp.qm   - QM model file for this project
+  | | | | | +-Makefile - GNU Makefile to build the DPP application
+  | | | | | +-. . .
+  | | |
+  | | +-win32\       - Examples for Win32 (Windows)
+  | | | +-mingw\     - Examples for the MinGW (GNU) compiler
+  | | | | +-dpp\     - Dining Philosopher Problem (DPP) example for Linux
+  | | | | | +-dbg\   - Debug build
+  | | | | | | +-dpp.exe - DPP executable (Debug configuration)
+  | | | | | +-rel\      - Release build
+  | | | | | +-spy\      - Spy build (with software tracing)
+  | | | | | +-dpp.qm    - QM model file for this project
+  | | | | | +-Makefile  - GNU Makefile to build the DPP application
+  | | | | | +-. . .
+  | | | | +-game-gui\   - "Fly 'n' Shoot" game example (GUI)
+  | | | | +-calc\       - Calculator example
+  | | | | +-qhsmtst\    - QHsmTst example (PSiCC2  in Chapter 2)
+  | | | | +-comp\       - "Orthogonal Component" pattern (PSiCC2 Chapter 5)
+  | | | | +-defer\      - "Deferred Event" pattern (PSiCC2 Chapter 5)
+  | | | | +-history\    - "Transition to History" pattern (PSiCC2 Chapter 5)
+  | | | | +-hook\       - "Ultimate Hook" pattern (Chapter 5)
+  | | | | +-reminder\   - "Reminder" pattern (PSiCC2 Chapter 5)
+  | | | | +-reminder2\  - "Reminder" pattern different example
+  | | | |
+  | | | +-vc\        - Examples for the Visual C++ compiler
+  | | | | +-dpp\     - Dining Philosopher Problem (DPP) example (console)
+  | | | | | +-Debug\    - Debug build
+  | | | | | | +-dpp.exe - DPP executable (Debug configuration)
+  | | | | | +-Release\  - Release build
+  | | | | | +-Spy\      - Spy build (with software instrumentation)
+  | | | | | +-dpp.qm    - QM model file for this project
+  | | | | | +-dpp.sln     - Visual Studio solution file
+  | | | | | +-dpp.vcxproj - Visual Studio project file
+  | | | | | +-. . .
+  | | | | +-dpp-gui\    - Dining Philosopher Problem (DPP) example (GUI)
+  | | | | +-game-gui\   - "Fly 'n' Shoot" game example (GUI)
+  | |
+  | +-arm-cm\        - Examples for ARM Cortex-M processor
+  | | +-vanilla\     - Examples for the cooperative "vanilla" kernel
+  | | | +-iar\       - Examples with the IAR compiler
+  | | | | +-dpp_qk-lm3s811\  - DPP example for for EK-LM3S811 board
+  | | | | +-game_qk-lm3s811\ - "Fly 'n' Shoot" example for EK-LM3S811 board
+  | | | | +-. . .    - Other examples for ARM Cortex
+  | | | +-gnu\       - Examples with the GNU compiler (Code Sourcery G++)
+  | | | | +-dpp_qk-lm3s811\  - DPP example for for EK-LM3S811 board
+  | | | | +-game_qk-lm3s811\ - "Fly 'n' Shoot" example for EK-LM3S811 board
+  | | | | +-. . .    - Other examples for ARM Cortex
+  | | |
+  | | +-qk\          - Examples for the preemptive QK kernel
+  | | | +-iar\       - Examples with the IAR compiler
+  | | | | +-dpp-qk_qk-lm3s811\  - DPP example for for EK-LM3S811 board
+  | | | | +-game-qk_qk-lm3s811\ - "Fly 'n' Shoot" example for EK-LM3S811 board
+  | | | | +-. . .    - Other examples for ARM Cortex
+  | | | +-gnu\       - Examples with the GNU compiler (Code Sourcery G++)
+  | | | | +-dpp-qk_qk-lm3s811\  - DPP example for for EK-LM3S811 board
+  | | | | +-game-qk_qk-lm3s811\ - "Fly 'n' Shoot" example for EK-LM3S811 board
+  | | | | +-. . .    - Other examples for ARM Cortex
+  | |
+  | +-. . .          - Examples for other CPUs and compiler
+  |
+  +-ports\           - Platform-specific QP ports
+  | +-posix\         - Ports to the POSIX operating systems (Linux, BSD, etc.)
+  | | +-gnu\         - Ports with the GNU compiler
+  | | | +-Makefile   - make file to build the QP libraries
+  | | | +-. . .
+  | |
+  | +-win32\         - Ports to the POSIX operating systems (Linux, BSD, etc.)
+  | | +-mingw\       - Port with the MinGW (GNU) compiler
+  | | | +-qp.sln     - Visual Studio solution to build the QP libraries
+  | | | +-. . .
+  | | |
+  | | +-vc\          - Port with the Visual C++ compiler
+  | |
+  | +-arm-cm\        - Ports for ARM Cortex-M processor
+  | | +-vanilla\     - Ports to the cooperative "vanilla" kernel
+  | | | +-iar\       - Ports with the IAR compiler
+  | | | | | +-dbg\   - Debug build
+  | | | | | +-rel\   - Release build
+  | | | | | +-spy\   - Spy build (with software instrumentation)
+  | | | | | +-make_cortex-m3.bat - batch script for building QP libraries
+  | | | | | +-qep_port.h - QEP platform-dependent include file
+  | | | | | +-qf_port.h  - QF  platform-dependent include file
+  | | | | | +-qs_port.h  - QS  platform-dependent include file
+  | | | | | +-qp_port.h  - QP  platform-dependent include file
+  | | | . . .
+  | | | +-gnu\       - Ports with the GNU compiler (Code Sourcery G++)
+  | | | | | +-dbg\   - Debug build
+  | | | | | +-rel\   - Release build
+  | | | | | +-spy\   - Spy build (with software instrumentation)
+  | | | | | +-make_cortex-m3_cs.bat - batch script for building QP libraries
+  | | | | | +-qep_port.h - QEP platform-dependent include file
+  | | | | | +-qf_port.h  - QF  platform-dependent include file
+  | | | | | +-qs_port.h  - QS  platform-dependent include file
+  | | | | | +-qp_port.h  - QP  platform-dependent include file
+  | | | . . .
+  | | +-qk\          - Ports to the preemptive QK kernel
+  | |   +-iar\       - Ports with the IAR compiler
+  | |   +-gnu\       - Ports with the GNU compiler (Code Sourcery G++)
+  | +-. . .          - Ports to other CPUs
+  |
+  +-include\         - QP platform-independent header files
+  | +-qassert.h      - QP assertions
+  | +-qevt.h         - QEvt declaration
+  | +-qep.h          - QEP platform-independent interface
+  | +-qf.h           - QF platform-independent interface
+  | +-qk.h           - QK platform-independent interface
+  | +-qs.h           - QS platform-independent active interface
+  | +-qs_dummy.h     - QS platform-independent inactive interface
+  | +-qequeue.h      - QF native event queue facility
+  | +-qmpool.h       - QF native memory pool facility
+  | +-qpset.h        - QF native priority set facility
+  | +-qvanilla.h     - QF native "vanilla" cooperative kernel interface
+  | +-qp_port.h      - QP port include file
+  |
+  +-qep\             - QEP hierarchical event processor
+  | +-source\        - QEP platform-independent source code (*.c files)
+  | | +- . . .
+  |
+  +-qf\              - QF real-time framework
+  | +-source\        - QF platform-independent source code (*.c files)
+  | | +- . . .
+  |
+  +-qk\              - QK preemptive kernel
+  | +-source\        - QK platform-independent source code (*.c files)
+  | | +- . . .
+  |
+  +-qs\              - QS software tracing (target component)
+  | +-source\        - QS platform-independent source code (*.c files)
+  | | +- . . .
+\endcode
+
+<HR>
+\section derivation Object-Oriented Programming in C
+
+Even though QP/C is implemented in standard ANSI-C, it extensively uses
+object-oriented design principles such as encapsulation (classes) and 
+single inheritance. At the C language level, encapsulation and inheritance
+become just simple coding idioms, which this section briefly describes.
+
+<b>Encapsulation</b> is the ability to package data with operations into
+<b>classes</b>. In C, you represent the data as a \c struct and the 
+operations that use this data as functions that take a pointer to the
+\c struct as the first argument. For example, the "class" \c ::QMsm
+packages the state machine data with the functions that operate on this
+data. The declaration of this class in C is as follows:
+ 
+\code
+typedef struct QMsmTag {
+    QMsmVtbl const *vptr;                       
+    QMAttr state;         
+    QMAttr temp; 
+} QMsm;
+
+void QMsm_ctor(QMsm * const me, QStateHandler initial);
+void QMsm_init(QMsm * const me, QEvt const * const e);
+void QMsm_dispatch(QMsm * const me, QEvt const * const e);
+\endcode
+
+As you can see, QP/C applies a number of coding and naming conventions
+to further strenghten the association between the data struct and the
+functions that operate on it:
+
+- the struct holding the class attributes is typedef'ed to the
+class name, for convenience of accessing it as \c QMsm instead of
+\c struct \c QMsm.
+
+- each class function starts with the prefix \c QMsm_ to make it
+clear that the function belongs to the class
+
+- each class function takes the pointer to the \c QMsm \c struct as the
+<i>first</i> argument, which is always called <b>me</b>
+
+- the class provides a special function for initialization of the
+attributes, which is called \c QMsm_ctor, because it plays the role
+of a class <i>constructor</i>.  
+         
+      
+<b>Inheritance</b> is the ability to derive new classes based on existing
+classes in order to reuse and organize code. You can implement single
+inheritance in C very simply by literally embedding the base struct as the
+first member of the derived struct. For example, \ref FA1 "Figure 1"(a)
+shows the struct ScoreEvt derived from the base struct QEvt by
+embedding the QEvt instance as the first member of ScoreEvt. To make this
+idiom better stand out, in QP the base struct member is always named <b>super</b>.
+
+\anchor FA1 \image html FA1.jpg "Figure 1 (a) Derivation of structures in C, (b) memory alignment, and (c) the UML class diagram."
+
+As shown in \ref FA1 "Figure 1"(b), such nesting of structs always aligns
+the data member \c super at the beginning of every instance of the derived
+struct. In particular, this alignment lets you treat a pointer to the
+derived \c ScoreEvt struct as a pointer to the \c QEvt base struct.
+Consequently, you can always safely pass a pointer to \c ScoreEvt to any C
+function that expects a pointer to \c QEvt. (To be strictly correct in C, you
+should explicitly cast this pointer. In OOP such casting is called upcasting
+and is always safe.) Therefore, all functions designed for the \c QEvt
+"class" are automatically available to the ScoreEvt "class" as well as
+other "classes" derived from \c QEvt. \ref FA1 "Figure 1"(c) shows the UML
+class diagram depicting the inheritance relationship between \c ScoreEvt and
+\c QEvt classes.
+
+QP uses single inheritance quite extensively not just for derivation of events
+with parameters, but also for derivation of state machines and active objects.
+Of course, the C++ version of QP uses the native C++ support for class
+inheritance rather than "derivation of structures".
+
+
+<HR>
 \image html logo_ql_TM.jpg
 Copyright &copy; 2002-2013 Quantum Leaps, LLC. All Rights Reserved.\n
 http://www.state-machine.com

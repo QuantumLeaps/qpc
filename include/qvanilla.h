@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 13, 2013
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 28, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,7 +45,14 @@
 #include "qmpool.h"     /* "Vanilla" kernel uses the native QF memory pool  */
 #include "qpset.h"      /* "Vanilla" kernel uses the native QF priority set */
 
-                           /* the event queue type for the "Vanilla" kernel */
+/** \brief This macro defines the type of the event queue used for the
+* active objects.
+*
+* \note This is just an example of the macro definition. Typically, you need
+* to define it in the specific QF port file (qf_port.h). In case of QK, which
+* always depends on the native QF queue, this macro is defined at the level
+* of the platform-independent interface qk.h.
+*/
 #define QF_EQUEUE_TYPE  QEQueue
 
 /*****************************************************************************

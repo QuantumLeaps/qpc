@@ -39,12 +39,14 @@
 
 --- Global Wrap-up
 
-"D:\qp\qpc\ports\lint\stdint.h" 38 1 Info 756: global typedef 'uint32_t' (line 38, file D:\qp\qpc\ports\lint\stdint.h) not referenced
+"D:\qp\qpc\ports\lint\stdint.h" 29 1 Info 756: global typedef 'uint32_t' (line 29, file D:\qp\qpc\ports\lint\stdint.h) not referenced
+"D:\qp\qpc\ports\lint\stdint.h" 30 1 Info 756: global typedef 'uint64_t' (line 30, file D:\qp\qpc\ports\lint\stdint.h) not referenced
 "D:\qp\qpc\include\qevt.h" 166 1 Info 756: global typedef 'uint_t' (line 166, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\ports\lint\stdint.h" 25 1 Info 756: global typedef 'int64_t' (line 25, file D:\qp\qpc\ports\lint\stdint.h) not referenced
 "D:\qp\qpc\include\qevt.h" 217 1 Info 756: global typedef 'QEvent' (line 217, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\include\qevt.h" 154 1 Info 756: global typedef 'float32_t' (line 154, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\include\qevt.h" 157 1 Info 756: global typedef 'float64_t' (line 157, file D:\qp\qpc\include\qevt.h) not referenced
-"D:\qp\qpc\ports\lint\stdint.h" 32 1 Info 756: global typedef 'int8_t' (line 32, file D:\qp\qpc\ports\lint\stdint.h) not referenced
+"D:\qp\qpc\ports\lint\stdint.h" 22 1 Info 756: global typedef 'int8_t' (line 22, file D:\qp\qpc\ports\lint\stdint.h) not referenced
 "D:\qp\qpc\include\qevt.h" 160 1 Info 756: global typedef 'enum_t' (line 160, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\qep\source\qfsm_ini.c" 47 1 Info 759: header declaration for symbol 'QFsm_ctor(QFsm *, QStateHandler)' defined at (line 47, file D:\qp\qpc\qep\source\qfsm_ini.c) could be moved from header to module
 "D:\qp\qpc\qep\source\qfsm_ini.c" 47 1 Info 765: external 'QFsm_ctor(QFsm *, QStateHandler)' (line 47, file D:\qp\qpc\qep\source\qfsm_ini.c) could be made static [MISRA 2004 Rule 8.10, required]
@@ -59,10 +61,10 @@
 "D:\qp\qpc\qep\source\qhsm_in.c" 47 1 Info 759: header declaration for symbol 'QHsm_isIn(QHsm *, QStateHandler)' defined at (line 47, file D:\qp\qpc\qep\source\qhsm_in.c) could be moved from header to module
 "D:\qp\qpc\qep\source\qhsm_in.c" 47 1 Info 765: external 'QHsm_isIn(QHsm *, QStateHandler)' (line 47, file D:\qp\qpc\qep\source\qhsm_in.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\qep\source\qhsm_in.c" 47 1 Info 714: Symbol 'QHsm_isIn(QHsm *, QStateHandler)' (line 47, file D:\qp\qpc\qep\source\qhsm_in.c) not referenced
-"D:\qp\qpc\ports\lint\stdint.h" 33 1 Info 756: global typedef 'int16_t' (line 33, file D:\qp\qpc\ports\lint\stdint.h) not referenced
+"D:\qp\qpc\ports\lint\stdint.h" 23 1 Info 756: global typedef 'int16_t' (line 23, file D:\qp\qpc\ports\lint\stdint.h) not referenced
 "D:\qp\qpc\include\qassert.h" 153 1 Warning 526: Symbol 'Q_onAssert(const char_t *, int_t)' (line 153, file D:\qp\qpc\include\qassert.h, module D:\qp\qpc\qep\source\qfsm_dis.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'Q_onAssert' 
-"D:\qp\qpc\ports\lint\stdint.h" 34 1 Info 756: global typedef 'int32_t' (line 34, file D:\qp\qpc\ports\lint\stdint.h) not referenced
+"D:\qp\qpc\ports\lint\stdint.h" 24 1 Info 756: global typedef 'int32_t' (line 24, file D:\qp\qpc\ports\lint\stdint.h) not referenced
 "D:\qp\qpc\qep\source\qmsm_ini.c" 52 1 Info 759: header declaration for symbol 'QMsm_ctor(QMsm *, QStateHandler)' defined at (line 52, file D:\qp\qpc\qep\source\qmsm_ini.c) could be moved from header to module
 "D:\qp\qpc\qep\source\qmsm_ini.c" 52 1 Info 765: external 'QMsm_ctor(QMsm *, QStateHandler)' (line 52, file D:\qp\qpc\qep\source\qmsm_ini.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\qep\source\qmsm_ini.c" 52 1 Info 714: Symbol 'QMsm_ctor(QMsm *, QStateHandler)' (line 52, file D:\qp\qpc\qep\source\qmsm_ini.c) not referenced
@@ -175,7 +177,7 @@ Count   Type    Number  Text
 1       Warning 526     Symbol '___' (___) not defined
 5       Info    714     Symbol '___' (___) not referenced
 90      Info    755     global macro '___' (___) not referenced
-9       Info    756     global typedef '___' (___) not referenced
+11      Info    756     global typedef '___' (___) not referenced
 8       Info    759     header declaration for symbol '___' defined at (___) could be moved from header to module
 8       Info    765     external '___' (___) could be made static
 5       Info    768     global struct member '___' (___) not referenced

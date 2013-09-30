@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QS/C port
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Aug 10, 2013
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Sep 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -34,8 +34,13 @@
 * \brief QS/C port example for a "generic" C compiler.
 */
 
+/** \brief The QS time-stamp size in bytes */
 #define QS_TIME_SIZE            4
+
+/** \brief The object pointer size in bytes */
 #define QS_OBJ_PTR_SIZE         4
+
+/** \brief The function pointer size in bytes */
 #define QS_FUN_PTR_SIZE         4
 
 /*************************************************************************

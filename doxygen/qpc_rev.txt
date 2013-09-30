@@ -1,5 +1,5 @@
 /**
-\page rev_page QP/C Revision History
+\page rev_page Revision History
 
 \section qpc_5_1_0 Version 5.1.0, Release date: Sep 23, 2013
 
@@ -101,17 +101,18 @@ ARM Cortex-M Interrupt Priorities in QP 5.1" available at:
 http://www.state-machine.com/arm/AN_ARM-Cortex-M_Interrupt-Priorities.pdf
 
 
+<HR>
 \section qpc_5_0_0 Version 5.0.0, Release date: Sep 10, 2013
 
-\note QP/C 5.0.0 remains backwards-compatible with the existing QP/C 4.x
+\note QP/C 5.0.0 remains <b>backwards-compatible</b> with the existing QP/C 4.x
 applications.
 
-The main purpose of this <b>milestone QP/C release</b> is to enable the QM
+The main purpose of this milestone QP/C release is to enable the QM
 modeling tool to generate a new type of state machine code (requires QM
 version 3.0.0, which is still in development as of this writing).
 
 This new type of state machine implementation in QP/C 5 is based on the
-new ::QMsm class, which takes advantage of the QM tool as an advanced
+new QMsm class, which takes advantage of the QM tool as an advanced
 "state machine compiler". QM can perform optimizations that were not
 possible with the C pre-processor alone. Specifically, the QM can easily
 determine the LCA (Least-Common-Ancestor) state for every transition and
@@ -120,7 +121,7 @@ exit/entry/initial actions) at code-generation time. The resulting code
 can be still highly human-readable, but it will no longer be
 human-maintainable. The lab tests indicate that the new "housekeeping"
 code for executing hierarchical state machines can be about twice as
-fast as the previous code based on the ::QHsm class. Additionally, the new
+fast as the previous code based on the QHsm class. Additionally, the new
 code requires less run-time support (smaller event processor) and uses
 70% less of stack space in the call to the QMsm_dispatch() operation
 than QHsm_dispatch().
@@ -175,7 +176,7 @@ structures for QMsm, QHsm, and QFsm (polymorphism).
 2. Added new source files qmsm_ini.c and qmsm_dis.c to the QEP. These
 files implement the QMsm_init() and QMsm_dispatch() functions, respectively.
 
-3. Added the new QMActive "class" to qf.h. Extended the inheritance
+3. Added the new "QMActive" "class" to qf.h. Extended the inheritance
 tree to derive QMActive from QActive. Added virtual table structures for
 QMActive and QActvie (polymorphism).
     - modified macro QACTIVE_POST() to polymorphically call the direct
@@ -185,23 +186,7 @@ QMActive and QActvie (polymorphism).
     - modified macro QACTIVE_START() to polymorphically call the
       starting of an active object.
 
-4. Added the new non-asserting API to qf.h:
-    - renamed internal function QF_new_() to QF_newX_(), the latter one
-      taking the argument 'margin' for allocating events. The function
-      returns NULL if the event pool has less free events than the
-      specified margin. The function asserts if the margin is zero and
-      the event can't be allocated.
-    - added function QActive_post() to post an event to the given
-      active object. The function does not post the event if the target
-      event queue has less free slots than the specified margin. The
-      function asserts if the margin is zero and the event can't be
-      posted.
-    - added "extended" macro QF_NEW_X() for allocating events with a
-      margin.
-    - added "extended" macro QACTIVE_POST_X() for posting events with a
-      margin.
-
-5. Added the multiple system clock tick rates feature in qf.h:
+4. Added the multiple system clock tick rates feature in qf.h:
     - added new configuration macro #QF_MAX_TICK_RATE, which specifies
       the number of clock tick rates. This macro is to be defined in
       the QF ports (in the qf_port.h header file). If the macro is
@@ -224,7 +209,27 @@ QMActive and QActvie (polymorphism).
       QF_noTimeEvtsActiveX(), which checks time events assigned to the
       given tick rate.
 
-6. Modified QS (Quantum Spy) software tracing implementation:
+5. Added the new non-asserting API to qf.h:
+    - renamed internal function QF_new_() to QF_newX_(), the latter one
+      taking the argument 'margin' for allocating events. The function
+      returns NULL if the event pool has less free events than the
+      specified margin. The function asserts if the margin is zero and
+      the event can't be allocated.
+    - added function QActive_post() to post an event to the given
+      active object. The function does not post the event if the target
+      event queue has less free slots than the specified margin. The
+      function asserts if the margin is zero and the event can't be
+      posted.
+    - added "extended" macro QF_NEW_X() for allocating events with a
+      margin.
+    - added "extended" macro QACTIVE_POST_X() for posting events with a
+      margin.
+
+6. Modified the QActive_defer() function to return the status of the
+   defer operation (true==success), instead of asserting when the defer
+   queue overflows.
+
+7. Modified QS (Quantum Spy) software tracing implementation:
     - added additional tick rate byte to the trace records QS_QF_TICK
       and QS_QFF_TIMEEVT_*.
     - added new trace records QS_QF_ACTIVE_POST_ATTEMPT,
@@ -241,7 +246,7 @@ QMActive and QActvie (polymorphism).
       buffer indexes, etc.) in a single struct, which results in a more
       efficient code for various QS operations.
 
-7. Changed the structure of the ARM Cortex-M ports
+8. Changed the structure of the ARM Cortex-M ports
     - renamed the sub-directory for ARM Cortex-M ports and examples
       from "arm-cortex" to "arm-cm". This is done to avoid confusion
       with other ARM Cortex variants, such as Cortex-A/R, which very
@@ -256,14 +261,16 @@ QMActive and QActvie (polymorphism).
     - upgraded ARM Cortex-M ports with Sourcery CodeBench to the latest
       version 2013.05-53.
 
-8. Added the requested simple "Blinky" example for Windows and ARM
+9. Added the requested simple "Blinky" example for Windows and ARM
 Cortex-M (with the GNU, IAR, and Keil toolsets).
     - Added "Getting Started with QP/C" guide based on the Blinky
       example.
 
-9. Updated the Doxygen documentation (QP/C Reference Manual)
+10. Updated the Doxygen documentation (QP/C Reference Manual)
     - updated the QP/C tutorial
-    - added documentation and code samples
+    - updated and added documentation and code samples
+    - added search box and tree-view panel to the HTML documentation
+
 
 <HR>
 \section qpc_4_5_04 Version 4.5.04, Release date: Feb 08, 2013

@@ -32,6 +32,7 @@
 lint*.out
 
 test/
+test_ports/
 dbg/
 rel/
 spy/
