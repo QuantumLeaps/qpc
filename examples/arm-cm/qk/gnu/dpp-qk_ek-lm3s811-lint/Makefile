@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for EK-LM3811, QK kernel, GNU/Sourcery G++
+# Product: Makefile for DPP EK-LM3811, QK kernel, GNU/Sourcery G++
 # Last Updated for Version: 5.0.0
-# Date of the Last Update:  Sep 12, 2013
+# Date of the Last Update:  Sep 07, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -81,8 +81,7 @@ APP_DIR     := .
 
 # source directories
 VPATH = $(APP_DIR) \
-	$(CMSIS_DIR) \
-	display
+	$(CMSIS_DIR)
 
 # Output file basename
 OUTPUT := $(PROJECT)
@@ -91,8 +90,7 @@ OUTPUT := $(PROJECT)
 INCLUDES  = -I$(QPC)/include	\
 	-I$(QP_PORT_DIR) \
 	-I. \
-	-I$(CMSIS_DIR) \
-	-Idisplay
+	-I$(CMSIS_DIR)
 
 # defines
 DEFINES =
@@ -107,8 +105,7 @@ ARM_CORE = cortex-m3
 ASM_SRCS :=
 
 # C source files
-C_SRCS := $(wildcard *.c) \
-	display96x16x1.c
+C_SRCS := $(wildcard *.c)
 
 # C++ source files
 CPP_SRCS :=	$(wildcard *.cpp)
@@ -119,6 +116,8 @@ LIBS    := -lqp_$(ARM_CORE)_cs
 #-----------------------------------------------------------------------------
 # build options for various configurations
 #
+
+ARM_CORE = cortex-m3
 
 ifeq (rel, $(CONF))       # Release configuration ............................
 

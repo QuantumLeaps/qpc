@@ -1,4 +1,4 @@
-/* Date Stamp */ -d"_lint_au_misra2_lnt=au-misra2.lnt modified 21-Dec-2012"
+/* Date Stamp */ -d"_lint_au_misra2_lnt=au-misra2.lnt modified 29-Aug-2013"
 /* To document usage use: -message( "Using " _lint_au_misra2_lnt ) */
 // ---------------------------------------------------------------------
 // This file is provided by Gimpel Software (www.gimpel.com) for use with
@@ -405,7 +405,7 @@
 
     +e586        /* to activate the deprecation message */
     +elib(586)
-    -deprecate(keyword,asm,[MISRA 2004 Rule 2.1])
+    -deprecate(keyword,asm,[MISRA 2004 Rule 2.1, required])
 
 /* Rule 2.2 (req) **********************************/
 
@@ -434,7 +434,7 @@
     -fnc                   /* flag nested comments */
     +e602                  /* comment within comment */
     +elib(602)
-    -append(602,[MISRA 2004 Rule 2.4, advisory)
+    -append(602,[MISRA 2004 Rule 2.4, advisory])
 
 /* Rule 3.1 (req) **********************************/
 
@@ -491,6 +491,10 @@
     +e606                       /* non-ANSI escape sequence */
     +elib(606)
     -append(606,[MISRA 2004 Rule 4.1, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 4.1,
+       Prohibited escape sequence used
+     */
 
 /* Rule 4.2 (req) **********************************/
 
@@ -508,6 +512,10 @@
     +e621       /* Identifier clash - length set by -idlen */
     +elib(621)
     -append(621,[MISRA 2004 Rule 5.1, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 5.1,
+       Identifier exceeds 31 characters
+     */
 
 /* Rule 5.2 (req) **********************************/
 
@@ -523,6 +531,10 @@
     +e623               /* redefining the storage class of symbol */
     +elib(623)
     -append(623,[MISRA 2004 Rule 5.3, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 5.3,
+       Typedef is not a unique declarator.
+     */
 
 /* Rule 5.4 (req) **********************************/
 
@@ -535,6 +547,10 @@
     +e15                /* Symbol redeclared */
     +elib(15)
     -append(15,[MISRA 2004 Rule 5.4, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 5.4,
+       Tag is not a unique declarator
+     */
 
 /* Rule 5.5 (adv) **********************************/
 
@@ -544,6 +560,10 @@
     +e580           /* enable reports of name hiding */
     +elib(580)
     -append(580,[MISRA 2004 Rule 5.5, advisory])
+    /* we generate note 961 as follows:
+       Note 961: Violates MISRA 2004 Advisory Rule 5.5,
+       Identifier with static storage is reused.
+     */
 
 /* Rule 5.6 (adv) **********************************/
 
@@ -594,12 +614,20 @@
     +e46                /* field type should be int */
     +elib(46)
     -append(46,[MISRA 2004 Rule 6.4, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 6.4,
+       Bit field must be explicitly signed int or unsigned int
+     */
 
 /* Rule 6.5 (req) **********************************/
 
     +e806               /* small bit field is signed rather than unsigned */
     +elib(806)
     -append(806,[MISRA 2004 Rule 6.5, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 6.5,
+       Signed bit field is too small
+     */
 
 /* Rule 7.1 (req) **********************************/
 
@@ -626,6 +654,10 @@
                                */
     +elib(957)
     -append(957,[MISRA 2004 Rule 8.1, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 8.1,
+       no prototype for function
+     */
 
 /* Rule 8.2 (req) **********************************/
 
@@ -664,7 +696,7 @@
 
     /* we generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 8.5,
-       no object/function definitions in header files
+       object/function definition in header file
      */
 
 /* Rule 8.6 (req) **********************************/
@@ -685,7 +717,7 @@
 
     /* we generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 8.8,
-       Object/function previously declared in location
+       Object/function previously declared
      */
 
 /* Rule 8.9 (req) **********************************/
@@ -693,6 +725,10 @@
     +e14        /* Symbol previously defined */
     +elib(14)
     -append(14,[MISRA 2004 Rule 8.9, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 8.9,
+       undefined symbol
+     */
 
 /* Rule 8.10 (req) *********************************/
 
@@ -711,6 +747,10 @@
     +e85               /* Array has 0 dimension */
     +elib(85)
     -append(85,[MISRA 2004 Rule 8.12, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 8.12,
+       extern array declared without size or initializer
+     */
 
 /* Rule 9.1 (req) **********************************/
 
@@ -811,9 +851,14 @@
     +esym(68,pointer)            /* cannot cast to/from pointer */
     -append(68,[MISRA 2004 Rule 11.1, required])
     +esym(922,pointer)           /* cast to/from pointer */
+    -append(922,[MISRA 2004 Rule 11.1, required])
     +e923                        /* cast pointer/non-pointer */
     +elib(923)
     -append(923,[Encompasses MISRA 2004 Rule 11.1, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 11.1,
+       Conversions involving function pointers must be to/from integral types
+     */
 
 /* Rule 11.2 (req) *********************************/
 
@@ -873,7 +918,7 @@
 
     /* we generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 12.3,
-       'sizeof' used on expressions with side effect
+       'sizeof' used on expression with side effect
      */
 
 /* Rule 12.4 (req) *********************************/
@@ -910,12 +955,20 @@
     +e572                        /* excessive shift value */
     +elib(572)
     -append(572,[MISRA 2004 Rule 12.8, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 12.8,
+       out of bounds value for right hand side of shift operator
+     */
 
 /* Rule 12.9 (req) *********************************/
 
     +e501                        /* expected signed type */
     +elib(501)
     -append(501,[MISRA 2004 Rule 12.9, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 12.9,
+       Prohibited operator applied to unsigned underlying type
+     */
 
 /* Rule 12.10 (req) ********************************/
 
@@ -937,9 +990,9 @@
        Bit representation of a floating point type used
      */
 
-/* Rule 12.13 (req) ********************************/
+/* Rule 12.13 (adv) ********************************/
 
-    /* we generate note 960 as follows:
+    /* we generate note 961 as follows:
        Note 961: Violates MISRA 2004 Advisory Rule 12.13,
        Increment or decrement combined with another operator
      */
@@ -950,10 +1003,13 @@
     +elib(720)
     -append(720,[MISRA 2004 Rule 13.1, required])
     +e820                    /* Boolean test of parenthesized
-                                assignment
-                              */
+                                assignment */
     +elib(820)
     -append(820,[MISRA 2004 Rule 13.1, required,])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 13.1,
+       assignment operator used in boolean expression
+     */
 
 /* Rule 13.2 (adv) *********************************/
 
@@ -963,12 +1019,13 @@
 
 /* Rule 13.3 (req) *********************************/
 
-    /* PC-lint and FlexeLint partially support this rule with the
-       following options.
-     */
     +e777                    /* testing floats for equality */
     +elib(777)
     -append(777,[MISRA 2004 Rule 13.3, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 13.3,
+       floating point test for equality or inequality
+     */
 
 /* Rule 13.4 (req) *********************************/
 
@@ -994,20 +1051,18 @@
 
 /* Rule 13.7 (req) *********************************/
 
-    +e506       /* constant value boolean */
+    +e506           /* constant value boolean */
     +elib(506)
     -append(506,[MISRA 2004 Rule 13.7, required])
-    +e650       /* constant out of range */
+    +e650           /* constant out of range */
     +elib(650)
     -append(650,[MISRA 2004 Rule 13.7, required])
-    +e685       /* always evaluates to true/false */
+    +e685           /* always evaluates to true/false */
     +elib(685)
     -append(685,[MISRA 2004 Rule 13.7, required])
-    +e774       /* always evaluates to true/false */
+    +e774              /* always evaluates to true/false */
     +elib(774)
     -append(774,[MISRA 2004 Rule 13.7, required])
-    +esym(845,&&,||)    /* argument is certain to be 0 */
-    -append(845,[MISRA 2004 Rule 13.7, required])
 
 /* Rule 14.1 (req) *********************************/
 
@@ -1104,6 +1159,11 @@
     +e44                  /* Need a switch */
     +elib(44)
     -append(44,[MISRA 2004 Rule 15.1, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 15.1,
+       most closely enclosing compound statement of a case/default
+       is not of a switch
+     */
 
 /* Rule 15.2 (req) *********************************/
 
@@ -1115,16 +1175,20 @@
                            */
     +elib(825)
     -append(825,[MISRA 2004 Rule 15.2, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 15.2,
+       missing unconditional break from switch case
+     */
 
 /* Rule 15.3 (req) *********************************/
 
     +e744            /* switch statement has no default */
     +elib(744)
     -append(744,[MISRA 2004 Rule 15.3, required])
-
     /* we also generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 15.3,
-       case label follows default in switch statement
+       case label follows default in switch statement or
+       default missing from switch statement
      */
 
 /* Rule 15.4 (req) *********************************/
@@ -1153,6 +1217,9 @@
     -e974
     +estring(974,*recursive*)   /* worst case function stack usage */
     -append(974,[MISRA 2004 Rule 16.2, required])
+    /* we also generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 16.2,
+       function is recursive */
 
 /* Rule 16.3 (req) *********************************/
 
@@ -1199,8 +1266,7 @@
 
     /* we generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 16.9,
-       Function identifier used without '&' or parenthisized parameter
-       list
+       Function identifier used without '&' or parenthesized parameter list
      */
 
 /* Rule 16.10 (req) ********************************/
@@ -1263,6 +1329,10 @@
     +e43                         /* vacuous type for variable */
     +elib(43)
     -append(43,[MISRA 2004 Rule 18.1, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 18.1,
+       Undefined type or Expression of undefined type
+     */
 
 /* Rule 18.2 (req) *********************************/
 
@@ -1311,6 +1381,10 @@
     +e773                   /* expression-like macro not parenthesized */
     +elib(773)
     -append(773,[MISRA 2004 Rule 19.4, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 19.4,
+       Disallowed definition for macro
+     */
 
 /* Rule 19.5 (req) *********************************/
 
@@ -1372,14 +1446,14 @@
 
     /* we generate note 961 as follows:
        Note 961: Violates MISRA 2004 Advisory Rule 19.13,
-       '#/##' operators used
+       '#/##' operator used in macro
      */
 
 /* Rule 19.14 (req) ********************************/
 
     /* we generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 19.14,
-       non-standard use of 'defined' preprocessor statement
+       non-standard use of 'defined' preprocessor operator
      */
 
 /* Rule 19.15 (req) ********************************/
@@ -1396,6 +1470,11 @@
     +e16        /* # directive not followed by recognizable word */
     +elib(16)
     -append(16,[MISRA 2004 Rule 19.16, required])
+    /* we generate note 960 as follows:
+       Note 960: Violates MISRA 2004 Required Rule 19.16,
+       all preprocessing directives must be valid
+     */
+
     /* other parts to the intent of this rule such as a syntax check
        of the disabled portions of the code do not seem to be
        statically checkable

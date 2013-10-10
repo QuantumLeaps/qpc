@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 08, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -33,9 +33,9 @@
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
 #include "qf_pkg.h"
-/* #include "qassert.h" */
+#include "qassert.h"
 
-/* Q_DEFINE_THIS_MODULE("qeq_get") */
+Q_DEFINE_THIS_MODULE("qeq_get")
 
 /**
 * \file
@@ -48,32 +48,34 @@
 QEvt const *QEQueue_get(QEQueue * const me) {
     QEvt const *e;
     QF_CRIT_STAT_
-    QF_CRIT_ENTRY_();
-    if (me->frontEvt == (QEvt const *)0) {           /* is the queue empty? */
-        e = (QEvt const *)0;             /* no event available at this time */
-    }
-    else {                                        /* the queue is not empty */
-        e = me->frontEvt;
 
-        if (me->nFree != me->end) {       /* any events in the ring buffer? */
+    QF_CRIT_ENTRY_();
+    e = me->frontEvt;        /* always remove event from the front location */
+
+    if (e != (QEvt const *)0) {                 /* was the queue not empty? */
+        QEQueueCtr nFree = me->nFree + (QEQueueCtr)1;/*get volatile into tmp*/
+        me->nFree = nFree;                      /* upate the number of free */
+
+        if (nFree <= me->end) {           /* any events in the ring buffer? */
             me->frontEvt = QF_PTR_AT_(me->ring, me->tail); /* get from tail */
             if (me->tail == (QEQueueCtr)0) {      /* need to wrap the tail? */
                 me->tail = me->end;                          /* wrap around */
             }
             --me->tail;
 
-            ++me->nFree;          /* one more free event in the ring buffer */
-
             QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_GET, QS_priv_.eqObjFilter, me)
                 QS_TIME_();                                    /* timestamp */
                 QS_SIG_(e->sig);                /* the signal of this event */
                 QS_OBJ_(me);                           /* this queue object */
                 QS_2U8_(e->poolId_, e->refCtr_);     /* pool Id & ref Count */
-                QS_EQC_(me->nFree);               /* number of free entries */
+                QS_EQC_(nFree);                   /* number of free entries */
             QS_END_NOCRIT_()
         }
         else {
             me->frontEvt = (QEvt const *)0;          /* queue becomes empty */
+
+                  /* all entries in the queue must be free (+1 for fronEvt) */
+            Q_ASSERT(nFree == (me->end + (QEQueueCtr)1));
 
             QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_GET_LAST, QS_priv_.eqObjFilter, me)
                 QS_TIME_();                                    /* timestamp */

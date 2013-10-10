@@ -1,13 +1,13 @@
 /*****************************************************************************
-* Product: Reminder1 state pattern example
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 21, 2012
+* Product: Reminder2 state pattern example
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 09, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -57,7 +57,6 @@ typedef struct CruncherTag {                  /* the Cruncher active object */
     double sum;                                        /* internal variable */
 } Cruncher;
 
-
 void Cruncher_ctor(Cruncher * const me);
                                                        /* state machine ... */
 static QState Cruncher_initial   (Cruncher * const me, QEvt const * const e);
@@ -80,7 +79,7 @@ QState Cruncher_processing(Cruncher * const me, QEvt const * const e) {
         case Q_ENTRY_SIG: {
             ReminderEvt *reminder = Q_NEW(ReminderEvt, CRUNCH_SIG);
             reminder->iter = 0;
-            QActive_postFIFO((QActive *)me, (QEvt const *)reminder);
+            QACTIVE_POST((QActive *)me, (QEvt const *)reminder, me);
             me->sum = 0.0;
             status = Q_HANDLED();
             break;
@@ -100,7 +99,7 @@ QState Cruncher_processing(Cruncher * const me, QEvt const * const e) {
             if (i < 0x07000000) {
                 ReminderEvt *reminder = Q_NEW(ReminderEvt, CRUNCH_SIG);
                 reminder->iter = i;
-                QActive_postFIFO((QActive *)me, (QEvt const *)reminder);
+                QACTIVE_POST((QActive *)me, (QEvt const *)reminder, me);
                 status = Q_HANDLED();
             }
             else {
@@ -147,13 +146,8 @@ QState Cruncher_final(Cruncher * const me, QEvt const * const e) {
 
 /* Local-scope objects -----------------------------------------------------*/
 static Cruncher l_cruncher;                   /* the Cruncher active object */
-QEvt const *l_cruncherQSto[10];    /* Event queue storage for Cruncher AO */
-
-static union SmallEvents {
-    void   *e0;                                       /* minimum event size */
-    uint8_t e1[sizeof(ReminderEvt)];
-    /* ... other event types to go into this pool */
-} l_smlPoolSto[20];                     /* storage for the small event pool */
+QEvt const *l_cruncherQSto[10];      /* Event queue storage for Cruncher AO */
+static QF_MPOOL_EL(ReminderEvt) l_smlPoolSto[20]; /* storage for small pool */
 
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
@@ -173,7 +167,7 @@ int main(int argc, char *argv[]) {
     QF_poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
 
                              /* instantiate and start the active objects... */
-    QActive_start((QActive *)&l_cruncher, 1,
+    QACTIVE_START((QActive *)&l_cruncher, 1,
                   l_cruncherQSto, Q_DIM(l_cruncherQSto),
                   (void *)0, 1024, (QEvt *)0);
 
@@ -183,16 +177,16 @@ int main(int argc, char *argv[]) {
 void BSP_onKeyboardInput(uint8_t key) {
     switch (key) {
         case 'e': {
-            static QEvt const echoEvt = { ECHO_SIG, 0};
-            QActive_postFIFO((QActive *)&l_cruncher, &echoEvt);
+            static QEvt const echoEvt = { ECHO_SIG, 0U, 0U };
+            QACTIVE_POST((QActive *)&l_cruncher, &echoEvt, (void *)0);
             break;
         }
         case '\033': {                                      /* ESC pressed? */
             /* NOTE: this constant event is statically pre-allocated.
             * It can be posted/published as any other event.
             */
-            static QEvt const terminateEvt = { TERMINATE_SIG, 0};
-            QActive_postFIFO((QActive *)&l_cruncher, &terminateEvt);
+            static QEvt const terminateEvt = { TERMINATE_SIG, 0U, 0U };
+            QACTIVE_POST((QActive *)&l_cruncher, &terminateEvt, (void *)0);
             break;
         }
     }

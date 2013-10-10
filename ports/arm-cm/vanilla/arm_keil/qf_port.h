@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C, ARM Cortex-M, Vanilla port, ARM-KEIL compiler
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 09, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -49,6 +49,12 @@
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE2   */
     #define QF_AWARE_ISR_CMSIS_PRI  0
 
+                          /* macro to put the CPU to sleep inside QF_idle() */
+    #define QF_CPU_SLEEP() do { \
+        __wfi(); \
+        QF_INT_ENABLE(); \
+    } while (0)
+
 #else                                        /* Cortex-M3/M4/M4F, see NOTE3 */
 
     #define QF_SET_BASEPRI(val)     __asm("msr BASEPRI," #val)
@@ -60,6 +66,14 @@
 
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5   */
     #define QF_AWARE_ISR_CMSIS_PRI  (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
+
+                          /* macro to put the CPU to sleep inside QF_idle() */
+    #define QF_CPU_SLEEP() do { \
+        __disable_irq(); \
+        QF_INT_ENABLE(); \
+        __wfi(); \
+        __enable_irq(); \
+    } while (0)
 
               /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
     #define QF_LOG2(n_) ((uint8_t)(32U - __clz(n_)))

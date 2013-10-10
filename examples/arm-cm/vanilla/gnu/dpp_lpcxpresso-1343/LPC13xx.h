@@ -1,4 +1,9 @@
 /**************************************************************************//**
+ * 10-Oct-2013 Quantum Leaps, LLC
+ * - Commented out "system_LPC13xx.h" and copied this header code verbatim.
+ * - Added the prototype of assert_failed()
+ ******************************************************************************/
+/**************************************************************************//**
  * @file     LPC13xx.h
  * @brief    CMSIS Cortex-M3 Core Peripheral Access Layer Header File for
  *           NXP LPC13xx Device Series
@@ -117,7 +122,41 @@ typedef enum IRQn
 
 
 #include "core_cm3.h"                       /* Cortex-M3 processor and core peripherals           */
-#include "system_LPC13xx.h"                 /* System Header                                      */
+/* #include "system_LPC13xx.h" */           /* System Header                                      */
+#include <stdint.h>
+
+extern uint32_t SystemCoreClock;     /*!< System Clock Frequency (Core Clock)  */
+
+
+/**
+ * Initialize the system
+ *
+ * @param  none
+ * @return none
+ *
+ * @brief  Setup the microcontroller system.
+ *         Initialize the System and update the SystemCoreClock variable.
+ */
+extern void SystemInit (void);
+
+/**
+ * Update SystemCoreClock variable
+ *
+ * @param  none
+ * @return none
+ *
+ * @brief  Updates the SystemCoreClock with current core Clock
+ *         retrieved from cpu registers.
+ */
+extern void SystemCoreClockUpdate (void);
+/**
+ * Assertion handler
+ *
+ * @brief  A function to handle an assertion.
+ *         This function should be defined at the application level
+ *         and should never return to the caller.
+ */
+extern void assert_failed (char const *file, int line);
 
 
 /******************************************************************************/

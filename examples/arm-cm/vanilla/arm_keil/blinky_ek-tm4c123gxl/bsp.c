@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Simple Blinky example, Tiva EK-TM4C123GXL, Vanilla kernel
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 09, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -143,7 +143,6 @@ void QF_onStartup(void) {
     NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
     /* ... */
                                                           /* enable IRQs... */
-
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
@@ -155,10 +154,9 @@ void QF_onIdle(void) {       /* called with interrupts disabled, see NOTE01 */
     * you might need to customize the clock management for your application,
     * see the datasheet for your particular Cortex-M MCU.
     */
-    __WFI();                                          /* Wait-For-Interrupt */
-    QF_INT_ENABLE();
+    QF_CPU_SLEEP();         /* atomically go to sleep and enable interrupts */
 #else
-    QF_INT_ENABLE();
+    QF_INT_ENABLE();                              /* just enable interrupts */
 #endif
 }
 

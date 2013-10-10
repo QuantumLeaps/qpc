@@ -4,9 +4,9 @@
 // www.state-machine.com
 //
 // - Added Stellaris DID0 register macros (Stellaris classes and versions)
-// - Configured for EK-LM3S6965 board:
-//     PLL driven system clock at 50MHz (200 MHz / 4)
-//     8 MHz oscillator
+// - Configured for EK-LM3S811 board:
+//     PLL driven system clock at 20MHz (200 MHz / 10)
+//     6 MHz oscillator
 //****************************************************************************
 
 //****************************************************************************
@@ -69,7 +69,7 @@
 // The following value is the system clock divisor.  This will be applied if
 // USESYSDIV (see below) is enabled.  The valid range of dividers is 2-16.
 //
-#define CFG_RCC_SYSDIV 4
+#define CFG_RCC_SYSDIV 10
 
 //      <q> USESYSDIV: Enable System Clock Divider
 //          <i> Check this box to use the System Clock Divider
@@ -153,7 +153,7 @@
 // to the table in the comments above.  If an external crystal is used, then
 // this value must be set to match the value of the crystal.
 //
-#define CFG_RCC_XTAL 14
+#define CFG_RCC_XTAL 11
 
 //      <o> OSCSRC: Oscillator Source
 //              <0=> 0: MOSC Main oscillator

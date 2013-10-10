@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Mar 16, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 08, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -52,8 +52,8 @@ void QEQueue_init(QEQueue * const me, QEvt const *qSto[],
     me->end      = qLen;
     me->head     = (QEQueueCtr)0;
     me->tail     = (QEQueueCtr)0;
-    me->nFree    = qLen;
-    me->nMin     = qLen;
+    me->nFree    = qLen + (QEQueueCtr)1;       /* +1 for the extra frontEvt */
+    me->nMin     = me->nFree;
 
     QS_BEGIN_(QS_QF_EQUEUE_INIT, QS_priv_.eqObjFilter, me)
         QS_OBJ_(me);                                 /* this QEQueue object */

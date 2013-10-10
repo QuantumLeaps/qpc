@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Deferred Event state pattern example
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 03, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 08, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -71,7 +71,6 @@ static QState TServer_busy       (TServer * const me, QEvt const * const e);
 static QState TServer_receiving  (TServer * const me, QEvt const * const e);
 static QState TServer_authorizing(TServer * const me, QEvt const * const e);
 static QState TServer_final      (TServer * const me, QEvt const * const e);
-
 
 /*..........................................................................*/
 void TServer_ctor(TServer * const me) {                 /* the default ctor */
@@ -261,12 +260,12 @@ void BSP_onKeyboardInput(uint8_t key) {
             RequestEvt *e = Q_NEW(RequestEvt, NEW_REQUEST_SIG);
             e->ref_num = (++reqCtr);            /* set the reference number */
                                   /* post directly to TServer active object */
-            QActive_postFIFO((QActive *)&l_tserver, (QEvt *)e);
+            QACTIVE_POST((QActive *)&l_tserver, (QEvt *)e, (void *)0);
             break;
         }
         case '\33': {                                       /* ESC pressed? */
-            static QEvt const terminateEvt = { TERMINATE_SIG, 0};
-            QActive_postFIFO((QActive *)&l_tserver, &terminateEvt);
+            static QEvt const terminateEvt = { TERMINATE_SIG, 0U, 0U };
+            QACTIVE_POST((QActive *)&l_tserver, &terminateEvt, (void *)0);
             break;
         }
     }

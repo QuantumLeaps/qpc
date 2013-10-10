@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: Orthogonal Component state pattern example
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 09, 2012
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 09, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -64,7 +64,7 @@ QState Alarm_off(Alarm * const me, QEvt const * const e) {
         case Q_ENTRY_SIG: {
              /* while in the off state, the alarm is kept in decimal format */
             me->alarm_time = (me->alarm_time/60)*100 + me->alarm_time%60;
-            printf("*** Alarm OFF %02ld:%02ld\n",
+            printf("*** Alarm OFF %02d:%02d\n",
                    me->alarm_time/100, me->alarm_time%100);
             fflush(stdout);
             status = Q_HANDLED();
@@ -83,7 +83,7 @@ QState Alarm_off(Alarm * const me, QEvt const * const e) {
             }
             else {      /* alarm out of range -- clear and don't transition */
                 me->alarm_time = 0;
-                printf("*** Alarm reset %02ld:%02ld\n",
+                printf("*** Alarm reset %02d:%02d\n",
                        me->alarm_time/100, me->alarm_time%100);
                 status = Q_HANDLED();
             }
@@ -93,7 +93,7 @@ QState Alarm_off(Alarm * const me, QEvt const * const e) {
                       /* while setting, the alarm is kept in decimal format */
             me->alarm_time = (10 * me->alarm_time
                               + ((SetEvt const *)e)->digit) % 10000;
-            printf("*** Alarm SET %02ld:%02ld\n",
+            printf("*** Alarm SET %02d:%02d\n",
                    me->alarm_time/100, me->alarm_time%100);
             fflush(stdout);
             status = Q_HANDLED();
@@ -111,7 +111,7 @@ QState Alarm_on(Alarm * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            printf("*** Alarm ON %02ld:%02ld\n",
+            printf("*** Alarm ON %02d:%02d\n",
                    me->alarm_time/60, me->alarm_time%60);
             fflush(stdout);
             status = Q_HANDLED();
@@ -131,7 +131,7 @@ QState Alarm_on(Alarm * const me, QEvt const * const e) {
             if (((TimeEvt *)e)->current_time == me->alarm_time) {
                 printf("ALARM!!!\n");
                        /* asynchronously post the event to the container AO */
-                QActive_postFIFO(APP_alarmClock, Q_NEW(QEvt, ALARM_SIG));
+                QACTIVE_POST(APP_alarmClock, Q_NEW(QEvt, ALARM_SIG), me);
             }
             status = Q_HANDLED();
             break;

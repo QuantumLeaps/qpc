@@ -210,8 +210,8 @@ typedef enum IRQn {
 
 
 #include "core_cm4.h"          /* Cortex-M4 processor and core periphs      */
-//#include "system_lm4f.h"       /* LM4F Stellaris system init                */
 
+/*extern uint32_t SystemFrequency;*/    /*!< System Clock Frequency (Core Clock) */
 
 /**
  * @brief  Setup the initial configuration of the microcontroller
@@ -221,6 +221,15 @@ typedef enum IRQn {
  * Initialize the system clocking according to the user configuration.
  */
 extern void SystemInit (void);
+
+/**
+ * Assertion handler
+ *
+ * @brief  A function to handle an assertion.
+ *         This function should be defined at the application level
+ *         and should never return to the caller.
+ */
+extern void assert_failed (char const *file, int line);
 
 
 /****************************************************************************/

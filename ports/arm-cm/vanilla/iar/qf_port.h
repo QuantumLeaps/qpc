@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C, Cortex-M, Vanilla port, IAR compiler
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 20, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 10, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -49,6 +49,12 @@
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE2   */
     #define QF_AWARE_ISR_CMSIS_PRI  0
 
+                          /* macro to put the CPU to sleep inside QF_idle() */
+    #define QF_CPU_SLEEP() do { \
+        __WFI(); \
+        QF_INT_ENABLE(); \
+    } while (0)
+
 #else                                       /* Cortex-M3/M4/M4F, see NOTE03 */
 
     #define QF_INT_DISABLE()        __set_BASEPRI(QF_BASEPRI)
@@ -60,10 +66,18 @@
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5   */
     #define QF_AWARE_ISR_CMSIS_PRI  (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
+                          /* macro to put the CPU to sleep inside QF_idle() */
+    #define QF_CPU_SLEEP() do { \
+        __disable_interrupt(); \
+        QF_INT_ENABLE(); \
+        __WFI(); \
+        __enable_interrupt(); \
+    } while (0)
+
               /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
     #define QF_LOG2(n_) ((uint8_t)(32U - __CLZ(n_)))
-#endif
 
+#endif
                                        /* QF critical section entry/exit... */
 /* QF_CRIT_STAT_TYPE not defined: unconditional interrupt unlocking" policy */
 #define QF_CRIT_ENTRY(dummy)        QF_INT_DISABLE()

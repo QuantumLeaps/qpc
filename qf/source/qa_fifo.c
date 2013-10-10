@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 08, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -55,14 +55,15 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
                      uint16_t const margin, void const * const sender)
 #endif
 {
+    QEQueueCtr nFree;          /* temporary to avoid UB for volatile access */
     uint8_t status;
     QF_CRIT_STAT_
 
     Q_REQUIRE(e != (QEvt const *)0);                 /* event must be valid */
 
     QF_CRIT_ENTRY_();
-
-    if (me->eQueue.nFree > (QEQueueCtr)margin) {       /* margin available? */
+    nFree = me->eQueue.nFree;            /* get volatile into the temporary */
+    if (nFree > (QEQueueCtr)margin) {       /* margin available? */
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.aoObjFilter, me)
             QS_TIME_();                                        /* timestamp */
@@ -70,7 +71,7 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
             QS_SIG_(e->sig);                     /* the signal of the event */
             QS_OBJ_(me);                  /* this active object (recipient) */
             QS_2U8_(e->poolId_, e->refCtr_);         /* pool Id & ref Count */
-            QS_EQC_(me->eQueue.nFree);            /* number of free entries */
+            QS_EQC_(nFree);                       /* number of free entries */
             QS_EQC_(me->eQueue.nMin);         /* min number of free entries */
         QS_END_NOCRIT_()
 
@@ -78,10 +79,15 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
             QF_EVT_REF_CTR_INC_(e);      /* increment the reference counter */
         }
 
+        --nFree;                             /* one free entry just used up */
+        me->eQueue.nFree = nFree;                    /* update the volatile */
+        if (me->eQueue.nMin > nFree) {
+            me->eQueue.nMin = nFree;               /* update minimum so far */
+        }
+
         if (me->eQueue.frontEvt == (QEvt const *)0) {       /* empty queue? */
             me->eQueue.frontEvt = e;              /* deliver event directly */
             QACTIVE_EQUEUE_SIGNAL_(me);           /* signal the event queue */
-            status = (uint8_t)1;               /* event posted successfully */
         }
         else {     /* queue is not empty, insert event into the ring-buffer */
                                 /* insert event into the ring buffer (FIFO) */
@@ -90,13 +96,8 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
                 me->eQueue.head = me->eQueue.end;            /* wrap around */
             }
             --me->eQueue.head;      /* advance the head (counter clockwise) */
-            --me->eQueue.nFree;             /* update number of free events */
-
-            if (me->eQueue.nMin > me->eQueue.nFree) {       /* the new min? */
-                me->eQueue.nMin = me->eQueue.nFree;    /* update min so far */
-            }
-            status = (uint8_t)1;               /* event posted successfully */
         }
+        status = (uint8_t)1;                   /* event posted successfully */
     }
     else {
         Q_ASSERT(margin != (uint16_t)0);    /* can tollerate dropping evts? */
@@ -107,13 +108,12 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
             QS_SIG_(e->sig);                     /* the signal of the event */
             QS_OBJ_(me);                  /* this active object (recipient) */
             QS_2U8_(e->poolId_, e->refCtr_);         /* pool Id & ref Count */
-            QS_EQC_(me->eQueue.nFree);            /* number of free entries */
+            QS_EQC_(nFree);                       /* number of free entries */
             QS_EQC_((QEQueueCtr)margin);                /* margin requested */
         QS_END_NOCRIT_()
 
         status = (uint8_t)0;
     }
-
     QF_CRIT_EXIT_();
 
     return status;

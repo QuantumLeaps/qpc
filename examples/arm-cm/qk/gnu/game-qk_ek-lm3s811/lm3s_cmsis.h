@@ -1,7 +1,6 @@
 //*****************************************************************************
 //
 // lm3s_cmsis.h - CMSIS header file for Luminary Micro LM3S Stellaris
-//                microcontroller.s
 //
 // This file is based on CMSIS specification 1.02 (02. Feb. 2009)
 //
@@ -113,8 +112,8 @@ typedef enum IRQn
 
 
 #include "core_cm3.h"          /* Cortex-M3 processor and core periphs  */
-#include "system_lm3s.h"       /* LM3S Stellaris system init            */
 
+extern uint32_t SystemFrequency;    /*!< System Clock Frequency (Core Clock) */
 
 /**
  * @brief  Setup the initial configuration of the microcontroller
@@ -125,6 +124,14 @@ typedef enum IRQn
  */
 extern void SystemInit (void);
 
+/**
+ * Assertion handler
+ *
+ * @brief  A function to handle an assertion.
+ *         This function should be defined at the application level
+ *         and should never return to the caller.
+ */
+extern void assert_failed (char const *file, int line);
 
 /*****************************************************************************/
 /*                Device Specific Peripheral registers structures            */

@@ -136,7 +136,7 @@ void QF_onStartup(void) {
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
     /* assing all priority bits for preemption-prio. and none to sub-prio. */
-    NVIC_SetPriorityGrouping(0U);
+    /* NVIC_SetPriorityGrouping(0U); // not available for Cortex-M0 */
 
     /* set priorities of ALL ISRs used in the system, see NOTE00
     *

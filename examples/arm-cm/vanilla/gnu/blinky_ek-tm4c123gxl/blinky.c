@@ -35,9 +35,7 @@
 #include "qp_port.h"
 #include "bsp.h"
 
-#include <stdio.h>
-
-Q_DEFINE_THIS_FILE
+//Q_DEFINE_THIS_FILE
 
 /*..........................................................................*/
 enum Signals {

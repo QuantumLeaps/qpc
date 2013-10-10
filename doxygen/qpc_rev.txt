@@ -1,6 +1,42 @@
 /**
 \page rev_page Revision History
 
+\section qpc_5_1_1 Version 5.1.1, Release date: Oct 10, 2013
+
+This release fixes reversal of logic in the QF_noTimeEvtsActiveX()
+function as well as sleep mode transition in the ARM Cortex-M3/M4 ports
+to the cooperative Vanilla kernel. Also, the native QP event queue
+implementation has been changed to count the extra "front-event"
+location into the number of free entries, which fixes the problem of
+defer queues of depth 1. Finally, the release restores the support for
+linting (with PC-Lint) of the QP/C applications for ARM Cortex-M (with
+IAR and GNU compilers).
+
+Changes in detail:
+
+1. In file qf_tick.c reversed the logic inside QF_noTimeEvtsActiveX()
+
+2. Modified free entry accounting (nFree) in the files: qeq_init.c,
+qeq_fifo.c, qeq_get.c, and qeq_lifo.c.
+
+3. Modified free entry accounting (nFree) in the files: qa_init.c,
+qa_fifo.c, qa_get_.c, and qa_lifo.c.
+
+4. Introduced new macro QF_CPU_SLEEP() in the ARM Cortex-M Vanilla ports.
+
+5. Changed Board Support Package files (bsp.c) in the ARM Cortex-M
+Vanilla examples.
+
+6. Modified the CMSIS-compliant startup code in all ARM Cortex-M Vanilla
+examples.
+
+7. Modified the application examples with PC-Lint
+(qpc/examples/arm-cm/qk/gnu/dpp-qk_ek-lm3s811-lint and
+qpc/examples/arm-cm/qk/iar/dpp-qk_ek-lm3s811-lint). Updated lint files
+for the latest PC-Lint
+
+
+<HR>
 \section qpc_5_1_0 Version 5.1.0, Release date: Sep 23, 2013
 
 This release brings significant improvements to the QS software tracing

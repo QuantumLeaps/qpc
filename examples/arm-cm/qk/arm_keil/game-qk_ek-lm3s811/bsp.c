@@ -62,21 +62,6 @@ enum KernelAwareISRs {
 /* "kernel-aware" interrupts should not overlap the PendSV priority */
 Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
-
-
-/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-* Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-* DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-*/
-enum ISR_CMSIS_Pri {/*ISR CMSIS priorities starting from the highest urgency*/
-    /* QF-unaware ISR start at 0 (highest NVIC priority) ...................*/
-
-    /* kernel-aware interrupts start at QF_AWARE_ISR_CMSIS_PRI .............*/
-    ADCSEQ3_PRIO = QF_AWARE_ISR_CMSIS_PRI,                    /* see NOTE00 */
-    SYSTICK_PRIO
-    /* ... */
-};
-
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
 void GPIOPortA_IRQHandler(void);

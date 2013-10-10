@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 12, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 07, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -130,20 +130,20 @@ void QF_tickX(uint8_t const tickRate, void const * const sender)
 }
 /*..........................................................................*/
 uint8_t QF_noTimeEvtsActiveX(uint8_t const tickRate) {        /* see NOTE03 */
-    uint8_t active;
+    uint8_t inactive;
 
     Q_REQUIRE(tickRate < (uint8_t)QF_MAX_TICK_RATE);    /* must be in range */
 
     if (QF_timeEvtHead_[tickRate].next != (QTimeEvt *)0) {
-        active = (uint8_t)1;
+        inactive = (uint8_t)0;
     }
     else if ((QF_timeEvtHead_[tickRate].act != (void *)0)) {
-        active = (uint8_t)1;
+        inactive = (uint8_t)0;
     }
     else {
-        active = (uint8_t)0;
+        inactive = (uint8_t)1;
     }
-    return active;
+    return inactive;
 }
 
 /*****************************************************************************

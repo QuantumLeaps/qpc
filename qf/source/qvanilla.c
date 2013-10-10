@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 04, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 07, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -90,7 +90,9 @@ int16_t QF_run(void) {
             QF_onIdle();                                      /* see NOTE01 */
         }
     }
-    /* return (int16_t)0; */                            /* unreachable code */
+#ifdef __GNUC__                                            /* GNU compiler? */
+    return (int16_t)0;
+#endif
 }
 /*..........................................................................*/
 void QActive_start(QActive * const me, uint8_t prio,

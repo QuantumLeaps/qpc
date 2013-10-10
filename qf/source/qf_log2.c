@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 5.1.0
+* Date of the Last Update:  Oct 07, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -39,6 +39,8 @@
 * \ingroup qf
 * \brief QF_log2Lkup[] definition.
 */
+
+#ifdef QF_LOG2LKUP
 
 /* Global objects ----------------------------------------------------------*/
 uint8_t const Q_ROM Q_ROM_VAR QF_log2Lkup[256] = {
@@ -107,3 +109,6 @@ uint8_t const Q_ROM Q_ROM_VAR QF_log2Lkup[256] = {
     (uint8_t)8, (uint8_t)8, (uint8_t)8, (uint8_t)8,
     (uint8_t)8, (uint8_t)8, (uint8_t)8, (uint8_t)8
 };
+
+#endif                                                /* #ifdef QF_LOG2LKUP */
+

@@ -1,7 +1,6 @@
 //*****************************************************************************
 //
 // lm3s_cmsis.h - CMSIS header file for Luminary Micro LM3S Stellaris
-//                microcontroller.s
 //
 // This file is based on CMSIS specification 1.02 (02. Feb. 2009)
 //
@@ -113,8 +112,8 @@ typedef enum IRQn
 
 
 #include "core_cm3.h"          /* Cortex-M3 processor and core periphs  */
-#include "system_lm3s.h"       /* LM3S Stellaris system init            */
 
+extern uint32_t SystemFrequency;    /*!< System Clock Frequency (Core Clock) */
 
 /**
  * @brief  Setup the initial configuration of the microcontroller
@@ -125,6 +124,14 @@ typedef enum IRQn
  */
 extern void SystemInit (void);
 
+/**
+ * Assertion handler
+ *
+ * @brief  A function to handle an assertion.
+ *         This function should be defined at the application level
+ *         and should never return to the caller.
+ */
+extern void assert_failed (char const *file, int line);
 
 /*****************************************************************************/
 /*                Device Specific Peripheral registers structures            */
@@ -920,69 +927,67 @@ typedef struct
 /*                            Peripheral declaration                          */
 /******************************************************************************/
 
-#define UINT2PTR_CAST(type_, base_) ((type_ *)(base_))
+#define SYSCTL              ((SYSCTL_Type *)SYSCTL_BASE)
 
-#define SYSCTL              UINT2PTR_CAST(SYSCTL_Type, SYSCTL_BASE)
+#define GPIOA               ((GPIO_Type *)GPIO_PORTA_BASE)
+#define GPIOB               ((GPIO_Type *)GPIO_PORTB_BASE)
+#define GPIOC               ((GPIO_Type *)GPIO_PORTC_BASE)
+#define GPIOD               ((GPIO_Type *)GPIO_PORTD_BASE)
+#define GPIOE               ((GPIO_Type *)GPIO_PORTE_BASE)
+#define GPIOF               ((GPIO_Type *)GPIO_PORTF_BASE)
+#define GPIOG               ((GPIO_Type *)GPIO_PORTG_BASE)
+#define GPIOA_HS            ((GPIO_Type *)GPIO_PORTA_AHB_BASE)
+#define GPIOB_HS            ((GPIO_Type *)GPIO_PORTB_AHB_BASE)
+#define GPIOC_HS            ((GPIO_Type *)GPIO_PORTC_AHB_BASE)
+#define GPIOD_HS            ((GPIO_Type *)GPIO_PORTD_AHB_BASE)
+#define GPIOE_HS            ((GPIO_Type *)GPIO_PORTE_AHB_BASE)
+#define GPIOF_HS            ((GPIO_Type *)GPIO_PORTF_AHB_BASE)
+#define GPIOG_HS            ((GPIO_Type *)GPIO_PORTG_AHB_BASE)
 
-#define GPIOA               UINT2PTR_CAST(GPIO_Type, GPIO_PORTA_BASE)
-#define GPIOB               UINT2PTR_CAST(GPIO_Type, GPIO_PORTB_BASE)
-#define GPIOC               UINT2PTR_CAST(GPIO_Type, GPIO_PORTC_BASE)
-#define GPIOD               UINT2PTR_CAST(GPIO_Type, GPIO_PORTD_BASE)
-#define GPIOE               UINT2PTR_CAST(GPIO_Type, GPIO_PORTE_BASE)
-#define GPIOF               UINT2PTR_CAST(GPIO_Type, GPIO_PORTF_BASE)
-#define GPIOG               UINT2PTR_CAST(GPIO_Type, GPIO_PORTG_BASE)
-#define GPIOA_HS            UINT2PTR_CAST(GPIO_Type, GPIO_PORTA_AHB_BASE)
-#define GPIOB_HS            UINT2PTR_CAST(GPIO_Type, GPIO_PORTB_AHB_BASE)
-#define GPIOC_HS            UINT2PTR_CAST(GPIO_Type, GPIO_PORTC_AHB_BASE)
-#define GPIOD_HS            UINT2PTR_CAST(GPIO_Type, GPIO_PORTD_AHB_BASE)
-#define GPIOE_HS            UINT2PTR_CAST(GPIO_Type, GPIO_PORTE_AHB_BASE)
-#define GPIOF_HS            UINT2PTR_CAST(GPIO_Type, GPIO_PORTF_AHB_BASE)
-#define GPIOG_HS            UINT2PTR_CAST(GPIO_Type, GPIO_PORTG_AHB_BASE)
+#define TIMER0              ((TIMER_Type *)TIMER0_BASE)
+#define TIMER1              ((TIMER_Type *)TIMER1_BASE)
+#define TIMER2              ((TIMER_Type *)TIMER2_BASE)
+#define TIMER3              ((TIMER_Type *)TIMER3_BASE)
 
-#define TIMER0              UINT2PTR_CAST(TIMER_Type, TIMER0_BASE)
-#define TIMER1              UINT2PTR_CAST(TIMER_Type, TIMER1_BASE)
-#define TIMER2              UINT2PTR_CAST(TIMER_Type, TIMER2_BASE)
-#define TIMER3              UINT2PTR_CAST(TIMER_Type, TIMER3_BASE)
+#define ADC                 ((ADC_Type *)ADC_BASE)
 
-#define ADC                 UINT2PTR_CAST(ADC_Type, ADC_BASE)
+#define COMP                ((COMP_Type *)COMP_BASE)
 
-#define COMP                UINT2PTR_CAST(COMP_Type, COMP_BASE)
+#define CAN0                ((CAN_Type *)CAN0_BASE)
+#define CAN1                ((CAN_Type *)CAN1_BASE)
+#define CAN2                ((CAN_Type *)CAN2_BASE)
 
-#define CAN0                UINT2PTR_CAST(CAN_Type, CAN0_BASE)
-#define CAN1                UINT2PTR_CAST(CAN_Type, CAN1_BASE)
-#define CAN2                UINT2PTR_CAST(CAN_Type, CAN2_BASE)
+#define ETH                 ((MAC_Type *)ETH_BASE)
 
-#define ETH                 UINT2PTR_CAST(MAC_Type, ETH_BASE)
+#define FLASH_CTRL          ((FLASH_Type *)FLASH_CTRL_BASE)
 
-#define FLASH_CTRL          UINT2PTR_CAST(FLASH_Type, FLASH_CTRL_BASE)
+#define HIB                 ((HIB_Type *)HIB_BASE)
 
-#define HIB                 UINT2PTR_CAST(HIB_Type, HIB_BASE)
+#define I2C0_MASTER         ((I2C_MASTER_Type *)I2C0_MASTER_BASE)
+#define I2C0_SLAVE          ((I2C_SLAVE_Type *)I2C0_SLAVE_BASE)
+#define I2C1_MASTER         ((I2C_MASTER_Type *)I2C1_MASTER_BASE)
+#define I2C1_SLAVE          ((I2C_SLAVE_Type *)I2C1_SLAVE_BASE)
 
-#define I2C0_MASTER         UINT2PTR_CAST(I2C_MASTER_Type, I2C0_MASTER_BASE)
-#define I2C0_SLAVE          UINT2PTR_CAST(I2C_SLAVE_Type, I2C0_SLAVE_BASE)
-#define I2C1_MASTER         UINT2PTR_CAST(I2C_MASTER_Type, I2C1_MASTER_BASE)
-#define I2C1_SLAVE          UINT2PTR_CAST(I2C_SLAVE_Type, I2C1_SLAVE_BASE)
+#define PWM                 ((PWM_Type *)PWM_BASE)
+#define PWMGEN0             ((PWMGEN_Type *)(PWM_BASE + PWM_GEN_0_OFFSET))
+#define PWMGEN1             ((PWMGEN_Type *)(PWM_BASE + PWM_GEN_1_OFFSET))
+#define PWMGEN2             ((PWMGEN_Type *)(PWM_BASE + PWM_GEN_2_OFFSET))
+#define PWMGEN3             ((PWMGEN_Type *)(PWM_BASE + PWM_GEN_3_OFFSET))
 
-#define PWM                 UINT2PTR_CAST(PWM_Type, PWM_BASE)
-#define PWMGEN0             UINT2PTR_CAST(PWMGEN_Type, (PWM_BASE + PWM_GEN_0_OFFSET))
-#define PWMGEN1             UINT2PTR_CAST(PWMGEN_Type, (PWM_BASE + PWM_GEN_1_OFFSET))
-#define PWMGEN2             UINT2PTR_CAST(PWMGEN_Type, (PWM_BASE + PWM_GEN_2_OFFSET))
-#define PWMGEN3             UINT2PTR_CAST(PWMGEN_Type, (PWM_BASE + PWM_GEN_3_OFFSET))
+#define QEI0                ((QEI_Type *)QEI0_BASE)
+#define QEI1                ((QEI_Type *)QEI1_BASE)
 
-#define QEI0                UINT2PTR_CAST(QEI_Type, QEI0_BASE)
-#define QEI1                UINT2PTR_CAST(QEI_Type, QEI1_BASE)
+#define SSI0                ((SSI_Type *)SSI0_BASE)
+#define SSI1                ((SSI_Type *)SSI1_BASE)
 
-#define SSI0                UINT2PTR_CAST(SSI_Type, SSI0_BASE)
-#define SSI1                UINT2PTR_CAST(SSI_Type, SSI1_BASE)
+#define UART0               ((UART_Type *)UART0_BASE)
+#define UART1               ((UART_Type *)UART1_BASE)
+#define UART2               ((UART_Type *)UART2_BASE)
 
-#define UART0               UINT2PTR_CAST(UART_Type, UART0_BASE)
-#define UART1               UINT2PTR_CAST(UART_Type, UART1_BASE)
-#define UART2               UINT2PTR_CAST(UART_Type, UART2_BASE)
+#define UDMA                ((UDMA_Type *)UDMA_BASE)
 
-#define UDMA                UINT2PTR_CAST(UDMA_Type, UDMA_BASE)
+#define USB0                ((USB_Type *)USB0_BASE)
 
-#define USB0                UINT2PTR_CAST(USB_Type, USB0_BASE)
-
-#define WDT                 UINT2PTR_CAST(WDT_Type, WATCHDOG_BASE)
+#define WDT                 ((WDT_Type *)WATCHDOG_BASE)
 
 #endif  /* __LM3_CMSIS_H__ */

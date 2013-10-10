@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Orthogonal Component state pattern example
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 09, 2012
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -249,13 +249,13 @@ int main(int argc, char *argv[]) {
 void BSP_onKeyboardInput(uint8_t key) {
     switch (key) {
         case 'o': {                                 /* 'o': Alarm on event? */
-            QActive_postFIFO((QActive *)&l_alarmClock,
-                             Q_NEW(QEvt, ALARM_ON_SIG));
+            QACTIVE_POST((QActive *)&l_alarmClock,
+                          Q_NEW(QEvt, ALARM_ON_SIG), (void *)0);
             break;
         }
         case 'f': {                                /* 'f': Alarm off event? */
-            QActive_postFIFO((QActive *)&l_alarmClock,
-                             Q_NEW(QEvt, ALARM_OFF_SIG));
+            QACTIVE_POST((QActive *)&l_alarmClock,
+                             Q_NEW(QEvt, ALARM_OFF_SIG), (void *)0);
             break;
         }
         case '1':                                                    /* '1' */
@@ -269,28 +269,28 @@ void BSP_onKeyboardInput(uint8_t key) {
         case '9': {                                                  /* '9' */
             SetEvt *e = Q_NEW(SetEvt, ALARM_SET_SIG);
             e->digit = (uint8_t)(key - '0');
-            QActive_postFIFO((QActive *)&l_alarmClock, (QEvt *)e);
+            QACTIVE_POST((QActive *)&l_alarmClock, (QEvt *)e, (void *)0);
             break;
         }
         case '0': {                                                  /* '0' */
             SetEvt *e = Q_NEW(SetEvt, ALARM_SET_SIG);
             e->digit = 0;
-            QActive_postFIFO((QActive *)&l_alarmClock, (QEvt *)e);
+            QACTIVE_POST((QActive *)&l_alarmClock, (QEvt *)e, (void *)0);
             break;
         }
         case 'a': {                                /* 'a': Clock 12H event? */
-            QActive_postFIFO((QActive *)&l_alarmClock,
-                             Q_NEW(QEvt, CLOCK_12H_SIG));
+            QACTIVE_POST((QActive *)&l_alarmClock,
+                         Q_NEW(QEvt, CLOCK_12H_SIG), (void *)0);
             break;
         }
         case 'b': {                                /* 'b': Clock 24H event? */
-            QActive_postFIFO((QActive *)&l_alarmClock,
-                             Q_NEW(QEvt, CLOCK_24H_SIG));
+            QACTIVE_POST((QActive *)&l_alarmClock,
+                         Q_NEW(QEvt, CLOCK_24H_SIG), (void *)0);
             break;
         }
         case '\33': {                                       /* ESC pressed? */
-            QActive_postFIFO((QActive *)&l_alarmClock,
-                             Q_NEW(QEvt, TERMINATE_SIG));
+            QACTIVE_POST((QActive *)&l_alarmClock,
+                         Q_NEW(QEvt, TERMINATE_SIG), (void *)0);
             break;
         }
     }

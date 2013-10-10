@@ -6,7 +6,7 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>com.codesourcery.arm_none_eabi.cdt.debug.core.builder</name>
+			<name>com.codesourcery.target.data.arm_none_eabi.builder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>

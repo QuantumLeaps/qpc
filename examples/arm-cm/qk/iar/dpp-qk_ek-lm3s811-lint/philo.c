@@ -42,9 +42,9 @@ static QState Philo_eating(Philo * const me, QEvt const * const e);
 static Philo l_philo[N_PHILO];   /* storage for all Philos */
 
 #define THINK_TIME  \
-    ((QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + (BSP_TICKS_PER_SEC/2U)))
+    (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + (BSP_TICKS_PER_SEC/2U))
 #define EAT_TIME    \
-    ((QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + BSP_TICKS_PER_SEC))
+    (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + BSP_TICKS_PER_SEC)
 
 /* helper macro to provide the ID of Philo "me_" */
 #define PHILO_ID(me_)    ((uint8_t)((me_) - l_philo))

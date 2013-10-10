@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Dining Philosophers Problem" example, cooperative Vanilla kernel
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 09, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -64,7 +64,6 @@ Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
 void GPIOPortA_IRQHandler(void);
-void assert_failed(char const *file, int line);
 
 /* Local-scope objects -----------------------------------------------------*/
 static unsigned  l_rnd;                                      /* random seed */
@@ -266,10 +265,9 @@ void QF_onIdle(void) {       /* called with interrupts disabled, see NOTE01 */
     * you might need to customize the clock management for your application,
     * see the datasheet for your particular Cortex-M MCU.
     */
-    __WFI();                                          /* Wait-For-Interrupt */
-    QF_INT_ENABLE();
+    QF_CPU_SLEEP();         /* atomically go to sleep and enable interrupts */
 #else
-    QF_INT_ENABLE();
+    QF_INT_ENABLE();                              /* just enable interrupts */
 #endif
 }
 

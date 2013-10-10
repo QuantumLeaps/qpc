@@ -1,6 +1,8 @@
 /**************************************************************************//**
- * 22-Feb-2010 Quantum Leaps, LLC
- * corrected bug in definition of __NVIC_PRIO_BITS, which was 3 for
+ * 10-Oct-2013 Quantum Leaps, LLC
+ * - Commented out "system_LPC11xx.h" and copied this header code verbatim.
+ * - Added the prototype of assert_failed()
+ * - Corrected bug in definition of __NVIC_PRIO_BITS, which was 3 for
  * LPC11xx, whereas the LPC11xx hardware supports only 2 bits.
  ******************************************************************************/
 
@@ -116,7 +118,43 @@ typedef enum IRQn
 
 
 #include "core_cm0.h"                       /* Cortex-M0 processor and core peripherals           */
-#include "system_LPC11xx.h"                 /* System Header                                      */
+/*#include "system_LPC11xx.h"*/             /* System Header                                      */
+
+#include <stdint.h>
+
+extern uint32_t SystemCoreClock;     /*!< System Clock Frequency (Core Clock)  */
+
+
+/**
+ * Initialize the system
+ *
+ * @param  none
+ * @return none
+ *
+ * @brief  Setup the microcontroller system.
+ *         Initialize the System and update the SystemCoreClock variable.
+ */
+extern void SystemInit (void);
+
+/**
+ * Update SystemCoreClock variable
+ *
+ * @param  none
+ * @return none
+ *
+ * @brief  Updates the SystemCoreClock with current core Clock
+ *         retrieved from cpu registers.
+ */
+extern void SystemCoreClockUpdate (void);
+
+/**
+ * Assertion handler
+ *
+ * @brief  A function to handle an assertion.
+ *         This function should be defined at the application level
+ *         and should never return to the caller.
+ */
+extern void assert_failed (char const *file, int line);
 
 
 /******************************************************************************/

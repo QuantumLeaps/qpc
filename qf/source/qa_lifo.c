@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 08, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -49,15 +49,21 @@ Q_DEFINE_THIS_MODULE("qa_lifo")
 /*..........................................................................*/
 void QActive_postLIFO(QActive * const me, QEvt const * const e) {
     QEvt const *frontEvt;      /* temporary to avoid UB for volatile access */
+    QEQueueCtr nFree;          /* temporary to avoid UB for volatile access */
     QF_CRIT_STAT_
+
     QF_CRIT_ENTRY_();
+    nFree = me->eQueue.nFree;            /* get volatile into the temporary */
+
+            /* the queue must be able to accept the event (cannot overflow) */
+    Q_ASSERT(nFree != (QEQueueCtr)0);
 
     QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.aoObjFilter, me)
         QS_TIME_();                                            /* timestamp */
         QS_SIG_(e->sig);                        /* the signal of this event */
         QS_OBJ_(me);                                  /* this active object */
         QS_2U8_(e->poolId_, e->refCtr_);/* pool Id & ref Count of the event */
-        QS_EQC_(me->eQueue.nFree);                /* number of free entries */
+        QS_EQC_(nFree);                           /* number of free entries */
         QS_EQC_(me->eQueue.nMin);             /* min number of free entries */
     QS_END_NOCRIT_()
 
@@ -65,27 +71,24 @@ void QActive_postLIFO(QActive * const me, QEvt const * const e) {
         QF_EVT_REF_CTR_INC_(e);          /* increment the reference counter */
     }
 
+    --nFree;                                 /* one free entry just used up */
+    me->eQueue.nFree = nFree;                        /* update the volatile */
+    if (me->eQueue.nMin > nFree) {
+        me->eQueue.nMin = nFree;                   /* update minimum so far */
+    }
+
     frontEvt = me->eQueue.frontEvt;     /* read volatile into the temporary */
-    if (frontEvt == (QEvt const *)0) {               /* is the queue empty? */
-        me->eQueue.frontEvt = e;                  /* deliver event directly */
+    me->eQueue.frontEvt = e;     /* deliver the event directly to the front */
+    if (frontEvt == (QEvt const *)0) {              /* was the queue empty? */
         QACTIVE_EQUEUE_SIGNAL_(me);               /* signal the event queue */
     }
-    else {            /* queue is not empty, leave event in the ring-buffer */
-            /* the queue must be able to accept the event (cannot overflow) */
-        Q_ASSERT(me->eQueue.nFree != (QEQueueCtr)0);
-
+    else {       /* queue was not empty, leave the event in the ring-buffer */
         ++me->eQueue.tail;
         if (me->eQueue.tail == me->eQueue.end) {  /* need to wrap the tail? */
             me->eQueue.tail = (QEQueueCtr)0;                 /* wrap around */
         }
 
         QF_PTR_AT_(me->eQueue.ring, me->eQueue.tail) = frontEvt;
-        me->eQueue.frontEvt = e;                      /* put event to front */
-
-        --me->eQueue.nFree;                 /* update number of free events */
-        if (me->eQueue.nMin > me->eQueue.nFree) {
-            me->eQueue.nMin = me->eQueue.nFree;    /* update minimum so far */
-        }
     }
     QF_CRIT_EXIT_();
 }

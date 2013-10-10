@@ -41,13 +41,13 @@
 
 "D:\qp\qpc\ports\lint\stdint.h" 29 1 Info 756: global typedef 'uint32_t' (line 29, file D:\qp\qpc\ports\lint\stdint.h) not referenced
 "D:\qp\qpc\ports\lint\stdint.h" 30 1 Info 756: global typedef 'uint64_t' (line 30, file D:\qp\qpc\ports\lint\stdint.h) not referenced
-"D:\qp\qpc\include\qevt.h" 166 1 Info 756: global typedef 'uint_t' (line 166, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 169 1 Info 756: global typedef 'uint_t' (line 169, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\ports\lint\stdint.h" 25 1 Info 756: global typedef 'int64_t' (line 25, file D:\qp\qpc\ports\lint\stdint.h) not referenced
-"D:\qp\qpc\include\qevt.h" 217 1 Info 756: global typedef 'QEvent' (line 217, file D:\qp\qpc\include\qevt.h) not referenced
-"D:\qp\qpc\include\qevt.h" 154 1 Info 756: global typedef 'float32_t' (line 154, file D:\qp\qpc\include\qevt.h) not referenced
-"D:\qp\qpc\include\qevt.h" 157 1 Info 756: global typedef 'float64_t' (line 157, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 220 1 Info 756: global typedef 'QEvent' (line 220, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 157 1 Info 756: global typedef 'float32_t' (line 157, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 160 1 Info 756: global typedef 'float64_t' (line 160, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\ports\lint\stdint.h" 22 1 Info 756: global typedef 'int8_t' (line 22, file D:\qp\qpc\ports\lint\stdint.h) not referenced
-"D:\qp\qpc\include\qevt.h" 160 1 Info 756: global typedef 'enum_t' (line 160, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 163 1 Info 756: global typedef 'enum_t' (line 163, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\qep\source\qfsm_ini.c" 47 1 Info 759: header declaration for symbol 'QFsm_ctor(QFsm *, QStateHandler)' defined at (line 47, file D:\qp\qpc\qep\source\qfsm_ini.c) could be moved from header to module
 "D:\qp\qpc\qep\source\qfsm_ini.c" 47 1 Info 765: external 'QFsm_ctor(QFsm *, QStateHandler)' (line 47, file D:\qp\qpc\qep\source\qfsm_ini.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\qep\source\qfsm_ini.c" 47 1 Info 714: Symbol 'QFsm_ctor(QFsm *, QStateHandler)' (line 47, file D:\qp\qpc\qep\source\qfsm_ini.c) not referenced
@@ -81,6 +81,7 @@
 "D:\qp\qpc\include\qep.h" 343 1 Info 755: global macro 'QM_ENTRY' (line 343, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qep.h" 345 1 Info 755: global macro 'QM_EXIT' (line 345, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qep.h" 371 1 Info 755: global macro 'QM_UNHANDLED' (line 371, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qevt.h" 60 1 Info 755: global macro 'QP_RELEASE' (line 60, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 84 1 Info 755: global macro 'QS_OBJ' (line 84, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 88 1 Info 755: global macro 'QS_OBJ_DICTIONARY' (line 88, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qassert.h" 178 1 Info 755: global macro 'Q_ENSURE' (line 178, file D:\qp\qpc\include\qassert.h) not referenced
@@ -153,19 +154,19 @@
 "D:\qp\qpc\include\qassert.h" 66 1 Info 755: global macro 'Q_DEFINE_THIS_FILE' (line 66, file D:\qp\qpc\include\qassert.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 62 1 Info 755: global macro 'QS_GET_BYTE' (line 62, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 63 1 Info 755: global macro 'QS_GET_BLOCK' (line 63, file D:\qp\qpc\include\qs_dummy.h) not referenced
-"D:\qp\qpc\include\qevt.h" 200 1 Info 755: global macro 'Q_EVT_CAST' (line 200, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 203 1 Info 755: global macro 'Q_EVT_CAST' (line 203, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 49 1 Info 755: global macro 'QS_INIT' (line 49, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 70 1 Info 755: global macro 'QS_I8' (line 70, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 72 1 Info 755: global macro 'QS_I16' (line 72, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 74 1 Info 755: global macro 'QS_I32' (line 74, file D:\qp\qpc\include\qs_dummy.h) not referenced
-"D:\qp\qpc\include\qevt.h" 203 1 Info 755: global macro 'Q_DIM' (line 203, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 206 1 Info 755: global macro 'Q_DIM' (line 206, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\include\qassert.h" 120 1 Info 755: global macro 'Q_ALLEGE_ID' (line 120, file D:\qp\qpc\include\qassert.h) not referenced
-"D:\qp\qpc\include\qevt.h" 213 1 Info 755: global macro 'Q_UINT2PTR_CAST' (line 213, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 216 1 Info 755: global macro 'Q_UINT2PTR_CAST' (line 216, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\include\qep.h" 153 1 Info 755: global macro 'QMSM_INIT' (line 153, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qep.h" 170 1 Info 755: global macro 'QMSM_DISPATCH' (line 170, file D:\qp\qpc\include\qep.h) not referenced
-"D:\qp\qpc\include\qevt.h" 182 1 Info 768: global struct member 'QEvtTag::sig' (line 182, file D:\qp\qpc\include\qevt.h) not referenced
-"D:\qp\qpc\include\qevt.h" 183 1 Info 768: global struct member 'QEvtTag::poolId_' (line 183, file D:\qp\qpc\include\qevt.h) not referenced
-"D:\qp\qpc\include\qevt.h" 184 1 Info 768: global struct member 'QEvtTag::refCtr_' (line 184, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 185 1 Info 768: global struct member 'QEvtTag::sig' (line 185, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 186 1 Info 768: global struct member 'QEvtTag::poolId_' (line 186, file D:\qp\qpc\include\qevt.h) not referenced
+"D:\qp\qpc\include\qevt.h" 187 1 Info 768: global struct member 'QEvtTag::refCtr_' (line 187, file D:\qp\qpc\include\qevt.h) not referenced
 "D:\qp\qpc\include\qep.h" 124 1 Info 768: global struct member 'QMsmVtblTag::init' (line 124, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qep.h" 127 1 Info 768: global struct member 'QMsmVtblTag::dispatch' (line 127, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qep.h" 306 1 Info 769: global enumeration constant 'QHandlerReturnValues::Q_RET_ENTRY' (line 306, file D:\qp\qpc\include\qep.h) not referenced
@@ -176,7 +177,7 @@ Count   Type    Number  Text
 
 1       Warning 526     Symbol '___' (___) not defined
 5       Info    714     Symbol '___' (___) not referenced
-90      Info    755     global macro '___' (___) not referenced
+91      Info    755     global macro '___' (___) not referenced
 11      Info    756     global typedef '___' (___) not referenced
 8       Info    759     header declaration for symbol '___' defined at (___) could be moved from header to module
 8       Info    765     external '___' (___) could be made static

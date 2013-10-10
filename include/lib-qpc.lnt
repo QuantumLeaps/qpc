@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last Updated for Version: 5.1.0
-// Date of the Last Update:  Sep 18, 2013
+// Last Updated for Version: 5.1.1
+// Date of the Last Update:  Oct 10, 2013
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -148,6 +148,7 @@
  QF_CRIT_ENTRY,
  QF_CRIT_EXIT,
  QF_CRIT_EXIT_NOP,
+ QF_CPU_SLEEP,
  QF_TICK,
  QF_TICK_X,
  QF_PUBLISH,
@@ -194,12 +195,12 @@
  QF_tick,
  QActive_postFIFO,
  QEQueue_postFIFO)
-
 -esym(960,                    // MISRA04-19.4(req) Disallowed macro definition
  QF_INT_DISABLE,
  QF_INT_ENABLE,
  QF_CRIT_ENTRY,
  QF_CRIT_EXIT,
+ QF_CRIT_EXIT_NOP,
  QF_EQUEUE_TYPE,
  QF_OS_OBJECT_TYPE,
  QF_THREAD_TYPE,

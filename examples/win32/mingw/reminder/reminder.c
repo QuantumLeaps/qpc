@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: Reminder state pattern example
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 21, 2012
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 09, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -120,12 +120,12 @@ QState Sensor_polling(Sensor * const me, QEvt const * const e) {
             /* NOTE: this constant event is statically pre-allocated.
             * It can be posted/published as any other event.
             */
-            static const QEvt reminderEvt = { DATA_READY_SIG, 0 };
+            static const QEvt reminderEvt = { DATA_READY_SIG, 0U, 0U };
 
             ++me->pollCtr;
             printf("polling %3d\n", me->pollCtr);
             if ((me->pollCtr & 0x3) == 0) {                     /* modulo 4 */
-                QActive_postFIFO((QActive *)me, &reminderEvt);
+                QACTIVE_POST((QActive *)me, &reminderEvt, me);
             }
             status = Q_HANDLED();
             break;
@@ -218,14 +218,15 @@ int main(int argc, char *argv[]) {
 
     BSP_init(argc, argv);                             /* initialize the BSP */
 
-    QF_init();    /* initialize the framework and the underlying RT kernel */
+    QF_init();     /* initialize the framework and the underlying RT kernel */
 
     /* publish-subscribe not used, no call to QF_psInit() */
     /* dynamic event allocation not used, no call to QF_poolInit() */
 
                              /* instantiate and start the active objects... */
     Sensor_ctor(&l_sensor);
-    QActive_start((QActive *)&l_sensor, 1, l_sensorQSto, Q_DIM(l_sensorQSto),
+    QACTIVE_START((QActive *)&l_sensor, 1U,
+                  l_sensorQSto, Q_DIM(l_sensorQSto),
                   (void *)0, 1024, (QEvt *)0);
 
     return QF_run();                              /* run the QF application */
@@ -237,8 +238,8 @@ void BSP_onKeyboardInput(uint8_t key) {
             /* NOTE: this constant event is statically pre-allocated.
             * It can be posted/published as any other event.
             */
-            static QEvt const terminateEvt = { TERMINATE_SIG, 0};
-            QActive_postFIFO((QActive *)&l_sensor, &terminateEvt);
+            static QEvt const terminateEvt = { TERMINATE_SIG, 0U, 0U };
+            QACTIVE_POST((QActive *)&l_sensor, &terminateEvt, (void *)0);
             break;
         }
     }

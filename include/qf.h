@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
 * Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Date of the Last Update:  Oct 07, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -1182,6 +1182,7 @@ extern uint8_t const Q_ROM Q_ROM_VAR QF_div8Lkup[65];
     */
     extern uint8_t const Q_ROM Q_ROM_VAR QF_log2Lkup[256];
 
+    #define QF_LOG2LKUP 1
 #endif                                                           /* QF_LOG2 */
 
 /** \brief array of registered active objects

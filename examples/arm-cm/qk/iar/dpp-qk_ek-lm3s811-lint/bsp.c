@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Dining Philosophers Problem" example, preemptive QK kernel
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 07, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -64,7 +64,6 @@ Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
 void GPIOPortA_IRQHandler(void);
-void assert_failed(char const *file, int line);
 
 /* Local-scope objects -----------------------------------------------------*/
 static unsigned  l_rnd;                                      /* random seed */
@@ -95,7 +94,7 @@ void SysTick_Handler(void) {
     static uint8_t  debounce_state = 0U;
     uint32_t btn;
 
-    QK_ISR_ENTRY();                      /* infrom QK about entering an ISR */
+    QK_ISR_ENTRY();                      /* inform QK about entering an ISR */
 
 #ifdef Q_SPY
     {
@@ -146,13 +145,13 @@ void SysTick_Handler(void) {
             debounce_state = 0U;              /* transition back to state 0 */
             break;
     }
-    QK_ISR_EXIT();                        /* infrom QK about exiting an ISR */
+    QK_ISR_EXIT();                        /* inform QK about exiting an ISR */
 }
 /*..........................................................................*/
 void GPIOPortA_IRQHandler(void) {
-    QK_ISR_ENTRY();                      /* infrom QK about entering an ISR */
+    QK_ISR_ENTRY();                      /* inform QK about entering an ISR */
 
-    QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG),    /* for testing... */
+    QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG),      /* for testing... */
                  &l_GPIOPortA_IRQHandler);
 
     QK_ISR_EXIT();                        /* infrom QK about exiting an ISR */
@@ -279,7 +278,7 @@ void QK_onIdle(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int_t line) {
+void Q_onAssert(char_t const Q_ROM * const Q_ROM_VAR file, int_t line) {
     (void)file;                                   /* avoid compiler warning */
     (void)line;                                   /* avoid compiler warning */
     QF_INT_DISABLE();         /* make sure that all interrupts are disabled */

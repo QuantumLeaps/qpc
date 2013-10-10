@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QF/C port for Lint with QK, Generic C compiler
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Aug 04, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 10, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -237,6 +237,21 @@ void intEnable(void);
 * macro #QF_CRIT_EXIT.
 */
 #define QF_CRIT_EXIT(stat_)         critExit(stat_)
+
+/** \brief Macro to put the CPU to sleep safely in the cooperative
+* Vanilla kernel (inside QF_idle()).
+*
+* This macro is provided in some QP ports for the Vanilla kernel and
+* in general it depends on the interrupt disabling policy.
+*
+* \note The provided code is just an example (for ARM Cortex-M).
+*/
+#define QF_CPU_SLEEP() do { \
+    __disable_interrupt(); \
+    QF_INT_ENABLE(); \
+    __WFI(); \
+    __enable_interrupt(); \
+} while (0)
 
 typedef unsigned int crit_stat_t;
 QF_CRIT_STAT_TYPE critEntry(void);

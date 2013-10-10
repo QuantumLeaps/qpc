@@ -212,7 +212,7 @@
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <RoSelD>3</RoSelD>
@@ -423,9 +423,9 @@
               <FilePath>.\table.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
+              <FileName>startup_tm4c.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
+              <FilePath>.\startup_tm4c.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -835,13 +835,13 @@
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <RoSelD>3</RoSelD>
             <RwSelD>3</RwSelD>
             <CodeSel>0</CodeSel>
-            <OptFeed>0</OptFeed>
+            <OptFeed>1</OptFeed>
             <NoZi1>0</NoZi1>
             <NoZi2>0</NoZi2>
             <NoZi3>0</NoZi3>
@@ -1046,9 +1046,9 @@
               <FilePath>.\table.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
+              <FileName>startup_tm4c.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
+              <FilePath>.\startup_tm4c.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1458,7 +1458,7 @@
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <RoSelD>3</RoSelD>
@@ -1669,9 +1669,9 @@
               <FilePath>.\table.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
+              <FileName>startup_tm4c.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
+              <FilePath>.\startup_tm4c.s</FilePath>
             </File>
           </Files>
         </Group>

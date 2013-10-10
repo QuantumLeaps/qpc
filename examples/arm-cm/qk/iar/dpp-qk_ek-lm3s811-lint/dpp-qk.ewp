@@ -259,7 +259,7 @@
         </option>
         <option>
           <name>CCLangConformance</name>
-          <state>2</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCSignedPlainChar</name>
@@ -304,7 +304,6 @@
         <option>
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\.</state>
-          <state>$PROJ_DIR$\display</state>
           <state>$_QPC_$\include</state>
           <state>$_QPC_$\ports\arm-cm\qk\iar</state>
           <state>$_QPC_$\ports\arm-cm\cmsis</state>
@@ -374,7 +373,7 @@
         </option>
         <option>
           <name>IccCppDialect</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IccExceptions</name>
@@ -386,11 +385,11 @@
         </option>
         <option>
           <name>IccStaticDestr</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IccCppInlineSemantics</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IccCmsis</name>
@@ -1198,7 +1197,7 @@
         </option>
         <option>
           <name>CCLangConformance</name>
-          <state>2</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCSignedPlainChar</name>
@@ -1243,7 +1242,6 @@
         <option>
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\.</state>
-          <state>$PROJ_DIR$\display</state>
           <state>$_QPC_$\include</state>
           <state>$_QPC_$\ports\arm-cm\qk\iar</state>
           <state>$_QPC_$\ports\arm-cm\cmsis</state>
@@ -1313,7 +1311,7 @@
         </option>
         <option>
           <name>IccCppDialect</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IccExceptions</name>
@@ -1325,11 +1323,11 @@
         </option>
         <option>
           <name>IccStaticDestr</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IccCppInlineSemantics</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IccCmsis</name>
@@ -2137,7 +2135,7 @@
         </option>
         <option>
           <name>CCLangConformance</name>
-          <state>2</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCSignedPlainChar</name>
@@ -2182,7 +2180,6 @@
         <option>
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\.</state>
-          <state>$PROJ_DIR$\display</state>
           <state>$_QPC_$\include</state>
           <state>$_QPC_$\ports\arm-cm\qk\iar</state>
           <state>$_QPC_$\ports\arm-cm\cmsis</state>
@@ -2252,7 +2249,7 @@
         </option>
         <option>
           <name>IccCppDialect</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IccExceptions</name>
@@ -2264,11 +2261,11 @@
         </option>
         <option>
           <name>IccStaticDestr</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IccCppInlineSemantics</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IccCmsis</name>
@@ -2819,15 +2816,6 @@
     </settings>
   </configuration>
   <group>
-    <name>display</name>
-    <file>
-      <name>$PROJ_DIR$\display\display96x16x1.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\display\display96x16x1.h</name>
-    </file>
-  </group>
-  <group>
     <name>Source</name>
     <file>
       <name>$PROJ_DIR$\bsp.c</name>
@@ -2836,7 +2824,16 @@
       <name>$PROJ_DIR$\bsp.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\display96x16x1.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\display96x16x1.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\dpp.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\lm3s_cmsis.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\lm3s_config.h</name>
@@ -2848,7 +2845,7 @@
       <name>$PROJ_DIR$\philo.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\startup_ewarm.c</name>
+      <name>$PROJ_DIR$\startup_lm3s.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\system_lm3s.c</name>

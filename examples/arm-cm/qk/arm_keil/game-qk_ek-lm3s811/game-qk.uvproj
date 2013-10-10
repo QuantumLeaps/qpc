@@ -423,11 +423,6 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
-            </File>
-            <File>
               <FileName>mine1.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\mine1.c</FilePath>
@@ -461,6 +456,11 @@
               <FileName>system_lm3s.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system_lm3s.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup-qk_lm3s.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\startup-qk_lm3s.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1081,11 +1081,6 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
-            </File>
-            <File>
               <FileName>mine1.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\mine1.c</FilePath>
@@ -1119,6 +1114,11 @@
               <FileName>system_lm3s.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system_lm3s.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup-qk_lm3s.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\startup-qk_lm3s.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1739,11 +1739,6 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
-            </File>
-            <File>
               <FileName>mine1.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\mine1.c</FilePath>
@@ -1777,6 +1772,11 @@
               <FileName>system_lm3s.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system_lm3s.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup-qk_lm3s.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\startup-qk_lm3s.s</FilePath>
             </File>
           </Files>
         </Group>

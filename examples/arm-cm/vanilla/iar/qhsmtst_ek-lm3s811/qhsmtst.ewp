@@ -2836,7 +2836,7 @@
       <name>$PROJ_DIR$\qhsmtst.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\startup_ewarm.c</name>
+      <name>$PROJ_DIR$\startup_lm3s.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\system_lm3s.c</name>

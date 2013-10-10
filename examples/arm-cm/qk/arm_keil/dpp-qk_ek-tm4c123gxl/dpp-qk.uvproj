@@ -423,9 +423,9 @@
               <FilePath>.\table.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
+              <FileName>startup-qk_tm4c.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
+              <FilePath>.\startup-qk_tm4c.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1046,9 +1046,9 @@
               <FilePath>.\table.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
+              <FileName>startup-qk_tm4c.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
+              <FilePath>.\startup-qk_tm4c.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1669,9 +1669,9 @@
               <FilePath>.\table.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
+              <FileName>startup-qk_tm4c.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
+              <FilePath>.\startup-qk_tm4c.s</FilePath>
             </File>
           </Files>
         </Group>

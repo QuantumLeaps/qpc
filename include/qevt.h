@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 17, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 10, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -51,10 +51,13 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      0x0510U
+#define QP_VERSION      0x0511U
 
 /** \brief The current QP version string */
-#define QP_VERSION_STR  "5.1.0"
+#define QP_VERSION_STR  "5.1.1"
+
+/** \brief Temperproof current QP release (5.1.1) and date (13-10-10) */
+#define QP_RELEASE      0xB1E973E0U
 
 #ifndef Q_ROM
     /** \brief Macro to specify compiler-specific directive for placing a

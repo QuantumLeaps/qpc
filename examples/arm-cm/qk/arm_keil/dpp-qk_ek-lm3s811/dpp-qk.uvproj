@@ -438,14 +438,14 @@
               <FilePath>.\table.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
-            </File>
-            <File>
               <FileName>system_lm3s.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system_lm3s.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup-qk_lm3s.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\startup-qk_lm3s.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1081,14 +1081,14 @@
               <FilePath>.\table.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
-            </File>
-            <File>
               <FileName>system_lm3s.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system_lm3s.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup-qk_lm3s.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\startup-qk_lm3s.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1724,14 +1724,14 @@
               <FilePath>.\table.c</FilePath>
             </File>
             <File>
-              <FileName>startup_keil.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\startup_keil.s</FilePath>
-            </File>
-            <File>
               <FileName>system_lm3s.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\system_lm3s.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup-qk_lm3s.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\startup-qk_lm3s.s</FilePath>
             </File>
           </Files>
         </Group>
