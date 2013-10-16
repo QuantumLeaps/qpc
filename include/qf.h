@@ -11,7 +11,7 @@
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 2 of the License, or
+* by the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
 * Alternatively, this program may be distributed and modified under the
@@ -251,7 +251,8 @@ void QActive_start(QActive * const me, uint8_t prio,
     * functions.
     */
     uint8_t QActive_post(QActive * const me, QEvt const * const e,
-                         uint16_t const margin, void const * const sender);
+                         uint16_t const margin,
+ void const * const sender);
 
     /** \brief Polymorphically posts an event to an active object (FIFO)
     * with delivery guarantee.
@@ -280,7 +281,7 @@ void QActive_start(QActive * const me, uint8_t prio,
     * without delivery guarantee.
     *
     * The macro takes the argument \a margin_, which specifies the
-    * minumum free slots in the queue, which must still be available
+    * minimum free slots in the queue, which must still be available
     * after posting the event. The macro returns 1 (TRUE) if the posting
     * succeeded, and 0 (FALSE) if the posting failed due to insufficient
     * margin of free slots available in the queue.
@@ -546,8 +547,7 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial);
 * inserts the time event directly into the recipient's event queue. The
 * recipient then processes the time event just like any other event.
 *
-* Time events, as any other QF events derive from the ::QEvt
-* base structure.
+* Time events, as any other QF events derive from the ::QEvt base structure.
 * Typically, you will use a time event as-is, but you can also further
 * derive more specialized time events from it by adding some more data
 * members and/or specialized functions that operate on the specialized
@@ -676,17 +676,17 @@ QTimeEvtCtr QTimeEvt_ctr(QTimeEvt const * const me);
 /****************************************************************************/
 /* Deprecated QTimeEvt interface defined for backwards compatibility */
 
-/** \brief Deprecated "constructor" defined for backwards compatiblity */
+/** \brief Deprecated "constructor" defined for backwards compatibility */
 #define QTimeEvt_ctor(me_, sig_) \
     QTimeEvt_ctorX((me_), (QActive *)0, (sig_), (uint8_t)0)
 
-/** \brief Deprecated interface defined for backwards compatiblity */
+/** \brief Deprecated interface defined for backwards compatibility */
 #define QTimeEvt_postIn(me_, act_, nTicks_) do { \
     (me_)->act = (act_); \
     QTimeEvt_armX((me_), (nTicks_), (uint8_t)0); \
 } while (0)
 
-/** \brief Deprecated interface defined for backwards compatiblity */
+/** \brief Deprecated interface defined for backwards compatibility */
 #define QTimeEvt_postEvery(me_, act_, nTicks_) do { \
     (me_)->act = (act_); \
     QTimeEvt_armX((me_), (nTicks_), (nTicks_)); \
@@ -733,7 +733,8 @@ void QF_init(void);
 *
 * This function initializes the publish-subscribe facilities of QF and must
 * be called exactly once before any subscriptions/publications occur in
-* the application. The arguments are as follows: \a subscrSto is a pointer
+* the application. The arguments are as follows: \a subscrSto
+ is a pointer
 * to the array of subscriber-lists. \a maxSignal is the dimension of this
 * array and at the same time the maximum signal that can be published or
 * subscribed.
@@ -950,7 +951,8 @@ void QF_onIdle(void);
     * overhead when the tracing is disabled.
     *
     * This macro takes the argument \a sender_, which is a pointer to the
-    * sender object. This argument is actually only used when QS software
+    * sender object. This argument is actually only used when
+ QS software
     * tracing is enabled (macro #Q_SPY is defined). When QS software
     * tracing is disabled, the macro calls QF_tickX() without any
     * arguments, so the overhead of passing this extra argument is
@@ -1025,7 +1027,7 @@ void QF_remove_(QActive const * const a);
 * to QF_poolInit(). The poolId of the first initialized pool is 1, the
 * second 2, and so on.
 *
-* \note Requesting the minimum of an un-initialized pool raises an assertion
+* \note Requesting the minimum of an uninitialized pool raises an assertion
 * in the QF.
 */
 uint16_t QF_getPoolMin(uint_t const poolId);
@@ -1052,7 +1054,7 @@ uint16_t QF_getQueueMin(uint8_t const prio);
 * of the requested event.
 *
 * \note The application code should not call this function directly.
-* The only allowed use is trhrough the macros #Q_NEW or #Q_NEW_X.
+* The only allowed use is thorough the macros #Q_NEW or #Q_NEW_X.
 */
 QEvt *QF_newX_(QEvtSize const evtSize,
                uint16_t const margin, enum_t const sig);
@@ -1211,4 +1213,5 @@ extern QActive *QF_active_[QF_MAX_ACTIVE + 1];
 char_t const Q_ROM * Q_ROM_VAR QF_getPortVersion(void);
 
 #endif                                                              /* qf_h */
+
 

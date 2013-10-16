@@ -11,7 +11,7 @@
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 2 of the License, or
+* by the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
 * Alternatively, this program may be distributed and modified under the
@@ -62,7 +62,7 @@ enum QSpyRecords {
     /* [1] QEP records */
     QS_QEP_STATE_ENTRY,                            /**< a state was entered */
     QS_QEP_STATE_EXIT,                              /**< a state was exited */
-    QS_QEP_STATE_INIT,       /**< an intial transition was taken in a state */
+    QS_QEP_STATE_INIT,      /**< an initial transition was taken in a state */
     QS_QEP_INIT_TRAN,        /**< the top-most initial transition was taken */
     QS_QEP_INTERN_TRAN,               /**< an internal transition was taken */
     QS_QEP_TRAN,                        /**< a regular transition was taken */
@@ -132,9 +132,9 @@ enum QSpyRecords {
     QS_EMPTY,           /**< empty QS record for cleanly starting a session */
     QS_RESERVED3,
     QS_RESERVED2,
-    QS_TEST_RUN,                           /**< a given test is beening run */
+    QS_TEST_RUN,                             /**< a given test is being run */
     QS_TEST_FAIL,                              /**< a test assertion failed */
-    QS_ASSERT_FAIL,                        /**< assertion faled in the code */
+    QS_ASSERT_FAIL,                       /**< assertion failed in the code */
 
     /* [70] Application-specific QS records */
     QS_USER      /**< \brief the first record available for user QS records */
@@ -206,11 +206,12 @@ enum QSpyRecords {
 * \note If the data output rate cannot keep up with the production rate,
 * QS will start overwriting the older data with newer data. This is
 * consistent with the "last-is-best" QS policy. The record sequence counters
-* and checksums on each record allow to easily detect data loss.
+* and check sums on each record allow to easily detect data loss.
 */
 void QS_initBuf(uint8_t sto[], uint32_t stoSize);
 
-/** \brief Turn the global Filter on for a given record type \a rec.
+/**
+ \brief Turn the global Filter on for a given record type \a rec.
 *
 * This function sets up the QS filter to enable the record type \a rec.
 * The argument #QS_ALL_RECORDS specifies to filter-in all records.
@@ -255,7 +256,7 @@ void QS_beginRec(uint8_t rec);
 */
 void QS_endRec(void);
 
-/* unformatted data elements output ........................................*/
+//* unformatted data elements output ........................................*/
 /** \brief output uint8_t data element without format information
 * \note This function is only to be used through macros, never in the
 * client code directly.
@@ -464,12 +465,13 @@ void QS_onFlush(void);
 * This is a platform-dependent "callback" function invoked from the macro
 * #QS_TIME_ to add the time stamp to a QS record.
 *
-* \note Some of the pre-defined QS records from QP do not output the time
+* \note Some of the predefined QS records from QP do not output the time
 * stamp. However, ALL user records do output the time stamp.
 * \note QS_onGetTime() is called in a critical section and should not
 * exit the critical section.
 *
-* The following example shows using a system call to implement QS
+*
+ The following example shows using a system call to implement QS
 * time stamping:
 * \include qs_onGetTime.c
 */
@@ -704,6 +706,7 @@ QSTimeCtr QS_onGetTime(void);
 #else
     #define QS_CRIT_STAT_       QF_CRIT_STAT_TYPE critStat_;
     #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(critStat_)
+
     #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_)
 #endif
 
@@ -967,6 +970,7 @@ enum QSType {
 #elif (QS_FUN_PTR_SIZE == 8)
     #define QS_FUN(fun_)        (QS_u64(QS_FUN_T, (uint64_t)(fun_)))
 #else
+
     /** \brief Output formatted function pointer to the QS record */
     #define QS_FUN(fun_)        (QS_u32(QS_FUN_T, (uint32_t)(fun_)))
 #endif
@@ -1191,4 +1195,5 @@ typedef struct QSPrivTag {
 extern QSPriv QS_priv_;
 
 #endif                                                             /* qs_h  */
+
 
