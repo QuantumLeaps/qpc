@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="2.3.2">
- <documentation>&quot;Fly 'n' Shoot&quot; game model from Chapters 1 &amp; 9 of PSiCC2</documentation>
+<model version="3.0.0">
+ <documentation>&quot;Fly 'n' Shoot&quot; game model from Chapters 1 &amp; 9 of PSiCC2
+
+NOTE: Requries QP 5.</documentation>
  <framework name="qpc"/>
  <package name="Events" stereotype="0x01">
   <class name="ObjectPosEvt" superclass="qpc::QEvt">
@@ -20,13 +22,13 @@
   </class>
  </package>
  <package name="AOs" stereotype="0x02">
-  <class name="Tunnel" superclass="qpc::QActive">
+  <class name="Tunnel" superclass="qpc::QMActive">
    <documentation>Tunnel Active Object</documentation>
    <attribute name="blinkTimeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
    <attribute name="screenTimeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
-   <attribute name="mines[GAME_MINES_MAX]" type="QHsm *" visibility="0x02" properties="0x00"/>
-   <attribute name="mine1_pool[GAME_MINES_MAX]" type="QHsm *" visibility="0x02" properties="0x00"/>
-   <attribute name="mine2_pool[GAME_MINES_MAX]" type="QHsm *" visibility="0x02" properties="0x00"/>
+   <attribute name="mines[GAME_MINES_MAX]" type="QMsm *" visibility="0x02" properties="0x00"/>
+   <attribute name="mine1_pool[GAME_MINES_MAX]" type="QMsm *" visibility="0x02" properties="0x00"/>
+   <attribute name="mine2_pool[GAME_MINES_MAX]" type="QMsm *" visibility="0x02" properties="0x00"/>
    <attribute name="blink_ctr" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="last_mine_x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="last_mine_y" type="uint8_t" visibility="0x02" properties="0x00"/>
@@ -100,7 +102,7 @@ if ((me-&gt;last_mine_x + GAME_MINES_DIST_MIN &lt; GAME_SCREEN_WIDTH)
 {
     uint8_t n;
     for (n = 0U; n &lt; Q_DIM(me-&gt;mines); ++n) { /*look for disabled mines */
-        if (me-&gt;mines[n] == (QHsm *)0) {
+        if (me-&gt;mines[n] == (QMsm *)0) {
             break;
         }
     }
@@ -127,7 +129,7 @@ if ((me-&gt;last_mine_x + GAME_MINES_DIST_MIN &lt; GAME_SCREEN_WIDTH)
         ope.super.sig = MINE_PLANT_SIG;
         ope.x = me-&gt;last_mine_x;
         ope.y = me-&gt;last_mine_y;
-        QHsm_dispatch(me-&gt;mines[n], (QEvt *)&amp;ope); /* direct dispatch */
+        QMSM_DISPATCH(me-&gt;mines[n], (QEvt *)&amp;ope); /* direct dispatch */
     }
 }
 </code>
@@ -163,8 +165,8 @@ for (x = 0U; x &lt; w; ++x) {
     <code>uint8_t n;
 
 for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
-    if (me-&gt;mines[n] != (QHsm *)0) { /* is the mine used? */
-        QHsm_dispatch(me-&gt;mines[n], e);
+    if (me-&gt;mines[n] != (QMsm *)0) { /* is the mine used? */
+        QMSM_DISPATCH(me-&gt;mines[n], e);
     }
 }</code>
    </operation>
@@ -197,8 +199,8 @@ return (uint8_t)0;</code>
     <initial target="../1/2">
      <action>uint8_t n;
 for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
-    QHsm_init(me-&gt;mine1_pool[n], (QEvt *)0);/*initial tran. for Mine1 */
-    QHsm_init(me-&gt;mine2_pool[n], (QEvt *)0);/*initial tran. for Mine2 */
+    QMSM_INIT(me-&gt;mine1_pool[n], (QEvt *)0);/*initial tran. for Mine1 */
+    QMSM_INIT(me-&gt;mine2_pool[n], (QEvt *)0);/*initial tran. for Mine2 */
 }
 randomSeed(1234); /* seed the pseudo-random generator */
 
@@ -241,8 +243,8 @@ QS_SIG_DICTIONARY(SCORE_SIG,          &amp;l_tunnel);
     <state name="active">
      <tran trig="MINE_DISABLED">
       <action>Q_ASSERT((Q_EVT_CAST(MineEvt)-&gt;id &lt; GAME_MINES_MAX)
-         &amp;&amp; (me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] != (QHsm *)0));
-me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] = (QHsm *)0;</action>
+         &amp;&amp; (me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] != (QMsm *)0));
+me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] = (QMsm *)0;</action>
       <tran_glyph conn="2,9,3,-1,14">
        <action box="0,-2,14,2"/>
       </tran_glyph>
@@ -253,10 +255,9 @@ me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] = (QHsm *)0;</action>
       </tran_glyph>
      </tran>
      <state name="show_logo">
-      <entry>QTimeEvt_postEvery(&amp;me-&gt;blinkTimeEvt, (QActive *)me,
-                   BSP_TICKS_PER_SEC/2U); /* 1/2 sec */
-QTimeEvt_postIn(&amp;me-&gt;screenTimeEvt, (QActive *)me,
-                BSP_TICKS_PER_SEC*5U); /* 5 sec timeout */
+      <entry>QTimeEvt_armX(&amp;me-&gt;blinkTimeEvt, BSP_TICKS_PER_SEC/2U,
+              BSP_TICKS_PER_SEC/2U);
+QTimeEvt_armX(&amp;me-&gt;screenTimeEvt, BSP_TICKS_PER_SEC*5U, 0U);
 me-&gt;blink_ctr = 0U;
 BSP_drawNString(0U, 0U, &quot; Quantum  LeAps &quot;);
 BSP_drawNString(0U, 1U, &quot;state-machine.co&quot;);</entry>
@@ -306,10 +307,9 @@ me-&gt;minimal_gap = GAME_SCREEN_HEIGHT - 3U;
 memset(l_walls, (uint8_t)0,
       (GAME_SCREEN_WIDTH * GAME_SCREEN_HEIGHT/8U));
 
-QTimeEvt_postEvery(&amp;me-&gt;blinkTimeEvt, (QActive *)me,
-                   BSP_TICKS_PER_SEC/2U); /* every 1/2 sec */
-QTimeEvt_postIn(&amp;me-&gt;screenTimeEvt, (QActive *)me,
-                BSP_TICKS_PER_SEC*20U); /* 20s timeout */
+QTimeEvt_armX(&amp;me-&gt;blinkTimeEvt,  BSP_TICKS_PER_SEC/2U,
+              BSP_TICKS_PER_SEC/2U);
+QTimeEvt_armX(&amp;me-&gt;screenTimeEvt, BSP_TICKS_PER_SEC*20U, 0U);
 
 me-&gt;blink_ctr = 0U; /* init the blink counter */</entry>
       <exit>QTimeEvt_disarm(&amp;me-&gt;blinkTimeEvt);
@@ -457,10 +457,9 @@ BSP_drawNString((GAME_SCREEN_WIDTH - 6U*10U)/2U + 6U*6U, 1U, str);</action>
       </state_glyph>
      </state>
      <state name="game_over">
-      <entry>QTimeEvt_postEvery(&amp;me-&gt;blinkTimeEvt, (QActive *)me,
-                   BSP_TICKS_PER_SEC/2U); /* 1/2 sec */
-QTimeEvt_postIn(&amp;me-&gt;screenTimeEvt, (QActive *)me,
-                BSP_TICKS_PER_SEC*5U); /* 5 sec timeout */
+      <entry>QTimeEvt_armX(&amp;me-&gt;blinkTimeEvt, BSP_TICKS_PER_SEC/2U,
+              BSP_TICKS_PER_SEC/2U);
+QTimeEvt_armX(&amp;me-&gt;screenTimeEvt, BSP_TICKS_PER_SEC*5U, 0U);
 me-&gt;blink_ctr = 0U;
 BSP_drawNString((GAME_SCREEN_WIDTH - 6U*9U)/2U, 0U, &quot;Game Over&quot;);</entry>
       <exit>QTimeEvt_disarm(&amp;me-&gt;blinkTimeEvt);
@@ -499,8 +498,7 @@ BSP_drawNString((GAME_SCREEN_WIDTH - 6U*9U)/2, 0U,
       </tran>
       <state name="screen_saver_hide">
        <entry>BSP_displayOff(); /* power down the display */
-QTimeEvt_postIn(&amp;me-&gt;screenTimeEvt, (QActive *)me,
-                BSP_TICKS_PER_SEC*3U); /* 3s timeout */</entry>
+QTimeEvt_armX(&amp;me-&gt;screenTimeEvt, BSP_TICKS_PER_SEC*3U, 0U);</entry>
        <exit>QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);
 BSP_displayOn(); /* power up the display */</exit>
        <tran trig="SCREEN_TIMEOUT" target="../../3">
@@ -523,8 +521,7 @@ Tunnel_addImageAt(me,
         (uint8_t)(rnd % (GAME_SCREEN_WIDTH - 55U)),
         (int8_t) (rnd % (GAME_SCREEN_HEIGHT - 8U)));
 BSP_drawBitmap(l_frame);
-QTimeEvt_postIn(&amp;me-&gt;screenTimeEvt, (QActive *)me,
-                BSP_TICKS_PER_SEC/3U); /* 1/3 sec timeout */</entry>
+QTimeEvt_armX(&amp;me-&gt;screenTimeEvt, BSP_TICKS_PER_SEC/2U, 0U);</entry>
        <exit>QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);
 /* clear the screen frame buffer */
 memset(l_frame, (uint8_t)0,
@@ -557,7 +554,7 @@ QF_stop(); /* stop QF and cleanup */</entry>
     <state_diagram size="68,94"/>
    </statechart>
   </class>
-  <class name="Ship" superclass="qpc::QActive">
+  <class name="Ship" superclass="qpc::QMActive">
    <documentation>Ship Active Object</documentation>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
@@ -701,7 +698,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)gameOver, me);</action>
     <state_diagram size="41,67"/>
    </statechart>
   </class>
-  <class name="Missile" superclass="qpc::QActive">
+  <class name="Missile" superclass="qpc::QMActive">
    <documentation>Missile Active Object</documentation>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
@@ -811,7 +808,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
     <state_diagram size="46,55"/>
    </statechart>
   </class>
-  <class name="Mine1" superclass="qpc::QHsm">
+  <class name="Mine1" superclass="qpc::QMsm">
    <documentation>The Mine1 orthogonal component</documentation>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
@@ -975,7 +972,7 @@ QACTIVE_POST(AO_Missile, (QEvt *)&amp;mine1_destroyed, me);</action>
     <state_diagram size="53,68"/>
    </statechart>
   </class>
-  <class name="Mine2" superclass="qpc::QHsm">
+  <class name="Mine2" superclass="qpc::QMsm">
    <documentation>The Mine2 orthogonal component</documentation>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
@@ -1150,6 +1147,48 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
   <attribute name="AO_Tunnel" type="QActive * const" visibility="0x00" properties="0x00"/>
   <attribute name="AO_Ship" type="QActive * const" visibility="0x00" properties="0x00"/>
   <attribute name="AO_Missile" type="QActive * const" visibility="0x00" properties="0x00"/>
+  <operation name="Tunnel_ctor" type="void" visibility="0x00" properties="0x01">
+   <code>uint8_t n;
+Tunnel *me = &amp;l_tunnel;
+QMActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Tunnel_initial));
+QTimeEvt_ctorX(&amp;me-&gt;blinkTimeEvt,  &amp;me-&gt;super, BLINK_TIMEOUT_SIG,  0U);
+QTimeEvt_ctorX(&amp;me-&gt;screenTimeEvt, &amp;me-&gt;super, SCREEN_TIMEOUT_SIG, 0U);
+for (n = 0; n &lt; GAME_MINES_MAX; ++n) {
+    me-&gt;mine1_pool[n] = Mine1_ctor(n); /* instantiate Mine1 in the pool */
+    me-&gt;mine2_pool[n] = Mine2_ctor(n); /* instantiate Mine2 in the pool */
+    me-&gt;mines[n] = (QMsm *)0; /* mine 'n' is unused */
+}
+me-&gt;last_mine_x = 0; /* the last mine at the right edge of the tunnel */
+me-&gt;last_mine_y = 0;</code>
+  </operation>
+  <operation name="Ship_ctor" type="void" visibility="0x00" properties="0x01">
+   <code>Ship *me = &amp;l_ship;
+QMActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Ship_initial));
+me-&gt;x = GAME_SHIP_X;
+me-&gt;y = GAME_SHIP_Y;</code>
+  </operation>
+  <operation name="Missile_ctor" type="void" visibility="0x00" properties="0x01">
+   <code>Missile *me = &amp;l_missile;
+QMActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Missile_initial));</code>
+  </operation>
+  <operation name="Mine1_ctor" type="QMsm *" visibility="0x00" properties="0x01">
+   <parameter name="id" type="uint8_t"/>
+   <code>Mine1 *me;
+Q_REQUIRE(id &lt; GAME_MINES_MAX);
+me = &amp;l_mine1[id];
+/* superclass' ctor */
+QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine1_initial));
+return (QMsm *)me;</code>
+  </operation>
+  <operation name="Mine2_ctor" type="QMsm *" visibility="0x00" properties="0x01">
+   <parameter name="id" type="uint8_t"/>
+   <code>Mine2 *me;
+Q_REQUIRE(id &lt; GAME_MINES_MAX);
+me = &amp;l_mine2[id];
+/* superclass' ctor */
+QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine2_initial));
+return (QMsm *)me;</code>
+  </operation>
   <operation name="do_bitmaps_overlap" type="uint8_t" visibility="0x00" properties="0x00">
    <parameter name="bmp_id1" type="uint8_t"/>
    <parameter name="x1" type="uint8_t"/>
@@ -1157,48 +1196,6 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
    <parameter name="bmp_id2" type="uint8_t"/>
    <parameter name="x2" type="uint8_t"/>
    <parameter name="y2" type="uint8_t"/>
-  </operation>
-  <operation name="Tunnel_ctor" type="void" visibility="0x00" properties="0x01">
-   <code>uint8_t n;
-Tunnel *me = &amp;l_tunnel;
-QActive_ctor(&amp;me-&gt;super, (QStateHandler)&amp;Tunnel_initial);
-QTimeEvt_ctor(&amp;me-&gt;blinkTimeEvt,  BLINK_TIMEOUT_SIG);
-QTimeEvt_ctor(&amp;me-&gt;screenTimeEvt, SCREEN_TIMEOUT_SIG);
-for (n = 0; n &lt; GAME_MINES_MAX; ++n) {
-    me-&gt;mine1_pool[n] = Mine1_ctor(n); /* instantiate Mine1 in the pool */
-    me-&gt;mine2_pool[n] = Mine2_ctor(n); /* instantiate Mine2 in the pool */
-    me-&gt;mines[n] = (QHsm *)0; /* mine 'n' is unused */
-}
-me-&gt;last_mine_x = 0; /* the last mine at the right edge of the tunnel */
-me-&gt;last_mine_y = 0;</code>
-  </operation>
-  <operation name="Ship_ctor" type="void" visibility="0x00" properties="0x01">
-   <code>Ship *me = &amp;l_ship;
-QActive_ctor(&amp;me-&gt;super, (QStateHandler)&amp;Ship_initial);
-me-&gt;x = GAME_SHIP_X;
-me-&gt;y = GAME_SHIP_Y;</code>
-  </operation>
-  <operation name="Missile_ctor" type="void" visibility="0x00" properties="0x01">
-   <code>Missile *me = &amp;l_missile;
-QActive_ctor(&amp;me-&gt;super, (QStateHandler)&amp;Missile_initial);</code>
-  </operation>
-  <operation name="Mine1_ctor" type="QHsm *" visibility="0x00" properties="0x01">
-   <parameter name="id" type="uint8_t"/>
-   <code>Mine1 *me;
-Q_REQUIRE(id &lt; GAME_MINES_MAX);
-me = &amp;l_mine1[id];
-/* superclass' ctor */
-QHsm_ctor(&amp;me-&gt;super, (QStateHandler)&amp;Mine1_initial);
-return (QHsm *)me;</code>
-  </operation>
-  <operation name="Mine2_ctor" type="QHsm *" visibility="0x00" properties="0x01">
-   <parameter name="id" type="uint8_t"/>
-   <code>Mine2 *me;
-Q_REQUIRE(id &lt; GAME_MINES_MAX);
-me = &amp;l_mine2[id];
-/* superclass' ctor */
-QHsm_ctor(&amp;me-&gt;super, (QStateHandler)&amp;Mine2_initial);
-return (QHsm *)me;</code>
   </operation>
  </package>
  <directory name=".">
@@ -1658,17 +1655,17 @@ int main() {
     QS_SIG_DICTIONARY(GAME_OVER_SIG,      (void *)0);
 
                                              /* start the active objects... */
-    QActive_start(AO_Missile,
+    QACTIVE_START(AO_Missile,
                   1U,                                           /* priority */
                   l_missileQueueSto, Q_DIM(l_missileQueueSto), /* evt queue */
                   (void *)0, 0U,                     /* no per-thread stack */
                   (QEvt *)0);                    /* no initialization event */
-    QActive_start(AO_Ship,
+    QACTIVE_START(AO_Ship,
                   2U,                                           /* priority */
                   l_shipQueueSto,    Q_DIM(l_shipQueueSto),    /* evt queue */
                   (void *)0, 0U,                     /* no per-thread stack */
                   (QEvt *)0);                    /* no initialization event */
-    QActive_start(AO_Tunnel,
+    QACTIVE_START(AO_Tunnel,
                   3U,                                           /* priority */
                   l_tunnelQueueSto,  Q_DIM(l_tunnelQueueSto),  /* evt queue */
                   (void *)0, 0U,                     /* no per-thread stack */

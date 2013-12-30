@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 11, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -46,11 +46,11 @@
 /*..........................................................................*/
 void QMActive_ctor(QMActive * const me, QStateHandler initial) {
     static QActiveVtbl const vtbl = {             /* QMActive virtual table */
-        { &QMsm_init,
-          &QMsm_dispatch },
-        &QActive_start,
-        &QActive_post,
-        &QActive_postLIFO
+        { &QMsm_init_,
+          &QMsm_dispatch_ },
+        &QActive_start_,
+        &QActive_post_,
+        &QActive_postLIFO_
     };
 
     QMsm_ctor(&me->super, initial);/*call instead of QActive_ctor(), NOTE01 */
@@ -62,7 +62,7 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial) {
 * QMActive inherits QActive, so by the "inheritance of structures" convention
 * it should call the constructor of the superclass, i.e., QActive_ctor().
 * However, this would pull in the QActiveVtbl, which in turn will pull in
-* the code for QHsm_init() and QHsm_dispatch() implemetations, which is
+* the code for QHsm_init_() and QHsm_dispatch_() implemetations, which is
 * expensive. To avoid this code size penalty, in case QHsm is not used in
 * a given project, the QMActive_ctor() calls the QMsm_ctor(), which avoids
 * pulling in the code for QHsm.

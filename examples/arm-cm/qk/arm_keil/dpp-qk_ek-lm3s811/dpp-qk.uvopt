@@ -73,7 +73,7 @@
       <OPTFL>
         <tvExp>1</tvExp>
         <tvExpOptDlg>0</tvExpOptDlg>
-        <IsCurrentTarget>1</IsCurrentTarget>
+        <IsCurrentTarget>0</IsCurrentTarget>
       </OPTFL>
       <CpuCode>255</CpuCode>
       <DllOpt>
@@ -120,6 +120,15 @@
         <pMon>BIN\lmidk-agdi.dll</pMon>
       </DebugOpt>
       <TargetDriverDllRegistry>
+        <SetRegEntry>
+          <Number>0</Number>
+          <Key>DLGUARM</Key>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
+          <Key>UL2CM3</Key>
+          <Name>UL2CM3(-UU0101L5E -O14 -S0 -C0 -N00("ARM Cortex-M3") -D00(1BA00477) -L00(4) -FO7 -FD20000000 -FC800 -FN1 -FF0LM3S_64 -FS00 -FL010000)</Name>
+        </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGTARM</Key>
@@ -280,7 +289,8 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>DLGUARM</Key>
+          <Key>UL2CM3</Key>
+          <Name>UL2CM3(-UU0101L5E -O14 -S0 -C0 -N00("ARM Cortex-M3") -D00(1BA00477) -L00(4) -FO7 -FD20000000 -FC800 -FN1 -FF0LM3S_64 -FS00 -FL010000)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -393,7 +403,7 @@
       <OPTFL>
         <tvExp>1</tvExp>
         <tvExpOptDlg>0</tvExpOptDlg>
-        <IsCurrentTarget>0</IsCurrentTarget>
+        <IsCurrentTarget>1</IsCurrentTarget>
       </OPTFL>
       <CpuCode>255</CpuCode>
       <DllOpt>
@@ -446,6 +456,11 @@
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
+          <Key>UL2CM3</Key>
+          <Name>UL2CM3(-UU0101L5E -O14 -S0 -C0 -N00("ARM Cortex-M3") -D00(1BA00477) -L00(4) -FO7 -FD20000000 -FC800 -FN1 -FF0LM3S_64 -FS00 -FL010000)</Name>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
           <Key>DLGTARM</Key>
           <Name>(1010=-1,-1,-1,-1,0)(1007=-1,-1,-1,-1,0)(1008=-1,-1,-1,-1,0)(1009=-1,-1,-1,-1,0)(110=-1,-1,-1,-1,0)(100=-1,-1,-1,-1,0)(101=-1,-1,-1,-1,0)(102=-1,-1,-1,-1,0)(103=-1,-1,-1,-1,0)(104=-1,-1,-1,-1,0)(161=-1,-1,-1,-1,0)(162=-1,-1,-1,-1,0)(163=-1,-1,-1,-1,0)(150=-1,-1,-1,-1,0)(151=-1,-1,-1,-1,0)(1011=-1,-1,-1,-1,0)(1012=-1,-1,-1,-1,0)(1013=-1,-1,-1,-1,0)(171=-1,-1,-1,-1,0)(172=-1,-1,-1,-1,0)(173=-1,-1,-1,-1,0)(1014=-1,-1,-1,-1,0)(1016=-1,-1,-1,-1,0)(136=-1,-1,-1,-1,0)</Name>
         </SetRegEntry>
@@ -479,7 +494,7 @@
         <aSer1>0</aSer1>
         <aSer2>0</aSer2>
         <aPa>0</aPa>
-        <viewmode>1</viewmode>
+        <viewmode>2</viewmode>
         <vrSel>0</vrSel>
         <aSym>0</aSym>
         <aTbox>0</aTbox>
@@ -516,8 +531,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>234</TopLine>
-      <CurrentLine>251</CurrentLine>
+      <TopLine>236</TopLine>
+      <CurrentLine>266</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\bsp.c</PathWithFileName>
       <FilenameWithoutPath>bsp.c</FilenameWithoutPath>
@@ -676,8 +691,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>1</CurrentLine>
+      <TopLine>175</TopLine>
+      <CurrentLine>188</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\startup-qk_lm3s.s</PathWithFileName>
       <FilenameWithoutPath>startup-qk_lm3s.s</FilenameWithoutPath>

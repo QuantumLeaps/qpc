@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, preemptive QK kernel
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -110,7 +110,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK(&l_SysTick_Handler);           /* process all armed time events */
+    QF_TICK_X(0U, &l_SysTick_Handler);    /* process time events for rate 0 */
     QF_PUBLISH(&tickEvt, &l_SysTick_Handler); /* publish to all subscribers */
 
     QK_ISR_EXIT();                        /* infrom QK about exiting an ISR */
@@ -338,18 +338,16 @@ void QK_onIdle(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
-    (void)file;                                   /* avoid compiler warning */
-    (void)line;                                   /* avoid compiler warning */
-    QF_INT_DISABLE();         /* make sure that all interrupts are disabled */
-    QS_ASSERTION(file, line);
-    for (;;) {       /* NOTE: replace the loop with reset for final version */
-    }
+void Q_onAssert(char const Q_ROM * const file, int_t line) {
+    assert_failed(file, line);
 }
 /*..........................................................................*/
 /* error routine that is called if the CMSIS library encounters an error    */
 void assert_failed(char const *file, int line) {
-    Q_onAssert(file, line);
+    (void)file;                                   /* avoid compiler warning */
+    (void)line;                                   /* avoid compiler warning */
+    QF_INT_DISABLE();         /* make sure that all interrupts are disabled */
+    NVIC_SystemReset();                             /* perform system reset */
 }
 
 /*--------------------------------------------------------------------------*/
@@ -434,8 +432,6 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_OFF(QS_QF_CRIT_EXIT);
     QS_FILTER_OFF(QS_QF_ISR_ENTRY);
     QS_FILTER_OFF(QS_QF_ISR_EXIT);
-
-    QS_RESET();
 
     return (uint8_t)1;                                    /* return success */
 }

@@ -1,8 +1,16 @@
 //*****************************************************************************
+// Added prototype of assert_failed().
+//
+// Quantum Leaps on 18-Oct-2013
+// www.state-machine.com
+//*****************************************************************************
+
+
+//*****************************************************************************
 //
 // sysctl.h - Prototypes for the system control driver.
 //
-// Copyright (c) 2005-2012 Texas Instruments Incorporated.  All rights reserved.
+// Copyright (c) 2005-2013 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
 //
 //   Redistribution and use in source and binary forms, with or without
@@ -33,7 +41,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// This is part of revision 9453 of the Stellaris Peripheral Driver Library.
+// This is part of revision 1.0 of the Tiva Peripheral Driver Library.
 //
 //*****************************************************************************
 
@@ -51,97 +59,35 @@ extern "C"
 {
 #endif
 
-typedef unsigned char tBoolean;
-
 //*****************************************************************************
 //
 // The following are values that can be passed to the
 // SysCtlPeripheralPresent(), SysCtlPeripheralEnable(),
 // SysCtlPeripheralDisable(), and SysCtlPeripheralReset() APIs as the
-// ulPeripheral parameter.  The peripherals in the fourth group (upper nibble
+// ui32Peripheral parameter.  The peripherals in the fourth group (upper nibble
 // is 3) can only be used with the SysCtlPeripheralPresent() API.
 //
 //*****************************************************************************
-#ifndef DEPRECATED
-#define SYSCTL_PERIPH_WDOG      0x00000008  // Watchdog
-#endif
-#define SYSCTL_PERIPH_WDOG0     0x00000008  // Watchdog 0
-#define SYSCTL_PERIPH_HIBERNATE 0x00000040  // Hibernation module
-#ifndef DEPRECATED
-#define SYSCTL_PERIPH_ADC       0x00100001  // ADC
-#endif
-#define SYSCTL_PERIPH_ADC0      0x00100001  // ADC0
-#define SYSCTL_PERIPH_ADC1      0x00100002  // ADC1
-#ifndef DEPRECATED
-#define SYSCTL_PERIPH_PWM       0x00100010  // PWM
-#endif
-#define SYSCTL_PERIPH_PWM0      0x00100010  // PWM
-#define SYSCTL_PERIPH_CAN0      0x00100100  // CAN 0
-#define SYSCTL_PERIPH_CAN1      0x00100200  // CAN 1
-#define SYSCTL_PERIPH_CAN2      0x00100400  // CAN 2
-#define SYSCTL_PERIPH_WDOG1     0x00101000  // Watchdog 1
-#define SYSCTL_PERIPH_UART0     0x10000001  // UART 0
-#define SYSCTL_PERIPH_UART1     0x10000002  // UART 1
-#define SYSCTL_PERIPH_UART2     0x10000004  // UART 2
-#ifndef DEPRECATED
-#define SYSCTL_PERIPH_SSI       0x10000010  // SSI
-#endif
-#define SYSCTL_PERIPH_SSI0      0x10000010  // SSI 0
-#define SYSCTL_PERIPH_SSI1      0x10000020  // SSI 1
-#ifndef DEPRECATED
-#define SYSCTL_PERIPH_QEI       0x10000100  // QEI
-#endif
-#define SYSCTL_PERIPH_QEI0      0x10000100  // QEI 0
-#define SYSCTL_PERIPH_QEI1      0x10000200  // QEI 1
-#ifndef DEPRECATED
-#define SYSCTL_PERIPH_I2C       0x10001000  // I2C
-#endif
-#define SYSCTL_PERIPH_I2C0      0x10001000  // I2C 0
-#define SYSCTL_PERIPH_I2C1      0x10004000  // I2C 1
-#define SYSCTL_PERIPH_TIMER0    0x10100001  // Timer 0
-#define SYSCTL_PERIPH_TIMER1    0x10100002  // Timer 1
-#define SYSCTL_PERIPH_TIMER2    0x10100004  // Timer 2
-#define SYSCTL_PERIPH_TIMER3    0x10100008  // Timer 3
-#define SYSCTL_PERIPH_COMP0     0x10100100  // Analog comparator 0
-#define SYSCTL_PERIPH_COMP1     0x10100200  // Analog comparator 1
-#define SYSCTL_PERIPH_COMP2     0x10100400  // Analog comparator 2
-#define SYSCTL_PERIPH_I2S0      0x10101000  // I2S0
-#define SYSCTL_PERIPH_EPI0      0x10104000  // EPI0
-#define SYSCTL_PERIPH_GPIOA     0x20000001  // GPIO A
-#define SYSCTL_PERIPH_GPIOB     0x20000002  // GPIO B
-#define SYSCTL_PERIPH_GPIOC     0x20000004  // GPIO C
-#define SYSCTL_PERIPH_GPIOD     0x20000008  // GPIO D
-#define SYSCTL_PERIPH_GPIOE     0x20000010  // GPIO E
-#define SYSCTL_PERIPH_GPIOF     0x20000020  // GPIO F
-#define SYSCTL_PERIPH_GPIOG     0x20000040  // GPIO G
-#define SYSCTL_PERIPH_GPIOH     0x20000080  // GPIO H
-#define SYSCTL_PERIPH_GPIOJ     0x20000100  // GPIO J
-#define SYSCTL_PERIPH_UDMA      0x20002000  // uDMA
-#define SYSCTL_PERIPH_USB0      0x20100001  // USB0
-#define SYSCTL_PERIPH_ETH       0x20105000  // Ethernet
-#define SYSCTL_PERIPH_IEEE1588  0x20100100  // IEEE1588
-#define SYSCTL_PERIPH_PLL       0x30000010  // PLL
-#define SYSCTL_PERIPH_TEMP      0x30000020  // Temperature sensor
-#define SYSCTL_PERIPH_MPU       0x30000080  // Cortex M3 MPU
-#define SYSCTL_PERIPH2_ADC0     0xf0003800  // ADC 0
-#define SYSCTL_PERIPH2_ADC1     0xf0003801  // ADC 1
-#define SYSCTL_PERIPH2_CAN0     0xf0003400  // CAN 0
-#define SYSCTL_PERIPH2_CAN1     0xf0003401  // CAN 1
-#define SYSCTL_PERIPH2_CAN2     0xf0003402  // CAN 2
-#define SYSCTL_PERIPH2_COMP0    0xf0003c00  // Analog comparator 0
+#define SYSCTL_PERIPH_ADC0      0xf0003800  // ADC 0
+#define SYSCTL_PERIPH_ADC1      0xf0003801  // ADC 1
+#define SYSCTL_PERIPH_CAN0      0xf0003400  // CAN 0
+#define SYSCTL_PERIPH_CAN1      0xf0003401  // CAN 1
+#define SYSCTL_PERIPH_CAN2      0xf0003402  // CAN 2
+#define SYSCTL_PERIPH_COMP0     0xf0003c00  // Analog comparator 0
+#define SYSCTL_PERIPH_COMP1     0xf0003c01  // Analog comparator 1
+#define SYSCTL_PERIPH_COMP2     0xf0003c02  // Analog comparator 2
+#define SYSCTL_PERIPH_GPIOA     0xf0000800  // GPIO A
+#define SYSCTL_PERIPH_GPIOB     0xf0000801  // GPIO B
+#define SYSCTL_PERIPH_GPIOC     0xf0000802  // GPIO C
+#define SYSCTL_PERIPH_GPIOD     0xf0000803  // GPIO D
+#define SYSCTL_PERIPH_GPIOE     0xf0000804  // GPIO E
+#define SYSCTL_PERIPH_GPIOF     0xf0000805  // GPIO F
+#define SYSCTL_PERIPH_GPIOG     0xf0000806  // GPIO G
+#define SYSCTL_PERIPH_GPIOH     0xf0000807  // GPIO H
+#define SYSCTL_PERIPH_GPIOJ     0xf0000808  // GPIO J
+#define SYSCTL_PERIPH_HIBERNATE 0xf0001400  // Hibernation module
 #define SYSCTL_PERIPH_EEPROM0   0xf0005800  // EEPROM 0
-#define SYSCTL_PERIPH2_EPI0     0xf0001000  // EPI0
-#define SYSCTL_PERIPH2_ETH      0xf0002c00  // ETH
 #define SYSCTL_PERIPH_FAN0      0xf0005400  // FAN 0
-#define SYSCTL_PERIPH2_GPIOA    0xf0000800  // GPIO A
-#define SYSCTL_PERIPH2_GPIOB    0xf0000801  // GPIO B
-#define SYSCTL_PERIPH2_GPIOC    0xf0000802  // GPIO C
-#define SYSCTL_PERIPH2_GPIOD    0xf0000803  // GPIO D
-#define SYSCTL_PERIPH2_GPIOE    0xf0000804  // GPIO E
-#define SYSCTL_PERIPH2_GPIOF    0xf0000805  // GPIO F
-#define SYSCTL_PERIPH2_GPIOG    0xf0000806  // GPIO G
-#define SYSCTL_PERIPH2_GPIOH    0xf0000807  // GPIO H
-#define SYSCTL_PERIPH2_GPIOJ    0xf0000808  // GPIO J
 #define SYSCTL_PERIPH_GPIOK     0xf0000809  // GPIO K
 #define SYSCTL_PERIPH_GPIOL     0xf000080a  // GPIO L
 #define SYSCTL_PERIPH_GPIOM     0xf000080b  // GPIO M
@@ -150,116 +96,46 @@ typedef unsigned char tBoolean;
 #define SYSCTL_PERIPH_GPIOQ     0xf000080e  // GPIO Q
 #define SYSCTL_PERIPH_GPIOR     0xf000080f  // GPIO R
 #define SYSCTL_PERIPH_GPIOS     0xf0000810  // GPIO S
-#define SYSCTL_PERIPH2_HIB      0xf0001400  // Hibernation module
-#define SYSCTL_PERIPH2_I2C0     0xf0002000  // I2C 0
-#define SYSCTL_PERIPH2_I2C1     0xf0002001  // I2C 1
+#define SYSCTL_PERIPH_I2C0      0xf0002000  // I2C 0
+#define SYSCTL_PERIPH_I2C1      0xf0002001  // I2C 1
 #define SYSCTL_PERIPH_I2C2      0xf0002002  // I2C 2
 #define SYSCTL_PERIPH_I2C3      0xf0002003  // I2C 3
 #define SYSCTL_PERIPH_I2C4      0xf0002004  // I2C 4
 #define SYSCTL_PERIPH_I2C5      0xf0002005  // I2C 5
-#define SYSCTL_PERIPH2_I2S0     0xf0002400  // I2S0
 #define SYSCTL_PERIPH_LPC0      0xf0004800  // LPC 0
 #define SYSCTL_PERIPH_PECI0     0xf0005000  // PECI 0
-#define SYSCTL_PERIPH2_PWM0     0xf0004000  // PWM 0
+#define SYSCTL_PERIPH_PWM0      0xf0004000  // PWM 0
 #define SYSCTL_PERIPH_PWM1      0xf0004001  // PWM 1
-#define SYSCTL_PERIPH2_QEI0     0xf0004400  // QEI 0
-#define SYSCTL_PERIPH2_QEI1     0xf0004401  // QEI 1
-#define SYSCTL_PERIPH2_SSI0     0xf0001c00  // SSI 0
-#define SYSCTL_PERIPH2_SSI1     0xf0001c01  // SSI 1
+#define SYSCTL_PERIPH_QEI0      0xf0004400  // QEI 0
+#define SYSCTL_PERIPH_QEI1      0xf0004401  // QEI 1
+#define SYSCTL_PERIPH_SSI0      0xf0001c00  // SSI 0
+#define SYSCTL_PERIPH_SSI1      0xf0001c01  // SSI 1
 #define SYSCTL_PERIPH_SSI2      0xf0001c02  // SSI 2
 #define SYSCTL_PERIPH_SSI3      0xf0001c03  // SSI 3
-#define SYSCTL_PERIPH2_TIMER0   0xf0000400  // Timer 0
-#define SYSCTL_PERIPH2_TIMER1   0xf0000401  // Timer 1
-#define SYSCTL_PERIPH2_TIMER2   0xf0000402  // Timer 2
-#define SYSCTL_PERIPH2_TIMER3   0xf0000403  // Timer 3
+#define SYSCTL_PERIPH_TIMER0    0xf0000400  // Timer 0
+#define SYSCTL_PERIPH_TIMER1    0xf0000401  // Timer 1
+#define SYSCTL_PERIPH_TIMER2    0xf0000402  // Timer 2
+#define SYSCTL_PERIPH_TIMER3    0xf0000403  // Timer 3
 #define SYSCTL_PERIPH_TIMER4    0xf0000404  // Timer 4
 #define SYSCTL_PERIPH_TIMER5    0xf0000405  // Timer 5
+#define SYSCTL_PERIPH_UART0     0xf0001800  // UART 0
+#define SYSCTL_PERIPH_UART1     0xf0001801  // UART 1
+#define SYSCTL_PERIPH_UART2     0xf0001802  // UART 2
+#define SYSCTL_PERIPH_UART3     0xf0001803  // UART 3
+#define SYSCTL_PERIPH_UART4     0xf0001804  // UART 4
+#define SYSCTL_PERIPH_UART5     0xf0001805  // UART 5
+#define SYSCTL_PERIPH_UART6     0xf0001806  // UART 6
+#define SYSCTL_PERIPH_UART7     0xf0001807  // UART 7
+#define SYSCTL_PERIPH_UDMA      0xf0000c00  // uDMA
+#define SYSCTL_PERIPH_USB0      0xf0002800  // USB 0
+#define SYSCTL_PERIPH_WDOG0     0xf0000000  // Watchdog 0
+#define SYSCTL_PERIPH_WDOG1     0xf0000001  // Watchdog 1
 #define SYSCTL_PERIPH_WTIMER0   0xf0005c00  // Wide Timer 0
 #define SYSCTL_PERIPH_WTIMER1   0xf0005c01  // Wide Timer 1
 #define SYSCTL_PERIPH_WTIMER2   0xf0005c02  // Wide Timer 2
 #define SYSCTL_PERIPH_WTIMER3   0xf0005c03  // Wide Timer 3
 #define SYSCTL_PERIPH_WTIMER4   0xf0005c04  // Wide Timer 4
 #define SYSCTL_PERIPH_WTIMER5   0xf0005c05  // Wide Timer 5
-#define SYSCTL_PERIPH2_UART0    0xf0001800  // UART 0
-#define SYSCTL_PERIPH2_UART1    0xf0001801  // UART 1
-#define SYSCTL_PERIPH2_UART2    0xf0001802  // UART 2
-#define SYSCTL_PERIPH_UART3     0xf0001803  // UART 3
-#define SYSCTL_PERIPH_UART4     0xf0001804  // UART 4
-#define SYSCTL_PERIPH_UART5     0xf0001805  // UART 5
-#define SYSCTL_PERIPH_UART6     0xf0001806  // UART 6
-#define SYSCTL_PERIPH_UART7     0xf0001807  // UART 7
-#define SYSCTL_PERIPH2_UDMA     0xf0000c00  // uDMA
-#define SYSCTL_PERIPH2_USB0     0xf0002800  // USB 0
-#define SYSCTL_PERIPH2_WDOG0    0xf0000000  // Watchdog 0
-#define SYSCTL_PERIPH2_WDOG1    0xf0000001  // Watchdog 1
-#define SYSCTL_PERIPH2_HIBERNATE \
-                                0xf0001400  // Hibernate
-
-//*****************************************************************************
-//
-// The following are values that can be passed to the SysCtlPinPresent() API
-// as the ulPin parameter.
-//
-//*****************************************************************************
-#define SYSCTL_PIN_PWM0         0x00000001  // PWM0 pin
-#define SYSCTL_PIN_PWM1         0x00000002  // PWM1 pin
-#define SYSCTL_PIN_PWM2         0x00000004  // PWM2 pin
-#define SYSCTL_PIN_PWM3         0x00000008  // PWM3 pin
-#define SYSCTL_PIN_PWM4         0x00000010  // PWM4 pin
-#define SYSCTL_PIN_PWM5         0x00000020  // PWM5 pin
-#define SYSCTL_PIN_PWM6         0x00000040  // PWM6 pin
-#define SYSCTL_PIN_PWM7         0x00000080  // PWM7 pin
-#define SYSCTL_PIN_C0MINUS      0x00000040  // C0- pin
-#define SYSCTL_PIN_C0PLUS       0x00000080  // C0+ pin
-#define SYSCTL_PIN_C0O          0x00000100  // C0o pin
-#define SYSCTL_PIN_C1MINUS      0x00000200  // C1- pin
-#define SYSCTL_PIN_C1PLUS       0x00000400  // C1+ pin
-#define SYSCTL_PIN_C1O          0x00000800  // C1o pin
-#define SYSCTL_PIN_C2MINUS      0x00001000  // C2- pin
-#define SYSCTL_PIN_C2PLUS       0x00002000  // C2+ pin
-#define SYSCTL_PIN_C2O          0x00004000  // C2o pin
-#define SYSCTL_PIN_MC_FAULT0    0x00008000  // MC0 Fault pin
-#define SYSCTL_PIN_ADC0         0x00010000  // ADC0 pin
-#define SYSCTL_PIN_ADC1         0x00020000  // ADC1 pin
-#define SYSCTL_PIN_ADC2         0x00040000  // ADC2 pin
-#define SYSCTL_PIN_ADC3         0x00080000  // ADC3 pin
-#define SYSCTL_PIN_ADC4         0x00100000  // ADC4 pin
-#define SYSCTL_PIN_ADC5         0x00200000  // ADC5 pin
-#define SYSCTL_PIN_ADC6         0x00400000  // ADC6 pin
-#define SYSCTL_PIN_ADC7         0x00800000  // ADC7 pin
-#define SYSCTL_PIN_CCP0         0x01000000  // CCP0 pin
-#define SYSCTL_PIN_CCP1         0x02000000  // CCP1 pin
-#define SYSCTL_PIN_CCP2         0x04000000  // CCP2 pin
-#define SYSCTL_PIN_CCP3         0x08000000  // CCP3 pin
-#define SYSCTL_PIN_CCP4         0x10000000  // CCP4 pin
-#define SYSCTL_PIN_CCP5         0x20000000  // CCP5 pin
-#define SYSCTL_PIN_32KHZ        0x80000000  // 32kHz pin
-
-//*****************************************************************************
-//
-// The following are values that can be passed to the SysCtlLDOSet() API as
-// the ulVoltage value, or returned by the SysCtlLDOGet() API.
-//
-//*****************************************************************************
-#define SYSCTL_LDO_2_25V        0x00000005  // LDO output of 2.25V
-#define SYSCTL_LDO_2_30V        0x00000004  // LDO output of 2.30V
-#define SYSCTL_LDO_2_35V        0x00000003  // LDO output of 2.35V
-#define SYSCTL_LDO_2_40V        0x00000002  // LDO output of 2.40V
-#define SYSCTL_LDO_2_45V        0x00000001  // LDO output of 2.45V
-#define SYSCTL_LDO_2_50V        0x00000000  // LDO output of 2.50V
-#define SYSCTL_LDO_2_55V        0x0000001f  // LDO output of 2.55V
-#define SYSCTL_LDO_2_60V        0x0000001e  // LDO output of 2.60V
-#define SYSCTL_LDO_2_65V        0x0000001d  // LDO output of 2.65V
-#define SYSCTL_LDO_2_70V        0x0000001c  // LDO output of 2.70V
-#define SYSCTL_LDO_2_75V        0x0000001b  // LDO output of 2.75V
-
-//*****************************************************************************
-//
-// The following are values that can be passed to the SysCtlLDOConfigSet() API.
-//
-//*****************************************************************************
-#define SYSCTL_LDOCFG_ARST      0x00000001  // Allow LDO failure to reset
-#define SYSCTL_LDOCFG_NORST     0x00000000  // Do not reset on LDO failure
 
 //*****************************************************************************
 //
@@ -296,7 +172,7 @@ typedef unsigned char tBoolean;
 //*****************************************************************************
 //
 // The following are values that can be passed to the SysCtlBrownOutConfigSet()
-// API as the ulConfig parameter.
+// API as the ui32Config parameter.
 //
 //*****************************************************************************
 #define SYSCTL_BOR_RESET        0x00000002  // Reset instead of interrupting
@@ -305,7 +181,7 @@ typedef unsigned char tBoolean;
 //*****************************************************************************
 //
 // The following are values that can be passed to the SysCtlPWMClockSet() API
-// as the ulConfig parameter, and can be returned by the SysCtlPWMClockGet()
+// as the ui32Config parameter, and can be returned by the SysCtlPWMClockGet()
 // API.
 //
 //*****************************************************************************
@@ -320,7 +196,7 @@ typedef unsigned char tBoolean;
 //*****************************************************************************
 //
 // The following are values that can be passed to the SysCtlADCSpeedSet() API
-// as the ulSpeed parameter, and can be returned by the SyCtlADCSpeedGet()
+// as the ui32Speed parameter, and can be returned by the SysCtlADCSpeedGet()
 // API.
 //
 //*****************************************************************************
@@ -332,7 +208,7 @@ typedef unsigned char tBoolean;
 //*****************************************************************************
 //
 // The following are values that can be passed to the SysCtlClockSet() API as
-// the ulConfig parameter.
+// the ui32Config parameter.
 //
 //*****************************************************************************
 #define SYSCTL_SYSDIV_1         0x07800000  // Processor clock is osc/pll /1
@@ -502,7 +378,7 @@ typedef unsigned char tBoolean;
 //*****************************************************************************
 //
 // The following are values that can be passed to the SysCtlDeepSleepClockSet()
-// API as the ulConfig parameter.
+// API as the ui32Config parameter.
 //
 //*****************************************************************************
 #define SYSCTL_DSLP_DIV_1       0x00000000  // Deep-sleep clock is osc /1
@@ -577,60 +453,77 @@ typedef unsigned char tBoolean;
 
 //*****************************************************************************
 //
+// The following are values that can be passed to the SysCtlPIOSCCalibrate()
+// API as the ui32Type parameter.
+//
+//*****************************************************************************
+#define SYSCTL_PIOSC_CAL_AUTO   0x00000200  // Automatic calibration
+#define SYSCTL_PIOSC_CAL_FACT   0x00000100  // Factory calibration
+#define SYSCTL_PIOSC_CAL_USER   0x80000100  // User-supplied calibration
+
+//*****************************************************************************
+//
+// The following are values that can be passed to the SysCtlMOSCConfigSet() API
+// as the ui32Config parameter.
+//
+//*****************************************************************************
+#define SYSCTL_MOSC_VALIDATE    0x00000001  // Enable MOSC validation
+#define SYSCTL_MOSC_INTERRUPT   0x00000002  // Generate interrupt on MOSC fail
+#define SYSCTL_MOSC_NO_XTAL     0x00000004  // No crystal is attached to MOSC
+
+//*****************************************************************************
+//
 // Prototypes for the APIs.
 //
 //*****************************************************************************
-extern unsigned long SysCtlSRAMSizeGet(void);
-extern unsigned long SysCtlFlashSizeGet(void);
-extern tBoolean SysCtlPinPresent(unsigned long ulPin);
-extern tBoolean SysCtlPeripheralPresent(unsigned long ulPeripheral);
-extern tBoolean SysCtlPeripheralReady(unsigned long ulPeripheral);
-extern void SysCtlPeripheralPowerOn(unsigned long ulPeripheral);
-extern void SysCtlPeripheralPowerOff(unsigned long ulPeripheral);
-extern void SysCtlPeripheralReset(unsigned long ulPeripheral);
-extern void SysCtlPeripheralEnable(unsigned long ulPeripheral);
-extern void SysCtlPeripheralDisable(unsigned long ulPeripheral);
-extern void SysCtlPeripheralSleepEnable(unsigned long ulPeripheral);
-extern void SysCtlPeripheralSleepDisable(unsigned long ulPeripheral);
-extern void SysCtlPeripheralDeepSleepEnable(unsigned long ulPeripheral);
-extern void SysCtlPeripheralDeepSleepDisable(unsigned long ulPeripheral);
-extern void SysCtlPeripheralClockGating(tBoolean bEnable);
+extern uint32_t SysCtlSRAMSizeGet(void);
+extern uint32_t SysCtlFlashSizeGet(void);
+extern int SysCtlPeripheralPresent(uint32_t ui32Peripheral);
+extern int SysCtlPeripheralReady(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralPowerOn(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralPowerOff(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralReset(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralEnable(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralDisable(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralSleepEnable(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralSleepDisable(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralDeepSleepEnable(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralDeepSleepDisable(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralClockGating(int bEnable);
 extern void SysCtlIntRegister(void (*pfnHandler)(void));
 extern void SysCtlIntUnregister(void);
-extern void SysCtlIntEnable(unsigned long ulInts);
-extern void SysCtlIntDisable(unsigned long ulInts);
-extern void SysCtlIntClear(unsigned long ulInts);
-extern unsigned long SysCtlIntStatus(tBoolean bMasked);
-extern void SysCtlLDOSet(unsigned long ulVoltage);
-extern unsigned long SysCtlLDOGet(void);
-extern void SysCtlLDOConfigSet(unsigned long ulConfig);
+extern void SysCtlIntEnable(uint32_t ui32Ints);
+extern void SysCtlIntDisable(uint32_t ui32Ints);
+extern void SysCtlIntClear(uint32_t ui32Ints);
+extern uint32_t SysCtlIntStatus(int bMasked);
+extern void SysCtlLDOConfigSet(uint32_t ui32Config);
 extern void SysCtlReset(void);
 extern void SysCtlSleep(void);
 extern void SysCtlDeepSleep(void);
-extern unsigned long SysCtlResetCauseGet(void);
-extern void SysCtlResetCauseClear(unsigned long ulCauses);
-extern void SysCtlBrownOutConfigSet(unsigned long ulConfig,
-                                    unsigned long ulDelay);
-extern void SysCtlDelay(unsigned long ulCount);
-extern void SysCtlMOSCConfigSet(unsigned long ulConfig);
-extern unsigned long SysCtlPIOSCCalibrate(unsigned long ulType);
-extern void SysCtlClockSet(unsigned long ulConfig);
-extern unsigned long SysCtlClockGet(void);
-extern void SysCtlDeepSleepClockSet(unsigned long ulConfig);
-extern void SysCtlPWMClockSet(unsigned long ulConfig);
-extern unsigned long SysCtlPWMClockGet(void);
-extern void SysCtlADCSpeedSet(unsigned long ulSpeed);
-extern unsigned long SysCtlADCSpeedGet(void);
-extern void SysCtlIOSCVerificationSet(tBoolean bEnable);
-extern void SysCtlMOSCVerificationSet(tBoolean bEnable);
-extern void SysCtlPLLVerificationSet(tBoolean bEnable);
+extern uint32_t SysCtlResetCauseGet(void);
+extern void SysCtlResetCauseClear(uint32_t ui32Causes);
+extern void SysCtlBrownOutConfigSet(uint32_t ui32Config,
+                                    uint32_t ui32Delay);
+extern void SysCtlDelay(uint32_t ui32Count);
+extern void SysCtlMOSCConfigSet(uint32_t ui32Config);
+extern uint32_t SysCtlPIOSCCalibrate(uint32_t ui32Type);
+extern void SysCtlClockSet(uint32_t ui32Config);
+extern uint32_t SysCtlClockGet(void);
+extern void SysCtlDeepSleepClockSet(uint32_t ui32Config);
+extern void SysCtlPWMClockSet(uint32_t ui32Config);
+extern uint32_t SysCtlPWMClockGet(void);
+extern void SysCtlADCSpeedSet(uint32_t ui32Speed);
+extern uint32_t SysCtlADCSpeedGet(void);
+extern void SysCtlIOSCVerificationSet(int bEnable);
+extern void SysCtlMOSCVerificationSet(int bEnable);
+extern void SysCtlPLLVerificationSet(int bEnable);
 extern void SysCtlClkVerificationClear(void);
-extern void SysCtlGPIOAHBEnable(unsigned long ulGPIOPeripheral);
-extern void SysCtlGPIOAHBDisable(unsigned long ulGPIOPeripheral);
+extern void SysCtlGPIOAHBEnable(uint32_t ui32GPIOPeripheral);
+extern void SysCtlGPIOAHBDisable(uint32_t ui32GPIOPeripheral);
 extern void SysCtlUSBPLLEnable(void);
 extern void SysCtlUSBPLLDisable(void);
-extern unsigned long SysCtlI2SMClkSet(unsigned long ulInputClock,
-                                      unsigned long ulMClk);
+
+extern void assert_failed(char const *file, int line);
 
 //*****************************************************************************
 //

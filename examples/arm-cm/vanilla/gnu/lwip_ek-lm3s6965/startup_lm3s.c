@@ -1,103 +1,115 @@
 /*****************************************************************************
-* Purpose: CMSIS-compliant startup code for LM3S Cortex-M3 devices, GNU
-* Last Updated for Version: 4.1.03
-* Date of the Last Update:  Mar 03, 2010
+* Purpose: CMSIS-compliant startup code for LM3S Cortex-M3 devices, GNU-ARM
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 24, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2010 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
-* This software may be distributed and modified under the terms of the GNU
-* General Public License version 2 (GPL) as published by the Free Software
-* Foundation and appearing in the file GPL.TXT included in the packaging of
-* this file. Please note that GPL Section 2[b] requires that all works based
-* on this software must also be made publicly available under the terms of
-* the GPL ("Copyleft").
+* This program is open source software: you can redistribute it and/or
+* modify it under the terms of the GNU General Public License as published
+* by the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
 *
-* Alternatively, this software may be distributed and modified under the
+* Alternatively, this program may be distributed and modified under the
 * terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GPL and are specifically designed for licensees interested in
-* retaining the proprietary status of their code.
+* the GNU General Public License and are specifically designed for
+* licensees interested in retaining the proprietary status of their code.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web site:  http://www.quantum-leaps.com
+* Quantum Leaps Web sites: http://www.quantum-leaps.com
+*                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-void __attribute__ ((weak)) Reset_Handler(void);
-void __attribute__ ((weak)) NMI_Handler(void);
-void __attribute__ ((weak)) HardFault_Handler(void);
-void __attribute__ ((weak)) MemManage_Handler(void);
-void __attribute__ ((weak)) BusFault_Handler(void);
-void __attribute__ ((weak)) UsageFault_Handler(void);
-void __attribute__ ((weak)) MemManage_Handler(void);
-void __attribute__ ((weak)) SVC_Handler(void);
-void __attribute__ ((weak)) DebugMon_Handler(void);
-void __attribute__ ((weak)) PendSV_Handler(void);
-void __attribute__ ((weak)) SysTick_Handler(void);
 
-                                                  /* external interrupts... */
-void __attribute__ ((weak)) GPIOPortA_IRQHandler(void);
-void __attribute__ ((weak)) GPIOPortB_IRQHandler(void);
-void __attribute__ ((weak)) GPIOPortC_IRQHandler(void);
-void __attribute__ ((weak)) GPIOPortD_IRQHandler(void);
-void __attribute__ ((weak)) GPIOPortE_IRQHandler(void);
-void __attribute__ ((weak)) UART0_IRQHandler(void);
-void __attribute__ ((weak)) UART1_IRQHandler(void);
-void __attribute__ ((weak)) SSI0_IRQHandler(void);
-void __attribute__ ((weak)) I2C0_IRQHandler(void);
-void __attribute__ ((weak)) PWMFault_IRQHandler(void);
-void __attribute__ ((weak)) PWMGen0_IRQHandler(void);
-void __attribute__ ((weak)) PWMGen1_IRQHandler(void);
-void __attribute__ ((weak)) PWMGen2_IRQHandler(void);
-void __attribute__ ((weak)) QEI0_IRQHandler(void);
-void __attribute__ ((weak)) ADCSeq0_IRQHandler(void);
-void __attribute__ ((weak)) ADCSeq1_IRQHandler(void);
-void __attribute__ ((weak)) ADCSeq2_IRQHandler(void);
-void __attribute__ ((weak)) ADCSeq3_IRQHandler(void);
-void __attribute__ ((weak)) Watchdog_IRQHandler(void);
-void __attribute__ ((weak)) Timer0A_IRQHandler(void);
-void __attribute__ ((weak)) Timer0B_IRQHandler(void);
-void __attribute__ ((weak)) Timer1A_IRQHandler(void);
-void __attribute__ ((weak)) Timer1B_IRQHandler(void);
-void __attribute__ ((weak)) Timer2A_IRQHandler(void);
-void __attribute__ ((weak)) Timer2B_IRQHandler(void);
-void __attribute__ ((weak)) Comp0_IRQHandler(void);
-void __attribute__ ((weak)) Comp1_IRQHandler(void);
-void __attribute__ ((weak)) Comp2_IRQHandler(void);
-void __attribute__ ((weak)) SysCtrl_IRQHandler(void);
-void __attribute__ ((weak)) FlashCtrl_IRQHandler(void);
-void __attribute__ ((weak)) GPIOPortF_IRQHandler(void);
-void __attribute__ ((weak)) GPIOPortG_IRQHandler(void);
-void __attribute__ ((weak)) GPIOPortH_IRQHandler(void);
-void __attribute__ ((weak)) UART2_IRQHandler(void);
-void __attribute__ ((weak)) SSI1_IRQHandler(void);
-void __attribute__ ((weak)) Timer3A_IRQHandler(void);
-void __attribute__ ((weak)) Timer3B_IRQHandler(void);
-void __attribute__ ((weak)) I2C1_IRQHandler(void);
-void __attribute__ ((weak)) QEI1_IRQHandler(void);
-void __attribute__ ((weak)) CAN0_IRQHandler(void);
-void __attribute__ ((weak)) CAN1_IRQHandler(void);
-void __attribute__ ((weak)) CAN2_IRQHandler(void);
-void __attribute__ ((weak)) Ethernet_IRQHandler(void);
-void __attribute__ ((weak)) Hibernate_IRQHandler(void);
+/* Function prototypes -----------------------------------------------------*/
+void Reset_Handler(void);
+void NMI_Handler(void);
+void HardFault_Handler(void);
+void MemManage_Handler(void);
+void BusFault_Handler(void);
+void UsageFault_Handler(void);
+void HardFault_Handler(void);
+void Spurious_Handler(void);
 
-void __attribute__ ((weak)) Spurious_Handler(void);
+void assert_failed(char const *file, int line);       /* defined in the BSP */
 
 /*----------------------------------------------------------------------------
 * weak aliases for each Exception handler to the Spurious_Handler.
 * Any function with the same name will override these definitions.
 */
-#pragma weak NMI_Handler            = Spurious_Handler
-#pragma weak MemManage_Handler      = Spurious_Handler
-#pragma weak BusFault_Handler       = Spurious_Handler
-#pragma weak UsageFault_Handler     = Spurious_Handler
+__attribute__ ((weak)) void SVC_Handler(void);
+__attribute__ ((weak)) void DebugMon_Handler(void);
+__attribute__ ((weak)) void PendSV_Handler(void);
+__attribute__ ((weak)) void SysTick_Handler(void);
+__attribute__ ((weak)) void Spurious_Handler(void);
+
+/* external interrupts... */
+__attribute__ ((weak)) void GPIOPortA_IRQHandler(void);
+__attribute__ ((weak)) void GPIOPortB_IRQHandler(void);
+__attribute__ ((weak)) void GPIOPortC_IRQHandler(void);
+__attribute__ ((weak)) void GPIOPortD_IRQHandler(void);
+__attribute__ ((weak)) void GPIOPortE_IRQHandler(void);
+__attribute__ ((weak)) void UART0_IRQHandler(void);
+__attribute__ ((weak)) void UART1_IRQHandler(void);
+__attribute__ ((weak)) void SSI0_IRQHandler(void);
+__attribute__ ((weak)) void I2C0_IRQHandler(void);
+__attribute__ ((weak)) void PWMFault_IRQHandler(void);
+__attribute__ ((weak)) void PWMGen0_IRQHandler(void);
+__attribute__ ((weak)) void PWMGen1_IRQHandler(void);
+__attribute__ ((weak)) void PWMGen2_IRQHandler(void);
+__attribute__ ((weak)) void QEI0_IRQHandler(void);
+__attribute__ ((weak)) void ADCSeq0_IRQHandler(void);
+__attribute__ ((weak)) void ADCSeq1_IRQHandler(void);
+__attribute__ ((weak)) void ADCSeq2_IRQHandler(void);
+__attribute__ ((weak)) void ADCSeq3_IRQHandler(void);
+__attribute__ ((weak)) void Watchdog_IRQHandler(void);
+__attribute__ ((weak)) void Timer0A_IRQHandler(void);
+__attribute__ ((weak)) void Timer0B_IRQHandler(void);
+__attribute__ ((weak)) void Timer1A_IRQHandler(void);
+__attribute__ ((weak)) void Timer1B_IRQHandler(void);
+__attribute__ ((weak)) void Timer2A_IRQHandler(void);
+__attribute__ ((weak)) void Timer2B_IRQHandler(void);
+__attribute__ ((weak)) void Comp0_IRQHandler(void);
+__attribute__ ((weak)) void Comp1_IRQHandler(void);
+__attribute__ ((weak)) void Comp2_IRQHandler(void);
+__attribute__ ((weak)) void SysCtrl_IRQHandler(void);
+__attribute__ ((weak)) void FlashCtrl_IRQHandler(void);
+__attribute__ ((weak)) void GPIOPortF_IRQHandler(void);
+__attribute__ ((weak)) void GPIOPortG_IRQHandler(void);
+__attribute__ ((weak)) void GPIOPortH_IRQHandler(void);
+__attribute__ ((weak)) void UART2_IRQHandler(void);
+__attribute__ ((weak)) void SSI1_IRQHandler(void);
+__attribute__ ((weak)) void Timer3A_IRQHandler(void);
+__attribute__ ((weak)) void Timer3B_IRQHandler(void);
+__attribute__ ((weak)) void I2C1_IRQHandler(void);
+__attribute__ ((weak)) void QEI1_IRQHandler(void);
+__attribute__ ((weak)) void CAN0_IRQHandler(void);
+__attribute__ ((weak)) void CAN1_IRQHandler(void);
+__attribute__ ((weak)) void CAN2_IRQHandler(void);
+__attribute__ ((weak)) void Ethernet_IRQHandler(void);
+__attribute__ ((weak)) void Hibernate_IRQHandler(void);
+
+
+/*----------------------------------------------------------------------------
+* weak aliases for each Exception handler to the Spurious_Handler.
+* Any function with the same name will override these definitions.
+*/
 #pragma weak SVC_Handler            = Spurious_Handler
 #pragma weak DebugMon_Handler       = Spurious_Handler
 #pragma weak PendSV_Handler         = Spurious_Handler
 #pragma weak SysTick_Handler        = Spurious_Handler
-
 #pragma weak GPIOPortA_IRQHandler   = Spurious_Handler
 #pragma weak GPIOPortB_IRQHandler   = Spurious_Handler
 #pragma weak GPIOPortC_IRQHandler   = Spurious_Handler
@@ -143,20 +155,21 @@ void __attribute__ ((weak)) Spurious_Handler(void);
 #pragma weak Ethernet_IRQHandler    = Spurious_Handler
 #pragma weak Hibernate_IRQHandler   = Spurious_Handler
 
-/* exception and interrupt vector table ------------------------------------*/
-typedef void (*ExceptionHandler)(void);
-typedef union {
-    ExceptionHandler handler;
-    void            *pointer;
-} VectorTableEntry;
 
-                               /* top of stack defined in the linker script */
-extern unsigned __c_stack_top__;
+/* start and end of stack defined in the linker script ---------------------*/
+extern unsigned __stack_start__;
+extern unsigned __stack_end__;
+
+/* exception and interrupt vector table ------------------------------------*/
+typedef union VectorTableEntryTag {
+    void *pointer;                 /* used only to initialize the stack top */
+    void (*handler)(void); /* used for all exception and interrupt handlers */
+} VectorTableEntry;
 
 /*..........................................................................*/
 __attribute__ ((section(".isr_vector")))
 VectorTableEntry const g_pfnVectors[] = {
-    { .pointer = &__c_stack_top__        }, /* initial stack pointer        */
+    { .pointer = &__stack_end__          }, /* initial stack pointer        */
     { .handler = &Reset_Handler          }, /* Reset Handler                */
     { .handler = &NMI_Handler            }, /* NMI Handler                  */
     { .handler = &HardFault_Handler      }, /* Hard Fault Handler           */
@@ -173,57 +186,55 @@ VectorTableEntry const g_pfnVectors[] = {
     { .handler = &PendSV_Handler         }, /* PendSV Handler               */
     { .handler = &SysTick_Handler        }, /* SysTick Handler              */
     /* external interrupts (IRQs) ... */
-    { .handler = GPIOPortA_IRQHandler    }, /* GPIO Port A                  */
-    { .handler = GPIOPortB_IRQHandler    }, /* GPIO Port B                  */
-    { .handler = GPIOPortC_IRQHandler    }, /* GPIO Port C                  */
-    { .handler = GPIOPortD_IRQHandler    }, /* GPIO Port D                  */
-    { .handler = GPIOPortE_IRQHandler    }, /* GPIO Port E                  */
-    { .handler = UART0_IRQHandler        }, /* UART0 Rx and Tx              */
-    { .handler = UART1_IRQHandler        }, /* UART1 Rx and Tx              */
-    { .handler = SSI0_IRQHandler         }, /* SSI0 Rx and Tx               */
-    { .handler = I2C0_IRQHandler         }, /* I2C0 Master and Slave        */
-    { .handler = PWMFault_IRQHandler     }, /* PWM Fault                    */
-    { .handler = PWMGen0_IRQHandler      }, /* PWM Generator 0              */
-    { .handler = PWMGen1_IRQHandler      }, /* PWM Generator 1              */
-    { .handler = PWMGen2_IRQHandler      }, /* PWM Generator 2              */
-    { .handler = QEI0_IRQHandler         }, /* Quadrature Encoder 0         */
-    { .handler = ADCSeq0_IRQHandler      }, /* ADC Sequence 0               */
-    { .handler = ADCSeq1_IRQHandler      }, /* ADC Sequence 1               */
-    { .handler = ADCSeq2_IRQHandler      }, /* ADC Sequence 2               */
-    { .handler = ADCSeq3_IRQHandler      }, /* ADC Sequence 3               */
-    { .handler = Watchdog_IRQHandler     }, /* Watchdog timer               */
-    { .handler = Timer0A_IRQHandler      }, /* Timer 0 subtimer A           */
-    { .handler = Timer0B_IRQHandler      }, /* Timer 0 subtimer B           */
-    { .handler = Timer1A_IRQHandler      }, /* Timer 1 subtimer A           */
-    { .handler = Timer1B_IRQHandler      }, /* Timer 1 subtimer B           */
-    { .handler = Timer2A_IRQHandler      }, /* Timer 2 subtimer A           */
-    { .handler = Timer2B_IRQHandler      }, /* Timer 2 subtimer B           */
-    { .handler = Comp0_IRQHandler        }, /* Analog Comparator 0          */
-    { .handler = Comp1_IRQHandler        }, /* Analog Comparator 1          */
-    { .handler = Comp2_IRQHandler        }, /* Analog Comparator 2          */
-    { .handler = SysCtrl_IRQHandler      }, /* System Control (PLL,OSC,BO)  */
-    { .handler = FlashCtrl_IRQHandler    }, /* FLASH Control                */
-    { .handler = GPIOPortF_IRQHandler    }, /* GPIO Port F                  */
-    { .handler = GPIOPortG_IRQHandler    }, /* GPIO Port G                  */
-    { .handler = GPIOPortH_IRQHandler    }, /* GPIO Port H                  */
-    { .handler = UART2_IRQHandler        }, /* UART2 Rx and Tx              */
-    { .handler = SSI1_IRQHandler         }, /* SSI1 Rx and Tx               */
-    { .handler = Timer3A_IRQHandler      }, /* Timer 3 subtimer A           */
-    { .handler = Timer3B_IRQHandler      }, /* Timer 3 subtimer B           */
-    { .handler = I2C1_IRQHandler         }, /* I2C1 Master and Slave        */
-    { .handler = QEI1_IRQHandler         }, /* Quadrature Encoder 1         */
-    { .handler = CAN0_IRQHandler         }, /* CAN0                         */
-    { .handler = CAN1_IRQHandler         }, /* CAN1                         */
-    { .handler = CAN2_IRQHandler         }, /* CAN2                         */
-    { .handler = Ethernet_IRQHandler     }, /* Ethernet                     */
-    { .handler = Hibernate_IRQHandler    }, /* Hibernate                    */
+    { .handler = &GPIOPortA_IRQHandler   }, /* GPIO Port A                  */
+    { .handler = &GPIOPortB_IRQHandler   }, /* GPIO Port B                  */
+    { .handler = &GPIOPortC_IRQHandler   }, /* GPIO Port C                  */
+    { .handler = &GPIOPortD_IRQHandler   }, /* GPIO Port D                  */
+    { .handler = &GPIOPortE_IRQHandler   }, /* GPIO Port E                  */
+    { .handler = &UART0_IRQHandler       }, /* UART0 Rx and Tx              */
+    { .handler = &UART1_IRQHandler       }, /* UART1 Rx and Tx              */
+    { .handler = &SSI0_IRQHandler        }, /* SSI0 Rx and Tx               */
+    { .handler = &I2C0_IRQHandler        }, /* I2C0 Master and Slave        */
+    { .handler = &PWMFault_IRQHandler    }, /* PWM Fault                    */
+    { .handler = &PWMGen0_IRQHandler     }, /* PWM Generator 0              */
+    { .handler = &PWMGen1_IRQHandler     }, /* PWM Generator 1              */
+    { .handler = &PWMGen2_IRQHandler     }, /* PWM Generator 2              */
+    { .handler = &QEI0_IRQHandler        }, /* Quadrature Encoder 0         */
+    { .handler = &ADCSeq0_IRQHandler     }, /* ADC Sequence 0               */
+    { .handler = &ADCSeq1_IRQHandler     }, /* ADC Sequence 1               */
+    { .handler = &ADCSeq2_IRQHandler     }, /* ADC Sequence 2               */
+    { .handler = &ADCSeq3_IRQHandler     }, /* ADC Sequence 3               */
+    { .handler = &Watchdog_IRQHandler    }, /* Watchdog timer               */
+    { .handler = &Timer0A_IRQHandler     }, /* Timer 0 subtimer A           */
+    { .handler = &Timer0B_IRQHandler     }, /* Timer 0 subtimer B           */
+    { .handler = &Timer1A_IRQHandler     }, /* Timer 1 subtimer A           */
+    { .handler = &Timer1B_IRQHandler     }, /* Timer 1 subtimer B           */
+    { .handler = &Timer2A_IRQHandler     }, /* Timer 2 subtimer A           */
+    { .handler = &Timer2B_IRQHandler     }, /* Timer 2 subtimer B           */
+    { .handler = &Comp0_IRQHandler       }, /* Analog Comparator 0          */
+    { .handler = &Comp1_IRQHandler       }, /* Analog Comparator 1          */
+    { .handler = &Comp2_IRQHandler       }, /* Analog Comparator 2          */
+    { .handler = &SysCtrl_IRQHandler     }, /* System Control (PLL,OSC,BO)  */
+    { .handler = &FlashCtrl_IRQHandler   }, /* FLASH Control                */
+    { .handler = &GPIOPortF_IRQHandler   }, /* GPIO Port F                  */
+    { .handler = &GPIOPortG_IRQHandler   }, /* GPIO Port G                  */
+    { .handler = &GPIOPortH_IRQHandler   }, /* GPIO Port H                  */
+    { .handler = &UART2_IRQHandler       }, /* UART2 Rx and Tx              */
+    { .handler = &SSI1_IRQHandler        }, /* SSI1 Rx and Tx               */
+    { .handler = &Timer3A_IRQHandler     }, /* Timer 3 subtimer A           */
+    { .handler = &Timer3B_IRQHandler     }, /* Timer 3 subtimer B           */
+    { .handler = &I2C1_IRQHandler        }, /* I2C1 Master and Slave        */
+    { .handler = &QEI1_IRQHandler        }, /* Quadrature Encoder 1         */
+    { .handler = &CAN0_IRQHandler        }, /* CAN0                         */
+    { .handler = &CAN1_IRQHandler        }, /* CAN1                         */
+    { .handler = &CAN2_IRQHandler        }, /* CAN2                         */
+    { .handler = &Ethernet_IRQHandler    }, /* Ethernet                     */
+    { .handler = &Hibernate_IRQHandler   }, /* Hibernate                    */
 };
 
-/* function prototypes -----------------------------------------------------*/
-void assert_failed(char const *file, int line);
 
-/*..........................................................................*/
-void Reset_Handler(void)    __attribute__((__interrupt__));
+/* exception handlers ------------------------------------------------------*/
+__attribute__((naked)) void Reset_Handler(void);
 void Reset_Handler(void) {
     extern int main(void);
     extern int __libc_init_array(void);
@@ -240,7 +251,6 @@ void Reset_Handler(void) {
     for (dst = &__data_start; dst < &__data_end__; ++dst, ++src) {
         *dst = *src;
     }
-
                                            /* zero fill the .bss segment... */
     for (dst = &__bss_start__; dst < &__bss_end__; ++dst) {
         *dst = 0;
@@ -248,26 +258,49 @@ void Reset_Handler(void) {
              /* call all static construcors in C++ (harmless in C programs) */
     __libc_init_array();
 
-                                      /* call the application's entry point */
-    main();
-
-    /* in a bare-metal system main() has nothing to return to and it should
-    * never return. Just in case main() returns, the assert_failed() gives
-    * the last opportunity to catch this problem.
-    */
-    assert_failed("startup_stm32f10x_cl", __LINE__);
+    (void)main();  /* application's entry point, which should never return! */
 }
 /*..........................................................................*/
-void Spurious_Handler(void) __attribute__((__interrupt__));
-void Spurious_Handler(void) {
-    assert_failed("startup_stm32f10x_cl", __LINE__);
-    /* assert_failed() should not return, but just in case the following
-    * enless loop will tie up the CPU.
-    */
-    for (;;) {
+__attribute__((naked)) void NMI_Handler(void);
+void NMI_Handler(void) {
+    assert_failed("NMI", __LINE__);                 /* should never return! */
+}
+/*..........................................................................*/
+__attribute__((naked)) void MemManage_Handler(void);
+void MemManage_Handler(void) {
+    assert_failed("MemManage", __LINE__);           /* should never return! */
+}
+/*..........................................................................*/
+__attribute__((naked)) void HardFault_Handler(void);
+void HardFault_Handler(void) {
+    unsigned old_sp;
+    __asm volatile ("mov %0,sp" : "=r" (old_sp));
+    if (old_sp < (unsigned)&__stack_start__) {           /* stack overflow? */
+        unsigned new_sp = (unsigned)&__stack_end__;
+        __asm volatile ("mov sp,%0" :: "r" (new_sp));
+        assert_failed("StackOverflow", old_sp);     /* should never return! */
     }
+    else {
+        assert_failed("HardFault", __LINE__);       /* should never return! */
+    }
+}
+/*..........................................................................*/
+__attribute__((naked)) void BusFault_Handler(void);
+void BusFault_Handler(void) {
+    assert_failed("BusFault", __LINE__);            /* should never return! */
+}
+/*..........................................................................*/
+__attribute__((naked)) void UsageFault_Handler(void);
+void UsageFault_Handler(void) {
+    assert_failed("UsageFault", __LINE__);          /* should never return! */
+}
+/*..........................................................................*/
+__attribute__((naked)) void Spurious_Handler(void);
+void Spurious_Handler(void) {
+    assert_failed("Spurious", __LINE__);            /* should never return! */
 }
 /*..........................................................................*/
 void _init() {
 }
+
 

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Aug 10, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 24, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -35,15 +35,6 @@
 #ifndef qp_port_h
 #define qp_port_h
 
-#include "qf_port.h"                   /* QF/C port from the port directory */
-#include "qassert.h"                                       /* QP assertions */
-
-#ifdef Q_SPY                                   /* software tracing enabled? */
-    #include "qs_port.h"               /* QS/C port from the port directory */
-#else
-    #include "qs_dummy.h"                /* QS/C dummy (inactive) interface */
-#endif
-
 /**
 * \file
 * \ingroup qep qf qk qs
@@ -53,15 +44,100 @@
 * in all application modules (*.c files) that use QP/C.
 */
 
-              /* device driver signal offset at the top of the signal range */
-#if (Q_SIGNAL_SIZE == 1)
-    #define Q_DEV_DRIVER_SIG  ((QSignal)(0xFFU - 8U))
-#elif (Q_SIGNAL_SIZE == 2)
-    #define Q_DEV_DRIVER_SIG  ((QSignal)(0xFFFFU - 32U))
-#elif (Q_SIGNAL_SIZE == 4)
-    #define Q_DEV_DRIVER_SIG  ((QSignal)(0xFFFFFFFFU - 256U))
+#ifndef QP_API_VERSION
+
+/** \brief Macro that specifies the backwards compatibility with the
+* QP/C API version.
+*
+* For example, QP_API_VERSION=450 will cause generating the compatibility
+* layer with QP/C version 4.5.0 and newer, but not older than 4.5.0.
+* QP_API_VERSION=0 causes generation of the compatibility layer "from the
+* begining of time", which is the maximum backwards compatibilty. This is
+* the default.
+*
+* Conversely, QP_API_VERSION=9999 means that no compatibility layer should
+* be generated. This setting is useful for checking if an application
+* complies with the latest QP/C API.
+*/
+#define QP_API_VERSION 0
+#endif                                            /* #ifndef QP_API_VERSION */
+
+
+#include "qf_port.h"                   /* QF/C port from the port directory */
+#include "qassert.h"                                       /* QP assertions */
+
+#ifdef Q_SPY                                   /* software tracing enabled? */
+    #include "qs_port.h"               /* QS/C port from the port directory */
 #else
-    #error "Q_SIGNAL_SIZE not defined or incorrect"
+    #include "qs_dummy.h"                /* QS/C dummy (inactive) interface */
 #endif
+
+/* QP API compatibility layer ----------------------------------------------*/
+#if (QP_API_VERSION < 500)
+
+/** \brief Deprecated macro for odd 8-bit CPUs. */
+#define Q_ROM_VAR
+
+/** \brief Deprecated call to the QHsm init operation */
+#define QHsm_init(me_, e_)     QMSM_INIT((me_), (e_))
+
+/** \brief Deprecated call to the QHsm dispatch operation */
+#define QHsm_dispatch(me_, e_) QMSM_DISPATCH((me_), (e_))
+
+/** \brief Deprecated call to the QFsm init operation */
+#define QFsm_init(me_, e_)     QMSM_INIT((me_), (e_))
+
+/** \brief Deprecated to the QFsm dispatch operation */
+#define QFsm_dispatch(me_, e_) QMSM_DISPATCH((me_), (e_))
+
+/** \brief Deprecated name of the QActive start operation */
+#define QActive_start QActive_start_
+
+
+#ifdef Q_SPY
+
+    /** \brief deprecated call to QActive post FIFO operation */
+    #define QActive_postFIFO(me_, e_, sender_) \
+        QACTIVE_POST((me_), (e_), (sender_))
+
+    /** \brief Deprecated call of QF system clock tick (for rate 0) */
+    #define QF_tick(sender_)   QF_TICK_X((uint8_t)0, (sender_))
+
+#else
+
+    #define QActive_postFIFO(me_, e_) \
+        QACTIVE_POST((me_), (e_), dummy)
+    #define QF_tick()          QF_TICK_X((uint8_t)0, dummy)
+
+#endif
+
+/** \brief Deprecated time event constructor */
+#define QTimeEvt_ctor(me_, sig_) \
+    QTimeEvt_ctorX((me_), (QActive *)0, (sig_), (uint8_t)0)
+
+/** \brief Deprecated time event one-shot arm operation */
+#define QTimeEvt_postIn(me_, act_, nTicks_) do { \
+    (me_)->act = (act_); \
+    QTimeEvt_armX((me_), (nTicks_), (uint8_t)0); \
+} while (0)
+
+/** \brief Deprecated time event periodic arm operation */
+#define QTimeEvt_postEvery(me_, act_, nTicks_) do { \
+    (me_)->act = (act_); \
+    QTimeEvt_armX((me_), (nTicks_), (nTicks_)); \
+} while (0)
+
+/** \brief Deprecated macro for generating QS-Reset trace record. */
+#define QS_RESET() ((void)0)
+
+/*..........................................................................*/
+#if (QP_API_VERSION < 450)
+
+/** \brief deprecated typedef for backwards compatibility */
+typedef QEvt QEvent;
+
+#endif                                              /* QP_API_VERSION < 450 */
+#endif                                              /* QP_API_VERSION < 500 */
+/*--------------------------------------------------------------------------*/
 
 #endif                                                         /* qp_port_h */

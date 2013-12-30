@@ -707,7 +707,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\lm3s811.icf</state>
+          <state>$PROJ_DIR$\dpp.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -1645,7 +1645,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\lm3s811.icf</state>
+          <state>$PROJ_DIR$\dpp.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -2583,7 +2583,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\lm3s811.icf</state>
+          <state>$PROJ_DIR$\dpp.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>

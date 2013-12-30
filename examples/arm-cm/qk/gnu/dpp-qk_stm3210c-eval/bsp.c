@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, STM3210C-EVAL board, QK kernel
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -87,7 +87,7 @@ void SysTick_Handler(void) {
     QS_tickTime_ += QS_tickPeriod_;       /* account for the clock rollover */
 #endif
 
-    QF_TICK(&l_SysTick_Handler);           /* process all armed time events */
+    QF_TICK_X(0U, &l_SysTick_Handler);    /* process time events for rate 0 */
 
     QK_ISR_EXIT();                         /* inform QK-nano about ISR exit */
 }

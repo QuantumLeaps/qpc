@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QF/C port to POSIX/P-threads, GNU
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Aug 09, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 22, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -53,7 +53,7 @@ void QF_init(void) {
     /*mlockall(MCL_CURRENT | MCL_FUTURE);          uncomment when supported */
 }
 /*..........................................................................*/
-int16_t QF_run(void) {
+int_t QF_run(void) {
     struct sched_param sparam;
     struct timeval timeout = { 0 };                 /* timeout for select() */
 
@@ -78,7 +78,7 @@ int16_t QF_run(void) {
     QF_onCleanup();                              /* invoke cleanup callback */
     pthread_mutex_destroy(&QF_pThreadMutex_);
 
-    return (int16_t)0;                                    /* return success */
+    return (int_t)0;                                      /* return success */
 }
 /*..........................................................................*/
 void QF_setTickRate(uint32_t ticksPerSec) {

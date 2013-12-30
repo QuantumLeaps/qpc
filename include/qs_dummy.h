@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -49,7 +49,6 @@
 #define QS_INIT(arg_)                   (0 == 0)
 #define QS_EXIT()                       ((void)0)
 #define QS_DUMP()                       ((void)0)
-#define QS_RESET()                      ((void)0)
 #define QS_FILTER_ON(rec_)              ((void)0)
 #define QS_FILTER_OFF(rec_)             ((void)0)
 #define QS_FILTER_SM_OBJ(obj_)          ((void)0)

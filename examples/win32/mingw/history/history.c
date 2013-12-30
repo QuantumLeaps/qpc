@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: History state pattern example
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 21, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -255,7 +255,7 @@ int main() {
 
       /* instantiate the ToastOven HSM and trigger the initial transition */
     ToastOven_ctor(&l_test);
-    QHsm_init((QHsm *)&l_test, (QEvt *)0);
+    QMSM_INIT((QHsm *)&l_test, (QEvt *)0);
 
     for (;;) {
         QEvt e;
@@ -274,12 +274,12 @@ int main() {
             case 0x1B: e.sig = TERMINATE_SIG;   break;
         }
                                /* dispatch the event into the state machine */
-        QHsm_dispatch((QHsm *)&l_test,  &e);
+        QMSM_DISPATCH((QHsm *)&l_test,  &e);
     }
     return 0;
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+void Q_onAssert(char const Q_ROM * const file, int line) {
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
     _exit(-1);
 }

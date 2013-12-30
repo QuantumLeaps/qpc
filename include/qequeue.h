@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 13, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 03, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -176,7 +176,7 @@ typedef struct QEQueueTag {
 * location forntEvt.
 */
 void QEQueue_init(QEQueue * const me,
-                  QEvt const *qSto[], QEQueueCtr const qLen);
+                  QEvt const *qSto[], uint_t const qLen);
 
 /** \brief "raw" thread-safe QF event queue implementation for the event
 * posting (FIFO). You can call this function from any task context or ISR
@@ -193,7 +193,7 @@ void QEQueue_init(QEQueue * const me,
 * \sa QEQueue_postLIFO(), QEQueue_get()
 */
 uint8_t QEQueue_post(QEQueue * const me, QEvt const * const e,
-                     uint16_t const margin);
+                     uint_t const margin);
 
 /** \brief Deprecated interface defined for backwards compatibility */
 #define QEQueue_postFIFO(me_, e_) \

@@ -1,6 +1,88 @@
 /**
 \page rev_page Revision History
 
+\section qpc_5_2_0 Version 5.2.0, Release date: Dec 26, 2013
+
+This release matches the new QM 3.0.0, for which it provides model
+examples based on the new QMsm/QMActive classes. This, in turn
+demonstrates the new state machine code generation that QM3 was
+specifically designed to do.
+
+This release also provides consistent API for late-binding ("virtual"
+functions) introduced in QP 5.0.0, as opposed to using regular linking
+(early-binding) for direct function calls, such as QHsm_dispatch(). A
+clearly separated API compatibility layer is provided, whereas you can
+configure a level of backwards compatibility by means of the
+#QP_API_VERSION macro. This facilitates migrating existing QP
+applications to the newer API.
+
+An cyclomatic complexity (McCabe V(G)) analysis of this version has been
+performed and the maximum V(G) complexity per function has been reduced
+to 15 by breaking up the QHsm_dispatch_() function. The code metrics
+report, including cyclomatic complexity by function as well as other
+standard code metrics (e.g., lines of code), is now included in the
+"QP/C Reference Manual", see
+http://www.state-machine.com/qp/qpc/metrics.html
+
+Finally, this release demonstrates safer stack allocation and safer
+exception handlers in all ARM Cortex-M examples. The techniques are
+described in the Embedded.com article "Are We Shooting Ourselves in the
+Foot with Stack Overflow?".
+
+Changes in detail:
+
+1. In file qep.h renamed the implementation functions, such as
+QHsm_init() and QHsm_dispatch() to QHsm_init_() and QHsm_dispatch_()
+(note the underscore, which means that the functions should not be
+called directly by the application code). The only correct way of
+calling the functions is through the macros QMSM_INIT() and
+QMSM_DISPATCH(), respectively. The latter macros implement late-binding
+("virtual" functions in C).
+
+2. In file qf.h renamed the implementation functions, such as
+QActive_start(), QActive_post() and QActive_postLIFO() to
+QActive_start_(), QActive_post_(), and QActive_postLIFO_, respectively
+(note the underscore, which means that the functions should not be
+called directly by the application code). The only correct way of
+calling the functions is through the macros QACTIVE_START(),
+QACTIVE_POST(), and QACTIVE_POST_LIFO(), respectively. The latter macros
+implement late-binding ("virtual" functions in C).
+
+3. for backwards compatibility, in file qp_port.h defined "API
+Compatibility Layer", which is controlled by the macro #QP_API_VERSION.
+For example, specifying QP_API_VERSION=500 chooses API compatible with
+QP version 5.0.0 or newer, but excludes APIs that became deprecated in
+the earlier versions. If the macro #QP_API_VERSION is not defined by the
+user (typically on the command line for the compiler), the default value
+of 0 is assumed. This default means maximum backwards compatibility
+(from version 0.0.0). On the other hand, higher values of
+#QP_API_VERSION mean less backwards compatibility. For example
+QP_API_VERSION=9999 will specify compatibility only with the latest
+version of QP.
+
+The API Compatibility Layer for QP_API_VERSION < 500 provides macros:
+QHsm_init(), QHsm_dispatch(), QActive_start(), QActive_post() and
+QActive_postLIFO(). These macros resolve to QMSM_INIT() and
+QMSM_DISPATCH(), QACTIVE_START(), QACTIVE_POST() and QACTIVE_POST_LIFO()
+respectively, so that calls based on the older API also use late-binging.
+
+4. In file qhsm_dis.c, broken up the function QHsm_dispatch() into two
+functions QHsm_dispatch_() and QHsm_tran_(). This has reduced the
+cyclomatic complexity from 25 for the original function, to 11 and 15
+for QHsm_dispatch_() and QHsm_tran_(), respectively.
+
+5. In file qmsm_dis.c, broken up the function QMsm_dispatch() into two
+functions QMsm_dispatch_() and QMsm_tran_(). This has reduced the
+cyclomatic complexity from 15 for the original function, to 9 and 7 for
+QMsm_dispatch_() and QMsm_tran_(), respectively.
+
+6. Updated all examples for ARM Cortex-M to use safer stack allocation
+and safer exception handlers in all ARM Cortex-M examples, as described
+in the Embedded.com article "Are We Shooting Ourselves in the Foot with
+Stack Overflow?".
+
+
+<HR>
 \section qpc_5_1_1 Version 5.1.1, Release date: Oct 10, 2013
 
 This release fixes reversal of logic in the QF_noTimeEvtsActiveX()

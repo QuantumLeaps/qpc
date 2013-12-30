@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, 80x86, Win32-GUI
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 04, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -215,11 +215,11 @@ void QF_onClockTick(void) {
     QF_TICK(&l_clock_tick);         /* perform the QF clock tick processing */
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+void Q_onAssert(char const Q_ROM * const file, int line) {
     char message[80];
     QF_stop();                                              /* stop ticking */
-    _snprintf_s(message, Q_DIM(message) - 1, _TRUNCATE,
-                "Assertion failed in module %hs line %d", file, line);
+    snprintf(message, Q_DIM(message) - 1,
+             "Assertion failed in module %hs line %d", file, line);
     MessageBox(l_hWnd, message, "!!! ASSERTION !!!",
                MB_OK | MB_ICONEXCLAMATION | MB_APPLMODAL);
     PostQuitMessage(-1);

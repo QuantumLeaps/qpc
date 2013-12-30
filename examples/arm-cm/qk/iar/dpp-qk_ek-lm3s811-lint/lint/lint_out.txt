@@ -1,10 +1,29 @@
 
 --- Module:   D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c (C)
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 168 1 Info 818: Pointer parameter 'me' (line 163) could be declared as pointing to const [MISRA 2004 Rule 16.7, advisory]
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 163 1 Info 830: Location cited in prior message
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 211 1 Info 818: Pointer parameter 'me' (line 206) could be declared as pointing to const [MISRA 2004 Rule 16.7, advisory]
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 206 1 Info 830: Location cited in prior message
 
 --- Module:   D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c (C)
-"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 109 21 Warning 527: Unreachable code at token 'status_' [MISRA 2004 Rule 14.1, required]
-"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 217 21 Warning 527: Unreachable code at token 'status_' [MISRA 2004 Rule 14.1, required]
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 131 21 Warning 527: Unreachable code at token 'status_' [MISRA 2004 Rule 14.1, required]
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 140 1 Info 715: Symbol 'me' (line 119) not referenced
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 119 1 Info 830: Location cited in prior message
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 140 1 Info 818: Pointer parameter 'me' (line 119) could be declared as pointing to const [MISRA 2004 Rule 16.7, advisory]
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 119 1 Info 830: Location cited in prior message
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 237 21 Warning 527: Unreachable code at token 'status_' [MISRA 2004 Rule 14.1, required]
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 260 1 Info 715: Symbol 'me' (line 257) not referenced
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 257 1 Info 830: Location cited in prior message
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 260 1 Info 818: Pointer parameter 'me' (line 257) could be declared as pointing to const [MISRA 2004 Rule 16.7, advisory]
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 257 1 Info 830: Location cited in prior message
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 264 1 Info 715: Symbol 'me' (line 261) not referenced
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 261 1 Info 830: Location cited in prior message
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 264 1 Info 818: Pointer parameter 'me' (line 261) could be declared as pointing to const [MISRA 2004 Rule 16.7, advisory]
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 261 1 Info 830: Location cited in prior message
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 53 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'Philo_eating_s' at location line 53, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c
 "D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\dpp.h" 54 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'AO_Table' at location line 54, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\dpp.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 45 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'Philo_hungry_s' at location line 45, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 53 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'Table_paused_s' at location line 53, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c
 
 /// Start of Pass 2 ///
 
@@ -14,13 +33,13 @@
 
 --- Global Wrap-up
 
+"D:\qp\qpc\include\qf.h" 508 1 Warning 526: Symbol 'QMActive_ctor(QMActive *, QStateHandler)' (line 508, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMActive_ctor' 
-"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 55 1 Info 759: header declaration for symbol 'Table_ctor(void)' defined at (line 55, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c) could be moved from header to module
-"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 55 1 Info 765: external 'Table_ctor(void)' (line 55, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c) could be made static [MISRA 2004 Rule 8.10, required]
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_intNest_' 
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 73 1 Info 759: header declaration for symbol 'Table_ctor(void)' defined at (line 73, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c) could be moved from header to module
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c" 73 1 Info 765: external 'Table_ctor(void)' (line 73, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\table.c) could be made static [MISRA 2004 Rule 8.10, required]
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_init' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_noTimeEvtsActiveX' 
-"D:\qp\qpc\include\qf.h" 1057 1 Warning 526: Symbol 'QF_newX_(QEvtSize, uint16_t, enum_t)' (line 1057, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
+"D:\qp\qpc\include\qf.h" 1026 1 Warning 526: Symbol 'QF_newX_(uint_t, uint_t, enum_t)' (line 1026, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_newX_' 
 "D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\bsp.h" 41 1 Warning 526: Symbol 'BSP_displayPaused(uint8_t)' (line 41, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\bsp.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'BSP_displayPaused' 
@@ -37,44 +56,43 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_onIdle' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_poolInit' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_psInit' 
-"D:\qp\qpc\include\qf.h" 924 1 Warning 526: Symbol 'QF_publish(const QEvt *)' (line 924, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_publish' 
+"D:\qp\qpc\include\qf.h" 898 1 Warning 526: Symbol 'QF_publish_(const QEvt *)' (line 898, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_publish_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_pwr2Lkup' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_add_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_active_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QFsm_ctor' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QFsm_dispatch' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QFsm_init' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QFsm_dispatch_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QFsm_init_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_run' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_remove_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_bzero' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_mutexLock' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_mutexUnlock' 
-"D:\qp\qpc\include\qf.h" 362 1 Warning 526: Symbol 'QActive_ctor(QActive *, QStateHandler)' (line 362, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_postLIFO_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_ctor' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_defer' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_get_' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_post' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_postLIFO' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_post_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_recall' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_start' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_start_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_stop' 
-"D:\qp\qpc\include\qf.h" 393 1 Warning 526: Symbol 'QActive_subscribe(const QActive *, enum_t)' (line 393, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
+"D:\qp\qpc\include\qf.h" 388 1 Warning 526: Symbol 'QActive_subscribe(const QActive *, enum_t)' (line 388, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_subscribe' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_unsubscribe' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_unsubscribeAll' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_stop' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_ctor' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_dispatch' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_init' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_dispatch_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_init_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_isIn' 
-"D:\qp\qpc\include\qep.h" 287 1 Warning 526: Symbol 'QHsm_top(const void *, const QEvt *)' (line 287, file D:\qp\qpc\include\qep.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_top' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_onIdle' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_tickX' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_tickX_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_div8Lkup' 
-"D:\qp\qpc\include\qf.h" 631 1 Warning 526: Symbol 'QTimeEvt_armX(QTimeEvt *, QTimeEvtCtr, QTimeEvtCtr)' (line 631, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
+"D:\qp\qpc\include\qf.h" 625 1 Warning 526: Symbol 'QTimeEvt_armX(QTimeEvt *, QTimeEvtCtr, QTimeEvtCtr)' (line 625, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_armX' 
-"D:\qp\qpc\include\qf.h" 607 1 Warning 526: Symbol 'QTimeEvt_ctorX(QTimeEvt *, QActive *, enum_t, uint8_t)' (line 607, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
+"D:\qp\qpc\include\qf.h" 601 1 Warning 526: Symbol 'QTimeEvt_ctorX(QTimeEvt *, QActive *, enum_t, uint8_t)' (line 601, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_ctorX' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_rearm' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_disarm' 
@@ -85,8 +103,8 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QEQueue_postLIFO' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_readySet_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_gc' 
-"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 67 1 Info 759: header declaration for symbol 'Philo_ctor(void)' defined at (line 67, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) could be moved from header to module
-"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 67 1 Info 765: external 'Philo_ctor(void)' (line 67, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 86 1 Info 759: header declaration for symbol 'Philo_ctor(void)' defined at (line 86, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) could be moved from header to module
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 86 1 Info 765: external 'Philo_ctor(void)' (line 86, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) could be made static [MISRA 2004 Rule 8.10, required]
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_getPoolMin' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_getQueueMin' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_getPortVersion' 
@@ -100,25 +118,26 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_schedExt_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_schedPrio_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_ctor' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_init' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_dispatch' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_init_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_dispatch_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_emptyAction_' 
-"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 57 1 Info 759: header declaration for symbol 'AO_Philo' defined at (line 57, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) could be moved from header to module
-"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 57 1 Info 765: external 'AO_Philo' (line 57, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 76 1 Info 759: header declaration for symbol 'AO_Philo' defined at (line 76, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) could be moved from header to module
+"D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c" 76 1 Info 765: external 'AO_Philo' (line 76, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\philo.c) could be made static [MISRA 2004 Rule 8.10, required]
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_init' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_invPwr2Lkup' 
-"D:\qp\qpc\include\qep.h" 304 1 Info 769: global enumeration constant 'QHandlerReturnValues::Q_RET_IGNORED' (line 304, file D:\qp\qpc\include\qep.h) not referenced
-"D:\qp\qpc\include\qep.h" 306 1 Info 769: global enumeration constant 'QHandlerReturnValues::Q_RET_ENTRY' (line 306, file D:\qp\qpc\include\qep.h) not referenced
-"D:\qp\qpc\include\qep.h" 307 1 Info 769: global enumeration constant 'QHandlerReturnValues::Q_RET_EXIT' (line 307, file D:\qp\qpc\include\qep.h) not referenced
-"D:\qp\qpc\include\qep.h" 308 1 Info 769: global enumeration constant 'QHandlerReturnValues::Q_RET_INITIAL' (line 308, file D:\qp\qpc\include\qep.h) not referenced
-"D:\qp\qpc\include\qep.h" 413 1 Info 769: global enumeration constant 'QReservedSignals::Q_INIT_SIG' (line 413, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 305 1 Info 769: global enumeration constant 'QHandlerReturnValues::Q_RET_IGNORED' (line 305, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 412 1 Info 769: global enumeration constant 'QReservedSignals::Q_ENTRY_SIG' (line 412, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 413 1 Info 769: global enumeration constant 'QReservedSignals::Q_EXIT_SIG' (line 413, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 414 1 Info 769: global enumeration constant 'QReservedSignals::Q_INIT_SIG' (line 414, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\dpp.h" 26 1 Info 769: global enumeration constant 'DPPSignals::MAX_PUB_SIG' (line 26, file D:\qp\qpc\examples\arm-cm\qk\iar\dpp-qk_ek-lm3s811-lint\dpp.h) not referenced
 
 Count   Type    Number  Text
 
-12      Warning 526     Symbol '___' (___) not defined
+11      Warning 526     Symbol '___' (___) not defined
 2       Warning 527     Unreachable code at token '___'
+3       Info    715     Symbol '___' (___) not referenced
 3       Info    759     header declaration for symbol '___' defined at (___) could be moved from header to module
 3       Info    765     external '___' (___) could be made static
-6       Info    769     global enumeration constant '___' (___) not referenced
-76      Note    960     Violates MISRA 2004 Required Rule ___, ___
+5       Info    769     global enumeration constant '___' (___) not referenced
+5       Info    818     Pointer parameter '___' (___) could be declared as pointing to const
+79      Note    960     Violates MISRA 2004 Required Rule ___, ___

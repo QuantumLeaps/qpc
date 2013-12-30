@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  Calculator Example with percentage calculations
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Jan 07, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 *                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#include "qp_port.h"                        /* the port of the QP framework */
+#include "qep_port.h"                                    /* QEP/C interface */
 #include "bsp.h"                                   /* board support package */
 #include "calc.h"
 

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 10, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -47,17 +47,17 @@
 /****************************************************************************/
 /** \brief The current QP version number
 *
-* version of the QP as a hex constant 0x0XYZ, where X is a 1-digit
+* version of the QP as a decimal constant XYZ, where X is a 1-digit
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      0x0511U
+#define QP_VERSION      520
 
 /** \brief The current QP version string */
-#define QP_VERSION_STR  "5.1.1"
+#define QP_VERSION_STR  "5.2.0"
 
-/** \brief Temperproof current QP release (5.1.1) and date (13-10-10) */
-#define QP_RELEASE      0xB1E973E0U
+/** \brief Tamperproof current QP release (5.2.0) and date (13-12-26) */
+#define QP_RELEASE      0xB1C87E57U
 
 #ifndef Q_ROM
     /** \brief Macro to specify compiler-specific directive for placing a
@@ -74,24 +74,6 @@
     * Cx51 compiler), PROGMEM (gcc for AVR), __flash (IAR for AVR).
     */
     #define Q_ROM
-#endif
-#ifndef Q_ROM_VAR         /* if NOT defined, provide the default definition */
-
-    /** \brief Macro to specify compiler-specific directive for accessing a
-    * constant object in ROM.
-    *
-    * Many compilers for 8-bit MCUs provide different size pointers for
-    * accessing objects in various memories. Constant objects allocated
-    * in ROM (see #Q_ROM macro) often mandate the use of specific-size
-    * pointers (e.g., far pointers) to get access to ROM objects. The
-    * macro Q_ROM_VAR specifies the kind of the pointer to be used to access
-    * the ROM objects.
-    *
-    * To override the following empty definition, you need to define the
-    * Q_ROM_VAR macro in the qep_port.h header file. An example of valid
-    * Q_ROM_VAR macro definition is: __far (Freescale HC(S)08 compiler).
-    */
-    #define Q_ROM_VAR
 #endif
 #ifndef Q_ROM_BYTE
     /** \brief Macro to access a byte allocated in ROM
@@ -110,6 +92,7 @@
     */
     #define Q_ROM_BYTE(rom_var_)   (rom_var_)
 #endif
+
 
 /****************************************************************************/
 #ifndef Q_SIGNAL_SIZE
@@ -214,10 +197,5 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 * this macro helps to encapsulate this deviation.
 */
 #define Q_UINT2PTR_CAST(type_, uint_)  ((type_ *)(uint_))
-
-/****************************************************************************/
-#ifndef Q_NQEVENT
-    typedef QEvt QEvent;/**< deprecated typedef for backwards compatibility */
-#endif
 
 #endif                                                            /* qevt_h */

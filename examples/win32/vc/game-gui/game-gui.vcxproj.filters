@@ -8,7 +8,6 @@
     <ClCompile Include="missile.c" />
     <ClCompile Include="ship.c" />
     <ClCompile Include="tunnel.c" />
-    <ClCompile Include="game.c" />
     <ClCompile Include="$(QTOOLS)\qspy\source\qspy.c" />
   </ItemGroup>
   <ItemGroup>

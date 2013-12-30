@@ -134,7 +134,7 @@ extern void GPIOPadConfigGet(unsigned long ulPort, unsigned char ucPin,
                              unsigned long *pulPadType);
 extern void GPIOPinIntEnable(unsigned long ulPort, unsigned char ucPins);
 extern void GPIOPinIntDisable(unsigned long ulPort, unsigned char ucPins);
-extern long GPIOPinIntStatus(unsigned long ulPort, tBoolean bMasked);
+extern long GPIOPinIntStatus(unsigned long ulPort, int bMasked);
 extern void GPIOPinIntClear(unsigned long ulPort, unsigned char ucPins);
 extern void GPIOPortIntRegister(unsigned long ulPort,
                                 void (*pfnIntHandler)(void));

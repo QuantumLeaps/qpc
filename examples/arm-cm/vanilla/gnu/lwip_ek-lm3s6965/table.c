@@ -93,7 +93,8 @@ void Table_ctor(void) {
     Table *me = &l_table;
 
     QActive_ctor(&me->super, (QStateHandler)&Table_initial);
-    QTimeEvt_ctor(&me->te_DISPLAY_TIMEOUT, DISPLAY_TIMEOUT_SIG);
+    QTimeEvt_ctorX(&me->te_DISPLAY_TIMEOUT, &me->super,
+                   DISPLAY_TIMEOUT_SIG, 0U);
 
     for (n = 0; n < N_PHILO; ++n) {
         me->fork[n] = FREE;
@@ -137,8 +138,8 @@ QState Table_serving(Table *me, QEvt const *e) {
 
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            QTimeEvt_postEvery(&me->te_DISPLAY_TIMEOUT, (QActive *)me,
-                               DISPLAY_TIMEOUT);
+            QTimeEvt_armX(&me->te_DISPLAY_TIMEOUT,
+                          DISPLAY_TIMEOUT, DISPLAY_TIMEOUT);
             Table_displayOn(me);
             return Q_HANDLED();
         }

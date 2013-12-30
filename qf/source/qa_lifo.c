@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 08, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,14 +40,14 @@ Q_DEFINE_THIS_MODULE("qa_lifo")
 /**
 * \file
 * \ingroup qf
-* \brief QActive_postLIFO() definition.
+* \brief QActive_postLIFO_() definition.
 *
 * \note this source file is only included in the QF library when the native
 * QF active object queue is used (instead of a message queue of an RTOS).
 */
 
 /*..........................................................................*/
-void QActive_postLIFO(QActive * const me, QEvt const * const e) {
+void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QEvt const *frontEvt;      /* temporary to avoid UB for volatile access */
     QEQueueCtr nFree;          /* temporary to avoid UB for volatile access */
     QF_CRIT_STAT_

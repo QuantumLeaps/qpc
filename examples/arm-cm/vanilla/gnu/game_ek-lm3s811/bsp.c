@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, cooperative Vanilla kernel
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 10, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,19 +45,26 @@ Q_DEFINE_THIS_FILE
 * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
 * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
 */
-enum ISR_CMSIS_Pri {/*ISR CMSIS priorities starting from the highest urgency*/
-    /* QF-unaware ISR start at 0 (highest NVIC priority) ...................*/
-
-    /* kernel-aware interrupts start at QF_AWARE_ISR_CMSIS_PRI .............*/
-    ADCSEQ3_PRIO = QF_AWARE_ISR_CMSIS_PRI,                    /* see NOTE00 */
-    SYSTICK_PRIO
+enum KernelUnawareISRs {                                      /* see NOTE00 */
     /* ... */
+    MAX_KERNEL_UNAWARE_CMSIS_PRI                        /* keep always last */
 };
+/* "kernel-unaware" interrupts can't overlap "kernel-aware" interrupts */
+Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
+
+enum KernelAwareISRs {
+    GPIOPORTA_PRIO = QF_AWARE_ISR_CMSIS_PRI,                  /* see NOTE00 */
+    ADCSEQ3_PRIO,
+    SYSTICK_PRIO,
+    /* ... */
+    MAX_KERNEL_AWARE_CMSIS_PRI                          /* keep always last */
+};
+/* "kernel-aware" interrupts should not overlap the PendSV priority */
+Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
 void GPIOPortA_IRQHandler(void);
-void assert_failed(char const *file, int line);
 
 /* Local-scope objects -----------------------------------------------------*/
 #define PUSH_BUTTON             (1U << 4)
@@ -100,7 +107,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK(&l_SysTick_Handler);           /* process all armed time events */
+    QF_TICK_X(0U, &l_SysTick_Handler); /* process all time events at rate 0 */
     QF_PUBLISH(&tickEvt, &l_SysTick_Handler); /* publish to all subscribers */
 }
 /*..........................................................................*/
@@ -225,7 +232,6 @@ void BSP_init(void) {
     if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
         Q_ERROR();
     }
-
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_OBJ_DICTIONARY(&l_ADCSeq3_IRQHandler);
 }
@@ -319,18 +325,16 @@ void QF_onIdle(void) {       /* called with interrupts disabled, see NOTE01 */
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
-    (void)file;                                   /* avoid compiler warning */
-    (void)line;                                   /* avoid compiler warning */
-    QF_INT_DISABLE();         /* make sure that all interrupts are disabled */
-    QS_ASSERTION(file, line);
-    for (;;) {       /* NOTE: replace the loop with reset for final version */
-    }
+void Q_onAssert(char const Q_ROM * const file, int_t line) {
+    assert_failed(file, line);
 }
 /*..........................................................................*/
 /* error routine that is called if the CMSIS library encounters an error    */
 void assert_failed(char const *file, int line) {
-    Q_onAssert(file, line);
+    (void)file;                                   /* avoid compiler warning */
+    (void)line;                                   /* avoid compiler warning */
+    QF_INT_DISABLE();         /* make sure that all interrupts are disabled */
+    NVIC_SystemReset();                             /* perform system reset */
 }
 
 /*--------------------------------------------------------------------------*/

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C/C++/nano
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 05, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 22, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -63,14 +63,14 @@
     * name). This name will be used in reporting assertions in this module.
     */
     #define Q_DEFINE_THIS_FILE \
-        static char_t const Q_ROM Q_ROM_VAR Q_this_module_[] = __FILE__;
+        static char_t const Q_ROM Q_this_module_[] = __FILE__;
 
     /** Place this macro at the top of each C/C++ module to define the module
     * name as the argument \a name_. This name will be used in reporting
     * assertions in this module.
     */
     #define Q_DEFINE_THIS_MODULE(name_) \
-        static char_t const Q_ROM Q_ROM_VAR Q_this_module_[] = name_;
+        static char_t const Q_ROM Q_this_module_[] = name_;
 
     /** General purpose assertion that makes sure the \a test_ argument is
     * TRUE. Calls the Q_onAssert() callback if the \a test_ evaluates
@@ -150,7 +150,7 @@
 * \param module name where the assertion failed
 * \param line number at which the assertion failed
 */
-void Q_onAssert(char_t const Q_ROM * const Q_ROM_VAR module, int_t line);
+void Q_onAssert(char_t const Q_ROM * const module, int_t line);
 
 #ifdef __cplusplus
     }

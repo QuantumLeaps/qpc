@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for QP-POSIX port, GNU compiler
-# Last Updated for Version: 5.0.0
-# Date of the Last Update:  Sep 08, 2013
+# Product: Generic Makefile for QP/C application, POSIX, GNU compiler
+# Last Updated for Version: 5.1.2
+# Date of the Last Update:  Nov 04, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -42,8 +42,11 @@
 # make clean
 # make CONF=rel clean
 # make CONF=spy clean
-
-PROJECT := dpp
+##############################################################################
+#
+# NOTE: Typically, you should have no need to change anything in this Makefile
+#
+##############################################################################
 
 #-----------------------------------------------------------------------------
 # NOTE: the Makefile expects that the QPC environment variable is defined
@@ -54,33 +57,28 @@ $(error The QPC environment variable must be defined)
 endif
 
 #-----------------------------------------------------------------------------
-# general utilities
-#
-
-#-----------------------------------------------------------------------------
 #
 CC    := gcc
 CPP   := g++
 LINK  := gcc
+#LINK  := g++                                                # for C++ programs
 RM    := rm
 
 #-----------------------------------------------------------------------------
 # directories
 #
-QP_PORT_DIR := $(QPC)/ports/posix/gnu
+# Project name is derived from the directory name
+PROJECT := $(notdir $(CURDIR))
+
+QP_PORT_DIR := $(QPC)/ports/posix
 APP_DIR     := .
 
-VPATH = $(APP_DIR) \
-	$(QTOOLS)/qspy/source \
-
-# Output file basename
-OUTPUT    := $(PROJECT)
+VPATH = $(APP_DIR)
 
 # include directories
 INCLUDES  = -I. \
 	-I$(QPC)/include	\
-	-I$(QP_PORT_DIR) \
-	-I$(QTOOLS)/qspy/include
+	-I$(QP_PORT_DIR)
 
 # defines
 DEFINES =
@@ -108,55 +106,45 @@ ifeq (rel, $(CONF))       # Release configuration ............................
 
 BIN_DIR := rel
 
-ASFLAGS =
-
 CFLAGS = -c -Wall -pthread -O2 $(INCLUDES) $(DEFINES) -DNDEBUG
 
 CPPFLAGS = -c -Wall -pthread -O2 $(INCLUDES) $(DEFINES) -DNDEBUG
-
-LINKFLAGS = -L$(QP_PORT_DIR)/$(BIN_DIR) -pthread
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
 BIN_DIR := spy
 
-C_SRCS += qspy.c
-
-ASFLAGS =
+INCLUDES +=	-I$(QTOOLS)/qspy/include
+VPATH    += $(QTOOLS)/qspy/source
+C_SRCS   += qspy.c
 
 CFLAGS = -c -g -pthread $(INCLUDES) $(DEFINES) -DQ_SPY
 
 CPPFLAGS = -c -Wall -g -pthread $(INCLUDES) $(DEFINES) -DQ_SPY
 
-LINKFLAGS = -L$(QP_PORT_DIR)/$(BIN_DIR) -pthread
-
 else                     # default Debug configuration .......................
 
 BIN_DIR := dbg
-
-ASFLAGS =
 
 CFLAGS = -c -Wall -pthread -g $(INCLUDES) $(DEFINES)
 
 CPPFLAGS = -c -Wall -pthread -g $(INCLUDES) $(DEFINES)
 
-LINKFLAGS = -L$(QP_PORT_DIR)/$(BIN_DIR) -pthread
-
-
 endif
 
+LINKFLAGS = -L$(QP_PORT_DIR)/gnu/$(BIN_DIR) -pthread -Wl,-Map,$(BIN_DIR)/$(PROJECT).map
 
-ASM_OBJS     := $(patsubst %.s,%.o,   $(ASM_SRCS))
+#-----------------------------------------------------------------------------
+
 C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))
 CPP_OBJS     := $(patsubst %.cpp,%.o, $(CPP_SRCS))
 
-TARGET_BIN   := $(BIN_DIR)/$(OUTPUT).bin
-TARGET_EXE   := $(BIN_DIR)/$(OUTPUT)
-ASM_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(ASM_OBJS))
+TARGET_BIN   := $(BIN_DIR)/$(PROJECT).bin
+TARGET_EXE   := $(BIN_DIR)/$(PROJECT)
 C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
-C_DEPS_EXT   := $(patsubst %.o,%.d,      $(C_OBJS_EXT))
+C_DEPS_EXT   := $(patsubst %.o,%.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
-CPP_DEPS_EXT := $(patsubst %.o,%.d,      $(CPP_OBJS_EXT))
+CPP_DEPS_EXT := $(patsubst %.o,%.d, $(CPP_OBJS_EXT))
 
 
 #-----------------------------------------------------------------------------
@@ -173,14 +161,14 @@ $(BIN_DIR):
 $(TARGET_BIN): $(TARGET_EXE)
 	$(BIN) -O binary $< $@
 
-$(TARGET_EXE) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
+$(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LINK) $(LINKFLAGS) -o $@ $^ -lqp
 
 $(BIN_DIR)/%.d : %.c
-	$(CC) -MM -MT $(@:.d=.o) $(filter-out -c -g, $(CFLAGS)) $< > $@
+	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
 $(BIN_DIR)/%.d : %.cpp
-	$(CPP) -MM -MT $(@:.d=.o) $(filter-out -c -g, $(CPPFLAGS)) $< > $@
+	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
 
 $(BIN_DIR)/%.o : %.s
 	$(AS) $(ASFLAGS) $< -o $@
@@ -207,12 +195,12 @@ clean:
 	$(BIN_DIR)/*.map
 	
 show:
-	@echo CONF         = $(CONF)
-	@echo ASM_SRCS     = $(ASM_SRCS)
-	@echo C_SRCS       = $(C_SRCS)
-	@echo CPP_SRCS     = $(CPP_SRCS)
+	@echo PROJECT  = $(PROJECT)
+	@echo CONF     = $(CONF)
+	@echo VPATH    = $(VPATH)
+	@echo C_SRCS   = $(C_SRCS)
+	@echo CPP_SRCS = $(CPP_SRCS)
 	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
 	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
 	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
-	@echo TARGET_ELF   = $(TARGET_ELF)

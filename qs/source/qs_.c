@@ -128,7 +128,7 @@ void QS_str_(char_t const *s) {
     QS_priv_.used   = used;                  /* save # of used buffer space */
 }
 /*..........................................................................*/
-void QS_str_ROM_(char_t const Q_ROM * Q_ROM_VAR s) {
+void QS_str_ROM_(char_t const Q_ROM *s) {
     uint8_t b      = (uint8_t)Q_ROM_BYTE(*s);
     uint8_t chksum = QS_priv_.chksum;      /* put in a temporary (register) */
     uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */

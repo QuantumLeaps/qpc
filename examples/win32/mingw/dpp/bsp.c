@@ -1,7 +1,7 @@
  /*****************************************************************************
 * Product: DPP example, 80x86, Win32
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -62,7 +62,7 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
-    QF_TICK(&l_clock_tick);         /* perform the QF clock tick processing */
+    QF_TICK_X(0U, &l_clock_tick);   /* perform the QF clock tick processing */
     if (_kbhit()) {                                     /* any key pressed? */
         int ch = _getch();
         if (ch == '\33') {                    /* see if the ESC key pressed */
@@ -74,7 +74,7 @@ void QF_onClockTick(void) {
     }
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+void Q_onAssert(char const Q_ROM * const file, int line) {
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
     exit(-1);
 }

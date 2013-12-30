@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C, ARM Cortex-M, QK port, ARM-KEIL compiler
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 26, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -51,9 +51,8 @@
 
 #else                                        /* Cortex-M3/M4/M4F, see NOTE3 */
 
-    #define QF_SET_BASEPRI(val)     __asm("msr BASEPRI," #val)
-    #define QF_INT_DISABLE()        QF_SET_BASEPRI(QF_BASEPRI)
-    #define QF_INT_ENABLE()         QF_SET_BASEPRI(0U)
+    #define QF_INT_DISABLE()        QF_set_BASEPRI(QF_BASEPRI)
+    #define QF_INT_ENABLE()         QF_set_BASEPRI(0U)
 
     /* NOTE: keep in synch with the value defined in "qk_port.s", see NOTE4 */
     #define QF_BASEPRI              (0xFF >> 2)
@@ -63,6 +62,12 @@
 
               /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
     #define QF_LOG2(n_) ((uint8_t)(32U - __clz(n_)))
+
+    /* inline function for setting the BASEPRI register */
+    __inline void QF_set_BASEPRI(unsigned basePri) {
+        register unsigned __regBasePri __asm("basepri");
+        __regBasePri = basePri;
+    }
 
 #endif
                                           /* QF critical section entry/exit */

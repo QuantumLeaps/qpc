@@ -1,8 +1,8 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C buld script for ARM Cortex-M4F, Vanilla port, IAR compiler
-:: Last Updated for Version: 5.1.0
-:: Date of the Last Update:  Sep 17, 2013
+:: Last Updated for Version: 5.2.0
+:: Date of the Last Update:  Dec 30, 2013
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -38,8 +38,8 @@ setlocal
 :: define the IAR_ARM environment variable to point to the location 
 :: where you've installed the IAR toolset or adjust the following 
 :: set instruction 
-::if "%IAR_ARM%"=="" set IAR_ARM="C:\Program Files\IAR Systems\Embedded Workbench 6.60"
-if "%IAR_ARM%"=="" set IAR_ARM="C:\tools\IAR\ARM_6.60"
+::if "%IAR_ARM%"=="" set IAR_ARM="C:\Program Files\IAR Systems\Embedded Workbench 6.70"
+if "%IAR_ARM%"=="" set IAR_ARM="C:\tools\IAR\ARM_KS_6.70"
 
 set PATH=%IAR_ARM%\arm\bin;%IAR_ARM%\common\bin;%PATH%
 

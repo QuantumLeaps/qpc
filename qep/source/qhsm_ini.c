@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,14 +40,14 @@ Q_DEFINE_THIS_MODULE("qhsm_ini")
 /**
 * \file
 * \ingroup qep
-* \brief QHsm_init() implementation.
+* \brief QHsm_ctor() and QHsm_init_() implementation.
 */
 
 /*..........................................................................*/
 void QHsm_ctor(QHsm * const me, QStateHandler initial) {
     static QMsmVtbl const vtbl = {                    /* QHsm virtual table */
-        &QHsm_init,
-        &QHsm_dispatch
+        &QHsm_init_,
+        &QHsm_dispatch_
     };
     /* do not call the QMsm_ctor() here, see NOTE01 */
     me->vptr  = &vtbl;
@@ -55,7 +55,7 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial) {
     me->temp.fun  = initial;
 }
 /*..........................................................................*/
-void QHsm_init(QHsm * const me, QEvt const * const e) {
+void QHsm_init_(QHsm * const me, QEvt const * const e) {
     QStateHandler t = me->state.fun;
     QS_CRIT_STAT_
 
@@ -110,7 +110,7 @@ void QHsm_init(QHsm * const me, QEvt const * const e) {
 * QHsm inherits QMsm, so by the "inheritance of structures" convention
 * it should call the constructor of the superclass, i.e., QMsm_ctor().
 * However, this would pull in the QMsmVtbl, which in turn will pull in
-* the code for QMsm_init() and QMsm_dispatch() implemetations. To avoid
+* the code for QMsm_init_() and QMsm_dispatch_() implemetations. To avoid
 * this code size penalty, in case QMsm is not used in a given project,
 * the QHsm_ctor() performs direct intitialization of the Vtbl, which avoids
 * pulling in the code for QMsm.

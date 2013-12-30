@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QS/C port, ARM Cortex-M, Generic C compiler
-* Last Updated for Version: 4.5.04
-* Date of the Last Update:  Jun 26, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,10 +41,10 @@
 
 /*****************************************************************************
 * NOTE: QS might be used with or without other QP components, in which
-* case the separate definitions of the macros Q_ROM, Q_ROM_VAR,
-* QF_CRIT_STAT_TYPE, QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this
-* port QS is configured to be used with the other QP component, by
-* simply including "qf_port.h" *before* "qs.h".
+* case the separate definitions of the macros Q_ROM, QF_CRIT_STAT_TYPE,
+* QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this port QS is configured
+* to be used with the other QP component, by simply including "qf_port.h"
+* *before* "qs.h".
 */
 #include "qf_port.h"                                      /* use QS with QF */
 #include "qs.h"                 /* QS platform-independent public interface */

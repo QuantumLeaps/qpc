@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: Time Bomb Example with QEP
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 24, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 *                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#include "qep_port.h"                /* the port of the QEP event processor */
+#include "qp_port.h"                                         /* the QP port */
 #include "bsp.h"                                   /* board support package */
 
 enum BombSignals {                          /* all signals for the Bomb FSM */

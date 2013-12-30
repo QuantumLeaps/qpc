@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 22, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -179,9 +179,6 @@ enum QSpyRecords {
 #ifndef Q_ROM                   /* provide the default if Q_ROM NOT defined */
     #define Q_ROM
 #endif
-#ifndef Q_ROM_VAR           /* provide the default if Q_ROM_VAR NOT defined */
-    #define Q_ROM_VAR
-#endif
 #ifndef Q_ROM_BYTE         /* provide the default if Q_ROM_BYTE NOT defined */
     #define Q_ROM_BYTE(rom_var_)   (rom_var_)
 #endif
@@ -208,7 +205,7 @@ enum QSpyRecords {
 * consistent with the "last-is-best" QS policy. The record sequence counters
 * and check sums on each record allow to easily detect data loss.
 */
-void QS_initBuf(uint8_t sto[], uint32_t stoSize);
+void QS_initBuf(uint8_t sto[], uint_t stoSize);
 
 /**
  \brief Turn the global Filter on for a given record type \a rec.
@@ -256,7 +253,7 @@ void QS_beginRec(uint8_t rec);
 */
 void QS_endRec(void);
 
-//* unformatted data elements output ........................................*/
+/* unformatted data elements output ........................................*/
 /** \brief output uint8_t data element without format information
 * \note This function is only to be used through macros, never in the
 * client code directly.
@@ -293,7 +290,7 @@ void QS_str_(char_t const *s);
 * \note This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_str_ROM_(char_t const Q_ROM * Q_ROM_VAR s);
+void QS_str_ROM_(char_t const Q_ROM *s);
 
 /* formatted data elements output ..........................................*/
 /** \brief Output uint8_t data element with format information
@@ -337,7 +334,7 @@ void QS_str(char_t const *s);
 * \note This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_str_ROM(char_t const Q_ROM * Q_ROM_VAR s);
+void QS_str_ROM(char_t const Q_ROM *s);
 
 /** \brief Output memory block of up to 255-bytes with format information
 * \note This function is only to be used through macros, never in the
@@ -363,25 +360,25 @@ void QS_mem(uint8_t const *blk, uint8_t size);
 * \note This function is only to be used through macro #QS_SIG_DICTIONARY
 */
 void QS_sig_dict(enum_t const sig, void const * const obj,
-                 char_t const Q_ROM * const Q_ROM_VAR name);
+                 char_t const Q_ROM * const name);
 
 /** \brief Output object dictionary record
 * \note This function is only to be used through macro #QS_OBJ_DICTIONARY
 */
 void QS_obj_dict(void const * const obj,
-                 char_t const Q_ROM * const Q_ROM_VAR name);
+                 char_t const Q_ROM * const name);
 
 /** \brief Output function dictionary record
 * \note This function is only to be used through macro #QS_FUN_DICTIONARY
 */
 void QS_fun_dict(void (* const fun)(void),
-                 char_t const Q_ROM *const Q_ROM_VAR name);
+                 char_t const Q_ROM *const name);
 
 /** \brief Output user dictionary record
 * \note This function is only to be used through macro #QS_USR_DICTIONARY
 */
 void QS_usr_dict(enum_t const rec,
-                 char_t const Q_ROM * const Q_ROM_VAR name);
+                 char_t const Q_ROM * const name);
 
 /* QS buffer access ........................................................*/
 /** \brief Byte-oriented interface to the QS data buffer.
@@ -1039,7 +1036,7 @@ enum QSType {
     if (((QS_priv_.glbFilter[(uint8_t)QS_SIG_DICT >> 3] \
       & (uint8_t)(1U << ((uint8_t)QS_SIG_DICT & (uint8_t)7))) != (uint8_t)0))\
     { \
-        static char_t const Q_ROM Q_ROM_VAR sig_name_[] = #sig_; \
+        static char_t const Q_ROM sig_name_[] = #sig_; \
         QS_sig_dict((sig_), (obj_), &sig_name_[0]); \
     } \
 } while (0)
@@ -1061,7 +1058,7 @@ enum QSType {
     if (((QS_priv_.glbFilter[(uint8_t)QS_OBJ_DICT >> 3] \
       & (uint8_t)(1U << ((uint8_t)QS_OBJ_DICT & (uint8_t)7))) != (uint8_t)0))\
     { \
-        static char_t const Q_ROM Q_ROM_VAR obj_name_[] = #obj_; \
+        static char_t const Q_ROM obj_name_[] = #obj_; \
         QS_obj_dict((obj_), &obj_name_[0]); \
     } \
 } while (0)
@@ -1082,7 +1079,7 @@ enum QSType {
     if (((QS_priv_.glbFilter[(uint8_t)QS_FUN_DICT >> 3] \
       & (uint8_t)(1U << ((uint8_t)QS_FUN_DICT & (uint8_t)7))) != (uint8_t)0))\
     { \
-        static char_t const Q_ROM Q_ROM_VAR fun_name_[] = #fun_; \
+        static char_t const Q_ROM fun_name_[] = #fun_; \
         QS_fun_dict((void (*)(void))(fun_), &fun_name_[0]); \
     } \
 } while (0)
@@ -1096,7 +1093,7 @@ enum QSType {
     if (((QS_priv_.glbFilter[(uint8_t)QS_USR_DICT >> 3] \
       & (uint8_t)(1U << ((uint8_t)QS_USR_DICT & (uint8_t)7))) != (uint8_t)0))\
     { \
-        static char_t const Q_ROM Q_ROM_VAR usr_name_[] = #rec_; \
+        static char_t const Q_ROM usr_name_[] = #rec_; \
         QS_usr_dict((rec_), &usr_name_[0]); \
     } \
 } while (0)
@@ -1152,13 +1149,6 @@ enum QSType {
 
 /** \brief Execute an action that is only necessary for QS output */
 #define QF_QS_ACTION(act_)      (act_)
-
-/** \brief Deprecated macro for generating QS-Reset trace record.
-*
-* This Reset QS trace record is generated automatically upon initialization
-* of the QS buffer, \sa QS_initBuf().
-*/
-#define QS_RESET() ((void)0)
 
 /** \brief obtain the current QS version number string
 *

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 11, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -67,9 +67,9 @@ typedef QState (*QActionHandler)(void * const me);
 * and should not be used in hand-crafted code.
 */
 typedef struct QMStateTag {
-    struct QMStateTag const *parent;      /**< parent state (state nesting) */
-    QStateHandler  stateHandler;               /**<  state handler function */
-    QActionHandler exitAction;            /**< exit action handler function */
+    struct QMStateTag const *parent;                      /**< parent state */
+    QStateHandler     const stateHandler;      /**<  state handler function */
+    QActionHandler    const exitAction;   /**< exit action handler function */
 } QMState;
 
 /** \brief Attribute of for the ::QMsm class (Meta State Machine).
@@ -78,9 +78,9 @@ typedef struct QMStateTag {
 * attributes of the ::QMsm class.
 */
 typedef union QMAttrTag {
-    QMState const *obj;                      /**< pointer to QMState object */
+    QMState        const *obj;               /**< pointer to QMState object */
     QActionHandler const *act;                /**< array of action handlers */
-    QStateHandler fun;             /**< pointer to a state handler function */
+    QStateHandler  fun;            /**< pointer to a state handler function */
 } QMAttr;
 
 /****************************************************************************/
@@ -154,7 +154,7 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial);
 
 /** \brief Implementation of the top-most initial transition in ::QMsm.
 */
-void QMsm_init(QMsm * const me, QEvt const * const e);
+void QMsm_init_(QMsm * const me, QEvt const * const e);
 
 /** \brief Polymorphically dispatches an event to a SM.
 *
@@ -171,52 +171,9 @@ void QMsm_init(QMsm * const me, QEvt const * const e);
 
 /** \brief Implementation of disparching events to QMsm.
 */
-void QMsm_dispatch(QMsm * const me, QEvt const * const e);
+void QMsm_dispatch_(QMsm * const me, QEvt const * const e);
 
 extern QActionHandler const QMsm_emptyAction_[1];
-
-
-/****************************************************************************/
-/** \brief Finite State Machine
-*
-* QFsm represents a traditional non-hierarchical Finite State Machine (FSM)
-* without state hierarchy, but with entry/exit actions. QFsm inherits QMsm
-* "as is" without adding new attributes, so it is typedef'ed as QMsm.
-*
-* \note QFsm is not intended to be instantiated directly, but rather serves
-* as the base structure for derivation of state machines in the application
-* code.
-*
-* The following example illustrates how to derive a state machine structure
-* from QFsm. Please note that the QFsm member super is defined as the FIRST
-* member of the derived struct.
-* \include qep_qfsm.c
-*
-* \sa \ref derivation
-*/
-typedef QMsm QFsm;
-
-/** \brief Protected "constructor" of a FSM.
-*
-* Performs the first step of FSM initialization by assigning the
-* initial pseudostate to the currently active state of the state machine.
-* \note Must be called only by the "constructors" of the derived state
-* machines.
-* \note Must be called only ONCE before QFsm_init().
-*
-* The following example illustrates how to invoke QFsm_ctor() in the
-* "constructor" of a derived state machine:
-* \include qep_qfsm_ctor.c
-*/
-void QFsm_ctor(QFsm * const me, QStateHandler initial);
-
-/** \brief Implementation of the top-most initial transition in QFsm.
-*/
-void QFsm_init(QFsm * const me, QEvt const * const e);
-
-/** \brief Implementation of disparching events to QFsm.
-*/
-void QFsm_dispatch(QFsm * const me, QEvt const * const e);
 
 
 /****************************************************************************/
@@ -262,11 +219,11 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial);
 
 /** \brief Implementation of the top-most initial transition in QHsm.
 */
-void QHsm_init(QHsm * const me, QEvt const * const e);
+void QHsm_init_(QHsm * const me, QEvt const * const e);
 
 /** \brief Implementation of dispatching events to QHsm.
 */
-void QHsm_dispatch(QHsm * const me, QEvt const * const e);
+void QHsm_dispatch_(QHsm * const me, QEvt const * const e);
 
 /** \brief Tests if a given state is part of the current active state
 * configuration
@@ -285,6 +242,50 @@ uint8_t QHsm_isIn(QHsm * const me, QStateHandler const state);
 * that it "handles" all events.
 */
 QState QHsm_top(void const * const me, QEvt const * const e);
+
+
+/****************************************************************************/
+/** \brief Non-hierarchical Finite State Machine
+*
+* QFsm represents a traditional non-hierarchical Finite State Machine (FSM)
+* without state hierarchy, but with entry/exit actions. QFsm inherits QMsm
+* "as is" without adding new attributes, so it is typedef'ed as QMsm.
+*
+* \note QFsm is not intended to be instantiated directly, but rather serves
+* as the base structure for derivation of state machines in the application
+* code.
+*
+* The following example illustrates how to derive a state machine structure
+* from QFsm. Please note that the QFsm member super is defined as the FIRST
+* member of the derived struct.
+* \include qep_qfsm.c
+*
+* \sa \ref derivation
+*/
+typedef QMsm QFsm;
+
+/** \brief Protected "constructor" of a FSM.
+*
+* Performs the first step of FSM initialization by assigning the
+* initial pseudostate to the currently active state of the state machine.
+* \note Must be called only by the "constructors" of the derived state
+* machines.
+* \note Must be called only ONCE before QFsm_init().
+*
+* The following example illustrates how to invoke QFsm_ctor() in the
+* "constructor" of a derived state machine:
+* \include qep_qfsm_ctor.c
+*/
+void QFsm_ctor(QFsm * const me, QStateHandler initial);
+
+/** \brief Implementation of the top-most initial transition in QFsm.
+*/
+void QFsm_init_(QFsm * const me, QEvt const * const e);
+
+/** \brief Implementation of disparching events to QFsm.
+*/
+void QFsm_dispatch_(QFsm * const me, QEvt const * const e);
+
 
 /****************************************************************************/
 /** \brief obtain the current QEP version number string
@@ -357,7 +358,7 @@ enum QHandlerReturnValues {
 */
 #define QM_INITIAL(target_, act_) \
     (((((QMsm *)me)->state.obj = (target_)), \
-      (((QMsm *)me)->temp.act = (act_))), Q_RET_INITIAL)
+      (((QMsm *)me)->temp.act = (act_))), (QState)Q_RET_INITIAL)
 
 /** \brief Macro to call in a QM state-handler when it handled an event.
 * Applicable only to QMSMs.

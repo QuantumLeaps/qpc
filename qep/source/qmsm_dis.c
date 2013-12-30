@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Aug 29, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 20, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,11 +40,13 @@ Q_DEFINE_THIS_MODULE("qmsm_dis")
 /**
 * \file
 * \ingroup qep
-* \brief QMsm_dispatch() implementation.
+* \brief QMsm_dispatch_() implementation.
 */
 
+static void QMsm_tran_(QHsm * const me);          /* static helper function */
+
 /*..........................................................................*/
-void QMsm_dispatch(QMsm * const me, QEvt const * const e) {
+void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
     QMState const *s = me->state.obj;            /* store the current state */
     QMState const *t;
     QState r = (QState)Q_RET_HANDLED;
@@ -76,8 +78,6 @@ void QMsm_dispatch(QMsm * const me, QEvt const * const e) {
     }
 
     if (r == (QState)Q_RET_TRAN) {                     /* transition taken? */
-        QActionHandler const *a = me->temp.act;
-
         Q_ASSERT(t != (QMState const *)0);    /* tran. source can't be null */
 
          /* exit states starting from the current state to the source state */
@@ -91,59 +91,8 @@ void QMsm_dispatch(QMsm * const me, QEvt const * const e) {
                 QS_END_()
             }
         }
-        /*  at this point s == t and both hold the source of the transition */
-#ifdef Q_SPY
-        t = me->state.obj;                      /* target of the transition */
-#endif
 
-        for (; *a != Q_ACTION_CAST(0); QEP_ACT_PTR_INC_(a)) {
-            r = (**a)(me);
-#ifdef Q_SPY
-            if (r == (QState)Q_RET_EXIT) {
-                QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.smObjFilter, me)
-                    QS_OBJ_(me);               /* this state machine object */
-                    QS_FUN_(me->temp.obj->stateHandler);    /* exited state */
-                QS_END_()
-            }
-            else if (r == (QState)Q_RET_ENTRY) {
-                QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.smObjFilter, me)
-                    QS_OBJ_(me);
-                    QS_FUN_(me->temp.obj->stateHandler);   /* entered state */
-                QS_END_()
-            }
-            else {
-                /* empty */
-            }
-#endif
-        }
-
-        while (r == (QState)Q_RET_INITIAL) {
-
-            QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.smObjFilter, me)
-                QS_OBJ_(me);                   /* this state machine object */
-                QS_FUN_(t->stateHandler);/* target (source of initial tran) */
-                QS_FUN_(me->state.obj->stateHandler); /* the target handler */
-            QS_END_()
-
-#ifdef Q_SPY
-            t = me->state.obj;        /* store the target of the transition */
-#endif
-            r = (QState)0U;                  /* invalidate the return value */
-            for (a = me->temp.act;
-                 *a != Q_ACTION_CAST(0);
-                 QEP_ACT_PTR_INC_(a))
-            {
-                r = (**a)(me);
-#ifdef Q_SPY
-                if (r == (QState)Q_RET_ENTRY) {
-                    QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.smObjFilter, me)
-                        QS_OBJ_(me);
-                        QS_FUN_(me->temp.obj->stateHandler);/*entered state */
-                    QS_END_()
-                }
-#endif
-            }
-        }
+        QMsm_tran_(me);                       /* take the actual transition */
 
         QS_BEGIN_(QS_QEP_TRAN, QS_priv_.smObjFilter, me)
             QS_TIME_();                                       /* time stamp */
@@ -182,4 +131,63 @@ void QMsm_dispatch(QMsm * const me, QEvt const * const e) {
         }
     }
 #endif
+}
+
+/*..........................................................................*/
+static void QMsm_tran_(QHsm * const me) {
+    QActionHandler const *a = me->temp.act;
+    QState r = (QState)Q_RET_TRAN;
+#ifdef Q_SPY
+    QMState const *t = me->state.obj;           /* target of the transition */
+#endif
+    QS_CRIT_STAT_
+
+    for (; *a != Q_ACTION_CAST(0); QEP_ACT_PTR_INC_(a)) {
+        r = (*(*a))(me);         /* call the action through the 'a' pointer */
+#ifdef Q_SPY
+        if (r == (QState)Q_RET_EXIT) {
+            QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.smObjFilter, me)
+                QS_OBJ_(me);                   /* this state machine object */
+                QS_FUN_(me->temp.obj->stateHandler);        /* exited state */
+            QS_END_()
+        }
+        else if (r == (QState)Q_RET_ENTRY) {
+            QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.smObjFilter, me)
+                QS_OBJ_(me);
+                QS_FUN_(me->temp.obj->stateHandler);       /* entered state */
+            QS_END_()
+        }
+        else {
+            /* empty */
+        }
+#endif
+    }
+
+    while (r == (QState)Q_RET_INITIAL) {
+
+        QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.smObjFilter, me)
+            QS_OBJ_(me);                       /* this state machine object */
+            QS_FUN_(t->stateHandler);    /* target (source of initial tran) */
+            QS_FUN_(me->state.obj->stateHandler);     /* the target handler */
+        QS_END_()
+
+#ifdef Q_SPY
+        t = me->state.obj;            /* store the target of the transition */
+#endif
+        r = (QState)0U;                      /* invalidate the return value */
+        for (a = me->temp.act;
+             *a != Q_ACTION_CAST(0);
+             QEP_ACT_PTR_INC_(a))
+        {
+            r = (*(*a))(me);     /* call the action through the 'a' pointer */
+#ifdef Q_SPY
+            if (r == (QState)Q_RET_ENTRY) {
+                QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.smObjFilter, me)
+                    QS_OBJ_(me);
+                    QS_FUN_(me->temp.obj->stateHandler);   /* entered state */
+                QS_END_()
+            }
+#endif
+        }
+    }
 }

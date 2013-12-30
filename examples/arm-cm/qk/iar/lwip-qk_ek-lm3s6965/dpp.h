@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example with lwIP
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 20, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,6 +48,9 @@ enum DPPSignals {
 
    HUNGRY_SIG,          /* posted direclty to Table from hungry Philosopher */
    SEND_UDP_SIG,         /* posted directly to lwIPMgr to send text via UDP */
+   LWIP_DRIVER_GROUP,                           /* LwIP driver signal group */
+   LWIP_DRIVER_END = LWIP_DRIVER_GROUP + 10,          /* reserve 10 signals */
+   LWIP_SLOW_TICK_SIG,                 /* slow tick signal for LwIP manager */
    MAX_SIG                                               /* the last signal */
 };
 

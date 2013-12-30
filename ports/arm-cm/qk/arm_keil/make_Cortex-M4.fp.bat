@@ -1,8 +1,8 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C buld script for ARM Cortex-M4.fp, QK port, ARM-KEIL
-:: Last Updated for Version: 5.1.0
-:: Date of the Last Update:  Sep 19, 2013
+:: Last Updated for Version: 5.2.0
+:: Date of the Last Update:  Dec 26, 2013
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -52,7 +52,7 @@ set ARM_CORE=Cortex-M4.fp
 if "%1"=="" (
     echo default selected
     set BINDIR=%QP_PRTDIR%\dbg
-    set CCOPT=-O0
+    set CCOPT=-O1
     set CCFLAGS=-g -c --cpu %ARM_CORE% --apcs=interwork --split_sections
     set ASMFLAGS=-g --cpu %ARM_CORE% --apcs=interwork
 )
@@ -66,7 +66,7 @@ if "%1"=="rel" (
 if "%1"=="spy" (
     echo spy selected
     set BINDIR=%QP_PRTDIR%\spy
-    set CCOPT=-O0
+    set CCOPT=-O1
     set CCOPT_QS=-O3 -Otime
     set CCFLAGS=-g -c --cpu %ARM_CORE% --apcs=interwork --split_sections -DQ_SPY
     set ASMFLAGS=-g --cpu %ARM_CORE% --apcs=interwork

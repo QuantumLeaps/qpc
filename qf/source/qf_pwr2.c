@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.4.02
-* Date of the Last Update:  Apr 13, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,7 +41,7 @@
 */
 
 /* Global objects ----------------------------------------------------------*/
-uint8_t const Q_ROM Q_ROM_VAR QF_pwr2Lkup[65] = {
+uint8_t const Q_ROM QF_pwr2Lkup[65] = {
     (uint8_t)0x00,                                       /* unused location */
     (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
     (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80,
@@ -61,7 +61,7 @@ uint8_t const Q_ROM Q_ROM_VAR QF_pwr2Lkup[65] = {
     (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80
 };
 
-uint8_t const Q_ROM Q_ROM_VAR QF_invPwr2Lkup[65] = {
+uint8_t const Q_ROM QF_invPwr2Lkup[65] = {
     (uint8_t)0xFF,                                       /* unused location */
     (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
     (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F,
@@ -81,7 +81,7 @@ uint8_t const Q_ROM Q_ROM_VAR QF_invPwr2Lkup[65] = {
     (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F
 };
 
-uint8_t const Q_ROM Q_ROM_VAR QF_div8Lkup[65] = {
+uint8_t const Q_ROM QF_div8Lkup[65] = {
     (uint8_t)0,                                          /* unused location */
     (uint8_t)0, (uint8_t)0, (uint8_t)0, (uint8_t)0,
     (uint8_t)0, (uint8_t)0, (uint8_t)0, (uint8_t)0,

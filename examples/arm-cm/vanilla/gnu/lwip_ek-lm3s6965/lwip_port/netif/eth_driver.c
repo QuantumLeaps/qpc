@@ -1,6 +1,6 @@
 /*
  * lwIP Ethernet CMSIS-compliant driver for Stellaris MCUs
- * Copyright (c) 2012 Quantum Leaps, LLC, www.state-machine.com
+ * Copyright (c) 2013 Quantum Leaps, LLC, www.state-machine.com
  */
 
 /*
@@ -96,32 +96,32 @@ static uint8_t PbufQueue_put(PbufQueue *me, struct pbuf *p);
 static struct pbuf *PbufQueue_get(PbufQueue *me);
 #define PbufQueue_isEmpty(me_) ((me_)->qwrite == (me_)->qread)
 
-#define ETH_INT_RX              (1 << 0)
-#define ETH_INT_TXER            (1 << 1)
-#define ETH_INT_TX              (1 << 2)
-#define ETH_INT_RXOF            (1 << 3)
-#define ETH_INT_RXER            (1 << 4)
-#define ETH_INT_MDIO            (1 << 5)
-#define ETH_INT_PHY             (1 << 6)
+#define ETH_INT_RX              (1U << 0)
+#define ETH_INT_TXER            (1U << 1)
+#define ETH_INT_TX              (1U << 2)
+#define ETH_INT_RXOF            (1U << 3)
+#define ETH_INT_RXER            (1U << 4)
+#define ETH_INT_MDIO            (1U << 5)
+#define ETH_INT_PHY             (1U << 6)
 
-#define ETH_CFG_TX_PADEN        (1 << 1)
-#define ETH_CFG_TX_CRCEN        (1 << 2)
-#define ETH_CFG_TX_DPLXEN       (1 << 4)
-#define ETH_CFG_RX_AMULEN       (1 << 9)
-#define ETH_CFG_RX_PRMSEN       (1 << 10)
-#define ETH_CFG_RX_BADCRCDIS    (1 << 11)
-#define ETH_CFG_TS_TSEN         (1 << 16)
+#define ETH_CFG_TX_PADEN        (1U << 1)
+#define ETH_CFG_TX_CRCEN        (1U << 2)
+#define ETH_CFG_TX_DPLXEN       (1U << 4)
+#define ETH_CFG_RX_AMULEN       (1U << 9)
+#define ETH_CFG_RX_PRMSEN       (1U << 10)
+#define ETH_CFG_RX_BADCRCDIS    (1U << 11)
+#define ETH_CFG_TS_TSEN         (1U << 16)
 
-#define MAC_TCTL_TXEN           (1 << 0)
-#define MAC_TCTL_PADEN          (1 << 1)
-#define MAC_TCTL_CRC            (1 << 2)
-#define MAC_TCTL_DUPLEX         (1 << 4)
+#define MAC_TCTL_TXEN           (1U << 0)
+#define MAC_TCTL_PADEN          (1U << 1)
+#define MAC_TCTL_CRC            (1U << 2)
+#define MAC_TCTL_DUPLEX         (1U << 4)
 
-#define MAC_RCTL_RXEN           (1 << 0)
-#define MAC_RCTL_AMUL           (1 << 1)
-#define MAC_RCTL_PRMS           (1 << 2)
-#define MAC_RCTL_BADCRC         (1 << 3)
-#define MAC_RCTL_RSTFIFO        (1 << 4)
+#define MAC_RCTL_RXEN           (1U << 0)
+#define MAC_RCTL_AMUL           (1U << 1)
+#define MAC_RCTL_PRMS           (1U << 2)
+#define MAC_RCTL_BADCRC         (1U << 3)
+#define MAC_RCTL_RSTFIFO        (1U << 4)
 
 #define MAC_TR_NEWTX            0x00000001
 #define MAC_NP_NPR_M            0x0000003F
@@ -130,6 +130,7 @@ static struct pbuf *PbufQueue_get(PbufQueue *me);
 static struct netif l_netif;                /* the single network interface */
 static QActive *l_active;      /* active object associated with this driver */
 static PbufQueue l_txq;                  /* queue of pbufs for transmission */
+static QEvt l_lwipEvt[LWIP_MAX_OFFSET];        /* static LwIP events issued */
 
 static err_t ethernetif_init(struct netif *netif);
 static err_t ethernetif_output(struct netif *netif, struct pbuf *p);
@@ -153,19 +154,19 @@ void Ethernet_IRQHandler(void) {
     eth_stat &= ETH->IM;                   /* mask only the enabled sources */
 
     if ((eth_stat & ETH_INT_RX) != 0) {
-        static QEvt const evt_eth_rx = { LWIP_RX_READY_SIG, 0 };
-        QACTIVE_POST(l_active, &evt_eth_rx, &l_Ethernet_IRQHandler);
+        QACTIVE_POST(l_active, &l_lwipEvt[LWIP_RX_READY_OFFSET],
+                     &l_Ethernet_IRQHandler);
 
         ETH->IM &= ~ETH_INT_RX;                       /* disable further RX */
     }
     if ((eth_stat & ETH_INT_TX) != 0) {
-        static QEvt const evt_eth_tx = { LWIP_TX_READY_SIG, 0 };
-        QACTIVE_POST(l_active, &evt_eth_tx, &l_Ethernet_IRQHandler);
+        QACTIVE_POST(l_active, &l_lwipEvt[LWIP_TX_READY_OFFSET],
+                     &l_Ethernet_IRQHandler);
     }
 #if LINK_STATS
     if ((eth_stat & ETH_INT_RXOF) != 0) {
-        static QEvt const evt_eth_er = { LWIP_RX_OVERRUN_SIG, 0 };
-        QACTIVE_POST(l_active, &evt_eth_er, &l_Ethernet_IRQHandler);
+        QACTIVE_POST(l_active, &l_lwipEvt[LWIP_RX_OVERRUN_OFFSET],
+                     &l_Ethernet_IRQHandler);
     }
 #endif
 
@@ -176,6 +177,7 @@ void Ethernet_IRQHandler(void) {
 
 /*..........................................................................*/
 struct netif *eth_driver_init(QActive *active,
+                              enum_t base_sig,
                               u8_t macaddr[NETIF_MAX_HWADDR_LEN])
 {
     struct ip_addr ipaddr;
@@ -188,7 +190,12 @@ struct netif *eth_driver_init(QActive *active,
     l_netif.hwaddr_len = NETIF_MAX_HWADDR_LEN;
     memcpy(&l_netif.hwaddr[0], macaddr, NETIF_MAX_HWADDR_LEN);
 
-    l_active = active; /*save the active object associated with this driver */
+    l_active = active;           /* save the AO associated with this driver */
+
+                        /* set up the static events issed by this driver... */
+    l_lwipEvt[LWIP_RX_READY_OFFSET]  .sig = base_sig + LWIP_RX_READY_OFFSET;
+    l_lwipEvt[LWIP_TX_READY_OFFSET]  .sig = base_sig + LWIP_TX_READY_OFFSET;
+    l_lwipEvt[LWIP_RX_OVERRUN_OFFSET].sig = base_sig + LWIP_RX_OVERRUN_OFFSET;
 
 #if LWIP_NETIF_HOSTNAME
     l_netif.hostname = "lwIP";             /* initialize interface hostname */
@@ -331,16 +338,16 @@ static err_t ethernetif_init(struct netif *netif) {
     } addr;
     uint32_t tmp;
 
-    SYSCTL->RCGC2 |= (1 << 28) | (1 << 30);  /* enable clock to MAC and PHY */
+    SYSCTL->RCGC2 |= (1U << 28) | (1U << 30);/* enable clock to MAC and PHY */
     __NOP();
     __NOP();
 
-    SYSCTL->SRCR2 |= (1 << 28) | (1 << 30);   /* put MAC and PHY into reset */
+    SYSCTL->SRCR2 |= (1U << 28) | (1U << 30); /* put MAC and PHY into reset */
     __NOP();
     __NOP();
     __NOP();
     __NOP();
-    SYSCTL->SRCR2 &= ~((1 << 28) | (1 << 30));         /* take out of reset */
+    SYSCTL->SRCR2 &= ~((1U << 28) | (1U << 30));       /* take out of reset */
 
     /* Program the MAC Address into the device. The first four bytes of the
     * MAC Address are placed into the IA0 register. The remaining two bytes
@@ -388,9 +395,9 @@ static err_t ethernetif_init(struct netif *netif) {
     tmp |= (ETH_CFG_RX_AMULEN >> 8) & 0x0FF;
     ETH->RCTL = tmp;
 
-    ETH->RCTL |= ((1 << 0) | (1 << 4));
-    ETH->TCTL |= (1 << 0);                   /* enable Ethernet transmitter */
-    ETH->RCTL |= (1 << 4);       /* reset the Rx FIFO again, after enabling */
+    ETH->RCTL |= ((1U << 0) | (1U << 4));
+    ETH->TCTL |= (1U << 0);                  /* enable Ethernet transmitter */
+    ETH->RCTL |= (1U << 4);      /* reset the Rx FIFO again, after enabling */
 
     return ERR_OK;
 }

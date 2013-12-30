@@ -176,7 +176,6 @@
           <state>PART_LM4F120H5QR</state>
           <state>__FPU_PRESENT</state>
           <state>TARGET_IS_BLIZZARD_RA1</state>
-          <state>STACK_SIZE=1024</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -709,7 +708,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\tm4c123gh6pm.icf</state>
+          <state>$PROJ_DIR$\blinky.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -1649,7 +1648,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\tm4c123gh6pm.icf</state>
+          <state>$PROJ_DIR$\blinky.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>

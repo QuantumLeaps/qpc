@@ -1,55 +1,57 @@
-//*****************************************************************************
-// Added STACK_SIZE macro and calls to assert_failed()
-// Quantum Leaps on 25-Sep-2013
-// www.state-machine.com
-//*****************************************************************************
+/*****************************************************************************
+* Product: CMSIS-compliant startup code for LM3S Cortex-M3, IAR-ARM
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 24, 2013
+*
+*                    Q u a n t u m     L e a P s
+*                    ---------------------------
+*                    innovating embedded systems
+*
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+*
+* This program is open source software: you can redistribute it and/or
+* modify it under the terms of the GNU General Public License as published
+* by the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Alternatively, this program may be distributed and modified under the
+* terms of Quantum Leaps commercial licenses, which expressly supersede
+* the GNU General Public License and are specifically designed for
+* licensees interested in retaining the proprietary status of their code.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*
+* Contact information:
+* Quantum Leaps Web sites: http://www.quantum-leaps.com
+*                          http://www.state-machine.com
+* e-mail:                  info@quantum-leaps.com
+*****************************************************************************/
 
-//*****************************************************************************
-//
-// startup_ewarm.c - Startup code for use with IAR's Embedded Workbench,
-//                   version 5.
-//
-// Copyright (c) 2009 Luminary Micro, Inc.  All rights reserved.
-// Software License Agreement
-//
-// Luminary Micro, Inc. (LMI) is supplying this software for use solely and
-// exclusively on LMI's microcontroller products.
-//
-// The software is owned by LMI and/or its suppliers, and is protected under
-// applicable copyright laws.  All rights are reserved.  You may not combine
-// this software with "viral" open-source software in order to form a larger
-// program.  Any use in violation of the foregoing restrictions may subject
-// the user to criminal sanctions under applicable laws, as well as to civil
-// liability for the breach of the terms and conditions of this license.
-//
-// THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
-// OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
-// LMI SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
-// CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
-//
-// This is part of revision 32 of the Stellaris CMSIS Package.
-//
-//*****************************************************************************
-
-//*****************************************************************************
-//
-// Enable the IAR extensions for this source file.
-//
-//*****************************************************************************
+/* Enable the IAR extensions for this source file */
 #pragma language=extended
 
-//*****************************************************************************
-//
-// Forward declaration of the default fault handlers.
-//
-//*****************************************************************************
+/* Function prototypes -----------------------------------------------------*/
+void __iar_program_start(void);                         /* IAR startup code */
 void NMI_Handler(void);
 void HardFault_Handler(void);
-__weak void MemManage_Handler(void);
-__weak void BusFault_Handler(void);
-__weak void UsageFault_Handler(void);
-__weak void HardFault_Handler(void);
+void MemManage_Handler(void);
+void BusFault_Handler(void);
+void UsageFault_Handler(void);
+void HardFault_Handler(void);
+void Spurious_Handler(void);
+
+void assert_failed(char const *file, int line);       /* defined in the BSP */
+
+/*----------------------------------------------------------------------------
+* weak aliases for each Exception handler to the Spurious_Handler.
+* Any function with the same name will override these definitions.
+*/
 __weak void SVC_Handler(void);
 __weak void DebugMon_Handler(void);
 __weak void PendSV_Handler(void);
@@ -96,129 +98,117 @@ __weak void QEI1_IRQHandler(void);
 __weak void CAN0_IRQHandler(void);
 __weak void CAN1_IRQHandler(void);
 __weak void CAN2_IRQHandler(void);
-__weak void Ethernet_IRQHandler(void);
 __weak void Hibernate_IRQHandler(void);
+__weak void Ethernet_IRQHandler(void);
 
-//*****************************************************************************
-//
-// The entry point for the application startup code.
-//
-//*****************************************************************************
-extern void __iar_program_start(void);
 
-//*****************************************************************************
-//
-// Reserve space for the system stack.
-//
-//*****************************************************************************
-static unsigned long pulStack[STACK_SIZE/sizeof(unsigned long)] @ ".noinit";
+/* CSTACK section limits (created by the IAR linker) -----------------------*/
+extern int CSTACK$$Base;                /* symbol created by the IAR linker */
+extern int CSTACK$$Limit;               /* symbol created by the IAR linker */
 
-//*****************************************************************************
-//
-// A union that describes the entries of the vector table.  The union is needed
-// since the first entry is the stack pointer and the remainder are function
-// pointers.
-//
-//*****************************************************************************
-typedef union {
-    void (*pfnHandler)(void);
-    unsigned long ulPtr;
-}
-uVectorEntry;
+/* exception and interrupt vector table ------------------------------------*/
+typedef union VectorTableEntryTag {
+    void *pointer;                 /* used only to initialize the stack top */
+    void (*handler)(void); /* used for all exception and interrupt handlers */
+} VectorTableEntry;
 
-//*****************************************************************************
-//
-// The vector table.  Note that the proper constructs must be placed on this to
-// ensure that it ends up at physical address 0x0000.0000.
-//
-//*****************************************************************************
-__root const uVectorEntry __vector_table[] @ ".intvec" = {
-    { .ulPtr = (unsigned long)pulStack + sizeof(pulStack) },
-                                            // The initial stack pointer
-    __iar_program_start,                    // The reset handler
-    NMI_Handler,                            // The NMI handler
-    HardFault_Handler,                      // The hard fault handler
-    MemManage_Handler,                      // The MPU fault handler
-    BusFault_Handler,                       // The bus fault handler
-    UsageFault_Handler,                     // The usage fault handler
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    SVC_Handler,                            // SVCall handler
-    DebugMon_Handler,                       // Debug monitor handler
-    0,                                      // Reserved
-    PendSV_Handler,                         // The PendSV handler
-    SysTick_Handler,                        // The SysTick handler
-
-    //
-    // External Interrupts
-    //
-    GPIOPortA_IRQHandler,                   // GPIO Port A
-    GPIOPortB_IRQHandler,                   // GPIO Port B
-    GPIOPortC_IRQHandler,                   // GPIO Port C
-    GPIOPortD_IRQHandler,                   // GPIO Port D
-    GPIOPortE_IRQHandler,                   // GPIO Port E
-    UART0_IRQHandler,                       // UART0 Rx and Tx
-    UART1_IRQHandler,                       // UART1 Rx and Tx
-    SSI0_IRQHandler,                        // SSI0 Rx and Tx
-    I2C0_IRQHandler,                        // I2C0 Master and Slave
-    PWMFault_IRQHandler,                    // PWM Fault
-    PWMGen0_IRQHandler,                     // PWM Generator 0
-    PWMGen1_IRQHandler,                     // PWM Generator 1
-    PWMGen2_IRQHandler,                     // PWM Generator 2
-    QEI0_IRQHandler,                        // Quadrature Encoder 0
-    ADCSeq0_IRQHandler,                     // ADC Sequence 0
-    ADCSeq1_IRQHandler,                     // ADC Sequence 1
-    ADCSeq2_IRQHandler,                     // ADC Sequence 2
-    ADCSeq3_IRQHandler,                     // ADC Sequence 3
-    Watchdog_IRQHandler,                    // Watchdog timer
-    Timer0A_IRQHandler,                     // Timer 0 subtimer A
-    Timer0B_IRQHandler,                     // Timer 0 subtimer B
-    Timer1A_IRQHandler,                     // Timer 1 subtimer A
-    Timer1B_IRQHandler,                     // Timer 1 subtimer B
-    Timer2A_IRQHandler,                     // Timer 2 subtimer A
-    Timer2B_IRQHandler,                     // Timer 2 subtimer B
-    Comp0_IRQHandler,                       // Analog Comparator 0
-    Comp1_IRQHandler,                       // Analog Comparator 1
-    Comp2_IRQHandler,                       // Analog Comparator 2
-    SysCtrl_IRQHandler,                     // System Control (PLL, OSC, BO)
-    FlashCtrl_IRQHandler,                   // FLASH Control
-    GPIOPortF_IRQHandler,                   // GPIO Port F
-    GPIOPortG_IRQHandler,                   // GPIO Port G
-    GPIOPortH_IRQHandler,                   // GPIO Port H
-    UART2_IRQHandler,                       // UART2 Rx and Tx
-    SSI1_IRQHandler,                        // SSI1 Rx and Tx
-    Timer3A_IRQHandler,                     // Timer 3 subtimer A
-    Timer3B_IRQHandler,                     // Timer 3 subtimer B
-    I2C1_IRQHandler,                        // I2C1 Master and Slave
-    QEI1_IRQHandler,                        // Quadrature Encoder 1
-    CAN0_IRQHandler,                        // CAN0
-    CAN1_IRQHandler,                        // CAN1
-    CAN2_IRQHandler,                        // CAN2
-    Ethernet_IRQHandler,                    // Ethernet
-    Hibernate_IRQHandler                    // Hibernate
+/*..........................................................................*/
+__root const VectorTableEntry __vector_table[] @ ".intvec" = {
+    { .pointer = &CSTACK$$Limit          }, /* The initial stack pointer    */
+    { .handler = &__iar_program_start    }, /* IAR Reset Handler            */
+    { .handler = &NMI_Handler            }, /* NMI Handler                  */
+    { .handler = &HardFault_Handler      }, /* Hard Fault Handler           */
+    { .handler = &MemManage_Handler      }, /* MPU Fault Handler            */
+    { .handler = &BusFault_Handler       }, /* Bus Fault Handler            */
+    { .handler = &UsageFault_Handler     }, /* Usage Fault Handler          */
+    { .handler = &Spurious_Handler       }, /* Reserved                     */
+    { .handler = &Spurious_Handler       }, /* Reserved                     */
+    { .handler = &Spurious_Handler       }, /* Reserved                     */
+    { .handler = &Spurious_Handler       }, /* Reserved                     */
+    { .handler = &SVC_Handler            }, /* SVCall Handler               */
+    { .handler = &DebugMon_Handler       }, /* Debug Monitor Handler        */
+    { .handler = &Spurious_Handler       }, /* Reserved                     */
+    { .handler = &PendSV_Handler         }, /* PendSV Handler               */
+    { .handler = &SysTick_Handler        }, /* SysTick Handler              */
+    /* external interrupts (IRQs) ... */
+    { .handler = &GPIOPortA_IRQHandler   }, /* GPIO Port A                  */
+    { .handler = &GPIOPortB_IRQHandler   }, /* GPIO Port B                  */
+    { .handler = &GPIOPortC_IRQHandler   }, /* GPIO Port C                  */
+    { .handler = &GPIOPortD_IRQHandler   }, /* GPIO Port D                  */
+    { .handler = &GPIOPortE_IRQHandler   }, /* GPIO Port E                  */
+    { .handler = &UART0_IRQHandler       }, /* UART0 Rx and Tx              */
+    { .handler = &UART1_IRQHandler       }, /* UART1 Rx and Tx              */
+    { .handler = &SSI0_IRQHandler        }, /* SSI0 Rx and Tx               */
+    { .handler = &I2C0_IRQHandler        }, /* I2C0 Master and Slave        */
+    { .handler = &PWMFault_IRQHandler    }, /* PWM Fault                    */
+    { .handler = &PWMGen0_IRQHandler     }, /* PWM Generator 0              */
+    { .handler = &PWMGen1_IRQHandler     }, /* PWM Generator 1              */
+    { .handler = &PWMGen2_IRQHandler     }, /* PWM Generator 2              */
+    { .handler = &QEI0_IRQHandler        }, /* Quadrature Encoder 0         */
+    { .handler = &ADCSeq0_IRQHandler     }, /* ADC Sequence 0               */
+    { .handler = &ADCSeq1_IRQHandler     }, /* ADC Sequence 1               */
+    { .handler = &ADCSeq2_IRQHandler     }, /* ADC Sequence 2               */
+    { .handler = &ADCSeq3_IRQHandler     }, /* ADC Sequence 3               */
+    { .handler = &Watchdog_IRQHandler    }, /* Watchdog timer               */
+    { .handler = &Timer0A_IRQHandler     }, /* Timer 0 subtimer A           */
+    { .handler = &Timer0B_IRQHandler     }, /* Timer 0 subtimer B           */
+    { .handler = &Timer1A_IRQHandler     }, /* Timer 1 subtimer A           */
+    { .handler = &Timer1B_IRQHandler     }, /* Timer 1 subtimer B           */
+    { .handler = &Timer2A_IRQHandler     }, /* Timer 2 subtimer A           */
+    { .handler = &Timer2B_IRQHandler     }, /* Timer 2 subtimer B           */
+    { .handler = &Comp0_IRQHandler       }, /* Analog Comparator 0          */
+    { .handler = &Comp1_IRQHandler       }, /* Analog Comparator 1          */
+    { .handler = &Comp2_IRQHandler       }, /* Analog Comparator 2          */
+    { .handler = &SysCtrl_IRQHandler     }, /* System Control (PLL,OSC,BO)  */
+    { .handler = &FlashCtrl_IRQHandler   }, /* FLASH Control                */
+    { .handler = &GPIOPortF_IRQHandler   }, /* GPIO Port F                  */
+    { .handler = &GPIOPortG_IRQHandler   }, /* GPIO Port G                  */
+    { .handler = &GPIOPortH_IRQHandler   }, /* GPIO Port H                  */
+    { .handler = &UART2_IRQHandler       }, /* UART2 Rx and Tx              */
+    { .handler = &SSI1_IRQHandler        }, /* SSI1 Rx and Tx               */
+    { .handler = &Timer3A_IRQHandler     }, /* Timer 3 subtimer A           */
+    { .handler = &Timer3B_IRQHandler     }, /* Timer 3 subtimer B           */
+    { .handler = &I2C1_IRQHandler        }, /* I2C1 Master and Slave        */
+    { .handler = &QEI1_IRQHandler        }, /* Quadrature Encoder 1         */
+    { .handler = &CAN0_IRQHandler        }, /* CAN0                         */
+    { .handler = &CAN1_IRQHandler        }, /* CAN1                         */
+    { .handler = &CAN2_IRQHandler        }, /* CAN2                         */
+    { .handler = &Ethernet_IRQHandler    }, /* Ethernet                     */
+    { .handler = &Hibernate_IRQHandler   }, /* Hibernate                    */
 };
 
-/* function prototypes -----------------------------------------------------*/
-extern void assert_failed (char const *file, int line);
 
-/****************************************************************************/
-void NMI_Handler(void) {
-    assert_failed("NMI_Handler", __LINE__);
+/* exception handlers ------------------------------------------------------*/
+__stackless void NMI_Handler(void) {
+    assert_failed("NMI", __LINE__);                 /* should never return! */
+}
+/*..........................................................................*/
+__stackless void MemManage_Handler(void) {
+    assert_failed("MemManage", __LINE__);           /* should never return! */
+}
+/*..........................................................................*/
+__stackless void HardFault_Handler(void) {
+    unsigned old_sp = __get_SP();
 
-    // assert_failed() should not return, but just in case it does
-    // enter an infinite loop.
-    while (1) {
+    if (old_sp < (unsigned)&CSTACK$$Base) {              /* stack overflow? */
+        __set_SP((unsigned)&CSTACK$$Limit);        /* initial stack pointer */
+        assert_failed("StackOverflow", old_sp);     /* should never return! */
+    }
+    else {
+        assert_failed("HardFault", __LINE__);       /* should never return! */
     }
 }
-
-/****************************************************************************/
-void HardFault_Handler(void) {
-    assert_failed("HardFault_Handler", __LINE__);
-
-    // assert_failed() should not return, but just in case it does
-    // enter an infinite loop.
-    while (1) {
-    }
+/*..........................................................................*/
+__stackless void BusFault_Handler(void) {
+    assert_failed("BusFault", __LINE__);            /* should never return! */
 }
+/*..........................................................................*/
+__stackless void UsageFault_Handler(void) {
+    assert_failed("UsageFault", __LINE__);          /* should never return! */
+}
+/*..........................................................................*/
+__stackless void Spurious_Handler(void) {
+    assert_failed("Spurious", __LINE__);            /* should never return! */
+}
+
+

@@ -139,6 +139,15 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
+          <Key>DLGUARM</Key>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
+          <Key>UL2CM3</Key>
+          <Name>UL2CM3(-O207 -S0 -C0 -FO7 -FD20000000 -FC800 -FN1 -FF0TM4C123_256 -FS00 -FL040000)</Name>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
           <Key>DLGTARM</Key>
           <Name>(1010=-1,-1,-1,-1,0)(1007=-1,-1,-1,-1,0)(1008=-1,-1,-1,-1,0)(1009=-1,-1,-1,-1,0)(1012=-1,-1,-1,-1,0)</Name>
         </SetRegEntry>
@@ -574,8 +583,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>262</TopLine>
-      <CurrentLine>279</CurrentLine>
+      <TopLine>273</TopLine>
+      <CurrentLine>278</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\bsp.c</PathWithFileName>
       <FilenameWithoutPath>bsp.c</FilenameWithoutPath>
@@ -670,8 +679,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>274</TopLine>
+      <CurrentLine>279</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\startup-qk_tm4c.s</PathWithFileName>
       <FilenameWithoutPath>startup-qk_tm4c.s</FilenameWithoutPath>

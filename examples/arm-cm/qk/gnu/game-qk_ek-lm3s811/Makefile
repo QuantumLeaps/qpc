@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: "Fly 'n' Shoot" game, EK-LM3811, QK kernel, GNU/Sourcery G++
-# Last Updated for Version: 5.0.0
-# Date of the Last Update:  Aug 25, 2013
+# Product: Makefile for EK-LM3811, QK kernel, GNU/Sourcery G++
+# Last Updated for Version: 5.2.0
+# Date of the Last Update:  Dec 17, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -52,44 +52,24 @@ $(error The QPC environment variable must be defined)
 endif
 
 #-----------------------------------------------------------------------------
-# general utilities
-#
-RM = del
-
-#-----------------------------------------------------------------------------
-# tools
-#
-ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/CodeSourcery
-endif
-
-CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
-AS    := $(GNU_ARM)/bin/arm-none-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
-BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
-RM    := rm -rf
-MKDIR := mkdir
-
-#-----------------------------------------------------------------------------
 # directories
 #
+
+PROJECT := game-qk
+
 QP_PORT_DIR := $(QPC)/ports/arm-cm/qk/gnu
 CMSIS_DIR   := $(QPC)/ports/arm-cm/cmsis
 APP_DIR     := .
-LIB_DIR     :=
 
 # source directories
 VPATH = $(APP_DIR) \
-	$(CMSIS_DIR) \
-	lwip_port/netif \
-	webserver
+	$(CMSIS_DIR)
 
 # Output file basename
-OUTPUT    := game-qk
+OUTPUT := $(PROJECT)
 
 # include directories
-INCLUDES  = -I$(QPC)/include	\
+INCLUDES  = -I$(QPC)/include \
 	-I$(QP_PORT_DIR) \
 	-I. \
 	-I$(CMSIS_DIR)
@@ -98,6 +78,29 @@ INCLUDES  = -I$(QPC)/include	\
 DEFINES =
 
 ARM_CORE = cortex-m3
+ARM_FPU  =
+
+LD_SCRIPT := $(PROJECT).ld
+LIBS      := -lqp_$(ARM_CORE)_cs
+
+#-----------------------------------------------------------------------------
+# GNU ARM compiler
+#
+ifeq ($(GNU_ARM),)
+GNU_ARM = C:/tools/CodeSourcery
+endif
+
+##############################################################################
+# Typically, you should not need to change anything below this line
+
+CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
+CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
+AS    := $(GNU_ARM)/bin/arm-none-eabi-as
+LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
+BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
+RM    := rm -rf
+MKDIR := mkdir
+RM    := rm
 
 #-----------------------------------------------------------------------------
 # files
@@ -111,10 +114,6 @@ C_SRCS := $(wildcard *.c)
 
 # C++ source files
 CPP_SRCS :=	$(wildcard *.cpp)
-
-
-LD_SCRIPT := lm3s811.ld
-LIBS    := -lqp_$(ARM_CORE)_cs
 
 #-----------------------------------------------------------------------------
 # build options for various configurations
@@ -218,7 +217,12 @@ $(BIN_DIR)/%.o : %.c
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
+# include dependency files only if our goal depends on their existence
+ifneq ($(MAKECMDGOALS),clean)
+  ifneq ($(MAKECMDGOALS),show)
 -include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
+  endif
+endif
 
 
 .PHONY : clean

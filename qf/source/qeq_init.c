@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 08, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 03, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -43,20 +43,20 @@
 
 /*..........................................................................*/
 void QEQueue_init(QEQueue * const me, QEvt const *qSto[],
-                  QEQueueCtr const qLen)
+                  uint_t const qLen)
 {
     QS_CRIT_STAT_
 
     me->frontEvt = (QEvt const *)0;               /* no events in the queue */
     me->ring     = &qSto[0];            /* the beginning of the ring buffer */
-    me->end      = qLen;
+    me->end      = (QEQueueCtr)qLen;
     me->head     = (QEQueueCtr)0;
     me->tail     = (QEQueueCtr)0;
-    me->nFree    = qLen + (QEQueueCtr)1;       /* +1 for the extra frontEvt */
+    me->nFree    = (QEQueueCtr)(qLen + (uint_t)1);   /* +1 for the frontEvt */
     me->nMin     = me->nFree;
 
     QS_BEGIN_(QS_QF_EQUEUE_INIT, QS_priv_.eqObjFilter, me)
         QS_OBJ_(me);                                 /* this QEQueue object */
-        QS_EQC_(qLen);                           /* the length of the queue */
+        QS_EQC_(me->end);                        /* the length of the queue */
     QS_END_()
 }

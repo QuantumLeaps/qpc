@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QS/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 22, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,17 +48,14 @@ Q_DEFINE_THIS_MODULE("qs")
 QSPriv QS_priv_;                                         /* QS private data */
 
 /*..........................................................................*/
-void QS_initBuf(uint8_t sto[], uint32_t stoSize) {
+void QS_initBuf(uint8_t sto[], uint_t stoSize) {
     uint8_t *buf = &sto[0];
 
-    Q_REQUIRE(stoSize > (uint32_t)8);  /* the storage size at least 7 bytes */
+    Q_REQUIRE(stoSize > (uint_t)8);    /* the storage size at least 7 bytes */
 
-    QS_priv_.buf  = buf;
-    QS_priv_.end  = (QSCtr)stoSize;
-    QS_priv_.seq  = (uint8_t)0;
-    QS_priv_.head = (QSCtr)0;
-    QS_priv_.tail = (QSCtr)0;
-    QS_priv_.used = (QSCtr)0;
+    QF_bzero(&QS_priv_, (uint_t)sizeof(QS_priv_));            /* see NOTE01 */
+    QS_priv_.buf = buf;
+    QS_priv_.end = (QSCtr)stoSize;
 
     QS_beginRec((uint8_t)QS_EMPTY);
     QS_endRec();
@@ -221,5 +218,12 @@ void QS_u32(uint8_t format, uint32_t d) {
     QS_priv_.head   = head;                                /* save the head */
     QS_priv_.chksum = chksum;                          /* save the checksum */
 }
+
+/*****************************************************************************
+* NOTE01:
+* The QS_initBuf() function clears the internal QS variables, so that the
+* tracing can start correctly even if the startup code fails to clear
+* the uninitialized data (as is required by the C Standard).
+*/
 
 

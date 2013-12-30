@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, POSIX
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -95,10 +95,7 @@ void QF_onClockTick(void) {
     }
 }
 /*..........................................................................*/
-void BSP_init(int argc, char *argv[]) {
-    (void)argc;
-    (void)argv;
-
+void BSP_init() {
     printf("Dining Philosopher Problem example"
            "\nQEP %s\nQF  %s\n"
            "Press p to pause/un-pause\n"
@@ -107,7 +104,7 @@ void BSP_init(int argc, char *argv[]) {
            QF_getVersion());
 
     BSP_randomSeed(1234U);
-    Q_ALLEGE(QS_INIT(argv[0]));
+    Q_ALLEGE(QS_INIT((void *)0));
     QS_RESET();
     QS_OBJ_DICTIONARY(&l_clock_tick);   /* must be called *after* QF_init() */
     QS_USR_DICTIONARY(PHILO_STAT);
@@ -143,7 +140,8 @@ void BSP_randomSeed(uint32_t seed) {
     l_rnd = seed;
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+void Q_onAssert(char const Q_ROM * const file, int line) {
+    QS_ASSERTION(file, line);
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
     QF_stop();
 }

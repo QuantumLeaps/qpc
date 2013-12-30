@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product:  QF/C, port to 80x86, uC/OS-II v2.86, Open Watcom compiler
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 13, 2013
+* Product:  QF/C, port to uC/OS-II v2.86
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -47,7 +47,7 @@ void QF_init(void) {
     OSInit();                                        /* initialize uC/OS-II */
 }
 /*..........................................................................*/
-int16_t QF_run(void) {
+int_t QF_run(void) {
                                   /* install uC/OS-II context switch vector */
     l_dosSpareISR = _dos_getvect(uCOS);
     _dos_setvect(uCOS, (void interrupt (*)(void))&OSCtxSw);
@@ -55,7 +55,7 @@ int16_t QF_run(void) {
     /* NOTE the QF_onStartup() callback must be invoked from the task level */
     OSStart();                               /* start uC/OS-II multitasking */
     Q_ERROR();                             /* OSStart() should never return */
-    return (int16_t)0;  /* this unreachable return keeps the compiler happy */
+    return (int_t)0;    /* this unreachable return keeps the compiler happy */
 }
 /*..........................................................................*/
 void QF_stop(void) {
@@ -77,15 +77,15 @@ static void task_function(void *pdata) {         /* uC/OS-II task signature */
     OSTaskDel(OS_PRIO_SELF);        /* make uC/OS-II forget about this task */
 }
 /*..........................................................................*/
-void QActive_start(QActive *me, uint8_t prio,
-                   QEvt const *qSto[], uint32_t qLen,
-                   void *stkSto, uint32_t stkSize,
-                   QEvt const *ie)
+void QActive_start_(QActive *me, uint_t prio,
+                    QEvt const *qSto[], uint_t qLen,
+                    void *stkSto, uint_t stkSize,
+                    QEvt const *ie)
 {
     INT8U err;
     me->eQueue = OSQCreate((void **)qSto, qLen);
     Q_ASSERT(me->eQueue != (OS_EVENT *)0);        /* uC/OS-II queue created */
-    me->prio = prio;                                /* save the QF priority */
+    me->prio = (uint8_t)prio;                       /* save the QF priority */
     QF_add_(me);                     /* make QF aware of this active object */
     QMSM_INIT(&me->super, ie);                /* execute initial transition */
 
@@ -113,21 +113,21 @@ void QActive_stop(QActive *me) {
 }
 /*..........................................................................*/
 #ifndef Q_SPY
-uint8_t QActive_post(QActive * const me, QEvt const * const e,
-                     uint16_t const margin)
+uint8_t QActive_post_(QActive * const me, QEvt const * const e,
+                      uint_t const margin)
 #else
-uint8_t QActive_post(QActive * const me, QEvt const * const e,
-                     uint16_t const margin, void const * const sender)
+uint8_t QActive_post_(QActive * const me, QEvt const * const e,
+                      uint_t const margin, void const * const sender)
 #endif
 {
     uint8_t status;
-    uint16_t nFree;
+    uint_t nFree;
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
 
-    nFree = (uint16_t)(((OS_Q_DATA *)me->eQueue)->OSQSize
-                       - ((OS_Q_DATA *)me->eQueue)->OSNMsgs);
+    nFree = (uint_t)(((OS_Q_DATA *)me->eQueue)->OSQSize
+                     - ((OS_Q_DATA *)me->eQueue)->OSNMsgs);
     if (nFree > margin) {
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.aoObjFilter, me)
             QS_TIME_();                                        /* timestamp */
@@ -136,8 +136,8 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
             QS_OBJ_(me);                  /* this active object (recipient) */
             QS_U8_(e->poolId_);                 /* the pool Id of the event */
             QS_U8_(e->refCtr_);               /* the ref count of the event */
-            QS_EQC_(nFree);                               /* # free entries */
-            QS_EQC_(0);                     /* min # free entries (unknown) */
+            QS_EQC_((QEQueueCtr)nFree);                   /* # free entries */
+            QS_EQC_((QEQueueCtr)0);         /* min # free entries (unknown) */
         QS_END_NOCRIT_()
 
         if (e->poolId_ != (uint8_t)0) {              /* is it a pool event? */
@@ -145,10 +145,11 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
         }
         /* posting the event to uC/OS message queue must succeed, NOTE01 */
         Q_ALLEGE(OSQPost((OS_EVENT *)me->eQueue, (void *)e) == OS_NO_ERR);
+
         status = (uint8_t)1;                              /* return success */
     }
     else {
-        Q_ASSERT(margin != (uint16_t)0);    /* can tollerate dropping evts? */
+        Q_ASSERT(margin != (uint_t)0);      /* can tollerate dropping evts? */
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT, QS_priv_.aoObjFilter, me)
             QS_TIME_();                                        /* timestamp */
@@ -157,7 +158,7 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
             QS_OBJ_(me);                  /* this active object (recipient) */
             QS_U8_(e->poolId_);                 /* the pool Id of the event */
             QS_U8_(e->refCtr_);               /* the ref count of the event */
-            QS_EQC_(nFree);                       /* number of free entries */
+            QS_EQC_((QEQueueCtr)nFree);           /* number of free entries */
             QS_EQC_((QEQueueCtr)margin);                /* margin requested */
         QS_END_NOCRIT_()
 
@@ -169,7 +170,7 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
     return status;
 }
 /*..........................................................................*/
-void QActive_postLIFO(QActive *me, QEvt const *e) {
+void QActive_postLIFO_(QActive *me, QEvt const *e) {
     QF_CRIT_STAT_
     QF_CRIT_ENTRY_();
 

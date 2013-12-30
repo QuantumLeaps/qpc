@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 03, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,10 +45,10 @@ Q_DEFINE_THIS_MODULE("qmp_init")
 
 /*..........................................................................*/
 void QMPool_init(QMPool * const me, void * const poolSto,
-                 uint32_t poolSize, QMPoolSize blockSize)
+                 uint_t poolSize, uint_t blockSize)
 {
     QFreeBlock *fb;
-    uint32_t nblocks;
+    uint_t nblocks;
     QS_CRIT_STAT_
 
     /* The memory block must be valid
@@ -56,32 +56,32 @@ void QMPool_init(QMPool * const me, void * const poolSto,
     * and the blockSize must not be too close to the top of the dynamic range
     */
     Q_REQUIRE((poolSto != (void *)0)
-              && (poolSize >= (uint32_t)sizeof(QFreeBlock))
-              && ((QMPoolSize)(blockSize + (QMPoolSize)sizeof(QFreeBlock))
+              && (poolSize >= (uint_t)sizeof(QFreeBlock))
+              && ((uint_t)(blockSize + (uint_t)sizeof(QFreeBlock))
                     > blockSize));
 
     me->free_head = poolSto;
 
      /* round up the blockSize to fit an integer # free blocks, no division */
     me->blockSize = (QMPoolSize)sizeof(QFreeBlock);  /* start with just one */
-    nblocks = (uint32_t)1;    /* # free blocks that fit in one memory block */
-    while (me->blockSize < blockSize) {
+    nblocks = (uint_t)1;      /* # free blocks that fit in one memory block */
+    while (me->blockSize < (QMPoolSize)blockSize) {
         me->blockSize += (QMPoolSize)sizeof(QFreeBlock);
         ++nblocks;
     }
-    blockSize = me->blockSize;      /* use the rounded-up value from now on */
+    blockSize = (uint_t)me->blockSize;  /* use rounded-up value from now on */
 
                   /* the pool buffer must fit at least one rounded-up block */
-    Q_ASSERT(poolSize >= (uint32_t)blockSize);
+    Q_ASSERT(poolSize >= blockSize);
 
                              /* chain all blocks together in a free-list... */
-    poolSize -= (uint32_t)blockSize;          /* don't count the last block */
+    poolSize -= blockSize;                    /* don't count the last block */
     me->nTot  = (QMPoolCtr)1;         /* the last block already in the pool */
     fb = (QFreeBlock *)me->free_head; /* start at the head of the free list */
-    while (poolSize >= (uint32_t)blockSize) {
+    while (poolSize >= blockSize) {
         fb->next = &QF_PTR_AT_(fb, nblocks);/*point next link to next block */
         fb = fb->next;                         /* advance to the next block */
-        poolSize -= (uint32_t)blockSize;  /* reduce the available pool size */
+        poolSize -= blockSize;            /* reduce the available pool size */
         ++me->nTot;                /* increment the number of blocks so far */
     }
 

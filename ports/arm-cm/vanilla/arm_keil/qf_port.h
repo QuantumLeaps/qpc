@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C, ARM Cortex-M, Vanilla port, ARM-KEIL compiler
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 09, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 26, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -57,9 +57,8 @@
 
 #else                                        /* Cortex-M3/M4/M4F, see NOTE3 */
 
-    #define QF_SET_BASEPRI(val)     __asm("msr BASEPRI," #val)
-    #define QF_INT_DISABLE()        QF_SET_BASEPRI(QF_BASEPRI)
-    #define QF_INT_ENABLE()         QF_SET_BASEPRI(0U)
+    #define QF_INT_DISABLE()        QF_set_BASEPRI(QF_BASEPRI)
+    #define QF_INT_ENABLE()         QF_set_BASEPRI(0U)
 
                     /* BASEPRI limit for QF-aware ISR priorities, see NOTE4 */
     #define QF_BASEPRI  (0xFF >> 2)
@@ -67,16 +66,22 @@
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5   */
     #define QF_AWARE_ISR_CMSIS_PRI  (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
-                          /* macro to put the CPU to sleep inside QF_idle() */
+              /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
+    #define QF_LOG2(n_) ((uint8_t)(32U - __clz(n_)))
+
+                        /* inline function for setting the BASEPRI register */
+    __inline void QF_set_BASEPRI(unsigned basePri) {
+        register unsigned __regBasePri __asm("basepri");
+        __regBasePri = basePri;
+    }
+
+                        /* macro to put the CPU to sleep inside QF_onIdle() */
     #define QF_CPU_SLEEP() do { \
         __disable_irq(); \
         QF_INT_ENABLE(); \
         __wfi(); \
         __enable_irq(); \
     } while (0)
-
-              /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
-    #define QF_LOG2(n_) ((uint8_t)(32U - __clz(n_)))
 
 #endif
                                           /* QF critical section entry/exit */

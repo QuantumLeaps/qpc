@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EK-TM4C123GXL, Vanilla kernel, GNU/Sourcery
-# Last Updated for Version: 5.1.0
-# Date of the Last Update:  Sep 20, 2013
+# Last Updated for Version: 5.2.0
+# Date of the Last Update:  Dec 17, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -43,7 +43,45 @@
 # make CONF=rel clean
 # make CONF=spy clean
 
+#-----------------------------------------------------------------------------
+# NOTE: the Makefile expects that the QPC environment variable is defined
+# and points to the QP/C installation directory
+#
+ifndef QPC
+$(error The QPC environment variable must be defined)
+endif
+
+#-----------------------------------------------------------------------------
+# directories
+#
+
 PROJECT := blinky
+
+QP_PORT_DIR := $(QPC)/ports/arm-cm/vanilla/gnu
+CMSIS_DIR   := $(QPC)/ports/arm-cm/cmsis
+APP_DIR     := .
+
+# source directories
+VPATH = $(APP_DIR) \
+	$(CMSIS_DIR)
+
+# Output file basename
+OUTPUT := $(PROJECT)
+
+# include directories
+INCLUDES  = -I$(QPC)/include \
+	-I$(QP_PORT_DIR) \
+	-I. \
+	-I$(CMSIS_DIR)
+
+# defines
+DEFINES = -DTARGET_IS_BLIZZARD_RA1 -D__VFP_FP__ -D__FPU_PRESENT
+
+ARM_CORE = cortex-m4
+ARM_FPU  = vfp
+
+LD_SCRIPT := $(PROJECT).ld
+LIBS      := -lqp_$(ARM_CORE)f_cs
 
 #-----------------------------------------------------------------------------
 # GNU ARM compiler
@@ -65,40 +103,6 @@ MKDIR := mkdir
 RM    := rm
 
 #-----------------------------------------------------------------------------
-# NOTE: the Makefile expects that the QPC environment variable is defined
-# and points to the QP/C installation directory
-#
-ifndef QPC
-$(error The QPC environment variable must be defined)
-endif
-
-#-----------------------------------------------------------------------------
-# directories
-#
-QP_PORT_DIR := $(QPC)/ports/arm-cm/vanilla/gnu
-CMSIS_DIR   := $(QPC)/ports/arm-cm/cmsis
-APP_DIR     := .
-
-# source directories
-VPATH = $(APP_DIR) \
-	$(CMSIS_DIR)
-
-# Output file basename
-OUTPUT := $(PROJECT)
-
-# include directories
-INCLUDES  = -I$(QPC)/include	\
-	-I$(QP_PORT_DIR) \
-	-I. \
-	-I$(CMSIS_DIR)
-
-# defines
-DEFINES = -DTARGET_IS_BLIZZARD_RA1 -D__VFP_FP__ -D__FPU_PRESENT
-
-ARM_CORE = cortex-m4
-ARM_FPU  = vfp
-
-#-----------------------------------------------------------------------------
 # files
 #
 
@@ -110,9 +114,6 @@ C_SRCS := $(wildcard *.c)
 
 # C++ source files
 CPP_SRCS :=	$(wildcard *.cpp)
-
-LD_SCRIPT := tm4c123gh6pm.ld
-LIBS      := -lqp_$(ARM_CORE)f_cs
 
 #-----------------------------------------------------------------------------
 # build options for various configurations
@@ -219,7 +220,12 @@ $(BIN_DIR)/%.o : %.c
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
+# include dependency files only if our goal depends on their existence
+ifneq ($(MAKECMDGOALS),clean)
+  ifneq ($(MAKECMDGOALS),show)
 -include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
+  endif
+endif
 
 
 .PHONY : clean

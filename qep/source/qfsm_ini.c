@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 11, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,14 +40,14 @@ Q_DEFINE_THIS_MODULE("qfsm_ini")
 /**
 * \file
 * \ingroup qep
-* \brief QFsm_ctor() and QFsm_init() implementations.
+* \brief QFsm_ctor() and QFsm_init_() implementations.
 */
 
 /*..........................................................................*/
 void QFsm_ctor(QFsm * const me, QStateHandler initial) {
     static QMsmVtbl const vtbl = {                    /* QFsm virtual table */
-        &QFsm_init,
-        &QFsm_dispatch
+        &QFsm_init_,
+        &QFsm_dispatch_
     };
     /* do not call the QMsm_ctor() here, see NOTE01 */
     me->vptr = &vtbl;            /* hook the vptr to the QFsm virtual table */
@@ -55,7 +55,7 @@ void QFsm_ctor(QFsm * const me, QStateHandler initial) {
     me->temp.fun  = initial;
 }
 /*..........................................................................*/
-void QFsm_init(QFsm * const me, QEvt const * const e) {
+void QFsm_init_(QFsm * const me, QEvt const * const e) {
     QS_CRIT_STAT_
 
     Q_REQUIRE((me->vptr != (QMsmVtbl const *)0)    /* ctor must be executed */
@@ -86,7 +86,7 @@ void QFsm_init(QFsm * const me, QEvt const * const e) {
 * QFsm inherits QMsm, so by the "inheritance of structures" convention
 * it should call the constructor of the superclass, i.e., QMsm_ctor().
 * However, this would pull in the QMsmVtbl, which in turn will pull in
-* the code for QMsm_init() and QMsm_dispatch() implemetations. To avoid
+* the code for QMsm_init_() and QMsm_dispatch_() implemetations. To avoid
 * this code size penalty, in case QMsm is not used in a given project,
 * the QFsm_ctor() performs direct intitialization of the Vtbl, which avoids
 * pulling in the code for QMsm.

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QHsmTst Example, Linux
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 *                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#include "qep_port.h"
+#include "qp_port.h"
 #include "qassert.h"
 #include "qhsmtst.h"
 
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
                "QEP: %s.\nPress ESC to quit...\n",
                __DATE__, __TIME__, QEP_getVersion());
 
-        QHsm_init(the_hsm, (QEvt *)0);      /* the top-most initial tran. */
+        QMSM_INIT(the_hsm, (QEvt *)0);        /* the top-most initial tran. */
 
         for (;;) {                                            /* event loop */
             QEvt e;
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
                 e.sig = IGNORE_SIG;
             }
 
-            QHsm_dispatch(the_hsm, &e);               /* dispatch the event */
+            QMSM_DISPATCH(the_hsm, &e);               /* dispatch the event */
         }
     }
     else {                                                 /* batch version */
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
         fprintf(l_outFile, "QHsmTst example, QEP %s\n",
                 QEP_getVersion());
 
-        QHsm_init(the_hsm, (QEvt *)0);      /* the top-most initial tran. */
+        QMSM_INIT(the_hsm, (QEvt *)0);      /* the top-most initial tran. */
 
                                        /* testing of dynamic transitions... */
         dispatch(A_SIG);
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+void Q_onAssert(char const Q_ROM * const file, int line) {
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
     exit(-1);
 }
@@ -157,6 +157,6 @@ static void dispatch(QSignal sig) {
     Q_REQUIRE((A_SIG <= sig) && (sig <= I_SIG));
     e.sig = sig;
     fprintf(l_outFile, "\n%c:", 'A' + sig - A_SIG);
-    QHsm_dispatch(the_hsm, &e);                       /* dispatch the event */
+    QMSM_DISPATCH(the_hsm, &e);                       /* dispatch the event */
 }
 

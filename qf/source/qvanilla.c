@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 07, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 24, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -52,8 +52,11 @@ Q_DEFINE_THIS_MODULE("qvanilla")
 #endif
 
 /*..........................................................................*/
-void QF_init(void) {
-    /* nothing to do for the "vanilla" kernel */
+void QF_init(void) {                                          /* see NOTE01 */
+    QF_maxPool_ = (uint_t)0;
+    QF_bzero(&QF_readySet_,       (uint_t)sizeof(QF_readySet_));
+    QF_bzero(&QF_timeEvtHead_[0], (uint_t)sizeof(QF_timeEvtHead_));
+    QF_bzero(&QF_active_[0],      (uint_t)sizeof(QF_active_));
 }
 /*..........................................................................*/
 void QF_stop(void) {
@@ -61,11 +64,11 @@ void QF_stop(void) {
     /* nothing else to do for the "vanilla" kernel */
 }
 /*..........................................................................*/
-int16_t QF_run(void) {
+int_t QF_run(void) {
 
     QF_onStartup();                                     /* startup callback */
 
-    for (;;) {                                       /* the background loop */
+    for ( ; ; ) {                                    /* the background loop */
         QEvt const *e;
         QActive *a;
         uint8_t p;
@@ -87,25 +90,25 @@ int16_t QF_run(void) {
             QF_gc(e); /* determine if event is garbage and collect it if so */
         }
         else {
-            QF_onIdle();                                      /* see NOTE01 */
+            QF_onIdle();                                      /* see NOTE02 */
         }
     }
 #ifdef __GNUC__                                            /* GNU compiler? */
-    return (int16_t)0;
+    return (int_t)0;
 #endif
 }
 /*..........................................................................*/
-void QActive_start(QActive * const me, uint8_t prio,
-                   QEvt const *qSto[], uint32_t qLen,
-                   void *stkSto, uint32_t stkSize,
-                   QEvt const *ie)
+void QActive_start_(QActive * const me, uint_t prio,
+                    QEvt const *qSto[], uint_t qLen,
+                    void *stkSto, uint_t stkSize,
+                    QEvt const *ie)
 {
-    Q_REQUIRE(((uint8_t)0 < prio) && (prio <= (uint8_t)QF_MAX_ACTIVE)
+    Q_REQUIRE(((uint_t)0 < prio) && (prio <= (uint_t)QF_MAX_ACTIVE)
               && (stkSto == (void *)0));   /* does not need per-actor stack */
 
     (void)stkSize;         /* avoid the "unused parameter" compiler warning */
-    QEQueue_init(&me->eQueue, qSto, (QEQueueCtr)qLen);/* initialize QEQueue */
-    me->prio = prio;           /* set the QF priority of this active object */
+    QEQueue_init(&me->eQueue, qSto, qLen);            /* initialize QEQueue */
+    me->prio = (uint8_t)prio;  /* set the QF priority of this active object */
     QF_add_(me);                     /* make QF aware of this active object */
     QMSM_INIT(&me->super, ie);                /* execute initial transition */
 
@@ -118,6 +121,11 @@ void QActive_stop(QActive * const me) {
 
 /*****************************************************************************
 * NOTE01:
+* The QF_init() function clears the internal QF variables, so that the
+* framework can start correctly even if the startup code fails to clear
+* the uninitialized data (as is required by the C Standard).
+*
+* NOTE02:
 * QF_onIdle() must be called with interrupts DISABLED because the
 * determination of the idle condition (no events in the queues) can change
 * at any time by an interrupt posting events to a queue. The QF_onIdle()

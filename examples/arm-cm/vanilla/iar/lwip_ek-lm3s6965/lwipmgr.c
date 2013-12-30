@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: lwIP-Manager Active Object
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -46,8 +46,8 @@
 
 Q_DEFINE_THIS_FILE
 
-            /* application signals cannot overlap the device-driver signals */
-Q_ASSERT_COMPILE(MAX_SIG < Q_DEV_DRIVER_SIG);
+      /* the LwIP driver signal group must fit the actual number of signals */
+Q_ASSERT_COMPILE((LWIP_DRIVER_END - LWIP_DRIVER_GROUP) >= LWIP_MAX_OFFSET);
 
 #define FLASH_USERREG0          (*(uint32_t const *)0x400FE1E0)
 #define FLASH_USERREG1          (*(uint32_t const *)0x400FE1E4)
@@ -118,7 +118,7 @@ void LwIPMgr_ctor(void) {
     LwIPMgr *me = &l_lwIPMgr;
 
     QActive_ctor(&me->super, (QStateHandler)&LwIPMgr_initial);
-    QTimeEvt_ctor(&me->te_LWIP_SLOW_TICK, LWIP_SLOW_TICK_SIG);
+    QTimeEvt_ctorX(&me->te_LWIP_SLOW_TICK, me, LWIP_SLOW_TICK_SIG, 0U);
 }
 /*..........................................................................*/
 QState LwIPMgr_initial(LwIPMgr *me, QEvt const *e) {
@@ -152,7 +152,7 @@ QState LwIPMgr_initial(LwIPMgr *me, QEvt const *e) {
     macaddr[5] = (uint8_t)user1;
 
                                           /* initialize the Ethernet Driver */
-    me->netif = eth_driver_init((QActive *)me, macaddr);
+    me->netif = eth_driver_init((QActive *)me, LWIP_DRIVER_GROUP, macaddr);
 
     me->ip_addr = 0xFFFFFFFF;             /* initialize to impossible value */
 
@@ -171,11 +171,11 @@ QState LwIPMgr_initial(LwIPMgr *me, QEvt const *e) {
     QS_FUN_DICTIONARY(&LwIPMgr_initial);
     QS_FUN_DICTIONARY(&LwIPMgr_running);
 
-    QS_SIG_DICTIONARY(SEND_UDP_SIG,       (QActive *)me);
-    QS_SIG_DICTIONARY(LWIP_SLOW_TICK_SIG, (QActive *)me);
-    QS_SIG_DICTIONARY(LWIP_RX_READY_SIG,  (QActive *)me);
-    QS_SIG_DICTIONARY(LWIP_TX_READY_SIG,  (QActive *)me);
-    QS_SIG_DICTIONARY(LWIP_RX_OVERRUN_SIG,(QActive *)me);
+    QS_SIG_DICTIONARY(SEND_UDP_SIG,       me);
+    QS_SIG_DICTIONARY(LWIP_SLOW_TICK_SIG, me);
+    QS_SIG_DICTIONARY(LWIP_DRIVER_GROUP + LWIP_RX_READY_OFFSET,   me);
+    QS_SIG_DICTIONARY(LWIP_DRIVER_GROUP + LWIP_TX_READY_OFFSET,   me);
+    QS_SIG_DICTIONARY(LWIP_DRIVER_GROUP + LWIP_RX_OVERRUN_OFFSET, me);
 
     return Q_TRAN(&LwIPMgr_running);
 }
@@ -183,8 +183,9 @@ QState LwIPMgr_initial(LwIPMgr *me, QEvt const *e) {
 QState LwIPMgr_running(LwIPMgr *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            QTimeEvt_postEvery(&me->te_LWIP_SLOW_TICK, (QActive *)me,
-                (LWIP_SLOW_TICK_MS * BSP_TICKS_PER_SEC) / 1000);
+            QTimeEvt_armX(&me->te_LWIP_SLOW_TICK,
+                          (LWIP_SLOW_TICK_MS * BSP_TICKS_PER_SEC) / 1000U,
+                          (LWIP_SLOW_TICK_MS * BSP_TICKS_PER_SEC) / 1000U);
             return Q_HANDLED();
         }
         case Q_EXIT_SIG: {
@@ -204,11 +205,11 @@ QState LwIPMgr_running(LwIPMgr *me, QEvt const *e) {
             return Q_HANDLED();
         }
 
-        case LWIP_RX_READY_SIG: {
+        case LWIP_DRIVER_GROUP + LWIP_RX_READY_OFFSET: {
             eth_driver_read();
             return Q_HANDLED();
         }
-        case LWIP_TX_READY_SIG: {
+        case LWIP_DRIVER_GROUP + LWIP_TX_READY_OFFSET: {
             eth_driver_write();
             return Q_HANDLED();
         }
@@ -265,7 +266,7 @@ QState LwIPMgr_running(LwIPMgr *me, QEvt const *e) {
 #endif
             return Q_HANDLED();
         }
-        case LWIP_RX_OVERRUN_SIG: {
+        case LWIP_DRIVER_GROUP + LWIP_RX_OVERRUN_OFFSET: {
             LINK_STATS_INC(link.err);
             return Q_HANDLED();
         }

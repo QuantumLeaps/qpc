@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for QP-lwIP, EK-LM36965, QK, GNU/Sourcery G++
-# Last Updated for Version: lwIP-1.4.1/QP-5.1.0
-# Date of the Last Update:  Sep 20, 2013
+# Product: Makefile for QP-lwIP, EK-LM36965, QK kernel, GNU/Sourcery G++
+# Last Updated for Version: lwIP-1.4.1/QP-5.2.0
+# Date of the Last Update:  Dec 24, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -43,23 +43,13 @@
 # make CONF=rel clean
 # make CONF=spy clean
 
-PROJECT := lwip
-
 #-----------------------------------------------------------------------------
-# GNU ARM compiler
+# NOTE: the Makefile expects that the QPC environment variable is defined
+# and points to the QP/C installation directory
 #
-ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/CodeSourcery
+ifndef QPC
+$(error The QPC environment variable must be defined)
 endif
-
-CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
-AS    := $(GNU_ARM)/bin/arm-none-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
-BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
-RM    := rm -rf
-MKDIR := mkdir
-RM    := rm
 
 #-----------------------------------------------------------------------------
 # NOTE: the Makefile expects that the LWIP environment variable is defined
@@ -69,6 +59,10 @@ ifndef LWIP
 $(error The LWIP environment variable must be defined)
 endif
 
+#-----------------------------------------------------------------------------
+# directories
+#
+PROJECT := lwip-qk
 
 #-----------------------------------------------------------------------------
 # directories
@@ -101,6 +95,29 @@ INCLUDES  = -I$(QPC)/include	\
 DEFINES =
 
 ARM_CORE = cortex-m3
+ARM_FPU  =
+
+LD_SCRIPT := $(PROJECT).ld
+LIBS      := -lqp_$(ARM_CORE)_cs
+
+#-----------------------------------------------------------------------------
+# GNU ARM compiler
+#
+ifeq ($(GNU_ARM),)
+GNU_ARM = C:/tools/CodeSourcery
+endif
+
+##############################################################################
+# Typically, you should not need to change anything below this line
+
+CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
+CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
+AS    := $(GNU_ARM)/bin/arm-none-eabi-as
+LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
+BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
+RM    := rm -rf
+MKDIR := mkdir
+RM    := rm
 
 #-----------------------------------------------------------------------------
 # files
@@ -117,9 +134,6 @@ C_SRCS := $(wildcard *.c) \
 
 # C++ source files
 CPP_SRCS :=	$(wildcard *.cpp)
-
-LD_SCRIPT := lm3s6965.ld
-LIBS    := -lqp_$(ARM_CORE)_cs
 
 #-----------------------------------------------------------------------------
 # build options for various configurations
@@ -223,8 +237,12 @@ $(BIN_DIR)/%.o : %.c
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
+# include dependency files only if our goal depends on their existence
+ifneq ($(MAKECMDGOALS),clean)
+  ifneq ($(MAKECMDGOALS),show)
 -include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
-
+  endif
+endif
 
 .PHONY : clean
 clean:

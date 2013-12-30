@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 08, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -94,15 +94,15 @@ QEvt const *QActive_get_(QActive * const me) {
     return e;
 }
 /*..........................................................................*/
-uint16_t QF_getQueueMin(uint8_t const prio) {
-    uint16_t min;
+uint_t QF_getQueueMin(uint8_t const prio) {
+    uint_t min;
     QF_CRIT_STAT_
 
     Q_REQUIRE((prio <= (uint8_t)QF_MAX_ACTIVE)
               && (QF_active_[prio] != (QActive *)0));
 
     QF_CRIT_ENTRY_();
-    min = (uint16_t)QF_active_[prio]->eQueue.nMin;
+    min = (uint_t)QF_active_[prio]->eQueue.nMin;
     QF_CRIT_EXIT_();
 
     return min;

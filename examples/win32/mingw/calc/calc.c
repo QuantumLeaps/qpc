@@ -32,7 +32,7 @@
 *                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#include "qp_port.h"                        /* the port of the QP framework */
+#include "qep_port.h"                                    /* QEP/C interface */
 #include "bsp.h"                                   /* board support package */
 #include "calc.h"
 

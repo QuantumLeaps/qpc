@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK/C
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 07, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 24, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -51,15 +51,28 @@ Q_DEFINE_THIS_MODULE("qk")
 #else
     QPSet64 QK_readySet_;                                   /* QK ready-set */
 #endif
-                                      /* start with the QK scheduler locked */
-uint8_t volatile QK_currPrio_ = (uint8_t)(QF_MAX_ACTIVE + 1);
-uint8_t volatile QK_intNest_;              /* start with nesting level of 0 */
+
+uint8_t volatile QK_currPrio_;
+uint_t  volatile QK_intNest_;
 
 /*..........................................................................*/
 static void initialize(void);
 
 /*..........................................................................*/
-void QF_init(void) {
+void QF_init(void) {                                          /* see NOTE01 */
+    extern uint_t QF_maxPool_;
+    extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
+
+    QK_intNest_  = (uint_t)0;                           /* no nesting level */
+    QK_currPrio_ = (uint8_t)(QF_MAX_ACTIVE + 1);        /* scheduler locked */
+#ifndef QK_NO_MUTEX
+    QK_ceilingPrio_ = (uint8_t)0;
+#endif
+    QF_maxPool_  = (uint_t)0;
+    QF_bzero(&QK_readySet_,       (uint_t)sizeof(QK_readySet_));
+    QF_bzero(&QF_timeEvtHead_[0], (uint_t)sizeof(QF_timeEvtHead_));
+    QF_bzero(&QF_active_[0],      (uint_t)sizeof(QF_active_));
+
     QK_init();                              /* might be defined in assembly */
 }
 /*..........................................................................*/
@@ -78,37 +91,37 @@ static void initialize(void) {
     }
 }
 /*..........................................................................*/
-int16_t QF_run(void) {
+int_t QF_run(void) {
     QF_INT_DISABLE();
     initialize();
     QF_onStartup();                                     /* startup callback */
     QF_INT_ENABLE();
 
-    for (;;) {                                          /* the QK idle loop */
+    for ( ; ; ) {                                       /* the QK idle loop */
         QK_onIdle();                      /* invoke the QK on-idle callback */
     }
 
 #ifdef __GNUC__                                            /* GNU compiler? */
-    return (int16_t)0;
+    return (int_t)0;
 #endif
 }
 /*..........................................................................*/
-void QActive_start(QActive *me, uint8_t prio,
-                   QEvt const *qSto[], uint32_t qLen,
-                   void *stkSto, uint32_t stkSize,
-                   QEvt const *ie)
+void QActive_start_(QActive *me, uint_t prio,
+                    QEvt const *qSto[], uint_t qLen,
+                    void *stkSto, uint_t stkSize,
+                    QEvt const *ie)
 {
-    Q_REQUIRE(((uint8_t)0 < prio) && (prio <= (uint8_t)QF_MAX_ACTIVE));
+    Q_REQUIRE(((uint_t)0 < prio) && (prio <= (uint_t)QF_MAX_ACTIVE));
 
-    QEQueue_init(&me->eQueue, qSto, (QEQueueCtr)qLen);
-    me->prio = prio;
+    QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
+    me->prio = (uint8_t)prio;
     QF_add_(me);                     /* make QF aware of this active object */
 
 #if defined(QK_TLS) || defined(QK_EXT_SAVE)
     me->osObject = (uint8_t)stkSize;  /* osObject contains the thread flags */
     me->thread = stkSto;/* contains the pointer to the thread-local storage */
 #else
-    Q_ASSERT((stkSto == (void *)0) && (stkSize == (uint32_t)0));
+    Q_ASSERT((stkSto == (void *)0) && (stkSize == (uint_t)0));
 #endif
 
     QMSM_INIT(&me->super, ie);                /* execute initial transition */
@@ -119,3 +132,10 @@ void QActive_start(QActive *me, uint8_t prio,
 void QActive_stop(QActive *me) {
     QF_remove_(me);                /* remove this active object from the QF */
 }
+
+/*****************************************************************************
+* NOTE01:
+* The QF_init() function clears the internal QF variables, so that the
+* framework can start correctly even if the startup code fails to clear
+* the uninitialized data (as is required by the C Standard).
+*/

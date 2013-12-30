@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 11, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 20, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,7 +40,7 @@ Q_DEFINE_THIS_MODULE("qmsm_ini")
 /**
 * \file
 * \ingroup qep
-* \brief QMsm_ctor() and QMsm_init() implementations.
+* \brief QMsm_ctor() and QMsm_init_() implementations.
 */
 
 /*..........................................................................*/
@@ -51,15 +51,15 @@ QActionHandler const QMsm_emptyAction_[1] = {
 /*..........................................................................*/
 void QMsm_ctor(QMsm * const me, QStateHandler initial) {
     static QMsmVtbl const vtbl = {                    /* QMsm virtual table */
-        &QMsm_init,
-        &QMsm_dispatch
+        &QMsm_init_,
+        &QMsm_dispatch_
     };
     me->vptr = &vtbl;
     me->state.obj = (void *)0;
     me->temp.fun  = initial;
 }
 /*..........................................................................*/
-void QMsm_init(QMsm * const me, QEvt const * const e) {
+void QMsm_init_(QMsm * const me, QEvt const * const e) {
     QState r;
 #ifdef Q_SPY
     QMState const *t = (QMState const *)0;       /* the current state (top) */
@@ -89,7 +89,7 @@ void QMsm_init(QMsm * const me, QEvt const * const e) {
 #endif
         r = (QState)0U;                      /* invalidate the return value */
         for (a = me->temp.act; *a != Q_ACTION_CAST(0); QEP_ACT_PTR_INC_(a)) {
-            r = (**a)(me);
+            r = (*(*a))(me);     /* call the action through the 'a' pointer */
 #ifdef Q_SPY
             if (r == (QState)Q_RET_ENTRY) {
                 QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.smObjFilter, me)

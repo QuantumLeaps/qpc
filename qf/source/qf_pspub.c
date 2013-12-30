@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,14 +40,14 @@ Q_DEFINE_THIS_MODULE("qf_pspub")
 /**
 * \file
 * \ingroup qf
-* \brief QF_publish() implementation.
+* \brief QF_publish_() implementation.
 */
 
 /*..........................................................................*/
 #ifndef Q_SPY
-void QF_publish(QEvt const * const e)
+void QF_publish_(QEvt const * const e)
 #else
-void QF_publish(QEvt const * const e, void const * const sender)
+void QF_publish_(QEvt const * const e, void const * const sender)
 #endif
 {
     QF_CRIT_STAT_
@@ -106,7 +106,7 @@ void QF_publish(QEvt const * const e, void const * const sender)
 
 /*****************************************************************************
 * NOTE01:
-* QF_publish() increments the reference counter to prevent premature
+* QF_publish_() increments the reference counter to prevent premature
 * recycling of the event while the multicasting is still in progress.
 * At the end of the function, the garbage collector step decrements the
 * reference counter and recycles the event if the counter drops to zero.

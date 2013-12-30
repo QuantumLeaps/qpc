@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 07, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 24, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,7 +40,7 @@ Q_DEFINE_THIS_MODULE("qf_tick")
 /**
 * \file
 * \ingroup qf
-* \brief QF_tickX() and QF_noTimeEvtsActiveX() implementation.
+* \brief QF_tickX_() and QF_noTimeEvtsActiveX() implementation.
 */
 
 /* Package-scope objects ---------------------------------------------------*/
@@ -48,9 +48,9 @@ QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];    /* heads of time event lists */
 
 /*..........................................................................*/
 #ifndef Q_SPY
-void QF_tickX(uint8_t const tickRate)                         /* see NOTE01 */
+void QF_tickX_(uint8_t const tickRate)                        /* see NOTE01 */
 #else
-void QF_tickX(uint8_t const tickRate, void const * const sender)
+void QF_tickX_(uint8_t const tickRate, void const * const sender)
 #endif
 {
     QTimeEvt *prev = &QF_timeEvtHead_[tickRate];
@@ -63,7 +63,7 @@ void QF_tickX(uint8_t const tickRate, void const * const sender)
         QS_U8_(tickRate);                                      /* tick rate */
     QS_END_NOCRIT_()
 
-    for (;;) {
+    for ( ; ; ) {
         QTimeEvt *t = prev->next;        /* advance down the time evt. list */
         if (t == (QTimeEvt *)0) {                       /* end of the list? */
             if (QF_timeEvtHead_[tickRate].act != (void *)0) { /* new armed? */
@@ -148,9 +148,9 @@ uint8_t QF_noTimeEvtsActiveX(uint8_t const tickRate) {        /* see NOTE03 */
 
 /*****************************************************************************
 * NOTE01:
-* QF_tickX() must always run to completion and never preempt itself.
-* In particular, if QF_tickX() runs in an ISR, the ISR is not allowed to
-* preempt itself. Also, QF_tickX() should not be called from two different
+* QF_tickX_() must always run to completion and never preempt itself.
+* In particular, if QF_tickX_() runs in an ISR, the ISR is not allowed to
+* preempt itself. Also, QF_tickX_() should not be called from two different
 * ISRs, which potentially could preempt each other.
 *
 * NOTE02:

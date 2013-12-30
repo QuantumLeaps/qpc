@@ -30,6 +30,7 @@
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
           <SFDFile>SFD\Luminary\LM4F120H5QR.SFR</SFDFile>
+          <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
           <IncludePath></IncludePath>
@@ -97,6 +98,7 @@
           <StopOnExitCode>3</StopOnExitCode>
           <CustomArgument></CustomArgument>
           <IncludeLibraryModules></IncludeLibraryModules>
+          <ComprImg>1</ComprImg>
         </CommonProperty>
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
@@ -165,10 +167,14 @@
             <Capability>1</Capability>
             <DriverSelection>4097</DriverSelection>
           </Flash1>
-          <bUseTDR>0</bUseTDR>
+          <bUseTDR>1</bUseTDR>
           <Flash2>BIN\lmidk-agdi.dll</Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
+          <pFcarmOut></pFcarmOut>
+          <pFcarmGrp></pFcarmGrp>
+          <pFcArmRoot></pFcArmRoot>
+          <FcArmLst>0</FcArmLst>
         </Utilities>
         <TargetArmAds>
           <ArmAdsMisc>
@@ -431,6 +437,7 @@
               <StopOnExitCode>11</StopOnExitCode>
               <CustomArgument></CustomArgument>
               <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>0</ComprImg>
             </CommonProperty>
             <GroupArmAds>
               <Cads>
@@ -497,6 +504,7 @@
               <StopOnExitCode>11</StopOnExitCode>
               <CustomArgument></CustomArgument>
               <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>0</ComprImg>
             </CommonProperty>
             <GroupArmAds>
               <Cads>
@@ -572,6 +580,7 @@
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
           <SFDFile>SFD\Luminary\LM4F120H5QR.SFR</SFDFile>
+          <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
           <IncludePath></IncludePath>
@@ -639,6 +648,7 @@
           <StopOnExitCode>3</StopOnExitCode>
           <CustomArgument></CustomArgument>
           <IncludeLibraryModules></IncludeLibraryModules>
+          <ComprImg>1</ComprImg>
         </CommonProperty>
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
@@ -711,6 +721,10 @@
           <Flash2>BIN\lmidk-agdi.dll</Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
+          <pFcarmOut></pFcarmOut>
+          <pFcarmGrp></pFcarmGrp>
+          <pFcArmRoot></pFcArmRoot>
+          <FcArmLst>0</FcArmLst>
         </Utilities>
         <TargetArmAds>
           <ArmAdsMisc>
@@ -973,6 +987,7 @@
               <StopOnExitCode>11</StopOnExitCode>
               <CustomArgument></CustomArgument>
               <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>0</ComprImg>
             </CommonProperty>
             <GroupArmAds>
               <Cads>
@@ -1039,6 +1054,7 @@
               <StopOnExitCode>11</StopOnExitCode>
               <CustomArgument></CustomArgument>
               <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>0</ComprImg>
             </CommonProperty>
             <GroupArmAds>
               <Cads>

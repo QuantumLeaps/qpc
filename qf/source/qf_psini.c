@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 25, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -46,7 +46,18 @@ QSubscrList *QF_subscrList_;
 enum_t QF_maxSignal_;
 
 /*..........................................................................*/
-void QF_psInit(QSubscrList * const subscrSto, uint32_t const maxSignal) {
+void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal) {
     QF_subscrList_ = subscrSto;
-    QF_maxSignal_  = (enum_t)maxSignal;
+    QF_maxSignal_  = maxSignal;
+                                    /* zero the subscriber list, see NOTE01 */
+    QF_bzero(subscrSto,
+             (uint_t)((uint_t)maxSignal * (uint_t)sizeof(QSubscrList)));
 }
+
+/*****************************************************************************
+* NOTE01:
+* The QF_psInit() function clears the subscriber list, so that the
+* framework can start correctly even if the startup code fails to clear
+* the uninitialized data (as is required by the C Standard).
+*/
+

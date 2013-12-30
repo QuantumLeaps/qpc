@@ -8,7 +8,7 @@
 
 \image html qp_components.jpg
 
-All QP&trade; frameworks can run on "bare-metal" single-chip microcontrollers, completely replacing a traditional Real-Time Operating System (RTOS). Ports and ready-to-use examples are provided for most major <a href="http://www.state-machine.com/downloads/index.php#QDK">CPU families</a>. QP/C and QP/C++ can also work with a traditional OS/RTOS, such as: <a href="http://www.state-machine.com/linux/">POSIX (Linux, QNX)</a>, <a href="http://www.state-machine.com/win32/">Windows</a>, <a href="http://www.state-machine.com/android/">Android-NDK</a>, <a href="http://www.state-machine.com/threadx/">ThreadX</a>, <a href="http://www.state-machine.com/ucos2/">MicroC/OS</a>, <a href="http://www.state-machine.com/freertos/">FreeRTOS</a>, etc.
+All QP&trade; frameworks can run on "bare-metal" single-chip microcontrollers, completely replacing a traditional Real-Time Operating System (RTOS). Ports and ready-to-use examples are provided for most major <a href="http://www.state-machine.com/downloads/index.php#QDK">CPU families</a>. QP/C and QP/C++ can also work with a traditional OS/RTOS, such as: <a href="http://www.state-machine.com/linux/">POSIX (Linux, embedded Linux, QNX, INTEGRITY)</a>, <a href="http://www.state-machine.com/win32/">Windows (Windows embedded, Windows CE)</a>, <a href="http://www.state-machine.com/android/">Android-NDK</a>, <a href="http://www.state-machine.com/threadx/">ThreadX</a>, <a href="http://www.state-machine.com/ucos2/">MicroC/OS</a>, etc.
 
 The behavior of active objects is specified in QP by means of <a href="http://en.wikipedia.org/wiki/UML_state_machine">hierarchical state machines (UML statecharts)</a>. The frameworks support manual coding of UML state machines in C or C++ as well as fully automatic code generation by means of the free graphical <a href="http://www.state-machine.com/qm/">QM&trade; modeling tool</a>.
 
@@ -22,8 +22,7 @@ For more information about QP, please visit:
 <a href="http://www.state-machine.com/qp"><strong>state-machine.com/qp</strong></a>
 
 <HR>
-QP/C Licensing
-==============
+\section licensing QP/C Licensing
 
 QP/C is licensed under the increasingly popular dual licensing model, in which both the open source software distribution mechanism and traditional closed source software distribution models are combined.
 
@@ -38,8 +37,8 @@ Closed Source Projects:
 If you are developing and distributing traditional closed source applications, you can purchase one of Quantum Leaps commercial licenses, which are specifically designed for users interested in retaining the proprietary status of their code. All Quantum Leaps commercial licenses expressly supersede the GPL open source license. This means that when you license Quantum Leaps software under a commercial license, you specifically do not use the software under the open source license and therefore you are not subject to any of its terms. 
 
 <HR>
-Contact Information
-===================
+\section contact Contact Information
+
 - Quantum Leaps Web site:   http://www.state-machine.com
 - Quantum Leaps licensing:  http://www.state-machine.com/licensing
 - QP/QM on SourceForge.net: http://sourceforge.net/projects/qpc
@@ -161,9 +160,9 @@ qpc\                 - QP/C root directory
   | | | | | +-rel\   - Release build
   | | | | | +-spy\   - Spy build (with software instrumentation)
   | | | | | +-make_cortex-m3_cs.bat - batch script for building QP libraries
-  | | | | | +-qep_port.h - QEP platform-dependent include file
-  | | | | | +-qf_port.h  - QF  platform-dependent include file
-  | | | | | +-qs_port.h  - QS  platform-dependent include file
+  | | | | | +-qep_port.h - QEP platform-independent include file
+  | | | | | +-qf_port.h  - QF  platform-independent include file
+  | | | | | +-qs_port.h  - QS  platform-independent include file
   | | | | | +-qp_port.h  - QP  platform-dependent include file
   | | | . . .
   | | +-qk\          - Ports to the preemptive QK kernel

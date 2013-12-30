@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP with lwIP application
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Oct 06, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -74,15 +74,15 @@ int main(void) {
     QF_poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
     QF_poolInit(l_medPoolSto, sizeof(l_medPoolSto), sizeof(l_medPoolSto[0]));
 
-    QActive_start(AO_LwIPMgr, 1,
+    QACTIVE_START(AO_LwIPMgr, 1,
                   l_lwIPMgrQueueSto, Q_DIM(l_lwIPMgrQueueSto),
                   (void *)0, 0, (QEvt *)0);
     for (n = 0; n < N_PHILO; ++n) {          /* start the active objects... */
-        QActive_start(AO_Philo[n], (uint8_t)(n + 2),
+        QACTIVE_START(AO_Philo[n], (uint8_t)(n + 2),
                       l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
                       (void *)0, 0, (QEvt *)0);
     }
-    QActive_start(AO_Table, (uint8_t)(N_PHILO + 2),
+    QACTIVE_START(AO_Table, (uint8_t)(N_PHILO + 2),
                   l_tableQueueSto, Q_DIM(l_tableQueueSto),
                   (void *)0, 0, (QEvt *)0);
 

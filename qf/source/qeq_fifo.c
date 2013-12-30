@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 08, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,7 +48,7 @@ Q_DEFINE_THIS_MODULE("qeq_fifo")
 
 /*..........................................................................*/
 uint8_t QEQueue_post(QEQueue * const me, QEvt const * const e,
-                     uint16_t const margin)
+                     uint_t const margin)
 {
     QEQueueCtr nFree;          /* temporary to avoid UB for volatile access */
     uint8_t status;
@@ -94,7 +94,7 @@ uint8_t QEQueue_post(QEQueue * const me, QEvt const * const e,
         status = (uint8_t)1;                   /* event posted successfully */
     }
     else {
-        Q_ASSERT(margin != (uint16_t)0);    /* can tollerate dropping evts? */
+        Q_ASSERT(margin != (uint_t)0);      /* can tollerate dropping evts? */
 
         QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_ATTEMPT, QS_priv_.eqObjFilter, me)
             QS_TIME_();                                        /* timestamp */

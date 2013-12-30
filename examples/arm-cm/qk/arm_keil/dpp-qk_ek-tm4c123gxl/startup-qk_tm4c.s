@@ -49,7 +49,7 @@ Heap    EQU     0x00000000
 ; Allocate space for the stack.
 ;
 ;******************************************************************************
-        AREA    STACK, NOINIT, READWRITE, ALIGN=3
+        AREA    STACK, READWRITE, ALIGN=3
 StackMem
         SPACE   Stack
 __initial_sp

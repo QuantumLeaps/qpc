@@ -62,17 +62,17 @@ int main() {
     QS_SIG_DICTIONARY(GAME_OVER_SIG,      (void *)0);
 
                                              /* start the active objects... */
-    QActive_start(AO_Missile,
+    QACTIVE_START(AO_Missile,
                   1U,                                           /* priority */
                   l_missileQueueSto, Q_DIM(l_missileQueueSto), /* evt queue */
                   (void *)0, 0U,                     /* no per-thread stack */
                   (QEvt *)0);                    /* no initialization event */
-    QActive_start(AO_Ship,
+    QACTIVE_START(AO_Ship,
                   2U,                                           /* priority */
                   l_shipQueueSto,    Q_DIM(l_shipQueueSto),    /* evt queue */
                   (void *)0, 0U,                     /* no per-thread stack */
                   (QEvt *)0);                    /* no initialization event */
-    QActive_start(AO_Tunnel,
+    QACTIVE_START(AO_Tunnel,
                   3U,                                           /* priority */
                   l_tunnelQueueSto,  Q_DIM(l_tunnelQueueSto),  /* evt queue */
                   (void *)0, 0U,                     /* no per-thread stack */

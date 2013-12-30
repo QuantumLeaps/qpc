@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -78,7 +78,7 @@ void Philo_ctor(void) {                    /* instantiate all Philo objects */
     for (n = 0; n < N_PHILO; ++n) {
         me = &l_philo[n];
         QActive_ctor(&me->super, (QStateHandler)&Philo_initial);
-        QTimeEvt_ctor(&me->timeEvt, TIMEOUT_SIG);
+        QTimeEvt_ctorX(&me->timeEvt, &me->super, TIMEOUT_SIG, 0U);
     }
 }
 /*..........................................................................*/
@@ -115,7 +115,7 @@ QState Philo_initial(Philo *me, QEvt const *e) {
 QState Philo_thinking(Philo *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            QTimeEvt_postIn(&me->timeEvt, (QActive *)me, THINK_TIME);
+            QTimeEvt_armX(&me->timeEvt, THINK_TIME, 0U);
             return Q_HANDLED();
         }
         case TIMEOUT_SIG: {
@@ -157,7 +157,7 @@ QState Philo_hungry(Philo *me, QEvt const *e) {
 QState Philo_eating(Philo *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            QTimeEvt_postIn(&me->timeEvt, (QActive *)me, EAT_TIME);
+            QTimeEvt_armX(&me->timeEvt, EAT_TIME, 0U);
             return Q_HANDLED();
         }
         case Q_EXIT_SIG: {

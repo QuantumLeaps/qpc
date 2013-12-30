@@ -98,7 +98,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK(&l_SysTick_Handler);           /* process all armed time events */
+    QF_TICK_X(0U, &l_SysTick_Handler);    /* process time events for rate 0 */
 
     QK_ISR_EXIT();                         /* inform QK-nano about ISR exit */
 }

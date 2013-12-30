@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 28, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -62,8 +62,8 @@
 #define QF_EQUEUE_TYPE         QEQueue
 
 #if defined(QK_TLS) || defined(QK_EXT_SAVE)
-    #define QF_OS_OBJECT_TYPE      uint8_t
-    #define QF_THREAD_TYPE         void *
+    #define QF_OS_OBJECT_TYPE  uint8_t
+    #define QF_THREAD_TYPE     void *
 #endif                                             /* QK_TLS || QK_EXT_SAVE */
 
 #if (QF_MAX_ACTIVE <= 8)
@@ -99,7 +99,7 @@ uint8_t QK_schedPrio_(void);
 
 /* public-scope objects */
 extern uint8_t volatile QK_currPrio_;  /**< current task/interrupt priority */
-extern uint8_t volatile QK_intNest_;           /**< interrupt nesting level */
+extern uint_t  volatile QK_intNest_;           /**< interrupt nesting level */
 
 /****************************************************************************/
 /** \brief QK initialization
@@ -176,7 +176,7 @@ void QK_onIdle(void);
     #if (QF_MAX_ACTIVE <= 8)
         #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
             QPSet8_insert(&QK_readySet_, (me_)->prio); \
-            if (QK_intNest_ == (uint8_t)0) { \
+            if (QK_intNest_ == (uint_t)0) { \
                 uint8_t p = QK_schedPrio_(); \
                 if (p != (uint8_t)0) { \
                     QK_sched_(p); \
@@ -189,7 +189,7 @@ void QK_onIdle(void);
     #else
         #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
             QPSet64_insert(&QK_readySet_, (me_)->prio); \
-            if (QK_intNest_ == (uint8_t)0) { \
+            if (QK_intNest_ == (uint_t)0) { \
                 uint8_t p = QK_schedPrio_(); \
                 if (p != (uint8_t)0) { \
                     QK_sched_(p); \
@@ -201,10 +201,11 @@ void QK_onIdle(void);
             QPSet64_remove(&QK_readySet_, (me_)->prio)
     #endif
 
+                                         /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        (QMPool_init(&(p_), (poolSto_), (poolSize_), (QMPoolSize)(evtSize_)))
-    #define QF_EPOOL_EVENT_SIZE_(p_)  ((QEvtSize)(p_).blockSize)
+        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_t)(p_).blockSize)
     #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
     #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), (e_)))
 

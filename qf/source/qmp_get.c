@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,11 +40,11 @@ Q_DEFINE_THIS_MODULE("qmp_get")
 /**
 * \file
 * \ingroup qf
-* \brief QMPool_get() and QF_getPoolMargin() implementation.
+* \brief QMPool_get() and QF_getPoolMin() implementation.
 */
 
 /*..........................................................................*/
-void *QMPool_get(QMPool * const me, uint16_t const margin) {
+void *QMPool_get(QMPool * const me, uint_t const margin) {
     QFreeBlock *fb;
     QF_CRIT_STAT_
 
@@ -82,14 +82,14 @@ void *QMPool_get(QMPool * const me, uint16_t const margin) {
     return fb;  /* return the pointer to memory block or NULL to the caller */
 }
 /*..........................................................................*/
-uint16_t QF_getPoolMin(uint_t const poolId) {
-    uint16_t min;
+uint_t QF_getPoolMin(uint_t const poolId) {
+    uint_t min;
     QF_CRIT_STAT_
 
     Q_REQUIRE(((uint_t)1 <= poolId) && (poolId <= QF_maxPool_));
 
     QF_CRIT_ENTRY_();
-    min = (uint16_t)QF_pool_[poolId - (uint_t)1].nMin;
+    min = (uint_t)QF_pool_[poolId - (uint_t)1].nMin;
     QF_CRIT_EXIT_();
 
     return min;

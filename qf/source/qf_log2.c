@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Oct 07, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -43,7 +43,7 @@
 #ifdef QF_LOG2LKUP
 
 /* Global objects ----------------------------------------------------------*/
-uint8_t const Q_ROM Q_ROM_VAR QF_log2Lkup[256] = {
+uint8_t const Q_ROM QF_log2Lkup[256] = {
     (uint8_t)0, (uint8_t)1, (uint8_t)2, (uint8_t)2,
     (uint8_t)3, (uint8_t)3, (uint8_t)3, (uint8_t)3,
     (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4,

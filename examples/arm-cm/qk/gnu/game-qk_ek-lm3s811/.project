@@ -11,11 +11,6 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>com.codesourcery.arm_none_eabi.cdt.debug.core.builder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
 			<triggers>clean,full,incremental,</triggers>
 			<arguments>

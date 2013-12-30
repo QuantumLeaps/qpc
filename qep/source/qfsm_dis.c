@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Jul 30, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,11 +40,11 @@ Q_DEFINE_THIS_MODULE("qfsm_dis")
 /**
 * \file
 * \ingroup qep
-* \brief QFsm_dispatch() implementation.
+* \brief QFsm_dispatch_() implementation.
 */
 
 /*..........................................................................*/
-void QFsm_dispatch(QFsm * const me, QEvt const * const e) {
+void QFsm_dispatch_(QFsm * const me, QEvt const * const e) {
     QState r;
     QS_CRIT_STAT_
 

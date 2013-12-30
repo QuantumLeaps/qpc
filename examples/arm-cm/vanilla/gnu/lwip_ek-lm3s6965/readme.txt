@@ -1,7 +1,7 @@
 About this example
 ------------------
 This example application demonstrates the lightweight TCP/IP stack called lwIP
-(version 1.3.2) running on top of the QP™ state machine framework, which are
+(version 1.4.1) running on top of the QP state machine framework, which are
 both briefly described below.
 
 The example is currently configured to use DHCP to obtain the IP address, so
@@ -51,7 +51,7 @@ example code.
 
 About QP State Machine Frameworks
 ---------------------------------
-QP™ is a family of very lightweight, open source, state machine-based
+QP is a family of very lightweight, open source, state machine-based
 frameworks for embedded microprocessors, microcontrollers, and DSPs. QP
 enables developing well-structured embedded applications as a set of
 concurrently executing hierarchical state machines (UML statecharts). With QP,
@@ -101,6 +101,43 @@ lwIP is licensed under the BSD open source license. More information about
 lwIP can be found at the lwIP homepage at http://www.sics.se/~adam/lwip/. 
 
 
+The QPC Environment Variable
+----------------------------
+The project file provided with this example assumes that the environment
+variable QPC is defined and it points to the location of the QP/C framework.
+For example, assuming that you have installed QP/C into the directory C:\qp\qpc,
+you should define the environment variable QPC to C:\qp\qpc.
+
+
+The LWIP Environment Variable
+-----------------------------
+The project file provided with this example assumes that the environment
+variable LWIP is defined and it points to the location of the LwIP software.
+For example, assuming that you have installed LWIP into the directory
+C:\software\lwip-1.4.1, you should define the environment variable LWIP to 
+C:\software\lwip-1.4.1.
+
+  
+Editing the Environment Variables on Windows
+--------------------------------------------
+Open the Windows Explorer and right-click on the Computer
+icon. Then select Properties from the pop-up menu. This opens
+a window with the basic information about your computer. In the
+left panel of this window, click on "Advanced system settings".
+This opens the dialog "System Properties". Click the
+"Environment Variables..." button.
+
+To add a new environment variable, click the "New..." button
+in the System variables section and provide the variable name
+(e.g., QPC) and value (e.g., C:\software\qpc).
+
+****
+NOTE: After updating envrinment variables, you shold reboot your
+computer so that all applications, such as IAR Embedded Workbench
+can pick up the changes.
+****
+
+
 Contact information
 ---------------------
 Quantum Leaps, LLC
@@ -115,7 +152,7 @@ www.state-machine.com
 Copyright information
 ---------------------
 The QP state machine frameworks and most of this example are:
-Copyright (c) 2002-2010 Quantum Leaps, LLC. All rights reserved.
+Copyright (c) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 
 The lwIP TCP/IP stack is:
 Copyright (c) 2001-2004 Swedish Institute of Computer Science.

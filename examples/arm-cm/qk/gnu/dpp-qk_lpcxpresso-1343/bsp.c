@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, LPCXpresso-1343 board, QK kernel, GNU/CodeRed
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 21, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -98,7 +98,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK(&l_SysTick_Handler);           /* process all armed time events */
+    QF_TICK_X(0U, &l_SysTick_Handler);    /* process time events for rate 0 */
 
     QK_ISR_EXIT();                         /* inform QK-nano about ISR exit */
 }
@@ -124,7 +124,6 @@ void BSP_init(void) {
         Q_ERROR();
     }
 
-    QS_RESET();
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_OBJ_DICTIONARY(&l_PIOINT0_IRQHandler);
 }

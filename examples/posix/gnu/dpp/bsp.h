@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Jul 04, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 18, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -37,7 +37,7 @@
 
 #define BSP_TICKS_PER_SEC   100U
 
-void BSP_init(int argc, char *argv[]);
+void BSP_init();
 void BSP_displayPhilStat(uint8_t n, char const *stat);
 void BSP_displayPaused(uint8_t paused);
 void BSP_terminate(int16_t result);

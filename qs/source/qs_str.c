@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product:  QS/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 23, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -66,7 +66,7 @@ void QS_str(char_t const *s) {
     QS_priv_.used   = used;                  /* save # of used buffer space */
 }
 /*..........................................................................*/
-void QS_str_ROM(char_t const Q_ROM * Q_ROM_VAR s) {
+void QS_str_ROM(char_t const Q_ROM *s) {
     uint8_t b      = (uint8_t)Q_ROM_BYTE(*s);
     uint8_t chksum = (uint8_t)(QS_priv_.chksum + (uint8_t)QS_STR_T);
     uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */

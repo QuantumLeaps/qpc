@@ -35,6 +35,9 @@ typedef unsigned long      uint32_t;
 typedef signed   long long int64_t;
 typedef unsigned long long uint64_t;
 
+/* workaround for Microsoft lack of support of C99 snprintf() */
+#define snprintf _snprintf
+
 #ifdef  __cplusplus
 }
 #endif

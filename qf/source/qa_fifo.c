@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 08, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,7 +40,7 @@ Q_DEFINE_THIS_MODULE("qa_fifo")
 /**
 * \file
 * \ingroup qf
-* \brief QActive_post() definition
+* \brief QActive_post_() definition
 *
 * \note this source file is only included in the QF library when the native
 * QF active object queue is used (instead of a message queue of an RTOS).
@@ -48,11 +48,11 @@ Q_DEFINE_THIS_MODULE("qa_fifo")
 
 /*..........................................................................*/
 #ifndef Q_SPY
-uint8_t QActive_post(QActive * const me, QEvt const * const e,
-                     uint16_t const margin)
+uint8_t QActive_post_(QActive * const me, QEvt const * const e,
+                      uint_t const margin)
 #else
-uint8_t QActive_post(QActive * const me, QEvt const * const e,
-                     uint16_t const margin, void const * const sender)
+uint8_t QActive_post_(QActive * const me, QEvt const * const e,
+                      uint_t const margin, void const * const sender)
 #endif
 {
     QEQueueCtr nFree;          /* temporary to avoid UB for volatile access */
@@ -63,7 +63,7 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
 
     QF_CRIT_ENTRY_();
     nFree = me->eQueue.nFree;            /* get volatile into the temporary */
-    if (nFree > (QEQueueCtr)margin) {       /* margin available? */
+    if (nFree > (QEQueueCtr)margin) {                  /* margin available? */
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.aoObjFilter, me)
             QS_TIME_();                                        /* timestamp */
@@ -100,7 +100,7 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
         status = (uint8_t)1;                   /* event posted successfully */
     }
     else {
-        Q_ASSERT(margin != (uint16_t)0);    /* can tollerate dropping evts? */
+        Q_ASSERT(margin != (uint_t)0);      /* can tollerate dropping evts? */
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT, QS_priv_.aoObjFilter, me)
             QS_TIME_();                                        /* timestamp */
@@ -112,7 +112,8 @@ uint8_t QActive_post(QActive * const me, QEvt const * const e,
             QS_EQC_((QEQueueCtr)margin);                /* margin requested */
         QS_END_NOCRIT_()
 
-        status = (uint8_t)0;
+        QF_gc(e);                      /* recycle the evnet to avoid a leak */
+        status = (uint8_t)0;                            /* event not posted */
     }
     QF_CRIT_EXIT_();
 

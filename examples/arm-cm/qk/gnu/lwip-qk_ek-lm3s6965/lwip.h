@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: lwIP consolidated file for QP-lwIP integration
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Oct 03, 2012
+* Last Updated for Version: LwIP 1.4.1/QP 5.1.1
+* Date of the Last Update:  Oct 21, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published

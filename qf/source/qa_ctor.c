@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 11, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Nov 30, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -46,11 +46,11 @@
 /*..........................................................................*/
 void QActive_ctor(QActive * const me, QStateHandler initial) {
     static QActiveVtbl const vtbl = {              /* QActive virtual table */
-        { &QHsm_init,
-          &QHsm_dispatch },
-        &QActive_start,
-        &QActive_post,
-        &QActive_postLIFO
+        { &QHsm_init_,
+          &QHsm_dispatch_ },
+        &QActive_start_,
+        &QActive_post_,
+        &QActive_postLIFO_
     };
     QHsm_ctor(&me->super, initial);
     me->super.vptr = &vtbl.super; /* hook the vptr to QActive virtual table */

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product:  QP/C, POSIX port, GNU compiler
-# Last Updated for Version: 5.0.0
-# Date of the Last Update:  Aug 09, 2013
+# Last Updated for Version: 5.1.2
+# Date of the Last Update:  Nov 04, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -47,18 +47,17 @@
 #-----------------------------------------------------------------------------
 CC  = gcc
 LIB = ar
+RM  = rm -f
 
 QPC        = ../../..
+QP_PRTDIR  = ..
 QP_INCDIR  = $(QPC)/include
 QEP_SRCDIR = $(QPC)/qep/source
 QF_SRCDIR  = $(QPC)/qf/source
 QS_SRCDIR  = $(QPC)/qs/source
-QP_PRTDIR  = .
-LIBFLAGS   = rs
-QS_OBJS    =
-RM = rm -f
 
 CCINC      = -I$(QP_PRTDIR) -I$(QP_INCDIR)
+LIBFLAGS   = rs
 
 #-----------------------------------------------------------------------------
 # build options for various configurations
@@ -74,7 +73,7 @@ CCFLAGS = -c -O2 -Wall -pthread -o$@
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
-BINDIR   = spy
+BINDIR  = spy
 
 # gcc options
 # -c    : compile only
@@ -112,7 +111,7 @@ VPATH = $(QEP_SRCDIR) $(QF_SRCDIR) $(QS_SRCDIR)
 all: $(BINDIR) $(BINDIR)/libqp.a
 
 $(BINDIR) :
-	mkdir -p $@
+	mkdir $@
 
 # the objects to build =======================================================
 QEP_OBJS = \
@@ -293,7 +292,7 @@ $(BINDIR)/qte_rarm.o: $(QF_SRCDIR)/qte_rarm.c
 $(BINDIR)/qte_ctr.o: $(QF_SRCDIR)/qte_ctr.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
 
-$(BINDIR)/qf_port.o: qf_port.c
+$(BINDIR)/qf_port.o: $(QP_PRTDIR)/qf_port.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
 
 # QS -----------------------------------------

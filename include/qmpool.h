@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 12, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -136,7 +136,7 @@ typedef struct QMPoolTag {
     *
     * \note this attribute remembers the low watermark of the pool,
     * which provides a valuable information for sizing event pools.
-    * \sa QF_getPoolMargin().
+    * \sa QF_getPoolMin().
     */
     QMPoolCtr nMin;
 } QMPool;
@@ -159,10 +159,10 @@ typedef struct QMPoolTag {
 *
 * \note Due to the rounding of block size the actual capacity of the pool
 * might be less than (\a poolSize / \a blockSize). You can check the capacity
-* of the pool by calling the QF_getPoolMargin() function.
+* of the pool by calling the QF_getPoolMin() function.
 */
 void QMPool_init(QMPool * const me, void * const poolSto,
-                 uint32_t poolSize, QMPoolSize blockSize);
+                 uint_t poolSize, uint_t blockSize);
 
 /** \brief Obtains a memory block from a memory pool.
 *
@@ -182,7 +182,7 @@ void QMPool_init(QMPool * const me, void * const poolSto,
 *
 * \sa QMPool_put()
 */
-void *QMPool_get(QMPool * const me, uint16_t const margin);
+void *QMPool_get(QMPool * const me, uint_t const margin);
 
 /** \brief Returns a memory block back to a memory pool.
 *

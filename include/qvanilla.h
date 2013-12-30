@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 28, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -75,13 +75,12 @@
             QPSet64_remove(&QF_readySet_, (me_)->prio)
     #endif
                                          /* native QF event pool operations */
-    #define QF_EPOOL_TYPE_              QMPool
+    #define QF_EPOOL_TYPE_            QMPool
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        QMPool_init(&(p_), (poolSto_), (poolSize_), (QMPoolSize)(evtSize_))
-    #define QF_EPOOL_EVENT_SIZE_(p_)    ((p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
-    #define QF_EPOOL_PUT_(p_, e_)       (QMPool_put(&(p_), (e_)))
+        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_t)(p_).blockSize)
+    #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
+    #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), (e_)))
 
     #if (QF_MAX_ACTIVE <= 8)
         extern QPSet8 QF_readySet_;                /**< QF-ready set of AOs */

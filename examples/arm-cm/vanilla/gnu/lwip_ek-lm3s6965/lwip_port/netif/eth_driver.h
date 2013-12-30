@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Ethernet driver for lwIP with QP
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Aug 25, 2013
+* Last Updated for Version: 5.1.1
+* Date of the Last Update:  Oct 20, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -36,15 +36,16 @@
 #define eth_driver_h
 
 struct netif *eth_driver_init(QActive *active,
+                              enum_t base_sig,
                               u8_t macaddr[NETIF_MAX_HWADDR_LEN]);
 void eth_driver_read(void);
 void eth_driver_write(void);
 
 enum EthDriverSignals {
-    LWIP_SLOW_TICK_SIG = Q_DEV_DRIVER_SIG,
-    LWIP_RX_READY_SIG,
-    LWIP_TX_READY_SIG,
-    LWIP_RX_OVERRUN_SIG
+    LWIP_RX_READY_OFFSET,
+    LWIP_TX_READY_OFFSET,
+    LWIP_RX_OVERRUN_OFFSET,
+    LWIP_MAX_OFFSET
 };
 
 #endif                                                      /* eth_driver_h */

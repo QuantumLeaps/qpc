@@ -709,7 +709,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\tm4c123gh6pm.icf</state>
+          <state>$PROJ_DIR$\dpp.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -1649,7 +1649,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\tm4c123gh6pm.icf</state>
+          <state>$PROJ_DIR$\dpp.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -2589,7 +2589,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\tm4c123gh6pm.icf</state>
+          <state>$PROJ_DIR$\dpp.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>

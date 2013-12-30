@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: DPP with lwIP application, preemptive QK kernel
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 07, 2013
+* Product: "Dining Philosophers Problem" example, preemptive QK kernel
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 25, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,11 +32,12 @@
 *                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#include "qp_port.h"                                 /* QP port header file */
-#include "dpp.h"                   /* application events and active objects */
-#include "bsp.h"                       /* Board Support Package header file */
+#include "qp_port.h"
+#include "dpp.h"
+#include "bsp.h"
 
 #include "lm3s_cmsis.h"
+#include "display96x16x1.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -52,7 +53,7 @@ enum KernelUnawareISRs {                                      /* see NOTE00 */
 Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
 
 enum KernelAwareISRs {
-    ETHERNET_PRIO = QF_AWARE_ISR_CMSIS_PRI,                   /* see NOTE00 */
+    GPIOPORTA_PRIO = QF_AWARE_ISR_CMSIS_PRI,                  /* see NOTE00 */
     SYSTICK_PRIO,
     /* ... */
     MAX_KERNEL_AWARE_CMSIS_PRI                          /* keep always last */
@@ -62,85 +63,98 @@ Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
+void GPIOPortA_IRQHandler(void);
 
 /* Local-scope objects -----------------------------------------------------*/
-#define USER_LED           (1 << 0)
-#define USER_BTN           (1 << 1)
+static unsigned  l_rnd;                                      /* random seed */
 
-#define ETH0_LED           (1 << 3)
-#define ETH1_LED           (1 << 2)
-
-static uint32_t l_nTicks;
+#define PUSH_BUTTON             (1U << 4)
+#define USER_LED                (1U << 5)
 
 #ifdef Q_SPY
 
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
     static uint8_t l_SysTick_Handler;
+    static uint8_t l_GPIOPortA_IRQHandler;
 
-    #define UART_BAUD_RATE      115200
-    #define UART_TXFIFO_DEPTH   16
-    #define UART_FR_TXFE        (1 << 7)
+    #define UART_BAUD_RATE      115200U
+    #define UART_TXFIFO_DEPTH   16U
+    #define UART_FR_TXFE        0x00000080U
+
+    enum AppRecords {                 /* application-specific trace records */
+        PHILO_STAT = QS_USER
+    };
 
 #endif
 
 /*..........................................................................*/
 void SysTick_Handler(void) {
-    static uint32_t btn_debounced  = 0;
-    static uint8_t  debounce_state = 0;
-    uint32_t volatile tmp;
+    static uint32_t btn_debounced  = PUSH_BUTTON;
+    static uint8_t  debounce_state = 0U;
+    uint32_t btn;
 
-    QK_ISR_ENTRY();                            /* inform QK about ISR entry */
-
-    ++l_nTicks;                          /* count the number of clock ticks */
+    QK_ISR_ENTRY();                      /* inform QK about entering an ISR */
 
 #ifdef Q_SPY
-    tmp = SysTick->CTRL;                    /* clear SysTick_CTRL_COUNTFLAG */
-    QS_tickTime_ += QS_tickPeriod_;       /* account for the clock rollover */
+    {
+        uint32_t dummy = SysTick->CTRL;     /* clear SysTick_CTRL_COUNTFLAG */
+        QS_tickTime_ += QS_tickPeriod_;   /* account for the clock rollover */
+    }
 #endif
 
-    QF_TICK(&l_SysTick_Handler);           /* process all armed time events */
+    QF_TICK_X(0U, &l_SysTick_Handler);    /* process time events for rate 0 */
 
-    tmp = GPIOF->DATA_Bits[USER_BTN];               /* read the User Button */
+                                             /* debounce the USER button... */
+    btn = GPIOC->DATA_Bits[PUSH_BUTTON];               /* read the push btn */
     switch (debounce_state) {
         case 0:
-            if (tmp != btn_debounced) {
-                debounce_state = 1;         /* transition to the next state */
+            if (btn != btn_debounced) {
+                debounce_state = 1U;        /* transition to the next state */
             }
             break;
         case 1:
-            if (tmp != btn_debounced) {
-                debounce_state = 2;         /* transition to the next state */
+            if (btn != btn_debounced) {
+                debounce_state = 2U;        /* transition to the next state */
             }
             else {
-                debounce_state = 0;           /* transition back to state 0 */
+                debounce_state = 0U;          /* transition back to state 0 */
             }
             break;
         case 2:
-            if (tmp != btn_debounced) {
-                debounce_state = 3;         /* transition to the next state */
+            if (btn != btn_debounced) {
+                debounce_state = 3U;        /* transition to the next state */
             }
             else {
-                debounce_state = 0;           /* transition back to state 0 */
+                debounce_state = 0U;          /* transition back to state 0 */
             }
             break;
         case 3:
-            if (tmp != btn_debounced) {
-                btn_debounced = tmp;     /* save the debounced button value */
-                if (tmp == 0) {                 /* is the button depressed? */
-                    static QEvt const bd = { BTN_DOWN_SIG, 0 };
-                    QF_PUBLISH(&bd, &l_SysTick_Handler);
+            if (btn != btn_debounced) {
+                btn_debounced = btn;     /* save the debounced button value */
+
+                if (btn == 0U) {                /* is the button depressed? */
+                    static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
+                    QF_PUBLISH(&pauseEvt, &l_SysTick_Handler);
                 }
                 else {
-                    static QEvt const bu = { BTN_UP_SIG, 0 };
-                    QF_PUBLISH(&bu, &l_SysTick_Handler);
+                    static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
+                    QF_PUBLISH(&pauseEvt, &l_SysTick_Handler);
                 }
             }
-            debounce_state = 0;               /* transition back to state 0 */
+            debounce_state = 0U;              /* transition back to state 0 */
             break;
     }
+    QK_ISR_EXIT();                        /* inform QK about exiting an ISR */
+}
+/*..........................................................................*/
+void GPIOPortA_IRQHandler(void) {
+    QK_ISR_ENTRY();                      /* inform QK about entering an ISR */
 
-    QK_ISR_EXIT();                              /* inform QK about ISR exit */
+    QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG),      /* for testing... */
+                 &l_GPIOPortA_IRQHandler);
+
+    QK_ISR_EXIT();                        /* infrom QK about exiting an ISR */
 }
 
 /*..........................................................................*/
@@ -148,41 +162,65 @@ void BSP_init(void) {
     /* set the system clock as specified in lm3s_config.h (20MHz from PLL)  */
     SystemInit();
 
-    SYSCTL->RCGC2 |= (1 << 5);  /* enable clock to GPIOF (User and Eth LEDs)*/
+    /* enable clock to the peripherals used by the application */
+    SYSCTL->RCGC2 |= (1 <<  0) | (1 <<  2);   /* enable clock to GPIOA & C  */
+    __NOP();                                  /* wait after enabling clocks */
     __NOP();
     __NOP();
-                              /* configure the pin driving the Ethernet LED */
-    GPIOF->DIR   &= ~(ETH0_LED | ETH1_LED);      /* set direction: hardware */
-    GPIOF->AFSEL |=  (ETH0_LED | ETH1_LED);
-    GPIOF->DR2R  |=  (ETH0_LED | ETH1_LED);
-    GPIOF->ODR   &= ~(ETH0_LED | ETH1_LED);
-    GPIOF->PUR   |=  (ETH0_LED | ETH1_LED);
-    GPIOF->PDR   &= ~(ETH0_LED | ETH1_LED);
-    GPIOF->DEN   |=  (ETH0_LED | ETH1_LED);
-    GPIOF->AMSEL &= ~(ETH0_LED | ETH1_LED);
 
-                                  /* configure the pin driving the User LED */
-    GPIOF->DIR   |=  USER_LED;                     /* set direction: output */
-    GPIOF->DR2R  |=  USER_LED;
-    GPIOF->DEN   |=  USER_LED;
-    GPIOF->AMSEL &= ~USER_LED;
-    GPIOF->DATA_Bits[USER_LED] = 0;                     /* turn the LED off */
+    /* configure the LED and push button */
+    GPIOC->DIR |= USER_LED;                        /* set direction: output */
+    GPIOC->DEN |= USER_LED;                               /* digital enable */
+    GPIOC->DATA_Bits[USER_LED] = 0;                /* turn the User LED off */
 
-                              /* configure the pin connected to the Buttons */
-    GPIOF->DIR   &= ~USER_BTN;                      /* set direction: input */
-    GPIOF->DR2R  |=  USER_BTN;
-    GPIOF->ODR   &= ~USER_BTN;
-    GPIOF->PUR   |=  USER_BTN;
-    GPIOF->PDR   &= ~USER_BTN;
-    GPIOF->DEN   |=  USER_BTN;
-    GPIOF->AMSEL &= ~USER_BTN;
+    GPIOC->DIR &= ~PUSH_BUTTON;                    /*  set direction: input */
+    GPIOC->DEN |= PUSH_BUTTON;                            /* digital enable */
+
+    Display96x16x1Init(1);                   /* initialize the OLED display */
+    Display96x16x1StringDraw("Dining Philos", 0, 0);
+    Display96x16x1StringDraw("0 ,1 ,2 ,3 ,4", 0, 1);
+
+    BSP_randomSeed(1234U);
 
     if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
         Q_ERROR();
     }
-
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
+    QS_OBJ_DICTIONARY(&l_GPIOPortA_IRQHandler);
 }
+/*..........................................................................*/
+void BSP_displayPhilStat(uint8_t n, char_t const *stat) {
+    char str[2];
+    str[0] = stat[0];
+    str[1] = '\0';
+    Display96x16x1StringDraw(str, (3*6*n + 6), 1);
+
+    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
+        QS_U8(1, n);                                  /* Philosopher number */
+        QS_STR(stat);                                 /* Philosopher status */
+    QS_END()
+}
+/*..........................................................................*/
+void BSP_displayPaused(uint8_t paused) {
+    Display96x16x1StringDraw(paused ? "P" : " ", 15*6, 0);
+}
+/*..........................................................................*/
+uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
+    /* "Super-Duper" Linear Congruential Generator (LCG)
+    * LCG(2^32, 3*7*11*13*23, 0, seed)
+    */
+    l_rnd = l_rnd * (3*7*11*13*23);
+    return l_rnd >> 8;
+}
+/*..........................................................................*/
+void BSP_randomSeed(uint32_t seed) {
+    l_rnd = seed;
+}
+/*..........................................................................*/
+void BSP_terminate(int16_t result) {
+    (void)result;
+}
+
 /*..........................................................................*/
 void QF_onStartup(void) {
               /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
@@ -198,10 +236,11 @@ void QF_onStartup(void) {
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
     NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
-    NVIC_SetPriority(Ethernet_IRQn,  ETHERNET_PRIO);
+    NVIC_SetPriority(GPIOPortA_IRQn, GPIOPORTA_PRIO);
     /* ... */
 
-    NVIC_EnableIRQ(Ethernet_IRQn);         /* enable the Ethernet Interrupt */
+                                                          /* enable IRQs... */
+    NVIC_EnableIRQ(GPIOPortA_IRQn);
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
@@ -211,8 +250,8 @@ void QK_onIdle(void) {
 
     /* toggle the User LED on and then off, see NOTE01 */
     QF_INT_DISABLE();
-    GPIOF->DATA_Bits[USER_LED] = USER_LED;         /* turn the User LED on  */
-    GPIOF->DATA_Bits[USER_LED] = 0;                /* turn the User LED off */
+    GPIOC->DATA_Bits[USER_LED] = USER_LED;         /* turn the User LED on  */
+    GPIOC->DATA_Bits[USER_LED] = 0;                /* turn the User LED off */
     QF_INT_ENABLE();
 
 #ifdef Q_SPY
@@ -231,37 +270,30 @@ void QK_onIdle(void) {
 #elif defined NDEBUG
     /* Put the CPU and peripherals to the low-power mode.
     * you might need to customize the clock management for your application,
-    * see the datasheet for your particular MCU.
+    * see the datasheet for your particular Cortex-M3 MCU.
     */
     __WFI();                                          /* Wait-For-Interrupt */
 #endif
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
-    (void)file;                                   /* avoid compiler warning */
-    (void)line;                                   /* avoid compiler warning */
-    QF_INT_DISABLE();         /* make sure that all interrupts are disabled */
-    for (;;) {       /* NOTE: replace the loop with reset for final version */
-    }
+void Q_onAssert(char const Q_ROM * const file, int_t line) {
+    assert_failed(file, line);
 }
 /*..........................................................................*/
 /* error routine that is called if the CMSIS library encounters an error    */
 void assert_failed(char const *file, int line) {
-    Q_onAssert(file, line);
-}
-/*..........................................................................*/
-/* sys_now() is used in the lwIP stack
-*/
-uint32_t sys_now(void) {
-    return l_nTicks * (1000 / BSP_TICKS_PER_SEC);
+    (void)file;                                   /* avoid compiler warning */
+    (void)line;                                   /* avoid compiler warning */
+    QF_INT_DISABLE();         /* make sure that all interrupts are disabled */
+    NVIC_SystemReset();                             /* perform system reset */
 }
 
 /*--------------------------------------------------------------------------*/
 #ifdef Q_SPY
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsBuf[6*256];                  /* buffer for Quantum Spy */
+    static uint8_t qsBuf[2*1024];                 /* buffer for Quantum Spy */
     uint32_t tmp;
     QS_initBuf(qsBuf, sizeof(qsBuf));
 
@@ -275,21 +307,20 @@ uint8_t QS_onStartup(void const *arg) {
                                  /* configure UART0 pins for UART operation */
     tmp = (1 << 0) | (1 << 1);
     GPIOA->DIR   &= ~tmp;
-    GPIOA->AFSEL |=  tmp;
-    GPIOA->DR2R  |=  tmp;       /* set 2mA drive, DR4R and DR8R are cleared */
+    GPIOA->AFSEL |= tmp;
+    GPIOA->DR2R  |= tmp;        /* set 2mA drive, DR4R and DR8R are cleared */
     GPIOA->SLR   &= ~tmp;
     GPIOA->ODR   &= ~tmp;
     GPIOA->PUR   &= ~tmp;
     GPIOA->PDR   &= ~tmp;
-    GPIOA->DEN   |=  tmp;
-    GPIOA->AMSEL &= ~tmp;
+    GPIOA->DEN   |= tmp;
 
            /* configure the UART for the desired baud rate, 8-N-1 operation */
     tmp = (((SystemFrequency * 8) / UART_BAUD_RATE) + 1) / 2;
     UART0->IBRD   = tmp / 64;
     UART0->FBRD   = tmp % 64;
-    UART0->LCRH   = 0x60;                      /* configure 8-bit operation */
-    UART0->LCRH  |= 0x10;                                   /* enable FIFOs */
+    UART0->LCRH   = 0x60;                      /* configure 8-N-1 operation */
+    UART0->LCRH  |= 0x10;
     UART0->CTL   |= (1 << 0) | (1 << 8) | (1 << 9);
 
     QS_tickPeriod_ = SystemFrequency / BSP_TICKS_PER_SEC;
@@ -307,33 +338,33 @@ uint8_t QS_onStartup(void const *arg) {
 //    QS_FILTER_OFF(QS_QEP_TRAN);
 //    QS_FILTER_OFF(QS_QEP_IGNORED);
 
-    QS_FILTER_OFF(QS_QF_ACTIVE_ADD);
-    QS_FILTER_OFF(QS_QF_ACTIVE_REMOVE);
-    QS_FILTER_OFF(QS_QF_ACTIVE_SUBSCRIBE);
-    QS_FILTER_OFF(QS_QF_ACTIVE_UNSUBSCRIBE);
-    QS_FILTER_OFF(QS_QF_ACTIVE_POST_FIFO);
-    QS_FILTER_OFF(QS_QF_ACTIVE_POST_LIFO);
-    QS_FILTER_OFF(QS_QF_ACTIVE_GET);
-    QS_FILTER_OFF(QS_QF_ACTIVE_GET_LAST);
-    QS_FILTER_OFF(QS_QF_EQUEUE_INIT);
-    QS_FILTER_OFF(QS_QF_EQUEUE_POST_FIFO);
-    QS_FILTER_OFF(QS_QF_EQUEUE_POST_LIFO);
-    QS_FILTER_OFF(QS_QF_EQUEUE_GET);
-    QS_FILTER_OFF(QS_QF_EQUEUE_GET_LAST);
-    QS_FILTER_OFF(QS_QF_MPOOL_INIT);
-    QS_FILTER_OFF(QS_QF_MPOOL_GET);
-    QS_FILTER_OFF(QS_QF_MPOOL_PUT);
-    QS_FILTER_OFF(QS_QF_PUBLISH);
-    QS_FILTER_OFF(QS_QF_NEW);
-    QS_FILTER_OFF(QS_QF_GC_ATTEMPT);
-    QS_FILTER_OFF(QS_QF_GC);
+//    QS_FILTER_OFF(QS_QF_ACTIVE_ADD);
+//    QS_FILTER_OFF(QS_QF_ACTIVE_REMOVE);
+//    QS_FILTER_OFF(QS_QF_ACTIVE_SUBSCRIBE);
+//    QS_FILTER_OFF(QS_QF_ACTIVE_UNSUBSCRIBE);
+//    QS_FILTER_OFF(QS_QF_ACTIVE_POST_FIFO);
+//    QS_FILTER_OFF(QS_QF_ACTIVE_POST_LIFO);
+//    QS_FILTER_OFF(QS_QF_ACTIVE_GET);
+//    QS_FILTER_OFF(QS_QF_ACTIVE_GET_LAST);
+//    QS_FILTER_OFF(QS_QF_EQUEUE_INIT);
+//    QS_FILTER_OFF(QS_QF_EQUEUE_POST_FIFO);
+//    QS_FILTER_OFF(QS_QF_EQUEUE_POST_LIFO);
+//    QS_FILTER_OFF(QS_QF_EQUEUE_GET);
+//    QS_FILTER_OFF(QS_QF_EQUEUE_GET_LAST);
+//    QS_FILTER_OFF(QS_QF_MPOOL_INIT);
+//    QS_FILTER_OFF(QS_QF_MPOOL_GET);
+//    QS_FILTER_OFF(QS_QF_MPOOL_PUT);
+//    QS_FILTER_OFF(QS_QF_PUBLISH);
+//    QS_FILTER_OFF(QS_QF_NEW);
+//    QS_FILTER_OFF(QS_QF_GC_ATTEMPT);
+//    QS_FILTER_OFF(QS_QF_GC);
 //    QS_FILTER_OFF(QS_QF_TICK);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_ARM);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_AUTO_DISARM);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_DISARM_ATTEMPT);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_DISARM);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_REARM);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_POST);
+//    QS_FILTER_OFF(QS_QF_TIMEEVT_ARM);
+//    QS_FILTER_OFF(QS_QF_TIMEEVT_AUTO_DISARM);
+//    QS_FILTER_OFF(QS_QF_TIMEEVT_DISARM_ATTEMPT);
+//    QS_FILTER_OFF(QS_QF_TIMEEVT_DISARM);
+//    QS_FILTER_OFF(QS_QF_TIMEEVT_REARM);
+//    QS_FILTER_OFF(QS_QF_TIMEEVT_POST);
     QS_FILTER_OFF(QS_QF_CRIT_ENTRY);
     QS_FILTER_OFF(QS_QF_CRIT_EXIT);
     QS_FILTER_OFF(QS_QF_ISR_ENTRY);

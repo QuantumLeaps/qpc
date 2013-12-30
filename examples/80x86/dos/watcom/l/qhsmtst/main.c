@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QHsmTst Example, DOS, Large model
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 24, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,7 @@
 *                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#include "qep_port.h"
-#include "qassert.h"
+#include "qp_port.h"                                         /* the QP port */
 #include "qhsmtst.h"
 
 #include <conio.h>
@@ -128,7 +127,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+void Q_onAssert(char const Q_ROM * const file, int line) {
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
     exit(-1);
 }

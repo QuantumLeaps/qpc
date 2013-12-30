@@ -1,13 +1,13 @@
 ##############################################################################
-# Product: Reminder pattern example, Win32, MinGW compiler
-# Last Updated for Version: 4.5.03
-# Date of the Last Update:  Nov 25, 2012
+# Product: Generic Makefile for QP/C application, Win32, MinGW compiler
+# Last Updated for Version: 5.1.2
+# Date of the Last Update:  Nov 04, 2013
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -42,6 +42,11 @@
 # make clean
 # make CONF=rel clean
 # make CONF=spy clean
+##############################################################################
+#
+# NOTE: Typically, you should have no need to change anything in this Makefile
+#
+##############################################################################
 
 #-----------------------------------------------------------------------------
 # NOTE: the Makefile expects that the QPC environment variable is defined
@@ -52,11 +57,6 @@ $(error The QPC environment variable must be defined)
 endif
 
 #-----------------------------------------------------------------------------
-# general utilities
-#
-RM = del
-
-#-----------------------------------------------------------------------------
 # NOTE: this Makefile assumes that the MinGW\bin directory is added
 # to the PATH variable.
 #
@@ -64,32 +64,31 @@ CC    := gcc
 CPP   := g++
 LINK  := gcc                                                 # for C programs
 #LINK  := g++                                                # for C++ programs
+RM    := rm
 
 #-----------------------------------------------------------------------------
 # directories
 #
-QP_PORT_DIR := $(QPC)\ports\win32\mingw
+# Project name is derived from the directory name
+PROJECT := $(notdir $(CURDIR))
+
+QP_PORT_DIR := $(QPC)/ports/win32
 APP_DIR     := .
 
 VPATH = $(APP_DIR)
 
-# Output file basename
-OUTPUT    := reminder
-
 # include directories
-INCLUDES  = -I$(QPC)\include	\
-	-I$(QP_PORT_DIR) \
-	-I.
+INCLUDES  = -I. \
+	-I$(QPC)/include \
+	-I$(QP_PORT_DIR)
 
 # defines
 DEFINES =
 
+LINKFLAGS = -Wl,-Map,$(BIN_DIR)/$(PROJECT).map
 #-----------------------------------------------------------------------------
 # files
 #
-
-# assembler source files
-ASM_SRCS :=
 
 # C source files
 C_SRCS := $(wildcard *.c)
@@ -107,49 +106,43 @@ ifeq (rel, $(CONF))       # Release configuration ............................
 
 BIN_DIR := rel
 
-ASFLAGS =
-
 CFLAGS = -c -Wall -O2 $(INCLUDES) $(DEFINES) -DNDEBUG
 
 CPPFLAGS = -c -Wall -O2 $(INCLUDES) $(DEFINES) -DNDEBUG
 
-LINKFLAGS = -L$(QP_PORT_DIR)\$(BIN_DIR)
+LINKFLAGS = -L$(QP_PORT_DIR)/mingw/$(BIN_DIR)
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
 BIN_DIR := spy
 
-ASFLAGS =
+INCLUDES +=	-I$(QTOOLS)/qspy/include
+VPATH    += $(QTOOLS)/qspy/source
+C_SRCS   += qspy.c
 
 CFLAGS = -c -Wall -g $(INCLUDES) $(DEFINES) -DQ_SPY
 
 CPPFLAGS = -c -Wall -g $(INCLUDES) $(DEFINES) -DQ_SPY
 
-LINKFLAGS = -L$(QP_PORT_DIR)\$(BIN_DIR)
-
 else                     # default Debug configuration .......................
 
 BIN_DIR := dbg
-
-ASFLAGS =
 
 CFLAGS = -c -Wall -g $(INCLUDES) $(DEFINES)
 
 CPPFLAGS = -c -Wall -g $(INCLUDES) $(DEFINES)
 
-LINKFLAGS = -L$(QP_PORT_DIR)\$(BIN_DIR)
-
-
 endif
 
+LINKFLAGS = -L$(QP_PORT_DIR)/mingw/$(BIN_DIR) -Wl,-Map,$(BIN_DIR)/$(PROJECT).map
 
-ASM_OBJS     := $(patsubst %.s,%.o,$(ASM_SRCS))
+#-----------------------------------------------------------------------------
+
 C_OBJS       := $(patsubst %.c,%.o,$(C_SRCS))
 CPP_OBJS     := $(patsubst %.cpp,%.o,$(CPP_SRCS))
 
-TARGET_BIN   := $(BIN_DIR)/$(OUTPUT).bin
-TARGET_EXE   := $(BIN_DIR)/$(OUTPUT).exe
-ASM_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(ASM_OBJS))
+TARGET_BIN   := $(BIN_DIR)/$(PROJECT).bin
+TARGET_EXE   := $(BIN_DIR)/$(PROJECT).exe
 C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
 C_DEPS_EXT   := $(patsubst %.o, %.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
@@ -165,12 +158,12 @@ all: $(BIN_DIR) $(TARGET_EXE)
 
 $(BIN_DIR):
 	@echo
-	mkdir -p $@
+	mkdir $@
 
 $(TARGET_BIN): $(TARGET_EXE)
 	$(BIN) -O binary $< $@
 
-$(TARGET_EXE) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
+$(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LINK) $(LINKFLAGS) -o $@ $^ -lqp
 
 $(BIN_DIR)/%.d : %.c
@@ -188,23 +181,27 @@ $(BIN_DIR)/%.o : %.c
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
+# include dependency files only if our goal depends on their existence
+ifneq ($(MAKECMDGOALS),clean)
+  ifneq ($(MAKECMDGOALS),show)
 -include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
-
+  endif
+endif
 
 .PHONY : clean
 clean:
-	-$(RM) $(BIN_DIR)\*.o \
-	$(BIN_DIR)\*.d \
-	$(BIN_DIR)\*.exe \
-	$(BIN_DIR)\*.map
+	-$(RM) $(BIN_DIR)/*.o \
+	$(BIN_DIR)/*.d \
+	$(BIN_DIR)/*.exe \
+	$(BIN_DIR)/*.map
 	
 show:
-	@echo CONF = $(CONF)
-	@echo ASM_SRCS = $(ASM_SRCS)
-	@echo C_SRCS = $(C_SRCS)
+	@echo PROJECT  = $(PROJECT)
+	@echo CONF     = $(CONF)
+	@echo VPATH    = $(VPATH)
+	@echo C_SRCS   = $(C_SRCS)
 	@echo CPP_SRCS = $(CPP_SRCS)
 	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
-	@echo C_OBJS_EXT = $(C_OBJS_EXT)
-	@echo C_DEPS_EXT = $(C_DEPS_EXT)
+	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
-	@echo TARGET_ELF = $(TARGET_ELF)

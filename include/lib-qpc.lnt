@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last Updated for Version: 5.1.1
-// Date of the Last Update:  Oct 10, 2013
+// Last Updated for Version: 5.2.0
+// Date of the Last Update:  Nov 22, 2013
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -93,12 +93,18 @@
 -emacro(740,                  // MISRA04-1.2(req) pointer cast
  Q_STATE_CAST,                // (incompatible indirect types)
  Q_TRAN,
- Q_SUPER)
+ Q_SUPER,
+ QM_ENTRY,
+ QM_EXIT,
+ QM_INITIAL,
+ QM_TRAN)
 -emacro(929,                  // MISRA04-11.4(adv) cast pointer to pointer
  Q_STATE_CAST,
  Q_ACTION_CAST,
  Q_TRAN,
  Q_SUPER,
+ QM_ENTRY,
+ QM_EXIT,
  QM_INITIAL,
  QM_TRAN)
 -emacro(960,                  // MISRA04-11.1(req) Conversions involving
@@ -192,6 +198,7 @@
  QF_EPOOL_EVENT_SIZE_,
  QF_EPOOL_GET_,
  QF_EPOOL_PUT_,
+ QF_PTR_INC_,
  QF_tick,
  QActive_postFIFO,
  QEQueue_postFIFO)
@@ -217,6 +224,7 @@
  Q_NEW_X,
  QACTIVE_POST,
  QACTIVE_POST_LIFO)
+-emacro(960, QF_PTR_INC_)     // MISRA04-17.4(req) pointer increment
 -emacro(717,                  // do ... while(0)
  QPSet64_insert,
  QPSet64_remove,
@@ -240,6 +248,11 @@
  QK_EXT_RESTORE,
  QK_TLS,
  QK_getVersion)
+-estring(960,                 // MISRA04-8.7(req) could use block scope
+ QK_intNest_,
+ QF_maxPool_,
+ QF_timeEvtHead_)
+
 
 // QS
 -emacro(506, QS_*)            // MISRA04-13.7(req) constant value boolean
@@ -292,6 +305,7 @@
  QS_OBJ_DICTIONARY,
  QS_FUN_DICTIONARY,
  QS_USR_DICTIONARY,
+ QS_RESET,
  QS_ASSERTION,
  QS_TEST_ASSERTION,
  QS_TEST,
@@ -337,6 +351,33 @@
  QS_BEGIN_NOCRIT_,
  QS_END_NOCRIT_)
 -emacro(717, QS_*)            // do ... while(0);
+
+
+// Backwards compatibility layer of QP API
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QHsm_init,
+ QHsm_dispatch,
+ QFsm_init,
+ QFsm_dispatch,
+ QActive_start,
+ QActive_postFIFO,
+ QF_tick,
+ QF_TICK,
+ QTimeEvt_ctor,
+ QTimeEvt_postIn,
+ QTimeEvt_postEvery)
+-esym(960,                    // MISRA04-19.4(req) Disallowed macro definition
+ QHsm_init,
+ QHsm_dispatch,
+ QFsm_init,
+ QFsm_dispatch,
+ QActive_start,
+ QActive_postFIFO,
+ QF_tick,
+ QF_TICK,
+ QTimeEvt_ctor,
+ QTimeEvt_postIn,
+ QTimeEvt_postEvery)
 
 
 // Miscallaneous

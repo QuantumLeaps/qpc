@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 03, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,17 +48,17 @@ QF_EPOOL_TYPE_ QF_pool_[QF_MAX_EPOOL];          /* allocate the event pools */
 uint_t QF_maxPool_;                    /* number of initialized event pools */
 
 /*..........................................................................*/
-void QF_poolInit(void * const poolSto, uint32_t const poolSize,
-                 uint32_t const evtSize)
+void QF_poolInit(void * const poolSto, uint_t const poolSize,
+                 uint_t const evtSize)
 {
                       /* cannot exceed the number of available memory pools */
     Q_REQUIRE(QF_maxPool_ < (uint_t)Q_DIM(QF_pool_));
             /* please initialize event pools in ascending order of evtSize: */
     Q_REQUIRE((QF_maxPool_ == (uint_t)0)
              || (QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - (uint_t)1])
-                 < (QEvtSize)evtSize));
+                 < evtSize));
                 /* perfom the platform-dependent initialization of the pool */
     QF_EPOOL_INIT_(QF_pool_[QF_maxPool_],
-                   poolSto, poolSize, (QEvtSize)evtSize);
+                   poolSto, poolSize, evtSize);
     ++QF_maxPool_;                                         /* one more pool */
 }

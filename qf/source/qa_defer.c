@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 12, 2013
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,7 +48,7 @@ uint8_t QActive_defer(QActive * const me, QEQueue * const eq,
                       QEvt const * const e)
 {
     (void)me;                 /* avoid compiler warning about 'me' not used */
-    return QEQueue_post(eq, e, (uint16_t)1);
+    return QEQueue_post(eq, e, (uint_t)1);
 }
 /*..........................................................................*/
 uint8_t QActive_recall(QActive * const me, QEQueue * const eq) {

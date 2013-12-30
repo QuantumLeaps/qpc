@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  Calculator Example
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last Updated for Version: 5.2.0
+* Date of the Last Update:  Dec 02, 2013
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 *                          http://www.state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#include "qp_port.h"
+#include "qep_port.h"
 #include "bsp.h"
 #include "calc.h"
 
@@ -57,7 +57,7 @@ int main() {
            "Press <Esc>          to quit.\n\n",
            QEP_getVersion());
 
-    QHsm_init(the_calc, (QEvt *)0);         /* trigger initial transition */
+    QMSM_INIT(the_calc, (QEvt *)0);           /* trigger initial transition */
 
     for (;;) {                                                /* event loop */
         CalcEvt e;                                      /* Calculator event */
@@ -123,7 +123,7 @@ int main() {
         }
 
         if (((QEvt *)&e)->sig != 0) {           /* valid event generated? */
-            QHsm_dispatch(the_calc, (QEvt *)&e);        /* dispatch event */
+            QMSM_DISPATCH(the_calc, (QEvt *)&e);        /* dispatch event */
         }
     }
     return 0;

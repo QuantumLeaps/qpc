@@ -1,7 +1,7 @@
-About this example
-------------------
+About QP-lwIP Integration
+-------------------------
 This example application demonstrates the lightweight TCP/IP stack called lwIP
-(version 1.4.0-rc2) running on top of the QP state machine framework, which are
+(version 1.4.1) running on top of the QP active object framework, which are
 both briefly described below.
 
 The example is currently configured to use DHCP to obtain the IP address, so
@@ -51,7 +51,7 @@ example code.
 
 About QP State Machine Frameworks
 ---------------------------------
-QP™ is a family of very lightweight, open source, state machine-based
+QP is a family of very lightweight, open source, state machine-based
 frameworks for embedded microprocessors, microcontrollers, and DSPs. QP
 enables developing well-structured embedded applications as a set of
 concurrently executing hierarchical state machines (UML statecharts). With QP,
@@ -103,14 +103,21 @@ lwIP can be found at the lwIP homepage at http://www.sics.se/~adam/lwip/.
 
 The QPC Environment Variable
 ----------------------------
-The project file provided with this example assumes that
-the environment variable QPC is defined and it points to the
-location of the QP/C framework. For example, assuming that
-you have installed QP/C into the directory C:\software\qpc,
-you should define the environment variable QPC to 
-C:\software\qpc.
+The project file provided with this example assumes that the environment
+variable QPC is defined and it points to the location of the QP/C framework.
+For example, assuming that you have installed QP/C into the directory C:\qp\qpc,
+you should define the environment variable QPC to C:\qp\qpc.
 
- 
+
+The LWIP Environment Variable
+-----------------------------
+The project file provided with this example assumes that the environment
+variable LWIP is defined and it points to the location of the LwIP software.
+For example, assuming that you have installed LWIP into the directory
+C:\software\lwip-1.4.1, you should define the environment variable LWIP to 
+C:\software\lwip-1.4.1.
+
+  
 Editing the Environment Variables on Windows
 --------------------------------------------
 Open the Windows Explorer and right-click on the Computer
