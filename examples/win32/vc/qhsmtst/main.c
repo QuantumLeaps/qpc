@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QHsmTst Example, Win32
 * Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 02, 2013
+* Date of the Last Update:  Jan 06, 2014
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -150,4 +150,25 @@ static void dispatch(QSignal sig) {
     fprintf(l_outFile, "\n%c:", 'A' + sig - A_SIG);
     QMSM_DISPATCH(the_hsm, &e);                       /* dispatch the event */
 }
+/*--------------------------------------------------------------------------*/
+#ifdef Q_SPY
+#include "qs_port.h"
+
+/*..........................................................................*/
+void QF_onStartup(void) {
+}
+/*..........................................................................*/
+void QF_onClockTick(void) {
+}
+/*..........................................................................*/
+void QF_onCleanup(void) {
+}
+/*..........................................................................*/
+void QS_onCleanup(void) {
+}
+/*..........................................................................*/
+QSTimeCtr QS_onGetTime(void) {
+    return (QSTimeCtr)clock();
+}
+#endif
 

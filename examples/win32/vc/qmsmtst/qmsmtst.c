@@ -106,7 +106,7 @@ static QState QMsmTst_initial(QMsmTst * const me, QEvt const * const e) {
     (void)e; /* avoid compiler warning */
     me->foo = 0U;
     BSP_display("top-INIT;");
-    return QM_INITIAL(&QMsmTst_s2_s, act_);
+    return QM_INITIAL(&QMsmTst_s2_s, &act_[0]);
 }
 /* @(/1/0/1/1) .............................................................*/
 static QState QMsmTst_s_e(QMsmTst * const me) {
@@ -124,7 +124,7 @@ static QState QMsmTst_s_i(QMsmTst * const me) {
         Q_ACTION_CAST(0)
     };
     BSP_display("s-INIT;");
-    return QM_INITIAL(&QMsmTst_s11_s, act_);
+    return QM_INITIAL(&QMsmTst_s11_s, &act_[0]);
 }
 static QState QMsmTst_s(QMsmTst * const me, QEvt const * const e) {
     QState status_;
@@ -150,7 +150,7 @@ static QState QMsmTst_s(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s-E;");
-            status_ = QM_TRAN(&QMsmTst_s11_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s11_s, &act_[0]);
             break;
         }
         /* @(/1/0/1/1/3) */
@@ -181,7 +181,7 @@ static QState QMsmTst_s1_i(QMsmTst * const me) {
         Q_ACTION_CAST(0)
     };
     BSP_display("s1-INIT;");
-    return QM_INITIAL(&QMsmTst_s11_s, act_);
+    return QM_INITIAL(&QMsmTst_s11_s, &act_[0]);
 }
 static QState QMsmTst_s1(QMsmTst * const me, QEvt const * const e) {
     QState status_;
@@ -203,7 +203,7 @@ static QState QMsmTst_s1(QMsmTst * const me, QEvt const * const e) {
                 };
                 me->foo = 1U;
                 BSP_display("s1-D;");
-                status_ = QM_TRAN(&QMsmTst_s_s, act_);
+                status_ = QM_TRAN(&QMsmTst_s_s, &act_[0]);
             }
             else {
                 status_ = QM_UNHANDLED();
@@ -219,7 +219,7 @@ static QState QMsmTst_s1(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s1-A;");
-            status_ = QM_TRAN(&QMsmTst_s1_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s1_s, &act_[0]);
             break;
         }
         /* @(/1/0/1/1/4/4) */
@@ -229,7 +229,7 @@ static QState QMsmTst_s1(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s1-B;");
-            status_ = QM_TRAN(&QMsmTst_s11_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s11_s, &act_[0]);
             break;
         }
         /* @(/1/0/1/1/4/5) */
@@ -242,7 +242,7 @@ static QState QMsmTst_s1(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s1-F;");
-            status_ = QM_TRAN(&QMsmTst_s211_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s211_s, &act_[0]);
             break;
         }
         /* @(/1/0/1/1/4/6) */
@@ -254,7 +254,7 @@ static QState QMsmTst_s1(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s1-C;");
-            status_ = QM_TRAN(&QMsmTst_s2_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s2_s, &act_[0]);
             break;
         }
         default: {
@@ -285,7 +285,7 @@ static QState QMsmTst_s11(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s11-H;");
-            status_ = QM_TRAN(&QMsmTst_s_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s_s, &act_[0]);
             break;
         }
         /* @(/1/0/1/1/4/7/1) */
@@ -299,7 +299,7 @@ static QState QMsmTst_s11(QMsmTst * const me, QEvt const * const e) {
                 };
                 me->foo = 0U;
                 BSP_display("s11-D;");
-                status_ = QM_TRAN(&QMsmTst_s1_s, act_);
+                status_ = QM_TRAN(&QMsmTst_s1_s, &act_[0]);
             }
             else {
                 status_ = QM_UNHANDLED();
@@ -317,7 +317,7 @@ static QState QMsmTst_s11(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s11-G;");
-            status_ = QM_TRAN(&QMsmTst_s211_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s211_s, &act_[0]);
             break;
         }
         default: {
@@ -343,7 +343,7 @@ static QState QMsmTst_s2_i(QMsmTst * const me) {
         Q_ACTION_CAST(0)
     };
     BSP_display("s2-INIT;");
-    return QM_INITIAL(&QMsmTst_s211_s, act_);
+    return QM_INITIAL(&QMsmTst_s211_s, &act_[0]);
 }
 static QState QMsmTst_s2(QMsmTst * const me, QEvt const * const e) {
     QState status_;
@@ -370,7 +370,7 @@ static QState QMsmTst_s2(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s2-F;");
-            status_ = QM_TRAN(&QMsmTst_s11_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s11_s, &act_[0]);
             break;
         }
         /* @(/1/0/1/1/5/3) */
@@ -382,7 +382,7 @@ static QState QMsmTst_s2(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s2-C;");
-            status_ = QM_TRAN(&QMsmTst_s1_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s1_s, &act_[0]);
             break;
         }
         default: {
@@ -407,7 +407,7 @@ static QState QMsmTst_s21_i(QMsmTst * const me) {
         Q_ACTION_CAST(0)
     };
     BSP_display("s21-INIT;");
-    return QM_INITIAL(&QMsmTst_s211_s, act_);
+    return QM_INITIAL(&QMsmTst_s211_s, &act_[0]);
 }
 static QState QMsmTst_s21(QMsmTst * const me, QEvt const * const e) {
     QState status_;
@@ -422,7 +422,7 @@ static QState QMsmTst_s21(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s21-G;");
-            status_ = QM_TRAN(&QMsmTst_s1_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s1_s, &act_[0]);
             break;
         }
         /* @(/1/0/1/1/5/4/2) */
@@ -434,7 +434,7 @@ static QState QMsmTst_s21(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s21-A;");
-            status_ = QM_TRAN(&QMsmTst_s21_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s21_s, &act_[0]);
             break;
         }
         /* @(/1/0/1/1/5/4/3) */
@@ -444,7 +444,7 @@ static QState QMsmTst_s21(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s21-B;");
-            status_ = QM_TRAN(&QMsmTst_s211_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s211_s, &act_[0]);
             break;
         }
         default: {
@@ -476,7 +476,7 @@ static QState QMsmTst_s211(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s211-H;");
-            status_ = QM_TRAN(&QMsmTst_s_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s_s, &act_[0]);
             break;
         }
         /* @(/1/0/1/1/5/4/4/1) */
@@ -487,7 +487,7 @@ static QState QMsmTst_s211(QMsmTst * const me, QEvt const * const e) {
                 Q_ACTION_CAST(0)
             };
             BSP_display("s211-D;");
-            status_ = QM_TRAN(&QMsmTst_s21_s, act_);
+            status_ = QM_TRAN(&QMsmTst_s21_s, &act_[0]);
             break;
         }
         default: {

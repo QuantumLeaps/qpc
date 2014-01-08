@@ -110,7 +110,7 @@ static QState Mine1_initial(Mine1 * const me, QEvt const * const e) {
     QS_SIG_DICTIONARY(MISSILE_IMG_SIG,   me);
 
     (void)e; /* avoid the "unreferenced parameter" warning */
-    return QM_INITIAL(&Mine1_unused_s, QMsm_emptyAction_);
+    return QM_INITIAL(&Mine1_unused_s, &QMsm_emptyAction_[0]);
 }
 /* @(/2/3/3/1) .............................................................*/
 static QState Mine1_unused(Mine1 * const me, QEvt const * const e) {
@@ -120,7 +120,7 @@ static QState Mine1_unused(Mine1 * const me, QEvt const * const e) {
         case MINE_PLANT_SIG: {
             me->x = Q_EVT_CAST(ObjectPosEvt)->x;
             me->y = Q_EVT_CAST(ObjectPosEvt)->y;
-            status_ = QM_TRAN(&Mine1_planted_s, QMsm_emptyAction_);
+            status_ = QM_TRAN(&Mine1_planted_s, &QMsm_emptyAction_[0]);
             break;
         }
         default: {
@@ -147,7 +147,7 @@ static QState Mine1_used(Mine1 * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Mine1_used_x),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Mine1_unused_s, act_);
+            status_ = QM_TRAN(&Mine1_unused_s, &act_[0]);
             break;
         }
         default: {
@@ -187,7 +187,7 @@ static QState Mine1_exploding(Mine1 * const me, QEvt const * const e) {
                     Q_ACTION_CAST(&Mine1_used_x),
                     Q_ACTION_CAST(0)
                 };
-                status_ = QM_TRAN(&Mine1_unused_s, act_);
+                status_ = QM_TRAN(&Mine1_unused_s, &act_[0]);
             }
             break;
         }
@@ -222,7 +222,7 @@ static QState Mine1_planted(Mine1 * const me, QEvt const * const e) {
                     Q_ACTION_CAST(&Mine1_used_x),
                     Q_ACTION_CAST(0)
                 };
-                status_ = QM_TRAN(&Mine1_unused_s, act_);
+                status_ = QM_TRAN(&Mine1_unused_s, &act_[0]);
             }
             break;
         }
@@ -244,7 +244,7 @@ static QState Mine1_planted(Mine1 * const me, QEvt const * const e) {
                 QACTIVE_POST(AO_Ship, (QEvt *)&mine1_hit, me);
                 /* go straight to 'disabled' and let the Ship do
                  * the exploding */
-                status_ = QM_TRAN(&Mine1_unused_s, act_);
+                status_ = QM_TRAN(&Mine1_unused_s, &act_[0]);
             }
             else {
                 status_ = QM_UNHANDLED();
@@ -267,7 +267,7 @@ static QState Mine1_planted(Mine1 * const me, QEvt const * const e) {
                     25U  /* score for destroying Mine type-1 */
                 };
                 QACTIVE_POST(AO_Missile, (QEvt *)&mine1_destroyed, me);
-                status_ = QM_TRAN(&Mine1_exploding_s, act_);
+                status_ = QM_TRAN(&Mine1_exploding_s, &act_[0]);
             }
             else {
                 status_ = QM_UNHANDLED();

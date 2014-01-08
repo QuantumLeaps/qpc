@@ -118,7 +118,7 @@ BIN_DIR := spy
 
 INCLUDES +=	-I$(QTOOLS)/qspy/include
 VPATH    += $(QTOOLS)/qspy/source
-C_SRCS   += qspy.c
+#C_SRCS   += qspy.c
 
 CFLAGS = -c -Wall -g $(INCLUDES) $(DEFINES) -DQ_SPY
 

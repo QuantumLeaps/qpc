@@ -113,7 +113,7 @@ static QState Table_initial(Table * const me, QEvt const * const e) {
         me->isHungry[n] = 0U;
         BSP_displayPhilStat(n, "thinking");
     }
-    return QM_INITIAL(&Table_serving_s, act_);
+    return QM_INITIAL(&Table_serving_s, &act_[0]);
 }
 /* @(/2/1/2/1) .............................................................*/
 static QState Table_active(Table * const me, QEvt const * const e) {
@@ -243,7 +243,7 @@ static QState Table_serving(Table * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Table_paused_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Table_paused_s, act_);
+            status_ = QM_TRAN(&Table_paused_s, &act_[0]);
             break;
         }
         default: {
@@ -272,7 +272,7 @@ static QState Table_paused(Table * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Table_serving_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Table_serving_s, act_);
+            status_ = QM_TRAN(&Table_serving_s, &act_[0]);
             break;
         }
         /* @(/2/1/2/1/3/1) */

@@ -83,7 +83,7 @@ static QState Missile_initial(Missile * const me, QEvt const * const e) {
     QS_SIG_DICTIONARY(MISSILE_FIRE_SIG,   &l_missile);     /* local signals */
     QS_SIG_DICTIONARY(HIT_WALL_SIG,       &l_missile);
     QS_SIG_DICTIONARY(DESTROYED_MINE_SIG, &l_missile);
-    return QM_INITIAL(&Missile_armed_s, QMsm_emptyAction_);
+    return QM_INITIAL(&Missile_armed_s, &QMsm_emptyAction_[0]);
 }
 /* @(/2/2/3/1) .............................................................*/
 static QState Missile_armed(Missile * const me, QEvt const * const e) {
@@ -93,7 +93,7 @@ static QState Missile_armed(Missile * const me, QEvt const * const e) {
         case MISSILE_FIRE_SIG: {
             me->x = Q_EVT_CAST(ObjectPosEvt)->x;
             me->y = Q_EVT_CAST(ObjectPosEvt)->y;
-            status_ = QM_TRAN(&Missile_flying_s, QMsm_emptyAction_);
+            status_ = QM_TRAN(&Missile_flying_s, &QMsm_emptyAction_[0]);
             break;
         }
         default: {
@@ -123,7 +123,7 @@ static QState Missile_flying(Missile * const me, QEvt const * const e) {
             }
             /* @(/2/2/3/2/0/1) */
             else {
-                status_ = QM_TRAN(&Missile_armed_s, QMsm_emptyAction_);
+                status_ = QM_TRAN(&Missile_armed_s, &QMsm_emptyAction_[0]);
             }
             break;
         }
@@ -133,13 +133,13 @@ static QState Missile_flying(Missile * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Missile_exploding_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Missile_exploding_s, act_);
+            status_ = QM_TRAN(&Missile_exploding_s, &act_[0]);
             break;
         }
         /* @(/2/2/3/2/2) */
         case DESTROYED_MINE_SIG: {
             QACTIVE_POST(AO_Ship, e, me);
-            status_ = QM_TRAN(&Missile_armed_s, QMsm_emptyAction_);
+            status_ = QM_TRAN(&Missile_armed_s, &QMsm_emptyAction_[0]);
             break;
         }
         default: {
@@ -176,7 +176,7 @@ static QState Missile_exploding(Missile * const me, QEvt const * const e) {
             }
             /* @(/2/2/3/3/0/1) */
             else {
-                status_ = QM_TRAN(&Missile_armed_s, QMsm_emptyAction_);
+                status_ = QM_TRAN(&Missile_armed_s, &QMsm_emptyAction_[0]);
             }
             break;
         }

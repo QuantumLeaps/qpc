@@ -231,7 +231,6 @@ void Q_onAssert(char const Q_ROM * const file, int line) {
 /*..........................................................................*/
 void BSP_init(void) {
     Q_ALLEGE(QS_INIT(l_cmdLine));
-    QS_RESET();
     QS_OBJ_DICTIONARY(&l_clock_tick);   /* must be called *after* QF_init() */
     QS_USR_DICTIONARY(PHILO_STAT);
 }

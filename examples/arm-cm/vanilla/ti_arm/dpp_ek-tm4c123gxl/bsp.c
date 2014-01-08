@@ -176,7 +176,6 @@ void BSP_init(void) {
     if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
         Q_ERROR();
     }
-    QS_RESET();
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_OBJ_DICTIONARY(&l_GPIOPortA_IRQHandler);
 }

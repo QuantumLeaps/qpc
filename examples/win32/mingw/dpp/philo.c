@@ -125,7 +125,7 @@ static QState Philo_initial(Philo * const me, QEvt const * const e) {
     QS_SIG_DICTIONARY(TIMEOUT_SIG, me); /* signal for each Philos */
 
     QActive_subscribe(&me->super, EAT_SIG);
-    return QM_INITIAL(&Philo_thinking_s, act_);
+    return QM_INITIAL(&Philo_thinking_s, &act_[0]);
 }
 /* @(/2/0/1/1) .............................................................*/
 static QState Philo_thinking_e(Philo * const me) {
@@ -141,7 +141,7 @@ static QState Philo_thinking(Philo * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Philo_hungry_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Philo_hungry_s, act_);
+            status_ = QM_TRAN(&Philo_hungry_s, &act_[0]);
             break;
         }
         /* @(/2/0/1/1/1) */
@@ -177,7 +177,7 @@ static QState Philo_hungry(Philo * const me, QEvt const * const e) {
                     Q_ACTION_CAST(&Philo_eating_e),
                     Q_ACTION_CAST(0)
                 };
-                status_ = QM_TRAN(&Philo_eating_s, act_);
+                status_ = QM_TRAN(&Philo_eating_s, &act_[0]);
             }
             else {
                 status_ = QM_UNHANDLED();
@@ -219,7 +219,7 @@ static QState Philo_eating(Philo * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Philo_thinking_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Philo_thinking_s, act_);
+            status_ = QM_TRAN(&Philo_thinking_s, &act_[0]);
             break;
         }
         /* @(/2/0/1/3/1) */

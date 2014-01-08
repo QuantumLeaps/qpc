@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="3.0.0">
+<model version="3.0.1">
  <documentation>&quot;Fly 'n' Shoot&quot; game model from Chapters 1 &amp; 9 of PSiCC2
 
 NOTE: Requries QP 5.</documentation>

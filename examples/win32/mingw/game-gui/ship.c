@@ -107,11 +107,11 @@ static QState Ship_initial(Ship * const me, QEvt const * const e) {
     QS_SIG_DICTIONARY(HIT_WALL_SIG,         &l_ship);
     QS_SIG_DICTIONARY(HIT_MINE_SIG,         &l_ship);
     QS_SIG_DICTIONARY(DESTROYED_MINE_SIG,   &l_ship);
-    return QM_INITIAL(&Ship_active_s, act_);
+    return QM_INITIAL(&Ship_active_s, &act_[0]);
 }
 /* @(/2/1/4/1) .............................................................*/
 static QState Ship_active_i(Ship * const me) {
-    return QM_INITIAL(&Ship_parked_s, QMsm_emptyAction_);
+    return QM_INITIAL(&Ship_parked_s, &QMsm_emptyAction_[0]);
 }
 static QState Ship_active(Ship * const me, QEvt const * const e) {
     QState status_;
@@ -140,7 +140,7 @@ static QState Ship_parked(Ship * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Ship_flying_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Ship_flying_s, act_);
+            status_ = QM_TRAN(&Ship_flying_s, &act_[0]);
             break;
         }
         default: {
@@ -203,7 +203,7 @@ static QState Ship_flying(Ship * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Ship_exploding_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Ship_exploding_s, act_);
+            status_ = QM_TRAN(&Ship_exploding_s, &act_[0]);
             break;
         }
         /* @(/2/1/4/1/3/4) */
@@ -212,7 +212,7 @@ static QState Ship_flying(Ship * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Ship_exploding_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Ship_exploding_s, act_);
+            status_ = QM_TRAN(&Ship_exploding_s, &act_[0]);
             break;
         }
         default: {
@@ -249,7 +249,7 @@ static QState Ship_exploding(Ship * const me, QEvt const * const e) {
                 ScoreEvt *gameOver = Q_NEW(ScoreEvt, GAME_OVER_SIG);
                 gameOver->score = me->score;
                 QACTIVE_POST(AO_Tunnel, (QEvt *)gameOver, me);
-                status_ = QM_TRAN(&Ship_parked_s, QMsm_emptyAction_);
+                status_ = QM_TRAN(&Ship_parked_s, &QMsm_emptyAction_[0]);
             }
             break;
         }

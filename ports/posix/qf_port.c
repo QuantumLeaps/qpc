@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QF/C port to POSIX/P-threads, GNU
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 18, 2013
+* Last Updated for Version: 5.2.1
+* Date of the Last Update:  Jan 06, 2014
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -119,8 +119,6 @@ void QActive_start_(QActive *me, uint_t prio,
     me->prio = (uint8_t)prio;
     QF_add_(me);                     /* make QF aware of this active object */
     QMSM_INIT(&me->super, ie);            /* execute the initial transition */
-
-    QS_FLUSH();                       /* flush the trace buffer to the host */
 
     pthread_attr_init(&attr);
 

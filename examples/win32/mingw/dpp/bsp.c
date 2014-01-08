@@ -219,8 +219,6 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_OFF(QS_QF_ISR_ENTRY);
     QS_FILTER_OFF(QS_QF_ISR_EXIT);
 
-    QS_RESET();
-
     return CreateThread(NULL, 1024, &idleThread, (void *)0, 0, NULL)
              != (HANDLE)0; /* return the status of creating the idle thread */
 }

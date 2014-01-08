@@ -1,3 +1,7 @@
+/** \page metrics Code Metrics 
+
+\code 
+                   Standard Code Metrics for QP/C 5.2.0 
 
            Resource Standard Metrics (TM) for C, C++, C# and Java
                    Version 7.75 - mSquaredTechnologies.com
@@ -5,13 +9,12 @@
   License Type: Windows Single User License
   Licensed To : Quantum Leaps, LLC
   License No. : WS2975                          License Date: Dec 15, 2013
-  Build Date  : Sep  2 2009                         Run Date: Dec 26, 2013
+  Build Date  : Sep  2 2009                         Run Date: Jan 06, 2014
   (C)1996-2009 M Squared Technologies LLC
   ________________________________________________________________________
 
                            ~~ Function Metrics ~~
                       ~~ Complexity Detail Analysis ~~
-                           ~~ Quality Analysis ~~
 
   File: ..\include\qassert.h
   ________________________________________________________________________
@@ -55,14 +58,6 @@
 
   File: ..\include\qf.h
   ________________________________________________________________________
-
-
-    Notice #3: Line 1031, '...' ellipsis found for a variable argument list.
-           The compiler will not check the types of these parameters.
-
-    Notice #3: Line 1035, '...' ellipsis found for a variable argument list.
-           The compiler will not check the types of these parameters.
-  ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
 
@@ -201,18 +196,14 @@
   File: ..\qep\source\qfsm_dis.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QFsm_dispatch_
   Parameters: (QFsm * const me, QEvt const * const e)
-
-  Function: QFsm_dispatch_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 3     
   Complexity   Param 2       Return 1      Cyclo Vg 4       Total        7
   LOC 51       eLOC 45       lLOC 26       Comment 28       Lines       62
-  ------------------------ Function End Line: 108 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -245,27 +236,19 @@
   File: ..\qep\source\qfsm_ini.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QFsm_ctor
   Parameters: (QFsm * const me, QStateHandler initial)
-
-  Function: QFsm_ctor
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 9        eLOC 7        lLOC 4        Comment 4        Lines       10
-  ------------------------- Function End Line: 56 ------------------------
 
-  ------------------------ Function Begin Line: 58 -----------------------
   Function: QFsm_init_
   Parameters: (QFsm * const me, QEvt const * const e)
-
-  Function: QFsm_init_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 2     
   Complexity   Param 2       Return 1      Cyclo Vg 3       Total        6
   LOC 19       eLOC 18       lLOC 10       Comment 14       Lines       25
-  ------------------------- Function End Line: 82 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -298,15 +281,8 @@
   File: ..\qep\source\qhsm_dis.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 51 -----------------------
   Function: QHsm_dispatch_
   Parameters: (QHsm * const me, QEvt const * const e)
-
-    Notice #28: Line 178: The function cyclomatic complexity of
-           11 exceeds the specified limit of 10.
-
-  Function: QHsm_dispatch_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 5     
@@ -314,56 +290,16 @@
       Conditional if / else if: 4     
   Complexity   Param 2       Return 1      Cyclo Vg 11      Total       14
   LOC 99       eLOC 88       lLOC 59       Comment 49       Lines      128
-  ------------------------ Function End Line: 178 ------------------------
 
-  ----------------------- Function Begin Line: 183 -----------------------
   Function: QHsm_tran_
   Parameters: (QHsm * const me, QStateHandler path[QEP_MAX_NEST_DEPTH_])
-
-    Notice #55: Line 227
-           The depth of scope '7' exceeds the notice limit of 6.
-
-    Notice #55: Line 234
-           The depth of scope '7' exceeds the notice limit of 6.
-
-    Notice #55: Line 250
-           The depth of scope '7' exceeds the notice limit of 6.
-
-    Notice #55: Line 251
-           The depth of scope '8' exceeds the notice limit of 6.
-
-    Notice #55: Line 257
-           The depth of scope '8' exceeds the notice limit of 6.
-
-    Notice #55: Line 262
-           The depth of scope '7' exceeds the notice limit of 6.
-
-    Notice #55: Line 267
-           The depth of scope '8' exceeds the notice limit of 6.
-
-    Notice #55: Line 271
-           The depth of scope '9' exceeds the notice limit of 6.
-
-    Notice #55: Line 282
-           The depth of scope '9' exceeds the notice limit of 6.
-
-    Notice #55: Line 283
-           The depth of scope '10' exceeds the notice limit of 6.
-
-    Notice #55: Line 289
-           The depth of scope '10' exceeds the notice limit of 6.
-
-    Notice #28: Line 301: The function cyclomatic complexity of
-           15 exceeds the specified limit of 10.
-
-  Function: QHsm_tran_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 4     
       Conditional if / else if: 10    
   Complexity   Param 2       Return 1      Cyclo Vg 15      Total       18
   LOC 95       eLOC 74       lLOC 48       Comment 52       Lines      119
-  ------------------------ Function End Line: 301 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -396,19 +332,15 @@
   File: ..\qep\source\qhsm_in.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QHsm_isIn
   Parameters: (QHsm * const me, QStateHandler const state)
-
-  Function: QHsm_isIn
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
       Conditional if / else if: 1     
   Complexity   Param 2       Return 1      Cyclo Vg 3       Total        6
   LOC 16       eLOC 13       lLOC 9        Comment 9        Lines       19
-  ------------------------- Function End Line: 65 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -441,28 +373,20 @@
   File: ..\qep\source\qhsm_ini.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QHsm_ctor
   Parameters: (QHsm * const me, QStateHandler initial)
-
-  Function: QHsm_ctor
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 9        eLOC 7        lLOC 4        Comment 3        Lines       10
-  ------------------------- Function End Line: 56 ------------------------
 
-  ------------------------ Function Begin Line: 58 -----------------------
   Function: QHsm_init_
   Parameters: (QHsm * const me, QEvt const * const e)
-
-  Function: QHsm_init_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 3     
       Logical and ( && )      : 2     
   Complexity   Param 2       Return 1      Cyclo Vg 6       Total        9
   LOC 38       eLOC 36       lLOC 25       Comment 19       Lines       49
-  ------------------------ Function End Line: 106 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -495,15 +419,11 @@
   File: ..\qep\source\qhsm_top.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 44 -----------------------
   Function: QHsm_top
   Parameters: (void const * const me, QEvt const * const e)
-
-  Function: QHsm_top
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 5        eLOC 4        lLOC 3        Comment 4        Lines        5
-  ------------------------- Function End Line: 48 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -536,43 +456,30 @@
   File: ..\qep\source\qmsm_dis.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 49 -----------------------
   Function: QMsm_dispatch_
   Parameters: (QMsm * const me, QEvt const * const e)
-
-    Notice #44: Line 75, The keyword 'break' has been identified
-           outside a 'switch' logic control structure.  The use
-           of 'break' interrupts the linear logic flow and can create
-           source code which is difficult to maintain.
-
-  Function: QMsm_dispatch_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 2     
       Conditional if / else if: 6     
   Complexity   Param 2       Return 1      Cyclo Vg 9       Total       12
-  LOC 71       eLOC 59       lLOC 34       Comment 38       Lines       86
-  ------------------------ Function End Line: 134 ------------------------
-
-  ----------------------- Function Begin Line: 137 -----------------------
-  Function: QMsm_tran_
-  Parameters: (QHsm * const me)
+  LOC 72       eLOC 60       lLOC 35       Comment 38       Lines       88
 
   Function: QMsm_tran_
+  Parameters: (QHsm * const me, QActionHandler const *a)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
       Loops for / foreach     : 2     
       Conditional if / else if: 3     
-  Complexity   Param 1       Return 1      Cyclo Vg 7       Total        9
-  LOC 52       eLOC 43       lLOC 18       Comment 14       Lines       57
-  ------------------------ Function End Line: 193 ------------------------
+  Complexity   Param 2       Return 1      Cyclo Vg 7       Total       10
+  LOC 51       eLOC 42       lLOC 17       Comment 14       Lines       56
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
 
-  LOC 127      eLOC 106      lLOC 53       Comment 92       Lines      193
+  LOC 127      eLOC 106      lLOC 53       Comment 92       Lines      195
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
@@ -581,18 +488,18 @@
   Total Function LOC.....:        123  Total Function Pts LOC :        1.0
   Total Function eLOC....:        102  Total Function Pts eLOC:        0.8
   Total Function lLOC....:         52  Total Function Pts lLOC:        0.4
-  Total Function Params .:          3  Total Function Return .:          2
-  Total Cyclo Complexity :         16  Total Function Complex.:         21
+  Total Function Params .:          4  Total Function Return .:          2
+  Total Cyclo Complexity :         16  Total Function Complex.:         22
          ------     -----     -----     ------     ------     -----       
-  Max Function LOC ......:         71  Average Function LOC ..:      61.50
-  Max Function eLOC .....:         59  Average Function eLOC .:      51.00
-  Max Function lLOC .....:         34  Average Function lLOC .:      26.00
+  Max Function LOC ......:         72  Average Function LOC ..:      61.50
+  Max Function eLOC .....:         60  Average Function eLOC .:      51.00
+  Max Function lLOC .....:         35  Average Function lLOC .:      26.00
          ------     -----     -----     ------     ------     -----       
-  Max Function Parameters:          2  Avg Function Parameters:       1.50
+  Max Function Parameters:          2  Avg Function Parameters:       2.00
   Max Function Returns ..:          1  Avg Function Returns ..:       1.00
-  Max Interface Complex. :          3  Avg Interface Complex. :       2.50
+  Max Interface Complex. :          3  Avg Interface Complex. :       3.00
   Max Cyclomatic Complex.:          9  Avg Cyclomatic Complex.:       8.00
-  Max Total Complexity ..:         12  Avg Total Complexity ..:      10.50
+  Max Total Complexity ..:         12  Avg Total Complexity ..:      11.00
   ________________________________________________________________________
   End of File: ..\qep\source\qmsm_dis.c
 
@@ -600,24 +507,13 @@
   File: ..\qep\source\qmsm_ini.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 52 -----------------------
   Function: QMsm_ctor
   Parameters: (QMsm * const me, QStateHandler initial)
-
-  Function: QMsm_ctor
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 9        eLOC 7        lLOC 4        Comment 2        Lines        9
-  ------------------------- Function End Line: 60 ------------------------
 
-  ------------------------ Function Begin Line: 62 -----------------------
   Function: QMsm_init_
   Parameters: (QMsm * const me, QEvt const * const e)
-
-    Notice #23: Line 82, The '?' operator was identified.  This implied
-           if-else construct can reduce code readability.
-
-  Function: QMsm_init_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
@@ -627,7 +523,7 @@
       Logical and ( && )      : 2     
   Complexity   Param 2       Return 1      Cyclo Vg 7       Total       10
   LOC 42       eLOC 38       lLOC 18       Comment 17       Lines       48
-  ------------------------ Function End Line: 109 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -660,15 +556,11 @@
   File: ..\qf\source\qa_ctor.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QActive_ctor
   Parameters: (QActive * const me, QStateHandler initial)
-
-  Function: QActive_ctor
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 11       eLOC 9        lLOC 3        Comment 3        Lines       11
-  ------------------------- Function End Line: 57 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -701,28 +593,20 @@
   File: ..\qf\source\qa_defer.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 49 -----------------------
   Function: QActive_defer
   Parameters: (QActive * const me, QEQueue * const eq, QEvt const * const 
               e)
-
-  Function: QActive_defer
   Complexity   Param 3       Return 1      Cyclo Vg 1       Total        5
   LOC 4        eLOC 2        lLOC 2        Comment 2        Lines        4
-  ------------------------- Function End Line: 52 ------------------------
 
-  ------------------------ Function Begin Line: 54 -----------------------
   Function: QActive_recall
   Parameters: (QActive * const me, QEQueue * const eq)
-
-  Function: QActive_recall
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
   Complexity   Param 2       Return 1      Cyclo Vg 3       Total        6
   LOC 19       eLOC 15       lLOC 10       Comment 14       Lines       33
-  ------------------------- Function End Line: 86 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -755,19 +639,15 @@
   File: ..\qf\source\qa_fifo.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 57 -----------------------
   Function: QActive_post_
   Parameters: (QActive * const me, QEvt const * const e, uint_t const marg
               in)
-
-  Function: QActive_post_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 5     
   Complexity   Param 3       Return 1      Cyclo Vg 6       Total       10
   LOC 55       eLOC 46       lLOC 34       Comment 36       Lines       65
-  ------------------------ Function End Line: 121 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -800,30 +680,22 @@
   File: ..\qf\source\qa_get_.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 50 -----------------------
   Function: QActive_get_
   Parameters: (QActive * const me)
-
-  Function: QActive_get_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
   Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
   LOC 37       eLOC 33       lLOC 24       Comment 20       Lines       46
-  ------------------------- Function End Line: 95 ------------------------
 
-  ------------------------ Function Begin Line: 97 -----------------------
   Function: QF_getQueueMin
   Parameters: (uint8_t const prio)
-
-  Function: QF_getQueueMin
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 10       eLOC 9        lLOC 6        Comment 1        Lines       13
-  ------------------------ Function End Line: 109 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -856,18 +728,14 @@
   File: ..\qf\source\qa_lifo.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 50 -----------------------
   Function: QActive_postLIFO_
   Parameters: (QActive * const me, QEvt const * const e)
-
-  Function: QActive_postLIFO_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 4     
   Complexity   Param 2       Return 1      Cyclo Vg 5       Total        8
   LOC 37       eLOC 31       lLOC 22       Comment 23       Lines       45
-  ------------------------- Function End Line: 94 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -900,18 +768,14 @@
   File: ..\qf\source\qa_sub.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QActive_subscribe
   Parameters: (QActive const * const me, enum_t const sig)
-
-  Function: QActive_subscribe
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 4     
   Complexity   Param 2       Return 1      Cyclo Vg 5       Total        8
   LOC 17       eLOC 16       lLOC 9        Comment 5        Lines       21
-  ------------------------- Function End Line: 67 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -944,18 +808,14 @@
   File: ..\qf\source\qa_usub.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QActive_unsubscribe
   Parameters: (QActive const * const me, enum_t const sig)
-
-  Function: QActive_unsubscribe
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 4     
   Complexity   Param 2       Return 1      Cyclo Vg 5       Total        8
   LOC 17       eLOC 16       lLOC 9        Comment 5        Lines       21
-  ------------------------- Function End Line: 67 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -988,12 +848,8 @@
   File: ..\qf\source\qa_usuba.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QActive_unsubscribeAll
   Parameters: (QActive const * const me)
-
-  Function: QActive_unsubscribeAll
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
@@ -1001,7 +857,7 @@
       Logical and ( && )      : 2     
   Complexity   Param 1       Return 1      Cyclo Vg 5       Total        7
   LOC 25       eLOC 21       lLOC 12       Comment 5        Lines       29
-  ------------------------- Function End Line: 75 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1034,19 +890,15 @@
   File: ..\qf\source\qeq_fifo.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 52 -----------------------
   Function: QEQueue_post
   Parameters: (QEQueue * const me, QEvt const * const e, uint_t const marg
               in)
-
-  Function: QEQueue_post
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 5     
   Complexity   Param 3       Return 1      Cyclo Vg 6       Total       10
   LOC 51       eLOC 42       lLOC 30       Comment 31       Lines       62
-  ------------------------ Function End Line: 113 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1079,18 +931,14 @@
   File: ..\qf\source\qeq_get.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 48 -----------------------
   Function: QEQueue_get
   Parameters: (QEQueue * const me)
-
-  Function: QEQueue_get
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 3     
   Complexity   Param 1       Return 1      Cyclo Vg 4       Total        6
   LOC 36       eLOC 31       lLOC 21       Comment 20       Lines       43
-  ------------------------- Function End Line: 90 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1123,15 +971,11 @@
   File: ..\qf\source\qeq_init.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QEQueue_init
   Parameters: (QEQueue * const me, QEvt const *qSto[], uint_t const qLen)
-
-  Function: QEQueue_init
   Complexity   Param 3       Return 1      Cyclo Vg 1       Total        5
   LOC 14       eLOC 12       lLOC 9        Comment 6        Lines       16
-  ------------------------- Function End Line: 62 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1164,18 +1008,14 @@
   File: ..\qf\source\qeq_lifo.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 48 -----------------------
   Function: QEQueue_postLIFO
   Parameters: (QEQueue * const me, QEvt const * const e)
-
-  Function: QEQueue_postLIFO
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 4     
   Complexity   Param 2       Return 1      Cyclo Vg 5       Total        8
   LOC 34       eLOC 29       lLOC 21       Comment 22       Lines       41
-  ------------------------- Function End Line: 88 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1208,42 +1048,30 @@
   File: ..\qf\source\qf_act.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 50 -----------------------
   Function: QF_add_
   Parameters: (QActive * const a)
-
-  Function: QF_add_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 2     
   Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
   LOC 14       eLOC 13       lLOC 8        Comment 5        Lines       19
-  ------------------------- Function End Line: 68 ------------------------
 
-  ------------------------ Function Begin Line: 70 -----------------------
   Function: QF_remove_
   Parameters: (QActive const * const a)
-
-  Function: QF_remove_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 2     
   Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
   LOC 14       eLOC 13       lLOC 8        Comment 5        Lines       19
-  ------------------------- Function End Line: 88 ------------------------
 
-  ------------------------ Function Begin Line: 96 -----------------------
   Function: QF_bzero
   Parameters: (void * const start, uint_t len)
-
-  Function: QF_bzero
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
   Complexity   Param 2       Return 1      Cyclo Vg 2       Total        5
   LOC 8        eLOC 6        lLOC 4        Comment 1        Lines        8
-  ------------------------ Function End Line: 103 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1276,18 +1104,14 @@
   File: ..\qf\source\qf_gc.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QF_gc
   Parameters: (QEvt const * const e)
-
-  Function: QF_gc
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
   Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
   LOC 26       eLOC 22       lLOC 13       Comment 14       Lines       35
-  ------------------------- Function End Line: 81 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1330,34 +1154,21 @@
   File: ..\qf\source\qf_new.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 49 -----------------------
   Function: QEvt_ctor
   Parameters: (QEvt * const me, enum_t const sig)
-
-  Function: QEvt_ctor
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 5        eLOC 4        lLOC 3        Comment 2        Lines        5
-  ------------------------- Function End Line: 53 ------------------------
 
-  ------------------------ Function Begin Line: 60 -----------------------
   Function: QF_newX_
   Parameters: (uint_t const evtSize, uint_t const margin, enum_t const sig
               )
-
-    Notice #44: Line 68, The keyword 'break' has been identified
-           outside a 'switch' logic control structure.  The use
-           of 'break' interrupts the linear logic flow and can create
-           source code which is difficult to maintain.
-
-  Function: QF_newX_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
       Conditional if / else if: 2     
   Complexity   Param 3       Return 1      Cyclo Vg 4       Total        8
   LOC 26       eLOC 20       lLOC 14       Comment 14       Lines       31
-  ------------------------- Function End Line: 90 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1390,19 +1201,15 @@
   File: ..\qf\source\qf_pool.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 53 -----------------------
   Function: QF_poolInit
   Parameters: (void * const poolSto, uint_t const poolSize, uint_t const e
               vtSize)
-
-  Function: QF_poolInit
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical or ( || )       : 1     
   Complexity   Param 3       Return 1      Cyclo Vg 2       Total        6
   LOC 9        eLOC 7        lLOC 4        Comment 5        Lines       12
-  ------------------------- Function End Line: 64 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1435,15 +1242,11 @@
   File: ..\qf\source\qf_psini.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 49 -----------------------
   Function: QF_psInit
   Parameters: (QSubscrList * const subscrSto, enum_t const maxSignal)
-
-  Function: QF_psInit
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 6        eLOC 5        lLOC 3        Comment 2        Lines        7
-  ------------------------- Function End Line: 55 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1476,19 +1279,15 @@
   File: ..\qf\source\qf_pspub.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 52 -----------------------
   Function: QF_publish_
   Parameters: (QEvt const * const e)
-
-  Function: QF_publish_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 3     
       Conditional if / else if: 1     
   Complexity   Param 1       Return 1      Cyclo Vg 5       Total        7
   LOC 43       eLOC 34       lLOC 24       Comment 17       Lines       54
-  ------------------------ Function End Line: 105 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1531,38 +1330,23 @@
   File: ..\qf\source\qf_tick.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 55 -----------------------
   Function: QF_tickX_
   Parameters: (uint8_t const tickRate)
-
-    Notice #107: Line: 66 A double ;; has been identified
-
-    Notice #44: Line 76, The keyword 'break' has been identified
-           outside a 'switch' logic control structure.  The use
-           of 'break' interrupts the linear logic flow and can create
-           source code which is difficult to maintain.
-
-  Function: QF_tickX_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
       Conditional if / else if: 5     
   Complexity   Param 1       Return 1      Cyclo Vg 7       Total        9
   LOC 65       eLOC 53       lLOC 36       Comment 37       Lines       76
-  ------------------------ Function End Line: 130 ------------------------
 
-  ----------------------- Function Begin Line: 132 -----------------------
   Function: QF_noTimeEvtsActiveX
   Parameters: (uint8_t const tickRate)
-
-  Function: QF_noTimeEvtsActiveX
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
   Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
   LOC 14       eLOC 10       lLOC 6        Comment 3        Lines       16
-  ------------------------ Function End Line: 147 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1595,15 +1379,11 @@
   File: ..\qf\source\qma_ctor.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QMActive_ctor
   Parameters: (QMActive * const me, QStateHandler initial)
-
-  Function: QMActive_ctor
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 11       eLOC 9        lLOC 3        Comment 4        Lines       12
-  ------------------------- Function End Line: 58 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1636,30 +1416,22 @@
   File: ..\qf\source\qmp_get.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QMPool_get
   Parameters: (QMPool * const me, uint_t const margin)
-
-  Function: QMPool_get
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
   Complexity   Param 2       Return 1      Cyclo Vg 3       Total        6
   LOC 32       eLOC 28       lLOC 18       Comment 18       Lines       37
-  ------------------------- Function End Line: 83 ------------------------
 
-  ------------------------ Function Begin Line: 85 -----------------------
   Function: QF_getPoolMin
   Parameters: (uint_t const poolId)
-
-  Function: QF_getPoolMin
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 9        eLOC 8        lLOC 6        Comment 1        Lines       12
-  ------------------------- Function End Line: 96 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1692,20 +1464,16 @@
   File: ..\qf\source\qmp_init.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 49 -----------------------
   Function: QMPool_init
   Parameters: (QMPool * const me, void * const poolSto, uint_t poolSize, u
               int_t blockSize)
-
-  Function: QMPool_init
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 2     
       Logical and ( && )      : 2     
   Complexity   Param 4       Return 1      Cyclo Vg 5       Total       10
   LOC 36       eLOC 32       lLOC 24       Comment 25       Lines       50
-  ------------------------- Function End Line: 98 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1738,15 +1506,11 @@
   File: ..\qf\source\qmp_put.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 55 -----------------------
   Function: QMPool_put
   Parameters: (QMPool * const me, void *b)
-
-  Function: QMPool_put
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 15       eLOC 14       lLOC 10       Comment 9        Lines       19
-  ------------------------- Function End Line: 73 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1779,20 +1543,16 @@
   File: ..\qf\source\qte_arm.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 50 -----------------------
   Function: QTimeEvt_armX
   Parameters: (QTimeEvt * const me, QTimeEvtCtr const nTicks, QTimeEvtCtr 
               const interval)
-
-  Function: QTimeEvt_armX
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 1     
       Logical and ( && )      : 4     
   Complexity   Param 3       Return 1      Cyclo Vg 6       Total       10
   LOC 27       eLOC 24       lLOC 16       Comment 15       Lines       32
-  ------------------------- Function End Line: 81 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1825,19 +1585,15 @@
   File: ..\qf\source\qte_ctor.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 49 -----------------------
   Function: QTimeEvt_ctorX
   Parameters: (QTimeEvt * const me, QActive * const act, enum_t const sig,
                uint8_t tickRate)
-
-  Function: QTimeEvt_ctorX
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 1     
   Complexity   Param 4       Return 1      Cyclo Vg 2       Total        7
   LOC 11       eLOC 9        lLOC 8        Comment 7        Lines       13
-  ------------------------- Function End Line: 61 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1870,15 +1626,11 @@
   File: ..\qf\source\qte_ctr.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 45 -----------------------
   Function: QTimeEvt_ctr
   Parameters: (QTimeEvt const * const me)
-
-  Function: QTimeEvt_ctr
   Complexity   Param 1       Return 1      Cyclo Vg 1       Total        3
   LOC 16       eLOC 15       lLOC 11       Comment 7        Lines       19
-  ------------------------- Function End Line: 63 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1911,18 +1663,14 @@
   File: ..\qf\source\qte_darm.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 45 -----------------------
   Function: QTimeEvt_disarm
   Parameters: (QTimeEvt * const me)
-
-  Function: QTimeEvt_disarm
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 29       eLOC 26       lLOC 17       Comment 15       Lines       33
-  ------------------------- Function End Line: 77 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -1955,19 +1703,15 @@
   File: ..\qf\source\qte_rarm.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QTimeEvt_rearm
   Parameters: (QTimeEvt * const me, QTimeEvtCtr const nTicks)
-
-  Function: QTimeEvt_rearm
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
       Logical and ( && )      : 3     
   Complexity   Param 2       Return 1      Cyclo Vg 6       Total        9
   LOC 32       eLOC 28       lLOC 18       Comment 17       Lines       37
-  ------------------------- Function End Line: 83 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2000,30 +1744,16 @@
   File: ..\qf\source\qvanilla.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 55 -----------------------
   Function: QF_init
   Parameters: (void)
-
-  Function: QF_init
   Complexity   Param 0       Return 1      Cyclo Vg 1       Total        2
   LOC 6        eLOC 5        lLOC 4        Comment 2        Lines        6
-  ------------------------- Function End Line: 60 ------------------------
 
-  ------------------------ Function Begin Line: 62 -----------------------
   Function: QF_stop
   Parameters: (void)
-
-  Function: QF_stop
   Complexity   Param 0       Return 1      Cyclo Vg 1       Total        2
   LOC 3        eLOC 2        lLOC 1        Comment 3        Lines        4
-  ------------------------- Function End Line: 65 ------------------------
 
-  ------------------------ Function Begin Line: 67 -----------------------
-  Function: QF_run
-  Parameters: (void)
-
-    Notice #107: Line: 71 A double ;; has been identified
 
     NOTICE: The end of the source file has been reached where the
             open brace count { 9 != 8 } close brace count 
@@ -2038,7 +1768,6 @@
             condition.
   Function: QF_run
   Parameters: (void)
-
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2071,76 +1800,47 @@
   File: ..\qk\source\qk.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 62 -----------------------
   Function: QF_init
   Parameters: (void)
-
-  Function: QF_init
   Complexity   Param 0       Return 1      Cyclo Vg 1       Total        2
   LOC 14       eLOC 13       lLOC 10       Comment 5        Lines       16
-  ------------------------- Function End Line: 77 ------------------------
 
-  ------------------------ Function Begin Line: 79 -----------------------
   Function: QF_stop
   Parameters: (void)
-
-  Function: QF_stop
   Complexity   Param 0       Return 1      Cyclo Vg 1       Total        2
   LOC 3        eLOC 2        lLOC 1        Comment 3        Lines        4
-  ------------------------- Function End Line: 82 ------------------------
 
-  ------------------------ Function Begin Line: 84 -----------------------
   Function: initialize
   Parameters: (void)
-
-  Function: initialize
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 1     
   Complexity   Param 0       Return 1      Cyclo Vg 2       Total        3
   LOC 8        eLOC 6        lLOC 4        Comment 3        Lines        9
-  ------------------------- Function End Line: 92 ------------------------
 
-  ------------------------ Function Begin Line: 94 -----------------------
   Function: QF_run
   Parameters: (void)
-
-    Notice #107: Line: 100 A double ;; has been identified
-
-  Function: QF_run
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
   Complexity   Param 0       Return 1      Cyclo Vg 2       Total        3
   LOC 12       eLOC 10       lLOC 7        Comment 5        Lines       14
-  ------------------------ Function End Line: 107 ------------------------
 
-  ----------------------- Function Begin Line: 113 -----------------------
   Function: QActive_start_
   Parameters: (QActive *me, uint_t prio, QEvt const *qSto[], uint_t qLen, 
               void *stkSto, uint_t stkSize, QEvt const *ie)
-
-    Notice #29: Line 130: The number of function input parameters,
-           7 exceeds the specified limit of 6.
-
-  Function: QActive_start_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical or ( || )       : 1     
       Logical and ( && )      : 2     
   Complexity   Param 7       Return 1      Cyclo Vg 4       Total       12
   LOC 14       eLOC 12       lLOC 9        Comment 7        Lines       18
-  ------------------------ Function End Line: 130 ------------------------
 
-  ----------------------- Function Begin Line: 132 -----------------------
   Function: QActive_stop
   Parameters: (QActive *me)
-
-  Function: QActive_stop
   Complexity   Param 1       Return 1      Cyclo Vg 1       Total        3
   LOC 3        eLOC 2        lLOC 1        Comment 2        Lines        3
-  ------------------------ Function End Line: 134 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2173,12 +1873,8 @@
   File: ..\qk\source\qk_ext.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 48 -----------------------
   Function: QK_schedExt_
   Parameters: (uint8_t p)
-
-  Function: QK_schedExt_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
@@ -2186,7 +1882,7 @@
       Logical or ( || )       : 1     
   Complexity   Param 1       Return 1      Cyclo Vg 8       Total       10
   LOC 61       eLOC 54       lLOC 27       Comment 32       Lines       72
-  ------------------------ Function End Line: 119 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2219,30 +1915,22 @@
   File: ..\qk\source\qk_mutex.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 54 -----------------------
   Function: QK_mutexLock
   Parameters: (uint8_t prioCeiling)
-
-  Function: QK_mutexLock
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 16       eLOC 14       lLOC 9        Comment 6        Lines       18
-  ------------------------- Function End Line: 71 ------------------------
 
-  ------------------------ Function Begin Line: 73 -----------------------
   Function: QK_mutexUnlock
   Parameters: (QMutex mutex)
-
-  Function: QK_mutexUnlock
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
   Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
   LOC 17       eLOC 14       lLOC 8        Comment 6        Lines       19
-  ------------------------- Function End Line: 91 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2275,31 +1963,23 @@
   File: ..\qk\source\qk_sched.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 48 -----------------------
   Function: QK_schedPrio_
   Parameters: (void)
-
-  Function: QK_schedPrio_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
   Complexity   Param 0       Return 1      Cyclo Vg 3       Total        4
   LOC 19       eLOC 15       lLOC 6        Comment 7        Lines       22
-  ------------------------- Function End Line: 69 ------------------------
 
-  ------------------------ Function Begin Line: 72 -----------------------
   Function: QK_sched_
   Parameters: (uint8_t p)
-
-  Function: QK_sched_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
       Conditional if / else if: 4     
   Complexity   Param 1       Return 1      Cyclo Vg 6       Total        8
   LOC 50       eLOC 44       lLOC 24       Comment 26       Lines       60
-  ------------------------ Function End Line: 131 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2332,92 +2012,60 @@
   File: ..\qs\source\qs.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 51 -----------------------
   Function: QS_initBuf
   Parameters: (uint8_t sto[], uint_t stoSize)
-
-  Function: QS_initBuf
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 11       eLOC 10       lLOC 9        Comment 3        Lines       14
-  ------------------------- Function End Line: 64 ------------------------
 
-  ------------------------ Function Begin Line: 66 -----------------------
   Function: QS_filterOn
   Parameters: (uint8_t rec)
-
-  Function: QS_filterOn
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
       Conditional if / else if: 1     
   Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
   LOC 17       eLOC 12       lLOC 6        Comment 3        Lines       18
-  ------------------------- Function End Line: 83 ------------------------
 
-  ------------------------ Function Begin Line: 85 -----------------------
   Function: QS_filterOff
   Parameters: (uint8_t rec)
-
-  Function: QS_filterOff
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 27       eLOC 24       lLOC 35       Comment 6        Lines       35
-  ------------------------ Function End Line: 119 ------------------------
 
-  ----------------------- Function Begin Line: 121 -----------------------
   Function: QS_beginRec
   Parameters: (uint8_t rec)
-
-  Function: QS_beginRec
   Complexity   Param 1       Return 1      Cyclo Vg 1       Total        3
   LOC 14       eLOC 13       lLOC 10       Comment 11       Lines       18
-  ------------------------ Function End Line: 138 ------------------------
 
-  ----------------------- Function Begin Line: 140 -----------------------
   Function: QS_endRec
   Parameters: (void)
-
-  Function: QS_endRec
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
       Logical and ( && )      : 1     
   Complexity   Param 0       Return 1      Cyclo Vg 4       Total        5
   LOC 21       eLOC 17       lLOC 9        Comment 9        Lines       25
-  ------------------------ Function End Line: 164 ------------------------
 
-  ----------------------- Function Begin Line: 166 -----------------------
   Function: QS_u8
   Parameters: (uint8_t format, uint8_t d)
-
-  Function: QS_u8
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 11       eLOC 10       lLOC 7        Comment 8        Lines       14
-  ------------------------ Function End Line: 179 ------------------------
 
-  ----------------------- Function Begin Line: 181 -----------------------
   Function: QS_u16
   Parameters: (uint8_t format, uint16_t d)
-
-  Function: QS_u16
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 15       eLOC 14       lLOC 10       Comment 8        Lines       20
-  ------------------------ Function End Line: 200 ------------------------
 
-  ----------------------- Function Begin Line: 202 -----------------------
   Function: QS_u32
   Parameters: (uint8_t format, uint32_t d)
-
-  Function: QS_u32
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
   Complexity   Param 2       Return 1      Cyclo Vg 2       Total        5
   LOC 16       eLOC 14       lLOC 11       Comment 10       Lines       19
-  ------------------------ Function End Line: 220 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2450,69 +2098,45 @@
   File: ..\qs\source\qs_.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 44 -----------------------
   Function: QS_u8_
   Parameters: (uint8_t d)
-
-  Function: QS_u8_
   Complexity   Param 1       Return 1      Cyclo Vg 1       Total        3
   LOC 10       eLOC 9        lLOC 7        Comment 8        Lines       12
-  ------------------------- Function End Line: 55 ------------------------
 
-  ------------------------ Function Begin Line: 57 -----------------------
   Function: QS_u8u8_
   Parameters: (uint8_t d1, uint8_t d2)
-
-  Function: QS_u8u8_
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 11       eLOC 10       lLOC 7        Comment 8        Lines       13
-  ------------------------- Function End Line: 69 ------------------------
 
-  ------------------------ Function Begin Line: 71 -----------------------
   Function: QS_u16_
   Parameters: (uint16_t d)
-
-  Function: QS_u16_
   Complexity   Param 1       Return 1      Cyclo Vg 1       Total        3
   LOC 14       eLOC 13       lLOC 10       Comment 8        Lines       18
-  ------------------------- Function End Line: 88 ------------------------
 
-  ------------------------ Function Begin Line: 90 -----------------------
   Function: QS_u32_
   Parameters: (uint32_t d)
-
-  Function: QS_u32_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 15       eLOC 13       lLOC 11       Comment 8        Lines       17
-  ------------------------ Function End Line: 106 ------------------------
 
-  ----------------------- Function Begin Line: 108 -----------------------
   Function: QS_str_
   Parameters: (char_t const *s)
-
-  Function: QS_str_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 20       eLOC 18       lLOC 14       Comment 12       Lines       22
-  ------------------------ Function End Line: 129 ------------------------
 
-  ----------------------- Function Begin Line: 131 -----------------------
   Function: QS_str_ROM_
   Parameters: (char_t const Q_ROM *s)
-
-  Function: QS_str_ROM_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 20       eLOC 18       lLOC 14       Comment 12       Lines       22
-  ------------------------ Function End Line: 152 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2545,18 +2169,14 @@
   File: ..\qs\source\qs_blk.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 45 -----------------------
   Function: QS_getBlock
   Parameters: (uint16_t *pNbytes)
-
-  Function: QS_getBlock
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 4     
   Complexity   Param 1       Return 1      Cyclo Vg 5       Total        7
   LOC 29       eLOC 23       lLOC 17       Comment 9        Lines       30
-  ------------------------- Function End Line: 74 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2589,18 +2209,14 @@
   File: ..\qs\source\qs_byte.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 44 -----------------------
   Function: QS_getByte
   Parameters: (void)
-
-  Function: QS_getByte
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
   Complexity   Param 0       Return 1      Cyclo Vg 3       Total        4
   LOC 18       eLOC 14       lLOC 10       Comment 10       Lines       18
-  ------------------------- Function End Line: 61 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2633,43 +2249,27 @@
   File: ..\qs\source\qs_dict.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 47 -----------------------
   Function: QS_sig_dict
   Parameters: (enum_t const sig, void const * const obj, char_t const Q_RO
               M * const name)
-
-  Function: QS_sig_dict
   Complexity   Param 3       Return 1      Cyclo Vg 1       Total        5
   LOC 11       eLOC 9        lLOC 8        Comment 1        Lines       11
-  ------------------------- Function End Line: 57 ------------------------
 
-  ------------------------ Function Begin Line: 61 -----------------------
   Function: QS_obj_dict
   Parameters: (void const * const obj, char_t const Q_ROM * const name)
-
-  Function: QS_obj_dict
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 10       eLOC 8        lLOC 7        Comment 1        Lines       10
-  ------------------------- Function End Line: 70 ------------------------
 
-  ------------------------ Function Begin Line: 74 -----------------------
   Function: QS_fun_dict
   Parameters: (void (* const fun)(void), char_t const Q_ROM * const name)
-
-  Function: QS_fun_dict
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 10       eLOC 8        lLOC 7        Comment 1        Lines       10
-  ------------------------- Function End Line: 83 ------------------------
 
-  ------------------------ Function Begin Line: 87 -----------------------
   Function: QS_usr_dict
   Parameters: (enum_t const rec, char_t const Q_ROM * const name)
-
-  Function: QS_usr_dict
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
   LOC 10       eLOC 8        lLOC 7        Comment 1        Lines       10
-  ------------------------- Function End Line: 96 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2702,18 +2302,14 @@
   File: ..\qs\source\qs_f32.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 44 -----------------------
   Function: QS_f32
   Parameters: (uint8_t format, float32_t f)
-
-  Function: QS_f32
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
   Complexity   Param 2       Return 1      Cyclo Vg 2       Total        5
   LOC 21       eLOC 19       lLOC 15       Comment 12       Lines       25
-  ------------------------- Function End Line: 68 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2746,18 +2342,14 @@
   File: ..\qs\source\qs_f64.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 44 -----------------------
   Function: QS_f64
   Parameters: (uint8_t format, float64_t d)
-
-  Function: QS_f64
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 2     
   Complexity   Param 2       Return 1      Cyclo Vg 3       Total        6
   LOC 29       eLOC 26       lLOC 20       Comment 9        Lines       33
-  ------------------------- Function End Line: 76 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2790,18 +2382,14 @@
   File: ..\qs\source\qs_mem.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 44 -----------------------
   Function: QS_mem
   Parameters: (uint8_t const *blk, uint8_t size)
-
-  Function: QS_mem
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
   Complexity   Param 2       Return 1      Cyclo Vg 2       Total        5
   LOC 18       eLOC 16       lLOC 11       Comment 7        Lines       21
-  ------------------------- Function End Line: 64 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2834,30 +2422,22 @@
   File: ..\qs\source\qs_str.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 44 -----------------------
   Function: QS_str
   Parameters: (char_t const *s)
-
-  Function: QS_str
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 21       eLOC 19       lLOC 14       Comment 12       Lines       24
-  ------------------------- Function End Line: 67 ------------------------
 
-  ------------------------ Function Begin Line: 69 -----------------------
   Function: QS_str_ROM
   Parameters: (char_t const Q_ROM *s)
-
-  Function: QS_str_ROM
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 21       eLOC 19       lLOC 14       Comment 12       Lines       25
-  ------------------------- Function End Line: 93 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2890,30 +2470,22 @@
   File: ..\qs\source\qs_u64.c
   ________________________________________________________________________
 
-
-  ------------------------ Function Begin Line: 46 -----------------------
   Function: QS_u64_
   Parameters: (uint64_t d)
-
-  Function: QS_u64_
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
   Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
   LOC 15       eLOC 13       lLOC 11       Comment 4        Lines       17
-  ------------------------- Function End Line: 62 ------------------------
 
-  ------------------------ Function Begin Line: 64 -----------------------
   Function: QS_u64
   Parameters: (uint8_t format, uint64_t d)
-
-  Function: QS_u64
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
   Complexity   Param 2       Return 1      Cyclo Vg 2       Total        5
   LOC 16       eLOC 14       lLOC 11       Comment 6        Lines       19
-  ------------------------- Function End Line: 82 ------------------------
+
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
@@ -2951,7 +2523,7 @@
 
                          ~~ Total Project Summary ~~
 
-  LOC 3635     eLOC 3319     lLOC 1506     Comment 6653     Lines    10344
+  LOC 3635     eLOC 3319     lLOC 1506     Comment 6653     Lines    10346
   Average per File, metric/70 files
   LOC 51       eLOC 47       lLOC 21       Comment 95       Lines      147
 
@@ -3007,12 +2579,12 @@
   Function: QMsm_dispatch_
   Parameters: (QMsm * const me, QEvt const * const e)
   Complexity   Param 2       Return 1      Cyclo Vg 9       Total       12
-  LOC 71       eLOC 59       lLOC 34       Comment 38       Lines       86
+  LOC 72       eLOC 60       lLOC 35       Comment 38       Lines       88
 
   Function: QMsm_tran_
-  Parameters: (QHsm * const me)
-  Complexity   Param 1       Return 1      Cyclo Vg 7       Total        9
-  LOC 52       eLOC 43       lLOC 18       Comment 14       Lines       57
+  Parameters: (QHsm * const me, QActionHandler const *a)
+  Complexity   Param 2       Return 1      Cyclo Vg 7       Total       10
+  LOC 51       eLOC 42       lLOC 17       Comment 14       Lines       56
 
   Function: QMsm_ctor
   Parameters: (QMsm * const me, QStateHandler initial)
@@ -3410,25 +2982,25 @@
   LOC 16       eLOC 14       lLOC 11       Comment 6        Lines       19
 
   Total: Functions  
-  LOC 2007     eLOC 1715     lLOC 1151     InCmp 232      CycloCmp     270
+  LOC 2007     eLOC 1715     lLOC 1151     InCmp 233      CycloCmp     270
   Function Points         FP(LOC) 15.7    FP(eLOC) 13.4   FP(lLOC)     9.0
 
   ------------------------------------------------------------------------
 
                       ~~ Project Functional Analysis ~~
 
-  Total Functions .......:         88  Total Physical Lines ..:       2408
+  Total Functions .......:         88  Total Physical Lines ..:       2409
   Total LOC .............:       2007  Total Function Pts LOC :       15.7
   Total eLOC ............:       1715  Total Function Pts eLOC:       13.4
   Total lLOC.............:       1151  Total Function Pts lLOC:        9.0
-  Total Cyclomatic Comp. :        270  Total Interface Comp. .:        232
-  Total Parameters ......:        144  Total Return Points ...:         88
-  Total Comment Lines ...:        975  Total Blank Lines .....:        321
+  Total Cyclomatic Comp. :        270  Total Interface Comp. .:        233
+  Total Parameters ......:        145  Total Return Points ...:         88
+  Total Comment Lines ...:        975  Total Blank Lines .....:        322
          ------     -----     -----     ------     ------     -----       
-  Avg Physical Lines ....:      27.36
+  Avg Physical Lines ....:      27.38
   Avg LOC ...............:      22.81  Avg eLOC ..............:      19.49
   Avg lLOC ..............:      13.08  Avg Cyclomatic Comp. ..:       3.07
-  Avg Interface Comp. ...:       2.64  Avg Parameters ........:       1.64
+  Avg Interface Comp. ...:       2.65  Avg Parameters ........:       1.65
   Avg Return Points .....:       1.00  Avg Comment Lines .....:      11.08
          ------     -----     -----     ------     ------     -----       
   Max LOC ...............:         99
@@ -3445,32 +3017,6 @@
 
   ------------------------------------------------------------------------
 
-                        ~~ Project Quality Profile ~~
-
-  Type  Count Percent  Quality Notice
-  ________________________________________________________________________
-
-  3         2    8.70  Ellipsis '...' are identified as function parameters
-  23        1    4.35  '?' ternary operator identified
-  28        2    8.70  Cyclomatic complexity > 10
-  29        1    4.35  Number of function parameters > 6
-  44        3   13.04  Keyword 'break' identified outside a 'switch' structure
-  55       11   47.83  Scope level exceeds the defined limit of 6
-  107       3   13.04  A double ;; has been identified
-  ________________________________________________________________________
-
-           23  100.00  Total Quality Notices
-
-                        ~~ Quality Notice Density ~~
-
-  Basis: 1000 (K)
-
-  Quality Notices/K LOC   =        6.3 (  0.63%)
-  Quality Notices/K eLOC  =        6.9 (  0.69%)
-  Quality Notices/K lLOC  =       15.3 (  1.53%)
-
-  ------------------------------------------------------------------------
-
                              ~~ File Summary ~~
 
   C Source Files *.c ....:         54  C/C++ Include Files *.h:         16
@@ -3479,3 +3025,5 @@
   Other File Count ......:          0  Total File Count ......:         70
   ________________________________________________________________________
 
+\endcode 
+*/ 

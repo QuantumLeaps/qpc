@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QP/C
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 02, 2013
+* Last Updated for Version: 5.2.1
+* Date of the Last Update:  Jan 06, 2014
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -51,13 +51,13 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      520
+#define QP_VERSION      521
 
 /** \brief The current QP version string */
-#define QP_VERSION_STR  "5.2.0"
+#define QP_VERSION_STR  "5.2.1"
 
-/** \brief Tamperproof current QP release (5.2.0) and date (13-12-26) */
-#define QP_RELEASE      0xB1C87E57U
+/** \brief Tamperproof current QP release (5.2.1) and date (14-01-06) */
+#define QP_RELEASE      0xAC7D8356U
 
 #ifndef Q_ROM
     /** \brief Macro to specify compiler-specific directive for placing a

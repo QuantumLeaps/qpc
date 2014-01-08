@@ -526,7 +526,7 @@ static QState Tunnel_initial(Tunnel * const me, QEvt const * const e) {
     QS_SIG_DICTIONARY(SCORE_SIG,          &l_tunnel);
 
     (void)e;  /* avoid the "unreferenced parameter" warning */
-    return QM_INITIAL(&Tunnel_show_logo_s, act_);
+    return QM_INITIAL(&Tunnel_show_logo_s, &act_[0]);
 }
 /* @(/2/0/16/1) ............................................................*/
 static QState Tunnel_active(Tunnel * const me, QEvt const * const e) {
@@ -546,7 +546,7 @@ static QState Tunnel_active(Tunnel * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Tunnel_final_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Tunnel_final_s, act_);
+            status_ = QM_TRAN(&Tunnel_final_s, &act_[0]);
             break;
         }
         default: {
@@ -581,7 +581,7 @@ static QState Tunnel_show_logo(Tunnel * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Tunnel_demo_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Tunnel_demo_s, act_);
+            status_ = QM_TRAN(&Tunnel_demo_s, &act_[0]);
             break;
         }
         /* @(/2/0/16/1/2/1) */
@@ -649,7 +649,7 @@ static QState Tunnel_demo(Tunnel * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Tunnel_screen_saver_i),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Tunnel_screen_saver_s, act_);
+            status_ = QM_TRAN(&Tunnel_screen_saver_s, &act_[0]);
             break;
         }
         /* @(/2/0/16/1/3/2) */
@@ -673,7 +673,7 @@ static QState Tunnel_demo(Tunnel * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Tunnel_playing_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Tunnel_playing_s, act_);
+            status_ = QM_TRAN(&Tunnel_playing_s, &act_[0]);
             break;
         }
         default: {
@@ -796,7 +796,7 @@ static QState Tunnel_playing(Tunnel * const me, QEvt const * const e) {
             str[1] = '0' + (score % 10U); score /= 10U;
             str[0] = '0' + (score % 10U);
             BSP_drawNString((GAME_SCREEN_WIDTH - 6U*10U)/2U + 6U*6U, 1U, str);
-            status_ = QM_TRAN(&Tunnel_game_over_s, act_);
+            status_ = QM_TRAN(&Tunnel_game_over_s, &act_[0]);
             break;
         }
         default: {
@@ -841,7 +841,7 @@ static QState Tunnel_game_over(Tunnel * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Tunnel_demo_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Tunnel_demo_s, act_);
+            status_ = QM_TRAN(&Tunnel_demo_s, &act_[0]);
             break;
         }
         default: {
@@ -857,7 +857,7 @@ static QState Tunnel_screen_saver_i(Tunnel * const me) {
         Q_ACTION_CAST(&Tunnel_screen_saver_hide_e),
         Q_ACTION_CAST(0)
     };
-    return QM_INITIAL(&Tunnel_screen_saver_hide_s, act_);
+    return QM_INITIAL(&Tunnel_screen_saver_hide_s, &act_[0]);
 }
 static QState Tunnel_screen_saver(Tunnel * const me, QEvt const * const e) {
     QState status_;
@@ -868,7 +868,7 @@ static QState Tunnel_screen_saver(Tunnel * const me, QEvt const * const e) {
                 Q_ACTION_CAST(&Tunnel_demo_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Tunnel_demo_s, act_);
+            status_ = QM_TRAN(&Tunnel_demo_s, &act_[0]);
             break;
         }
         default: {
@@ -899,7 +899,7 @@ static QState Tunnel_screen_saver_hide(Tunnel * const me, QEvt const * const e) 
                 Q_ACTION_CAST(&Tunnel_screen_saver_show_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Tunnel_screen_saver_show_s, act_);
+            status_ = QM_TRAN(&Tunnel_screen_saver_show_s, &act_[0]);
             break;
         }
         default: {
@@ -941,7 +941,7 @@ static QState Tunnel_screen_saver_show(Tunnel * const me, QEvt const * const e) 
                 Q_ACTION_CAST(&Tunnel_screen_saver_hide_e),
                 Q_ACTION_CAST(0)
             };
-            status_ = QM_TRAN(&Tunnel_screen_saver_hide_s, act_);
+            status_ = QM_TRAN(&Tunnel_screen_saver_hide_s, &act_[0]);
             break;
         }
         default: {

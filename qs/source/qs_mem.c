@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QS/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last Updated for Version: 5.2.1
+* Date of the Last Update:  Jan 06, 2014
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,7 +48,7 @@ void QS_mem(uint8_t const *blk, uint8_t size) {
     QSCtr   head   = QS_priv_.head;        /* put in a temporary (register) */
     QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
 
-    QS_priv_.used += (QSCtr)size + (QSCtr)1;    /* size+1 bytes to be added */
+    QS_priv_.used += ((QSCtr)size + (QSCtr)2);  /* size+2 bytes to be added */
 
     QS_INSERT_BYTE(b)
     QS_INSERT_ESC_BYTE(size)

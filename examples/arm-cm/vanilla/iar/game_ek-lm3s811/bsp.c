@@ -420,8 +420,6 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_OFF(QS_QF_ISR_ENTRY);
     QS_FILTER_OFF(QS_QF_ISR_EXIT);
 
-    QS_RESET();
-
     return (uint8_t)1;                                    /* return success */
 }
 /*..........................................................................*/

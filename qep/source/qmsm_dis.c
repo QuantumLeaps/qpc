@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 20, 2013
+* Last Updated for Version: 5.2.1
+* Date of the Last Update:  Jan 06, 2014
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -43,7 +43,8 @@ Q_DEFINE_THIS_MODULE("qmsm_dis")
 * \brief QMsm_dispatch_() implementation.
 */
 
-static void QMsm_tran_(QHsm * const me);          /* static helper function */
+/* static helper function */
+static void QMsm_tran_(QHsm * const me, QActionHandler const *a);
 
 /*..........................................................................*/
 void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
@@ -78,6 +79,8 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
     }
 
     if (r == (QState)Q_RET_TRAN) {                     /* transition taken? */
+        QActionHandler const *a = me->temp.act;
+
         Q_ASSERT(t != (QMState const *)0);    /* tran. source can't be null */
 
          /* exit states starting from the current state to the source state */
@@ -92,7 +95,7 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
             }
         }
 
-        QMsm_tran_(me);                       /* take the actual transition */
+        QMsm_tran_(me, a);                    /* take the actual transition */
 
         QS_BEGIN_(QS_QEP_TRAN, QS_priv_.smObjFilter, me)
             QS_TIME_();                                       /* time stamp */
@@ -134,8 +137,7 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
 }
 
 /*..........................................................................*/
-static void QMsm_tran_(QHsm * const me) {
-    QActionHandler const *a = me->temp.act;
+static void QMsm_tran_(QHsm * const me, QActionHandler const *a) {
     QState r = (QState)Q_RET_TRAN;
 #ifdef Q_SPY
     QMState const *t = me->state.obj;           /* target of the transition */

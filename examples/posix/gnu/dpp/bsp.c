@@ -105,7 +105,6 @@ void BSP_init() {
 
     BSP_randomSeed(1234U);
     Q_ALLEGE(QS_INIT((void *)0));
-    QS_RESET();
     QS_OBJ_DICTIONARY(&l_clock_tick);   /* must be called *after* QF_init() */
     QS_USR_DICTIONARY(PHILO_STAT);
 }

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QHsmTst Example, Linux
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 25, 2013
+* Last Updated for Version: 5.2.1
+* Date of the Last Update:  Jan 06, 2014
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -159,4 +159,28 @@ static void dispatch(QSignal sig) {
     fprintf(l_outFile, "\n%c:", 'A' + sig - A_SIG);
     QMSM_DISPATCH(the_hsm, &e);                       /* dispatch the event */
 }
+
+/*--------------------------------------------------------------------------*/
+#ifdef Q_SPY
+#include "qs_port.h"
+
+/*..........................................................................*/
+void QF_onStartup(void) {
+}
+/*..........................................................................*/
+void QF_onClockTick(void) {
+}
+/*..........................................................................*/
+void QF_onCleanup(void) {
+}
+/*..........................................................................*/
+void QS_onCleanup(void) {
+}
+/*..........................................................................*/
+QSTimeCtr QS_onGetTime(void) {
+    return (QSTimeCtr)clock();
+}
+#endif
+
+
 
