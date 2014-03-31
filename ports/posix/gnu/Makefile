@@ -1,13 +1,13 @@
 ##############################################################################
 # Product:  QP/C, POSIX port, GNU compiler
-# Last Updated for Version: 5.1.2
-# Date of the Last Update:  Nov 04, 2013
+# Last Updated for Version: 5.3.0
+# Date of the Last Update:  2014-03-16
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# Quantum Leaps Web sites: http://www.quantum-leaps.com
-#                          http://www.state-machine.com
-# e-mail:                  info@quantum-leaps.com
+# Web:   www.state-machine.com
+# Email: info@state-machine.com
 ##############################################################################
 
 # examples of invoking this Makefile:
@@ -106,18 +105,12 @@ endif
 
 VPATH = $(QEP_SRCDIR) $(QF_SRCDIR) $(QS_SRCDIR)
 
-# the 'all' target ===========================================================
-
-all: $(BINDIR) $(BINDIR)/libqp.a
-
-$(BINDIR) :
-	mkdir $@
-
 # the objects to build =======================================================
 QEP_OBJS = \
 	$(BINDIR)/qep.o \
 	$(BINDIR)/qmsm_ini.o \
 	$(BINDIR)/qmsm_dis.o \
+	$(BINDIR)/qmsm_in.o \
 	$(BINDIR)/qfsm_ini.o \
 	$(BINDIR)/qfsm_dis.o \
 	$(BINDIR)/qhsm_ini.o \
@@ -158,13 +151,12 @@ QF_OBJS = \
 	$(BINDIR)/qte_ctr.o \
 	$(BINDIR)/qf_port.o
 
-# the 'all' target ===========================================================
+# the targets ================================================================
 
-all: $(BINDIR)/libqp.a $(BIN_DIR)
-	-$(RM) $(BINDIR)/*.o
+all: $(BINDIR) $(BINDIR)/libqp.a
 
-$(BIN_DIR):
-	mkdir $@
+$(BINDIR) :
+	mkdir -p $@
 
 $(BINDIR)/libqp.a: 	$(QEP_OBJS) $(QF_OBJS) $(QS_OBJS)
 	-$(RM) $(BINDIR)/libqp.a
@@ -181,6 +173,9 @@ $(BINDIR)/qmsm_ini.o: $(QEP_SRCDIR)/qmsm_ini.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
 
 $(BINDIR)/qmsm_dis.o: $(QEP_SRCDIR)/qmsm_dis.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+
+$(BINDIR)/qmsm_in.o: $(QEP_SRCDIR)/qmsm_in.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
 
 $(BINDIR)/qfsm_ini.o: $(QEP_SRCDIR)/qfsm_ini.c

@@ -1,13 +1,18 @@
-/*****************************************************************************
-* Product:  QF/C port for Lint with QK, Generic C compiler
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 10, 2013
+/**
+* \file
+* \brief QF/C port example for a "generic" C compiler.
+* \ingroup qf
+* \cond
+******************************************************************************
+* Product: QF/C
+* Last updated for version 5.3.0
+* Last updated on  2014-03-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,23 +33,17 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
 #ifndef qf_port_h
 #define qf_port_h
 
+/*! The maximum number of active objects in the application. */
 /**
-* \file
-* \ingroup qf qk
-* \brief QF/C port example for a "generic" C compiler.
-*
-* \note This is just an example of a QF port used for "linting" the QF.
-*/
-
-/** \brief The maximum number of active objects in the application.
-*
+* \description
 * This macro *must* be defined in the QF port and should be in range
 * of 1..63, inclusive. The value of this macro determines the maximum
 * priority level of an active object in the system. Not all priority
@@ -59,8 +58,9 @@
 */
 #define QF_MAX_ACTIVE               63
 
-/** \brief The maximum number of event pools in the application.
-*
+/*! The maximum number of event pools in the application. */
+/**
+* \description
 * This macro should be defined in the QF ports and should be in range
 * of 1..255, inclusive. The value of this macro determines the maximum
 * event pools in the system. Not all event pools must be actually used,
@@ -78,9 +78,11 @@
 */
 #define QF_MAX_EPOOL               3
 
-/** \brief The size (in bytes) of the event-size representation in the QF.
+/*! The size (in bytes) of the event-size representation in the QF.
 * Valid values: 1, 2, or 4; default 2
-*
+*/
+/**
+* \description
 * This macro can be defined in the QF ports to configure the ::QEvtSize
 * type. If the macro is not defined, the default of 2 byte will be chosen in
 * qf.h. The valid #QF_EVENT_SIZ_SIZE values of 1, 2, or 4, correspond
@@ -97,9 +99,11 @@
 */
 #define QF_EVENT_SIZ_SIZE           2
 
-/** \brief The size (in bytes) of the ring-buffer counters used in the
-* native QF event queue implementation. Valid values: 1, 2, or 4; default 1
-*
+/*! The size (in bytes) of the ring-buffer counters used in the native QF
+* event queue implementation. Valid values: 1, 2, or 4; default 1
+*/
+/**
+* \description
 * This macro can be defined in the QF ports to configure the ::QEQueueCtr
 * type. If the macro is not defined, the default of 1 byte will be chosen in
 * qequeue.h. The valid #QF_EQUEUE_CTR_SIZE values of 1, 2, or 4, correspond
@@ -117,9 +121,11 @@
 */
 #define QF_EQUEUE_CTR_SIZE          1
 
-/** \brief The size (in bytes) of the block-size representation in the
-* native QF event pool. Valid values: 1, 2, or 4; default #QF_EVENT_SIZ_SIZE.
-*
+/*! The size (in bytes) of the block-size representation in the native QF
+* event pool. Valid values: 1, 2, or 4; default #QF_EVENT_SIZ_SIZE.
+*/
+/**
+* \description
 * This macro can be defined in the QF ports to configure the ::QMPoolSize
 * type. If the macro is not defined, the default of #QF_EVENT_SIZ_SIZE
 * will be chosen in qmpool.h, because the memory pool is primarily used for
@@ -139,9 +145,11 @@
 */
 #define QF_MPOOL_SIZ_SIZE           2
 
-/** \brief The size (in bytes) of the block-counter representation in the
+/*! The size (in bytes) of the block-counter representation in the
 * native QF event pool. Valid values: 1, 2, or 4; default 2.
-*
+*/
+/**
+* \description
 * This macro can be defined in the QF ports to configure the ::QMPoolCtr
 * type. If the macro is not defined, the default of 2 bytes will be chosen
 * in qmpool.h. The valid #QF_MPOOL_CTR_SIZE values of 1, 2, or 4, correspond
@@ -159,9 +167,11 @@
 */
 #define QF_MPOOL_CTR_SIZE           2
 
-/** \brief The size (in bytes) of the time event-counter representation
+/*! The size (in bytes) of the time event-counter representation
 * in the ::QTimeEvt struct. Valid values: 1, 2, or 4; default 2.
-*
+*/
+/**
+* \description
 * This macro can be defined in the QF ports to configure the internal tick
 * counters of Time Events. If the macro is not defined, the default of 2
 * bytes will be chosen in qf.h. The valid #QF_TIMEEVT_CTR_SIZE values of 1,
@@ -178,7 +188,7 @@
 */
 #define QF_TIMEEVT_CTR_SIZE         2
 
-/** \brief Define the interrupt disabling policy.
+/*! Define the interrupt disabling policy.
 *
 * This macro encapsulates platform-specific way of disabling interrupts
 * from "C" for a given CPU and compiler.
@@ -188,8 +198,9 @@
 */
 #define QF_INT_DISABLE()            intDisable()
 
-/** \brief Define the interrupt enabling policy.
-*
+/*! Define the interrupt enabling policy. */
+/**
+* \description
 * This macro encapsulates platform-specific way of enabling interrupts
 * from "C" for a given CPU and compiler.
 *
@@ -201,16 +212,18 @@
 void intDisable(void);
 void intEnable(void);
 
-/** \brief Define the type of the critical section status.
-*
+/*! Define the type of the critical section status. */
+/**
+* \description
 * Defining this macro configures the "saving and restoring critical section
 * status" policy. Coversely, if this macro is not defined, the simple
 * "unconditional critical section exit" is used.
 */
 #define QF_CRIT_STAT_TYPE           crit_stat_t
 
-/** \brief Define the critical section entry policy.
-*
+/*! Define the critical section entry policy. */
+/**
+* \description
 * This macro enters a critical section (often by means of disabling
 * interrupts). When the "saving and restoring critical section status"
 * policy is used, the macro sets the \a status_ argument to the critical
@@ -223,8 +236,9 @@ void intEnable(void);
 */
 #define QF_CRIT_ENTRY(stat_)        ((stat_) = critEntry())
 
-/** \brief Define the critical section exit policy.
-*
+/*! Define the critical section exit policy. */
+/**
+* \description
 * This macro enters a critical section (often by means of disabling
 * interrupts). When the "saving and restoring critical section status"
 * policy is used, the macro restores the critical section status from the
@@ -238,9 +252,11 @@ void intEnable(void);
 */
 #define QF_CRIT_EXIT(stat_)         critExit(stat_)
 
-/** \brief Macro to put the CPU to sleep safely in the cooperative
+/*! Macro to put the CPU to sleep safely in the cooperative
 * Vanilla kernel (inside QF_idle()).
-*
+*/
+/**
+* \description
 * This macro is provided in some QP ports for the Vanilla kernel and
 * in general it depends on the interrupt disabling policy.
 *
@@ -256,10 +272,11 @@ void intEnable(void);
 typedef unsigned int crit_stat_t;
 QF_CRIT_STAT_TYPE critEntry(void);
 void critExit(QF_CRIT_STAT_TYPE stat);
+void QF_onIdle(void);
 
-#include "qep_port.h"                                           /* QEP port */
-#include "qk_port.h"                                             /* QK port */
-#include "qf.h"                 /* QF platform-independent public interface */
+#include "qep_port.h"  /* QEP port */
+#include "qk_port.h"   /* QK port */
+#include "qf.h"        /* QF platform-independent public interface */
 
-#endif                                                         /* qf_port_h */
+#endif /* qf_port_h */
 

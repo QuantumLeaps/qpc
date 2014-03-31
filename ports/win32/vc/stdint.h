@@ -35,6 +35,14 @@ typedef unsigned long      uint32_t;
 typedef signed   long long int64_t;
 typedef unsigned long long uint64_t;
 
+/* Fastest minimum-width types. WG14/N843 C99 Standard, Section 7.18.1.3 */
+typedef signed   int       int_fast8_t;
+typedef unsigned int       uint_fast8_t;
+typedef signed   int       int_fast16_t;
+typedef unsigned int       uint_fast16_t;
+typedef signed   int       int_fast32_t;
+typedef unsigned int       uint_fast32_t;
+
 /* workaround for Microsoft lack of support of C99 snprintf() */
 #define snprintf _snprintf
 

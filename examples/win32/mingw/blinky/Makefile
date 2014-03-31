@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Generic Makefile for QP/C application, Win32, MinGW compiler
-# Last Updated for Version: 5.1.2
-# Date of the Last Update:  Nov 04, 2013
+# Last updated for version 5.3.0
+# Last updated on  2014-03-25
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) Quantum Leaps, www.state-machine.com.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# Quantum Leaps Web sites: http://www.quantum-leaps.com
-#                          http://www.state-machine.com
-# e-mail:                  info@quantum-leaps.com
+# Web:   www.state-machine.com
+# Email: info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
 # building configurations: Debug (default), Release, and Spy
@@ -105,9 +104,9 @@ ifeq (rel, $(CONF))       # Release configuration ............................
 
 BIN_DIR := rel
 
-CFLAGS = -c -Wall -O2 $(INCLUDES) $(DEFINES) -DNDEBUG
+CFLAGS = -c -Wall -W -O2 $(INCLUDES) $(DEFINES) -DNDEBUG
 
-CPPFLAGS = -c -Wall -O2 $(INCLUDES) $(DEFINES) -DNDEBUG
+CPPFLAGS = -c -Wall -W -O2 $(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
@@ -117,17 +116,17 @@ INCLUDES +=	-I$(QTOOLS)/qspy/include
 VPATH    += $(QTOOLS)/qspy/source
 C_SRCS   += qspy.c
 
-CFLAGS = -c -Wall -g $(INCLUDES) $(DEFINES) -DQ_SPY
+CFLAGS = -c -Wall -W -g $(INCLUDES) $(DEFINES) -DQ_SPY
 
-CPPFLAGS = -c -Wall -g $(INCLUDES) $(DEFINES) -DQ_SPY
+CPPFLAGS = -c -Wall -W -g $(INCLUDES) $(DEFINES) -DQ_SPY
 
 else                     # default Debug configuration .......................
 
 BIN_DIR := dbg
 
-CFLAGS = -c -Wall -g $(INCLUDES) $(DEFINES)
+CFLAGS = -c -Wall -W -g $(INCLUDES) $(DEFINES)
 
-CPPFLAGS = -c -Wall -g $(INCLUDES) $(DEFINES)
+CPPFLAGS = -c -Wall -W -g $(INCLUDES) $(DEFINES)
 
 endif
 

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QF/C, ARM Cortex-M, Vanilla port, ARM-KEIL compiler
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 26, 2013
+* Last Updated for Version: 5.3.0
+* Date of the Last Update:  Feb 04, 2014
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -70,8 +70,8 @@
     #define QF_LOG2(n_) ((uint8_t)(32U - __clz(n_)))
 
                         /* inline function for setting the BASEPRI register */
-    __inline void QF_set_BASEPRI(unsigned basePri) {
-        register unsigned __regBasePri __asm("basepri");
+    static __inline void QF_set_BASEPRI(unsigned basePri) {
+        register unsigned volatile __regBasePri __asm("basepri");
         __regBasePri = basePri;
     }
 

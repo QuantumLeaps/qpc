@@ -1,13 +1,13 @@
  /*****************************************************************************
 * Product: DPP example, 80x86, Win32
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Nov 30, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-03-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
 *****************************************************************************/
 #include "qp_port.h"
 #include "dpp.h"
@@ -176,11 +175,10 @@ uint8_t QS_onStartup(void const *arg) {
 
     QS_FILTER_ON(QS_ALL_RECORDS);
 
-//    QS_FILTER_OFF(QS_QEP_STATE_EMPTY);
 //    QS_FILTER_OFF(QS_QEP_STATE_ENTRY);
 //    QS_FILTER_OFF(QS_QEP_STATE_EXIT);
 //    QS_FILTER_OFF(QS_QEP_STATE_INIT);
-//    QS_FILTER_OFF(QS_QEP_INIT_TRAN);
+//    QS_FILTER_OFF(QS_QEP_TRAN_HIST);
 //    QS_FILTER_OFF(QS_QEP_INTERN_TRAN);
 //    QS_FILTER_OFF(QS_QEP_TRAN);
 //    QS_FILTER_OFF(QS_QEP_IGNORED);
@@ -219,8 +217,9 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_OFF(QS_QF_ISR_ENTRY);
     QS_FILTER_OFF(QS_QF_ISR_EXIT);
 
-    return CreateThread(NULL, 1024, &idleThread, (void *)0, 0, NULL)
-             != (HANDLE)0; /* return the status of creating the idle thread */
+    /* return the status of creating the idle thread */
+    return (CreateThread(NULL, 1024, &idleThread, (void *)0, 0, NULL)
+            != (HANDLE)0) ? (uint8_t)1 : (uint8_t)0;
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

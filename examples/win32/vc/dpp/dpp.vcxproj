@@ -75,6 +75,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <DisableSpecificWarnings>4127</DisableSpecificWarnings>
+      <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
       <AdditionalDependencies>qp.lib;%(AdditionalDependencies)</AdditionalDependencies>

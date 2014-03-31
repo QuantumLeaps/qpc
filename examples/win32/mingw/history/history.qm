@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="3.1.0">
+ <documentation>QHsmTst is a contrived state machine from Chapter 2 of the PSiCC2 book for testing all possible transition topologies with up to 4-levels of state nesting.</documentation>
+ <framework name="qpc"/>
+ <package name="SMs" stereotype="0x02">
+  <class name="ToastOven" superclass="qpc::QHsm">
+   <documentation>Oven state machine</documentation>
+   <statechart>
+    <initial target="../2">
+     <action>(void)e; /* avoid compiler warning */</action>
+     <initial_glyph conn="3,2,5,3,53,4,4">
+      <action box="2,-2,13,4"/>
+     </initial_glyph>
+    </initial>
+    <state name="doorClosed">
+     <entry>printf(&quot;door-Closed;&quot;);</entry>
+     <initial target="../8">
+      <initial_glyph conn="40,10,4,0,10">
+       <action box="0,-2,6,2"/>
+      </initial_glyph>
+     </initial>
+     <history target="../8">
+      <history_glyph conn="52,16,1,0,-8,4"/>
+     </history>
+     <tran trig="TERMINATE" target="../../3">
+      <tran_glyph conn="52,30,1,0,16,2">
+       <action box="0,-2,9,2"/>
+      </tran_glyph>
+     </tran>
+     <tran trig="OPEN" target="../../2">
+      <tran_glyph conn="52,10,1,3,8">
+       <action box="0,-2,6,2"/>
+      </tran_glyph>
+     </tran>
+     <tran trig="TOAST" target="../7/0">
+      <tran_glyph conn="12,38,2,2,-6">
+       <action box="0,-2,6,2"/>
+      </tran_glyph>
+     </tran>
+     <tran trig="BAKE" target="../7/1">
+      <tran_glyph conn="26,38,2,2,-6">
+       <action box="0,-2,6,2"/>
+      </tran_glyph>
+     </tran>
+     <tran trig="OFF" target="../8">
+      <tran_glyph conn="44,38,2,2,-10">
+       <action box="0,-2,6,2"/>
+      </tran_glyph>
+     </tran>
+     <state name="heating">
+      <entry>printf(&quot;heater-On;&quot;);</entry>
+      <exit>printf(&quot;heater-Off;&quot;);</exit>
+      <state name="toasting">
+       <entry>printf(&quot;toasting;&quot;);</entry>
+       <state_glyph node="6,24,14,8">
+        <entry box="1,2,5,2"/>
+       </state_glyph>
+      </state>
+      <state name="baking">
+       <entry>printf(&quot;baking;&quot;);</entry>
+       <state_glyph node="22,24,12,8">
+        <entry box="1,2,5,2"/>
+       </state_glyph>
+      </state>
+      <state_glyph node="4,11,32,23">
+       <entry box="1,2,7,2"/>
+       <exit box="1,4,5,2"/>
+      </state_glyph>
+     </state>
+     <state name="off">
+      <entry>printf(&quot;toaster-Off;&quot;);</entry>
+      <state_glyph node="38,20,12,8">
+       <entry box="1,2,5,2"/>
+      </state_glyph>
+     </state>
+     <state_glyph node="2,4,50,34">
+      <entry box="1,2,5,2"/>
+     </state_glyph>
+    </state>
+    <state name="doorOpen">
+     <entry>printf(&quot;door-Open,lamp-On;&quot;);</entry>
+     <exit>printf(&quot;lamp-Off;&quot;);</exit>
+     <tran trig="CLOSE" target="../../1/1">
+      <tran_glyph conn="60,16,3,1,-8">
+       <action box="-6,-2,7,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="60,4,20,22">
+      <entry box="1,2,6,2"/>
+      <exit box="1,4,5,2"/>
+     </state_glyph>
+    </state>
+    <state name="final">
+     <entry>printf(&quot;-&gt; final\nBye!Bye!\n&quot;);
+_exit(0);</entry>
+     <state_glyph node="60,32,16,6">
+      <entry box="1,2,5,2"/>
+     </state_glyph>
+    </state>
+    <state_diagram size="81,40"/>
+   </statechart>
+  </class>
+  <operation name="ToastOven_ctor" type="void" visibility="0x00" properties="0x00">
+   <code>ToastOven *me = &amp;l_oven;
+QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;ToastOven_initial));</code>
+  </operation>
+ </package>
+ <directory name=".">
+  <file name="history.h">
+   <text>#ifndef history_h
+#define history_h
+
+enum ToastOvenSignals {
+    OPEN_SIG = Q_USER_SIG,
+    CLOSE_SIG,
+    TOAST_SIG,
+    BAKE_SIG,
+    OFF_SIG,
+    TERMINATE_SIG /* terminate the application */
+};
+
+extern QHsm * const the_oven; /* opaque pointer to the oven HSM */
+
+$declare(SMs::ToastOven_ctor)
+
+#endif /* history_h */</text>
+  </file>
+  <file name="history.c">
+   <text>#include &quot;qep_port.h&quot;
+#include &quot;qassert.h&quot;
+#include &quot;history.h&quot;
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+Q_DEFINE_THIS_FILE
+
+$declare(SMs::ToastOven)
+
+static ToastOven l_oven; /* the only instance of the ToastOven class */
+
+/* global-scope definitions -----------------------------------------*/
+QHsm * const the_oven = (QHsm *)&amp;l_oven;       /* the opaque pointer */
+
+$define(SMs::ToastOven_ctor)
+$define(SMs::ToastOven)</text>
+  </file>
+ </directory>
+</model>

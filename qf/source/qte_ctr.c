@@ -1,13 +1,18 @@
-/*****************************************************************************
+/**
+* \file
+* \ingroup qf
+* \brief QTimeEvt_ctr() implementation.
+* \cond
+******************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Aug 08, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-02-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,20 +33,36 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
-
-#include "qf_pkg.h"
-
-/**
-* \file
-* \ingroup qf
-* \brief QTimeEvt_ctr() implementation.
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
 */
+#define QP_IMPL           /* this is QP implementation */
+#include "qf_port.h"      /* QF port */
+#include "qf_pkg.h"
+/*#include "qassert.h"*/
+#ifdef Q_SPY              /* QS software tracing enabled? */
+    #include "qs_port.h"  /* include QS port */
+#else
+    #include "qs_dummy.h" /* disable the QS software tracing */
+#endif /* Q_SPY */
 
-/*..........................................................................*/
+/****************************************************************************/
+/**
+* \description
+* Useful for checking how many clock ticks (at the tick rate associated
+* with the time event) remain until the time event expires.
+*
+* \arguments
+* \arg[in,out] \c me   pointer (see \ref derivation)
+*
+* \returns For an armed time event, the function returns the current value
+* of the down-counter of the given time event. If the time event is not
+* armed, the function returns 0.
+*
+* /note The function is thread-safe.
+*/
 QTimeEvtCtr QTimeEvt_ctr(QTimeEvt const * const me) {
     QTimeEvtCtr ret;
     QF_CRIT_STAT_
@@ -50,12 +71,12 @@ QTimeEvtCtr QTimeEvt_ctr(QTimeEvt const * const me) {
     ret = me->ctr;
 
     QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_CTR, QS_priv_.teObjFilter, me)
-        QS_TIME_();                                            /* timestamp */
-        QS_OBJ_(me);                              /* this time event object */
-        QS_OBJ_(me->act);                                  /* the target AO */
-        QS_TEC_(ret);                                /* the current counter */
-        QS_TEC_(me->interval);                              /* the interval */
-        QS_U8_((uint8_t)(me->super.refCtr_ & (uint8_t)0x7F));  /* tick rate */
+        QS_TIME_();              /* timestamp */
+        QS_OBJ_(me);             /* this time event object */
+        QS_OBJ_(me->act);        /* the target AO */
+        QS_TEC_(ret);            /* the current counter */
+        QS_TEC_(me->interval);   /* the interval */
+        QS_U8_((uint8_t)(me->super.refCtr_ & (uint8_t)0x7F)); /* tick rate */
     QS_END_NOCRIT_()
 
     QF_CRIT_EXIT_();

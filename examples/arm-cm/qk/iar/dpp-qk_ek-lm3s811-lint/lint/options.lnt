@@ -1,13 +1,13 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last Updated for Version: 5.1.1
-// Date of the Last Update:  Oct 04, 2013
+// Last Updated for Version: 5.3.0
+// Date of the Last Update:  Jan 27, 2014
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
 //                    innovating embedded systems
 //
-// Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
 //
 // This program is open source software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -34,7 +34,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 // the location of the IAR ARM includes (need to adjust!!!)
--iC:\tools\IAR\ARM_6.60\arm\inc\c
+-iC:\tools\IAR\ARM_KS_6.70\arm\inc\c
 
 // the location of the QTools lint directory (need to adjust!!!)
 -i%QTOOLS%\lint

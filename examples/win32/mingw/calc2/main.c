@@ -1,13 +1,13 @@
 /*****************************************************************************
-* Product:  Calculator Example
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 02, 2013
+* Product:  Calculator2 Example
+* Last Updated for Version: 5.2.1
+* Date of the Last Update:  Jan 15, 2014
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -34,7 +34,7 @@
 *****************************************************************************/
 #include "qep_port.h"
 #include "bsp.h"
-#include "calc.h"
+#include "calc2.h"
 
 #include <stdio.h>
 #include <conio.h>
@@ -42,7 +42,7 @@
 
 /*..........................................................................*/
 int main() {
-    Calc_ctor();            /* explicitly instantiate the calculator object */
+    Calc2_ctor();                /* explicitly instantiate the Calc2 object */
 
     printf("Calculator example, QEP version: %s\n"
            "Press '0' .. '9'     to enter a digit\n"

@@ -78,6 +78,7 @@ void Q_onAssert(char const Q_ROM * const file, int line) {
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
     exit(-1);
 }
+
 /*..........................................................................*/
 void BSP_init(void) {
 
@@ -181,11 +182,10 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_OFF(QS_ALL_RECORDS);
     QS_FILTER_ON(QS_ALL_RECORDS);
 
-//    QS_FILTER_OFF(QS_QEP_STATE_EMPTY);
 //    QS_FILTER_OFF(QS_QEP_STATE_ENTRY);
 //    QS_FILTER_OFF(QS_QEP_STATE_EXIT);
 //    QS_FILTER_OFF(QS_QEP_STATE_INIT);
-//    QS_FILTER_OFF(QS_QEP_INIT_TRAN);
+//    QS_FILTER_OFF(QS_QEP_TRAN_HIST);
 //    QS_FILTER_OFF(QS_QEP_INTERN_TRAN);
 //    QS_FILTER_OFF(QS_QEP_TRAN);
 //    QS_FILTER_OFF(QS_QEP_IGNORED);

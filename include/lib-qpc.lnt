@@ -1,13 +1,13 @@
-//////////////////////////////////////////////////////////////////////////////
+//============================================================================
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last Updated for Version: 5.2.0
-// Date of the Last Update:  Nov 22, 2013
+// Last updated for version 5.3.0
+// Last updated on  2014-03-25
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
 //                    innovating embedded systems
 //
-// Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
 //
 // This program is open source software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -28,24 +28,27 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// Quantum Leaps Web sites: http://www.quantum-leaps.com
-//                          http://www.state-machine.com
-// e-mail:                  info@quantum-leaps.com
-//////////////////////////////////////////////////////////////////////////////
+// Web:   http://www.state-machine.com
+// Email: info@state-machine.com
+//============================================================================
 
 // general (evt.h)
+-emacro(740,                  // MISRA04-1.2(req) incompatible indirect types
+ Q_MSM_UPCAST)
 -emacro((960),                // MISRA04-17.4(req) pointer arithmetic
  Q_DIM,
  Q_UINT2PTR_CAST)
 -esym(960,                    // MISRA04-19.10(req) unparenthesized macro par
  Q_EVT_CAST,
- Q_DIM,
  Q_UINT2PTR_CAST)
 -estring(961,                 // MISRA04-19.7(adv) function-like macro
+ Q_MSM_UPCAST,
  Q_EVT_CAST,
  Q_DIM,
  Q_UINT2PTR_CAST)
--emacro(929, Q_EVT_CAST)      // MISRA04-11.4(adv) cast pointer to pointer
+-emacro(929,                  // MISRA04-11.4(adv) cast pointer to pointer
+ Q_MSM_UPCAST,
+ Q_EVT_CAST)
 -emacro(866, Q_DIM)           // Unusual use of 'SYM' in argument to sizeof
 
 // Assertions
@@ -93,11 +96,15 @@
 -emacro(740,                  // MISRA04-1.2(req) pointer cast
  Q_STATE_CAST,                // (incompatible indirect types)
  Q_TRAN,
+ Q_TRAN_HIST,
  Q_SUPER,
  QM_ENTRY,
  QM_EXIT,
- QM_INITIAL,
- QM_TRAN)
+ QM_TRAN,
+ QM_TRAN_INIT,
+ QM_TRAN_HIST,
+ QM_TRAN_EP,
+ QM_TRAN_XP)
 -emacro(929,                  // MISRA04-11.4(adv) cast pointer to pointer
  Q_STATE_CAST,
  Q_ACTION_CAST,
@@ -105,25 +112,34 @@
  Q_SUPER,
  QM_ENTRY,
  QM_EXIT,
- QM_INITIAL,
- QM_TRAN)
+ QM_TRAN,
+ QM_TRAN_INIT,
+ QM_TRAN_HIST,
+ QM_TRAN_EP,
+ QM_TRAN_XP)
 -emacro(960,                  // MISRA04-11.1(req) Conversions involving
- Q_STATE_CAST,
+ Q_STATE_CAST,                // fun. pointers must be to/from integral types
  Q_ACTION_CAST)
-                              // fun. pointers must be to/from integral types
+
 -emacro(960,                  // MISRA04-12.10(req) comma operator used
  Q_TRAN,
+ Q_TRAN_HIST,
  Q_SUPER,
- QM_INITIAL,
- QM_TRAN)
--estring(960, QMAttrTag)      // MISRA04-18.4(req) declaration of union type
+ QM_ENTRY,
+ QM_EXIT,
+ QM_TRAN,
+ QM_TRAN_INIT,
+ QM_TRAN_HIST)
+-estring(960, QMAttr)         // MISRA04-18.4(req) declaration of union type
 -estring(961,                 // MISRA04-19.7(adv) function-like macro
  Q_ROM_BYTE,
+ QMsm_stateObj,
  QHsm_state,
  Q_IGNORED,
  Q_HANDLED,
  Q_UNHANDLED,
  Q_TRAN,
+ Q_TRAN_HIST,
  Q_SUPER,
  Q_STATE_CAST,
  Q_ACTION_CAST,
@@ -134,10 +150,19 @@
  QM_ENTRY,
  QM_EXIT,
  QM_TRAN,
- QM_INITIAL,
+ QM_TRAN_INIT,
+ QM_TRAN_HIST,
+ QM_TRAN_EP,
+ QM_TRAN_XP,
  QM_SUPER,
+ QM_SUPER_SUB,
  QM_HANDLED,
  QM_UNHANDLED)
+-esym(754,                    // Info: local structure member not referenced
+ target,
+ act)
+-esym(715, me)                // Info: Symbol 'me' not referenced
+-esym(818, me)                // Info: Pointer 'me' could be pointing to const 
 
 // QF
 -emacro(950,                  // MISRA04-2.1(req) assembly language
@@ -350,6 +375,10 @@
  QS_END_,
  QS_BEGIN_NOCRIT_,
  QS_END_NOCRIT_)
+-emacro(960,          // MISRA04-11.1(req) conversion of function pointers
+ QS_FUN_DICTIONARY)
+-emacro(929,                  // MISRA04-11.4(adv) cast pointer to pointer
+ QS_FUN_DICTIONARY)
 -emacro(717, QS_*)            // do ... while(0);
 
 

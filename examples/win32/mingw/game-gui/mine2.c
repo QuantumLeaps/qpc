@@ -14,7 +14,7 @@
 * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 * for more details.
 *****************************************************************************/
-/* @(/3/5) .................................................................*/
+/*${.::mine2.c} ............................................................*/
 #include "qp_port.h"
 #include "bsp.h"
 #include "game.h"
@@ -22,8 +22,8 @@
 Q_DEFINE_THIS_FILE
 
 /* encapsulated delcaration of the Mine2 HSM -------------------------------*/
-/* @(/2/4) .................................................................*/
-typedef struct Mine2Tag {
+/*${AOs::Mine2} ............................................................*/
+typedef struct {
 /* protected: */
     QMsm super;
 
@@ -39,29 +39,37 @@ typedef struct Mine2Tag {
 static QState Mine2_initial(Mine2 * const me, QEvt const * const e);
 static QState Mine2_unused  (Mine2 * const me, QEvt const * const e);
 static QMState const Mine2_unused_s = {
-    (QMState const *)0,
+    (QMState const *)0, /* superstate (top) */
     Q_STATE_CAST(&Mine2_unused),
-    Q_ACTION_CAST(0)
+    Q_ACTION_CAST(0), /* no entry action */
+    Q_ACTION_CAST(0), /* no exit action */
+    Q_ACTION_CAST(0)  /* no intitial tran. */
 };
 static QState Mine2_used  (Mine2 * const me, QEvt const * const e);
 static QState Mine2_used_x(Mine2 * const me);
 static QMState const Mine2_used_s = {
-    (QMState const *)0,
+    (QMState const *)0, /* superstate (top) */
     Q_STATE_CAST(&Mine2_used),
-    Q_ACTION_CAST(&Mine2_used_x)
+    Q_ACTION_CAST(0), /* no entry action */
+    Q_ACTION_CAST(&Mine2_used_x),
+    Q_ACTION_CAST(0)  /* no intitial tran. */
 };
 static QState Mine2_planted  (Mine2 * const me, QEvt const * const e);
 static QMState const Mine2_planted_s = {
-    &Mine2_used_s,
+    &Mine2_used_s, /* superstate */
     Q_STATE_CAST(&Mine2_planted),
-    Q_ACTION_CAST(0)
+    Q_ACTION_CAST(0), /* no entry action */
+    Q_ACTION_CAST(0), /* no exit action */
+    Q_ACTION_CAST(0)  /* no intitial tran. */
 };
 static QState Mine2_exploding  (Mine2 * const me, QEvt const * const e);
 static QState Mine2_exploding_e(Mine2 * const me);
 static QMState const Mine2_exploding_s = {
-    &Mine2_used_s,
+    &Mine2_used_s, /* superstate */
     Q_STATE_CAST(&Mine2_exploding),
-    Q_ACTION_CAST(0)
+    Q_ACTION_CAST(&Mine2_exploding_e),
+    Q_ACTION_CAST(0), /* no exit action */
+    Q_ACTION_CAST(0)  /* no intitial tran. */
 };
 
 
@@ -72,7 +80,7 @@ static Mine2 l_mine2[GAME_MINES_MAX];             /* a pool of type-2 mines */
 #define MINE_ID(me_)    ((uint8_t)((me_) - l_mine2))
 
 /* Mine2 class definition --------------------------------------------------*/
-/* @(/2/12) ................................................................*/
+/*${AOs::Mine2_ctor} .......................................................*/
 QMsm * Mine2_ctor(uint8_t id) {
     Mine2 *me;
     Q_REQUIRE(id < GAME_MINES_MAX);
@@ -81,10 +89,16 @@ QMsm * Mine2_ctor(uint8_t id) {
     QMsm_ctor(&me->super, Q_STATE_CAST(&Mine2_initial));
     return (QMsm *)me;
 }
-/* @(/2/4) .................................................................*/
-/* @(/2/4/3) ...............................................................*/
-/* @(/2/4/3/0) */
+/*${AOs::Mine2} ............................................................*/
+/*${AOs::Mine2::SM} ........................................................*/
 static QState Mine2_initial(Mine2 * const me, QEvt const * const e) {
+    static QMTranActTable const tatbl_ = { /* transition-action table */
+        &Mine2_unused_s,
+        {
+            Q_ACTION_CAST(0) /* zero terminator */
+        }
+    };
+    /* ${AOs::Mine2::SM::initial} */
     static  uint8_t dict_sent;
 
     if (!dict_sent) {
@@ -112,17 +126,23 @@ static QState Mine2_initial(Mine2 * const me, QEvt const * const e) {
     QS_SIG_DICTIONARY(MISSILE_IMG_SIG,   me);
 
     (void)e; /* avoid the "unreferenced parameter" warning */
-    return QM_INITIAL(&Mine2_unused_s, &QMsm_emptyAction_[0]);
+    return QM_TRAN_INIT(&tatbl_);
 }
-/* @(/2/4/3/1) .............................................................*/
+/*${AOs::Mine2::SM::unused} ................................................*/
 static QState Mine2_unused(Mine2 * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/4/3/1/0) */
+        /* ${AOs::Mine2::SM::unused::MINE_PLANT} */
         case MINE_PLANT_SIG: {
+            static QMTranActTable const tatbl_ = { /* transition-action table */
+                &Mine2_planted_s,
+                {
+                    Q_ACTION_CAST(0) /* zero terminator */
+                }
+            };
             me->x = Q_EVT_CAST(ObjectPosEvt)->x;
             me->y = Q_EVT_CAST(ObjectPosEvt)->y;
-            status_ = QM_TRAN(&Mine2_planted_s, &QMsm_emptyAction_[0]);
+            status_ = QM_TRAN(&tatbl_);
             break;
         }
         default: {
@@ -132,7 +152,7 @@ static QState Mine2_unused(Mine2 * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/4/3/2) .............................................................*/
+/*${AOs::Mine2::SM::used} ..................................................*/
 static QState Mine2_used_x(Mine2 * const me) {
     /* tell the Tunnel that this mine is becoming disabled */
     MineEvt *mev = Q_NEW(MineEvt, MINE_DISABLED_SIG);
@@ -143,13 +163,19 @@ static QState Mine2_used_x(Mine2 * const me) {
 static QState Mine2_used(Mine2 * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/4/3/2/0) */
+        /* ${AOs::Mine2::SM::used::MINE_RECYCLE} */
         case MINE_RECYCLE_SIG: {
-            static QActionHandler const act_[] = {
-                Q_ACTION_CAST(&Mine2_used_x),
-                Q_ACTION_CAST(0)
+            static struct {
+                QMState const *target;
+                QActionHandler act[2];
+            } const tatbl_ = { /* transition-action table */
+                &Mine2_unused_s, /* target state */
+                {
+                    Q_ACTION_CAST(&Mine2_used_x), /* exit */
+                    Q_ACTION_CAST(0) /* zero terminator */
+                }
             };
-            status_ = QM_TRAN(&Mine2_unused_s, &act_[0]);
+            status_ = QM_TRAN(&tatbl_);
             break;
         }
         default: {
@@ -159,13 +185,13 @@ static QState Mine2_used(Mine2 * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/4/3/2/1) ...........................................................*/
+/*${AOs::Mine2::SM::used::planted} .........................................*/
 static QState Mine2_planted(Mine2 * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/4/3/2/1/0) */
+        /* ${AOs::Mine2::SM::used::planted::TIME_TICK} */
         case TIME_TICK_SIG: {
-            /* @(/2/4/3/2/1/0/0) */
+            /* ${AOs::Mine2::SM::used::planted::TIME_TICK::[me->x>=GAME_S~]} */
             if (me->x >= GAME_SPEED_X) {
                 ObjectImageEvt *oie;
                  me->x -= GAME_SPEED_X; /* move the mine 1 step */
@@ -177,26 +203,38 @@ static QState Mine2_planted(Mine2 * const me, QEvt const * const e) {
                 QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);
                 status_ = QM_HANDLED();
             }
-            /* @(/2/4/3/2/1/0/1) */
+            /* ${AOs::Mine2::SM::used::planted::TIME_TICK::[else]} */
             else {
-                static QActionHandler const act_[] = {
-                    Q_ACTION_CAST(&Mine2_used_x),
-                    Q_ACTION_CAST(0)
+                static struct {
+                    QMState const *target;
+                    QActionHandler act[2];
+                } const tatbl_ = { /* transition-action table */
+                    &Mine2_unused_s, /* target state */
+                    {
+                        Q_ACTION_CAST(&Mine2_used_x), /* exit */
+                        Q_ACTION_CAST(0) /* zero terminator */
+                    }
                 };
-                status_ = QM_TRAN(&Mine2_unused_s, &act_[0]);
+                status_ = QM_TRAN(&tatbl_);
             }
             break;
         }
-        /* @(/2/4/3/2/1/1) */
+        /* ${AOs::Mine2::SM::used::planted::SHIP_IMG} */
         case SHIP_IMG_SIG: {
             uint8_t x   = Q_EVT_CAST(ObjectImageEvt)->x;
             uint8_t y   = Q_EVT_CAST(ObjectImageEvt)->y;
             uint8_t bmp = Q_EVT_CAST(ObjectImageEvt)->bmp;
-            /* @(/2/4/3/2/1/1/0) */
+            /* ${AOs::Mine2::SM::used::planted::SHIP_IMG::[collisionwith~]} */
             if (do_bitmaps_overlap(MINE2_BMP, me->x, me->y, bmp, x, y)) {
-                static QActionHandler const act_[] = {
-                    Q_ACTION_CAST(&Mine2_used_x),
-                    Q_ACTION_CAST(0)
+                static struct {
+                    QMState const *target;
+                    QActionHandler act[2];
+                } const tatbl_ = { /* transition-action table */
+                    &Mine2_unused_s, /* target state */
+                    {
+                        Q_ACTION_CAST(&Mine2_used_x), /* exit */
+                        Q_ACTION_CAST(0) /* zero terminator */
+                    }
                 };
                 static MineEvt const mine1_hit = {
                     { HIT_MINE_SIG, 0U, 0U }, /* the QEvt base instance */
@@ -205,23 +243,29 @@ static QState Mine2_planted(Mine2 * const me, QEvt const * const e) {
                  QACTIVE_POST(AO_Ship, (QEvt *)&mine1_hit, me);
                  /* go straight to 'disabled' and let the Ship do
                  * the exploding */
-                status_ = QM_TRAN(&Mine2_unused_s, &act_[0]);
+                status_ = QM_TRAN(&tatbl_);
             }
             else {
                 status_ = QM_UNHANDLED();
             }
             break;
         }
-        /* @(/2/4/3/2/1/2) */
+        /* ${AOs::Mine2::SM::used::planted::MISSILE_IMG} */
         case MISSILE_IMG_SIG: {
             uint8_t x   = Q_EVT_CAST(ObjectImageEvt)->x;
             uint8_t y   = Q_EVT_CAST(ObjectImageEvt)->y;
             uint8_t bmp = Q_EVT_CAST(ObjectImageEvt)->bmp;
-            /* @(/2/4/3/2/1/2/0) */
+            /* ${AOs::Mine2::SM::used::planted::MISSILE_IMG::[collisionwith~]} */
             if (do_bitmaps_overlap(MINE2_MISSILE_BMP, me->x, me->y, bmp, x, y)) {
-                static QActionHandler const act_[] = {
-                    Q_ACTION_CAST(&Mine2_exploding_e),
-                    Q_ACTION_CAST(0)
+                static struct {
+                    QMState const *target;
+                    QActionHandler act[2];
+                } const tatbl_ = { /* transition-action table */
+                    &Mine2_exploding_s, /* target state */
+                    {
+                        Q_ACTION_CAST(&Mine2_exploding_e), /* entry */
+                        Q_ACTION_CAST(0) /* zero terminator */
+                    }
                 };
                 /* NOTE: Mine type-2 is nastier than Mine type-1.
                 * The type-2 mine can hit the Ship with any of its
@@ -234,7 +278,7 @@ static QState Mine2_planted(Mine2 * const me, QEvt const * const e) {
                     45U  /* score for destroying Mine type-2 */
                 };
                 QACTIVE_POST(AO_Missile, (QEvt *)&mine2_destroyed, me);
-                status_ = QM_TRAN(&Mine2_exploding_s, &act_[0]);
+                status_ = QM_TRAN(&tatbl_);
             }
             else {
                 status_ = QM_UNHANDLED();
@@ -248,7 +292,7 @@ static QState Mine2_planted(Mine2 * const me, QEvt const * const e) {
     }
     return status_;
 }
-/* @(/2/4/3/2/2) ...........................................................*/
+/*${AOs::Mine2::SM::used::exploding} .......................................*/
 static QState Mine2_exploding_e(Mine2 * const me) {
     me->exp_ctr = 0U;
     return QM_ENTRY(&Mine2_exploding_s);
@@ -256,9 +300,9 @@ static QState Mine2_exploding_e(Mine2 * const me) {
 static QState Mine2_exploding(Mine2 * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* @(/2/4/3/2/2/0) */
+        /* ${AOs::Mine2::SM::used::exploding::TIME_TICK} */
         case TIME_TICK_SIG: {
-            /* @(/2/4/3/2/2/0/0) */
+            /* ${AOs::Mine2::SM::used::exploding::TIME_TICK::[stillonscreen?]} */
             if ((me->x >= GAME_SPEED_X) && (me->exp_ctr < 15U)) {
                 ObjectImageEvt *oie;
                 ++me->exp_ctr;  /* advance the explosion counter */
@@ -272,13 +316,19 @@ static QState Mine2_exploding(Mine2 * const me, QEvt const * const e) {
                 QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);
                 status_ = QM_HANDLED();
             }
-            /* @(/2/4/3/2/2/0/1) */
+            /* ${AOs::Mine2::SM::used::exploding::TIME_TICK::[else]} */
             else {
-                static QActionHandler const act_[] = {
-                    Q_ACTION_CAST(&Mine2_used_x),
-                    Q_ACTION_CAST(0)
+                static struct {
+                    QMState const *target;
+                    QActionHandler act[2];
+                } const tatbl_ = { /* transition-action table */
+                    &Mine2_unused_s, /* target state */
+                    {
+                        Q_ACTION_CAST(&Mine2_used_x), /* exit */
+                        Q_ACTION_CAST(0) /* zero terminator */
+                    }
                 };
-                status_ = QM_TRAN(&Mine2_unused_s, &act_[0]);
+                status_ = QM_TRAN(&tatbl_);
             }
             break;
         }

@@ -1,6 +1,107 @@
 /**
 \page rev_page Revision History
 
+\section qpc_5_3_0 Version 5.3.0, Release date: Mar 31, 2014
+
+This release adds the "transition to history" (deep history) feature to
+both QHsm and QMsm state machines and their subclasses. This QP/C
+release matches the new QM modeling tool version 3.1.0, which now
+supports the "transition to history" connector and the corresponding
+code generation for transitions to history.
+
+\note QP/C 5.3.0 remains backwards-compatible with QP/C applications
+developed for QP/C 4.x and QP/5.x. However, any QM models created for
+the previous QP/C versions require re-generating the code with QM 3.1.0.
+
+This release adds new QS (Quantum Spy) instrumentation for tracing
+transitions to history as well as entry and exit points in submachines.
+All these features require the matching QSPY host application included
+in Qtools 5.3.0.
+
+Additionally, the QMsm state machine has been extended to add
+implementation of the reusable submachine states and submachines with
+entry points and exit points. The reusable submachines in QP/C 5.3.0 lay
+the groundwork for providing reusable submachine states and submachine
+diagrams in the next upcoming QM version.
+
+This release also goes several steps towards compliance with the new
+MISRA-C:2012 rules. For example, unused tag declarations have been
+removed (MISRA-C:2012 Rule 2.4), the C99 standard Boolean data type in
+<stdbool.h> has been added instead of uint8_t for stricter type
+analysis, and the C99 data types uint_fast8_t and uint_fast16_t are used
+instead of the non-standard uint_t.
+
+Finally, this QP/C release brings deep changes in the source code
+comments and the doxygen documentation generated from the source code.
+All comments have now more consistent structure, and every function is
+now documented in the implementation file (.c file), whereas the
+interface (.h files) contain only the brief descriptions of the
+functions. This re-structuring of documentation is performed as part of
+the validation and verification effort that has begun to provide a
+certification package for QP/C for safety standards, such as IEC 61508
+and ISO 62304 (FDA 510(k)).
+
+
+Changes in detail:
+
+1. Moved detailed documentation of functions from the header files (.h)
+to implementation files (.c).
+
+2. Removed the header file "qevt.h" and merged its contents into "qep.h"
+
+3. Added macros: trace records QS_QEP_TRAN_HIST, QS_QEP_TRAN_EP, and
+QS_QEP_TRAN_XP to "qs.h"
+
+4. Added macros: Q_TRAN_HIST(), QM_TRAN_HIST(), QM_TRAN_EP(),
+QM_TRAN_XP(), and QM_SUPER_SUB() to "qep.h"
+
+5. Added attributes entryAction and initAction to the QMState struct in
+"qep.h" (needed for transition to history).
+
+6. Added attribute act to the QMAttr union in "qep.h" (needed for
+transitions to entry point in submachine states).
+
+7. Changed return type to bool in functions QHsm_isIn(),
+QMsmVtbl.post(), QActive_post_(), QEQueue_post(), QActive_defer(),
+QTimeEvt_rearm(), QTimeEvt_disarm(), QF_noTimeEvtsActiveX().
+
+8. Changed the QState return type from action/state handler functions to
+uint_fast8_t.
+
+9. Changed the prio attribute of QActive to uint_fast8_t.
+
+10. Changed the type of prio argument to uint_fast8_t and qlen/stkSize
+to uint_fast16_t in the signature of QActiveVtbl.start function pointer
+and QActive_start_() implementation.
+
+11. Changed the type of the tickRate argument in QTimeEvt_ctorX() and
+QF_tickX_(), and QF_noTimeEvtsActiveX() to uint_fast8_t.
+
+12. Changed the type of the poolSize argument in QF_poolInit() to
+uint_fast16_t.
+
+13. Changed arguments evtSize and margin in QF_newX_() to uint_fast16_t.
+
+14. Changed attribute bits in QPSet8 as well as bytes and bits[] in
+QPSet64 to uint_fast8_t.
+
+15. Changed the QEQueueCtr event queue counter type to uint_fast8_t.
+
+16. Changed type of arguments qLen and margin in QEQueue_init() and
+QEQueue/QActive_post() to uint_fast16_t.
+
+17. Changed the return type from QK_schedPrio_() (priority) as well as
+the p argument in QK_sched_() and QK_schedExt_() to uint_fast8_t
+
+18. Added function QMsm_isInState() to "qep.h" and its implementation
+file qmsm_in.c. This function tests whether the QMsm state machine (or
+its subclasses like QMActive) "is in" the given state.
+
+19. Updated all make scripts for QP/C ports to include the new qmsm_in.c
+in the QP/C library builds.
+
+
+<HR>
 \section qpc_5_2_1 Version 5.2.1, Release date: Jan 06, 2014
 
 This release fixes two bugs.

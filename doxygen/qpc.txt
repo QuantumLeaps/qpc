@@ -1,4 +1,9 @@
 /**
+\defgroup qep QEP (QP Event Processor)
+\defgroup qf  QF  (Active Object (Actor) Framework)
+\defgroup qk  QK  (Preemptive Run-to-Completin Kernel)
+\defgroup qs  QS  (Software Tracing Instrumentation)
+
 \anchor main_page
 \mainpage About QP/C
 
@@ -42,8 +47,7 @@ If you are developing and distributing traditional closed source applications, y
 - Quantum Leaps Web site:   http://www.state-machine.com
 - Quantum Leaps licensing:  http://www.state-machine.com/licensing
 - QP/QM on SourceForge.net: http://sourceforge.net/projects/qpc
-- e-mail: info@quantum-leaps.com
-- Toll-free: 1-866-450-LEAP (US Eastern Standard Time)
+- e-mail: info@state-machine.com
 
 <HR>
 \section files Directories and Files
@@ -278,7 +282,8 @@ inheritance rather than "derivation of structures".
 
 <HR>
 \image html logo_ql_TM.jpg
-Copyright &copy; 2002-2013 Quantum Leaps, LLC. All Rights Reserved.\n
+Copyright &copy; 2002-2014 Quantum Leaps, LLC. All Rights Reserved.\n
 http://www.state-machine.com
+
 */
 

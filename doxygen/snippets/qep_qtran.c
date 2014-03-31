@@ -1,25 +1,20 @@
-/* state handler function for the QBomb FSM ................................*/
-QState QBomb_setting(QBomb * const me, QEvt const * const e) {
+QState Blinky_off(Blinky * const me, QEvt const * const e) {
+    QState status;
     switch (e->sig) {
-        . . .
-        case ARM_SIG: {
-            return Q_TRAN(&QBomb_timing);         /* transition to "timing" */
+        case Q_ENTRY_SIG: {
+            BSP_ledOff();
+            status = Q_HANDLED();
+            break;
         }
-    }
-    return Q_IGNORED();
-}
-
-/* state handler function for the QCalc HSM ................................*/
-QState QCalc_begin(QCalc *me, QEvt const * const e) {
-    switch (e->sig) {
-        . . .
-        case OPER_SIG: {
-            if (((QCalcEvt *)e)->keyId == KEY_MINUS) {   /* guard condition */
-                return Q_TRAN(&QCalc_negated1); /* transition to "negated1" */
-            }
+        case TIMEOUT_SIG: {
+            status = Q_TRAN(&Blinky_on); /*<== */
+            break;
+        }
+        default: {
+            status = Q_SUPER(&QHsm_top);
             break;
         }
     }
-    return Q_SUPER(&QCalc_ready);
+    return status;
 }
 

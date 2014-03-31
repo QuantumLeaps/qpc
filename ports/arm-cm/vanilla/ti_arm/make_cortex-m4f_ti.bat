@@ -1,14 +1,14 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C buld script for ARM Cortex-M4F, Vanilla port, TI_ARM comiler
-:: Last Updated for Version: 5.0.0
-:: Date of the Last Update:  Aug 25, 2013
+:: Last updated for version 5.3.0
+:: Last updated on  2014-03-30
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) Quantum Leaps, www.state-machine.com.
 ::
 :: This program is open source software: you can redistribute it and/or
 :: modify it under the terms of the GNU General Public License as published
@@ -29,9 +29,8 @@
 :: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: Quantum Leaps Web sites: http://www.quantum-leaps.com
-::                          http://www.state-machine.com
-:: e-mail:                  info@quantum-leaps.com
+:: Web:   www.state-machine.com
+:: Email: info@state-machine.com
 :: ===========================================================================
 setlocal
 
@@ -82,6 +81,7 @@ set CCINC=-I. -I%QP_INCDIR% -I%SRCDIR% -fr%BINDIR%
 %CC% %CCFLAGS% %CCINC% %SRCDIR%\qep.c
 %CC% %CCFLAGS% %CCINC% %SRCDIR%\qmsm_ini.c
 %CC% %CCFLAGS% %CCINC% %SRCDIR%\qmsm_dis.c
+%CC% %CCFLAGS% %CCINC% %SRCDIR%\qmsm_in.c
 %CC% %CCFLAGS% %CCINC% %SRCDIR%\qfsm_ini.c
 %CC% %CCFLAGS% %CCINC% %SRCDIR%\qfsm_dis.c
 %CC% %CCFLAGS% %CCINC% %SRCDIR%\qhsm_ini.c
@@ -89,7 +89,7 @@ set CCINC=-I. -I%QP_INCDIR% -I%SRCDIR% -fr%BINDIR%
 %CC% %CCFLAGS% %CCINC% %SRCDIR%\qhsm_top.c
 %CC% %CCFLAGS% %CCINC% %SRCDIR%\qhsm_in.c
 
-%LIB% %LIBFLAGS% %LIBDIR%\qp_%ARM_CORE%f_ti.lib %BINDIR%\qep.obj %BINDIR%\qmsm_ini.obj %BINDIR%\qmsm_dis.obj %BINDIR%\qfsm_ini.obj %BINDIR%\qfsm_dis.obj %BINDIR%\qhsm_ini.obj %BINDIR%\qhsm_dis.obj %BINDIR%\qhsm_top.obj %BINDIR%\qhsm_in.obj
+%LIB% %LIBFLAGS% %LIBDIR%\qp_%ARM_CORE%f_ti.lib %BINDIR%\qep.obj %BINDIR%\qmsm_ini.obj %BINDIR%\qmsm_dis.obj %BINDIR%\qmsm_in.obj %BINDIR%\qfsm_ini.obj %BINDIR%\qfsm_dis.obj %BINDIR%\qhsm_ini.obj %BINDIR%\qhsm_dis.obj %BINDIR%\qhsm_top.obj %BINDIR%\qhsm_in.obj
 @echo off
 erase %BINDIR%\*.obj
 

@@ -1,13 +1,17 @@
-/*****************************************************************************
+/**
+* \file
+* \ingroup qep
+* \cond
+******************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 4.5.00
-* Date of the Last Update:  May 18, 2012
+* Last updated for version 5.3.0
+* Last updated on  2014-02-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,21 +32,32 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
+#include "qep_port.h"     /* QEP port */
 #include "qep_pkg.h"
 
+/****************************************************************************/
 /**
-* \file
-* \ingroup qep
-* \brief QHsm_top() implementation.
+* \description
+* QHsm_top() is the ultimate root of state hierarchy in all HSMs derived
+* from ::QHsm.
+*
+* \arguments
+* \arg[in] \c me pointer (see \ref derivation)
+* \arg[in] \c e  pointer to the event to be dispatched to the FSM
+*
+* \returns Always returns #Q_RET_IGNORED, which means that the top state
+*          ignores all events.
+*
+* \note The arguments to this state handler are not used. They are provided
+* for conformance with the state-handler function signature ::QStateHandler.
 */
-
-/*..........................................................................*/
 QState QHsm_top(void const * const me, QEvt const * const e) {
-    (void)me;            /* suppress the "unused argument" compiler warning */
-    (void)e;             /* suppress the "unused argument" compiler warning */
-    return Q_IGNORED();                 /* the top state ignores all events */
+    (void)me;           /* suppress the "unused argument" compiler warning */
+    (void)e;            /* suppress the "unused argument" compiler warning */
+    return Q_IGNORED(); /* the top state ignores all events */
 }
