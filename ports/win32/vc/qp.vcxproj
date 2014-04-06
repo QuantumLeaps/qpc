@@ -146,6 +146,7 @@
     <ClCompile Include="..\..\..\qep\source\qhsm_ini.c" />
     <ClCompile Include="..\..\..\qep\source\qhsm_top.c" />
     <ClCompile Include="..\..\..\qep\source\qmsm_dis.c" />
+    <ClCompile Include="..\..\..\qep\source\qmsm_in.c" />
     <ClCompile Include="..\..\..\qep\source\qmsm_ini.c" />
     <ClCompile Include="..\..\..\qf\source\qa_ctor.c" />
     <ClCompile Include="..\..\..\qf\source\qa_defer.c" />

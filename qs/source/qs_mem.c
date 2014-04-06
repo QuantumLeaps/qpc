@@ -1,13 +1,18 @@
-/*****************************************************************************
-* Product:  QS/C
-* Last Updated for Version: 5.2.1
-* Date of the Last Update:  Jan 06, 2014
+/**
+* \file
+* \ingroup qs
+* \brief QS_mem() implementation
+* \cond
+******************************************************************************
+* Product: QS/C
+* Last updated for version 5.3.0
+* Last updated on  2014-03-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,30 +33,31 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
+#include "qs_port.h" /* QS port */
 #include "qs_pkg.h"
 
-/**
-* \file
-* \ingroup qs
-* \brief QS_mem() implementation
+/****************************************************************************/
+/** \note This function is only to be used through macros, never in the
+* client code directly.
 */
-
-/*..........................................................................*/
 void QS_mem(uint8_t const *blk, uint8_t size) {
     uint8_t b      = (uint8_t)(QS_MEM_T);
     uint8_t chksum = (uint8_t)(QS_priv_.chksum + b);
-    uint8_t *buf   = QS_priv_.buf;         /* put in a temporary (register) */
-    QSCtr   head   = QS_priv_.head;        /* put in a temporary (register) */
-    QSCtr   end    = QS_priv_.end;         /* put in a temporary (register) */
+    uint8_t *buf   = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr   head   = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr   end    = QS_priv_.end;  /* put in a temporary (register) */
 
-    QS_priv_.used += ((QSCtr)size + (QSCtr)2);  /* size+2 bytes to be added */
+    QS_priv_.used += ((QSCtr)size + (QSCtr)2); /* size+2 bytes to be added */
 
     QS_INSERT_BYTE(b)
     QS_INSERT_ESC_BYTE(size)
+
+    /* output the 'size' number of bytes */
     while (size != (uint8_t)0) {
         b = *blk;
         QS_INSERT_ESC_BYTE(b)
@@ -59,6 +65,6 @@ void QS_mem(uint8_t const *blk, uint8_t size) {
         --size;
     }
 
-    QS_priv_.head   = head;                                /* save the head */
-    QS_priv_.chksum = chksum;                          /* save the checksum */
+    QS_priv_.head   = head;   /* save the head */
+    QS_priv_.chksum = chksum; /* save the checksum */
 }

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: CMSIS-compliant startup code for TM4C Cortex-M4F, GNU-ARM
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 24, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-02-24
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
 *****************************************************************************/
 #include <stdint.h>
 #include "sysctl.h"
@@ -486,7 +485,7 @@ void Reset_Handler(void) {
     unsigned const *src;
     unsigned *dst;
 
-                 /* copy the data segment initializers from flash to RAM... */
+    /* copy the data segment initializers from flash to RAM... */
     src = &__data_load;
     for (dst = &__data_start; dst < &__data_end__; ++dst, ++src) {
         *dst = *src;
@@ -495,7 +494,8 @@ void Reset_Handler(void) {
     for (dst = &__bss_start__; dst < &__bss_end__; ++dst) {
         *dst = 0;
     }
-             /* call all static construcors in C++ (harmless in C programs) */
+
+    /* call all static constructors in C++ (harmless in C programs) */
     __libc_init_array();
 
     /* Enable the floating-point unit. This must be done here to handle the
@@ -511,41 +511,73 @@ void Reset_Handler(void) {
 /*..........................................................................*/
 __attribute__((naked)) void NMI_Handler(void);
 void NMI_Handler(void) {
-    assert_failed("NMI", __LINE__);                 /* should never return! */
+    __asm volatile (
+        "    ldr r0,=str_nmi\n\t"
+        "    mov r1,#1\n\t"
+        "    b assert_failed\n\t"
+        "str_nmi: .asciz \"NMI\"\n\t"
+    );
 }
 /*..........................................................................*/
 __attribute__((naked)) void MemManage_Handler(void);
 void MemManage_Handler(void) {
-    assert_failed("MemManage", __LINE__);           /* should never return! */
+    __asm volatile (
+        "    ldr r0,=str_mem\n\t"
+        "    mov r1,#1\n\t"
+        "    b assert_failed\n\t"
+        "str_mem: .asciz \"MemManage\"\n\t"
+    );
 }
 /*..........................................................................*/
 __attribute__((naked)) void HardFault_Handler(void);
 void HardFault_Handler(void) {
-    unsigned old_sp;
-    __asm volatile ("mov %0,sp" : "=r" (old_sp));
-    if (old_sp < (unsigned)&__stack_start__) {           /* stack overflow? */
-        unsigned new_sp = (unsigned)&__stack_end__;
-        __asm volatile ("mov sp,%0" :: "r" (new_sp));
-        assert_failed("StackOverflow", old_sp);     /* should never return! */
-    }
-    else {
-        assert_failed("HardFault", __LINE__);       /* should never return! */
-    }
+    __asm volatile (
+        "    mov r0,sp\n\t"
+        "    ldr r1,=__stack_start__\n\t"
+        "    cmp r0,r1\n\t"
+        "    bcs stack_ok\n\t"
+        "    ldr r0,=__stack_end__\n\t"
+        "    mov sp,r0\n\t"
+        "    ldr r0,=str_overflow\n\t"
+        "    mov r1,#1\n\t"
+        "    b assert_failed\n\t"
+        "stack_ok:\n\t"
+        "    ldr r0,=str_hardfault\n\t"
+        "    mov r1,#2\n\t"
+        "    b assert_failed\n\t"
+        "str_overflow:  .asciz \"StackOverflow\"\n\t"
+        "str_hardfault: .asciz \"HardFault\"\n\t"
+    );
 }
 /*..........................................................................*/
 __attribute__((naked)) void BusFault_Handler(void);
 void BusFault_Handler(void) {
-    assert_failed("BusFault", __LINE__);            /* should never return! */
+    __asm volatile (
+        "    ldr r0,=str_bus\n\t"
+        "    mov r1,#1\n\t"
+        "    b assert_failed\n\t"
+        "str_bus: .asciz \"BusFault\"\n\t"
+    );
 }
 /*..........................................................................*/
 __attribute__((naked)) void UsageFault_Handler(void);
 void UsageFault_Handler(void) {
-    assert_failed("UsageFault", __LINE__);          /* should never return! */
+    __asm volatile (
+        "    ldr r0,=str_usage\n\t"
+        "    mov r1,#1\n\t"
+        "    b assert_failed\n\t"
+        "str_usage: .asciz \"UsageFault\"\n\t"
+    );
 }
 /*..........................................................................*/
 __attribute__((naked)) void Spurious_Handler(void);
 void Spurious_Handler(void) {
-    assert_failed("Spurious", __LINE__);            /* should never return! */
+    __asm volatile (
+        "    ldr r0,=str_spur\n\t"
+        "    mov r1,#1\n\t"
+        "    b assert_failed\n\t"
+        "str_spur: .asciz \"Spurious\"\n\t"
+    );
 }
 /*..........................................................................*/
 void _init() {

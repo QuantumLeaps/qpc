@@ -1,13 +1,18 @@
-/*****************************************************************************
+/**
+* \file
+* \brief QF_active_[], and QF_add_()/QF_remove_(), QF_bzero() implementation.
+* \ingroup qf
+* \cond
+******************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 20, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-02-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,74 +33,136 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
+#define QP_IMPL           /* this is QP implementation */
+#include "qf_port.h"      /* QF port */
 #include "qf_pkg.h"
 #include "qassert.h"
+#ifdef Q_SPY              /* QS software tracing enabled? */
+    #include "qs_port.h"  /* include QS port */
+#else
+    #include "qs_dummy.h" /* disable the QS software tracing */
+#endif /* Q_SPY */
 
 Q_DEFINE_THIS_MODULE("qf_act")
 
-/**
-* \file
-* \ingroup qf
-* \brief QF_active_[], and QF_add_()/QF_remove_(), QF_bzero() implementation.
-*/
-
-/* public objects ----------------------------------------------------------*/
+/* public objects ***********************************************************/
 QActive *QF_active_[QF_MAX_ACTIVE + 1];      /* to be used by QF ports only */
 
-/*..........................................................................*/
+/****************************************************************************/
+/**
+* \description
+* This function adds a given active object to the active objects managed
+* by the QF framework. It should not be called by the application directly,
+* only through the function QActive_start().
+*
+* \arguments
+* \arg[in]  \c a  pointer to the active object to add to the framework.
+*
+* \note The priority of the active object \c a should be set before calling
+* this function.
+*
+* \sa QF_remove_()
+*/
 void QF_add_(QActive * const a) {
-    uint8_t p = a->prio;
+    uint_fast8_t p = a->prio;
     QF_CRIT_STAT_
 
-    Q_REQUIRE(((uint8_t)0 < p) && (p <= (uint8_t)QF_MAX_ACTIVE)
+    /** \pre the priority of the active object must not be zero and cannot
+    * exceed the maximum #QF_MAX_ACTIVE. Also, the priority of the active
+    * object must not be already in use. QF requires each active object to
+    * have a __unique__ priority.
+    */
+    Q_REQUIRE_ID(100, ((uint_fast8_t)0 < p)
+                       && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
               && (QF_active_[p] == (QActive *)0));
 
     QF_CRIT_ENTRY_();
 
-    QF_active_[p] = a;       /* register the active object at this priority */
+    QF_active_[p] = a; /* register the active object at this priority */
 
     QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_ADD, QS_priv_.aoObjFilter, a)
-        QS_TIME_();                                            /* timestamp */
-        QS_OBJ_(a);                                    /* the active object */
-        QS_U8_(p);                     /* the priority of the active object */
+        QS_TIME_();         /* timestamp */
+        QS_OBJ_(a);         /* the active object */
+        QS_U8_((uint8_t)p); /* the priority of the active object */
     QS_END_NOCRIT_()
 
     QF_CRIT_EXIT_();
 }
-/*..........................................................................*/
+
+/****************************************************************************/
+/**
+* \description
+* This function removes a given active object from the active objects managed
+* by the QF framework. It should not be called by the application directly,
+* only through the function QActive_stop().
+*
+* \arguments
+* \arg[in]  \c a  pointer to the active object to remove from the framework.
+*
+* \note The active object that is removed from the framework can no longer
+* participate in the publish-subscribe event exchange.
+*
+* \sa QF_add_()
+*/
 void QF_remove_(QActive const * const a) {
-    uint8_t p = a->prio;
+    uint_fast8_t p = a->prio;
     QF_CRIT_STAT_
 
-    Q_REQUIRE(((uint8_t)0 < p) && (p <= (uint8_t)QF_MAX_ACTIVE)
+    /** \pre the priority of the active object must not be zero and cannot
+    * exceed the maximum #QF_MAX_ACTIVE. Also, the priority of the active
+    * object must be already registered with the framework.
+    */
+    Q_REQUIRE_ID(200, ((uint_fast8_t)0 < p)
+                       && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
               && (QF_active_[p] == a));
 
     QF_CRIT_ENTRY_();
 
-    QF_active_[p] = (QActive *)0;             /* free-up the priority level */
+    QF_active_[p] = (QActive *)0;  /* free-up the priority level */
 
     QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_REMOVE, QS_priv_.aoObjFilter, a)
-        QS_TIME_();                                            /* timestamp */
-        QS_OBJ_(a);                                    /* the active object */
-        QS_U8_(p);                     /* the priority of the active object */
+        QS_TIME_();         /* timestamp */
+        QS_OBJ_(a);         /* the active object */
+        QS_U8_((uint8_t)p); /* the priority of the active object */
     QS_END_NOCRIT_()
 
     QF_CRIT_EXIT_();
 }
 
-/* macro to encapsulate pointer incrementing, which violates
-* MISRA-C:2004 required rule 17.4 (pointer arithmetic used).
+/****************************************************************************/
+/**
+* \description
+* macro to encapsulate pointer increment, which violates MISRA-C:2004
+* required rule 17.4 (pointer arithmetic used).
+*
+* \arguments
+* \arg[in]  \c p_  pointer to be incremented.
 */
 #define QF_PTR_INC_(p_) (++(p_))
 
-/*..........................................................................*/
-void QF_bzero(void * const start, uint_t len) {
+/****************************************************************************/
+/**
+* \description
+* Clears a memory buffer by writing zeros byte-by-byte.
+*
+* \arguments
+* \arg[in]  \c start  pointer to the beginning of a memory buffer.
+* \arg[in]  \c len    length of the memory buffer to clear (in bytes)
+*
+* \note The main application of this function is clearing the internal QF
+* variables upon startup. This is done to avoid problems with non-standard
+* startup code provided with some compilers and toolsets (e.g., TI DSPs or
+* Microchip MPLAB), which does not zero the uninitialized variables, as
+* required by the ANSI C standard.
+*/
+void QF_bzero(void * const start, uint_fast16_t len) {
     uint8_t *ptr = (uint8_t *)start;
-    while (len != (uint_t)0) {
+    while (len != (uint_fast16_t)0) {
         *ptr = (uint8_t)0;
         QF_PTR_INC_(ptr);
         --len;

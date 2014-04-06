@@ -1,13 +1,18 @@
-/*****************************************************************************
-* Product: QP/C
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 02, 2013
+/**
+* \file
+* \brief QK/C platform-independent public interface.
+* \ingroup qk
+* \cond
+******************************************************************************
+* Product: QK/C
+* Last updated for version 5.3.0
+* Last updated on  2014-03-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,32 +33,24 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
 #ifndef qk_h
 #define qk_h
 
-/**
-* \file
-* \ingroup qk qf
-* \brief QK/C platform-independent public interface.
-*
-* This header file must be included directly or indirectly
-* in all modules (*.c files) that use QK/C.
-*/
-
-#include "qequeue.h"       /* The QK kernel uses the native QF event queue  */
-#include "qmpool.h"        /* The QK kernel uses the native QF memory pool  */
-#include "qpset.h"         /* The QK kernel uses the native QF priority set */
+#include "qequeue.h"  /* QK kernel uses the native QF event queue  */
+#include "qmpool.h"   /* QK kernel uses the native QF memory pool  */
+#include "qpset.h"    /* QK kernel uses the native QF priority set */
 
 /****************************************************************************/
 /* QF configuration for QK */
 
-/** \brief This macro defines the type of the event queue used for the
-* active objects.
-*
+/*! This macro defines the type of the event queue used for the
+* active objects. */
+/**
 * \note This is just an example of the macro definition. Typically, you need
 * to define it in the specific QF port file (qf_port.h). In case of QK, which
 * always depends on the native QF queue, this macro is defined at the level
@@ -62,55 +59,40 @@
 #define QF_EQUEUE_TYPE         QEQueue
 
 #if defined(QK_TLS) || defined(QK_EXT_SAVE)
-    #define QF_OS_OBJECT_TYPE  uint8_t
+    #define QF_OS_OBJECT_TYPE  uint_fast8_t
     #define QF_THREAD_TYPE     void *
-#endif                                             /* QK_TLS || QK_EXT_SAVE */
+#endif /* QK_TLS || QK_EXT_SAVE */
 
 #if (QF_MAX_ACTIVE <= 8)
-    extern QPSet8  QK_readySet_;
+    extern QPSet8  QK_readySet_; /*!< QK ready-set of AOs */
 #else
-    extern QPSet64 QK_readySet_;                   /**< QK ready-set of AOs */
+    extern QPSet64 QK_readySet_; /*!< QK ready-set of AOs */
 #endif
 
-
 /****************************************************************************/
-/** \brief QK scheduler
-*
-* \note QK_sched_() must be always called with interrupts disabled.
-* The scheduler might enable interrupts internally, but always
-* returns with interrupts disabled.
-*/
-void QK_sched_(uint8_t p);
+/*! QK scheduler */
+void QK_sched_(uint_fast8_t p);
 
-/** \brief QK extended scheduler
-*
-* \note QK_schedExt_() must be always called with interrupts disabled.
-* The scheduler might enable the interrupts internally, but always
-* returns with interrupts disabled.
-*/
-void QK_schedExt_(uint8_t p);
+/*! QK extended scheduler */
+void QK_schedExt_(uint_fast8_t p);
 
-/** \brief Find the highest-priority task ready to run
-*
-* \note QK_schedPrio_() must be always called with interrupts disabled
-* and returns with interrupts disabled.
-*/
-uint8_t QK_schedPrio_(void);
+/*! Find the highest-priority task ready to run */
+uint_fast8_t QK_schedPrio_(void);
 
 /* public-scope objects */
-extern uint8_t volatile QK_currPrio_;  /**< current task/interrupt priority */
-extern uint_t  volatile QK_intNest_;           /**< interrupt nesting level */
+extern uint_fast8_t volatile QK_currPrio_; /*!< current task priority */
+extern uint_fast8_t volatile QK_intNest_;  /*!< interrupt nesting level */
 
 /****************************************************************************/
-/** \brief QK initialization
-*
+/*! QK initialization */
+/**
 * QK_init() is called from QF_init() in qk.c. This function is
 * defined in the QK ports.
 */
 void QK_init(void);
 
-/** \brief QK idle callback (customized in BSPs for QK)
-*
+/*! QK idle callback (customized in BSPs for QK) */
+/**
 * QK_onIdle() is called continuously by the QK idle loop. This callback
 * gives the application an opportunity to enter a power-saving CPU mode,
 * or perform some other idle processing.
@@ -124,61 +106,44 @@ void QK_onIdle(void);
 
 #ifndef QK_NO_MUTEX
 
-    /** \brief QK Mutex type.
-    *
+    /*! QK Mutex type. */
+    /**
     * QMutex represents the priority-ceiling mutex available in QK.
     * \sa QK_mutexLock()
     * \sa QK_mutexUnlock()
     */
-    typedef uint8_t QMutex;
+    typedef uint_fast8_t QMutex;
 
-    /** \brief QK priority-ceiling mutex lock
-    *
-    * Lock the QK scheduler up to the priority level \a prioCeiling.
-    *
-    * \note This function should be always paired with QK_mutexUnlock(). The
-    * code between QK_mutexLock() and QK_mutexUnlock() should be kept to the
-    * minimum.
-    *
-    * \include qk_mux.c
-    */
-    QMutex QK_mutexLock(uint8_t const prioCeiling);
+    /*! QK priority-ceiling mutex lock */
+    QMutex QK_mutexLock(uint_fast8_t const prioCeiling);
 
-    /** \brief QK priority-ceiling mutex unlock
-    *
-    * \note This function should be always paired with QK_mutexLock(). The
-    * code between QK_mutexLock() and QK_mutexUnlock() should be kept to the
-    * minimum.
-    *
-    * \include qk_mux.c
-    */
+    /*! QK priority-ceiling mutex unlock */
     void QK_mutexUnlock(QMutex mutex);
 
-#endif                                                          /* QK_MUTEX */
+#endif /* QK_MUTEX */
 
 /****************************************************************************/
-/** \brief get the current QK version number string
-*
+/*! get the current QK version number string */
+/**
 * version of QK as a constant 5-character string of the form X.Y.Z,
 * where X is a 1-digit major version number, Y is a 1-digit minor
 * version number, and Z is a 1-digit release number.
 */
 #define QK_getVersion() (QP_VERSION_STR)
 
-/*****************************************************************************
-* interface used only inside QF, but not in applications
-*/
-#ifdef qf_pkg_h
+/****************************************************************************/
+/* interface used only inside QP implementation, but not in applications */
+#ifdef QP_IMPL
 
     #define QACTIVE_EQUEUE_WAIT_(me_) \
-        (Q_ASSERT((me_)->eQueue.frontEvt != (QEvt *)0))
+        (Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0))
 
     #if (QF_MAX_ACTIVE <= 8)
         #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
             QPSet8_insert(&QK_readySet_, (me_)->prio); \
-            if (QK_intNest_ == (uint_t)0) { \
-                uint8_t p = QK_schedPrio_(); \
-                if (p != (uint8_t)0) { \
+            if (QK_intNest_ == (uint_fast8_t)0) { \
+                uint_fast8_t p = QK_schedPrio_(); \
+                if (p != (uint_fast8_t)0) { \
                     QK_sched_(p); \
                 } \
             } \
@@ -189,9 +154,9 @@ void QK_onIdle(void);
     #else
         #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
             QPSet64_insert(&QK_readySet_, (me_)->prio); \
-            if (QK_intNest_ == (uint_t)0) { \
-                uint8_t p = QK_schedPrio_(); \
-                if (p != (uint8_t)0) { \
+            if (QK_intNest_ == (uint_fast8_t)0) { \
+                uint_fast8_t p = QK_schedPrio_(); \
+                if (p != (uint_fast8_t)0) { \
                     QK_sched_(p); \
                 } \
             } \
@@ -201,15 +166,15 @@ void QK_onIdle(void);
             QPSet64_remove(&QK_readySet_, (me_)->prio)
     #endif
 
-                                         /* native QF event pool operations */
+    /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
         (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_t)(p_).blockSize)
+    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
     #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
     #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), (e_)))
 
-#endif                                                    /* ifdef qf_pkg_h */
+#endif /* QP_IMPL */
 
-#endif                                                              /* qk_h */
+#endif /* qk_h */
 

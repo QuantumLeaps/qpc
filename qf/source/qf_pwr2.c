@@ -1,13 +1,18 @@
-/*****************************************************************************
+/**
+* \file
+* \brief QF_pwr2Lkup[], QF_invPwr2Lkup[], and QF_div8Lkup[] definitions.
+* \ingroup qf
+* \cond
+******************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Nov 30, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-02-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,21 +33,18 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
+#define QP_IMPL           /* this is QP implementation */
+#include "qf_port.h"      /* QF port */
 #include "qf_pkg.h"
 
-/**
-* \file
-* \ingroup qf
-* \brief QF_pwr2Lkup[], QF_invPwr2Lkup[], and QF_div8Lkup[] definitions.
-*/
-
-/* Global objects ----------------------------------------------------------*/
+/* Global objects ***********************************************************/
 uint8_t const Q_ROM QF_pwr2Lkup[65] = {
-    (uint8_t)0x00,                                       /* unused location */
+    (uint8_t)0x00, /* unused location */
     (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
     (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80,
     (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
@@ -62,7 +64,7 @@ uint8_t const Q_ROM QF_pwr2Lkup[65] = {
 };
 
 uint8_t const Q_ROM QF_invPwr2Lkup[65] = {
-    (uint8_t)0xFF,                                       /* unused location */
+    (uint8_t)0xFF, /* unused location */
     (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
     (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F,
     (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
@@ -82,7 +84,7 @@ uint8_t const Q_ROM QF_invPwr2Lkup[65] = {
 };
 
 uint8_t const Q_ROM QF_div8Lkup[65] = {
-    (uint8_t)0,                                          /* unused location */
+    (uint8_t)0, /* unused location */
     (uint8_t)0, (uint8_t)0, (uint8_t)0, (uint8_t)0,
     (uint8_t)0, (uint8_t)0, (uint8_t)0, (uint8_t)0,
     (uint8_t)1, (uint8_t)1, (uint8_t)1, (uint8_t)1,

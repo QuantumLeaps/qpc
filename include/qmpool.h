@@ -1,13 +1,18 @@
-/*****************************************************************************
-* Product: QP/C
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 02, 2013
+/**
+* \file
+* \brief platform-independent memory pool interface.
+* \ingroup qf
+* \cond
+******************************************************************************
+* Product: QF/C
+* Last updated for version 5.3.0
+* Last updated on  2014-02-24
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,34 +33,27 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
 #ifndef qmpool_h
 #define qmpool_h
 
-/**
-* \file
-* \ingroup qf
-* \brief platform-independent memory pool interface.
-*
-* This header file must be included in all QF ports that use native QF
-* memory pool implementation.
-*/
-
 /****************************************************************************/
 #ifndef QF_MPOOL_SIZ_SIZE
-    /** \brief macro to override the default ::QMPoolSize size.
+    /*! macro to override the default ::QMPoolSize size.
     * Valid values 1, 2, or 4; default 2
     */
     #define QF_MPOOL_SIZ_SIZE 2
 #endif
 #if (QF_MPOOL_SIZ_SIZE == 1)
 
-    /** \brief The data type to store the block-size based on the macro
-    * #QF_MPOOL_SIZ_SIZE.
-    *
+    /*! The data type to store the block-size based on the macro
+    * #QF_MPOOL_SIZ_SIZE. */
+    /**
+    * \description
     * The dynamic range of this data type determines the maximum size
     * of blocks that can be managed by the native QF event pool.
     */
@@ -71,16 +69,17 @@
 
 /****************************************************************************/
 #ifndef QF_MPOOL_CTR_SIZE
-    /** \brief macro to override the default ::QMPoolCtr size.
+    /*! macro to override the default ::QMPoolCtr size.
     * Valid values 1, 2, or 4; default 2
     */
     #define QF_MPOOL_CTR_SIZE 2
 #endif
 #if (QF_MPOOL_CTR_SIZE == 1)
 
-    /** \brief The data type to store the block-counter based on the macro
-    * #QF_MPOOL_CTR_SIZE.
-    *
+    /*! The data type to store the block-counter based on the macro
+    * #QF_MPOOL_CTR_SIZE. */
+    /**
+    * \description
     * The dynamic range of this data type determines the maximum number
     * of blocks that can be stored in the pool.
     */
@@ -94,48 +93,46 @@
 #endif
 
 /****************************************************************************/
-/** \brief Native QF Memory Pool
-*
-* This structure describes the native QF memory pool, which can be used as
+/*! Native QF Memory Pool */
+/**
+* \description
+* This class describes the native QF memory pool, which can be used as
 * the event pool for dynamic event allocation, or as a fast, deterministic
 * fixed block-size heap for any other objects in your application.
 *
-* The ::QMPool structure contains only data members for managing a memory
-* pool, but does not contain the pool storage, which must be provided
-* externally during the pool initialization.
+* \note
+* ::QMPool contains only data members for managing a memory pool, but
+* does not contain the pool storage, which must be provided externally
+* during the pool initialization.
 *
+* \note
 * The native QF event pool is configured by defining the macro
 * #QF_EPOOL_TYPE_ as QMPool in the specific QF port header file.
 */
-typedef struct QMPoolTag {
-    /** The head of the linked list of free blocks
-    */
+typedef struct {
+    /*! The head of the linked list of free blocks */
     void * volatile free_head;
 
-    /** the original start this pool
-    */
+    /*! the original start this pool */
     void *start;
 
-    /** the last memory block managed by this memory pool
-    */
+    /*! the last memory block managed by this memory pool */
     void *end;
 
-    /**  maximum block size (in bytes)
-    */
+    /*!  maximum block size (in bytes) */
     QMPoolSize blockSize;
 
-    /** total number of blocks
-    */
+    /*! total number of blocks */
     QMPoolCtr nTot;
 
-    /** number of free blocks remaining
-    */
+    /*! number of free blocks remaining */
     QMPoolCtr volatile nFree;
 
-    /** minimum number of free blocks ever present in this pool
-    *
-    * \note this attribute remembers the low watermark of the pool,
-    * which provides a valuable information for sizing event pools.
+    /*! minimum number of free blocks ever present in this pool */
+    /**
+    * \description
+    * this attribute remembers the low watermark of the pool, which
+    * provides a valuable information for sizing event pools.
     * \sa QF_getPoolMin().
     */
     QMPoolCtr nMin;
@@ -143,74 +140,25 @@ typedef struct QMPoolTag {
 
 /* public functions: */
 
-/** \brief Initializes the native QF event pool
-*
-* The parameters are as follows: \a me points to the ::QMPool struct to be
-* initialized, \a poolSto is the pool storage, \a poolSize is the size
-* of the pool storage in bytes, and \a blockSize is the block size of this
-* pool.
-*
-* The caller of this method must make sure that the \a poolSto pointer
-* is properly aligned. In particular, it must be possible to efficiently
-* store a pointer at the location pointed to by \a poolSto.
-* Internally, the QMPool_init() function rounds up the block size
-* \a blockSize so that it can fit an integer number of pointers.
-* This is done to achieve proper alignment of the blocks within the pool.
-*
-* \note Due to the rounding of block size the actual capacity of the pool
-* might be less than (\a poolSize / \a blockSize). You can check the capacity
-* of the pool by calling the QF_getPoolMin() function.
-*/
+/*! Initializes the native QF memory pool */
 void QMPool_init(QMPool * const me, void * const poolSto,
-                 uint_t poolSize, uint_t blockSize);
+                 uint_fast16_t poolSize, uint_fast16_t blockSize);
 
-/** \brief Obtains a memory block from a memory pool.
-*
-* The only parameter \a me is a pointer to the ::QMPool from which the
-* block is requested. The function returns a pointer to the allocated
-* memory block or NULL if no free blocks are available.
-*
-* A allocated block must be returned to the same pool from which it has
-* been allocated.
-*
-* This function can be called from any task level or ISR level.
-*
-* \note The memory pool \a me must be initialized before any events can
-* be requested from it. Also, the QMPool_get() function uses internally a
-* QF critical section, so you should be careful not to call it from within
-* a critical section when nesting of critical section is not supported.
-*
-* \sa QMPool_put()
-*/
-void *QMPool_get(QMPool * const me, uint_t const margin);
+/*! Obtains a memory block from a memory pool. */
+void *QMPool_get(QMPool * const me, uint_fast16_t const margin);
 
-/** \brief Returns a memory block back to a memory pool.
-*
-* The first parameter \a me is a pointer to the ::QMPool to which the
-* block is returned. The second parameter is the pointer to the returned
-* memory block.
-*
-* This function can be called from any task level or ISR level.
-*
-* \note The block must be allocated from the same memory pool to which it
-* is returned. The QMPool_put() function raises an assertion if the returned
-* pointer to the block points outside of the original memory buffer managed
-* by the memory pool. Also, the QMPool_put() function uses internally a
-* QF critical section, so you should be careful not to call it from within
-* a critical section when nesting of critical section is not supported.
-*
-* \sa QMPool_get()
-*/
+/*! Recycles a memory block back to a memory pool. */
 void QMPool_put(QMPool * const me, void *b);
 
-/* friend class QF; */
-
-/** \brief Memory pool element to allocate correctly aligned storage
+/*! Memory pool element to allocate correctly aligned storage
 * for QMPool class.
 */
-#define QF_MPOOL_EL(type_) \
-    struct { void *sto_[((sizeof(type_) - 1U)/sizeof(void*)) + 1U]; }
+/**
+* \arguments
+* \arg[in] \c evType_ event type (name of the subclass of QEvt)
+*/
+#define QF_MPOOL_EL(evType_) \
+    struct { void *sto_[((sizeof(evType_) - 1U)/sizeof(void*)) + 1U]; }
 
-
-#endif                                                          /* qmpool_h */
+#endif /* qmpool_h */
 

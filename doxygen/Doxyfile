@@ -175,7 +175,7 @@ JAVADOC_AUTOBRIEF      = NO
 # requiring an explicit \brief command for a brief description.)
 # The default value is: NO.
 
-QT_AUTOBRIEF           = NO
+QT_AUTOBRIEF           = YES
 
 # The MULTILINE_CPP_IS_BRIEF tag can be set to YES to make doxygen treat a
 # multi-line C++ special comment block (i.e. a block of //! or /// comments) as
@@ -218,7 +218,10 @@ TAB_SIZE               = 4
 # "Side Effects:". You can put \n's in the value part of an alias to insert
 # newlines.
 
-ALIASES                =
+ALIASES                = \
+    "description=@par <b>Description</b>\n" \
+    "arguments=<b>Arguments</b>" \
+    "usage=@par <b>Usage</b>\n"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
@@ -628,7 +631,7 @@ SHOW_FILES             = YES
 # Folder Tree View (if specified).
 # The default value is: YES.
 
-SHOW_NAMESPACES        = YES
+SHOW_NAMESPACES        = NO
 
 # The FILE_VERSION_FILTER tag can be used to specify a program or script that
 # doxygen should invoke to get the current version for each file (typically from
@@ -735,8 +738,8 @@ WARN_LOGFILE           =
 
 INPUT                  = ./qpc.txt \
                          ./qpc_rev.txt \
-                         ./qpc_metrics.txt \
                          ./qp_macros.h \
+                         ./qpc_metrics.txt \
                          ../include \
                          ../qep/source \
                          ../qf/source \

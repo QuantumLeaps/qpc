@@ -14,7 +14,7 @@
 * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 * for more details.
 *****************************************************************************/
-/* @(/3/0) .................................................................*/
+/*${.::game.h} .............................................................*/
 #ifndef game_h
 #define game_h
 
@@ -50,8 +50,8 @@ enum GameSignals {                              /* signals used in the game */
     MAX_SIG                           /* the last signal (keep always last) */
 };
 
-/* @(/1/0) .................................................................*/
-typedef struct ObjectPosEvtTag {
+/*${Events::ObjectPosEvt} ..................................................*/
+typedef struct {
 /* protected: */
     QEvt super;
 
@@ -60,8 +60,8 @@ typedef struct ObjectPosEvtTag {
     uint8_t y;
 } ObjectPosEvt;
 
-/* @(/1/1) .................................................................*/
-typedef struct ObjectImageEvtTag {
+/*${Events::ObjectImageEvt} ................................................*/
+typedef struct {
 /* protected: */
     QEvt super;
 
@@ -71,8 +71,8 @@ typedef struct ObjectImageEvtTag {
     uint8_t bmp;
 } ObjectImageEvt;
 
-/* @(/1/2) .................................................................*/
-typedef struct MineEvtTag {
+/*${Events::MineEvt} .......................................................*/
+typedef struct {
 /* protected: */
     QEvt super;
 
@@ -80,8 +80,8 @@ typedef struct MineEvtTag {
     uint8_t id;
 } MineEvt;
 
-/* @(/1/3) .................................................................*/
-typedef struct ScoreEvtTag {
+/*${Events::ScoreEvt} ......................................................*/
+typedef struct {
 /* protected: */
     QEvt super;
 
@@ -92,12 +92,12 @@ typedef struct ScoreEvtTag {
 
 #define GAME_SCREEN_WIDTH          BSP_SCREEN_WIDTH
 #define GAME_SCREEN_HEIGHT         BSP_SCREEN_HEIGHT
-#define GAME_MINES_MAX             5
-#define GAME_MINES_DIST_MIN        10
-#define GAME_SPEED_X               1
-#define GAME_MISSILE_SPEED_X       2
-#define GAME_SHIP_X                10
-#define GAME_SHIP_Y                (GAME_SCREEN_HEIGHT / 2)
+#define GAME_MINES_MAX             5U
+#define GAME_MINES_DIST_MIN        10U
+#define GAME_SPEED_X               1U
+#define GAME_MISSILE_SPEED_X       2U
+#define GAME_SHIP_X                10U
+#define GAME_SHIP_Y                (GAME_SCREEN_HEIGHT / 2U)
 
 enum GameBitmapIds {
     PRESS_BUTTON_BMP,
@@ -114,21 +114,21 @@ enum GameBitmapIds {
 };
 
 /* active objects' "constructors" */
-/* @(/2/8) .................................................................*/
+/*${AOs::Tunnel_ctor} ......................................................*/
 void Tunnel_ctor(void);
 
-/* @(/2/9) .................................................................*/
+/*${AOs::Ship_ctor} ........................................................*/
 void Ship_ctor(void);
 
-/* @(/2/10) ................................................................*/
+/*${AOs::Missile_ctor} .....................................................*/
 void Missile_ctor(void);
 
 
 /* instantiation of the Mines orthogonal components */
-/* @(/2/11) ................................................................*/
+/*${AOs::Mine1_ctor} .......................................................*/
 QMsm * Mine1_ctor(uint8_t id);
 
-/* @(/2/12) ................................................................*/
+/*${AOs::Mine2_ctor} .......................................................*/
 QMsm * Mine2_ctor(uint8_t id);
 
 
@@ -141,7 +141,7 @@ extern QActive * const AO_Missile;
 
 
 /* helper function for all AOs */
-/* @(/2/13) ................................................................*/
+/*${AOs::do_bitmaps_overlap} ...............................................*/
 uint8_t do_bitmaps_overlap(
     uint8_t bmp_id1,
     uint8_t x1,

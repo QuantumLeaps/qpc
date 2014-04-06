@@ -1,13 +1,17 @@
-/*****************************************************************************
+/**
+* \file
+* \ingroup qf
+* \cond
+******************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Oct 08, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-02-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,60 +32,80 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
+#define QP_IMPL           /* this is QP implementation */
+#include "qf_port.h"      /* QF port */
 #include "qf_pkg.h"
 #include "qassert.h"
+#ifdef Q_SPY              /* QS software tracing enabled? */
+    #include "qs_port.h"  /* include QS port */
+#else
+    #include "qs_dummy.h" /* disable the QS software tracing */
+#endif /* Q_SPY */
 
 Q_DEFINE_THIS_MODULE("qeq_get")
 
+/****************************************************************************/
 /**
-* \file
-* \ingroup qf
-* \brief QEQueue_get() definition. NOTE: this function is used for
-* the "raw" thread-safe queues and NOT for the queues of active objects.
+* \description
+* Retrieves an event from the front of the "raw" thread-safe queue and
+* returns a pointer to this event to the caller.
+*
+* \arguments
+* \arg[in,out] \c me     pointer (see \ref derivation)
+*
+* \returns pointer to event at the front of the queue, if the queue is
+* not empty and NULL if the queue is empty.
+*
+* \note this function is used for the "raw" thread-safe queues and __not__
+* for the queues of active objects.
+*
+* \sa QEQueue_post(), QEQueue_postLIFO(), QActive_recall()
 */
-
-/*..........................................................................*/
 QEvt const *QEQueue_get(QEQueue * const me) {
     QEvt const *e;
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    e = me->frontEvt;        /* always remove event from the front location */
+    e = me->frontEvt; /* always remove event from the front location */
 
-    if (e != (QEvt const *)0) {                 /* was the queue not empty? */
-        QEQueueCtr nFree = me->nFree + (QEQueueCtr)1;/*get volatile into tmp*/
-        me->nFree = nFree;                      /* upate the number of free */
+    /* was the queue not empty? */
+    if (e != (QEvt const *)0) {
+        /* use a temporary variable to increment volatile me->nFree */
+        QEQueueCtr nFree = me->nFree + (QEQueueCtr)1;
+        me->nFree = nFree; /* update the number of free */
 
-        if (nFree <= me->end) {           /* any events in the ring buffer? */
+        /* any events in the ring buffer? */
+        if (nFree <= me->end) {
             me->frontEvt = QF_PTR_AT_(me->ring, me->tail); /* get from tail */
-            if (me->tail == (QEQueueCtr)0) {      /* need to wrap the tail? */
-                me->tail = me->end;                          /* wrap around */
+            if (me->tail == (QEQueueCtr)0) { /* need to wrap the tail? */
+                me->tail = me->end; /* wrap around */
             }
             --me->tail;
 
             QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_GET, QS_priv_.eqObjFilter, me)
-                QS_TIME_();                                    /* timestamp */
-                QS_SIG_(e->sig);                /* the signal of this event */
-                QS_OBJ_(me);                           /* this queue object */
-                QS_2U8_(e->poolId_, e->refCtr_);     /* pool Id & ref Count */
-                QS_EQC_(nFree);                   /* number of free entries */
+                QS_TIME_();           /* timestamp */
+                QS_SIG_(e->sig);      /* the signal of this event */
+                QS_OBJ_(me);          /* this queue object */
+                QS_2U8_(e->poolId_, e->refCtr_);/* pool Id & ref Count */
+                QS_EQC_(nFree);       /* number of free entries */
             QS_END_NOCRIT_()
         }
         else {
-            me->frontEvt = (QEvt const *)0;          /* queue becomes empty */
+            me->frontEvt = (QEvt const *)0; /* queue becomes empty */
 
-                  /* all entries in the queue must be free (+1 for fronEvt) */
-            Q_ASSERT(nFree == (me->end + (QEQueueCtr)1));
+            /* all entries in the queue must be free (+1 for fronEvt) */
+            Q_ASSERT_ID(110, nFree == (me->end + (QEQueueCtr)1));
 
             QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_GET_LAST, QS_priv_.eqObjFilter, me)
-                QS_TIME_();                                    /* timestamp */
-                QS_SIG_(e->sig);                /* the signal of this event */
-                QS_OBJ_(me);                           /* this queue object */
-                QS_2U8_(e->poolId_, e->refCtr_);     /* pool Id & ref Count */
+                QS_TIME_();           /* timestamp */
+                QS_SIG_(e->sig);      /* the signal of this event */
+                QS_OBJ_(me);          /* this queue object */
+                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_END_NOCRIT_()
         }
     }

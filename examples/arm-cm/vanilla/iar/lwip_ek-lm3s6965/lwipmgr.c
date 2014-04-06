@@ -118,7 +118,8 @@ void LwIPMgr_ctor(void) {
     LwIPMgr *me = &l_lwIPMgr;
 
     QActive_ctor(&me->super, (QStateHandler)&LwIPMgr_initial);
-    QTimeEvt_ctorX(&me->te_LWIP_SLOW_TICK, me, LWIP_SLOW_TICK_SIG, 0U);
+    QTimeEvt_ctorX(&me->te_LWIP_SLOW_TICK, &me->super,
+                   LWIP_SLOW_TICK_SIG, 0U);
 }
 /*..........................................................................*/
 QState LwIPMgr_initial(LwIPMgr *me, QEvt const *e) {

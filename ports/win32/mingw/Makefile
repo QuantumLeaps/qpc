@@ -1,13 +1,13 @@
 ##############################################################################
-# Product:  QP/C, Win32 build, GNU compiler
-# Last Updated for Version: 5.2.0
-# Date of the Last Update:  Dec 03, 2013
+# Product:  QP/C, Win32 build, GNU compiler (MinGW)
+# Last Updated for Version: 5.3.0
+# Date of the Last Update:  2014-03-30
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# Quantum Leaps Web sites: http://www.quantum-leaps.com
-#                          http://www.state-machine.com
-# e-mail:                  info@quantum-leaps.com
+# Web:   www.state-machine.com
+# Email: info@state-machine.com
 ##############################################################################
 
 # examples of invoking this Makefile:
@@ -76,7 +75,7 @@ BINDIR  = rel
 # gcc options
 # -c    : compile only
 # -O    : optimize
-CCFLAGS = -c -O2 -Wall -o$@
+CCFLAGS = -c -O2 -Wall -W -o$@
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
@@ -86,7 +85,7 @@ BINDIR   = spy
 # -c    : compile only
 # -g    : source level debugging
 # -D    : define preprocessor macro
-CCFLAGS = -c -g -O -Wall -DQ_SPY -o$@
+CCFLAGS = -c -g -O -Wall -W -DQ_SPY -o$@
 QS_OBJS = \
 	$(BINDIR)/qs.o \
 	$(BINDIR)/qs_.o \
@@ -107,7 +106,7 @@ QP_DEP  = $(QP_INCDIR)/qassert.h
 # gcc options
 # -c    : compile only
 # -g    : source level debugging
-CCFLAGS = -c -g -O -Wall -o$@
+CCFLAGS = -c -g -O -Wall -W -o$@
 
 endif
 
@@ -116,14 +115,15 @@ VPATH = $(QEP_SRCDIR) $(QF_SRCDIR) $(QS_SRCDIR)
 # the objects to build =======================================================
 QEP_OBJS = \
 	$(BINDIR)/qep.o \
+	$(BINDIR)/qmsm_ini.o \
+	$(BINDIR)/qmsm_dis.o \
+	$(BINDIR)/qmsm_in.o \
 	$(BINDIR)/qfsm_ini.o \
 	$(BINDIR)/qfsm_dis.o \
 	$(BINDIR)/qhsm_ini.o \
 	$(BINDIR)/qhsm_dis.o \
 	$(BINDIR)/qhsm_top.o \
-	$(BINDIR)/qhsm_in.o \
-	$(BINDIR)/qmsm_ini.o \
-	$(BINDIR)/qmsm_dis.o
+	$(BINDIR)/qhsm_in.o
 
 QF_OBJS = \
 	$(BINDIR)/qa_ctor.o \
@@ -159,12 +159,12 @@ QF_OBJS = \
 	$(BINDIR)/qf_port.o \
 	$(BINDIR)/win32_gui.o
 
-# the 'all' target ===========================================================
+# the targets ================================================================
 
-all: $(BINDIR)/libqp.a $(BIN_DIR)
+all: $(BINDIR) $(BINDIR)/libqp.a
 	-$(RM) $(BINDIR)/*.o
 
-$(BIN_DIR):
+$(BINDIR):
 	mkdir $@
 
 $(BINDIR)/libqp.a: 	$(QEP_OBJS) $(QF_OBJS) $(QS_OBJS)
@@ -176,6 +176,15 @@ $(BINDIR)/libqp.a: 	$(QEP_OBJS) $(QF_OBJS) $(QS_OBJS)
 
 # QEP -----------------------------------------
 $(BINDIR)/qep.o: $(QEP_SRCDIR)/qep.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+
+$(BINDIR)/qmsm_ini.o: $(QEP_SRCDIR)/qmsm_ini.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+
+$(BINDIR)/qmsm_dis.o: $(QEP_SRCDIR)/qmsm_dis.c
+	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+
+$(BINDIR)/qmsm_in.o: $(QEP_SRCDIR)/qmsm_in.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
 
 $(BINDIR)/qfsm_ini.o: $(QEP_SRCDIR)/qfsm_ini.c
@@ -194,12 +203,6 @@ $(BINDIR)/qhsm_top.o: $(QEP_SRCDIR)/qhsm_top.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
 
 $(BINDIR)/qhsm_in.o: $(QEP_SRCDIR)/qhsm_in.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
-
-$(BINDIR)/qmsm_ini.o: $(QEP_SRCDIR)/qmsm_ini.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
-
-$(BINDIR)/qmsm_dis.o: $(QEP_SRCDIR)/qmsm_dis.c
 	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
 
 # QF -----------------------------------------

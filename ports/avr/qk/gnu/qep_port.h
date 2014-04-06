@@ -1,17 +1,17 @@
 /*****************************************************************************
 * Product: QEP/C port, AVR, GNU compiler
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Nov 22, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-02-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 2 of the License, or
+* by the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
 * Alternatively, this program may be distributed and modified under the
@@ -28,9 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
 *****************************************************************************/
 #ifndef qep_port_h
 #define qep_port_h
@@ -43,7 +42,9 @@
 #define Q_ROM_OBJ_PTR(rom_var_) pgm_read_word_near(&(rom_var_))
 #define Q_ROM_FUN_PTR(rom_var_) pgm_read_word_near(&(rom_var_))
 
-#include <stdint.h>                    /* C99-standard exact-width integers */
+#include <stdint.h>            /* Exact-width types. WG14/N843 C99 Standard */
+#include <stdbool.h>           /* Boolean type.      WG14/N843 C99 Standard */
+
 #include <avr\pgmspace.h> /* accessing data in the program memory (PROGMEM) */
 
 #include "qep.h"               /* QEP platform-independent public interface */

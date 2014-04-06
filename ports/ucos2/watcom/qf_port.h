@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QF/C, port to uC/OS-II, Open Watcom, Large model
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Sep 13, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-03-26
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
 *****************************************************************************/
 #ifndef qf_port_h
 #define qf_port_h
@@ -53,7 +52,7 @@
 /*****************************************************************************
 * interface used only inside QF, but not in applications
 */
-#ifdef qf_pkg_h
+#ifdef QP_IMPL
 
     typedef struct UCosMemPartTag {  /* uC/OS-II memory pool and block-size */
         OS_MEM *pool;                               /* uC/OS-II memory pool */
@@ -85,7 +84,7 @@
     } while (0)
     #define QF_EPOOL_PUT_(p_, e_)    OSMemPut((p_).pool, (void *)(e_))
 
-#endif                                                    /* ifdef qf_pkg_h */
+#endif                                                    /* ifdef QP_IMPL */
 
 #endif                                                         /* qf_port_h */
 

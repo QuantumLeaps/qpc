@@ -1,14 +1,14 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C buld script for uC/OS-II port, Open Watcom compiler
-:: Last Updated for Version: 5.1.0
-:: Date of the Last Update:  Sep 30, 2013
+:: Last updated for version 5.3.0
+:: Last updated on  2014-03-30
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) Quantum Leaps, www.state-machine.com.
 ::
 :: This program is open source software: you can redistribute it and/or
 :: modify it under the terms of the GNU General Public License as published
@@ -29,9 +29,8 @@
 :: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: Quantum Leaps Web sites: http://www.quantum-leaps.com
-::                          http://www.state-machine.com
-:: e-mail:                  info@quantum-leaps.com
+:: Web:   www.state-machine.com
+:: Email: info@state-machine.com
 :: ===========================================================================
 
 :: If you have defined the WATCOM environment variable, the following line has
@@ -99,6 +98,7 @@ set CCINC=@inc_qep.rsp
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qep.obj      %SRCDIR%\qep.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qmsm_ini.obj %SRCDIR%\qmsm_ini.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qmsm_dis.obj %SRCDIR%\qmsm_dis.c
+%CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qmsm_in.obj  %SRCDIR%\qmsm_in.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qfsm_ini.obj %SRCDIR%\qfsm_ini.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qfsm_dis.obj %SRCDIR%\qfsm_dis.c
 %CC% %CCFLAGS% %CCINC% -fo=%BINDIR%\qhsm_ini.obj %SRCDIR%\qhsm_ini.c
@@ -109,6 +109,7 @@ set CCINC=@inc_qep.rsp
 %LIB% %LIBDIR%\qp +%BINDIR%\qep
 %LIB% %LIBDIR%\qp +%BINDIR%\qmsm_ini
 %LIB% %LIBDIR%\qp +%BINDIR%\qmsm_dis
+%LIB% %LIBDIR%\qp +%BINDIR%\qmsm_in
 %LIB% %LIBDIR%\qp +%BINDIR%\qfsm_ini
 %LIB% %LIBDIR%\qp +%BINDIR%\qfsm_dis
 %LIB% %LIBDIR%\qp +%BINDIR%\qhsm_ini

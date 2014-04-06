@@ -1,13 +1,17 @@
-/*****************************************************************************
+/**
+* \file
+* \ingroup qep
+* \cond
+******************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 20, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-03-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,82 +32,103 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   http://www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
+#include "qep_port.h"     /* QEP port */
 #include "qep_pkg.h"
 #include "qassert.h"
+#ifdef Q_SPY              /* QS software tracing enabled? */
+    #include "qs_port.h"  /* include QS port */
+#else
+    #include "qs_dummy.h" /* disable the QS software tracing */
+#endif /* Q_SPY */
 
 Q_DEFINE_THIS_MODULE("qmsm_ini")
 
-/**
-* \file
-* \ingroup qep
-* \brief QMsm_ctor() and QMsm_init_() implementations.
-*/
-
-/*..........................................................................*/
-QActionHandler const QMsm_emptyAction_[1] = {
+/****************************************************************************/
+static QMState const l_msm_top_s = {
+    (QMState const *)0,
+    Q_STATE_CAST(0),
+    Q_ACTION_CAST(0),
+    Q_ACTION_CAST(0),
     Q_ACTION_CAST(0)
 };
 
-/*..........................................................................*/
+/****************************************************************************/
+/**
+* \description
+* Performs the first step of QMsm initialization by assigning the initial
+* pseudostate to the currently active state of the state machine.
+*
+* \arguments
+* \arg[in,out] \c me       pointer (see \ref derivation)
+* \arg[in]     \c initial  the top-most initial transition for the MSM.
+*
+* \note  Must be called only ONCE before QMSM_INIT().
+*
+* \usage
+* The following example illustrates how to invoke QMsm_ctor() in the
+* "constructor" of a derived state machine:
+* \include qep_qmsm_ctor.c
+*/
 void QMsm_ctor(QMsm * const me, QStateHandler initial) {
-    static QMsmVtbl const vtbl = {                    /* QMsm virtual table */
+    static QMsmVtbl const vtbl = { /* QMsm virtual table */
         &QMsm_init_,
         &QMsm_dispatch_
     };
     me->vptr = &vtbl;
-    me->state.obj = (void *)0;
-    me->temp.fun  = initial;
+    me->state.obj = &l_msm_top_s; /* the current state (top) */
+    me->temp.fun  = initial;      /* the initial transition handler */
 }
-/*..........................................................................*/
+
+/****************************************************************************/
+/**
+* \description
+* Executes the top-most initial transition in a MSM.
+*
+* \arguments
+* \arg[in,out] \c me pointer (see \ref derivation)
+* \arg[in]     \c e  pointer to the initialization event (might be NULL)
+*
+* \note Must be called only ONCE after the QMsm_ctor().
+*/
 void QMsm_init_(QMsm * const me, QEvt const * const e) {
     QState r;
-#ifdef Q_SPY
-    QMState const *t = (QMState const *)0;       /* the current state (top) */
     QS_CRIT_STAT_
-#endif
 
-    Q_REQUIRE((me->vptr != (QMsmVtbl const *)0)    /* ctor must be executed */
-              && (me->temp.fun != Q_STATE_CAST(0)) /* ctor must be executed */
-              && (me->state.obj == (void *)0));   /*initial tran. NOT taken */
+    /** \pre the virtual pointer must be initialized, the top-most initial
+    * transition must be initialized, and the initial transition must not
+    * be taken yet.
+    */
+    Q_REQUIRE_ID(200, (me->vptr != (QMsmVtbl const *)0)
+                      && (me->temp.fun != Q_STATE_CAST(0))
+                      && (me->state.obj == &l_msm_top_s));
 
-    r = (*me->temp.fun)(me, e);  /* execute the top-most initial transition */
-    Q_ASSERT(r == (QState)Q_RET_INITIAL);    /* initial tran. must be taken */
+    r = (*me->temp.fun)(me, e); /* the action of the top-most initial tran. */
 
-    while (r == (QState)Q_RET_INITIAL) {
-        QActionHandler const *a;
+    /* the top-most initial transition must be taken */
+    Q_ASSERT_ID(210, r == (QState)Q_RET_TRAN_INIT);
 
-        QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.smObjFilter, me)
-            QS_OBJ_(me);                       /* this state machine object */
-            QS_FUN_((t == (QMState const *)0)
-                    ? Q_STATE_CAST(0)
-                    : t->stateHandler);          /* source of initial tran. */
-            QS_FUN_(me->state.obj->stateHandler);   /* target state handler */
-        QS_END_()
+    QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.smObjFilter, me)
+        QS_OBJ_(me); /* this state machine object */
+        QS_FUN_(me->state.obj->stateHandler);        /* source state handler*/
+        QS_FUN_(me->temp.tatbl->target->stateHandler);/*target state handler*/
+    QS_END_()
 
-#ifdef Q_SPY
-        t = me->state.obj;            /* store the target of the transition */
-#endif
-        r = (QState)0U;                      /* invalidate the return value */
-        for (a = me->temp.act; *a != Q_ACTION_CAST(0); QEP_ACT_PTR_INC_(a)) {
-            r = (*(*a))(me);     /* call the action through the 'a' pointer */
-#ifdef Q_SPY
-            if (r == (QState)Q_RET_ENTRY) {
-                QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.smObjFilter, me)
-                    QS_OBJ_(me);
-                    QS_FUN_(me->temp.obj->stateHandler);   /* entered state */
-                QS_END_()
-            }
-#endif
-        }
-    }
+    /* set state to the last tran. target */
+    me->state.obj = me->temp.tatbl->target;
+
+    /* drill down into the state hierarchy with initial transitions... */
+    do {
+        r = QMsm_execTatbl_(me, me->temp.tatbl); /* execute the tran. table */
+    } while (r >= (QState)Q_RET_TRAN_INIT);
 
     QS_BEGIN_(QS_QEP_INIT_TRAN, QS_priv_.smObjFilter, me)
-        QS_TIME_();                                           /* time stamp */
-        QS_OBJ_(me);                           /* this state machine object */
-        QS_FUN_(me->state.obj->stateHandler);      /* the new current state */
+        QS_TIME_();                           /* time stamp */
+        QS_OBJ_(me);                          /* this state machine object */
+        QS_FUN_(me->state.obj->stateHandler); /* the new current state */
     QS_END_()
 }

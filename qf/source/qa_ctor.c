@@ -1,13 +1,17 @@
-/*****************************************************************************
+/**
+* \file
+* \ingroup qf
+* \cond
+******************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Nov 30, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-03-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,30 +32,37 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
-#include "qf_pkg.h"
-/*#include "qassert.h"*/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
+#define QP_IMPL           /* this is QP implementation */
+#include "qf_port.h"      /* QF port */
 
 /*Q_DEFINE_THIS_MODULE("qa_ctor")*/
 
+/****************************************************************************/
 /**
-* \file
-* \ingroup qf
-* \brief QActive_ctor() implementation.
+* \description
+* Performs the first step of active object initialization by assigning
+* the virtual pointer and calling the superclass constructor.
+*
+* \arguments
+* \arg[in,out] \c me       pointer (see \ref derivation)
+* \arg[in]     \c initial  pointer to the event to be dispatched to the MSM
+*
+* \note  Must be called only __once__ before QMSM_INIT().
+* \sa QMsm_ctor() and QHsm_ctor()
 */
-
-/*..........................................................................*/
 void QActive_ctor(QActive * const me, QStateHandler initial) {
-    static QActiveVtbl const vtbl = {              /* QActive virtual table */
+    static QActiveVtbl const vtbl = {  /* QActive virtual table */
         { &QHsm_init_,
           &QHsm_dispatch_ },
         &QActive_start_,
         &QActive_post_,
         &QActive_postLIFO_
     };
-    QHsm_ctor(&me->super, initial);
+    QHsm_ctor(&me->super, initial); /* explicitly call superclass' ctor */
     me->super.vptr = &vtbl.super; /* hook the vptr to QActive virtual table */
 }

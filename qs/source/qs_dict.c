@@ -1,13 +1,18 @@
-/*****************************************************************************
-* Product:  QS/C
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 02, 2013
+/**
+* \file
+* \ingroup qs
+* \brief QS_sig_dict(), QS_obj_dict(), QS_fun_dict(), and QS_usr_dict()
+* \cond
+******************************************************************************
+* Product: QS/C
+* Last updated for version 5.3.0
+* Last updated on  2014-03-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,26 +33,22 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
-#include "qs_pkg.h"
-
-/**
-* \file
-* \ingroup qs
-* \brief QS_sig_dict(), QS_obj_dict(), QS_fun_dict(), and QS_usr_dict()
-* implementation
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
 */
+#include "qs_port.h" /* QS port */
 
-/*..........................................................................*/
+/****************************************************************************/
+/** \note This function is only to be used through macro #QS_SIG_DICTIONARY
+*/
 void QS_sig_dict(enum_t const sig, void const * const obj,
                  char_t const Q_ROM * const name)
 {
     QS_CRIT_STAT_
     QS_CRIT_ENTRY_();
-    QS_beginRec((uint8_t)QS_SIG_DICT);
+    QS_beginRec((uint_fast8_t)QS_SIG_DICT);
     QS_SIG_((QSignal)sig);
     QS_OBJ_(obj);
     QS_STR_ROM_(name);
@@ -55,39 +56,48 @@ void QS_sig_dict(enum_t const sig, void const * const obj,
     QS_CRIT_EXIT_();
     QS_onFlush();
 }
-/*..........................................................................*/
+
+/****************************************************************************/
+/** \note This function is only to be used through macro #QS_OBJ_DICTIONARY
+*/
 void QS_obj_dict(void const * const obj,
                  char_t const Q_ROM * const name)
 {
     QS_CRIT_STAT_
     QS_CRIT_ENTRY_();
-    QS_beginRec((uint8_t)QS_OBJ_DICT);
+    QS_beginRec((uint_fast8_t)QS_OBJ_DICT);
     QS_OBJ_(obj);
     QS_STR_ROM_(name);
     QS_endRec();
     QS_CRIT_EXIT_();
     QS_onFlush();
 }
-/*..........................................................................*/
+
+/****************************************************************************/
+/** \note This function is only to be used through macro #QS_FUN_DICTIONARY
+*/
 void QS_fun_dict(void (* const fun)(void),
                  char_t const Q_ROM * const name)
 {
     QS_CRIT_STAT_
     QS_CRIT_ENTRY_();
-    QS_beginRec((uint8_t)QS_FUN_DICT);
+    QS_beginRec((uint_fast8_t)QS_FUN_DICT);
     QS_FUN_(fun);
     QS_STR_ROM_(name);
     QS_endRec();
     QS_CRIT_EXIT_();
     QS_onFlush();
 }
-/*..........................................................................*/
+
+/****************************************************************************/
+/** \note This function is only to be used through macro #QS_USR_DICTIONARY
+*/
 void QS_usr_dict(enum_t const rec,
                  char_t const Q_ROM * const name)
 {
     QS_CRIT_STAT_
     QS_CRIT_ENTRY_();
-    QS_beginRec((uint8_t)QS_USR_DICT);
+    QS_beginRec((uint_fast8_t)QS_USR_DICT);
     QS_U8_((uint8_t)rec);
     QS_STR_ROM_(name);
     QS_endRec();

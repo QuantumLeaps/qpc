@@ -1,14 +1,14 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 5.2.0
-:: Date of the Last Update:  Dec 20, 2013
+:: Last Updated for Version: 5.3.0
+:: Date of the Last Update:  Feb 10, 2014
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
 ::
 :: This program is open source software: you can redistribute it and/or
 :: modify it under the terms of the GNU General Public License as published
@@ -39,9 +39,9 @@ echo usage:
 echo make
 echo make -CHM
 
-set VERSION=5.2.0
+set VERSION=5.3.0
 
-set DOXHOME="C:\tools\Doxygen\bin\Release64"
+set DOXHOME="C:\tools\doxygen\bin"
 set RCMHOME="C:\tools\MSquared\M2 RSM"
 
 set RSM_OUTPUT=qpc_metrics.txt

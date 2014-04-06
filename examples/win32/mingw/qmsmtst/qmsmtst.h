@@ -14,7 +14,7 @@
 * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 * for more details.
 *****************************************************************************/
-/* @(/2/0) .................................................................*/
+/*${.::qmsmtst.h} ..........................................................*/
 #ifndef qmsmtst_h
 #define qmsmtst_h
 
@@ -35,7 +35,7 @@ enum QMsmTstSignals {
 
 extern QMsm * const the_msm; /* opaque pointer to the test MSM */
 
-/* @(/1/1) .................................................................*/
+/*${SMs::QMsmTst_ctor} .....................................................*/
 void QMsmTst_ctor(void);
 
 

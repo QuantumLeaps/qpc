@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="3.0.0">
+<model version="3.1.0">
  <documentation>Dining Philosopher Problem example
 
 NOTE: Requries QP 5.</documentation>

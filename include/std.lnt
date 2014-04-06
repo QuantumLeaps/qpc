@@ -1,13 +1,13 @@
-//////////////////////////////////////////////////////////////////////////////
+//============================================================================
 // Product: PC-Lint 9.x standard option file
-// Last Updated for Version: 4.4.01
-// Date of the Last Update:  Mar 28, 2012
+// Last Updated for Version: 5.3.0
+// Date of the Last Update:  2014-02-11
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
 //                    innovating embedded systems
 //
-// Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2002-2014 Quantum Leaps, www.state-machine.com.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,10 +28,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// Quantum Leaps Web sites: http://www.quantum-leaps.com
-//                          http://www.state-machine.com
-// e-mail:                  info@quantum-leaps.com
-//////////////////////////////////////////////////////////////////////////////
+// Web:   http://www.state-machine.com
+// Email: info@state-machine.com
+//============================================================================
 
 // output: a single line, file info always, use full path names
 -hF1

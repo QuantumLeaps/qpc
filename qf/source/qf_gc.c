@@ -1,13 +1,18 @@
-/*****************************************************************************
+/**
+* \file
+* \brief QF_gc() implementation.
+* \ingroup qf
+* \cond
+******************************************************************************
 * Product: QF/C
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 18, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-02-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,54 +33,83 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
+#define QP_IMPL           /* this is QP implementation */
+#include "qf_port.h"      /* QF port */
 #include "qf_pkg.h"
 #include "qassert.h"
+#ifdef Q_SPY              /* QS software tracing enabled? */
+    #include "qs_port.h"  /* include QS port */
+#else
+    #include "qs_dummy.h" /* disable the QS software tracing */
+#endif /* Q_SPY */
 
 Q_DEFINE_THIS_MODULE("qf_gc")
 
+/****************************************************************************/
 /**
-* \file
-* \ingroup qf
-* \brief QF_gc() implementation.
+* \description
+* This function implements a simple garbage collector for the dynamic events.
+* Only dynamic events are candidates for recycling. (A dynamic event is one
+* that is allocated from an event pool, which is determined as non-zero
+* e->poolId_ attribute.) Next, the function decrements the reference counter
+* of the event (e->refCtr_), and recycles the event only if the counter drops
+* to zero (meaning that no more references are outstanding for this event).
+* The dynamic event is recycled by returning it to the pool from which
+* it was originally allocated.
+*
+* \arguments
+* \arg[in]  \c e  pointer to the event to recycle
+*
+* \note QF invokes the garbage collector at all appropriate contexts, when
+* an event can become garbage (automatic garbage collection), so the
+* application code should have no need to call QF_gc() directly. The QF_gc()
+* function is exposed only for special cases when your application sends
+* dynamic events to the "raw" thread-safe queues (see ::QEQueue). Such
+* queues are processed outside of QF and the automatic garbage collection
+* is CANNOT be performed for these events. In this case you need to call
+* QF_gc() explicitly.
 */
-
-/*..........................................................................*/
 void QF_gc(QEvt const * const e) {
-    if (e->poolId_ != (uint8_t)0) {               /* is it a dynamic event? */
+
+    /* is it a dynamic event? */
+    if (e->poolId_ != (uint8_t)0) {
         QF_CRIT_STAT_
         QF_CRIT_ENTRY_();
 
-        if (e->refCtr_ > (uint8_t)1) {          /* isn't this the last ref? */
-            QF_EVT_REF_CTR_DEC_(e);           /* decrements the ref counter */
+        /* isn't this the last ref? */
+        if (e->refCtr_ > (uint8_t)1) {
+            QF_EVT_REF_CTR_DEC_(e); /* decrements the ref counter */
 
             QS_BEGIN_NOCRIT_(QS_QF_GC_ATTEMPT, (void *)0, (void *)0)
-                QS_TIME_();                                    /* timestamp */
-                QS_SIG_(e->sig);                 /* the signal of the event */
-                QS_2U8_(e->poolId_, e->refCtr_);     /* pool Id & ref Count */
+                QS_TIME_();         /* timestamp */
+                QS_SIG_(e->sig);    /* the signal of the event */
+                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_END_NOCRIT_()
 
             QF_CRIT_EXIT_();
         }
-        else {      /* this is the last reference to this event, recycle it */
-                                                      /* cannot wrap around */
-            uint_t idx = (uint_t)e->poolId_ - (uint_t)1;
+        /* this is the last reference to this event, recycle it */
+        else {
+            uint_fast8_t idx = (uint_fast8_t)e->poolId_ - (uint_fast8_t)1;
 
             QS_BEGIN_NOCRIT_(QS_QF_GC, (void *)0, (void *)0)
-                QS_TIME_();                                    /* timestamp */
-                QS_SIG_(e->sig);                 /* the signal of the event */
-                QS_2U8_(e->poolId_, e->refCtr_);     /* pool Id & ref Count */
+                QS_TIME_();         /* timestamp */
+                QS_SIG_(e->sig);    /* the signal of the event */
+                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_END_NOCRIT_()
 
             QF_CRIT_EXIT_();
 
-            Q_ASSERT(idx < QF_maxPool_);
+            /*pool ID must be in range */
+            Q_ASSERT_ID(110, idx < QF_maxPool_);
 
-            QF_EPOOL_PUT_(QF_pool_[idx], (QEvt *)e);    /* cast const away, */
-                          /* which is legitimate, because it's a pool event */
+            /* casting const away is legitimate, because it's a pool event */
+            QF_EPOOL_PUT_(QF_pool_[idx], (QEvt *)e);
         }
     }
 }

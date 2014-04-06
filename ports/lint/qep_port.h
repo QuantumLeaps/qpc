@@ -1,13 +1,18 @@
-/*****************************************************************************
-* Product:  QEP/C port for Lint, Generic C compiler
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Aug 10, 2013
+/**
+* \file
+* \brief QEP/C port example for a "generic" C compiler.
+* \ingroup qep
+* \cond
+******************************************************************************
+* Product: QEP/C
+* Last updated for version 5.3.0
+* Last updated on  2014-03-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,25 +33,18 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
 #ifndef qep_port_h
 #define qep_port_h
 
-/**
-* \file
-* \ingroup qep
-* \brief QEP/C port example for a "generic" C compiler.
-*
-* \note This is just an example of a QEP port used for "linting" the QEP.
-*/
+#include <stdint.h>   /* Exact-width types. WG14/N843 C99 Standard */
+#include <stdbool.h>  /* Boolean type.      WG14/N843 C99 Standard */
 
-             /* Exact-width types. WG14/N843 C99 Standard, Section 7.18.1.1 */
-#include <stdint.h>
+#include "qep.h"      /* QEP platform-independent public interface */
 
-#include "qep.h"               /* QEP platform-independent public interface */
-
-#endif                                                        /* qep_port_h */
+#endif /* qep_port_h */
 

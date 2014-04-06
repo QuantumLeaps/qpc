@@ -1,13 +1,17 @@
-/*****************************************************************************
+/**
+* \file
+* \ingroup qep
+* \cond
+******************************************************************************
 * Product: QEP/C
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Jul 30, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-02-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,38 +32,49 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* \endcond
+*/
+#include "qep_port.h"     /* QEP port */
 #include "qep_pkg.h"
 #include "qassert.h"
 
 Q_DEFINE_THIS_MODULE("qhsm_in")
 
+/****************************************************************************/
 /**
-* \file
-* \ingroup qep
-* \brief QHsm_isIn() implementation.
+* \description
+* Tests if a state machine derived from QHsm is-in a given state.
+*
+* \note For a HSM, to "be in a state" means also to be in a substate of
+* of the state.
+*
+* \arguments
+* \arg[in] \c me    pointer (see \ref derivation)
+* \arg[in] \c state pointer to the state-handler function to be tested
+*
+* \returns 'true' if the HSM is in the \c state and 'false' otherwise
 */
-
-/*..........................................................................*/
-uint8_t QHsm_isIn(QHsm * const me, QStateHandler const state) {
-    uint8_t inState = (uint8_t)0; /* assume that this HSM is not in 'state' */
+bool QHsm_isIn(QHsm * const me, QStateHandler const state) {
+    bool inState = false; /* assume that this HSM is not in 'state' */
     QState r;
 
-    Q_REQUIRE(me->temp.fun == me->state.fun); /* stable state configuration */
+    /** \pre the state configuration must be stable */
+    Q_REQUIRE_ID(100, me->temp.fun == me->state.fun);
 
     do {
-        if (me->temp.fun == state) {                /* do the states match? */
-            inState = (uint8_t)1;               /* match found, return TRUE */
-            r = (QState)Q_RET_IGNORED;             /* break out of the loop */
+        /* do the states match? */
+        if (me->temp.fun == state) {
+            inState = true;            /* match found, return 'true' */
+            r = (QState)Q_RET_IGNORED; /* break out of the loop */
         }
         else {
             r = QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
         }
-    } while (r != (QState)Q_RET_IGNORED);     /* QHsm_top state not reached */
+    } while (r != (QState)Q_RET_IGNORED); /* QHsm_top state not reached */
     me->temp.fun = me->state.fun; /* restore the stable state configuration */
 
-    return inState;                                    /* return the status */
+    return inState; /* return the status */
 }

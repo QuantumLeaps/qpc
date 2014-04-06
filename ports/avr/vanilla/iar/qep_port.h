@@ -1,17 +1,17 @@
 /*****************************************************************************
 * Product:  QEP/C port, AVR, IAR compiler
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Sep 17, 2012
+* Last updated for version 5.3.0
+* Last updated on  2014-02-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 2 of the License, or
+* by the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
 * Alternatively, this program may be distributed and modified under the
@@ -28,9 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
 *****************************************************************************/
 #ifndef qep_port_h
 #define qep_port_h
@@ -38,7 +37,8 @@
        /* special extended keyword '__flash' allocates const objects to ROM */
 #define Q_ROM           __flash
 
-#include <stdint.h>                    /* C99-standard exact-width integers */
+#include <stdint.h>            /* Exact-width types. WG14/N843 C99 Standard */
+#include <stdbool.h>           /* Boolean type.      WG14/N843 C99 Standard */
 
 #include "qep.h"               /* QEP platform-independent public interface */
 

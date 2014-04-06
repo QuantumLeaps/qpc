@@ -14,7 +14,7 @@
 * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 * for more details.
 *****************************************************************************/
-/* @(/3/3) .................................................................*/
+/*${.::main.c} .............................................................*/
 #include "qp_port.h"
 #include "dpp.h"
 #include "bsp.h"

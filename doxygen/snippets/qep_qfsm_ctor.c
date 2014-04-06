@@ -1,4 +1,4 @@
-void QBomb_ctor(QBomb *me) {
+void QBomb_ctor(QBomb * const me) {
     QFsm_ctor(&me->super, Q_STATE_CAST(&QBomb_initial)); /* superclass ctor */
 
     me->timeout = 0U;
