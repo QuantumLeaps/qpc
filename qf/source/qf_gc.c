@@ -1,6 +1,6 @@
 /**
 * \file
-* \brief QF_gc() implementation.
+* \brief QF_gc() definition.
 * \ingroup qf
 * \cond
 ******************************************************************************
@@ -105,7 +105,7 @@ void QF_gc(QEvt const * const e) {
 
             QF_CRIT_EXIT_();
 
-            /*pool ID must be in range */
+            /* pool ID must be in range */
             Q_ASSERT_ID(110, idx < QF_maxPool_);
 
             /* casting const away is legitimate, because it's a pool event */

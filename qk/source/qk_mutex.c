@@ -1,12 +1,12 @@
 /**
 * \file
 * \ingroup qk
-* \brief QK_mutexLock()/QK_mutexUnlock() implementation.
+* \brief QK_mutexLock() and QK_mutexUnlock() definitions.
 * \cond
 ******************************************************************************
 * Product: QK/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-24
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -50,7 +50,7 @@
     #error "qk_mutex.c included in the build when QK_NO_MUTEX defined"
 #endif
 
-/* package-scope objects ****************************************************/
+/* Package-scope objects ****************************************************/
 uint_fast8_t volatile QK_ceilingPrio_; /* ceiling priority of a mutex */
 
 /****************************************************************************/

@@ -1,12 +1,12 @@
 /**
 * \file
 * \ingroup qk
-* \brief QK scheduler implementation.
+* \brief QK_schedPrio_() and QK_sched_() definitions.
 * \cond
 ******************************************************************************
 * Product: QK/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-24
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -57,8 +57,8 @@
 * \returns the 1-based priority of the the active object, or zero if
 * no eligible active object is ready to run.
 *
-* \note QK_schedPrio_() must be always called with interrupts DISABLED
-* and returns with interrupts DISABLED.
+* \attention QK_schedPrio_() must be always called with interrupts
+* __disabled__  and returns with interrupts __disabled__.
 */
 uint_fast8_t QK_schedPrio_(void) {
     uint_fast8_t p; /* for priority */
@@ -82,7 +82,8 @@ uint_fast8_t QK_schedPrio_(void) {
     else {
         /* empty */
     }
-#endif
+#endif /* QK_NO_MUTEX */
+
     return p;
 }
 
@@ -91,17 +92,19 @@ uint_fast8_t QK_schedPrio_(void) {
 * \arguments
 * \arg[in] \c p  priority of the next AO to schedule
 *
-* \note QK_sched_() must be always called with interrupts DISABLED.
+* \attention QK_sched_() must be always called with interrupts
+* __disabled__  and returns with interrupts __disabled__.
 *
 * \note The scheduler might enable interrupts internally, but always
-* returns with interrupts DISABLED.
+* returns with interrupts __disabled__.
 */
 void QK_sched_(uint_fast8_t p) {
     uint_fast8_t pin = QK_currPrio_; /* save the initial priority */
     QActive *a;
+
 #ifdef QK_TLS /* thread-local storage used? */
     uint_fast8_t pprev = pin;
-#endif
+#endif /* QK_TLS */
 
     /* loop until have ready-to-run AOs of higher priority than the initial */
     do {
@@ -116,7 +119,8 @@ void QK_sched_(uint_fast8_t p) {
             QK_TLS(a); /* switch new thread-local storage */
             pprev = p;
         }
-#endif
+#endif /* QK_TLS */
+
         QS_BEGIN_NOCRIT_(QS_QK_SCHEDULE, QS_priv_.aoObjFilter, a)
             QS_TIME_();            /* timestamp */
             QS_U8_((uint8_t)p);    /* the priority of the AO */
@@ -142,7 +146,8 @@ void QK_sched_(uint_fast8_t p) {
         QPSet8_findMax(&QK_readySet_, p);
 #else
         QPSet64_findMax(&QK_readySet_, p);
-#endif
+#endif  /* (QF_MAX_ACTIVE <= 8) */
+
         /* is the new priority below the current preemption threshold? */
         if (p <= pin) {
             p = (uint_fast8_t)0;
@@ -156,7 +161,8 @@ void QK_sched_(uint_fast8_t p) {
         else {
             /* empty */
         }
-#endif
+#endif  /* QK_NO_MUTEX */
+
     } while (p != (uint_fast8_t)0);
 
     QK_currPrio_ = pin; /* restore the initial priority */
@@ -167,5 +173,5 @@ void QK_sched_(uint_fast8_t p) {
         a = QF_active_[pin]; /* the pointer to the preempted AO */
         QK_TLS(a); /* restore the original TLS */
     }
-#endif
+#endif /* QK_TLS */
 }

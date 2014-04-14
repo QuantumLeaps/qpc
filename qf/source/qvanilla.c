@@ -1,13 +1,13 @@
 /**
 * \file
+* \brief cooperative "vanilla" kernel, definition of ::QF_readySet_ and
+* implementation of kernel-specific functins.
 * \ingroup qf
-* \brief "vanilla" cooperative kernel, implementation of kernel-specific
-* functins.
 * \cond
 ******************************************************************************
 * Product: QEP/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-23
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -89,6 +89,23 @@ void QF_init(void) {
 /****************************************************************************/
 /**
 * \description
+* This function stops the QF application. After calling this function,
+* QF attempts to gracefully stop the application. This graceful shutdown
+* might take some time to complete. The typical use of this function is
+* for terminating the QF application to return back to the operating
+* system or for handling fatal errors that require shutting down
+* (and possibly re-setting) the system.
+*
+* \sa QF_onCleanup()
+*/
+void QF_stop(void) {
+    QF_onCleanup(); /* application-specific cleanup callback */
+    /* nothing else to do for the "vanilla" kernel */
+}
+
+/****************************************************************************/
+/**
+* \description
 * QF_run() is typically called from your startup code after you initialize
 * the QF and start at least one active object with QActive_start().
 *
@@ -149,23 +166,6 @@ int_t QF_run(void) {
 #ifdef __GNUC__  /* GNU compiler? */
     return (int_t)0;
 #endif
-}
-
-/****************************************************************************/
-/**
-* \description
-* This function stops the QF application. After calling this function,
-* QF attempts to gracefully stop the application. This graceful shutdown
-* might take some time to complete. The typical use of this function is
-* for terminating the QF application to return back to the operating
-* system or for handling fatal errors that require shutting down
-* (and possibly re-setting) the system.
-*
-* \sa QF_onCleanup()
-*/
-void QF_stop(void) {
-    QF_onCleanup(); /* application-specific cleanup callback */
-    /* nothing else to do for the "vanilla" kernel */
 }
 
 /****************************************************************************/

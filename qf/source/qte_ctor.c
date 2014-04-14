@@ -66,7 +66,7 @@ Q_DEFINE_THIS_MODULE("qte_ctor")
 void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
                     enum_t const sig, uint_fast8_t tickRate)
 {
-    /** \pre signal must be valid and the tick rate in range */
+    /** \pre The signal must be valid and the tick rate in range */
     Q_REQUIRE_ID(100, (sig >= (enum_t)Q_USER_SIG)
         && (tickRate < (uint_fast8_t)QF_MAX_TICK_RATE));
 

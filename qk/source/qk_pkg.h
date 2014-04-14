@@ -82,9 +82,11 @@
     #define QF_CRIT_ENTRY_()    QF_CRIT_ENTRY(critStat_)
     #define QF_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_)
 #endif
-                                                /* package-scope objects... */
+
+/* package-scope objects... */
 #ifndef QK_NO_MUTEX
-    extern uint_fast8_t volatile QK_ceilingPrio_;/*!< QK mutex prio.ceiling */
+    /*! QK mutex prio.ceiling */
+    extern uint_fast8_t volatile QK_ceilingPrio_;
 #endif
 
 #endif /* qk_pkg_h */

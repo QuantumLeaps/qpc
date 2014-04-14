@@ -6,7 +6,7 @@
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-17
+* Last updated on  2014-04-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -55,8 +55,6 @@
 *
 * \arguments
 * \arg[in,out] \c me     pointer (see \ref derivation)
-* \arg[in]     \c nTicks number of clock ticks (at the associated rate)
-*                        to rearm the time event with.
 *
 * \returns 'true' if the time event was truly disarmed, that is, it
 * was running. The return of 'false' means that the time event was

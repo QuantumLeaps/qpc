@@ -1,7 +1,7 @@
 /**
 * \file
+* \brief "Extended" QK scheduler QK_schedExt_() definition.
 * \ingroup qk
-* \brief "Extended" QK scheduler implementation.
 * \cond
 ******************************************************************************
 * Product: QK/C

@@ -1,12 +1,12 @@
 /**
 * \file
-* \brief platform-independent memory pool interface.
+* \brief platform-independent memory pool ::QMPool interface.
 * \ingroup qf
 * \cond
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-24
+* Last updated on  2014-04-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -51,7 +51,8 @@
 #if (QF_MPOOL_SIZ_SIZE == 1)
 
     /*! The data type to store the block-size based on the macro
-    * #QF_MPOOL_SIZ_SIZE. */
+    * #QF_MPOOL_SIZ_SIZE.
+    */
     /**
     * \description
     * The dynamic range of this data type determines the maximum size
@@ -77,7 +78,8 @@
 #if (QF_MPOOL_CTR_SIZE == 1)
 
     /*! The data type to store the block-counter based on the macro
-    * #QF_MPOOL_CTR_SIZE. */
+    * #QF_MPOOL_CTR_SIZE.
+    */
     /**
     * \description
     * The dynamic range of this data type determines the maximum number
@@ -96,7 +98,12 @@
 /*! Native QF Memory Pool */
 /**
 * \description
-* This class describes the native QF memory pool, which can be used as
+* A fixed block-size memory pool is a very fast and efficient data
+* structure for dynamic allocation of fixed block-size chunks of memory.
+* A memory pool offers fast and deterministic allocation and recycling of
+* memory blocks and is not subject to fragmenation.\n
+* \n
+* The ::QMPool class describes the native QF memory pool, which can be used as
 * the event pool for dynamic event allocation, or as a fast, deterministic
 * fixed block-size heap for any other objects in your application.
 *
@@ -107,7 +114,7 @@
 *
 * \note
 * The native QF event pool is configured by defining the macro
-* #QF_EPOOL_TYPE_ as QMPool in the specific QF port header file.
+* #QF_EPOOL_TYPE_ as ::QMPool in the specific QF port header file.
 */
 typedef struct {
     /*! The head of the linked list of free blocks */

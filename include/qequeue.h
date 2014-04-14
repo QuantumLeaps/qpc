@@ -90,28 +90,28 @@
 * This class describes the native QF event queue, which can be used as
 * the event queue for active objects, or as a simple "raw" event queue for
 * thread-safe event passing among non-framework entities, such as ISRs,
-* device drivers, or other third-party components.
-*
+* device drivers, or other third-party components.\n
+* \n
 * The native QF event queue is configured by defining the macro
-* #QF_EQUEUE_TYPE as ::QEQueue in the specific QF port header file.
-*
+* #QF_EQUEUE_TYPE as ::QEQueue in the specific QF port header file.\n
+* \n
 * The ::QEQueue structure contains only data members for managing an event
 * queue, but does not contain the storage for the queue buffer, which must
-* be provided externally during the queue initialization.
-*
+* be provided externally during the queue initialization.\n
+* \n
 * The event queue can store only event pointers, not the whole events. The
 * internal implementation uses the standard ring-buffer plus one external
 * location that optimizes the queue operation for the most frequent case
-* of empty queue.
-*
+* of empty queue.\n
+* \n
 * The ::QEQueue structure is used with two sets of functions. One set is for
 * the active object event queue, which might need to block the active object
 * task when the event queue is empty and might need to unblock it when
 * events are posted to the queue. The interface for the native active object
 * event queue consists of the following functions: QActive_post(),
 * QActive_postLIFO(), and QActive_get_(). Additionally the function
-* QEQueue_init() is used to initialize the queue.
-*
+* QEQueue_init() is used to initialize the queue.\n
+* \n
 * The other set of functions, uses ::QEQueue as a simple "raw" event
 * queue to pass events between entities other than active objects, such as
 * ISRs. The "raw" event queue is not capable of blocking on the get()
@@ -129,7 +129,7 @@
 * \sa ::QEQueue for the description of the data members
 */
 typedef struct QEQueue {
-    /*! pointer to event at the front of the queue */
+    /*! pointer to event at the front of the queue. */
     /**
     * \description
     * All incoming and outgoing events pass through the frontEvt location.
@@ -143,20 +143,19 @@ typedef struct QEQueue {
     */
     QEvt const * volatile frontEvt;
 
-    /*! pointer to the start of the ring buffer */
+    /*! pointer to the start of the ring buffer. */
     QEvt const **ring;
 
-    /*! offset of the end of the ring buffer from the start of the buffer
-    */
+    /*! offset of the end of the ring buffer from the start of the buffer. */
     QEQueueCtr end;
 
-    /*! offset to where next event will be inserted into the buffer */
+    /*! offset to where next event will be inserted into the buffer. */
     QEQueueCtr volatile head;
 
-    /*! offset of where next event will be extracted from the buffer */
+    /*! offset of where next event will be extracted from the buffer. */
     QEQueueCtr volatile tail;
 
-    /*! number of free events in the ring buffer */
+    /*! number of free events in the ring buffer. */
     QEQueueCtr volatile nFree;
 
     /*! minimum number of free events ever in the ring buffer. */
@@ -203,7 +202,7 @@ QEvt const *QEQueue_get(QEQueue * const me);
 #define QEQueue_getNFree(me_) ((me_)->nFree)
 
 /*! "raw" thread-safe QF event queue operation to find out if the queue
-* is empty */
+* is empty. */
 /**
 * \description
 * This operation needs to be used with caution because the queue status

@@ -1,11 +1,13 @@
 /**
 * \file
+* \brief QMsm_dispatch_(), QMsm_execTatbl_(), QMsm_exitToTranSource_(),
+* and QMsm_enterHistory_() definitions
 * \ingroup qep
 * \cond
 ******************************************************************************
 * Product: QEP/C
 * Last updated for version 5.3.0
-* Last updated on  2014-03-25
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,9 +50,11 @@
 
 Q_DEFINE_THIS_MODULE("qmsm_dis")
 
-/* static prototypes of helper functions */
+/*! helper function to exit the current state up to the transition source */
 static void QMsm_exitToTranSource_(QMsm * const me, QMState const *s,
                                    QMState const * const ts);
+
+/*! helper function to execute a transition to history */
 static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist);
 
 /****************************************************************************/
@@ -188,7 +192,7 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
     /* was the event handled? */
     else if (r == (QState)Q_RET_HANDLED) {
         /* internal tran. source can't be NULL */
-        Q_ASSERT_ID(120, t != (QMState const *)0);
+        Q_ASSERT_ID(140, t != (QMState const *)0);
 
         QS_BEGIN_(QS_QEP_INTERN_TRAN, QS_priv_.smObjFilter, me)
             QS_TIME_();                /* time stamp */
@@ -228,8 +232,8 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
 * \returns status of the last action from the transition-action table.
 *
 * \note
-* This function is for internal use inside the QEP and should NOT be called
-* directly in the applications.
+* This function is for internal use inside the QEP event processor and should
+* __not__ be called directly from the applications.
 */
 QState QMsm_execTatbl_(QMsm * const me, QMTranActTable const *tatbl) {
     QActionHandler const *a;
@@ -300,7 +304,7 @@ QState QMsm_execTatbl_(QMsm * const me, QMTranActTable const *tatbl) {
 /**
 * \description
 * Static helper function to exit the current state configuration to the
-* transition source, which is a hierarchical state machine might be a
+* transition source, which in a hierarchical state machine might be a
 * superstate of the current state.
 *
 * \arguments
@@ -353,8 +357,8 @@ static void QMsm_exitToTranSource_(QMsm * const me, QMState const *s,
 * \arg[in,out] \c me   pointer (see \ref derivation)
 * \arg[in]     \c hist pointer to the history substate
 *
-* \returns Q_RET_INIT, if an initial transition has been executed
-* in the last entered state or Q_RET_NULL if no such transition was taken.
+* \returns #Q_RET_INIT, if an initial transition has been executed
+* in the last entered state or #Q_RET_NULL if no such transition was taken.
 */
 static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist){
     QMState const *s;

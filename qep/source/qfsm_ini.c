@@ -1,11 +1,12 @@
 /**
 * \file
+* \brief QFsm_ctor() and QFsm_init_() definitions
 * \ingroup qep
 * \cond
 ******************************************************************************
 * Product: QEP/C
 * Last updated for version 5.3.0
-* Last updated on  2014-03-17
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -97,7 +98,8 @@ void QFsm_ctor(QFsm * const me, QStateHandler initial) {
 * \arg[in,out] \c me pointer (see \ref derivation)
 * \arg[in]     \c e  pointer to the initialization event (might be NULL)
 *
-* \note Must be called only ONCE after the QFsm_ctor().
+* \note Must be called only __once__ after the QFsm_ctor() and before
+* QFsm_dispatch_().
 */
 void QFsm_init_(QFsm * const me, QEvt const * const e) {
     QS_CRIT_STAT_

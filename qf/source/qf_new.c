@@ -1,12 +1,12 @@
 /**
 * \file
-* \brief QF_new_() implementation.
+* \brief QF_newX_() and QEvt_ctor() definitions.
 * \ingroup qf
 * \cond
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-17
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -71,7 +71,7 @@ Q_DEFINE_THIS_MODULE("qf_new")
 * of the requested event.
 *
 * \note The application code should not call this function directly.
-* The only allowed use is thorough the macros #Q_NEW or #Q_NEW_X.
+* The only allowed use is thorough the macros Q_NEW() or Q_NEW_X().
 */
 QEvt *QF_newX_(uint_fast16_t const evtSize,
                uint_fast16_t const margin, enum_t const sig)

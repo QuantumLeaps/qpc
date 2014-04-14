@@ -1,11 +1,12 @@
 /**
 * \file
+* \brief QHsm_ctor() and QHsm_init_() definitions
 * \ingroup qep
 * \cond
 ******************************************************************************
 * Product: QEP/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-29
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------

@@ -53,10 +53,8 @@ Q_DEFINE_THIS_MODULE("qmp_init")
 /****************************************************************************/
 /**
 * \description
-* A memory pool is a very fast and efficient data structure for dynamic
-* allocation of fixed block-size chunks of memory. A memory pool offers
-* fast and deterministic allocation and recycling of memory blocks and is
-* not subject to fragmenation.
+* Initialize a fixed block-size memory pool by providing it with the pool
+* memory to manage, size of this memory, and the block size.
 *
 * \arguments
 * \arg[in,out] \c me       pointer (see \ref derivation)
@@ -64,15 +62,16 @@ Q_DEFINE_THIS_MODULE("qmp_init")
 * \arg[in]     \c poolSize size of the storage buffer in bytes
 * \arg[in]     \c blockSize fixed-size of the memory blocks in bytes
 *
-* \note The caller of this function must make sure that the \c poolSto pointer
-* is properly aligned. In particular, it must be possible to efficiently
-* store a pointer at the location pointed to by \c poolSto.
+* \attention
+* The caller of QMPool::init() must make sure that the \c poolSto
+* pointer is properly __aligned__. In particular, it must be possible to
+* efficiently store a pointer at the location pointed to by \c poolSto.
 * Internally, the QMPool_init() function rounds up the block size
 * \c blockSize so that it can fit an integer number of pointers.
 * This is done to achieve proper alignment of the blocks within the pool.
 *
 * \note Due to the rounding of block size the actual capacity of the pool
-* might be less than (\a poolSize / \a blockSize). You can check the capacity
+* might be less than (\c poolSize / \c blockSize). You can check the capacity
 * of the pool by calling the QF_getPoolMin() function.
 *
 * \note This function is __not__ protected by a critical section, because

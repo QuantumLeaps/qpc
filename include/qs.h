@@ -6,7 +6,7 @@
 ******************************************************************************
 * Product: QS/C
 * Last updated for version 5.3.0
-* Last updated on  2014-03-26
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,6 +48,7 @@
 /****************************************************************************/
 /*! Quantum Spy record types. */
 /**
+* \description
 * This enumeration specifies the record types used in the QP components.
 * You can specify your own record types starting from ::QS_USER offset.
 * Currently, the maximum of all records cannot exceed 256.
@@ -118,8 +119,8 @@ enum QSpyRecords {
 
     /* [55] Additional QEP records */
     QS_QEP_TRAN_HIST,     /*!< a transition to history was taken */
-    QS_QEP_TRAN_EP,       /*!< a tran. to entry point into a submachine */
-    QS_QEP_TRAN_XP,       /*!< a tran. to exit  point out of a submachine */
+    QS_QEP_TRAN_EP,   /*!< a transition to entry point into a submachine */
+    QS_QEP_TRAN_XP,   /*!< a transition to exit  point out of a submachine */
     QS_QEP_RESERVED1,
     QS_QEP_RESERVED0,
 
@@ -144,9 +145,11 @@ enum QSpyRecords {
 
 #ifndef QS_TIME_SIZE
 
-    /*! The size (in bytes) of the QS time stamp. Valid values: 1, 2,
-    * or 4; default 4. */
+    /*! The size (in bytes) of the QS time stamp. Valid values: 1, 2, or 4;
+    * default 4.
+    */
     /**
+    * \description
     * This macro can be defined in the QS port file (qs_port.h) to
     * configure the ::QSTimeCtr type. Here the macro is not defined so the
     * default of 4 byte is chosen.
@@ -387,23 +390,24 @@ QSTimeCtr QS_onGetTime(void);
 * \description
 * This macro sets up the state machine object local filter if #Q_SPY is
 * defined, or does nothing if #Q_SPY is not defined. The argument \a obj_
-* is the pointer to the state machine object that you want to monitor.
-*
+* is the pointer to the state machine object that you want to monitor.\n
+* \n
 * The state machine object filter allows you to filter QS records pertaining
 * only to a given state machine object. With this filter disabled, QS will
 * output records from all state machines in your application. The object
-* filter is disabled by setting the state machine pointer to NULL.
-*
+* filter is disabled by setting the state machine pointer to NULL.\n
+* \n
 * The state machine filter affects the following QS records:
 * ::QS_QEP_STATE_ENTRY, ::QS_QEP_STATE_EXIT, ::QS_QEP_STATE_INIT,
 * ::QS_QEP_INTERN_TRAN, ::QS_QEP_TRAN, ::QS_QEP_IGNORED,
 * ::QS_QEP_TRAN_HIST, ::Q_RET_TRAN_EP, ::Q_RET_TRAN_XP
 *
-* \note Because active objects are state machines at the same time,
-* the state machine filter (QS_FILTER_SM_OBJ) pertains to active
-* objects as well. However, the state machine filter is more general,
-* because it can be used only for state machines that are not active objects,
-* such as "Orthogonal Components".
+* \note
+* Because active objects are state machines at the same time, the state
+* machine filter (QS_FILTER_SM_OBJ) pertains to active objects as well.
+* However, the state machine filter is more general, because it can be
+* used only for state machines that are not active objects, such as
+* "Orthogonal Components".
 *
 * \sa Example of using QS filters in #QS_FILTER_ON documentation
 */

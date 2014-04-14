@@ -1,13 +1,12 @@
 /**
 * \file
 * \ingroup qf
-* \brief QF_timeEvtHead_ definition;
-* QTimeEvt_armX() implementation.
+* \brief ::QF_timeEvtHead_ and QTimeEvt_armX() definitions.
 * \cond
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-17
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------

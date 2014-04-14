@@ -1,12 +1,13 @@
 /**
 * \file
-* \brief QF_tickX_() and QF_noTimeEvtsActiveX() implementation.
+* \brief ::QF_timeEvtHead_[], QF_tickX_() and QF_noTimeEvtsActiveX()
+* definitions
 * \ingroup qf
 * \cond
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-17
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -50,8 +51,8 @@
 
 Q_DEFINE_THIS_MODULE("qf_tick")
 
-/* Package-scope objects ---------------------------------------------------*/
-QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];    /* heads of time event lists */
+/* Package-scope objects ****************************************************/
+QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
 
 /****************************************************************************/
 /**
@@ -63,7 +64,7 @@ QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];    /* heads of time event lists */
 * \arguments
 * \arg[in]  \c tickRate  system clock tick rate serviced in this call.
 *
-* \note this function should be called only via the macro #QF_TICK_X
+* \note this function should be called only via the macro QF_TICK_X()
 *
 * \note the calls to QF_tickX_() with different tick rate argument can
 * preempt each other. For example, higher clock tick rates might be serviced
@@ -170,6 +171,19 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
     QF_CRIT_EXIT_();
 }
 
+/*****************************************************************************
+* NOTE1:
+* In some QF ports the critical section exit takes effect only on the next
+* machine instruction. If this case, the next instruction is another entry
+* to a critical section, the critical section won't be really exited, but
+* rather the two adjacent critical sections would be merged.
+*
+* The QF_CRIT_EXIT_NOP() macro contains minimal code required
+* to prevent such merging of critical sections in QF ports,
+* in which it can occur.
+*/
+
+
 /****************************************************************************/
 /**
 * \description
@@ -200,16 +214,4 @@ bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate) {
     }
     return inactive;
 }
-
-/*****************************************************************************
-* NOTE:
-* In some QF ports the critical section exit takes effect only on the next
-* machine instruction. If this case, the next instruction is another entry
-* to a critical section, the critical section won't be really exited, but
-* rather the two adjacent critical sections would be merged.
-*
-* The QF_CRIT_EXIT_NOP() macro contains minimal code required
-* to prevent such merging of critical sections in QF ports,
-* in which it can occur.
-*/
 

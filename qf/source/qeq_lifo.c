@@ -1,11 +1,12 @@
 /**
-* \ingroup qf
+* \file
 * \brief QEQueue_postLIFO() definition.
+* \ingroup qf
 * \cond
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-15
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -49,11 +50,6 @@
 
 Q_DEFINE_THIS_MODULE("qeq_lifo")
 
-/**
-* \note this function is used for
-* the "raw" thread-safe queues and NOT for the queues of active objects.
-*/
-
 /****************************************************************************/
 /**
 * \description
@@ -64,10 +60,13 @@ Q_DEFINE_THIS_MODULE("qeq_lifo")
 * \arg[in,out] \c me  pointer (see \ref derivation)
 * \arg[in]     \c e   pointer to the event to be posted to the queue
 *
-* \note The LIFO policy should be used only with great __caution__ because
-* it alters the order of events in the queue.
+* \attention The LIFO policy should be used only with great __caution__,
+* because it alters the order of events in the queue.
 *
 * \note This function can be called from any task context or ISR context.
+*
+* \note this function is used for the "raw" thread-safe queues and __not__
+* for the queues of active objects.
 *
 * \sa QEQueue_post(), QEQueue_get(), QActive_defer()
 */

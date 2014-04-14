@@ -136,6 +136,7 @@
 
 /*! typedef for character strings. */
 /**
+* \description
 * This typedef specifies character type for exclusive use in character
 * strings. Use of this type, rather than plain 'char', is in compliance
 * with the MISRA-C 2004 Rules 6.1(req), 6.3(adv).
@@ -273,8 +274,9 @@ typedef QState (*QActionHandler)(void * const me);
 * the exit action handler function. These attributes are used inside the
 * QMsm_dispatch() and QMsm_init() functions.
 *
-* \attention The ::QMState class is only intended for the QM code generator
-* and should not be used in hand-crafted code.
+* \attention
+* The ::QMState class is only intended for the QM code generator and should
+* not be used in hand-crafted code.
 */
 typedef struct QMState {
     struct QMState const *superstate;   /*!< superstate of this state */
@@ -314,8 +316,8 @@ typedef struct QMsmVtbl QMsmVtbl;
 * QMsm represents the most fundamental State Machine in QP. The application-
 * level state machines derived directly from QMsm typically require the use
 * of the QM modeling tool, but are the fastest and need the least run-time
-* support (the smallest event-processor taking up the least code space).
-*
+* support (the smallest event-processor taking up the least code space).\n
+* \n
 * QMsm is also the base class for the QFsm and QHsm state machines, which
 * can be coded and maintained by hand (as well as by QM), but aren't as fast
 * and require significantly more run-time code (0.5-1KB) to execute.
@@ -399,10 +401,10 @@ bool QMsm_isInState(QMsm * const me, QMState const *state);
 /*! Hierarchical State Machine. */
 /**
 * \description
-* QHsm represents a Hierarchical Finite State Machine (HSM) with full
-* support for hierarchical nesting of states, entry/exit actions,
-* and initial transitions in any composite state. QHsm inherits QMsm
-* "as is" without adding new attributes, so it is typedef'ed as QMsm.
+* QHsm represents a Hierarchical State Machine (HSM) with full support for
+* hierarchical nesting of states, entry/exit actions, and initial transitions
+* in any composite state. QHsm inherits QMsm "as is" without adding new
+* attributes, so it is typedef'ed as QMsm.
 *
 * \note QHsm is not intended to be instantiated directly, but rather serves
 * as the base structure for derivation of state machines in the application

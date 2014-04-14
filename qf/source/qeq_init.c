@@ -1,13 +1,12 @@
 /**
 * \file
-* \brief QEQueue_init() definition. This function is used both for Active
-* Object queues and for the "raw" thread-safe queues.
+* \brief QEQueue_init() definition.
 * \ingroup qf
 * \cond
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-15
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -63,7 +62,8 @@
 * location forntEvt.
 *
 * \note This function is also used to initialize the event queues of active
-* object in the built-int QK and "Vanilla" kernels.
+* objects in the built-int QK and "Vanilla" kernels, as well as other
+* QP ports to OSes/RTOSes that do provide a suitable message queue.
 */
 void QEQueue_init(QEQueue * const me, QEvt const *qSto[],
                   uint_fast16_t const qLen)

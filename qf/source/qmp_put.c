@@ -53,14 +53,15 @@ Q_DEFINE_THIS_MODULE("qmp_put")
 /****************************************************************************/
 /**
 * \description
-* The recycled block must be allocated from the same memory pool to which it
-* is returned. The pre-condition to QMPool_put() function asserts that the
-* pointer to the block points inside of the original memory buffer managed
-* by the memory pool.
+* Recycle a memory block to the fixed block-size memory pool.
 *
 * \arguments
 * \arg[in,out] \c me   pointer (see \ref derivation)
 * \arg[in]     \c b    pointer to the memory block that is being recycled
+*
+* \attention
+* The recycled block must be allocated from the __same__ memory pool
+* to which it is returned.
 *
 * \note This function can be called from any task level or ISR level.
 *

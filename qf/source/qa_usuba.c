@@ -6,7 +6,7 @@
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-15
+* Last updated on  2014-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -57,6 +57,9 @@ Q_DEFINE_THIS_MODULE("qa_usuba")
 * available in QF. Un-subscribing from all events means that the framework
 * will stop posting any published events to the event queue of the active
 * object \a me.
+*
+* \arguments
+* \arg[in] \c me  pointer (see \ref derivation)
 *
 * \note Due to the latency of event queues, an active object should NOT
 * assume that no events will ever be dispatched to the state machine of

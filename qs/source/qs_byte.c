@@ -1,12 +1,12 @@
 /**
 * \file
-* \ingroup qs
 * \brief QS_getByte() implementation
+* \ingroup qs
 * \cond
 ******************************************************************************
 * Product: QS/C
 * Last updated for version 5.3.0
-* Last updated on  2014-03-01
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -43,13 +43,14 @@
 
 /****************************************************************************/
 /**
+* \description
 * This function delivers one byte at a time from the QS data buffer.
 *
 * \returns the byte in the least-significant 8-bits of the 16-bit return
 * value if the byte is available. If no more data is available at the time,
-* the function returns QS_EOD (End-Of-Data).
+* the function returns ::QS_EOD (End-Of-Data).
 *
-* \note QS_getByte() is NOT protected with a critical section.
+* \note QS_getByte() is __not__ protected with a critical section.
 */
 uint16_t QS_getByte(void) {
     uint16_t ret;

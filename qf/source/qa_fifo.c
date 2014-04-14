@@ -59,17 +59,18 @@ Q_DEFINE_THIS_MODULE("qa_fifo")
 * \description
 * Direct event posting is the simplest asynchronous communication method
 * available in QF. The following example illustrates how the Philo active
-* object posts directly the HUNGRY event to the Table active object.
-* \include qf_post.c
-*
+* object posts directly the HUNGRY event to the Table active object.\n
+* \n
 * The argument \a margin specifies the minimum number of free slots in
 * the queue that must be available for posting to succeed. The function
 * returns 1 (success) if the posting succeeded (with the provided margin)
 * and 0 (failure) when the posting fails.
 *
 * \arguments
-* \arg[in,out] \c me  pointer (see \ref derivation)
-* \arg[in,out] \c e   pointer to the event to be posted
+* \arg[in,out] \c me     pointer (see \ref derivation)
+* \arg[in]     \c e      pointer to the event to be posted
+* \arg[in]     \c margin number of required free slots in the queue
+*                        after posting the event.
 *
 * \note this function should be called only via the macro QACTIVE_POST()
 * or QACTIVE_POST_X().
@@ -91,6 +92,9 @@ Q_DEFINE_THIS_MODULE("qa_fifo")
 * (file qf_port.c). Depending on the underlying OS or kernel, the
 * function might block the calling thread when no events are available.
 *
+* \usage
+* \include qf_post.c
+*
 * \sa QActive_post_(), QActive_postLIFO()
 */
 #ifndef Q_SPY
@@ -110,7 +114,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
     QF_CRIT_ENTRY_();
     nFree = me->eQueue.nFree; /* get volatile into the temporary */
-    if (nFree > (QEQueueCtr)margin) { /* margin available? */
+
+    /* margin available? */
+    if (nFree > (QEQueueCtr)margin) {
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.aoObjFilter, me)
             QS_TIME_();               /* timestamp */

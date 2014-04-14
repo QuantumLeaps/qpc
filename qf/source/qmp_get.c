@@ -53,24 +53,24 @@ Q_DEFINE_THIS_MODULE("qmp_get")
 /****************************************************************************/
 /**
 * \description
-* The only parameter \a me is a pointer to the ::QMPool from which the
-* block is requested. The function returns a pointer to the allocated
-* memory block or NULL if no free blocks are available.
+* The function allocates a memory block from the pool and returns a pointer
+* to the block back to the caller.
 *
 * \arguments
-* \arg[in,out] \c me     pointer (see \ref derivation)
-* \arg[in]     \c nTicks number of clock ticks (at the associated rate)
-*                        to rearm the time event with.
+* \arg[in,out] \c me      pointer (see \ref derivation)
+* \arg[in]     \c margin  the minimum number of unused blocks still available
+*                         in the pool after the allocation.
 *
-* A allocated block must be returned to the same pool from which it has
-* been allocated.
-*
-* This function can be called from any task level or ISR level.
+* \note This function can be called from any task level or ISR level.
 *
 * \note The memory pool \a me must be initialized before any events can
 * be requested from it. Also, the QMPool_get() function uses internally a
 * QF critical section, so you should be careful not to call it from within
 * a critical section when nesting of critical section is not supported.
+*
+* \attention
+* An allocated block must be later returned back to the same pool
+* from which it has been allocated.
 *
 * \sa QMPool_put()
 */

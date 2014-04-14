@@ -1,5 +1,6 @@
 /**
 * \file
+* \brief QMActive_ctor() definition
 * \ingroup qf
 * \cond
 ******************************************************************************
@@ -52,6 +53,7 @@
 * \arg[in]     \c initial  pointer to the event to be dispatched to the MSM
 *
 * \note  Must be called only ONCE before QMSM_INIT().
+*
 * \sa QHsm_ctor() and QFsm_ctor()
 */
 void QMActive_ctor(QMActive * const me, QStateHandler initial) {

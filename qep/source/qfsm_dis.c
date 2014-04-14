@@ -1,11 +1,12 @@
 /**
 * \file
+* \brief QFsm_dispatch_() definition
 * \ingroup qep
 * \cond
 ******************************************************************************
 * Product: QEP/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-25
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -67,14 +68,16 @@ void QFsm_dispatch_(QFsm * const me, QEvt const * const e) {
     Q_REQUIRE_ID(100, me->state.fun == me->temp.fun);
 
     QS_BEGIN_(QS_QEP_DISPATCH, QS_priv_.smObjFilter, me)
-        QS_TIME_();                /* time stamp */
-        QS_SIG_(e->sig);           /* the signal of the event */
-        QS_OBJ_(me);               /* this state machine object */
-        QS_FUN_(me->state.fun);    /* the current state */
+        QS_TIME_();                 /* time stamp */
+        QS_SIG_(e->sig);            /* the signal of the event */
+        QS_OBJ_(me);                /* this state machine object */
+        QS_FUN_(me->state.fun);     /* the current state */
     QS_END_()
 
     r = (*me->state.fun)(me, e);    /* call the event handler */
-    if (r == (QState)Q_RET_TRAN) {  /* transition taken? */
+
+    /* transition taken? */
+    if (r == (QState)Q_RET_TRAN) {
 
         QS_BEGIN_(QS_QEP_TRAN, QS_priv_.smObjFilter, me)
             QS_TIME_();             /* time stamp */

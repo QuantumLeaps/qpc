@@ -1,11 +1,12 @@
 /**
 * \file
+* \brief QEQueue_get() implementation
 * \ingroup qf
 * \cond
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-19
+* Last updated on  2014-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -71,7 +72,7 @@ QEvt const *QEQueue_get(QEQueue * const me) {
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    e = me->frontEvt; /* always remove event from the front location */
+    e = me->frontEvt; /* always remove the event from the front location */
 
     /* was the queue not empty? */
     if (e != (QEvt const *)0) {

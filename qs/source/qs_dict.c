@@ -1,7 +1,7 @@
 /**
 * \file
-* \ingroup qs
 * \brief QS_sig_dict(), QS_obj_dict(), QS_fun_dict(), and QS_usr_dict()
+* \ingroup qs
 * \cond
 ******************************************************************************
 * Product: QS/C
@@ -41,7 +41,7 @@
 #include "qs_port.h" /* QS port */
 
 /****************************************************************************/
-/** \note This function is only to be used through macro #QS_SIG_DICTIONARY
+/** \note This function is only to be used through macro QS_SIG_DICTIONARY()
 */
 void QS_sig_dict(enum_t const sig, void const * const obj,
                  char_t const Q_ROM * const name)
@@ -58,7 +58,7 @@ void QS_sig_dict(enum_t const sig, void const * const obj,
 }
 
 /****************************************************************************/
-/** \note This function is only to be used through macro #QS_OBJ_DICTIONARY
+/** \note This function is only to be used through macro QS_OBJ_DICTIONARY()
 */
 void QS_obj_dict(void const * const obj,
                  char_t const Q_ROM * const name)
@@ -74,7 +74,7 @@ void QS_obj_dict(void const * const obj,
 }
 
 /****************************************************************************/
-/** \note This function is only to be used through macro #QS_FUN_DICTIONARY
+/** \note This function is only to be used through macro QS_FUN_DICTIONARY()
 */
 void QS_fun_dict(void (* const fun)(void),
                  char_t const Q_ROM * const name)
@@ -90,7 +90,7 @@ void QS_fun_dict(void (* const fun)(void),
 }
 
 /****************************************************************************/
-/** \note This function is only to be used through macro #QS_USR_DICTIONARY
+/** \note This function is only to be used through macro QS_USR_DICTIONARY()
 */
 void QS_usr_dict(enum_t const rec,
                  char_t const Q_ROM * const name)

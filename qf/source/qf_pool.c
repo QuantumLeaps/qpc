@@ -1,6 +1,6 @@
 /**
 * \file
-* \brief QF_pool_[] definition and QF_poolInit() implementation.
+* \brief ::QF_pool_[] definition and QF_poolInit() implementation.
 * \ingroup qf
 * \cond
 ******************************************************************************

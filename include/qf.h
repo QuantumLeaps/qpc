@@ -586,7 +586,8 @@ void QF_onCleanup(void);
     * without the \c sender argument, so the overhead of passing this
     * extra argument is entirely avoided.
     *
-    * \note the pointer to the sender object is not necessarily a pointer
+    * \note
+    * The pointer to the sender object is not necessarily a pointer
     * to an active object. In fact, when #QF_TICK_X() is called from
     * an interrupt, you would create a unique object just to unambiguously
     * identify the ISR as the sender of the time events.
@@ -643,11 +644,24 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
 
     /*! Allocate a dynamic event. */
     /**
-    * This macro returns a valid event pointer cast to the type \a evtT_.
-    * The event is initialized by the event constructor. The macro calls
-    * the internal QF function QF_newX_() with margin==0, which causes
-    * an assertion when the event can't be successfully allocated.
+    * \description
+    * The macro calls the internal QF function QF::newX_() with
+    * margin == 0, which causes an assertion when the event cannot be
+    * successfully allocated.
     *
+    * \arguments
+    * \arg[in] \c evtT_ event type (class name) of the event to allocate
+    * \arg[in] \c sig_  signal to assign to the newly allocated event
+    *
+    * \returns a valid event pointer cast to the type \a evtT_.
+    *
+    * \note
+    * If #Q_EVT_CTOR is defined, the Q_NEW() macro becomes variadic and
+    * takes all the arguments needed by the constructor of the event
+    * class being allocated. The constructor is then called by means
+    * of the placement-new operator.
+    *
+    * \usage
     * The following example illustrates dynamic allocation of an event:
     * \include qf_post.c
     */
@@ -658,10 +672,26 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
     /*! Allocate a dynamic event (non-asserting version). */
     /**
     * \description
-    * This macro allocates a new event and sets the pointer \a e_.
-    * If the event can't be allocated with the specified \a margin,
-    * the pointer \a e_ is set to NULL.
+    * \description
+    * This macro allocates a new event and sets the pointer \a e_, while
+    * leaving at least \a margin_ of events still available in the pool
     *
+    * \arguments
+    * \arg[in] \c evtT_   event type (class name) of the event to allocate
+    * \arg[in] \c margin_ number of events that must remain available
+    *                     in the given pool after this allocation
+    * \arg[in] \c sig_    signal to assign to the newly allocated event
+    *
+    * \returns an event pointer cast to the type \a evtT_ or NULL if the
+    * event cannot be allocated with the specified \a margin.
+    *
+    * \note
+    * If #Q_EVT_CTOR is defined, the Q_NEW_X() macro becomes variadic and
+    * takes all the arguments needed by the constructor of the event
+    * class being allocated. The constructor is then called and all the
+    * extra arguments are passed to it.
+    *
+    * \usage
     * The following example illustrates dynamic allocation of an event:
     * \include qf_postx.c
     */

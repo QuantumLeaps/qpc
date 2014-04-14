@@ -1,12 +1,12 @@
 /**
 * \file
-* \brief QF_active_[], and QF_add_()/QF_remove_(), QF_bzero() implementation.
+* \brief ::QF_active_[] and QF_add_(), QF_remove_(), QF_bzero() definitions.
 * \ingroup qf
 * \cond
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-19
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -56,9 +56,9 @@ QActive *QF_active_[QF_MAX_ACTIVE + 1];      /* to be used by QF ports only */
 /****************************************************************************/
 /**
 * \description
-* This function adds a given active object to the active objects managed
-* by the QF framework. It should not be called by the application directly,
-* only through the function QActive_start().
+* This function removes a given active object from the active objects
+* managed by the QF framework. It should not be called by the application
+* directly, only through the function QActive_stop().
 *
 * \arguments
 * \arg[in]  \c a  pointer to the active object to add to the framework.

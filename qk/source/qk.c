@@ -1,11 +1,14 @@
 /**
 * \file
+* \brief preemptive QK kernel, definition of ::QK_currPrio_, ::QK_intNest_,
+* as well as implementation of kernel-specific functins.
+* definition
 * \ingroup qk
 * \cond
 ******************************************************************************
 * Product: QK/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-24
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -178,8 +181,8 @@ void QActive_start_(QActive *me, uint_fast8_t prio,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
 {
-    Q_REQUIRE(((uint_fast8_t)0 < prio)
-               && (prio <= (uint_fast8_t)QF_MAX_ACTIVE));
+    Q_REQUIRE_ID(500, ((uint_fast8_t)0 < prio)
+                      && (prio <= (uint_fast8_t)QF_MAX_ACTIVE));
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
     me->prio = prio;

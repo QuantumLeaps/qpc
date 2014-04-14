@@ -1,7 +1,7 @@
 /**
 * \file
+* \brief QS_str() and QS_str_ROM() implementation
 * \ingroup qs
-* \brief QS_str() adn QS_str_ROM() implementation
 * \cond
 ******************************************************************************
 * Product: QS/C

@@ -6,7 +6,7 @@
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-15
+* Last updated on  2014-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -58,6 +58,11 @@ Q_DEFINE_THIS_MODULE("qa_sub")
 * start posting all published events with a given signal \a sig to the
 * event queue of the active object \a me.
 *
+* \arguments
+* \arg[in,out] \c me  pointer (see \ref derivation)
+* \arg[in]     \c sig event signal to subscribe
+*
+* \usage
 * The following example shows how the Table active object subscribes
 * to three signals in the initial transition:
 * \include qf_subscribe.c

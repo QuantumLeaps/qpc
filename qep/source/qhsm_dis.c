@@ -1,11 +1,12 @@
 /**
 * \file
+* \brief QHsm_dispatch_() and QHsm_tran_() definitions
 * \ingroup qep
 * \cond
 ******************************************************************************
 * Product: QEP/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-29
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,7 +49,7 @@
 
 Q_DEFINE_THIS_MODULE("qhsm_dis")
 
-/* static helper function prototype */
+/*! helper function to execute a transition chain in HSM */
 static int_fast8_t QHsm_tran_(QHsm * const me,
                               QStateHandler path[QHSM_MAX_NEST_DEPTH_]);
 

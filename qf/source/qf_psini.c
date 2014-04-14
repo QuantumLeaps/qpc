@@ -1,7 +1,6 @@
 /**
 * \file
-* \brief QF_subscrList_, QF_maxSignal_ definitions,
-* and QF_psInit() implementation.
+* \brief ::QF_subscrList_, ::QF_maxSignal_, and QF_psInit() definitions.
 * \ingroup qf
 * \cond
 ******************************************************************************

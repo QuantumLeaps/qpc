@@ -66,12 +66,13 @@ extern "C" {
 
 /*! Specifies the backwards compatibility with the QP/C API version. */
 /**
+* \description
 * For example, QP_API_VERSION=450 will cause generating the compatibility
 * layer with QP/C version 4.5.0 and newer, but not older than 4.5.0.
 * QP_API_VERSION=0 causes generation of the compatibility layer "from the
 * begining of time", which is the maximum backwards compatibilty. This is
-* the default.
-*
+* the default.\n
+* \n
 * Conversely, QP_API_VERSION=9999 means that no compatibility layer should
 * be generated. This setting is useful for checking if an application
 * complies with the latest QP/C API.

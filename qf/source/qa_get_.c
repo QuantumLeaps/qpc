@@ -121,8 +121,8 @@ QEvt const *QActive_get_(QActive * const me) {
 /****************************************************************************/
 /**
 * \description
-* This function returns the minimum of free ever present in the given event
-* queue of an active object with priority \a prio, since the active object
+* Queries the minimum of free ever present in the given event queue of
+* an active object with priority \a prio, since the active object
 * was started.
 *
 * \note QF_getQueueMin() is available only when the native QF event

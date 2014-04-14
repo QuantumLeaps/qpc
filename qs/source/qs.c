@@ -1,12 +1,12 @@
 /**
 * \file
-* \ingroup qs
 * \brief QS internal variables and core QS functions implementations.
+* \ingroup qs
 * \cond
 ******************************************************************************
 * Product: QS/C
 * Last updated for version 5.3.0
-* Last updated on  2014-03-27
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -56,7 +56,7 @@ QSPriv QS_priv_;  /* QS private data */
 * in bytes. Currently the size of the QS buffer cannot exceed 64KB.
 *
 * \note QS can work with quite small data buffers, but you will start losing
-* data if the buffer is too small for the bursts of logging activity.
+* data if the buffer is too small for the bursts of tracing activity.
 * The right size of the buffer depends on the data production rate and
 * the data output rate. QS offers flexible filtering to reduce the data
 * production rate.
@@ -64,7 +64,8 @@ QSPriv QS_priv_;  /* QS private data */
 * \note If the data output rate cannot keep up with the production rate,
 * QS will start overwriting the older data with newer data. This is
 * consistent with the "last-is-best" QS policy. The record sequence counters
-* and check sums on each record allow to easily detect data loss.
+* and check sums on each record allow the QSPY host uitiliy to easily detect
+* any data loss.
 */
 void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
     uint8_t *buf = &sto[0];
@@ -129,7 +130,6 @@ void QS_filterOn(uint_fast8_t rec) {
 * \note Filtering records based on the record-type is only the first layer of
 * filtering. The second layer is based on the object-type. Both filter
 * layers must be enabled for the QS record to be inserted into the QS buffer.
-* \sa
 */
 void QS_filterOff(uint_fast8_t rec) {
     if (rec == QS_ALL_RECORDS) {

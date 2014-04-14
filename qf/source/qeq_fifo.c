@@ -66,6 +66,10 @@ Q_DEFINE_THIS_MODULE("qeq_fifo")
 * \arg[in]     \c e      pointer to the event to be posted to the queue
 * \arg[in]     \c margin number of unused slots in the queue that must
 *                 be still available after posting the event
+* \note
+* The zero value of the \c margin argument is special and denotes situation
+* when event posting is assumed to succeed (event delivery guarantee).
+* An assertion fires, when the event cannot be delivered in this case.
 *
 * \returns 'true' (success) when the posting succeeded with the provided
 * margin and 'false' (failure) when the posting fails.
@@ -127,9 +131,9 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
         status = true; /* event posted successfully */
     }
     else {
-        /** \note If the \c margin is zero, assert that the queue is not full
-        * and still can accept the event. This is to support the "guaranteed
-        * event delivery" policy for most events posted within the framework.
+        /** \note If the \c margin is zero, assert that the queue can accept
+        * the event. This is to support the "guaranteed event delivery"
+        * policy for most events posted within the framework.
         */
         Q_ASSERT_ID(110, margin != (uint_fast16_t)0);
 

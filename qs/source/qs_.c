@@ -1,7 +1,7 @@
 /**
 * \file
-* \ingroup qs
 * \brief QS functions for internal use inside QP components
+* \ingroup qs
 * \cond
 ******************************************************************************
 * Product: QS/C
@@ -79,7 +79,6 @@ void QS_u8u8_(uint8_t d1, uint8_t d2) {
 
 /****************************************************************************/
 /**
-* \description
 * \note This function is only to be used through macros, never in the
 * client code directly.
 */

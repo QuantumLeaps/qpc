@@ -58,6 +58,10 @@ Q_DEFINE_THIS_MODULE("qa_usub")
 * will stop posting published events with a given signal \a sig to the
 * event queue of the active object \a me.
 *
+* \arguments
+* \arg[in] \c me  pointer (see \ref derivation)
+* \arg[in] \c sig event signal to unsubscribe
+*
 * \note Due to the latency of event queues, an active object should NOT
 * assume that a given signal \a sig will never be dispatched to the
 * state machine of the active object after un-subscribing from that signal.

@@ -65,8 +65,8 @@ Q_DEFINE_THIS_MODULE("qa_lifo")
 * caution because it alters order of events in the queue.
 *
 * \arguments
-* \arg[in,out] \c me pointer (see \ref derivation)
-* \arg[in]     \c e  pointer to the event to post to the queue
+* \arg[in] \c me pointer (see \ref derivation)
+* \arg[in  \c e  pointer to the event to post to the queue
 *
 * \sa QActive_post_()
 */

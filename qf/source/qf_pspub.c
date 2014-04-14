@@ -6,7 +6,7 @@
 ******************************************************************************
 * Product: QF/C
 * Last updated for version 5.3.0
-* Last updated on  2014-02-17
+* Last updated on  2014-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -52,17 +52,19 @@ Q_DEFINE_THIS_MODULE("qf_pspub")
 
 /****************************************************************************/
 /**
+* \description
 * This function posts (using the FIFO policy) the event \a e to ALL
 * active objects that have subscribed to the signal \a e->sig.
 * This function is designed to be callable from any part of the system,
 * including ISRs, device drivers, and active objects.
 *
+* \note
 * In the general case, event publishing requires multicasting the
 * event to multiple subscribers. This happens in the caller's thread with
 * the scheduler locked to prevent preemption during the multicasting
 * process. (Please note that the interrupts are not locked.)
 *
-* \note this function should be called only via the macro #QF_PUBLISH
+* \attention this function should be called only via the macro QF_PUBLISH()
 */
 #ifndef Q_SPY
 void QF_publish_(QEvt const * const e)
@@ -128,13 +130,14 @@ void QF_publish_(QEvt const * const e, void const * const sender)
     }
 #endif
 
-    /* run the garbage collector.
-    * NOTE: QF_publish_() increments the reference counter to prevent
+    /* run the garbage collector */
+    QF_gc(e);
+
+    /* NOTE: QF_publish_() increments the reference counter to prevent
     * premature recycling of the event while the multicasting is still
     * in progress. At the end of the function, the garbage collector step
     * decrements the reference counter and recycles the event if the
     * counter drops to zero. This covers the case when the event was
     * published without any subscribers.
     */
-    QF_gc(e);
 }

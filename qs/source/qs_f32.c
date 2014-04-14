@@ -1,7 +1,7 @@
 /**
 * \file
-* \ingroup qs
 * \brief QS_f32() implementation
+* \ingroup qs
 * \cond
 ******************************************************************************
 * Product: QS/C

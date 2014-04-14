@@ -82,9 +82,9 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
     * be zero, and the signal of this time event must be valid
     */
     Q_REQUIRE_ID(100, (me->act != (void *)0)
-              && (tickRate < (uint_fast8_t)QF_MAX_TICK_RATE)
-              && (nTicks != (QTimeEvtCtr)0)
-              && (me->super.sig >= (QSignal)Q_USER_SIG));
+                      && (tickRate < (uint_fast8_t)QF_MAX_TICK_RATE)
+                      && (nTicks != (QTimeEvtCtr)0)
+                      && (me->super.sig >= (QSignal)Q_USER_SIG));
 
     QF_CRIT_ENTRY_();
 

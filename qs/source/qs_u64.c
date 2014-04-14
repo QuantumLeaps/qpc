@@ -1,7 +1,7 @@
 /**
 * \file
-* \ingroup qs
 * \brief QS_u64_() and QS_u64() implementation
+* \ingroup qs
 * \cond
 ******************************************************************************
 * Product: QS/C
