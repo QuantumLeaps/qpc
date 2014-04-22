@@ -287,7 +287,7 @@ typedef struct QMState {
 } QMState;
 
 /*! Transition-Action Table for the Meta State Machine. */
-typedef struct QMTranActTable {
+typedef struct {
     QMState        const *target;
     QActionHandler const act[1];
 } QMTranActTable;

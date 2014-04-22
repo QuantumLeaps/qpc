@@ -40,12 +40,12 @@
 */
 #include "qep_port.h"     /* QEP port */
 #include "qep_pkg.h"
-#include "qassert.h"
 #ifdef Q_SPY              /* QS software tracing enabled? */
     #include "qs_port.h"  /* include QS port */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
+#include "qassert.h"
 
 Q_DEFINE_THIS_MODULE("qfsm_ini")
 
@@ -109,8 +109,8 @@ void QFsm_init_(QFsm * const me, QEvt const * const e) {
     * be taken yet.
     */
     Q_REQUIRE_ID(200, (me->vptr != (QMsmVtbl const *)0)
-              && (me->temp.fun != Q_STATE_CAST(0))
-              && (me->state.fun == Q_STATE_CAST(0)));
+                      && (me->temp.fun != Q_STATE_CAST(0))
+                      && (me->state.fun == Q_STATE_CAST(0)));
 
     /* execute the top-most initial transition, which must be taken */
     Q_ALLEGE_ID(210, (*me->temp.fun)(me, e) == (QState)Q_RET_TRAN);

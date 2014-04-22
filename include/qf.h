@@ -768,6 +768,7 @@ extern uint8_t const Q_ROM QF_div8Lkup[65];
     extern uint8_t const Q_ROM QF_log2Lkup[256];
 
     #define QF_LOG2LKUP 1
+
 #endif /* QF_LOG2 */
 
 /*! array of registered active objects */

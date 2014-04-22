@@ -263,7 +263,7 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_ctor' 
 "D:\qp\qpc\include\qep.h" 390 1 Info 757: global declarator 'QMsm_dispatch_(QMsm *, const QEvt *)' (line 390, file D:\qp\qpc\include\qep.h) not referenced
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_dispatch_' 
-"D:\qp\qpc\include\qep.h" 393 1 Info 757: global declarator 'QMsm_execTatbl_(QMsm *, const struct QMTranActTable *)' (line 393, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 393 1 Info 757: global declarator 'QMsm_execTatbl_(QMsm *, const QMTranActTable *)' (line 393, file D:\qp\qpc\include\qep.h) not referenced
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_execTatbl_' 
 "D:\qp\qpc\include\qep.h" 374 1 Info 757: global declarator 'QMsm_init_(QMsm *, const QEvt *)' (line 374, file D:\qp\qpc\include\qep.h) not referenced
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_init_' 
@@ -415,8 +415,8 @@
 "D:\qp\qpc\include\qep.h" 284 1 Info 768: global struct member 'QMState::entryAction' (line 284, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qep.h" 285 1 Info 768: global struct member 'QMState::exitAction' (line 285, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qep.h" 286 1 Info 768: global struct member 'QMState::initAction' (line 286, file D:\qp\qpc\include\qep.h) not referenced
-"D:\qp\qpc\include\qep.h" 291 1 Info 768: global struct member 'QMTranActTable::target' (line 291, file D:\qp\qpc\include\qep.h) not referenced
-"D:\qp\qpc\include\qep.h" 292 1 Info 768: global struct member 'QMTranActTable::act' (line 292, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 291 1 Info 768: global struct member 'target' (line 291, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 292 1 Info 768: global struct member 'act' (line 292, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qep.h" 302 1 Info 768: global struct member 'QMAttr::obj' (line 302, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qep.h" 303 1 Info 768: global struct member 'QMAttr::tatbl' (line 303, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qep.h" 304 1 Info 768: global struct member 'QMAttr::fun' (line 304, file D:\qp\qpc\include\qep.h) not referenced

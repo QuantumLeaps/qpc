@@ -40,12 +40,12 @@
 */
 #include "qep_port.h"     /* QEP port */
 #include "qep_pkg.h"
-#include "qassert.h"
 #ifdef Q_SPY              /* QS software tracing enabled? */
     #include "qs_port.h"  /* include QS port */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
+#include "qassert.h"
 
 Q_DEFINE_THIS_MODULE("qhsm_dis")
 
@@ -262,9 +262,9 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
                     QEP_EXIT_(s); /* exit the source */
                 }
                 else {
-                     /* (e) check rest of source==target->super->super..
-                     * and store the entry path along the way
-                     */
+                    /* (e) check rest of source==target->super->super..
+                    * and store the entry path along the way
+                    */
                     iq = (int_fast8_t)0; /* indicate that LCA not found */
                     ip = (int_fast8_t)1; /* enter target and its superstate */
                     path[1] = t;         /* save the superstate of target */
@@ -281,10 +281,11 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
                             /* entry path must not overflow */
                             Q_ASSERT_ID(210,
                                       ip < (int_fast8_t)QHSM_MAX_NEST_DEPTH_);
-                            --ip;                /* do not enter the source */
-                            r = (QState)Q_RET_HANDLED;    /* terminate loop */
+                            --ip; /* do not enter the source */
+                            r = (QState)Q_RET_HANDLED; /* terminate loop */
                         }
-                        else {       /* it is not the source, keep going up */
+                         /* it is not the source, keep going up */
+                        else {
                             r = QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
                         }
                     }
@@ -293,7 +294,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
                     if (iq == (int_fast8_t)0) {
 
                         /* entry path must not overflow */
-                        Q_ASSERT_ID(120,
+                        Q_ASSERT_ID(220,
                                     ip < (int_fast8_t)QHSM_MAX_NEST_DEPTH_);
 
                         QEP_EXIT_(s); /* exit the source */

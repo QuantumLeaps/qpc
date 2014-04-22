@@ -9,7 +9,7 @@
   License Type: Windows Single User License
   Licensed To : Quantum Leaps, LLC
   License No. : WS2975                          License Date: Dec 15, 2013
-  Build Date  : Sep  2 2009                         Run Date: Apr 13, 2014
+  Build Date  : Sep  2 2009                         Run Date: Apr 21, 2014
   (C)1996-2009 M Squared Technologies LLC
   ________________________________________________________________________
 
@@ -51,7 +51,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 187      eLOC 187      lLOC 72       Comment 505      Lines      791
+  LOC 187      eLOC 187      lLOC 72       Comment 505      Lines      792
   ________________________________________________________________________
   End of File: ..\include\qf.h
 
@@ -288,13 +288,13 @@
       Loops while / do        : 4     
       Conditional if / else if: 10    
   Complexity   Param 2       Return 1      Cyclo Vg 15      Total       18
-  LOC 97       eLOC 76       lLOC 48       Comment 63       Lines      133
+  LOC 97       eLOC 76       lLOC 48       Comment 63       Lines      134
 
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
 
-  LOC 215      eLOC 183      lLOC 111      Comment 175      Lines      361
+  LOC 215      eLOC 183      lLOC 111      Comment 175      Lines      362
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
@@ -1687,7 +1687,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 24       eLOC 23       lLOC 11       Comment 68       Lines       84
+  LOC 24       eLOC 23       lLOC 11       Comment 67       Lines       83
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
@@ -1727,7 +1727,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 37       eLOC 34       lLOC 17       Comment 78       Lines      105
+  LOC 37       eLOC 34       lLOC 17       Comment 77       Lines      104
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
@@ -2576,7 +2576,7 @@
 
                          ~~ Total Project Summary ~~
 
-  LOC 4039     eLOC 3699     lLOC 1574     Comment 7783     Lines    11839
+  LOC 4039     eLOC 3699     lLOC 1574     Comment 7781     Lines    11839
   Average per File, metric/70 files
   LOC 57       eLOC 52       lLOC 22       Comment 111      Lines      169
 
@@ -2607,7 +2607,7 @@
   Function: QHsm_tran_
   Parameters: (QHsm * const me, QStateHandler path[QHSM_MAX_NEST_DEPTH_])
   Complexity   Param 2       Return 1      Cyclo Vg 15      Total       18
-  LOC 97       eLOC 76       lLOC 48       Comment 63       Lines      133
+  LOC 97       eLOC 76       lLOC 48       Comment 63       Lines      134
 
   Function: QHsm_isIn
   Parameters: (QHsm * const me, QStateHandler const state)
@@ -3060,7 +3060,7 @@
 
                       ~~ Project Functional Analysis ~~
 
-  Total Functions .......:         91  Total Physical Lines ..:       2887
+  Total Functions .......:         91  Total Physical Lines ..:       2888
   Total LOC .............:       2128  Total Function Pts LOC :       16.6
   Total eLOC ............:       1814  Total Function Pts eLOC:       14.2
   Total lLOC.............:       1214  Total Function Pts lLOC:        9.5
@@ -3068,7 +3068,7 @@
   Total Parameters ......:        152  Total Return Points ...:         91
   Total Comment Lines ...:       2350  Total Blank Lines .....:        415
          ------     -----     -----     ------     ------     -----       
-  Avg Physical Lines ....:      31.73
+  Avg Physical Lines ....:      31.74
   Avg LOC ...............:      23.38  Avg eLOC ..............:      19.93
   Avg lLOC ..............:      13.34  Avg Cyclomatic Comp. ..:       3.20
   Avg Interface Comp. ...:       2.67  Avg Parameters ........:       1.67
