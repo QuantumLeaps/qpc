@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Dining Philosophers Problem" example, preemptive QK kernel
-* Last Updated for Version: 5.0.0
-* Date of the Last Update:  Aug 26, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-04-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
 *****************************************************************************/
 #include "qp_port.h"
 #include "dpp.h"
@@ -43,11 +42,29 @@
 
 Q_DEFINE_THIS_FILE
 
-enum ISR_Priorities {   /* ISR priorities starting from the highest urgency */
-    GPIOPORTA_PRIO,
+/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+* Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
+* DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
+*/
+enum KernelUnawareISRs {                                      /* see NOTE00 */
+    /* ... */
+    MAX_KERNEL_UNAWARE_CMSIS_PRI                        /* keep always last */
+};
+/* "kernel-unaware" interrupts can't overlap "kernel-aware" interrupts */
+Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
+
+enum KernelAwareISRs {
+    GPIOPORTA_PRIO = QF_AWARE_ISR_CMSIS_PRI,                  /* see NOTE00 */
     SYSTICK_PRIO,
     /* ... */
+    MAX_KERNEL_AWARE_CMSIS_PRI                          /* keep always last */
 };
+/* "kernel-aware" interrupts should not overlap the PendSV priority */
+Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
+
+/* ISRs defined in this BSP ------------------------------------------------*/
+void SysTick_Handler(void);
+void GPIOPortA_IRQHandler(void);
 
 /* Local-scope objects -----------------------------------------------------*/
 static unsigned  l_rnd;                                      /* random seed */
@@ -82,7 +99,7 @@ void SysTick_Handler(void) {
     static uint8_t  debounce_state = 0U;
     uint32_t btn;
 
-    QK_ISR_ENTRY();                      /* infrom QK about entering an ISR */
+    QK_ISR_ENTRY();                      /* inform QK about entering an ISR */
 
 #ifdef Q_SPY
     {
@@ -91,7 +108,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK(&l_SysTick_Handler);           /* process all armed time events */
+    QF_TICK_X(0U, &l_SysTick_Handler);    /* process time events for rate 0 */
 
                                               /* debounce the SW1 button... */
     btn = GPIOF->DATA_Bits[USR_SW1];                   /* read the push btn */
@@ -134,16 +151,16 @@ void SysTick_Handler(void) {
             break;
     }
 
-    QK_ISR_EXIT();                        /* infrom QK about exiting an ISR */
+    QK_ISR_EXIT();                        /* inform QK about exiting an ISR */
 }
 /*..........................................................................*/
 void GPIOPortA_IRQHandler(void) {
-    QK_ISR_ENTRY();                      /* infrom QK about entering an ISR */
+    QK_ISR_ENTRY();                      /* inform QK about entering an ISR */
 
     QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG),      /* for testing... */
                  &l_GPIOPortA_IRQHandler);
 
-    QK_ISR_EXIT();                        /* infrom QK about exiting an ISR */
+    QK_ISR_EXIT();                        /* inform QK about exiting an ISR */
 }
 
 /*..........................................................................*/
@@ -163,9 +180,9 @@ void BSP_init(void) {
 
     /* enable clock to the peripherals used by the application */
     SYSCTL->RCGC2 |= (1U << 5);                   /* enable clock to GPIOF  */
-    asm(" MOV R0,R0");                        /* wait after enabling clocks */
-    asm(" MOV R0,R0");                        /* wait after enabling clocks */
-    asm(" MOV R0,R0");                        /* wait after enabling clocks */
+    __asm(" NOP");                           /* wait after enabling clocks */
+    __asm(" NOP");
+    __asm(" NOP");
 
     /* configure the LEDs and push buttons */
     GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE);/* set direction: output */
@@ -226,10 +243,20 @@ void QF_onStartup(void) {
               /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
     SysTick_Config(ROM_SysCtlClockGet() / BSP_TICKS_PER_SEC);
 
-                       /* set priorities of all interrupts in the system... */
+    /* assing all priority bits for preemption-prio. and none to sub-prio. */
+    NVIC_SetPriorityGrouping(0U);
+
+    /* set priorities of ALL ISRs used in the system, see NOTE00
+    *
+    * !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
+    * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
+    */
     NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
     NVIC_SetPriority(GPIOPortA_IRQn, GPIOPORTA_PRIO);
+    /* ... */
 
+                                                          /* enable IRQs... */
     NVIC_EnableIRQ(GPIOPortA_IRQn);
 }
 /*..........................................................................*/
@@ -237,14 +264,15 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QK_onIdle(void) {
+    float volatile x;
 
-    /* toggle the User LED on and then off, see NOTE02 */
+    /* toggle the User LED on and then off, see NOTE01 */
     QF_INT_DISABLE();
     GPIOF->DATA_Bits[LED_GREEN] = LED_GREEN;      /* turn the Green LED on  */
     GPIOF->DATA_Bits[LED_GREEN] = 0;              /* turn the Green LED off */
     QF_INT_ENABLE();
 
-    float volatile x = 3.1415926F;
+    x = 3.1415926F;
     x = x + 2.7182818F;
 
 #ifdef Q_SPY
@@ -265,22 +293,21 @@ void QK_onIdle(void) {
     * you might need to customize the clock management for your application,
     * see the datasheet for your particular Cortex-M3 MCU.
     */
-    asm(" WFI");                                      /* Wait-For-Interrupt */
+    __asm(" WFI");                                    /* Wait-For-Interrupt */
 #endif
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const file, int line) {
-    (void)file;                                   /* avoid compiler warning */
-    (void)line;                                   /* avoid compiler warning */
-    QF_INT_DISABLE();         /* make sure that all interrupts are disabled */
-    for (;;) {       /* NOTE: replace the loop with reset for final version */
-    }
+void Q_onAssert(char const Q_ROM * const file, int_t line) {
+    assert_failed(file, line);
 }
 /*..........................................................................*/
 /* error routine that is called if the CMSIS library encounters an error    */
 void assert_failed(char const *file, int line) {
-    Q_onAssert(file, line);
+    (void)file;                                   /* avoid compiler warning */
+    (void)line;                                   /* avoid compiler warning */
+    QF_INT_DISABLE();         /* make sure that all interrupts are disabled */
+    ROM_SysCtlReset();                                  /* reset the system */
 }
 
 /*--------------------------------------------------------------------------*/
@@ -294,9 +321,9 @@ uint8_t QS_onStartup(void const *arg) {
                                 /* enable the peripherals used by the UART0 */
     SYSCTL->RCGC1 |= (1U << 0);                    /* enable clock to UART0 */
     SYSCTL->RCGC2 |= (1U << 0);                    /* enable clock to GPIOA */
-    asm("  MOV R0,R0");                       /* wait after enabling clocks */
-    asm("  MOV R0,R0");                       /* wait after enabling clocks */
-    asm("  MOV R0,R0");                       /* wait after enabling clocks */
+    __asm(" NOP");                           /* wait after enabling clocks */
+    __asm(" NOP");
+    __asm(" NOP");
 
                                  /* configure UART0 pins for UART operation */
     tmp = (1U << 0) | (1U << 1);
@@ -400,7 +427,25 @@ void QS_onFlush(void) {
 /*--------------------------------------------------------------------------*/
 
 /*****************************************************************************
-* NOTE02:
+* NOTE00:
+* The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
+* ISR priority that is disabled by the QF framework. The value is suitable
+* for the NVIC_SetPriority() CMSIS function.
+*
+* Only ISRs prioritized at or below the QF_AWARE_ISR_CMSIS_PRI level (i.e.,
+* with the numerical values of priorities equal or higher than
+* QF_AWARE_ISR_CMSIS_PRI) are allowed to call the QK_ISR_ENTRY/QK_ISR_ENTRY
+* macros or any other QF/QK  services. These ISRs are "QF-aware".
+*
+* Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority
+* level (i.e., with the numerical values of priorities less than
+* QF_AWARE_ISR_CMSIS_PRI) are never disabled and are not aware of the kernel.
+* Such "QF-unaware" ISRs cannot call any QF/QK services. In particular they
+* can NOT call the macros QK_ISR_ENTRY/QK_ISR_ENTRY. The only mechanism
+* by which a "QF-unaware" ISR can communicate with the QF framework is by
+* triggering a "QF-aware" ISR, which can post/publish events.
+*
+* NOTE01:
 * The User LED is used to visualize the idle loop activity. The brightness
 * of the LED is proportional to the frequency of invcations of the idle loop.
 * Please note that the LED is toggled with interrupts locked, so no interrupt

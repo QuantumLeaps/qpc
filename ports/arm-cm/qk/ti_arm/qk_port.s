@@ -1,17 +1,17 @@
 ;*****************************************************************************
 ; Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M4F), TI ARM assembler
-; Last Updated for Version: 4.5.04
-; Date of the Last Update:  Feb 04, 2013
+; Last updated for version 5.3.0
+; Last updated on  2014-04-23
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
 ;                    innovating embedded systems
 ;
-; Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+; Copyright (C) Quantum Leaps, www.state-machine.com.
 ;
 ; This program is open source software: you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License as published
-; by the Free Software Foundation, either version 2 of the License, or
+; by the Free Software Foundation, either version 3 of the License, or
 ; (at your option) any later version.
 ;
 ; Alternatively, this program may be distributed and modified under the
@@ -28,9 +28,8 @@
 ; along with this program. If not, see <http://www.gnu.org/licenses/>.
 ;
 ; Contact information:
-; Quantum Leaps Web sites: http://www.quantum-leaps.com
-;                          http://www.state-machine.com
-; e-mail:                  info@quantum-leaps.com
+; Web:   www.state-machine.com
+; Email: info@state-machine.com
 ;*****************************************************************************
 
     .text
@@ -92,12 +91,24 @@ SHPR_addr:  .word 0E000ED18h
 ;*****************************************************************************
 PendSV_Handler: .asmfunc
     PUSH    {lr}              ; push the exception lr (EXC_RETURN)
-    CPSID   i                 ; disable interrupts at processor level
+    .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__
+    MOVS    r0,#(0xFF >> 2)   ; Keep in synch with QF_BASEPRI in qf_port.h!
+    MSR     BASEPRI,r0        ; disable interrupts at processor level
+    .else
+    CPSIE   i                 ; enable interrupts at processor level
+    .endif
+
     BL      QK_schedPrio_     ; check if we have preemption
     CMP     r0,#0             ; is prio == 0 ?
     BNE.N   scheduler         ; if prio != 0, branch to scheduler
 
+    .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__
+    MOVS    r0,#(0xFF >> 2)   ; Keep in synch with QF_BASEPRI in qf_port.h!
+    MSR     BASEPRI,r0        ; disable interrupts at processor level
+    .else
     CPSIE   i                 ; enable interrupts at processor level
+    .endif
+
     POP     {r0}              ; pop the EXC_RETURN into r0 (low register)
     BX      r0                ; exception-return to the task
 
@@ -115,7 +126,12 @@ scheduler:
     BX      r0                ; exception-return to the scheduler
 
 svc_ret:
-    CPSIE   i                 ; enable interrupts to allow SVCall exception
+    .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__
+    MOVS    r0,#(0xFF >> 2)   ; Keep in synch with QF_BASEPRI in qf_port.h!
+    MSR     BASEPRI,r0        ; disable interrupts at processor level
+    .else
+    CPSIE   i                 ; enable interrupts at processor level
+    .endif
 
     .if __TI_VFP_SUPPORT__    ; If Vector FPU used-clear CONTROL[2] (FPCA bit)
     MRS     r0,CONTROL        ; r0 := CONTROL

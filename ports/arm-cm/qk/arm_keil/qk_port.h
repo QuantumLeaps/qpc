@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QK/C, ARM Cortex-M, QK port, Generic C compiler
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 08, 2013
+* Last updated for version 5.3.0
+* Last updated on  2014-04-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,13 +28,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
 *****************************************************************************/
 #ifndef qk_port_h
 #define qk_port_h
-                                             /* QK interrupt entry and exit */
+
+/* QK interrupt entry and exit */
 #define QK_ISR_ENTRY() do { \
     QF_INT_DISABLE(); \
     ++QK_intNest_; \
@@ -44,12 +44,12 @@
 #define QK_ISR_EXIT()  do { \
     QF_INT_DISABLE(); \
     --QK_intNest_; \
-    if (QK_schedPrio_() != (uint8_t)0) { \
+    if (QK_schedPrio_() != (uint_fast8_t)0) { \
         *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)0x10000000U; \
     } \
     QF_INT_ENABLE(); \
 } while (0)
 
-#include "qk.h"                 /* QK platform-independent public interface */
+#include "qk.h" /* QK platform-independent public interface */
 
-#endif                                                         /* qk_port_h */
+#endif /* qk_port_h */

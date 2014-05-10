@@ -127,16 +127,19 @@ static QState QMsmTst_initial(QMsmTst * const me, QEvt const * const e) {
     return QM_TRAN_INIT(&tatbl_);
 }
 /*${SMs::QMsmTst::SM::s} ...................................................*/
+/* ${SMs::QMsmTst::SM::s} */
 static QState QMsmTst_s_e(QMsmTst * const me) {
     BSP_display("s-ENTRY;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_ENTRY(&QMsmTst_s_s);
 }
+/* ${SMs::QMsmTst::SM::s} */
 static QState QMsmTst_s_x(QMsmTst * const me) {
     BSP_display("s-EXIT;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_EXIT(&QMsmTst_s_s);
 }
+/* ${SMs::QMsmTst::SM::s::initial} */
 static QState QMsmTst_s_i(QMsmTst * const me) {
     static struct {
         QMState const *target;
@@ -153,6 +156,7 @@ static QState QMsmTst_s_i(QMsmTst * const me) {
     BSP_display("s-INIT;");
     return QM_TRAN_INIT(&tatbl_);
 }
+/* ${SMs::QMsmTst::SM::s} */
 static QState QMsmTst_s(QMsmTst * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -201,16 +205,19 @@ static QState QMsmTst_s(QMsmTst * const me, QEvt const * const e) {
     return status_;
 }
 /*${SMs::QMsmTst::SM::s::s1} ...............................................*/
+/* ${SMs::QMsmTst::SM::s::s1} */
 static QState QMsmTst_s1_e(QMsmTst * const me) {
     BSP_display("s1-ENTRY;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_ENTRY(&QMsmTst_s1_s);
 }
+/* ${SMs::QMsmTst::SM::s::s1} */
 static QState QMsmTst_s1_x(QMsmTst * const me) {
     BSP_display("s1-EXIT;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_EXIT(&QMsmTst_s1_s);
 }
+/* ${SMs::QMsmTst::SM::s::s1::initial} */
 static QState QMsmTst_s1_i(QMsmTst * const me) {
     static struct {
         QMState const *target;
@@ -226,6 +233,7 @@ static QState QMsmTst_s1_i(QMsmTst * const me) {
     BSP_display("s1-INIT;");
     return QM_TRAN_INIT(&tatbl_);
 }
+/* ${SMs::QMsmTst::SM::s::s1} */
 static QState QMsmTst_s1(QMsmTst * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -338,16 +346,19 @@ static QState QMsmTst_s1(QMsmTst * const me, QEvt const * const e) {
     return status_;
 }
 /*${SMs::QMsmTst::SM::s::s1::s11} ..........................................*/
+/* ${SMs::QMsmTst::SM::s::s1::s11} */
 static QState QMsmTst_s11_e(QMsmTst * const me) {
     BSP_display("s11-ENTRY;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_ENTRY(&QMsmTst_s11_s);
 }
+/* ${SMs::QMsmTst::SM::s::s1::s11} */
 static QState QMsmTst_s11_x(QMsmTst * const me) {
     BSP_display("s11-EXIT;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_EXIT(&QMsmTst_s11_s);
 }
+/* ${SMs::QMsmTst::SM::s::s1::s11} */
 static QState QMsmTst_s11(QMsmTst * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -421,16 +432,19 @@ static QState QMsmTst_s11(QMsmTst * const me, QEvt const * const e) {
     return status_;
 }
 /*${SMs::QMsmTst::SM::s::s2} ...............................................*/
+/* ${SMs::QMsmTst::SM::s::s2} */
 static QState QMsmTst_s2_e(QMsmTst * const me) {
     BSP_display("s2-ENTRY;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_ENTRY(&QMsmTst_s2_s);
 }
+/* ${SMs::QMsmTst::SM::s::s2} */
 static QState QMsmTst_s2_x(QMsmTst * const me) {
     BSP_display("s2-EXIT;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_EXIT(&QMsmTst_s2_s);
 }
+/* ${SMs::QMsmTst::SM::s::s2::initial} */
 static QState QMsmTst_s2_i(QMsmTst * const me) {
     static struct {
         QMState const *target;
@@ -447,6 +461,7 @@ static QState QMsmTst_s2_i(QMsmTst * const me) {
     BSP_display("s2-INIT;");
     return QM_TRAN_INIT(&tatbl_);
 }
+/* ${SMs::QMsmTst::SM::s::s2} */
 static QState QMsmTst_s2(QMsmTst * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -507,16 +522,19 @@ static QState QMsmTst_s2(QMsmTst * const me, QEvt const * const e) {
     return status_;
 }
 /*${SMs::QMsmTst::SM::s::s2::s21} ..........................................*/
+/* ${SMs::QMsmTst::SM::s::s2::s21} */
 static QState QMsmTst_s21_e(QMsmTst * const me) {
     BSP_display("s21-ENTRY;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_ENTRY(&QMsmTst_s21_s);
 }
+/* ${SMs::QMsmTst::SM::s::s2::s21} */
 static QState QMsmTst_s21_x(QMsmTst * const me) {
     BSP_display("s21-EXIT;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_EXIT(&QMsmTst_s21_s);
 }
+/* ${SMs::QMsmTst::SM::s::s2::s21::initial} */
 static QState QMsmTst_s21_i(QMsmTst * const me) {
     static struct {
         QMState const *target;
@@ -532,6 +550,7 @@ static QState QMsmTst_s21_i(QMsmTst * const me) {
     BSP_display("s21-INIT;");
     return QM_TRAN_INIT(&tatbl_);
 }
+/* ${SMs::QMsmTst::SM::s::s2::s21} */
 static QState QMsmTst_s21(QMsmTst * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -596,16 +615,19 @@ static QState QMsmTst_s21(QMsmTst * const me, QEvt const * const e) {
     return status_;
 }
 /*${SMs::QMsmTst::SM::s::s2::s21::s211} ....................................*/
+/* ${SMs::QMsmTst::SM::s::s2::s21::s211} */
 static QState QMsmTst_s211_e(QMsmTst * const me) {
     BSP_display("s211-ENTRY;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_ENTRY(&QMsmTst_s211_s);
 }
+/* ${SMs::QMsmTst::SM::s::s2::s21::s211} */
 static QState QMsmTst_s211_x(QMsmTst * const me) {
     BSP_display("s211-EXIT;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_EXIT(&QMsmTst_s211_s);
 }
+/* ${SMs::QMsmTst::SM::s::s2::s21::s211} */
 static QState QMsmTst_s211(QMsmTst * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {

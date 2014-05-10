@@ -37,8 +37,8 @@ setlocal
 :: define the IAR_ARM environment variable to point to the location 
 :: where you've installed the IAR toolset or adjust the following 
 :: set instruction 
-::if "%IAR_ARM%"=="" set IAR_ARM="C:\Program Files\IAR Systems\Embedded Workbench 6.70"
-if "%IAR_ARM%"=="" set IAR_ARM="C:\tools\IAR\ARM_KS_6.70"
+::if "%IAR_ARM%"=="" set IAR_ARM="C:\Program Files\IAR Systems\Embedded Workbench 7.10"
+if "%IAR_ARM%"=="" set IAR_ARM="C:\tools\IAR\ARM_KS_7.10"
 
 set PATH=%IAR_ARM%\arm\bin;%IAR_ARM%\common\bin;%PATH%
 

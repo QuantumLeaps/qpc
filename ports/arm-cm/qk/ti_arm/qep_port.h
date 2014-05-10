@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QEP/C port
 * Last updated for version 5.3.0
-* Last updated on  2014-02-14
+* Last updated on  2014-04-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -34,9 +34,9 @@
 #ifndef qep_port_h
 #define qep_port_h
 
-#include <stdint.h>            /* Exact-width types. WG14/N843 C99 Standard */
-#include <stdbool.h>           /* Boolean type.      WG14/N843 C99 Standard */
+#include <stdint.h>  /* Exact-width types. WG14/N843 C99 Standard */
+#include <stdbool.h> /* Boolean type.      WG14/N843 C99 Standard */
 
-#include "qep.h"               /* QEP platform-independent public interface */
+#include "qep.h"     /* QEP platform-independent public interface */
 
-#endif                                                        /* qep_port_h */
+#endif /* qep_port_h */
