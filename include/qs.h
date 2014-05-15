@@ -5,8 +5,8 @@
 * \cond
 ******************************************************************************
 * Product: QS/C
-* Last updated for version 5.3.0
-* Last updated on  2014-04-09
+* Last updated for version 5.3.1
+* Last updated on  2014-05-15
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -518,7 +518,7 @@ QSTimeCtr QS_onGetTime(void);
 /*! Begin a QS user record without entering critical section. */
 #define QS_BEGIN_NOCRIT(rec_, obj_) \
     if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
-          & (uint8_fast8_t)(1U << ((uint8_t)(rec_) & (uint8_t)7))) \
+          & (uint_fast8_t)(1U << ((uint8_t)(rec_) & (uint8_t)7))) \
             != (uint_fast8_t)0) \
         && ((QS_priv_.apObjFilter == (void *)0) \
            || (QS_priv_.apObjFilter == (obj_)))) \
