@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: QF/C generic port to uC/OS-II + DOS-specific port
+* Product: QF/C generic port to uC/OS-II
 * Last updated for version 5.3.1
-* Last updated on  2014-05-10
+* Last updated on  2014-05-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,31 +41,20 @@
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
 
-#include <dos.h>          /* DOS-specific: _dos_setvect()/_dos_getvect() */
-
 Q_DEFINE_THIS_MODULE("qf_port")
 
 /* Local objects -----------------------------------------------------------*/
-static void interrupt (*l_dosSpareISR)(void); /*!!! DOS-specific */
 static void task_function(void *pdata); /* uC/OS-II task signature */
 
 /*..........................................................................*/
-int_t QF_run(void) { /*!!! DOS-specific */
-    /* install uC/OS-II context switch vector */
-    l_dosSpareISR = _dos_getvect(uCOS);
-    _dos_setvect(uCOS, (void interrupt (*)(void))&OSCtxSw);
-
+int_t QF_run(void) {
     /* NOTE the QF_onStartup() callback must be invoked from the task level */
     OSStart();  /* start uC/OS-II multitasking */
     Q_ERROR();  /* OSStart() should never return */
     return (int_t)0; /* this unreachable return keeps the compiler happy */
 }
 /*..........................................................................*/
-void QF_stop(void) { /*!!! DOS-specific */
-    QF_CRIT_STAT_
-    QF_CRIT_ENTRY_();
-    _dos_setvect(uCOS, l_dosSpareISR); /* restore the original DOS vector */
-    QF_CRIT_EXIT_();
+void QF_stop(void) {
     QF_onCleanup(); /* cleanup callback */
 }
 /*..........................................................................*/
@@ -106,7 +95,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     Q_ASSERT(err == OS_NO_ERR); /* uC/OS-II task must be created correctly */
 }
 
-/* Generic port ------------------------------------------------------------*/
 /*..........................................................................*/
 void QF_init(void) {
     OSInit(); /* initialize uC/OS-II */
