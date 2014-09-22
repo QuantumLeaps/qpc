@@ -140,10 +140,12 @@ static QState Philo_initial(Philo * const me, QEvt const * const e) {
     return QM_TRAN_INIT(&tatbl_);
 }
 /*${AOs::Philo::SM::thinking} ..............................................*/
+/* ${AOs::Philo::SM::thinking} */
 static QState Philo_thinking_e(Philo * const me) {
     QTimeEvt_armX(&me->timeEvt, THINK_TIME, 0U);
     return QM_ENTRY(&Philo_thinking_s);
 }
+/* ${AOs::Philo::SM::thinking} */
 static QState Philo_thinking(Philo * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -178,12 +180,14 @@ static QState Philo_thinking(Philo * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Philo::SM::hungry} ................................................*/
+/* ${AOs::Philo::SM::hungry} */
 static QState Philo_hungry_e(Philo * const me) {
     TableEvt *pe = Q_NEW(TableEvt, HUNGRY_SIG);
     pe->philoNum = PHILO_ID(me);
     QACTIVE_POST(AO_Table, &pe->super, me);
     return QM_ENTRY(&Philo_hungry_s);
 }
+/* ${AOs::Philo::SM::hungry} */
 static QState Philo_hungry(Philo * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -223,16 +227,19 @@ static QState Philo_hungry(Philo * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Philo::SM::eating} ................................................*/
+/* ${AOs::Philo::SM::eating} */
 static QState Philo_eating_e(Philo * const me) {
     QTimeEvt_armX(&me->timeEvt, EAT_TIME, 0U);
     return QM_ENTRY(&Philo_eating_s);
 }
+/* ${AOs::Philo::SM::eating} */
 static QState Philo_eating_x(Philo * const me) {
     TableEvt *pe = Q_NEW(TableEvt, DONE_SIG);
     pe->philoNum = PHILO_ID(me);
     QF_PUBLISH(&pe->super, me);
     return QM_EXIT(&Philo_eating_s);
 }
+/* ${AOs::Philo::SM::eating} */
 static QState Philo_eating(Philo * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {

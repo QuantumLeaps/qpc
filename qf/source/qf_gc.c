@@ -5,8 +5,8 @@
 * \cond
 ******************************************************************************
 * Product: QF/C
-* Last updated for version 5.3.0
-* Last updated on  2014-02-17
+* Last updated for version 5.3.1
+* Last updated on  2014-09-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -71,7 +71,7 @@ Q_DEFINE_THIS_MODULE("qf_gc")
 * function is exposed only for special cases when your application sends
 * dynamic events to the "raw" thread-safe queues (see ::QEQueue). Such
 * queues are processed outside of QF and the automatic garbage collection
-* is CANNOT be performed for these events. In this case you need to call
+* is **NOT** performed for these events. In this case you need to call
 * QF_gc() explicitly.
 */
 void QF_gc(QEvt const * const e) {

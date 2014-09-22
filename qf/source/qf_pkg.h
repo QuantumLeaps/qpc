@@ -5,8 +5,8 @@
 * \cond
 ******************************************************************************
 * Product: QF/C
-* Last updated for version 5.3.0
-* Last updated on  2014-04-03
+* Last updated for version 5.3.1
+* Last updated on  2014-09-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -147,6 +147,7 @@ typedef struct QFreeBlock {
 
         /*! Internal QS macro to output an unformatted event size
         * data element. */
+        /**
         * \note the event size depends on the macro #QF_EVENT_SIZ_SIZE.
         */
         #define QS_EVS_(size_)      QS_u8_((uint8_t)(size_))

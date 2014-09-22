@@ -1,7 +1,7 @@
 /** \page metrics Code Metrics 
 
 \code 
-                   Standard Code Metrics for QP/C 5.3.0 
+                   Standard Code Metrics for QP/C 5.3.1 
 
            Resource Standard Metrics (TM) for C, C++, C# and Java
                    Version 7.75 - mSquaredTechnologies.com
@@ -9,7 +9,7 @@
   License Type: Windows Single User License
   Licensed To : Quantum Leaps, LLC
   License No. : WS2975                          License Date: Dec 15, 2013
-  Build Date  : Sep  2 2009                         Run Date: Apr 21, 2014
+  Build Date  : Sep  2 2009                         Run Date: Sep 22, 2014
   (C)1996-2009 M Squared Technologies LLC
   ________________________________________________________________________
 
@@ -148,7 +148,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 65       eLOC 65       lLOC 8        Comment 118      Lines      205
+  LOC 63       eLOC 63       lLOC 8        Comment 121      Lines      206
   ________________________________________________________________________
   End of File: ..\qf\source\qf_pkg.h
 
@@ -518,33 +518,33 @@
   ________________________________________________________________________
 
   Function: QMsm_isInState
-  Parameters: (QMsm * const me, QMState const *state)
+  Parameters: (QMsm * const me, QMState const * const state)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops for / foreach     : 1     
       Conditional if / else if: 1     
   Complexity   Param 2       Return 1      Cyclo Vg 3       Total        6
-  LOC 10       eLOC 7        lLOC 5        Comment 17       Lines       11
+  LOC 11       eLOC 8        lLOC 6        Comment 17       Lines       12
 
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
 
-  LOC 12       eLOC 9        lLOC 5        Comment 58       Lines       69
+  LOC 13       eLOC 10       lLOC 6        Comment 58       Lines       70
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
 
   File Function Count....:          1
-  Total Function LOC.....:         10  Total Function Pts LOC :        0.1
-  Total Function eLOC....:          7  Total Function Pts eLOC:        0.1
-  Total Function lLOC....:          5  Total Function Pts lLOC:        0.0
+  Total Function LOC.....:         11  Total Function Pts LOC :        0.1
+  Total Function eLOC....:          8  Total Function Pts eLOC:        0.1
+  Total Function lLOC....:          6  Total Function Pts lLOC:        0.0
   Total Function Params .:          2  Total Function Return .:          1
   Total Cyclo Complexity :          3  Total Function Complex.:          6
          ------     -----     -----     ------     ------     -----       
-  Max Function LOC ......:         10  Average Function LOC ..:      10.00
-  Max Function eLOC .....:          7  Average Function eLOC .:       7.00
-  Max Function lLOC .....:          5  Average Function lLOC .:       5.00
+  Max Function LOC ......:         11  Average Function LOC ..:      11.00
+  Max Function eLOC .....:          8  Average Function eLOC .:       8.00
+  Max Function lLOC .....:          6  Average Function lLOC .:       6.00
          ------     -----     -----     ------     ------     -----       
   Max Function Parameters:          2  Avg Function Parameters:       2.00
   Max Function Returns ..:          1  Avg Function Returns ..:       1.00
@@ -2576,7 +2576,7 @@
 
                          ~~ Total Project Summary ~~
 
-  LOC 4039     eLOC 3699     lLOC 1574     Comment 7781     Lines    11839
+  LOC 4038     eLOC 3698     lLOC 1575     Comment 7784     Lines    11841
   Average per File, metric/70 files
   LOC 57       eLOC 52       lLOC 22       Comment 111      Lines      169
 
@@ -2651,9 +2651,9 @@
   LOC 37       eLOC 31       lLOC 21       Comment 24       Lines       45
 
   Function: QMsm_isInState
-  Parameters: (QMsm * const me, QMState const *state)
+  Parameters: (QMsm * const me, QMState const * const state)
   Complexity   Param 2       Return 1      Cyclo Vg 3       Total        6
-  LOC 10       eLOC 7        lLOC 5        Comment 17       Lines       11
+  LOC 11       eLOC 8        lLOC 6        Comment 17       Lines       12
 
   Function: QMsm_ctor
   Parameters: (QMsm * const me, QStateHandler initial)
@@ -3053,24 +3053,24 @@
   LOC 16       eLOC 14       lLOC 11       Comment 9        Lines       20
 
   Total: Functions  
-  LOC 2128     eLOC 1814     lLOC 1214     InCmp 243      CycloCmp     291
+  LOC 2129     eLOC 1815     lLOC 1215     InCmp 243      CycloCmp     291
   Function Points         FP(LOC) 16.6    FP(eLOC) 14.2   FP(lLOC)     9.5
 
   ------------------------------------------------------------------------
 
                       ~~ Project Functional Analysis ~~
 
-  Total Functions .......:         91  Total Physical Lines ..:       2888
-  Total LOC .............:       2128  Total Function Pts LOC :       16.6
-  Total eLOC ............:       1814  Total Function Pts eLOC:       14.2
-  Total lLOC.............:       1214  Total Function Pts lLOC:        9.5
+  Total Functions .......:         91  Total Physical Lines ..:       2889
+  Total LOC .............:       2129  Total Function Pts LOC :       16.6
+  Total eLOC ............:       1815  Total Function Pts eLOC:       14.2
+  Total lLOC.............:       1215  Total Function Pts lLOC:        9.5
   Total Cyclomatic Comp. :        291  Total Interface Comp. .:        243
   Total Parameters ......:        152  Total Return Points ...:         91
   Total Comment Lines ...:       2350  Total Blank Lines .....:        415
          ------     -----     -----     ------     ------     -----       
-  Avg Physical Lines ....:      31.74
-  Avg LOC ...............:      23.38  Avg eLOC ..............:      19.93
-  Avg lLOC ..............:      13.34  Avg Cyclomatic Comp. ..:       3.20
+  Avg Physical Lines ....:      31.75
+  Avg LOC ...............:      23.40  Avg eLOC ..............:      19.95
+  Avg lLOC ..............:      13.35  Avg Cyclomatic Comp. ..:       3.20
   Avg Interface Comp. ...:       2.67  Avg Parameters ........:       1.67
   Avg Return Points .....:       1.00  Avg Comment Lines .....:      25.82
          ------     -----     -----     ------     ------     -----       

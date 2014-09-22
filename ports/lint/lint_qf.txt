@@ -240,12 +240,12 @@
 "D:\qp\qpc\qf\source\qte_rarm.c" 75 1 Info 759: header declaration for symbol 'QTimeEvt_rearm(struct QTimeEvt *, QTimeEvtCtr)' defined at (line 75, file D:\qp\qpc\qf\source\qte_rarm.c) could be moved from header to module
 "D:\qp\qpc\qf\source\qte_rarm.c" 75 1 Info 765: external 'QTimeEvt_rearm(struct QTimeEvt *, QTimeEvtCtr)' (line 75, file D:\qp\qpc\qf\source\qte_rarm.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\qf\source\qte_rarm.c" 75 1 Info 714: Symbol 'QTimeEvt_rearm(struct QTimeEvt *, QTimeEvtCtr)' (line 75, file D:\qp\qpc\qf\source\qte_rarm.c) not referenced
-"D:\qp\qpc\qf\source\qte_darm.c" 69 1 Info 759: header declaration for symbol 'QTimeEvt_disarm(struct QTimeEvt *)' defined at (line 69, file D:\qp\qpc\qf\source\qte_darm.c) could be moved from header to module
-"D:\qp\qpc\qf\source\qte_darm.c" 69 1 Info 765: external 'QTimeEvt_disarm(struct QTimeEvt *)' (line 69, file D:\qp\qpc\qf\source\qte_darm.c) could be made static [MISRA 2004 Rule 8.10, required]
-"D:\qp\qpc\qf\source\qte_darm.c" 69 1 Info 714: Symbol 'QTimeEvt_disarm(struct QTimeEvt *)' (line 69, file D:\qp\qpc\qf\source\qte_darm.c) not referenced
-"D:\qp\qpc\qf\source\qte_ctr.c" 66 1 Info 759: header declaration for symbol 'QTimeEvt_ctr(const struct QTimeEvt *)' defined at (line 66, file D:\qp\qpc\qf\source\qte_ctr.c) could be moved from header to module
-"D:\qp\qpc\qf\source\qte_ctr.c" 66 1 Info 765: external 'QTimeEvt_ctr(const struct QTimeEvt *)' (line 66, file D:\qp\qpc\qf\source\qte_ctr.c) could be made static [MISRA 2004 Rule 8.10, required]
-"D:\qp\qpc\qf\source\qte_ctr.c" 66 1 Info 714: Symbol 'QTimeEvt_ctr(const struct QTimeEvt *)' (line 66, file D:\qp\qpc\qf\source\qte_ctr.c) not referenced
+"D:\qp\qpc\qf\source\qte_darm.c" 68 1 Info 759: header declaration for symbol 'QTimeEvt_disarm(struct QTimeEvt *)' defined at (line 68, file D:\qp\qpc\qf\source\qte_darm.c) could be moved from header to module
+"D:\qp\qpc\qf\source\qte_darm.c" 68 1 Info 765: external 'QTimeEvt_disarm(struct QTimeEvt *)' (line 68, file D:\qp\qpc\qf\source\qte_darm.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\qf\source\qte_darm.c" 68 1 Info 714: Symbol 'QTimeEvt_disarm(struct QTimeEvt *)' (line 68, file D:\qp\qpc\qf\source\qte_darm.c) not referenced
+"D:\qp\qpc\qf\source\qte_ctr.c" 65 1 Info 759: header declaration for symbol 'QTimeEvt_ctr(const struct QTimeEvt *)' defined at (line 65, file D:\qp\qpc\qf\source\qte_ctr.c) could be moved from header to module
+"D:\qp\qpc\qf\source\qte_ctr.c" 65 1 Info 765: external 'QTimeEvt_ctr(const struct QTimeEvt *)' (line 65, file D:\qp\qpc\qf\source\qte_ctr.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\qf\source\qte_ctr.c" 65 1 Info 714: Symbol 'QTimeEvt_ctr(const struct QTimeEvt *)' (line 65, file D:\qp\qpc\qf\source\qte_ctr.c) not referenced
 "D:\qp\qpc\ports\lint\stdint.h" 23 1 Info 756: global typedef 'int16_t' (line 23, file D:\qp\qpc\ports\lint\stdint.h) not referenced
 "D:\qp\qpc\qf\source\qeq_lifo.c" 73 1 Info 759: header declaration for symbol 'QEQueue_postLIFO(struct QEQueue *, const QEvt *)' defined at (line 73, file D:\qp\qpc\qf\source\qeq_lifo.c) could be moved from header to module
 "D:\qp\qpc\qf\source\qeq_lifo.c" 73 1 Info 765: external 'QEQueue_postLIFO(struct QEQueue *, const QEvt *)' (line 73, file D:\qp\qpc\qf\source\qeq_lifo.c) could be made static [MISRA 2004 Rule 8.10, required]
@@ -393,7 +393,7 @@
 "D:\qp\qpc\include\qs_dummy.h" 69 1 Info 755: global macro 'QS_I8' (line 69, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 71 1 Info 755: global macro 'QS_I16' (line 71, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 73 1 Info 755: global macro 'QS_I32' (line 73, file D:\qp\qpc\include\qs_dummy.h) not referenced
-"D:\qp\qpc\include\qf.h" 787 1 Info 755: global macro 'QF_getVersion' (line 787, file D:\qp\qpc\include\qf.h) not referenced
+"D:\qp\qpc\include\qf.h" 788 1 Info 755: global macro 'QF_getVersion' (line 788, file D:\qp\qpc\include\qf.h) not referenced
 "D:\qp\qpc\include\qassert.h" 151 1 Info 755: global macro 'Q_ALLEGE' (line 151, file D:\qp\qpc\include\qassert.h) not referenced
 "D:\qp\qpc\include\qassert.h" 167 1 Info 755: global macro 'Q_ALLEGE_ID' (line 167, file D:\qp\qpc\include\qassert.h) not referenced
 "D:\qp\qpc\include\qep.h" 356 1 Info 755: global macro 'QMsm_stateObj' (line 356, file D:\qp\qpc\include\qep.h) not referenced

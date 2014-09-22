@@ -161,11 +161,11 @@ BIN_DIR := dbg
 
 ASFLAGS = -g -mcpu=$(ARM_CORE) -defsym=FPU_VFP_V4_SP_D16=1
 
-CFLAGS = -mcpu=$(ARM_CORE) -mfpu=$(ARM_FPU) -mfloat-abi=softfp -mthumb -Wall \
-	-g -O $(INCLUDES) $(DEFINES)
+CFLAGS = -mcpu=$(ARM_CORE) -mfpu=$(ARM_FPU) -mfloat-abi=softfp -mthumb \
+	-Wall -Wcast-align -g -O $(INCLUDES) $(DEFINES)
 
 CPPFLAGS = -mcpu=$(ARM_CORE) -mfpu=$(ARM_FPU) -mfloat-abi=softfp -mthumb \
-	-Wall -fno-rtti -fno-exceptions \
+	-Wall -Wcast-align -fno-rtti -fno-exceptions \
 	-g -O $(INCLUDES) $(DEFINES)
 
 LINKFLAGS = -T$(LD_SCRIPT) -mcpu=$(ARM_CORE) -mfpu=$(ARM_FPU) -mfloat-abi=softfp \

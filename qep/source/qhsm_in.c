@@ -5,8 +5,8 @@
 * \cond
 ******************************************************************************
 * Product: QEP/C
-* Last updated for version 5.3.0
-* Last updated on  2014-04-09
+* Last updated for version 5.3.1
+* Last updated on  2014-09-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -49,14 +49,14 @@ Q_DEFINE_THIS_MODULE("qhsm_in")
 * \description
 * Tests if a state machine derived from QHsm is-in a given state.
 *
-* \note For a HSM, to "be in a state" means also to be in a substate of
+* \note For a HSM, to "be in a state" means also to be in a superstate of
 * of the state.
 *
 * \arguments
 * \arg[in] \c me    pointer (see \ref derivation)
 * \arg[in] \c state pointer to the state-handler function to be tested
 *
-* \returns 'true' if the HSM is in the \c state and 'false' otherwise
+* \returns 'true' if the HSM "is in" the \c state and 'false' otherwise
 */
 bool QHsm_isIn(QHsm * const me, QStateHandler const state) {
     bool inState = false; /* assume that this HSM is not in 'state' */

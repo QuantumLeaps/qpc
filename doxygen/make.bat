@@ -1,14 +1,14 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 5.3.0
-:: Date of the Last Update:  Feb 10, 2014
+:: Last Updated for Version: 5.3.1
+:: Date of the Last Update:  2014-09-18
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) Quantum Leaps, LLC. All rights reserved.
 ::
 :: This program is open source software: you can redistribute it and/or
 :: modify it under the terms of the GNU General Public License as published
@@ -29,17 +29,22 @@
 :: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: Quantum Leaps Web sites: http://www.quantum-leaps.com
-::                          http://www.state-machine.com
-:: e-mail:                  info@quantum-leaps.com
+:: Web:   http://www.state-machine.com
+:: Email: info@state-machine.com
 :: ==========================================================================
 setlocal
 
-echo usage:
-echo make
-echo make -CHM
+@echo usage:
+@echo make
+@echo make -CHM
 
-set VERSION=5.3.0
+@echo Cleanup...
+@echo off
+rm help\*.*
+rmdir /S /Q  help\search
+@echo on
+
+set VERSION=5.3.1
 
 set DOXHOME="C:\tools\doxygen\bin"
 set RCMHOME="C:\tools\MSquared\M2 RSM"
@@ -57,6 +62,18 @@ echo                    Standard Code Metrics for QP/C %VERSION% >> %RSM_OUTPUT%
 echo \endcode >> %RSM_OUTPUT%
 echo */ >> %RSM_OUTPUT%
 
-%DOXHOME%\doxygen.exe Doxyfile%1
+@echo off
+if "%1"=="-CHM" (
+
+    ::( type Doxyfile & echo GENERATE_HTMLHELP=YES ) | %DOXHOME%\doxygen.exe -
+    %DOXHOME%\doxygen.exe Doxyfile-CHM
+
+    @echo off
+    @echo "C:\tools\HTML Help Workshop\hhw.exe"
+    @echo In HHW: you need to add all img\*.htm files to the project
+    @echo off
+) else (
+    %DOXHOME%\doxygen.exe Doxyfile
+)
 
 endlocal

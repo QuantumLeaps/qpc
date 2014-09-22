@@ -108,7 +108,7 @@
 "D:\qp\qpc\qs\source\qs_str.c" 78 1 Info 714: Symbol 'QS_str_ROM(const char_t *)' (line 78, file D:\qp\qpc\qs\source\qs_str.c) not referenced
 "D:\qp\qpc\include\qf.h" 613 1 Info 757: global declarator 'QF_add_(QActive *)' (line 613, file D:\qp\qpc\include\qf.h) not referenced
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_add_' 
-"D:\qp\qpc\include\qf.h" 777 1 Info 757: global declarator 'QF_active_' (line 777, file D:\qp\qpc\include\qf.h) not referenced
+"D:\qp\qpc\include\qf.h" 778 1 Info 757: global declarator 'QF_active_' (line 778, file D:\qp\qpc\include\qf.h) not referenced
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_active_' 
 "D:\qp\qpc\include\qep.h" 474 1 Info 757: global declarator 'QFsm_ctor(QFsm *, QStateHandler)' (line 474, file D:\qp\qpc\include\qep.h) not referenced
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QFsm_ctor' 
@@ -395,7 +395,7 @@
 "D:\qp\qpc\include\qs.h" 804 1 Info 755: global macro 'QS_I64' (line 804, file D:\qp\qpc\include\qs.h) not referenced
 "D:\qp\qpc\include\qs.h" 356 1 Info 755: global macro 'QS_INIT' (line 356, file D:\qp\qpc\include\qs.h) not referenced
 "D:\qp\qpc\include\qep.h" 225 1 Info 755: global macro 'Q_DIM' (line 225, file D:\qp\qpc\include\qep.h) not referenced
-"D:\qp\qpc\include\qf.h" 787 1 Info 755: global macro 'QF_getVersion' (line 787, file D:\qp\qpc\include\qf.h) not referenced
+"D:\qp\qpc\include\qf.h" 788 1 Info 755: global macro 'QF_getVersion' (line 788, file D:\qp\qpc\include\qf.h) not referenced
 "D:\qp\qpc\include\qassert.h" 151 1 Info 755: global macro 'Q_ALLEGE' (line 151, file D:\qp\qpc\include\qassert.h) not referenced
 "D:\qp\qpc\include\qassert.h" 167 1 Info 755: global macro 'Q_ALLEGE_ID' (line 167, file D:\qp\qpc\include\qassert.h) not referenced
 "D:\qp\qpc\include\qep.h" 236 1 Info 755: global macro 'Q_UINT2PTR_CAST' (line 236, file D:\qp\qpc\include\qep.h) not referenced

@@ -124,6 +124,7 @@ static QState Ship_initial(Ship * const me, QEvt const * const e) {
     return QM_TRAN_INIT(&tatbl_);
 }
 /*${AOs::Ship::SM::active} .................................................*/
+/* ${AOs::Ship::SM::active::initial} */
 static QState Ship_active_i(Ship * const me) {
     static QMTranActTable const tatbl_ = { /* transition-action table */
         &Ship_parked_s,
@@ -134,6 +135,7 @@ static QState Ship_active_i(Ship * const me) {
     /* ${AOs::Ship::SM::active::initial} */
     return QM_TRAN_INIT(&tatbl_);
 }
+/* ${AOs::Ship::SM::active} */
 static QState Ship_active(Ship * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -152,6 +154,7 @@ static QState Ship_active(Ship * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Ship::SM::active::parked} .........................................*/
+/* ${AOs::Ship::SM::active::parked} */
 static QState Ship_parked(Ship * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -178,6 +181,7 @@ static QState Ship_parked(Ship * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Ship::SM::active::flying} .........................................*/
+/* ${AOs::Ship::SM::active::flying} */
 static QState Ship_flying_e(Ship * const me) {
     ScoreEvt *sev;
     me->score = 0U; /* reset the score */
@@ -186,6 +190,7 @@ static QState Ship_flying_e(Ship * const me) {
     QACTIVE_POST(AO_Tunnel, (QEvt *)sev, me);
     return QM_ENTRY(&Ship_flying_s);
 }
+/* ${AOs::Ship::SM::active::flying} */
 static QState Ship_flying(Ship * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -262,10 +267,12 @@ static QState Ship_flying(Ship * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Ship::SM::active::exploding} ......................................*/
+/* ${AOs::Ship::SM::active::exploding} */
 static QState Ship_exploding_e(Ship * const me) {
     me->exp_ctr = 0U;
     return QM_ENTRY(&Ship_exploding_s);
 }
+/* ${AOs::Ship::SM::active::exploding} */
 static QState Ship_exploding(Ship * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {

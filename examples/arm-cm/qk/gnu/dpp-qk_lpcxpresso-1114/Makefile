@@ -161,7 +161,7 @@ BIN_DIR := dbg
 
 ASFLAGS = -g -mcpu=$(ARM_CORE)
 
-CFLAGS = -mcpu=$(ARM_CORE) -mthumb -Wall \
+CFLAGS = -mcpu=$(ARM_CORE) -mthumb -Wall -Wcast-align \
 	-g -O $(INCLUDES) $(DEFINES)
 
 CPPFLAGS = -mcpu=$(ARM_CORE) -mthumb \

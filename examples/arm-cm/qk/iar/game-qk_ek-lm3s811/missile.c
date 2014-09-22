@@ -98,6 +98,7 @@ static QState Missile_initial(Missile * const me, QEvt const * const e) {
     return QM_TRAN_INIT(&tatbl_);
 }
 /*${AOs::Missile::SM::armed} ...............................................*/
+/* ${AOs::Missile::SM::armed} */
 static QState Missile_armed(Missile * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -122,6 +123,7 @@ static QState Missile_armed(Missile * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Missile::SM::flying} ..............................................*/
+/* ${AOs::Missile::SM::flying} */
 static QState Missile_flying(Missile * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -186,10 +188,12 @@ static QState Missile_flying(Missile * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Missile::SM::exploding} ...........................................*/
+/* ${AOs::Missile::SM::exploding} */
 static QState Missile_exploding_e(Missile * const me) {
     me->exp_ctr = 0U;
     return QM_ENTRY(&Missile_exploding_s);
 }
+/* ${AOs::Missile::SM::exploding} */
 static QState Missile_exploding(Missile * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {

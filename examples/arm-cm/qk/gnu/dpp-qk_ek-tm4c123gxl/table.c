@@ -128,6 +128,7 @@ static QState Table_initial(Table * const me, QEvt const * const e) {
     return QM_TRAN_INIT(&tatbl_);
 }
 /*${AOs::Table::SM::active} ................................................*/
+/* ${AOs::Table::SM::active} */
 static QState Table_active(Table * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -152,6 +153,7 @@ static QState Table_active(Table * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Table::SM::active::serving} .......................................*/
+/* ${AOs::Table::SM::active::serving} */
 static QState Table_serving_e(Table * const me) {
     uint8_t n;
     for (n = 0U; n < N_PHILO; ++n) { /* give permissions to eat... */
@@ -172,6 +174,7 @@ static QState Table_serving_e(Table * const me) {
     }
     return QM_ENTRY(&Table_serving_s);
 }
+/* ${AOs::Table::SM::active::serving} */
 static QState Table_serving(Table * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -273,16 +276,19 @@ static QState Table_serving(Table * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Table::SM::active::paused} ........................................*/
+/* ${AOs::Table::SM::active::paused} */
 static QState Table_paused_e(Table * const me) {
     BSP_displayPaused(1U);
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_ENTRY(&Table_paused_s);
 }
+/* ${AOs::Table::SM::active::paused} */
 static QState Table_paused_x(Table * const me) {
     BSP_displayPaused(0U);
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_EXIT(&Table_paused_s);
 }
+/* ${AOs::Table::SM::active::paused} */
 static QState Table_paused(Table * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {

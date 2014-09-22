@@ -127,6 +127,7 @@ static QState Mine1_initial(Mine1 * const me, QEvt const * const e) {
     return QM_TRAN_INIT(&tatbl_);
 }
 /*${AOs::Mine1::SM::unused} ................................................*/
+/* ${AOs::Mine1::SM::unused} */
 static QState Mine1_unused(Mine1 * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -151,6 +152,7 @@ static QState Mine1_unused(Mine1 * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Mine1::SM::used} ..................................................*/
+/* ${AOs::Mine1::SM::used} */
 static QState Mine1_used_x(Mine1 * const me) {
     /* tell the Tunnel that this mine is becoming disabled */
     MineEvt *mev = Q_NEW(MineEvt, MINE_DISABLED_SIG);
@@ -158,6 +160,7 @@ static QState Mine1_used_x(Mine1 * const me) {
     QACTIVE_POST(AO_Tunnel, (QEvt *)mev, me);
     return QM_EXIT(&Mine1_used_s);
 }
+/* ${AOs::Mine1::SM::used} */
 static QState Mine1_used(Mine1 * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -184,10 +187,12 @@ static QState Mine1_used(Mine1 * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Mine1::SM::used::exploding} .......................................*/
+/* ${AOs::Mine1::SM::used::exploding} */
 static QState Mine1_exploding_e(Mine1 * const me) {
     me->exp_ctr = 0U;
     return QM_ENTRY(&Mine1_exploding_s);
 }
+/* ${AOs::Mine1::SM::used::exploding} */
 static QState Mine1_exploding(Mine1 * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -231,6 +236,7 @@ static QState Mine1_exploding(Mine1 * const me, QEvt const * const e) {
     return status_;
 }
 /*${AOs::Mine1::SM::used::planted} .........................................*/
+/* ${AOs::Mine1::SM::used::planted} */
 static QState Mine1_planted(Mine1 * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {

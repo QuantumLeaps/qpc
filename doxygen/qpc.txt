@@ -7,9 +7,9 @@
 \anchor main_page
 \mainpage About QP/C
 
-\image html qp_banner.jpg
+\tableofcontents
 
-<a href="http://www.state-machine.com/qm/"><strong>QP&trade; (Quantum Platform)</strong></a> is a family of lightweight, open source software frameworks for building responsive and modular real-time embedded applications as systems of cooperating, event-driven <a href="http://www.state-machine.com/qp/index.php#Active">active objects</a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP&trade; family consists of QP/C, QP/C++, and QP-nano frameworks, which are all strictly quality controlled, superbly documented, and commercially licensable.
+<a class="extern" target="_blank" href="http://www.state-machine.com/qm/"><strong>QP&trade; (Quantum Platform)</strong></a> is a family of lightweight, open source software frameworks for building responsive and modular real-time embedded applications as systems of cooperating, event-driven <a class="extern" target="_blank" href="http://www.state-machine.com/qp/index.php#Active">active objects</a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP&trade; family consists of QP/C, QP/C++, and QP-nano frameworks, which are all strictly quality controlled, superbly documented, and commercially licensable.
 
 \image html qp_components.jpg
 
@@ -26,7 +26,7 @@ QP is available for download from <a href="http://sourceforge.net/projects/qpc">
 For more information about QP, please visit:
 <a href="http://www.state-machine.com/qp"><strong>state-machine.com/qp</strong></a>
 
-<HR>
+--------
 \section licensing QP/C Licensing
 
 QP/C is licensed under the increasingly popular dual licensing model, in which both the open source software distribution mechanism and traditional closed source software distribution models are combined.
@@ -41,7 +41,7 @@ Closed Source Projects:
 -----------------------
 If you are developing and distributing traditional closed source applications, you can purchase one of Quantum Leaps commercial licenses, which are specifically designed for users interested in retaining the proprietary status of their code. All Quantum Leaps commercial licenses expressly supersede the GPL open source license. This means that when you license Quantum Leaps software under a commercial license, you specifically do not use the software under the open source license and therefore you are not subject to any of its terms. 
 
-<HR>
+--------
 \section contact Contact Information
 
 - Quantum Leaps Web site:   http://www.state-machine.com
@@ -49,13 +49,13 @@ If you are developing and distributing traditional closed source applications, y
 - QP/QM on SourceForge.net: http://sourceforge.net/projects/qpc
 - e-mail: info@state-machine.com
 
-<HR>
+--------
 \section files Directories and Files
 
 The following annotated directory tree lists the most important directories
 and files provided in the standard QP/C distribution.
 
-\code
+\verbatim
 qpc\                 - QP/C root directory
   |
   +-qpc.chm          - "QP/C Reference Manual" in CHM Help format
@@ -203,10 +203,11 @@ qpc\                 - QP/C root directory
   +-qs\              - QS software tracing (target component)
   | +-source\        - QS platform-independent source code (*.c files)
   | | +- . . .
-\endcode
+\endverbatim
 
-<HR>
-\section derivation Object-Oriented Programming in C
+
+--------
+\section derivation Object-Oriented C
 
 Even though QP/C is implemented in standard ANSI-C, it extensively uses
 object-oriented design principles such as encapsulation (classes) and 
@@ -220,7 +221,7 @@ operations that use this data as functions that take a pointer to the
 packages the state machine data with the functions that operate on this
 data. The declaration of this class in C is as follows:
  
-\code
+\verbatim
 typedef struct QMsmTag {
     QMsmVtbl const *vptr;                       
     QMAttr state;         
@@ -230,7 +231,7 @@ typedef struct QMsmTag {
 void QMsm_ctor(QMsm * const me, QStateHandler initial);
 void QMsm_init(QMsm * const me, QEvt const * const e);
 void QMsm_dispatch(QMsm * const me, QEvt const * const e);
-\endcode
+\endverbatim
 
 As you can see, QP/C applies a number of coding and naming conventions
 to further strenghten the association between the data struct and the
@@ -280,7 +281,7 @@ Of course, the C++ version of QP uses the native C++ support for class
 inheritance rather than "derivation of structures".
 
 
-<HR>
+--------
 \image html logo_ql_TM.jpg
 Copyright &copy; 2002-2014 Quantum Leaps, LLC. All Rights Reserved.\n
 http://www.state-machine.com

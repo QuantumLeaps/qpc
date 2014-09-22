@@ -63,7 +63,7 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_pwr2Lkup' 
 "D:\qp\qpc\include\qf.h" 613 1 Warning 526: Symbol 'QF_add_(QActive *)' (line 613, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\qk\source\qk.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_add_' 
-"D:\qp\qpc\include\qf.h" 777 1 Warning 526: Symbol 'QF_active_' (line 777, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\qk\source\qk.c) not defined
+"D:\qp\qpc\include\qf.h" 778 1 Warning 526: Symbol 'QF_active_' (line 778, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\qk\source\qk.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_active_' 
 "D:\qp\qpc\include\qep.h" 474 1 Info 757: global declarator 'QFsm_ctor(QFsm *, QStateHandler)' (line 474, file D:\qp\qpc\include\qep.h) not referenced
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QFsm_ctor' 
@@ -304,8 +304,8 @@
 "D:\qp\qpc\include\qs_dummy.h" 54 1 Info 755: global macro 'QS_FILTER_SM_OBJ' (line 54, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 58 1 Info 755: global macro 'QS_FILTER_TE_OBJ' (line 58, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 84 1 Info 755: global macro 'QS_FUN' (line 84, file D:\qp\qpc\include\qs_dummy.h) not referenced
-"D:\qp\qpc\include\qs_dummy.h" 88 1 Info 755: global macro 'QS_FUN_DICTIONARY' (line 88, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 111 1 Info 755: global macro 'QS_FUN_' (line 111, file D:\qp\qpc\include\qs_dummy.h) not referenced
+"D:\qp\qpc\include\qs_dummy.h" 88 1 Info 755: global macro 'QS_FUN_DICTIONARY' (line 88, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qassert.h" 81 1 Info 755: global macro 'Q_DEFINE_THIS_FILE' (line 81, file D:\qp\qpc\include\qassert.h) not referenced
 "D:\qp\qpc\include\qep.h" 631 1 Info 755: global macro 'Q_HANDLED' (line 631, file D:\qp\qpc\include\qep.h) not referenced
 "D:\qp\qpc\include\qf.h" 602 1 Info 755: global macro 'QF_TICK_X' (line 602, file D:\qp\qpc\include\qf.h) not referenced
@@ -320,7 +320,7 @@
 "D:\qp\qpc\include\qs_dummy.h" 71 1 Info 755: global macro 'QS_I16' (line 71, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qs_dummy.h" 73 1 Info 755: global macro 'QS_I32' (line 73, file D:\qp\qpc\include\qs_dummy.h) not referenced
 "D:\qp\qpc\include\qep.h" 225 1 Info 755: global macro 'Q_DIM' (line 225, file D:\qp\qpc\include\qep.h) not referenced
-"D:\qp\qpc\include\qf.h" 787 1 Info 755: global macro 'QF_getVersion' (line 787, file D:\qp\qpc\include\qf.h) not referenced
+"D:\qp\qpc\include\qf.h" 788 1 Info 755: global macro 'QF_getVersion' (line 788, file D:\qp\qpc\include\qf.h) not referenced
 "D:\qp\qpc\include\qassert.h" 151 1 Info 755: global macro 'Q_ALLEGE' (line 151, file D:\qp\qpc\include\qassert.h) not referenced
 "D:\qp\qpc\include\qassert.h" 167 1 Info 755: global macro 'Q_ALLEGE_ID' (line 167, file D:\qp\qpc\include\qassert.h) not referenced
 "D:\qp\qpc\include\qep.h" 356 1 Info 755: global macro 'QMsm_stateObj' (line 356, file D:\qp\qpc\include\qep.h) not referenced

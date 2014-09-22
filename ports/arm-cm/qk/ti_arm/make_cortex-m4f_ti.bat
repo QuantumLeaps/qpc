@@ -2,7 +2,7 @@
 :: ===========================================================================
 :: Product: QP/C buld script for ARM Cortex-M4F, QK port, TI_ARM comiler
 :: Last updated for version 5.3.0
-:: Last updated on  2014-03-30
+:: Last updated on  2014-06-12
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -37,7 +37,7 @@ setlocal
 :: adjust the following path to the location where you've installed
 :: the TI_ARM toolset...
 ::
-if "%TI_ARM%"=="" set TI_ARM="C:\tools\TI\ccsv5\ccsv5\tools\compiler\arm_5.0.1"
+if "%TI_ARM%"=="" set TI_ARM="C:\tools\TI\ccsv6\tools\compiler\arm_5.1.5"
 
 set CC=%TI_ARM%\bin\armcl
 set ASM=%TI_ARM%\bin\armcl

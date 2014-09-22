@@ -5,8 +5,8 @@
 * \cond
 ******************************************************************************
 * Product: QEP/C
-* Last updated for version 5.3.0
-* Last updated on  2014-04-09
+* Last updated for version 5.3.1
+* Last updated on  2014-09-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -46,7 +46,7 @@
 * \description
 * Tests if a state machine derived from QMsm is-in a given state.
 *
-* \note For a MSM, to "be-in" a state means also to "be-in" a substate of
+* \note For a MSM, to "be-in" a state means also to "be-in" a superstate of
 * of the state.
 *
 * \arguments
@@ -54,13 +54,14 @@
 * \arg[in] \c state pointer to the QMState object that corresponds to the
 *                   tested state.
 *
-* \returns 'true' if the MSM is in the \c state and 'false' otherwise
+* \returns 'true' if the MSM "is in" the \c state and 'false' otherwise
 */
-bool QMsm_isInState(QMsm * const me, QMState const *state) {
+bool QMsm_isInState(QMsm * const me, QMState const * const state) {
     bool inState = false; /* assume that this MSM is not in 'state' */
+    QMState const *s;
 
-    for (; state != (QMState const *)0; state = state->superstate) {
-        if (state == me->state.obj) {
+    for (s = me->state.obj; s != (QMState const *)0; s = s->superstate) {
+        if (s == state) {
             inState = true; /* match found, return 'true' */
             break;
         }
