@@ -1,3 +1,9 @@
+//****************************************************************************
+// This LM3S CMSIS file has been augmented with interrupt handler prototypes
+// Quantum Leaps on 28-Jul-2014
+// www.state-machine.com
+//****************************************************************************
+
 //*****************************************************************************
 //
 // lm3s_cmsis.h - CMSIS header file for Luminary Micro LM3S Stellaris
@@ -97,6 +103,68 @@ typedef enum IRQn
     uDMA_IRQn               = 46,   /*!<  uDMA Software Transfer             */
     uDMAErr_IRQn            = 47    /*!<  uDMA Error                         */
 } IRQn_Type;
+
+
+/*
+ * ===========================================================================
+ * ---------- Interrupt Handler Prototypes -----------------------------------
+ * ===========================================================================
+ */
+void NMI_Handler(void);
+void HardFault_Handler(void);
+void MemManage_Handler(void);
+void BusFault_Handler(void);
+void UsageFault_Handler(void);
+void HardFault_Handler(void);
+
+void SVC_Handler(void);
+void DebugMon_Handler(void);
+void PendSV_Handler(void);
+void SysTick_Handler(void);
+
+void GPIOPortA_IRQHandler(void);
+void GPIOPortB_IRQHandler(void);
+void GPIOPortC_IRQHandler(void);
+void GPIOPortD_IRQHandler(void);
+void GPIOPortE_IRQHandler(void);
+void UART0_IRQHandler(void);
+void UART1_IRQHandler(void);
+void SSI0_IRQHandler(void);
+void I2C0_IRQHandler(void);
+void PWMFault_IRQHandler(void);
+void PWMGen0_IRQHandler(void);
+void PWMGen1_IRQHandler(void);
+void PWMGen2_IRQHandler(void);
+void QEI0_IRQHandler(void);
+void ADCSeq0_IRQHandler(void);
+void ADCSeq1_IRQHandler(void);
+void ADCSeq2_IRQHandler(void);
+void ADCSeq3_IRQHandler(void);
+void Watchdog_IRQHandler(void);
+void Timer0A_IRQHandler(void);
+void Timer0B_IRQHandler(void);
+void Timer1A_IRQHandler(void);
+void Timer1B_IRQHandler(void);
+void Timer2A_IRQHandler(void);
+void Timer2B_IRQHandler(void);
+void Comp0_IRQHandler(void);
+void Comp1_IRQHandler(void);
+void Comp2_IRQHandler(void);
+void SysCtrl_IRQHandler(void);
+void FlashCtrl_IRQHandler(void);
+void GPIOPortF_IRQHandler(void);
+void GPIOPortG_IRQHandler(void);
+void GPIOPortH_IRQHandler(void);
+void UART2_IRQHandler(void);
+void SSI1_IRQHandler(void);
+void Timer3A_IRQHandler(void);
+void Timer3B_IRQHandler(void);
+void I2C1_IRQHandler(void);
+void QEI1_IRQHandler(void);
+void CAN0_IRQHandler(void);
+void CAN1_IRQHandler(void);
+void CAN2_IRQHandler(void);
+void Hibernate_IRQHandler(void);
 
 
 /*

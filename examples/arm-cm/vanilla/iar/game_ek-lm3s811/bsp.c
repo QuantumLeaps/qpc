@@ -62,10 +62,6 @@ enum KernelAwareISRs {
 /* "kernel-aware" interrupts should not overlap the PendSV priority */
 Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
-/* ISRs defined in this BSP ------------------------------------------------*/
-void SysTick_Handler(void);
-void GPIOPortA_IRQHandler(void);
-
 /* Local-scope objects -----------------------------------------------------*/
 #define PUSH_BUTTON             (1U << 4)
 #define USER_LED                (1U << 5)
@@ -90,11 +86,6 @@ void GPIOPortA_IRQHandler(void);
     #define UART_FR_TXFE        0x00000080U
 
 #endif
-
-/* prototypes of ISRs defined in the BSP....................................*/
-void SysTick_Handler(void);
-void ADCSeq3_IRQHandler(void);
-void assert_failed(char const *file, int line);
 
 /*..........................................................................*/
 void SysTick_Handler(void) {

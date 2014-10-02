@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  QK/C port, AVR, IAR compiler
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Sep 17, 2012
+* Last Updated for Version: 5.3.1
+* Date of the Last Update:  2014-09-24
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,27 +28,26 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* Web:   http://www.state-machine.com
+* Email: info@state-machine.com
 *****************************************************************************/
 #ifndef qk_port_h
 #define qk_port_h
 
-                                             /* QK interrupt entry and exit */
+/* QK interrupt entry and exit */
 #define QK_ISR_ENTRY()    (++QK_intNest_)
 
 #define QK_ISR_EXIT()     do { \
     --QK_intNest_; \
-    if (QK_intNest_ == (uint8_t)0) { \
-        uint8_t p = QK_schedPrio_(); \
-        if (p != (uint8_t)0) { \
+    if (QK_intNest_ == (uint_fast8_t)0) { \
+        uint_fast8_t p = QK_schedPrio_(); \
+        if (p != (uint_fast8_t)0) { \
             QK_sched_(p); \
         } \
     } \
 } while (0)
 
 
-#include "qk.h"                 /* QK platform-independent public interface */
+#include "qk.h" /* QK platform-independent public interface */
 
-#endif                                                         /* qk_port_h */
+#endif /* qk_port_h */

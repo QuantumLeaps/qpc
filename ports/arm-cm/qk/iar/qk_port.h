@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK/C, ARM Cortex-M, QK port, Generic C compiler
-* Last updated for version 5.3.0
-* Last updated on  2014-04-22
+* Last updated for version 5.3.1
+* Last updated on  2014-09-24
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -44,9 +44,7 @@
 #define QK_ISR_EXIT()  do { \
     QF_INT_DISABLE(); \
     --QK_intNest_; \
-    if (QK_schedPrio_() != (uint_fast8_t)0) { \
-        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)0x10000000U; \
-    } \
+    *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)0x10000000U; \
     QF_INT_ENABLE(); \
 } while (0)
 

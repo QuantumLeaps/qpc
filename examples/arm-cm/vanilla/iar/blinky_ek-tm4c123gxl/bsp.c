@@ -35,12 +35,12 @@
 #include "qp_port.h"
 #include "bsp.h"
 
-#include "tm4c_cmsis.h"                 /* Tiva-C CMSIS-compliant interface */
+#include "tm4c_cmsis.h"  /* Tiva-C CMSIS-compliant interface */
 #include "sysctl.h"
 #include "gpio.h"
 #include "rom.h"
 
-Q_DEFINE_THIS_FILE
+//Q_DEFINE_THIS_FILE
 
 /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
@@ -69,18 +69,16 @@ Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 #define USR_SW1     (1U << 4)
 #define USR_SW2     (1U << 0)
 
-/* ISRs defined in this BSP ------------------------------------------------*/
-void SysTick_Handler(void);
-void assert_failed(char const *file, int line);
+uint32_t SystemCoreClock;    /* System Clock Frequency (Core Clock) */
 
 /*..........................................................................*/
-void SysTick_Handler(void) {                       /* system clock tick ISR */
-    QF_TICK_X(0U, (void *)0);              /* process all armed time events */
+void SysTick_Handler(void) {  /* system clock tick ISR */
+    QF_TICK_X(0U, (void *)0);  /* process all armed time events */
 }
 
 /*..........................................................................*/
 void BSP_init(void) {
-                                          /* Enable the floating-point unit */
+    /* Enable the floating-point unit */
     SCB->CPACR |= (0xFU << 20);
 
     /* Enable lazy stacking for interrupt handlers. This allows FPU
@@ -92,29 +90,25 @@ void BSP_init(void) {
     /* Set the clocking to run directly from the crystal */
     ROM_SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC
                        | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+    SystemCoreClock = ROM_SysCtlClockGet(); /* get the actual clock */
 
     /* enable clock to the peripherals used by the application */
-    SYSCTL->RCGC2 |= (1U << 5);                   /* enable clock to GPIOF  */
-    __NOP();                                  /* wait after enabling clocks */
+    SYSCTL->RCGC2 |= (1U << 5); /* enable clock to GPIOF  */
+    __NOP();                    /* wait after enabling clocks */
     __NOP();
     __NOP();
 
-    /* configure the LEDs and push buttons */
+    /* configure the LEDs... */
     GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE);/* set direction: output */
-    GPIOF->DEN |= (LED_RED | LED_GREEN | LED_BLUE);       /* digital enable */
-    GPIOF->DATA_Bits[LED_RED]   = 0;                    /* turn the LED off */
-    GPIOF->DATA_Bits[LED_GREEN] = 0;                    /* turn the LED off */
-    GPIOF->DATA_Bits[LED_BLUE]  = 0;                    /* turn the LED off */
+    GPIOF->DEN |= (LED_RED | LED_GREEN | LED_BLUE); /* digital enable */
+    GPIOF->DATA_Bits[LED_RED]   = 0; /* turn the LED off */
+    GPIOF->DATA_Bits[LED_GREEN] = 0; /* turn the LED off */
+    GPIOF->DATA_Bits[LED_BLUE]  = 0; /* turn the LED off */
 
-    /* configure the User Switches */
-    GPIOF->DIR &= ~(USR_SW1 | USR_SW2);            /*  set direction: input */
+    /* configure the User Switches... */
+    GPIOF->DIR &= ~(USR_SW1 | USR_SW2); /*  set direction: input */
     ROM_GPIOPadConfigSet(GPIO_PORTF_BASE, (USR_SW1 | USR_SW2),
                          GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
-
-    if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
-        Q_ERROR();
-    }
-    QS_OBJ_DICTIONARY(&l_SysTick_Handler);
 }
 /*..........................................................................*/
 void BSP_ledOff() {
@@ -127,8 +121,8 @@ void BSP_ledOn() {
 
 /*..........................................................................*/
 void QF_onStartup(void) {
-              /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
-    SysTick_Config(ROM_SysCtlClockGet() / BSP_TICKS_PER_SEC);
+    /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
+    SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
     /* assing all priority bits for preemption-prio. and none to sub-prio. */
     NVIC_SetPriorityGrouping(0U);
