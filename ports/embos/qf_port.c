@@ -1,13 +1,17 @@
-/*****************************************************************************
-* Product: QF/C port to embOS
-* Last updated for version 5.3.0
-* Last updated on  2014-06-25
+/**
+* @file
+* @brief QF/C port to embOS
+* @ingroup ports
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,7 +34,9 @@
 * Contact information:
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
-*****************************************************************************/
+******************************************************************************
+* @endcond
+*/
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
 #include "qf_pkg.h"
@@ -44,33 +50,53 @@
 Q_DEFINE_THIS_MODULE("qf_port")
 
 /*..........................................................................*/
+/* define __TARGET_FPU_VFP symbol depending on the compiler...  */
+#if defined (__CC_ARM)          /* ARM Compiler */
+    /* in ARM Compiler __TARGET_FPU_VFP is a pre-defined symbol*/
+#elif defined (__ICCARM__)      /* IAR Compiler */
+    #if defined __ARMVFP__
+        #define __TARGET_FPU_VFP 1
+    #endif
+#elif defined (__GNUC__)        /* GNU Compiler */
+    #if defined (__VFP_FP__) && !defined(__SOFTFP__)
+        #define __TARGET_FPU_VFP 1
+    #endif
+#endif
+
+/*..........................................................................*/
 void QF_init(void) {
     OS_InitKern();  /* initialize embOS */
     OS_InitHW();    /* initialize the hardware used by embOS */
 }
 /*..........................................................................*/
 int_t QF_run(void) {
-    QF_onStartup();
-    OS_Start(); /* start multitasking; NOTE: QS_start() does not return */
+    QF_onStartup();  /* QF callback to configure and start interrupts */
+    OS_Start();      /* start embOS multitasking */
+    Q_ERROR_ID(100); /* OS_Start() should never return */
     return (int_t)0; /* dummy return to make the compiler happy */
 }
 /*..........................................................................*/
 void QF_stop(void) {
-    QF_onCleanup(); /* cleanup callback */
+    QF_onCleanup();  /* cleanup callback */
 }
+/*..........................................................................*/
+void QF_setEmbOsTaskAttr(QActive *act, uint32_t attr) {
+    act->osObject = attr;
+}
+
 /*..........................................................................*/
 static void thread_function(void *pVoid) { /* embOS signature */
     QActive *act = (QActive *)pVoid;
 
-#if defined (__ARM7EM__) && (__CORE__ == __ARM7EM__) && defined (__ARMVFP__)
+#ifdef __TARGET_FPU_VFP
     /* does the task use the FPU? see NOTE1 */
-    if ((act->osObject & QF_TASK_USES_FPU) != (uint8_t)0) {
+    if ((act->osObject & QF_TASK_USES_FPU) != (uint32_t)0) {
         OS_ExtendTaskContext_VFP();
     }
-#endif
+#endif  /* __TARGET_FPU_VFP */
 
-    act->osObject = (uint8_t)1;/* enable thread-loop */
-    while (act->osObject) {
+    act->osObject = (uint32_t)1; /* enable the event-loop, see NOTE2 */
+    while (act->osObject != (uint32_t)0) {  /* event-loop */
         QEvt const *e = QActive_get_(act);
         QMSM_DISPATCH(&act->super, e);
         QF_gc(e); /* check if the event is garbage, and collect it if so */
@@ -94,11 +120,10 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = prio;  /* save the QF priority */
     QF_add_(me);      /* make QF aware of this active object */
-    QMSM_INIT(&me->super, ie); /* execute initial transition */
-
+    QMSM_INIT(&me->super, ie);  /* thake the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
-
+    /* create an embOS task for the AO */
     OS_CreateTaskEx(&me->thread,
                     "AO",
                     (OS_PRIO)prio, /* embOS uses the same numbering as QP */
@@ -110,7 +135,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 }
 /*..........................................................................*/
 void QActive_stop(QActive * const me) {
-    me->osObject = (uint8_t)0; /* stop the thread loop */
+    me->osObject = (uint32_t)0; /* stop the thread loop */
 }
 /*..........................................................................*/
 #ifndef Q_SPY
@@ -142,7 +167,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         if (e->poolId_ != (uint8_t)0) { /* is it a pool event? */
             QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
         }
-        /* posting to the embOS mailbox must succeed, see NOTE2 */
+        /* posting to the embOS mailbox must succeed, see NOTE3 */
         Q_ALLEGE(OS_PutMailCond(&me->eQueue, (OS_CONST_PTR void *)&e)
                  == (char)0);
 
@@ -187,7 +212,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
-    /* posting to the embOS mailbox must succeed, see NOTE2 */
+    /* posting to the embOS mailbox must succeed, see NOTE3 */
     Q_ALLEGE(OS_PutMailFrontCond(&me->eQueue, (OS_CONST_PTR void *)&e)
              == (char)0);
 
@@ -218,12 +243,16 @@ QEvt const *QActive_get_(QActive * const me) {
 * preserve the FPU registers accross the context switch. However, this
 * additional overhead is necessary only for tasks that actually use the
 * FPU. In this QP-embOS port, an active object task that uses the FPU is
-* designated by initially setting the bit QF_TASK_USES_FPU in the
-* QActive.osObject attribute. Later on the QActive.osObject attribute is
-* reused as the event-loop flag to gracefully terminate the AOs event
-* loop, in case QActive_stop() is called.
+* designated by the QF_TASK_USES_FPU attribute, which can be set wiht the
+* QF_setEmbOsTaskAttr() function. The task attributes must be set *before*
+* calling QACTIVE_START(). The task attributes are saved in QActive.osObject
+* member.
 *
 * NOTE2:
+* The member QActive.osObject is reused as the loop control variable,
+* because the task attributes are alredy applied.
+*
+* NOTE3:
 * The event posting to embOS mailbox occurs inside a critical section,
 * but this is OK, because the QF/embOS critical sections are designed
 * to nest.

@@ -1,0 +1,82 @@
+D:/qp/qpc/doxygen/macros.h:66: warning: Member QACTIVE_EQUEUE_SIGNAL_(me_) (macro definition) of file macros.h is not documented.
+D:/qp/qpc/doxygen/macros.h:76: warning: Member QACTIVE_EQUEUE_ONEMPTY_(me_) (macro definition) of file macros.h is not documented.
+D:/qp/qpc/include/qassert.h:197: warning: argument 'module' of command @param is not found in the argument list of Q_onAssert(char_t const Q_ROM *const file, int_t line)
+D:/qp/qpc/include/qassert.h:197: warning: The following parameters of Q_onAssert(char_t const Q_ROM *const file, int_t line) are not documented:
+  parameter 'file'
+D:/qp/qpc/include/qf.h:650: warning: explicit link request to 'Q_EVT_CTOR' could not be resolved
+D:/qp/qpc/include/qf.h:679: warning: explicit link request to 'Q_EVT_CTOR' could not be resolved
+D:/qp/qpc/include/qf.h:665: warning: The following parameters of Q_NEW_X(e_, evtT_, margin_, sig_) are not documented:
+  parameter 'e_'
+D:/qp/qpc/include/qf.h:191: warning: argument 'stkSize_' of command @param is not found in the argument list of QACTIVE_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, param_)
+D:/qp/qpc/include/qf.h:191: warning: The following parameters of QACTIVE_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, param_) are not documented:
+  parameter 'stkLen_'
+D:/qp/qpc/include/qf.h:567: warning: argument 'tickRate' of command @param is not found in the argument list of QF_TICK_X(tickRate_, sender_)
+D:/qp/qpc/include/qf.h:567: warning: argument 'sender' of command @param is not found in the argument list of QF_TICK_X(tickRate_, sender_)
+D:/qp/qpc/include/qf.h:567: warning: The following parameters of QF_TICK_X(tickRate_, sender_) are not documented:
+  parameter 'tickRate_'
+  parameter 'sender_'
+D:/qp/qpc/source/qf_actq.c:59: warning: The following parameters of QActive_post_(QActive *const me, QEvt const *const e, uint_fast16_t const margin, void const *const sender) are not documented:
+  parameter 'sender'
+D:/qp/qpc/source/qf_actq.c:191: warning: expected whitespace after [ command
+D:/qp/qpc/source/qf_actq.c:183: warning: The following parameters of QActive_postLIFO_(QActive *const me, QEvt const *const e) are not documented:
+  parameter 'e'
+D:/qp/qpc/source/qf_time.c:57: warning: The following parameters of QF_tickX_(uint_fast8_t const tickRate, void const *const sender) are not documented:
+  parameter 'sender'
+D:/qp/qpc/include/qmpool.h:45: warning: explicit link request to 'QMPoolSize' could not be resolved
+D:/qp/qpc/include/qmpool.h:72: warning: explicit link request to 'QMPoolCtr' could not be resolved
+D:/qp/qpc/include/qmpool.h:63: warning: Member QMPoolSize (typedef) of file qmpool.h is not documented.
+D:/qp/qpc/include/qmpool.h:89: warning: Member QMPoolCtr (typedef) of file qmpool.h is not documented.
+D:/qp/qpc/include/qmpool.h:72: warning: explicit link request to 'QMPoolCtr' could not be resolved
+D:/qp/qpc/include/qmpool.h:45: warning: explicit link request to 'QMPoolSize' could not be resolved
+D:/qp/qpc/include/qs.h:178: warning: Member Q_ROM (macro definition) of file qs.h is not documented.
+D:/qp/qpc/include/qs.h:181: warning: Member Q_ROM_BYTE(rom_var_) (macro definition) of file qs.h is not documented.
+D:/qp/qpc/include/qs.h:1074: warning: Member QS_priv_ (variable) of file qs.h is not documented.
+D:/qp/qpc/include/qs.h:429: warning: explicit link request to 'QS_QF_ACTIVE_POST' could not be resolved
+D:/qp/qpc/include/qs.h:469: warning: explicit link request to 'QS_QF_EQUEUE_POST' could not be resolved
+D:/qp/qpc/include/qs.h:491: warning: explicit link request to 'QS_QF_TIMEEVT_PUBLISH' could not be resolved
+D:/qp/qpc/include/qv.h:48: warning: explicit link request to 'QEqueue' could not be resolved
+D:/qp/qpc/ports/lint/qf_port.h:271: warning: Member crit_stat_t (typedef) of file qf_port.h is not documented.
+D:/qp/qpc/ports/lint/qf_port.h:211: warning: Member intDisable(void) (function) of file qf_port.h is not documented.
+D:/qp/qpc/ports/lint/qf_port.h:212: warning: Member intEnable(void) (function) of file qf_port.h is not documented.
+D:/qp/qpc/ports/lint/qf_port.h:272: warning: Member critEntry(void) (function) of file qf_port.h is not documented.
+D:/qp/qpc/ports/lint/qf_port.h:273: warning: Member critExit(QF_CRIT_STAT_TYPE stat) (function) of file qf_port.h is not documented.
+D:/qp/qpc/ports/lint/qf_port.h:274: warning: Member QV_onIdle(void) (function) of file qf_port.h is not documented.
+D:/qp/qpc/ports/lint/qf_port.h:152: warning: explicit link request to 'QMPoolCtr' could not be resolved
+D:/qp/qpc/ports/lint/qf_port.h:150: warning: explicit link request to 'QMPoolSize' could not be resolved
+D:/qp/qpc/ports/lint/qf_port.h:151: warning: explicit link request to 'QMPoolCtr' could not be resolved
+D:/qp/qpc/ports/lint/qf_port.h:128: warning: explicit link request to 'QMPoolSize' could not be resolved
+D:/qp/qpc/ports/lint/qf_port.h:126: warning: explicit link request to 'QMPoolSize' could not be resolved
+D:/qp/qpc/ports/lint/qf_port.h:127: warning: explicit link request to 'QMPoolSize' could not be resolved
+D:/qp/qpc/ports/lint/qk_port.h:66: warning: explicit link request to 'QK_EXT_TYPE' could not be resolved
+D:/qp/qpc/ports/lint/qk_port.h:54: warning: explicit link request to 'QK_EXT_TYPE' could not be resolved
+D:/qp/qpc/ports/lint/stdbool.h:22: warning: Member __bool_true_false_are_defined (macro definition) of file stdbool.h is not documented.
+D:/qp/qpc/source/qep_msm.c:57: warning: Member l_msm_top_s (variable) of file qep_msm.c is not documented.
+D:/qp/qpc/source/qep_msm.c:451: warning: explicit link request to 'Q_RET_INIT' could not be resolved
+D:/qp/qpc/source/qf_actq.c:59: warning: The following parameters of QActive_post_(QActive *const me, QEvt const *const e, uint_fast16_t const margin, void const *const sender) are not documented:
+  parameter 'sender'
+D:/qp/qpc/source/qf_actq.c:191: warning: expected whitespace after [ command
+D:/qp/qpc/source/qf_actq.c:183: warning: The following parameters of QActive_postLIFO_(QActive *const me, QEvt const *const e) are not documented:
+  parameter 'e'
+D:/qp/qpc/source/qf_time.c:57: warning: The following parameters of QF_tickX_(uint_fast8_t const tickRate, void const *const sender) are not documented:
+  parameter 'sender'
+D:/qp/qpc/source/qs.c:47: warning: Member QS_priv_ (variable) of file qs.c is not documented.
+D:/qp/qpc/doxygen/exa_os.dox:41: warning: unable to resolve reference to `ports_win32' for \ref command
+D:/qp/qpc/doxygen/exa_os.dox:59: warning: unable to resolve reference to `ports_win32-qv' for \ref command
+D:/qp/qpc/doxygen/ports_rtos.dox:53: warning: Found unknown command `\uCOS'
+D:/qp/qpc/doxygen/history.dox:22: warning: unable to resolve reference to `ports_native:' for \ref command
+D:/qp/qpc/doxygen/history.dox:61: warning: Found unknown command `\win32'
+D:/qp/qpc/doxygen/history.dox:479: warning: explicit link request to 'if' could not be resolved
+D:/qp/qpc/doxygen/history.dox:464: warning: Unsupported xml/html tag <qpc> found
+D:/qp/qpc/doxygen/history.dox:471: warning: Unsupported xml/html tag <qpc> found
+D:/qp/qpc/doxygen/history.dox:107: warning: explicit link request to 'XXX_onYYY()' could not be resolved
+D:/qp/qpc/doxygen/history.dox:67: warning: explicit link request to 'QF_FSM_ACTIVE' could not be resolved
+D:/qp/qpc/doxygen/history.dox:68: warning: explicit link request to 'QF_ACTIVE_SUPER_' could not be resolved
+D:/qp/qpc/doxygen/history.dox:68: warning: explicit link request to 'QF_ACTIVE_CTOR_' could not be resolved
+D:/qp/qpc/doxygen/history.dox:68: warning: explicit link request to 'QF_ACTIVE_INIT_' could not be resolved
+D:/qp/qpc/doxygen/history.dox:69: warning: explicit link request to 'QF_ACTIVE_DISPATCH_' could not be resolved
+D:/qp/qpc/doxygen/history.dox:69: warning: explicit link request to 'QF_ACTIVE_STATE_' could not be resolved
+D:/qp/qpc/source/qf_pkg.h:101: warning: Member next (variable) of class QFreeBlock is not documented.
+D:/qp/qpc/include/qep.h:289: warning: Member target (variable) of class QMTranActTable is not documented.
+D:/qp/qpc/include/qep.h:290: warning: Member act[1] (variable) of class QMTranActTable is not documented.
+D:/qp/qpc/doxygen/ab.dox:136: warning: unable to resolve reference to `misra_lint' for \ref command
+D:/qp/qpc/doxygen/ab.dox:101: warning: unexpected token TK_EOF as the argument of ref

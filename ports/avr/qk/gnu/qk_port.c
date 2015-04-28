@@ -1,17 +1,20 @@
-/*****************************************************************************
-* Product:  QK/C port, AVR, QK
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Nov 22, 2013
+/**
+* @file
+* @brief QK/C port, AVR, QK
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 2 of the License, or
+* by the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
 * Alternatively, this program may be distributed and modified under the
@@ -28,10 +31,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* @endcond
+*/
 #include "qf_port.h"
 
 void QK_init(void) {

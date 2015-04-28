@@ -1,9 +1,9 @@
 QState Table_initial(Table * const me, QEvt const *) {
     uint8_t n;
 
-    QS_SIG_DICTIONARY(HUNGRY_SIG, me);   /* output signal dictionary QS record */
-    QS_SIG_DICTIONARY(DONE_SIG, me);     /* output signal dictionary QS record */
-    QS_SIG_DICTIONARY(EAT_SIG, 0);       /* output signal dictionary QS record */
+    QS_SIG_DICTIONARY(HUNGRY_SIG, me); /* output signal dictionary QS record */
+    QS_SIG_DICTIONARY(DONE_SIG, me);   /* output signal dictionary QS record */
+    QS_SIG_DICTIONARY(EAT_SIG, 0);     /* output signal dictionary QS record */
 
     QS_FUN_DICTIONARY(&Table_serving);
 

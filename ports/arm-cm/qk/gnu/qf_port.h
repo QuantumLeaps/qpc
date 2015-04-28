@@ -1,13 +1,16 @@
-/*****************************************************************************
-* Product: QF/C, Cortex-M, QK port, GNU ARM compiler
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+/**
+* @file
+* @brief QF/C port to Cortex-M, preemptive QK kernel, GNU-ARM toolset
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,53 +31,57 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* @endcond
+*/
 #ifndef qf_port_h
 #define qf_port_h
 
-      /* The maximum number of active objects in the application, see NOTE1 */
-#define QF_MAX_ACTIVE               32
-                                   /* The number of system clock tick rates */
-#define QF_MAX_TICK_RATE            2
+/* The maximum number of active objects in the application, see NOTE1 */
+#define QF_MAX_ACTIVE           32
+
+/* The maximum number of system clock tick rates */
+#define QF_MAX_TICK_RATE        2
 
 /* QF interrupt disable/enable and log2()... */
-#ifdef ARM_ARCH_V6M                       /* Cortex-M0/M0+/M1 ?, see NOTE02 */
+#ifdef ARM_ARCH_V6M /* Cortex-M0/M0+/M1 ?, see NOTE02 */
 
-    #define QF_INT_DISABLE()        __asm volatile ("cpsid i")
-    #define QF_INT_ENABLE()         __asm volatile ("cpsie i")
+    #define QF_INT_DISABLE()    __asm volatile ("cpsid i")
+    #define QF_INT_ENABLE()     __asm volatile ("cpsie i")
 
-    /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE2   */
+    /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE2 */
     #define QF_AWARE_ISR_CMSIS_PRI  0
 
-#else                                       /* Cortex-M3/M4/M4F, see NOTE03 */
+#else /* Cortex-M3/M4/M4F, see NOTE03 */
 
-    #define QF_SET_BASEPRI(val_)    __asm volatile (\
+    #define QF_SET_BASEPRI(val_) __asm volatile (\
         "movs r0,%0 \n\t" \
         "msr  BASEPRI,r0" :: "I" (val_) : "cc", "r0")
-    #define QF_INT_DISABLE()        QF_SET_BASEPRI(QF_BASEPRI)
-    #define QF_INT_ENABLE()         QF_SET_BASEPRI(0U)
+    #define QF_INT_DISABLE()    QF_SET_BASEPRI(QF_BASEPRI)
+    #define QF_INT_ENABLE()     QF_SET_BASEPRI(0U)
 
-    /* NOTE: keep in synch with the value defined in "qk_port.s", see NOTE4 */
-    #define QF_BASEPRI  (0xFF >> 2)
+    /* NOTE: keep in synch with the value defined in "qk_port.s", NOTE4 */
+    #define QF_BASEPRI          (0xFFU >> 2)
 
-    /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5   */
-    #define QF_AWARE_ISR_CMSIS_PRI  (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
+    /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5 */
+    #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
               /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
     #define QF_LOG2(n_) ((uint8_t)(32U - __builtin_clz(n_)))
-#endif
-                                          /* QF critical section entry/exit */
-/* QF_CRIT_STAT_TYPE not defined: unconditional interrupt unlocking" policy */
-#define QF_CRIT_ENTRY(dummy)        QF_INT_DISABLE()
-#define QF_CRIT_EXIT(dummy)         QF_INT_ENABLE()
-#define QF_CRIT_EXIT_NOP()          __asm volatile ("nop")
 
-#include "qep_port.h"                                           /* QEP port */
-#include "qk_port.h"                                             /* QK port */
-#include "qf.h"                 /* QF platform-independent public interface */
+#endif
+
+/* QF critical section entry/exit */
+/* QF_CRIT_STAT_TYPE not defined: unconditional interrupt disabling" policy */
+#define QF_CRIT_ENTRY(dummy)    QF_INT_DISABLE()
+#define QF_CRIT_EXIT(dummy)     QF_INT_ENABLE()
+#define QF_CRIT_EXIT_NOP()      __asm volatile ("nop")
+
+#include "qep_port.h" /* QEP port */
+#include "qk_port.h"  /* QK port */
+#include "qf.h"       /* QF platform-independent public interface */
 
 /*****************************************************************************
 * NOTE1:
@@ -85,7 +92,7 @@
 * On Cortex-M0/M0+/M1 (architecture v6-M, v6S-M), the interrupt disabling
 * policy uses the PRIMASK register to disable interrupts globally. The
 * QF_AWARE_ISR_CMSIS_PRI level is zero, meaning that all interrupts are
-* "kernel-aware"
+* "kernel-aware".
 *
 * NOTE3:
 * On Cortex-M3/M4/M4F, the interrupt disable/enable policy uses the BASEPRI
@@ -118,4 +125,4 @@
 * on the number of implemented priority bits in the NVIC.
 */
 
-#endif                                                         /* qf_port_h */
+#endif /* qf_port_h */

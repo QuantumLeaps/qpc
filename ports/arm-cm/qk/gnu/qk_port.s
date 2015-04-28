@@ -1,5 +1,5 @@
 /*****************************************************************************
-* Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M4F), GNU ARM assembler
+* Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M4F), GNU-ARM assembler
 * Last Updated for Version: 5.1.0
 * Date of the Last Update:  Sep 19, 2013
 *

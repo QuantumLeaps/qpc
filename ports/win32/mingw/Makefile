@@ -1,7 +1,7 @@
 ##############################################################################
-# Product:  QP/C, Win32 build, GNU compiler (MinGW)
-# Last Updated for Version: 5.3.0
-# Date of the Last Update:  2014-03-30
+# Product: Makefile for QP/C port to Win32 API, MinGW toolset
+# Last Updated for Version: 5.4.0
+# Date of the Last Update:  2015-04-07
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,316 +28,194 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# Web:   www.state-machine.com
+# Web:   http://www.state-machine.com
 # Email: info@state-machine.com
 ##############################################################################
-
 # examples of invoking this Makefile:
 # building configurations: Debug (default), Release, and Spy
-# mingw32-make
-# mingw32-make CONF=rel
-# mingw32-make CONF=spy
+# make
+# make CONF=rel
+# make CONF=spy
 #
 # cleaning configurations: Debug (default), Release, and Spy
-# mingw32-make clean
-# mingw32-make CONF=rel clean
-# mingw32-make CONF=spy clean
-
-#-----------------------------------------------------------------------------
-# general utilities
+# make clean
+# make CONF=rel clean
+# make CONF=spy clean
+#
+# NOTE:
+# To use this Makefile on Windows, you will need the GNU make utility, which
+# is included in the Qtools collection for Windows, see:
+#    http://sourceforge.net/projects/qpc/files/Qtools/
 #
 
 #-----------------------------------------------------------------------------
-# NOTE: this Makefile assumes that the MinGW\bin directory is added
-# to the PATH variable.
+# project name
 #
-CC  = gcc
-LIB = ar
-RM  = rm
+PROJECT     := qp
 
-QPC        = ../../..
-QP_PRTDIR  = ..
-QP_INCDIR  = $(QPC)/include
-QEP_SRCDIR = $(QPC)/qep\source
-QF_SRCDIR  = $(QPC)/qf\source
-QS_SRCDIR  = $(QPC)/qs\source
+#-----------------------------------------------------------------------------
+# project directories
+#
 
-CCINC      = -I$(QP_PRTDIR) -I$(QP_INCDIR)
-LIBFLAGS   = rs
+# location of the QP/C framework
+QPC := ../../..
+
+# QP port used in this project
+QP_PORT_DIR := ..
+
+
+# list of all source directories used by this project
+VPATH = \
+	$(QPC)/source \
+	$(QP_PORT_DIR)
+
+
+# list of all include directories needed by this project
+INCLUDES  = \
+	-I$(QPC)/include \
+	-I$(QPC)/source \
+	-I$(QP_PORT_DIR)
+
+#-----------------------------------------------------------------------------
+# files
+#
+
+# assembler source files
+ASM_SRCS :=
+
+# C source files
+C_SRCS := \
+	qep_hsm.c \
+	qep_msm.c \
+	qf_act.c \
+	qf_actq.c \
+	qf_defer.c \
+	qf_dyn.c \
+	qf_mem.c \
+	qf_ps.c \
+	qf_qact.c \
+	qf_qeq.c \
+	qf_qmact.c \
+	qf_time.c \
+	win32_gui.c \
+	qf_port.c
+
+C_QS_SRCS := \
+	qs.c \
+	qs_fp.c \
+	qs_64bit.c
+
+# C++ source files
+CPP_SRCS :=
+
+# defines
+DEFINES  :=
+
+#-----------------------------------------------------------------------------
+# MinGW toolset (NOTE: assumed to be on your PATH)
+#
+# NOTE:
+# MinGW toolset is included in the Qtools collection for Windows, see:
+#    http://sourceforge.net/projects/qpc/files/Qtools/
+
+CC    := gcc
+LIB   := ar
+
+
+
+##############################################################################
+# Typically, you should not need to change anything below this line
+
+# basic utilities (included in Qtools for Windows), see:
+#    http://sourceforge.net/projects/qpc/files/Qtools
+
+MKDIR := mkdir
+RM    := rm
 
 #-----------------------------------------------------------------------------
 # build options for various configurations
 #
+
+LIBFLAGS := rs
+
 ifeq (rel, $(CONF))       # Release configuration ............................
 
-BINDIR  = rel
+BIN_DIR = rel
 
 # gcc options
-# -c    : compile only
-# -O    : optimize
-CCFLAGS = -c -O2 -Wall -W -o$@
+CFLAGS = -c -O2 -ffunction-sections -fdata-sections $(INCLUDES) $(DEFINES) -Wall -W
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
-BINDIR   = spy
+BIN_DIR = spy
 
 # gcc options
-# -c    : compile only
-# -g    : source level debugging
-# -D    : define preprocessor macro
-CCFLAGS = -c -g -O -Wall -W -DQ_SPY -o$@
-QS_OBJS = \
-	$(BINDIR)/qs.o \
-	$(BINDIR)/qs_.o \
-	$(BINDIR)/qs_blk.o \
-	$(BINDIR)/qs_byte.o \
-	$(BINDIR)/qs_dict.o \
-	$(BINDIR)/qs_f32.o \
-	$(BINDIR)/qs_f64.o \
-	$(BINDIR)/qs_mem.o \
-	$(BINDIR)/qs_str.o \
-	$(BINDIR)/qs_u64.o
+CFLAGS = -c -g -O -ffunction-sections -fdata-sections $(INCLUDES) $(DEFINES) -Wall -W -DQ_SPY -o$@
+
+# add the QS sources...
+C_SRCS += $(C_QS_SRCS)
 
 else                     # default Debug configuration .......................
 
-BINDIR  = dbg
-QP_DEP  = $(QP_INCDIR)/qassert.h
+BIN_DIR = dbg
 
 # gcc options
-# -c    : compile only
-# -g    : source level debugging
-CCFLAGS = -c -g -O -Wall -W -o$@
+CFLAGS = -c -g -O -ffunction-sections -fdata-sections $(INCLUDES) $(DEFINES) -Wall -W -o$@
 
 endif
 
-VPATH = $(QEP_SRCDIR) $(QF_SRCDIR) $(QS_SRCDIR)
 
-# the objects to build =======================================================
-QEP_OBJS = \
-	$(BINDIR)/qep.o \
-	$(BINDIR)/qmsm_ini.o \
-	$(BINDIR)/qmsm_dis.o \
-	$(BINDIR)/qmsm_in.o \
-	$(BINDIR)/qfsm_ini.o \
-	$(BINDIR)/qfsm_dis.o \
-	$(BINDIR)/qhsm_ini.o \
-	$(BINDIR)/qhsm_dis.o \
-	$(BINDIR)/qhsm_top.o \
-	$(BINDIR)/qhsm_in.o
+ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
+C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
+CPP_OBJS     := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))
 
-QF_OBJS = \
-	$(BINDIR)/qa_ctor.o \
-	$(BINDIR)/qa_defer.o \
-	$(BINDIR)/qa_fifo.o \
-	$(BINDIR)/qa_lifo.o \
-	$(BINDIR)/qa_get_.o \
-	$(BINDIR)/qa_sub.o \
-	$(BINDIR)/qa_usub.o \
-	$(BINDIR)/qa_usuba.o \
-	$(BINDIR)/qeq_init.o \
-	$(BINDIR)/qeq_fifo.o \
-	$(BINDIR)/qeq_lifo.o \
-	$(BINDIR)/qeq_get.o \
-	$(BINDIR)/qf_act.o \
-	$(BINDIR)/qf_gc.o \
-	$(BINDIR)/qf_log2.o \
-	$(BINDIR)/qf_new.o \
-	$(BINDIR)/qf_pool.o \
-	$(BINDIR)/qf_psini.o \
-	$(BINDIR)/qf_pspub.o \
-	$(BINDIR)/qf_pwr2.o \
-	$(BINDIR)/qf_tick.o \
-	$(BINDIR)/qma_ctor.o \
-	$(BINDIR)/qmp_get.o \
-	$(BINDIR)/qmp_init.o \
-	$(BINDIR)/qmp_put.o \
-	$(BINDIR)/qte_ctor.o \
-	$(BINDIR)/qte_arm.o \
-	$(BINDIR)/qte_darm.o \
-	$(BINDIR)/qte_rarm.o \
-	$(BINDIR)/qte_ctr.o \
-	$(BINDIR)/qf_port.o \
-	$(BINDIR)/win32_gui.o
+TARGET_LIB   := $(BIN_DIR)/lib$(PROJECT).a
+ASM_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(ASM_OBJS))
+C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
+CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
 
-# the targets ================================================================
+# create $(BIN_DIR) if it does not exist
+ifeq ("$(wildcard $(BIN_DIR))","")
+$(shell $(MKDIR) $(BIN_DIR))
+endif
 
-all: $(BINDIR) $(BINDIR)/libqp.a
-	-$(RM) $(BINDIR)/*.o
+#-----------------------------------------------------------------------------
+# rules
+#
 
-$(BINDIR):
-	mkdir $@
+all: $(TARGET_LIB)
+	-$(RM) $(BIN_DIR)/*.o
 
-$(BINDIR)/libqp.a: 	$(QEP_OBJS) $(QF_OBJS) $(QS_OBJS)
-	-$(RM) $(BINDIR)/libqp.a
-	$(LIB) $(LIBFLAGS) $(BINDIR)/libqp.a \
-	$(QEP_OBJS) \
-	$(QF_OBJS) \
-	$(QS_OBJS)
+$(TARGET_LIB) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
+	$(LIB) $(LIBFLAGS) $@ $^
 
-# QEP -----------------------------------------
-$(BINDIR)/qep.o: $(QEP_SRCDIR)/qep.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+$(BIN_DIR)/%.o : %.s
+	$(AS) $(ASFLAGS) $< -o $@
 
-$(BINDIR)/qmsm_ini.o: $(QEP_SRCDIR)/qmsm_ini.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+$(BIN_DIR)/%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BINDIR)/qmsm_dis.o: $(QEP_SRCDIR)/qmsm_dis.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
+$(BIN_DIR)/%.o : %.cpp
+	$(CPP) $(CPPFLAGS) -c $< -o $@
 
-$(BINDIR)/qmsm_in.o: $(QEP_SRCDIR)/qmsm_in.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
-
-$(BINDIR)/qfsm_ini.o: $(QEP_SRCDIR)/qfsm_ini.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
-
-$(BINDIR)/qfsm_dis.o: $(QEP_SRCDIR)/qfsm_dis.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
-
-$(BINDIR)/qhsm_ini.o: $(QEP_SRCDIR)/qhsm_ini.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
-
-$(BINDIR)/qhsm_dis.o: $(QEP_SRCDIR)/qhsm_dis.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
-
-$(BINDIR)/qhsm_top.o: $(QEP_SRCDIR)/qhsm_top.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
-
-$(BINDIR)/qhsm_in.o: $(QEP_SRCDIR)/qhsm_in.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QEP_SRCDIR) $<
-
-# QF -----------------------------------------
-$(BINDIR)/qa_ctor.o: $(QF_SRCDIR)/qa_ctor.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qa_defer.o: $(QF_SRCDIR)/qa_defer.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qa_fifo.o: $(QF_SRCDIR)/qa_fifo.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qa_lifo.o: $(QF_SRCDIR)/qa_lifo.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qa_get_.o: $(QF_SRCDIR)/qa_get_.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qa_sub.o: $(QF_SRCDIR)/qa_sub.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qa_usub.o: $(QF_SRCDIR)/qa_usub.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qa_usuba.o: $(QF_SRCDIR)/qa_usuba.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qeq_init.o: $(QF_SRCDIR)/qeq_init.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qeq_fifo.o: $(QF_SRCDIR)/qeq_fifo.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qeq_lifo.o: $(QF_SRCDIR)/qeq_lifo.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qeq_get.o: $(QF_SRCDIR)/qeq_get.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qf_act.o: $(QF_SRCDIR)/qf_act.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qf_gc.o: $(QF_SRCDIR)/qf_gc.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qf_log2.o: $(QF_SRCDIR)/qf_log2.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qf_new.o: $(QF_SRCDIR)/qf_new.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qf_pool.o: $(QF_SRCDIR)/qf_pool.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qf_psini.o: $(QF_SRCDIR)/qf_psini.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qf_pspub.o: $(QF_SRCDIR)/qf_pspub.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qf_pwr2.o: $(QF_SRCDIR)/qf_pwr2.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qf_tick.o: $(QF_SRCDIR)/qf_tick.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qma_ctor.o: $(QF_SRCDIR)/qma_ctor.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qmp_get.o: $(QF_SRCDIR)/qmp_get.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qmp_init.o: $(QF_SRCDIR)/qmp_init.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qmp_put.o: $(QF_SRCDIR)/qmp_put.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qte_ctor.o: $(QF_SRCDIR)/qte_ctor.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qte_arm.o: $(QF_SRCDIR)/qte_arm.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qte_darm.o: $(QF_SRCDIR)/qte_darm.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qte_rarm.o: $(QF_SRCDIR)/qte_rarm.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qte_ctr.o: $(QF_SRCDIR)/qte_ctr.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/qf_port.o: $(QP_PRTDIR)/qf_port.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-$(BINDIR)/win32_gui.o: $(QP_PRTDIR)/win32_gui.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QF_SRCDIR) $<
-
-# QS -----------------------------------------
-
-$(BINDIR)/qs.o: $(QS_SRCDIR)/qs.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
-
-$(BINDIR)/qs_.o: $(QS_SRCDIR)/qs_.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
-
-$(BINDIR)/qs_blk.o: $(QS_SRCDIR)/qs_blk.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
-
-$(BINDIR)/qs_byte.o: $(QS_SRCDIR)/qs_byte.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
-
-$(BINDIR)/qs_dict.o: $(QS_SRCDIR)/qs_dict.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
-
-$(BINDIR)/qs_f32.o: $(QS_SRCDIR)/qs_f32.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
-
-$(BINDIR)/qs_f64.o: $(QS_SRCDIR)/qs_f64.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
-
-$(BINDIR)/qs_mem.o: $(QS_SRCDIR)/qs_mem.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
-
-$(BINDIR)/qs_str.o: $(QS_SRCDIR)/qs_str.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
-
-$(BINDIR)/qs_u64.o: $(QS_SRCDIR)/qs_u64.c
-	$(CC) $(CCFLAGS) $(CCINC) -I$(QS_SRCDIR) $<
-
-
-# clean ======================================================================
+#-----------------------------------------------------------------------------
+# the clean target
+#
 .PHONY : clean
 clean:
-	-$(RM) $(BINDIR)/*.o
-	-$(RM) $(BINDIR)/*.a
-
+	-$(RM) $(BIN_DIR)/*.o $(TARGET_LIB)
+	
+#-----------------------------------------------------------------------------
+# the show target for debugging
+#
+show:
+	@echo PROJECT = $(PROJECT)
+	@echo CONF = $(CONF)
+	@echo TARGET_LIB = $(TARGET_LIB)
+	@echo ASM_SRCS = $(ASM_SRCS)
+	@echo C_SRCS = $(C_SRCS)
+	@echo CPP_SRCS = $(CPP_SRCS)
+	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
+	@echo C_OBJS_EXT = $(C_OBJS_EXT)
+	@echo C_DEPS_EXT = $(C_DEPS_EXT)
+	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)

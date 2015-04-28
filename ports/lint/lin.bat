@@ -1,14 +1,14 @@
 @echo off
-::  ==========================================================================
-::  Product: QP/C build script for PC-Lint(TM), Standard C compiler
-::  Last Updated for Version: 5.2.0
-::  Date of the Last Update:  Dec 16, 2013
+:: ===========================================================================
+:: Product: QP/C build script for PC-Lint(TM), Standard C compiler
+:: Last Updated for Version: 5.4.0
+:: Date of the Last Update:  2015-03-13
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
 ::                    innovating embedded systems
 ::
-:: Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) Quantum Leaps, LLC. All rights reserved.
 ::
 :: This program is open source software: you can redistribute it and/or
 :: modify it under the terms of the GNU General Public License as published
@@ -29,37 +29,38 @@
 :: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: Quantum Leaps Web sites: http://www.quantum-leaps.com
-::                          http://www.state-machine.com
-:: e-mail:                  info@quantum-leaps.com
-::  ==========================================================================
+:: Web:   http://www.state-machine.com
+:: Email: info@state-machine.com
+:: ===========================================================================
 setlocal
 
 :: Options for calling lin.bat
 ::
-:: -DQ_SPY              // for linting the Spy configuration (default for QS)
+:: -DQ_SPY  // for linting the Spy configuration (default for QS)
 :: up to 4 other options, if needed
 
 :: NOTE: adjust to for your installation directory of PC-Lint
 :: 
-set PC_LINT_DIR=C:\tools\lint
+set PC_LINT=C:\tools\lint
 
+if NOT exist "%PC_LINT%" (
+    @echo The PC_LINT toolset not found. Please adjust lin.bat 
+    goto end
+)
+
+set QPC=..\..
 set LINTFLAGS=%QPC%\include\std.lnt options.lnt %1 %2 %3 %4
 
-::  QEP ----------------------------------------------------------------------
-set QEP_DIR=..\..\qep
-%PC_LINT_DIR%\lint-nt -os(lint_qep.txt) %LINTFLAGS% %QEP_DIR%\source\*.c
+:: do the linting...
+%PC_LINT%\lint-nt -os(lint_qep.txt) %LINTFLAGS% %QPC%\source\qep*.c
 
-::  QF -----------------------------------------------------------------------
-set QF_DIR=..\..\qf
-%PC_LINT_DIR%\lint-nt -os(lint_qf.txt) %LINTFLAGS% %QF_DIR%\source\*.c
+%PC_LINT%\lint-nt -os(lint_qf.txt)  %LINTFLAGS% %QPC%\source\qf*.c 
 
-::  QK ----------------------------------------------------------------------
-set QK_DIR=..\..\qk
-%PC_LINT_DIR%\lint-nt -os(lint_qk.txt) %LINTFLAGS% %QK_DIR%\source\*.c
+%PC_LINT%\lint-nt -os(lint_qk.txt)  %LINTFLAGS% %QPC%\source\qk*.c
 
-::  QS ----------------------------------------------------------------------
-set QS_DIR=..\..\qs
-%PC_LINT_DIR%\lint-nt -DQ_SPY -os(lint_qs.txt) %LINTFLAGS% -DQ_SPY %QS_DIR%\source\*.c
+%PC_LINT%\lint-nt -os(lint_qv.txt)  %LINTFLAGS% %QPC%\source\qv*.c
 
+%PC_LINT%\lint-nt -os(lint_qs.txt)  %LINTFLAGS% -DQ_SPY %QPC%\source\qs*.c
+
+:end
 endlocal

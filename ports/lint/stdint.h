@@ -1,17 +1,18 @@
 /**
-* \file
-* \brief Exact-width integer types. WG14/N843 C99 Standard, Section 7.18
+* @file
+* @brief Selected exact-width and fast minimum-width integer types.
+* WG14/N843 C99 Standard, Section 7.18
 *
-* \description
+* @description
 * This header is part of the ANSI C99 standard library to define the
 * standard exact-width integer types (see C99 Section 7.18.1.1).
 * If the compiler does not provide the stdint.h header file, you can
 * either create one in the QP port directory, or you can typedef the
 * 8 exact-width integer types directly in the qep_port.h header file.
 *
-* \note The version included in the QP documentation contains only the 8
-* exact-width types actually used in QP. The actual definition of the
-* exact-width integer types is platform dependent.
+* @note The version included in the QP documentation contains only the 8
+* exact-width types and 6 fast minimum-width types actually used in QP.
+* The actual definition of the integer types is platform dependent.
 */
 #ifndef stdint_h
 #define stdint_h

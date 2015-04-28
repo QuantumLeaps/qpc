@@ -1,13 +1,16 @@
-/*****************************************************************************
-* Product: QF/C, port to ThreadX
-* Last updated for version 5.3.0
-* Last updated on  2014-05-07
+/**
+* @file
+* @brief QF/C, port to ThreadX
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,7 +33,9 @@
 * Contact information:
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
-*****************************************************************************/
+******************************************************************************
+* @endcond
+*/
 #ifndef qf_port_h
 #define qf_port_h
 

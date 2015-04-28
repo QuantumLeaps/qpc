@@ -1,12 +1,12 @@
 typedef struct  {
-    QHsm super;                    /* inherit QHsm */
+    QHsm super;  /* inherit QHsm */
 
     QStateHandler hist_doorClosed; /* history of doorClosed */
 } ToastOven;
 
 /*..........................................................*/
 static QState ToastOven_doorClosed(ToastOven * const me,
-                                  QEvt const * const e)
+                                   QEvt const * const e)
 {
     QState status;
     switch (e->sig) {

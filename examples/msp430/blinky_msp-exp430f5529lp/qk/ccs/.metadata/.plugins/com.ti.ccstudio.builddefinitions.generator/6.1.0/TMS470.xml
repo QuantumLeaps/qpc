@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+
+	<extension point="org.eclipse.cdt.managedbuilder.core.buildDefinitions"
+		id="TMS470"
+		name="TMS470 Build Definitions">
+		
+		<managedBuildRevision fileVersion="3.1.0"/>
+		
+		<projectType
+			id="com.ti.ccstudio.buildDefinitions.TMS470.ProjectType"
+			name="ARM"
+			isTest="true">
+			<configuration
+				id="com.ti.ccstudio.buildDefinitions.TMS470.Default"
+				name="Default"
+				cleanCommand="${CG_CLEAN_CMD}">
+				<toolChain
+					id="com.ti.ccstudio.buildDefinitions.TMS470.Default.ToolchainPlaceholder"
+					isToolChainSupported="com.ti.ccstudio.buildmodel.IsToolchainSupported"
+					isAbstract="true"/>
+			</configuration>
+			<configuration
+				id="com.ti.ccstudio.buildDefinitions.TMS470.Debug"
+				name="Debug"
+				cleanCommand="${CG_CLEAN_CMD}">
+				<toolChain
+					id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.ToolchainPlaceholder"
+					isToolChainSupported="com.ti.ccstudio.buildmodel.IsToolchainSupported"
+					isAbstract="true"/>
+			</configuration>
+			<configuration
+				id="com.ti.ccstudio.buildDefinitions.TMS470.Release"
+				name="Release"
+				cleanCommand="${CG_CLEAN_CMD}">
+				<toolChain
+					id="com.ti.ccstudio.buildDefinitions.TMS470.Release.ToolchainPlaceholder"
+					isToolChainSupported="com.ti.ccstudio.buildmodel.IsToolchainSupported"
+					isAbstract="true"/>
+			</configuration>
+		</projectType>
+
+	</extension>
+
+</plugin>

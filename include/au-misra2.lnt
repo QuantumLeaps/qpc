@@ -1,4 +1,4 @@
-/* Date Stamp */ -d"_lint_au_misra2_lnt=au-misra2.lnt modified 29-Aug-2013"
+/* Date Stamp */ -d"_lint_au_misra2_lnt=au-misra2.lnt modified 13-Jun-2014"
 /* To document usage use: -message( "Using " _lint_au_misra2_lnt ) */
 // ---------------------------------------------------------------------
 // This file is provided by Gimpel Software (www.gimpel.com) for use with
@@ -661,6 +661,12 @@
 
 /* Rule 8.2 (req) **********************************/
 
+    +e601                           /* object has no explicit type */
+    +elib(601)
+    -append(601,[MISRA 2004 Rule 8.2, required])
+    +e808                           /* object type defaults to int */
+    +elib(808)
+    -append(808,[MISRA 2004 Rule 8.2, required])
     +e745                           /* function has no explicit type */
     +elib(745)
     -append(745,[MISRA 2004 Rule 8.2, required])
@@ -688,6 +694,9 @@
     +e15        /* symbol redeclared */
     +elib(15)
     -append(15,[MISRA 2004 Rule 8.4, required])
+    +e18        /* symbol redeclared */
+    +elib(18)
+    -append(18,[Encompasses MISRA 2004 Rule 8.4, required])
     +e64        /* flag type mismatch */
     +elib(64)
     -append(64,[MISRA 2004 Rule 8.4, required])
@@ -696,7 +705,7 @@
 
     /* we generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 8.5,
-       object/function definition in header file
+       no object/function definitions in header files
      */
 
 /* Rule 8.6 (req) **********************************/
@@ -717,7 +726,7 @@
 
     /* we generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 8.8,
-       Object/function previously declared
+       Object/function previously declared in location
      */
 
 /* Rule 8.9 (req) **********************************/
@@ -738,9 +747,15 @@
 
 /* Rule 8.11 (req) *********************************/
 
+    +e401           /* symbol not previously declared static */
+    +elib(401)
+    -append(401,[MISRA 2004 Rule 8.11, required])
     +e512           /* symbol previously used as static */
     +elib(512)
     -append(512,[MISRA 2004 Rule 8.11, required])
+    +e839           /* symbol previously declared as static */
+    +elib(839)
+    -append(839,[MISRA 2004 Rule 8.11, required])
 
 /* Rule 8.12 (req) *********************************/
 
@@ -766,6 +781,9 @@
 
 /* Rule 9.2 (req) **********************************/
 
+    +e785                   /* too few initializers for aggregate */
+    +elib(785)
+    -append(785,[MISRA 2004 Rule 9.2, required])
     +e940                   /* omitted braces within an initializer */
     +elib(940)
     -append(940,[MISRA 2004 Rule 9.2, required])
@@ -913,12 +931,18 @@
     +e564                       /* order of evaluation */
     +elib(564)
     -append(564,[MISRA 2004 Rule 12.2, required])
+    +e864                       /* order of evaluation */
+    +elib(864)
+    -append(864,[MISRA 2004 Rule 12.2, required])
+    +e931                       /* order of evaluation */
+    +elib(931)
+    -append(931,[MISRA 2004 Rule 12.2, required])
 
 /* Rule 12.3 (req) *********************************/
 
     /* we generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 12.3,
-       'sizeof' used on expression with side effect
+       'sizeof' used on expressions with side effect
      */
 
 /* Rule 12.4 (req) *********************************/
@@ -1003,7 +1027,8 @@
     +elib(720)
     -append(720,[MISRA 2004 Rule 13.1, required])
     +e820                    /* Boolean test of parenthesized
-                                assignment */
+                                assignment
+                              */
     +elib(820)
     -append(820,[MISRA 2004 Rule 13.1, required,])
     /* we generate note 960 as follows:
@@ -1013,12 +1038,18 @@
 
 /* Rule 13.2 (adv) *********************************/
 
+    +e640                    /* Non-Boolean in Boolean context */
+    +elib(640)
+    -append(640,[MISRA 2004 Rule 13.2, advisory])
     +e720                    /* Boolean test of assignment */
     +elib(720)
     -append(720,[MISRA 2004 Rule 13.2, advisory])
 
 /* Rule 13.3 (req) *********************************/
 
+    /* PC-lint and FlexeLint partially support this rule with the
+       following options.
+     */
     +e777                    /* testing floats for equality */
     +elib(777)
     -append(777,[MISRA 2004 Rule 13.3, required])
@@ -1051,18 +1082,20 @@
 
 /* Rule 13.7 (req) *********************************/
 
-    +e506           /* constant value boolean */
+    +e506       /* constant value boolean */
     +elib(506)
     -append(506,[MISRA 2004 Rule 13.7, required])
-    +e650           /* constant out of range */
+    +e650       /* constant out of range */
     +elib(650)
     -append(650,[MISRA 2004 Rule 13.7, required])
-    +e685           /* always evaluates to true/false */
+    +e685       /* always evaluates to true/false */
     +elib(685)
     -append(685,[MISRA 2004 Rule 13.7, required])
-    +e774              /* always evaluates to true/false */
+    +e774       /* always evaluates to true/false */
     +elib(774)
     -append(774,[MISRA 2004 Rule 13.7, required])
+    +esym(845,&&,||)    /* argument is certain to be 0 */
+    -append(845,[MISRA 2004 Rule 13.7, required])
 
 /* Rule 14.1 (req) *********************************/
 
@@ -1185,10 +1218,10 @@
     +e744            /* switch statement has no default */
     +elib(744)
     -append(744,[MISRA 2004 Rule 15.3, required])
+
     /* we also generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 15.3,
-       case label follows default in switch statement or
-       default missing from switch statement
+       case label follows default in switch statement
      */
 
 /* Rule 15.4 (req) *********************************/
@@ -1266,8 +1299,10 @@
 
     /* we generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 16.9,
-       Function identifier used without '&' or parenthesized parameter list
+       Function identifier used without '&' or parenthesized parameter
+       list
      */
+    -e546
 
 /* Rule 16.10 (req) ********************************/
 
@@ -1317,6 +1352,12 @@
 
 /* Rule 17.6 (req) *********************************/
 
+    +e604               /* returning address of auto variable */
+    +elib(604)
+    -append(604,[MISRA 2004 Rule 17.6, required])
+    +e684               /* passing address of auto variable to caller space */
+    +elib(684)
+    -append(684,[MISRA 2004 Rule 17.6, required])
     +e733               /* assigning address of auto to outer scope symbol */
     +elib(733)
     -append(733,[MISRA 2004 Rule 17.6, required])
@@ -1421,13 +1462,9 @@
 
 /* Rule 19.10 (req) ********************************/
 
-    +e773                   /* expression-like macro not parenthesized */
-    +elib(773)
-    -append(773,[MISRA 2004 Rule 19.10, required])
-    /* we generate note 960 as follows:
-       Note 960: Violates MISRA 2004 Required Rule 19.10,
-       unparenthesized macro parameter in definition of macro
-     */
+    +e9022             /* unparenthesized macro parameter in definition of macro */
+    +elib(9022)
+    -append(9022,[MISRA 2004 Rule 19.10, required])
 
 /* Rule 19.11 (req) ********************************/
 
@@ -1446,14 +1483,14 @@
 
     /* we generate note 961 as follows:
        Note 961: Violates MISRA 2004 Advisory Rule 19.13,
-       '#/##' operator used in macro
+       '#/##' operators used
      */
 
 /* Rule 19.14 (req) ********************************/
 
     /* we generate note 960 as follows:
        Note 960: Violates MISRA 2004 Required Rule 19.14,
-       non-standard use of 'defined' preprocessor operator
+       non-standard use of 'defined' preprocessor statement
      */
 
 /* Rule 19.15 (req) ********************************/
@@ -1475,7 +1512,7 @@
        all preprocessing directives must be valid
      */
 
-    /* other parts to the intent of this rule such as a syntax check
+    /* other parts of this rule such as a syntax check
        of the disabled portions of the code do not seem to be
        statically checkable
      */
@@ -1524,6 +1561,7 @@
     +e586       /* Symbol is deprecated */
     +elib(586)
     -deprecate( variable, errno, [MISRA 2004 Rule 20.5, required] )
+    -deprecate( macro, errno, [MISRA 2004 Rule 20.5, required] )
 
 /* Rule 20.6 (req) *********************************/
 
@@ -1536,7 +1574,7 @@
     +e586       /* Symbol is deprecated */
     +elib(586)
     -deprecate( function, longjmp, [MISRA 2004 Rule 20.7, required] )
-    -deprecate( function, setjmp, [MISRA 2004 Rule 20.7, required] )
+    -deprecate( macro, setjmp, [MISRA 2004 Rule 20.7, required] )
 
 /* Rule 20.8 (req) *********************************/
 
@@ -1544,6 +1582,19 @@
     +elib(586)
     -deprecate( function, signal, [MISRA 2004 Rule 20.8, required] )
     -deprecate( function, raise, [MISRA 2004 Rule 20.8, required] )
+    +e829       /* warn on header usage */
+    +elib(829)
+    -headerwarn(signal.h)
+    -append(829(signal.h),[MISRA 2004 Rule 20.8, required])
+    -deprecate( macro, SIG_DFL, [MISRA 2004 Rule 20.8, required] )
+    -deprecate( macro, SIG_ERR, [MISRA 2004 Rule 20.8, required] )
+    -deprecate( macro, SIG_IGN, [MISRA 2004 Rule 20.8, required] )
+    -deprecate( macro, SIGABRT, [MISRA 2004 Rule 20.8, required] )
+    -deprecate( macro, SIGFPE, [MISRA 2004 Rule 20.8, required] )
+    -deprecate( macro, SIGILL, [MISRA 2004 Rule 20.8, required] )
+    -deprecate( macro, SIGINT, [MISRA 2004 Rule 20.8, required] )
+    -deprecate( macro, SIGSEGV, [MISRA 2004 Rule 20.8, required] )
+    -deprecate( macro, SIGTERM, [MISRA 2004 Rule 20.8, required] )
 
 /* Rule 20.9 (req) *********************************/
 
@@ -1551,6 +1602,60 @@
     +elib(829)
     -headerwarn(stdio.h)
     -append(829(stdio.h),[MISRA 2004 Rule 20.9, required])
+    -deprecate( macro, _IOFBF, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, _IOLBF, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, _IONBF, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, BUFSIZ, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, EOF, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, FOPEN_MAX, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, FILENAME_MAX, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, L_tmpnam, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, SEEK_CUR, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, SEEK_END, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, SEEK_SET, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, TMP_MAX, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, stdin, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, stdout, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( macro, stderr, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, clearerr, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fclose, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, feof, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, ferror, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fflush, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fgetc, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fopen, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fprintf, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fputc, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fputs, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fread, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, freopen, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fscanf, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fseek, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fsetpos, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, ftell, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, fwrite, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, getc, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, getchar, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, gets, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, perror, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, printf, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, putc, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, putchar, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, puts, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, remove, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, rename, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, rewind, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, scanf, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, setbuf, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, setvbuf, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, sprintf, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, sscanf, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, tmpfile, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, tmpnam, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, ungetc, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, vfprintf, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, vprintf, [MISRA 2004 Rule 20.9, required] )
+    -deprecate( function, vsprintf, [MISRA 2004 Rule 20.9, required] )
 
 /* Rule 20.10 (req) ********************************/
 

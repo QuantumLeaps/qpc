@@ -1,13 +1,16 @@
-/*****************************************************************************
-* Product:  QF/C, port to POSIX/P-threads
-* Last updated for version 5.3.0
-* Last updated on  2014-03-14
+/**
+* @file
+* @brief QF/C port to POSIX threads (pthreads)
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,37 +33,43 @@
 * Contact information:
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
-*****************************************************************************/
+******************************************************************************
+* @endcond
+*/
 #ifndef qf_port_h
 #define qf_port_h
 
 /* POSIX event queue and thread types */
-#define QF_EQUEUE_TYPE              QEQueue
-#define QF_OS_OBJECT_TYPE           pthread_cond_t
-#define QF_THREAD_TYPE              uint8_t
+#define QF_EQUEUE_TYPE       QEQueue
+#define QF_OS_OBJECT_TYPE    pthread_cond_t
+#define QF_THREAD_TYPE       uint8_t
 
 /* The maximum number of active objects in the application */
-#define QF_MAX_ACTIVE               63
+#define QF_MAX_ACTIVE        63
 
 /* The number of system clock tick rates */
-#define QF_MAX_TICK_RATE            2
+#define QF_MAX_TICK_RATE     2
 
 /* various QF object sizes configuration for this port */
-#define QF_EVENT_SIZ_SIZE           4
-#define QF_EQUEUE_CTR_SIZE          4
-#define QF_MPOOL_SIZ_SIZE           4
-#define QF_MPOOL_CTR_SIZE           4
-#define QF_TIMEEVT_CTR_SIZE         4
+#define QF_EVENT_SIZ_SIZE    4
+#define QF_EQUEUE_CTR_SIZE   4
+#define QF_MPOOL_SIZ_SIZE    4
+#define QF_MPOOL_CTR_SIZE    4
+#define QF_TIMEEVT_CTR_SIZE  4
 
-/* QF critical section entry/exit for Linux, see NOTE01 */
+/* QF interrupt disable/enable, see NOTE1 */
+#define QF_INT_DISABLE()     pthread_mutex_lock(&QF_pThreadMutex_)
+#define QF_INT_ENABLE()      pthread_mutex_unlock(&QF_pThreadMutex_)
+
+/* QF critical section for POSIX */
 /* QF_CRIT_STAT_TYPE not defined */
-#define QF_CRIT_ENTRY(dummy)        pthread_mutex_lock(&QF_pThreadMutex_)
-#define QF_CRIT_EXIT(dummy)         pthread_mutex_unlock(&QF_pThreadMutex_)
+#define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
+#define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
 
 #include <pthread.h>    /* POSIX-thread API */
 #include "qep_port.h"   /* QEP port */
-#include "qequeue.h"    /* Linux needs event-queue */
-#include "qmpool.h"     /* Linux needs memory-pool */
+#include "qequeue.h"    /* POSIX needs event-queue */
+#include "qmpool.h"     /* POSIX needs memory-pool */
 #include "qf.h"         /* QF platform-independent public interface */
 
 void QF_setTickRate(uint32_t ticksPerSec); /* set clock tick rate */
@@ -72,7 +81,7 @@ extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
 /* interface used only inside QF implementation, but not in applications */
 #ifdef QP_IMPL
 
-    /* OS-object implementation for Linux */
+    /* POSIX OS object object implementation */
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         while ((me_)->eQueue.frontEvt == (QEvt *)0) \
             pthread_cond_wait(&(me_)->osObject, &QF_pThreadMutex_)
@@ -83,7 +92,7 @@ extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
     #define QACTIVE_EQUEUE_ONEMPTY_(me_) ((void)0)
 
     /* native QF event pool operations */
-    #define QF_EPOOL_TYPE_            QMPool
+    #define QF_EPOOL_TYPE_  QMPool
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
         QMPool_init(&(p_), poolSto_, poolSize_, evtSize_)
     #define QF_EPOOL_EVENT_SIZE_(p_)  ((p_).blockSize)
@@ -94,11 +103,11 @@ extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
 
 /*****************************************************************************
 *
-* NOTE01:
+* NOTE1:
 * QF, like all real-time frameworks, needs to execute certain sections of
 * code indivisibly to avoid data corruption. The most straightforward way of
 * protecting such critical sections of code is disabling and enabling
-* interrupts, which Linux does not allow.
+* interrupts, which POSIX does not allow.
 *
 * This QF port uses therefore a single package-scope p-thread mutex
 * QF_pThreadMutex_ to protect all critical sections. The mutex is locked upon
@@ -118,7 +127,7 @@ extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
 *
 * Unlinke simply disabling and enabling interrupts, the mutex approach is
 * also subject to priority inversions. However, the p-thread mutex
-* implementation, such as Linux p-threads, should support the priority-
+* implementation, such as POSIX threads, should support the priority-
 * inheritance protocol.
 */
 

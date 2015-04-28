@@ -1,0 +1,267 @@
+
+--- Module:   D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c (C)
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 46 8 Note 950: Non-ANSI reserved word or construct: 'inline' [MISRA 2004 Rule 1.1, required], [MISRA 2004 Rule 2.2, required]
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 46 15 Warning 618: Storage class specified after a type
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 46 15 Note 963: Qualifier const or volatile precedes a type; use +fqb to reverse the test
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 46 42 Note 960: Violates MISRA 2004 Required Rule 8.5, object/function definition in header file: 'QK_get_IPSR' 
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 47 21 Note 960: Violates MISRA 2004 Required Rule 8.5, object/function definition in header file: 'regIPSR' 
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 48 52 Note 960: Violates MISRA 2004 Required Rule 14.3, null statement not in line by itself
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 49 19 Warning 530: Symbol 'regIPSR' (line 47) not initialized [MISRA 2004 Rule 9.1, required]
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 47 1 Info 830: Location cited in prior message
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qs_port.h" 59 10 Warning 537: Repeated include file 'D:\qp\qpc\ports\arm-cm\qk\gnu\qf_port.h'
+
+--- Module:   D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\table.c (C)
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 46 8 Note 950: Non-ANSI reserved word or construct: 'inline' [MISRA 2004 Rule 1.1, required], [MISRA 2004 Rule 2.2, required]
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 46 15 Warning 618: Storage class specified after a type
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 46 15 Note 963: Qualifier const or volatile precedes a type; use +fqb to reverse the test
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 46 42 Note 960: Violates MISRA 2004 Required Rule 8.5, object/function definition in header file: 'QK_get_IPSR' 
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 47 21 Note 960: Violates MISRA 2004 Required Rule 8.5, object/function definition in header file: 'regIPSR' 
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 48 52 Note 960: Violates MISRA 2004 Required Rule 14.3, null statement not in line by itself
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 49 19 Warning 530: Symbol 'regIPSR' (line 47) not initialized [MISRA 2004 Rule 9.1, required]
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qk_port.h" 47 1 Info 830: Location cited in prior message
+"D:\qp\qpc\ports\arm-cm\qk\gnu\qs_port.h" 59 10 Warning 537: Repeated include file 'D:\qp\qpc\ports\arm-cm\qk\gnu\qf_port.h'
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\table.c" 148 21 Warning 527: Unreachable code at token 'status_' [MISRA 2004 Rule 14.1, required]
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\table.c" 257 21 Warning 527: Unreachable code at token 'status_' [MISRA 2004 Rule 14.1, required]
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\dpp.h" 56 1 Note 960: Violates MISRA 2004 Required Rule 8.7, could define variable at block scope: 'AO_Table' at location line 56, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\dpp.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c
+
+/// Start of Pass 2 ///
+
+--- Module:   D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c (C)
+
+--- Module:   D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\table.c (C)
+
+--- Global Wrap-up
+
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_mem' 
+"D:\qp\qpc\include\qf.h" 346 1 Warning 526: Symbol 'QMActive_ctor(QMActive *, QStateHandler)' (line 346, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMActive_ctor' 
+"D:\qp\qpc\include\qs.h" 262 1 Warning 526: Symbol 'QS_obj_dict(const void *, const char_t *)' (line 262, file D:\qp\qpc\include\qs.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_obj_dict' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_onStartup' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_onCleanup' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_onFlush' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_onGetTime' 
+"D:\qp\qpc\include\qs.h" 1074 1 Warning 526: Symbol 'QS_priv_' (line 1074, file D:\qp\qpc\include\qs.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_priv_' 
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\table.c" 79 1 Info 759: header declaration for symbol 'Table_ctor(void)' defined at (line 79, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\table.c) could be moved from header to module
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\table.c" 79 1 Info 765: external 'Table_ctor(void)' (line 79, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\table.c) could be made static [MISRA 2004 Rule 8.10, required]
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_init' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_noTimeEvtsActiveX' 
+"D:\qp\qpc\include\qf.h" 618 1 Warning 526: Symbol 'QF_newX_(uint_fast16_t, uint_fast16_t, enum_t)' (line 618, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_newX_' 
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\bsp.h" 40 1 Warning 526: Symbol 'BSP_displayPaused(uint8_t)' (line 40, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\bsp.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'BSP_displayPaused' 
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\bsp.h" 41 1 Warning 526: Symbol 'BSP_displayPhilStat(uint8_t, const char_t *)' (line 41, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\bsp.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'BSP_displayPhilStat' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'BSP_init' 
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\bsp.h" 42 1 Warning 526: Symbol 'BSP_terminate(int16_t)' (line 42, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\bsp.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'BSP_terminate' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'BSP_randomSeed' 
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\bsp.h" 45 1 Warning 526: Symbol 'BSP_random(void)' (line 45, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\bsp.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'BSP_random' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_onStartup' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_onCleanup' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_beginRec' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_poolInit' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_psInit' 
+"D:\qp\qpc\include\qf.h" 527 1 Warning 526: Symbol 'QF_publish_(const QEvt *, const void *)' (line 527, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_publish_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_pwr2Lkup' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_str' 
+"D:\qp\qpc\include\qs.h" 258 1 Warning 526: Symbol 'QS_sig_dict(enum_t, const void *, const char_t *)' (line 258, file D:\qp\qpc\include\qs.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_sig_dict' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_str_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_str_ROM_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_str_ROM' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_add_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_active_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_run' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_remove_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_bzero' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_mutexLock' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_mutexUnlock' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_endRec' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_u16' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_u16_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_u32' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_u32_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_u8' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_u8_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_u8u8_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_usr_dict' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_postLIFO_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_ctor' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_defer' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_get_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_post_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_recall' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_start_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_stop' 
+"D:\qp\qpc\include\qf.h" 313 1 Warning 526: Symbol 'QActive_subscribe(const QActive *, enum_t)' (line 313, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_subscribe' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_unsubscribe' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_unsubscribeAll' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_stop' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_ctor' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_dispatch_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_init_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_isIn' 
+"D:\qp\qpc\include\qep.h" 445 1 Warning 526: Symbol 'QHsm_top(const void *, const QEvt *)' (line 445, file D:\qp\qpc\include\qep.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_top' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_filterOff' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_f32' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_f64' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_filterOn' 
+"D:\qp\qpc\include\qs.h" 266 1 Warning 526: Symbol 'QS_fun_dict(void (*)(void), const char_t *)' (line 266, file D:\qp\qpc\include\qs.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_fun_dict' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_tickX_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_div8Lkup' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_onIdle' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_getByte' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_getBlock' 
+"D:\qp\qpc\include\qf.h" 440 1 Warning 526: Symbol 'QTimeEvt_armX(struct QTimeEvt *, QTimeEvtCtr, QTimeEvtCtr)' (line 440, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_armX' 
+"D:\qp\qpc\include\qf.h" 436 1 Warning 526: Symbol 'QTimeEvt_ctorX(struct QTimeEvt *, QActive *, enum_t, uint_fast8_t)' (line 436, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_ctorX' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_rearm' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_disarm' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_ctr' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QEQueue_get' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QEQueue_init' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QEQueue_post' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QEQueue_postLIFO' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_initBuf' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_readySet_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_gc' 
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c" 88 1 Info 759: header declaration for symbol 'Philo_ctor(void)' defined at (line 88, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) could be moved from header to module
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c" 88 1 Info 765: external 'Philo_ctor(void)' (line 88, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) could be made static [MISRA 2004 Rule 8.10, required]
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_getPoolMin' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_getQueueMin' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMPool_get' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMPool_init' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMPool_put' 
+"D:\qp\qpc\include\qassert.h" 223 1 Warning 526: Symbol 'Q_onAssert(const char_t *, int_t)' (line 223, file D:\qp\qpc\include\qassert.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'Q_onAssert' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_sched_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_schedPrio_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_currPrio_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_ctor' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_dispatch_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_execTatbl_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_init_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMsm_isInState' 
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c" 78 1 Info 759: header declaration for symbol 'AO_Philo' defined at (line 78, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) could be moved from header to module
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c" 78 1 Info 765: external 'AO_Philo' (line 78, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) could be made static [MISRA 2004 Rule 8.10, required]
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_init' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_invPwr2Lkup' 
+"D:\qp\qpc\include\qs.h" 750 1 Info 758: global enum '(untagged)' (line 750, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qep.h" 466 1 Info 769: global enumeration constant 'Q_RET_SUPER_SUB' (line 466, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 471 1 Info 769: global enumeration constant 'Q_RET_IGNORED' (line 471, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 478 1 Info 769: global enumeration constant 'Q_RET_NULL' (line 478, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 483 1 Info 769: global enumeration constant 'Q_RET_TRAN_HIST' (line 483, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 484 1 Info 769: global enumeration constant 'Q_RET_TRAN_EP' (line 484, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 485 1 Info 769: global enumeration constant 'Q_RET_TRAN_XP' (line 485, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 607 1 Info 769: global enumeration constant 'Q_ENTRY_SIG' (line 607, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 608 1 Info 769: global enumeration constant 'Q_EXIT_SIG' (line 608, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qep.h" 609 1 Info 769: global enumeration constant 'Q_INIT_SIG' (line 609, file D:\qp\qpc\include\qep.h) not referenced
+"D:\qp\qpc\include\qs.h" 57 1 Info 769: global enumeration constant 'QSpyRecords::QS_QP_RESET' (line 57, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 60 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_STATE_ENTRY' (line 60, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 61 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_STATE_EXIT' (line 61, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 62 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_STATE_INIT' (line 62, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 63 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_INIT_TRAN' (line 63, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 64 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_INTERN_TRAN' (line 64, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 65 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_TRAN' (line 65, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 66 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_IGNORED' (line 66, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 67 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_DISPATCH' (line 67, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 68 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_UNHANDLED' (line 68, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 71 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ACTIVE_ADD' (line 71, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 72 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ACTIVE_REMOVE' (line 72, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 73 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ACTIVE_SUBSCRIBE' (line 73, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 74 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ACTIVE_UNSUBSCRIBE' (line 74, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 75 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ACTIVE_POST_FIFO' (line 75, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 76 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ACTIVE_POST_LIFO' (line 76, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 77 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ACTIVE_GET' (line 77, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 78 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ACTIVE_GET_LAST' (line 78, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 79 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_EQUEUE_INIT' (line 79, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 80 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_EQUEUE_POST_FIFO' (line 80, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 81 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_EQUEUE_POST_LIFO' (line 81, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 82 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_EQUEUE_GET' (line 82, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 83 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_EQUEUE_GET_LAST' (line 83, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 84 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_MPOOL_INIT' (line 84, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 85 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_MPOOL_GET' (line 85, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 86 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_MPOOL_PUT' (line 86, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 87 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_PUBLISH' (line 87, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 88 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_RESERVED8' (line 88, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 89 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_NEW' (line 89, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 90 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_GC_ATTEMPT' (line 90, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 91 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_GC' (line 91, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 92 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_TICK' (line 92, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 93 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_TIMEEVT_ARM' (line 93, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 94 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_TIMEEVT_AUTO_DISARM' (line 94, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 95 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_TIMEEVT_DISARM_ATTEMPT' (line 95, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 96 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_TIMEEVT_DISARM' (line 96, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 97 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_TIMEEVT_REARM' (line 97, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 98 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_TIMEEVT_POST' (line 98, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 99 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_TIMEEVT_CTR' (line 99, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 100 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_CRIT_ENTRY' (line 100, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 101 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_CRIT_EXIT' (line 101, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 102 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ISR_ENTRY' (line 102, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 103 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ISR_EXIT' (line 103, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 104 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_INT_DISABLE' (line 104, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 105 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_INT_ENABLE' (line 105, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 106 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_ACTIVE_POST_ATTEMPT' (line 106, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 107 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_EQUEUE_POST_ATTEMPT' (line 107, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 108 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_MPOOL_GET_ATTEMPT' (line 108, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 109 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_RESERVED1' (line 109, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 110 1 Info 769: global enumeration constant 'QSpyRecords::QS_QF_RESERVED0' (line 110, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 113 1 Info 769: global enumeration constant 'QSpyRecords::QS_QK_MUTEX_LOCK' (line 113, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 114 1 Info 769: global enumeration constant 'QSpyRecords::QS_QK_MUTEX_UNLOCK' (line 114, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 115 1 Info 769: global enumeration constant 'QSpyRecords::QS_QK_SCHEDULE' (line 115, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 116 1 Info 769: global enumeration constant 'QSpyRecords::QS_QK_RESERVED1' (line 116, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 117 1 Info 769: global enumeration constant 'QSpyRecords::QS_QK_RESERVED0' (line 117, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 120 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_TRAN_HIST' (line 120, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 121 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_TRAN_EP' (line 121, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 122 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_TRAN_XP' (line 122, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 123 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_RESERVED1' (line 123, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 124 1 Info 769: global enumeration constant 'QSpyRecords::QS_QEP_RESERVED0' (line 124, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 130 1 Info 769: global enumeration constant 'QSpyRecords::QS_USR_DICT' (line 130, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 131 1 Info 769: global enumeration constant 'QSpyRecords::QS_EMPTY' (line 131, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 132 1 Info 769: global enumeration constant 'QSpyRecords::QS_RESERVED3' (line 132, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 133 1 Info 769: global enumeration constant 'QSpyRecords::QS_RESERVED2' (line 133, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 134 1 Info 769: global enumeration constant 'QSpyRecords::QS_TEST_RUN' (line 134, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 135 1 Info 769: global enumeration constant 'QSpyRecords::QS_TEST_FAIL' (line 135, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 136 1 Info 769: global enumeration constant 'QSpyRecords::QS_ASSERT_FAIL' (line 136, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 139 1 Info 769: global enumeration constant 'QSpyRecords::QS_USER' (line 139, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 751 1 Info 769: global enumeration constant 'QS_I8_T' (line 751, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 752 1 Info 769: global enumeration constant 'QS_U8_T' (line 752, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 753 1 Info 769: global enumeration constant 'QS_I16_T' (line 753, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 754 1 Info 769: global enumeration constant 'QS_U16_T' (line 754, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 755 1 Info 769: global enumeration constant 'QS_I32_T' (line 755, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 756 1 Info 769: global enumeration constant 'QS_U32_T' (line 756, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 757 1 Info 769: global enumeration constant 'QS_F32_T' (line 757, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 758 1 Info 769: global enumeration constant 'QS_F64_T' (line 758, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 759 1 Info 769: global enumeration constant 'QS_STR_T' (line 759, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 760 1 Info 769: global enumeration constant 'QS_MEM_T' (line 760, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 761 1 Info 769: global enumeration constant 'QS_SIG_T' (line 761, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 762 1 Info 769: global enumeration constant 'QS_OBJ_T' (line 762, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 763 1 Info 769: global enumeration constant 'QS_FUN_T' (line 763, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 764 1 Info 769: global enumeration constant 'QS_I64_T' (line 764, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 765 1 Info 769: global enumeration constant 'QS_U64_T' (line 765, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\include\qs.h" 766 1 Info 769: global enumeration constant 'QS_U32_HEX_T' (line 766, file D:\qp\qpc\include\qs.h) not referenced
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\dpp.h" 27 1 Info 769: global enumeration constant 'DPPSignals::MAX_PUB_SIG' (line 27, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\dpp.h) not referenced
+"D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\dpp.h" 31 1 Info 769: global enumeration constant 'DPPSignals::MAX_SIG' (line 31, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\dpp.h) not referenced
+
+Count   Type    Number  Text
+
+16      Warning 526     Symbol '___' (___) not defined
+2       Warning 527     Unreachable code at token '___'
+2       Warning 530     Symbol '___' (___) not initialized
+2       Warning 537     Repeated include file '___'
+2       Warning 618     Storage class specified after a type
+1       Info    758     global ___ '___' (___) not referenced
+3       Info    759     header declaration for symbol '___' defined at (___) could be moved from header to module
+3       Info    765     external '___' (___) could be made static
+95      Info    769     global enumeration constant '___' (___) not referenced
+2       Note    950     Non-ANSI reserved word or construct: '___'
+107     Note    960     Violates MISRA 2004 Required Rule ___, ___
+2       Note    963     Qualifier const or volatile ___ a type; use ___ to reverse the test

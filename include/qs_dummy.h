@@ -1,13 +1,12 @@
 /**
-* \file
-* \brief Dummy definitions of the QS macros that avoid code generation from
+* @file
+* @brief Dummy definitions of the QS macros that avoid code generation from
 * the QS instrumentation.
-* \ingroup qs
-* \cond
+* @ingroup qs
+* @cond
 ******************************************************************************
-* Product: QP/C
-* Last updated for version 5.3.0
-* Last updated on  2014-02-24
+* Last updated for version 5.4.0
+* Last updated on  2015-03-24
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -37,7 +36,7 @@
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
 ******************************************************************************
-* \endcond
+* @endcond
 */
 #ifndef qs_dummy_h
 #define qs_dummy_h

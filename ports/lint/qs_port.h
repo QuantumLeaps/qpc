@@ -1,10 +1,9 @@
 /**
-* \file
-* \brief QS/C port example for a "generic" C compiler.
-* \ingroup qs
-* \cond
+* @file
+* @brief QS/C port example for a 32-bit CPU and a generic C compiler.
+* @ingroup qs
+* @cond
 ******************************************************************************
-* Product: QS/C
 * Last updated for version 5.3.0
 * Last updated on  2014-03-01
 *
@@ -36,19 +35,19 @@
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
 ******************************************************************************
-* \endcond
+* @endcond
 */
 #ifndef qs_port_h
 #define qs_port_h
 
 /*! The QS time-stamp size in bytes */
-#define QS_TIME_SIZE            4
+#define QS_TIME_SIZE     4
 
 /*! The object pointer size in bytes */
-#define QS_OBJ_PTR_SIZE         4
+#define QS_OBJ_PTR_SIZE  4
 
 /*! The function pointer size in bytes */
-#define QS_FUN_PTR_SIZE         4
+#define QS_FUN_PTR_SIZE  4
 
 /*****************************************************************************
 * NOTE: QS might be used with or without other QP components, in which
@@ -57,10 +56,7 @@
 * to be used with the other QP component, by simply including "qf_port.h"
 * *before* "qs.h".
 */
-#ifndef qf_h
 #include "qf_port.h" /* use QS with QF */
-#endif
-
 #include "qs.h"      /* QS platform-independent public interface */
 
-#endif /* qs_port_h  */
+#endif /* qs_port_h */

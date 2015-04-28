@@ -1,12 +1,12 @@
 /**
-* \file
-* \brief QK/C platform-independent public interface.
-* \ingroup qk
-* \cond
+* @file
+* @brief QK/C (preemptive non-blocking kernel) platform-independent
+* public interface.
+* @ingroup qk
+* @cond
 ******************************************************************************
-* Product: QK/C
-* Last updated for version 5.3.0
-* Last updated on  2014-03-01
+* Last updated for version 5.4.0
+* Last updated on  2014-04-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -36,7 +36,7 @@
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
 ******************************************************************************
-* \endcond
+* @endcond
 */
 #ifndef qk_h
 #define qk_h
@@ -51,17 +51,17 @@
 /*! This macro defines the type of the event queue used for the
 * active objects. */
 /**
-* \note This is just an example of the macro definition. Typically, you need
+* @note This is just an example of the macro definition. Typically, you need
 * to define it in the specific QF port file (qf_port.h). In case of QK, which
 * always depends on the native QF queue, this macro is defined at the level
 * of the platform-independent interface qk.h.
 */
 #define QF_EQUEUE_TYPE         QEQueue
 
-#if defined(QK_TLS) || defined(QK_EXT_SAVE)
+#if defined(QK_TLS)
     #define QF_OS_OBJECT_TYPE  uint_fast8_t
     #define QF_THREAD_TYPE     void *
-#endif /* QK_TLS || QK_EXT_SAVE */
+#endif /* QK_TLS */
 
 #if (QF_MAX_ACTIVE <= 8)
     extern QPSet8  QK_readySet_; /*!< QK ready-set of AOs */
@@ -73,15 +73,15 @@
 /*! QK scheduler */
 void QK_sched_(uint_fast8_t p);
 
-/*! QK extended scheduler */
-void QK_schedExt_(uint_fast8_t p);
-
 /*! Find the highest-priority task ready to run */
 uint_fast8_t QK_schedPrio_(void);
 
 /* public-scope objects */
 extern uint_fast8_t volatile QK_currPrio_; /*!< current task priority */
-extern uint_fast8_t volatile QK_intNest_;  /*!< interrupt nesting level */
+
+#ifndef QK_ISR_CONTEXT_
+    extern uint_fast8_t volatile QK_intNest_;  /*!< ISR nesting level */
+#endif /* QK_ISR_CONTEXT_ */
 
 /****************************************************************************/
 /*! QK initialization */
@@ -97,10 +97,10 @@ void QK_init(void);
 * gives the application an opportunity to enter a power-saving CPU mode,
 * or perform some other idle processing.
 *
-* \note QK_onIdle() is invoked with interrupts enabled and must also
+* @note QK_onIdle() is invoked with interrupts enabled and must also
 * return with interrupts enabled.
 *
-* \sa QF_onIdle()
+* @sa QV_onIdle()
 */
 void QK_onIdle(void);
 
@@ -109,8 +109,8 @@ void QK_onIdle(void);
     /*! QK Mutex type. */
     /**
     * QMutex represents the priority-ceiling mutex available in QK.
-    * \sa QK_mutexLock()
-    * \sa QK_mutexUnlock()
+    * @sa QK_mutexLock()
+    * @sa QK_mutexUnlock()
     */
     typedef uint_fast8_t QMutex;
 
@@ -131,9 +131,22 @@ void QK_onIdle(void);
 */
 #define QK_getVersion() (QP_VERSION_STR)
 
+
 /****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */
 #ifdef QP_IMPL
+
+    #ifndef QK_ISR_CONTEXT_
+        /*!
+        * Internal port-specific macro that reports the execution context
+        * (ISR vs. thread).
+        */
+        /*!
+        * @returns true if the code executes in the ISR context and false
+        * otherwise
+        */
+        #define QK_ISR_CONTEXT_() (QK_intNest_ != (uint_fast8_t)0)
+    #endif /* QK_ISR_CONTEXT_ */
 
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         (Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0))
@@ -141,7 +154,7 @@ void QK_onIdle(void);
     #if (QF_MAX_ACTIVE <= 8)
         #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
             QPSet8_insert(&QK_readySet_, (me_)->prio); \
-            if (QK_intNest_ == (uint_fast8_t)0) { \
+            if (!QK_ISR_CONTEXT_()) { \
                 uint_fast8_t p = QK_schedPrio_(); \
                 if (p != (uint_fast8_t)0) { \
                     QK_sched_(p); \
@@ -154,7 +167,7 @@ void QK_onIdle(void);
     #else
         #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
             QPSet64_insert(&QK_readySet_, (me_)->prio); \
-            if (QK_intNest_ == (uint_fast8_t)0) { \
+            if (!QK_ISR_CONTEXT_()) { \
                 uint_fast8_t p = QK_schedPrio_(); \
                 if (p != (uint_fast8_t)0) { \
                     QK_sched_(p); \

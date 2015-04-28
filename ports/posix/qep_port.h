@@ -1,13 +1,17 @@
-/*****************************************************************************
-* Product: QEP/C port to POSIX
-* Last updated for version 5.3.0
-* Last updated on  2014-03-14
+/**
+* @file
+* @brief QEP/C port, generic C99 compiler
+* @ingroup ports
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,13 +34,14 @@
 * Contact information:
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
-*****************************************************************************/
+******************************************************************************
+* @endcond */
 #ifndef qep_port_h
 #define qep_port_h
 
-#include <stdint.h>   /* Exact-width types. WG14/N843 C99 Standard */
-#include <stdbool.h>  /* Boolean type.      WG14/N843 C99 Standard */
+#include <stdint.h>  /* Exact-width types. WG14/N843 C99 Standard */
+#include <stdbool.h> /* Boolean type.      WG14/N843 C99 Standard */
 
-#include "qep.h"      /* QEP platform-independent public interface */
+#include "qep.h"     /* QEP platform-independent public interface */
 
 #endif /* qep_port_h */

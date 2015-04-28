@@ -1,5 +1,5 @@
-typedef struct QCalcEvtTag {
-    QEvt super;       /* inherits QEvt */
+typedef struct {
+    QEvt super; /* inherits QEvt */
 
-    uint8_t keyId;    /* ID of the key depressed */
-} QCalcEvt;
+    uint8_t keyId; /* ID of the key depressed */
+} CalcEvt;

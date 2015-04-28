@@ -1,1 +1,0 @@
--i=. -i=..\..\..\..\include -i=..\..\..\..\ports\ucos2 -i=..\..\..\..\ports\ucos2\watcom\ucos2.86

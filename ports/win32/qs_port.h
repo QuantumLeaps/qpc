@@ -1,13 +1,17 @@
-/*****************************************************************************
-* Product: QS/C port to Win32
-* Last Updated for Version: 4.5.02
-* Date of the Last Update:  Aug 04, 2012
+/**
+* @file
+* @brief QS/C port to Win32 with GNU or Visual C++ compilers
+* @ingroup ports
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,19 +32,20 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
+* Web:   www.state-machine.com
+* Email: info@state-machine.com
+******************************************************************************
+* @endcond
+*/
 #ifndef qs_port_h
 #define qs_port_h
 
 #define QS_TIME_SIZE        4
 
-#ifdef _WIN64                                       /* 64-bit architecture? */
+#ifdef _WIN64 /* 64-bit architecture? */
     #define QS_OBJ_PTR_SIZE 8
     #define QS_FUN_PTR_SIZE 8
-#else                                                /* 32-bit architecture */
+#else         /* 32-bit architecture */
     #define QS_OBJ_PTR_SIZE 4
     #define QS_FUN_PTR_SIZE 4
 #endif
@@ -52,7 +57,7 @@
 * to be used with the other QP component, by simply including "qf_port.h"
 * *before* "qs.h".
 */
-#include "qf_port.h"                                      /* use QS with QF */
-#include "qs.h"                 /* QS platform-independent public interface */
+#include "qf_port.h" /* use QS with QF */
+#include "qs.h"      /* QS platform-independent public interface */
 
-#endif                                                        /* qs_port_h  */
+#endif /* qs_port_h  */

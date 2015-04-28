@@ -1,12 +1,11 @@
 /**
-* \file
-* \brief QS/C platform-independent public interface.
-* \ingroup qs
-* \cond
+* @file
+* @brief QS/C platform-independent public interface.
+* @ingroup qs
+* @cond
 ******************************************************************************
-* Product: QS/C
-* Last updated for version 5.3.1
-* Last updated on  2014-05-15
+* Last updated for version 5.4.0
+* Last updated on  2015-03-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -36,7 +35,7 @@
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
 ******************************************************************************
-* \endcond
+* @endcond
 */
 #ifndef qs_h
 #define qs_h
@@ -48,11 +47,11 @@
 /****************************************************************************/
 /*! Quantum Spy record types. */
 /**
-* \description
+* @description
 * This enumeration specifies the record types used in the QP components.
 * You can specify your own record types starting from ::QS_USER offset.
 * Currently, the maximum of all records cannot exceed 256.
-* \sa QS_filterIn()/QS_FILTER_ON and QS_filterOut()/QS_FILTER_OFF
+* @sa QS_filterIn()/QS_FILTER_ON and QS_filterOut()/QS_FILTER_OFF
 */
 enum QSpyRecords {
     QS_QP_RESET,          /*!< reset the QP (start of a new QS session) */
@@ -149,7 +148,7 @@ enum QSpyRecords {
     * default 4.
     */
     /**
-    * \description
+    * @description
     * This macro can be defined in the QS port file (qs_port.h) to
     * configure the ::QSTimeCtr type. Here the macro is not defined so the
     * default of 4 byte is chosen.
@@ -188,16 +187,16 @@ enum QSpyRecords {
 /*! Initialize the QS data buffer. */
 void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize);
 
-/*! Turn the global Filter on for a given record type \a rec. */
+/*! Turn the global Filter on for a given record type @p rec. */
 void QS_filterOn(uint_fast8_t rec);
 
-/*! Turn the global Filter off for a given record type \a rec. */
+/*! Turn the global Filter off for a given record type @p rec. */
 void QS_filterOff(uint_fast8_t rec);
 
-/*! Mark the begin of a QS record \a rec */
+/*! Mark the begin of a QS record @p rec */
 void QS_beginRec(uint_fast8_t rec);
 
-/*! Mark the end of a QS record \a rec */
+/*! Mark the end of a QS record @p rec */
 void QS_endRec(void);
 
 /* unformatted data elements output ........................................*/
@@ -286,26 +285,26 @@ uint8_t const *QS_getBlock(uint16_t *pNbytes);
 
 /*! Callback to startup the QS facility */
 /**
-* \description
+* @description
 * This is a platform-dependent "callback" function invoked through the macro
 * #QS_INIT. You need to implement this function in your application.
 * At a minimum, the function must configure the QS buffer by calling
 * QS_initBuf(). Typically, you will also want to open/configure the QS output
-* channel, such as a serial port, or a data file. The void* argument \a arg
+* channel, such as a serial port, or a data file. The void* argument @p arg
 * can be used to pass parameter(s) needed to configure the output channel.
 *
-* \returns the staus of initialization. Typically 1 (true) when the QS
+* @returns the staus of initialization. Typically 1 (true) when the QS
 * initialization was successful, or 0 (false) when it failed.
 *
-* \usage
+* @usage
 * The following example illustrates an implementation of QS_onStartup():
-* \include qs_startup.c
+* @include qs_startup.c
 */
 uint8_t QS_onStartup(void const *arg);
 
 /*! Callback to cleanup the QS facility */
 /**
-* \description
+* @description
 * This is a platform-dependent "callback" function invoked through the macro
 * #QS_EXIT. You need to implement this function in your application.
 * The main purpose of this function is to close the QS output channel, if
@@ -315,7 +314,7 @@ void QS_onCleanup(void);
 
 /*! Callback to flush the QS trace data to the host */
 /**
-* \description
+* @description
 * This is a platform-dependent "callback" function to flush the QS trace
 * buffer to the host. The function typically busy-waits until all the data
 * in the buffer is sent to the host. This is acceptable only in the initial
@@ -325,21 +324,21 @@ void QS_onFlush(void);
 
 /*! Callback to obtain a timestamp for a QS record. */
 /**
-* \description
+* @description
 * This is a platform-dependent "callback" function invoked from the macro
 * #QS_TIME_ to add the time stamp to a QS record.
 *
-* \note Some of the predefined QS records from QP do not output the time
+* @note Some of the predefined QS records from QP do not output the time
 * stamp. However, ALL user records do output the time stamp.
-* \note QS_onGetTime() is called in a critical section and should not
+* @note QS_onGetTime() is called in a critical section and should not
 * exit the critical section.
 *
-* \returns the current timestamp.
+* @returns the current timestamp.
 *
-* \usage
+* @usage
 * The following example shows using a system call to implement QS
 * time stamping:
-* \include qs_onGetTime.c
+* @include qs_onGetTime.c
 */
 QSTimeCtr QS_onGetTime(void);
 
@@ -348,167 +347,167 @@ QSTimeCtr QS_onGetTime(void);
 
 /*! Initialize the QS facility. */
 /**
-* \description
+* @description
 * This macro provides an indirection layer to invoke the QS initialization
 * routine if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
-* \sa QS_onStartup(), example of setting up a QS filter in QS_FILTER_ON
+* @sa QS_onStartup(), example of setting up a QS filter in QS_FILTER_ON
 */
 #define QS_INIT(arg_)           (QS_onStartup(arg_) != (uint8_t)0)
 
 /*! Cleanup the QS facility. */
 /**
-* \description
+* @description
 * This macro provides an indirection layer to invoke the QS cleanup
 * routine if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
-* \sa QS_exit()
+* @sa QS_exit()
 */
 #define QS_EXIT()               (QS_onCleanup())
 
-/*! Global Filter ON for a given record type \a rec. */
+/*! Global Filter ON for a given record type @p rec. */
 /**
-* \description
+* @description
 * This macro provides an indirection layer to call QS_filterOn() if #Q_SPY
 * is defined, or do nothing if #Q_SPY is not defined.
 *
 * The following example shows how to use QS filters:
-* \include qs_filter.c
+* @include qs_filter.c
 */
 #define QS_FILTER_ON(rec_)      (QS_filterOn((uint_fast8_t)(rec_)))
 
-/*! Global filter OFF for a given record type \a rec. */
+/*! Global filter OFF for a given record type @p rec. */
 /**
-* \description
+* @description
 * This macro provides an indirection layer to call QS_filterOff() if #Q_SPY
 * is defined, or do nothing if #Q_SPY is not defined.
 *
-* \sa Example of using QS filters in #QS_FILTER_ON documentation
+* @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
 #define QS_FILTER_OFF(rec_)     (QS_filterOff((uint_fast8_t)(rec_)))
 
-/*! Local Filter for a given state machine object \a obj_. */
+/*! Local Filter for a given state machine object @p obj_. */
 /**
-* \description
+* @description
 * This macro sets up the state machine object local filter if #Q_SPY is
-* defined, or does nothing if #Q_SPY is not defined. The argument \a obj_
-* is the pointer to the state machine object that you want to monitor.\n
-* \n
+* defined, or does nothing if #Q_SPY is not defined. The argument @p obj_
+* is the pointer to the state machine object that you want to monitor.@n
+* @n
 * The state machine object filter allows you to filter QS records pertaining
 * only to a given state machine object. With this filter disabled, QS will
 * output records from all state machines in your application. The object
-* filter is disabled by setting the state machine pointer to NULL.\n
-* \n
+* filter is disabled by setting the state machine pointer to NULL.@n
+* @n
 * The state machine filter affects the following QS records:
 * ::QS_QEP_STATE_ENTRY, ::QS_QEP_STATE_EXIT, ::QS_QEP_STATE_INIT,
 * ::QS_QEP_INTERN_TRAN, ::QS_QEP_TRAN, ::QS_QEP_IGNORED,
 * ::QS_QEP_TRAN_HIST, ::Q_RET_TRAN_EP, ::Q_RET_TRAN_XP
 *
-* \note
+* @note
 * Because active objects are state machines at the same time, the state
 * machine filter (QS_FILTER_SM_OBJ) pertains to active objects as well.
 * However, the state machine filter is more general, because it can be
 * used only for state machines that are not active objects, such as
 * "Orthogonal Components".
 *
-* \sa Example of using QS filters in #QS_FILTER_ON documentation
+* @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
 #define QS_FILTER_SM_OBJ(obj_)  (QS_priv_.smObjFilter = (obj_))
 
-/*! Local Filter for a given active object \a obj_. */
+/*! Local Filter for a given active object @p obj_. */
 /**
-* \description
+* @description
 * This macro sets up the active object local filter if #Q_SPY is defined,
-* or does nothing if #Q_SPY is not defined. The argument \a obj_ is the
+* or does nothing if #Q_SPY is not defined. The argument @p obj_ is the
 * pointer to the active object that you want to monitor.
 *
 * The active object filter allows you to filter QS records pertaining
 * only to a given active object. With this filter disabled, QS will
 * output records from all active objects in your application. The object
-* filter is disabled by setting the active object pointer \a obj_ to NULL.
+* filter is disabled by setting the active object pointer @p obj_ to NULL.
 *
 * The active object filter affects the following QS records:
 * ::QS_QF_ACTIVE_ADD, ::QS_QF_ACTIVE_REMOVE, ::QS_QF_ACTIVE_SUBSCRIBE,
 * ::QS_QF_ACTIVE_UNSUBSCRIBE, ::QS_QF_ACTIVE_POST, ::QS_QF_ACTIVE_POST_LIFO,
 * ::QS_QF_ACTIVE_GET, and ::QS_QF_ACTIVE_GET_LAST.
 *
-* \sa Example of using QS filters in #QS_FILTER_ON documentation
+* @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
 #define QS_FILTER_AO_OBJ(obj_)  (QS_priv_.aoObjFilter = (obj_))
 
-/*! Local Filter for a given memory pool object \a obj_. */
+/*! Local Filter for a given memory pool object @p obj_. */
 /**
-* \description
+* @description
 * This macro sets up the memory pool local object filter if #Q_SPY is
-* defined, or does nothing if #Q_SPY is not defined. The argument \a obj_
+* defined, or does nothing if #Q_SPY is not defined. The argument @p obj_
 * is the pointer to the memory buffer used during the initialization of
 * the event pool with QF_poolInit().
 *
 * The memory pool filter allows you to filter QS records pertaining
 * only to a given memory pool. With this filter disabled, QS will
 * output records from all memory pools in your application. The object
-* filter is disabled by setting the memory pool pointer \a obj_ to NULL.
+* filter is disabled by setting the memory pool pointer @p obj_ to NULL.
 *
 * The memory pool filter affects the following QS records:
 * ::QS_QF_MPOOL_INIT, ::QS_QF_MPOOL_GET, and ::QS_QF_MPOOL_PUT.
 *
-* \sa Example of using QS filters in #QS_FILTER_ON documentation
+* @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
 #define QS_FILTER_MP_OBJ(obj_)  (QS_priv_.mpObjFilter = (obj_))
 
-/*! Local Filter for a given event queue object \a obj_. */
+/*! Local Filter for a given event queue object @p obj_. */
 /**
-* \description
+* @description
 * This macro sets up the event queue object local filter if #Q_SPY is
-* defined, or does nothing if #Q_SPY is not defined. The argument \a obj_
+* defined, or does nothing if #Q_SPY is not defined. The argument @p obj_
 * is the pointer to the "raw" thread-safe queue object you want to monitor.
 *
 * The event queue filter allows you to filter QS records pertaining
 * only to a given event queue. With this filter disabled, QS will
 * output records from all event queues in your application. The object
-* filter is disabled by setting the event queue pointer \a obj_ to NULL.
+* filter is disabled by setting the event queue pointer @p obj_ to NULL.
 *
 * The event queue filter affects the following QS records:
 * ::QS_QF_EQUEUE_INIT, ::QS_QF_EQUEUE_POST, ::QS_QF_EQUEUE_POST_LIFO,
 * ::QS_QF_EQUEUE_GET, and ::QS_QF_EQUEUE_GET_LAST.
 *
-* \sa Example of using QS filters in #QS_FILTER_ON documentation
+* @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
 #define QS_FILTER_EQ_OBJ(obj_)  (QS_priv_.eqObjFilter = (obj_))
 
-/*! Local Filter for a given time event object \a obj_. */
+/*! Local Filter for a given time event object @p obj_. */
 /**
-* \description
+* @description
 * This macro sets up the time event object local filter if #Q_SPY is defined,
-* or does nothing if #Q_SPY is not defined. The argument \a obj_ is the
+* or does nothing if #Q_SPY is not defined. The argument @p obj_ is the
 * pointer to the time event object you want to monitor.
 *
 * The time event filter allows you to filter QS records pertaining
 * only to a given time event. With this filter disabled, QS will
 * output records from all time events in your application. The object
-* filter is disabled by setting the time event pointer \a obj_ to NULL.
+* filter is disabled by setting the time event pointer @p obj_ to NULL.
 *
 * The time event filter affects the following QS records:
 * ::QS_QF_TIMEEVT_ARM, ::QS_QF_TIMEEVT_AUTO_DISARM,
 * ::QS_QF_TIMEEVT_DISARM_ATTEMPT, ::QS_QF_TIMEEVT_DISARM,
 * ::QS_QF_TIMEEVT_REARM, ::QS_QF_TIMEEVT_POST, and ::QS_QF_TIMEEVT_PUBLISH.
 *
-* \sa Example of using QS filters in #QS_FILTER_ON documentation
+* @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
 #define QS_FILTER_TE_OBJ(obj_)  (QS_priv_.teObjFilter = (obj_))
 
-/*! Local Filter for a generic application object \a obj_. */
+/*! Local Filter for a generic application object @p obj_. */
 /**
-* \description
+* @description
 * This macro sets up the application object local filter if #Q_SPY is
-* defined, or does nothing if #Q_SPY is not defined. The argument \a obj_
+* defined, or does nothing if #Q_SPY is not defined. The argument @p obj_
 * is the pointer to the application object you want to monitor.
 *
 * The application object filter allows you to filter QS records pertaining
 * only to a given application object. With this filter disabled, QS will
 * output records from all application-records enabled by the global filter.
-* The local filter is disabled by setting the time event pointer \a obj_
+* The local filter is disabled by setting the time event pointer @p obj_
 * to NULL.
 *
-* \sa Example of using QS filters in #QS_FILTER_ON documentation
+* @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
 #define QS_FILTER_AP_OBJ(obj_)  (QS_priv_.apObjFilter = (obj_))
 
@@ -549,37 +548,37 @@ QSTimeCtr QS_onGetTime(void);
     /*! This is an internal macro for defining the critical section
     * status type. */
     /**
-    * \description
+    * @description
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
     * provides the definition of the critical section status variable.
     * Otherwise this macro is empty.
-    * \sa #QF_CRIT_STAT_TYPE
+    * @sa #QF_CRIT_STAT_TYPE
     */
     #define QS_CRIT_STAT_
 
     /*! This is an internal macro for entering a critical section. */
     /**
-    * \description
+    * @description
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
     * invokes #QF_CRIT_ENTRY passing the key variable as the parameter.
     * Otherwise #QF_CRIT_ENTRY is invoked with a dummy parameter.
-    * \sa #QF_CRIT_ENTRY
+    * @sa #QF_CRIT_ENTRY
     */
     #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(dummy)
 
     /*! This is an internal macro for exiting a critical section. */
     /**
-    * \description
+    * @description
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
     * invokes #QF_CRIT_EXIT passing the key variable as the parameter.
     * Otherwise #QF_CRIT_EXIT is invoked with a dummy parameter.
-    * \sa #QF_CRIT_EXIT
+    * @sa #QF_CRIT_EXIT
     */
     #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(dummy)
 
@@ -594,12 +593,12 @@ QSTimeCtr QS_onGetTime(void);
 
 /*! Begin a user QS record with entering critical section. */
 /**
-* \usage
+* @usage
 * The following example shows how to build a user QS record using the
 * macros #QS_BEGIN, #QS_END, and the formatted output macros: #QS_U8 and
 * #QS_STR.
-* \include qs_user.c
-* \note Must always be used in pair with #QS_END
+* @include qs_user.c
+* @note Must always be used in pair with #QS_END
 */
 #define QS_BEGIN(rec_, obj_) \
     if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
@@ -614,8 +613,8 @@ QSTimeCtr QS_onGetTime(void);
         QS_TIME_(); {
 
 /*! End a QS record with exiting critical section. */
-/** \sa example for #QS_BEGIN
-* \note Must always be used in pair with #QS_BEGIN
+/** @sa example for #QS_BEGIN
+* @note Must always be used in pair with #QS_BEGIN
 */
 #define QS_END() } \
     QS_END_()
@@ -624,8 +623,8 @@ QSTimeCtr QS_onGetTime(void);
 
 /*! Internal QS macro to begin a QS record with entering critical section. */
 /**
-* \note This macro is intended to use only inside QP components and NOT
-* at the application level. \sa #QS_BEGIN
+* @note This macro is intended to use only inside QP components and NOT
+* at the application level. @sa #QS_BEGIN
 */
 #define QS_BEGIN_(rec_, objFilter_, obj_) \
     if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
@@ -639,8 +638,8 @@ QSTimeCtr QS_onGetTime(void);
 
 /*!  Internal QS macro to end a QS record with exiting critical section. */
 /**
-* \note This macro is intended to use only inside QP components and NOT
-* at the application level. \sa #QS_END
+* @note This macro is intended to use only inside QP components and NOT
+* at the application level. @sa #QS_END
 */
 #define QS_END_() \
         QS_endRec(); \
@@ -649,8 +648,8 @@ QSTimeCtr QS_onGetTime(void);
 
 /*! Internal macro to begin a QS record without entering critical section. */
 /**
-* \note This macro is intended to use only inside QP components and NOT
-* at the application level. \sa #QS_BEGIN_NOCRIT
+* @note This macro is intended to use only inside QP components and NOT
+* at the application level. @sa #QS_BEGIN_NOCRIT
 */
 #define QS_BEGIN_NOCRIT_(rec_, objFilter_, obj_) \
     if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
@@ -663,8 +662,8 @@ QSTimeCtr QS_onGetTime(void);
 
 /*! Internal QS macro to end a QS record without exiting critical section. */
 /**
-* \note This macro is intended to use only inside QP components and NOT
-* at the application level. \sa #QS_END_NOCRIT
+* @note This macro is intended to use only inside QP components and NOT
+* at the application level. @sa #QS_END_NOCRIT
 */
 #define QS_END_NOCRIT_() \
         QS_endRec(); \
@@ -686,7 +685,7 @@ QSTimeCtr QS_onGetTime(void);
 #if (Q_SIGNAL_SIZE == 1)
     /*! Internal macro to output an unformatted event signal data element */
     /**
-    * \note the size of the pointer depends on the macro #Q_SIGNAL_SIZE.
+    * @note the size of the pointer depends on the macro #Q_SIGNAL_SIZE.
     */
     #define QS_SIG_(sig_)       (QS_u8_(sig_))
 #elif (Q_SIGNAL_SIZE == 2)
@@ -707,7 +706,7 @@ QSTimeCtr QS_onGetTime(void);
 #else
 
     /*! Internal macro to output an unformatted object pointer data element */
-    /** \note the size of the pointer depends on the macro #QS_OBJ_PTR_SIZE.
+    /** @note the size of the pointer depends on the macro #QS_OBJ_PTR_SIZE.
     * If the size is not defined the size of pointer is assumed 4-bytes.
     */
     #define QS_OBJ_(obj_)       (QS_u32_((uint32_t)(obj_))
@@ -725,7 +724,7 @@ QSTimeCtr QS_onGetTime(void);
 #else
 
     /*! Internal macro to output an unformatted function pointer */
-    /** \note the size of the pointer depends on the macro #QS_FUN_PTR_SIZE.
+    /** @note the size of the pointer depends on the macro #QS_FUN_PTR_SIZE.
     * If the size is not defined the size of pointer is assumed 4-bytes.
     */
     #define QS_FUN_(fun_)       (QS_u32_((uint32_t)(fun_)))
@@ -744,7 +743,7 @@ in ROM data element
 
 /*! Enumerates data formats recognized by QS */
 /**
-* \description
+* @description
 * QS uses this enumeration is used only internally for the formatted user
 * data elements.
 */
@@ -875,7 +874,7 @@ enum {
 
 /*! Output signal dictionary record */
 /**
-* \description
+* @description
 * A signal dictionary record associates the numerical value of the signal
 * and the binary address of the state machine that consumes that signal
 * with the human-readable name of the signal.
@@ -884,35 +883,35 @@ enum {
 * the QS log, because instead of dealing with cryptic machine addresses the
 * QSpy host utility can display human-readable names.
 *
-* A signal dictionary entry is associated with both the signal value \a sig_
-* and the state machine \a obj_, because signals are required to be unique
+* A signal dictionary entry is associated with both the signal value @p sig_
+* and the state machine @p obj_, because signals are required to be unique
 * only within a given state machine and therefore the same numerical values
 * can represent different signals in different state machines.
 *
 * For the "global" signals that have the same meaning in all state machines
 * (such as globally published signals), you can specify a signal dictionary
-* entry with the \a obj_ parameter set to NULL.
+* entry with the @p obj_ parameter set to NULL.
 *
 * The following example shows the definition of signal dictionary entries
 * in the initial transition of the Table active object. Please note that
 * signals HUNGRY_SIG and DONE_SIG are associated with the Table state machine
-* only ("me" \a obj_ pointer). The EAT_SIG signal, on the other hand,
-* is global (0 \a obj_ pointer):
-* \include qs_sigDic.c
+* only ("me" @p obj_ pointer). The EAT_SIG signal, on the other hand,
+* is global (0 @p obj_ pointer):
+* @include qs_sigDic.c
 *
-* \note The QSpy log utility must capture the signal dictionary record
+* @note The QSpy log utility must capture the signal dictionary record
 * in order to use the human-readable information. You need to connect to
 * the target before the dictionary entries have been transmitted.
 *
 * The following QSpy log example shows the signal dictionary records
 * generated from the Table initial transition and subsequent records that
 * show human-readable names of the signals:
-* \include qs_sigLog.txt
+* @include qs_sigLog.txt
 *
 * The following QSpy log example shows the same sequence of records, but
 * with dictionary records removed. The human-readable signal names are not
 * available.
-* \include qs_sigLog0.txt
+* @include qs_sigLog0.txt
 */
 #define QS_SIG_DICTIONARY(sig_, obj_) do { \
     if (((QS_priv_.glbFilter[(uint8_t)QS_SIG_DICT >> 3] \
@@ -925,7 +924,7 @@ enum {
 
 /*! Output object dictionary record */
 /**
-* \description
+* @description
 * An object dictionary record associates the binary address of an object
 * in the target's memory with the human-readable name of the object.
 *
@@ -935,7 +934,7 @@ enum {
 *
 * The following example shows the definition of object dictionary entry
 * for the Table active object:
-* \include qs_objDic.c
+* @include qs_objDic.c
 */
 #define QS_OBJ_DICTIONARY(obj_) do { \
     if (((QS_priv_.glbFilter[(uint8_t)QS_OBJ_DICT >> 3] \
@@ -948,7 +947,7 @@ enum {
 
 /*! Output function dictionary record */
 /**
-* \description
+* @description
 * A function dictionary record associates the binary address of a function
 * in the target's memory with the human-readable name of the function.
 *
@@ -970,7 +969,7 @@ enum {
 
 /*! Output user QS rectord dictionary record */
 /**
-* \description
+* @description
 * A user QS record dictionary record associates the numerical value of a
 * user record with the human-readable identifier.
 */
@@ -985,7 +984,7 @@ enum {
 
 /*! Output the assertion failure trace record */
 /**
-* \description
+* @description
 * This trace record is intended to use from the Q_onAssert() callback.
 */
 #define QS_ASSERTION(module_, loc_) do { \
@@ -999,7 +998,7 @@ enum {
 
 /*! Flush the QS trace data to the host */
 /**
-* \description
+* @description
 * This macro invokes the QS_flush() platform-dependent callback function
 * to flush the QS trace buffer to the host. The function typically
 * busy-waits until all the data in the buffer is sent to the host.
@@ -1040,7 +1039,7 @@ enum {
 
 /*! obtain the current QS version number string */
 /**
-* \description
+* @description
 * version of QS as a constant 5-character string of the form X.Y.Z,
 * where X is a 1-digit major version number, Y is a 1-digit minor
 * version number, and Z is a 1-digit release number.

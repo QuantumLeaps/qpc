@@ -1,13 +1,16 @@
-/*****************************************************************************
-* Product: QK/C, ARM Cortex-M, QK port, Generic C compiler
-* Last updated for version 5.3.1
-* Last updated on  2014-09-24
+/**
+* @file
+* @brief QK/C port to ARM Cortex-M, IAR-ARM toolset
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,23 +33,20 @@
 * Contact information:
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
-*****************************************************************************/
+******************************************************************************
+* @endcond
+*/
 #ifndef qk_port_h
 #define qk_port_h
 
-/* QK interrupt entry and exit */
-#define QK_ISR_ENTRY() do { \
-    QF_INT_DISABLE(); \
-    ++QK_intNest_; \
-    QF_INT_ENABLE(); \
-} while (0)
+/* determination if the code executes in the ISR context */
+#define QK_ISR_CONTEXT_() (__get_IPSR() != (uint32_t)0)
 
-#define QK_ISR_EXIT()  do { \
-    QF_INT_DISABLE(); \
-    --QK_intNest_; \
-    *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)0x10000000U; \
-    QF_INT_ENABLE(); \
-} while (0)
+/* QK interrupt entry and exit */
+#define QK_ISR_ENTRY() ((void)0)
+
+#define QK_ISR_EXIT()  \
+    (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)0x10000000U)
 
 #include "qk.h" /* QK platform-independent public interface */
 

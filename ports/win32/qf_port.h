@@ -1,13 +1,16 @@
-/*****************************************************************************
-* Product: QF/C port to Win32
-* Last updated for version 5.3.0
-* Last updated on  2014-03-01
+/**
+* @file
+* @brief QF/C port to Win32 API
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,32 +33,38 @@
 * Contact information:
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
-*****************************************************************************/
+******************************************************************************
+* @endcond
+*/
 #ifndef qf_port_h
 #define qf_port_h
 
 /* Win32 event queue and thread types */
-#define QF_EQUEUE_TYPE              QEQueue
-#define QF_OS_OBJECT_TYPE           void*
-#define QF_THREAD_TYPE              void*
+#define QF_EQUEUE_TYPE       QEQueue
+#define QF_OS_OBJECT_TYPE    void*
+#define QF_THREAD_TYPE       void*
 
 /* The maximum number of active objects in the application */
-#define QF_MAX_ACTIVE               63
+#define QF_MAX_ACTIVE        63
 
 /* The number of system clock tick rates */
-#define QF_MAX_TICK_RATE            2
+#define QF_MAX_TICK_RATE     2
 
 /* various QF object sizes configuration for this port */
-#define QF_EVENT_SIZ_SIZE           4
-#define QF_EQUEUE_CTR_SIZE          4
-#define QF_MPOOL_SIZ_SIZE           4
-#define QF_MPOOL_CTR_SIZE           4
-#define QF_TIMEEVT_CTR_SIZE         4
+#define QF_EVENT_SIZ_SIZE    4
+#define QF_EQUEUE_CTR_SIZE   4
+#define QF_MPOOL_SIZ_SIZE    4
+#define QF_MPOOL_CTR_SIZE    4
+#define QF_TIMEEVT_CTR_SIZE  4
 
-/* Win32 critical section, see NOTE01 */
+/* QF interrupt disable/enable, see NOTE1 */
+#define QF_INT_DISABLE()     QF_enterCriticalSection_()
+#define QF_INT_ENABLE()      QF_leaveCriticalSection_()
+
+/* Win32 critical section */
 /* QF_CRIT_STAT_TYPE not defined */
-#define QF_CRIT_ENTRY(dummy)        QF_enterCriticalSection_()
-#define QF_CRIT_EXIT(dummy)         QF_leaveCriticalSection_()
+#define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
+#define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
 
 #include "qep_port.h"  /* QEP port */
 #include "qequeue.h"   /* Win32 needs event-queue */
@@ -64,12 +73,21 @@
 
 void QF_enterCriticalSection_(void);
 void QF_leaveCriticalSection_(void);
+
+/* set Win32 thread priority;
+* can be called either before or after QACTIVE_START().
+*/
+void QF_setWin32Prio(QActive *act, int_t win32Prio);
+
 void QF_setTickRate(uint32_t ticksPerSec); /* set clock tick rate */
-void QF_onClockTick(void);  /* clock tick callback (provided in the app) */
+
+/* application-level clock tick callback */
+void QF_onClockTick(void);
 
 /****************************************************************************/
 /* interface used only inside QF implementation, but not in applications */
 #ifdef QP_IMPL
+
     /* Win32 OS object object implementation */
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         while ((me_)->eQueue.frontEvt == (QEvt *)0) { \
@@ -84,21 +102,31 @@ void QF_onClockTick(void);  /* clock tick callback (provided in the app) */
     #define QACTIVE_EQUEUE_ONEMPTY_(me_) ((void)0)
 
     /* native QF event pool operations */
-    #define QF_EPOOL_TYPE_            QMPool
-    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        QMPool_init(&(p_), poolSto_, poolSize_, evtSize_)
+    #define QF_EPOOL_TYPE_  QMPool
+    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) do { \
+        uint_fast32_t fudgedSize = (poolSize_) * QF_WIN32_FUDGE_FACTOR; \
+        void *fudgedSto = malloc(fudgedSize); \
+        Q_ASSERT_ID(210, fudgedSto != (void *)0); \
+        (void)(poolSto_); \
+        QMPool_init(&(p_), fudgedSto, fudgedSize, evtSize_); \
+    } while (0)
+
     #define QF_EPOOL_EVENT_SIZE_(p_)  ((p_).blockSize)
     #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
     #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), e_))
 
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h> /* Win32 API */
+    #include <stdlib.h>  /* for malloc() */
+
+    /* Windows "fudge factor" for oversizing the resources, see NOTE2 */
+    #define QF_WIN32_FUDGE_FACTOR  100U
 
 #endif /* QP_IMPL */
 
-/* NOTES: ********************************************************************
-*
-* NOTE01:
+/* NOTES: ==================================================================*/
+/*
+* NOTE1:
 * QF, like all real-time frameworks, needs to execute certain sections of
 * code indivisibly to avoid data corruption. The most straightforward way of
 * protecting such critical sections of code is disabling and enabling
@@ -125,6 +153,25 @@ void QF_onClockTick(void);  /* clock tick callback (provided in the app) */
 * them recognize priority inversions and dynamically adjust the priorities of
 * threads to prevent it. Please refer to the MSN articles for more
 * information.
+*
+* NOTE2:
+* Windows is not a deterministic real-time system, which means that the
+* system can occasionally and unexpectedly "choke and freeze" for a number
+* of seconds. The designers of Windows have dealt with these sort of issues
+* by massively oversizing the resources available to the applications. For
+* example, the default Windows GUI message queues size is 10,000 entries,
+* which can dynamically grow to an even larger number. Also the stacks of
+* Win32 threads can dynamically grow to several megabytes.
+*
+* In contrast, the event queues, event pools, and stack size inside the
+* real-time embedded (RTE) systems can be (and must be) much smaller,
+* because you typically can put an upper bound on the real-time behavior
+* and the resulting delays.
+*
+* To be able to run the unmodified applications designed originally for
+* RTE systems on Windows, and to reduce the odds of resource shortages in
+* this case, the generous QF_WIN32_FUDGE_FACTOR is used to oversize the
+* event queues and event pools.
 */
 
 #endif /* qf_port_h */

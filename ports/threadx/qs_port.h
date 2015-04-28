@@ -1,7 +1,11 @@
-/*****************************************************************************
-* Product: QS/C port
-* Last updated for version 5.3.0
-* Last updated on  2014-05-07
+/**
+* @file
+* @brief QS/C port to a 32-bit CPU and a generic C compiler.
+* @ingroup qs
+* @cond
+******************************************************************************
+* Last updated for version 5.4.0
+* Last updated on  2015-04-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -30,22 +34,29 @@
 * Contact information:
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
-*****************************************************************************/
+******************************************************************************
+* @endcond
+*/
 #ifndef qs_port_h
 #define qs_port_h
 
-#define QS_TIME_SIZE            4
-#define QS_OBJ_PTR_SIZE         4
-#define QS_FUN_PTR_SIZE         4
+/* QS time-stamp size in bytes */
+#define QS_TIME_SIZE     4
+
+/* object pointer size in bytes */
+#define QS_OBJ_PTR_SIZE  4
+
+/* function pointer size in bytes */
+#define QS_FUN_PTR_SIZE  4
 
 /*****************************************************************************
 * NOTE: QS might be used with or without other QP components, in which
-* case the separate definitions of the macros Q_ROM, Q_ROM_VAR,
-* QF_CRIT_STAT_TYPE, QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this
-* port QS is configured to be used with the other QP component, by
-* simply including "qf_port.h" *before* "qs.h".
+* case the separate definitions of the macros Q_ROM, QF_CRIT_STAT_TYPE,
+* QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this port QS is configured
+* to be used with the other QP component, by simply including "qf_port.h"
+* *before* "qs.h".
 */
 #include "qf_port.h" /* use QS with QF */
 #include "qs.h"      /* QS platform-independent public interface */
 
-#endif /* qs_port_h  */
+#endif /* qs_port_h */

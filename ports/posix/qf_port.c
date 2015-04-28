@@ -1,13 +1,17 @@
-/*****************************************************************************
-* Product:  QF/C port to POSIX/P-threads, GNU
-* Last updated for version 5.3.0
-* Last updated on  2014-03-14
+/**
+* @file
+* @brief QF/C port to POSIX/P-threads, GNU-C compiler
+* @ingroup ports
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,7 +34,9 @@
 * Contact information:
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
-*****************************************************************************/
+******************************************************************************
+* @endcond
+*/
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
 #include "qf_pkg.h"
@@ -125,7 +131,9 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = (uint8_t)prio;
     QF_add_(me); /* make QF aware of this active object */
-    QMSM_INIT(&me->super, ie); /* execute the initial transition */
+    QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+
+    QS_FLUSH(); /* flush the QS trace buffer to the host */
 
     pthread_attr_init(&attr);
 

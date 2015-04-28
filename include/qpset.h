@@ -1,10 +1,9 @@
 /**
-* \file
-* \brief platform-independent priority sets of 8 or 64 elements.
-* \ingroup qf
-* \cond
+* @file
+* @brief QP native, platform-independent priority sets of 8 or 64 elements.
+* @ingroup qf
+* @cond
 ******************************************************************************
-* Product: QF/C
 * Last updated for version 5.3.0
 * Last updated on  2014-02-24
 *
@@ -36,7 +35,7 @@
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
 ******************************************************************************
-* \endcond
+* @endcond
 */
 #ifndef qpset_h
 #define qpset_h
@@ -55,27 +54,27 @@ typedef struct {
     uint_fast8_t volatile bits;  /*!< bitmask with a bit for each element */
 } QPSet8;
 
-/*! Evaluates to TRUE if the priority set \c me_ has elements */
+/*! Evaluates to TRUE if the priority set @p me_ has elements */
 #define QPSet8_isEmpty(me_) ((me_)->bits == (uint_fast8_t)0)
 
-/*! Evaluates to TRUE if the priority set \c me_ is empty */
+/*! Evaluates to TRUE if the priority set @p me_ is empty */
 #define QPSet8_notEmpty(me_) ((me_)->bits != (uint_fast8_t)0)
 
-/*! Evaluates to TRUE if the priority set \c me_ has element \c n_ */
+/*! Evaluates to TRUE if the priority set @p me_ has element @p n_ */
 #define QPSet8_hasElement(me_, n_) \
     (((me_)->bits & (uint_fast8_t)Q_ROM_BYTE(QF_pwr2Lkup[(n_)])) \
     != (uint_fast8_t)0)
 
-/*! Insert element \c n_ into the set \c me_, n_= 1..8 */
+/*! Insert element @p n_ into the set @p me_, n_= 1..8 */
 #define QPSet8_insert(me_, n_) \
     ((me_)->bits |= (uint_fast8_t)Q_ROM_BYTE(QF_pwr2Lkup[(n_)]))
 
-/*! Remove element n_ from the set \c me_, n_= 1..8 */
+/*! Remove element n_ from the set @p me_, n_= 1..8 */
 #define QPSet8_remove(me_, n_) \
     ((me_)->bits &= (uint_fast8_t)Q_ROM_BYTE(QF_invPwr2Lkup[(n_)]))
 
 /*! Find the maximum element in the set, and assign it to n_ */
-/** \note if the set \c me_ is empty, \c n_ is set to zero.
+/** @note if the set @p me_ is empty, @p n_ is set to zero.
 */
 #define QPSet8_findMax(me_, n_) \
     ((n_) = (uint_fast8_t)QF_LOG2((me_)->bits))
@@ -94,46 +93,46 @@ typedef struct {
 */
 typedef struct {
 
-    /** \brief bimask representing 8-element subsets of the set
+    /** @brief bimask representing 8-element subsets of the set
     *
     * Each bit in the bytes set represents a subset (8-elements)
-    * as follows: \n
-    * bit 0 in bytes is 1 when bits[0] is not empty \n
-    * bit 1 in bytes is 1 when bits[1] is not empty \n
-    * bit 2 in bytes is 1 when bits[2] is not empty \n
-    * bit 3 in bytes is 1 when bits[3] is not empty \n
-    * bit 4 in bytes is 1 when bits[4] is not empty \n
-    * bit 5 in bytes is 1 when bits[5] is not empty \n
-    * bit 6 in bytes is 1 when bits[6] is not empty \n
-    * bit 7 in bytes is 1 when bits[7] is not empty \n
+    * as follows: @n
+    * bit 0 in bytes is 1 when bits[0] is not empty @n
+    * bit 1 in bytes is 1 when bits[1] is not empty @n
+    * bit 2 in bytes is 1 when bits[2] is not empty @n
+    * bit 3 in bytes is 1 when bits[3] is not empty @n
+    * bit 4 in bytes is 1 when bits[4] is not empty @n
+    * bit 5 in bytes is 1 when bits[5] is not empty @n
+    * bit 6 in bytes is 1 when bits[6] is not empty @n
+    * bit 7 in bytes is 1 when bits[7] is not empty @n
     */
     uint_fast8_t volatile bytes;
 
-    /** \brief bits representing elements in the set as follows: \n
-    * bits[0] represent elements  1..8  \n
-    * bits[1] represent elements  9..16 \n
-    * bits[2] represent elements 17..24 \n
-    * bits[3] represent elements 25..32 \n
-    * bits[4] represent elements 33..40 \n
-    * bits[5] represent elements 41..48 \n
-    * bits[6] represent elements 49..56 \n
-    * bits[7] represent elements 57..64 \n
+    /** @brief bits representing elements in the set as follows: @n
+    * bits[0] represent elements  1..8  @n
+    * bits[1] represent elements  9..16 @n
+    * bits[2] represent elements 17..24 @n
+    * bits[3] represent elements 25..32 @n
+    * bits[4] represent elements 33..40 @n
+    * bits[5] represent elements 41..48 @n
+    * bits[6] represent elements 49..56 @n
+    * bits[7] represent elements 57..64 @n
     */
     uint_fast8_t volatile bits[8];
 } QPSet64;
 
-/*! Evaluates to TRUE if the priority set \c me_ has elements */
+/*! Evaluates to TRUE if the priority set @p me_ has elements */
 #define QPSet64_isEmpty(me_)    ((me_)->bytes == (uint_fast8_t)0)
 
-/*! Evaluates to TRUE if the priority set \c me is empty */
+/*! Evaluates to TRUE if the priority set @p me is empty */
 #define QPSet64_notEmpty(me_)   ((me_)->bytes != (uint_fast8_t)0)
 
-/*! Evaluates to TRUE if the priority set \c me_ has element \c n_. */
+/*! Evaluates to TRUE if the priority set @p me_ has element @p n_. */
 #define QPSet64_hasElement(me_, n_) \
     (((me_)->bits[Q_ROM_BYTE(QF_div8Lkup[(n_)])] \
       & (uint_fast8_t)Q_ROM_BYTE(QF_pwr2Lkup[(n_)])) != ((uint_fast8_t)0)
 
-/*! insert element \c n_ into the set \c me_, n_= 1..64 */
+/*! insert element @p n_ into the set @p me_, n_= 1..64 */
 #define QPSet64_insert(me_, n_) do { \
     uint_fast8_t m_  = (uint_fast8_t)Q_ROM_BYTE(QF_div8Lkup[(n_)]); \
     (me_)->bits[m_] |= (uint_fast8_t)Q_ROM_BYTE(QF_pwr2Lkup[(n_)]); \
@@ -141,7 +140,7 @@ typedef struct {
                                                + (uint_fast8_t)1]); \
 } while (0)
 
-/*! Remove element n_ from the set \c me_, n_= 1..64 */
+/*! Remove element n_ from the set @p me_, n_= 1..64 */
 #define QPSet64_remove(me_, n_) do { \
     uint_fast8_t m_ = (uint_fast8_t)Q_ROM_BYTE(QF_div8Lkup[(n_)]); \
     if (((me_)->bits[m_] &= (uint_fast8_t)Q_ROM_BYTE( \
@@ -151,8 +150,8 @@ typedef struct {
     } \
 } while (0)
 
-/*! Find the maximum element in the set, and assign it to \c n_ */
-/** \note if the set \c me_ is empty, \c n_ is set to zero.
+/*! Find the maximum element in the set, and assign it to @p n_ */
+/** @note if the set @p me_ is empty, @p n_ is set to zero.
 */
 #define QPSet64_findMax(me_, n_) do { \
     if ((me_)->bytes != (uint_fast8_t)0) { \

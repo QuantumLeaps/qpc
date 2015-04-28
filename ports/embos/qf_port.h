@@ -1,13 +1,17 @@
-/*****************************************************************************
-* Product: QF/C port to embOS
-* Last updated for version 5.3.0
-* Last updated on  2014-06-27
+/**
+* @file
+* @brief QF/C port to embOS
+* @ingroup ports
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-04-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,32 +34,40 @@
 * Contact information:
 * Web:   www.state-machine.com
 * Email: info@state-machine.com
-*****************************************************************************/
+******************************************************************************
+* @endcond
+*/
 #ifndef qf_port_h
 #define qf_port_h
 
 /* embOS message mailbox and thread types */
 #define QF_EQUEUE_TYPE      OS_MAILBOX
 #define QF_THREAD_TYPE      OS_TASK
-#define QF_OS_OBJECT_TYPE   uint8_t
+#define QF_OS_OBJECT_TYPE   uint32_t
 
 /* The maximum number of active objects in the application, see NOTE1 */
 #define QF_MAX_ACTIVE       32
 
+/* QF interrupt disable/enable */
+#define QF_INT_DISABLE()    OS_IncDI()
+#define QF_INT_ENABLE()     OS_DecRI()
+
 /* QF critical section for embOS, see NOTE2 */
 /*#define QF_CRIT_STAT_TYPE not defined */
-#define QF_CRIT_ENTRY(dummy)  OS_IncDI()
-#define QF_CRIT_EXIT(dummy)   OS_DecRI()
+#define QF_CRIT_ENTRY(dummy)  QF_INT_DISABLE()
+#define QF_CRIT_EXIT(dummy)   QF_INT_ENABLE()
 
-#define QF_TASK_USES_FPU      ((uint8_t)1)
+/* thred options... */
+#define QF_TASK_USES_FPU    ((uint32_t)1)
 
 #include "RTOS.h"      /* embOS API */
-
 #include "qep_port.h"  /* QEP port */
 #include "qequeue.h"   /* used for event deferral */
 #include "qmpool.h"    /* this QP port uses the native QF memory pool */
 #include "qf.h"        /* QF platform-independent public interface */
 
+/* set attributes (e.g., QF_TASK_USES_FPU) before calling QACTIVE_START() */
+void QF_setEmbOsTaskAttr(QActive *act, uint32_t attr);
 
 /*****************************************************************************
 * interface used only inside QF, but not in applications
