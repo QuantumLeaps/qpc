@@ -33,7 +33,7 @@
 --- Global Wrap-up
 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_mem' 
-"D:\qp\qpc\include\qf.h" 346 1 Warning 526: Symbol 'QMActive_ctor(QMActive *, QStateHandler)' (line 346, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+"D:\qp\qpc\include\qf.h" 164 1 Warning 526: Symbol 'QMActive_ctor(QMActive *, QStateHandler)' (line 164, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QMActive_ctor' 
 "D:\qp\qpc\include\qs.h" 262 1 Warning 526: Symbol 'QS_obj_dict(const void *, const char_t *)' (line 262, file D:\qp\qpc\include\qs.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_obj_dict' 
@@ -47,7 +47,7 @@
 "D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\table.c" 79 1 Info 765: external 'Table_ctor(void)' (line 79, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\table.c) could be made static [MISRA 2004 Rule 8.10, required]
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_init' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_noTimeEvtsActiveX' 
-"D:\qp\qpc\include\qf.h" 618 1 Warning 526: Symbol 'QF_newX_(uint_fast16_t, uint_fast16_t, enum_t)' (line 618, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+"D:\qp\qpc\include\qf.h" 649 1 Warning 526: Symbol 'QF_newX_(uint_fast16_t, uint_fast16_t, enum_t)' (line 649, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_newX_' 
 "D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\bsp.h" 40 1 Warning 526: Symbol 'BSP_displayPaused(uint8_t)' (line 40, file D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\bsp.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'BSP_displayPaused' 
@@ -64,7 +64,7 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_beginRec' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_poolInit' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_psInit' 
-"D:\qp\qpc\include\qf.h" 527 1 Warning 526: Symbol 'QF_publish_(const QEvt *, const void *)' (line 527, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+"D:\qp\qpc\include\qf.h" 558 1 Warning 526: Symbol 'QF_publish_(const QEvt *, const void *)' (line 558, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_publish_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_pwr2Lkup' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_str' 
@@ -73,8 +73,8 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_str_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_str_ROM_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_str_ROM' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_add_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_active_' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_add_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_run' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_remove_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QF_bzero' 
@@ -89,15 +89,15 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_u8_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_u8u8_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_usr_dict' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_postLIFO_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_ctor' 
+ Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_postLIFO_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_defer' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_get_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_post_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_recall' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_start_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_stop' 
-"D:\qp\qpc\include\qf.h" 313 1 Warning 526: Symbol 'QActive_subscribe(const QActive *, enum_t)' (line 313, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+"D:\qp\qpc\include\qf.h" 359 1 Warning 526: Symbol 'QActive_subscribe(const QActive *, enum_t)' (line 359, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_subscribe' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_unsubscribe' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_unsubscribeAll' 
@@ -119,9 +119,9 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_onIdle' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_getByte' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_getBlock' 
-"D:\qp\qpc\include\qf.h" 440 1 Warning 526: Symbol 'QTimeEvt_armX(struct QTimeEvt *, QTimeEvtCtr, QTimeEvtCtr)' (line 440, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+"D:\qp\qpc\include\qf.h" 471 1 Warning 526: Symbol 'QTimeEvt_armX(struct QTimeEvt *, QTimeEvtCtr, QTimeEvtCtr)' (line 471, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_armX' 
-"D:\qp\qpc\include\qf.h" 436 1 Warning 526: Symbol 'QTimeEvt_ctorX(struct QTimeEvt *, QActive *, enum_t, uint_fast8_t)' (line 436, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
+"D:\qp\qpc\include\qf.h" 467 1 Warning 526: Symbol 'QTimeEvt_ctorX(struct QTimeEvt *, QActive *, enum_t, uint_fast8_t)' (line 467, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_ctorX' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_rearm' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QTimeEvt_disarm' 

@@ -201,7 +201,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     nFree = me->eQueue.nFree; /* get volatile into the temporary */
 
     /* the queue must be able to accept the event (cannot overflow) */
-    Q_ASSERT_ID(110, nFree != (QEQueueCtr)0);
+    Q_ASSERT_ID(210, nFree != (QEQueueCtr)0);
 
     QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.aoObjFilter, me)
         QS_TIME_();                  /* timestamp */
@@ -290,7 +290,7 @@ QEvt const *QActive_get_(QActive * const me) {
         me->eQueue.frontEvt = (QEvt const *)0; /* queue becomes empty */
 
         /* all entries in the queue must be free (+1 for fronEvt) */
-        Q_ASSERT_ID(110, nFree == (me->eQueue.end + (QEQueueCtr)1));
+        Q_ASSERT_ID(310, nFree == (me->eQueue.end + (QEQueueCtr)1));
 
         QACTIVE_EQUEUE_ONEMPTY_(me);
 
@@ -327,7 +327,7 @@ uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
     uint_fast16_t min;
     QF_CRIT_STAT_
 
-    Q_REQUIRE_ID(200, (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
+    Q_REQUIRE_ID(400, (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
                       && (QF_active_[prio] != (QActive *)0));
 
     QF_CRIT_ENTRY_();

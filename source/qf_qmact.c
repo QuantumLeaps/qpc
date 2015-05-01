@@ -13,7 +13,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.4.0
-* Last updated on  2015-03-26
+* Last updated on  2015-04-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -65,7 +65,7 @@
 * @sa QHsm_ctor() and QFsm_ctor()
 */
 void QMActive_ctor(QMActive * const me, QStateHandler initial) {
-    static QActiveVtbl const vtbl = { /* QMActive virtual table */
+    static QMActiveVtbl const vtbl = { /* QMActive virtual table */
         { &QMsm_init_,
           &QMsm_dispatch_ },
         &QActive_start_,

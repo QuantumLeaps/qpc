@@ -10,14 +10,11 @@
 
 Additionally, the QP/C distribution contains several application examples described in the <a class="extern" target="_blank" href="http://www.state-machine.com/psicc2">PSiCC2</a> book.
 
-- bomb
-- calculator
-- qhsmtst
+- Calculator
+- QHsmTst
 - PELICAN
 - ...
 
-
-@next{blinky}
 */
 
 /*##########################################################################*/
@@ -58,19 +55,28 @@ The very simple state machine of the Blinky AO is shown in the figure below:
   
   <li><span class="tag">5</span> When the `TIMEOUT` event arrives in the "on" state, the "on" state transitions back to "off", which cases execution of the entry action, in which the LED is turned off. From that point on the cycle repeats forever because the `TIMEOUT` events keep getting generated at the pre-determined rate.
   </li>
-
 </ul>
+
+@image html under_construction.jpg
 
 @next{dpp}
 */
 /*##########################################################################*/
 /*! @page dpp Dining Philosophers Problem (DPP)
 
+@image html dpp_win32.jpg
+
+@image html under_construction.jpg
+
 @next{game}
 */
 
 /*##########################################################################*/
 /*! @page game "Fly 'n' Shoot" Game
+
+@image html game_win32.jpg
+
+@image html under_construction.jpg
 
 */
 

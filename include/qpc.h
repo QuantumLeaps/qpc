@@ -94,8 +94,7 @@ extern "C" {
 * For efficiency, the recommended migration path is to use the ::QMsm
 * state machine and the QM modeling tool.
 */
-#define QFsm        QHsm
-
+typedef QHsm        QFsm;
 /*! @deprecated QFsm state machine constructor; instead use: QHsm_ctor() */
 #define QFsm_ctor   QHsm_ctor
 

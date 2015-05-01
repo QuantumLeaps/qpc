@@ -17,6 +17,8 @@
 
 lwIP example for Texas Instruments EK-LM3S6965 (Cortex-M3) with GNU-ARM and IAR-ARM toolsets.
 
+@image html under_construction.jpg
+
 */
 
 /*##########################################################################*/

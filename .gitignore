@@ -21,6 +21,7 @@
 *.log
 *.chm
 *.zip
+*.pdb
 *.ncb
 *.suo
 *.chw
@@ -29,7 +30,7 @@
 *.avrsuo
 *.Debug
 *.Release
-lint*.out
+lint*.txt
 *.Miro
 *.bak
 
@@ -41,6 +42,7 @@ dbg/
 rel/
 spy/
 settings/
+.settings/
 
 Debug/
 Release/

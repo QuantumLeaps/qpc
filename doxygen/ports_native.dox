@@ -19,20 +19,25 @@
 /*##########################################################################*/
 /*! @page lint PC-Lint
 
+@image html under_construction.jpg
+
 */
 /*##########################################################################*/
 /*! @page arm7-9 ARM7/ARM9
 
+@image html under_construction.jpg
+
 @section arm7-9_qk Preemptive QK Kernel 
 
 \includelineno ports/arm7-9/qk/iar/qk_port.s
-
 
 @section arm7-9_qv Cooperative QV Kernel
 
 */
 /*##########################################################################*/
 /*! @page arm-cm ARM Cortex-M
+
+@image html under_construction.jpg
 
 @section arm-cm_qk Preemptive QK Kernel
 
@@ -42,8 +47,9 @@
 /*##########################################################################*/
 /*! @page avr AVR
 
-@section avr_qk Preemptive QK Kernel 
+@image html under_construction.jpg
 
+@section avr_qk Preemptive QK Kernel 
 
 @section avr_qv Cooperative QV Kernel
 
@@ -51,9 +57,10 @@
 /*##########################################################################*/
 /*! @page msp430 MSP430
 
+@image html under_construction.jpg
+
 @section msp430_qk Preemptive QK Kernel 
 
 @section msp430_qv Cooperative QV Kernel
 
 */
-

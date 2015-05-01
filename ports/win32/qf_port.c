@@ -144,7 +144,9 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QEQueue_init(&me->eQueue, (QEvt const **)fudgedQSto, fudgedQLen);
 
     /* save osObject as integer, in case it contains the Win32 priority */
-    win32Prio = (int)me->osObject;
+    win32Prio = (me->osObject != (void *)0)
+                ? (int)me->osObject
+                : THREAD_PRIORITY_NORMAL;
 
     /* create the Win32 "event" to throttle the AO's event queue */
     me->osObject = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -162,7 +164,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     */
     me->thread = CreateThread(NULL, stkSize,
                               &ao_thread, me, 0, &threadId);
-    Q_ASSERT(me->thread != (HANDLE)0); /* thread must be created */
+    Q_ASSERT_ID(730, me->thread != (HANDLE)0); /* thread must be created */
 
     /* was the thread priority provided? */
     if (win32Prio != 0) {
@@ -171,9 +173,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 }
 /****************************************************************************/
 void QActive_stop(QActive * const me) {
-    QActive_unsubscribeAll(me);
-    QF_remove_(me);
-
     me->thread = (HANDLE)0; /* stop the AO event loop in thread_function() */
 }
 /****************************************************************************/
@@ -187,6 +186,7 @@ static DWORD WINAPI ao_thread(LPVOID arg) { /* for CreateThread() */
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     } while (act->thread != (HANDLE)0);
 
+    QActive_unsubscribeAll(act); /* make sure that no events are subscribed */
     QF_remove_(act);  /* remove this object from any subscriptions */
     CloseHandle(act->osObject); /* cleanup the OS event */
     free((void *)act->eQueue.ring); /* free the fudged queue storage */

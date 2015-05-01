@@ -58,6 +58,8 @@ The native (bare-metal) QP/C examples for ARM Cortex-M are as follows:
 
 Simple "Blinky" example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
 
+@image html under_construction.jpg
+
 */
 /*##########################################################################*/
 /*! @page arm-cm_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
@@ -65,6 +67,8 @@ Simple "Blinky" example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM 
 @image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
 
 Dining Philosophers Problem (DPP) example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
+
+@image html under_construction.jpg
 
 */
 /*##########################################################################*/
@@ -74,8 +78,9 @@ Dining Philosophers Problem (DPP) example for Texas Instruments TivaC123GXL MCU 
 
 Dining Philosophers Problem (DPP) example for  NXP LPC1768 MCU (Cortex-M3) with GNU-ARM toolset.
 
-
 @image html mbed-LPC1768_button.jpg Adding External Button to mbed-LPC1768
+
+@image html under_construction.jpg
 
 */
 /*##########################################################################*/
@@ -85,6 +90,8 @@ Dining Philosophers Problem (DPP) example for  NXP LPC1768 MCU (Cortex-M3) with 
 
 Dining Philosophers Problem (DPP) example for STM32-L053R8T6 MCU (Cortex-M0+) with ARM-Keil, GNU-ARM, and IAR-ARM toolsets.
 
+@image html under_construction.jpg
+
 */
 /*##########################################################################*/
 /*! @page arm-cm_dpp_nucleo-l152re DPP on NUCLEO-L152RE
@@ -92,6 +99,8 @@ Dining Philosophers Problem (DPP) example for STM32-L053R8T6 MCU (Cortex-M0+) wi
 @image html bd_nucleo-l152re.jpg NUCLEO-L152RE board
 
 Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) with ARM-Keil, GNU-ARM, and IAR-ARM toolsets.
+
+@image html under_construction.jpg
 
 */
 /*##########################################################################*/
@@ -102,6 +111,8 @@ Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) wit
 "Fly 'n' Shoot" game example for Texas Instruments LM3S811 MCU (Cortex-M3), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
 
 @image html bd_EK-LM3S811_game.jpg Game playing on EK-LM3S811 board
+
+@image html under_construction.jpg
 
 */
 
@@ -123,6 +134,8 @@ The native (bare-metal) QP/C examples for the "classic" ARM7/ARM9 are as follows
 @image html bd_AT91SAM7S-EK.jpg AT91SAM7S-EK board
 
 Dining Philosophers Problem (DPP) example for Atmel AT91SAM7S MCU (ARM7) with GNU-ARM toolset.
+
+@image html under_construction.jpg
 
 */
 
@@ -146,6 +159,8 @@ The native (bare-metal) QP/C examples for the 8-bit AVRmega are as follows:
 
 Simple Blinky example for Arduino-UNO with GNU-AVR and IAR-AVR toolsets.
 
+@image html under_construction.jpg
+
 */
 /*##########################################################################*/
 /*! @page avr_dpp_arduino-uno DPP on Arduino-UNO
@@ -157,6 +172,8 @@ Dining Philosophers Problem (DPP) example for Arduino-UNO with GNU-AVR and IAR-A
 @image html Arduino-UNO_button.jpg Adding External Button to Arduino-UNO
 
 @image html Arduino-UNO_button_schem.jpg External Button Schematics
+
+@image html under_construction.jpg
 
 */
 
@@ -181,6 +198,8 @@ The native (bare-metal) QP/C examples for MSP430 are as follows:
 
 Simple Blinky example for MSP-EXP430G2 with CCS-430 and IAR-430 toolsets.
 
+@image html under_construction.jpg
+
 */
 /*##########################################################################*/
 /*! @page msp430_blinky_msp-exp430f5529lp Blinky on MSP-EXP430F5529LP
@@ -188,6 +207,8 @@ Simple Blinky example for MSP-EXP430G2 with CCS-430 and IAR-430 toolsets.
 @image html bd_MSP-EXP430F5529LP.jpg MSP-EXP430F5529LP board
 
 Simple Blinky example for MSP-EXP430F5529LP with CCS-430 and IAR-430 toolsets.
+
+@image html under_construction.jpg
 
 */
 /*##########################################################################*/
@@ -210,8 +231,9 @@ where `COM_PORT` denotes the Virtual COM port, which you can find out in the Dev
 
 @image html com_msp-exp430g2.png Virtual COM port of the MSP-EXP430G2 board
 
-
 @note
 To receive the QS data over the Virtual COM Port, you need to make sure that the jumper J3 on the MSP-EXP430G2 board is configured for the "Hardware UART" (the first two jumpers should be in the horizontal setting, as shown in the picture of the MSP-EXP430G2 board on top of this page. 
+
+@image html under_construction.jpg
 
 */

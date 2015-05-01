@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.4.0
-* Last updated on  2015-04-25
+* Last updated on  2015-04-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -85,7 +85,7 @@
 /****************************************************************************/
 struct QEQueue; /* forward declaration */
 
-/*! QActive is the base structure for derivation of active objects */
+/*! QMActive active object (based on QMsm-implementation)*/
 /**
 * @description
 * Active objects in QP are encapsulated state machines (each embedding an
@@ -93,21 +93,27 @@ struct QEQueue; /* forward declaration */
 * by sending and receiving events. Within an active object, events are
 * processed sequentially in a run-to-completion (RTC) fashion, while QF
 * encapsulates all the details of thread-safe event exchange and queuing.
+* @n@n
+* QMActive represents an active object that uses the QMsm-style state
+* machine implementation strategy. This strategy requires the use of the
+* QM modeling tool to generate state machine code automatically, but the
+* code is faster than in the QHsm-style implementation strategy and needs
+* less run-time support (smaller event-processor).
 *
-* @note ::QActive is not intended to be instantiated directly, but rather
-* serves as the base structure for derivation of active objects in the
-* application code.
+* @note
+* ::QMActive is not intended to be instantiated directly, but rather serves
+* as the base class for derivation of active objects in the application.
+*
+* @sa ::QActive
 *
 * @usage
 * The following example illustrates how to derive an active object from
-* QActive. Please note that the QActive member @c super is defined as the
+* QMActive. Please note that the QActive member @c super is defined as the
 * __first__ member of the derived struct (see @ref oop).
-* @include qf_qactive.c
-*
-* @sa ::QMActive
+* @include qf_qmactive.c
 */
 typedef struct {
-    QHsm super; /*!< inherits ::QHsm */
+    QMsm super; /*!< inherits ::QMsm */
 
 #ifdef QF_EQUEUE_TYPE
     /*! OS-dependent event-queue type. */
@@ -150,15 +156,19 @@ typedef struct {
     /*! QF priority associated with the active object. */
     uint_fast8_t prio;
 
-} QActive;
+} QMActive;
 
-/*! Virtual table for the ::QActiveVtbl class */
+/*! protected "constructor" of an QMActive active object. */
+void QMActive_ctor(QMActive * const me, QStateHandler initial);
+
+
+/*! Virtual table for the ::QMActive class */
 typedef struct {
     QMsmVtbl super; /*!< inherits QMsmVtbl */
 
     /*! virtual function to start the active object (thread) */
     /** @sa QACTIVE_START() */
-    void (*start)(QActive * const me, uint_fast8_t prio,
+    void (*start)(QMActive * const me, uint_fast8_t prio,
                   QEvt const *qSto[], uint_fast16_t qLen,
                   void *stkSto, uint_fast16_t stkSize,
                   QEvt const *ie);
@@ -166,20 +176,64 @@ typedef struct {
 #ifdef Q_SPY
     /*! virtual function to asynchronously post (FIFO) an event to an AO */
     /** @sa QACTIVE_POST() and QACTIVE_POST_X() */
-    bool (*post)(QActive * const me, QEvt const * const e,
+    bool (*post)(QMActive * const me, QEvt const * const e,
                  uint_fast16_t const margin, void const * const sender);
 #else
-    bool (*post)(QActive * const me, QEvt const * const e,
+    bool (*post)(QMActive * const me, QEvt const * const e,
                  uint_fast16_t const margin);
 #endif
 
     /*! virtual function to asynchronously post (LIFO) an event to an AO */
     /** @sa QACTIVE_POST_LIFO() */
-    void (*postLIFO)(QActive * const me, QEvt const * const e);
+    void (*postLIFO)(QMActive * const me, QEvt const * const e);
 
-} QActiveVtbl;
+} QMActiveVtbl;
 
-/* public functions */
+/****************************************************************************/
+/*! Active Object (based on QHsm-implementation) */
+/**
+* @description
+* Active objects in QP are encapsulated state machines (each embedding an
+* event queue and a thread) that communicate with one another asynchronously
+* by sending and receiving events. Within an active object, events are
+* processed sequentially in a run-to-completion (RTC) fashion, while QF
+* encapsulates all the details of thread-safe event exchange and queuing.
+* @n@n
+* QActive represents an active object that uses the QHsm-style
+* implementation strategy for state machines. This strategy is tailored
+* to manual coding, but it is also supported by the QM modeling tool.
+* The resulting code is slower than in the QMsm-style implementation
+* strategy.
+*
+* @note
+* ::QActive inherits ::QMActive exactly, without adding any new attributes
+* (or operations) and therefore, ::QActive is typedef'ed as ::QMActive.
+* ::QActive is not intended to be instantiated directly, but rather serves
+* as the base class for derivation of active objects in the application.
+*
+* @sa ::QMActive
+*
+* @usage
+* The following example illustrates how to derive an active object from
+* QActive. Please note that the QActive member @c super is defined as the
+* __first__ member of the derived struct (see @ref oop).
+* @include qf_qactive.c
+*/
+typedef QMActive QActive;
+
+/*! Virtual Table for the ::QActive class (inherited from ::QMActiveVtbl */
+/**
+* @note
+* ::QActive inherits ::QMActive exactly, without adding any new virtual
+* functions and therefore, ::QActiveVtbl is typedef'ed as ::QMActiveVtbl.
+*/
+typedef QMActiveVtbl QActiveVtbl;
+
+/*! protected "constructor" of an QActive active object. */
+void QActive_ctor(QActive * const me, QStateHandler initial);
+
+
+/* public functions for QActive/QMActive... */
 /*! Implementation of the active object start operation. */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
@@ -203,7 +257,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 *                         (might be NULL).
 */
 #define QACTIVE_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, param_) \
-    ((*((QActiveVtbl const *)((me_)->super.vptr))->start)( \
+    ((*((QMActiveVtbl const *)((me_)->super.vptr))->start)( \
         (me_), (prio_), (qSto_), (qLen_), (stkSto_), (stkLen_), (param_)))
 
 #ifdef Q_SPY
@@ -236,7 +290,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     * @sa #QACTIVE_POST_X, QActive_post_().
     */
     #define QACTIVE_POST(me_, e_, sender_) \
-        ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+        ((void)(*((QMActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
                   (e_), (uint_fast16_t)0, (sender_)))
 
     /*! Polymorphically posts an event to an active object (FIFO)
@@ -270,7 +324,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     * @include qf_postx.c
     */
     #define QACTIVE_POST_X(me_, e_, margin_, sender_) \
-        ((*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+        ((*((QMActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
          (e_), (margin_), (sender_)))
 #else
 
@@ -278,11 +332,11 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                          uint_fast16_t const margin);
 
     #define QACTIVE_POST(me_, e_, sender_) \
-        ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+        ((void)(*((QMActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
                   (e_), (uint_fast16_t)0))
 
     #define QACTIVE_POST_X(me_, e_, margin_, sender_) \
-        ((*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+        ((*((QMActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
                   (e_), (margin_)))
 
 #endif
@@ -297,13 +351,10 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e);
 * @param[in]     e_    pointer to the event to post
 */
 #define QACTIVE_POST_LIFO(me_, e_) \
-    ((*((QActiveVtbl const *)((me_)->super.vptr))->postLIFO)((me_), (e_)))
+    ((*((QMActiveVtbl const *)((me_)->super.vptr))->postLIFO)((me_), (e_)))
 
 
-/* protected functions ...*/
-
-/*! protected "constructor" of an active object. */
-void QActive_ctor(QActive * const me, QStateHandler initial);
+/* protected functions for QActive/QMActive...*/
 
 /*! Stops execution of an active object and removes it from the
 * framework's supervision. */
@@ -329,21 +380,6 @@ bool QActive_recall(QActive * const me, QEQueue * const eq);
 /*! Get an event from the event queue of an active object. */
 QEvt const *QActive_get_(QActive *const me);
 
-/****************************************************************************/
-/*! QM Active Object */
-/**
-* @description
-* QMActive represents an active object version based on the ::QMsm state
-* machine. The application-level active object derived from QMActive
-* typically require the use of QM, but are the fastest and need the least
-* run-time support (the smallest event-processor taking up the least code
-* space). QMActive inherits QActive "as is" without adding new attributes,
-* so it is typedef'ed as ::QActive.
-*/
-typedef QActive QMActive;
-
-/*! protected "constructor" of an QMActive active object. */
-void QMActive_ctor(QMActive * const me, QStateHandler initial);
 
 /****************************************************************************/
 #if (QF_TIMEEVT_CTR_SIZE == 1)

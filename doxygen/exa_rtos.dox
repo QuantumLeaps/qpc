@@ -38,6 +38,8 @@ The QP/C examples for CMSIS-RTX (on Cortex-M) are as follows:
 
 Simple "Blinky" example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
 
+@image html under_construction.jpg
+
 */
 /*##########################################################################*/
 /*! @page cmsis-rtx_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
@@ -45,6 +47,8 @@ Simple "Blinky" example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM 
 @image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
 
 Dining Philosophers Problem (DPP) example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
+
+@image html under_construction.jpg
 
 */
 /*##########################################################################*/
@@ -54,6 +58,8 @@ Dining Philosophers Problem (DPP) example for Texas Instruments TivaC123GXL MCU 
 
 Dining Philosophers Problem (DPP) example for STM32-L053R8T6 MCU (Cortex-M0+) with ARM-Keil, GNU-ARM, and IAR-ARM toolsets.
 
+@image html under_construction.jpg
+
 */
 /*##########################################################################*/
 /*! @page cmsis-rtx_dpp_nucleo-l152re DPP on NUCLEO-L152RE
@@ -61,6 +67,8 @@ Dining Philosophers Problem (DPP) example for STM32-L053R8T6 MCU (Cortex-M0+) wi
 @image html bd_nucleo-l152re.jpg NUCLEO-L152RE board
 
 Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) with ARM-Keil, GNU-ARM, and IAR-ARM toolsets.
+
+@image html under_construction.jpg
 
 */
 
@@ -111,6 +119,8 @@ qspy -cCOM1
 
 The actual COM port number might be different on your Windows machine. Please check the Device Manager to find the COM port number.
 
+@image html under_construction.jpg
+
 */
 
 /*##########################################################################*/
@@ -133,6 +143,8 @@ The QP/C examples for FreeRTOS are as follows:
 
 Simple "Blinky" example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), GNU-ARM, IAR EWARM toolsets.
 
+@image html under_construction.jpg
+
 */
 /*##########################################################################*/
 /*! @page freertos_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
@@ -140,6 +152,8 @@ Simple "Blinky" example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), GNU-
 @image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
 
 Dining Philosophers Problem (DPP) example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), GNU-ARM, IAR EWARM toolsets.
+
+@image html under_construction.jpg
 
 */
 
@@ -160,6 +174,8 @@ DPP example built for ThreadX demo on Windows with Visual Studio.
 
 @note
 Due to the limitations of the ThreadX library for Windows, the DPP example can only instantiate one `Philo[0]` active object.
+
+@image html under_construction.jpg
 
 */
 
@@ -183,6 +199,8 @@ The QP/C examples for uC/OS-II are as follows:
 
 DPP example for Texas Instruments TivaC123GXL MCU (Cortex-M4F) and IAR EWARM toolsets.
 
+@image html under_construction.jpg
+
 */
 /*##########################################################################*/
 /*! @page ucos-ii_dpp_nucleo-l152re DPP on NUCLEO-L152RE
@@ -190,5 +208,7 @@ DPP example for Texas Instruments TivaC123GXL MCU (Cortex-M4F) and IAR EWARM too
 @image html bd_nucleo-l152re.jpg NUCLEO-L152RE board
 
 DPP example for Texas Instruments STM32 L152RET6 MCU (Cortex-M3) and IAR EWARM toolsets.
+
+@image html under_construction.jpg
 
 */
