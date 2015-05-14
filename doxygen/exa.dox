@@ -188,7 +188,7 @@ QP examples @ref ports "QP ports" are provided in the following three **build co
 - **Spy** &mdash; like the debug variant, this variant is built with full debugging information and minimal optimization. Additionally, it is build with the @ref comp_qs "QS trace instrumentation" enabled. The on-board serial port and the Q-Spy host application are used for sending and viewing trace data. Like the Debug configuration, the QP framework busy-idles until there are new events to process.
 
 
--@remark
+@remark
 <strong>Why do you need multiple build configurations?</strong>@n
 The different phases of embedded software lifecycle pose different challenges. During the development and maintenance phase, for example, the emphasis is on the ease of debugging and verifying the correctness of the code, which require lower levels of optimization and special scaffolding code. In contrast, for releasing the code in the final product, the emphasis is on small memory footprint and CPU time efficiency, which require high-level of optimization and removal of any scaffolding code. To address these conflicting needs, the same source code is compiled into multiple **build configurations** that differ in the use of compiler options and activation of the scaffolding code.
 

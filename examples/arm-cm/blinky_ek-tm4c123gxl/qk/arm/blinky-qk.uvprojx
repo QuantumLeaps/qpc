@@ -1308,7 +1308,7 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>.\dbg\</OutputDirectory>
+          <OutputDirectory>.\spy\</OutputDirectory>
           <OutputName>blinky-qk</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>

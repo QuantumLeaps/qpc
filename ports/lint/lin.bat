@@ -48,19 +48,18 @@ if NOT exist "%PC_LINT%" (
     goto end
 )
 
-set QPC=..\..
-set LINTFLAGS=%QPC%\include\std.lnt options.lnt %1 %2 %3 %4
+set LINTFLAGS=..\..\include\std.lnt options.lnt %1 %2 %3 %4
 
 :: do the linting...
-%PC_LINT%\lint-nt -os(lint_qep.txt) %LINTFLAGS% %QPC%\source\qep*.c
+%PC_LINT%\lint-nt -os(lint_qep.txt) %LINTFLAGS% -iqk ..\..\source\qep*.c
 
-%PC_LINT%\lint-nt -os(lint_qf.txt)  %LINTFLAGS% %QPC%\source\qf*.c 
+%PC_LINT%\lint-nt -os(lint_qf.txt)  %LINTFLAGS% -iqk ..\..\source\qf*.c 
 
-%PC_LINT%\lint-nt -os(lint_qk.txt)  %LINTFLAGS% %QPC%\source\qk*.c
+%PC_LINT%\lint-nt -os(lint_qk.txt)  %LINTFLAGS% -iqk ..\..\source\qk*.c
 
-%PC_LINT%\lint-nt -os(lint_qv.txt)  %LINTFLAGS% %QPC%\source\qv*.c
+%PC_LINT%\lint-nt -os(lint_qv.txt)  %LINTFLAGS% -iqv ..\..\source\qv*.c
 
-%PC_LINT%\lint-nt -os(lint_qs.txt)  %LINTFLAGS% -DQ_SPY %QPC%\source\qs*.c
+%PC_LINT%\lint-nt -os(lint_qs.txt)  %LINTFLAGS% -iqk -DQ_SPY ..\..\source\qs*.c
 
 :end
 endlocal

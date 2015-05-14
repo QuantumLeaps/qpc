@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.4.0
-* Last updated on  2015-03-13
+* Last updated on  2015-05-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -46,6 +46,9 @@
 #endif /* Q_SPY */
 
 Q_DEFINE_THIS_MODULE("qep_msm")
+
+/****************************************************************************/
+char_t const Q_ROM QP_versionStr[6] = QP_VERSION_STR;
 
 /****************************************************************************/
 /*! internal QEP constants */

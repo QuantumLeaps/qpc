@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP with lwIP application, preemptive QK kernel
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-07
+* Last Updated for Version: 5.4.1
+* Date of the Last Update:  2015-05-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -85,8 +85,12 @@ static uint32_t l_nTicks;
 
 /*..........................................................................*/
 void SysTick_Handler(void) {
-    static uint32_t btn_debounced  = 0;
-    static uint8_t  debounce_state = 0;
+    /* state of the button debouncing, see below */
+    static struct ButtonsDebouncing {
+        uint32_t depressed;
+        uint32_t previous;
+    } buttons = { ~0U, ~0U };
+    uint32_t current;
     uint32_t volatile tmp;
 
     QK_ISR_ENTRY();    /* inform QK about ISR entry */
@@ -94,49 +98,31 @@ void SysTick_Handler(void) {
     ++l_nTicks;        /* count the number of clock ticks */
 
 #ifdef Q_SPY
-    tmp = SysTick->CTRL;   /* clear SysTick_CTRL_COUNTFLAG */
+    tmp = SysTick->CTRL; /* clear SysTick_CTRL_COUNTFLAG */
     QS_tickTime_ += QS_tickPeriod_; /* account for the clock rollover */
 #endif
 
     QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
 
-    tmp = GPIOF->DATA_Bits[USER_BTN];  /* read the User Button */
-    switch (debounce_state) {
-        case 0:
-            if (tmp != btn_debounced) {
-                debounce_state = 1;  /* transition to the next state */
-            }
-            break;
-        case 1:
-            if (tmp != btn_debounced) {
-                debounce_state = 2;  /* transition to the next state */
-            }
-            else {
-                debounce_state = 0;  /* transition back to state 0 */
-            }
-            break;
-        case 2:
-            if (tmp != btn_debounced) {
-                debounce_state = 3;  /* transition to the next state */
-            }
-            else {
-                debounce_state = 0;  /* transition back to state 0 */
-            }
-            break;
-        case 3:
-            if (tmp != btn_debounced) {
-                btn_debounced = tmp;  /* save the debounced button value */
-                if (tmp == 0) {       /* is the button depressed? */
-                    static QEvt const bd = { BTN_DOWN_SIG, 0 };
-                    QF_PUBLISH(&bd, &l_SysTick_Handler);
-                }
-                else {
-                    static QEvt const bu = { BTN_UP_SIG, 0 };
-                    QF_PUBLISH(&bu, &l_SysTick_Handler);
-                }
-            }
-            debounce_state = 0;      /* transition back to state 0 */
-            break;
+    /* Perform the debouncing of buttons. The algorithm for debouncing
+    * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
+    * and Michael Barr, page 71.
+    */
+    current = ~GPIOF->DATA_Bits[USER_BTN]; /* read USER_BTN */
+    tmp = buttons.depressed; /* save the debounced depressed buttons */
+    buttons.depressed |= (buttons.previous & current); /* set depressed */
+    buttons.depressed &= (buttons.previous | current); /* clear released */
+    buttons.previous   = current; /* update the history */
+    tmp ^= buttons.depressed;     /* changed debounced depressed */
+    if ((tmp & USER_BTN) != 0U) { /* debounced USER_BTN state changed? */
+        if ((buttons.depressed & USER_BTN) != 0U) { /* is BTN depressed? */
+            static QEvt const bd = { BTN_DOWN_SIG, 0U, 0U };
+            QF_PUBLISH(&bd, &l_SysTick_Handler);
+        }
+        else { /* the button is released */
+            static QEvt const bu = { BTN_UP_SIG, 0U, 0U };
+            QF_PUBLISH(&bu, &l_SysTick_Handler);
+        }
     }
 
     QK_ISR_EXIT();  /* inform QK about ISR exit */

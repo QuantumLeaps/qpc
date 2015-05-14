@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.4.0
-* Last updated on  2015-03-14
+* Last updated on  2015-05-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -1037,14 +1037,8 @@ enum {
 /*! Execute an action that is only necessary for QS output */
 #define QF_QS_ACTION(act_)      (act_)
 
-/*! obtain the current QS version number string */
-/**
-* @description
-* version of QS as a constant 5-character string of the form X.Y.Z,
-* where X is a 1-digit major version number, Y is a 1-digit minor
-* version number, and Z is a 1-digit release number.
-*/
-#define QS_getVersion() (QP_VERSION_STR)
+/*! get the current QS version number string of the form "X.Y.Z" */
+#define QS_getVersion() (QP_versionStr)
 
 /****************************************************************************/
 /* QS private data */

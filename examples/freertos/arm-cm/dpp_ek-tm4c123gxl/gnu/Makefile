@@ -79,7 +79,7 @@ VPATH = \
 	$(FREERTOS)/Source/portable/MemMang \
 	$(FREERTOS)/Source/portable/GCC/ARM_CM4F \
 	$(QPC)/3rd_party/ek-tm4c123gxl \
-	$(QPC)/3rd_party/ek-tm4c123gxl\gnu
+	$(QPC)/3rd_party/ek-tm4c123gxl/gnu
 
 # list of all include directories needed by this project
 INCLUDES  = \

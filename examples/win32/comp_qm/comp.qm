@@ -218,7 +218,7 @@ QF_stop(); /* terminate the application */</entry>
     <state_diagram size="50,80"/>
    </statechart>
   </class>
-  <attribute name="APP_alarmClock" type="QActive * const" visibility="0x00" properties="0x00">
+  <attribute name="APP_alarmClock" type="QMActive * const" visibility="0x00" properties="0x00">
    <documentation>Opaque pointer to the single instance of the AlarmClock AO</documentation>
   </attribute>
   <operation name="AlarmClock_ctor" type="void" visibility="0x00" properties="0x00">
@@ -294,7 +294,7 @@ $declare(Components::AlarmClock)
 static AlarmClock l_alarmClock; /* the single instance of the AO */
 
 /* Global-scope objects ----------------------------------------------------*/
-QActive * const APP_alarmClock = &amp;l_alarmClock.super; /* &quot;opaque&quot; AO pointer */
+QMActive * const APP_alarmClock = &amp;l_alarmClock.super; /* &quot;opaque&quot; pointer */
 
 $define(Components::AlarmClock_ctor)
 

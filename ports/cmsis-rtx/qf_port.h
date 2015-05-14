@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Date of the Last Update:  2015-05-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -131,7 +131,7 @@ void QF_onRtxTicker(void);
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
         QF_CRIT_EXIT_(); \
-        Q_ALLEGE_ID(105, osSignalSet((me_)->thread, 0x01U) != 0x80000000U); \
+        (void)osSignalSet((me_)->thread, 0x01U); \
         QF_CRIT_ENTRY_()
 
     #define QACTIVE_EQUEUE_ONEMPTY_(me_) ((void)0)

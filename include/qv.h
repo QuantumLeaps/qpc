@@ -6,7 +6,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.4.0
-* Last updated on  2014-03-24
+* Last updated on  2014-05-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -75,6 +75,10 @@
 * of the RTOS or kernel is used instead of QV_onIdle().
 */
 void QV_onIdle(void);
+
+/****************************************************************************/
+/*! get the current QV version number string of the form "X.Y.Z" */
+#define QV_getVersion() (QP_versionStr)
 
 /****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */

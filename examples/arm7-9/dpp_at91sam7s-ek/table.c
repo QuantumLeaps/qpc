@@ -72,7 +72,7 @@ static QMState const Table_paused_s = {
 static Table l_table; /* the single instance of the Table active object */
 
 /* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_Table = &l_table.super; /* "opaque" AO pointer */
+QMActive * const AO_Table = &l_table.super; /* "opaque" AO pointer */
 
 /*..........................................................................*/
 /*${AOs::Table_ctor} .......................................................*/

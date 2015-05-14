@@ -133,11 +133,11 @@ QMsm * Mine2_ctor(uint8_t id);
 
 
 /* opaque pointers to active objects in the application */
-extern QActive * const AO_Tunnel;
+extern QMActive * const AO_Tunnel;
 
-extern QActive * const AO_Ship;
+extern QMActive * const AO_Ship;
 
-extern QActive * const AO_Missile;
+extern QMActive * const AO_Missile;
 
 
 /* helper function for all AOs */

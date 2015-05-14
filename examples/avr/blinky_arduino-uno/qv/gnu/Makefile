@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for Blinky on Arduino-UNO, preemptive QV kernel, GNU-AVR
+# Product: Makefile for Blinky on Arduino-UNO, cooperative QV kernel, GNU-AVR
 # Last Updated for Version: 5.4.0
-# Date of the Last Update:  2015-04-03
+# Date of the Last Update:  2015-05-08
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------

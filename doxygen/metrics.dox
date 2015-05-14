@@ -9,7 +9,7 @@
   License Type: Windows Single User License
   Licensed To : Quantum Leaps, LLC
   License No. : WS2975                          License Date: Dec 15, 2013
-  Build Date  : Sep  2 2009                         Run Date: May 01, 2015
+  Build Date  : Sep  2 2009                         Run Date: May 14, 2015
   (C)1996-2009 M Squared Technologies LLC
   ________________________________________________________________________
 
@@ -31,7 +31,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 149      eLOC 145      lLOC 51       Comment 419      Lines      614
+  LOC 150      eLOC 146      lLOC 52       Comment 414      Lines      611
   ________________________________________________________________________
   End of File: ..\include\qep.h
 
@@ -51,7 +51,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 188      eLOC 188      lLOC 73       Comment 529      Lines      821
+  LOC 188      eLOC 188      lLOC 73       Comment 523      Lines      815
   ________________________________________________________________________
   End of File: ..\include\qf.h
 
@@ -61,7 +61,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 68       eLOC 68       lLOC 17       Comment 110      Lines      193
+  LOC 68       eLOC 68       lLOC 17       Comment 105      Lines      188
   ________________________________________________________________________
   End of File: ..\include\qk.h
 
@@ -118,7 +118,7 @@
             all code present in this file must be compilable.
                           ~~ Total File Summary ~~
 
-  LOC 413      eLOC 409      lLOC 90       Comment 626      Lines     1078
+  LOC 413      eLOC 409      lLOC 90       Comment 620      Lines     1072
   ________________________________________________________________________
   End of File: ..\include\qs.h
 
@@ -138,7 +138,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 34       eLOC 34       lLOC 3        Comment 78       Lines      115
+  LOC 35       eLOC 35       lLOC 3        Comment 80       Lines      119
   ________________________________________________________________________
   End of File: ..\include\qv.h
 
@@ -321,7 +321,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 288      eLOC 240      lLOC 132      Comment 263      Lines      525
+  LOC 289      eLOC 241      lLOC 133      Comment 264      Lines      528
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
@@ -350,7 +350,7 @@
   ________________________________________________________________________
 
   Function: QF_add_
-  Parameters: (QActive * const a)
+  Parameters: (QMActive * const a)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 2     
@@ -358,7 +358,7 @@
   LOC 15       eLOC 14       lLOC 8        Comment 23       Lines       25
 
   Function: QF_remove_
-  Parameters: (QActive const * const a)
+  Parameters: (QMActive const * const a)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 2     
@@ -1426,9 +1426,9 @@
 
                          ~~ Total Project Summary ~~
 
-  LOC 3684     eLOC 3359     lLOC 1515     Comment 6016     Lines     9824
+  LOC 3687     eLOC 3362     lLOC 1517     Comment 5997     Lines     9811
   Average per File, metric/33 files
-  LOC 111      eLOC 101      lLOC 45       Comment 182      Lines      297
+  LOC 111      eLOC 101      lLOC 45       Comment 181      Lines      297
 
   ------------------------------------------------------------------------
 
@@ -1501,12 +1501,12 @@
   LOC 11       eLOC 8        lLOC 6        Comment 16       Lines       12
 
   Function: QF_add_
-  Parameters: (QActive * const a)
+  Parameters: (QMActive * const a)
   Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
   LOC 15       eLOC 14       lLOC 8        Comment 23       Lines       25
 
   Function: QF_remove_
-  Parameters: (QActive const * const a)
+  Parameters: (QMActive const * const a)
   Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
   LOC 15       eLOC 14       lLOC 8        Comment 22       Lines       24
 

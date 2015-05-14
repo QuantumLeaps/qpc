@@ -72,21 +72,21 @@ VPATH = \
 	$(QPC)/source \
 	$(QP_PORT_DIR) \
 	$(QPC)/3rd_party/ek-lm3s6965 \
-	$(QPC)/3rd_party/ek-lm3s6965\gnu \
+	$(QPC)/3rd_party/ek-lm3s6965/gnu \
 	$(QPC)/3rd_party/ek-lm3s6965/lwip_driver/netif \
 	$(QPC)/3rd_party/lwip/apps/webserver_raw
 
 # list of all include directories needed by this project
 INCLUDES  = \
-	-I..\.. \
+	-I../.. \
 	-I$(QPC)/include \
 	-I$(QPC)/source \
 	-I$(QP_PORT_DIR) \
 	-I$(QPC)/3rd_party/CMSIS/Include \
 	-I$(QPC)/3rd_party/ek-lm3s6965 \
 	-I$(QPC)/3rd_party/ek-lm3s6965/lwip_driver \
-	-I$(QPC)/3rd_party/lwip\src/include \
-	-I$(QPC)/3rd_party/lwip\src/include/ipv4 \
+	-I$(QPC)/3rd_party/lwip/src/include \
+	-I$(QPC)/3rd_party/lwip/src/include/ipv4 \
 	-I$(QPC)/3rd_party/lwip/src \
 	-I$(QPC)/3rd_party/lwip/apps/webserver_raw
 

@@ -72,11 +72,11 @@ VPATH = \
 	$(QPC)/source \
 	$(QP_PORT_DIR) \
 	$(QPC)/3rd_party/ek-tm4c123gxl \
-	$(QPC)/3rd_party/ek-tm4c123gxl\gnu
+	$(QPC)/3rd_party/ek-tm4c123gxl/gnu
 
 # list of all include directories needed by this project
 INCLUDES  = \
-	-I..\.. \
+	-I../.. \
 	-I$(QPC)/include \
 	-I$(QPC)/source \
 	-I$(QP_PORT_DIR) \

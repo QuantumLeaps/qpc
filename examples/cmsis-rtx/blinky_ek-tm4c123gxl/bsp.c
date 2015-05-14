@@ -136,10 +136,7 @@ void BSP_ledOff(uint_fast8_t n) {
 }
 /*..........................................................................*/
 void BSP_ledOn(uint_fast8_t n) {
-    /* exercise the FPU with some floating point computations */
-    /* NOTE: this code can be only called from a task that created with
-    * the option OS_TASK_OPT_SAVE_FP.
-    */
+    /* exercise the FPU with some floating point computations... */
     float volatile x;
     x = 3.1415926F;
     x = x + 2.7182818F;

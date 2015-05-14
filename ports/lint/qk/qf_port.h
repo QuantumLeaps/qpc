@@ -252,11 +252,11 @@ void intEnable(void);
 #define QF_CRIT_EXIT(stat_)         critExit(stat_)
 
 /*! Macro to put the CPU to sleep safely in the cooperative
-* Vanilla kernel (inside QF_idle()).
+* QV kernel (inside QV_idle()).
 */
 /**
 * @description
-* This macro is provided in some QP ports for the Vanilla kernel and
+* This macro is provided in some QP ports for the QV kernel and
 * in general it depends on the interrupt disabling policy.
 *
 * @note The provided code is just an example (for ARM Cortex-M).
@@ -271,7 +271,6 @@ void intEnable(void);
 typedef unsigned int crit_stat_t;
 QF_CRIT_STAT_TYPE critEntry(void);
 void critExit(QF_CRIT_STAT_TYPE stat);
-void QV_onIdle(void);
 
 #include "qep_port.h"  /* QEP port */
 #include "qk_port.h"   /* QK port */

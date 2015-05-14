@@ -1144,9 +1144,9 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
     <state_diagram size="53,68"/>
    </statechart>
   </class>
-  <attribute name="AO_Tunnel" type="QActive * const" visibility="0x00" properties="0x00"/>
-  <attribute name="AO_Ship" type="QActive * const" visibility="0x00" properties="0x00"/>
-  <attribute name="AO_Missile" type="QActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Tunnel" type="QMActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Ship" type="QMActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Missile" type="QMActive * const" visibility="0x00" properties="0x00"/>
   <operation name="Tunnel_ctor" type="void" visibility="0x00" properties="0x01">
    <code>uint8_t n;
 Tunnel *me = &amp;l_tunnel;
@@ -1294,7 +1294,7 @@ $declare(AOs::Missile)
 static Missile l_missile; /* the sole instance of the Missile active object */
 
 /* Public-scope objects ----------------------------------------------------*/
-QActive * const AO_Missile = (QActive *)&amp;l_missile;       /* opaque pointer */
+QMActive * const AO_Missile = &amp;l_missile.super; /* opaque AO pointer */
 
 /* Active object definition ------------------------------------------------*/
 $define(AOs::Missile_ctor)
@@ -1317,7 +1317,7 @@ $declare(AOs::Ship)
 static Ship l_ship; /* the sole instance of the Ship active object */
 
 /* Public-scope objects ----------------------------------------------------*/
-QActive * const AO_Ship = (QActive *)&amp;l_ship; /* opaque pointer */
+QMActive * const AO_Ship = &amp;l_ship.super; /* opaque AO pointer */
 
 /* Active object definition ------------------------------------------------*/
 $define(AOs::Ship_ctor)
@@ -1344,7 +1344,7 @@ static void randomSeed(uint32_t seed);
 static uint32_t random(void);
 
 /* Public-scope objects ----------------------------------------------------*/
-QActive * const AO_Tunnel = (QActive *)&amp;l_tunnel;         /* opaque pointer */
+QMActive * const AO_Tunnel = &amp;l_tunnel.super; /* opaque AO pointer */
 
 /* helper functions --------------------------------------------------------*/
 

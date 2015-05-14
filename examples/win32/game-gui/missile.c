@@ -64,7 +64,7 @@ static QMState const Missile_exploding_s = {
 static Missile l_missile; /* the sole instance of the Missile active object */
 
 /* Public-scope objects ----------------------------------------------------*/
-QActive * const AO_Missile = (QActive *)&l_missile;       /* opaque pointer */
+QMActive * const AO_Missile = &l_missile.super; /* opaque AO pointer */
 
 /* Active object definition ------------------------------------------------*/
 /*${AOs::Missile_ctor} .....................................................*/

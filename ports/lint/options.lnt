@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
 // Last updated for version 5.4.0
-// Last updated on  2015-04-13
+// Last updated on  2015-05-01
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -37,7 +37,7 @@
 //-vf             // print names of all source files
 
 +fdi              // start #include search in directory of the including file
--i.               // QP/C port includes
+-i.               // QP/C port includes (see also qk/ and qv/)
 -i../../include   // QP/C includes
 
 -si4              // sizeof(int) 
@@ -98,6 +98,8 @@ qpc.lnt           // QP/C options
  QF_ACTIVE_STATE_,
  QF_CRIT_STAT_,
  QF_PTR_AT_,
+ QACTIVE_EQUEUE_WAIT_,
+ QACTIVE_EQUEUE_SIGNAL_,
  QACTIVE_EQUEUE_ONEMPTY_)
 -efunc(818,                   // MISRA04-16.7(adv) 'stkSto' could be const
  QActive_start_)

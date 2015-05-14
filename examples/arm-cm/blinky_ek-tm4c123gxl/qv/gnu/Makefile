@@ -7,7 +7,7 @@
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -72,11 +72,12 @@ VPATH = \
 	$(QPC)/source \
 	$(QP_PORT_DIR) \
 	$(QPC)/3rd_party/ek-tm4c123gxl \
-	$(QPC)/3rd_party/ek-tm4c123gxl\gnu
+	$(QPC)/3rd_party/ek-tm4c123gxl/gnu \
+	$(QPC)/3rd_party/mini_cpp
 
 # list of all include directories needed by this project
 INCLUDES  = \
-	-I..\.. \
+	-I../.. \
 	-I$(QPC)/include \
 	-I$(QPC)/source \
 	-I$(QP_PORT_DIR) \
@@ -291,6 +292,7 @@ clean:
 	$(BIN_DIR)/*.map
 	
 show:
+	@echo PROJECT = $(PROJECT)
 	@echo CONF = $(CONF)
 	@echo ASM_SRCS = $(ASM_SRCS)
 	@echo C_SRCS = $(C_SRCS)

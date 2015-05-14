@@ -2,16 +2,35 @@
 @page history Revision History
 
 
+@section qpc_5_4_1 Version 5.4.1, 2015-05-14
+
+This release changes the active object class hierarchy so that ::QMActive is now more fundamental and is the base class for ::QActive. (Previously ::QMActive was a subclass of ::QActive). The newly added documentation section about @ref classes "QP/C Design" shows the current class hierarchy.
+
+@note
+Because the types ::QMActive and ::QActive are equivalent in QP/C, this change has minimal impact on the applications, but it is now more correct to use ::QMActive as the base class for all "opaque" active object pointers.
+
+Also, this release brings several cosmetic improvements:
+
+1. All QM models included in examples have been modified to use the ::QMActive "opaque" pointers.
+
+2. The ROM-able QP version string QP_versionStr[] has been added and used consistently in the macros QEP_getVersion(), QF_getVersion(), QK_getVersion(), QV_getVersion(), and QS_getVersion() macros.   
+
+3. All Makefiles for the GNU toolset have been cleaned up, whereas any `\` (back-slash) characters in the paths have been repalced with `/` (forward-slash) characters.
+
+4. Several README files have been updated.
+
+
+------------------------------------------------------------------------------
 @section qpc_5_4_0 Version 5.4.0, 2015-04-26
 
-This release changes the basic philosophy of distributing the QP frameworks by **combining** the "QP/C Baseline Code" with all currently available "QP/C Development Kits" (QDK/C). This is done to eliminate any potential mistakes in downloading and intallating separate pieces of code.
+This release changes the basic philosophy of distributing the QP frameworks by **combining** the "QP/C Baseline Code" with all currently available "QP/C Development Kits" (QDK/C). This is done to eliminate any potential mistakes in downloading and installing separate pieces of code.
 
 Additionally, this release changes the basic philosophy of building your embedded applications with the QP/C framework. Starting with this release, all @ref exa "examples" for embedded boards include the QP/C framework as **source code** within the projects, instead of statically linking with a QP/C library. (**NOTE:** It is still possible to use QP/C as a library, but you need to build such libraries yourself, as they are no longer provided in the QP/C distribution.)
 
-The move to building QP/C from sources ensures the consistent toolset version and compiler options applied to the application code as well as the QP/C framework code. (**NOTE:** The QP/C examples for "big operating systems", like @ref exa_win32 "Windows" or @ref exa_posix "Linux", still use QP/C as a pre-compiled library that is staically linked with the application code.)
+The move to building QP/C from sources ensures the consistent toolset version and compiler options applied to the application code as well as the QP/C framework code. (**NOTE:** The QP/C examples for "big operating systems", like @ref exa_win32 "Windows" or @ref exa_posix "Linux", still use QP/C as a pre-compiled library that is statically linked with the application code.)
 
 @note
-Even though the QP/C source has been re-packaged in this release, there are no API changes to the code, so it remains **backwards compatible** with the existing applications. (Except the build process, which builds QP/C from sources rahter than linking to the QP/C library.) 
+Even though the QP/C source has been re-packaged in this release, there are no API changes to the code, so it remains **backwards compatible** with the existing applications. (Except the build process, which builds QP/C from sources rather than linking to the QP/C library.) 
 
 The two changes in basic approach to distributing and building the framework have also the following ripple effects:
 
@@ -34,9 +53,9 @@ Changes in detail:
 
 2. Removed class QFsm (which is now deprecated). Legacy state machines coded in the "QFsm-style" will continue to work, but will use the ::QHsm implementation internally. There is no longer any efficiency advantage in using the "QFsm-style" state machines.
 
-3. Applied a slight performance improvement to the ARM Cortex-M port to the QK preemptive kernel. The QK port now checks for ISR context by looking at the IPSR register, instead of incrementing and decremening the `QK_intNest_` up-down counter.
+3. Applied a slight performance improvement to the ARM Cortex-M port to the QK preemptive kernel. The QK port now checks for ISR context by looking at the IPSR register, instead of incrementing and decrementing the `QK_intNest_` up-down counter.
 
-4. Updated @ref exa_arm-cm "ARM Cortex-M examples" and provided new examples for NXP mbed-LPC1768, and STM32 NUCLEO-L053R8, and NUCLEO-L152RE boards. All examples are provided for the ARM-KEIL, GNU-ARM, and IAR-ARM toolsets.
+4. Updated @ref exa_arm-cm "ARM Cortex-M examples" and provided new examples for NXP mbed-LPC1768, and STM32 NUCLEO-L053R8, and NUCLEO-L152RE boards. All examples now use the latest CMSIS (V4.3.0). All ARM Cortex-M exampels are provided for the ARM-KEIL, GNU-ARM, and IAR-ARM toolsets.
 
 5. Added the native @ref arm7-9 "port" and @ref exa_arm7-9 "examples" to the @ref arm7-9 "classic ARM7/9" with AT91SAM7S-EK board and the IAR-ARM toolset.
 

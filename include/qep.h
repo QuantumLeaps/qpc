@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-04-26
+* Last updated for version 5.4.1
+* Last updated on  2015-05-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,20 +41,20 @@
 #define qep_h
 
 /****************************************************************************/
-/*! The current QP/C version number */
-/**
-* @description
-* version of the QP/C framework as a decimal constant XYZ, where X is a
-* 1-digit major version number, Y is a 1-digit minor version number, and Z
-* is a 1-digit release number.
+/*! The current QP version as a decimal constant XYZ, where X is a 1-digit
+* major version number, Y is a 1-digit minor version number, and Z is
+* a 1-digit release number.
 */
-#define QP_VERSION      540
+#define QP_VERSION      541
 
-/*! The current QP version string */
-#define QP_VERSION_STR  "5.4.0"
+/*! The current QP version number string of the form X.Y.Z, where X is
+* a 1-digit major version number, Y is a 1-digit minor version number,
+* and Z is a 1-digit release number.
+*/
+#define QP_VERSION_STR  "5.4.1"
 
-/*! Tamperproof current QP release (5.4.0) and date (15-04-26) */
-#define QP_RELEASE      0xA656CE43U
+/*! Tamperproof current QP release (5.4.1) and date (15-05-14) */
+#define QP_RELEASE      0xA64960C2U
 
 /****************************************************************************/
 #ifndef Q_SIGNAL_SIZE
@@ -446,14 +446,11 @@ QState QHsm_top(void const * const me, QEvt const * const e);
 
 
 /****************************************************************************/
-/*! obtain the current QEP version number string */
-/**
-* @description
-* version of QEP as a constant 5-character string of the form X.Y.Z,
-* where X is a 1-digit major version number, Y is a 1-digit minor
-* version number, and Z is a 1-digit release number.
-*/
-#define QEP_getVersion() (QP_VERSION_STR)
+/*! the current QP version number string in ROM, based on QP_VERSION_STR */
+extern char_t const Q_ROM QP_versionStr[6];
+
+/*! get the current QEP version number string of the form "X.Y.Z" */
+#define QEP_getVersion() (QP_versionStr)
 
 /****************************************************************************/
 /*! All possible values returned from state/action handlers */

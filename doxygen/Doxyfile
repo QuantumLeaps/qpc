@@ -38,7 +38,7 @@ PROJECT_NAME           = "QP/C"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = "5.4.0"
+PROJECT_NUMBER         = "5.4.1"
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -764,7 +764,8 @@ WARN_LOGFILE           =
 
 INPUT = \
     modules.dox \
-    ab.dox \
+    about.dox \
+    design.dox \
     exa.dox \
     exa_apps.dox \
     exa_native.dox \

@@ -1,7 +1,7 @@
 //============================================================================
 // Product: PC-Lint 9.x option file for linting QP/C applications
 // Last updated for version 5.4.0
-// Last updated on  2015-04-06
+// Last updated on  2015-05-08
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -292,6 +292,9 @@
  QF_maxPool_,
  QF_timeEvtHead_)
 
+// QV
+-estring(961,                 // MISRA04-19.7(adv) function-like macro
+ QV_getVersion)
 
 // QS
 -emacro(506, QS_*)            // MISRA04-13.7(req) constant value boolean

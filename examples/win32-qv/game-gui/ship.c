@@ -80,7 +80,7 @@ static QMState const Ship_exploding_s = {
 static Ship l_ship; /* the sole instance of the Ship active object */
 
 /* Public-scope objects ----------------------------------------------------*/
-QActive * const AO_Ship = (QActive *)&l_ship; /* opaque pointer */
+QMActive * const AO_Ship = &l_ship.super; /* opaque AO pointer */
 
 /* Active object definition ------------------------------------------------*/
 /*${AOs::Ship_ctor} ........................................................*/

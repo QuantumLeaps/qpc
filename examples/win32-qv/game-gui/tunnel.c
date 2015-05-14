@@ -157,7 +157,7 @@ static void randomSeed(uint32_t seed);
 static uint32_t random(void);
 
 /* Public-scope objects ----------------------------------------------------*/
-QActive * const AO_Tunnel = (QActive *)&l_tunnel;         /* opaque pointer */
+QMActive * const AO_Tunnel = &l_tunnel.super; /* opaque AO pointer */
 
 /* helper functions --------------------------------------------------------*/
 

@@ -168,10 +168,7 @@ void BSP_init(void) {
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
-    /* exercise the FPU with some floating point computations */
-    /* NOTE: this code can be only called from a task that created with
-    * the option OS_TASK_OPT_SAVE_FP.
-    */
+    /* exercise the FPU with some floating point computations... */
     float volatile x;
     x = 3.1415926F;
     x = x + 2.7182818F;

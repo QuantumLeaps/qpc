@@ -54,9 +54,9 @@ void Philo_ctor(void);
 void Table_ctor(void);
 
 
-extern QActive * const AO_Philo[N_PHILO];
+extern QMActive * const AO_Philo[N_PHILO];
 
-extern QActive * const AO_Table;
+extern QMActive * const AO_Table;
 
 
 #endif /* dpp_h */

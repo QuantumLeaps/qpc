@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.4.0
-* Last updated on  2015-04-30
+* Last updated on  2015-05-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -85,7 +85,7 @@
 /****************************************************************************/
 struct QEQueue; /* forward declaration */
 
-/*! QMActive active object (based on QMsm-implementation)*/
+/*! QMActive active object (based on QMsm-implementation) */
 /**
 * @description
 * Active objects in QP are encapsulated state machines (each embedding an
@@ -108,7 +108,7 @@ struct QEQueue; /* forward declaration */
 *
 * @usage
 * The following example illustrates how to derive an active object from
-* QMActive. Please note that the QActive member @c super is defined as the
+* QMActive. Please note that the ::QActive member @c super is defined as the
 * __first__ member of the derived struct (see @ref oop).
 * @include qf_qmactive.c
 */
@@ -199,7 +199,7 @@ typedef struct {
 * processed sequentially in a run-to-completion (RTC) fashion, while QF
 * encapsulates all the details of thread-safe event exchange and queuing.
 * @n@n
-* QActive represents an active object that uses the QHsm-style
+* ::QActive represents an active object that uses the QHsm-style
 * implementation strategy for state machines. This strategy is tailored
 * to manual coding, but it is also supported by the QM modeling tool.
 * The resulting code is slower than in the QMsm-style implementation
@@ -215,7 +215,7 @@ typedef struct {
 *
 * @usage
 * The following example illustrates how to derive an active object from
-* QActive. Please note that the QActive member @c super is defined as the
+* ::QActive. Please note that the ::QActive member @c super is defined as the
 * __first__ member of the derived struct (see @ref oop).
 * @include qf_qactive.c
 */
@@ -229,11 +229,11 @@ typedef QMActive QActive;
 */
 typedef QMActiveVtbl QActiveVtbl;
 
-/*! protected "constructor" of an QActive active object. */
+/*! protected "constructor" of an ::QActive active object. */
 void QActive_ctor(QActive * const me, QStateHandler initial);
 
 
-/* public functions for QActive/QMActive... */
+/* public functions for ::QActive / ::QMActive... */
 /*! Implementation of the active object start operation. */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
@@ -354,7 +354,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e);
     ((*((QMActiveVtbl const *)((me_)->super.vptr))->postLIFO)((me_), (e_)))
 
 
-/* protected functions for QActive/QMActive...*/
+/* protected functions for ::QActive / ::QMActive ...*/
 
 /*! Stops execution of an active object and removes it from the
 * framework's supervision. */
@@ -638,10 +638,10 @@ void QF_onCleanup(void);
 bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate);
 
 /*! Register an active object to be managed by the framework */
-void QF_add_(QActive * const a);
+void QF_add_(QMActive * const a);
 
 /*! Remove the active object from the framework. */
-void QF_remove_(QActive const * const a);
+void QF_remove_(QMActive const * const a);
 
 /*! Obtain the minimum of free entries of the given event pool. */
 uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId);
@@ -804,17 +804,11 @@ extern uint8_t const Q_ROM QF_div8Lkup[65];
 /**
 * @note Not to be used by Clients directly, only in ports of QF
 */
-extern QActive *QF_active_[QF_MAX_ACTIVE + 1];
+extern QMActive *QF_active_[QF_MAX_ACTIVE + 1];
 
 /****************************************************************************/
-/*! Returns the QF version. */
-/**
-* @description
-* version of QF as a constant 5-character string of the form X.Y.Z,
-* where X is a 1-digit major version number, Y is a 1-digit minor
-* version number, and Z is a 1-digit release number.
-*/
-#define QF_getVersion() (QP_VERSION_STR)
+/*! get the current QF version number string of the form "X.Y.Z" */
+#define QF_getVersion() (QP_versionStr)
 
 #endif /* qf_h */
 

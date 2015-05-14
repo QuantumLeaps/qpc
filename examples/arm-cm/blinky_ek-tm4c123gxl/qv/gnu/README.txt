@@ -24,6 +24,18 @@ make clean
 make CONF=rel clean
 make CONF=spy clean
 
+***
+NOTE:
+The installation folder of the GNU-ARM toolset on YOUR machine needs
+to be adjusted in the provided Makefile, by editing the symbol: GNU_ARM.
+As described in the comment for this symbol, the GNU-ARM toolset is taken
+from: http://gnutoolchains.com/arm-eabi
+
+It is highly recommened to use the same GNU-ARM distribution, especially
+for ARM Cortex-M4F projects, due to the support for the hardware FPU
+(float-abi=hard).
+***
+
 
 Adjusting Stack and Heap Sizes
 ==============================

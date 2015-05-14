@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, cooperative QV kernel
 * Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-05
+* Date of the Last Update:  2015-05-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -66,8 +66,11 @@ void SysTick_Handler(void);
 void GPIOPortA_IRQHandler(void);
 
 /* Local-scope objects -----------------------------------------------------*/
-#define PUSH_BUTTON             (1U << 4)
-#define USER_LED                (1U << 5)
+/* LEDs available on the board */
+#define USER_LED  (1U << 5)
+
+/* Push-Button wired externally to DIP8 (P0.6) */
+#define USER_BTN  (1U << 4)
 
 #define ADC_TRIGGER_TIMER       0x00000005U
 #define ADC_CTL_IE              0x00000040U
@@ -110,76 +113,61 @@ void SysTick_Handler(void) {
 
     QF_TICK_X(0U, &l_SysTick_Handler);    /* process time events for rate 0 */
     QF_PUBLISH(&tickEvt, &l_SysTick_Handler); /* publish to all subscribers */
-
 }
 /*..........................................................................*/
 void ADCSeq3_IRQHandler(void) {
-    static uint32_t adcLPS = 0U;           /* Low-Pass-Filtered ADC reading */
-    static uint32_t wheel  = 0U;                 /* the last wheel position */
+    static uint32_t adcLPS = 0U; /* Low-Pass-Filtered ADC reading */
+    static uint32_t wheel  = 0U; /* the last wheel position */
 
-    static uint32_t btn_debounced  = 0U;
-    static uint8_t  debounce_state = 0U;
+    /* state variables for button debouncing, see below */
+    static struct ButtonsDebouncing {
+        uint32_t depressed;
+        uint32_t previous;
+    } buttons = { ~0U, ~0U };
+    uint32_t current;
 
     uint32_t tmp;
 
-    ADC->ISC = (1U << 3);                    /* clear the ADCSeq3 interrupt */
-                              /* the ADC Sequence 3 FIFO must have a sample */
+    ADC->ISC = (1U << 3); /* clear the ADCSeq3 interrupt */
+
+    /* the ADC Sequence 3 FIFO must have a sample */
     Q_ASSERT((ADC->SSFSTAT3 & ADC_SSFSTAT0_EMPTY) == 0);
-    tmp = ADC->SSFIFO3;                       /* read the data from the ADC */
 
     /* 1st order low-pass filter: time constant ~= 2^n samples
      * TF = (1/2^n)/(z-((2^n - 1)/2^n)),
      * eg, n=3, y(k+1) = y(k) - y(k)/8 + x(k)/8 => y += (x - y)/8
      */
+    tmp = ADC->SSFIFO3; /* read the data from the ADC */
     adcLPS += (((int)tmp - (int)adcLPS + 4) >> 3);
 
     /* compute the next position of the wheel */
     tmp = (((1 << 10) - adcLPS)*(BSP_SCREEN_HEIGHT - 2)) >> 10;
-
-    if (tmp != wheel) {                   /* did the wheel position change? */
+    if (tmp != wheel) { /* did the wheel position change? */
         ObjectPosEvt *ope = Q_NEW(ObjectPosEvt, PLAYER_SHIP_MOVE_SIG);
-        ope->x = (uint8_t)GAME_SHIP_X;               /* x-position is fixed */
+        ope->x = (uint8_t)GAME_SHIP_X; /* x-position is fixed */
         ope->y = (uint8_t)tmp;
         QACTIVE_POST(AO_Ship, (QEvt *)ope, &l_ADCSeq3_IRQHandler);
-        wheel = tmp;                 /* save the last position of the wheel */
+        wheel = tmp; /* save the last position of the wheel */
     }
 
-    tmp = GPIOC->DATA_Bits[PUSH_BUTTON];               /* read the push btn */
-    switch (debounce_state) {
-        case 0:
-            if (tmp != btn_debounced) {
-                debounce_state = 1U;        /* transition to the next state */
-            }
-            break;
-        case 1:
-            if (tmp != btn_debounced) {
-                debounce_state = 2U;        /* transition to the next state */
-            }
-            else {
-                debounce_state = 0U;          /* transition back to state 0 */
-            }
-            break;
-        case 2:
-            if (tmp != btn_debounced) {
-                debounce_state = 3U;        /* transition to the next state */
-            }
-            else {
-                debounce_state = 0U;          /* transition back to state 0 */
-            }
-            break;
-        case 3:
-            if (tmp != btn_debounced) {
-                btn_debounced = tmp;     /* save the debounced button value */
-
-                if (tmp == 0U) {                /* is the button depressed? */
-                    static QEvt const fireEvt = { PLAYER_TRIGGER_SIG, 0 };
-                    QF_PUBLISH(&fireEvt, &l_ADCSeq3_IRQHandler);
-                }
-            }
-            debounce_state = 0U;              /* transition back to state 0 */
-            break;
+    /* Perform the debouncing of buttons. The algorithm for debouncing
+    * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
+    * and Michael Barr, page 71.
+    */
+    current = ~GPIOC->DATA; /* read the port with the User Button */
+    tmp = buttons.depressed; /* save the debounced depressed buttons */
+    buttons.depressed |= (buttons.previous & current); /* set depressed */
+    buttons.depressed &= (buttons.previous | current); /* clear released */
+    buttons.previous   = current; /* update the history */
+    tmp ^= buttons.depressed;     /* changed debounced depressed */
+    if ((tmp & USER_BTN) != 0U) { /* debounced USER_BTN state changed? */
+        if ((buttons.depressed & USER_BTN) != 0U) { /* is BTN depressed? */
+            static QEvt const fireEvt = { PLAYER_TRIGGER_SIG, 0U, 0U};
+            QF_PUBLISH(&fireEvt, &l_ADCSeq3_IRQHandler);
+        }
+        else { /* the button is released */
+        }
     }
-
 }
 /*..........................................................................*/
 void GPIOPortA_IRQHandler(void) {
@@ -224,17 +212,18 @@ void BSP_init(void) {
     TIMER1->CTL  |= 0x02;
     TIMER1->CTL  |= 0x20;
 
-    /* configure the LED and push button */
-    GPIOC->DIR |= USER_LED;                        /* set direction: output */
-    GPIOC->DEN |= USER_LED;                               /* digital enable */
-    GPIOC->DATA_Bits[USER_LED] = 0;                /* turn the User LED off */
+    /* configure the User LED... */
+    GPIOC->DIR |= USER_LED; /* set direction: output */
+    GPIOC->DEN |= USER_LED; /* digital enable */
+    GPIOC->DATA_Bits[USER_LED] = 0U; /* turn the User LED off */
 
-    GPIOC->DIR &= ~PUSH_BUTTON;                    /*  set direction: input */
-    GPIOC->DEN |= PUSH_BUTTON;                            /* digital enable */
+    /* configure the User Button... */
+    GPIOC->DIR &= ~USER_BTN; /*  set direction: input */
+    GPIOC->DEN |= USER_BTN;  /* digital enable */
 
-    Display96x16x1Init(1);                   /* initialize the OLED display */
+    Display96x16x1Init(1); /* initialize the OLED display */
 
-    if (QS_INIT((void *)0) == 0) {    /* initialize the QS software tracing */
+    if (QS_INIT((void *)0) == 0U) { /* initialize the QS software tracing */
         Q_ERROR();
     }
 

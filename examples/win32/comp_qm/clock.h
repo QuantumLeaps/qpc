@@ -49,7 +49,7 @@ typedef struct {
 } TimeEvt;
 
 
-extern QActive * const APP_alarmClock;
+extern QMActive * const APP_alarmClock;
 
 /*${Components::AlarmClock_ctor} ...........................................*/
 void AlarmClock_ctor(void);

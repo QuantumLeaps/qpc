@@ -24,7 +24,7 @@ set BUILD_DIR=dbg
 if [%1] NEQ [] set BUILD_DIR=%1
 @echo on
 
-%LMFLASH% -q ek-tm4c123gxl %BUILD_DIR%\dpp-qk.bin
+%LMFLASH% -q ek-tm4c123gxl %BUILD_DIR%\dpp-qv.bin
 
 @echo.
 @echo.

@@ -50,7 +50,7 @@
 Q_DEFINE_THIS_MODULE("qf_act")
 
 /* public objects ***********************************************************/
-QActive *QF_active_[QF_MAX_ACTIVE + 1]; /* to be used by QF ports only */
+QMActive *QF_active_[QF_MAX_ACTIVE + 1]; /* to be used by QF ports only */
 
 /****************************************************************************/
 /**
@@ -66,7 +66,7 @@ QActive *QF_active_[QF_MAX_ACTIVE + 1]; /* to be used by QF ports only */
 *
 * @sa QF_remove_()
 */
-void QF_add_(QActive * const a) {
+void QF_add_(QMActive * const a) {
     uint_fast8_t p = a->prio;
     QF_CRIT_STAT_
 
@@ -106,7 +106,7 @@ void QF_add_(QActive * const a) {
 *
 * @sa QF_add_()
 */
-void QF_remove_(QActive const * const a) {
+void QF_remove_(QMActive const * const a) {
     uint_fast8_t p = a->prio;
     QF_CRIT_STAT_
 

@@ -84,7 +84,7 @@ static QMState const AlarmClock_final_s = {
 static AlarmClock l_alarmClock; /* the single instance of the AO */
 
 /* Global-scope objects ----------------------------------------------------*/
-QActive * const APP_alarmClock = &l_alarmClock.super; /* "opaque" AO pointer */
+QMActive * const APP_alarmClock = &l_alarmClock.super; /* "opaque" pointer */
 
 /*${Components::AlarmClock_ctor} ...........................................*/
 void AlarmClock_ctor(void) {

@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Date of the Last Update:  2015-05-04
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -58,7 +58,7 @@ pthread_mutex_t QF_pThreadMutex_ = PTHREAD_MUTEX_INITIALIZER;
 
 /* Local objects -----------------------------------------------------------*/
 static long int l_tickUsec = 10000UL; /* clock tick in usec (for tv_usec) */
-static int_t l_running;
+static bool l_isRunning;
 
 /*..........................................................................*/
 void QF_init(void) {
@@ -81,8 +81,8 @@ int_t QF_run(void) {
         /* setting priority failed, probably due to insufficient privieges */
     }
 
-    l_running = (int_t)1;
-    while (l_running) {
+    l_isRunning = true;
+    while (l_isRunning) {
         QF_onClockTick(); /* clock tick callback (must call QF_TICK_X()) */
 
         timeout.tv_usec = l_tickUsec; /* set the desired tick interval */
@@ -99,7 +99,7 @@ void QF_setTickRate(uint32_t ticksPerSec) {
 }
 /*..........................................................................*/
 void QF_stop(void) {
-    l_running = (int_t)0; /* stop the loop in QF_run() */
+    l_isRunning = false; /* stop the loop in QF_run() */
 }
 /*..........................................................................*/
 static void *thread_routine(void *arg) { /* the expected POSIX signature */
@@ -124,15 +124,16 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     pthread_attr_t attr;
     struct sched_param param;
 
-    Q_REQUIRE(stkSto == (void *)0); /* p-threads allocate stack internally */
+    /* p-threads allocate stack internally */
+    Q_REQUIRE_ID(600, stkSto == (void *)0);
 
     QEQueue_init(&me->eQueue, qSto, qLen);
     pthread_cond_init(&me->osObject, 0);
 
     me->prio = (uint8_t)prio;
     QF_add_(me); /* make QF aware of this active object */
-    QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
 
+    QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 
     pthread_attr_init(&attr);

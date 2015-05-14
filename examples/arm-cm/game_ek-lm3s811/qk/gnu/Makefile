@@ -72,11 +72,11 @@ VPATH = \
 	$(QPC)/source \
 	$(QP_PORT_DIR) \
 	$(QPC)/3rd_party/ek-lm3s811 \
-	$(QPC)/3rd_party/ek-lm3s811\gnu
+	$(QPC)/3rd_party/ek-lm3s811/gnu
 
 # list of all include directories needed by this project
 INCLUDES  = \
-	-I..\.. \
+	-I../.. \
 	-I$(QPC)/include \
 	-I$(QPC)/source \
 	-I$(QP_PORT_DIR) \

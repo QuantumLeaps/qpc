@@ -76,11 +76,11 @@ VPATH = \
 	$(QPC)/source \
 	$(QP_PORT_DIR) \
 	$(QPC)/3rd_party/nucleo-l152re \
-	$(QPC)/3rd_party/nucleo-l152re\gnu
+	$(QPC)/3rd_party/nucleo-l152re/gnu
 
 # list of all include directories needed by this project
 INCLUDES  = \
-	-I..\.. \
+	-I../.. \
 	-I$(QPC)/include \
 	-I$(QPC)/source \
 	-I$(CMSIS_RTX)/INC \

@@ -6,7 +6,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.4.0
-* Last updated on  2014-04-06
+* Last updated on  2014-05-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -123,13 +123,8 @@ void QK_onIdle(void);
 #endif /* QK_MUTEX */
 
 /****************************************************************************/
-/*! get the current QK version number string */
-/**
-* version of QK as a constant 5-character string of the form X.Y.Z,
-* where X is a 1-digit major version number, Y is a 1-digit minor
-* version number, and Z is a 1-digit release number.
-*/
-#define QK_getVersion() (QP_VERSION_STR)
+/*! get the current QK version number string of the form "X.Y.Z" */
+#define QK_getVersion() (QP_versionStr)
 
 
 /****************************************************************************/

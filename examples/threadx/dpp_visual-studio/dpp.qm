@@ -315,8 +315,8 @@ me-&gt;fork[n] = FREE;</action>
     <state_diagram size="49,69"/>
    </statechart>
   </class>
-  <attribute name="AO_Philo[N_PHILO]" type="QActive * const" visibility="0x00" properties="0x00"/>
-  <attribute name="AO_Table" type="QActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Philo[N_PHILO]" type="QMActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Table" type="QMActive * const" visibility="0x00" properties="0x00"/>
   <operation name="Philo_ctor" type="void" visibility="0x00" properties="0x00">
    <code>uint8_t n;
 Philo *me;
@@ -394,7 +394,7 @@ static Philo l_philo[N_PHILO];   /* storage for all Philos */
 #define PHILO_ID(me_)    ((uint8_t)((me_) - l_philo))
 
 /* Global objects ----------------------------------------------------------*/
-QActive * const AO_Philo[N_PHILO] = { /* &quot;opaque&quot; pointers to Philo AO */
+QMActive * const AO_Philo[N_PHILO] = { /* &quot;opaque&quot; pointers to Philo AO */
     &amp;l_philo[0].super,
 //    &amp;l_philo[1].super,
 //    &amp;l_philo[2].super,
@@ -425,7 +425,7 @@ $declare(AOs::Table)
 static Table l_table; /* the single instance of the Table active object */
 
 /* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_Table = &amp;l_table.super; /* &quot;opaque&quot; AO pointer */
+QMActive * const AO_Table = &amp;l_table.super; /* &quot;opaque&quot; AO pointer */
 
 /*..........................................................................*/
 $define(AOs::Table_ctor)

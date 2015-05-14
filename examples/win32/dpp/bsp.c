@@ -100,17 +100,17 @@ void BSP_init(void) {
 void BSP_terminate(int16_t result) {
     (void)result;
 #ifdef Q_SPY
-    l_running = (uint8_t)0;                    /* stop the QS output thread */
+    l_running = (uint8_t)0; /* stop the QS output thread */
 #endif
-    QF_stop();                             /* stop the main "ticker thread" */
+    QF_stop(); /* stop the main "ticker thread" */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
     printf("Philosopher %2d is %s\n", (int)n, stat);
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
-        QS_U8(1, n);                                  /* Philosopher number */
-        QS_STR(stat);                                 /* Philosopher status */
+        QS_U8(1, n);  /* Philosopher number */
+        QS_STR(stat); /* Philosopher status */
     QS_END()
 }
 /*..........................................................................*/
@@ -135,7 +135,7 @@ void BSP_randomSeed(uint32_t seed) {
 
 #include <time.h>
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>                        /* Win32 API for multithreading */
+#include <windows.h> /* Win32 API for multithreading */
 
 #include "qspy.h"
 
@@ -154,13 +154,13 @@ static DWORD WINAPI idleThread(LPVOID par) {/* signature for CreateThread() */
         if (block != (uint8_t *)0) {
             QSPY_parse(block, nBytes);
         }
-        Sleep(10);                                      /* wait for a while */
+        Sleep(10); /* wait for a while */
     }
-    return 0;                                             /* return success */
+    return 0; /* return success */
 }
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsBuf[4*1024];                 // 4K buffer for Quantum Spy
+    static uint8_t qsBuf[4*1024]; // 4K buffer for Quantum Spy
     QS_initBuf(qsBuf, sizeof(qsBuf));
     (void)arg;
     QSPY_config(QP_VERSION,         // version
@@ -177,7 +177,7 @@ uint8_t QS_onStartup(void const *arg) {
                 (void *)0,
                 (QSPY_CustParseFun)0); // customized parser function
 
-    /* setup the QS filters... */
+    /* set up the QS filters... */
     QS_FILTER_ON(QS_QEP_STATE_ENTRY);
     QS_FILTER_ON(QS_QEP_STATE_EXIT);
     QS_FILTER_ON(QS_QEP_STATE_INIT);
@@ -264,7 +264,7 @@ void QS_onCleanup(void) {
 /*..........................................................................*/
 void QS_onFlush(void) {
     for (;;) {
-        uint16_t nBytes = 1024;
+        uint16_t nBytes = 1024U;
         uint8_t const *block;
 
         QF_CRIT_ENTRY(dummy);
@@ -273,7 +273,7 @@ void QS_onFlush(void) {
 
         if (block != (uint8_t const *)0) {
             QSPY_parse(block, nBytes);
-            nBytes = 1024;
+            nBytes = 1024U;
         }
         else {
             break;
@@ -289,5 +289,5 @@ void QSPY_onPrintLn(void) {
     fputs(QSPY_line, stdout);
     fputc('\n', stdout);
 }
-#endif                                                             /* Q_SPY */
+#endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
