@@ -13,11 +13,17 @@ Also, this release brings several cosmetic improvements:
 
 1. All QM models included in examples have been modified to use the ::QMActive "opaque" pointers.
 
-2. The ROM-able QP version string QP_versionStr[] has been added and used consistently in the macros QEP_getVersion(), QF_getVersion(), QK_getVersion(), QV_getVersion(), and QS_getVersion() macros.   
+2. All QM models have been saved with QM 3.3.0, which means that they will not open with QM 3.2.x or earlier QM versions.
 
-3. All Makefiles for the GNU toolset have been cleaned up, whereas any `\` (back-slash) characters in the paths have been repalced with `/` (forward-slash) characters.
+3. The ROM-able QP version string QP_versionStr[] has been added and used consistently in the macros QEP_getVersion(), QF_getVersion(), QK_getVersion(), QV_getVersion(), and QS_getVersion() macros.   
 
-4. Several README files have been updated.
+4. The `qpc/ports/arm-cm/qk/gnu/qk_port.s` ARM Cortex-M port to QK with GNU has been modified to use the CMSIS-compliant symbol __FPU_PRESENT instead of the FPU_VFP_V4_SP_D16 symbol.
+
+5. All Makefiles for the GNU toolset have been cleaned up, whereas any `\` (back-slash) characters in the paths have been repalced with `/` (forward-slash) characters. Also all these Makefiles have been updated to provide the __FPU_PRESENT to C and assembler when the hardware FPU is used.
+
+6. The file display drver for the EK-LM2S811 board locate at `qpc/3rd_party/ek-lm3s811/display96x16x1.c` has been modified to fix the problem with incorrect hardware delay with the GNU compiler at higher levels of optimization. The in-line assembly for the GNU compiler has been updated such that the delay loop cannot be "optimized away". 
+
+7. Several README files have been updated.
 
 
 ------------------------------------------------------------------------------
@@ -447,7 +453,7 @@ NVIC_SetPriority() CMSIS function.
 
 For more information, please read the short Application Note "Setting
 ARM Cortex-M Interrupt Priorities in QP 5.1" available at:
-http://www.state-machine.com/arm/AN_ARM-Cortex-M_Interrupt-Priorities.pdf
+http://www.state-machine.com/doc/AN_ARM-Cortex-M_Interrupt-Priorities.pdf
 
 
 ------------------------------------------------------------------------------

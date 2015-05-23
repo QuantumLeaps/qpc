@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for DPP on NUCLEO-L053R8, CMSIS-RTX kernel, GNU-ARM
-# Last Updated for Version: 5.4.0
-# Date of the Last Update:  2015-04-03
+# Last Updated for Version: 5.4.1
+# Date of the Last Update:  2015-05-22
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -168,34 +168,36 @@ BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 # basic utilities (included in Qtools for Windows), see:
 #    http://sourceforge.net/projects/qpc/files/Qtools
 
-RM    := rm -rf
 MKDIR := mkdir
 RM    := rm
 
 #-----------------------------------------------------------------------------
-# build options for various configurations for ARM Cortex-M
+# build options for various configurations for ARM Cortex-M4F
 #
 
+# combine all the soruces...
 C_SRCS += $(QP_SRCS) $(QP_PORT)
 ASM_SRCS += $(QP_ASMS)
 
+# add the pre-defined symbol __FPU_PRESENT if needed...
+ifneq (,$(ARM_FPU))
+DEFINES += -D__FPU_PRESENT
+ASM_FPU += -defsym=__FPU_PRESENT=1
+endif
 
-ifeq (rel, $(CONF))       # Release configuration ............................
+ifeq (rel, $(CONF)) # Release configuration ..................................
 
 BIN_DIR := rel
 
-ASFLAGS = $(ARM_CPU) -defsym=FPU_VFP_V4_SP_D16=1
+ASFLAGS = $(ARM_CPU) $(ASM_FPU)
 
 CFLAGS = $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-	-ffunction-sections -fdata-sections -Os $(INCLUDES) $(DEFINES) -DNDEBUG
-
-CPPFLAGS = $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
-	-ffunction-sections -fdata-sections -Wall -fno-rtti -fno-exceptions \
+	-ffunction-sections -fdata-sections \
 	-Os $(INCLUDES) $(DEFINES) -DNDEBUG
 
-LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib \
-	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
+CPPFLAGS = $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
+	-Os $(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
@@ -203,37 +205,36 @@ BIN_DIR := spy
 
 C_SRCS += $(QS_SRCS)
 
-ASFLAGS = -g $(ARM_CPU) -defsym=FPU_VFP_V4_SP_D16=1
+ASFLAGS = -g $(ARM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-	-ffunction-sections -fdata-sections -O $(INCLUDES) $(DEFINES) -DQ_SPY
-
-CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
-	-ffunction-sections -fdata-sections -Wall -fno-rtti -fno-exceptions \
+	-ffunction-sections -fdata-sections \
 	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
-LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib \
-	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
+CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
+	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
-else                     # default Debug configuration .......................
+else # default Debug configuration ..........................................
 
 BIN_DIR := dbg
 
-ASFLAGS = -g $(ARM_CPU) -defsym=FPU_VFP_V4_SP_D16=1
+ASFLAGS = -g $(ARM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-	-ffunction-sections -fdata-sections -O $(INCLUDES) $(DEFINES)
-
-CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
-	-ffunction-sections -fdata-sections -Wall -fno-rtti -fno-exceptions \
+	-ffunction-sections -fdata-sections \
 	-O $(INCLUDES) $(DEFINES)
+
+CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
+	-O $(INCLUDES) $(DEFINES)
+
+endif # ......................................................................
+
 
 LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
 	-mthumb -nostdlib \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
-
-endif
 
 
 ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
@@ -288,6 +289,7 @@ ifneq ($(MAKECMDGOALS),clean)
   endif
 endif
 
+
 .PHONY : clean
 clean:
 	-$(RM) $(BIN_DIR)/*.o \
@@ -297,7 +299,10 @@ clean:
 	$(BIN_DIR)/*.map
 	
 show:
+	@echo PROJECT = $(PROJECT)
 	@echo CONF = $(CONF)
+	@echo DEFINES = $(DEFINES)
+	@echo ASM_FPU = $(ASM_FPU)
 	@echo ASM_SRCS = $(ASM_SRCS)
 	@echo C_SRCS = $(C_SRCS)
 	@echo CPP_SRCS = $(CPP_SRCS)

@@ -278,7 +278,7 @@ static QState Ship_exploding(Ship * const me, QEvt const * const e) {
     switch (e->sig) {
         /* ${AOs::Ship::SM::active::exploding::TIME_TICK} */
         case TIME_TICK_SIG: {
-            /* ${AOs::Ship::SM::active::exploding::TIME_TICK::[me->exp_ctr<15U~} */
+            /* ${AOs::Ship::SM::active::exploding::TIME_TICK::[me->exp_ctr<15U]} */
             if (me->exp_ctr < 15U) {
                 ObjectImageEvt *oie;
                 ++me->exp_ctr;

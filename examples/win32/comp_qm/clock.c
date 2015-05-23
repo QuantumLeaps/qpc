@@ -188,7 +188,7 @@ static QState AlarmClock_timekeeping(AlarmClock * const me, QEvt const * const e
             status_ = QM_HANDLED();
             break;
         }
-        /* ${Components::AlarmClock::SM::timekeeping::ALARM_SET, ALARM~} */
+        /* ${Components::AlarmClock::SM::timekeeping::ALARM_SET, ALARM_ON, ALARM_OFF} */
         case ALARM_SET_SIG: /* intentionally fall through */
         case ALARM_ON_SIG: /* intentionally fall through */
         case ALARM_OFF_SIG: {

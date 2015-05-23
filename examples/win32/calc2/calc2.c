@@ -808,7 +808,7 @@ static QState Calc2_int1(Calc2 * const me, QEvt const * const e) {
             status_ = QM_TRAN(&tatbl_);
             break;
         }
-        /* ${SMs::Calc2::SM::on::operand1::int1::DIGIT_0, DIGIT_1~} */
+        /* ${SMs::Calc2::SM::on::operand1::int1::DIGIT_0, DIGIT_1_9} */
         case DIGIT_0_SIG: /* intentionally fall through */
         case DIGIT_1_9_SIG: {
             BSP_insert(Q_EVT_CAST(CalcEvt)->key_code);
@@ -846,7 +846,7 @@ static QState Calc2_frac1(Calc2 * const me, QEvt const * const e) {
             status_ = QM_HANDLED();
             break;
         }
-        /* ${SMs::Calc2::SM::on::operand1::frac1::DIGIT_0, DIGIT_1~} */
+        /* ${SMs::Calc2::SM::on::operand1::frac1::DIGIT_0, DIGIT_1_9} */
         case DIGIT_0_SIG: /* intentionally fall through */
         case DIGIT_1_9_SIG: {
             BSP_insert(Q_EVT_CAST(CalcEvt)->key_code);
@@ -1332,7 +1332,7 @@ static QState Calc2_int2(Calc2 * const me, QEvt const * const e) {
             status_ = QM_TRAN(&tatbl_);
             break;
         }
-        /* ${SMs::Calc2::SM::on::operand2::int2::DIGIT_0, DIGIT_1~} */
+        /* ${SMs::Calc2::SM::on::operand2::int2::DIGIT_0, DIGIT_1_9} */
         case DIGIT_0_SIG: /* intentionally fall through */
         case DIGIT_1_9_SIG: {
             BSP_insert(Q_EVT_CAST(CalcEvt)->key_code);
@@ -1370,7 +1370,7 @@ static QState Calc2_frac2(Calc2 * const me, QEvt const * const e) {
             status_ = QM_HANDLED();
             break;
         }
-        /* ${SMs::Calc2::SM::on::operand2::frac2::DIGIT_0, DIGIT_1~} */
+        /* ${SMs::Calc2::SM::on::operand2::frac2::DIGIT_0, DIGIT_1_9} */
         case DIGIT_0_SIG: /* intentionally fall through */
         case DIGIT_1_9_SIG: {
             BSP_insert(Q_EVT_CAST(CalcEvt)->key_code);

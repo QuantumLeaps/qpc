@@ -1,0 +1,56 @@
+Important - Read carefully:
+
+This license is a legal agreement between YOU (either an individual or a single entity) and SEGGER Microcontroller Systeme GmbH & Co. KG (called SEGGER).
+By downloading and/or using the starterkit software, you agree to be bound by the terms of this agreement.
+
+1. Content of contract
+The starterkit software (hereinafter referred to as “software”) governed by this contract, which includes computer software, electronic documents and printed material is protected by copyright laws.
+Solely with respect to electronic documents included with the software product, YOU may make an unlimited number of copies (either in hardcopy or electronic form), provided that such copies shall be used only for internal purposes and are not republished or distributed to any third party without agreement of SEGGER. The software is licensed, not sold, to YOU  for use only under the terms of this agreement. YOU acknowledge and agree that the product consists of proprietary, unpublished products of SEGGER, protected under copyright and trade secret laws. Title, ownership rights, and intellectual property rights in the product shall remain by SEGGER and/or its suppliers. Licensee acknowledges such ownership and intellectual property rights and will not take any action to jeopardize, limit or interfere in any manner with SEGGER or its suppliers' ownership of or rights with respect to the product.
+
+2. License Grant
+The licensee (YOU) will receive the software as source code, object code and executable code from SEGGER.
+YOU may use the code for evaluation purposes based on the provided hardware platform only. You may not use the software on another platform, in a product or for any commercial purposes without entering a separate License Agreement.
+An unlimited number of persons working for your company are entitled to use the software for evaluation purposes on said platform only.
+YOU are entitled to make copies of the software for backup purposes.
+Any other use of the package is prohibited without prior written authorization from SEGGER. Under this license, the package may not be used to create and distribute a relinkable or an equivalent. Under no circumstances may any of the source code/object code be used for creating or developing a similar or competitive software.
+All copies of the software, including modifications to the software, must bear all copyright, trademarks and other proprietary notices included thereon by SEGGER.
+
+3. RESTRICTIONS
+Licensee may not:
+(a) decompile, disassemble, reverse engineer, or otherwise attempt to derive the source code for the product, 
+(b) redistribute, encumber, sell, rent, lease, sublicense, or otherwise transfer rights to the product,
+(c) remove or alter any trademark, logo, copyright or other proprietary notices, legends, symbols or labels in the product, or 
+(d) publish any results of benchmark tests run on the product to a third party without Licensor's prior written consent,
+(e) use of software in a commercial product or the development of a commercial product without entering a separate license agreement with SEGGER.
+Without prejudice to any other rights, SEGGER may terminate this agreement if Licensee fails to comply with foregoing restrictions.
+In such event SEGGER is entitled to make you liable and may claim monetary damages. 
+
+4. FEES
+All components can be used free of charge for evaluation purposes.
+
+5. TERMINATION
+Without prejudice to any other rights, Licensor may terminate this agreement if Licensee breaches any of its terms and conditions. Upon termination, Licensee shall destroy all copies of the product.
+
+6. PROPRIETARY RIGHTS
+Title, ownership rights, and intellectual property rights in the product shall remain by SEGGER and/or its suppliers. Licensee acknowledges such ownership and intellectual property rights and will not take any action to jeopardize, limit or interfere in any manner with SEGGER or its suppliers' ownership of or rights with respect to the product. The product is protected by copyright and other intellectual property laws and by international treaties. Title and related rights in the content accessed through the product is the property of the applicable content owner and is protected by applicable law. The License granted under this agreement gives Licensee no rights to such content. 
+
+7. DISCLAIMER OF WARRANTY
+The product is provided on an "as is" basis, without warranty of any kind, including without limitation the warranties that it is free of defects, merchantable, fit for a particular purpose or non-infringing. The entire risk as to the quality and performance of the product is borne by licensee. Should the product prove defective in any respect, licensee and not licensor or its suppliers or resellers assumes the entire cost of any service and repair. In addition, the security mechanisms implemented by the product have inherent limitations, and licensee must determine that the product sufficiently meets its requirements. This disclaimer of warranty constitutes an essential part of this agreement. No use of the product is authorized hereunder except under this disclaimer.
+
+8. LIMITATION OF LIABILITY
+To the maximum extent permitted by applicable law, in no event will licensor or its suppliers or resellers be liable for any indirect, special, incidental or consequential damages arising out of the use of or inability to use the product, including, without limitation, damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses, even if advised of the possibility thereof, and regardless of the legal or equitable theory (contract, tort or otherwise) upon which the claim is based. In any case, licensor's entire liability under any provision of this agreement shall not exceed in the aggregate the sum of the fees licensee paid for this license (if any), with the exception of death or personal injury caused by the negligence of licensor to the extent applicable law prohibits the limitation of damages in such cases. Some jurisdictions do not allow the exclusion or limitation of incidental or consequential damages, so this exclusion and limitation may not be applicable. SEGGER is not responsible for any liability arising out of content provided by licensee or a third party that is accessed through the product and/or any material linked through such content.
+
+9. HIGH RISK ACTIVITIES
+The product is not fault-tolerant and is not designed, manufactured or intended for use or resale as on-line control equipment in hazardous environments requiring fail-safe performance, such as in the operation of nuclear facilities, aircraft navigation or communication systems, air traffic control, direct life support machines, or weapons systems, in which the failure of the product could lead directly to death, personal injury, or severe physical or environmental damage ("High Risk Activities"). Accordingly, Licensor and its suppliers specifically disclaim any express or implied warranty of fitness for High Risk Activities. Licensee agrees that Licensor and its suppliers will not be liable for any claims or damages arising from the use of the product in such applications.
+
+10. MISCELLANEOUS
+(a) This agreement constitutes the entire agreement between the parties concerning the subject matter hereof. 
+(b) This agreement may be changed only by an amendment in writing, signed by both parties.
+(c) If any provision in this agreement should be held illegal or unenforceable by a court having jurisdiction, such provision shall be modified to the extent necessary to render it enforceable without losing its intent, or severed from this agreement if no such modification is possible, and other provisions of this agreement shall remain in full force and effect.
+(d) This agreement shall be governed by the laws of the Federal Republic of Germany.
+(e) This agreement shall be binding upon and shall inure to the benefit of the parties, their successors and permitted assigns.
+(f) Neither party shall be in default or be liable for any delay, failure in performance (excepting the obligation to pay) or interruption of service resulting directly or indirectly from any cause beyond its reasonable control.
+(g) The relationship between Licensor and Licensee is that of independent contractors and neither Licensee nor its agents shall have any authority to bind Licensor in any way.
+(h) If any SEGGER Microcontroller Systeme GmbH & Co. KG professional services are being provided, then such professional services are provided pursuant to the terms of a separate professional services agreement between the parties. The parties acknowledge that such services are acquired independently of the product licensed hereunder, and that provision of such services is not essential to the functionality of such product.
+
+© 2004-2013 SEGGER Microcontroller GmbH & Co. KG

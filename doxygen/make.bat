@@ -1,8 +1,8 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 5.4.0
-:: Date of the Last Update:  2015-04.-03
+:: Last Updated for Version: 5.4.1
+:: Date of the Last Update:  2015-05-18
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -38,7 +38,7 @@ echo usage:
 echo make
 echo make -CHM
 
-set VERSION=5.4.0
+set VERSION=5.4.1
 
 :: Generate Resource Standard Metrics for QP/C ............................... 
 set DOXHOME="C:\tools\doxygen\bin"
@@ -47,14 +47,14 @@ set RCMHOME="C:\tools\MSquared\M2 RSM"
 set RSM_OUTPUT=metrics.dox
 set RSM_INPUT=..\include\*.h ..\source\*.h ..\source\*.c
 
-echo /** \page metrics Code Metrics > %RSM_OUTPUT%
+echo /** @page metrics Code Metrics > %RSM_OUTPUT%
 echo.>> %RSM_OUTPUT%
-echo \code >> %RSM_OUTPUT%
+echo @code >> %RSM_OUTPUT%
 echo                    Standard Code Metrics for QP/C %VERSION% >> %RSM_OUTPUT%
 
 %RCMHOME%\rsm.exe -fd -xNOCOMMAND -xNOCONFIG -u"File cfg rsm_qpc.cfg" %RSM_INPUT% >> %RSM_OUTPUT%
 
-echo \endcode >> %RSM_OUTPUT%
+echo @endcode >> %RSM_OUTPUT%
 echo */ >> %RSM_OUTPUT%
 
 :: Generate Doxygen Documentation ........................................... 

@@ -141,7 +141,7 @@ extern QMActive * const AO_Missile;
 
 
 /* helper function for all AOs */
-/*${AOs::do_bitmaps_overl~} ................................................*/
+/*${AOs::do_bitmaps_overlap} ...............................................*/
 uint8_t do_bitmaps_overlap(
     uint8_t bmp_id1,
     uint8_t x1,

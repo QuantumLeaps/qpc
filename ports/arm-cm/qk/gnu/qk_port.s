@@ -1,13 +1,13 @@
 /*****************************************************************************
-* Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M4F), GNU-ARM assembler
-* Last Updated for Version: 5.1.0
-* Date of the Last Update:  Sep 19, 2013
+* Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M4F), GNU ARM assembler
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-05-21
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* Web  : http://www.state-machine.com
+* Email: info@state-machine.com
 *****************************************************************************/
 
     .syntax unified
@@ -134,7 +133,7 @@ svc_ret:
     MSR     BASEPRI,r0        /* enable interrupts to allow SVCall exception*/
     .endif
 
-    .ifdef  FPU_VFP_V4_SP_D16 /* If Vector FPU used--clear CONTROL[2] (FPCA)*/
+    .ifdef  __FPU_PRESENT     /* If Vector FPU used--clear CONTROL[2] (FPCA)*/
     MRS     r0,CONTROL        /* r0 := CONTROL                              */
     MOVS    r1,#4             /* r1 := 0x04 (FPCA bit)                      */
     BICS    r0,r1             /* r0 := r0 & ~r1                             */

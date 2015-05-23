@@ -153,7 +153,7 @@ QState Alarm_on(Alarm * const me, QEvt const * const e) {
         }
         /* ${Components::Alarm::SM::on::TIME} */
         case TIME_SIG: {
-            /* ${Components::Alarm::SM::on::TIME::[Q_EVT_CAST(Time~} */
+            /* ${Components::Alarm::SM::on::TIME::[Q_EVT_CAST(TimeEvt)->current_ti~} */
             if (Q_EVT_CAST(TimeEvt)->current_time == me->alarm_time) {
                 BSP_showMsg("ALARM!!!");
 

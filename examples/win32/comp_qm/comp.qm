@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="3.2.2">
+<model version="3.3.0">
  <documentation>Dining Philosopher Problem example
 
-NOTE: Requries QP 5.</documentation>
+NOTE: Requries QP5.</documentation>
  <framework name="qpc"/>
  <package name="Events" stereotype="0x01">
   <class name="SetEvt" superclass="qpc::QEvt">

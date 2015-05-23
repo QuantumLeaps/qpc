@@ -195,7 +195,7 @@ static QState Mine2_planted(Mine2 * const me, QEvt const * const e) {
     switch (e->sig) {
         /* ${AOs::Mine2::SM::used::planted::TIME_TICK} */
         case TIME_TICK_SIG: {
-            /* ${AOs::Mine2::SM::used::planted::TIME_TICK::[me->x>=GAME_SPE~} */
+            /* ${AOs::Mine2::SM::used::planted::TIME_TICK::[me->x>=GAME_SPEED_X]} */
             if (me->x >= GAME_SPEED_X) {
                 ObjectImageEvt *oie;
                  me->x -= GAME_SPEED_X; /* move the mine 1 step */
@@ -228,7 +228,7 @@ static QState Mine2_planted(Mine2 * const me, QEvt const * const e) {
             uint8_t x   = Q_EVT_CAST(ObjectImageEvt)->x;
             uint8_t y   = Q_EVT_CAST(ObjectImageEvt)->y;
             uint8_t bmp = Q_EVT_CAST(ObjectImageEvt)->bmp;
-            /* ${AOs::Mine2::SM::used::planted::SHIP_IMG::[collisionwithMI~} */
+            /* ${AOs::Mine2::SM::used::planted::SHIP_IMG::[collisionwithMINE2_BMP?]} */
             if (do_bitmaps_overlap(MINE2_BMP, me->x, me->y, bmp, x, y)) {
                 static struct {
                     QMState const *target;
@@ -259,7 +259,7 @@ static QState Mine2_planted(Mine2 * const me, QEvt const * const e) {
             uint8_t x   = Q_EVT_CAST(ObjectImageEvt)->x;
             uint8_t y   = Q_EVT_CAST(ObjectImageEvt)->y;
             uint8_t bmp = Q_EVT_CAST(ObjectImageEvt)->bmp;
-            /* ${AOs::Mine2::SM::used::planted::MISSILE_IMG::[collisionwithMI~} */
+            /* ${AOs::Mine2::SM::used::planted::MISSILE_IMG::[collisionwithMINE2_MISSILE_BMP?~} */
             if (do_bitmaps_overlap(MINE2_MISSILE_BMP, me->x, me->y, bmp, x, y)) {
                 static struct {
                     QMState const *target;

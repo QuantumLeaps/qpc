@@ -129,7 +129,7 @@ static QState Missile_flying(Missile * const me, QEvt const * const e) {
     switch (e->sig) {
         /* ${AOs::Missile::SM::flying::TIME_TICK} */
         case TIME_TICK_SIG: {
-            /* ${AOs::Missile::SM::flying::TIME_TICK::[me->x+GAME_MISS~} */
+            /* ${AOs::Missile::SM::flying::TIME_TICK::[me->x+GAME_MISSILE_SPEED_X<GAME~} */
             if (me->x + GAME_MISSILE_SPEED_X < GAME_SCREEN_WIDTH) {
                 ObjectImageEvt *oie;
                 me->x += GAME_MISSILE_SPEED_X;
@@ -199,7 +199,7 @@ static QState Missile_exploding(Missile * const me, QEvt const * const e) {
     switch (e->sig) {
         /* ${AOs::Missile::SM::exploding::TIME_TICK} */
         case TIME_TICK_SIG: {
-            /* ${AOs::Missile::SM::exploding::TIME_TICK::[(me->x>=GAME_SP~} */
+            /* ${AOs::Missile::SM::exploding::TIME_TICK::[(me->x>=GAME_SPEED_X)&&(me->exp~} */
             if ((me->x >= GAME_SPEED_X) && (me->exp_ctr < 15U)) {
                 ObjectImageEvt *oie;
 

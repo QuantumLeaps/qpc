@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="3.2.2">
+<model version="3.3.0">
  <documentation>&quot;Fly 'n' Shoot&quot; game model from Chapters 1 &amp; 9 of PSiCC2
 
-NOTE: Requries QP 5.</documentation>
+NOTE: Requries QP5.</documentation>
  <framework name="qpc"/>
  <package name="Events" stereotype="0x01">
   <class name="ObjectPosEvt" superclass="qpc::QEvt">

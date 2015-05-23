@@ -460,7 +460,7 @@ static void Tunnel_addImageAt(
     }
     (void)me; /* avoid the compiler warning */
 }
-/*${AOs::Tunnel::dispatchToAllMin~} ........................................*/
+/*${AOs::Tunnel::dispatchToAllMines} .......................................*/
 static void Tunnel_dispatchToAllMines(Tunnel * const me, QEvt const * e) {
     uint8_t n;
 
@@ -627,7 +627,7 @@ static QState Tunnel_show_logo(Tunnel * const me, QEvt const * const e) {
         /* ${AOs::Tunnel::SM::active::show_logo::BLINK_TIMEOUT} */
         case BLINK_TIMEOUT_SIG: {
             me->blink_ctr ^= 1U; /* toggle the blink couner */
-            /* ${AOs::Tunnel::SM::active::show_logo::BLINK_TIMEOUT::[me->blink_ctr==~} */
+            /* ${AOs::Tunnel::SM::active::show_logo::BLINK_TIMEOUT::[me->blink_ctr==0U]} */
             if (me->blink_ctr == 0U) {
                 BSP_drawNString(6U*9U, 0U,         " LeAps");
                 BSP_drawNString(0U,    1U, "state-machine.co");
@@ -967,20 +967,20 @@ static QState Tunnel_screen_saver(Tunnel * const me, QEvt const * const e) {
     }
     return status_;
 }
-/*${AOs::Tunnel::SM::active::screen_saver::screen_saver_hid~} ..............*/
-/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_hid~} */
+/*${AOs::Tunnel::SM::active::screen_saver::screen_saver_hide} ..............*/
+/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_hide} */
 static QState Tunnel_screen_saver_hide_e(Tunnel * const me) {
     BSP_displayOff(); /* power down the display */
     QTimeEvt_armX(&me->screenTimeEvt, BSP_TICKS_PER_SEC*3U, 0U);
     return QM_ENTRY(&Tunnel_screen_saver_hide_s);
 }
-/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_hid~} */
+/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_hide} */
 static QState Tunnel_screen_saver_hide_x(Tunnel * const me) {
     QTimeEvt_disarm(&me->screenTimeEvt);
     BSP_displayOn(); /* power up the display */
     return QM_EXIT(&Tunnel_screen_saver_hide_s);
 }
-/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_hid~} */
+/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_hide} */
 static QState Tunnel_screen_saver_hide(Tunnel * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -1007,8 +1007,8 @@ static QState Tunnel_screen_saver_hide(Tunnel * const me, QEvt const * const e) 
     }
     return status_;
 }
-/*${AOs::Tunnel::SM::active::screen_saver::screen_saver_sho~} ..............*/
-/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_sho~} */
+/*${AOs::Tunnel::SM::active::screen_saver::screen_saver_show} ..............*/
+/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_show} */
 static QState Tunnel_screen_saver_show_e(Tunnel * const me) {
     uint32_t rnd = random();
     /* clear the screen frame buffer */
@@ -1022,7 +1022,7 @@ static QState Tunnel_screen_saver_show_e(Tunnel * const me) {
     QTimeEvt_armX(&me->screenTimeEvt, BSP_TICKS_PER_SEC/2U, 0U);
     return QM_ENTRY(&Tunnel_screen_saver_show_s);
 }
-/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_sho~} */
+/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_show} */
 static QState Tunnel_screen_saver_show_x(Tunnel * const me) {
     QTimeEvt_disarm(&me->screenTimeEvt);
     /* clear the screen frame buffer */
@@ -1031,7 +1031,7 @@ static QState Tunnel_screen_saver_show_x(Tunnel * const me) {
     BSP_drawBitmap(l_frame);
     return QM_EXIT(&Tunnel_screen_saver_show_s);
 }
-/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_sho~} */
+/* ${AOs::Tunnel::SM::active::screen_saver::screen_saver_show} */
 static QState Tunnel_screen_saver_show(Tunnel * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
