@@ -1,4 +1,4 @@
-About AP/C
+About QP/C
 ==========
 QP/C (Quantum Platform in C) is a lightweight, open source software framework
 for building responsive and modular real-time embedded applications as
@@ -27,9 +27,9 @@ frameworks and the QM modeling tool receive over 40,000 downloads a year.
 The book, Practical UML Statecharts in C/C++, 2nd Edition provides a detailed
 design study of the QP frameworks and explains all the related concepts.
 
-***
+****
 NOTE: For more information about QP/C, please visit:
-http://www.state-machine.com/qp/qpc
+http://www.state-machine.com/qpc
 ****
 
 
@@ -39,10 +39,11 @@ QP/C is licensed under the increasingly popular dual licensing model, in
 which both the open source software distribution mechanism and traditional
 closed source software distribution models are combined.
 
-Note
-If your company has a policy forbidding open source in your product, all
-QP frameworks can be licensed commercially, in which case you don't use any
-open source license and you do not violate your policy.
+****
+NOTE: If your company has a policy forbidding open source in your product,
+all QP frameworks can be licensed commercially, in which case you don't use
+any open source license and you do not violate your policy.
+****
 
 Open Source Projects:
 --------------------

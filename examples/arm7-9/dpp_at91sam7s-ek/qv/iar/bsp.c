@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP on AT91SAM7S-EK, cooperative QV kernel, IAR-ARM toolset
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-01
+* Last Updated for Version: 5.4.1
+* Date of the Last Update:  2015-05-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,22 +48,28 @@ typedef void (*IntVector)(void);  /* IntVector pointer-to-function */
 uint32_t get_MCK_FREQ(void);      /* CPU clock set up in __low_level_init() */
 
 uint32_t const l_led[] = {
-    (1 << 0),              /* LED D1 on AT91SAM7S-EK */
-    (1 << 1),              /* LED D2 on AT91SAM7S-EK */
-    (1 << 2),              /* LED D3 on AT91SAM7S-EK */
-    (1 << 3),              /* LED D4 on AT91SAM7S-EK */
-    0                      /* no LED 5  on AT91SAM7S-EK */
+    (1 << 0),  /* LED D1 on AT91SAM7S-EK */
+    (1 << 1),  /* LED D2 on AT91SAM7S-EK */
+    (1 << 2),  /* LED D3 on AT91SAM7S-EK */
+    (1 << 3)   /* LED D4 on AT91SAM7S-EK */
 };
 
-#define LED_ON(num_)       (AT91C_BASE_PIOA->PIO_CODR = l_led[num_])
-#define LED_OFF(num_)      (AT91C_BASE_PIOA->PIO_SODR = l_led[num_])
+#define LED_ON(num_)  (AT91C_BASE_PIOA->PIO_CODR = l_led[num_])
+#define LED_OFF(num_) (AT91C_BASE_PIOA->PIO_SODR = l_led[num_])
 
-static unsigned  l_rnd;    /* random seed */
+uint32_t const l_btn[] = {
+    (1U << 19), /* BTN P1 on AT91SAM7S-EK */
+    (1U << 20), /* BTN P2 on AT91SAM7S-EK */
+    (1U << 14), /* BTN P3 on AT91SAM7S-EK */
+    (1U << 15)  /* BTN P4 on AT91SAM7S-EK */
+};
+
+static unsigned l_rnd; /* random seed */
 
 #ifdef Q_SPY
 
     static uint8_t const l_ISR_tick = 0;
-    enum AppRecords {      /* application-specific trace records */
+    enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER
     };
 
@@ -84,10 +90,40 @@ void BSP_irq(void) {
 /* ISRs --------------------------------------------------------------------*/
 __ramfunc
 static void ISR_tick(void) {
-    uint32_t volatile tmp = AT91C_BASE_PITC->PITC_PIVR;  /* clear interrupt */
-    (void)tmp; /* avoid the compiler warning about unused variable */
+    /* state of the button debouncing, see below */
+    static struct ButtonsDebouncing {
+        uint32_t depressed;
+        uint32_t previous;
+    } buttons = { ~0U, ~0U };
+    uint32_t current;
+    uint32_t volatile tmp;
+
+    /* clear the interrupt source */
+    tmp = AT91C_BASE_PITC->PITC_PIVR;
 
     QF_TICK_X(0U, &l_ISR_tick); /* process all time events at tick rate 0 */
+
+    /* Perform the debouncing of buttons. The algorithm for debouncing
+    * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
+    * and Michael Barr, page 71.
+    */
+    current = ~AT91C_BASE_PIOA->PIO_PDSR;/* read PIOA with state of Buttons */
+    tmp = buttons.depressed; /* save the debounced depressed buttons */
+    buttons.depressed |= (buttons.previous & current); /* set depressed */
+    buttons.depressed &= (buttons.previous | current); /* clear released */
+    buttons.previous   = current; /* update the history */
+    tmp ^= buttons.depressed;     /* changed debounced depressed */
+    if ((tmp & l_btn[0]) != 0U) {  /* debounced BTN_P1 state changed? */
+        if ((buttons.depressed & l_btn[0]) != 0U) { /* is BTN_P1 depressed? */
+            static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
+            QF_PUBLISH(&pauseEvt, &l_ISR_tick);
+        }
+        else {            /* the button is released */
+            static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
+            QF_PUBLISH(&serveEvt, &l_ISR_tick);
+        }
+
+    }
 }
 /*..........................................................................*/
 __ramfunc
@@ -99,10 +135,26 @@ static void ISR_spur(void) {
 void BSP_init(void) {
     uint32_t i;
 
-    for (i = 0; i < Q_DIM(l_led); ++i) {      /* initialize the LEDs... */
+    /* When using the JTAG debugger the AIC might not be initialised
+    * to the correct default state. This line ensures that AIC does not
+    * mask all interrupts at the start.
+    */
+    AT91C_BASE_AIC->AIC_EOICR = 0U;
+
+    /* enable peripheral clock for PIOA */
+    AT91C_BASE_PMC->PMC_PCER = (1U << AT91C_ID_PIOA);
+
+    /* initialize the LEDs... */
+    for (i = 0; i < Q_DIM(l_led); ++i) {
         AT91C_BASE_PIOA->PIO_PER = l_led[i];  /* enable pin */
         AT91C_BASE_PIOA->PIO_OER = l_led[i];  /* configure as output pin */
         LED_OFF(i);                           /* extinguish the LED */
+    }
+
+    /* initialize the Buttons... */
+    for (i = 0; i < Q_DIM(l_btn); ++i) {
+        AT91C_BASE_PIOA->PIO_ODR = l_btn[i]; /* disable output (input pin) */
+        AT91C_BASE_PIOA->PIO_PER = l_btn[i]; /* enable pin */
     }
 
     /* configure Advanced Interrupt Controller (AIC) of AT91... */
@@ -129,11 +181,17 @@ void BSP_terminate(int16_t result) {
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
-    if (stat[0] == (uint8_t)'e') { /* is this Philosopher eating? */
-        LED_ON(n);
+    if (stat[0] == 'h') {
+        LED_ON(0);  /* turn LED on  */
     }
-    else {  /* this Philosopher is not eating */
-        LED_OFF(n);
+    else {
+        LED_OFF(0); /* turn LED off */
+    }
+    if (stat[0] == 'e') {
+        LED_ON(1);  /* turn LED on  */
+    }
+    else {
+        LED_OFF(1); /* turn LED off */
     }
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
@@ -143,7 +201,12 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    (void)paused;
+    if (paused != (uint8_t)0) {
+        LED_ON(2);  /* turn LED on  */
+    }
+    else {
+        LED_OFF(2); /* turn LED off */
+    }
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
@@ -183,6 +246,11 @@ void QF_onCleanup(void) {
 /*..........................................................................*/
 __ramfunc
 void QV_onIdle(void) { /* NOTE: called with interrupts DISABLED */
+
+    /* toggle first LED on and off, see NOTE01 */
+    LED_ON(3);  /* turn LED on  */
+    LED_OFF(3); /* turn LED off */
+
 #ifdef Q_SPY
     /* use the idle cycles for QS transmission... */
 
@@ -365,3 +433,11 @@ uint32_t QS_onGetTime(void) {
 }
 #endif  /* Q_SPY */
 /*--------------------------------------------------------------------------*/
+
+/*****************************************************************************
+* NOTE01:
+* The User LED is used to visualize the idle loop activity. The brightness
+* of the LED is proportional to the frequency of invcations of the idle loop.
+* Please note that the LED is toggled with interrupts locked, so no interrupt
+* execution time contributes to the brightness of the User LED.
+*/

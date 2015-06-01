@@ -490,6 +490,7 @@
 "D:\qp\qpc\include\qs.h" 1062 1 Info 768: global struct member 'QSPriv::seq' (line 1062, file D:\qp\qpc\include\qs.h) not referenced
 "D:\qp\qpc\include\qs.h" 1063 1 Info 768: global struct member 'QSPriv::chksum' (line 1063, file D:\qp\qpc\include\qs.h) not referenced
 "D:\qp\qpc\include\qs.h" 1065 1 Info 768: global struct member 'QSPriv::critNest' (line 1065, file D:\qp\qpc\include\qs.h) not referenced
+ Note 900: Successful completion, 447 messages produced
 
 Count   Type    Number  Text
 
@@ -504,4 +505,5 @@ Count   Type    Number  Text
 28      Info    765     external '___' (___) could be made static
 30      Info    768     global struct member '___' (___) not referenced
 72      Info    769     global enumeration constant '___' (___) not referenced
+1       Note    900     Successful completion, ___ messages produced
 63      Note    960     Violates MISRA 2004 Required Rule ___, ___

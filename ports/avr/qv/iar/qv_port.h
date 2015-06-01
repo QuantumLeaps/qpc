@@ -3,8 +3,8 @@
 * @brief QV/C port to AVRmega, IAR-AVR toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 5.4.1
+* Date of the Last Update:  2015-05-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,8 +40,8 @@
 #define qv_port_h
 
 /* QV sleep mode, see NOTE1... */
-#define QV_CPU_SLEEP()          do { \
-    __disable_interrupt(); \
+#define QV_CPU_SLEEP()  do { \
+    __enable_interrupt(); \
     __sleep(); \
     SMCR = 0U; \
 } while (0)

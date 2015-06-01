@@ -536,6 +536,7 @@
 "D:\qp\qpc\include\qs.h" 1054 1 Info 768: global struct member 'QSPriv::teObjFilter' (line 1054, file D:\qp\qpc\include\qs.h) not referenced
 "D:\qp\qpc\include\qs.h" 1055 1 Info 768: global struct member 'QSPriv::apObjFilter' (line 1055, file D:\qp\qpc\include\qs.h) not referenced
 "D:\qp\qpc\include\qs.h" 1065 1 Info 768: global struct member 'QSPriv::critNest' (line 1065, file D:\qp\qpc\include\qs.h) not referenced
+ Note 900: Successful completion, 521 messages produced
 
 Count   Type    Number  Text
 
@@ -549,4 +550,5 @@ Count   Type    Number  Text
 25      Info    765     external '___' (___) could be made static
 59      Info    768     global struct member '___' (___) not referenced
 96      Info    769     global enumeration constant '___' (___) not referenced
+1       Note    900     Successful completion, ___ messages produced
 75      Note    960     Violates MISRA 2004 Required Rule ___, ___
