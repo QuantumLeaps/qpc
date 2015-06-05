@@ -3,8 +3,8 @@
 * @brief QP/C public interface including backwards-compatibility layer
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-04-11
+* Last updated for version 5.4.2
+* Last updated on  2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -159,7 +159,7 @@ typedef QHsm        QFsm;
 
 /*! @deprecated time event constructor; instead use: QTimeEvt_ctorX() */
 #define QTimeEvt_ctor(me_, sig_) \
-    QTimeEvt_ctorX((me_), (QActive *)0, (sig_), (uint8_t)0)
+    QTimeEvt_ctorX((me_), (QMActive *)0, (sig_), (uint8_t)0)
 
 /*! @deprecated time event one-shot arm operation;
 * instead use: QTimeEvt_armX() */

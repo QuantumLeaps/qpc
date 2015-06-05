@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Console-based BSP, MinGW
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-07
+* Last Updated for Version: 5.4.2
+* Date of the Last Update:  2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -44,8 +44,8 @@ Q_DEFINE_THIS_FILE
 
 /*..........................................................................*/
 void BSP_init(int argc, char *argv[]) {
-    (void)argc; /* avoid the compiler warning about unused parameter */
-    (void)argv; /* avoid the compiler warning about unused parameter */
+    (void)argc; /* unused parameter */
+    (void)argv; /* unused parameter */
 }
 /*..........................................................................*/
 void BSP_showMsg(char_t const *str) {
@@ -74,6 +74,7 @@ void QF_onStartup(void) {
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
+    printf("\nBye! Bye!\n");
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {

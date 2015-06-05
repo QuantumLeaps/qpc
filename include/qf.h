@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-05-08
+* Last updated for version 5.4.2
+* Last updated on  2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -235,7 +235,7 @@ void QActive_ctor(QActive * const me, QStateHandler initial);
 
 /* public functions for ::QActive / ::QMActive... */
 /*! Implementation of the active object start operation. */
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QMActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie);
@@ -262,7 +262,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
 #ifdef Q_SPY
     /*! Implementation of the active object post (FIFO) operation */
-    bool QActive_post_(QActive * const me, QEvt const * const e,
+    bool QActive_post_(QMActive * const me, QEvt const * const e,
                        uint_fast16_t const margin,
                        void const * const sender);
 
@@ -328,8 +328,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
          (e_), (margin_), (sender_)))
 #else
 
-    bool QActive_post_(QActive * const me, QEvt const * const e,
-                         uint_fast16_t const margin);
+    bool QActive_post_(QMActive * const me, QEvt const * const e,
+                       uint_fast16_t const margin);
 
     #define QACTIVE_POST(me_, e_, sender_) \
         ((void)(*((QMActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
@@ -342,7 +342,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 #endif
 
 /*! Implementation of the active object post LIFO operation */
-void QActive_postLIFO_(QActive * const me, QEvt const * const e);
+void QActive_postLIFO_(QMActive * const me, QEvt const * const e);
 
 /*! Polymorphically posts an event to an active object using the
 * Last-In-First-Out (LIFO) policy. */
@@ -358,7 +358,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e);
 
 /*! Stops execution of an active object and removes it from the
 * framework's supervision. */
-void QActive_stop(QActive * const me);
+void QActive_stop(QMActive * const me);
 
 /*! Subscribes for delivery of signal @p sig to the active object @p me. */
 void QActive_subscribe(QActive const * const me, enum_t const sig);
@@ -371,14 +371,14 @@ void QActive_unsubscribeAll(QActive const * const me);
 
 
 /*! Defer an event to a given separate event queue. */
-bool QActive_defer(QActive * const me,
+bool QActive_defer(QMActive * const me,
                    QEQueue * const eq, QEvt const * const e);
 
 /*! Recall a deferred event from a given event queue. */
-bool QActive_recall(QActive * const me, QEQueue * const eq);
+bool QActive_recall(QMActive * const me, QEQueue * const eq);
 
 /*! Get an event from the event queue of an active object. */
-QEvt const *QActive_get_(QActive *const me);
+QEvt const *QActive_get_(QMActive *const me);
 
 
 /****************************************************************************/
@@ -469,7 +469,7 @@ typedef struct QTimeEvt {
 /* public functions */
 
 /*! The extended "constructor" to initialize a Time Event. */
-void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
+void QTimeEvt_ctorX(QTimeEvt * const me, QMActive * const act,
                     enum_t const sig, uint_fast8_t tickRate);
 
 /*! Arm a time event (one shot or periodic) for direct event posting. */

@@ -142,18 +142,18 @@
 "D:\qp\qpc\source\qf_qact.c" 65 1 Info 759: header declaration for symbol 'QActive_ctor(QActive *, QStateHandler)' defined at (line 65, file D:\qp\qpc\source\qf_qact.c) could be moved from header to module
 "D:\qp\qpc\source\qf_qact.c" 65 1 Info 765: external 'QActive_ctor(QActive *, QStateHandler)' (line 65, file D:\qp\qpc\source\qf_qact.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\source\qf_qact.c" 65 1 Info 714: Symbol 'QActive_ctor(QActive *, QStateHandler)' (line 65, file D:\qp\qpc\source\qf_qact.c) not referenced
-"D:\qp\qpc\source\qf_defer.c" 70 1 Info 759: header declaration for symbol 'QActive_defer(QActive *, struct QEQueue *, const QEvt *)' defined at (line 70, file D:\qp\qpc\source\qf_defer.c) could be moved from header to module
-"D:\qp\qpc\source\qf_defer.c" 70 1 Info 765: external 'QActive_defer(QActive *, struct QEQueue *, const QEvt *)' (line 70, file D:\qp\qpc\source\qf_defer.c) could be made static [MISRA 2004 Rule 8.10, required]
-"D:\qp\qpc\source\qf_defer.c" 70 1 Info 714: Symbol 'QActive_defer(QActive *, struct QEQueue *, const QEvt *)' (line 70, file D:\qp\qpc\source\qf_defer.c) not referenced
-"D:\qp\qpc\source\qf_actq.c" 259 1 Info 759: header declaration for symbol 'QActive_get_(QActive *)' defined at (line 259, file D:\qp\qpc\source\qf_actq.c) could be moved from header to module
-"D:\qp\qpc\source\qf_actq.c" 259 1 Info 765: external 'QActive_get_(QActive *)' (line 259, file D:\qp\qpc\source\qf_actq.c) could be made static [MISRA 2004 Rule 8.10, required]
-"D:\qp\qpc\source\qf_actq.c" 259 1 Info 714: Symbol 'QActive_get_(QActive *)' (line 259, file D:\qp\qpc\source\qf_actq.c) not referenced
-"D:\qp\qpc\source\qf_defer.c" 97 1 Info 759: header declaration for symbol 'QActive_recall(QActive *, struct QEQueue *)' defined at (line 97, file D:\qp\qpc\source\qf_defer.c) could be moved from header to module
-"D:\qp\qpc\source\qf_defer.c" 97 1 Info 765: external 'QActive_recall(QActive *, struct QEQueue *)' (line 97, file D:\qp\qpc\source\qf_defer.c) could be made static [MISRA 2004 Rule 8.10, required]
-"D:\qp\qpc\source\qf_defer.c" 97 1 Info 714: Symbol 'QActive_recall(QActive *, struct QEQueue *)' (line 97, file D:\qp\qpc\source\qf_defer.c) not referenced
-"D:\qp\qpc\include\qf.h" 238 1 Warning 526: Symbol 'QActive_start_(QActive *, uint_fast8_t, const QEvt **, uint_fast16_t, void *, uint_fast16_t, const QEvt *)' (line 238, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\source\qf_act.c) not defined
+"D:\qp\qpc\source\qf_defer.c" 70 1 Info 759: header declaration for symbol 'QActive_defer(QMActive *, struct QEQueue *, const QEvt *)' defined at (line 70, file D:\qp\qpc\source\qf_defer.c) could be moved from header to module
+"D:\qp\qpc\source\qf_defer.c" 70 1 Info 765: external 'QActive_defer(QMActive *, struct QEQueue *, const QEvt *)' (line 70, file D:\qp\qpc\source\qf_defer.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\source\qf_defer.c" 70 1 Info 714: Symbol 'QActive_defer(QMActive *, struct QEQueue *, const QEvt *)' (line 70, file D:\qp\qpc\source\qf_defer.c) not referenced
+"D:\qp\qpc\source\qf_actq.c" 259 1 Info 759: header declaration for symbol 'QActive_get_(QMActive *)' defined at (line 259, file D:\qp\qpc\source\qf_actq.c) could be moved from header to module
+"D:\qp\qpc\source\qf_actq.c" 259 1 Info 765: external 'QActive_get_(QMActive *)' (line 259, file D:\qp\qpc\source\qf_actq.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\source\qf_actq.c" 259 1 Info 714: Symbol 'QActive_get_(QMActive *)' (line 259, file D:\qp\qpc\source\qf_actq.c) not referenced
+"D:\qp\qpc\source\qf_defer.c" 97 1 Info 759: header declaration for symbol 'QActive_recall(QMActive *, struct QEQueue *)' defined at (line 97, file D:\qp\qpc\source\qf_defer.c) could be moved from header to module
+"D:\qp\qpc\source\qf_defer.c" 97 1 Info 765: external 'QActive_recall(QMActive *, struct QEQueue *)' (line 97, file D:\qp\qpc\source\qf_defer.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\source\qf_defer.c" 97 1 Info 714: Symbol 'QActive_recall(QMActive *, struct QEQueue *)' (line 97, file D:\qp\qpc\source\qf_defer.c) not referenced
+"D:\qp\qpc\include\qf.h" 238 1 Warning 526: Symbol 'QActive_start_(QMActive *, uint_fast8_t, const QEvt **, uint_fast16_t, void *, uint_fast16_t, const QEvt *)' (line 238, file D:\qp\qpc\include\qf.h, module D:\qp\qpc\source\qf_act.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_start_' 
-"D:\qp\qpc\include\qf.h" 361 1 Info 757: global declarator 'QActive_stop(QActive *)' (line 361, file D:\qp\qpc\include\qf.h) not referenced
+"D:\qp\qpc\include\qf.h" 361 1 Info 757: global declarator 'QActive_stop(QMActive *)' (line 361, file D:\qp\qpc\include\qf.h) not referenced
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QActive_stop' 
 "D:\qp\qpc\source\qf_ps.c" 208 1 Info 759: header declaration for symbol 'QActive_subscribe(const QActive *, enum_t)' defined at (line 208, file D:\qp\qpc\source\qf_ps.c) could be moved from header to module
 "D:\qp\qpc\source\qf_ps.c" 208 1 Info 765: external 'QActive_subscribe(const QActive *, enum_t)' (line 208, file D:\qp\qpc\source\qf_ps.c) could be made static [MISRA 2004 Rule 8.10, required]
@@ -211,9 +211,9 @@
 "D:\qp\qpc\source\qf_time.c" 291 1 Info 759: header declaration for symbol 'QTimeEvt_armX(struct QTimeEvt *, QTimeEvtCtr, QTimeEvtCtr)' defined at (line 291, file D:\qp\qpc\source\qf_time.c) could be moved from header to module
 "D:\qp\qpc\source\qf_time.c" 291 1 Info 765: external 'QTimeEvt_armX(struct QTimeEvt *, QTimeEvtCtr, QTimeEvtCtr)' (line 291, file D:\qp\qpc\source\qf_time.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\source\qf_time.c" 291 1 Info 714: Symbol 'QTimeEvt_armX(struct QTimeEvt *, QTimeEvtCtr, QTimeEvtCtr)' (line 291, file D:\qp\qpc\source\qf_time.c) not referenced
-"D:\qp\qpc\source\qf_time.c" 231 1 Info 759: header declaration for symbol 'QTimeEvt_ctorX(struct QTimeEvt *, QActive *, enum_t, uint_fast8_t)' defined at (line 231, file D:\qp\qpc\source\qf_time.c) could be moved from header to module
-"D:\qp\qpc\source\qf_time.c" 231 1 Info 765: external 'QTimeEvt_ctorX(struct QTimeEvt *, QActive *, enum_t, uint_fast8_t)' (line 231, file D:\qp\qpc\source\qf_time.c) could be made static [MISRA 2004 Rule 8.10, required]
-"D:\qp\qpc\source\qf_time.c" 231 1 Info 714: Symbol 'QTimeEvt_ctorX(struct QTimeEvt *, QActive *, enum_t, uint_fast8_t)' (line 231, file D:\qp\qpc\source\qf_time.c) not referenced
+"D:\qp\qpc\source\qf_time.c" 231 1 Info 759: header declaration for symbol 'QTimeEvt_ctorX(struct QTimeEvt *, QMActive *, enum_t, uint_fast8_t)' defined at (line 231, file D:\qp\qpc\source\qf_time.c) could be moved from header to module
+"D:\qp\qpc\source\qf_time.c" 231 1 Info 765: external 'QTimeEvt_ctorX(struct QTimeEvt *, QMActive *, enum_t, uint_fast8_t)' (line 231, file D:\qp\qpc\source\qf_time.c) could be made static [MISRA 2004 Rule 8.10, required]
+"D:\qp\qpc\source\qf_time.c" 231 1 Info 714: Symbol 'QTimeEvt_ctorX(struct QTimeEvt *, QMActive *, enum_t, uint_fast8_t)' (line 231, file D:\qp\qpc\source\qf_time.c) not referenced
 "D:\qp\qpc\source\qf_time.c" 420 1 Info 759: header declaration for symbol 'QTimeEvt_rearm(struct QTimeEvt *, QTimeEvtCtr)' defined at (line 420, file D:\qp\qpc\source\qf_time.c) could be moved from header to module
 "D:\qp\qpc\source\qf_time.c" 420 1 Info 765: external 'QTimeEvt_rearm(struct QTimeEvt *, QTimeEvtCtr)' (line 420, file D:\qp\qpc\source\qf_time.c) could be made static [MISRA 2004 Rule 8.10, required]
 "D:\qp\qpc\source\qf_time.c" 420 1 Info 714: Symbol 'QTimeEvt_rearm(struct QTimeEvt *, QTimeEvtCtr)' (line 420, file D:\qp\qpc\source\qf_time.c) not referenced

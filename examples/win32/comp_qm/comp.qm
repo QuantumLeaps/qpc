@@ -209,8 +209,7 @@ QMSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
      </state_glyph>
     </state>
     <state name="final">
-     <entry brief="terminate">BSP_showMsg(&quot;Bye! Bye!&quot;);
-QF_stop(); /* terminate the application */</entry>
+     <entry brief="terminate">QF_stop(); /* terminate the application */</entry>
      <state_glyph node="2,68,31,8">
       <entry box="1,2,11,2"/>
      </state_glyph>

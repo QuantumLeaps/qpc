@@ -20,7 +20,7 @@ this folder for more details.
 
 
 QS Software Tracing Instrumentation
-===================================
+-----------------------------------
 This example provides the "Spy" build configuration, which outputs the QS
 (Quantum Spy) software tracing data through UART0, which is connected to
 the virtual COM port of the TI Stellaris debugger.
@@ -34,3 +34,17 @@ qspy -cCOM1
 
 The actual COM port number might be different on your Windows machine.
 Please check the Device Manager to find the COM port number.
+
+
+Win32 Emulations
+================
+The sub-directorie win32 and win32-qv provide the emulations of the example
+on Windows GUI (with regular Win32 threads and with cooperative QV scheduler,
+respectively. These sub-directories contain the Makefiles for the MinGW
+toolset and Visual Studio solution files (game-gui.sln) for Visual C++.
+
+The Win32 emulations use exactly the same code as the embedded board and
+differ only in the Board Support Package (bsp.c). This example demonstrates
+the "dual targeting" development approach, where most of the embedded code
+is developed on the desktop machine (Windows), but is intended for a deeply
+embedded target (EK-TM4C123GXL here).

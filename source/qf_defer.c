@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-03-13
+* Last updated for version 5.4.2
+* Last updated on  2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -67,7 +67,7 @@ Q_DEFINE_THIS_MODULE("qf_defer")
 *
 * @sa QActive_recall(), QEQueue
 */
-bool QActive_defer(QActive * const me, QEQueue * const eq,
+bool QActive_defer(QMActive * const me, QEQueue * const eq,
                    QEvt const * const e)
 {
     (void)me; /* avoid compiler warning about 'me' not used */
@@ -94,7 +94,7 @@ bool QActive_defer(QActive * const me, QEQueue * const eq,
 *
 * @sa QActive_recall(), QEQueue, QActive_postLIFO_()
 */
-bool QActive_recall(QActive * const me, QEQueue * const eq) {
+bool QActive_recall(QMActive * const me, QEQueue * const eq) {
     QEvt const *e = QEQueue_get(eq); /* get an event from deferred queue */
     bool recalled;
 

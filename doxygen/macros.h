@@ -165,3 +165,10 @@
 * be not defined for the application-level code
 */
 #define QP_IMPL
+
+/*! Macro that should be defined (typically on the compiler's command line)
+in the Win32-GUI applications that use the @ref win32 or @ref win32-qv ports.
+*/
+#define WIN32_GUI
+
+

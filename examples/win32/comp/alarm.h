@@ -35,12 +35,10 @@
 #define alarm_h
 
 typedef struct {   /* the FSM version of the Alarm component */
-    QFsm super;    /* inherit FHsm */
+    QFsm super;    /* inherit QFsm */
     uint32_t alarm_time;
 } Alarm;
 
 void Alarm_ctor(Alarm * const me);
-#define Alarm_init(me_)           QMSM_INIT    ((QMsm *)(me_), (QEvt *)0)
-#define Alarm_dispatch(me_, e_)   QMSM_DISPATCH((QMsm *)(me_), e_)
 
 #endif /* alarm_h */

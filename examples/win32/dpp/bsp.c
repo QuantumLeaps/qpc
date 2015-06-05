@@ -1,7 +1,7 @@
  /*****************************************************************************
 * Product: DPP example, Windows
-* Last updated for version 5.4.0
-* Last updated on  2015-04-07
+* Last updated for version 5.4.2
+* Last updated on  2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -42,7 +42,7 @@
 Q_DEFINE_THIS_FILE
 
 /* local variables ---------------------------------------------------------*/
-static uint32_t l_rnd;                                       /* random seed */
+static uint32_t l_rnd; /* random seed */
 
 #ifdef Q_SPY
     enum {
@@ -54,17 +54,18 @@ static uint32_t l_rnd;                                       /* random seed */
 
 /*..........................................................................*/
 void QF_onStartup(void) {
-    QF_setTickRate(BSP_TICKS_PER_SEC);         /* set the desired tick rate */
+    QF_setTickRate(BSP_TICKS_PER_SEC); /* set the desired tick rate */
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
+    printf("\nBye! Bye!\n");
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
-    QF_TICK_X(0U, &l_clock_tick);   /* perform the QF clock tick processing */
-    if (_kbhit()) {                                     /* any key pressed? */
+    QF_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
+    if (_kbhit()) { /* any key pressed? */
         int ch = _getch();
-        if (ch == '\33') {                    /* see if the ESC key pressed */
+        if (ch == '\33') { /* see if the ESC key pressed */
             QF_PUBLISH(Q_NEW(QEvt, TERMINATE_SIG), &l_clock_tick);
         }
         else if (ch == 'p') {
@@ -84,16 +85,15 @@ void Q_onAssert(char const Q_ROM * const file, int line) {
 void BSP_init(void) {
 
     printf("Dining Philosophers Problem example"
-           "\nQEP %s\nQF  %s\n"
+           "\nQP %s\n"
            "Press 'p' to pause\n"
            "Press 's' to serve\n"
            "Press ESC to quit...\n",
-           QEP_getVersion(),
-           QF_getVersion());
+           QP_versionStr);
 
     BSP_randomSeed(1234U);
     Q_ALLEGE(QS_INIT((void *)0));
-    QS_OBJ_DICTIONARY(&l_clock_tick);   /* must be called *after* QF_init() */
+    QS_OBJ_DICTIONARY(&l_clock_tick); /* must be called *after* QF_init() */
     QS_USR_DICTIONARY(PHILO_STAT);
 }
 /*..........................................................................*/
@@ -108,7 +108,7 @@ void BSP_terminate(int16_t result) {
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
     printf("Philosopher %2d is %s\n", (int)n, stat);
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
+    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
     QS_END()
@@ -131,7 +131,7 @@ void BSP_randomSeed(uint32_t seed) {
 }
 
 /*--------------------------------------------------------------------------*/
-#ifdef Q_SPY                                         /* define QS callbacks */
+#ifdef Q_SPY /* define QS callbacks */
 
 #include <time.h>
 #define WIN32_LEAN_AND_MEAN

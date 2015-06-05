@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-03-25
+* Last updated for version 5.4.2
+* Last updated on  2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -127,7 +127,7 @@ int_t QF_run(void) {
     /* the combined event-loop and background-loop of the QV kernel */
     for (;;) {
         QEvt const *e;
-        QActive *a;
+        QMActive *a;
         uint_fast8_t p;
 
         QF_INT_DISABLE();
@@ -192,7 +192,7 @@ int_t QF_run(void) {
 * The following example shows starting an AO when a per-task stack is needed:
 * @include qf_start.c
 */
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QMActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
@@ -226,6 +226,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 * @note By the time the AO calls QActive_stop(), it should have unsubscribed
 * from all events and no more events should be directly-posted to it.
 */
-void QActive_stop(QActive * const me) {
+void QActive_stop(QMActive * const me) {
     QF_remove_(me);  /* remove the AO from the framework */
 }

@@ -4,7 +4,7 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Update: 2015-03-02
+* Last Update: 2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,6 +41,10 @@
 */
 #ifndef win32_gui_h
 #define win32_gui_h
+
+#ifndef WIN32_GUI
+    #error The pre-processor macro WIN32_GUI must be defined
+#endif
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>  /* Win32 API */

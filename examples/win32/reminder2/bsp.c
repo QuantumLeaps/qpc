@@ -43,20 +43,21 @@ Q_DEFINE_THIS_FILE
 
 /*..........................................................................*/
 void BSP_init(int argc, char *argv[]) {
-    (void)argc;        /* avoid the compiler warning about unused parameter */
-    (void)argv;        /* avoid the compiler warning about unused parameter */
+    (void)argc; /* unused parameter */
+    (void)argv; /* unused parameter */
 }
 /*..........................................................................*/
 void QF_onStartup(void) {
-    QF_setTickRate(BSP_TICKS_PER_SEC);         /* set the desired tick rate */
+    QF_setTickRate(BSP_TICKS_PER_SEC); /* set the desired tick rate */
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
+    printf("\nBye! Bye!\n");
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
-    QF_TICK(&l_clock_tick);         /* perform the QF clock tick processing */
-    if (_kbhit()) {                                     /* any key pressed? */
+    QF_TICK(&l_clock_tick); /* perform the QF clock tick processing */
+    if (_kbhit()) { /* any key pressed? */
         BSP_onKeyboardInput(_getch());
     }
 }

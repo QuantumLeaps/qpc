@@ -1,7 +1,7 @@
 /** @page metrics Code Metrics 
 
 @code 
-                   Standard Code Metrics for QP/C 5.4.1 
+                   Standard Code Metrics for QP/C 5.4.2 
 
            Resource Standard Metrics (TM) for C, C++, C# and Java
                    Version 7.75 - mSquaredTechnologies.com
@@ -9,7 +9,7 @@
   License Type: Windows Single User License
   Licensed To : Quantum Leaps, LLC
   License No. : WS2975                          License Date: Dec 15, 2013
-  Build Date  : Sep  2 2009                         Run Date: May 22, 2015
+  Build Date  : Sep  2 2009                         Run Date: Jun 04, 2015
   (C)1996-2009 M Squared Technologies LLC
   ________________________________________________________________________
 
@@ -406,8 +406,8 @@
   ________________________________________________________________________
 
   Function: QActive_post_
-  Parameters: (QActive * const me, QEvt const * const e, uint_fast16_t con
-              st margin)
+  Parameters: (QMActive * const me, QEvt const * const e, uint_fast16_t co
+              nst margin)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 5     
@@ -415,7 +415,7 @@
   LOC 55       eLOC 46       lLOC 34       Comment 79       Lines       74
 
   Function: QActive_postLIFO_
-  Parameters: (QActive * const me, QEvt const * const e)
+  Parameters: (QMActive * const me, QEvt const * const e)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 4     
@@ -423,7 +423,7 @@
   LOC 37       eLOC 31       lLOC 22       Comment 36       Lines       50
 
   Function: QActive_get_
-  Parameters: (QActive * const me)
+  Parameters: (QMActive * const me)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
@@ -471,13 +471,13 @@
   ________________________________________________________________________
 
   Function: QActive_defer
-  Parameters: (QActive * const me, QEQueue * const eq, QEvt const * const 
-              e)
+  Parameters: (QMActive * const me, QEQueue * const eq, QEvt const * const
+               e)
   Complexity   Param 3       Return 1      Cyclo Vg 1       Total        5
   LOC 4        eLOC 2        lLOC 2        Comment 24       Lines        4
 
   Function: QActive_recall
-  Parameters: (QActive * const me, QEQueue * const eq)
+  Parameters: (QMActive * const me, QEQueue * const eq)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
@@ -873,8 +873,8 @@
   LOC 14       eLOC 10       lLOC 6        Comment 13       Lines       17
 
   Function: QTimeEvt_ctorX
-  Parameters: (QTimeEvt * const me, QActive * const act, enum_t const sig,
-               uint_fast8_t tickRate)
+  Parameters: (QTimeEvt * const me, QMActive * const act, enum_t const sig
+              , uint_fast8_t tickRate)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 1     
@@ -972,9 +972,9 @@
   LOC 12       eLOC 10       lLOC 7        Comment 21       Lines       15
 
   Function: QActive_start_
-  Parameters: (QActive * const me, uint_fast8_t prio, QEvt const *qSto[], 
-              uint_fast16_t qLen, void *stkSto, uint_fast16_t stkSize, QEv
-              t const *ie)
+  Parameters: (QMActive * const me, uint_fast8_t prio, QEvt const *qSto[],
+               uint_fast16_t qLen, void *stkSto, uint_fast16_t stkSize, QE
+              vt const *ie)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Logical and ( && )      : 2     
@@ -982,7 +982,7 @@
   LOC 15       eLOC 13       lLOC 9        Comment 29       Lines       19
 
   Function: QActive_stop
-  Parameters: (QActive *me)
+  Parameters: (QMActive *me)
   Complexity   Param 1       Return 1      Cyclo Vg 1       Total        3
   LOC 3        eLOC 2        lLOC 1        Comment 13       Lines        3
 
@@ -1516,18 +1516,18 @@
   LOC 8        eLOC 6        lLOC 4        Comment 14       Lines        8
 
   Function: QActive_post_
-  Parameters: (QActive * const me, QEvt const * const e, uint_fast16_t con
-              st margin)
+  Parameters: (QMActive * const me, QEvt const * const e, uint_fast16_t co
+              nst margin)
   Complexity   Param 3       Return 1      Cyclo Vg 6       Total       10
   LOC 55       eLOC 46       lLOC 34       Comment 79       Lines       74
 
   Function: QActive_postLIFO_
-  Parameters: (QActive * const me, QEvt const * const e)
+  Parameters: (QMActive * const me, QEvt const * const e)
   Complexity   Param 2       Return 1      Cyclo Vg 5       Total        8
   LOC 37       eLOC 31       lLOC 22       Comment 36       Lines       50
 
   Function: QActive_get_
-  Parameters: (QActive * const me)
+  Parameters: (QMActive * const me)
   Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
   LOC 37       eLOC 33       lLOC 24       Comment 32       Lines       48
 
@@ -1537,13 +1537,13 @@
   LOC 10       eLOC 9        lLOC 6        Comment 18       Lines       13
 
   Function: QActive_defer
-  Parameters: (QActive * const me, QEQueue * const eq, QEvt const * const 
-              e)
+  Parameters: (QMActive * const me, QEQueue * const eq, QEvt const * const
+               e)
   Complexity   Param 3       Return 1      Cyclo Vg 1       Total        5
   LOC 4        eLOC 2        lLOC 2        Comment 24       Lines        4
 
   Function: QActive_recall
-  Parameters: (QActive * const me, QEQueue * const eq)
+  Parameters: (QMActive * const me, QEQueue * const eq)
   Complexity   Param 2       Return 1      Cyclo Vg 3       Total        6
   LOC 19       eLOC 15       lLOC 10       Comment 33       Lines       36
 
@@ -1658,8 +1658,8 @@
   LOC 14       eLOC 10       lLOC 6        Comment 13       Lines       17
 
   Function: QTimeEvt_ctorX
-  Parameters: (QTimeEvt * const me, QActive * const act, enum_t const sig,
-               uint_fast8_t tickRate)
+  Parameters: (QTimeEvt * const me, QMActive * const act, enum_t const sig
+              , uint_fast8_t tickRate)
   Complexity   Param 4       Return 1      Cyclo Vg 2       Total        7
   LOC 11       eLOC 9        lLOC 8        Comment 32       Lines       31
 
@@ -1705,14 +1705,14 @@
   LOC 12       eLOC 10       lLOC 7        Comment 21       Lines       15
 
   Function: QActive_start_
-  Parameters: (QActive * const me, uint_fast8_t prio, QEvt const *qSto[], 
-              uint_fast16_t qLen, void *stkSto, uint_fast16_t stkSize, QEv
-              t const *ie)
+  Parameters: (QMActive * const me, uint_fast8_t prio, QEvt const *qSto[],
+               uint_fast16_t qLen, void *stkSto, uint_fast16_t stkSize, QE
+              vt const *ie)
   Complexity   Param 7       Return 1      Cyclo Vg 3       Total       11
   LOC 15       eLOC 13       lLOC 9        Comment 29       Lines       19
 
   Function: QActive_stop
-  Parameters: (QActive *me)
+  Parameters: (QMActive *me)
   Complexity   Param 1       Return 1      Cyclo Vg 1       Total        3
   LOC 3        eLOC 2        lLOC 1        Comment 13       Lines        3
 

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Orthogonal Component" example, Console based
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-07
+* Last Updated for Version: 5.4.2
+* Date of the Last Update:  2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -44,14 +44,14 @@ int main(int argc, char *argv[]) {
     static QF_MPOOL_EL(TimeEvt) l_smlPoolSto[10]; /* storage for small pool */
 
 
-    printf("Orthogonal Component pattern\nQEP version: %s\nQF  version: %s\n"
+    printf("Orthogonal Component pattern\nQP version: %s\n"
            "Press 'o' to turn the Alarm ON\n"
            "Press 'f' to turn the Alarm OFF\n"
            "Press '0'..'9' to set the Alarm time\n"
            "Press 'a' to set the Clock in 12-hour mode\n"
            "Press 'b' to set the Clock in 24-hour mode\n"
            "Press ESC to quit...\n",
-           QEP_getVersion(), QF_getVersion());
+           QP_versionStr);
 
     BSP_init(argc, argv); /* initialize the BSP */
 
@@ -64,9 +64,9 @@ int main(int argc, char *argv[]) {
 
     /* instantiate and start the active objects... */
     AlarmClock_ctor();
-    QActive_start(APP_alarmClock, 1U,
+    QACTIVE_START(APP_alarmClock, 1U,
                   l_alarmClockQSto, Q_DIM(l_alarmClockQSto),
-                  (void *)0, 1024, (QEvt *)0);
+                  (void *)0, 0U, (QEvt *)0);
 
     return QF_run(); /* run the QF application */
 }

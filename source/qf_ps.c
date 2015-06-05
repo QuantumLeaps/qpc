@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-03-13
+* Last updated for version 5.4.2
+* Last updated on  2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -144,7 +144,7 @@ void QF_publish_(QEvt const * const e, void const * const sender)
             uint8_t p = QF_LOG2(tmp);
             tmp &= Q_ROM_BYTE(QF_invPwr2Lkup[p]); /* clear subscriber bit */
             /* the priority of the AO must be registered with the framework */
-            Q_ASSERT_ID(210, QF_active_[p] != (QActive *)0);
+            Q_ASSERT_ID(210, QF_active_[p] != (QMActive *)0);
 
             /* QACTIVE_POST() asserts internally if the queue overflows */
             QACTIVE_POST(QF_active_[p], e, sender);
@@ -166,7 +166,7 @@ void QF_publish_(QEvt const * const e, void const * const sender)
                 p = (uint_fast8_t)p + (uint_fast8_t)(i << 3);/*adj priority */
 
                 /* the priority level be registered with the framework */
-                Q_ASSERT_ID(220, QF_active_[p] != (QActive *)0);
+                Q_ASSERT_ID(220, QF_active_[p] != (QMActive *)0);
 
                 /* QACTIVE_POST() asserts internally if the queue overflows */
                 QACTIVE_POST(QF_active_[p], e, sender);

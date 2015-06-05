@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Deferred Event state pattern example
-* Last updated for version 5.4.0
-* Last updated on  2015-03-25
+* Last updated for version 5.4.2
+* Last updated on  2015-06-04
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -34,36 +34,37 @@
 #include "qpc.h"
 #include "bsp.h"
 
-#include <stdio.h>           /* this example uses printf() to report status */
+#include <stdio.h> /* this example uses printf() to report status */
 
 Q_DEFINE_THIS_FILE
 
 /*..........................................................................*/
 enum TServerSignals {
-    NEW_REQUEST_SIG = Q_USER_SIG,                 /* the new request signal */
-    RECEIVED_SIG,                          /* the request has been received */
-    AUTHORIZED_SIG,                      /* the request has been authorized */
-    TERMINATE_SIG                              /* terminate the application */
+    NEW_REQUEST_SIG = Q_USER_SIG, /* the new request signal */
+    RECEIVED_SIG,                 /* the request has been received */
+    AUTHORIZED_SIG,               /* the request has been authorized */
+    TERMINATE_SIG                 /* terminate the application */
 };
 /*..........................................................................*/
 typedef struct RequestEvtTag {
-    QEvt super;                                     /* derive from QEvt */
-    uint8_t ref_num;                     /* reference number of the request */
+    QEvt super;       /* inherit QEvt */
+    uint8_t ref_num;  /* reference number of the request */
 } RequestEvt;
 
 /*..........................................................................*/
-typedef struct TServerTag {             /* Transaction Server active object */
-    QActive super;                                   /* derive from QActive */
+typedef struct TServerTag { /* Transaction Server active object */
+    QActive super;    /* inherit QActive */
 
-    QEQueue requestQueue;    /* native QF queue for deferred request events */
-    QEvt const *requestQSto[3];        /* storage for deferred queue buffer */
+    QEQueue requestQueue; /* native QF queue for deferred request events */
+    QEvt const *requestQSto[3]; /* storage for deferred queue buffer */
 
-    QTimeEvt receivedEvt;                   /* private time event generator */
-    QTimeEvt authorizedEvt;                 /* private time event generator */
+    QTimeEvt receivedEvt;   /* private time event generator */
+    QTimeEvt authorizedEvt; /* private time event generator */
 } TServer;
 
-void TServer_ctor(TServer * const me);                  /* the default ctor */
-                                          /* hierarchical state machine ... */
+void TServer_ctor(TServer * const me); /* the default ctor */
+
+/* hierarchical state machine ... */
 static QState TServer_initial    (TServer * const me, QEvt const * const e);
 static QState TServer_idle       (TServer * const me, QEvt const * const e);
 static QState TServer_busy       (TServer * const me, QEvt const * const e);
@@ -72,16 +73,16 @@ static QState TServer_authorizing(TServer * const me, QEvt const * const e);
 static QState TServer_final      (TServer * const me, QEvt const * const e);
 
 /*..........................................................................*/
-void TServer_ctor(TServer * const me) {                 /* the default ctor */
+void TServer_ctor(TServer * const me) { /* the default ctor */
     QActive_ctor(&me->super, Q_STATE_CAST(&TServer_initial));
     QEQueue_init(&me->requestQueue,
                  me->requestQSto, Q_DIM(me->requestQSto));
-    QTimeEvt_ctor(&me->receivedEvt,   RECEIVED_SIG);
-    QTimeEvt_ctor(&me->authorizedEvt, AUTHORIZED_SIG);
+    QTimeEvt_ctorX(&me->receivedEvt,   &me->super, RECEIVED_SIG,   0U);
+    QTimeEvt_ctorX(&me->authorizedEvt, &me->super, AUTHORIZED_SIG, 0U);
 }
 /* HSM definition ----------------------------------------------------------*/
 QState TServer_initial(TServer * const me, QEvt const * const e) {
-    (void)e;           /* avoid the compiler warning about unused parameter */
+    (void)e; /* unused parameter */
     return Q_TRAN(&TServer_idle);
 }
 /*..........................................................................*/
@@ -90,7 +91,7 @@ QState TServer_final(TServer * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             printf("final-ENTRY;\nBye!Bye!\n");
-            QF_stop();                         /* terminate the application */
+            QF_stop(); /* terminate the application */
             status = Q_HANDLED();
             break;
         }
@@ -168,9 +169,8 @@ QState TServer_receiving(TServer * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             printf("receiving-ENTRY;\n");
-                                            /* one-shot timeout in 1 second */
-            QTimeEvt_postIn(&me->receivedEvt, (QActive *)me,
-                            BSP_TICKS_PER_SEC);
+            /* one-shot timeout in 1 second */
+            QTimeEvt_armX(&me->receivedEvt, BSP_TICKS_PER_SEC, 0U);
             status = Q_HANDLED();
             break;
         }
@@ -196,9 +196,8 @@ QState TServer_authorizing(TServer * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             printf("authorizing-ENTRY;\n");
-                                           /* one-shot timeout in 2 seconds */
-            QTimeEvt_postIn(&me->authorizedEvt, (QActive *)me,
-                            2*BSP_TICKS_PER_SEC);
+            /* one-shot timeout in 2 seconds */
+            QTimeEvt_armX(&me->authorizedEvt, 2U*BSP_TICKS_PER_SEC, 0U);
             status = Q_HANDLED();
             break;
         }
@@ -222,49 +221,50 @@ QState TServer_authorizing(TServer * const me, QEvt const * const e) {
 // test harness ============================================================*/
 
 // Local-scope objects -------------------------------------------------------
-static TServer l_tserver;                      /* the TServer active object */
-static QEvt const *l_tserverQSto[10];    /* Event queue storage for TServer */
-static QF_MPOOL_EL(RequestEvt) l_smlPoolSto[20];  /* storage for small pool */
+static TServer l_tserver;  /* the TServer active object */
+static QEvt const *l_tserverQSto[10]; /* Event queue storage for TServer */
+static QF_MPOOL_EL(RequestEvt) l_smlPoolSto[20]; /* storage for small pool */
 
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
-    printf("Deferred Event state pattern\nQEP version: %s\nQF  version: %s\n"
+    printf("Deferred Event state pattern\nQP version: %s\n"
            "Press 'n' to generate a new request\n"
            "Press ESC to quit...\n",
-           QEP_getVersion(), QF_getVersion());
+           QP_versionStr);
 
-    BSP_init(argc, argv);                             /* initialize the BSP */
+    BSP_init(argc, argv); /* initialize the BSP */
 
-    QF_init();       /* initialize the framework and the underlying RTOS/OS */
+    QF_init(); /* initialize the framework and the underlying RTOS/OS */
 
 
     /* publish-subscribe not used, no call to QF_psInit() */
 
-                                               /* initialize event pools... */
+    /* initialize event pools... */
     QF_poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
 
-                                             /* start the active objects... */
+    /* start the active objects... */
     TServer_ctor(&l_tserver);
-    QActive_start((QActive *)&l_tserver, 1,
+    QACTIVE_START((QMActive *)&l_tserver,
+                  1U,
                   l_tserverQSto, Q_DIM(l_tserverQSto),
-                  (void *)0, 1024, (QEvt *)0);
+                  (void *)0, 0U, (QEvt *)0);
 
-    return QF_run();                              /* run the QF application */
+    return QF_run(); /* run the QF application */
 }
 /*..........................................................................*/
 void BSP_onKeyboardInput(uint8_t key) {
     switch (key) {
-        case 'n': {                                    /* 'n': new request? */
-            static uint8_t reqCtr = 0;                /* count the requests */
+        case 'n': {  /* 'n': new request? */
+            static uint8_t reqCtr = 0; /* count the requests */
             RequestEvt *e = Q_NEW(RequestEvt, NEW_REQUEST_SIG);
-            e->ref_num = (++reqCtr);            /* set the reference number */
-                                  /* post directly to TServer active object */
-            QACTIVE_POST((QActive *)&l_tserver, (QEvt *)e, (void *)0);
+            e->ref_num = (++reqCtr); /* set the reference number */
+            /* post directly to TServer active object */
+            QACTIVE_POST((QMActive *)&l_tserver, (QEvt *)e, (void *)0);
             break;
         }
-        case '\33': {                                       /* ESC pressed? */
+        case '\33': { /* ESC pressed? */
             static QEvt const terminateEvt = { TERMINATE_SIG, 0U, 0U };
-            QACTIVE_POST((QActive *)&l_tserver, &terminateEvt, (void *)0);
+            QACTIVE_POST((QMActive *)&l_tserver, &terminateEvt, (void *)0);
             break;
         }
     }

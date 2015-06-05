@@ -1,7 +1,36 @@
 /**
 @page history Revision History
 
+@section qpc_5_4_2 Version 5.4.2, 2015-06-04
 
+The main focus of this release is to improve the support for "dual targeting" of QP/C applications, which is developing of deeply embedded code as much as possible on the desktop OS, such as Windows. Experience shows that "dual targeting" dramatically improves productivity of embedded systems developers, perhaps more than any other technique.
+
+This release makes it possible to use exactly the **same** application code, main function, and the Board Support Package interface (bsp.h) on both deeply embedded target and on Windows. The only differences between these targets can be completely encapsulated in the Board Support Package implementation (bsp.c).
+
+The support for "dual targeting" in this QP/C release works both for Win32 console and Win32 GUI applications. The Win32-GUI support enables developers to easily emulate the front-panels of the embedded devices, with LCD-screens (graphical and segmented), LEDs, buttons, switches, sliders, etc.
+
+Changes in detal:
+
+1. Modified the QP/C ports to Windows (both @ref win32 and @ref win32-qv) so that they support both Win32 console and Win32-GUI applications. The newly introduced pre-processor #WIN32_GUI macro is now requierd to use the Win32-GUI facilities.
+
+2. Added portable "safe" macros from `<stdio.h>` and `<string.h>` to the QP/C ports to Windows. These macros encapsulate the differences between Microsoft Visual C++ and other compilers (such as MinGW).
+
+3. Simplified the structure of the QP/C Windows ports by eliminating one level of directories for the compilers used. Both VC++ and MinGW builds can now be run in the same port directory.
+
+4. Modified the QF_stop() function in the QP/C port to @ref win32-qv, so that it unblocks the QV event-loop and thus lets the application terminate. 
+
+5. Modified all examples for Windows to use the new port structure.
+
+6. Improved all Makefiles (for the MinGW toolset) in all Windows examples, to make them easier to adapt to custom applications, both Win32 console and Win32 GUI.
+
+7. Moved several examples from the `examples/win32/` and examples/win32-qv directories to `examples/arm-cm/` directory with native embedded examples for ARM Cortex-M. This co-location of the Win32 emulation with the embedded code running on the actual board demonstrates better the "dual targeting" development approach.
+
+8. Updated all Windows examples to the latest QP API by compiling the code with the macro #QP_API_VERSION set to 9999 (latest API without backwards compatibility)
+
+9. Improved the PC-Lint support for checking the application-level code located in in `examples\arm-cm\dpp_ek-tm4c123gxl\lint`
+
+
+------------------------------------------------------------------------------
 @section qpc_5_4_1 Version 5.4.1, 2015-05-14
 
 This release changes the active object class hierarchy so that ::QMActive is now more fundamental and is the base class for ::QActive. (Previously ::QMActive was a subclass of ::QActive). The newly added documentation section about @ref classes "QP/C Design" shows the current class hierarchy.

@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Generic Makefile for QP/C application, Win32 API, MinGW compiler
-# Last updated for version 5.4.0
-# Last updated on  2015-04-07
+# Product: Makefile for QP/C, Reminder example, Win32 console, MinGW
+# Last updated for version 5.4.2
+# Last updated on  2015-06-03
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -48,18 +48,57 @@
 #    http://sourceforge.net/projects/qpc/files/Qtools/
 #
 
-##############################################################################
+#-----------------------------------------------------------------------------
+# project name
 #
-# NOTE: Typically, you should have no need to change anything in this Makefile
-#
-##############################################################################
-
+PROJECT     := reminder
 
 #-----------------------------------------------------------------------------
-# location of the QP/C framework (if not provided in an environemnt var.)
+# project directories
+#
+
+# location of the QP-nano framework (if not provided in an environemnt var.)
 ifeq ($(QPC),)
 QPC := ../../..
 endif
+
+# QP port used in this project
+QP_PORT_DIR := $(QPC)/ports/win32
+
+# list of all source directories used by this project
+VPATH = .
+
+# list of all include directories needed by this project
+INCLUDES  = \
+	-I. \
+	-I$(QPC)/include
+
+# list of resource include directories needed by this project
+RCINCLUDES = \
+	-IRes
+
+
+#-----------------------------------------------------------------------------
+# files
+#
+
+# C source files
+C_SRCS := \
+	bsp.c \
+	reminder.c
+
+# C++ source files
+CPP_SRCS :=	
+
+# Resource files
+RC_SRCS :=
+
+LIB_DIRS  :=
+LIBS      :=
+
+# defines...
+# QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
+DEFINES   := -DQP_API_VERSION=9999
 
 #-----------------------------------------------------------------------------
 # MinGW toolset (NOTE: assumed to be on your PATH)
@@ -67,49 +106,22 @@ endif
 # NOTE:
 # MinGW toolset is included in the Qtools collection for Windows, see:
 #    http://sourceforge.net/projects/qpc/files/Qtools/
-
+#
+# NOTE:
+# This Makefile assumes that the windres utility is available on the
+# PATH (NOTE: windres is available in the Qtools collection for Windows)
+#
 CC    := gcc
 CPP   := g++
 LINK  := gcc    # for C programs
 #LINK  := g++   # for C++ programs
+RC    := windres
 
 # basic utilities (included in Qtools for Windows), see:
 #    http://sourceforge.net/projects/qpc/files/Qtools
 
 MKDIR := mkdir
 RM    := rm
-
-
-#-----------------------------------------------------------------------------
-# directories
-#
-# Project name is derived from the directory name
-PROJECT := $(notdir $(CURDIR))
-
-QP_PORT_DIR := $(QPC)/ports/win32
-APP_DIR     := .
-
-VPATH = $(APP_DIR)
-
-# include directories
-INCLUDES  = -I. \
-	-I$(QPC)/include \
-	-I$(QP_PORT_DIR)
-
-# defines
-DEFINES =
-
-#-----------------------------------------------------------------------------
-# files
-#
-
-# C source files
-C_SRCS := $(wildcard *.c)
-
-# C++ source files
-CPP_SRCS := $(wildcard *.cpp)
-
-LD_SCRIPT :=
 
 #-----------------------------------------------------------------------------
 # build options for various configurations
@@ -119,15 +131,13 @@ ifeq (rel, $(CONF)) # Release configuration ..................................
 
 BIN_DIR := rel
 
-CFLAGS = -c -Wall -W -O2 -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -DNDEBUG
+CFLAGS = -c -Wall -W -ffunction-sections -fdata-sections \
+	-Os -fno-strict-aliasing $(INCLUDES) $(DEFINES) -DNDEBUG
 
-CPPFLAGS = -c -Wall -W -O2 -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -DNDEBUG
+CPPFLAGS = -c -Wall -W -ffunction-sections -fdata-sections \
+	-Os -fno-strict-aliasing $(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
-
-BIN_DIR := spy
 
 # make sure that QTOOLS exists...
 ifeq ("$(wildcard $(QTOOLS))","")
@@ -138,32 +148,44 @@ INCLUDES +=	-I$(QTOOLS)/qspy/include
 VPATH    += $(QTOOLS)/qspy/source
 C_SRCS   += qspy.c
 
+BIN_DIR := spy
+
 CFLAGS = -c -Wall -W -g -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -DQ_SPY
+	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
 CPPFLAGS = -c -Wall -W -g -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -DQ_SPY
+	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
 else  # default Debug configuration ..........................................
 
 BIN_DIR := dbg
 
 CFLAGS = -c -Wall -W -g -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES)
+	-O $(INCLUDES) $(DEFINES)
 
 CPPFLAGS = -c -Wall -W -g -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES)
+	-O $(INCLUDES) $(DEFINES)
 
+endif  # .....................................................................
+
+LINKFLAGS := -Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
+
+# is it a GUI application (any GUI resources provided?) ...
+ifneq (,$(RC_SRCS))
+LINKFLAGS += -mwindows
+DEFINES += -DWIN32_GUI
 endif
-
-
-LINKFLAGS = -L$(QP_PORT_DIR)/mingw/$(BIN_DIR) \
-	-Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
 
 #-----------------------------------------------------------------------------
 
-C_OBJS       := $(patsubst %.c,%.o,$(C_SRCS))
-CPP_OBJS     := $(patsubst %.cpp,%.o,$(CPP_SRCS))
+# combine all the soruces...
+INCLUDES  += -I$(QP_PORT_DIR)
+LIB_DIRS  += -L$(QP_PORT_DIR)/$(BIN_DIR)
+LIBS      += -lqp
+
+C_OBJS       := $(patsubst %.c,   %.o, $(C_SRCS))
+CPP_OBJS     := $(patsubst %.cpp, %.o, $(CPP_SRCS))
+RC_OBJS      := $(patsubst %.rc,  %.o, $(RC_SRCS))
 
 TARGET_BIN   := $(BIN_DIR)/$(PROJECT).bin
 TARGET_EXE   := $(BIN_DIR)/$(PROJECT).exe
@@ -171,6 +193,7 @@ C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
 C_DEPS_EXT   := $(patsubst %.o, %.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
 CPP_DEPS_EXT := $(patsubst %.o, %.d, $(CPP_OBJS_EXT))
+RC_OBJS_EXT  := $(addprefix $(BIN_DIR)/, $(RC_OBJS))
 
 # create $(BIN_DIR) if it does not exist
 ifeq ("$(wildcard $(BIN_DIR))","")
@@ -187,8 +210,8 @@ all: $(TARGET_EXE)
 $(TARGET_BIN): $(TARGET_EXE)
 	$(BIN) -O binary $< $@
 
-$(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(LINK) $(LINKFLAGS) -o $@ $^ -lqp
+$(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT) $(RC_OBJS_EXT)
+	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(LIBS)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
@@ -204,6 +227,9 @@ $(BIN_DIR)/%.o : %.c
 
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
+
+$(BIN_DIR)/%.o : %.rc
+	$(RC) $(RCINCLUDES) -i $< -o $@
 
 # include dependency files only if our goal depends on their existence
 ifneq ($(MAKECMDGOALS),clean)
@@ -228,3 +254,6 @@ show:
 	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
 	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
+	@echo RC_OBJS_EXT  = $(RC_OBJS_EXT)
+	@echo LIB_DIRS = $(LIB_DIRS)
+	@echo LIBS     = $(LIBS)

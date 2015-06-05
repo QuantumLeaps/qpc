@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-03-13
+* Last updated for version 5.4.2
+* Last updated on  2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -77,7 +77,7 @@ void QF_add_(QMActive * const a) {
     */
     Q_REQUIRE_ID(100, ((uint_fast8_t)0 < p)
                        && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
-              && (QF_active_[p] == (QActive *)0));
+              && (QF_active_[p] == (QMActive *)0));
 
     QF_CRIT_ENTRY_();
 
@@ -120,7 +120,7 @@ void QF_remove_(QMActive const * const a) {
 
     QF_CRIT_ENTRY_();
 
-    QF_active_[p] = (QActive *)0;  /* free-up the priority level */
+    QF_active_[p] = (QMActive *)0;  /* free-up the priority level */
 
     QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_REMOVE, QS_priv_.aoObjFilter, a)
         QS_TIME_();         /* timestamp */

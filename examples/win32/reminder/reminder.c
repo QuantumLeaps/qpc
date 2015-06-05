@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Reminder state pattern example
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-07
+* Last Updated for Version: 5.4.2
+* Date of the Last Update:  2015-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,22 +40,23 @@ Q_DEFINE_THIS_FILE
 
 /*..........................................................................*/
 enum SensorSignals {
-    TIMEOUT_SIG = Q_USER_SIG,                /* the periodic timeout signal */
-    DATA_READY_SIG,                         /* the invented reminder signal */
-    TERMINATE_SIG                              /* terminate the application */
+    TIMEOUT_SIG = Q_USER_SIG, /* the periodic timeout signal */
+    DATA_READY_SIG,           /* the invented reminder signal */
+    TERMINATE_SIG             /* terminate the application */
 };
 /*..........................................................................*/
-typedef struct SensorTag {                      /* the Sensor active object */
-    QActive super;                                   /* derive from QActive */
+typedef struct SensorTag {    /* the Sensor active object */
+    QActive super;            /* inherit QActive */
 
-    QTimeEvt timeEvt;                       /* private time event generator */
+    QTimeEvt timeEvt;         /* private time event generator */
     uint16_t pollCtr;
     uint16_t procCtr;
 } Sensor;
 
 
 void Sensor_ctor(Sensor * const me);
-                                          /* hierarchical state machine ... */
+
+/* hierarchical state machine ... */
 static QState Sensor_initial   (Sensor * const me, QEvt const * const e);
 static QState Sensor_polling   (Sensor * const me, QEvt const * const e);
 static QState Sensor_processing(Sensor * const me, QEvt const * const e);
@@ -66,15 +67,15 @@ static QState Sensor_final     (Sensor * const me, QEvt const * const e);
 /*..........................................................................*/
 void Sensor_ctor(Sensor * const me) {
     QActive_ctor(&me->super, (QStateHandler)&Sensor_initial);
-    QTimeEvt_ctor(&me->timeEvt, TIMEOUT_SIG);
+    QTimeEvt_ctorX(&me->timeEvt, &me->super, TIMEOUT_SIG, 0U);
 }
 
 /* HSM definition ----------------------------------------------------------*/
 QState Sensor_initial(Sensor * const me, QEvt const * const e) {
-    (void)e;               /* avoid compiler warning about unused parameter */
+    (void)e; /* unused parameter */
 
-    me->pollCtr = 0;
-    me->procCtr = 0;
+    me->pollCtr = 0U;
+    me->procCtr = 0U;
 
     return Q_TRAN(&Sensor_polling);
 }
@@ -83,8 +84,7 @@ QState Sensor_final(Sensor * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            printf("final-ENTRY;\nBye!Bye!\n");
-            QF_stop();                         /* terminate the application */
+            QF_stop(); /* terminate the application */
             status = Q_HANDLED();
             break;
         }
@@ -100,9 +100,8 @@ QState Sensor_polling(Sensor * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-                                       /* periodic timeout every 1/2 second */
-            QTimeEvt_postEvery(&me->timeEvt, (QActive *)me,
-                               BSP_TICKS_PER_SEC/2);
+            /* periodic timeout in 1/2 second and every 1/2 second */
+            QTimeEvt_armX(&me->timeEvt, BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);
             status = Q_HANDLED();
             break;
         }
@@ -123,8 +122,8 @@ QState Sensor_polling(Sensor * const me, QEvt const * const e) {
 
             ++me->pollCtr;
             printf("polling %3d\n", me->pollCtr);
-            if ((me->pollCtr & 0x3) == 0) {                     /* modulo 4 */
-                QACTIVE_POST((QActive *)me, &reminderEvt, me);
+            if ((me->pollCtr & 0x3U) == 0U) {  /* modulo 4 */
+                QACTIVE_POST(&me->super, &reminderEvt, me);
             }
             status = Q_HANDLED();
             break;
@@ -187,7 +186,7 @@ QState Sensor_busy(Sensor * const me, QEvt const * const e) {
         case TIMEOUT_SIG: {
             ++me->procCtr;
             printf("processing %3d\n", me->procCtr);
-            if ((me->procCtr & 0x1) == 0) {                     /* modulo 2 */
+            if ((me->procCtr & 0x1U) == 0U) { /* modulo 2 */
                 status = Q_TRAN(&Sensor_idle);
             }
             else {
@@ -206,29 +205,30 @@ QState Sensor_busy(Sensor * const me, QEvt const * const e) {
 /* test harness ============================================================*/
 
 /* Local-scope objects -----------------------------------------------------*/
-static Sensor l_sensor;                         /* the Sensor active object */
-static QEvt const *l_sensorQSto[10];      /* Event queue storage for Sensor */
+static Sensor l_sensor; /* the Sensor active object */
+static QEvt const *l_sensorQSto[10]; /* Event queue storage for Sensor */
 
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
-    printf("Reminder state pattern\nQEP version: %s\nQF  version: %s\n"
+    printf("Reminder state pattern\nQP version: %s\n"
            "Press ESC to quit...\n",
-           QEP_getVersion(), QF_getVersion());
+           QP_versionStr);
 
-    BSP_init(argc, argv);                             /* initialize the BSP */
+    BSP_init(argc, argv); /* initialize the BSP */
 
-    QF_init();     /* initialize the framework and the underlying RT kernel */
+    QF_init(); /* initialize the framework and the underlying RT kernel */
 
     /* publish-subscribe not used, no call to QF_psInit() */
     /* dynamic event allocation not used, no call to QF_poolInit() */
 
-                             /* instantiate and start the active objects... */
+    /* instantiate and start the active objects... */
     Sensor_ctor(&l_sensor);
-    QACTIVE_START((QActive *)&l_sensor, 1U,
+    QACTIVE_START(&l_sensor.super,
+                  1U,
                   l_sensorQSto, Q_DIM(l_sensorQSto),
-                  (void *)0, 1024, (QEvt *)0);
+                  (void *)0, 0U, (QEvt *)0);
 
-    return QF_run();                              /* run the QF application */
+    return QF_run(); /* run the QF application */
 }
 /*..........................................................................*/
 void BSP_onKeyboardInput(uint8_t key) {

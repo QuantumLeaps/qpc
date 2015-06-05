@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-25
+* Last Updated for Version: 5.4.2
+* Date of the Last Update:  2015-06-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -77,6 +77,7 @@ void QF_leaveCriticalSection_(void) {
 /****************************************************************************/
 void QF_stop(void) {
     l_isRunning = false;  /* terminate the QV event loop and ticker thread */
+    SetEvent(QV_win32Event_); /* unblock the event-loop so it can terminate */
 }
 /****************************************************************************/
 int_t QF_run(void) {

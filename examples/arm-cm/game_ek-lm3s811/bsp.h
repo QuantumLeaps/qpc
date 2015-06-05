@@ -34,7 +34,7 @@
 #ifndef bsp_h
 #define bsp_h
 
-#define BSP_TICKS_PER_SEC    30U
+#define BSP_TICKS_PER_SEC    33U
 #define BSP_SCREEN_WIDTH     96U
 #define BSP_SCREEN_HEIGHT    16U
 

@@ -294,7 +294,6 @@ static QState AlarmClock_mode12h(AlarmClock * const me, QEvt const * const e) {
 /*${Components::AlarmClock::SM::final} .....................................*/
 /* ${Components::AlarmClock::SM::final} */
 static QState AlarmClock_final_e(AlarmClock * const me) {
-    BSP_showMsg("Bye! Bye!");
     QF_stop(); /* terminate the application */
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_ENTRY(&AlarmClock_final_s);
