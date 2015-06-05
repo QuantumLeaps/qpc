@@ -104,12 +104,14 @@ QState Cruncher_processing(Cruncher * const me, QEvt const * const e) {
             }
             else {
                 printf("pi=%16.14f\n", 4.0*me->sum);
+                fflush(stdout);
                 status = Q_TRAN(&Cruncher_processing);
             }
             break;
         }
         case ECHO_SIG: {
             printf("Echo! pi=%16.14f\n", 4.0*me->sum);
+            fflush(stdout);
             status = Q_HANDLED();
             break;
         }
@@ -130,6 +132,7 @@ QState Cruncher_final(Cruncher * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             printf("final-ENTRY;\n");
+            fflush(stdout);
             QF_stop(); /* terminate the application */
             status = Q_HANDLED();
             break;
@@ -155,6 +158,7 @@ int main(int argc, char *argv[]) {
            "Press 'e' to echo the current value...\n"
            "Press ESC to quit...\n",
            QP_versionStr);
+    fflush(stdout);
 
     Cruncher_ctor(&l_cruncher);
 
