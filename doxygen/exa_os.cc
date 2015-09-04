@@ -26,8 +26,8 @@
 - <span class="img folder">dpp</span> DPP (command-line)
 - <span class="img folder">dpp-gui</span> DPP (with GUI on Windows)
 - <span class="img folder">game-gui</span> "Fly 'n' Shoot" game from Chapter 1 of PSiCC2
-- <span class="img folder">history</span> Transition-to-History design pattern (hand-coded)
-- <span class="img folder">history_qm</span> Transition-to-History with QM model
+- <span class="img folder">history_qhsm</span> Transition-to-History (with ::QHsm class)
+- <span class="img folder">history_qmsm</span> Transition-to-History (with ::QMsm class)
 - <span class="img folder">qmsmtst</span> Test State Machine based on ::QMsm with QM model
 - <span class="img folder">qhsmtst</span> Test State Machine based on ::QHsm with QM model
 - <span class="img folder">reminder</span> Reminder design pattern from Chapter 5 of PSiCC2

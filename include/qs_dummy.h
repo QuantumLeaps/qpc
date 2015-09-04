@@ -5,14 +5,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-03-24
+* Last updated for version 5.5.0
+* Last updated on  2015-08-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -33,8 +33,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -86,9 +86,7 @@
 #define QS_OBJ_DICTIONARY(obj_)         ((void)0)
 #define QS_FUN_DICTIONARY(fun_)         ((void)0)
 #define QS_USR_DICTIONARY(rec_)         ((void)0)
-#define QS_ASSERTION(module_, loc_)     ((void)0)
-#define QS_TEST_ASSERTION(file_, loc_)  ((void)0)
-#define QS_TEST(file_, test_)           ((void)0)
+#define QS_ASSERTION(module_, loc_, delay_) ((void)0)
 #define QS_FLUSH()                      ((void)0)
 
 /****************************************************************************/

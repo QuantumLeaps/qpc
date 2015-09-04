@@ -2810,7 +2810,7 @@
             <wLevel>2</wLevel>
             <uThumb>1</uThumb>
             <VariousControls>
-              <MiscControls>-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections</MiscControls>
+              <MiscControls>-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -ffunction-sections</MiscControls>
               <Define>__CORTEX_M4F __FPU_PRESENT=1 __CMSIS_RTOS DBG_MSG</Define>
               <Undefine></Undefine>
               <IncludePath>..\..\..\CMSIS\Include</IncludePath>

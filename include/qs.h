@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-05-08
+* Last updated for version 5.5.0
+* Last updated on  2015-08-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -50,11 +50,21 @@
 * @description
 * This enumeration specifies the record types used in the QP components.
 * You can specify your own record types starting from ::QS_USER offset.
-* Currently, the maximum of all records cannot exceed 256.
-* @sa QS_filterIn()/QS_FILTER_ON and QS_filterOut()/QS_FILTER_OFF
+* Currently, the maximum of all records cannot exceed 125.
+*
+* @note
+* The QS records labeled as "not maskable" are always enabled and cannot
+* be turend off with the QS_FILTER_OFF() macro.
+*
+* @note
+* The numerical values of the QS trace records used by the Target and
+* the host "back-end", such as the QSPY host application.
+*
+* @sa QS_FILTER_ON() and QS_FILTER_OFF() macros
 */
 enum QSpyRecords {
-    QS_QP_RESET,          /*!< reset the QP (start of a new QS session) */
+    /* [0] QS session (not maskable) */
+    QS_EMPTY,             /*!< QS record for cleanly starting a session */
 
     /* [1] QEP records */
     QS_QEP_STATE_ENTRY,   /*!< a state was entered */
@@ -109,12 +119,12 @@ enum QSpyRecords {
     QS_QF_RESERVED1,
     QS_QF_RESERVED0,
 
-    /* [50] QK records */
-    QS_QK_MUTEX_LOCK,     /*!< the QK mutex was locked */
-    QS_QK_MUTEX_UNLOCK,   /*!< the QK mutex was unlocked */
-    QS_QK_SCHEDULE,       /*!< the QK scheduled a new task to execute */
-    QS_QK_RESERVED1,
-    QS_QK_RESERVED0,
+    /* [50] QK/QV records */
+    QS_QK_MUTEX_LOCK,     /*!< QK mutex was locked */
+    QS_QK_MUTEX_UNLOCK,   /*!< QK mutex was unlocked */
+    QS_QVK_SCHEDULE,      /*!< QK/QV scheduled a new task to execute */
+    QS_QVK_IDLE,          /*!< QK/QV became idle */
+    QS_QK_RESUME,         /*!< QK resumed previous task (not idle) */
 
     /* [55] Additional QEP records */
     QS_QEP_TRAN_HIST,     /*!< a transition to history was taken */
@@ -123,24 +133,24 @@ enum QSpyRecords {
     QS_QEP_RESERVED1,
     QS_QEP_RESERVED0,
 
-    /* [60] Miscellaneous QS records */
+    /* [60] Miscellaneous QS records (not maskable) */
     QS_SIG_DICT,          /*!< signal dictionary entry */
     QS_OBJ_DICT,          /*!< object dictionary entry */
     QS_FUN_DICT,          /*!< function dictionary entry */
     QS_USR_DICT,          /*!< user QS record dictionary entry */
-    QS_EMPTY,             /*!< QS record for cleanly starting a session */
-    QS_RESERVED3,
-    QS_RESERVED2,
-    QS_TEST_RUN,          /*!< a given test is being run */
-    QS_TEST_FAIL,         /*!< a test assertion failed */
+    QS_TARGET_INFO,       /*!< reports the Target information */
+    QS_RESERVED0,
+    QS_RX_STATUS,         /*!< reports QS data receive status */
+    QS_TEST_STATUS,       /*!< reports test status */
+    QS_PEEK_DATA,         /*!< reports the data from the PEEK query */
     QS_ASSERT_FAIL,       /*!< assertion failed in the code */
 
     /* [70] Application-specific QS records */
-    QS_USER               /*!< the first record available for QS user */
+    QS_USER               /*!< the first record available to QS users */
 };
 
 /*! Specification of all QS records for  QS_FILTER_ON() and QS_FILTER_OFF() */
-#define QS_ALL_RECORDS          ((uint_fast8_t)0xFF)
+#define QS_ALL_RECORDS    ((uint_fast8_t)0xFF)
 
 #ifndef QS_TIME_SIZE
 
@@ -256,15 +266,15 @@ void QS_mem(uint8_t const *blk, uint8_t size);
 
 /*! Output signal dictionary record */
 void QS_sig_dict(enum_t const sig, void const * const obj,
-                 char_t const Q_ROM * const name);
+                 char_t const Q_ROM *name);
 
 /*! Output object dictionary record */
 void QS_obj_dict(void const * const obj,
-                 char_t const Q_ROM * const name);
+                 char_t const Q_ROM *name);
 
 /*! Output function dictionary record */
 void QS_fun_dict(void (* const fun)(void),
-                 char_t const Q_ROM *const name);
+                 char_t const Q_ROM *name);
 
 /*! Output user dictionary record */
 void QS_usr_dict(enum_t const rec,
@@ -352,7 +362,8 @@ QSTimeCtr QS_onGetTime(void);
 * routine if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
 * @sa QS_onStartup(), example of setting up a QS filter in QS_FILTER_ON
 */
-#define QS_INIT(arg_)           (QS_onStartup(arg_) != (uint8_t)0)
+#define QS_INIT(arg_) ((QS_onStartup(arg_) != (uint8_t)0) \
+                      ? (QS_onFlush(), (uint8_t)1) : (uint8_t)0)
 
 /*! Cleanup the QS facility. */
 /**
@@ -379,6 +390,9 @@ QSTimeCtr QS_onGetTime(void);
 * @description
 * This macro provides an indirection layer to call QS_filterOff() if #Q_SPY
 * is defined, or do nothing if #Q_SPY is not defined.
+*
+* @note
+* The QS records marked as "non-maskable" in the
 *
 * @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
@@ -987,13 +1001,15 @@ enum {
 * @description
 * This trace record is intended to use from the Q_onAssert() callback.
 */
-#define QS_ASSERTION(module_, loc_) do { \
+#define QS_ASSERTION(module_, loc_, delay_) do { \
+    uint32_t volatile delay_ctr_; \
     QS_BEGIN_NOCRIT_(QS_ASSERT_FAIL, (void *)0, (void *)0) \
         QS_TIME_(); \
         QS_U16_((uint16_t)(loc_)); \
         QS_STR_ROM_(module_); \
     QS_END_NOCRIT_() \
     QS_onFlush(); \
+    for (delay_ctr_ = (delay_); delay_ctr_ > (uint32_t)0; --delay_ctr_) {} \
 } while (0)
 
 /*! Flush the QS trace data to the host */
@@ -1041,7 +1057,7 @@ enum {
 #define QS_getVersion() (QP_versionStr)
 
 /****************************************************************************/
-/* QS private data */
+/* QS private data (the transmit channel) */
 typedef uint_fast16_t QSCtr;  /*!< QS ring buffer counter and offset type */
 
 /*! Private QS data to keep track of the filters and the trace buffer. */
@@ -1057,7 +1073,7 @@ typedef struct {
     uint8_t *buf;         /*!< pointer to the start of the ring buffer */
     QSCtr    end;         /*!< offset of the end of the ring buffer */
     QSCtr    head;        /*!< offset to where next byte will be inserted */
-    QSCtr    tail;        /*!< offset of where next event will be extracted */
+    QSCtr    tail;        /*!< offset of where next byte will be extracted */
     QSCtr    used;        /*!< number of bytes currently in the ring buffer */
     uint8_t  seq;         /*!< the record sequence number */
     uint8_t  chksum;      /*!< the checksum of the current record */
@@ -1066,6 +1082,76 @@ typedef struct {
 } QSPriv;
 
 extern QSPriv QS_priv_;
+
+
+/****************************************************************************/
+/* QS receive channel */
+
+/*! Quantum Spy Receive (RX) record types: */
+/**
+* @description
+* This enumeration specifies the record types for the QS receive channel.
+*/
+enum QSpyRxRecords {
+    QS_RX_INFO,           /*!< query Target info (ver, config, tstamp) */
+    QS_RX_COMMAND,        /*!< execute a user-defined command in the Target */
+    QS_RX_RESET,          /*!< reset the Target */
+    QS_RX_TICK,           /*!< call QF_tick() */
+    QS_RX_PEEK,           /*!< peek Target memory */
+    QS_RX_POKE,           /*!< poke Target memory */
+    QS_RX_RESERVED7,      /*!< reserved for future use */
+    QS_RX_RESERVED6,      /*!< reserved for future use */
+    QS_RX_RESERVED5,      /*!< reserved for future use */
+    QS_RX_RESERVED4,      /*!< reserved for future use */
+    QS_RX_GLB_FILTER,     /*!< set global filters in the Target */
+    QS_RX_LOC_FILTER,     /*!< set local  filters in the Target */
+    QS_RX_AO_FILTER,      /*!< set local AO filter in the Target */
+    QS_RX_RESERVED3,      /*!< reserved for future use */
+    QS_RX_RESERVED2,      /*!< reserved for future use */
+    QS_RX_RESERVED1,      /*!< reserved for future use */
+    QS_RX_EVENT           /*!< inject an event to the Target (post/publish) */
+};
+
+/*! Initialize the QS RX data buffer. */
+void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize);
+
+/*! Parse all bytes present in the QS RX data buffer */
+void QS_rxParse(void);
+
+/*! Private QS-RX data to keep track of the lock-free buffer. */
+typedef struct {
+    uint8_t *buf;         /*!< pointer to the start of the ring buffer */
+    QSCtr end;            /*!< offset of the end of the ring buffer */
+    QSCtr head;           /*!< offset to where next byte will be inserted */
+    QSCtr tail;           /*!< offset of where next byte will be extracted */
+} QSrxPriv;
+
+extern QSrxPriv QS_rxPriv_;
+
+/*! put one byte into the QS RX lock-free buffer */
+#define QS_RX_PUT(b_) do { \
+    if (QS_rxPriv_.head != (QSCtr)0) { \
+        if ((QS_rxPriv_.head - QS_rxPriv_.tail) != (QSCtr)1) { \
+            QS_rxPriv_.buf[QS_rxPriv_.head] = (uint8_t)(b_); \
+            --QS_rxPriv_.head; \
+        } \
+    } \
+    else { \
+        if (QS_rxPriv_.tail != QS_rxPriv_.end) { \
+            QS_rxPriv_.buf[0] = (uint8_t)(b_); \
+            QS_rxPriv_.head = QS_rxPriv_.end; \
+        } \
+    } \
+} while (0)
+
+/*! Obtain the number of free bytes in the QS RX data buffer */
+uint16_t QS_rxGetNfree(void);
+
+/*! callback function to reset the target (to be implemented in the BSP) */
+void QS_onReset(void);
+
+/*! callback function to execute user commands (to be implemented in BSP) */
+void QS_onCommand(uint8_t cmdId, uint32_t param);
 
 #endif /* qs_h  */
 

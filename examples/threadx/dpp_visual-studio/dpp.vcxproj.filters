@@ -47,6 +47,7 @@
     <ClCompile Include="..\..\..\ports\threadx\qf_port.c">
       <Filter>QP_port</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\include\qstamp.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bsp.h" />

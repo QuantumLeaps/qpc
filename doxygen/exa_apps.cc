@@ -57,7 +57,31 @@ The very simple state machine of the Blinky AO is shown in the figure below:
   </li>
 </ul>
 
-@image html under_construction.jpg
+------------------------------------------------------------------------------
+@section blinky_code State Machine Code
+The Blinky state machine shown above is implemented in the blinky.c source file, as shown in the
+listing below. The code has been specifically organized not to access target resources directly, but instead encapsulate all such access in the calls to the BSP (Board Support Package). So for example, instead of turning the LED on and off by writing to a specific GPIO register on an embedded board, the code calls the BSP functions `BSP_ledOn()` and `BSP_ledOff()`. These functions can then be defined differently for each Target board (or even a desktop workstation), without the need to change the state machine code.
+
+@note
+The Blinky source code (blinky.c) is actually the same on all platforms, including Windows
+and the embedded boards. The only difference is in the Board Support Package (bsp.c), which is 
+specific for the target.
+
+@includelineno examples/arm-cm/blinky_ek-tm4c123gxl/blinky.c
+
+As you can see, the structure of the state machine is very clearly recognizable in this code. Please refer to the Application Note <a class="extern" target="_blank" href="http://state-machine.com/doc/AN_Crash_Course_in_UML_State_Machines.pdf">A Crash Course in UML State Machines</a> for exact explanation of the state machine coding techniques.
+
+
+@subsection blinky_ao Defining Active Object (AO) Class
+
+
+
+- hand-coding the simple state machine of the Blinky AO;
+- using a periodic time event;
+- initializing the QP framework; and
+- starting an AO.
+
+
 
 @next{dpp}
 */

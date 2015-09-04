@@ -4,14 +4,14 @@
 * @brief Internal (package scope) QS/C interface.
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-03-13
+* Last updated for version 5.5.0
+* Last updated on  2015-08-11
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -85,6 +85,9 @@
 /*! Escape character of the QS output protocol */
 #define QS_ESC      ((uint8_t)0x7D)
 
+/*! The expected checksum value over an uncorrupted QS record */
+#define QS_GOOD_CHKSUM ((uint8_t)0xFF)
+
 /*! Escape modifier of the QS output protocol */
 /**
 * @description
@@ -112,6 +115,9 @@
     */
     #define Q_ROM_BYTE(rom_var_)   (rom_var_)
 #endif
+
+/*! send the Target info (object sizes, build time-stamp, QP version) */
+void QS_target_info_(uint8_t isReset);
 
 #endif  /* qs_pkg_h */
 

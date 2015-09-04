@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-04-23
+* Last updated for version 5.5.0
+* Last updated on  2015-08-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -43,6 +43,11 @@
 
 Q_DEFINE_THIS_MODULE("qs")
 
+
+/****************************************************************************/
+extern char_t const Q_ROM Q_BUILD_DATE[12];
+extern char_t const Q_ROM Q_BUILD_TIME[9];
+
 /****************************************************************************/
 QSPriv QS_priv_;  /* QS private data */
 
@@ -67,23 +72,39 @@ QSPriv QS_priv_;  /* QS private data */
 * any data loss.
 */
 void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
-    uint8_t *buf = &sto[0];
-
-    /* must be at least 8 bytes */
+    /* the provided buffer must be at least 8 bytes long */
     Q_REQUIRE_ID(100, stoSize > (uint_fast16_t)8);
 
-    /* The QS_initBuf() function clears the internal QS variables, so that
-    * the tracing can start correctly even if the startup code fails
-    * to clear the uninitialized data (as is required by the C Standard).
+    /* This function initializes all the internal QS variables, so that the
+    * tracing can start correctly even if the startup code fails to clear
+    * any uninitialized data (as is required by the C Standard).
     */
-    QF_bzero(&QS_priv_, (uint_fast16_t)sizeof(QS_priv_));
-    QS_priv_.buf = buf;
-    QS_priv_.end = (QSCtr)stoSize;
+    QS_filterOff(QS_ALL_RECORDS); /* disable all maskable filters */
 
+    QS_priv_.smObjFilter = (void *)0;
+    QS_priv_.aoObjFilter = (void *)0;
+    QS_priv_.mpObjFilter = (void *)0;
+    QS_priv_.eqObjFilter = (void *)0;
+    QS_priv_.teObjFilter = (void *)0;
+    QS_priv_.apObjFilter = (void *)0;
+
+    QS_priv_.buf      = &sto[0];
+    QS_priv_.end      = (QSCtr)stoSize;
+    QS_priv_.head     = (QSCtr)0;
+    QS_priv_.tail     = (QSCtr)0;
+    QS_priv_.used     = (QSCtr)0;
+    QS_priv_.seq      = (uint8_t)0;
+    QS_priv_.chksum   = (uint8_t)0;
+    QS_priv_.critNest = (uint_fast8_t)0;
+
+    /* produce an empty record to "flush" the QS trace buffer */
     QS_beginRec((uint_fast8_t)QS_EMPTY);
     QS_endRec();
-    QS_beginRec((uint_fast8_t)QS_QP_RESET);
-    QS_endRec();
+
+    /* produce the reset record to inform QSPY of a new session */
+    QS_target_info_((uint8_t)0xFF); /* send Reset and Target info */
+
+    /* wait with flushing after successfull initialization (see QS_INIT()) */
 }
 
 /****************************************************************************/
@@ -109,7 +130,7 @@ void QS_filterOn(uint_fast8_t rec) {
             QS_priv_.glbFilter[i] = (uint8_t)0xFFU; /* set all bits */
         }
         /* never turn the last 3 records on (0x7D, 0x7E, 0x7F) */
-        QS_priv_.glbFilter[sizeof(QS_priv_.glbFilter) - 1U] = (uint8_t)0x1F;
+        QS_priv_.glbFilter[sizeof(QS_priv_.glbFilter) - 1U] = (uint8_t)0x1FU;
     }
     else {
         /* record numbers can't exceed QS_ESC, so they don't need escaping */
@@ -127,40 +148,29 @@ void QS_filterOn(uint_fast8_t rec) {
 * This function should be called indirectly through the macro QS_FILTER_OFF.
 *
 * @note Filtering records based on the record-type is only the first layer of
-* filtering. The second layer is based on the object-type. Both filter
-* layers must be enabled for the QS record to be inserted into the QS buffer.
+* filtering (global filter). The second layer is based on the object-type
+* (local filter). Both filter layers must be enabled for the QS record to be
+* inserted into the QS buffer.
 */
 void QS_filterOff(uint_fast8_t rec) {
+    uint8_t tmp;
+
     if (rec == QS_ALL_RECORDS) {
-        uint8_t *glbFilter = &QS_priv_.glbFilter[0];
+        /* first clear all global filters */
+        for (tmp = (uint8_t)((uint8_t)sizeof(QS_priv_.glbFilter) - (uint8_t)1);
+             tmp > (uint8_t)0;
+             --tmp)
+        {
+            QS_priv_.glbFilter[tmp] = (uint8_t)0;
+        }
 
-        /* the following unrolled loop is designed to stop collecting trace
-        * very fast in order to prevent overwriting the interesting data.
-        * The code assumes that the dimension of QS_priv_.glbFilter[] is 16.
-        */
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;  QS_PTR_INC_(glbFilter);
-        *glbFilter = (uint8_t)0;
+        /* next leave the specific filters enabled  */
+        QS_priv_.glbFilter[0] = (uint8_t)0x01;
+        QS_priv_.glbFilter[7] = (uint8_t)0xF0;
+        QS_priv_.glbFilter[8] = (uint8_t)0x3F;
     }
     else {
-        uint8_t tmp;
-        /* record numbers can't exceed QS_ESC, so they don't need escaping */
+        /* record IDs can't exceed QS_ESC, so they don't need escaping */
         Q_ASSERT_ID(310, rec < (uint_fast8_t)QS_ESC);
         tmp =  (uint8_t)(1U << (rec & (uint_fast8_t)0x07));
         tmp ^= (uint8_t)0xFFU; /* invert all bits */
@@ -230,6 +240,119 @@ void QS_endRec(void) {
         QS_priv_.used = end;   /* the whole buffer is used */
         QS_priv_.tail = head;  /* shift the tail to the old data */
     }
+}
+
+/****************************************************************************/
+void QS_target_info_(uint8_t isReset) {
+    uint8_t b;
+
+    QS_beginRec((uint_fast8_t)QS_TARGET_INFO);
+        QS_U8_(isReset);
+
+        QS_U16_(QP_VERSION); /* two-byte version number */
+
+        /* send the object sizes... */
+        QS_U8_((uint8_t)Q_SIGNAL_SIZE
+               | (uint8_t)((uint8_t)QF_EVENT_SIZ_SIZE   << 4));
+
+#ifdef QF_EQUEUE_CTR_SIZE
+        QS_U8_((uint8_t)QF_EQUEUE_CTR_SIZE
+               | (uint8_t)((uint8_t)QF_TIMEEVT_CTR_SIZE << 4));
+#else
+        QS_U8_((uint8_t)((uint8_t)QF_TIMEEVT_CTR_SIZE << 4));
+#endif /* QF_EQUEUE_CTR_SIZE */
+
+#ifdef QF_MPOOL_CTR_SIZE
+        QS_U8_((uint8_t)QF_MPOOL_SIZ_SIZE
+               | (uint8_t)((uint8_t)QF_MPOOL_CTR_SIZE   << 4));
+#else
+        QS_U8_((uint8_t)0);
+#endif /* QF_MPOOL_CTR_SIZE */
+
+        QS_U8_((uint8_t)QS_OBJ_PTR_SIZE
+               | (uint8_t)((uint8_t)QS_FUN_PTR_SIZE     << 4));
+        QS_U8_((uint8_t)QS_TIME_SIZE);
+
+        /* send the limits... */
+        QS_U8_((uint8_t)QF_MAX_ACTIVE);
+        QS_U8_((uint8_t)QF_MAX_EPOOL
+               | (uint8_t)((uint8_t)QF_MAX_TICK_RATE << 4));
+
+        /* send the build time in three bytes (sec, min, hour)... */
+        QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[6])
+                         - (uint8_t)'0'))
+                + ((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[7]) - (uint8_t)'0'));
+        QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[3])
+                         - (uint8_t)'0'))
+                + ((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[4]) - (uint8_t)'0'));
+        if ((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[0]) == (uint8_t)' ') {
+            QS_U8_((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[1]) - (uint8_t)'0');
+        }
+        else {
+            QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[0])
+                             - (uint8_t)'0'))
+                    + ((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[1]) - (uint8_t)'0'));
+        }
+
+        /* send the build date in three bytes (day, month, year) ... */
+        if ((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[4]) == (uint8_t)' ') {
+            QS_U8_((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[5]) - (uint8_t)'0');
+        }
+        else {
+            QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[4])
+                             - (uint8_t)'0'))
+                    + ((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[5]) - (uint8_t)'0'));
+        }
+        /* convert the 3-letter month to a number 1-12 ... */
+        switch ((int_t)Q_ROM_BYTE(Q_BUILD_DATE[0])
+                + (int_t)Q_ROM_BYTE(Q_BUILD_DATE[1])
+                + (int_t)Q_ROM_BYTE(Q_BUILD_DATE[2]))
+        {
+            case (int_t)'J' + (int_t)'a' + (int_t)'n':
+                b = (uint8_t)1;
+                break;
+            case (int_t)'F' + (int_t)'e' + (int_t)'b':
+                b = (uint8_t)2;
+                break;
+            case (int_t)'M' + (int_t)'a' + (int_t)'r':
+                b = (uint8_t)3;
+                break;
+            case (int_t)'A' + (int_t)'p' + (int_t)'r':
+                b = (uint8_t)4;
+                break;
+            case (int_t)'M' + (int_t)'a' + (int_t)'y':
+                b = (uint8_t)5;
+                break;
+            case (int_t)'J' + (int_t)'u' + (int_t)'n':
+                b = (uint8_t)6;
+                break;
+            case (int_t)'J' + (int_t)'u' + (int_t)'l':
+                b = (uint8_t)7;
+                break;
+            case (int_t)'A' + (int_t)'u' + (int_t)'g':
+                b = (uint8_t)8;
+                break;
+            case (int_t)'S' + (int_t)'e' + (int_t)'p':
+                b = (uint8_t)9;
+                break;
+            case (int_t)'O' + (int_t)'c' + (int_t)'t':
+                b = (uint8_t)10;
+                break;
+            case (int_t)'N' + (int_t)'o' + (int_t)'v':
+                b = (uint8_t)11;
+                break;
+            case (int_t)'D' + (int_t)'e' + (int_t)'c':
+                b = (uint8_t)12;
+                break;
+            default:
+                b = (uint8_t)0;
+                break;
+        }
+        QS_U8_(b); /* store the month */
+        QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[ 9])
+                         - (uint8_t)'0'))
+                + ((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[10]) - (uint8_t)'0'));
+    QS_endRec();
 }
 
 /****************************************************************************/
@@ -535,9 +658,13 @@ uint8_t const *QS_getBlock(uint16_t *pNbytes) {
 /** @note This function is only to be used through macro QS_SIG_DICTIONARY()
 */
 void QS_sig_dict(enum_t const sig, void const * const obj,
-                 char_t const Q_ROM * const name)
+                 char_t const Q_ROM *name)
 {
     QS_CRIT_STAT_
+
+    if (*name == (char_t)'&') {
+        QS_PTR_INC_(name);
+    }
     QS_CRIT_ENTRY_();
     QS_beginRec((uint_fast8_t)QS_SIG_DICT);
     QS_SIG_((QSignal)sig);
@@ -552,9 +679,13 @@ void QS_sig_dict(enum_t const sig, void const * const obj,
 /** @note This function is only to be used through macro QS_OBJ_DICTIONARY()
 */
 void QS_obj_dict(void const * const obj,
-                 char_t const Q_ROM * const name)
+                 char_t const Q_ROM *name)
 {
     QS_CRIT_STAT_
+
+    if (*name == (char_t)'&') {
+        QS_PTR_INC_(name);
+    }
     QS_CRIT_ENTRY_();
     QS_beginRec((uint_fast8_t)QS_OBJ_DICT);
     QS_OBJ_(obj);
@@ -568,9 +699,13 @@ void QS_obj_dict(void const * const obj,
 /** @note This function is only to be used through macro QS_FUN_DICTIONARY()
 */
 void QS_fun_dict(void (* const fun)(void),
-                 char_t const Q_ROM * const name)
+                 char_t const Q_ROM *name)
 {
     QS_CRIT_STAT_
+
+    if (*name == (char_t)'&') {
+        QS_PTR_INC_(name);
+    }
     QS_CRIT_ENTRY_();
     QS_beginRec((uint_fast8_t)QS_FUN_DICT);
     QS_FUN_(fun);
@@ -587,6 +722,7 @@ void QS_usr_dict(enum_t const rec,
                  char_t const Q_ROM * const name)
 {
     QS_CRIT_STAT_
+
     QS_CRIT_ENTRY_();
     QS_beginRec((uint_fast8_t)QS_USR_DICT);
     QS_U8_((uint8_t)rec);

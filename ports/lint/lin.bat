@@ -1,8 +1,8 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C build script for PC-Lint(TM), Standard C compiler
-:: Last Updated for Version: 5.4.0
-:: Date of the Last Update:  2015-03-13
+:: Last Updated for Version: 5.5.0
+:: Date of the Last Update:  2015-07-27
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -51,15 +51,15 @@ if NOT exist "%PC_LINT%" (
 set LINTFLAGS=..\..\include\std.lnt options.lnt %1 %2 %3 %4
 
 :: do the linting...
-%PC_LINT%\lint-nt -os(lint_qep.txt) %LINTFLAGS% -iqk ..\..\source\qep*.c
+%PC_LINT%\lint-nt -os(lint_qep.log) %LINTFLAGS% -iqk ..\..\source\qep*.c
 
-%PC_LINT%\lint-nt -os(lint_qf.txt)  %LINTFLAGS% -iqk ..\..\source\qf*.c 
+%PC_LINT%\lint-nt -os(lint_qf.log)  %LINTFLAGS% -iqk ..\..\source\qf*.c 
 
-%PC_LINT%\lint-nt -os(lint_qk.txt)  %LINTFLAGS% -iqk ..\..\source\qk*.c
+%PC_LINT%\lint-nt -os(lint_qk.log)  %LINTFLAGS% -iqk ..\..\source\qk*.c
 
-%PC_LINT%\lint-nt -os(lint_qv.txt)  %LINTFLAGS% -iqv ..\..\source\qv*.c
+%PC_LINT%\lint-nt -os(lint_qv.log)  %LINTFLAGS% -iqv ..\..\source\qv*.c
 
-%PC_LINT%\lint-nt -os(lint_qs.txt)  %LINTFLAGS% -iqk -DQ_SPY ..\..\source\qs*.c
+%PC_LINT%\lint-nt -os(lint_qs.log)  %LINTFLAGS% -iqk -DQ_SPY ..\..\source\qs*.c
 
 :end
 endlocal

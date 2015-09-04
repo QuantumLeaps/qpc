@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="bsp.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="philo.c" />
+    <ClCompile Include="table.c" />
+    <ClCompile Include="..\..\..\include\qstamp.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bsp.h" />
+    <ClInclude Include="dpp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\..\ports\win32-qv\Release\qp.lib">
+      <Filter>QP</Filter>
+    </Library>
+    <Library Include="..\..\..\ports\win32-qv\QSpy\qp.lib">
+      <Filter>QP</Filter>
+    </Library>
+    <Library Include="..\..\..\ports\win32-qv\Debug\qp.lib">
+      <Filter>QP</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="QP">
+      <UniqueIdentifier>{223c8de9-a095-4bac-8dbb-75a9d5fcaa58}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

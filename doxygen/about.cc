@@ -44,7 +44,14 @@ If you are developing and distributing traditional closed source applications, y
 @section getting_started Getting Started with QP/C
 The Quantum Leaps Application Note <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf"><strong>Getting Started with QP/C</strong></a> provides step-by-step instructions on how to get started with QP/C quickly.
 
-@image html AN_Getting_Started_with_QPC.jpg
+@htmlonly
+<div class="image">
+<a target="_blank" href="http://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf"><img border="0" src="img/AN_Getting_Started_with_QPC.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: Getting Started with QP/C
+</div>
+</div>
+@endhtmlonly
 
 The standard QP/C distribution contains also many @ref exa "Example Projects", which are specifically designed to help you learn to use QP/C and to serve you as starting points for your own projects.
 
@@ -85,7 +92,14 @@ The following annotated directory tree lists the top-level directories provided 
 @section coding Coding Standard
 The QP/C framework has been developed in strict adherence to the documented <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_QL_Coding_Standard.pdf"><strong>Quantum Leaps Coding Standard</strong></a>.
 
-@image html AN_Coding_Standard.jpg "Quantum Leaps C/C++ Coding Standard"
+@htmlonly
+<div class="image">
+<a target="_blank" href="http://www.state-machine.com/doc/AN_QL_Coding_Standard.pdf"><img border="0" src="img/AN_Coding_Standard.jpg " title="Download PDF"></a>
+<div class="caption">
+Application Note: Quantum Leaps C/C++ Coding Standard
+</div>
+</div>
+@endhtmlonly
 
 
 ------------------------------------------------------------------------------
@@ -94,7 +108,14 @@ The QP/C framework has been developed in strict adherence to the documented <a c
 <p>The QP/C framework complies with most of the Motor Industry Software Reliability Association (MISRA) MISRA-C:2004 rules.
 </p>
 
-@image html AN_MISRA-QPC.jpg "QP/C MISRA-C:2004 Compliance Matrix"
+@htmlonly
+<div class="image">
+<a target="_blank" href="http://www.state-machine.com/doc/AN_QP-C_MISRA.pdf"><img border="0" src="img/AN_MISRA-QPC.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: QP/C MISRA-C:2004 Compliance Matrix
+</div>
+</div>
+@endhtmlonly
 
 All deviations are carefully limited into very specific contexts and are documented with the Application Note: <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_QP-C_MISRA.pdf"><strong>QP/C MISRA-C:2004 Compliance Matrix</strong></a>.
 

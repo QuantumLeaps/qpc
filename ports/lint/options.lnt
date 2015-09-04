@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.4.1
-// Last updated on  2015-05-31
+// Last updated for version 5.5.0
+// Last updated on  2015-08-29
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -131,18 +131,22 @@ qpc.lnt               // QP/C options
 // QS -- the following options are needed only when Q_SPY is defined
 -emacro(960,          // MISR04-17.4(req), pointer arithmetic
  QS_PTR_AT_,
+ QS_RX_AT_,
  QS_PTR_INC_)
 -efunc(960,           // MISRA04-18.4(req) declaration of union
  QS_f32,
  QS_f64)
 -estring(960,         // MISRA04-8.7(req) could use block scope
- QS_seq_)
+ QS_seq_,
+ QS_priv_)
 -estring(961,         // MISRA04-19.7(adv) function-like macro
  QS_INSERT_BYTE,
  QS_INSERT_ESC_BYTE,
  QS_INSERT_CHKSUM_BYTE,
  QS_PTR_AT_,
- QS_PTR_INC_)
+ QS_PTR_INC_,
+ QS_RX_AT_,
+ QS_RX_TRAN_)
 -emacro(506,          // MISRA04-13.7(req) & 14.1(req)
  QS_BEGIN_,
  QS_BEGIN_NOCRIT_)
@@ -180,6 +184,9 @@ qpc.lnt               // QP/C options
  QS_END_NOCRIT_)
 -emacro(778,          // zero in operation '&'
  QS_BEGIN_NOCRIT_)
+-estring(960,         // MISRA04-18.4(req) declaration of union type
+ QSRxExtState)
+
  
 // Warning 537 "Repeated include file" is generated only for QEP source code
 // This warning is redundant, because all QP header files are protected

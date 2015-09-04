@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, POSIX
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-07
+* Last Updated for Version: 5.5.0
+* Date of the Last Update:  2015-08-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -56,17 +56,17 @@ static uint32_t l_rnd;        /* random seed */
 #endif
 
 /* BSP functions ===========================================================*/
-/*..........................................................................*/
 void BSP_init() {
-    printf("Dining Philosopher Problem example"
-           "\nQEP %s\nQF  %s\n"
-           "Press p to pause\n"
-           "Press s to serve\n"
+
+    printf("Dining Philosophers Problem example"
+           "\nQP %s\n"
+           "Press 'p' to pause\n"
+           "Press 's' to serve\n"
            "Press ESC to quit...\n",
-           QEP_getVersion(),
-           QF_getVersion());
+           QP_versionStr);
 
     BSP_randomSeed(1234U);
+
     Q_ALLEGE(QS_INIT((void *)0));
     QS_OBJ_DICTIONARY(&l_clock_tick); /* must be called *after* QF_init() */
     QS_USR_DICTIONARY(PHILO_STAT);
@@ -125,7 +125,7 @@ void QF_onClockTick(void) {
     struct timeval timeout = { 0 };  /* timeout for select() */
     fd_set con; /* FD set representing the console */
 
-    QF_TICK(&l_clock_tick); /* perform the QF clock tick processing */
+    QF_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
 
     FD_ZERO(&con);
     FD_SET(0, &con);
@@ -145,10 +145,15 @@ void QF_onClockTick(void) {
     }
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const file, int line) {
-    QS_ASSERTION(file, line);
-    fprintf(stderr, "Assertion failed in %s, line %d", file, line);
-    QF_stop();
+void Q_onAssert(char const Q_ROM *module, int loc) {
+    /*
+    * NOTE: add here your application-specific error handling
+    */
+    (void)module;
+    (void)loc;
+    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    fprintf(stderr, "Assertion failed in %s, loc %d", module, loc);
+    exit(-1);
 }
 
 /* QS callbacks ============================================================*/
@@ -183,7 +188,21 @@ static void *idleThread(void *par) { /* the expected P-Thread signature */
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[4*1024];  // 4K buffer for Quantum Spy
+
+    (void)arg;
     QS_initBuf(qsBuf, sizeof(qsBuf));
+
+    printf("QSPY_config(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d)\n",
+           (int)QP_VERSION,         // version
+           (int)QS_OBJ_PTR_SIZE,    // objPtrSize
+           (int)QS_FUN_PTR_SIZE,    // funPtrSize
+           (int)QS_TIME_SIZE,       // tstampSize
+           (int)Q_SIGNAL_SIZE,      // sigSize,
+           (int)QF_EVENT_SIZ_SIZE,  // evtSize
+           (int)QF_EQUEUE_CTR_SIZE, // queueCtrSize
+           (int)QF_MPOOL_CTR_SIZE,  // poolCtrSize
+           (int)QF_MPOOL_SIZ_SIZE,  // poolBlkSize
+           (int)QF_TIMEEVT_CTR_SIZE);
 
     QSPY_config(QP_VERSION,         // version
                 QS_OBJ_PTR_SIZE,    // objPtrSize
@@ -199,49 +218,22 @@ uint8_t QS_onStartup(void const *arg) {
                 (void *)0,
                 (QSPY_CustParseFun)0); // customized parser function
 
-    QS_FILTER_ON(QS_ALL_RECORDS);
+    /* set up the QS filters... */
+    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
+    QS_FILTER_ON(QS_QEP_STATE_EXIT);
+    QS_FILTER_ON(QS_QEP_STATE_INIT);
+    QS_FILTER_ON(QS_QEP_INIT_TRAN);
+    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
+    QS_FILTER_ON(QS_QEP_TRAN);
+    QS_FILTER_ON(QS_QEP_IGNORED);
+    QS_FILTER_ON(QS_QEP_DISPATCH);
+    QS_FILTER_ON(QS_QEP_UNHANDLED);
 
-//    QS_FILTER_OFF(QS_QEP_STATE_ENTRY);
-//    QS_FILTER_OFF(QS_QEP_STATE_EXIT);
-//    QS_FILTER_OFF(QS_QEP_STATE_INIT);
-//    QS_FILTER_OFF(QS_QEP_TRAN_HIST);
-//    QS_FILTER_OFF(QS_QEP_INTERN_TRAN);
-//    QS_FILTER_OFF(QS_QEP_TRAN);
-//    QS_FILTER_OFF(QS_QEP_IGNORED);
-//    QS_FILTER_OFF(QS_QEP_DISPATCH);
-//    QS_FILTER_OFF(QS_QEP_UNHANDLED);
+    QS_FILTER_ON(QS_QF_ACTIVE_POST_FIFO);
+    QS_FILTER_ON(QS_QF_ACTIVE_POST_LIFO);
+    QS_FILTER_ON(QS_QF_PUBLISH);
 
-    QS_FILTER_OFF(QS_QF_ACTIVE_ADD);
-    QS_FILTER_OFF(QS_QF_ACTIVE_REMOVE);
-    QS_FILTER_OFF(QS_QF_ACTIVE_SUBSCRIBE);
-//    QS_FILTER_OFF(QS_QF_ACTIVE_UNSUBSCRIBE);
-    QS_FILTER_OFF(QS_QF_ACTIVE_POST_FIFO);
-//    QS_FILTER_OFF(QS_QF_ACTIVE_POST_LIFO);
-    QS_FILTER_OFF(QS_QF_ACTIVE_GET);
-    QS_FILTER_OFF(QS_QF_ACTIVE_GET_LAST);
-    QS_FILTER_OFF(QS_QF_EQUEUE_INIT);
-    QS_FILTER_OFF(QS_QF_EQUEUE_POST_FIFO);
-    QS_FILTER_OFF(QS_QF_EQUEUE_POST_LIFO);
-    QS_FILTER_OFF(QS_QF_EQUEUE_GET);
-    QS_FILTER_OFF(QS_QF_EQUEUE_GET_LAST);
-    QS_FILTER_OFF(QS_QF_MPOOL_INIT);
-    QS_FILTER_OFF(QS_QF_MPOOL_GET);
-    QS_FILTER_OFF(QS_QF_MPOOL_PUT);
-    QS_FILTER_OFF(QS_QF_PUBLISH);
-    QS_FILTER_OFF(QS_QF_NEW);
-    QS_FILTER_OFF(QS_QF_GC_ATTEMPT);
-    QS_FILTER_OFF(QS_QF_GC);
-    QS_FILTER_OFF(QS_QF_TICK);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_ARM);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_AUTO_DISARM);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_DISARM_ATTEMPT);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_DISARM);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_REARM);
-    QS_FILTER_OFF(QS_QF_TIMEEVT_POST);
-    QS_FILTER_OFF(QS_QF_CRIT_ENTRY);
-    QS_FILTER_OFF(QS_QF_CRIT_EXIT);
-    QS_FILTER_OFF(QS_QF_ISR_ENTRY);
-    QS_FILTER_OFF(QS_QF_ISR_EXIT);
+    QS_FILTER_ON(PHILO_STAT);
 
     {
         pthread_attr_t attr;

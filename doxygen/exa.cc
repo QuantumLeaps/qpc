@@ -216,6 +216,34 @@ The Third-Party software components included in the <span class="img folder">3rd
 sub-folders.
 
 
+------------------------------------------------------------------------------
+@section exa_own Creating your Own QP/C Projects
+
+Perhaps the most important fact of life to remember is that in embedded systems nothing works until everything works. This means that you should always start with a <strong>working system</strong> and gradually evolve it, changing one thing at a time and making sure that it keeps working every step of the way.
+
+Keeping this in mind, the provided QP/C application examples, such as the super-simple Blinky, or a bit more advanced @ref dpp or @ref game, allow you to get started with a working project rather than starting from scratch. You should also always try one of the provided example projects on the same evaluation board that it was designed for, before making any changes.
+
+Only after convincing yourself that the example project works "as is", you can think about creating your own projects. At this point, the easiest and recommended way is to copy the existing working example project folder (such as the Blinky example) and rename it.
+
+After copying the project folder, you still need to change the name of the project/workspace. The easiest and safest way to do this is to open the project/workspace in the corresponding IDE and use the Save As... option to save the project under a different name. You can do this also with the QM model file, which you can open in QM and "Save As" a different model.
+
+@note
+By copying and re-naming an existing, working project, as opposed to creating a new one from scratch, you inherit the correct compiler and linker options an other project settings, which will help you get started much faster.
+
+
+------------------------------------------------------------------------------
+@section exa_doc Next Steps and Further Reading About QP and QM
+
+To work with QP/C effectively, you need to learn a bit more about active objects and state machines. Below is a list of links to enable you to further your knowledge:
+
+1. The book “Practical UML Statecharts in C/C++, 2nd Edition” [PSiCC2] and the companion web-page to the book (http://www.state-machine.com/psicc2/ 
+2. Free Support Forum for QP/QM (https://sourceforge.net/p/qpc/discussion/668726 )
+3. QP Code Downloads summary (http://www.state-machine.com/downloads )
+4. QP Application Notes (http://www.state-machine.com/resources/appnotes.php )
+5. QP Articles (http://www.state-machine.com/resources/articles.php )
+6. QP/C Tutorial (http://www.state-machine.com/doxygen/qpc/tutorial.html)
+7. "State Space" Blog (http://embeddedgurus.com/state-space/ )
+
 @next{exa_ref}
 */
 

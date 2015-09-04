@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.2
-* Last updated on  2015-06-03
+* Last updated for version 5.5.0
+* Last updated on  2015-08-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -279,9 +279,10 @@ void QK_sched_(uint_fast8_t p) {
     uint_fast8_t pin = QK_currPrio_; /* save the initial priority */
     QMActive *a;
 
-#ifdef QK_TLS /* thread-local storage used? */
+    /* QS tracing or thread-local storage? */
+#if (defined Q_SPY) || (defined QK_TLS)
     uint_fast8_t pprev = pin;
-#endif /* QK_TLS */
+#endif /* Q_SPY || QK_TLS */
 
     /* loop until have ready-to-run AOs of higher priority than the initial */
     do {
@@ -290,23 +291,25 @@ void QK_sched_(uint_fast8_t p) {
 
         QK_currPrio_ = p; /* this becomes the current task priority */
 
-#ifdef QK_TLS /* thread-local storage used? */
-        /* changing threads? */
-        if (p != pprev) {
-            QK_TLS(a); /* switch new thread-local storage */
-            pprev = p;
-        }
-#endif /* QK_TLS */
-
-        QS_BEGIN_NOCRIT_(QS_QK_SCHEDULE, QS_priv_.aoObjFilter, a)
+        QS_BEGIN_NOCRIT_(QS_QVK_SCHEDULE, QS_priv_.aoObjFilter, a)
             QS_TIME_();            /* timestamp */
-            QS_U8_((uint8_t)p);    /* the priority of the AO */
-            QS_U8_((uint8_t)pin);  /* the preempted priority */
+            QS_2U8_((uint8_t)p,    /* priority of the scheduled AO */
+                    (uint8_t)pprev); /* previous priority */
         QS_END_NOCRIT_()
+
+    /* QS tracing or thread-local storage? */
+#if (defined Q_SPY) || (defined QK_TLS)
+        if (p != pprev) { /* changing priorities? */
+            pprev = p;    /* update previous priority */
+#ifdef QK_TLS /* thread-local storage used? */
+            QK_TLS(a);    /* switch new thread-local storage */
+#endif /* QK_TLS */
+        }
+#endif /* Q_SPY || QK_TLS */
 
         QF_INT_ENABLE(); /* unconditionally enable interrupts */
 
-        /* perform the run-to-completion (RTS) step...
+        /* perform the run-to-completion (RTC) step...
         * 1. retrieve the event from the AO's event queue, which by this
         *    time must be non-empty and QActive_get_() asserts it.
         * 2. dispatch the event to the AO's state machine.
@@ -344,11 +347,26 @@ void QK_sched_(uint_fast8_t p) {
 
     QK_currPrio_ = pin; /* restore the initial priority */
 
-#ifdef QK_TLS /* thread-local storage used? */
-    /* aren't we preempting the idle loop? (only idle loop has prio==0)  */
-    if (pin != (uint_fast8_t)0) {
+    /* QS tracing or thread-local storage? */
+#if (defined Q_SPY) || (defined QK_TLS)
+    if (pin != (uint_fast8_t)0) { /* resuming an active object? */
         a = QF_active_[pin]; /* the pointer to the preempted AO */
+
+#ifdef QK_TLS /* thread-local storage used? */
         QK_TLS(a); /* restore the original TLS */
-    }
 #endif /* QK_TLS */
+
+        QS_BEGIN_NOCRIT_(QS_QK_RESUME, QS_priv_.aoObjFilter, a)
+            QS_TIME_();              /* timestamp */
+            QS_2U8_((uint8_t)pin,    /* priority of the resumed AO */
+                    (uint8_t)pprev); /* previous priority */
+        QS_END_NOCRIT_()
+    }
+    else {  /* resuming priority==0 --> idle */
+        QS_BEGIN_NOCRIT_(QS_QVK_IDLE, (void *)0, (void *)0)
+            QS_TIME_();              /* timestamp */
+            QS_U8_((uint8_t)pprev);  /* previous priority */
+        QS_END_NOCRIT_()
+    }
+#endif /* Q_SPY || QK_TLS */
 }

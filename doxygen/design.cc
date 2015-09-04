@@ -6,7 +6,14 @@
 
 Even though QP/C is implemented in standard ANSI-C, it extensively uses object-oriented design principles such as **encapsulation** (classes), single **inheritance**, and, starting with QP5, **polymorphism** (late binding). At the C language level, these proven ways of software design become **design-patterns** and coding idioms.
 
-@image html AN_Simple_OOP_in_C.jpg
+@htmlonly
+<div class="image">
+<a target="_blank" href="http://www.state-machine.com/doc/AN_Simple_OOP_in_C.pdf"><img border="0" src="img/AN_Simple_OOP_in_C.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: Getting Started with QP/C
+</div>
+</div>
+@endhtmlonly
 
 The Quantum Leaps Application Note <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_Simple_OOP_in_C.pdf"><strong>Simple Object-Oriented Programming in C</strong></a> describes how the OOP design patterns are implemented in QP/C and how you should code them in your own applications.
 <div class="clear"></div>

@@ -1,6 +1,75 @@
 /**
 @page history Revision History
 
+@section qpc_5_5_0 Version 5.5.0, 2015-09-04
+
+The main purpose of this release is the extension of the QS software
+tracing system to bi-directional communication with embedded Targets.
+Specifically, the QS-RX (receive channel for QS) has been added with the
+following capabilities:
+
+1. Set global QS filters inside the Target
+
+2. Set local QS filters inside the Target
+
+3. Inject an arbitrary event to the Target (direct post or publish)
+
+4. Execute a user-defined callback function inside the Target with arguments supplied from QSPY
+
+5. Peek data inside the Target and send to QSPY
+
+6. Poke data (supplied from QSPY) into the Target
+
+7. Execute clock tick inside the Target
+
+8. Request target information (version, all sizes of objects, build time-stamp)
+
+9. Remotely reset of the Target
+
+
+This QP/C version complements the recent release of Qtools 5.5.0, where the <a href="http://www.state-machine.com/qspy ">QSPY host application</a> has been extended with a UDP socket, which is open for communication with various Front-Ends (GUI-based or headless). An example Front-End written in Tcl/Tk called "QspyView" has been developed to demonstrate all the features. The example application located in the directory qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qspy contains customization of the "qspyview" script for the DPP application. Please refer to the documentation of this example (@ref arm-cm_dpp_ek-tm4c123gxl) for more information.
+
+Finally, this release adds a state machine operation for implementing
+the shallow history mechanism. The operation is called "childState",
+because it computes a child state of a given parent, such that the child
+belongs to the same state hierarchy as the current state.
+
+Changes in detail:
+
+1. Modified the QS software tracing component to add new functionality,
+such as the QS-RX input channel. Also added new trace records.
+
+2. Added file "qstamp.c" (in the qpc\include\ folder) to provide
+time-stamp of the application build.
+
+3. Added function QMsm_childStateObj() to the QMsm class and
+QHsm_childState() to the QHsm class. These functions have been added to
+support the shallow-history mechanism.
+
+4. Modified all example projects (qpc\examples\ folder) to include the
+"qstamp.c" file and force its re-compilation for each new build, so that
+every build has an up-to-date and unique time stamp.
+
+5. Extended the DPP on TivaC LauchPad example (directory
+qpc\examples\arm-cm\dpp_ek-tm4c123gxl\) to demonstrate QS-RX (QS receive
+channel).
+
+6. Provided example of customizing the "QspyView" Tcl/Tk script for the
+DPP application in the directory qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qspy\
+
+7. Modified all examples (qpc\examples\ folder) to call the
+QS_ASSERTION() macro to the Q_onAssert() callback function.
+
+8. Modified the startup code (in the qpc\3rd_party\ folder) for ARM
+Cortex-M to invoke the Q_onAssert() callback from the assert_failure()
+exception handler. This is to allow application-level code to define
+Q_onAssert() for each specific project.
+
+9. Replaced deprecated registers in TM4C (TivaC) projects
+(SYSCTL->RCGCGPIO rather than the deprecated SYSCTL->RCGC2).
+
+
+------------------------------------------------------------------------------
 @section qpc_5_4_2 Version 5.4.2, 2015-06-04
 
 The main focus of this release is to improve the support for "dual targeting" of QP/C applications, which is developing of deeply embedded code as much as possible on the desktop OS, such as Windows. Experience shows that "dual targeting" dramatically improves productivity of embedded systems developers, perhaps more than any other technique.
@@ -9,15 +78,15 @@ This release makes it possible to use exactly the **same** application code, mai
 
 The support for "dual targeting" in this QP/C release works both for Win32 console and Win32 GUI applications. The Win32-GUI support enables developers to easily emulate the front-panels of the embedded devices, with LCD-screens (graphical and segmented), LEDs, buttons, switches, sliders, etc.
 
-Changes in detal:
+Changes in detail:
 
-1. Modified the QP/C ports to Windows (both @ref win32 and @ref win32-qv) so that they support both Win32 console and Win32-GUI applications. The newly introduced pre-processor #WIN32_GUI macro is now requierd to use the Win32-GUI facilities.
+1. Modified the QP/C ports to Windows (both @ref win32 and @ref win32-qv) so that they support both Win32 console and Win32-GUI applications. The newly introduced pre-processor #WIN32_GUI macro is now required to use the Win32-GUI facilities.
 
 2. Added portable "safe" macros from `<stdio.h>` and `<string.h>` to the QP/C ports to Windows. These macros encapsulate the differences between Microsoft Visual C++ and other compilers (such as MinGW).
 
 3. Simplified the structure of the QP/C Windows ports by eliminating one level of directories for the compilers used. Both VC++ and MinGW builds can now be run in the same port directory.
 
-4. Modified the QF_stop() function in the QP/C port to @ref win32-qv, so that it unblocks the QV event-loop and thus lets the application terminate. 
+4. Modified the QF_stop() function in the QP/C port to @ref win32-qv, so that it unblocks the QV event-loop and thus lets the application terminate.
 
 5. Modified all examples for Windows to use the new port structure.
 
@@ -44,13 +113,13 @@ Also, this release brings several cosmetic improvements:
 
 2. All QM models have been saved with QM 3.3.0, which means that they will not open with QM 3.2.x or earlier QM versions.
 
-3. The ROM-able QP version string QP_versionStr[] has been added and used consistently in the macros QEP_getVersion(), QF_getVersion(), QK_getVersion(), QV_getVersion(), and QS_getVersion() macros.   
+3. The ROM-able QP version string QP_versionStr[] has been added and used consistently in the macros QEP_getVersion(), QF_getVersion(), QK_getVersion(), QV_getVersion(), and QS_getVersion() macros.
 
 4. The `qpc/ports/arm-cm/qk/gnu/qk_port.s` ARM Cortex-M port to QK with GNU has been modified to use the CMSIS-compliant symbol __FPU_PRESENT instead of the FPU_VFP_V4_SP_D16 symbol.
 
 5. All Makefiles for the GNU toolset have been cleaned up, whereas any `\` (back-slash) characters in the paths have been repalced with `/` (forward-slash) characters. Also all these Makefiles have been updated to provide the __FPU_PRESENT to C and assembler when the hardware FPU is used.
 
-6. The file display drver for the EK-LM2S811 board locate at `qpc/3rd_party/ek-lm3s811/display96x16x1.c` has been modified to fix the problem with incorrect hardware delay with the GNU compiler at higher levels of optimization. The in-line assembly for the GNU compiler has been updated such that the delay loop cannot be "optimized away". 
+6. The file display drver for the EK-LM2S811 board locate at `qpc/3rd_party/ek-lm3s811/display96x16x1.c` has been modified to fix the problem with incorrect hardware delay with the GNU compiler at higher levels of optimization. The in-line assembly for the GNU compiler has been updated such that the delay loop cannot be "optimized away".
 
 7. Several README files have been updated.
 
@@ -65,13 +134,13 @@ Additionally, this release changes the basic philosophy of building your embedde
 The move to building QP/C from sources ensures the consistent toolset version and compiler options applied to the application code as well as the QP/C framework code. (**NOTE:** The QP/C examples for "big operating systems", like @ref exa_win32 "Windows" or @ref exa_posix "Linux", still use QP/C as a pre-compiled library that is statically linked with the application code.)
 
 @note
-Even though the QP/C source has been re-packaged in this release, there are no API changes to the code, so it remains **backwards compatible** with the existing applications. (Except the build process, which builds QP/C from sources rather than linking to the QP/C library.) 
+Even though the QP/C source has been re-packaged in this release, there are no API changes to the code, so it remains **backwards compatible** with the existing applications. (Except the build process, which builds QP/C from sources rather than linking to the QP/C library.)
 
 The two changes in basic approach to distributing and building the framework have also the following ripple effects:
 
 1. The QP/C source code has been simplified and has been re-packaged into a much smaller number of source files. The whole QP/C source code now resides in the single <span class="img folder"><a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html"><strong>source</strong></a></span> folder. Additionally, the source code files have now the **read-only** protection to prevent inadvertent changes to the QP/C soruce code that is part of your projects.
 
-2. It is no longer necessary to define the **QPC environment variable** to build the QP/C examples. All directories and files referenced by example projects are **relative** to the project folder. This change reflects the fact that most development tools add source files to the project using relative paths (and now the projects contain QP/C source code, not just the QP library).   
+2. It is no longer necessary to define the **QPC environment variable** to build the QP/C examples. All directories and files referenced by example projects are **relative** to the project folder. This change reflects the fact that most development tools add source files to the project using relative paths (and now the projects contain QP/C source code, not just the QP library).
 
 3. The QP/C <span class="img folder">@ref ports</span> folder has been reorganized to contain all currently available QP/C ports. The ports are organized into three categories: @ref ports_native "native QP/C ports" ("bare-metal"), @ref ports_rtos "ports to 3rd-party RTOSes", and @ref ports_os "ports to big operating systems" (Windows and Linux).(**NOTE**: the ports are now documented in the this <strong>QP/C Reference Manual</strong>. Each port sub-directory contains a <span class="img qp_link">README</span> link to the corresponding page in the online documentation)
 
@@ -94,7 +163,7 @@ Changes in detail:
 
 5. Added the native @ref arm7-9 "port" and @ref exa_arm7-9 "examples" to the @ref arm7-9 "classic ARM7/9" with AT91SAM7S-EK board and the IAR-ARM toolset.
 
-6. Added the native @ref avr "port" and @ref exa_avr "examples" to the AVR (AVRmega) with GNU-AVR and IAR-AVR toolsets. The @ref exa_avr "examples" are provided for the Arduino-UNO board. 
+6. Added the native @ref avr "port" and @ref exa_avr "examples" to the AVR (AVRmega) with GNU-AVR and IAR-AVR toolsets. The @ref exa_avr "examples" are provided for the Arduino-UNO board.
 
 7. Added the native @ref msp430 "port" and @ref exa_msp430 "examples" to MSP430 with TI CCS-430 and IAR-430 toolsets. The @ref exa_msp430 "examples" are provided for the MSP430 LauchPad boards (the MSP-EXP430G2 and MSP-EXP430F5529LP for the "classic" MSP430 and "extened" MSP430X, respectively).
 
@@ -110,9 +179,9 @@ Changes in detail:
 
 13. Updated @win32 "port to Win32" (Windows). Modified the port to apply a generous "fudge factor" in over-sizing QP event queues and event pools, to minimize the risk of overflowing queues/pools due to non-deterministic Windows behavior.
 
-14. Added new @ref win32-qv "port to Win32-QV" (Windows with cooperative "Vanilla" scheduler, previously known as Win32-1T).    
- 
-15. Updated the @ref lwip_ek-lm3s6965 "lwIP-QP example for EK-LM3S6965 board".    
+14. Added new @ref win32-qv "port to Win32-QV" (Windows with cooperative "Vanilla" scheduler, previously known as Win32-1T).
+
+15. Updated the @ref lwip_ek-lm3s6965 "lwIP-QP example for EK-LM3S6965 board".
 
 
 ------------------------------------------------------------------------------

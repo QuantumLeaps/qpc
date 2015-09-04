@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Generic Makefile for QP/C application, POSIX, GNU compiler
-# Last updated for version 5.4.0
-# Last updated on  2015-04-07
+# Product: Makefile for QP/C, DPP console, POSIX, GNU compiler
+# Last updated for version 5.5.0
+# Last updated on  2015-08-14
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,8 +28,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# Web:   www.state-machine.com
-# Email: info@state-machine.com
+# http://www.state-machine.com
+# mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
 # building configurations: Debug (default), Release, and Spy
@@ -41,61 +41,67 @@
 # make clean
 # make CONF=rel clean
 # make CONF=spy clean
-##############################################################################
-#
-# NOTE: Typically, you should have no need to change anything in this Makefile
-#
-##############################################################################
-
 
 #-----------------------------------------------------------------------------
+# project name
+#
+PROJECT     := dpp
+
+#-----------------------------------------------------------------------------
+# project directories
+#
+
 # location of the QP/C framework (if not provided in an environemnt var.)
 ifeq ($(QPC),)
 QPC := ../../..
 endif
+
+# QP port used in this project
+QP_PORT_DIR := $(QPC)/ports/posix
+
+# list of all source directories used by this project
+VPATH = \
+	.
+
+# list of all include directories needed by this project
+INCLUDES  = \
+	-I. \
+	-I$(QPC)/include
+
+
+
+#-----------------------------------------------------------------------------
+# files
+#
+
+# C source files...
+C_SRCS := \
+	bsp.c \
+	main.c \
+	philo.c \
+	table.c
+
+# C++ source files...
+CPP_SRCS :=	
+
+LIB_DIRS  :=
+LIBS      :=
+
+# defines...
+# QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
+DEFINES   := -DQP_API_VERSION=9999
+
 
 #-----------------------------------------------------------------------------
 # GNU toolset
 #
 CC    := gcc
 CPP   := g++
-LINK  := gcc   # for C programs
-#LINK  := g++  # for C++ programs
+LINK  := gcc    # for C programs
+#LINK  := g++   # for C++ programs
 
 MKDIR := mkdir -p
 RM    := rm
-
-
-#-----------------------------------------------------------------------------
-# directories
-#
-# Project name is derived from the directory name
-PROJECT := $(notdir $(CURDIR))
-
-QP_PORT_DIR := $(QPC)/ports/posix
-APP_DIR     := .
-
-VPATH = $(APP_DIR)
-
-# include directories
-INCLUDES  = -I. \
-	-I$(QPC)/include \
-	-I$(QP_PORT_DIR)
-
-# defines
-DEFINES =
-
-#-----------------------------------------------------------------------------
-# files
-#
-
-# C source files
-C_SRCS := $(wildcard *.c)
-
-# C++ source files
-CPP_SRCS := $(wildcard *.cpp)
-
-LD_SCRIPT :=
 
 #-----------------------------------------------------------------------------
 # build options for various configurations
@@ -105,16 +111,13 @@ ifeq (rel, $(CONF)) # Release configuration ..................................
 
 BIN_DIR := rel
 
-CFLAGS = -c -Wall -W -O2 -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -pthread -DNDEBUG
+CFLAGS = -ffunction-sections -fdata-sections \
+	-Os -Wall -W $(INCLUDES) $(DEFINES) -pthread -DNDEBUG
 
-CPPFLAGS = -c -Wall -W -O2 -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -pthread -DNDEBUG
-
+CPPFLAGS = -ffunction-sections -fdata-sections \
+	-Os -Wall -W $(INCLUDES) $(DEFINES) -pthread -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
-
-BIN_DIR := spy
 
 # make sure that QTOOLS exists...
 ifeq ("$(wildcard $(QTOOLS))","")
@@ -125,29 +128,34 @@ INCLUDES +=	-I$(QTOOLS)/qspy/include
 VPATH    += $(QTOOLS)/qspy/source
 C_SRCS   += qspy.c
 
-CFLAGS = -c -Wall -W -g -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -pthread -DQ_SPY
+BIN_DIR := spy
 
-CPPFLAGS = -c -Wall -W -g -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -pthread -DQ_SPY
+CFLAGS = -g -ffunction-sections -fdata-sections \
+	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread -DQ_SPY
+
+CPPFLAGS = -g -ffunction-sections -fdata-sections \
+	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread -DQ_SPY
 
 else  # default Debug configuration ..........................................
 
 BIN_DIR := dbg
 
-CFLAGS = -c -Wall -W -g -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -pthread
+CFLAGS = -g -ffunction-sections -fdata-sections \
+	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread
 
-CPPFLAGS = -c -Wall -W -g -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -pthread
+CPPFLAGS = -g -ffunction-sections -fdata-sections \
+	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread
 
-endif
+endif  # .....................................................................
 
-
-LINKFLAGS = -L$(QP_PORT_DIR)/$(BIN_DIR) -pthread \
-	-Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
+LINKFLAGS := -Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
 
 #-----------------------------------------------------------------------------
+
+# combine all the soruces...
+INCLUDES  += -I$(QP_PORT_DIR)
+LIB_DIRS  += -L$(QP_PORT_DIR)/$(BIN_DIR)
+LIBS      += -lpthread -lqp
 
 C_OBJS       := $(patsubst %.c,   %.o, $(C_SRCS))
 CPP_OBJS     := $(patsubst %.cpp, %.o, $(CPP_SRCS))
@@ -174,23 +182,21 @@ all: $(TARGET_EXE)
 $(TARGET_BIN): $(TARGET_EXE)
 	$(BIN) -O binary $< $@
 
-$(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(LINK) $(LINKFLAGS) -o $@ $^ -lqp
-
-$(BIN_DIR)/%.d : %.c
-	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
+$(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT) $(RC_OBJS_EXT)
+	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
 
-$(BIN_DIR)/%.o : %.s
-	$(AS) $(ASFLAGS) $< -o $@
-
-$(BIN_DIR)/%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+$(BIN_DIR)/%.d : %.c
+	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
+
+$(BIN_DIR)/%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # include dependency files only if our goal depends on their existence
 ifneq ($(MAKECMDGOALS),clean)
@@ -215,3 +221,6 @@ show:
 	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
 	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
+	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
+	@echo LIB_DIRS = $(LIB_DIRS)
+	@echo LIBS     = $(LIBS)

@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-04-25
+* Last updated for version 5.5.0
+* Last updated on  2015-08-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -248,3 +248,36 @@ void QF_gc(QEvt const * const e) {
     }
 }
 
+/****************************************************************************/
+/**
+* @description
+* Creates and returns a new reference to the current event e
+*
+* @param[in] e       pointer to the current event
+* @param[in] evtRef  the event reference
+*
+* @returns the newly created reference to the event `e`
+*
+* @note The application code should not call this function directly.
+* The only allowed use is thorough the macro Q_NEW_REF().
+*/
+QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef) {
+    /* the provided event reference must not be in use */
+    Q_REQUIRE_ID(500, evtRef == (QEvt const *)0);
+
+    /* is the current event dynamic? */
+    if (e->poolId_ != (uint8_t)0) {
+        QF_EVT_REF_CTR_INC_(e); /* increments the ref counter */
+    }
+
+    return e;
+}
+
+/****************************************************************************/
+/**
+* @description
+* Obtain the block size of any registered event pools
+*/
+uint_fast16_t QF_poolGetMaxBlockSize(void) {
+    return QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - (uint_fast8_t)1]);
+}

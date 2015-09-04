@@ -4,8 +4,8 @@
 * @brief Memory management services
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-04-25
+* Last updated for version 5.5.0
+* Last updated on  2015-08-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -77,6 +77,10 @@ Q_DEFINE_THIS_MODULE("qf_mem")
 * when interrupts are not allowed yet.
 *
 * @note Many QF ports use memory pools to implement the event pools.
+*
+* @usage
+* The following example illustrates how to invoke QMPool_init():
+* @include qmp_init.c
 */
 void QMPool_init(QMPool * const me, void * const poolSto,
                  uint_fast32_t poolSize, uint_fast16_t blockSize)
@@ -117,7 +121,7 @@ void QMPool_init(QMPool * const me, void * const poolSto,
     while (poolSize >= (uint_fast32_t)blockSize) {
         fb->next = &QF_PTR_AT_(fb, nblocks);/*point next link to next block */
         fb = fb->next;           /* advance to the next block */
-        poolSize -= (uint_fast32_t)blockSize; /* reduce the available pool size */
+        poolSize -= (uint_fast32_t)blockSize; /* reduce available pool size */
         ++me->nTot;              /* increment the number of blocks so far */
     }
 
@@ -148,6 +152,10 @@ void QMPool_init(QMPool * const me, void * const poolSto,
 * @note This function can be called from any task level or ISR level.
 *
 * @sa QMPool_get()
+*
+* @usage
+* The following example illustrates how to use QMPool_put():
+* @include qmp_use.c
 */
 void QMPool_put(QMPool * const me, void *b) {
     QF_CRIT_STAT_
@@ -194,6 +202,10 @@ void QMPool_put(QMPool * const me, void *b) {
 * from which it has been allocated.
 *
 * @sa QMPool_put()
+*
+* @usage
+* The following example illustrates how to use QMPool_get():
+* @include qmp_use.c
 */
 void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
     QFreeBlock *fb;

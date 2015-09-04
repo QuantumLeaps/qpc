@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: Simple "Blinky" example, EK-TM4C123GLX board, CMSIS-RTOS RTX
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-23
+* Last Updated for Version: 5.5.0
+* Date of the Last Update:  2015-08-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "blinky.h"
@@ -112,11 +112,8 @@ void BSP_init(void) {
     */
     SystemCoreClockUpdate();
 
-    /* enable clock to the peripherals used by the application */
-    SYSCTL->RCGC2 |= (1U << 5); /* enable clock to GPIOF  */
-    __NOP();                    /* wait after enabling clocks */
-    __NOP();
-    __NOP();
+    /* enable clock for to the peripherals used by this application... */
+    SYSCTL->RCGCGPIO |= (1U << 5); /* enable Run mode for GPIOF */
 
     /* configure the LEDs and push buttons */
     GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE); /* set as output */
@@ -167,7 +164,15 @@ void QF_onRtxTicker() {
 }
 
 /*..........................................................................*/
-/* NOTE Q_onAssert() defined in assembly in startup_TM4C123GH6PM.s */
+void Q_onAssert(char const *module, int loc) {
+    /*
+    * NOTE: add here your application-specific error handling
+    */
+    (void)module;
+    (void)loc;
+    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    NVIC_SystemReset();
+}
 
 /*****************************************************************************
 * NOTE01:

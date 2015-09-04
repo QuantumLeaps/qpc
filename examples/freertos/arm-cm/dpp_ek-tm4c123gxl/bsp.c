@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, FreeRTOS kernel
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-16
+* Last Updated for Version: 5.5.0
+* Date of the Last Update:  2015-08-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -202,11 +202,8 @@ void BSP_init(void) {
     */
     FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
 
-    /* enable clock to the peripherals used by the application */
-    SYSCTL->RCGC2 |= (1U << 5); /* enable clock to GPIOF  */
-    __NOP();                    /* wait after enabling clocks */
-    __NOP();
-    __NOP();
+    /* enable clock for to the peripherals used by this application... */
+    SYSCTL->RCGCGPIO |= (1U << 5); /* enable Run mode for GPIOF */
 
     /* configure the LEDs and push buttons */
     GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE); /* set as output */
@@ -294,8 +291,17 @@ void QF_onCleanup(void) {
 }
 
 /*..........................................................................*/
-/* NOTE Q_onAssert() defined in assembly in startup_TM4C123GH6PM.s */
-/*--------------------------------------------------------------------------*/
+void Q_onAssert(char const *module, int loc) {
+    /*
+    * NOTE: add here your application-specific error handling
+    */
+    (void)module;
+    (void)loc;
+    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    NVIC_SystemReset();
+}
+
+/* QS callbacks ============================================================*/
 #ifdef Q_SPY
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
@@ -303,33 +309,34 @@ uint8_t QS_onStartup(void const *arg) {
     uint32_t tmp;
     QS_initBuf(qsBuf, sizeof(qsBuf));
 
-    /* enable the peripherals used by the UART0 */
-    SYSCTL->RCGC1 |= (1U << 0);    /* enable clock to UART0 */
-    SYSCTL->RCGC2 |= (1U << 0);    /* enable clock to GPIOA */
-    __NOP();                       /* wait after enabling clocks */
-    __NOP();
-    __NOP();
+    /* enable clock for UART0 and GPIOA (used by UART0 pins) */
+    SYSCTL->RCGCUART |= (1U << 0); /* enable Run mode for UART0 */
+    SYSCTL->RCGCGPIO |= (1U << 0); /* enable Run mode for GPIOA */
 
     /* configure UART0 pins for UART operation */
     tmp = (1U << 0) | (1U << 1);
     GPIOA->DIR   &= ~tmp;
-    GPIOA->AFSEL |= tmp;
-    GPIOA->DR2R  |= tmp;   /* set 2mA drive, DR4R and DR8R are cleared */
     GPIOA->SLR   &= ~tmp;
     GPIOA->ODR   &= ~tmp;
     GPIOA->PUR   &= ~tmp;
     GPIOA->PDR   &= ~tmp;
-    GPIOA->DEN   |= tmp;
+    GPIOA->AMSEL &= ~tmp;  /* disable analog function on the pins */
+    GPIOA->AFSEL |= tmp;   /* enable ALT function on the pins */
+    GPIOA->DEN   |= tmp;   /* enable digital I/O on the pins */
+    GPIOA->PCTL  &= ~0x00U;
+    GPIOA->PCTL  |= 0x11U;
 
     /* configure the UART for the desired baud rate, 8-N-1 operation */
-    tmp = (((ROM_SysCtlClockGet() * 8U) / UART_BAUD_RATE) + 1U) / 2U;
+    tmp = (((SystemCoreClock * 8U) / UART_BAUD_RATE) + 1U) / 2U;
     UART0->IBRD   = tmp / 64U;
     UART0->FBRD   = tmp % 64U;
-    UART0->LCRH   = 0x60U; /* configure 8-N-1 operation */
-    UART0->LCRH  |= 0x10U;
-    UART0->CTL   |= (1U << 0) | (1U << 8) | (1U << 9);
+    UART0->LCRH   = (0x3U << 5); /* configure 8-N-1 operation */
+    UART0->LCRH  |= (0x1U << 4); /* enable FIFOs */
+    UART0->CTL    = (1U << 0)    /* UART enable */
+                    | (1U << 8)  /* UART TX enable */
+                    | (1U << 9); /* UART RX enable */
 
-    QS_tickPeriod_ = ROM_SysCtlClockGet() / BSP_TICKS_PER_SEC;
+    QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
     /* setup the QS filters... */
@@ -343,69 +350,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(QS_QEP_DISPATCH);
     QS_FILTER_ON(QS_QEP_UNHANDLED);
 
-//    QS_FILTER_ON(QS_QF_ACTIVE_ADD);
-//    QS_FILTER_ON(QS_QF_ACTIVE_REMOVE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_SUBSCRIBE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_UNSUBSCRIBE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_POST_FIFO);
-//    QS_FILTER_ON(QS_QF_ACTIVE_POST_LIFO);
-//    QS_FILTER_ON(QS_QF_ACTIVE_GET);
-//    QS_FILTER_ON(QS_QF_ACTIVE_GET_LAST);
-//    QS_FILTER_ON(QS_QF_EQUEUE_INIT);
-//    QS_FILTER_ON(QS_QF_EQUEUE_POST_FIFO);
-//    QS_FILTER_ON(QS_QF_EQUEUE_POST_LIFO);
-//    QS_FILTER_ON(QS_QF_EQUEUE_GET);
-//    QS_FILTER_ON(QS_QF_EQUEUE_GET_LAST);
-//    QS_FILTER_ON(QS_QF_MPOOL_INIT);
-//    QS_FILTER_ON(QS_QF_MPOOL_GET);
-//    QS_FILTER_ON(QS_QF_MPOOL_PUT);
-//    QS_FILTER_ON(QS_QF_PUBLISH);
-//    QS_FILTER_ON(QS_QF_RESERVED8);
-//    QS_FILTER_ON(QS_QF_NEW);
-//    QS_FILTER_ON(QS_QF_GC_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_GC);
-    QS_FILTER_ON(QS_QF_TICK);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_ARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_AUTO_DISARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_DISARM_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_DISARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_REARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_POST);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_CTR);
-//    QS_FILTER_ON(QS_QF_CRIT_ENTRY);
-//    QS_FILTER_ON(QS_QF_CRIT_EXIT);
-//    QS_FILTER_ON(QS_QF_ISR_ENTRY);
-//    QS_FILTER_ON(QS_QF_ISR_EXIT);
-//    QS_FILTER_ON(QS_QF_INT_DISABLE);
-//    QS_FILTER_ON(QS_QF_INT_ENABLE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_POST_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_EQUEUE_POST_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_MPOOL_GET_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_RESERVED1);
-//    QS_FILTER_ON(QS_QF_RESERVED0);
-
-//    QS_FILTER_ON(QS_QK_MUTEX_LOCK);
-//    QS_FILTER_ON(QS_QK_MUTEX_UNLOCK);
-//    QS_FILTER_ON(QS_QK_SCHEDULE);
-//    QS_FILTER_ON(QS_QK_RESERVED1);
-//    QS_FILTER_ON(QS_QK_RESERVED0);
-
-//    QS_FILTER_ON(QS_QEP_TRAN_HIST);
-//    QS_FILTER_ON(QS_QEP_TRAN_EP);
-//    QS_FILTER_ON(QS_QEP_TRAN_XP);
-//    QS_FILTER_ON(QS_QEP_RESERVED1);
-//    QS_FILTER_ON(QS_QEP_RESERVED0);
-
-    QS_FILTER_ON(QS_SIG_DICT);
-    QS_FILTER_ON(QS_OBJ_DICT);
-    QS_FILTER_ON(QS_FUN_DICT);
-    QS_FILTER_ON(QS_USR_DICT);
-    QS_FILTER_ON(QS_EMPTY);
-    QS_FILTER_ON(QS_RESERVED3);
-    QS_FILTER_ON(QS_RESERVED2);
-    QS_FILTER_ON(QS_TEST_RUN);
-    QS_FILTER_ON(QS_TEST_FAIL);
-    QS_FILTER_ON(QS_ASSERT_FAIL);
+    QS_FILTER_ON(PHILO_STAT);
 
     return (uint8_t)1; /* return success */
 }

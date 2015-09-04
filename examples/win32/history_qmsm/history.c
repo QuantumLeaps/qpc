@@ -48,12 +48,13 @@ static QMState const ToastOven_doorClosed_s = {
 static QState ToastOven_heating  (ToastOven * const me, QEvt const * const e);
 static QState ToastOven_heating_e(ToastOven * const me);
 static QState ToastOven_heating_x(ToastOven * const me);
+static QState ToastOven_heating_i(ToastOven * const me);
 static QMState const ToastOven_heating_s = {
     &ToastOven_doorClosed_s, /* superstate */
     Q_STATE_CAST(&ToastOven_heating),
     Q_ACTION_CAST(&ToastOven_heating_e),
     Q_ACTION_CAST(&ToastOven_heating_x),
-    Q_ACTION_CAST(0)  /* no intitial tran. */
+    Q_ACTION_CAST(&ToastOven_heating_i)
 };
 static QState ToastOven_toasting  (ToastOven * const me, QEvt const * const e);
 static QState ToastOven_toasting_e(ToastOven * const me);
@@ -262,6 +263,21 @@ static QState ToastOven_heating_x(ToastOven * const me) {
     printf("heater-Off;");
     (void)me; /* avoid compiler warning in case 'me' is not used */
     return QM_EXIT(&ToastOven_heating_s);
+}
+/* ${SMs::ToastOven::SM::doorClosed::heating::initial} */
+static QState ToastOven_heating_i(ToastOven * const me) {
+    static struct {
+        QMState const *target;
+        QActionHandler act[2];
+    } const tatbl_ = { /* transition-action table */
+        &ToastOven_toasting_s, /* target state */
+        {
+            Q_ACTION_CAST(&ToastOven_toasting_e), /* entry */
+            Q_ACTION_CAST(0) /* zero terminator */
+        }
+    };
+    /* ${SMs::ToastOven::SM::doorClosed::heating::initial} */
+    return QM_TRAN_INIT(&tatbl_);
 }
 /* ${SMs::ToastOven::SM::doorClosed::heating} */
 static QState ToastOven_heating(ToastOven * const me, QEvt const * const e) {

@@ -28,12 +28,17 @@
 		<link>
 			<name>QP</name>
 			<type>2</type>
-			<location>D:/qp/qpc/source</location>
+			<location>C:/qp/qpc/source</location>
+		</link>
+		<link>
+			<name>QP_include</name>
+			<type>2</type>
+			<location>C:/qp/qpc/include</location>
 		</link>
 		<link>
 			<name>QP_port</name>
 			<type>2</type>
-			<location>D:/qp/qpc/ports/msp430/qv/ccs</location>
+			<location>C:/qp/qpc/ports/msp430/qv/ccs</location>
 		</link>
 		<link>
 			<name>bsp.c</name>

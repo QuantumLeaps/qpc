@@ -3,7 +3,7 @@
   <ItemGroup>
     <ClCompile Include="bsp.c" />
     <ClCompile Include="$(QTOOLS)\qspy\source\qspy.c">
-      <Filter>Q_SPY</Filter>
+      <Filter>QSPY</Filter>
     </ClCompile>
     <ClCompile Include="..\main.c" />
     <ClCompile Include="..\mine1.c" />
@@ -11,6 +11,7 @@
     <ClCompile Include="..\missile.c" />
     <ClCompile Include="..\ship.c" />
     <ClCompile Include="..\tunnel.c" />
+    <ClCompile Include="..\..\..\..\include\qstamp.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -40,16 +41,30 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Q_SPY">
-      <UniqueIdentifier>{9329cf7b-e791-415b-8458-a26ea9bf414f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Res">
       <UniqueIdentifier>{c8d4d732-dcf8-4466-ad8e-3f15ab6fe204}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QSPY">
+      <UniqueIdentifier>{9329cf7b-e791-415b-8458-a26ea9bf414f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QP">
+      <UniqueIdentifier>{22663e12-dd09-49e8-b222-67a2f17d770d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game-gui.rc">
       <Filter>Res</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\..\..\ports\win32-qv\QSpy\qp.lib">
+      <Filter>QP</Filter>
+    </Library>
+    <Library Include="..\..\..\..\ports\win32-qv\Debug\qp.lib">
+      <Filter>QP</Filter>
+    </Library>
+    <Library Include="..\..\..\..\ports\win32-qv\Release\qp.lib">
+      <Filter>QP</Filter>
+    </Library>
   </ItemGroup>
 </Project>

@@ -36,7 +36,7 @@
 #include "bsp.h"
 
 /*..........................................................................*/
-int main() {
+int main(int argc, char *argv[]) {
     static QEvt const *tableQueueSto[N_PHILO];
     static QEvt const *philoQueueSto[N_PHILO][N_PHILO];
     static QSubscrList subscrSto[MAX_PUB_SIG];
@@ -47,7 +47,7 @@ int main() {
     Table_ctor(); /* instantiate the Table active object */
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
-    BSP_init();   /* initialize the Board Support Package */
+    BSP_init(argc, argv); /* initialize the Board Support Package */
 
     /* object dictionaries... */
     QS_OBJ_DICTIONARY(smlPoolSto);

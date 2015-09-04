@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.2
-* Last updated on  2015-06-03
+* Last updated for version 5.5.0
+* Last updated on  2015-08-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -525,6 +525,9 @@ void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal);
 void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
                  uint_fast16_t const evtSize);
 
+/*! Obtain the block size of any registered event pools */
+uint_fast16_t QF_poolGetMaxBlockSize(void);
+
 /*! Transfers control to QF to run the application. */
 int_t QF_run(void);
 
@@ -650,9 +653,12 @@ uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId);
 * the given event queue. */
 uint_fast16_t QF_getQueueMin(uint_fast8_t const prio);
 
-/*! Internal QP implementation of the dynamic event allocator. */
+/*! Internal QF implementation of the dynamic event allocator. */
 QEvt *QF_newX_(uint_fast16_t const evtSize,
                uint_fast16_t const margin, enum_t const sig);
+
+/*! Internal QF implementation of the event reference creator. */
+QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef);
 
 #ifdef Q_EVT_CTOR /* Shall the constructor for the QEvt class be provided? */
 
@@ -673,7 +679,7 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
     /*! Allocate a dynamic event. */
     /**
     * @description
-    * The macro calls the internal QF function QF::newX_() with
+    * The macro calls the internal QF function QF_newX_() with
     * margin == 0, which causes an assertion when the event cannot be
     * successfully allocated.
     *
@@ -698,7 +704,6 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
 
     /*! Allocate a dynamic event (non-asserting version). */
     /**
-    * @description
     * @description
     * This macro allocates a new event and sets the pointer @p e_, while
     * leaving at least @p margin_ of events still available in the pool
@@ -726,6 +731,48 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
 
 #endif /* Q_EVT_CTOR */
 
+/*! Create a new reference of the current event `e` */
+/**
+* @description
+* The current event processed by an active object is available only for
+* the duration of the run-to-completion (RTC) step. After that step, the
+* current event is no longer available and the framework might recycle
+* (garbage-collect) the event. The macro Q_NEW_REF() explicitly creates
+* a new reference to the current event that can be stored and used beyond
+* the current RTC step, until the reference is explicitly recycled by
+* means of the macro Q_DELETE_REF().
+*
+* @param[in,out] evtRef_  event reference to create
+* @param[in]     evtT_    event type (class name) of the event refrence
+*
+* @usage
+* The example **defer** in the directory `examples/win32/defer` illustrates
+* the use of Q_NEW_REF()
+*
+* @sa Q_DELETE_REF()
+*/
+#define Q_NEW_REF(evtRef_, evtT_)  \
+    ((evtRef_) = (evtT_ const *)QF_newRef_(e, &(evtRef_)->super))
+
+/*! Delete the event reference */
+/**
+* @description
+* Every event reference created with the macro Q_NEW_REF() needs to be
+* eventually deleted by means of the macro Q_DELETE_REF() to avoid leaking
+* the event.
+*
+* @param[in,out] evtRef_  event reference to delete
+*
+* @usage
+* The example **defer** in the directory `examples/win32/defer` illustrates
+* the use of Q_DELETE_REF()
+*
+* @sa Q_NEW_REF()
+*/
+#define Q_DELETE_REF(evtRef_) do { \
+    QF_gc(&(evtRef_)->super); \
+    (evtRef_) = (void *)0; \
+} while (0)
 
 /*! Recycle a dynamic event. */
 void QF_gc(QEvt const * const e);

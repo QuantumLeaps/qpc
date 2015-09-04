@@ -1,8 +1,8 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 5.4.2
-:: Date of the Last Update:  2015-06-03
+:: Last Updated for Version: 5.5.0
+:: Date of the Last Update:  2015-08-10
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -29,8 +29,8 @@
 :: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: Web:   http://www.state-machine.com
-:: Email: info@state-machine.com
+:: http://www.state-machine.com
+:: mailto:info@state-machine.com
 :: ==========================================================================
 setlocal
 
@@ -38,13 +38,13 @@ echo usage:
 echo make
 echo make -CHM
 
-set VERSION=5.4.2
+set VERSION=5.5.0
 
 :: Generate Resource Standard Metrics for QP/C ............................... 
 set DOXHOME="C:\tools\doxygen\bin"
 set RCMHOME="C:\tools\MSquared\M2 RSM"
 
-set RSM_OUTPUT=metrics.dox
+set RSM_OUTPUT=metrics.cc
 set RSM_INPUT=..\include\*.h ..\source\*.h ..\source\*.c
 
 echo /** @page metrics Code Metrics > %RSM_OUTPUT%
@@ -73,16 +73,16 @@ if "%1"=="-CHM" (
     
     echo Cleanup...
     rmdir /S /Q  tmp
-    echo CHM file generated in ..\doc\
+    echo CHM file generated in ..\..\html\qpc\
 
 ) else (
     echo Cleanup...
-    rmdir /S /Q  ..\..\doc\qpc
+    rmdir /S /Q  ..\..\html\qpc
     
     echo Adding custom images...
-    xcopy preview.js ..\..\doc\qpc\
-    xcopy img ..\..\doc\qpc\img\
-    copy images\favicon.ico ..\..\doc\qpc
+    xcopy preview.js ..\..\html\qpc\
+    xcopy img ..\..\html\qpc\img\
+    copy images\favicon.ico ..\..\html\qpc
 
     echo Generating HTML...
     %DOXHOME%\doxygen.exe Doxyfile

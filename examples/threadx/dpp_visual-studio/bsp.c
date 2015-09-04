@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, ThreadX demo on Windows
-* Last updated for version 5.4.0
-* Last updated on  2014-05-07
+* Last Updated for Version: 5.5.0
+* Date of the Last Update:  2015-08-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -52,6 +52,7 @@ static unsigned l_rnd;        /* random seed */
         PHILO_STAT = QS_USER
     };
     /* ThreadX thread and thread function for QS output, see NOTE1 */
+    static char const *l_hostAndPort = "localhost:6601";
     static TX_THREAD l_qs_output_thread;
     static void qs_thread_function(ULONG thread_input);
     static ULONG qs_thread_stkSto[64];
@@ -60,20 +61,17 @@ static unsigned l_rnd;        /* random seed */
 
 /*..........................................................................*/
 void BSP_init(int argc, char *argv[]) {
-    static char const *hostAndPort = "localhost:6601";
-
     printf("Dining Philosopher Problem example"
-           "\nQEP %s\nQF  %s\n"
+           "\nQP %s\n"
            "Press Ctrl-C to quit...\n",
-           QEP_getVersion(),
-           QF_getVersion());
+           QP_versionStr);
 
     BSP_randomSeed(1234U); /* seed the random number generator */
 
     if (argc > 1) { /* port specified? */
-        hostAndPort = argv[1];
+        l_hostAndPort = argv[1];
     }
-    if (!QS_INIT(hostAndPort)) {
+    if (!QS_INIT(l_hostAndPort)) {
         printf("\nUnable to open QSpy socket\n");
         exit(-1);
     }
@@ -133,16 +131,16 @@ void QF_onStartup(void) {
 #ifdef Q_SPY
     /* start a ThreadX timer to perform QS output. See NOTE1... */
     Q_ALLEGE(tx_thread_create(&l_qs_output_thread, /* thread control block */
-                 "QS",                     /* thread name */
-                 &qs_thread_function,      /* thread function */
-                 (ULONG)0,                 /* thread input (unsued) */
-                 qs_thread_stkSto,         /* stack start */
-                 sizeof(qs_thread_stkSto), /* stack size in bytes */
-                 TX_MAX_PRIORITIES - 1,/* ThreadX priority (lowest possible)*/
-                 TX_MAX_PRIORITIES - 1,/* preemption threshold disabled */
-                 TX_NO_TIME_SLICE,
-                 TX_AUTO_START)
-             == TX_SUCCESS);
+        "QS",                     /* thread name */
+        &qs_thread_function,      /* thread function */
+        (ULONG)0,                 /* thread input (unsued) */
+        qs_thread_stkSto,         /* stack start */
+        sizeof(qs_thread_stkSto), /* stack size in bytes */
+        TX_MAX_PRIORITIES - 1,    /* ThreadX priority (lowest possible)*/
+        TX_MAX_PRIORITIES - 1,    /* preemption threshold disabled */
+        TX_NO_TIME_SLICE,
+        TX_AUTO_START)
+        == TX_SUCCESS);
 #endif /* Q_SPY */
 }
 /*..........................................................................*/
@@ -205,9 +203,9 @@ uint8_t QS_onStartup(void const *arg) {
     char host[64];
     char const *src;
     char *dst;
-    USHORT port = 6601; /* default port */
+    USHORT port = 6601; /* default QSPY server port */
     ULONG ioctl_opt = 1;
-    struct sockaddr_in servAddr;
+    struct sockaddr_in sockAddr;
     struct hostent *server;
 
     QS_initBuf(qsBuf, sizeof(qsBuf));
@@ -230,31 +228,29 @@ uint8_t QS_onStartup(void const *arg) {
 
     l_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); /* TCP socket */
     if (l_sock == INVALID_SOCKET){
-        printf("Socket cannot be created.\n"
-               "Windows socket error 0x%08X.",
+        printf("Socket cannot be created; error 0x%08X\n",
                WSAGetLastError());
-        return (uint8_t)0;
+        return (uint8_t)0; /* failure */
     }
 
     server = gethostbyname(host);
     if (server == NULL) {
-        printf("QSpy host name cannot be resolved.\n"
-               "Windows socket error 0x%08X.",
+        printf("QSpy host name cannot be resolved; error 0x%08X\n",
                WSAGetLastError());
         return (uint8_t)0;
     }
-    memset(&servAddr, 0, sizeof(servAddr));
-    servAddr.sin_family = AF_INET;
-    memcpy(&servAddr.sin_addr, server->h_addr, server->h_length);
-    servAddr.sin_port = htons(port);
-    if (connect(l_sock, (struct sockaddr *)&servAddr, sizeof(servAddr))
+
+    memset(&sockAddr, 0, sizeof(sockAddr));
+    sockAddr.sin_family = AF_INET;
+    memcpy(&sockAddr.sin_addr, server->h_addr, server->h_length);
+    sockAddr.sin_port = htons(port);
+    if (connect(l_sock, (struct sockaddr *)&sockAddr, sizeof(sockAddr))
         == SOCKET_ERROR)
     {
-        printf("Socket cannot be connected to the QSpy server.\n"
-               "Windows socket error 0x%08X.",
+        printf("Cannot connect to the QSPY server; error 0x%08X\n",
                WSAGetLastError());
         QS_EXIT();
-        return (uint8_t)0;
+        return (uint8_t)0; /* failure */
     }
 
     /* Set the socket to non-blocking mode. */
@@ -263,16 +259,21 @@ uint8_t QS_onStartup(void const *arg) {
                "Windows socket error 0x%08X.",
                WSAGetLastError());
         QS_EXIT();
-        return (uint8_t)0;
+        return (uint8_t)0; /* failure */
     }
 
-    QS_FILTER_ON(QS_ALL_RECORDS);
-    QS_FILTER_OFF(QS_QF_CRIT_ENTRY);
-    QS_FILTER_OFF(QS_QF_CRIT_EXIT);
-    QS_FILTER_OFF(QS_QF_ISR_ENTRY);
-    QS_FILTER_OFF(QS_QF_ISR_EXIT);
-    QS_FILTER_OFF(QS_QF_TICK);
-    QS_FILTER_OFF(QS_QK_SCHEDULE);
+    // Set QS global filters...
+    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
+    QS_FILTER_ON(QS_QEP_STATE_EXIT);
+    QS_FILTER_ON(QS_QEP_STATE_INIT);
+    QS_FILTER_ON(QS_QEP_TRAN_HIST);
+    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
+    QS_FILTER_ON(QS_QEP_TRAN);
+    QS_FILTER_ON(QS_QEP_IGNORED);
+    QS_FILTER_ON(QS_QEP_DISPATCH);
+    QS_FILTER_ON(QS_QEP_UNHANDLED);
+
+    QS_FILTER_ON(PHILO_STAT);
 
     return (uint8_t)1; /* success */
 }

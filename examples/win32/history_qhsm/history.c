@@ -131,6 +131,11 @@ static QState ToastOven_heating(ToastOven * const me, QEvt const * const e) {
             status_ = Q_HANDLED();
             break;
         }
+        /* ${SMs::ToastOven::SM::doorClosed::heating::initial} */
+        case Q_INIT_SIG: {
+            status_ = Q_TRAN(&ToastOven_toasting);
+            break;
+        }
         default: {
             status_ = Q_SUPER(&ToastOven_doorClosed);
             break;

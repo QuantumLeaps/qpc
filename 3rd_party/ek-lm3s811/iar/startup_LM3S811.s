@@ -1,8 +1,8 @@
 ;/***************************************************************************/
 ; * @file     startup_LM3S811.s for IAR ARM assembler
 ; * @brief    CMSIS Cortex-M# Core Device Startup File for LM3S811
-; * @version  CMSIS v4.1
-; * @date     07 March 2015
+; * @version  CMSIS 4.3.0
+; * @date     20 August 2015
 ; *
 ; * @description
 ; * Created from the CMSIS template for the specified device
@@ -12,8 +12,8 @@
 ; * The function assert_failed defined at the end of this file defines
 ; * the error/assertion handling policy for the application and might
 ; * need to be customized for each project. This function is defined in
-; * assembly to avoid accessing the stack, which might be corrupted by
-; * the time assert_failed is called.
+; * assembly to re-set the stack pointer, in case it is corrupted by the
+; * time assert_failed is called.
 ; *
 ; ***************************************************************************/
 ;/* Copyright (c) 2012 ARM LIMITED
@@ -253,36 +253,23 @@ FlashCtrl_IRQHandler
 
 ;******************************************************************************
 ;
-; The weak functions assert_failed/Q_onAssert define the error/assertion
-; handling policy for the application and might need to be customized
-; for each project. These functions are defined in assembly to avoid
-; accessing the stack, which might be corrupted by the time assert_failed
-; is called. For now the function just resets the CPU.
+; The function assert_failed defines the error/assertion handling policy
+; for the application. After making sure that the stack is OK, this function
+; calls Q_onAssert, which should NOT return (typically reset the CPU).
 ;
-; NOTE: the functions assert_failed/Q_onAssert should NOT return.
+; NOTE: the function Q_onAssert should NOT return.
 ;
-; The C proptotypes of these functions are as follows:
+; The C proptotype of the assert_failed() and Q_onAssert() functions are:
 ; void assert_failed(char const *file, int line);
 ; void Q_onAssert   (char const *file, int line);
 ;******************************************************************************
-        PUBWEAK  assert_failed
-        PUBWEAK  Q_onAssert
+        PUBLIC  assert_failed
+        EXTERN  Q_onAssert
 assert_failed
-Q_onAssert
-        ;
-        ; NOTE: add here your application-specific error handling
-        ;
+        LDR    sp,=sfe(CSTACK)   ; re-set the SP in case of stack overflow
+        BL     Q_onAssert        ; call the application-specific handler
 
-        ; the following code implements the CMIS function
-        ; NVIC_SystemReset() from core_cm3.h
-        ; Leave this code if you wish to reset the system after an error.
-        DSB                      ; ensure all memory access complete
-        LDR    r0,=0x05FA0004    ; (0x5FA << SCB_AIRCR_VECTKEY_Pos)
-                                 ; | (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk)
-                                 ; | SCB_AIRCR_SYSRESETREQ_Msk
-        LDR    r1,=0xE000ED0C    ; address of SCB->AIRCR
-        STR    r0,[r1]           ; r0 -> SCB->AIRCR
-        DSB                      ; ensure all memory access complete
-        B      .                 ; wait until reset occurs
+        B      .                 ; should not be reached, but just in case...
+
 
         END                      ; end of module

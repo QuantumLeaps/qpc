@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Blinky" on EK-TM4C123GXL board, cooperative Vanilla kernel
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-04
+* Last Updated for Version: 5.5.0
+* Date of the Last Update:  2015-08-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "blinky.h"
@@ -86,7 +86,6 @@ static uint32_t const l_led_pin[] = {
 /* ISRs used in this project ===============================================*/
 void SysTick_Handler(void) {
     QF_TICK_X(0U, (void *)0); /* process time events for rate 0 */
-
 }
 
 
@@ -109,18 +108,15 @@ void BSP_init(void) {
     */
     FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
 
-    /* enable clock to the peripherals used by the application */
-    SYSCTL->RCGC2 |= (1U << 5); /* enable clock to GPIOF  */
-    __NOP();                    /* wait after enabling clocks */
-    __NOP();
-    __NOP();
+    /* enable clock for to the peripherals used by this application... */
+    SYSCTL->RCGCGPIO |= (1U << 5); /* enable Run mode for GPIOF */
 
     /* configure the LEDs and push buttons */
     GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE);/* set direction: output */
     GPIOF->DEN |= (LED_RED | LED_GREEN | LED_BLUE); /* digital enable */
-    GPIOF->DATA_Bits[LED_RED]   = 0;               /* turn the LED off */
-    GPIOF->DATA_Bits[LED_GREEN] = 0;               /* turn the LED off */
-    GPIOF->DATA_Bits[LED_BLUE]  = 0;               /* turn the LED off */
+    GPIOF->DATA_Bits[LED_RED]   = 0U; /* turn the LED off */
+    GPIOF->DATA_Bits[LED_GREEN] = 0U; /* turn the LED off */
+    GPIOF->DATA_Bits[LED_BLUE]  = 0U; /* turn the LED off */
 
     /* configure the Buttons */
     GPIOF->DIR &= ~(BTN_SW1 | BTN_SW2); /*  set direction: input */
@@ -181,7 +177,16 @@ void QV_onIdle(void) { /* CATION: called with interrupts DISABLED, NOTE01 */
 }
 
 /*..........................................................................*/
-/* NOTE Q_onAssert() defined in assembly in startup_TM4C123GH6PM.s */
+void Q_onAssert(char const *module, int loc) {
+    /*
+    * NOTE: add here your application-specific error handling
+    */
+    (void)module;
+    (void)loc;
+    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    NVIC_SystemReset();
+}
+
 
 /*****************************************************************************
 * NOTE00:

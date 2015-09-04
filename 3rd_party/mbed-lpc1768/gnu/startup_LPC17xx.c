@@ -1,8 +1,8 @@
 /* File: startup_LPC17xx.c
  * Purpose: startup file for LPC17xx Cortex-M3 devices.
  *          Should be used with GCC 'GNU Tools ARM Embedded'
- * Version: CMSIS v4.2.0
- * Date: 30 March 2015
+ * Version: CMSIS 4.3.0
+ * Date: 06 August 2015
  *
  * Created from the CMSIS template for the specified device
  * Quantum Leaps, www.state-machine.com
@@ -47,20 +47,19 @@ extern int __stack_end__;
 /* Weak prototypes for error handlers --------------------------------------*/
 /**
 * \note
-* The functions assert_failed/Q_onAssert defined at the end of this file
-* determine the error/assertion handling policy for the application and
-* might need to be customized for each project. These functions are defined
-* as "naked" to avoid accessing the stack, which might be corrupted by
-* the time assert_failed/Q_onAssert are called.
+* The function assert_failed defined at the end of this file defines
+* the error/assertion handling policy for the application and might
+* need to be customized for each project. This function is defined in
+* assembly to avoid accessing the stack, which might be corrupted by
+* the time assert_failed is called.
 */
-__attribute__ ((naked)) void assert_failed(char const *file, int line);
-__attribute__ ((alias("assert_failed")))
-void Q_onAssert(char const *file, int line);
+__attribute__ ((naked)) void assert_failed(char const *module, int loc);
 
 /* Function prototypes -----------------------------------------------------*/
 void Default_Handler(void);  /* Default empty handler */
 void Reset_Handler(void);    /* Reset Handler */
 void SystemInit(void);       /* CMSIS system initialization */
+void Q_onAssert(char const *module, int loc); /* QP assertion handler */
 
 /*----------------------------------------------------------------------------
 * weak aliases for each Exception handler to the Default_Handler.
@@ -290,31 +289,22 @@ void _fini(void) { /* dummy */
 
 /*****************************************************************************
 * The function assert_failed defines the error/assertion handling policy
-* for the application and might need to be customized for each project.
-* This function is defined as "naked" and specifically avoids accessing the
-* stack, which might be corrupted by the time assert_failed is called.
+* for the application. After making sure that the stack is OK, this function
+* calls Q_onAssert, which should NOT return (typically reset the CPU).
 *
-* NOTE: the functions assert_failed/Q_onAssert should NOT return.
+* NOTE: the function Q_onAssert should NOT return.
 *****************************************************************************/
 __attribute__ ((naked))
-void assert_failed(char const *file, int line) {
-
-    /* NOTE: add here your application-specific error handling... */
-
-    /* the following assembly implements the CMIS function
-    * NVIC_SystemReset() from core_cm4.h
-    * Leave this code if you wish to reset the system after an error.
-    */
+void assert_failed(char const *module, int loc) {
+    /* re-set the SP in case of stack overflow */
     __asm volatile (
-        "  DSB\n\t"                /* ensure all memory access complete */
-        "  LDR r0,=0x05FA0004\n\t" /* (0x5FA << SCB_AIRCR_VECTKEY_Pos)
-                                   * | (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk)
-                                   * | SCB_AIRCR_SYSRESETREQ_Msk */
-        "  LDR r1,=0xE000ED0C\n\t" /* address of SCB->AIRCR */
-        "  STR r0,[r1]\n\t"        /* r0 -> SCB->AIRCR */
-        "  DSB\n\t"                /* ensure all memory access complete */
-        "  B   .\n\t"              /* wait until reset occurs */
-    );
+        "  MOV sp,%0\n\t"
+        : : "r" (&__stack_end__));
+
+    Q_onAssert(module, loc); /* call the application-specific QP handler */
+
+    for (;;) { /* should not be reached, but just in case loop forever... */
+    }
 }
 
 /****** End Of File *********************************************************/

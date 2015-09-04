@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 5.4.3
+* Date of the Last Update:  2015-06-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -103,6 +103,9 @@ extern FreeRTOSExtras FreeRTOS_extras;
 #if (configCHECK_FOR_STACK_OVERFLOW > 0)
     void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName);
 #endif
+
+/* set FreeRTOS taks name; must be be called before QACTIVE_START() */
+void QF_setTaskName(QMActive *act, char_t const *taskName);
 
 /*****************************************************************************
 * interface used only inside QF, but not in applications

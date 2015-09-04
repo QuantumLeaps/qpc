@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.2
-* Last updated on  2015-06-03
+* Last updated for version 5.5.0
+* Last updated on  2015-08-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -121,6 +121,9 @@ void QF_stop(void) {
 * for the given application. All QF ports must implement QF_run().
 */
 int_t QF_run(void) {
+#ifdef Q_SPY
+    uint_fast8_t pprev = (uint_fast8_t)0; /* previously used priority */
+#endif
 
     QF_onStartup(); /* application-specific startup callback */
 
@@ -141,9 +144,20 @@ int_t QF_run(void) {
             QPSet64_findMax(&QV_readySet_, p);
 #endif
             a = QF_active_[p];
+
+#ifdef Q_SPY
+            QS_BEGIN_NOCRIT_(QS_QVK_SCHEDULE, QS_priv_.aoObjFilter, a)
+                QS_TIME_();              /* timestamp */
+                QS_2U8_((uint8_t)p,      /* priority of the scheduled AO */
+                        (uint8_t)pprev); /* previous priority */
+            QS_END_NOCRIT_()
+
+            pprev = p; /* update previous priority */
+#endif /* Q_SPY */
+
             QF_INT_ENABLE();
 
-            /* perform the run-to-completion (RTS) step...
+            /* perform the run-to-completion (RTC) step...
             * 1. retrieve the event from the AO's event queue, which by this
             *    time must be non-empty and The "Vanialla" kernel asserts it.
             * 2. dispatch the event to the AO's state machine.
@@ -153,7 +167,18 @@ int_t QF_run(void) {
             QMSM_DISPATCH(&a->super, e);
             QF_gc(e);
         }
-        else {
+        else { /* no AO ready to run --> idle */
+#ifdef Q_SPY
+            if (pprev != (uint_fast8_t)0) {
+                QS_BEGIN_NOCRIT_(QS_QVK_IDLE, (void *)0, (void *)0)
+                    QS_TIME_();             /* timestamp */
+                    QS_U8_((uint8_t)pprev); /* previous priority */
+                QS_END_NOCRIT_()
+
+                pprev = (uint_fast8_t)0; /* update previous priority */
+            }
+#endif /* Q_SPY */
+
             /* QV_onIdle() must be called with interrupts DISABLED because
             * the determination of the idle condition (no events in the
             * queues) can change at any time by an interrupt posting events

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, cooperative QV kernel
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-04
+* Last Updated for Version: 5.5.0
+* Date of the Last Update:  2015-08-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -48,6 +48,7 @@ Q_DEFINE_THIS_FILE
 * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
 */
 enum KernelUnawareISRs { /* see NOTE00 */
+    UART0_PRIO,
     /* ... */
     MAX_KERNEL_UNAWARE_CMSIS_PRI  /* keep always last */
 };
@@ -69,27 +70,33 @@ void GPIOPortA_IRQHandler(void);
 
 /* Local-scope objects -----------------------------------------------------*/
 #define LED_RED     (1U << 1)
-#define LED_GREEN   (1U << 3)
 #define LED_BLUE    (1U << 2)
+#define LED_GREEN   (1U << 3)
 
 #define BTN_SW1     (1U << 4)
 #define BTN_SW2     (1U << 0)
 
-static unsigned  l_rnd;  /* random seed */
+static uint32_t  l_rnd;  /* random seed */
 
 #ifdef Q_SPY
 
+    void UART0_IRQHandler(void);
+
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
-    static uint8_t l_SysTick_Handler;
-    static uint8_t l_GPIOPortA_IRQHandler;
+
+    /* QS source IDs */
+    static uint8_t const l_SysTick_Handler = (uint8_t)0;
+    static uint8_t const l_GPIOPortA_IRQHandler = (uint8_t)0;
 
     #define UART_BAUD_RATE      115200U
-    #define UART_FR_TXFE        0x80U
+    #define UART_FR_TXFE        (1U << 7)
+    #define UART_FR_RXFE        (1U << 4)
     #define UART_TXFIFO_DEPTH   16U
 
     enum AppRecords { /* application-specific trace records */
-        PHILO_STAT = QS_USER
+        PHILO_STAT = QS_USER,
+        COMMAND_STAT
     };
 
 #endif
@@ -172,18 +179,15 @@ void BSP_init(void) {
     FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
 #endif
 
-    /* enable clock to the peripherals used by the application */
-    SYSCTL->RCGC2 |= (1U << 5); /* enable clock to GPIOF  */
-    __NOP();                    /* wait after enabling clocks */
-    __NOP();
-    __NOP();
+    /* enable clock for to the peripherals used by this application... */
+    SYSCTL->RCGCGPIO |= (1U << 5); /* enable Run mode for GPIOF */
 
     /* configure the LEDs and push buttons */
     GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE);/* set direction: output */
     GPIOF->DEN |= (LED_RED | LED_GREEN | LED_BLUE); /* digital enable */
-    GPIOF->DATA_Bits[LED_RED]   = 0;               /* turn the LED off */
-    GPIOF->DATA_Bits[LED_GREEN] = 0;               /* turn the LED off */
-    GPIOF->DATA_Bits[LED_BLUE]  = 0;               /* turn the LED off */
+    GPIOF->DATA_Bits[LED_RED]   = 0U; /* turn the LED off */
+    GPIOF->DATA_Bits[LED_GREEN] = 0U; /* turn the LED off */
+    GPIOF->DATA_Bits[LED_BLUE]  = 0U; /* turn the LED off */
 
     /* configure the Buttons */
     GPIOF->DIR &= ~(BTN_SW1 | BTN_SW2); /*  set direction: input */
@@ -197,6 +201,8 @@ void BSP_init(void) {
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_OBJ_DICTIONARY(&l_GPIOPortA_IRQHandler);
+    QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(COMMAND_STAT);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -249,12 +255,17 @@ void QF_onStartup(void) {
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
+    NVIC_SetPriority(UART0_IRQn,     UART0_PRIO);
     NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
     NVIC_SetPriority(GPIOA_IRQn,     GPIOA_PRIO);
     /* ... */
 
     /* enable IRQs... */
     NVIC_EnableIRQ(GPIOA_IRQn);
+
+#ifdef Q_SPY
+    NVIC_EnableIRQ(UART0_IRQn);  /* UART0 interrupt used for QS-RX */
+#endif
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
@@ -267,67 +278,84 @@ void QV_onIdle(void) {  /* called with interrupts disabled, see NOTE01 */
 
 #ifdef Q_SPY
     QF_INT_ENABLE();
+    QS_rxParse();  /* parse all the received bytes */
+
     if ((UART0->FR & UART_FR_TXFE) != 0U) {  /* TX done? */
         uint16_t fifo = UART_TXFIFO_DEPTH;   /* max bytes we can accept */
         uint8_t const *block;
 
         QF_INT_DISABLE();
-        block = QS_getBlock(&fifo); /* try to get next block to transmit */
+        block = QS_getBlock(&fifo);  /* try to get next block to transmit */
         QF_INT_ENABLE();
 
-        while (fifo-- != 0) {       /* any bytes in the block? */
-            UART0->DR = *block++;   /* put into the FIFO */
+        while (fifo-- != 0) {        /* any bytes in the block? */
+            UART0->DR = *block++;    /* put into the FIFO */
         }
     }
 #elif defined NDEBUG
     /* Put the CPU and peripherals to the low-power mode.
     * you might need to customize the clock management for your application,
-    * see the datasheet for your particular Cortex-M MCU.
+    * see the datasheet for your particular Cortex-M3 MCU.
     */
-    QV_CPU_SLEEP();  /* atomically go to sleep and enable interrupts */
-#else
-    QF_INT_ENABLE(); /* just enable interrupts */
+    __WFI(); /* Wait-For-Interrupt */
 #endif
 }
 
 /*..........................................................................*/
-/* NOTE Q_onAssert() defined in assembly in startup_TM4C123GH6PM.s */
+void Q_onAssert(char const *file, int line) {
+    /*
+    * NOTE: add here your application-specific error handling
+    */
+    (void)file;
+    (void)line;
+    QS_ASSERTION(file, line, (uint32_t)10000U); /* report assertion to QS */
+    NVIC_SystemReset();
+}
 
-/*--------------------------------------------------------------------------*/
+/* QS callbacks ============================================================*/
 #ifdef Q_SPY
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsBuf[2*1024]; /* buffer for Quantum Spy */
+    static uint8_t qsTxBuf[2*1024]; /* buffer for QS transmit channel */
+    static uint8_t qsRxBuf[100];    /* buffer for QS receive channel */
     uint32_t tmp;
-    QS_initBuf(qsBuf, sizeof(qsBuf));
 
-    /* enable the peripherals used by the UART0 */
-    SYSCTL->RCGC1 |= (1U << 0);    /* enable clock to UART0 */
-    SYSCTL->RCGC2 |= (1U << 0);    /* enable clock to GPIOA */
-    __NOP();                       /* wait after enabling clocks */
-    __NOP();
-    __NOP();
+    QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
+    QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
+
+    /* enable clock for UART0 and GPIOA (used by UART0 pins) */
+    SYSCTL->RCGCUART |= (1U << 0); /* enable Run mode for UART0 */
+    SYSCTL->RCGCGPIO |= (1U << 0); /* enable Run mode for GPIOA */
 
     /* configure UART0 pins for UART operation */
     tmp = (1U << 0) | (1U << 1);
     GPIOA->DIR   &= ~tmp;
-    GPIOA->AFSEL |= tmp;
-    GPIOA->DR2R  |= tmp;   /* set 2mA drive, DR4R and DR8R are cleared */
     GPIOA->SLR   &= ~tmp;
     GPIOA->ODR   &= ~tmp;
     GPIOA->PUR   &= ~tmp;
     GPIOA->PDR   &= ~tmp;
-    GPIOA->DEN   |= tmp;
+    GPIOA->AMSEL &= ~tmp;  /* disable analog function on the pins */
+    GPIOA->AFSEL |= tmp;   /* enable ALT function on the pins */
+    GPIOA->DEN   |= tmp;   /* enable digital I/O on the pins */
+    GPIOA->PCTL  &= ~0x00U;
+    GPIOA->PCTL  |= 0x11U;
 
     /* configure the UART for the desired baud rate, 8-N-1 operation */
-    tmp = (((ROM_SysCtlClockGet() * 8U) / UART_BAUD_RATE) + 1U) / 2U;
+    tmp = (((SystemCoreClock * 8U) / UART_BAUD_RATE) + 1U) / 2U;
     UART0->IBRD   = tmp / 64U;
     UART0->FBRD   = tmp % 64U;
-    UART0->LCRH   = 0x60U; /* configure 8-N-1 operation */
-    UART0->LCRH  |= 0x10U;
-    UART0->CTL   |= (1U << 0) | (1U << 8) | (1U << 9);
+    UART0->LCRH   = (0x3U << 5); /* configure 8-N-1 operation */
+    UART0->LCRH  |= (0x1U << 4); /* enable FIFOs */
+    UART0->CTL    = (1U << 0)    /* UART enable */
+                    | (1U << 8)  /* UART TX enable */
+                    | (1U << 9); /* UART RX enable */
 
-    QS_tickPeriod_ = ROM_SysCtlClockGet() / BSP_TICKS_PER_SEC;
+    /* configure UART interrupts (for the RX channel) */
+    UART0->IM   |= (1U << 4) | (1U << 6); /* enable RX and RX-TO interrupt */
+    UART0->IFLS |= (0x2U << 2);    /* interrupt on RX FIFO half-full */
+    /* NOTE: do not enable the UART0 interrupt yet. Wait till QF_onStartup() */
+
+    QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
     /* setup the QS filters... */
@@ -341,71 +369,25 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(QS_QEP_DISPATCH);
     QS_FILTER_ON(QS_QEP_UNHANDLED);
 
-//    QS_FILTER_ON(QS_QF_ACTIVE_ADD);
-//    QS_FILTER_ON(QS_QF_ACTIVE_REMOVE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_SUBSCRIBE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_UNSUBSCRIBE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_POST_FIFO);
-//    QS_FILTER_ON(QS_QF_ACTIVE_POST_LIFO);
-//    QS_FILTER_ON(QS_QF_ACTIVE_GET);
-//    QS_FILTER_ON(QS_QF_ACTIVE_GET_LAST);
-//    QS_FILTER_ON(QS_QF_EQUEUE_INIT);
-//    QS_FILTER_ON(QS_QF_EQUEUE_POST_FIFO);
-//    QS_FILTER_ON(QS_QF_EQUEUE_POST_LIFO);
-//    QS_FILTER_ON(QS_QF_EQUEUE_GET);
-//    QS_FILTER_ON(QS_QF_EQUEUE_GET_LAST);
-//    QS_FILTER_ON(QS_QF_MPOOL_INIT);
-//    QS_FILTER_ON(QS_QF_MPOOL_GET);
-//    QS_FILTER_ON(QS_QF_MPOOL_PUT);
-//    QS_FILTER_ON(QS_QF_PUBLISH);
-//    QS_FILTER_ON(QS_QF_RESERVED8);
-//    QS_FILTER_ON(QS_QF_NEW);
-//    QS_FILTER_ON(QS_QF_GC_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_GC);
-    QS_FILTER_ON(QS_QF_TICK);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_ARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_AUTO_DISARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_DISARM_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_DISARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_REARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_POST);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_CTR);
-//    QS_FILTER_ON(QS_QF_CRIT_ENTRY);
-//    QS_FILTER_ON(QS_QF_CRIT_EXIT);
-//    QS_FILTER_ON(QS_QF_ISR_ENTRY);
-//    QS_FILTER_ON(QS_QF_ISR_EXIT);
-//    QS_FILTER_ON(QS_QF_INT_DISABLE);
-//    QS_FILTER_ON(QS_QF_INT_ENABLE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_POST_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_EQUEUE_POST_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_MPOOL_GET_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_RESERVED1);
-//    QS_FILTER_ON(QS_QF_RESERVED0);
-
-//    QS_FILTER_ON(QS_QK_MUTEX_LOCK);
-//    QS_FILTER_ON(QS_QK_MUTEX_UNLOCK);
-//    QS_FILTER_ON(QS_QK_SCHEDULE);
-//    QS_FILTER_ON(QS_QK_RESERVED1);
-//    QS_FILTER_ON(QS_QK_RESERVED0);
-
-//    QS_FILTER_ON(QS_QEP_TRAN_HIST);
-//    QS_FILTER_ON(QS_QEP_TRAN_EP);
-//    QS_FILTER_ON(QS_QEP_TRAN_XP);
-//    QS_FILTER_ON(QS_QEP_RESERVED1);
-//    QS_FILTER_ON(QS_QEP_RESERVED0);
-
-    QS_FILTER_ON(QS_SIG_DICT);
-    QS_FILTER_ON(QS_OBJ_DICT);
-    QS_FILTER_ON(QS_FUN_DICT);
-    QS_FILTER_ON(QS_USR_DICT);
-    QS_FILTER_ON(QS_EMPTY);
-    QS_FILTER_ON(QS_RESERVED3);
-    QS_FILTER_ON(QS_RESERVED2);
-    QS_FILTER_ON(QS_TEST_RUN);
-    QS_FILTER_ON(QS_TEST_FAIL);
-    QS_FILTER_ON(QS_ASSERT_FAIL);
+    QS_FILTER_ON(PHILO_STAT);
+    QS_FILTER_ON(COMMAND_STAT);
 
     return (uint8_t)1; /* return success */
+}
+/*..........................................................................*/
+/*
+* ISR for receiving bytes from the QSPY Back-End
+* NOTE: This ISR is "QF-unaware" meaning that it does not interact with
+* the QF/QK and is not disabled. Such ISRs cannot post or publish events.
+*/
+void UART0_IRQHandler(void) {
+    uint32_t status = UART0->RIS; /* get the raw interrupt status */
+    UART0->ICR = status;          /* clear the asserted interrupts */
+
+    while ((UART0->FR & UART_FR_RXFE) == 0) { /* while RX FIFO NOT empty */
+        uint32_t b = UART0->DR;
+        QS_RX_PUT(b);
+    }
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {
@@ -426,7 +408,7 @@ void QS_onFlush(void) {
     QF_INT_DISABLE();
     while ((block = QS_getBlock(&fifo)) != (uint8_t *)0) {
         QF_INT_ENABLE();
-        /* busy-wait until TX FIFO empty */
+        /* busy-wait as long as TX FIFO has data to transmit */
         while ((UART0->FR & UART_FR_TXFE) == 0) {
         }
 
@@ -438,6 +420,30 @@ void QS_onFlush(void) {
     }
     QF_INT_ENABLE();
 }
+/*..........................................................................*/
+/*! callback function to reset the target (to be implemented in the BSP) */
+void QS_onReset(void) {
+    NVIC_SystemReset();
+}
+/*..........................................................................*/
+/*! callback function to execute a user command (to be implemented in BSP) */
+void QS_onCommand(uint8_t cmdId, uint32_t param) {
+    void assert_failed(char const *module, int loc);
+    (void)cmdId;
+    (void)param;
+    QS_BEGIN(COMMAND_STAT, (void *)0) /* application-specific record begin */
+        QS_U8(2, cmdId);
+        QS_U32(8, param);
+    QS_END()
+
+    if (cmdId == 10U) {
+        Q_ERROR();
+    }
+    else if (cmdId == 11U) {
+        assert_failed("QS_onCommand", 123);
+    }
+}
+
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 

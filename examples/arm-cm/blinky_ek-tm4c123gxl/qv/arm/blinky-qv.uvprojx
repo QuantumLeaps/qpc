@@ -68,9 +68,9 @@
             <nStopU2X>0</nStopU2X>
           </BeforeCompile>
           <BeforeMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>cmd /c "del .\dbg\qstamp.o"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -428,6 +428,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\blinky.h</FilePath>
             </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -621,6 +626,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\source\qs_fp.c</FilePath>
             </File>
+            <File>
+              <FileName>qs_rx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\source\qs_rx.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
@@ -687,9 +697,9 @@
             <nStopU2X>0</nStopU2X>
           </BeforeCompile>
           <BeforeMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>cmd /c "del .\rel\qstamp.o"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -1047,6 +1057,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\blinky.h</FilePath>
             </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1240,6 +1255,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\source\qs_fp.c</FilePath>
             </File>
+            <File>
+              <FileName>qs_rx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\source\qs_rx.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
@@ -1306,9 +1326,9 @@
             <nStopU2X>0</nStopU2X>
           </BeforeCompile>
           <BeforeMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>cmd /c "del .\spy\qstamp.o"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -1318,7 +1338,7 @@
           <AfterMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>fromelf --bin --output .\dbg\blinky-qv.bin .\dbg\blinky-qv.axf</UserProg1Name>
+            <UserProg1Name>fromelf --bin --output .\spy\blinky-qv.bin .\spy\blinky-qv.axf</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -1666,6 +1686,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\blinky.h</FilePath>
             </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1798,6 +1823,11 @@
               <FileName>qs_fp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\source\qs_fp.c</FilePath>
+            </File>
+            <File>
+              <FileName>qs_rx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\source\qs_rx.c</FilePath>
             </File>
           </Files>
         </Group>

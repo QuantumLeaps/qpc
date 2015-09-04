@@ -1,7 +1,7 @@
 //============================================================================
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last updated for version 5.4.1
-// Last updated on  2015-05-31
+// Last updated for version 5.5.0
+// Last updated on  2015-07-27
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -186,6 +186,8 @@
 -estring(961,         // MISRA04-19.7(adv) function-like macro
  Q_NEW,
  Q_NEW_X,
+ Q_NEW_REF,
+ Q_DELETE_REF,
  QF_INT_DISABLE,
  QF_INT_ENABLE,
  QF_CRIT_ENTRY,
@@ -260,6 +262,7 @@
 -emacro(929,          // MISRA04-11.4(adv) cast from pointer to pointer
  Q_NEW,
  Q_NEW_X,
+ Q_NEW_REF,
  QACTIVE_POST,
  QACTIVE_POST_LIFO)
 -emacro(960,          // MISRA04-17.4(req) pointer increment
@@ -272,10 +275,12 @@
  QTimeEvt_postEvery)
 -esym(960,            // MISRA04-19.10(req) unparenthesized macro par
  Q_NEW,
- Q_NEW_X)
+ Q_NEW_X,
+ Q_NEW_REF)
 -estring(9022,        // MISRA04-19.10(req) unparenthesized macro parameter
  Q_NEW,
- Q_NEW_X)
+ Q_NEW_X,
+ Q_NEW_REF)
 -esym(641, *Signals)  // Converting enum '*Signals' to 'int'
 -esym(754, sto_)      // local structure member 'sto' not referenced
 
@@ -359,7 +364,8 @@
  QS_FLUSH,
  QS_STR_ROM,
  QS_MEM,
- QS_SIG)
+ QS_SIG,
+ QS_RX_PUT)
 -estring(961,         // MISRA04-19.7(adv) function-like macro
  QS_CRIT_ENTRY_,
  QS_CRIT_EXIT_,

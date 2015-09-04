@@ -4,14 +4,14 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-05-08
+* Last updated for version 5.5.0
+* Last updated on  2015-09-04
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -525,4 +525,44 @@ bool QMsm_isInState(QMsm * const me, QMState const * const state) {
         }
     }
     return inState;
+}
+
+/****************************************************************************/
+/**
+* @description
+* Finds the child state of the given @c parent, such that this child state
+* is an ancestor of the currently active state. The main purpose of this
+* function is to support **shallow history** transitions in state machines
+* derived from QMsm.
+*
+* @param[in] me     pointer (see @ref oop)
+* @param[in] parent pointer to the state-handler object
+*
+* @returns the child of a given @c parent state, which is an ancestor of
+* the currently active state
+*/
+QMState const *QMsm_childStateObj(QMsm const * const me,
+                                  QMState const * const parent)
+{
+    QMState const *child = me->state.obj;
+    bool isConfirmed = false; /* start with the child not confirmed */
+    QMState const *s;
+
+    for (s = me->state.obj->superstate;
+         s != (QMState const *)0;
+         s = s->superstate)
+    {
+        if (s == parent) {
+            isConfirmed = true; /* child is confirmed */
+            break;
+        }
+        else {
+            child = s;
+        }
+    }
+
+    /** @post the child must be confirmed */
+    Q_ENSURE_ID(810, isConfirmed != false);
+
+    return child; /* return the child */
 }

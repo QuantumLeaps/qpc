@@ -9,7 +9,7 @@
 ;
 ;
 ; Quantum Leaps, LLC; www.state-machine.com
-; 2015-03-25
+; 2015-08-26
 ;******************** (C) COPYRIGHT 2014 STMicroelectronics ********************
 ;* File Name          : startup_stm32l1xx_hd.s
 ;* Author             : MCD Application Team
@@ -443,41 +443,27 @@ __user_initial_stackheap
 
 ;******************************************************************************
 ;
-; The functions assert_failed/Q_onAssert define the error/assertion
-; handling policy for the application and might need to be customized
-; for each project. These functions are defined in assembly to avoid
-; accessing the stack, which might be corrupted by the time assert_failed
-; is called. For now the function just resets the CPU.
+; The function assert_failed defines the error/assertion handling policy
+; for the application. After making sure that the stack is OK, this function
+; calls Q_onAssert, which should NOT return (typically reset the CPU).
 ;
-; NOTE: the functions assert_failed/Q_onAssert should NOT return.
+; NOTE: the function Q_onAssert should NOT return.
 ;
-; The C proptotypes of these functions are as follows:
+; The C proptotype of the assert_failed() and Q_onAssert() functions are:
 ; void assert_failed(char const *file, int line);
 ; void Q_onAssert   (char const *file, int line);
 ;******************************************************************************
         EXPORT  assert_failed
-        EXPORT  Q_onAssert
+        IMPORT  Q_onAssert
 assert_failed PROC
-Q_onAssert
-        ;
-        ; NOTE: add here your application-specific error handling
-        ;
 
-        ; the following code implements the CMIS function
-        ; NVIC_SystemReset() from core_cm4.h
-        ; Leave this code if you wish to reset the system after an error.
-        DSB                      ; ensure all memory access complete
-        LDR    r0,=0x05FA0004    ; (0x5FA << SCB_AIRCR_VECTKEY_Pos)
-                                 ; | (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk)
-                                 ; | SCB_AIRCR_SYSRESETREQ_Msk
-        LDR    r1,=0xE000ED0C    ; address of SCB->AIRCR
-        STR    r0,[r1]           ; r0 -> SCB->AIRCR
-        DSB                      ; ensure all memory access complete
-        B      .                 ; wait until reset occurs
+        LDR    sp,=__initial_sp  ; re-set the SP in case of stack overflow
+        BL     Q_onAssert        ; call the application-specific handler
+
+        B      .                 ; should not be reached, but just in case...
+
         ENDP
 
-        ALIGN               ; make sure the end of this section is aligned
+        ALIGN                    ; make sure the end of this section is aligned
 
-        END
-
-;************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE*****
+        END                      ; end of module

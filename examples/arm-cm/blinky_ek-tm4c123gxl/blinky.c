@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Simple Blinky example
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-16
+* Last Updated for Version: 5.5.0
+* Date of the Last Update:  2015-08-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -63,17 +63,6 @@ void Blinky_ctor(void) {
 /* HSM definition ----------------------------------------------------------*/
 QState Blinky_initial(Blinky * const me, QEvt const * const e) {
     (void)e; /* avoid compiler warning about unused parameter */
-
-    QS_OBJ_DICTIONARY(&l_blinky);
-    QS_OBJ_DICTIONARY(&l_blinky.timeEvt);
-
-    QS_FUN_DICTIONARY(&QHsm_top);
-    QS_FUN_DICTIONARY(&Blinky_initial);
-    QS_FUN_DICTIONARY(&Blinky_off);
-    QS_FUN_DICTIONARY(&Blinky_on);
-
-    QS_SIG_DICTIONARY(DUMMY_SIG,     (void *)0); /* global signal */
-    QS_SIG_DICTIONARY(TIMEOUT_SIG,   me);  /* signal just for Blinky */
 
     /* arm the time event to expire in half a second and every half second */
     QTimeEvt_armX(&me->timeEvt, BSP_TICKS_PER_SEC/2U, BSP_TICKS_PER_SEC/2U);

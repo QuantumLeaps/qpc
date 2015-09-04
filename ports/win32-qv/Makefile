@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for QP/C port to Win32-QV, MinGW toolset
-# Last Updated for Version: 5.4.2
-# Date of the Last Update:  2015-06-03
+# Product: Makefile for QP/C port to Win32 API, MinGW toolset
+# Last Updated for Version: 5.5.0
+# Date of the Last Update:  2015-08-04
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -79,9 +79,6 @@ INCLUDES  = \
 # files
 #
 
-# assembler source files
-ASM_SRCS :=
-
 # C source files
 C_SRCS := \
 	qep_hsm.c \
@@ -101,6 +98,7 @@ C_SRCS := \
 
 C_QS_SRCS := \
 	qs.c \
+	qs_rx.c \
 	qs_fp.c \
 	qs_64bit.c
 
@@ -144,12 +142,18 @@ BIN_DIR = rel
 CFLAGS = -c -ffunction-sections -fdata-sections \
 	-Os $(INCLUDES) $(DEFINES) -Wall -W
 
+CPPFLAGS = -c -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
+	-Os $(INCLUDES) $(DEFINES) -Wall -W
+
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
 BIN_DIR = spy
 
 # gcc options
 CFLAGS = -c -g -ffunction-sections -fdata-sections \
+	-O $(INCLUDES) $(DEFINES) -Wall -W -DQ_SPY
+
+CPPFLAGS = -c -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
 	-O $(INCLUDES) $(DEFINES) -Wall -W -DQ_SPY
 
 # add the QS sources...
@@ -163,15 +167,16 @@ BIN_DIR = dbg
 CFLAGS = -c -g -ffunction-sections -fdata-sections \
 	-O $(INCLUDES) $(DEFINES) -Wall -W
 
+CPPFLAGS = -c -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
+	-O $(INCLUDES) $(DEFINES) -Wall -W
+
 endif
 
 
-ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
 C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
 CPP_OBJS     := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))
 
 TARGET_LIB   := $(BIN_DIR)/lib$(PROJECT).a
-ASM_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(ASM_OBJS))
 C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
 
@@ -189,9 +194,6 @@ all: $(TARGET_LIB)
 
 $(TARGET_LIB) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LIB) $(LIBFLAGS) $@ $^
-
-$(BIN_DIR)/%.o : %.s
-	$(AS) $(ASFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -213,10 +215,9 @@ show:
 	@echo PROJECT = $(PROJECT)
 	@echo CONF = $(CONF)
 	@echo TARGET_LIB = $(TARGET_LIB)
-	@echo ASM_SRCS = $(ASM_SRCS)
 	@echo C_SRCS = $(C_SRCS)
 	@echo CPP_SRCS = $(CPP_SRCS)
-	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
 	@echo C_OBJS_EXT = $(C_OBJS_EXT)
 	@echo C_DEPS_EXT = $(C_DEPS_EXT)
+	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)

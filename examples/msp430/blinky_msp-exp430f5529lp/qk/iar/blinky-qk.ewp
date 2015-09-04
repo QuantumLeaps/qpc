@@ -725,7 +725,7 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild></prebuild>
+        <prebuild>cmd /c "if exist $OBJ_DIR$\qstamp.o del $OBJ_DIR$\qstamp.o"</prebuild>
         <postbuild></postbuild>
       </data>
     </settings>
@@ -1855,7 +1855,7 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild></prebuild>
+        <prebuild>cmd /c "if exist $OBJ_DIR$\qstamp.o del $OBJ_DIR$\qstamp.o"</prebuild>
         <postbuild></postbuild>
       </data>
     </settings>
@@ -2981,7 +2981,7 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild></prebuild>
+        <prebuild>cmd /c "if exist $OBJ_DIR$\qstamp.o del $OBJ_DIR$\qstamp.o"</prebuild>
         <postbuild></postbuild>
       </data>
     </settings>
@@ -3401,6 +3401,9 @@
     <file>
       <name>$PROJ_DIR$\..\..\main.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\include\qstamp.c</name>
+    </file>
   </group>
   <group>
     <name>QP</name>
@@ -3485,6 +3488,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\source\qs_pkg.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\source\qs_rx.c</name>
     </file>
   </group>
 </project>

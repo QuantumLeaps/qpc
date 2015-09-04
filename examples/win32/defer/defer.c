@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Deferred Event state pattern example
-* Last updated for version 5.4.2
-* Last updated on  2015-06-04
+* Last updated for version 5.4.3
+* Last updated on  2015-06-11
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -46,7 +46,7 @@ enum TServerSignals {
     TERMINATE_SIG                 /* terminate the application */
 };
 /*..........................................................................*/
-typedef struct RequestEvtTag {
+typedef struct {
     QEvt super;       /* inherit QEvt */
     uint8_t ref_num;  /* reference number of the request */
 } RequestEvt;
@@ -57,6 +57,7 @@ typedef struct TServerTag { /* Transaction Server active object */
 
     QEQueue requestQueue; /* native QF queue for deferred request events */
     QEvt const *requestQSto[3]; /* storage for deferred queue buffer */
+    RequestEvt const *activeRequest; /* request event being processed */
 
     QTimeEvt receivedEvt;   /* private time event generator */
     QTimeEvt authorizedEvt; /* private time event generator */
@@ -83,6 +84,7 @@ void TServer_ctor(TServer * const me) { /* the default ctor */
 /* HSM definition ----------------------------------------------------------*/
 QState TServer_initial(TServer * const me, QEvt const * const e) {
     (void)e; /* unused parameter */
+    me->activeRequest= (RequestEvt const *)0; /* no active request yet */
     return Q_TRAN(&TServer_idle);
 }
 /*..........................................................................*/
@@ -90,7 +92,7 @@ QState TServer_final(TServer * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            printf("final-ENTRY;\nBye!Bye!\n");
+            printf("final-ENTRY;\n");
             QF_stop(); /* terminate the application */
             status = Q_HANDLED();
             break;
@@ -108,8 +110,9 @@ QState TServer_idle(TServer * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             printf("idle-ENTRY;\n");
-                                /* recall the request from the requestQueue */
-            if (QActive_recall((QActive *)me, &me->requestQueue)) {
+
+            /* recall the oldest deferred request... */
+            if (QActive_recall(&me->super, &me->requestQueue)) {
                 printf("Request recalled\n");
             }
             else {
@@ -119,8 +122,15 @@ QState TServer_idle(TServer * const me, QEvt const * const e) {
             break;
         }
         case NEW_REQUEST_SIG: {
+            /* create and save a new reference to the request event so that
+            * this event will be available beyond this RTC step and won't be
+            * recycled.
+            */
+            Q_NEW_REF(me->activeRequest, RequestEvt);
+
             printf("Processing request #%d\n",
-                   (int)((RequestEvt const *)e)->ref_num);
+                   (int)me->activeRequest->ref_num);
+
             status = Q_TRAN(&TServer_receiving);
             break;
         }
@@ -139,15 +149,28 @@ QState TServer_idle(TServer * const me, QEvt const * const e) {
 QState TServer_busy(TServer * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
+        case Q_EXIT_SIG: {
+            printf("busy-EXIT; done processing request #%d\n",
+                   (int)me->activeRequest->ref_num);
+
+            /* delete the reference to the active request, because
+            * it is now processed.
+            */
+            Q_DELETE_REF(me->activeRequest);
+
+            status = Q_HANDLED();
+            break;
+        }
         case NEW_REQUEST_SIG: {
-            if (QActive_defer((QActive *)me, &me->requestQueue, e)) {
+            /* defer the new request event... */
+            if (QActive_defer(&me->super, &me->requestQueue, e)) {
                 printf("Request #%d deferred;\n",
                        (int)((RequestEvt const *)e)->ref_num);
             }
             else {
-                printf("Request #%d IGNORED;\n",
-                       (int)((RequestEvt const *)e)->ref_num);
                 /* notify the request sender that his request was denied... */
+                printf("Request #%d IGNORED;\n",
+                       (int)Q_EVT_CAST(RequestEvt)->ref_num);
             }
             status = Q_HANDLED();
             break;
@@ -168,7 +191,10 @@ QState TServer_receiving(TServer * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            printf("receiving-ENTRY;\n");
+            /* inform about the first stage of processing of the request... */
+            printf("receiving-ENTRY; active request: #%d\n",
+                   (int)me->activeRequest->ref_num);
+
             /* one-shot timeout in 1 second */
             QTimeEvt_armX(&me->receivedEvt, BSP_TICKS_PER_SEC, 0U);
             status = Q_HANDLED();
@@ -195,7 +221,10 @@ QState TServer_authorizing(TServer * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            printf("authorizing-ENTRY;\n");
+            /* inform about the second stage of processing of the request.. */
+            printf("authorizing-ENTRY; active request: #%d\n",
+                   (int)me->activeRequest->ref_num);
+
             /* one-shot timeout in 2 seconds */
             QTimeEvt_armX(&me->authorizedEvt, 2U*BSP_TICKS_PER_SEC, 0U);
             status = Q_HANDLED();

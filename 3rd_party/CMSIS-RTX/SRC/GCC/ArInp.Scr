@@ -1,0 +1,19 @@
+CREATE ./CM4F_LE/libRTX_CM4.a
+ADDMOD ./cm4f_le/rt_cmsis.o
+ADDMOD ./cm4f_le/rt_task.o
+ADDMOD ./cm4f_le/rt_system.o
+ADDMOD ./cm4f_le/rt_event.o
+ADDMOD ./cm4f_le/rt_list.o
+ADDMOD ./cm4f_le/rt_mailbox.o
+ADDMOD ./cm4f_le/rt_semaphore.o
+ADDMOD ./cm4f_le/rt_time.o
+ADDMOD ./cm4f_le/rt_timer.o
+ADDMOD ./cm4f_le/rt_mutex.o
+ADDMOD ./cm4f_le/rt_robin.o
+ADDMOD ./cm4f_le/rt_membox.o
+ADDMOD ./cm4f_le/rt_memory.o
+ADDMOD ./cm4f_le/svc_table.o
+ADDMOD ./cm4f_le/hal_cm.o
+ADDMOD ./cm4f_le/hal_cm4.o
+SAVE
+END

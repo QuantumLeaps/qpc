@@ -1,8 +1,8 @@
 ;/***************************************************************************/
 ; * @file     startup_LM3S811.s for ARM-KEIL ARM assembler
 ; * @brief    CMSIS Cortex-M3 Core Device Startup File for LM3S811
-; * @version  CMSIS v4.2.0
-; * @date     07 March 2015
+; * @version  CMSIS 4.3.0
+; * @date     20 August 2015
 ; *
 ; * @description
 ; * Created from the CMSIS template for the specified device
@@ -14,11 +14,11 @@
 ; *     --pd "Stack_Size SETA 512" --pd "Heap_Size SETA 0"
 ; *
 ; * @note
-; * The functions assert_failed/Q_onAssert defined at the end of this file
-; * determine the error/assertion handling policy for the application and
-; * might need to be customized for each project. This function is defined
-; * in assembly to avoid accessing the stack, which might be corrupted by
-; * the time assert_failed/Q_onAssert are called.
+; * The function assert_failed defined at the end of this file defines
+; * the error/assertion handling policy for the application and might
+; * need to be customized for each project. This function is defined in
+; * assembly to re-set the stack pointer, in case it is corrupted by the
+; * time assert_failed is called.
 ; *
 ; ***************************************************************************/
 ;/* Copyright (c) 2012 ARM LIMITED
@@ -169,15 +169,20 @@ Reset_Handler   PROC
         IMPORT  SystemInit
         IMPORT  __main
 
-        BL      SystemInit  ; CMSIS system initialization
+        LDR     r0, =SystemInit ; CMSIS system initialization
+        BLX     r0
 
-        ; Call the C library enty point that handles startup.  This will copy
+        ; Call the C library enty point that handles startup. This will copy
         ; the .data section initializers from flash to SRAM and zero fill the
         ; .bss section.
-        BL      __main
+        LDR     r0, =__main
+        BX      r0
+
+        ; __main calls the main() function, which should not return,
+        ; but just in case jump to assert_failed() if main returns.
         MOVS    r0,#0
         MOVS    r1,#0       ; error number
-        B       assert_failed ; __main should not return, but assert if it does
+        B       assert_failed
         ENDP
 
 ;******************************************************************************
@@ -384,37 +389,25 @@ __user_initial_stackheap PROC
 
 ;******************************************************************************
 ;
-; The weak functions assert_failed/Q_onAssert define the error/assertion
-; handling policy for the application and might need to be customized
-; for each project. These functions are defined in assembly to avoid
-; accessing the stack, which might be corrupted by the time assert_failed
-; is called. For now the function just resets the CPU.
+; The function assert_failed defines the error/assertion handling policy
+; for the application. After making sure that the stack is OK, this function
+; calls Q_onAssert, which should NOT return (typically reset the CPU).
 ;
-; NOTE: the functions assert_failed/Q_onAssert should NOT return.
+; NOTE: the function Q_onAssert should NOT return.
 ;
-; The C proptotypes of these functions are as follows:
+; The C proptotype of the assert_failed() and Q_onAssert() functions are:
 ; void assert_failed(char const *file, int line);
 ; void Q_onAssert   (char const *file, int line);
 ;******************************************************************************
-        EXPORT  assert_failed  [WEAK]
-        EXPORT  Q_onAssert     [WEAK]
+        EXPORT  assert_failed
+        IMPORT  Q_onAssert
 assert_failed PROC
-Q_onAssert
-        ;
-        ; NOTE: add here your application-specific error handling
-        ;
 
-        ; the following code implements the CMIS function
-        ; NVIC_SystemReset() from core_cm3.h
-        ; Leave this code if you wish to reset the system after an error.
-        DSB                      ; ensure all memory access complete
-        LDR    r0,=0x05FA0004    ; (0x5FA << SCB_AIRCR_VECTKEY_Pos)
-                                 ; | (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk)
-                                 ; | SCB_AIRCR_SYSRESETREQ_Msk
-        LDR    r1,=0xE000ED0C    ; address of SCB->AIRCR
-        STR    r0,[r1]           ; r0 -> SCB->AIRCR
-        DSB                      ; ensure all memory access complete
-        B      .                 ; wait until reset occurs
+        LDR    sp,=__initial_sp  ; re-set the SP in case of stack overflow
+        BL     Q_onAssert        ; call the application-specific handler
+
+        B      .                 ; should not be reached, but just in case...
+
         ENDP
 
 

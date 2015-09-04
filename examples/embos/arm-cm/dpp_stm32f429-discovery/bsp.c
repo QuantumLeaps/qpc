@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Dining Philosophers Problem" example, embOS kernel
-* Last updated for version 5.4.0
-* Last updated on  2015-04-23
+* Last Updated for Version: 5.5.0
+* Date of the Last Update:  2015-08-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -294,7 +294,15 @@ void QF_onCleanup(void) {
 }
 
 /*..........................................................................*/
-/* NOTE Q_onAssert() defined in assembly in startup_TM4C123GH6PM.s */
+void Q_onAssert(char const Q_ROM *module, int loc) {
+    /*
+    * NOTE: add here your application-specific error handling
+    */
+    (void)module;
+    (void)loc;
+    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    NVIC_SystemReset();
+}
 
 /* QS callbacks ============================================================*/
 #ifdef Q_SPY
@@ -339,47 +347,17 @@ uint8_t QS_onStartup(void const *arg) {
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_ALL_RECORDS);
+    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
+    QS_FILTER_ON(QS_QEP_STATE_EXIT);
+    QS_FILTER_ON(QS_QEP_STATE_INIT);
+    QS_FILTER_ON(QS_QEP_INIT_TRAN);
+    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
+    QS_FILTER_ON(QS_QEP_TRAN);
+    QS_FILTER_ON(QS_QEP_IGNORED);
+    QS_FILTER_ON(QS_QEP_DISPATCH);
+    QS_FILTER_ON(QS_QEP_UNHANDLED);
 
-//    QS_FILTER_OFF(QS_QEP_STATE_ENTRY);
-//    QS_FILTER_OFF(QS_QEP_STATE_EXIT);
-//    QS_FILTER_OFF(QS_QEP_STATE_INIT);
-//    QS_FILTER_OFF(QS_QEP_TRAN_HIST);
-//    QS_FILTER_OFF(QS_QEP_INTERN_TRAN);
-//    QS_FILTER_OFF(QS_QEP_TRAN);
-//    QS_FILTER_OFF(QS_QEP_IGNORED);
-
-//    QS_FILTER_OFF(QS_QF_ACTIVE_ADD);
-//    QS_FILTER_OFF(QS_QF_ACTIVE_REMOVE);
-//    QS_FILTER_OFF(QS_QF_ACTIVE_SUBSCRIBE);
-//    QS_FILTER_OFF(QS_QF_ACTIVE_UNSUBSCRIBE);
-//    QS_FILTER_OFF(QS_QF_ACTIVE_POST_FIFO);
-//    QS_FILTER_OFF(QS_QF_ACTIVE_POST_LIFO);
-//    QS_FILTER_OFF(QS_QF_ACTIVE_GET);
-//    QS_FILTER_OFF(QS_QF_ACTIVE_GET_LAST);
-//    QS_FILTER_OFF(QS_QF_EQUEUE_INIT);
-//    QS_FILTER_OFF(QS_QF_EQUEUE_POST_FIFO);
-//    QS_FILTER_OFF(QS_QF_EQUEUE_POST_LIFO);
-//    QS_FILTER_OFF(QS_QF_EQUEUE_GET);
-//    QS_FILTER_OFF(QS_QF_EQUEUE_GET_LAST);
-//    QS_FILTER_OFF(QS_QF_MPOOL_INIT);
-//    QS_FILTER_OFF(QS_QF_MPOOL_GET);
-//    QS_FILTER_OFF(QS_QF_MPOOL_PUT);
-//    QS_FILTER_OFF(QS_QF_PUBLISH);
-//    QS_FILTER_OFF(QS_QF_NEW);
-//    QS_FILTER_OFF(QS_QF_GC_ATTEMPT);
-//    QS_FILTER_OFF(QS_QF_GC);
-//    QS_FILTER_OFF(QS_QF_TICK);
-//    QS_FILTER_OFF(QS_QF_TIMEEVT_ARM);
-//    QS_FILTER_OFF(QS_QF_TIMEEVT_AUTO_DISARM);
-//    QS_FILTER_OFF(QS_QF_TIMEEVT_DISARM_ATTEMPT);
-//    QS_FILTER_OFF(QS_QF_TIMEEVT_DISARM);
-//    QS_FILTER_OFF(QS_QF_TIMEEVT_REARM);
-//    QS_FILTER_OFF(QS_QF_TIMEEVT_POST);
-    QS_FILTER_OFF(QS_QF_CRIT_ENTRY);
-    QS_FILTER_OFF(QS_QF_CRIT_EXIT);
-    QS_FILTER_OFF(QS_QF_ISR_ENTRY);
-    QS_FILTER_OFF(QS_QF_ISR_EXIT);
+    QS_FILTER_ON(PHILO_STAT);
 
     return (uint8_t)1; /* return success */
 }

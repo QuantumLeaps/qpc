@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for DPP on NUCLEO-L152RE, CMSIS-RTX kernel, GNU-ARM
-# Last Updated for Version: 5.4.1
-# Date of the Last Update:  2015-05-22
+# Last Updated for Version: 5.5.0
+# Date of the Last Update:  2015-08-13
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,8 +28,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# Web:   http://www.state-machine.com
-# Email: info@state-machine.com
+# http://www.state-machine.com
+# mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
 # building configurations: Debug (default), Release, and Spy
@@ -130,6 +130,7 @@ QP_PORT := \
 
 QS_SRCS := \
 	qs.c \
+	qs_rx.c \
 	qs_fp.c
 
 LIB_DIRS  := -L$(CMSIS_RTX)/LIB/GCC
@@ -265,7 +266,8 @@ $(TARGET_BIN): $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(LINK) $(LINKFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@

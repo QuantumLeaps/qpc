@@ -32,12 +32,12 @@
        <action box="0,-2,6,2"/>
       </tran_glyph>
      </tran>
-     <tran trig="TOAST" target="../7/0">
+     <tran trig="TOAST" target="../7/1">
       <tran_glyph conn="12,38,2,2,-6">
        <action box="0,-2,6,2"/>
       </tran_glyph>
      </tran>
-     <tran trig="BAKE" target="../7/1">
+     <tran trig="BAKE" target="../7/2">
       <tran_glyph conn="26,38,2,2,-6">
        <action box="0,-2,6,2"/>
       </tran_glyph>
@@ -50,6 +50,11 @@
      <state name="heating">
       <entry>printf(&quot;heater-On;&quot;);</entry>
       <exit>printf(&quot;heater-Off;&quot;);</exit>
+      <initial target="../1">
+       <initial_glyph conn="6,20,5,0,6,4">
+        <action box="0,-2,10,2"/>
+       </initial_glyph>
+      </initial>
       <state name="toasting">
        <entry>printf(&quot;toasting;&quot;);</entry>
        <state_glyph node="6,24,12,8">

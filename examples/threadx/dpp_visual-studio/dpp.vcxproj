@@ -195,8 +195,12 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\Spy/dpp.bsc</OutputFile>
     </Bscmake>
+    <PreBuildEvent>
+      <Command>cmd /c "del $(OutDir)qstamp.obj"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\include\qstamp.c" />
     <ClCompile Include="..\..\..\ports\threadx\qf_port.c" />
     <ClCompile Include="..\..\..\source\qep_hsm.c" />
     <ClCompile Include="..\..\..\source\qep_msm.c" />

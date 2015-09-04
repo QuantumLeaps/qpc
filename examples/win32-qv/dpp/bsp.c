@@ -1,7 +1,7 @@
  /*****************************************************************************
 * Product: DPP example, Windows
-* Last updated for version 5.4.0
-* Last updated on  2015-04-07
+* Last updated for version 5.5.0
+* Last updated on  2015-08-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -42,11 +42,12 @@
 Q_DEFINE_THIS_FILE
 
 /* local variables ---------------------------------------------------------*/
-static uint32_t l_rnd;                                       /* random seed */
+static uint32_t l_rnd; /* random seed */
 
 #ifdef Q_SPY
     enum {
-        PHILO_STAT = QS_USER
+        PHILO_STAT = QS_USER,
+        COMMAND_STAT
     };
     static uint8_t l_running;
     static uint8_t const l_clock_tick = 0U;
@@ -54,7 +55,7 @@ static uint32_t l_rnd;                                       /* random seed */
 
 /*..........................................................................*/
 void QF_onStartup(void) {
-    QF_setTickRate(BSP_TICKS_PER_SEC);         /* set the desired tick rate */
+    QF_setTickRate(BSP_TICKS_PER_SEC); /* set the desired tick rate */
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
@@ -62,10 +63,10 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
-    QF_TICK_X(0U, &l_clock_tick);   /* perform the QF clock tick processing */
-    if (_kbhit()) {                                     /* any key pressed? */
+    QF_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
+    if (_kbhit()) { /* any key pressed? */
         int ch = _getch();
-        if (ch == '\33') {                    /* see if the ESC key pressed */
+        if (ch == '\33') { /* see if the ESC key pressed */
             QF_PUBLISH(Q_NEW(QEvt, TERMINATE_SIG), &l_clock_tick);
         }
         else if (ch == 'p') {
@@ -77,41 +78,43 @@ void QF_onClockTick(void) {
     }
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const file, int line) {
-    fprintf(stderr, "Assertion failed in %s, line %d", file, line);
+void Q_onAssert(char const Q_ROM * const module, int loc) {
+    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    fprintf(stderr, "Assertion failed in %s, line %d", module, loc);
     exit(-1);
 }
 /*..........................................................................*/
-void BSP_init(void) {
+void BSP_init(int argc, char *argv[]) {
 
     printf("Dining Philosophers Problem example"
-           "\nQEP %s\nQF  %s\n"
+           "\nQP %s\n"
            "Press 'p' to pause\n"
            "Press 's' to serve\n"
            "Press ESC to quit...\n",
-           QEP_getVersion(),
-           QF_getVersion());
+           QP_versionStr);
 
     BSP_randomSeed(1234U);
-    Q_ALLEGE(QS_INIT((void *)0));
-    QS_OBJ_DICTIONARY(&l_clock_tick);   /* must be called *after* QF_init() */
+
+    Q_ALLEGE(QS_INIT((argc > 1) ? argv[1] : ""));
+    QS_OBJ_DICTIONARY(&l_clock_tick); /* must be called *after* QF_init() */
     QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(COMMAND_STAT);
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {
     (void)result;
 #ifdef Q_SPY
-    l_running = (uint8_t)0;                    /* stop the QS output thread */
+    l_running = (uint8_t)0; /* stop the QS output thread */
 #endif
-    QF_stop();                             /* stop the main "ticker thread" */
+    QF_stop(); /* stop the main "ticker thread" */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
     printf("Philosopher %2d is %s\n", (int)n, stat);
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
-        QS_U8(1, n);                                  /* Philosopher number */
-        QS_STR(stat);                                 /* Philosopher status */
+    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+        QS_U8(1, n);  /* Philosopher number */
+        QS_STR(stat); /* Philosopher status */
     QS_END()
 }
 /*..........................................................................*/
@@ -132,53 +135,139 @@ void BSP_randomSeed(uint32_t seed) {
 }
 
 /*--------------------------------------------------------------------------*/
-#ifdef Q_SPY                                         /* define QS callbacks */
+#ifdef Q_SPY /* define QS callbacks */
 
 #include <time.h>
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>                        /* Win32 API for multithreading */
+#include <windows.h>  /* Win32 API for multithreading */
+#include <winsock2.h> /* for Windows network facilities */
 
-#include "qspy.h"
+/*
+* In this demo, the QS software tracing output is sent out of the application
+* through a TCP/IP socket. This requires the QSPY host application to
+* be started first to open a server socket (qspy -t ...) to wait for the
+* incoming TCP/IP connection from the DPP demo.
+*
+* In an embedded target, the QS software tracing output can be sent out
+* using any method available, such as a UART. This would require changing
+* the implementation of the functions in this section, but the rest of the
+* application code does not "know" (and should not care) how the QS ouptut
+* is actually performed. In other words, the rest of the application does NOT
+* need to change in any way to produce QS output.
+*/
+
+static SOCKET l_sock = INVALID_SOCKET;
 
 /*..........................................................................*/
 static DWORD WINAPI idleThread(LPVOID par) {/* signature for CreateThread() */
     (void)par;
-
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_IDLE);
-    l_running = (uint8_t)1;
-    while (l_running) {
-        uint16_t nBytes = 256;
+    while (l_sock != INVALID_SOCKET) {
+        uint16_t nBytes;
         uint8_t const *block;
+
+        /* try to receive bytes from the QS socket... */
+        nBytes = QS_rxGetNfree();
+        if (nBytes > 0U) {
+            uint8_t buf[64];
+            int status;
+
+            if (nBytes > sizeof(buf)) {
+                nBytes = sizeof(buf);
+            }
+            status = recv(l_sock, (char *)buf, (int)nBytes, 0);
+            if (status != SOCKET_ERROR) {
+                uint16_t i;
+                nBytes = (uint16_t)status;
+                for (i = 0U; i < nBytes; ++i) {
+                    QS_RX_PUT(buf[i]);
+                }
+            }
+        }
+        QS_rxParse();  /* parse all the received bytes */
+
+        nBytes = 1024U;
         QF_CRIT_ENTRY(dummy);
         block = QS_getBlock(&nBytes);
         QF_CRIT_EXIT(dummy);
+
         if (block != (uint8_t *)0) {
-            QSPY_parse(block, nBytes);
+            send(l_sock, (char const *)block, nBytes, 0);
         }
-        Sleep(10);                                      /* wait for a while */
+        Sleep(20); /* sleep for xx milliseconds */
     }
-    return 0;                                             /* return success */
+    return (DWORD)0; /* return success */
 }
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsBuf[4*1024];                 // 4K buffer for Quantum Spy
-    QS_initBuf(qsBuf, sizeof(qsBuf));
-    (void)arg;
-    QSPY_config(QP_VERSION,         // version
-                QS_OBJ_PTR_SIZE,    // objPtrSize
-                QS_FUN_PTR_SIZE,    // funPtrSize
-                QS_TIME_SIZE,       // tstampSize
-                Q_SIGNAL_SIZE,      // sigSize,
-                QF_EVENT_SIZ_SIZE,  // evtSize
-                QF_EQUEUE_CTR_SIZE, // queueCtrSize
-                QF_MPOOL_CTR_SIZE,  // poolCtrSize
-                QF_MPOOL_SIZ_SIZE,  // poolBlkSize
-                QF_TIMEEVT_CTR_SIZE,// tevtCtrSize
-                (void *)0,          // matFile,
-                (void *)0,
-                (QSPY_CustParseFun)0); // customized parser function
+    static uint8_t qsBuf[1024];  /* buffer for QS output */
+    static uint8_t qsRxBuf[100]; /* buffer for QS receive channel */
+    static WSADATA wsaData;
+    char hostName[64];
+    char const *src;
+    char *dst;
+    USHORT port = 6601; /* default QSPY server port */
+    ULONG ioctl_opt = 1;
+    struct sockaddr_in sockAddr;
+    struct hostent *server;
 
-    /* setup the QS filters... */
+    QS_initBuf(qsBuf, sizeof(qsBuf));
+    QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
+
+    /* initialize Windows sockets */
+    if (WSAStartup(MAKEWORD(2,0), &wsaData) == SOCKET_ERROR) {
+        printf("Windows Sockets cannot be initialized.");
+        return (uint8_t)0;
+    }
+
+    src = (arg != (void const *)0)
+          ? (char const *)arg
+          : "localhost";
+    dst = hostName;
+    while ((*src != '\0') && (*src != ':') && (dst < &hostName[sizeof(hostName)])) {
+        *dst++ = *src++;
+    }
+    *dst = '\0';
+    if (*src == ':') {
+        port = (USHORT)strtoul(src + 1, NULL, 10);
+    }
+
+    l_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); /* TCP socket */
+    if (l_sock == INVALID_SOCKET){
+        printf("Socket cannot be created; error 0x%08X\n",
+               WSAGetLastError());
+        return (uint8_t)0; /* failure */
+    }
+
+    server = gethostbyname(hostName);
+    if (server == NULL) {
+        printf("QSpy host name %s cannot be resolved; error 0x%08X\n",
+               hostName, WSAGetLastError());
+        return (uint8_t)0;
+    }
+
+    memset(&sockAddr, 0, sizeof(sockAddr));
+    sockAddr.sin_family = AF_INET;
+    memcpy(&sockAddr.sin_addr, server->h_addr, server->h_length);
+    sockAddr.sin_port = htons(port);
+    if (connect(l_sock, (struct sockaddr *)&sockAddr, sizeof(sockAddr))
+        == SOCKET_ERROR)
+    {
+        printf("Cannot connect to the QSPY server; error 0x%08X\n",
+               WSAGetLastError());
+        QS_EXIT();
+        return (uint8_t)0; /* failure */
+    }
+
+    /* Set the socket to non-blocking mode. */
+    if (ioctlsocket(l_sock, FIONBIO, &ioctl_opt) == SOCKET_ERROR) {
+        printf("Socket configuration failed.\n"
+               "Windows socket error 0x%08X.",
+               WSAGetLastError());
+        QS_EXIT();
+        return (uint8_t)0; /* failure */
+    }
+
+    /* set up the QS filters... */
     QS_FILTER_ON(QS_QEP_STATE_ENTRY);
     QS_FILTER_ON(QS_QEP_STATE_EXIT);
     QS_FILTER_ON(QS_QEP_STATE_INIT);
@@ -189,69 +278,12 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(QS_QEP_DISPATCH);
     QS_FILTER_ON(QS_QEP_UNHANDLED);
 
-//    QS_FILTER_ON(QS_QF_ACTIVE_ADD);
-//    QS_FILTER_ON(QS_QF_ACTIVE_REMOVE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_SUBSCRIBE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_UNSUBSCRIBE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_POST_FIFO);
-//    QS_FILTER_ON(QS_QF_ACTIVE_POST_LIFO);
-//    QS_FILTER_ON(QS_QF_ACTIVE_GET);
-//    QS_FILTER_ON(QS_QF_ACTIVE_GET_LAST);
-//    QS_FILTER_ON(QS_QF_EQUEUE_INIT);
-//    QS_FILTER_ON(QS_QF_EQUEUE_POST_FIFO);
-//    QS_FILTER_ON(QS_QF_EQUEUE_POST_LIFO);
-//    QS_FILTER_ON(QS_QF_EQUEUE_GET);
-//    QS_FILTER_ON(QS_QF_EQUEUE_GET_LAST);
-//    QS_FILTER_ON(QS_QF_MPOOL_INIT);
-//    QS_FILTER_ON(QS_QF_MPOOL_GET);
-//    QS_FILTER_ON(QS_QF_MPOOL_PUT);
-//    QS_FILTER_ON(QS_QF_PUBLISH);
-//    QS_FILTER_ON(QS_QF_RESERVED8);
-//    QS_FILTER_ON(QS_QF_NEW);
-//    QS_FILTER_ON(QS_QF_GC_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_GC);
-    QS_FILTER_ON(QS_QF_TICK);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_ARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_AUTO_DISARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_DISARM_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_DISARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_REARM);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_POST);
-//    QS_FILTER_ON(QS_QF_TIMEEVT_CTR);
-//    QS_FILTER_ON(QS_QF_CRIT_ENTRY);
-//    QS_FILTER_ON(QS_QF_CRIT_EXIT);
-//    QS_FILTER_ON(QS_QF_ISR_ENTRY);
-//    QS_FILTER_ON(QS_QF_ISR_EXIT);
-//    QS_FILTER_ON(QS_QF_INT_DISABLE);
-//    QS_FILTER_ON(QS_QF_INT_ENABLE);
-//    QS_FILTER_ON(QS_QF_ACTIVE_POST_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_EQUEUE_POST_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_MPOOL_GET_ATTEMPT);
-//    QS_FILTER_ON(QS_QF_RESERVED1);
-//    QS_FILTER_ON(QS_QF_RESERVED0);
+    QS_FILTER_ON(QS_QF_ACTIVE_POST_FIFO);
+    QS_FILTER_ON(QS_QF_ACTIVE_POST_LIFO);
+    QS_FILTER_ON(QS_QF_PUBLISH);
 
-//    QS_FILTER_ON(QS_QK_MUTEX_LOCK);
-//    QS_FILTER_ON(QS_QK_MUTEX_UNLOCK);
-//    QS_FILTER_ON(QS_QK_SCHEDULE);
-//    QS_FILTER_ON(QS_QK_RESERVED1);
-//    QS_FILTER_ON(QS_QK_RESERVED0);
-
-//    QS_FILTER_ON(QS_QEP_TRAN_HIST);
-//    QS_FILTER_ON(QS_QEP_TRAN_EP);
-//    QS_FILTER_ON(QS_QEP_TRAN_XP);
-//    QS_FILTER_ON(QS_QEP_RESERVED1);
-//    QS_FILTER_ON(QS_QEP_RESERVED0);
-
-    QS_FILTER_ON(QS_SIG_DICT);
-    QS_FILTER_ON(QS_OBJ_DICT);
-    QS_FILTER_ON(QS_FUN_DICT);
-    QS_FILTER_ON(QS_USR_DICT);
-    QS_FILTER_ON(QS_EMPTY);
-    QS_FILTER_ON(QS_RESERVED3);
-    QS_FILTER_ON(QS_RESERVED2);
-    QS_FILTER_ON(QS_TEST_RUN);
-    QS_FILTER_ON(QS_TEST_FAIL);
-    QS_FILTER_ON(QS_ASSERT_FAIL);
+    QS_FILTER_ON(PHILO_STAT);
+    QS_FILTER_ON(COMMAND_STAT);
 
     /* return the status of creating the idle thread */
     return (CreateThread(NULL, 1024, &idleThread, (void *)0, 0, NULL)
@@ -259,26 +291,19 @@ uint8_t QS_onStartup(void const *arg) {
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {
-
-    QSPY_stop();
+    if (l_sock != INVALID_SOCKET) {
+        closesocket(l_sock);
+        l_sock = INVALID_SOCKET;
+    }
+    WSACleanup();
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    for (;;) {
-        uint16_t nBytes = 1024;
-        uint8_t const *block;
-
-        QF_CRIT_ENTRY(dummy);
-        block = QS_getBlock(&nBytes);
-        QF_CRIT_EXIT(dummy);
-
-        if (block != (uint8_t const *)0) {
-            QSPY_parse(block, nBytes);
-            nBytes = 1024;
-        }
-        else {
-            break;
-        }
+    uint16_t nBytes = 1000;
+    uint8_t const *block;
+    while ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+        send(l_sock, (char const *)block, nBytes, 0);
+        nBytes = 1000;
     }
 }
 /*..........................................................................*/
@@ -286,9 +311,24 @@ QSTimeCtr QS_onGetTime(void) {
     return (QSTimeCtr)clock();
 }
 /*..........................................................................*/
-void QSPY_onPrintLn(void) {
-    fputs(QSPY_line, stdout);
-    fputc('\n', stdout);
+/*! callback function to reset the target (to be implemented in the BSP) */
+void QS_onReset(void) {
+    //TBD
 }
-#endif                                                             /* Q_SPY */
+/*..........................................................................*/
+/*! callback function to execute a uesr command (to be implemented in BSP) */
+void QS_onCommand(uint8_t cmdId, uint32_t param) {
+    (void)cmdId;
+    (void)param;
+    QS_BEGIN(COMMAND_STAT, (void *)0) /* application-specific record begin */
+        QS_U8(2, cmdId);
+        QS_U32(8, param);
+    QS_END()
+
+    if (cmdId == 10U) {
+        Q_ERROR();
+    }
+}
+
+#endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/

@@ -200,8 +200,8 @@
 *
 * @param[in] module name of the file/module in which the assertion failed
 *                   (constant ROM-based, zero-terminated C string)
-* @param[in] line   line number or user-specified ID-number to identify
-*                   the location of the failing assertion within the file.
+* @param[in] loc    location of the assertion within the module. This could
+*                   be a line number or a user-specified ID-number.
 *
 * @note This callback function should _not_ return, as continuation after
 * an assertion failure does not make sense.
@@ -220,7 +220,7 @@
 * #Q_ERROR, #Q_ALLEGE as well as #Q_ASSERT_ID, #Q_REQUIRE_ID, #Q_ENSURE_ID,
 * #Q_ERROR_ID, and #Q_ALLEGE_ID.
 */
-void Q_onAssert(char_t const Q_ROM * const file, int_t line);
+void Q_onAssert(char_t const Q_ROM * const module, int_t location);
 
 #ifdef __cplusplus
     }

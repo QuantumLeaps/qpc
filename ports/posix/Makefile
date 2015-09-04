@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C port to POSIX, GNU toolset
-# Last Updated for Version: 5.4.0
-# Date of the Last Update:  2015-04-07
+# Last Updated for Version: 5.5.0
+# Date of the Last Update:  2015-08-04
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -64,7 +64,6 @@ VPATH = \
 	$(QPC)/source \
 	$(QP_PORT_DIR)
 
-
 # list of all include directories needed by this project
 INCLUDES  = \
 	-I$(QPC)/include \
@@ -74,9 +73,6 @@ INCLUDES  = \
 #-----------------------------------------------------------------------------
 # files
 #
-
-# assembler source files
-ASM_SRCS :=
 
 # C source files
 C_SRCS := \
@@ -96,6 +92,7 @@ C_SRCS := \
 
 C_QS_SRCS := \
 	qs.c \
+	qs_rx.c \
 	qs_fp.c \
 	qs_64bit.c
 
@@ -127,40 +124,35 @@ LIBFLAGS := rs
 
 ifeq (rel, $(CONF))       # Release configuration ............................
 
-BIN_DIR = rel
+BIN_DIR := rel
 
-# gcc options
-CFLAGS = -c -O2 -ffunction-sections -fdata-sections	\
-	$(INCLUDES) $(DEFINES) -Wall -pthread
+CFLAGS = -ffunction-sections -fdata-sections \
+	-Os -Wall -W $(INCLUDES) $(DEFINES) -pthread -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
-BIN_DIR = spy
+BIN_DIR := spy
 
-# gcc options
-CFLAGS = -c -g -O -ffunction-sections -fdata-sections $(INCLUDES) \
-	$(DEFINES) -Wall -pthread -DQ_SPY
+CFLAGS = -g -ffunction-sections -fdata-sections \
+	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread -DQ_SPY
 
 # add the QS sources...
 C_SRCS += $(C_QS_SRCS)
 
-else                     # default Debug configuration .......................
+else  # default Debug configuration ..........................................
 
-BIN_DIR = dbg
+BIN_DIR := dbg
 
-# gcc options
-CFLAGS = -c -g -O -ffunction-sections -fdata-sections \
-	$(INCLUDES) $(DEFINES) -Wall -pthread
+CFLAGS = -g -ffunction-sections -fdata-sections \
+	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread
 
-endif
+endif  # .....................................................................
 
 
-ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
-C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
-CPP_OBJS     := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))
+C_OBJS       := $(patsubst %.c,   %.o, $(C_SRCS))
+CPP_OBJS     := $(patsubst %.cpp, %.o, $(CPP_SRCS))
 
 TARGET_LIB   := $(BIN_DIR)/lib$(PROJECT).a
-ASM_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(ASM_OBJS))
 C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
 C_DEPS_EXT   := $(patsubst %.o, %.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
@@ -186,9 +178,6 @@ $(BIN_DIR)/%.d : %.c
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
-
-$(BIN_DIR)/%.o : %.s
-	$(AS) $(ASFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -217,10 +206,9 @@ show:
 	@echo PROJECT = $(PROJECT)
 	@echo CONF = $(CONF)
 	@echo TARGET_LIB = $(TARGET_LIB)
-	@echo ASM_SRCS = $(ASM_SRCS)
 	@echo C_SRCS = $(C_SRCS)
 	@echo CPP_SRCS = $(CPP_SRCS)
-	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
 	@echo C_OBJS_EXT = $(C_OBJS_EXT)
 	@echo C_DEPS_EXT = $(C_DEPS_EXT)
+	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
