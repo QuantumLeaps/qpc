@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, DPP-GUI, Win32-QV, MinGW
 # Last updated for version 5.5.0
-# Last updated on  2015-08-14
+# Last updated on  2015-09-25
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -145,16 +145,9 @@ CPPFLAGS = -ffunction-sections -fdata-sections \
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
-# make sure that QTOOLS exists...
-ifeq ("$(wildcard $(QTOOLS))","")
-$(error QTOOLS not found. Please install Qtools and define QTOOLS env. variable)
-endif
-
-INCLUDES +=	-I$(QTOOLS)/qspy/include
-VPATH    += $(QTOOLS)/qspy/source
-C_SRCS   += qspy.c
-
 BIN_DIR := spy
+
+LIBS    += -lwsock32
 
 CFLAGS = -g -ffunction-sections -fdata-sections \
 	-O -Wall -W $(INCLUDES) $(DEFINES) -DQ_SPY

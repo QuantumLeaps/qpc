@@ -88,8 +88,8 @@ set theBtnState BTN_UP
 
 # QS record handlers =========================================================
 
-# QS User records [70..0x7C] -------------------------------------------------
-proc ::qspy::rec70 {} { ;# QS_USER
+# user record handlers [70..0x7C] --------------------------------------------
+proc ::qspy::rec70  {} { ;# QS_USER
     variable thePkt
     variable theFmt
     binary scan $thePkt xx$theFmt(tstamp)xcxa* \
@@ -102,13 +102,14 @@ proc ::qspy::rec70 {} { ;# QS_USER
     .canv.c itemconfigure [expr $thePhiloId + $philoNum] -image ::img::$img
 }
 #.............................................................................
-proc ::qspy::rec71 {} { ;# QS_USER + 1
+proc ::qspy::rec71  {} { ;# QS_USER + 1
     variable thePkt
     variable theFmt
     binary scan $thePkt xx$theFmt(tstamp)xcxi \
            tstamp cmdId param
     dispTxt [format "%010u cmd=%d param=%d" $tstamp $cmdId $param]
 }
+
 proc ::qspy::rec72  {} { ;# QS_USER + 2
 }
 proc ::qspy::rec73  {} { ;# QS_USER + 3
@@ -217,13 +218,13 @@ proc ::qspy::rec124 {} { ;# QS_USER + 54
 }
 
 
-# Special QS records ---------------------------------------------------------
+# special record handlers ----------------------------------------------------
 proc ::qspy::recRESET {} { ;# target reset callback
 }
 proc ::qspy::recINFO  {} { ;# target info callback
 }
 
-# QS standard records [1..54] ------------------------------------------------
+# standard record handlers [1..54] -------------------------------------------
 proc ::qspy::rec0 {} { ;# QS_EMPTY
 }
 
@@ -329,16 +330,16 @@ proc ::qspy::rec48 {} { ;# QS_QF_RESERVED1
 proc ::qspy::rec49 {} { ;# QS_QF_RESERVED0
 }
 
-# [50] QK records
+# [50] QK/QV records
 proc ::qspy::rec50 {} { ;# QS_QK_MUTEX_LOCK
 }
 proc ::qspy::rec51 {} { ;# QS_QK_MUTEX_UNLOCK
 }
-proc ::qspy::rec52 {} { ;# QS_QK_SCHEDULE
+proc ::qspy::rec52 {} { ;# QS_QVK_SCHEDULE
 }
-proc ::qspy::rec53 {} { ;# QS_QK_RESERVED1
+proc ::qspy::rec53 {} { ;# QS_QVK_IDLE
 }
-proc ::qspy::rec54 {} { ;# QS_QK_RESERVED0
+proc ::qspy::rec54 {} { ;# QS_QK_RESUME
 }
 
 # [55] Additional QEP records
@@ -362,6 +363,9 @@ proc ::qspy::rec62 {} { ;# QS_FUN_DICT
 }
 proc ::qspy::rec63 {} { ;# QS_USR_DICT
 }
+
+# proc ::qspy::64 ;# QS_TARGET_INFO not used, see proc recINFO
+
 proc ::qspy::rec65 {} { ;# QS_RESERVED0
 }
 proc ::qspy::rec66 {} { ;# QS_RX_STATUS

@@ -32,14 +32,14 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+/// http://www.state-machine.com
+/// mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
-#include "qk_pkg.h"       /* QK package-scope interface */
+#include "qk_pkg.h"       /* QK package-scope internal interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
     #include "qs_port.h"  /* include QS port */
@@ -150,7 +150,7 @@ int_t QF_run(void) {
     QF_onStartup(); /* application-specific startup callback */
     QF_INT_ENABLE();
 
-    /* the QK idle loop */
+    /* the QK idle loop... */
     for (;;) {
         QK_onIdle(); /* application-specific QK on-idle callback */
     }
@@ -195,16 +195,15 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
     me->prio = prio;
     QF_add_(me); /* make QF aware of this active object */
 
-#if defined(QK_TLS)
+#ifdef QK_TLS
     me->osObject = (uint_fast8_t)stkSize; /* used for thread flags */
     me->thread = stkSto; /* pointer to the thread-local storage */
 #else
     Q_ASSERT_ID(510, (stkSto == (void *)0) && (stkSize == (uint_fast16_t)0));
-#endif
+#endif /* ifdef QK_TLS */
 
     QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
-
-    QS_FLUSH(); /* flush the trace buffer to the host */
+    QS_FLUSH();                /* flush the trace buffer to the host */
 }
 
 /****************************************************************************/
@@ -269,10 +268,12 @@ uint_fast8_t QK_schedPrio_(void) {
 /**
 * @param[in] p  priority of the next AO to schedule
 *
-* @attention QK_sched_() must be always called with interrupts
-* __disabled__  and returns with interrupts __disabled__.
+* @attention
+* QK_sched_() must be always called with interrupts **disabled**  and
+* returns with interrupts **disabled**.
 *
-* @note The scheduler might enable interrupts internally, but always
+* @note
+* The scheduler might enable interrupts internally, but always
 * returns with interrupts __disabled__.
 */
 void QK_sched_(uint_fast8_t p) {
@@ -289,7 +290,7 @@ void QK_sched_(uint_fast8_t p) {
         QEvt const *e;
         a = QF_active_[p]; /* obtain the pointer to the AO */
 
-        QK_currPrio_ = p; /* this becomes the current task priority */
+        QK_currPrio_ = p;  /* this becomes the current task priority */
 
         QS_BEGIN_NOCRIT_(QS_QVK_SCHEDULE, QS_priv_.aoObjFilter, a)
             QS_TIME_();            /* timestamp */
@@ -297,12 +298,12 @@ void QK_sched_(uint_fast8_t p) {
                     (uint8_t)pprev); /* previous priority */
         QS_END_NOCRIT_()
 
-    /* QS tracing or thread-local storage? */
+        /* QS tracing or thread-local storage? */
 #if (defined Q_SPY) || (defined QK_TLS)
-        if (p != pprev) { /* changing priorities? */
-            pprev = p;    /* update previous priority */
+        if (p != pprev) {  /* changing priorities? */
+            pprev = p;     /* update previous priority */
 #ifdef QK_TLS /* thread-local storage used? */
-            QK_TLS(a);    /* switch new thread-local storage */
+            QK_TLS(a);     /* switch new thread-local storage */
 #endif /* QK_TLS */
         }
 #endif /* Q_SPY || QK_TLS */

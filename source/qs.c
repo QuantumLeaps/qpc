@@ -5,13 +5,13 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.5.0
-* Last updated on  2015-08-29
+* Last updated on  2015-09-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -586,7 +586,7 @@ uint16_t QS_getByte(void) {
     else {
         uint8_t *buf = QS_priv_.buf;  /* put in a temporary (register) */
         QSCtr tail   = QS_priv_.tail; /* put in a temporary (register) */
-        ret = (uint16_t)(*QS_PTR_AT_(tail)); /* set the byte to return */
+        ret = (uint16_t)(QS_PTR_AT_(buf, tail)); /* set the byte to return */
         ++tail; /* advance the tail */
         if (tail == QS_priv_.end) { /* tail wrap around? */
             tail = (QSCtr)0;
@@ -636,8 +636,7 @@ uint8_t const *QS_getBlock(uint16_t *pNbytes) {
             n = (QSCtr)(*pNbytes);
         }
         *pNbytes = (uint16_t)n;      /* n-bytes available */
-        buf = QS_priv_.buf;
-        buf = QS_PTR_AT_(tail);      /* the bytes are at the tail */
+        buf = &QS_PTR_AT_(QS_priv_.buf, tail); /* the bytes are at the tail */
 
         QS_priv_.used = (QSCtr)(used - n);
         tail += n;
@@ -698,9 +697,7 @@ void QS_obj_dict(void const * const obj,
 /****************************************************************************/
 /** @note This function is only to be used through macro QS_FUN_DICTIONARY()
 */
-void QS_fun_dict(void (* const fun)(void),
-                 char_t const Q_ROM *name)
-{
+void QS_fun_dict(void (* const fun)(void), char_t const Q_ROM *name) {
     QS_CRIT_STAT_
 
     if (*name == (char_t)'&') {

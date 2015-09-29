@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, Blinky console, Win32, MinGW
 # Last Updated for Version: 5.5.0
-# Date of the Last Update:  2015-08-13
+# Date of the Last Update:  2015-09-25
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -142,15 +142,6 @@ CPPFLAGS = -ffunction-sections -fdata-sections \
 	-Os -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
-
-# make sure that QTOOLS exists...
-ifeq ("$(wildcard $(QTOOLS))","")
-$(error QTOOLS not found. Please install Qtools and define QTOOLS env. variable)
-endif
-
-INCLUDES +=	-I$(QTOOLS)/qspy/include
-VPATH    += $(QTOOLS)/qspy/source
-C_SRCS   += qspy.c
 
 BIN_DIR := spy
 

@@ -1,7 +1,7 @@
 //============================================================================
 // Product: PC-Lint 9.x option file for linting QP/C applications
 // Last updated for version 5.5.0
-// Last updated on  2015-07-27
+// Last updated on  2015-09-25
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -28,8 +28,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// Web:   http://www.state-machine.com
-// Email: info@state-machine.com
+// http://www.state-machine.com
+// mailto:info@state-machine.com
 //============================================================================
 
 // General
@@ -314,6 +314,10 @@
 -emacro(923,          // MISRA04-11.3(req) cast from pointer to int
  QS_OBJ_,
  QS_FUN_)
+-emacro(960,          // MISRA04-17.4(req), pointer arithmetic
+ QS_PTR_AT_)
+-esym(960,            // MISRA04-19.4(req) Disallowed macro definition
+ QS_PTR_AT_)
 -estring(961,         // MISRA04-19.7(adv) function-like macro
  QS_INIT,
  QS_EXIT,
@@ -357,14 +361,13 @@
  QS_OBJ_DICTIONARY,
  QS_FUN_DICTIONARY,
  QS_USR_DICTIONARY,
- QS_RESET,
  QS_ASSERTION,
- QS_TEST_ASSERTION,
  QS_TEST,
  QS_FLUSH,
  QS_STR_ROM,
  QS_MEM,
  QS_SIG,
+ QS_PTR_AT_,
  QS_RX_PUT)
 -estring(961,         // MISRA04-19.7(adv) function-like macro
  QS_CRIT_ENTRY_,
@@ -409,7 +412,8 @@
  QS_FUN_DICTIONARY)
 -estring(9022,        // MISRA04-19.10(req) unparenthesized macro parameter
  QF_QS_ISR_ENTRY,
- QF_QS_ISR_EXIT)
+ QF_QS_ISR_EXIT,
+ QS_PTR_AT_)
 -emacro(717, QS_*)    // do ... while(0);
 
 

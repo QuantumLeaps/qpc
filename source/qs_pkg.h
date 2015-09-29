@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.5.0
-* Last updated on  2015-08-11
+* Last updated on  2015-09-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -43,7 +43,7 @@
 /****************************************************************************/
 /*! Internal QS macro to insert an un-escaped byte into the QS buffer */
 #define QS_INSERT_BYTE(b_) \
-    *QS_PTR_AT_(head) = (b_); \
+    QS_PTR_AT_(buf, head) = (b_); \
     ++head; \
     if (head == end) { \
         head = (QSCtr)0; \
@@ -60,16 +60,6 @@
         QS_INSERT_BYTE((uint8_t)((b_) ^ QS_ESC_XOR)) \
         ++QS_priv_.used; \
     }
-
-/*! Internal QS macro to access the QS ring buffer */
-/**
-* @description
-* The QS buffer is allocated by the user and is accessed through the
-* pointer QS_ring_, which violates the MISRA-C 2004 Rule 17.4(req), pointer
-* arithmetic other than array indexing. Encapsulating this violation in a
-* macro allows to selectively suppress this specific deviation.
-*/
-#define QS_PTR_AT_(i_) (buf + (i_))
 
 /*! Internal QS macro to increment the given pointer parameter @p ptr_ */
 /**

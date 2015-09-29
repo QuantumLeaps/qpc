@@ -1,10 +1,16 @@
 /**
 * @file
-* @brief Application build times-tamp
+* @brief Application build time-stamp
+* @note
+* This module needs to be re-compiled in every new software build. To achive
+* this, it is recommended to delete the object file (qstamp.o, or qstamp.obj)
+* in the build directory before each build. (Most development tools allow
+* you to specify a pre-build command, which is the ideal place to delete
+* the qstamp object file.)
 * @cond
 ******************************************************************************
 * Last updated for version 5.5.0
-* Last updated on  2015-07-28
+* Last updated on  2015-09-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -39,17 +45,11 @@
 
 #include "qpc.h"
 
-/**
-* @note
-* This module needs to be re-compiled in every new software build. To achive
-* this, it is recommended to delete the object file (qstamp.o, or qstamp.obj)
-* in the build directory before each build. (Most development tools allow
-* you to specify a pre-build command, which is the ideal place to delete
-* the qstamp object file.)
-*/
+extern char_t const Q_ROM Q_BUILD_DATE[12];
+extern char_t const Q_ROM Q_BUILD_TIME[9];
 
-/* the calendar date of the last translation of the form: "Mmm dd yyyy" */
+/*! the calendar date of the last translation of the form: "Mmm dd yyyy" */
 char_t const Q_ROM Q_BUILD_DATE[12] = __DATE__;
 
-/* the time of the last translation of the form: "hh:mm:ss" */
+/*! the time of the last translation of the form: "hh:mm:ss" */
 char_t const Q_ROM Q_BUILD_TIME[9] = __TIME__;

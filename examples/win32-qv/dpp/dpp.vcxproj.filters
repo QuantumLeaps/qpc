@@ -6,25 +6,31 @@
     <ClCompile Include="philo.c" />
     <ClCompile Include="table.c" />
     <ClCompile Include="..\..\..\include\qstamp.c" />
+    <ClCompile Include="$(QTOOLS)\qspy\source\qspy.c">
+      <Filter>QSPY</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bsp.h" />
     <ClInclude Include="dpp.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\..\..\ports\win32-qv\Release\qp.lib">
-      <Filter>QP</Filter>
-    </Library>
-    <Library Include="..\..\..\ports\win32-qv\QSpy\qp.lib">
-      <Filter>QP</Filter>
-    </Library>
-    <Library Include="..\..\..\ports\win32-qv\Debug\qp.lib">
-      <Filter>QP</Filter>
-    </Library>
+    <Filter Include="QP">
+      <UniqueIdentifier>{76cb74d9-2f6d-42d1-98bb-e99763c51a65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QSPY">
+      <UniqueIdentifier>{d7f10ffa-a6c9-4edf-b9f9-c01f977f17cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="QP">
-      <UniqueIdentifier>{223c8de9-a095-4bac-8dbb-75a9d5fcaa58}</UniqueIdentifier>
-    </Filter>
+    <Library Include="..\..\..\ports\win32\Debug\qp.lib">
+      <Filter>QP</Filter>
+    </Library>
+    <Library Include="..\..\..\ports\win32\Release\qp.lib">
+      <Filter>QP</Filter>
+    </Library>
+    <Library Include="..\..\..\ports\win32\QSpy\qp.lib">
+      <Filter>QP</Filter>
+    </Library>
   </ItemGroup>
 </Project>

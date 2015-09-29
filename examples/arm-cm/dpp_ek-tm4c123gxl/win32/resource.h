@@ -14,7 +14,6 @@
 #define IDC_PHILO_2                             1002
 #define IDC_PHILO_3                             1003
 #define IDC_PHILO_4                             1004
-#define IDC_MPOOL0                              1005
 #define IDC_PAUSE                               1006
 #define IDC_PAUSED                              1009
 #define IDS_APP_TITLE                           40000

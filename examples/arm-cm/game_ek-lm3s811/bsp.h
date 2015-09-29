@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example
-* Last Updated for Version: 5.3.2
-* Date of the Last Update:  2015-03-07
+* Last updated for version 5.5.0
+* Last updated on  2015-09-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #ifndef bsp_h
 #define bsp_h
@@ -39,6 +39,7 @@
 #define BSP_SCREEN_HEIGHT    16U
 
 void BSP_init(void);
+void BSP_terminate(int16_t result);
 void BSP_drawBitmap(uint8_t const *bitmap);
 void BSP_drawBitmapXY(uint8_t const *bitmap, uint8_t x, uint8_t y);
 void BSP_drawNString(uint8_t x,    /* x in pixels */

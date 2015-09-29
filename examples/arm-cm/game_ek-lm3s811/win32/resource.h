@@ -28,5 +28,4 @@
 #define IDC_SEG1                                1021
 #define IDC_SEG2                                1022
 #define IDC_SEG3                                1023
-#define IDC_MPOOL0                              1100
 #define IDS_APP_TITLE                           40000

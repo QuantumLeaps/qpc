@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.5.0
-* Last updated on  2015-08-31
+* Last updated on  2015-09-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -190,6 +190,15 @@ enum QSpyRecords {
 #ifndef Q_ROM_BYTE /* provide the default if Q_ROM_BYTE NOT defined */
     #define Q_ROM_BYTE(rom_var_)   (rom_var_)
 #endif
+
+/*! access element at index @p i_ from the base pointer @p base_ */
+/**
+* @description
+* @note This macro encapsulates MISRA-C 2004 Rule 17.4(req) (pointer
+* arithmetic other than array indexing).
+*/
+#define QS_PTR_AT_(base_, i_) (base_[i_])
+
 
 /****************************************************************************/
 /* QS services. */
@@ -1132,13 +1141,13 @@ extern QSrxPriv QS_rxPriv_;
 #define QS_RX_PUT(b_) do { \
     if (QS_rxPriv_.head != (QSCtr)0) { \
         if ((QS_rxPriv_.head - QS_rxPriv_.tail) != (QSCtr)1) { \
-            QS_rxPriv_.buf[QS_rxPriv_.head] = (uint8_t)(b_); \
+            QS_PTR_AT_(QS_rxPriv_.buf, QS_rxPriv_.head) = (uint8_t)(b_); \
             --QS_rxPriv_.head; \
         } \
     } \
     else { \
         if (QS_rxPriv_.tail != QS_rxPriv_.end) { \
-            QS_rxPriv_.buf[0] = (uint8_t)(b_); \
+            QS_PTR_AT_(QS_rxPriv_.buf, 0) = (uint8_t)(b_); \
             QS_rxPriv_.head = QS_rxPriv_.end; \
         } \
     } \

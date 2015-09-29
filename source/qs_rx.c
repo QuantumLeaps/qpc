@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.5.0
-* Last updated on  2015-08-28
+* Last updated on  2015-09-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -528,7 +528,8 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_EVT_PAR: {  /* event parameters */
-            *l_rx.var.evt.p++ = b;
+            *l_rx.var.evt.p = b;
+            ++l_rx.var.evt.p;
             --l_rx.var.evt.len;
             if (l_rx.var.evt.len == (uint16_t)0) {
                 QS_RX_TRAN_(WAIT4_EVT_FRAME);
@@ -588,7 +589,7 @@ static void QS_rxHandleGoodFrame_(void) {
                 QS_U8_(l_rx.var.peek.len);   /* data length */
                 buf = (uint8_t *)l_rx.var.peek.addr;
                 for (i = (uint8_t)0; i < l_rx.var.peek.len; ++i) {
-                    QS_U8_(*QS_PTR_AT_(i));  /* data bytes */
+                    QS_U8_(QS_PTR_AT_(buf, i)); /* data byte */
                 }
             QS_END_()
             break;
@@ -598,7 +599,7 @@ static void QS_rxHandleGoodFrame_(void) {
             buf = (uint8_t *)l_rx.var.poke.addr;
             QS_CRIT_ENTRY_(); /* poke the data within a critical section */
             for (i = (uint8_t)0; i < l_rx.var.poke.len; ++i) {
-                *QS_PTR_AT_(i) = l_rx.var.poke.data[i];
+                QS_PTR_AT_(buf, i) = l_rx.var.poke.data[i];
             }
             QS_CRIT_EXIT_();
             break;

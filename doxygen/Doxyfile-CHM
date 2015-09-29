@@ -106,9 +106,10 @@ WARN_LOGFILE           =
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = \
+    main.cc \
+    concepts.cc \
     modules.cc \
-    about.cc \
-    design.cc \
+    qs.cc \
     exa.cc \
     exa_apps.cc \
     exa_native.cc \

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
 // Last updated for version 5.5.0
-// Last updated on  2015-08-29
+// Last updated on  2015-09-25
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -28,8 +28,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// Web:   www.state-machine.com
-// Email: info@state-machine.com
+// http://www.state-machine.com
+// mailto:info@state-machine.com
 //////////////////////////////////////////////////////////////////////////////
 
 // library headers
@@ -129,8 +129,7 @@ qpc.lnt               // QP/C options
 
  
 // QS -- the following options are needed only when Q_SPY is defined
--emacro(960,          // MISR04-17.4(req), pointer arithmetic
- QS_PTR_AT_,
+-emacro(960,          // MISRA04-17.4(req), pointer arithmetic
  QS_RX_AT_,
  QS_PTR_INC_)
 -efunc(960,           // MISRA04-18.4(req) declaration of union
@@ -143,7 +142,6 @@ qpc.lnt               // QP/C options
  QS_INSERT_BYTE,
  QS_INSERT_ESC_BYTE,
  QS_INSERT_CHKSUM_BYTE,
- QS_PTR_AT_,
  QS_PTR_INC_,
  QS_RX_AT_,
  QS_RX_TRAN_)

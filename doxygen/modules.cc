@@ -5,38 +5,34 @@ Hierarchical Event Processor
 
 QEP is a universal, UML-compliant event processor that enables developers to code UML state machines in highly readable ANSI-C, in which every state machine element is mapped to code precisely, unambiguously, and exactly once (traceability). QEP fully supports hierarchical state nesting, which is the fundamental mechanism for reusing behavior across many states instead of repeating the same actions and transitions over and over again.
 */
+/*###########################################################################*/
 /*!
-@defgroup qf  QF
+@defgroup qf QF
 
 @brief
 Active Object (Actor) Framework
 
 QF is a portable, event-driven, real-time framework for execution of active objects (concurrent state machines) specifically designed for real-time embedded (RTE) systems.
 */
+/*###########################################################################*/
 /*!
-@defgroup qk  QK
+@defgroup qk QK
 
 @brief
 Preemptive Non-Blocking Kernel
 
 QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specifically for executing active objects. QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis — RMA) and can be used in hard real-time systems.
 */
+/*###########################################################################*/
 /*!
-@defgroup qv  QV
+@defgroup qv QV
 
 @brief
 Cooperative Run-to-Completion Kernel
 
 QV is a simple **cooperative** kernel (previously called "Vanilla" kernel). This kernel executes active objects one at a time, with priority-based scheduling performed before processing of each event. Due to naturally short duration of event processing in state machines, the simple QV kernel is often adequate for many real-time systems. 
 */
-/*!
-@defgroup qs  QS
-
-@brief
-Software Tracing Instrumentation
-
-QS is software tracing system that enables developers to monitor live event-driven QP applications with minimal target system resources and without stopping or significantly slowing down the code. QS is an ideal tool for testing, troubleshooting, and optimizing QP applications. QS can even be used to support acceptance testing in product manufacturing.
-*/
+/*###########################################################################*/
 /*! @dir ../include
 
 Platform-independent QP/C API
@@ -44,6 +40,7 @@ Platform-independent QP/C API
 @note
 The QP/C <span class="img folder">include</span> directory needs to be added to the compiler's include path in the applications using QP/C. 
 */
+/*###########################################################################*/
 /*! @dir ../source
 
 Platform-independent QP/C implementation
