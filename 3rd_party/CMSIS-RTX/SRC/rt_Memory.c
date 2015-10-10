@@ -3,10 +3,10 @@
  *----------------------------------------------------------------------------
  *      Name:    RT_MEMORY.C
  *      Purpose: Interface functions for Dynamic Memory Management System
- *      Rev.:    V4.70
+ *      Rev.:    V4.79
  *----------------------------------------------------------------------------
  *
- * Copyright (c) 1999-2009 KEIL, 2009-2013 ARM Germany GmbH
+ * Copyright (c) 1999-2009 KEIL, 2009-2015 ARM Germany GmbH
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -44,17 +44,17 @@
 //     size:    Size of memory pool in bytes
 //   Return:    0 - OK, 1 - Error
 
-int rt_init_mem (void *pool, U32 size) {
+U32 rt_init_mem (void *pool, U32 size) {
   MEMP *ptr;
 
-  if ((pool == NULL) || (size < sizeof(MEMP))) return (1);
+  if ((pool == NULL) || (size < sizeof(MEMP))) { return (1U); }
 
   ptr = (MEMP *)pool;
   ptr->next = (MEMP *)((U32)pool + size - sizeof(MEMP *));
   ptr->next->next = NULL;
-  ptr->len = 0; 
+  ptr->len = 0U; 
 
-  return (0);
+  return (0U);
 }
 
 // Allocate Memory from Memory pool
@@ -67,19 +67,19 @@ void *rt_alloc_mem (void *pool, U32 size) {
   MEMP *p, *p_search, *p_new;
   U32   hole_size;
 
-  if ((pool == NULL) || (size == 0)) return NULL;
+  if ((pool == NULL) || (size == 0U)) { return NULL; }
 
   /* Add header offset to 'size' */
   size += sizeof(MEMP);
   /* Make sure that block is 4-byte aligned  */
-  size = (size + 3) & ~3;
+  size = (size + 3U) & ~(U32)3U;
 
   p_search = (MEMP *)pool;
   while (1) {
     hole_size  = (U32)p_search->next - (U32)p_search;
     hole_size -= p_search->len;
     /* Check if hole size is big enough */
-    if (hole_size >= size) break;
+    if (hole_size >= size) { break; }
     p_search = p_search->next;
     if (p_search->next == NULL) {
       /* Failed, we are at the end of the list */
@@ -87,7 +87,7 @@ void *rt_alloc_mem (void *pool, U32 size) {
     }
   }
 
-  if (p_search->len == 0) {
+  if (p_search->len == 0U) {
     /* No block is allocated, set the Length of the first element */
     p_search->len = size;
     p = (MEMP *)(((U32)p_search) + sizeof(MEMP));
@@ -109,10 +109,10 @@ void *rt_alloc_mem (void *pool, U32 size) {
 //     mem:     Pointer to memory to free
 //   Return:    0 - OK, 1 - Error
 
-int rt_free_mem (void *pool, void *mem) {
+U32 rt_free_mem (void *pool, void *mem) {
   MEMP *p_search, *p_prev, *p_return;
 
-  if ((pool == NULL) || (mem == NULL)) return (1);
+  if ((pool == NULL) || (mem == NULL)) { return (1U); }
 
   p_return = (MEMP *)((U32)mem - sizeof(MEMP));
   
@@ -124,17 +124,17 @@ int rt_free_mem (void *pool, void *mem) {
     p_search = p_search->next;
     if (p_search == NULL) {
       /* Valid Memory block not found */
-      return (1);
+      return (1U);
     }
   }
 
   if (p_prev == NULL) {
     /* First block to be released, only set length to 0 */
-    p_search->len = 0;
+    p_search->len = 0U;
   } else {
     /* Discard block from chain list */
     p_prev->next = p_search->next;
   }
 
-  return (0);
+  return (0U);
 }

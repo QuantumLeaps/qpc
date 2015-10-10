@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M4F), GNU ARM assembler
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-05-21
+* Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), GNU-ARM assembler
+* Last Updated for Version: 5.5.1
+* Date of the Last Update:  2015-10-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -11,7 +11,7 @@
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 2 of the License, or
+* by the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
 * Alternatively, this program may be distributed and modified under the
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 
     .syntax unified
@@ -90,30 +90,39 @@ QK_init:
     .type   svc_ret, %function /* to ensure that the svc_ret label is THUMB */
 
 PendSV_Handler:
-    PUSH    {lr}              /* push the exception lr (EXC_RETURN)         */
 
     .ifdef  ARM_ARCH_V6M      /* Cortex-M0/M0+/M1 (v6-M, v6S-M)?            */
     CPSID   i                 /* disable interrupts at processor level      */
-    .else                     /* Cortex-M3/M4/M4F                           */
-    MOVS    r0,#(0xFF >> 2)   /* Keep in synch with QF_BASEPRI in qf_port.h!*/
-    MSR     BASEPRI,r0        /* disable interrupts at processor level      */
-    .endif
+    .else   /* M3/M4/M7 */
+    .ifdef  __FPU_PRESENT     /* If FPU used...                             */
+    PUSH    {r0,lr}           /* push lr (EXC_RETURN) plus stack "aligner"  */
+    .endif  /* FPU */
+    MOVS    r0,#(0xFF >> 2)   /* NOTE: Must match QF_BASEPRI in qf_port.h!  */
+    MSR     BASEPRI,r0        /* selectively disable interrupts             */
+    .endif  /* M3/M4/M7 */
 
     BL      QK_schedPrio_     /* check if we have preemption                */
     CMP     r0,#0             /* is prio == 0 ?                             */
     BNE.N   scheduler         /* if prio != 0, branch to scheduler          */
 
     .ifdef  ARM_ARCH_V6M      /* Cortex-M0/M0+/M1 (v6-M, v6S-M)?            */
-    CPSIE   i                 /* enable interrupts at processor level       */
-    .else                     /* Cortex-M3/M4/M4F                           */
-    MSR     BASEPRI,r0        /* enable interrupts (r0 == 0 at this point)  */
-    .endif
-
-    POP     {r0}              /* pop the EXC_RETURN into r0 (low register)  */
+    CPSIE   i                 /* enable interrupts (clear PRIMASK)          */
+    MOVS    r0,#6
+    MVNS    r0,r0             /* r0 := ~6 == 0xFFFFFFF9                     */
     BX      r0                /* exception-return to the task               */
+    .else   /* M3/M4/M7 */
+    /* NOTE: r0 == 0 at this point */
+    MSR     BASEPRI,r0        /* enable interrupts (clear BASEPRI)          */
+    .ifdef  __FPU_PRESENT     /* If FPU used...                             */
+    POP     {r0,pc}           /* pop stack "aligner" and EXC_RETURN to PC   */
+    .else   /* no FPU */
+    MOVS    r0,#6
+    MVNS    r0,r0             /* r0 := ~6 == 0xFFFFFFF9                     */
+    BX      r0                /* exception-return to the task               */
+    .endif  /* no FPU */
+    .endif  /* M3/M4/M7 */
 
 scheduler:
-    SUB     sp,sp,#4          /* align the stack to 8-byte boundary         */
     MOVS    r3,#1
     LSLS    r3,r3,#24         /* r3:=(1 << 24), set the T bit  (new xpsr)   */
     LDR     r2,=QK_sched_     /* address of the QK scheduler   (new pc)     */
@@ -121,32 +130,30 @@ scheduler:
     PUSH    {r1-r3}           /* push xpsr,pc,lr                            */
     SUB     sp,sp,#(4*4)      /* don't care for r12,r3,r2,r1                */
     PUSH    {r0}              /* push the prio argument        (new r0)     */
-    MOVS    r0,#0x6
-    MVNS    r0,r0             /* r0 := ~0x6 == 0xFFFFFFF9                   */
-    BX      r0                /* exception-return to the scheduler          */
+    MOVS    r0,#6
+    MVNS    r0,r0             /* r0 := ~6 == 0xFFFFFFF9                     */
+    BX      r0                /* exception-return to the QK scheduler       */
 
 svc_ret:
     .ifdef  ARM_ARCH_V6M      /* Cortex-M0/M0+/M1 (v6-M, v6S-M)?            */
-    CPSIE   i                 /* enable interrupts to allow SVCall exception*/
-    .else                     /* Cortex-M3/M4/M4F                           */
+    CPSIE   i                 /* enable interrupts (clear PRIMASK)          */
+    .else   /* M3/M4/M7 */
     MOVS    r0,#0
-    MSR     BASEPRI,r0        /* enable interrupts to allow SVCall exception*/
-    .endif
-
-    .ifdef  __FPU_PRESENT     /* If Vector FPU used--clear CONTROL[2] (FPCA)*/
+    MSR     BASEPRI,r0        /* enable interrupts (clear BASEPRI)          */
+    .ifdef  __FPU_PRESENT     /* If FPU used...                             */
     MRS     r0,CONTROL        /* r0 := CONTROL                              */
-    MOVS    r1,#4             /* r1 := 0x04 (FPCA bit)                      */
-    BICS    r0,r1             /* r0 := r0 & ~r1                             */
-    MSR     CONTROL,r0        /* CONTROL := r0                              */
-    .endif
+    BICS    r0,r0,#4          /* r0 := r0 & ~4 (FPCA bit)                   */
+    MSR     CONTROL,r0        /* CONTROL := r0 (clear CONTROL[2] FPCA bit)  */
+    .endif  /* FPU */
+    .endif  /* M3/M4/M7 */
 
-    SVC     #0                /* SV exception returns to the preempted task */
+    SVC     #0                /* cause SV to return to preempted task       */
     .size   PendSV_Handler, . - PendSV_Handler
 
 
 /*****************************************************************************
 * The SVC_Handler exception handler is used for returning back to the
-* interrupted task. The SVCall exception simply removes its own interrupt
+* preempted task. The SVCall exception simply removes its own interrupt
 * stack frame from the stack and returns to the preempted task using the
 * interrupt stack frame that must be at the top of the stack.
 *****************************************************************************/
@@ -155,10 +162,15 @@ svc_ret:
     .type   SVC_Handler, %function
 
 SVC_Handler:
-    ADD     sp,sp,#(9*4)      /* remove one 8-register exception frame      */
-                              /* plus the "aligner" from the stack          */
-    POP     {r0}              /* pop the original EXC_RETURN into r0        */
+    ADD     sp,sp,#(8*4)      /* remove one 8-register exception frame      */
+
+    .ifdef  __FPU_PRESENT     /* If FPU used...                             */
+    POP     {r0,pc}           /* pop stack "aligner" and EXC_RETURN to PC   */
+    .else   /* no FPU */
+    MOVS    r0,#6
+    MVNS    r0,r0             /* r0 := ~6 == 0xFFFFFFF9                     */
     BX      r0                /* return to the preempted task               */
+    .endif  /* no FPU */
     .size   SVC_Handler, . - SVC_Handler
 
     .end

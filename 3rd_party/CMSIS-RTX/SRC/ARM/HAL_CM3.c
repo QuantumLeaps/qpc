@@ -99,7 +99,7 @@ __asm void *_alloc_box (void *box_mem) {
 
 /*--------------------------- _free_box -------------------------------------*/
 
-__asm int _free_box (void *box_mem, void *box) {
+__asm U32 _free_box (void *box_mem, void *box) {
    /* Function wrapper for Unprivileged/Privileged mode. */
         LDR     R12,=__cpp(rt_free_box)
         MRS     R3,IPSR
@@ -271,4 +271,3 @@ __asm void OS_Tick_Handler (void) {
 /*----------------------------------------------------------------------------
  * end of file
  *---------------------------------------------------------------------------*/
-

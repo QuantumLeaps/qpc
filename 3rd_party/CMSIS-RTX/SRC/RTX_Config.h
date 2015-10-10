@@ -3,7 +3,7 @@
  *----------------------------------------------------------------------------
  *      Name:    RTX_CONFIG.H
  *      Purpose: Exported functions of RTX_Config.c
- *      Rev.:    V4.78
+ *      Rev.:    V4.79
  *----------------------------------------------------------------------------
  *
  * Copyright (c) 1999-2009 KEIL, 2009-2015 ARM Germany GmbH
@@ -34,13 +34,13 @@
 
 
 /* Error Codes */
-#define OS_ERR_STK_OVF          1
-#define OS_ERR_FIFO_OVF         2
-#define OS_ERR_MBX_OVF          3
-#define OS_ERR_TIMER_OVF        4
+#define OS_ERR_STK_OVF          1U
+#define OS_ERR_FIFO_OVF         2U
+#define OS_ERR_MBX_OVF          3U
+#define OS_ERR_TIMER_OVF        4U
 
 /* Definitions */
-#define BOX_ALIGN_8                   0x80000000
+#define BOX_ALIGN_8                   0x80000000U
 #define _declare_box(pool,size,cnt)   U32 pool[(((size)+3)/4)*(cnt) + 3]
 #define _declare_box8(pool,size,cnt)  U64 pool[(((size)+7)/8)*(cnt) + 2]
 #define _init_box8(pool,size,bsize)   _init_box (pool,size,(bsize) | BOX_ALIGN_8)
@@ -67,7 +67,7 @@ extern U8  const os_fifo_size;
 
 /* Functions */
 extern void os_idle_demon   (void);
-extern int  os_tick_init    (void);
+extern S32  os_tick_init    (void);
 extern U32  os_tick_val     (void);
 extern U32  os_tick_ovf     (void);
 extern void os_tick_irqack  (void);

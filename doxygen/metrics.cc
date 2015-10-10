@@ -1,7 +1,7 @@
 /** @page metrics Code Metrics 
 
 @code 
-                   Standard Code Metrics for QP/C 5.5.0 
+                   Standard Code Metrics for QP/C 5.5.1 
 
            Resource Standard Metrics (TM) for C, C++, C# and Java
                    Version 7.75 - mSquaredTechnologies.com
@@ -9,7 +9,7 @@
   License Type: Windows Single User License
   Licensed To : Quantum Leaps, LLC
   License No. : WS2975                          License Date: Dec 15, 2013
-  Build Date  : Sep  2 2009                         Run Date: Sep 29, 2015
+  Build Date  : Sep  2 2009                         Run Date: Oct 05, 2015
   (C)1996-2009 M Squared Technologies LLC
   ________________________________________________________________________
 

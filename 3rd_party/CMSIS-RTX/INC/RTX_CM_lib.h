@@ -3,7 +3,7 @@
  *----------------------------------------------------------------------------
  *      Name:    RTX_CM_LIB.H
  *      Purpose: RTX Kernel System Configuration
- *      Rev.:    V4.77
+ *      Rev.:    V4.79
  *----------------------------------------------------------------------------
  *
  * Copyright (c) 1999-2009 KEIL, 2009-2015 ARM Germany GmbH
@@ -62,7 +62,7 @@ typedef uint32_t OS_RESULT;
 
 #define runtask_id()    rt_tsk_self()
 #define mutex_init(m)   rt_mut_init(m)
-#define mutex_wait(m)   os_mut_wait(m,0xFFFF)
+#define mutex_wait(m)   os_mut_wait(m,0xFFFFU)
 #define mutex_rel(m)    os_mut_release(m)
 
 extern uint8_t   os_running;
@@ -119,7 +119,7 @@ uint8_t  const os_flags      = OS_RUNPRIV;
 __USED uint32_t const CMSIS_RTOS_API_Version = osCMSIS;
 __USED uint32_t const CMSIS_RTOS_RTX_Version = osCMSIS_RTX;
 __USED uint32_t const os_clockrate = OS_TICK;
-__USED uint32_t const os_timernum  = 0;
+__USED uint32_t const os_timernum  = 0U;
 
 /* Memory pool for TCB allocation    */
 _declare_box  (mp_tcb, OS_TCB_SIZE, OS_TASK_CNT);
@@ -154,14 +154,14 @@ osMessageQId osMessageQId_osTimerMessageQ;
 #else
 osThreadDef_t os_thread_def_osTimerThread = { NULL };
 osThreadId osThreadId_osTimerThread;
-osMessageQDef(osTimerMessageQ, 0, void *);
+osMessageQDef(osTimerMessageQ, 0U, void *);
 osMessageQId osMessageQId_osTimerMessageQ;
 #endif
 
 /* Legacy RTX User Timers not used */
-uint32_t       os_tmr = 0; 
+uint32_t       os_tmr = 0U; 
 uint32_t const *m_tmr = NULL;
-uint16_t const mp_tmr_size = 0;
+uint16_t const mp_tmr_size = 0U;
 
 #if defined (__CC_ARM) && !defined (__MICROLIB)
  /* A memory space for arm standard library. */
@@ -198,8 +198,8 @@ void *__user_perthread_libspace (void) {
   /* Provide a separate libspace for each task. */
   uint32_t idx;
 
-  idx = os_running ? runtask_id () : 0;
-  if (idx == 0) {
+  idx = (os_running != 0U) ? runtask_id () : 0U;
+  if (idx == 0U) {
     /* RTX not running yet. */
     return (&__libspace_start);
   }
@@ -251,7 +251,7 @@ __attribute__((used)) void _mutex_release (OS_ID *mutex) {
 
 /* Main Thread definition */
 extern int main (void);
-osThreadDef_t os_thread_def_main = {(os_pthread)main, osPriorityNormal, 1, 4*OS_MAINSTKSIZE };
+osThreadDef_t os_thread_def_main = {(os_pthread)main, osPriorityNormal, 1U, 4*OS_MAINSTKSIZE };
 
 
 #if defined (__CC_ARM)
@@ -384,8 +384,6 @@ __noreturn __stackless void __cmain(void) {
 
 #endif
 
-
 /*----------------------------------------------------------------------------
  * end of file
  *---------------------------------------------------------------------------*/
-

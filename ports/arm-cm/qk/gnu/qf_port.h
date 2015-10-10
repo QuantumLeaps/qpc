@@ -3,14 +3,14 @@
 * @brief QF/C port to Cortex-M, preemptive QK kernel, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 5.5.0
+* Date of the Last Update:  2015-09-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,8 +31,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -54,7 +54,7 @@
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE2 */
     #define QF_AWARE_ISR_CMSIS_PRI  0
 
-#else /* Cortex-M3/M4/M4F, see NOTE03 */
+#else /* Cortex-M3/M4/M7, see NOTE03 */
 
     #define QF_SET_BASEPRI(val_) __asm volatile (\
         "movs r0,%0 \n\t" \
@@ -68,7 +68,7 @@
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5 */
     #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
-              /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
+    /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
     #define QF_LOG2(n_) ((uint8_t)(32U - __builtin_clz(n_)))
 
 #endif
@@ -95,7 +95,7 @@
 * "kernel-aware".
 *
 * NOTE3:
-* On Cortex-M3/M4/M4F, the interrupt disable/enable policy uses the BASEPRI
+* On Cortex-M3/M4/M7, the interrupt disable/enable policy uses the BASEPRI
 * register (which is not implemented in Cortex-M0/M0+/M1) to disable
 * interrupts only with priority lower than the level specified by the
 * QF_BASEPRI macro. The interrupts with priorities above QF_BASEPRI (i.e.,
@@ -106,7 +106,7 @@
 * higher than QF_BASEPRI, can call QF services.
 *
 * NOTE4:
-* For Cortex-M3/M4/M4F, the macro QF_BASEPRI leaves the top 2 priority bits
+* For Cortex-M3/M4/M7, the macro QF_BASEPRI leaves the top 2 priority bits
 * empty for QF-aware interrupts. This is the highest-possible priority
 * (lowest possible numerical value) for the guaranteed 3 priority bits
 * implemented in the NVIC.

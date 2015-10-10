@@ -80,7 +80,7 @@ static uint32_t  l_rnd;  /* random seed */
 
 #ifdef Q_SPY
 
-    void UART0_IRQHandler(void);
+    void UART0_IRQHandler(void); /* ISR for the QS-RX channel */
 
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
@@ -154,6 +154,26 @@ void GPIOPortA_IRQHandler(void) {
 
     QK_ISR_EXIT();  /* inform QK about exiting an ISR */
 }
+/*..........................................................................*/
+#ifdef Q_SPY
+/*
+* ISR for receiving bytes from the QSPY Back-End
+* NOTE: This ISR is "QF-unaware" meaning that it does not interact with
+* the QF/QK and is not disabled. Such ISRs don't need to call QK_ISR_ENTRY/
+* QK_ISR_EXIT and they cannot post or publish events.
+*/
+void UART0_IRQHandler(void) {
+    uint32_t status = UART0->RIS; /* get the raw interrupt status */
+    UART0->ICR = status;          /* clear the asserted interrupts */
+
+    while ((UART0->FR & UART_FR_RXFE) == 0) { /* while RX FIFO NOT empty */
+        uint32_t b = UART0->DR;
+        QS_RX_PUT(b);
+    }
+}
+#else
+void UART0_IRQHandler(void) {}
+#endif
 
 /*..........................................................................*/
 void BSP_init(void) {
@@ -382,22 +402,6 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(COMMAND_STAT);
 
     return (uint8_t)1; /* return success */
-}
-/*..........................................................................*/
-/*
-* ISR for receiving bytes from the QSPY Back-End
-* NOTE: This ISR is "QF-unaware" meaning that it does not interact with
-* the QF/QK and is not disabled. Such ISRs don't need to call QK_ISR_ENTRY/
-* QK_ISR_EXIT and they cannot post or publish events.
-*/
-void UART0_IRQHandler(void) {
-    uint32_t status = UART0->RIS; /* get the raw interrupt status */
-    UART0->ICR = status;          /* clear the asserted interrupts */
-
-    while ((UART0->FR & UART_FR_RXFE) == 0) { /* while RX FIFO NOT empty */
-        uint32_t b = UART0->DR;
-        QS_RX_PUT(b);
-    }
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

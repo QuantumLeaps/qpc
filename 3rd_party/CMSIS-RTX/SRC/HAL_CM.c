@@ -3,10 +3,10 @@
  *----------------------------------------------------------------------------
  *      Name:    HAL_CM.C
  *      Purpose: Hardware Abstraction Layer for Cortex-M
- *      Rev.:    V4.77
+ *      Rev.:    V4.79
  *----------------------------------------------------------------------------
  *
- * Copyright (c) 1999-2009 KEIL, 2009-2013 ARM Germany GmbH
+ * Copyright (c) 1999-2009 KEIL, 2009-2015 ARM Germany GmbH
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -58,7 +58,7 @@ void rt_init_stack (P_TCB p_TCB, FUNCP task_body) {
 
   /* Prepare a complete interrupt frame for first task start */
   size = p_TCB->priv_stack >> 2;
-  if (size == 0) {
+  if (size == 0U) {
     size = (U16)os_stackinfo >> 2;
   }
 
@@ -66,7 +66,7 @@ void rt_init_stack (P_TCB p_TCB, FUNCP task_body) {
   stk = &p_TCB->stack[size];
 
   /* Auto correct to 8-byte ARM stack alignment. */
-  if ((U32)stk & 0x04) {
+  if ((U32)stk & 0x04U) {
     stk--;
   }
 
@@ -77,8 +77,8 @@ void rt_init_stack (P_TCB p_TCB, FUNCP task_body) {
   stk[14] = (U32)task_body;
 
   /* Clear R4-R11,R0-R3,R12,LR registers. */
-  for (i = 0; i < 14; i++) {
-    stk[i] = 0;
+  for (i = 0U; i < 14U; i++) {
+    stk[i] = 0U;
   }
 
   /* Assign a void pointer to R0. */
@@ -92,9 +92,9 @@ void rt_init_stack (P_TCB p_TCB, FUNCP task_body) {
 
   /* Initialize stack with magic pattern. */
   if (os_stackinfo & 0x10000000U) {
-    if (size > (16+1)) {
-      for (i = (size - 16)/2 - 1; i; i--) {
-        stk -= 2;
+    if (size > (16U+1U)) {
+      for (i = ((size - 16U)/2U) - 1U; i; i--) {
+        stk -= 2U;
         stk[1] = MAGIC_PATTERN;
         stk[0] = MAGIC_PATTERN;
       }
@@ -113,17 +113,17 @@ void rt_init_stack (P_TCB p_TCB, FUNCP task_body) {
 
 static __inline U32 *rt_ret_regs (P_TCB p_TCB) {
   /* Get pointer to task return value registers (R0..R3) in Stack */
-#if (__TARGET_FPU_VFP)
+#if defined(__TARGET_FPU_VFP)
   if (p_TCB->stack_frame) {
     /* Extended Stack Frame: R4-R11,S16-S31,R0-R3,R12,LR,PC,xPSR,S0-S15,FPSCR */
-    return (U32 *)(p_TCB->tsk_stack + 8*4 + 16*4);
+    return (U32 *)(p_TCB->tsk_stack + (8U*4U) + (16U*4U));
   } else {
     /* Basic Stack Frame: R4-R11,R0-R3,R12,LR,PC,xPSR */
-    return (U32 *)(p_TCB->tsk_stack + 8*4);
+    return (U32 *)(p_TCB->tsk_stack + (8U*4U));
   }
 #else
   /* Stack Frame: R4-R11,R0-R3,R12,LR,PC,xPSR */
-  return (U32 *)(p_TCB->tsk_stack + 8*4);
+  return (U32 *)(p_TCB->tsk_stack + (8U*4U));
 #endif
 }
 
@@ -147,9 +147,9 @@ void rt_ret_val2(P_TCB p_TCB, U32 v0, U32 v1) {
 
 #ifdef DBG_MSG
 void dbg_init (void) {
-  if ((DEMCR & DEMCR_TRCENA)     && 
-      (ITM_CONTROL & ITM_ITMENA) &&
-      (ITM_ENABLE & (1UL << 31))) {
+  if (((DEMCR & DEMCR_TRCENA) != 0U)     && 
+      ((ITM_CONTROL & ITM_ITMENA) != 0U) &&
+      ((ITM_ENABLE & (1UL << 31)) != 0U)) {
     dbg_msg = __TRUE;
   }
 }
@@ -159,10 +159,10 @@ void dbg_init (void) {
 
 #ifdef DBG_MSG
 void dbg_task_notify (P_TCB p_tcb, BOOL create) {
-  while (ITM_PORT31_U32 == 0);
+  while (ITM_PORT31_U32 == 0U);
   ITM_PORT31_U32 = (U32)p_tcb->ptask;
-  while (ITM_PORT31_U32 == 0);
-  ITM_PORT31_U16 = (create << 8) | p_tcb->task_id;
+  while (ITM_PORT31_U32 == 0U);
+  ITM_PORT31_U16 = (U16)((create << 8) | p_tcb->task_id);
 }
 #endif
 
@@ -170,13 +170,11 @@ void dbg_task_notify (P_TCB p_tcb, BOOL create) {
 
 #ifdef DBG_MSG
 void dbg_task_switch (U32 task_id) {
-  while (ITM_PORT31_U32 == 0);
-  ITM_PORT31_U8 = task_id;
+  while (ITM_PORT31_U32 == 0U);
+  ITM_PORT31_U8 = (U8)task_id;
 }
 #endif
-
 
 /*----------------------------------------------------------------------------
  * end of file
  *---------------------------------------------------------------------------*/
-

@@ -428,7 +428,7 @@ uint32_t SystemCoreClock = __CORE_CLK;  /*!< System Clock Frequency (Core Clock)
 /*----------------------------------------------------------------------------
   Get the OSC clock
  *----------------------------------------------------------------------------*/
-__INLINE static uint32_t getOscClk (uint32_t xtal, uint32_t oscSrc) {
+static uint32_t getOscClk (uint32_t xtal, uint32_t oscSrc) {
   uint32_t oscClk = XTALI;
 
   switch (oscSrc) {                      /* switch OSCSRC */
@@ -574,7 +574,7 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
 void SystemInit (void)
 {
 #if(CLOCK_SETUP)
-    uint32_t i;
+    volatile uint32_t i;
 #endif
 
   /* FPU settings ------------------------------------------------------------*/

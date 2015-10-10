@@ -3,10 +3,10 @@
  *----------------------------------------------------------------------------
  *      Name:    RT_MEMORY.H
  *      Purpose: Interface functions for Dynamic Memory Management System
- *      Rev.:    V4.70
+ *      Rev.:    V4.79
  *----------------------------------------------------------------------------
  *
- * Copyright (c) 1999-2009 KEIL, 2009-2013 ARM Germany GmbH
+ * Copyright (c) 1999-2009 KEIL, 2009-2015 ARM Germany GmbH
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,6 @@ typedef struct mem {              /* << Memory Pool management struct >>     */
 } MEMP;
 
 /* Functions */
-extern int   rt_init_mem  (void *pool, U32  size);
+extern U32   rt_init_mem  (void *pool, U32  size);
 extern void *rt_alloc_mem (void *pool, U32  size);
-extern int   rt_free_mem  (void *pool, void *mem);
+extern U32   rt_free_mem  (void *pool, void *mem);

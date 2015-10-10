@@ -54,11 +54,11 @@
 #ifndef _CMSIS_OS_H
 #define _CMSIS_OS_H
 
-#define osCMSIS           0x10002      ///< CMSIS-RTOS API version (main [31:16] .sub [15:0])
+#define osCMSIS           0x10002U     ///< CMSIS-RTOS API version (main [31:16] .sub [15:0])
 
 #define osCMSIS_RTX     ((4<<16)|78)   ///< RTOS identification and version (main [31:16] .sub [15:0])
 
-#define osKernelSystemId "RTX V4.78"   ///< RTOS identification string
+#define osKernelSystemId "RTX V4.79"   ///< RTOS identification string
 
 
 #define osFeature_MainThread   1       ///< main can be thread
@@ -100,7 +100,7 @@ typedef enum  {
 } osPriority;
 
 /// Timeout value.
-#define osWaitForever     0xFFFFFFFF     ///< wait forever timeout value
+#define osWaitForever     0xFFFFFFFFU    ///< wait forever timeout value
 
 /// Status code values returned by CMSIS-RTOS functions.
 typedef enum  {

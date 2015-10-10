@@ -62,7 +62,7 @@ void rt_tmr_tick (void) {
     return;
   }
   os_tmr.tcnt--;
-  while (os_tmr.tcnt == 0 && (p = os_tmr.next) != NULL) {
+  while ((os_tmr.tcnt == 0U) && ((p = os_tmr.next) != NULL)) {
     /* Call a user provided function to handle an elapsed timer */
     os_tmr_call (p->info);
     os_tmr.tcnt = p->tcnt;
@@ -80,7 +80,7 @@ OS_ID rt_tmr_create (U16 tcnt, U16 info)  {
   P_TMR p_tmr, p;
   U32 delta,itcnt = tcnt;
 
-  if (tcnt == 0 || m_tmr == NULL)  {
+  if ((tcnt == 0U) || (m_tmr == NULL)) {
     return (NULL);
   }
   p_tmr = rt_alloc_box ((U32 *)m_tmr);
@@ -90,7 +90,7 @@ OS_ID rt_tmr_create (U16 tcnt, U16 info)  {
   p_tmr->info = info;
   p = (P_TMR)&os_tmr;
   delta = p->tcnt;
-  while (delta < itcnt && p->next != NULL) {
+  while ((delta < itcnt) && (p->next != NULL)) {
     p = p->next;
     delta += p->tcnt;
   }

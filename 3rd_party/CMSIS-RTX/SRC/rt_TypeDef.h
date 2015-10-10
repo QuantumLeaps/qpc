@@ -3,10 +3,10 @@
  *----------------------------------------------------------------------------
  *      Name:    RT_TYPEDEF.H
  *      Purpose: Type Definitions
- *      Rev.:    V4.73
+ *      Rev.:    V4.79
  *----------------------------------------------------------------------------
  *
- * Copyright (c) 1999-2009 KEIL, 2009-2013 ARM Germany GmbH
+ * Copyright (c) 1999-2009 KEIL, 2009-2015 ARM Germany GmbH
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -158,11 +158,10 @@ typedef struct OS_BM {
 } *P_BM;
 
 /* Definitions */
-#define __TRUE          1
-#define __FALSE         0
+#define __TRUE          1U
+#define __FALSE         0U
 #define NULL            ((void *) 0)
 
 /*----------------------------------------------------------------------------
  * end of file
  *---------------------------------------------------------------------------*/
-

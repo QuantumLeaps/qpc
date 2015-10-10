@@ -80,7 +80,7 @@ static uint32_t  l_rnd;  /* random seed */
 
 #ifdef Q_SPY
 
-    void UART0_IRQHandler(void);
+    void UART0_IRQHandler(void); /* ISR for the QS-RX channel */
 
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
@@ -146,6 +146,26 @@ void GPIOPortA_IRQHandler(void) {
     QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
                  &l_GPIOPortA_IRQHandler);
 }
+/*..........................................................................*/
+#ifdef Q_SPY
+/*
+* ISR for receiving bytes from the QSPY Back-End
+* NOTE: This ISR is "QF-unaware" meaning that it does not interact with
+* the QF/QK and is not disabled. Such ISRs don't need to call QK_ISR_ENTRY/
+* QK_ISR_EXIT and they cannot post or publish events.
+*/
+void UART0_IRQHandler(void) {
+    uint32_t status = UART0->RIS; /* get the raw interrupt status */
+    UART0->ICR = status;          /* clear the asserted interrupts */
+
+    while ((UART0->FR & UART_FR_RXFE) == 0) { /* while RX FIFO NOT empty */
+        uint32_t b = UART0->DR;
+        QS_RX_PUT(b);
+    }
+}
+#else
+void UART0_IRQHandler(void) {}
+#endif
 
 /*..........................................................................*/
 void BSP_init(void) {
@@ -295,20 +315,22 @@ void QV_onIdle(void) {  /* called with interrupts disabled, see NOTE01 */
 #elif defined NDEBUG
     /* Put the CPU and peripherals to the low-power mode.
     * you might need to customize the clock management for your application,
-    * see the datasheet for your particular Cortex-M3 MCU.
+    * see the datasheet for your particular Cortex-M MCU.
     */
-    __WFI(); /* Wait-For-Interrupt */
+    QV_CPU_SLEEP();  /* atomically go to sleep and enable interrupts */
+#else
+    QF_INT_ENABLE(); /* just enable interrupts */
 #endif
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const *file, int line) {
+void Q_onAssert(char const *module, int loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
-    (void)file;
-    (void)line;
-    QS_ASSERTION(file, line, (uint32_t)10000U); /* report assertion to QS */
+    (void)module;
+    (void)loc;
+    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
     NVIC_SystemReset();
 }
 
@@ -373,21 +395,6 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(COMMAND_STAT);
 
     return (uint8_t)1; /* return success */
-}
-/*..........................................................................*/
-/*
-* ISR for receiving bytes from the QSPY Back-End
-* NOTE: This ISR is "QF-unaware" meaning that it does not interact with
-* the QF/QK and is not disabled. Such ISRs cannot post or publish events.
-*/
-void UART0_IRQHandler(void) {
-    uint32_t status = UART0->RIS; /* get the raw interrupt status */
-    UART0->ICR = status;          /* clear the asserted interrupts */
-
-    while ((UART0->FR & UART_FR_RXFE) == 0) { /* while RX FIFO NOT empty */
-        uint32_t b = UART0->DR;
-        QS_RX_PUT(b);
-    }
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

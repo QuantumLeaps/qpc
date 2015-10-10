@@ -1,13 +1,13 @@
 ;*****************************************************************************
-; Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M4F), TI-ARM assembler
-; Last updated for version 5.3.0
-; Last updated on  2014-04-23
+; Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), TI-ARM assembler
+; Last Updated for Version: 5.5.1
+; Date of the Last Update:  2015-09-30
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
 ;                    innovating embedded systems
 ;
-; Copyright (C) Quantum Leaps, www.state-machine.com.
+; Copyright (C) Quantum Leaps, LLC. All rights reserved.
 ;
 ; This program is open source software: you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 ; along with this program. If not, see <http://www.gnu.org/licenses/>.
 ;
 ; Contact information:
-; Web:   www.state-machine.com
-; Email: info@state-machine.com
+; http://www.state-machine.com
+; mailto:info@state-machine.com
 ;*****************************************************************************
 
     .text
@@ -38,9 +38,13 @@
     .global QK_init
     .global PendSV_Handler    ; CMSIS-compliant PendSV exception name
     .global SVC_Handler       ; CMSIS-compliant SVC exception name
+    .global QF_set_BASEPRI    ; set BASEPRI register
+    .global assert_failed     ; low-level assert handler
 
     .ref    QK_schedPrio_     ; external reference
     .ref    QK_sched_         ; external reference
+    .ref    Q_onAssert        ; external reference
+    .ref    __STACK_TOP       ; external reference
 
 
 ;*****************************************************************************
@@ -90,30 +94,36 @@ SHPR_addr:  .word 0E000ED18h
 ; check for the asynchronous preemption.
 ;*****************************************************************************
 PendSV_Handler: .asmfunc
-    PUSH    {lr}              ; push the exception lr (EXC_RETURN)
-    .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__
-    MOVS    r0,#(0xFF >> 2)   ; Keep in synch with QF_BASEPRI in qf_port.h!
-    MSR     BASEPRI,r0        ; disable interrupts at processor level
-    .else
-    CPSIE   i                 ; enable interrupts at processor level
-    .endif
+
+    .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
+    .if __TI_VFP_SUPPORT__    ; If FPU used...
+    PUSH    {r0,lr}           ; push lr (EXC_RETURN) plus stack "aligner"
+    .endif  ; FPU
+
+    MOVS    r0,#(0xFF >> 2)   ; NOTE: Must match QF_BASEPRI in qf_port.h!
+    MSR     BASEPRI,r0        ; selectively disable interrupts
+    .else   ; M0/M0+/M1
+    CPSIE   i                 ; disable interrupts (set PRIMASK)
+    .endif  ; M0/M0+/M1
 
     BL      QK_schedPrio_     ; check if we have preemption
     CMP     r0,#0             ; is prio == 0 ?
     BNE.N   scheduler         ; if prio != 0, branch to scheduler
 
-    .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__
-    MOVS    r0,#(0xFF >> 2)   ; Keep in synch with QF_BASEPRI in qf_port.h!
-    MSR     BASEPRI,r0        ; disable interrupts at processor level
-    .else
-    CPSIE   i                 ; enable interrupts at processor level
-    .endif
-
-    POP     {r0}              ; pop the EXC_RETURN into r0 (low register)
+    .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
+    ; NOTE: r0 == 0 at this point
+    MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
+    .if __TI_VFP_SUPPORT__    ; If FPU used...
+    POP     {r0,pc}           ; pop stack "aligner" and EXC_RETURN to PC
+    .endif  ; FPU
+    .else   ; M0/M0+/M1
+    CPSIE   i                 ; enable interrupts (clear PRIMASK)
+    MOVS    r0,#6
+    MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
     BX      r0                ; exception-return to the task
+    .endif  ; M0/M0+/M1
 
 scheduler:
-    SUB     sp,sp,#4          ; align the stack to 8-byte boundary
     MOVS    r3,#1
     LSLS    r3,r3,#24         ; r3:=(1 << 24), set the T bit  (new xpsr)
     LDR     r2,QK_sched_addr  ; address of the QK scheduler   (new pc)
@@ -121,26 +131,24 @@ scheduler:
     PUSH    {r1-r3}           ; push xpsr,pc,lr
     SUB     sp,sp,#(4*4)      ; don't care for r12,r3,r2,r1
     PUSH    {r0}              ; push the prio argument        (new r0)
-    MOVS    r0,#0x6
-    MVNS    r0,r0             ; r0 := ~0x6 == 0xFFFFFFF9
-    BX      r0                ; exception-return to the scheduler
+    MOVS    r0,#6
+    MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
+    BX      r0                ; exception-return to the QK scheduler
 
 svc_ret:
-    .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__
-    MOVS    r0,#(0xFF >> 2)   ; Keep in synch with QF_BASEPRI in qf_port.h!
-    MSR     BASEPRI,r0        ; disable interrupts at processor level
-    .else
-    CPSIE   i                 ; enable interrupts at processor level
-    .endif
-
-    .if __TI_VFP_SUPPORT__    ; If Vector FPU used-clear CONTROL[2] (FPCA bit)
+    .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
+    MOVS    r0,#0
+    MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
+    .if __TI_VFP_SUPPORT__    ; If FPU used...
     MRS     r0,CONTROL        ; r0 := CONTROL
-    MOVS    r1,#4             ; r1 := 0x04 (FPCA bit)
-    BICS    r0,r1             ; r0 := r0 & ~r1
-    MSR     CONTROL,r0        ; CONTROL := r0
-    .endif
+    BICS    r0,r0,#4          ; r0 := r0 & ~4 (FPCA bit)
+    MSR     CONTROL,r0        ; CONTROL := r0 (clear CONTROL[2] FPCA bit)
+    .endif  ; FPU
+    .else   ; M0/M0+/M1
+    CPSIE   i                 ; enable interrupts at processor level
+    .endif  ; M0/M0+/M1
 
-    SVC     #0                ; SV exception returns to the preempted task
+    SVC     #0                ; cause SV exception to return to preempted task
 
 QK_sched_addr .word QK_sched_
 svc_ret_addr  .word svc_ret
@@ -149,14 +157,43 @@ svc_ret_addr  .word svc_ret
 
 ;*****************************************************************************
 ; The SVC_Handler exception handler is used for returning back to the
-; interrupted task. The SVCall exception simply removes its own interrupt
+; preempted task. The SVCall exception simply removes its own interrupt
 ; stack frame from the stack and returns to the preempted task using the
 ; interrupt stack frame that must be at the top of the stack.
 ;*****************************************************************************
 SVC_Handler: .asmfunc
-    ADD     sp,sp,#(9*4)      ; remove one 8-register exception frame
-                              ; plus the "aligner" from the stack
-    POP     {r0}              ; pop the original EXC_RETURN into r0
+    ADD     sp,sp,#(8*4)      ; remove one 8-register exception frame
+
+    .if __TI_VFP_SUPPORT__    ; If FPU used...
+    POP     {r0,pc}           ; pop stack "aligner" and the EXC_RETURN to PC
+    .else   ; no FPU
+    MOVS    r0,#6
+    MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
     BX      r0                ; return to the preempted task
+    .endif  ; no FPU
     .endasmfunc
 
+
+;*****************************************************************************
+; The QF_set_BASEPRI function sets the BASEPRI register to the value
+; passed in r0.
+; C prototype: void QF_set_BASEPRI(unsigned basePri);
+;*****************************************************************************
+QF_set_BASEPRI: .asmfunc
+    MSR     BASEPRI,r0        ; set BASEPRI
+    BX      lr                ; return to the caller
+    .endasmfunc
+
+;*****************************************************************************
+; The assert_failed() function restores the SP (in case stack is corrupted)
+; and calls Q_onAssert(module, loc)
+; C prototype: void assert_failed(char const *module, int loc);
+;*****************************************************************************
+assert_failed: .asmfunc
+    LDR sp,STACK_TOP_addr
+    B.w Q_onAssert
+
+STACK_TOP_addr .word __STACK_TOP
+    .endasmfunc
+
+    

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, DPP-GUI, Win32-QV, MinGW
-# Last updated for version 5.5.0
-# Last updated on  2015-09-25
+# Last updated for version 5.5.1
+# Last updated on  2015-10-05
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -138,10 +138,10 @@ ifeq (rel, $(CONF)) # Release configuration ..................................
 BIN_DIR := rel
 
 CFLAGS = -ffunction-sections -fdata-sections \
-	-Os -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O1 -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
 
 CPPFLAGS = -ffunction-sections -fdata-sections \
-	-Os -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O1 -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 

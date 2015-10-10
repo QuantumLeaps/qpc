@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, Blinky console, Win32, MinGW
-# Last Updated for Version: 5.5.0
-# Date of the Last Update:  2015-09-25
+# Last Updated for Version: 5.5.1
+# Date of the Last Update:  2015-10-05
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -136,10 +136,10 @@ ifeq (rel, $(CONF)) # Release configuration ..................................
 BIN_DIR := rel
 
 CFLAGS = -ffunction-sections -fdata-sections \
-	-Os -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O1 -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
 
 CPPFLAGS = -ffunction-sections -fdata-sections \
-	-Os -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O1 -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 

@@ -354,7 +354,6 @@ int const g_pfnVectors[] = {
 
 
 /* reset handler -----------------------------------------------------------*/
-__attribute__((naked)) void Reset_Handler(void);
 void Reset_Handler(void) {
     extern int main(void);
     extern int __libc_init_array(void);

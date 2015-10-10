@@ -120,7 +120,8 @@ void BSP_init(void) {
     * (or ISR) start using the FPU, this can lead to corruption of the
     * FPU registers. This option should be used with CAUTION.
     */
-    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
+    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos)
+                   | (1U << FPU_FPCCR_LSPEN_Pos));
 #endif
 
     /* enable clock for to the peripherals used by this application... */
@@ -176,13 +177,11 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QK_onIdle(void) {
-
     /* toggle LED2 on and then off, see NOTE01 */
     QF_INT_DISABLE();
     GPIOF->DATA_Bits[LED_BLUE] = 0xFFU;
     GPIOF->DATA_Bits[LED_BLUE] = 0x00U;
     QF_INT_ENABLE();
-
 
 #ifdef NDEBUG
     /* Put the CPU and peripherals to the low-power mode.
