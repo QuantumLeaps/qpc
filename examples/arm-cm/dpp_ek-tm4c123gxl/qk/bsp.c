@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, preemptive QK kernel
-* Last Updated for Version: 5.5.0
-* Date of the Last Update:  2015-08-20
+* Last Updated for Version: 5.6.0
+* Date of the Last Update:  2015-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -67,6 +67,7 @@ Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
 void GPIOPortA_IRQHandler(void);
+void UART0_IRQHandler(void);
 
 /* Local-scope objects -----------------------------------------------------*/
 #define LED_RED     (1U << 1)
@@ -76,11 +77,11 @@ void GPIOPortA_IRQHandler(void);
 #define BTN_SW1     (1U << 4)
 #define BTN_SW2     (1U << 0)
 
-static uint32_t  l_rnd;  /* random seed */
+static uint32_t  l_rnd;    /* random seed */
+static QMutex l_rndMutex;  /* to protect the random number generator */
 
 #ifdef Q_SPY
 
-    void UART0_IRQHandler(void); /* ISR for the QS-RX channel */
 
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
@@ -248,20 +249,25 @@ void BSP_displayPaused(uint8_t paused) {
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
-    /* The flating point code is to exercise the FPU
-    */
+    uint32_t rnd;
+
+    /* Some flating point code is to exercise the VFP... */
     float volatile x = 3.1415926F;
     x = x + 2.7182818F;
 
+    QMutex_lock(&l_rndMutex); /* lock the shared random seed */
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
-    l_rnd = l_rnd * (3U*7U*11U*13U*23U);
+    rnd = l_rnd * (3U*7U*11U*13U*23U);
+    l_rnd = rnd; /* set for the next time */
+    QMutex_unlock(&l_rndMutex); /* unlock the shared random seed */
 
-    return l_rnd >> 8;
+    return (rnd >> 8);
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
+    QMutex_init(&l_rndMutex, (N_PHILO + 1));
     l_rnd = seed;
 }
 /*..........................................................................*/
@@ -338,6 +344,15 @@ void Q_onAssert(char const *module, int loc) {
     (void)module;
     (void)loc;
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+
+#ifndef NDEBUG
+    /* for debugging, hang on in an endless loop toggling the RED LED... */
+    while (GPIOF->DATA_Bits[BTN_SW1] != 0) {
+        GPIOF->DATA = LED_RED;
+        GPIOF->DATA = 0U;
+    }
+#endif
+
     NVIC_SystemReset();
 }
 

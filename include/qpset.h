@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.3.0
-* Last updated on  2014-02-24
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -62,16 +62,16 @@ typedef struct {
 
 /*! Evaluates to TRUE if the priority set @p me_ has element @p n_ */
 #define QPSet8_hasElement(me_, n_) \
-    (((me_)->bits & (uint_fast8_t)Q_ROM_BYTE(QF_pwr2Lkup[(n_)])) \
+    (((me_)->bits & (uint_fast8_t)QF_pwr2Lkup[(n_)]) \
     != (uint_fast8_t)0)
 
 /*! Insert element @p n_ into the set @p me_, n_= 1..8 */
 #define QPSet8_insert(me_, n_) \
-    ((me_)->bits |= (uint_fast8_t)Q_ROM_BYTE(QF_pwr2Lkup[(n_)]))
+    ((me_)->bits |= (uint_fast8_t)QF_pwr2Lkup[(n_)])
 
 /*! Remove element n_ from the set @p me_, n_= 1..8 */
 #define QPSet8_remove(me_, n_) \
-    ((me_)->bits &= (uint_fast8_t)Q_ROM_BYTE(QF_invPwr2Lkup[(n_)]))
+    ((me_)->bits &= (uint_fast8_t)QF_invPwr2Lkup[(n_)])
 
 /*! Find the maximum element in the set, and assign it to n_ */
 /** @note if the set @p me_ is empty, @p n_ is set to zero.
@@ -129,24 +129,23 @@ typedef struct {
 
 /*! Evaluates to TRUE if the priority set @p me_ has element @p n_. */
 #define QPSet64_hasElement(me_, n_) \
-    (((me_)->bits[Q_ROM_BYTE(QF_div8Lkup[(n_)])] \
-      & (uint_fast8_t)Q_ROM_BYTE(QF_pwr2Lkup[(n_)])) != ((uint_fast8_t)0)
+    (((me_)->bits[QF_div8Lkup[(n_)]] \
+      & (uint_fast8_t)QF_pwr2Lkup[(n_)]) != (uint_fast8_t)0)
 
 /*! insert element @p n_ into the set @p me_, n_= 1..64 */
 #define QPSet64_insert(me_, n_) do { \
-    uint_fast8_t m_  = (uint_fast8_t)Q_ROM_BYTE(QF_div8Lkup[(n_)]); \
-    (me_)->bits[m_] |= (uint_fast8_t)Q_ROM_BYTE(QF_pwr2Lkup[(n_)]); \
-    (me_)->bytes    |= (uint_fast8_t)Q_ROM_BYTE(QF_pwr2Lkup[m_ \
-                                               + (uint_fast8_t)1]); \
+    uint_fast8_t m_  = (uint_fast8_t)QF_div8Lkup[(n_)]; \
+    (me_)->bits[m_] |= (uint_fast8_t)QF_pwr2Lkup[(n_)]; \
+    (me_)->bytes    |= (uint_fast8_t)QF_pwr2Lkup[m_ \
+                                               + (uint_fast8_t)1]; \
 } while (0)
 
 /*! Remove element n_ from the set @p me_, n_= 1..64 */
 #define QPSet64_remove(me_, n_) do { \
-    uint_fast8_t m_ = (uint_fast8_t)Q_ROM_BYTE(QF_div8Lkup[(n_)]); \
-    if (((me_)->bits[m_] &= (uint_fast8_t)Q_ROM_BYTE( \
-                            QF_invPwr2Lkup[(n_)])) == (uint_fast8_t)0) { \
-        (me_)->bytes &= (uint_fast8_t)Q_ROM_BYTE( \
-                                      QF_invPwr2Lkup[m_ + (uint_fast8_t)1]); \
+    uint_fast8_t m_ = (uint_fast8_t)QF_div8Lkup[(n_)]; \
+    if (((me_)->bits[m_] &= (uint_fast8_t)QF_invPwr2Lkup[(n_)]) \
+         == (uint_fast8_t)0) { \
+        (me_)->bytes &= (uint_fast8_t)QF_invPwr2Lkup[m_ + (uint_fast8_t)1]; \
     } \
 } while (0)
 

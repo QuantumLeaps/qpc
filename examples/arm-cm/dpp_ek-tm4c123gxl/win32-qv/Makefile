@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, DPP-GUI, Win32-QV, MinGW
-# Last updated for version 5.5.1
-# Last updated on  2015-10-05
+# Last updated for version 5.6.0
+# Last updated on  2015-12-11
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------

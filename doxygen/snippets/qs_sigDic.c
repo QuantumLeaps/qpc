@@ -7,13 +7,13 @@ QState Table_initial(Table * const me, QEvt const *) {
 
     QS_FUN_DICTIONARY(&Table_serving);
 
-    subscribe(HUNGRY_SIG);
-    subscribe(DONE_SIG);
-    subscribe(TERMINATE_SIG);
+    QActive_subscribe(&me->super, HUNGRY_SIG);
+    QActive_subscribe(&me->super, DONE_SIG);
+    QActive_subscribe(&me->super, TERMINATE_SIG);
 
-    for (n = 0; n < N; ++n) {
+    for (n = 0U; n < N; ++n) {
         me->fork[n] = FREE;
-        me->isHungry[n] = 0;
+        me->isHungry[n] = 0U;
     }
     return Q_TRAN(&Table_serving);
 }

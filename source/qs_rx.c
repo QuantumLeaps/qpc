@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-09-25
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -197,7 +197,7 @@ static uint8_t const l_QS_RX = (uint8_t)0; /* QS source ID */
 * QS_RX_DATA_ERROR trace record.
 */
 void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
-    static char_t const Q_ROM s_rxObjDic[] = "QS_RX";
+    static char_t const s_rxObjDic[] = "QS_RX";
     QS_CRIT_STAT_
 
     QS_rxPriv_.buf   = &sto[0];
@@ -213,7 +213,7 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
     QS_CRIT_ENTRY_();
     QS_beginRec((uint_fast8_t)QS_OBJ_DICT);
     QS_OBJ_(&l_QS_RX);
-    QS_STR_ROM_(s_rxObjDic);
+    QS_STR_(s_rxObjDic);
     QS_endRec();
     QS_CRIT_EXIT_();
 }

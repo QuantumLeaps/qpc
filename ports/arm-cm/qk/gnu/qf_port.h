@@ -3,8 +3,8 @@
 * @brief QF/C port to Cortex-M, preemptive QK kernel, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.5.0
-* Date of the Last Update:  2015-09-30
+* Last Updated for Version: 5.6.0
+* Date of the Last Update:  2015-12-11
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -46,7 +46,7 @@
 #define QF_MAX_TICK_RATE        2
 
 /* QF interrupt disable/enable and log2()... */
-#ifdef ARM_ARCH_V6M /* Cortex-M0/M0+/M1 ?, see NOTE02 */
+#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 ?, see NOTE02 */
 
     #define QF_INT_DISABLE()    __asm volatile ("cpsid i")
     #define QF_INT_ENABLE()     __asm volatile ("cpsie i")
@@ -77,7 +77,7 @@
 /* QF_CRIT_STAT_TYPE not defined: unconditional interrupt disabling" policy */
 #define QF_CRIT_ENTRY(dummy)    QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)     QF_INT_ENABLE()
-#define QF_CRIT_EXIT_NOP()      __asm volatile ("nop")
+#define QF_CRIT_EXIT_NOP()      __asm volatile ("isb")
 
 #include "qep_port.h" /* QEP port */
 #include "qk_port.h"  /* QK port */

@@ -7,7 +7,9 @@
   <item name="windows">0</item>
   <item name="grid">3</item>
  </group>
- <group name="windows"/>
+ <group name="windows">
+  <item id=".::dpp.h">0,0,672,444,*</item>
+ </group>
  <group name="search">
   <item name="options">4129280</item>
   <item name="replace">0</item>

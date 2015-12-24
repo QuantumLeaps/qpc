@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, Win32-GUI
-* Last updated for version 5.5.0
-* Last updated on  2015-09-25
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -309,7 +309,7 @@ void QF_onClockTick(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const module, int_t loc) {
+void Q_onAssert(char const * const module, int_t loc) {
     char message[80];
     QF_stop(); /* stop ticking */
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */

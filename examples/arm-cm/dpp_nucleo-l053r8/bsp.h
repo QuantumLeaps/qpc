@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-07
+* Last Updated for Version: 5.6.0
+* Date of the Last Update:  2015-11-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #ifndef bsp_h
 #define bsp_h
@@ -43,5 +43,10 @@ void BSP_terminate(int16_t result);
 
 void BSP_randomSeed(uint32_t seed);   /* random seed */
 uint32_t BSP_random(void);            /* pseudo-random generator */
+
+/* for testing... */
+void BSP_wait4SW1(void);
+void BSP_ledOn(void);
+void BSP_ledOff(void);
 
 #endif /* bsp_h */

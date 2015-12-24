@@ -422,11 +422,6 @@
               <FilePath>..\bsp.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>dpp.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\dpp.h</FilePath>
@@ -450,6 +445,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1073,11 +1073,6 @@
               <FilePath>..\bsp.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>dpp.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\dpp.h</FilePath>
@@ -1101,6 +1096,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1724,11 +1724,6 @@
               <FilePath>..\bsp.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>dpp.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\dpp.h</FilePath>
@@ -1752,6 +1747,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>

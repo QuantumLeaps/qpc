@@ -3,8 +3,8 @@
 * @brief QF/C port to Cortex-M, preemptive QK kernel, TI-ARM (CCS) toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 5.5.2
+* Date of the Last Update:  2015-11-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,27 +31,17 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
 #ifndef qk_port_h
 #define qk_port_h
 
-/* QK interrupt entry and exit */
-#define QK_ISR_ENTRY() do { \
-    QF_INT_DISABLE(); \
-    ++QK_intNest_; \
-    QF_INT_ENABLE(); \
-} while (0)
-
-#define QK_ISR_EXIT()  do { \
-    QF_INT_DISABLE(); \
-    --QK_intNest_; \
-    *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)0x10000000U; \
-    QF_INT_ENABLE(); \
-} while (0)
+/* QK interrupt entry and exit (defined in assembly) */
+void QK_ISR_ENTRY(void);
+void QK_ISR_EXIT(void);
 
 #include "qk.h" /* QK platform-independent public interface */
 

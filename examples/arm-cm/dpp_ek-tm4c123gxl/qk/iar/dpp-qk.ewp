@@ -128,7 +128,7 @@
         <option>
           <name>GBECoreSlave</name>
           <version>22</version>
-          <state>40</state>
+          <state>39</state>
         </option>
         <option>
           <name>OGUseCmsis</name>
@@ -2912,7 +2912,7 @@
       <name>$PROJ_DIR$\..\..\dpp.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\main.c</name>
+      <name>$PROJ_DIR$\..\main.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\philo.c</name>

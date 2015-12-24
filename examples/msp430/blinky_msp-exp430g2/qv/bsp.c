@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Blinky on MSP-EXP430G2, cooperative QV kernel
-* Last Updated for Version: 5.5.0
-* Date of the Last Update:  2015-08-20
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -121,7 +121,7 @@ void QV_onIdle(void) { /* NOTE: called with interrutps DISABLED, see NOTE1 */
 #endif
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM *module, int loc) {
+void Q_onAssert(char const *module, int loc) {
     /*
     * NOTE: add here your application-specific error handling
     */

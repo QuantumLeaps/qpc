@@ -1056,7 +1056,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>TM4C123GH6PM	TexasInstruments TM4C123GH6PM</state>
+          <state>STM32L152xE	ST STM32L152xE</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -1095,7 +1095,7 @@
         <option>
           <name>GBECoreSlave</name>
           <version>22</version>
-          <state>39</state>
+          <state>38</state>
         </option>
         <option>
           <name>OGUseCmsis</name>
@@ -1112,21 +1112,21 @@
         <option>
           <name>CoreVariant</name>
           <version>22</version>
-          <state>39</state>
+          <state>38</state>
         </option>
         <option>
           <name>GFPUDeviceSlave</name>
-          <state>TM4C123GH6PM	TexasInstruments TM4C123GH6PM</state>
+          <state>STM32L152xE	ST STM32L152xE</state>
         </option>
         <option>
           <name>FPU2</name>
           <version>0</version>
-          <state>4</state>
+          <state>0</state>
         </option>
         <option>
           <name>NrRegs</name>
           <version>0</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>NEON</name>
@@ -1135,7 +1135,7 @@
         <option>
           <name>GFPUCoreSlave2</name>
           <version>22</version>
-          <state>39</state>
+          <state>38</state>
         </option>
       </data>
     </settings>

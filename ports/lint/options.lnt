@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.5.0
-// Last updated on  2015-09-25
+// Last updated for version 5.6.0
+// Last updated on  2015-12-22
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -101,6 +101,8 @@ qpc.lnt               // QP/C options
  QF_PTR_RANGE_,
  QF_MPOOL_EL)
 -esym(960,            // MISRA04-19.4(req) Disallowed macro definition
+ QF_CRIT_ENTRY_,
+ QF_CRIT_EXIT_,
  QF_EPOOL_TYPE_,
  QF_ACTIVE_SUPER_,
  QF_ACTIVE_STATE_,
@@ -118,16 +120,37 @@ qpc.lnt               // QP/C options
  QACTIVE_EQUEUE_ONEMPTY_)
 -esym(960, 8.8)       // MISRA04-8.8(req) Seems to be checked incorrectly...
 
-// QK
--esym(960,            // MISRA04-19.4(req) Disallowed macro definition
- QF_CRIT_ENTRY_,
- QF_CRIT_EXIT_)
--esym(960,            // MISRA04-8.7(req) could define at block scope
- impure_ptr)
-
 // QV
 
- 
+// QK
+-esym(960,            // MISRA04-19.4(req) Disallowed macro definition
+ QK_prioNotEmpty,
+ QK_prioIsSet,
+ QK_prioFindMax,
+ QK_prioInsert,
+ QK_prioRemove)
+-estring(961,         // MISRA04-19.7(adv) function-like macro
+ QK_prioNotEmpty,
+ QK_prioIsSet,
+ QK_prioFindMax,
+ QK_prioInsert,
+ QK_prioRemove)
+
+// QXK
+-esym(960,            // MISRA04-19.4(req) Disallowed macro definition
+ QXK_prioNotEmpty,
+ QXK_prioIsSet,
+ QXK_prioFindMax,
+ QXK_prioInsert,
+ QXK_prioRemove)
+-estring(961,         // MISRA04-19.7(adv) function-like macro
+ QXK_prioNotEmpty,
+ QXK_prioIsSet,
+ QXK_prioFindMax,
+ QXK_prioInsert,
+ QXK_prioRemove,
+ QXK_CONTEXT_SWITCH_)
+
 // QS -- the following options are needed only when Q_SPY is defined
 -emacro(960,          // MISRA04-17.4(req), pointer arithmetic
  QS_RX_AT_,

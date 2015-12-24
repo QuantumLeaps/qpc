@@ -1,7 +1,7 @@
 //============================================================================
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last updated for version 5.5.0
-// Last updated on  2015-09-25
+// Last updated for version 5.6.0
+// Last updated on  2015-12-23
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -146,7 +146,6 @@
 -estring(960,         // MISRA04-18.4(req) declaration of union type
  QMAttr)
 -estring(961,         // MISRA04-19.7(adv) function-like macro
- Q_ROM_BYTE,
  QMsm_stateObj,
  QHsm_state,
  Q_IGNORED,
@@ -273,6 +272,9 @@
  QPSet64_findMax,
  QTimeEvt_postIn,
  QTimeEvt_postEvery)
+-estring(960,         // MISRA04-8.7(req) could use block scope
+ QF_maxPool_,
+ QF_timeEvtHead_)
 -esym(960,            // MISRA04-19.10(req) unparenthesized macro par
  Q_NEW,
  Q_NEW_X,
@@ -284,6 +286,10 @@
 -esym(641, *Signals)  // Converting enum '*Signals' to 'int'
 -esym(754, sto_)      // local structure member 'sto' not referenced
 
+// QV
+-estring(961,         // MISRA04-19.7(adv) function-like macro
+ QV_getVersion)
+
 // QK
 -emacro(950,          // MISRA04-2.1(req) assembly language
  QK_ISR_CONTEXT_,
@@ -293,18 +299,27 @@
  QK_ISR_CONTEXT_,
  QK_ISR_ENTRY,
  QK_ISR_EXIT,
- QK_EXT_SAVE,
- QK_EXT_RESTORE,
- QK_TLS,
  QK_getVersion)
 -estring(960,         // MISRA04-8.7(req) could use block scope
- QK_intNest_,
- QF_maxPool_,
- QF_timeEvtHead_)
+ QK_intNest_)
 
-// QV
+// QXK
+-emacro(950,          // MISRA04-2.1(req) assembly language
+ QXK_ISR_CONTEXT_,
+ QXK_ISR_ENTRY,
+ QXK_ISR_EXIT)
 -estring(961,         // MISRA04-19.7(adv) function-like macro
- QV_getVersion)
+ QXK_ISR_CONTEXT_,
+ QXK_ISR_ENTRY,
+ QXK_ISR_EXIT,
+ QXK_getVersion,
+ QXTHREAD_START,
+ QXTHREAD_POST_X)
+-esym(960,            // MISRA04-19.4(req) Disallowed macro definition
+ QXTHREAD_START,
+ QXTHREAD_POST_X)
+-estring(960,         // MISRA04-8.7(req) could use block scope
+ QXK_intNest_)
 
 // QS
 -emacro(506, QS_*)    // MISRA04-13.7(req) constant value boolean
@@ -364,7 +379,6 @@
  QS_ASSERTION,
  QS_TEST,
  QS_FLUSH,
- QS_STR_ROM,
  QS_MEM,
  QS_SIG,
  QS_PTR_AT_,
@@ -382,7 +396,6 @@
  QS_U32_,
  QS_U64_,
  QS_STR_,
- QS_STR_ROM_,
  QS_TIME_,
  QS_SIG_,
  QS_EVS_,
@@ -433,7 +446,8 @@
  QF_TICK,
  QTimeEvt_ctor,
  QTimeEvt_postIn,
- QTimeEvt_postEvery)
+ QTimeEvt_postEvery,
+ Q_ROM_BYTE)
 -esym(960,            // MISRA04-19.4(req) Disallowed macro definition
  QHsm_init,
  QHsm_dispatch,

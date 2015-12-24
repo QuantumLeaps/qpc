@@ -1,17 +1,17 @@
 /**
 * @file
-* @brief QF/C port example for a generic C compiler.
-* @ingroup qf
+* @brief QF/C port example for QK, generic C compiler.
+* @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-04-11
+* Last updated for version 5.6.0
+* Last updated on  2015-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -250,23 +250,6 @@ void intEnable(void);
 * macro #QF_CRIT_EXIT.
 */
 #define QF_CRIT_EXIT(stat_)         critExit(stat_)
-
-/*! Macro to put the CPU to sleep safely in the cooperative
-* QV kernel (inside QV_idle()).
-*/
-/**
-* @description
-* This macro is provided in some QP ports for the QV kernel and
-* in general it depends on the interrupt disabling policy.
-*
-* @note The provided code is just an example (for ARM Cortex-M).
-*/
-#define QF_CPU_SLEEP() do { \
-    __disable_interrupt(); \
-    QF_INT_ENABLE(); \
-    __WFI(); \
-    __enable_interrupt(); \
-} while (0)
 
 typedef unsigned int crit_stat_t;
 QF_CRIT_STAT_TYPE critEntry(void);

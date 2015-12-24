@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, ThreadX demo on Windows
-* Last Updated for Version: 5.5.0
-* Date of the Last Update:  2015-08-29
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -150,7 +150,7 @@ void QF_onCleanup(void) {
     exit(0);
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+void Q_onAssert(char const * const file, int line) {
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
     QF_stop();
 }

@@ -1,17 +1,17 @@
 /**
 * @file
-* @brief QS/C port example for a 32-bit CPU and a generic C compiler.
+* @brief QS/C port to a 32-bit CPU and a generic C compiler.
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.3.0
-* Last updated on  2014-03-01
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,26 +32,26 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
 #ifndef qs_port_h
 #define qs_port_h
 
-/*! The QS time-stamp size in bytes */
+/* QS time-stamp size in bytes */
 #define QS_TIME_SIZE     4
 
-/*! The object pointer size in bytes */
+/* object pointer size in bytes */
 #define QS_OBJ_PTR_SIZE  4
 
-/*! The function pointer size in bytes */
+/* function pointer size in bytes */
 #define QS_FUN_PTR_SIZE  4
 
 /*****************************************************************************
 * NOTE: QS might be used with or without other QP components, in which
-* case the separate definitions of the macros Q_ROM, QF_CRIT_STAT_TYPE,
+* case the separate definitions of the macros QF_CRIT_STAT_TYPE,
 * QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this port QS is configured
 * to be used with the other QP component, by simply including "qf_port.h"
 * *before* "qs.h".

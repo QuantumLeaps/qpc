@@ -2,22 +2,22 @@
 
 @tableofcontents
 
+@htmlonly
+<img style="float:right; margin:0 8px 8px 15px; clear:right;" src="img/logo_qp.jpg" title="QP">
+@endhtmlonly
+
 @section about About QP/C
-<p><a class="extern" target="_blank" href="http://www.state-machine.com/qp"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight, open source software framework for building responsive and modular real-time embedded applications as systems of cooperating, event-driven <a class="extern" target="_blank" href="http://www.state-machine.com/qp/index.php#Active">active objects</a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; framework is a member of a larger family consisting of QP/C, QP/C++, and QP-nano frameworks, which are all strictly quality controlled, thoroughly documented, and commercially licensable.
+<p><a class="extern" target="_blank" href="http://www.state-machine.com/qp"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight, open source <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Framework">active object (actor) framework</a> for building responsive and modular real-time embedded applications as systems of cooperating, event-driven <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Active">active objects</a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; framework is a member of a larger family consisting of QP/C, <a href="http://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a>, and <a href="http://www.state-machine.com/qpcn" target="_blank" class="extern">QP-nano</a> frameworks, which are all strictly quality controlled, thoroughly documented, and <a href="http://www.state-machine.com/licensing" target="_blank" class="extern">commercially licensable</a>.
 </p>
 
-@image html logo_qp.jpg
+All QP&trade; frameworks can run on @ref exa_native "bare-metal single-chip microcontrollers", completely replacing a traditional Real-Time Operating System (RTOS). The frameworks contain a selection of built-in real-time kernels, such as the cooperative @ref comp_qv "QV kernel", the preemptive non-blocking @ref comp_qk "QK kernel", and the preemptive, blocking @ref comp_qxk "QXK kernel", <span class="highlight">which provides all the features you might expect from a traditional <strong>RTOS kernel</strong></span>. @ref ports_native "Native QP ports" and ready-to-use @ref exa_native "examples" are provided for major @ref exa_ref_mcu "CPU families".
 
-All QP&trade; frameworks can run on @ref exa_native "bare-metal single-chip microcontrollers", completely replacing a traditional Real-Time Operating System (RTOS). Ports and ready-to-use examples are provided for major @ref exa_ref_mcu "CPU families".
+QP/C can also work with many traditional @ref exa_rtos "RTOSes" and @ref exa_rtos "desktop OSes" (such as Windows and Linux).
 
-QP/C can also work with many traditional @ref exa_rtos "RTOSes" and @ref exa_rtos "desktop OSes" (such as Windows, Linux including embedded Linux).
+The behavior of active objects is specified in QP by means of
+<a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#HSM">hierarchical state machines (UML statecharts)</a>. The frameworks support manual coding of UML state machines in C or C++ as well as fully automatic code generation by means of the free graphical <a class="extern" target="_blank" href="http://www.state-machine.com/qm">QM&trade; modeling tool</a>.
 
-The behavior of active objects is specified in QP by means of <a class="extern" target="_blank" href="http://en.wikipedia.org/wiki/UML_state_machine">hierarchical state machines (UML statecharts)</a>. The frameworks support manual coding of UML state machines in C or C++ as well as fully automatic code generation by means of the free graphical <a class="extern" target="_blank" href="http://www.state-machine.com/qm/help">QM&trade; modeling tool</a>.
-
-The QP frameworks are used in millions of products worldwide in aerospace, medical devices, consumer electronics, wired and wireless telecommunications, industrial automation, transportation, robotics, and many more. The QP frameworks and the <a class="extern" target="_blank" href="http://www.state-machine.com/qm/help">QM modeling tool</a> receive over <a class="extern" target="_blank" href="http://sourceforge.net/projects/qpc/files/stats/timeline?dates=2014-01-01+to+2014-12-31">40,000 downloads a year</a>. The book, <a class="extern" target="_blank" href="http://www.state-machine.com/psicc2" >Practical UML Statecharts in C/C++, 2nd Edition</a> provides a detailed design study of the QP frameworks and explains all the related concepts.
-
-@note
-For more information about QP, please visit: <a class="extern" target="_blank" href="http://www.state-machine.com/qp"><strong>state-machine.com/qp</strong></a>
+The QP frameworks are used in <a href="http://www.state-machine.com/about/customers.html" target="_blank" class="extern">millions of products worldwide</a> in aerospace, medical devices, consumer electronics, wired and wireless telecommunications, industrial automation, transportation, robotics, and many more. The QP frameworks and the <a class="extern" target="_blank" href="http://www.state-machine.com/qm">QM modeling tool</a> receive over <a class="extern" target="_blank" href="http://sourceforge.net/projects/qpc/files/stats/timeline?dates=2015-01-01+to+2015-12-31">40,000 downloads a year</a>. The book, <a class="extern" target="_blank" href="http://www.state-machine.com/psicc2" >Practical UML Statecharts in C/C++, 2nd Edition</a> provides a detailed design study of the QP frameworks and explains all the related concepts.
 
 
 ------------------------------------------------------------------------------
@@ -67,52 +67,7 @@ Please post any **technical questions** to the <a class="extern" target="_blank"
 
 Direct **Commercial Support** is available to the commercial licensees. Every commercial license includes one year of Technical Support for the licensed software. The support term can be extended annually.
 
-Training and consulting services are also available from Quantum Leaps. Please refer to the <a class="extern" target="_blank" href="http://www.state-machine.com/support/">Support web-page</a> for more information.
-
-
-------------------------------------------------------------------------------
-@section coding Coding Standard
-The QP/C framework has been developed in strict adherence to the documented <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_QL_Coding_Standard.pdf"><strong>Quantum Leaps Coding Standard</strong></a>.
-
-@htmlonly
-<div class="image">
-<a target="_blank" href="http://www.state-machine.com/doc/AN_QL_Coding_Standard.pdf"><img border="0" src="img/AN_Coding_Standard.jpg " title="Download PDF"></a>
-<div class="caption">
-Application Note: Quantum Leaps C/C++ Coding Standard
-</div>
-</div>
-@endhtmlonly
-
-
-------------------------------------------------------------------------------
-@section misra MISRA Compliance
-
-<p>The QP/C framework complies with most of the Motor Industry Software Reliability Association (MISRA) MISRA-C:2004 rules.
-</p>
-
-@htmlonly
-<div class="image">
-<a target="_blank" href="http://www.state-machine.com/doc/AN_QP-C_MISRA.pdf"><img border="0" src="img/AN_MISRA-QPC.jpg" title="Download PDF"></a>
-<div class="caption">
-Application Note: QP/C MISRA-C:2004 Compliance Matrix
-</div>
-</div>
-@endhtmlonly
-
-All deviations are carefully limited into very specific contexts and are documented with the Application Note: <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_QP-C_MISRA.pdf"><strong>QP/C MISRA-C:2004 Compliance Matrix</strong></a>.
-
-@note
-MISRA and MISRA C are registered trademarks of MIRA Ltd, held on behalf of the MISRA Consortium.
-
-The MISRA guidelines place great emphasis on the use of static code analysts tools to check compliance with the MISRA-C language subset. To this end, QP/C comes with an extensive support for automatic rule checking with @ref lint "PC-Lint". The QP frameworks go even beyond MISRA, by complying with the <strong>strict type checking</strong> of PC-Lint.
-
-
-------------------------------------------------------------------------------
-@section pc-lint PC-Lint Support
-
-The QP/C framework comes with extensive support for automatic rule checking by means of <a class="extern" target="_blank" href="http://www.gimpel.com/">PC-Lint</a>, which is designed not just for proving compliance of the Q/CP framework code, but more importantly, to aid in checking compliance of the application-level code. Any organization engaged in designing safety-related embedded software could benefit from the unprecedented quality infrastructure built around the QP/C framework.
-
-@sa @ref lint "Lint Port"
+Training and consulting services are also available from Quantum Leaps. Please refer to the <a class="extern" target="_blank" href="http://www.state-machine.com/contact.html">Contact web-page</a> for more information.
 
 
 ------------------------------------------------------------------------------
@@ -128,7 +83,7 @@ If you are developing and distributing open source applications under the GNU Ge
 
 Closed Source Projects:
 -----------------------
-If you are developing and distributing traditional closed source applications, you can purchase one of <a class="extern" target="_blank" href="http://www.state-machine.com/licensing/index.php#Commercial">Quantum Leaps commercial licenses</a>, which are specifically designed for users interested in retaining the proprietary status of their code. All Quantum Leaps commercial licenses expressly supersede the GPL open source license. This means that when you license Quantum Leaps software under a commercial license, you specifically do not use the software under the open source license and therefore you are not subject to any of its terms. 
+If you are developing and distributing traditional closed source applications, you can purchase one of <a class="extern" target="_blank" href="http://www.state-machine.com/licensing/index.html#Commercial">Quantum Leaps commercial licenses</a>, which are specifically designed for users interested in retaining the proprietary status of their code. All Quantum Leaps commercial licenses expressly supersede the GPL open source license. This means that when you license Quantum Leaps software under a commercial license, you specifically do not use the software under the open source license and therefore you are not subject to any of its terms. 
 
 
 ------------------------------------------------------------------------------
@@ -145,6 +100,6 @@ If you are developing and distributing traditional closed source applications, y
 @image html logo_ql_TM.jpg
 Copyright &copy; 2002-2015 Quantum Leaps, LLC. All Rights Reserved.
 
-@next{concepts}
+@next{struct}
 */
 

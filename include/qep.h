@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.1
-* Last updated on  2015-10-05
+* Last updated for version 5.6.0
+* Last updated on  2015-12-24
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      551
+#define QP_VERSION      560
 
 /*! The current QP version number string of the form X.Y.Z, where X is
 * a 1-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "5.5.1"
+#define QP_VERSION_STR  "5.6.0"
 
-/*! Tamperproof current QP release (5.5.1) and date (15-10-05) */
-#define QP_RELEASE      0xA5FE7508U
+/*! Tamperproof current QP release (5.6.0) and date (15-12-24) */
+#define QP_RELEASE      0xA5DD0A4FU
 
 /****************************************************************************/
 #ifndef Q_SIGNAL_SIZE
@@ -89,45 +89,6 @@
     #error "Q_SIGNAL_SIZE defined incorrectly, expected 1, 2, or 4"
 #endif
 
-/****************************************************************************/
-#ifndef Q_ROM
-    /*! Macro to specify compiler-specific directive for placing a
-    * constant object in ROM. */
-    /**
-    * @description
-    * Many compilers for 8-bit Harvard-architecture MCUs provide non-standard
-    * extensions to support placement of objects in different memories.
-    * In order to conserve the precious RAM, QP uses the Q_ROM macro for
-    * all constant objects that can be allocated in ROM.
-    *
-    * @note
-    * To override the empty definition of Q_ROM, you need to define the
-    * Q_ROM macro in the qep_port.h header file. Some examples of valid
-    * Q_ROM macro definitions are: __code (IAR 8051 compiler), code (Keil
-    * Cx51 compiler), PROGMEM (gcc for AVR), __flash (IAR for AVR).
-    */
-    #define Q_ROM
-#endif
-#ifndef Q_ROM_BYTE
-    /*! Macro to access a byte allocated in ROM */
-    /**
-    * @description
-    * Some compilers for Harvard-architecture MCUs, such as gcc for AVR, do
-    * not generate correct code for accessing data allocated in the program
-    * space (ROM). The workaround for such compilers is to explicitly add
-    * assembly code to access each data element allocated in the program
-    * space. The macro Q_ROM_BYTE() retrieves a byte from the given ROM
-    * address. If the macro is left undefined, the default definition simply
-    * returns the argument.
-    *
-    * @param[in] rom_var_ address of the ROM-based byte variable
-    * @returns the byte value from ROM
-    *
-    * @note The Q_ROM_BYTE() macro should be re-defined for compilers that
-    * cannot handle correctly data placed in ROM (such as the gcc for AVR).
-    */
-    #define Q_ROM_BYTE(rom_var_)   (rom_var_)
-#endif
 
 /****************************************************************************/
 /* typedefs for basic numerical types; MISRA-C 2004 rule 6.3(req). */
@@ -453,7 +414,7 @@ QState QHsm_top(void const * const me, QEvt const * const e);
 
 /****************************************************************************/
 /*! the current QP version number string in ROM, based on QP_VERSION_STR */
-extern char_t const Q_ROM QP_versionStr[6];
+extern char_t const QP_versionStr[6];
 
 /*! get the current QEP version number string of the form "X.Y.Z" */
 #define QEP_getVersion() (QP_versionStr)

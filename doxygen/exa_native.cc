@@ -24,10 +24,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @subpage exa_arm7-9 ("classic" ARM)
     - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 
-- @subpage exa_avr (8-bit megaAVR)
-    - @ref avr_blinky_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
-    - @ref avr_dpp_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
-
 - @subpage exa_msp430 ("classic" MSP430 and "extended" MSP430x)
     - @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
     - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
@@ -59,7 +55,7 @@ The native (bare-metal) QP/C examples for ARM Cortex-M are as follows:
 @n
 Simple "Blinky" example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
 @n
-@image html blinky_win32.png Blinky emulation running in a Windows console 
+@image html blinky_win32.png Blinky emulation running in a Windows console
 @n
 @n
 @image html under_construction.jpg
@@ -71,7 +67,7 @@ Simple "Blinky" example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM 
 
 Dining Philosophers Problem (DPP) example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
 
-@image html dpp_win32.png DPP emulation running in Windows GUI 
+@image html dpp_win32.png DPP emulation running in Windows GUI
 @n
 @n
 @image html under_construction.jpg
@@ -116,7 +112,7 @@ Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) wit
 @image html bd_EK-LM3S811_game.jpg Game playing on EK-LM3S811 board
 @n
 @n
-@image html game_win32.png Game emulation running in Windows GUI 
+@image html game_win32.png Game emulation running in Windows GUI
 @n
 @n
 @image html under_construction.jpg
@@ -140,43 +136,6 @@ The native (bare-metal) QP/C examples for the "classic" ARM7/ARM9 are as follows
 
 Dining Philosophers Problem (DPP) example for Atmel AT91SAM7S MCU (ARM7) with GNU-ARM toolset.
 
-@image html under_construction.jpg
-*/
-
-/*##########################################################################*/
-/*! @page exa_avr AVR
-
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
-
-The native (bare-metal) QP/C examples for the 8-bit AVRmega are as follows:
-
-- @subpage avr_blinky_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
-- @subpage avr_dpp_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
-*/
-/*##########################################################################*/
-/*! @page avr_blinky_arduino-uno Blinky on Arduino-UNO
-
-@image html bd_Arduino-UNO.jpg Arduino-UNO board
-
-Simple Blinky example for Arduino-UNO with GNU-AVR and IAR-AVR toolsets.
-
-@image html under_construction.jpg
-*/
-/*##########################################################################*/
-/*! @page avr_dpp_arduino-uno DPP on Arduino-UNO
-
-@image html bd_Arduino-UNO.jpg Arduino-UNO board
-
-Dining Philosophers Problem (DPP) example for Arduino-UNO with GNU-AVR and IAR-AVR toolsets.
-
-@image html Arduino-UNO_button.jpg Adding External Button to Arduino-UNO
-@n
-@n
-@image html Arduino-UNO_button_schem.jpg External Button Schematics
-@n
-@n
 @image html under_construction.jpg
 */
 
@@ -225,14 +184,14 @@ The QS trace date requires the following setting of the QSPY host utility
 
 @verbatim
 qspy -cCOM_PORT -b9600 -O2 -F2 -E1 -P1 -B1
-@endverbatim 
+@endverbatim
 
 where `COM_PORT` denotes the Virtual COM port, which you can find out in the Device Manager (see the screen shot below):
 
 @image html com_msp-exp430g2.png Virtual COM port of the MSP-EXP430G2 board
 
 @note
-To receive the QS data over the Virtual COM Port, you need to make sure that the jumper J3 on the MSP-EXP430G2 board is configured for the "Hardware UART" (the first two jumpers should be in the horizontal setting, as shown in the picture of the MSP-EXP430G2 board on top of this page. 
+To receive the QS data over the Virtual COM Port, you need to make sure that the jumper J3 on the MSP-EXP430G2 board is configured for the "Hardware UART" (the first two jumpers should be in the horizontal setting, as shown in the picture of the MSP-EXP430G2 board on top of this page.
 
 @image html under_construction.jpg
 */

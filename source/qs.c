@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-09-25
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,8 +45,8 @@ Q_DEFINE_THIS_MODULE("qs")
 
 
 /****************************************************************************/
-extern char_t const Q_ROM Q_BUILD_DATE[12];
-extern char_t const Q_ROM Q_BUILD_TIME[9];
+extern char_t const Q_BUILD_DATE[12];
+extern char_t const Q_BUILD_TIME[9];
 
 /****************************************************************************/
 QSPriv QS_priv_;  /* QS private data */
@@ -279,34 +279,34 @@ void QS_target_info_(uint8_t isReset) {
                | (uint8_t)((uint8_t)QF_MAX_TICK_RATE << 4));
 
         /* send the build time in three bytes (sec, min, hour)... */
-        QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[6])
+        QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_BUILD_TIME[6]
                          - (uint8_t)'0'))
-                + ((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[7]) - (uint8_t)'0'));
-        QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[3])
+                + ((uint8_t)Q_BUILD_TIME[7] - (uint8_t)'0'));
+        QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_BUILD_TIME[3]
                          - (uint8_t)'0'))
-                + ((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[4]) - (uint8_t)'0'));
-        if ((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[0]) == (uint8_t)' ') {
-            QS_U8_((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[1]) - (uint8_t)'0');
+                + ((uint8_t)Q_BUILD_TIME[4] - (uint8_t)'0'));
+        if ((uint8_t)Q_BUILD_TIME[0] == (uint8_t)' ') {
+            QS_U8_((uint8_t)Q_BUILD_TIME[1] - (uint8_t)'0');
         }
         else {
-            QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[0])
+            QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_BUILD_TIME[0]
                              - (uint8_t)'0'))
-                    + ((uint8_t)Q_ROM_BYTE(Q_BUILD_TIME[1]) - (uint8_t)'0'));
+                    + ((uint8_t)Q_BUILD_TIME[1] - (uint8_t)'0'));
         }
 
         /* send the build date in three bytes (day, month, year) ... */
-        if ((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[4]) == (uint8_t)' ') {
-            QS_U8_((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[5]) - (uint8_t)'0');
+        if ((uint8_t)Q_BUILD_DATE[4] == (uint8_t)' ') {
+            QS_U8_((uint8_t)Q_BUILD_DATE[5] - (uint8_t)'0');
         }
         else {
-            QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[4])
+            QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_BUILD_DATE[4]
                              - (uint8_t)'0'))
-                    + ((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[5]) - (uint8_t)'0'));
+                    + ((uint8_t)Q_BUILD_DATE[5] - (uint8_t)'0'));
         }
         /* convert the 3-letter month to a number 1-12 ... */
-        switch ((int_t)Q_ROM_BYTE(Q_BUILD_DATE[0])
-                + (int_t)Q_ROM_BYTE(Q_BUILD_DATE[1])
-                + (int_t)Q_ROM_BYTE(Q_BUILD_DATE[2]))
+        switch ((int_t)Q_BUILD_DATE[0]
+                + (int_t)Q_BUILD_DATE[1]
+                + (int_t)Q_BUILD_DATE[2])
         {
             case (int_t)'J' + (int_t)'a' + (int_t)'n':
                 b = (uint8_t)1;
@@ -349,9 +349,9 @@ void QS_target_info_(uint8_t isReset) {
                 break;
         }
         QS_U8_(b); /* store the month */
-        QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[ 9])
+        QS_U8_((uint8_t)((uint8_t)10*((uint8_t)Q_BUILD_DATE[ 9]
                          - (uint8_t)'0'))
-                + ((uint8_t)Q_ROM_BYTE(Q_BUILD_DATE[10]) - (uint8_t)'0'));
+                + ((uint8_t)Q_BUILD_DATE[10] - (uint8_t)'0'));
     QS_endRec();
 }
 
@@ -541,34 +541,6 @@ void QS_str_(char_t const *s) {
 
 /****************************************************************************/
 /**
-* @note This function is only to be used through macros, never in the
-* client code directly.
-*/
-void QS_str_ROM_(char_t const Q_ROM *s) {
-    uint8_t b      = (uint8_t)Q_ROM_BYTE(*s);
-    uint8_t chksum = QS_priv_.chksum; /* put in a temporary (register) */
-    uint8_t *buf = QS_priv_.buf;      /* put in a temporary (register) */
-    QSCtr   head = QS_priv_.head;     /* put in a temporary (register) */
-    QSCtr   end  = QS_priv_.end;      /* put in a temporary (register) */
-    QSCtr   used = QS_priv_.used;     /* put in a temporary (register) */
-
-    while (b != (uint8_t)(0)) {
-        chksum = (uint8_t)(chksum + b); /* update checksum */
-        QS_INSERT_BYTE(b)  /* ASCII characters don't need escaping */
-        QS_PTR_INC_(s);
-        b = (uint8_t)Q_ROM_BYTE(*s);
-        ++used;
-    }
-    QS_INSERT_BYTE((uint8_t)0) /* zero-terminate the string */
-    ++used;
-
-    QS_priv_.head   = head;   /* save the head */
-    QS_priv_.chksum = chksum; /* save the checksum */
-    QS_priv_.used   = used;   /* save # of used buffer space */
-}
-
-/****************************************************************************/
-/**
 * @description
 * This function delivers one byte at a time from the QS data buffer.
 *
@@ -657,7 +629,7 @@ uint8_t const *QS_getBlock(uint16_t *pNbytes) {
 /** @note This function is only to be used through macro QS_SIG_DICTIONARY()
 */
 void QS_sig_dict(enum_t const sig, void const * const obj,
-                 char_t const Q_ROM *name)
+                 char_t const *name)
 {
     QS_CRIT_STAT_
 
@@ -668,7 +640,7 @@ void QS_sig_dict(enum_t const sig, void const * const obj,
     QS_beginRec((uint_fast8_t)QS_SIG_DICT);
     QS_SIG_((QSignal)sig);
     QS_OBJ_(obj);
-    QS_STR_ROM_(name);
+    QS_STR_(name);
     QS_endRec();
     QS_CRIT_EXIT_();
     QS_onFlush();
@@ -678,7 +650,7 @@ void QS_sig_dict(enum_t const sig, void const * const obj,
 /** @note This function is only to be used through macro QS_OBJ_DICTIONARY()
 */
 void QS_obj_dict(void const * const obj,
-                 char_t const Q_ROM *name)
+                 char_t const *name)
 {
     QS_CRIT_STAT_
 
@@ -688,7 +660,7 @@ void QS_obj_dict(void const * const obj,
     QS_CRIT_ENTRY_();
     QS_beginRec((uint_fast8_t)QS_OBJ_DICT);
     QS_OBJ_(obj);
-    QS_STR_ROM_(name);
+    QS_STR_(name);
     QS_endRec();
     QS_CRIT_EXIT_();
     QS_onFlush();
@@ -697,7 +669,7 @@ void QS_obj_dict(void const * const obj,
 /****************************************************************************/
 /** @note This function is only to be used through macro QS_FUN_DICTIONARY()
 */
-void QS_fun_dict(void (* const fun)(void), char_t const Q_ROM *name) {
+void QS_fun_dict(void (* const fun)(void), char_t const *name) {
     QS_CRIT_STAT_
 
     if (*name == (char_t)'&') {
@@ -706,7 +678,7 @@ void QS_fun_dict(void (* const fun)(void), char_t const Q_ROM *name) {
     QS_CRIT_ENTRY_();
     QS_beginRec((uint_fast8_t)QS_FUN_DICT);
     QS_FUN_(fun);
-    QS_STR_ROM_(name);
+    QS_STR_(name);
     QS_endRec();
     QS_CRIT_EXIT_();
     QS_onFlush();
@@ -716,14 +688,14 @@ void QS_fun_dict(void (* const fun)(void), char_t const Q_ROM *name) {
 /** @note This function is only to be used through macro QS_USR_DICTIONARY()
 */
 void QS_usr_dict(enum_t const rec,
-                 char_t const Q_ROM * const name)
+                 char_t const * const name)
 {
     QS_CRIT_STAT_
 
     QS_CRIT_ENTRY_();
     QS_beginRec((uint_fast8_t)QS_USR_DICT);
     QS_U8_((uint8_t)rec);
-    QS_STR_ROM_(name);
+    QS_STR_(name);
     QS_endRec();
     QS_CRIT_EXIT_();
     QS_onFlush();
@@ -778,36 +750,6 @@ void QS_str(char_t const *s) {
         QS_INSERT_BYTE(b)
         QS_PTR_INC_(s);
         b = (uint8_t)(*s);
-        ++used;
-    }
-    QS_INSERT_BYTE((uint8_t)0) /* zero-terminate the string */
-
-    QS_priv_.head   = head;    /* save the head */
-    QS_priv_.chksum = chksum;  /* save the checksum */
-    QS_priv_.used   = used;    /* save # of used buffer space */
-}
-
-/****************************************************************************/
-/** @note This function is only to be used through macros, never in the
-* client code directly.
-*/
-void QS_str_ROM(char_t const Q_ROM *s) {
-    uint8_t b      = (uint8_t)Q_ROM_BYTE(*s);
-    uint8_t chksum = (uint8_t)(QS_priv_.chksum + (uint8_t)QS_STR_T);
-    uint8_t *buf   = QS_priv_.buf;  /* put in a temporary (register) */
-    QSCtr   head   = QS_priv_.head; /* put in a temporary (register) */
-    QSCtr   end    = QS_priv_.end;  /* put in a temporary (register) */
-    QSCtr   used   = QS_priv_.used; /* put in a temporary (register) */
-
-    used += (QSCtr)2; /* account for the format byte and the terminating-0 */
-
-    QS_INSERT_BYTE((uint8_t)QS_STR_T)
-    while (b != (uint8_t)(0)) {
-        /* ASCII characters don't need escaping */
-        chksum = (uint8_t)(chksum + b); /* update checksum */
-        QS_INSERT_BYTE(b)
-        QS_PTR_INC_(s);
-        b = (uint8_t)Q_ROM_BYTE(*s);
         ++used;
     }
     QS_INSERT_BYTE((uint8_t)0) /* zero-terminate the string */

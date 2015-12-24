@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for Blinky on EK-TM4C123GXL, QV kernel, GNU-ARM
-# Last Updated for Version: 5.5.1
-# Date of the Last Update:  2015-10-05
+# Last Updated for Version: 5.6.0
+# Date of the Last Update:  2015-12-10
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -132,8 +132,14 @@ LIBS      :=
 # defines
 DEFINES   :=
 
-# ARM CPU, FPU, and Float-ABI types
+# ARM CPU, ARCH, FPU, and Float-ABI types...
+# ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
+# ARM_ARCH:  [6 | 7] (NOTE: must match ARM_CPU!)
+# ARM_FPU:   [ | vfp]
+# FLOAT_ABI: [ | soft | softfp | hard]
+#
 ARM_CPU   := -mcpu=cortex-m4
+ARM_ARCH  := 7   # NOTE: must match the ARM_CPU!
 ARM_FPU   := -mfpu=vfp
 FLOAT_ABI := -mfloat-abi=softfp
 
@@ -173,6 +179,10 @@ RM    := rm
 C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
 
+# add the pre-defined symbol for ARM architecture
+DEFINES += -D__ARM_ARCH=$(ARM_ARCH)
+ASM_CPU += -defsym=__ARM_ARCH=$(ARM_ARCH)
+
 # add the pre-defined symbol __FPU_PRESENT if needed...
 ifneq (,$(ARM_FPU))
 DEFINES += -D__FPU_PRESENT
@@ -183,7 +193,7 @@ ifeq (rel, $(CONF)) # Release configuration ..................................
 
 BIN_DIR := rel
 
-ASFLAGS = $(ARM_CPU) $(ASM_FPU)
+ASFLAGS = $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
@@ -199,7 +209,7 @@ BIN_DIR := spy
 
 C_SRCS += $(QS_SRCS)
 
-ASFLAGS = -g $(ARM_CPU) $(ASM_FPU)
+ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
@@ -213,7 +223,7 @@ else # default Debug configuration ..........................................
 
 BIN_DIR := dbg
 
-ASFLAGS = -g $(ARM_CPU) $(ASM_FPU)
+ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \

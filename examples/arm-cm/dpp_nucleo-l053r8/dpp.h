@@ -47,13 +47,18 @@ typedef struct {
 /*${AOs::Philo_ctor} .......................................................*/
 void Philo_ctor(void);
 
+extern QMActive * const AO_Philo[N_PHILO];
+
+
 /*${AOs::Table_ctor} .......................................................*/
 void Table_ctor(void);
 
-
-extern QMActive * const AO_Philo[N_PHILO];
-
 extern QMActive * const AO_Table;
 
+
+#ifdef qxk_h
+    void Test_ctor(void);
+    extern QXThread * const XT_Test;
+#endif /* qxk_h */
 
 #endif /* dpp_h */

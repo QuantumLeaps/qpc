@@ -46,6 +46,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/bsp.c</locationURI>
 		</link>
 		<link>
+			<name>main.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/main.c</locationURI>
+		</link>
+		<link>
 			<name>bsp.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/bsp.h</locationURI>
@@ -59,11 +64,6 @@
 			<name>ek-tm4c123gxl</name>
 			<type>2</type>
 			<location>C:/qp/qpc/3rd_party/ek-tm4c123gxl</location>
-		</link>
-		<link>
-			<name>main.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/main.c</locationURI>
 		</link>
 		<link>
 			<name>philo.c</name>

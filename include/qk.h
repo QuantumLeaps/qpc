@@ -5,8 +5,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2014-05-08
+* Last updated for version 5.6.0
+* Last updated on  2014-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -58,10 +58,21 @@
 */
 #define QF_EQUEUE_TYPE         QEQueue
 
-#if defined(QK_TLS)
-    #define QF_OS_OBJECT_TYPE  uint_fast8_t
-    #define QF_THREAD_TYPE     void *
-#endif /* QK_TLS */
+/*! OS-dependent per-thread operating-system object */
+/**
+* @description
+* The use of this member depends on the CPU. For example, in port to
+* ARM Cortex-M with FPU this member is used to store the LR.
+*/
+#define QF_OS_OBJECT_TYPE      void*
+
+/*! OS-dependent representation of the private thread */
+/**
+* @description
+* QK uses this member to store the start priority of the AO,
+* which is needed when the QK priority-ceiling mutex is used.
+*/
+#define QF_THREAD_TYPE         uint_fast8_t
 
 #if (QF_MAX_ACTIVE <= 8)
     extern QPSet8  QK_readySet_; /*!< QK ready-set of AOs */
@@ -104,23 +115,23 @@ void QK_init(void);
 */
 void QK_onIdle(void);
 
-#ifndef QK_NO_MUTEX
 
-    /*! QK Mutex type. */
-    /**
-    * QMutex represents the priority-ceiling mutex available in QK.
-    * @sa QK_mutexLock()
-    * @sa QK_mutexUnlock()
-    */
-    typedef uint_fast8_t QMutex;
+/****************************************************************************/
+/*! Priority Ceiling Mutex the QK preemptive kernel */
+typedef struct {
+    uint8_t prioCeiling;
+    uint8_t lockNest;
+} QMutex;
 
-    /*! QK priority-ceiling mutex lock */
-    QMutex QK_mutexLock(uint_fast8_t const prioCeiling);
+/*! initialize the QK priority-ceiling mutex */
+void QMutex_init(QMutex * const me, uint_fast8_t prioCeiling);
 
-    /*! QK priority-ceiling mutex unlock */
-    void QK_mutexUnlock(QMutex mutex);
+/*! lock the QK priority-ceiling mutex */
+void QMutex_lock(QMutex * const me);
 
-#endif /* QK_MUTEX */
+/*! unlock the QK priority-ceiling mutex */
+void QMutex_unlock(QMutex * const me);
+
 
 /****************************************************************************/
 /*! get the current QK version number string of the form "X.Y.Z" */
@@ -130,6 +141,20 @@ void QK_onIdle(void);
 /****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */
 #ifdef QP_IMPL
+
+    #if (QF_MAX_ACTIVE <= 8)
+        #define QK_prioNotEmpty(set_)    QPSet8_notEmpty((set_))
+        #define QK_prioIsSet(set_, p_)   QPSet8_hasElement((set_), (p_))
+        #define QK_prioFindMax(set_, p_) QPSet8_findMax((set_), (p_))
+        #define QK_prioInsert(set_, p_)  QPSet8_insert((set_), (p_))
+        #define QK_prioRemove(set_, p_)  QPSet8_remove((set_), (p_))
+    #else
+        #define QK_prioNotEmpty(set_)    QPSet64_notEmpty((set_))
+        #define QK_prioIsSet(set_, p_)   QPSet64_hasElement((set_), (p_))
+        #define QK_prioFindMax(set_, p_) QPSet64_findMax((set_), (p_))
+        #define QK_prioInsert(set_, p_)  QPSet64_insert((set_), (p_))
+        #define QK_prioRemove(set_, p_)  QPSet64_remove((set_), (p_))
+    #endif
 
     #ifndef QK_ISR_CONTEXT_
         /*!
@@ -146,33 +171,18 @@ void QK_onIdle(void);
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         (Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0))
 
-    #if (QF_MAX_ACTIVE <= 8)
-        #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
-            QPSet8_insert(&QK_readySet_, (me_)->prio); \
-            if (!QK_ISR_CONTEXT_()) { \
-                uint_fast8_t p = QK_schedPrio_(); \
-                if (p != (uint_fast8_t)0) { \
-                    QK_sched_(p); \
-                } \
+    #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
+        QK_prioInsert(&QK_readySet_, (me_)->prio); \
+        if (!QK_ISR_CONTEXT_()) { \
+            uint_fast8_t p = QK_schedPrio_(); \
+            if (p != (uint_fast8_t)0) { \
+                QK_sched_(p); \
             } \
-        } while (0)
+        } \
+    } while (0)
 
-        #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-            (QPSet8_remove(&QK_readySet_, (me_)->prio))
-    #else
-        #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
-            QPSet64_insert(&QK_readySet_, (me_)->prio); \
-            if (!QK_ISR_CONTEXT_()) { \
-                uint_fast8_t p = QK_schedPrio_(); \
-                if (p != (uint_fast8_t)0) { \
-                    QK_sched_(p); \
-                } \
-            } \
-        } while (0)
-
-        #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-            QPSet64_remove(&QK_readySet_, (me_)->prio)
-    #endif
+    #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
+        QK_prioRemove(&QK_readySet_, (me_)->prio)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool
@@ -185,4 +195,3 @@ void QK_onIdle(void);
 #endif /* QP_IMPL */
 
 #endif /* qk_h */
-

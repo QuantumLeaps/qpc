@@ -1,13 +1,47 @@
 /**
 @page history Revision History
 
-@section qpc_5_5_1 Version 5.5.1, 2015-10-05
+@section qpc_5_6_0 Version 5.6.0-beta, 2015-12-24
 
-The main focus of this release is to improve the AAPCS compliance of the ARM Cortex-M port to the QK preemptive kernel. Specifically, the PendSV handler in assembly did not always maintain the 8-byte stack alignment, which is required by AAPCS. This version corrects the stack misalignment in the qk_port.s files for all supported ARM compilers (ARM-Keil, GNU, IAR, and TI CCS). All these ports should also be ready for ARM Cortex-M7.
+The main purpose of this *beta* release is to introduce a new component of the QP/C framework called QXK ("eXtended Quantum Kernel"). QXK is a small, preemptive, priority-based, **blocking** kernel that provides most features you might expect of a traditional blocking RTOS kernel.
 
-Also, this release adds support for the TI CCS ARM compiler. Specifically, a new ARM Cortex-M ports have been added (in directories `qpc\ports\arm-cm\qk\ti\` and `qpc\ports\arm-cm\qk\ti\`) and TI CCS example projects have been provided (in directories `qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qk\ti\` and `qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qv\ti\`).
+QXK has been designed specifically for applications that need to mix event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software. The QXK kernel is integrated tightly and optimally with the rest of the QP. It reuses all mechanisms already provided in QP, thus avoiding any code duplication, inefficient layers of indirection, and additional licensing costs, which are inevitable when using 3rd-party RTOS kernels to run QP/C applications.
 
-Finally, this release corrects a bug in the DPP example for EK-TM4C123GXL with the QV (Vanilla) cooperative kernel. Specifically, the file `qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qv\bsp.c` did not re-enable interrupts in the QV_onIdle() callback.
+@note
+The QXK documentation is available in the QP/C Reference Manual at @ref qxk
+
+
+Additionally, this release removes the macros Q_ROM, Q_ROM_BYTE, and Q_ROM_VAR from the QP/C code. These macros have been necessary for odd Harvard-architecture 8-bit CPUs (such as AVR, 8051) to place constant data in ROM. As QP/C stopped supporting those CPUs, the non-standard extensions could be removed from the QP/C code base.
+
+Additionally, this release re-designs the priority-ceiling mutex in the QK kernel, which now works the same as the mutex of the new QXK kernel. Also, the QK ports to ARM Cortex-M no longer need or use the SVC_Handler (Supervisor Call). This is done to make the QK ports compatible with various "hypervisors" (such as mbed uVisor or Nordic SoftDevice), which use the SVC exception.
+
+Finally, this release modifies the GNU-ARM ports of QK for ARM Cortex-M, to use the __ARM_ARCH macro to distinguish among different architectures (ARCHv6 vs ARCHv7).
+
+Changes in detail:
+
+1. Added new header files for QXK: qxk.h, and qxthread.h.
+
+2. Added new source files for QXK: qxk.c, qxk_mutex.c, qxk_pkg.h, qxk_same.c, qxk_xthr.c.
+
+3. Added QXK ports to ARM Cortex-M for ARM-KEIL, GNU-ARM, IAR, and TI-ARM toolsets (see @ref arm-cm_qxk)
+
+4. Added QXK examples for ARM Cortex-M (in @ref arm-cm_dpp_ek-tm4c123gxl and @ref arm-cm_dpp_nucleo-l053r8) for all supported toolsets.
+
+5. Removed Q_ROM, Q_ROM_BYTE, and Q_ROM_VAR from the QP/C code.
+
+6. Added Q_ROM, Q_ROM_BYTE to the compatibility-layer in qpc.h.
+
+7. Removed ports and examples for the following 3rd-party RTOSes: CMSIS-RTX and FreeRTOS, as QXK provided all the features found in those kernels and is recommended over those kernels.
+
+8. Removed AVR ports and examples.
+
+8. Re-designed the QK priority-mutex in files qk.h and qk_mutex.c.
+
+9. Provided QK mutex examples in @ref arm-cm_dpp_ek-tm4c123gxl and @ref arm-cm_dpp_nucleo-l053r8.
+
+10. Updated Makefiles for GNU-ARM to use the __ARM_ARCH macro for defining the ARM architecture.
+
+11. Updated CMSIS from 4.2 to 4.3 in qpc/3rd-party/CMSIS
 
 
 ------------------------------------------------------------------------------

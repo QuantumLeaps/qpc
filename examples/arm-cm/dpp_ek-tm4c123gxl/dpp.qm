@@ -362,10 +362,15 @@ $declare(Events::TableEvt)
 #define N_PHILO ((uint8_t)5)
 
 $declare(AOs::Philo_ctor)
-$declare(AOs::Table_ctor)
-
 $declare(AOs::AO_Philo[N_PHILO])
+
+$declare(AOs::Table_ctor)
 $declare(AOs::AO_Table)
+
+#ifdef qxk_h
+    void Test_ctor(void);
+    extern QXThread * const XT_Test;
+#endif /* qxk_h */
 
 #endif /* dpp_h */</text>
   </file>

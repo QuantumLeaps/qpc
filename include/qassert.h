@@ -3,14 +3,14 @@
 * @brief Customizable and memory-efficient assertions for embedded systems
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-03-14
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,8 +31,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -77,7 +77,7 @@
     * @sa Q_DEFINE_THIS_MODULE()
     */
     #define Q_DEFINE_THIS_FILE \
-        static char_t const Q_ROM Q_this_module_[] = __FILE__;
+        static char_t const Q_this_module_[] = __FILE__;
 
     /*! Define the user-specified module name for assertions in this file. */
     /**
@@ -93,7 +93,7 @@
     * @note This macro should __not__ be terminated by a semicolon.
     */
     #define Q_DEFINE_THIS_MODULE(name_) \
-        static char_t const Q_ROM Q_this_module_[] = name_;
+        static char_t const Q_this_module_[] = name_;
 
     /*! General purpose assertion. */
     /**
@@ -220,7 +220,7 @@
 * #Q_ERROR, #Q_ALLEGE as well as #Q_ASSERT_ID, #Q_REQUIRE_ID, #Q_ENSURE_ID,
 * #Q_ERROR_ID, and #Q_ALLEGE_ID.
 */
-void Q_onAssert(char_t const Q_ROM * const module, int_t location);
+void Q_onAssert(char_t const * const module, int_t location);
 
 #ifdef __cplusplus
     }

@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), ARM-Keil assembler
-; Last Updated for Version: 5.5.1
-; Date of the Last Update:  2015-09-30
+; Last Updated for Version: 5.6.0
+; Date of the Last Update:  2015-12-14
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -32,23 +32,33 @@
 ; mailto:info@state-machine.com
 ;*****************************************************************************
 
+    EXPORT  QK_init
+    EXPORT  PendSV_Handler    ; CMSIS-compliant PendSV exception name
+    EXPORT  QK_nextPrio_      ; priority of the next task to execute
+
+    IMPORT  QK_schedPrio_     ; external reference
+    IMPORT  QK_sched_         ; external reference
+
+    ; NOTE: keep in synch with QF_BASEPRI value defined in "qf_port.h" !!!
+QF_BASEPRI EQU (0xFF:SHR:2)
+
+    AREA    |.data|, DATA, READWRITE
+;*****************************************************************************
+; Global priority of the next task to execute or zero to indicate return
+; to the preempted task
+;*****************************************************************************
+QK_nextPrio_
+    DCD     0
+
+
     AREA    |.text|, CODE, READONLY
     THUMB
 
     PRESERVE8                 ; this code preserves 8-byte stack alignment
 
-    EXPORT  QK_init
-    EXPORT  PendSV_Handler    ; CMSIS-compliant PendSV exception name
-    EXPORT  SVC_Handler       ; CMSIS-compliant SVC exception name
-
-    IMPORT  QK_schedPrio_     ; external reference
-    IMPORT  QK_sched_         ; external reference
-
-
 ;*****************************************************************************
-; The QK_init function sets the priorities of PendSV and SVCall exceptions
-; to 0xFF and 0x00, respectively. The function internally disables
-; interrupts, but restores the original interrupt lock before exit.
+; The QK_init function sets the priorities of PendSV to 0xFF (lowest).
+; The priority is set within a critical section.
 ;*****************************************************************************
 QK_init
     MRS     r0,PRIMASK        ; store the state of the PRIMASK in r0
@@ -60,10 +70,6 @@ QK_init
     LSLS    r3,r3,#16
     ORRS    r2,r3             ; set PRI_14 (PendSV) to 0xFF
     STR     r2,[r1,#8]        ; write the System 12-15 Priority Register
-    LDR     r2,[r1,#4]        ; load the System 8-11 Priority Register
-    LSLS    r3,r3,#8
-    BICS    r2,r3             ; set PRI_11 (SVCall) to 0x00
-    STR     r2,[r1,#4]        ; write the System 8-11 Priority Register
 
     MSR     PRIMASK,r0        ; restore the original PRIMASK
     BX      lr                ; return to the caller
@@ -93,80 +99,80 @@ PendSV_Handler
 
   IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
     CPSID   i                 ; disable interrupts (set PRIMASK)
-  ELSE  ; M3/M4/M7
-  IF {FPU} != "SoftVFP"       ; If software FPU not used...
-    PUSH    {r0,lr}           ; push lr (EXC_RETURN) plus stack "aligner"
-  ENDIF ; FPU
-    MOVS    r0,#(0xFF:SHR:2)  ; NOTE: Must match QF_BASEPRI in qf_port.h!
+  ELSE                        ; M3/M4/M7
+    MOVS    r0,#QF_BASEPRI
     MSR     BASEPRI,r0        ; selectively disable interrupts
-  ENDIF ; M3/M4/M7
+  ENDIF                       ; M3/M4/M7
+    ISB                       ; reset the instruction pipeline
 
-    BL      QK_schedPrio_     ; check if we have preemption
-    CMP     r0,#0             ; is prio == 0 ?
-    BNE.N   scheduler         ; if prio != 0, branch to scheduler
+    LDR     r0,=QK_nextPrio_
+    LDR     r0,[r0]
+    CMP     r0,#0
+    BNE.N   PendSV_sched      ; if QK_nextPrio_ != 0, branch to scheduler
+
+    ; QK_nextPrio_ == 0: return to the preempted task...
+    ADD     sp,sp,#(8*4)      ; remove one 8-register exception frame
 
   IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
     CPSIE   i                 ; enable interrupts (clear PRIMASK)
     MOVS    r0,#6
     MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
     BX      r0                ; exception-return to the task
-  ELSE  ; M3/M4/M7
+  ELSE                        ; M3/M4/M7
     ; NOTE: r0 == 0 at this point
     MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
-  IF {FPU} != "SoftVFP"       ; If software FPU not used...
-    POP     {r0,pc}           ; pop stack "aligner" and the EXC_RETURN to PC
-  ELSE  ; no FPU
+  IF {TARGET_FPU_VFP} == {TRUE} ; if VFP available...
+    POP     {r0,pc}           ; pop stack "aligner" and EXC_RETURN to PC
+  ELSE                        ; no VFP
     MOVS    r0,#6
     MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
     BX      r0                ; exception-return to the task
-  ENDIF ; no FPU
-  ENDIF ; M3/M4/M7
+  ENDIF                       ; no VFP
+  ENDIF                       ; M3/M4/M7
 
-scheduler
+PendSV_sched
+  IF {TARGET_FPU_VFP} == {TRUE} ; if VFP available...
+    PUSH    {r0,lr}           ; push lr (EXC_RETURN) plus stack "aligner"
+  ENDIF                       ; VFP available
+
     MOVS    r3,#1
     LSLS    r3,r3,#24         ; r3:=(1 << 24), set the T bit  (new xpsr)
     LDR     r2,=QK_sched_     ; address of the QK scheduler   (new pc)
-    LDR     r1,=svc_ret       ; return address after the call (new lr)
-    PUSH    {r1-r3}           ; push xpsr,pc,lr
-    SUB     sp,sp,#(4*4)      ; don't care for r12,r3,r2,r1
-    PUSH    {r0}              ; push the prio argument        (new r0)
+    LDR     r1,=PendSV_sched_ret ; return address after the call (new lr)
+
+    SUB     sp,sp,#8*4        ; reserve space for exception stack frame
+    STR     r0,[sp]           ; save the prio argument        (new r0)
+    ADD     r0,sp,#5*4        ; r0 := 5 registers below the top of stack
+    STM     r0!,{r1-r3}       ; save xpsr,pc,lr
+
     MOVS    r0,#6
     MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
     BX      r0                ; exception-return to the QK scheduler
 
-svc_ret
+PendSV_sched_ret
+    LDR     r0,=QK_nextPrio_
+    MOVS    r1,#0
+    STR     r1,[r0]           ; QK_nextPrio_ = 0;
+
   IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
     CPSIE   i                 ; enable interrupts (clear PRIMASK)
-  ELSE  ; M3/M4/M7
-    MOVS    r0,#0
-    MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
-  IF {FPU} != "SoftVFP"       ; If software FPU not used...
+  ELSE                        ; M3/M4/M7
+  IF {TARGET_FPU_VFP} == {TRUE} ; if VFP available...
     MRS     r0,CONTROL        ; r0 := CONTROL
     BICS    r0,r0,#4          ; r0 := r0 & ~4 (FPCA bit)
     MSR     CONTROL,r0        ; CONTROL := r0 (clear CONTROL[2] FPCA bit)
-  ENDIF ; FPU
-  ENDIF ; M3/M4/M7
+  ENDIF                       ; VFP available
+    MOVS    r0,#0
+    MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
+  ENDIF                       ; M3/M4/M7
 
-    SVC     #0                ; cause SV exception to return to preempted task
-
-
-;*****************************************************************************
-; The SVC_Handler exception handler is used for returning back to the
-; preempted task. The SVCall exception simply removes its own interrupt
-; stack frame from the stack and returns to the preempted task using the
-; interrupt stack frame that must be at the top of the stack.
-;*****************************************************************************
-SVC_Handler
-    ADD     sp,sp,#(8*4)      ; remove one 8-register exception frame
-
-  IF {FPU} != "SoftVFP"       ; If software FPU not used...
-    POP     {r0,pc}           ; pop stack "aligner" and the EXC_RETURN to PC
-  ELSE  ; no FPU
-    MOVS    r0,#6
-    MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
-    BX      r0                ; return to the preempted task
-  ENDIF ; no FPU
+    ; trigger PendSV to return to preempted task...
+    LDR     r0,=0xE000ED04    ; Interrupt Control and State Register
+    MOVS    r1,#1
+    LSLS    r1,r1,#28         ; r0 := (1 << 28) (PENDSVSET bit)
+    STR     r1,[r0]           ; ICSR[28] := 1 (pend PendSV)
+    B       .                 ; wait for preemption by PendSV
 
     ALIGN                     ; make sure the END is properly aligned
-    END
 
+    END

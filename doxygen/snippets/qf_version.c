@@ -1,3 +1,1 @@
-    printf("Quantum DPP\nQP %s\n"
-           "Press ESC to quit...\n",
-           QP_getVersion());
+    printf("DPP example\nQP version %s\n", QP_getVersion());

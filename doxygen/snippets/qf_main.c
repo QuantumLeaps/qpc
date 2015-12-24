@@ -25,11 +25,11 @@ int main(void) {
 
     /* start the active objects... */
     for (n = 0; n < N_PHILO; ++n) {
-        QActive_start(AO_Philo[n], (uint8_t)(n + 1),
+        QACTIVE_START(AO_Philo[n], (uint8_t)(n + 1),
                       l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
                       (void *)0, 0U, (QEvt *)0);
     }
-    QActive_start(AO_Table, (uint8_t)(N_PHILO + 1),
+    QACTIVE_START(AO_Table, (uint8_t)(N_PHILO + 1),
                   l_tableQueueSto, Q_DIM(l_tableQueueSto),
                   (void *)0, 0U, (QEvt *)0);
 

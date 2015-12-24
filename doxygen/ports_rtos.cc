@@ -1,32 +1,23 @@
 /*##########################################################################*/
 /*! @page ports_rtos Ports to Third-Party RTOS
 
-The main purpose of integrating QP/C with conventional RTOSes is to enable you to incorporate various communication stacks (TCP/IP, USB, CAN, etc.) as well as other middleware, which requires the ability to **block** the task code.   
+The main purpose of integrating QP/C with conventional RTOSes is to enable you to incorporate various communication stacks (TCP/IP, USB, CAN, etc.) as well as other middleware, which requires the ability to **block** the task code.
 
-- @subpage cmsis-rtx
 - @subpage embos
-- @subpage freertos
 - @subpage threadx
 - @subpage ucos-ii
 
+@attention
+Starting from version 5.6.0, QP/C includes the conventional, preemptive @ref qxk " blocking QXK kernel", which is recommended as the preferred RTOS kernel for applications that need to mix active objects with traditional blocking code. Due to the tight and optimal integration between QXK and the rest of QP, QXK offers better performance and smaller memory footprint than any @ref ports_rtos "QP port to a 3rd-party RTOS". Additionally, QXK is already included in QP, so you avoid additional licensing costs of 3rd-party kernels.
+
+\n
 @note
 You do **not** need to use a traditional RTOS just to achieve preemptive multitasking with QP. The @ref comp_qk "preemptive QK kernel", available as part of the QP package, supports preemptive priority-based multitasking and is fully compatible with Rate Monotonic Scheduling to achieve guaranteed, hard real-time performance. The preemptive, run-to-completion QK kernel perfectly matches the run-to-completion execution semantics of active objects, yet it is simpler, faster, and more efficient than any traditional blocking kernel.
 
-*/
-/*##########################################################################*/
-/*! @page cmsis-rtx CMSIS-RTOS RTX
-
-@image html under_construction.jpg
 
 */
 /*##########################################################################*/
 /*! @page embos embOS
-
-@image html under_construction.jpg
-
-*/
-/*##########################################################################*/
-/*! @page freertos FreeRTOS
 
 @image html under_construction.jpg
 

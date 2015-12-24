@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.2
-* Last updated on  2015-06-03
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -142,7 +142,7 @@ void QF_publish_(QEvt const * const e, void const * const sender)
         uint8_t tmp = QF_subscrList_[e->sig].bits[0];
         while (tmp != (uint8_t)0) {
             uint8_t p = QF_LOG2(tmp);
-            tmp &= Q_ROM_BYTE(QF_invPwr2Lkup[p]); /* clear subscriber bit */
+            tmp &= QF_invPwr2Lkup[p]; /* clear subscriber bit */
             /* the priority of the AO must be registered with the framework */
             Q_ASSERT_ID(210, QF_active_[p] != (QMActive *)0);
 
@@ -162,7 +162,7 @@ void QF_publish_(QEvt const * const e, void const * const sender)
                 uint_fast8_t p = (uint_fast8_t)QF_LOG2(tmp);
 
                 /* clear the subscriber bit */
-                tmp &= (uint_fast8_t)Q_ROM_BYTE(QF_invPwr2Lkup[p]);
+                tmp &= (uint_fast8_t)QF_invPwr2Lkup[p];
                 p = (uint_fast8_t)p + (uint_fast8_t)(i << 3);/*adj priority */
 
                 /* the priority level be registered with the framework */
@@ -207,7 +207,7 @@ void QF_publish_(QEvt const * const e, void const * const sender)
 */
 void QActive_subscribe(QActive const * const me, enum_t const sig) {
     uint_fast8_t p = me->prio;
-    uint_fast8_t i = (uint_fast8_t)Q_ROM_BYTE(QF_div8Lkup[p]);
+    uint_fast8_t i = (uint_fast8_t)QF_div8Lkup[p];
     QF_CRIT_STAT_
 
     Q_REQUIRE_ID(300, ((enum_t)Q_USER_SIG <= sig)
@@ -224,7 +224,7 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
     QS_END_NOCRIT_()
 
     /* set the priority bit */
-    QF_PTR_AT_(QF_subscrList_, sig).bits[i] |= Q_ROM_BYTE(QF_pwr2Lkup[p]);
+    QF_PTR_AT_(QF_subscrList_, sig).bits[i] |= QF_pwr2Lkup[p];
     QF_CRIT_EXIT_();
 }
 
@@ -252,7 +252,7 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
 */
 void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
     uint_fast8_t p = me->prio;
-    uint_fast8_t i = (uint_fast8_t)Q_ROM_BYTE(QF_div8Lkup[p]);
+    uint_fast8_t i = (uint_fast8_t)QF_div8Lkup[p];
     QF_CRIT_STAT_
 
     /** @pre the singal and the prioriy must be in ragne, the AO must also
@@ -272,7 +272,7 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
     QS_END_NOCRIT_()
 
     /* clear priority bit */
-    QF_PTR_AT_(QF_subscrList_, sig).bits[i] &= Q_ROM_BYTE(QF_invPwr2Lkup[p]);
+    QF_PTR_AT_(QF_subscrList_, sig).bits[i] &= QF_invPwr2Lkup[p];
     QF_CRIT_EXIT_();
 }
 
@@ -306,12 +306,12 @@ void QActive_unsubscribeAll(QActive const * const me) {
                        && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
                        && (QF_active_[p] == me));
 
-    i = (uint_fast8_t)Q_ROM_BYTE(QF_div8Lkup[p]);
+    i = (uint_fast8_t)QF_div8Lkup[p];
     for (sig = (enum_t)Q_USER_SIG; sig < QF_maxSignal_; ++sig) {
         QF_CRIT_STAT_
         QF_CRIT_ENTRY_();
         if ((QF_PTR_AT_(QF_subscrList_, sig).bits[i]
-             & Q_ROM_BYTE(QF_pwr2Lkup[p])) != (uint8_t)0)
+             & QF_pwr2Lkup[p]) != (uint8_t)0)
         {
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_UNSUBSCRIBE,
@@ -322,8 +322,7 @@ void QActive_unsubscribeAll(QActive const * const me) {
             QS_END_NOCRIT_()
 
             /* clear the priority bit */
-            QF_PTR_AT_(QF_subscrList_, sig).bits[i] &=
-                Q_ROM_BYTE(QF_invPwr2Lkup[p]);
+            QF_PTR_AT_(QF_subscrList_, sig).bits[i] &= QF_invPwr2Lkup[p];
         }
         QF_CRIT_EXIT_();
     }

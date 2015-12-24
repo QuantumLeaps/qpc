@@ -422,11 +422,6 @@
               <FilePath>..\bsp.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>dpp.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\dpp.h</FilePath>
@@ -450,6 +445,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -673,6 +673,7 @@
       <TargetName>dpp-rel</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060020::V5.06 (build 20)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>TM4C123GH6PM</Device>
@@ -1084,11 +1085,6 @@
               <FilePath>..\bsp.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>dpp.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\dpp.h</FilePath>
@@ -1112,6 +1108,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1747,11 +1748,6 @@
               <FilePath>..\bsp.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>dpp.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\dpp.h</FilePath>
@@ -1775,6 +1771,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>

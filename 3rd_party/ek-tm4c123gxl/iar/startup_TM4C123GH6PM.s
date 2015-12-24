@@ -520,8 +520,8 @@ PWM1Gen1_IRQHandler
 PWM1Gen2_IRQHandler
 PWM1Gen3_IRQHandler
 PWM1Fault_IRQHandler
-        MOV     r0,#0
-        MOV     r1,#-1      ; 0xFFFFFFF
+        MOVS    r0,#0
+        MOVS    r1,#-1      ; 0xFFFFFFF
         B       assert_failed
 
 ;******************************************************************************

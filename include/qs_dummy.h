@@ -5,8 +5,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-08-06
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -76,7 +76,6 @@
 #define QS_U64(width_, data_)           ((void)0)
 #define QS_U32_HEX(width_, data_)       ((void)0)
 #define QS_STR(str_)                    ((void)0)
-#define QS_STR_ROM(str_)                ((void)0)
 #define QS_MEM(mem_, size_)             ((void)0)
 #define QS_SIG(sig_, obj_)              ((void)0)
 #define QS_OBJ(obj_)                    ((void)0)

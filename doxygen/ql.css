@@ -14,9 +14,11 @@ div.toc {
 }
 
 /* QL additions ---------------------------------------------- */
+/*
 #titlearea {
     background: #FFFFFF url(img/header_bg.png) repeat-x;
 }
+*/
 #projectlogo {
      display: block;
      min-width: 180px;
@@ -184,10 +186,22 @@ span.tag  {
     color:#fff;
     font-weight:bold;
     padding:0 4px 0 4px;
-    margin: 0 4px 0 0;
+    margin: 0 6px 0 -25px;
+}
+
+span.bullet {
+    background-color:#f00;
+    border-radius: 7px 7px 7px 7px;
+    color:#fff;
+    font-weight:bold;
+    padding:0 4px 0 4px;
+    margin: 0 6px 0 -25px;
 }
 
 div.clear { clear: both; }
+div.toc {
+    width:230px;
+}
 
 #preview{
 	position:absolute;
@@ -202,7 +216,7 @@ div.clear { clear: both; }
 .qp_link       {background:url(img/qp_link.png)       no-repeat;}
 .folder        {background:url(img/folder.png)        no-repeat;}
 .file          {background:url(img/file.png)          no-repeat;}
-.file_doc      {background:url(img/file_doc.png)          no-repeat;}
+.file_doc      {background:url(img/file_doc.png)      no-repeat;}
 .file_h        {background:url(img/file_header.png)   no-repeat;}
 .file_c        {background:url(img/file_source_c.png) no-repeat;}
 .file_cpp      {background:url(img/file_source_cpp.png) no-repeat;}

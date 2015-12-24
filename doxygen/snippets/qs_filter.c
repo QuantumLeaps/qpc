@@ -48,13 +48,9 @@ int main() {
     QS_FILTER_OFF(QS_QF_ISR_EXIT);
 
     QS_FILTER_SM_OBJ(&philo[3]);      /* trace only this state machine object */
-
     QS_FILTER_AO_OBJ(&philo[3]);      /* trace only this active object */
-
     QS_FILTER_MP_OBJ(regSizePoolSto); /* trace only this event pool */
-
     QS_FILTER_EQ_OBJ(&rawQueue);      /* trace only this event queue */
-
     QS_FILTER_TE_OBJ(&philo[3].m_timeEvt); /* trace only this time event */
 
     . . .

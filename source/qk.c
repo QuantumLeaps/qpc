@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-08-31
+* Last updated for version 5.6.0
+* Last updated on  2015-12-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,14 +32,14 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-/// http://www.state-machine.com
-/// mailto:info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
-#include "qk_pkg.h"       /* QK package-scope internal interface */
+#include "qf_pkg.h"       /* QF package-scope internal interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
     #include "qs_port.h"  /* include QS port */
@@ -79,10 +79,6 @@ void QF_init(void) {
 #ifndef QK_ISR_CONTEXT_
     QK_intNest_  = (uint_fast8_t)0; /* no nesting level */
 #endif /* QK_ISR_CONTEXT_ */
-
-#ifndef QK_NO_MUTEX
-    QK_ceilingPrio_ = (uint_fast8_t)0;
-#endif
 
     /* clear the internal QF variables, so that the framework can start
     * correctly even if the startup code fails to clear the uninitialized
@@ -192,7 +188,8 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
                       && (prio <= (uint_fast8_t)QF_MAX_ACTIVE));
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
-    me->prio = prio;
+    me->prio = prio;   /* set the current priority of the AO */
+    me->thread = prio; /* set the start priority of the AO */
     QF_add_(me); /* make QF aware of this active object */
 
 #ifdef QK_TLS
@@ -226,9 +223,8 @@ void QActive_stop(QMActive *me) {
 /**
 * @description
 * This function finds out the priority of the highest-priority active object
-* that (1) has events to process, and (2) has priority that is above the
-* current priority, and (3) has priority that is above the mutex ceiling,
-* if mutex is configured in the port.
+* that (1) has events to process and (2) has priority that is above the
+* current priority.
 *
 * @returns the 1-based priority of the the active object, or zero if
 * no eligible active object is ready to run.
@@ -240,27 +236,13 @@ void QActive_stop(QMActive *me) {
 uint_fast8_t QK_schedPrio_(void) {
     uint_fast8_t p; /* for priority */
 
-  /* find the highest-priority AO with non-empty event queue */
-#if (QF_MAX_ACTIVE <= 8)
-    QPSet8_findMax(&QK_readySet_, p);
-#else
-    QPSet64_findMax(&QK_readySet_, p);
-#endif
+    /* find the highest-priority AO with non-empty event queue */
+    QK_prioFindMax(&QK_readySet_, p);
 
     /* is the priority below the current preemption threshold? */
     if (p <= QK_currPrio_) {
         p = (uint_fast8_t)0; /* active object not eligible */
     }
-#ifndef QK_NO_MUTEX
-    /* is the priority below the mutex ceiling? */
-    else if (p <= QK_ceilingPrio_) {
-        p = (uint_fast8_t)0; /* active object not eligible */
-    }
-    else {
-        /* empty */
-    }
-#endif /* QK_NO_MUTEX */
-
     return p;
 }
 
@@ -322,27 +304,13 @@ void QK_sched_(uint_fast8_t p) {
 
         QF_INT_DISABLE(); /* unconditionally disable interrupts */
 
-        /* find new highest-priority AO ready to run... */
-#if (QF_MAX_ACTIVE <= 8) /* find new highest-prio AO ready to run... */
-        QPSet8_findMax(&QK_readySet_, p);
-#else
-        QPSet64_findMax(&QK_readySet_, p);
-#endif  /* (QF_MAX_ACTIVE <= 8) */
+        /* find new highest-prio AO ready to run... */
+        QK_prioFindMax(&QK_readySet_, p);
 
         /* is the new priority below the current preemption threshold? */
         if (p <= pin) {
             p = (uint_fast8_t)0;
         }
-
-#ifndef QK_NO_MUTEX
-        /* is the new priority below the mutex ceiling? */
-        else if (p <= QK_ceilingPrio_) {
-            p = (uint_fast8_t)0;
-        }
-        else {
-            /* empty */
-        }
-#endif  /* QK_NO_MUTEX */
 
     } while (p != (uint_fast8_t)0);
 

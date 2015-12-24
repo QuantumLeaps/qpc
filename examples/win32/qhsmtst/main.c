@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QHsmTst Example, Win32
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Jan 06, 2014
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2014 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qep_port.h"
 #include "qassert.h"
@@ -128,7 +127,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const file, int line) {
+void Q_onAssert(char const * const file, int line) {
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
     _exit(-1);
 }

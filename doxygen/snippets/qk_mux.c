@@ -1,9 +1,19 @@
-    QMutex mux;
-    . . .
-    mux = QK_mutexLock(PRIO_CEILING);
+QMutex l_rndMutex;  /* mutex to protect the random number generator */
 
-    /* access the shared resource */
 
-    QK_mutexUnlock(mux);
+void BSP_randomSeed(uint32_t seed) {
+    QMutex_init(&l_rndMutex, (N_PHILO + 1)); /* <== initialize the mutex */
+    l_rnd = seed;
+}
 
-    . . . 
+uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
+    uint32_t rnd;
+
+    QMutex_lock(&l_rndMutex); /* <== lock the shared random seed */
+    /* "Super-Duper" Linear Congruential Generator (LCG) */
+    rnd = l_rnd * (3U*7U*11U*13U*23U);
+    l_rnd = rnd; /* set for the next time */
+    QMutex_unlock(&l_rndMutex); /* <== unlock the shared random seed */
+
+    return rnd;
+}

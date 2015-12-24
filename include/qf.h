@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-08-03
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -255,6 +255,8 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
 * @param[in]     stkSize_ stack size (in bytes)
 * @param[in]     param_   pointer to the additional port-specific parameter(s)
 *                         (might be NULL).
+* @usage
+* @include qf_start.c
 */
 #define QACTIVE_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, param_) \
     ((*((QMActiveVtbl const *)((me_)->super.vptr))->start)( \
@@ -623,6 +625,11 @@ void QF_onCleanup(void);
     * an interrupt, you would create a unique object just to unambiguously
     * identify the ISR as the sender of the time events.
     *
+    * @usage
+    * The following example shows how to invoke QF_TICK_X() for different
+    * system tick rates:
+    * @include qf_tickx.c
+    *
     * @sa QF_tickX_().
     */
     #define QF_TICK_X(tickRate_, sender_) (QF_tickX_((tickRate_), (sender_)))
@@ -802,20 +809,20 @@ void QF_bzero(void * const start, uint_fast16_t len);
 /**
 * @note Index range n = 0..64. The first index (n == 0) should never be used.
 */
-extern uint8_t const Q_ROM QF_pwr2Lkup[65];
+extern uint8_t const QF_pwr2Lkup[65];
 
 /*! Lookup table for @c ~(1 << ((n-1) % 8)), where n is the index
 * into the table. */
 /**
 * @note Index range n = 0..64. The first index (n == 0) should never be used.
 */
-extern uint8_t const Q_ROM QF_invPwr2Lkup[65];
+extern uint8_t const QF_invPwr2Lkup[65];
 
 /*! Lookup table for @c (n-1)/8 , where n is the index into the table. */
 /**
 * @note Index range n = 0..64. The first index (n == 0) should never be used.
 */
-extern uint8_t const Q_ROM QF_div8Lkup[65];
+extern uint8_t const QF_div8Lkup[65];
 
 /* Log-base-2 calculations ...*/
 #ifndef QF_LOG2
@@ -830,7 +837,7 @@ extern uint8_t const Q_ROM QF_div8Lkup[65];
     * If the macro is not defined in the port, the default implementation
     * uses a lookup table.
     */
-    #define QF_LOG2(n_) (Q_ROM_BYTE(QF_log2Lkup[(n_)]))
+    #define QF_LOG2(n_) (QF_log2Lkup[(n_)])
 
     /*! Lookup table for (log2(n) + 1), where n is the index into the table */
     /**
@@ -838,7 +845,7 @@ extern uint8_t const Q_ROM QF_div8Lkup[65];
     * This lookup delivers the 1-based number of the most significant 1-bit
     * of a byte.
     */
-    extern uint8_t const Q_ROM QF_log2Lkup[256];
+    extern uint8_t const QF_log2Lkup[256];
 
     /*! Macro to include the QF_log2Lkup table in the code or skip it,
     * if undefined.

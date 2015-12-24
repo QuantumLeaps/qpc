@@ -3,8 +3,8 @@
 * @brief QP/C public interface including backwards-compatibility layer
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-07-28
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -66,8 +66,8 @@ extern "C" {
 * the module qstamp.c. This module needs to be re-compiled for every software
 * build.
 */
-extern char_t const Q_ROM Q_APP_BUILD_DATE[12];
-extern char_t const Q_ROM Q_APP_BUILD_TIME[9];
+extern char_t const Q_APP_BUILD_DATE[12];
+extern char_t const Q_APP_BUILD_TIME[9];
 
 
 /****************************************************************************/
@@ -120,6 +120,12 @@ typedef QHsm        QFsm;
 /****************************************************************************/
 /* QP API compatibility layer */
 #if (QP_API_VERSION < 500)
+
+/*! @deprecated macro for odd 8-bit CPUs. */
+#define Q_ROM
+
+/*! @deprecated macro for odd 8-bit CPUs. */
+#define Q_ROM_BYTE(rom_var_)   (rom_var_)
 
 /*! @deprecated macro for odd 8-bit CPUs. */
 #define Q_ROM_VAR

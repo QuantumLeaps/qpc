@@ -4,14 +4,14 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-03-01
+* Last updated for version 5.6.0
+* Last updated on  2015-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -41,51 +41,11 @@
 #define qk_port_h
 
 /****************************************************************************/
-/* QK extended context save/restore */
 
-/*! Define the method for saving the extended context (e.g., the context
-* of a floating-point co-processor).
-*/
-/**
-* @description
-* @note This is just an example of #QK_EXT_SAVE macro. You need to define
-* the macro appropriately for the co-processor you're using. This macro
-* is only used in the extended QK scheduler QK_scheduleExt_(). If you define
-* #QK_EXT_SAVE, you also need to provide #QK_EXT_RESTORE and #QK_EXT_TYPE.
-*/
-#define QK_EXT_SAVE(act_)      (FPU_save((void *)(act_)->thread))
+/*! determination if the code executes in the ISR context */
+#define QK_ISR_CONTEXT_() (get_IPSR() != (uint32_t)0)
 
-/*! Define the method for restoring the extended context (e.g.,
-* the context of a floating-point co-processor).
-*/
-/**
-* @note
-* This is just an example of #QK_EXT_RESTORE macro. You need to define
-* the macro appropriately for the co-processor you're using. This macro
-* is only used in the extended QK scheduler QK_scheduleExt_(). If you define
-* #QK_EXT_RESTORE, you also need to provide #QK_EXT_SAVE and #QK_EXT_TYPE.
-*/
-#define QK_EXT_RESTORE(act_)   (FPU_restore((void *)(act_)->thread))
-
-/****************************************************************************/
-/* Thread-Local-Storage switching */
-
-/*! Define the method for switching the Thread-Local-Storage for
-* for a given thread.
-*/
-/**
-* @note This is just an example of #QK_TLS macro. You need to define
-* the macro appropriately for the runtime library you're using. This macro
-* is optional and you don't need to define it. The macro is used in both the
-* regular QK scheduler QK_sched_() and the extended QK scheduler
-* QK_schedExt_().
-*/
-#define QK_TLS(act_)        \
-    (impure_ptr = (void *)(act_)->thread)
-
-/****************************************************************************/
-/* QK interrupt entry and exit */
-
+/* QK interrupt entry and exit... */
 /*! Define the ISR entry sequence, if the compiler supports writing
 * interrupts in C.
 */
@@ -96,8 +56,10 @@
 * skeleton code in assembly.
 */
 #define QK_ISR_ENTRY() do { \
+    QF_INT_DISABLE(); \
     ++QK_intNest_; \
     QF_QS_ISR_ENTRY(QK_intNest_, QK_currPrio_); \
+    QF_INT_ENABLE(); \
 } while (0)
 
 
@@ -111,19 +73,20 @@
 * not define this macro, but instead will provide ISR skeleton in assembly.
 */
 #define QK_ISR_EXIT() do { \
-    send End-Of-Interrupt instruction to the Interrupt Controller; \
-    QF_QS_ISR_EXIT(QK_intNest_, QK_currPrio_); \
+    QF_INT_DISABLE(); \
     --QK_intNest_; \
     if (QK_intNest_ == (uint_fast8_t)0) { \
-        QK_scheduleExt_(); \
+        uint_fast8_t nextPrio_ = QK_schedPrio_(); \
+        if (nextPrio_ != (uint_fast8_t)0) { \
+            QK_sched_(nextPrio_); \
+        } \
     } \
+    QF_INT_ENABLE(); \
 } while (0)
 
-void FPU_save(void *ctx);   /*!< example of extended context save */
-void FPU_restore(void *ctx);/*!< example of extended context restore */
-extern void *impure_ptr;    /*!< example of TLS pointer */
-
 #include "qk.h" /* QK platform-independent public interface */
+
+uint32_t get_IPSR(void);
 
 #endif /* qk_port_h */
 

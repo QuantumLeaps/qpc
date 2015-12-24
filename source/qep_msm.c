@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-09-04
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,7 +48,7 @@
 Q_DEFINE_THIS_MODULE("qep_msm")
 
 /****************************************************************************/
-char_t const Q_ROM QP_versionStr[6] = QP_VERSION_STR;
+char_t const QP_versionStr[6] = QP_VERSION_STR;
 
 /****************************************************************************/
 /*! internal QEP constants */

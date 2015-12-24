@@ -67,6 +67,7 @@ Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
 void GPIOPortA_IRQHandler(void);
+void UART0_IRQHandler(void);
 
 /* Local-scope objects -----------------------------------------------------*/
 #define LED_RED     (1U << 1)

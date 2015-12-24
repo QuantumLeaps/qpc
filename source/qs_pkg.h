@@ -4,8 +4,8 @@
 * @brief Internal (package scope) QS/C interface.
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-09-25
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -85,26 +85,6 @@
 * into the QS buffer.
 */
 #define QS_ESC_XOR  ((uint8_t)0x20)
-
-#ifndef Q_ROM_BYTE
-    /*! Macro to access a byte allocated in ROM */
-    /**
-    * @description
-    * Some compilers for Harvard-architecture MCUs, such as gcc for AVR, do
-    * not generate correct code for accessing data allocated in the program
-    * space (ROM). The workaround for such compilers is to explicitly add
-    * assembly code to access each data element allocated in the program
-    * space. The macro Q_ROM_BYTE() retrieves a byte from the given ROM
-    * address.
-    *
-    * The Q_ROM_BYTE() macro should be defined for the compilers that
-    * cannot handle correctly data allocated in ROM (such as the gcc).
-    * If the macro is left undefined, the default definition simply returns
-    * the @a rom_var_ argument and lets the compiler generate the correct
-    * code.
-    */
-    #define Q_ROM_BYTE(rom_var_)   (rom_var_)
-#endif
 
 /*! send the Target info (object sizes, build time-stamp, QP version) */
 void QS_target_info_(uint8_t isReset);

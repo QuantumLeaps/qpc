@@ -5,7 +5,7 @@
 interrupt void ISR_timer() { /* entered with interrupts disabled in hardware */
     QF_INT_ENABLE();  /* enable interrupts */
 
-    QF_tick();        /*<-- call the QF tick processing */
+    QF_TICK(&l_ISR_timer); /*<-- call the QF tick processing */
 
     QF_INT_DISABLE(); /* disable interrupts again */
     /* send the EOI instruction to the Interrupt Controller */
@@ -16,5 +16,5 @@ interrupt void ISR_timer() { /* entered with interrupts disabled in hardware */
 * (nesting of critical sections allowed)
 */
 interrupt void ISR_timer() {
-    QF_tick();  /*<-- call the QF tick processing */
+    QF_TICK(&l_ISR_timer); /*<-- call the QF tick processing */
 }

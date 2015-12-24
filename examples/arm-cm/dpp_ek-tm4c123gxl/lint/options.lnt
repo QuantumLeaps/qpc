@@ -1,13 +1,13 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x options for linting QP/C applications, GNU-ARM
-// Last Updated for Version: 5.4.0
-// Date of the Last Update:  2015-03-19
+// Last Updated for Version: 5.6.0
+// Date of the Last Update:  2015-12-19
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
 //                    innovating embedded systems
 //
-// Copyright (C) Quantum Leaps, www.state-machine.com.
+// Copyright (C) Quantum Leaps, LLC. All rights reserved.
 //
 // This program is open source software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -28,12 +28,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// Web:   www.state-machine.com
-// Email: info@state-machine.com
+// http://www.state-machine.com
+// mailto:info@state-machine.com
 //////////////////////////////////////////////////////////////////////////////
 
 // the location of the GNU-ARM includes (need to adjust!!!)
 -iC:\tools\gnu_arm-eabi\arm-eabi\include
+
+// define ARM Architecture
+-D__ARM_ARCH=7        
 
 // the location of the QTools lint directory (need to adjust!!!)
 -iC:\tools\qtools\lint

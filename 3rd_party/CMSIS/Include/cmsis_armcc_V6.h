@@ -1,8 +1,8 @@
 /**************************************************************************//**
  * @file     cmsis_armcc_V6.h
  * @brief    CMSIS Cortex-M Core Function/Instruction Header File
- * @version  V4.20
- * @date     20. July 2015
+ * @version  V4.30
+ * @date     20. October 2015
  ******************************************************************************/
 /* Copyright (c) 2009 - 2015 ARM LIMITED
 
@@ -42,10 +42,10 @@
   @{
  */
 
-/** \brief  Enable IRQ Interrupts
-
-  This function enables IRQ interrupts by clearing the I-bit in the CPSR.
-  Can only be executed in Privileged modes.
+/**
+  \brief   Enable IRQ Interrupts
+  \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+           Can only be executed in Privileged modes.
  */
 __attribute__((always_inline)) __STATIC_INLINE void __enable_irq(void)
 {
@@ -53,10 +53,10 @@ __attribute__((always_inline)) __STATIC_INLINE void __enable_irq(void)
 }
 
 
-/** \brief  Disable IRQ Interrupts
-
-  This function disables IRQ interrupts by setting the I-bit in the CPSR.
-  Can only be executed in Privileged modes.
+/**
+  \brief   Disable IRQ Interrupts
+  \details Disables IRQ interrupts by setting the I-bit in the CPSR.
+           Can only be executed in Privileged modes.
  */
 __attribute__((always_inline)) __STATIC_INLINE void __disable_irq(void)
 {
@@ -64,11 +64,10 @@ __attribute__((always_inline)) __STATIC_INLINE void __disable_irq(void)
 }
 
 
-/** \brief  Get Control Register
-
-    This function returns the content of the Control Register.
-
-    \return               Control Register value
+/**
+  \brief   Get Control Register
+  \details Returns the content of the Control Register.
+  \return               Control Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_CONTROL(void)
 {
@@ -80,29 +79,25 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_CONTROL(void)
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Get Control Register (non-secure)
-
-    This function returns the content of the non-secure Control Register when in secure mode.
-
-    \return               non-secure Control Register value
+/**
+  \brief   Get Control Register (non-secure)
+  \details Returns the content of the non-secure Control Register when in secure mode.
+  \return               non-secure Control Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_CONTROL_NS(void)
 {
   uint32_t result;
 
-  __asm volatile (".long 0x8194F3EF" ::: "r1");                     /* MRS r1, control_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, control" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, control_ns" : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Set Control Register
-
-    This function writes the given value to the Control Register.
-
-    \param [in]    control  Control Register value to set
+/**
+  \brief   Set Control Register
+  \details Writes the given value to the Control Register.
+  \param [in]    control  Control Register value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __set_CONTROL(uint32_t control)
 {
@@ -111,25 +106,22 @@ __attribute__((always_inline)) __STATIC_INLINE void __set_CONTROL(uint32_t contr
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Set Control Register (non-secure)
-
-    This function writes the given value to the non-secure Control Register when in secure state.
-
-    \param [in]    control  Control Register value to set
+/**
+  \brief   Set Control Register (non-secure)
+  \details Writes the given value to the non-secure Control Register when in secure state.
+  \param [in]    control  Control Register value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_CONTROL_NS(uint32_t control)
 {
-  __asm volatile (".long 0x8894F380");                     /* MSR control_ns, r0 */
-//  __ASM volatile ("MSR control, %0" : : "r" (control) : "memory");     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MSR control_ns, %0" : : "r" (control) : "memory");
 }
-#endif 
+#endif
 
 
-/** \brief  Get IPSR Register
-
-    This function returns the content of the IPSR Register.
-
-    \return               IPSR Register value
+/**
+  \brief   Get IPSR Register
+  \details Returns the content of the IPSR Register.
+  \return               IPSR Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_IPSR(void)
 {
@@ -141,29 +133,25 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_IPSR(void)
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Get IPSR Register (non-secure)
-
-    This function returns the content of the non-secure IPSR Register when in secure state. 
-
-    \return               IPSR Register value
+/**
+  \brief   Get IPSR Register (non-secure)
+  \details Returns the content of the non-secure IPSR Register when in secure state.
+  \return               IPSR Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_IPSR_NS(void)
 {
   uint32_t result;
 
-  __asm volatile (".long 0x8185F3EF" ::: "r1");                     /* MRS r1, ipsr_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, ipsr" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, ipsr_ns" : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Get APSR Register
-
-    This function returns the content of the APSR Register.
-
-    \return               APSR Register value
+/**
+  \brief   Get APSR Register
+  \details Returns the content of the APSR Register.
+  \return               APSR Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_APSR(void)
 {
@@ -175,29 +163,25 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_APSR(void)
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Get APSR Register (non-secure)
-
-    This function returns the content of the non-secure APSR Register when in secure state.
-
-    \return               APSR Register value
+/**
+  \brief   Get APSR Register (non-secure)
+  \details Returns the content of the non-secure APSR Register when in secure state.
+  \return               APSR Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_APSR_NS(void)
 {
   uint32_t result;
 
-  __asm volatile (".long 0x8180F3EF" ::: "r1");                     /* MRS r1, apsr_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, apsr" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, apsr_ns" : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Get xPSR Register
-
-    This function returns the content of the xPSR Register.
-
-    \return               xPSR Register value
+/**
+  \brief   Get xPSR Register
+  \details Returns the content of the xPSR Register.
+  \return               xPSR Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_xPSR(void)
 {
@@ -209,151 +193,133 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_xPSR(void)
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Get xPSR Register (non-secure)
-
-    This function returns the content of the non-secure xPSR Register when in secure state.
-
-    \return               xPSR Register value
+/**
+  \brief   Get xPSR Register (non-secure)
+  \details Returns the content of the non-secure xPSR Register when in secure state.
+  \return               xPSR Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_xPSR_NS(void)
 {
   uint32_t result;
 
-  __asm volatile (".long 0x8183F3EF" ::: "r1");                     /* MRS r1, xpsr_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, xpsr" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, xpsr_ns" : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Get Process Stack Pointer
-
-    This function returns the current value of the Process Stack Pointer (PSP).
-
-    \return               PSP Register value
+/**
+  \brief   Get Process Stack Pointer
+  \details Returns the current value of the Process Stack Pointer (PSP).
+  \return               PSP Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_PSP(void)
 {
   register uint32_t result;
 
-  __ASM volatile ("MRS %0, psp\n"  : "=r" (result) );
+  __ASM volatile ("MRS %0, psp"  : "=r" (result) );
   return(result);
 }
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Get Process Stack Pointer (non-secure)
-
-    This function returns the current value of the non-secure Process Stack Pointer (PSP) when in secure state.
-
-    \return               PSP Register value
+/**
+  \brief   Get Process Stack Pointer (non-secure)
+  \details Returns the current value of the non-secure Process Stack Pointer (PSP) when in secure state.
+  \return               PSP Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_PSP_NS(void)
 {
   register uint32_t result;
 
-  __asm volatile (".long 0x8189F3EF" ::: "r1");                     /* MRS r1, psp_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, psp\n"  : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, psp_ns"  : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Set Process Stack Pointer
-
-    This function assigns the given value to the Process Stack Pointer (PSP).
-
-    \param [in]    topOfProcStack  Process Stack Pointer value to set
+/**
+  \brief   Set Process Stack Pointer
+  \details Assigns the given value to the Process Stack Pointer (PSP).
+  \param [in]    topOfProcStack  Process Stack Pointer value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __set_PSP(uint32_t topOfProcStack)
 {
-  __ASM volatile ("MSR psp, %0\n" : : "r" (topOfProcStack) : "sp");
+  __ASM volatile ("MSR psp, %0" : : "r" (topOfProcStack) : "sp");
 }
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Set Process Stack Pointer (non-secure)
-
-    This function assigns the given value to the non-secure Process Stack Pointer (PSP) when in secure state.
-
-    \param [in]    topOfProcStack  Process Stack Pointer value to set
+/**
+  \brief   Set Process Stack Pointer (non-secure)
+  \details Assigns the given value to the non-secure Process Stack Pointer (PSP) when in secure state.
+  \param [in]    topOfProcStack  Process Stack Pointer value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_PSP_NS(uint32_t topOfProcStack)
 {
-  __asm volatile (".long 0x8889F380");                     /* MSR psp_ns, r0 */
-//  __ASM volatile ("MSR psp, %0\n" : : "r" (topOfProcStack) : "sp");     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MSR psp_ns, %0" : : "r" (topOfProcStack) : "sp");
 }
-#endif 
+#endif
 
 
-/** \brief  Get Main Stack Pointer
-
-    This function returns the current value of the Main Stack Pointer (MSP).
-
-    \return               MSP Register value
+/**
+  \brief   Get Main Stack Pointer
+  \details Returns the current value of the Main Stack Pointer (MSP).
+  \return               MSP Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_MSP(void)
 {
   register uint32_t result;
 
-  __ASM volatile ("MRS %0, msp\n" : "=r" (result) );
+  __ASM volatile ("MRS %0, msp" : "=r" (result) );
   return(result);
 }
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Get Main Stack Pointer (non-secure)
-
-    This function returns the current value of the non-secure Main Stack Pointer (MSP) when in secure state.
-
-    \return               MSP Register value
+/**
+  \brief   Get Main Stack Pointer (non-secure)
+  \details Returns the current value of the non-secure Main Stack Pointer (MSP) when in secure state.
+  \return               MSP Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_MSP_NS(void)
 {
   register uint32_t result;
 
-  __asm volatile (".long 0x8188F3EF" ::: "r1");                     /* MRS r1, msp_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, msp\n" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, msp_ns" : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Set Main Stack Pointer
-
-    This function assigns the given value to the Main Stack Pointer (MSP).
-
-    \param [in]    topOfMainStack  Main Stack Pointer value to set
+/**
+  \brief   Set Main Stack Pointer
+  \details Assigns the given value to the Main Stack Pointer (MSP).
+  \param [in]    topOfMainStack  Main Stack Pointer value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __set_MSP(uint32_t topOfMainStack)
 {
-  __ASM volatile ("MSR msp, %0\n" : : "r" (topOfMainStack) : "sp");
+  __ASM volatile ("MSR msp, %0" : : "r" (topOfMainStack) : "sp");
 }
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Set Main Stack Pointer (non-secure)
-
-    This function assigns the given value to the non-secure Main Stack Pointer (MSP) when in secure state.
-
-    \param [in]    topOfMainStack  Main Stack Pointer value to set
+/**
+  \brief   Set Main Stack Pointer (non-secure)
+  \details Assigns the given value to the non-secure Main Stack Pointer (MSP) when in secure state.
+  \param [in]    topOfMainStack  Main Stack Pointer value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_MSP_NS(uint32_t topOfMainStack)
 {
-  __asm volatile (".long 0x8888F380");                     /* MSR msp_ns, r0 */
-//  __ASM volatile ("MSR msp, %0\n" : : "r" (topOfMainStack) : "sp");     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MSR msp_ns, %0" : : "r" (topOfMainStack) : "sp");
 }
-#endif 
+#endif
 
 
-/** \brief  Get Priority Mask
-
-    This function returns the current state of the priority mask bit from the Priority Mask Register.
-
-    \return               Priority Mask value
+/**
+  \brief   Get Priority Mask
+  \details Returns the current state of the priority mask bit from the Priority Mask Register.
+  \return               Priority Mask value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_PRIMASK(void)
 {
@@ -365,29 +331,25 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_PRIMASK(void)
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Get Priority Mask (non-secure)
-
-    This function returns the current state of the non-secure priority mask bit from the Priority Mask Register when in secure state.
-
-    \return               Priority Mask value
+/**
+  \brief   Get Priority Mask (non-secure)
+  \details Returns the current state of the non-secure priority mask bit from the Priority Mask Register when in secure state.
+  \return               Priority Mask value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_PRIMASK_NS(void)
 {
   uint32_t result;
 
-  __asm volatile (".long 0x8190F3EF" ::: "r1");                     /* MRS r1, primask_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, primask" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, primask_ns" : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Set Priority Mask
-
-    This function assigns the given value to the Priority Mask Register.
-
-    \param [in]    priMask  Priority Mask
+/**
+  \brief   Set Priority Mask
+  \details Assigns the given value to the Priority Mask Register.
+  \param [in]    priMask  Priority Mask
  */
 __attribute__((always_inline)) __STATIC_INLINE void __set_PRIMASK(uint32_t priMask)
 {
@@ -396,26 +358,24 @@ __attribute__((always_inline)) __STATIC_INLINE void __set_PRIMASK(uint32_t priMa
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Set Priority Mask (non-secure)
-
-    This function assigns the given value to the non-secure Priority Mask Register when in secure state.
-
-    \param [in]    priMask  Priority Mask
+/**
+  \brief   Set Priority Mask (non-secure)
+  \details Assigns the given value to the non-secure Priority Mask Register when in secure state.
+  \param [in]    priMask  Priority Mask
  */
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_PRIMASK_NS(uint32_t priMask)
 {
-  __asm volatile (".long 0x8890F380");                     /* MSR primask_ns, r0 */
-//  __ASM volatile ("MSR primask, %0" : : "r" (priMask) : "memory");     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MSR primask_ns, %0" : : "r" (priMask) : "memory");
 }
-#endif 
+#endif
 
 
-#if ((__ARM_ARCH_7M__ == 1U) || (__ARM_ARCH_8M__ == 1U))  /* ToDo:  ARMCC_V6: check if this is ok for cortex >=3 */
+#if ((__ARM_ARCH_7M__ == 1U) || (__ARM_ARCH_7EM__ == 1U) || (__ARM_ARCH_8M__ == 1U))  /* ToDo:  ARMCC_V6: check if this is ok for cortex >=3 */
 
-/** \brief  Enable FIQ
-
-    This function enables FIQ interrupts by clearing the F-bit in the CPSR.
-    Can only be executed in Privileged modes.
+/**
+  \brief   Enable FIQ
+  \details Enables FIQ interrupts by clearing the F-bit in the CPSR.
+           Can only be executed in Privileged modes.
  */
 __attribute__((always_inline)) __STATIC_INLINE void __enable_fault_irq(void)
 {
@@ -423,10 +383,10 @@ __attribute__((always_inline)) __STATIC_INLINE void __enable_fault_irq(void)
 }
 
 
-/** \brief  Disable FIQ
-
-    This function disables FIQ interrupts by setting the F-bit in the CPSR.
-    Can only be executed in Privileged modes.
+/**
+  \brief   Disable FIQ
+  \details Disables FIQ interrupts by setting the F-bit in the CPSR.
+           Can only be executed in Privileged modes.
  */
 __attribute__((always_inline)) __STATIC_INLINE void __disable_fault_irq(void)
 {
@@ -434,11 +394,10 @@ __attribute__((always_inline)) __STATIC_INLINE void __disable_fault_irq(void)
 }
 
 
-/** \brief  Get Base Priority
-
-    This function returns the current value of the Base Priority register.
-
-    \return               Base Priority register value
+/**
+  \brief   Get Base Priority
+  \details Returns the current value of the Base Priority register.
+  \return               Base Priority register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_BASEPRI(void)
 {
@@ -450,29 +409,25 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_BASEPRI(void)
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Get Base Priority (non-secure)
-
-    This function returns the current value of the non-secure Base Priority register when in secure state.
-
-    \return               Base Priority register value
+/**
+  \brief   Get Base Priority (non-secure)
+  \details Returns the current value of the non-secure Base Priority register when in secure state.
+  \return               Base Priority register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_BASEPRI_NS(void)
 {
   uint32_t result;
 
-  __asm volatile (".long 0x8191F3EF" ::: "r1");                     /* MRS r1, basepri_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, basepri" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, basepri_ns" : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Set Base Priority
-
-    This function assigns the given value to the Base Priority register.
-
-    \param [in]    basePri  Base Priority value to set
+/**
+  \brief   Set Base Priority
+  \details Assigns the given value to the Base Priority register.
+  \param [in]    basePri  Base Priority value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __set_BASEPRI(uint32_t value)
 {
@@ -481,26 +436,23 @@ __attribute__((always_inline)) __STATIC_INLINE void __set_BASEPRI(uint32_t value
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Set Base Priority (non-secure)
-
-    This function assigns the given value to the non-secure Base Priority register when in secure state.
-
-    \param [in]    basePri  Base Priority value to set
+/**
+  \brief   Set Base Priority (non-secure)
+  \details Assigns the given value to the non-secure Base Priority register when in secure state.
+  \param [in]    basePri  Base Priority value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_BASEPRI_NS(uint32_t value)
 {
-  __asm volatile (".long 0x8891F380");                     /* MSR basepri_ns, r0 */
-//  __ASM volatile ("MSR basepri, %0" : : "r" (value) : "memory");     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MSR basepri_ns, %0" : : "r" (value) : "memory");
 }
-#endif 
+#endif
 
 
-/** \brief  Set Base Priority with condition
-
-    This function assigns the given value to the Base Priority register only if BASEPRI masking is disabled,
-	or the new value increases the BASEPRI priority level.
-
-    \param [in]    basePri  Base Priority value to set
+/**
+  \brief   Set Base Priority with condition
+  \details Assigns the given value to the Base Priority register only if BASEPRI masking is disabled,
+           or the new value increases the BASEPRI priority level.
+  \param [in]    basePri  Base Priority value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __set_BASEPRI_MAX(uint32_t value)
 {
@@ -509,26 +461,23 @@ __attribute__((always_inline)) __STATIC_INLINE void __set_BASEPRI_MAX(uint32_t v
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Set Base Priority with condition (non_secure)
-
-    This function assigns the given value to the non-secure Base Priority register when in secure state only if BASEPRI masking is disabled,
-	or the new value increases the BASEPRI priority level.
-
-    \param [in]    basePri  Base Priority value to set
+/**
+  \brief   Set Base Priority with condition (non_secure)
+  \details Assigns the given value to the non-secure Base Priority register when in secure state only if BASEPRI masking is disabled,
+	       or the new value increases the BASEPRI priority level.
+  \param [in]    basePri  Base Priority value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_BASEPRI_MAX_NS(uint32_t value)
 {
-  __asm volatile (".long 0x8892F380");                     /* MSR basepri_max_ns, r0 */
-//  __ASM volatile ("MSR basepri_max, %0" : : "r" (value) : "memory");     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MSR basepri_max_ns, %0" : : "r" (value) : "memory");
 }
-#endif 
+#endif
 
 
-/** \brief  Get Fault Mask
-
-    This function returns the current value of the Fault Mask register.
-
-    \return               Fault Mask register value
+/**
+  \brief   Get Fault Mask
+  \details Returns the current value of the Fault Mask register.
+  \return               Fault Mask register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_FAULTMASK(void)
 {
@@ -540,29 +489,25 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_FAULTMASK(void)
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Get Fault Mask (non-secure)
-
-    This function returns the current value of the non-secure Fault Mask register when in secure state.
-
-    \return               Fault Mask register value
+/**
+  \brief   Get Fault Mask (non-secure)
+  \details Returns the current value of the non-secure Fault Mask register when in secure state.
+  \return               Fault Mask register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_FAULTMASK_NS(void)
 {
   uint32_t result;
 
-  __asm volatile (".long 0x8193F3EF" ::: "r1");                     /* MRS r1, faultmask_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, faultmask" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, faultmask_ns" : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Set Fault Mask
-
-    This function assigns the given value to the Fault Mask register.
-
-    \param [in]    faultMask  Fault Mask value to set
+/**
+  \brief   Set Fault Mask
+  \details Assigns the given value to the Fault Mask register.
+  \param [in]    faultMask  Fault Mask value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __set_FAULTMASK(uint32_t faultMask)
 {
@@ -571,18 +516,16 @@ __attribute__((always_inline)) __STATIC_INLINE void __set_FAULTMASK(uint32_t fau
 
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Set Fault Mask (non-secure)
-
-    This function assigns the given value to the non-secure Fault Mask register when in secure state.
-
-    \param [in]    faultMask  Fault Mask value to set
+/**
+  \brief   Set Fault Mask (non-secure)
+  \details Assigns the given value to the non-secure Fault Mask register when in secure state.
+  \param [in]    faultMask  Fault Mask value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_FAULTMASK_NS(uint32_t faultMask)
 {
-  __asm volatile (".long 0x8893F380");                     /* MSR basepri_max_ns, r0 */
-//  __ASM volatile ("MSR faultmask, %0" : : "r" (faultMask) : "memory");
+  __ASM volatile ("MSR faultmask_ns, %0" : : "r" (faultMask) : "memory");
 }
-#endif 
+#endif
 
 
 #endif /* ((__ARM_ARCH_7M__ == 1U) || (__ARM_ARCH_8M__ == 1U)) */
@@ -590,145 +533,126 @@ __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_FAULTMASK_NS(uint32
 
 #if (__ARM_ARCH_8M__ == 1U)
 
-/** \brief  Get Process Stack Pointer Limit
-
-    This function returns the current value of the Process Stack Pointer Limit (PSPLIM).
-
-    \return               PSPLIM Register value
+/**
+  \brief   Get Process Stack Pointer Limit
+  \details Returns the current value of the Process Stack Pointer Limit (PSPLIM).
+  \return               PSPLIM Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_PSPLIM(void)
 {
   register uint32_t result;
 
-  __asm volatile (".long 0x810BF3EF" ::: "r1");                     /* MRS r1, psplim */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, psplim\n"  : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, psplim"  : "=r" (result) );
   return(result);
 }
 
 
 #if  (__ARM_FEATURE_CMSE == 3U) && (__ARM_ARCH_PROFILE == 'M')     /* ToDo:  ARMCC_V6: check predefined macro for mainline */
-/** \brief  Get Process Stack Pointer Limit (non-secure)
-
-    This function returns the current value of the non-secure Process Stack Pointer Limit (PSPLIM) when in secure state.
-
-    \return               PSPLIM Register value
+/**
+  \brief   Get Process Stack Pointer Limit (non-secure)
+  \details Returns the current value of the non-secure Process Stack Pointer Limit (PSPLIM) when in secure state.
+  \return               PSPLIM Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_PSPLIM_NS(void)
 {
   register uint32_t result;
 
-  __asm volatile (".long 0x818BF3EF" ::: "r1");                     /* MRS r1, psplim_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, psplim\n"  : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, psplim_ns"  : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Set Process Stack Pointer Limit
-
-    This function assigns the given value to the Process Stack Pointer Limit (PSPLIM).
-
-    \param [in]    ProcStackPtrLimit  Process Stack Pointer Limit value to set
+/**
+  \brief   Set Process Stack Pointer Limit
+  \details Assigns the given value to the Process Stack Pointer Limit (PSPLIM).
+  \param [in]    ProcStackPtrLimit  Process Stack Pointer Limit value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __set_PSPLIM(uint32_t ProcStackPtrLimit)
 {
-  __asm volatile (".long 0x880BF380");                     /* MSR psplim, r0 */
-//  __ASM volatile ("MSR psplim, %0\n" : : "r" (ProcStackPtrLimit));     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MSR psplim, %0" : : "r" (ProcStackPtrLimit));
 }
 
 
 #if  (__ARM_FEATURE_CMSE == 3U) && (__ARM_ARCH_PROFILE == 'M')     /* ToDo:  ARMCC_V6: check predefined macro for mainline */
-/** \brief  Set Process Stack Pointer (non-secure)
-
-    This function assigns the given value to the non-secure Process Stack Pointer Limit (PSPLIM) when in secure state.
-
-    \param [in]    ProcStackPtrLimit  Process Stack Pointer Limit value to set
+/**
+  \brief   Set Process Stack Pointer (non-secure)
+  \details Assigns the given value to the non-secure Process Stack Pointer Limit (PSPLIM) when in secure state.
+  \param [in]    ProcStackPtrLimit  Process Stack Pointer Limit value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_PSPLIM_NS(uint32_t ProcStackPtrLimit)
 {
-  __asm volatile (".long 0x888BF380");                     /* MSR psplim_ns, r0 */
- // __ASM volatile ("MSR psplim, %0\n" : : "r" (ProcStackPtrLimit));     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MSR psplim_ns, %0\n" : : "r" (ProcStackPtrLimit));
 }
-#endif 
+#endif
 
 
-/** \brief  Get Main Stack Pointer Limit
-
-    This function returns the current value of the Main Stack Pointer Limit (MSPLIM).
-
-    \return               MSPLIM Register value
+/**
+  \brief   Get Main Stack Pointer Limit
+  \details Returns the current value of the Main Stack Pointer Limit (MSPLIM).
+  \return               MSPLIM Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_MSPLIM(void)
 {
   register uint32_t result;
 
-  __asm volatile (".long 0x810AF3EF" ::: "r1");                     /* MRS r1, msplim */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, msplim\n" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
-  
+  __ASM volatile ("MRS %0, msplim" : "=r" (result) );
+
   return(result);
 }
 
 
 #if  (__ARM_FEATURE_CMSE == 3U) && (__ARM_ARCH_PROFILE == 'M')     /* ToDo:  ARMCC_V6: check predefined macro for mainline */
-/** \brief  Get Main Stack Pointer Limit (non-secure)
-
-    This function returns the current value of the non-secure Main Stack Pointer Limit(MSPLIM) when in secure state.
-
-    \return               MSPLIM Register value
+/**
+  \brief   Get Main Stack Pointer Limit (non-secure)
+  \details Returns the current value of the non-secure Main Stack Pointer Limit(MSPLIM) when in secure state.
+  \return               MSPLIM Register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_MSPLIM_NS(void)
 {
   register uint32_t result;
 
-  __asm volatile (".long 0x818AF3EF" ::: "r1");                     /* MRS r1, msplim_ns */
-  __asm volatile ("MOV %0, r1" : "=r" (result));
-//  __ASM volatile ("MRS %0, msplim\n" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MRS %0, msplim_ns" : "=r" (result) );
   return(result);
 }
-#endif 
+#endif
 
 
-/** \brief  Set Main Stack Pointer Limit
-
-    This function assigns the given value to the Main Stack Pointer Limit (MSPLIM).
-
-    \param [in]    MainStackPtrLimit  Main Stack Pointer Limit value to set
+/**
+  \brief   Set Main Stack Pointer Limit
+  \details Assigns the given value to the Main Stack Pointer Limit (MSPLIM).
+  \param [in]    MainStackPtrLimit  Main Stack Pointer Limit value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __set_MSPLIM(uint32_t MainStackPtrLimit)
 {
-  __asm volatile (".long 0x880AF380");                     /* MSR psplim, r0 */
-//  __ASM volatile ("MSR msplim, %0\n" : : "r" (MainStackPtrLimit));     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MSR msplim, %0" : : "r" (MainStackPtrLimit));
 }
 
 
 #if  (__ARM_FEATURE_CMSE == 3U) && (__ARM_ARCH_PROFILE == 'M')     /* ToDo:  ARMCC_V6: check predefined macro for mainline */
-/** \brief  Set Main Stack Pointer Limit (non-secure)
-
-    This function assigns the given value to the non-secure Main Stack Pointer Limit (MSPLIM) when in secure state.
-
-    \param [in]    MainStackPtrLimit  Main Stack Pointer value to set
+/**
+  \brief   Set Main Stack Pointer Limit (non-secure)
+  \details Assigns the given value to the non-secure Main Stack Pointer Limit (MSPLIM) when in secure state.
+  \param [in]    MainStackPtrLimit  Main Stack Pointer value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_MSPLIM_NS(uint32_t MainStackPtrLimit)
 {
-  __asm volatile (".long 0x888AF380");                     /* MSR msplim_ns, r0 */
-//  __ASM volatile ("MSR msplim, %0\n" : : "r" (MainStackPtrLimit));     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("MSR msplim_ns, %0" : : "r" (MainStackPtrLimit));
 }
-#endif 
+#endif
 
 #endif /* (__ARM_ARCH_8M__ == 1U) */
 
 
-#if       (__CORTEX_M == 0x04U) || (__CORTEX_M == 0x07U)      /* ToDo:  ARMCC_V6: This should be ARCH == ARMv7-M */
+#if ((__ARM_ARCH_7EM__ == 1U) || (__ARM_ARCH_8M__ == 1U))  /* ToDo:  ARMCC_V6: check if this is ok for cortex >=4 */
 
-/** \brief  Get FPSCR
-
-    This function returns the current value of the Floating Point Status/Control register.
-
-    \return               Floating Point Status/Control register value
+/**
+  \brief   Get FPSCR
+  \details eturns the current value of the Floating Point Status/Control register.
+  \return               Floating Point Status/Control register value
  */
+#define __get_FPSCR      __builtin_arm_get_fpscr
+#if 0
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_FPSCR(void)
 {
 #if (__FPU_PRESENT == 1U) && (__FPU_USED == 1U)
@@ -742,14 +666,13 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __get_FPSCR(void)
    return(0);
 #endif
 }
-
+#endif
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Get FPSCR (non-secure)
-
-    This function returns the current value of the non-secure Floating Point Status/Control register when in secure state.
-
-    \return               Floating Point Status/Control register value
+/**
+  \brief   Get FPSCR (non-secure)
+  \details Returns the current value of the non-secure Floating Point Status/Control register when in secure state.
+  \return               Floating Point Status/Control register value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_FPSCR_NS(void)
 {
@@ -757,50 +680,50 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_FPSCR_NS(void)
   uint32_t result;
 
   __ASM volatile ("");                                 /* Empty asm statement works as a scheduling barrier */
-  __ASM volatile ("VMRS %0, fpscr" : "=r" (result) );     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("VMRS %0, fpscr_ns" : "=r" (result) );
   __ASM volatile ("");
   return(result);
 #else
    return(0);
 #endif
 }
-#endif 
+#endif
 
 
-/** \brief  Set FPSCR
-
-    This function assigns the given value to the Floating Point Status/Control register.
-
-    \param [in]    fpscr  Floating Point Status/Control value to set
+/**
+  \brief   Set FPSCR
+  \details Assigns the given value to the Floating Point Status/Control register.
+  \param [in]    fpscr  Floating Point Status/Control value to set
  */
+#define __set_FPSCR      __builtin_arm_set_fpscr
+#if 0
 __attribute__((always_inline)) __STATIC_INLINE void __set_FPSCR(uint32_t fpscr)
 {
 #if (__FPU_PRESENT == 1U) && (__FPU_USED == 1U)
   __ASM volatile ("");                                 /* Empty asm statement works as a scheduling barrier */
-  __ASM volatile ("VMSR fpscr, %0" : : "r" (fpscr) : "vfpcc");     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("VMSR fpscr, %0" : : "r" (fpscr) : "vfpcc");
   __ASM volatile ("");
 #endif
 }
-
+#endif
 
 #if  (__ARM_FEATURE_CMSE == 3U)
-/** \brief  Set FPSCR (non-secure)
-
-    This function assigns the given value to the non-secure Floating Point Status/Control register when in secure state.
-
-    \param [in]    fpscr  Floating Point Status/Control value to set
+/**
+  \brief   Set FPSCR (non-secure)
+  \details Assigns the given value to the non-secure Floating Point Status/Control register when in secure state.
+  \param [in]    fpscr  Floating Point Status/Control value to set
  */
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_FPSCR_NS(uint32_t fpscr)
 {
 #if (__FPU_PRESENT == 1U) && (__FPU_USED == 1U)
   __ASM volatile ("");                                 /* Empty asm statement works as a scheduling barrier */
-  __ASM volatile ("VMSR fpscr, %0" : : "r" (fpscr) : "vfpcc");     /* ToDo:  ARMCC_V6: needs to be checked which register name to use */
+  __ASM volatile ("VMSR fpscr_ns, %0" : : "r" (fpscr) : "vfpcc");
   __ASM volatile ("");
 #endif
 }
-#endif 
+#endif
 
-#endif /* (__CORTEX_M == 0x04U) || (__CORTEX_M == 0x07U) */
+#endif /* ((__ARM_ARCH_7EM__ == 1U) || (__ARM_ARCH_8M__ == 1U)) */
 
 
 
@@ -814,8 +737,8 @@ __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_FPSCR_NS(uint32_t f
 */
 
 /* Define macros for porting to both thumb1 and thumb2.
- * For thumb1, use low register (r0-r7), specified by constrant "l"
- * Otherwise, use general registers, specified by constrant "r" */
+ * For thumb1, use low register (r0-r7), specified by constraint "l"
+ * Otherwise, use general registers, specified by constraint "r" */
 #if defined (__thumb__) && !defined (__thumb2__)
 #define __CMSIS_GCC_OUT_REG(r) "=l" (r)
 #define __CMSIS_GCC_USE_REG(r) "l" (r)
@@ -824,77 +747,75 @@ __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_FPSCR_NS(uint32_t f
 #define __CMSIS_GCC_USE_REG(r) "r" (r)
 #endif
 
-/** \brief  No Operation
-
-    No Operation does nothing. This instruction can be used for code alignment purposes.
+/**
+  \brief   No Operation
+  \details No Operation does nothing. This instruction can be used for code alignment purposes.
  */
 #define __NOP          __builtin_arm_nop
 
-/** \brief  Wait For Interrupt
-
-    Wait For Interrupt is a hint instruction that suspends execution
-    until one of a number of events occurs.
+/**
+  \brief   Wait For Interrupt
+  \details Wait For Interrupt is a hint instruction that suspends execution until one of a number of events occurs.
  */
 #define __WFI          __builtin_arm_wfi
 
 
-/** \brief  Wait For Event
-
-    Wait For Event is a hint instruction that permits the processor to enter
-    a low-power state until one of a number of events occurs.
+/**
+  \brief   Wait For Event
+  \details Wait For Event is a hint instruction that permits the processor to enter
+           a low-power state until one of a number of events occurs.
  */
 #define __WFE          __builtin_arm_wfe
 
 
-/** \brief  Send Event
-
-    Send Event is a hint instruction. It causes an event to be signaled to the CPU.
+/**
+  \brief   Send Event
+  \details Send Event is a hint instruction. It causes an event to be signaled to the CPU.
  */
 #define __SEV          __builtin_arm_sev
 
 
-/** \brief  Instruction Synchronization Barrier
-
-    Instruction Synchronization Barrier flushes the pipeline in the processor,
-    so that all instructions following the ISB are fetched from cache or
-    memory, after the instruction has been completed.
+/**
+  \brief   Instruction Synchronization Barrier
+  \details Instruction Synchronization Barrier flushes the pipeline in the processor,
+           so that all instructions following the ISB are fetched from cache or memory,
+           after the instruction has been completed.
  */
 #define __ISB()        __builtin_arm_isb(0xF);
 
-/** \brief  Data Synchronization Barrier
-
-    This function acts as a special kind of Data Memory Barrier.
-    It completes when all explicit memory accesses before this instruction complete.
+/**
+  \brief   Data Synchronization Barrier
+  \details Acts as a special kind of Data Memory Barrier.
+           It completes when all explicit memory accesses before this instruction complete.
  */
 #define __DSB()        __builtin_arm_dsb(0xF);
 
 
-/** \brief  Data Memory Barrier
-
-    This function ensures the apparent order of the explicit memory operations before
-    and after the instruction, without ensuring their completion.
+/**
+  \brief   Data Memory Barrier
+  \details Ensures the apparent order of the explicit memory operations before
+           and after the instruction, without ensuring their completion.
  */
 #define __DMB()        __builtin_arm_dmb(0xF);
 
 
-/** \brief  Reverse byte order (32 bit)
-
-    This function reverses the byte order in integer value.
-
-    \param [in]    value  Value to reverse
-    \return               Reversed value
+/**
+  \brief   Reverse byte order (32 bit)
+  \details Reverses the byte order in integer value.
+  \param [in]    value  Value to reverse
+  \return               Reversed value
  */
 #define __REV          __builtin_bswap32
 
 
-/** \brief  Reverse byte order (16 bit)
-
-    This function reverses the byte order in two unsigned short values.
-
-    \param [in]    value  Value to reverse
-    \return               Reversed value
+/**
+  \brief   Reverse byte order (16 bit)
+  \details Reverses the byte order in two unsigned short values.
+  \param [in]    value  Value to reverse
+  \return               Reversed value
  */
-                                                          /* ToDo:  ARMCC_V6: check if __builtin_bswap16 could be used */
+#define __REV16          __builtin_bswap16                           /* ToDo:  ARMCC_V6: check if __builtin_bswap16 could be used */
+#if 0
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __REV16(uint32_t value)
 {
   uint32_t result;
@@ -902,14 +823,14 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __REV16(uint32_t value)
   __ASM volatile ("rev16 %0, %1" : __CMSIS_GCC_OUT_REG (result) : __CMSIS_GCC_USE_REG (value) );
   return(result);
 }
+#endif
 
 
-/** \brief  Reverse byte order in signed short value
-
-    This function reverses the byte order in a signed short value with sign extension to integer.
-
-    \param [in]    value  Value to reverse
-    \return               Reversed value
+/**
+  \brief   Reverse byte order in signed short value
+  \details Reverses the byte order in a signed short value with sign extension to integer.
+  \param [in]    value  Value to reverse
+  \return               Reversed value
  */
                                                           /* ToDo:  ARMCC_V6: check if __builtin_bswap16 could be used */
 __attribute__((always_inline)) __STATIC_INLINE int32_t __REVSH(int32_t value)
@@ -921,13 +842,12 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t __REVSH(int32_t value)
 }
 
 
-/** \brief  Rotate Right in unsigned value (32 bit)
-
-    This function Rotate Right (immediate) provides the value of the contents of a register rotated by a variable number of bits.
-
-    \param [in]    op1  Value to rotate
-    \param [in]    op2  Number of Bits to rotate
-    \return               Rotated value
+/**
+  \brief   Rotate Right in unsigned value (32 bit)
+  \details Rotate Right (immediate) provides the value of the contents of a register rotated by a variable number of bits.
+  \param [in]    op1  Value to rotate
+  \param [in]    op2  Number of Bits to rotate
+  \return               Rotated value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __ROR(uint32_t op1, uint32_t op2)
 {
@@ -935,172 +855,163 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __ROR(uint32_t op1, uint
 }
 
 
-/** \brief  Breakpoint
-
-    This function causes the processor to enter Debug state.
-    Debug tools can use this to investigate system state when the instruction at a particular address is reached.
-
+/**
+  \brief   Breakpoint
+  \details Causes the processor to enter Debug state.
+            Debug tools can use this to investigate system state when the instruction at a particular address is reached.
     \param [in]    value  is ignored by the processor.
                    If required, a debugger can use it to store additional information about the breakpoint.
  */
 #define __BKPT(value)                       __ASM volatile ("bkpt "#value)
 
 
-/** \brief  Reverse bit order of value
-
-    This function reverses the bit order of the given value.
-
-    \param [in]    value  Value to reverse
-    \return               Reversed value
+/**
+  \brief   Reverse bit order of value
+  \details Reverses the bit order of the given value.
+  \param [in]    value  Value to reverse
+  \return               Reversed value
  */
                                                           /* ToDo:  ARMCC_V6: check if __builtin_arm_rbit is supported */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __RBIT(uint32_t value)
 {
   uint32_t result;
 
-#if ((__ARM_ARCH_7M__ == 1U) || (__ARM_ARCH_8M__ == 1U))  /* ToDo:  ARMCC_V6: check if this is ok for cortex >=3 */
+#if ((__ARM_ARCH_7M__ == 1U) || (__ARM_ARCH_7EM__ == 1U) || (__ARM_ARCH_8M__ == 1U))  /* ToDo:  ARMCC_V6: check if this is ok for cortex >=3 */
    __ASM volatile ("rbit %0, %1" : "=r" (result) : "r" (value) );
 #else
-  int32_t s = 4 /*sizeof(v)*/ * 8 - 1; // extra shift needed at end
+  int32_t s = 4 /*sizeof(v)*/ * 8 - 1; /* extra shift needed at end */
 
-  result = value;                      // r will be reversed bits of v; first get LSB of v
+  result = value;                      /* r will be reversed bits of v; first get LSB of v */
   for (value >>= 1U; value; value >>= 1U)
   {
     result <<= 1U;
     result |= value & 1U;
     s--;
   }
-  result <<= s;                       // shift when v's highest bits are zero
+  result <<= s;                        /* shift when v's highest bits are zero */
 #endif
   return(result);
 }
 
 
-/** \brief  Count leading zeros
-
-    This function counts the number of leading zeros of a data value.
-
-    \param [in]  value  Value to count the leading zeros
-    \return             number of leading zeros in value
+/**
+  \brief   Count leading zeros
+  \details Counts the number of leading zeros of a data value.
+  \param [in]  value  Value to count the leading zeros
+  \return             number of leading zeros in value
  */
 #define __CLZ             __builtin_clz
 
 
-#if ((__ARM_ARCH_7M__ == 1U) || (__ARM_ARCH_8M__ == 1U))  /* ToDo:  ARMCC_V6: check if this is ok for cortex >=3 */
+#if ((__ARM_ARCH_7M__ == 1U) || (__ARM_ARCH_7EM__ == 1U) || (__ARM_ARCH_8M__ == 1U))  /* ToDo:  ARMCC_V6: check if this is ok for cortex >=3 */
 
-/** \brief  LDR Exclusive (8 bit)
-
-    This function executes a exclusive LDR instruction for 8 bit value.
-
-    \param [in]    ptr  Pointer to data
-    \return             value of type uint8_t at (*ptr)
+/**
+  \brief   LDR Exclusive (8 bit)
+  \details Executes a exclusive LDR instruction for 8 bit value.
+  \param [in]    ptr  Pointer to data
+  \return             value of type uint8_t at (*ptr)
  */
 #define __LDREXB        (uint8_t)__builtin_arm_ldrex
 
 
-/** \brief  LDR Exclusive (16 bit)
-
-    This function executes a exclusive LDR instruction for 16 bit values.
-
-    \param [in]    ptr  Pointer to data
-    \return        value of type uint16_t at (*ptr)
+/**
+  \brief   LDR Exclusive (16 bit)
+  \details Executes a exclusive LDR instruction for 16 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint16_t at (*ptr)
  */
 #define __LDREXH        (uint16_t)__builtin_arm_ldrex
 
 
-/** \brief  LDR Exclusive (32 bit)
-
-    This function executes a exclusive LDR instruction for 32 bit values.
-
-    \param [in]    ptr  Pointer to data
-    \return        value of type uint32_t at (*ptr)
+/**
+  \brief   LDR Exclusive (32 bit)
+  \details Executes a exclusive LDR instruction for 32 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint32_t at (*ptr)
  */
 #define __LDREXW        (uint32_t)__builtin_arm_ldrex
 
 
-/** \brief  STR Exclusive (8 bit)
-
-    This function executes a exclusive STR instruction for 8 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
-    \return          0  Function succeeded
-    \return          1  Function failed
+/**
+  \brief   STR Exclusive (8 bit)
+  \details Executes a exclusive STR instruction for 8 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
+  \return          0  Function succeeded
+  \return          1  Function failed
  */
 #define __STREXB        (uint32_t)__builtin_arm_strex
 
 
-/** \brief  STR Exclusive (16 bit)
-
-    This function executes a exclusive STR instruction for 16 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
-    \return          0  Function succeeded
-    \return          1  Function failed
+/**
+  \brief   STR Exclusive (16 bit)
+  \details Executes a exclusive STR instruction for 16 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
+  \return          0  Function succeeded
+  \return          1  Function failed
  */
 #define __STREXH        (uint32_t)__builtin_arm_strex
 
 
-/** \brief  STR Exclusive (32 bit)
-
-    This function executes a exclusive STR instruction for 32 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
-    \return          0  Function succeeded
-    \return          1  Function failed
+/**
+  \brief   STR Exclusive (32 bit)
+  \details Executes a exclusive STR instruction for 32 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
+  \return          0  Function succeeded
+  \return          1  Function failed
  */
 #define __STREXW        (uint32_t)__builtin_arm_strex
 
 
-/** \brief  Remove the exclusive lock
-
-    This function removes the exclusive lock which is created by LDREX.
-
+/**
+  \brief   Remove the exclusive lock
+  \details Removes the exclusive lock which is created by LDREX.
  */
 #define __CLREX             __builtin_arm_clrex
 
 
-/** \brief  Signed Saturate
-
-    This function saturates a signed value.
-
-    \param [in]  value  Value to be saturated
-    \param [in]    sat  Bit position to saturate to (1..32)
-    \return             Saturated value
+/**
+  \brief   Signed Saturate
+  \details Saturates a signed value.
+  \param [in]  value  Value to be saturated
+  \param [in]    sat  Bit position to saturate to (1..32)
+  \return             Saturated value
  */
+/*#define __SSAT             __builtin_arm_ssat*/
 #define __SSAT(ARG1,ARG2) \
 ({                          \
-  uint32_t __RES, __ARG1 = (ARG1); \
+  int32_t __RES, __ARG1 = (ARG1); \
   __ASM ("ssat %0, %1, %2" : "=r" (__RES) :  "I" (ARG2), "r" (__ARG1) ); \
   __RES; \
  })
 
 
-/** \brief  Unsigned Saturate
-
-    This function saturates an unsigned value.
-
-    \param [in]  value  Value to be saturated
-    \param [in]    sat  Bit position to saturate to (0..31)
-    \return             Saturated value
+/**
+  \brief   Unsigned Saturate
+  \details Saturates an unsigned value.
+  \param [in]  value  Value to be saturated
+  \param [in]    sat  Bit position to saturate to (0..31)
+  \return             Saturated value
  */
+#define __USAT             __builtin_arm_usat
+#if 0
 #define __USAT(ARG1,ARG2) \
 ({                          \
   uint32_t __RES, __ARG1 = (ARG1); \
   __ASM ("usat %0, %1, %2" : "=r" (__RES) :  "I" (ARG2), "r" (__ARG1) ); \
   __RES; \
  })
+#endif
 
 
-/** \brief  Rotate Right with Extend (32 bit)
-
-    This function moves each bit of a bitstring right by one bit.
-    The carry input is shifted in at the left end of the bitstring.
-
-    \param [in]    value  Value to rotate
-    \return               Rotated value
+/**
+  \brief   Rotate Right with Extend (32 bit)
+  \details Moves each bit of a bitstring right by one bit.
+           The carry input is shifted in at the left end of the bitstring.
+  \param [in]    value  Value to rotate
+  \return               Rotated value
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __RRX(uint32_t value)
 {
@@ -1111,12 +1022,11 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __RRX(uint32_t value)
 }
 
 
-/** \brief  LDRT Unprivileged (8 bit)
-
-    This function executes a Unprivileged LDRT instruction for 8 bit value.
-
-    \param [in]    ptr  Pointer to data
-    \return             value of type uint8_t at (*ptr)
+/**
+  \brief   LDRT Unprivileged (8 bit)
+  \details Executes a Unprivileged LDRT instruction for 8 bit value.
+  \param [in]    ptr  Pointer to data
+  \return             value of type uint8_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint8_t __LDRBT(volatile uint8_t *ptr)
 {
@@ -1127,12 +1037,11 @@ __attribute__((always_inline)) __STATIC_INLINE uint8_t __LDRBT(volatile uint8_t 
 }
 
 
-/** \brief  LDRT Unprivileged (16 bit)
-
-    This function executes a Unprivileged LDRT instruction for 16 bit values.
-
-    \param [in]    ptr  Pointer to data
-    \return        value of type uint16_t at (*ptr)
+/**
+  \brief   LDRT Unprivileged (16 bit)
+  \details Executes a Unprivileged LDRT instruction for 16 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint16_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint16_t __LDRHT(volatile uint16_t *ptr)
 {
@@ -1143,12 +1052,11 @@ __attribute__((always_inline)) __STATIC_INLINE uint16_t __LDRHT(volatile uint16_
 }
 
 
-/** \brief  LDRT Unprivileged (32 bit)
-
-    This function executes a Unprivileged LDRT instruction for 32 bit values.
-
-    \param [in]    ptr  Pointer to data
-    \return        value of type uint32_t at (*ptr)
+/**
+  \brief   LDRT Unprivileged (32 bit)
+  \details Executes a Unprivileged LDRT instruction for 32 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint32_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __LDRT(volatile uint32_t *ptr)
 {
@@ -1159,12 +1067,11 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __LDRT(volatile uint32_t
 }
 
 
-/** \brief  STRT Unprivileged (8 bit)
-
-    This function executes a Unprivileged STRT instruction for 8 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
+/**
+  \brief   STRT Unprivileged (8 bit)
+  \details Executes a Unprivileged STRT instruction for 8 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STRBT(uint8_t value, volatile uint8_t *ptr)
 {
@@ -1172,12 +1079,11 @@ __attribute__((always_inline)) __STATIC_INLINE void __STRBT(uint8_t value, volat
 }
 
 
-/** \brief  STRT Unprivileged (16 bit)
-
-    This function executes a Unprivileged STRT instruction for 16 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
+/**
+  \brief   STRT Unprivileged (16 bit)
+  \details Executes a Unprivileged STRT instruction for 16 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STRHT(uint16_t value, volatile uint16_t *ptr)
 {
@@ -1185,29 +1091,27 @@ __attribute__((always_inline)) __STATIC_INLINE void __STRHT(uint16_t value, vola
 }
 
 
-/** \brief  STRT Unprivileged (32 bit)
-
-    This function executes a Unprivileged STRT instruction for 32 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
+/**
+  \brief   STRT Unprivileged (32 bit)
+  \details Executes a Unprivileged STRT instruction for 32 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STRT(uint32_t value, volatile uint32_t *ptr)
 {
    __ASM volatile ("strt %1, %0" : "=Q" (*ptr) : "r" (value) );
 }
 
-#endif /* ((__ARM_ARCH_7M__ == 1U) || (__ARM_ARCH_8M__ == 1U)) */
+#endif /* ((__ARM_ARCH_7M__ == 1U) || (__ARM_ARCH_7EM__ == 1U) || (__ARM_ARCH_8M__ == 1U)) */
 
 
 #if (__ARM_ARCH_8M__ == 1U)
 
-/** \brief Load-Acquire (8 bit)
-
-    This function executes a LDAB instruction for 8 bit value.
-
-    \param [in]    ptr  Pointer to data
-    \return             value of type uint8_t at (*ptr)
+/**
+  \brief   Load-Acquire (8 bit)
+  \details Executes a LDAB instruction for 8 bit value.
+  \param [in]    ptr  Pointer to data
+  \return             value of type uint8_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint8_t __LDAB(volatile uint8_t *ptr)
 {
@@ -1218,12 +1122,11 @@ __attribute__((always_inline)) __STATIC_INLINE uint8_t __LDAB(volatile uint8_t *
 }
 
 
-/** \brief  Load-Acquire (16 bit)
-
-    This function executes a LDAH instruction for 16 bit values.
-
-    \param [in]    ptr  Pointer to data
-    \return        value of type uint16_t at (*ptr)
+/**
+  \brief   Load-Acquire (16 bit)
+  \details Executes a LDAH instruction for 16 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint16_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint16_t __LDAH(volatile uint16_t *ptr)
 {
@@ -1234,12 +1137,11 @@ __attribute__((always_inline)) __STATIC_INLINE uint16_t __LDAH(volatile uint16_t
 }
 
 
-/** \brief  Load-Acquire (32 bit)
-
-    This function executes a LDA instruction for 32 bit values.
-
-    \param [in]    ptr  Pointer to data
-    \return        value of type uint32_t at (*ptr)
+/**
+  \brief   Load-Acquire (32 bit)
+  \details Executes a LDA instruction for 32 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint32_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __LDA(volatile uint32_t *ptr)
 {
@@ -1250,12 +1152,11 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __LDA(volatile uint32_t 
 }
 
 
-/** \brief  Store-Release (8 bit)
-
-    This function executes a STLB instruction for 8 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
+/**
+  \brief   Store-Release (8 bit)
+  \details Executes a STLB instruction for 8 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STLB(uint8_t value, volatile uint8_t *ptr)
 {
@@ -1263,12 +1164,11 @@ __attribute__((always_inline)) __STATIC_INLINE void __STLB(uint8_t value, volati
 }
 
 
-/** \brief  Store-Release (16 bit)
-
-    This function executes a STLH instruction for 16 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
+/**
+  \brief   Store-Release (16 bit)
+  \details Executes a STLH instruction for 16 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STLH(uint16_t value, volatile uint16_t *ptr)
 {
@@ -1276,12 +1176,11 @@ __attribute__((always_inline)) __STATIC_INLINE void __STLH(uint16_t value, volat
 }
 
 
-/** \brief  Store-Release (32 bit)
-
-    This function executes a STL instruction for 32 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
+/**
+  \brief   Store-Release (32 bit)
+  \details Executes a STL instruction for 32 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STL(uint32_t value, volatile uint32_t *ptr)
 {
@@ -1289,68 +1188,62 @@ __attribute__((always_inline)) __STATIC_INLINE void __STL(uint32_t value, volati
 }
 
 
-/** \brief  Load-Acquire Exclusive (8 bit)
-
-    This function executes a LDAB exclusive instruction for 8 bit value.
-
-    \param [in]    ptr  Pointer to data
-    \return             value of type uint8_t at (*ptr)
+/**
+  \brief   Load-Acquire Exclusive (8 bit)
+  \details Executes a LDAB exclusive instruction for 8 bit value.
+  \param [in]    ptr  Pointer to data
+  \return             value of type uint8_t at (*ptr)
  */
 #define     __LDAEXB                 (uint8_t)__builtin_arm_ldaex
 
 
-/** \brief  Load-Acquire Exclusive (16 bit)
-
-    This function executes a LDAH exclusive instruction for 16 bit values.
-
-    \param [in]    ptr  Pointer to data
-    \return        value of type uint16_t at (*ptr)
+/**
+  \brief   Load-Acquire Exclusive (16 bit)
+  \details Executes a LDAH exclusive instruction for 16 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint16_t at (*ptr)
  */
 #define     __LDAEXH                 (uint16_t)__builtin_arm_ldaex
 
 
-/** \brief  Load-Acquire Exclusive (32 bit)
-
-    This function executes a LDA exclusive instruction for 32 bit values.
-
-    \param [in]    ptr  Pointer to data
-    \return        value of type uint32_t at (*ptr)
+/**
+  \brief   Load-Acquire Exclusive (32 bit)
+  \details Executes a LDA exclusive instruction for 32 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint32_t at (*ptr)
  */
 #define     __LDAEX                  (uint32_t)__builtin_arm_ldaex
 
 
-/** \brief Store-Release Exclusive (8 bit)
-
-    This function executes a STLB exclusive instruction for 8 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
-    \return          0  Function succeeded
-    \return          1  Function failed
+/**
+  \brief   Store-Release Exclusive (8 bit)
+  \details Executes a STLB exclusive instruction for 8 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
+  \return          0  Function succeeded
+  \return          1  Function failed
  */
 #define     __STLEXB                 (uint32_t)__builtin_arm_stlex
 
 
-/** \brief  Store-Release Exclusive (16 bit)
-
-    This function executes a STLH exclusive instruction for 16 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
-    \return          0  Function succeeded
-    \return          1  Function failed
+/**
+  \brief   Store-Release Exclusive (16 bit)
+  \details Executes a STLH exclusive instruction for 16 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
+  \return          0  Function succeeded
+  \return          1  Function failed
  */
 #define     __STLEXH                 (uint32_t)__builtin_arm_stlex
 
 
-/** \brief  Store-Release Exclusive (32 bit)
-
-    This function executes a STL exclusive instruction for 32 bit values.
-
-    \param [in]  value  Value to store
-    \param [in]    ptr  Pointer to location
-    \return          0  Function succeeded
-    \return          1  Function failed
+/**
+  \brief   Store-Release Exclusive (32 bit)
+  \details Executes a STL exclusive instruction for 32 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
+  \return          0  Function succeeded
+  \return          1  Function failed
  */
 #define     __STLEX                  (uint32_t)__builtin_arm_stlex
 
@@ -1365,7 +1258,7 @@ __attribute__((always_inline)) __STATIC_INLINE void __STL(uint32_t value, volati
   @{
 */
 
-#if (__CORTEX_M >= 0x04)        /* ToDo:  ARMCC_V6: This should be ARCH >= ARMv7-M + SIMD */
+#if (__ARM_FEATURE_DSP == 1U)        /* ToDo:  ARMCC_V6: This should be ARCH >= ARMv7-M + SIMD */
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SADD8(uint32_t op1, uint32_t op2)
 {
@@ -1759,9 +1652,9 @@ __attribute__((always_inline)) __STATIC_INLINE uint64_t __SMLALD (uint32_t op1, 
   } llr;
   llr.w64 = acc;
 
-#ifndef __ARMEB__   // Little endian
+#ifndef __ARMEB__   /* Little endian */
   __ASM volatile ("smlald %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
-#else               // Big endian
+#else               /* Big endian */
   __ASM volatile ("smlald %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
 
@@ -1776,9 +1669,9 @@ __attribute__((always_inline)) __STATIC_INLINE uint64_t __SMLALDX (uint32_t op1,
   } llr;
   llr.w64 = acc;
 
-#ifndef __ARMEB__   // Little endian
+#ifndef __ARMEB__   /* Little endian */
   __ASM volatile ("smlaldx %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
-#else               // Big endian
+#else               /* Big endian */
   __ASM volatile ("smlaldx %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
 
@@ -1825,9 +1718,9 @@ __attribute__((always_inline)) __STATIC_INLINE uint64_t __SMLSLD (uint32_t op1, 
   } llr;
   llr.w64 = acc;
 
-#ifndef __ARMEB__   // Little endian
+#ifndef __ARMEB__   /* Little endian */
   __ASM volatile ("smlsld %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
-#else               // Big endian
+#else               /* Big endian */
   __ASM volatile ("smlsld %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
 
@@ -1842,9 +1735,9 @@ __attribute__((always_inline)) __STATIC_INLINE uint64_t __SMLSLDX (uint32_t op1,
   } llr;
   llr.w64 = acc;
 
-#ifndef __ARMEB__   // Little endian
+#ifndef __ARMEB__   /* Little endian */
   __ASM volatile ("smlsldx %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
-#else               // Big endian
+#else               /* Big endian */
   __ASM volatile ("smlsldx %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
 
@@ -1859,17 +1752,17 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __SEL  (uint32_t op1, ui
   return(result);
 }
 
-__attribute__((always_inline)) __STATIC_INLINE uint32_t __QADD(uint32_t op1, uint32_t op2)
+__attribute__((always_inline)) __STATIC_INLINE  int32_t __QADD( int32_t op1,  int32_t op2)
 {
-  uint32_t result;
+  int32_t result;
 
   __ASM volatile ("qadd %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
   return(result);
 }
 
-__attribute__((always_inline)) __STATIC_INLINE uint32_t __QSUB(uint32_t op1, uint32_t op2)
+__attribute__((always_inline)) __STATIC_INLINE  int32_t __QSUB( int32_t op1,  int32_t op2)
 {
-  uint32_t result;
+  int32_t result;
 
   __ASM volatile ("qsub %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
   return(result);
@@ -1900,7 +1793,7 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __SMMLA (int32_t op1, in
  return(result);
 }
 
-#endif /* (__CORTEX_M >= 0x04) */
+#endif /* (__ARM_FEATURE_DSP == 1U) */
 /*@} end of group CMSIS_SIMD_intrinsics */
 
 

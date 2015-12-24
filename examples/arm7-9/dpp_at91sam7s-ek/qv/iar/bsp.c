@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP on AT91SAM7S-EK, QK kernel, IAR-ARM
-* Last Updated for Version: 5.5.0
-* Date of the Last Update:  2015-08-26
+* Last updated for version 5.6.0
+* Last updated on  2015-12-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -280,7 +280,7 @@ void QV_onIdle(void) { /* NOTE: called with interrupts DISABLED */
 #endif
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM *module, int loc) {
+void Q_onAssert(char const *module, int loc) {
     QF_INT_DISABLE(); /* disable all interrupts */
     /*
     * NOTE: add here your application-specific error handling
