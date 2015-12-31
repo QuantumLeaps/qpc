@@ -15,7 +15,7 @@ The QP/C distribution contains many @subpage exa_ref "example projects" to demon
 - **to provide you with a starting point for your own projects** &mdash; the examples are complete working projects, with correctly pre-configured tools, such as compiler options, linker script, debugger setup, etc.
 
 @note
-It is highly recommended that you create your own projects by **copying and modifying** existing example projects rather than starting your QP/C projects from scratch. 
+It is highly recommended that you create your own projects by **copying and modifying** existing example projects rather than starting your QP/C projects from scratch.
 
 
 ------------------------------------------------------------------------------
@@ -25,124 +25,111 @@ Starting with QP/C release 5.4.0, **all** examples are bundled into the QP/C dow
 All examples are located in sub-directories of the <span class="img folder">examples</span> @ref qpc_files "top-level folder", with the hierarchical organization outlined below:
 
 <ul class="tag">
-  <li><span class="img folder">examples</span>
+  <li><span class="img folder">examples/</span>
   </li>
   <ul class="tag">
-    <li><span class="img folder">arm-cm</span> &mdash; Native examples for ARM-Cortex-M (bare-metal) <span class="tag">A</span>
+    <li><span class="img folder">arm-cm/</span> &mdash; Native examples for ARM-Cortex-M (bare-metal) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="tag">A</span>
     </li>
     <ul class="tag">
-      <li><span class="img folder">blinky_ek-tm4c123gxl</span> &mdash; Blinky example for EK-TM4C123GXL board
+      <li><span class="img folder">dpp_ek-tm4c123gxl/</span> &mdash; DPP example for EK-TM4C123GXL board
       </li>
-      <ul class="tag">
-        <li><span class="img folder">qk</span> &mdash; Version for the @ref comp_qk "preemptive QK kernel"
+        <li><span class="img folder">qk/</span> &mdash; Version for the @ref comp_qk "preemptive QK kernel"
         </li>
         <ul class="tag">
-          <li><span class="img folder">arm</span> &mdash; build with ARM toolset
+          <li><span class="img folder">arm/</span> &mdash; build with ARM toolset
           </li>
           <ul class="tag">
-            <li><span class="img folder">dbg</span> &mdash; Debug @ref exa_sec_conf "build configuration"
+            <li><span class="img folder">dbg/</span> &mdash; Debug @ref exa_sec_conf "build configuration"
             </li>
-            <li><span class="img folder">rel</span> &mdash; Release build configuration
+            <li><span class="img folder">rel/</span> &mdash; Release build configuration
             </li>
-            <li><span class="img folder">spy</span> &mdash; Spy build configuration
+            <li><span class="img folder">spy/</span> &mdash; Spy build configuration
             </li>
-          </ul>  
-          <li><span class="img folder">gnu</span> &mdash; build with GNU toolset
+          </ul>
+          <li><span class="img folder">gnu/</span> &mdash; build with GNU toolset
           </li>
-          <li><span class="img folder">iar</span> &mdash; build with IAR toolset
+          <li><span class="img folder">iar/</span> &mdash; build with IAR toolset
           </li>
-        </ul>  
-        <li><span class="img folder">qv</span> &mdash;  Version for the @ref comp_qv "cooperative QV kernel"
+          <li><span class="img folder">ti/</span> &mdash; build with TI/CCS toolset
+          </li>
+        </ul>
+        <li><span class="img folder">qv/</span> &mdash;  Version for the @ref comp_qv "cooperative QV kernel"
         </li>
-        <ul class="tag">
-          <li><span class="img folder">arm</span> &mdash; build with ARM toolset
-          </li>
-          <ul class="tag">
-            <li><span class="img folder">dbg</span> &mdash; Debug @ref exa_sec_conf "build configuration"
-            </li>
-            <li><span class="img folder">rel</span> &mdash; Release build configuration
-            </li>
-            <li><span class="img folder">spy</span> &mdash; Spy build configuration
-            </li>
-          </ul>  
-          <li><span class="img folder">gnu</span> &mdash; build with GNU toolset
-          </li>
-          <li><span class="img folder">iar</span> &mdash; build with IAR toolset
-          </li>
-        </ul>  
-        <li><span class="img file_c">...</span> &mdash; source code independent on the toolset
+        <li><span class="img folder">qxk/</span> &mdash; Version for the @ref comp_qxk "blocking QXK kernel"
         </li>
       </ul>
-    </ul>  
-
-    <li><span class="img folder">ucos-ii</span> &mdash; Examples for uCOS-II (3rd-party RTOS) <span class="tag">B</span>
-    </li>  
-    <ul class="tag">
-      <li><span class="img folder">arm-cm</span> &mdash; Examples for ARM-Cortex-M
+      <li><span class="img file_c">...</span> &mdash; source code independent on the toolset
       </li>
-      <ul class="tag">
-        <li><span class="img folder">blinky_ek-tm4c123gxl</span> &mdash; Blinky example for EK-TM4C123GXL board
-        </li>
-        <ul class="tag">
-          <li><span class="img folder">arm</span> &mdash; build with ARM toolset
-          </li>
-          <ul class="tag">
-            <li><span class="img folder">dbg</span> &mdash; Debug build configuration
-            </li>
-            <li><span class="img folder">rel</span> &mdash; Release build configuration
-            </li>
-            <li><span class="img folder">spy</span> &mdash; Spy build configuration
-            </li>
-          </ul>  
-          <li><span class="img folder">iar</span> &mdash; build with IAR toolset
-          </li>
-        </ul>
-      </ul>  
     </ul>
 
-    <li><span class="img folder">lwip</span> &mdash; Examples for lwIP (3rd-party TCP/IP) <span class="tag">C</span>
-    </li>  
+    <li><span class="img folder">ucos-ii/</span> &mdash; Examples for uCOS-II (3rd-party RTOS) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <span class="tag">B</span>
+    </li>
     <ul class="tag">
-      <li><span class="img folder">arm-cm</span> &mdash; Examples for ARM-Cortex-M
+      <li><span class="img folder">arm-cm/</span> &mdash; Examples for ARM-Cortex-M
       </li>
       <ul class="tag">
-        <li><span class="img folder">lwip_ek-lm3s6965</span> &mdash; lwIP example for EK-LM3S6965 board
+        <li><span class="img folder">dpp_ek-tm4c123gxl/</span> &mdash; DPP example for EK-TM4C123GXL board
         </li>
         <ul class="tag">
-          <li><span class="img folder">qk</span> &mdash; Version for the @ref comp_qk "preemptive QK kernel"
+          <li><span class="img folder">arm/</span> &mdash; build with ARM toolset
           </li>
           <ul class="tag">
-            <li><span class="img folder">gnu</span> &mdash; build with GNU toolset
+            <li><span class="img folder">dbg/</span> &mdash; Debug build configuration
+            </li>
+            <li><span class="img folder">rel/</span> &mdash; Release build configuration
+            </li>
+            <li><span class="img folder">spy/</span> &mdash; Spy build configuration
+            </li>
+          </ul>
+          <li><span class="img folder">iar/</span> &mdash; build with IAR toolset
+          </li>
+        </ul>
+      </ul>
+    </ul>
+
+    <li><span class="img folder">lwip/</span> &mdash; Examples for lwIP (3rd-party TCP/IP) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <span class="tag">C</span>
+    </li>
+    <ul class="tag">
+      <li><span class="img folder">arm-cm/</span> &mdash; Examples for ARM-Cortex-M
+      </li>
+      <ul class="tag">
+        <li><span class="img folder">lwip_ek-lm3s6965/</span> &mdash; lwIP example for EK-LM3S6965 board
+        </li>
+        <ul class="tag">
+          <li><span class="img folder">qk/</span> &mdash; Version for the @ref comp_qk "preemptive QK kernel"
+          </li>
+          <ul class="tag">
+            <li><span class="img folder">gnu/</span> &mdash; build with GNU toolset
             </li>
             <ul class="tag">
-              <li><span class="img folder">dbg</span> &mdash; Debug build configuration
+              <li><span class="img folder">dbg/</span> &mdash; Debug build configuration
               </li>
-              <li><span class="img folder">rel</span> &mdash; Release build configuration
+              <li><span class="img folder">rel/</span> &mdash; Release build configuration
               </li>
-              <li><span class="img folder">spy</span> &mdash; Spy build configuration
+              <li><span class="img folder">spy/</span> &mdash; Spy build configuration
               </li>
             </ul>
-            <li><span class="img folder">iar</span> &mdash; build with IAR toolset
+            <li><span class="img folder">iar/</span> &mdash; build with IAR toolset
             </li>
           </ul>
-          <li><span class="img folder">qv</span> &mdash; Version for the @ref comp_qv "cooperative QV kernel"
+          <li><span class="img folder">qv/</span> &mdash; Version for the @ref comp_qv "cooperative QV kernel"
           </li>
           <ul class="tag">
-            <li><span class="img folder">gnu</span> &mdash; build with GNU toolset
+            <li><span class="img folder">gnu/</span> &mdash; build with GNU toolset
             </li>
-            <li><span class="img folder">iar</span> &mdash; build with IAR toolset
+            <li><span class="img folder">iar/</span> &mdash; build with IAR toolset
             </li>
           </ul>
         </ul>
-      </ul>  
+      </ul>
     </ul>
-  </ul>    
+  </ul>
 </ul>
 
 <ul class="tag">
   <li><span class="tag">A</span> @subpage exa_native "Native examples" are located in sub-directories named after the CPU architecture, such as <span class="img folder">arm-cm</span> for ARM Cortex-M. Under that directory, the sub-directories <span class="img folder">blinky_ek-tm4c123gxl</span> contain the specific example on the specified board, such as "Blinky" on the EK-TM4C123GXL board here. In the specific example folder, you find sub-folders for the @ref comp_qk "QK" and @ref comp_qv "QV" kernels, respectively.
   </li>
-  
+
   <li><span class="tag">B</span> @subpage exa_rtos "Examples for 3rd-party RTOS"/@subpage exa_os "OS" are located in sub-directories named after the RTOS/OS, such as <span class="img folder">ucos-ii</span> for uCOS-II RTOS. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
   </li>
 
@@ -151,7 +138,7 @@ All examples are located in sub-directories of the <span class="img folder">exam
 </ul>
 
 @note
-Because the QP distribution contains *all* examples, the number of sub-directories and files in the <span class="img folder">examples</span> folder may seem daunting. However, knowing the structure of the <span class="img folder">examples</span> folder, you can simply **delete** the sub-directories that are not interesting to you. 
+Because the QP distribution contains *all* examples, the number of sub-directories and files in the <span class="img folder">examples</span> folder may seem daunting. However, knowing the structure of the <span class="img folder">examples</span> folder, you can simply **delete** the sub-directories that are not interesting to you.
 
 
 ------------------------------------------------------------------------------
@@ -164,7 +151,8 @@ To demonstrate QP/C features on an embedded board, you need to create an applica
 
 With the exception of the game application, all other example applications can be implemented on a board with just a couple of LEDs. The @ref game application is a bit more involved and requires a small graphic display on the board.
 
-Beyond these basic applications for demonstrating and testing the various @ref ports "QP/C ports", the QP/C distribution contains all examples described in the book <a class="extern" target="_blank" href="http://www.state-machine.com/psicc2" >Practical UML Statecharts in C/C++, 2nd Edition</a> (@sa exa_win32).
+Beyond these basic applications for demonstrating and testing the various @ref ports "QP/C ports", the QP/C distribution contains all examples described in the book <a class="extern" target="_blank" href="http://www.state-machine.com/psicc2" >Practical UML Statecharts in C/C++, 2nd Edition</a>.
+@sa @ref exa_win32
 
 
 ------------------------------------------------------------------------------
@@ -174,7 +162,7 @@ While some provided examples can run on your @ref exa_os "desktop computer", mos
 
 ------------------------------------------------------------------------------
 @subsection exa_sec_tools Development Tools
-Most provided examples require special embedded cross-development tools, such as embedded compilers, linkers, debuggers and IDEs, which you need to acquire independently from the QP/C distribution. Generally, the examples work with the free (size limited) evaluation versions of the commercial tools. The examples list the versions of tools they were developed and tested with. Please refer to the @ref exa_ref "cross-reference section" @ref exa_sec_tools to see which embedded toolsets are used.  
+Most provided examples require special embedded cross-development tools, such as embedded compilers, linkers, debuggers and IDEs, which you need to acquire independently from the QP/C distribution. Generally, the examples work with the free (size limited) evaluation versions of the commercial tools. The examples list the versions of tools they were developed and tested with. Please refer to the @ref exa_ref "cross-reference section" @ref exa_sec_tools to see which embedded toolsets are used.
 
 
 ------------------------------------------------------------------------------
@@ -190,7 +178,7 @@ QP examples @ref ports "QP ports" are provided in the following three **build co
 
 @remark
 <strong>Why do you need multiple build configurations?</strong>@n
-The different phases of embedded software lifecycle pose different challenges. During the development and maintenance phase, for example, the emphasis is on the ease of debugging and verifying the correctness of the code, which require lower levels of optimization and special scaffolding code. In contrast, for releasing the code in the final product, the emphasis is on small memory footprint and CPU time efficiency, which require high-level of optimization and removal of any scaffolding code. To address these conflicting needs, the same source code is compiled into multiple **build configurations** that differ in the use of compiler options and activation of the scaffolding code.
+The different phases of embedded software life cycle pose different challenges. During the development and maintenance phase, for example, the emphasis is on the ease of debugging and verifying the correctness of the code, which require lower levels of optimization and special scaffolding code. In contrast, for releasing the code in the final product, the emphasis is on small memory footprint and CPU time efficiency, which require high-level of optimization and removal of any scaffolding code. To address these conflicting needs, the same source code is compiled into multiple **build configurations** that differ in the use of compiler options and activation of the scaffolding code.
 
 
 -----------------------------------------------------------------------------
@@ -206,7 +194,7 @@ The auto-generated files are saved as **read-only**. This protects them from ina
 The QP/C example projects often need to use various additional code, such as MCU register definition files, startup code, device drivers, etc., which are provided by Third-Party vendors. All such code is located in the <span class="img folder">3rd_party</span> @ref qpc_files "top-level folder".
 
 @note
-As far as possible, the code in the <span class="img folder">3rd_party</span> folder has been left unchanged from the original source. (Any modified code is clearly identified by top-level comments that detail the applied changes.) For that reason, the Third-Party code might produce **compilation warnings** in your builds. 
+As far as possible, the code in the <span class="img folder">3rd_party</span> folder has been left unchanged from the original source. (Any modified code is clearly identified by top-level comments that detail the applied changes.) For that reason, the Third-Party code might produce **compilation warnings** in your builds.
 
 The code in the <span class="img folder">3rd_party</span> folder comes from various sources, and Quantum
 Leaps, LLC expressly makes **no claims of ownership** to any of this code, even though some of the code might be customized or modified by Quantum Leaps.
@@ -236,12 +224,11 @@ By copying and re-naming an existing, working project, as opposed to creating a 
 
 To work with QP/C effectively, you need to learn a bit more about active objects and state machines. Below is a list of links to enable you to further your knowledge:
 
-1. The book “Practical UML Statecharts in C/C++, 2nd Edition” [PSiCC2] and the companion web-page to the book (http://www.state-machine.com/psicc2/ 
+1. The book “Practical UML Statecharts in C/C++, 2nd Edition” [PSiCC2] and the companion web-page to the book (http://www.state-machine.com/psicc2/
 2. Free Support Forum for QP/QM (https://sourceforge.net/p/qpc/discussion/668726 )
 3. QP Code Downloads summary (http://www.state-machine.com/downloads )
 4. QP Application Notes (http://www.state-machine.com/doc/an.html )
-5. QP/C Tutorial (http://www.state-machine.com/doxygen/qpc/tutorial.html)
-6. "State Space" Blog (http://embeddedgurus.com/state-space/ )
+5. "State Space" Blog (http://embeddedgurus.com/state-space/ )
 
 @next{exa_ref}
 */
@@ -260,15 +247,12 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 @section exa_ref_native Native Examples (Bare-Metal)
 - @ref exa_arm-cm (Cortex-M0/M0+/M3/M4/M4F)
 - @ref exa_arm7-9 ("classic ARM")
-- @ref exa_avr (8-bit megaAVR)
 - @ref exa_msp430 ("classic" MSP430 and "extended" MSP430x)
 
 
 ------------------------------------------------------------------------------
 @section exa_ref_rtos Examples for Third-Party RTOS
-- @ref exa_cmsis-rtx (ARM Ltd.)
 - @ref exa_embos (SEGGER)
-- @ref exa_freertos (Real Time Engineers Ltd.)
 - @ref exa_threadx (Express Logic)
 - @ref exa_ucos-ii (Micrium)
 
@@ -305,9 +289,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - ARM7 Boards:
     - <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK">AT91SAM7S-EK</a>
 
-- AVR (megaAVR) Boards:
-    - <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO">Arduino-UNO</a>
-
 - MSP430 Boards:
     - <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2">MSP-EXP430G2</a> (MSP430 LaunchPad)
     - <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP">MSP-EXP430F5529LP</a> (MSP430X LaunchPad)
@@ -328,12 +309,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - ARM7 / ARM9
     - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 
-- AVRmega
-    - @ref avr_blinky_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
-    - @ref avr_dpp_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
-
-- AVR32UC (coming soon...)
-
 - MSP430
     - @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
     - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
@@ -341,9 +316,9 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 
 - PIC24 /dsPIC (coming soon...)
 - PIC32 (coming soon...)
-- Renesas RX (coming soon...) 
-- TI TMS320C28x (C28x) (coming soon...) 
-- TI TMS320C55x (C55x) (coming soon...) 
+- Renesas RX (coming soon...)
+- TI TMS320C28x (C28x) (coming soon...)
+- TI TMS320C55x (C55x) (coming soon...)
 
 
 ------------------------------------------------------------------------------

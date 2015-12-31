@@ -82,7 +82,7 @@
 /* QF_CRIT_STAT_TYPE not defined: unconditional interrupt enabling" policy */
 #define QF_CRIT_ENTRY(dummy)    QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)     QF_INT_ENABLE()
-#define QF_CRIT_EXIT_NOP()      __asm(" NOP")
+#define QF_CRIT_EXIT_NOP()      __asm(" ISB")
 
 #include "qep_port.h" /* QEP port */
 #include "qv_port.h"  /* QV port cooperative kernel port */

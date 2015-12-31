@@ -199,7 +199,7 @@
 * the application to perform the clean system shutdown and perhaps a reset.
 *
 * @param[in] module name of the file/module in which the assertion failed
-*                   (constant ROM-based, zero-terminated C string)
+*                   (constant, zero-terminated C string)
 * @param[in] loc    location of the assertion within the module. This could
 *                   be a line number or a user-specified ID-number.
 *

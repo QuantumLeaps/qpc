@@ -7,7 +7,7 @@
 @endhtmlonly
 
 @section about About QP/C
-<p><a class="extern" target="_blank" href="http://www.state-machine.com/qp"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight, open source <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Framework">active object (actor) framework</a> for building responsive and modular real-time embedded applications as systems of cooperating, event-driven <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Active">active objects</a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; framework is a member of a larger family consisting of QP/C, <a href="http://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a>, and <a href="http://www.state-machine.com/qpcn" target="_blank" class="extern">QP-nano</a> frameworks, which are all strictly quality controlled, thoroughly documented, and <a href="http://www.state-machine.com/licensing" target="_blank" class="extern">commercially licensable</a>.
+<p><a class="extern" target="_blank" href="http://www.state-machine.com/products/"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight, open source <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Framework">active object (actor) framework</a> for building responsive and modular real-time embedded applications as systems of cooperating, event-driven <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Active">active objects</a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; framework is a member of a larger family consisting of QP/C, <a href="http://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a>, and <a href="http://www.state-machine.com/qpcn" target="_blank" class="extern">QP-nano</a> frameworks, which are all strictly quality controlled, thoroughly documented, and <a href="http://www.state-machine.com/licensing" target="_blank" class="extern">commercially licensable</a>.
 </p>
 
 All QP&trade; frameworks can run on @ref exa_native "bare-metal single-chip microcontrollers", completely replacing a traditional Real-Time Operating System (RTOS). The frameworks contain a selection of built-in real-time kernels, such as the cooperative @ref comp_qv "QV kernel", the preemptive non-blocking @ref comp_qk "QK kernel", and the preemptive, blocking @ref comp_qxk "QXK kernel", <span class="highlight">which provides all the features you might expect from a traditional <strong>RTOS kernel</strong></span>. @ref ports_native "Native QP ports" and ready-to-use @ref exa_native "examples" are provided for major @ref exa_ref_mcu "CPU families".
@@ -44,18 +44,18 @@ The standard QP/C distribution contains also many @ref exa "Example Projects", w
 The following annotated directory tree lists the top-level directories provided in the standard QP/C distribution.
 
 <ul class="tag">
-  <li><span class="img folder">qpc</span>
+  <li><span class="img folder">qpc/</span>
   </li>
   <ul class="tag">
-    <li><span class="img folder">3rd_party</span> &mdash; Third-Party code used in the QP/C @ref ports "ports" and @ref exa "examples"
+    <li><span class="img folder">3rd_party/</span> &mdash; Third-Party code used in the QP/C @ref ports "ports" and @ref exa "examples"
     </li>
-    <li><span class="img folder">examples</span> &mdash; @ref exa "QP/C Examples"
+    <li><span class="img folder">examples/</span> &mdash; @ref exa "QP/C Examples"
     </li>
-    <li><span class="img folder">ports</span> &mdash; @ref ports "QP/C Ports"
+    <li><span class="img folder">ports/</span> &mdash; @ref ports "QP/C Ports"
     </li>
-    <li><span class="img folder">include</span> &mdash; Platform-independent QP/C API (see <a href="dir_d44c64559bbebec7f509842c48db8b23.html"><strong>include</strong></a>)
+    <li><span class="img folder">include/</span> &mdash; Platform-independent QP/C API (see <a href="dir_d44c64559bbebec7f509842c48db8b23.html"><strong>include</strong></a>)
     </li>
-    <li><span class="img folder">source</span> &mdash; Platform-independent QP/C source code (see @ref <a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html"><strong>source</strong></a>)
+    <li><span class="img folder">source/</span> &mdash; Platform-independent QP/C source code (see @ref <a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html"><strong>source</strong></a>)
     </li>
   </ul>
 </ul>
@@ -98,7 +98,7 @@ If you are developing and distributing traditional closed source applications, y
 - e-mail: <a class="extern" target="_blank" href="mailto:info@state-machine.com">info@state-machine.com</a>
 
 @image html logo_ql_TM.jpg
-Copyright &copy; 2002-2015 Quantum Leaps, LLC. All Rights Reserved.
+Copyright &copy; 2002-2016 Quantum Leaps, LLC. All Rights Reserved.
 
 @next{struct}
 */

@@ -388,7 +388,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=0</Define>
+              <Define>Stack_Size=512 Heap_Size=0</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -1066,7 +1066,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=0</Define>
+              <Define>Stack_Size=512 Heap_Size=0</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -1744,7 +1744,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=0</Define>
+              <Define>Stack_Size=512 Heap_Size=0</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>

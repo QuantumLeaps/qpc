@@ -1,6 +1,7 @@
 /**
 * @file
 * @brief QP/C public interface including backwards-compatibility layer
+* @ingroup qep qf qv qk qxk qs
 * @cond
 ******************************************************************************
 * Last updated for version 5.6.0

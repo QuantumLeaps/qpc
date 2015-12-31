@@ -44,7 +44,7 @@
 
 /*! determination if the code executes in the ISR context
 * (used internally in QXK only)
- */
+*/
 #define QXK_ISR_CONTEXT_() (getSR() != (uint32_t)0)
 
 /*! trigger context switch (used internally in QXK only) */

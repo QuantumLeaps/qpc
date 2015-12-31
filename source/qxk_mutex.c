@@ -4,8 +4,8 @@
 * @brief QXMutex_init(), QXMutex_lock(), and QXMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-23
+* Last updated for version 5.6.1
+* Last updated on  2015-12-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -39,7 +39,7 @@
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
-#include "qk_pkg.h"       /* QK package-scope interface */
+#include "qxk_pkg.h"      /* QXK package-scope interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
     #include "qs_port.h"  /* include QS port */
@@ -47,9 +47,10 @@
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
 
-#ifdef QXK_NO_MUTEX
-    #error "qxk_mutex.c included in the build when QXK_NO_MUTEX defined"
-#endif
+/* protection against including this source file in a wrong project */
+#ifndef qxk_h
+    #error "Source file included in a project NOT based on the QXK kernel"
+#endif /* qxk_h */
 
 Q_DEFINE_THIS_MODULE("qxk_mutex")
 

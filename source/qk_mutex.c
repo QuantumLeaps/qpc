@@ -4,8 +4,8 @@
 * @brief QMutex_init(), QMutex_lock and QMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-14
+* Last updated for version 5.6.1
+* Last updated on  2015-12-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -46,6 +46,11 @@
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
+
+/* protection against including this source file in a wrong project */
+#ifndef qk_h
+    #error "Source file included in a project NOT based on the QK kernel"
+#endif /* qk_h */
 
 Q_DEFINE_THIS_MODULE("qk_mutex")
 
@@ -93,7 +98,7 @@ void QMutex_init(QMutex * const me, uint_fast8_t prioCeiling) {
 * @param[in,out] me      pointer (see @ref oop)
 *
 * @note This function should be always paired with QXK_mutexUnlock(). The
-* code between QK_mutexLock() and QK_mutexUnlock() should be kept to the
+* code between QMutex_lock() and QMutex_unlock() should be kept to the
 * minimum.
 *
 * @usage
@@ -124,7 +129,7 @@ void QMutex_lock(QMutex * const me) {
 
             /* switch the priority of this thread to the ceiling priority */
             QF_active_[me->prioCeiling] = act;
-            act->prio = (uint_fast8_t)me->prioCeiling; /* set to the ceiling */
+            act->prio = (uint_fast8_t)me->prioCeiling; /* set to ceiling */
 
             if (QK_prioIsSet(&QK_readySet_, act->thread)) {
                 QK_prioRemove(&QK_readySet_, act->thread);
@@ -158,7 +163,7 @@ void QMutex_lock(QMutex * const me) {
 * @param[in,out] me      pointer (see @ref oop)
 *
 * @note This function should be always paired with QK_mutexLock(). The
-* code between QK_mutexLock() and QK_mutexUnlock() should be kept to the
+* code between QMutex_lock() and QMutex_unlock() should be kept to the
 * minimum.
 *
 * @usage

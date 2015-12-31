@@ -74,6 +74,7 @@ int main() {
                       0U,                    /* size of the stack [bytes] */
                      (QEvt *)0);             /* initialization event */
     }
+    /* leave the priority level (N_PHILO + 1) for the mutex */
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 2), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */

@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.6.0
-* Last updated on  2015-12-23
+* Last updated on  2015-12-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -47,7 +47,7 @@ void QXK_start_(void);
 void QXK_stackInit_(void *act, QXThreadHandler handler,
                     void *stkSto, uint_fast16_t stkSize);
 
-/*! called when a thread function returns (which it should not do!) */
+/*! called when a thread function returns */
 void QXK_threadRet_(void);
 
 /*! timeout signals */

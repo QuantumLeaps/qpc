@@ -1,9 +1,21 @@
 /**
 @page history Revision History
 
+
+@section qpc_5_6_1 Version 5.6.1, 2016-01-01
+This release is the first official (production) release of the new blocking @ref qxk "QXK" kernel.
+
+Changes in detail:
+
+1. Added error directives to source files from different built-in kernels (QV, QK, and QXK) to generate meaningful error messages when these files are mixed in one project. For example, a project based on QK will report errors when source files for QV or QXK are included in it.
+
+2. Corrected example projects for the ARM Cortex-M with TI/CCS toolset
+
+
+------------------------------------------------------------------------------
 @section qpc_5_6_0 Version 5.6.0-beta, 2015-12-24
 
-The main purpose of this *beta* release is to introduce a new component of the QP/C framework called QXK ("eXtended Quantum Kernel"). QXK is a small, preemptive, priority-based, **blocking** kernel that provides most features you might expect of a traditional blocking RTOS kernel.
+The main purpose of this *beta* release is to introduce a new component of the QP/C framework called @ref qxk "QXK" ("eXtended Quantum Kernel"). QXK is a small, preemptive, priority-based, **blocking** kernel that provides most features you might expect of a traditional blocking RTOS kernel.
 
 QXK has been designed specifically for applications that need to mix event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software. The QXK kernel is integrated tightly and optimally with the rest of the QP. It reuses all mechanisms already provided in QP, thus avoiding any code duplication, inefficient layers of indirection, and additional licensing costs, which are inevitable when using 3rd-party RTOS kernels to run QP/C applications.
 
@@ -21,7 +33,7 @@ Changes in detail:
 
 1. Added new header files for QXK: qxk.h, and qxthread.h.
 
-2. Added new source files for QXK: qxk.c, qxk_mutex.c, qxk_pkg.h, qxk_same.c, qxk_xthr.c.
+2. Added new source files for QXK: qxk.c, qxk_mutex.c, qxk_pkg.h, qxk_sema.c, qxk_xthr.c.
 
 3. Added QXK ports to ARM Cortex-M for ARM-KEIL, GNU-ARM, IAR, and TI-ARM toolsets (see @ref arm-cm_qxk)
 
@@ -35,13 +47,13 @@ Changes in detail:
 
 8. Removed AVR ports and examples.
 
-8. Re-designed the QK priority-mutex in files qk.h and qk_mutex.c.
+9. Re-designed the QK priority-mutex in files qk.h and qk_mutex.c.
 
-9. Provided QK mutex examples in @ref arm-cm_dpp_ek-tm4c123gxl and @ref arm-cm_dpp_nucleo-l053r8.
+10. Provided QK mutex examples in @ref arm-cm_dpp_ek-tm4c123gxl and @ref arm-cm_dpp_nucleo-l053r8.
 
-10. Updated Makefiles for GNU-ARM to use the __ARM_ARCH macro for defining the ARM architecture.
+11. Updated Makefiles for GNU-ARM to use the __ARM_ARCH macro for defining the ARM architecture.
 
-11. Updated CMSIS from 4.2 to 4.3 in qpc/3rd-party/CMSIS
+12. Updated CMSIS from 4.2 to 4.3 in qpc/3rd-party/CMSIS
 
 
 ------------------------------------------------------------------------------

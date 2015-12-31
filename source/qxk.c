@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-23
+* Last updated for version 5.6.1
+* Last updated on  2015-12-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -39,7 +39,6 @@
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
-#include "qf_pkg.h"       /* QF package-scope internal interface */
 #include "qxk_pkg.h"      /* QXK package-scope internal interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
@@ -48,13 +47,18 @@
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
 
+/* protection against including this source file in a wrong project */
+#ifndef qxk_h
+    #error "Source file included in a project NOT based on the QXK kernel"
+#endif /* qxk_h */
+
 Q_DEFINE_THIS_MODULE("qxk")
 
 /* Public-scope objects *****************************************************/
 QXK_Attr QXK_attr_; /* global attributes of the QXK kernel */
 
 /* Local-scope objects ******************************************************/
-static QMActive l_idleThread;
+static QXThread l_idleThread;
 
 static void thread_ao(void *par);
 static void thread_idle(void *par);
@@ -144,7 +148,7 @@ int_t QF_run(void) {
     /** @pre QXK_init() must be called __before__ QF_run() to initialize
     * the QXK idle thread.
     */
-    Q_REQUIRE_ID(100, QF_active_[0] == &l_idleThread);
+    Q_REQUIRE_ID(100, QF_active_[0] == &l_idleThread.super);
 
     /* switch to the highest-priority task */
     QF_INT_DISABLE();
@@ -259,15 +263,15 @@ void QActive_stop(QMActive *me) {
 */
 void QXK_init(void *idleStkSto, uint_fast16_t idleStkSize) {
     /* create the idle thread... */
-    QMActive_ctor(&l_idleThread, Q_STATE_CAST(&thread_idle));
+    QMActive_ctor(&l_idleThread.super, Q_STATE_CAST(&thread_idle));
 
     QXK_stackInit_(&l_idleThread,
-                   (QXThreadHandler)l_idleThread.super.temp.act,
+                   (QXThreadHandler)l_idleThread.super.super.temp.act,
                    idleStkSto, idleStkSize);
-    l_idleThread.prio = (uint_fast8_t)0; /* idle thread priority is zero */
+    l_idleThread.super.prio = (uint_fast8_t)0; /* idle thread prio is zero */
 
     QF_INT_DISABLE();
-    QF_active_[0] = &l_idleThread;
+    QF_active_[0] = &l_idleThread.super;
     QF_INT_ENABLE();
 }
 

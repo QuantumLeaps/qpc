@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), TI-ARM assembler
-; Last Updated for Version: 5.6.0
-; Date of the Last Update:  2015-12-14
+; Last Updated for Version: 5.6.1
+; Date of the Last Update:  2015-12-30
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -44,7 +44,6 @@
     .ref    QK_sched_         ; external reference
     .ref    QK_intNest_       ; external reference
     .ref    Q_onAssert        ; external reference
-    .ref    __STACK_TOP       ; external reference
 
     ; NOTE: keep in synch with QF_BASEPRI value defined in "qf_port.h" !!!
 QF_BASEPRI: .equ  (0xFF >> 2)
@@ -99,7 +98,6 @@ QK_init:    .asmfunc
 ; check for the asynchronous preemption.
 ;*****************************************************************************
 PendSV_Handler: .asmfunc
-PendSV_sched_ret: .asmfunc    ; to ensure that the label is THUMB
 
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
     MOVS    r0,#QF_BASEPRI
@@ -122,6 +120,10 @@ PendSV_sched_ret: .asmfunc    ; to ensure that the label is THUMB
     MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
   .if __TI_VFP_SUPPORT__      ; if VFP available...
     POP     {r0,pc}           ; pop stack "aligner" and EXC_RETURN to PC
+  .else
+    MOVS    r0,#6
+    MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
+    BX      r0                ; exception-return to the task
   .endif                      ; VFP available
   .else                       ; M0/M0+/M1
     CPSIE   i                 ; enable interrupts (clear PRIMASK)
@@ -134,10 +136,11 @@ PendSV_sched:
   .if __TI_VFP_SUPPORT__      ; if VFP available...
     PUSH    {r0,lr}           ; push lr (EXC_RETURN) plus stack "aligner"
   .endif                      ; VFP available
+
     MOVS    r3,#1
     LSLS    r3,r3,#24         ; r3:=(1 << 24), set the T bit  (new xpsr)
     LDR     r2,QK_sched_addr  ; address of the QK scheduler   (new pc)
-    LDR     r1,PendSV_sched_ret ; return address after the call (new lr)
+    LDR     r1,PendSV_sched_ret_addr ; ret address after the call (new lr)
 
     SUB     sp,sp,#8*4        ; reserve space for exception stack frame
     STR     r0,[sp]           ; save the prio argument        (new r0)
@@ -147,20 +150,21 @@ PendSV_sched:
     MOVS    r0,#6
     MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
     BX      r0                ; exception-return to the QK scheduler
+  .endasmfunc
 
-PendSV_sched_ret:
+PendSV_sched_ret: .asmfunc    ; to ensure that the label is THUMB
     LDR     r0,QK_nextPrio_addr
     MOVS    r1,#0
     STR     r1,[r0]           ; QK_nextPrio_ = 0;
 
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
-    MOVS    r0,#0
-    MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
   .if __TI_VFP_SUPPORT__      ; if VFP available...
     MRS     r0,CONTROL        ; r0 := CONTROL
     BICS    r0,r0,#4          ; r0 := r0 & ~4 (FPCA bit)
     MSR     CONTROL,r0        ; CONTROL := r0 (clear CONTROL[2] FPCA bit)
   .endif                      ; VFP available
+    MOVS    r0,#0
+    MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
   .else                       ; M0/M0+/M1
     CPSIE   i                 ; enable interrupts (clear BASEPRI)
   .endif                      ; M0/M0+/M1
@@ -171,10 +175,8 @@ PendSV_sched_ret:
     LSLS    r1,r1,#28         ; r0 := (1 << 28) (PENDSVSET bit)
     STR     r1,[r0]           ; ICSR[28] := 1 (pend PendSV)
 PendSV_sched_wait:
-    B.w     PendSV_sched_wait ; wait for preemption by PendSV
-
-sched_ret_addr:   .word sched_ret
-    .endasmfunc
+    B       PendSV_sched_wait ; wait for preemption by PendSV
+  .endasmfunc
 
 
 ;*****************************************************************************
@@ -269,8 +271,12 @@ no_preemption:
 ; C prototype: void assert_failed(char const *module, int loc);
 ;*****************************************************************************
 assert_failed: .asmfunc
-    LDR sp,STACK_TOP_addr
-    B.w Q_onAssert
+    LDR     r0,VTOR_addr      ; r0 := address of Vector Table Offset register
+    LDR     r0,[r0,#0]        ; r0 := contents of VTOR
+    LDR     r0,[r0]           ; r0 := VT[0] (first entry is the top of stack)
+    MSR     MSP,r0            ; main SP := initial top of stack
+    ISB                       ; flush the instruction pipeline
+    BL      Q_onAssert
     .endasmfunc
 
 ;*****************************************************************************
@@ -278,12 +284,12 @@ assert_failed: .asmfunc
 ;*****************************************************************************
 SHPR_addr:        .word 0xE000ED18
 ICSR_addr:        .word 0xE000ED04
+VTOR_addr:        .word 0xE000ED08
 
 ;*****************************************************************************
 ; Addresses for PC-relative LDR
 ;*****************************************************************************
-STACK_TOP_addr:   .word __STACK_TOP
 QK_nextPrio_addr: .word QK_nextPrio_
 QK_sched_addr:    .word QK_sched_
 QK_intNest_addr:  .word QK_intNest_
-    
+PendSV_sched_ret_addr .word PendSV_sched_ret
