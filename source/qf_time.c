@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-11-23
+* Last updated for version 5.6.2
+* Last updated on  2016-01-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -92,7 +92,7 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
         /* end of the list? */
         if (t == (QTimeEvt *)0) {
 
-            /* no newly armed time events? */
+            /* any new time events armed since the last run of QF_tickX_()? */
             if (QF_timeEvtHead_[tickRate].act != (void *)0) {
 
                 /* sanity check */
@@ -106,7 +106,7 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
             }
         }
 
-        /* time evt. scheduled for removal? */
+        /* time event scheduled for removal? */
         if (t->ctr == (QTimeEvtCtr)0) {
             prev->next = t->next;
             t->super.refCtr_ &= (uint8_t)0x7F; /* mark as unlinked */
@@ -121,7 +121,7 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
 
             /* is time event about to expire? */
             if (t->ctr == (QTimeEvtCtr)0) {
-                QMActive *act = (QMActive *)t->act; /* temporary for volatile */
+                QMActive *act = (QMActive *)t->act; /* temp. for volatile */
 
                 /* periodic time evt? */
                 if (t->interval != (QTimeEvtCtr)0) {
@@ -300,10 +300,10 @@ void QTimeEvt_armX(QTimeEvt * const me,
     * number of clock ticks cannot be zero, and the signal must be valid.
     */
     Q_REQUIRE_ID(400, (me->act != (void *)0)
-              && (ctr == (QTimeEvtCtr)0)
-              && (nTicks != (QTimeEvtCtr)0)
-              && (tickRate < (uint_fast8_t)QF_MAX_TICK_RATE)
-              && (me->super.sig >= (QSignal)Q_USER_SIG));
+                      && (ctr == (QTimeEvtCtr)0)
+                      && (nTicks != (QTimeEvtCtr)0)
+                      && (tickRate < (uint_fast8_t)QF_MAX_TICK_RATE)
+                      && (me->super.sig >= (QSignal)Q_USER_SIG));
 
     QF_CRIT_ENTRY_();
     me->ctr = nTicks;
@@ -315,7 +315,7 @@ void QTimeEvt_armX(QTimeEvt * const me,
     * because un-linking is performed exclusively in the QF_tickX() function.
     */
     if ((me->super.refCtr_ & (uint8_t)0x80) == (uint8_t)0) {
-        me->super.refCtr_ |= (uint8_t)0x80;       /* mark as linked */
+        me->super.refCtr_ |= (uint8_t)0x80;  /* mark as linked */
 
         /* The time event is initially inserted into the separate
         * "freshly armed" link list based on QF_timeEvtHead_[tickRate].act.
@@ -470,7 +470,13 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
         QS_OBJ_(me->act);      /* the target AO */
         QS_TEC_(me->ctr);      /* the number of ticks */
         QS_TEC_(me->interval); /* the interval */
-        QS_2U8_((uint8_t)tickRate, (uint8_t)isArmed);
+        QS_U8_((uint8_t)tickRate); /* the tick rate */
+        if (isArmed) {
+            QS_U8_((uint8_t)1); /* status: armed */
+        }
+        else {
+            QS_U8_((uint8_t)0); /* status: dis-armed */
+        }
     QS_END_NOCRIT_()
 
     QF_CRIT_EXIT_();

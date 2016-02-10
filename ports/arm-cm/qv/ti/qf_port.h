@@ -3,8 +3,8 @@
 * @brief QF/C port to Cortex-M, cooperative QV kernel, TI-ARM CCS toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.5.1
-* Date of the Last Update:  2015-09-30
+* Last Updated for Version: 5.6.1
+* Date of the Last Update:  2015-12-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -76,7 +76,7 @@
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5 */
     #define QF_AWARE_ISR_CMSIS_PRI  0
 
-#endif /* M3/M4/M7 */
+#endif /* not M3/M4/M7 */
 
 /* QF critical section entry/exit */
 /* QF_CRIT_STAT_TYPE not defined: unconditional interrupt enabling" policy */

@@ -27,11 +27,14 @@ MULTILINE_CPP_IS_BRIEF = YES
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 4
-ALIASES                = \
-    "next{1}=<hr><b>Next:</b> \ref \1</p>" \
-    "description=\par <b>Description</b>\n" \
-    "hint=\par <b>Hint</b>\n" \
-    "usage=@par <b>Usage</b>\n"
+ALIASES += next{1}="<hr><b>Next:</b> @ref \1</p>"
+ALIASES += description="@par <b>Description</b>@n"
+ALIASES += hint="@par <b>Hint</b>@n"
+ALIASES += usage="@par <b>Usage</b>@n"
+ALIASES += reqdef{2}="<div class="vmargin20"></div>@anchor \1 <TABLE><TR ALIGN="left"><TH NOWRAP>\1</TH><TH WIDTH="100%">\2</TH></TR></TABLE>"
+ALIASES += reqref{1}="@ref \1 \"\1\""
+ALIASES += termdef{2}="@anchor term_\1 @par \2"
+ALIASES += termref{2}="@ref term_\1 \"\2\""
 
 TCL_SUBST              =
 OPTIMIZE_OUTPUT_FOR_C  = YES
@@ -108,6 +111,7 @@ WARN_LOGFILE           =
 INPUT                  = \
     main.cc \
     struct.cc \
+    srs.cc \
     modules.cc \
     qs.cc \
     exa.cc \
@@ -122,13 +126,7 @@ INPUT                  = \
     ports_os.cc \
     history.cc \
     macros.h \
-    metrics.cc \
-    ../include \
-    ../source \
-    ../ports/lint \
-    ../ports/lint/qk \
-    ../ports/lint/qv \
-    ../ports/lint/qxk
+    metrics.cc
 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = \
@@ -186,7 +184,7 @@ IGNORE_PREFIX          =
 # Configuration options related to the HTML output
 #---------------------------------------------------------------------------
 GENERATE_HTML          = YES
-HTML_OUTPUT            = tmp
+HTML_OUTPUT            = ../../html/qpc
 HTML_FILE_EXTENSION    = .html
 HTML_HEADER            = header.html
 HTML_FOOTER            = footer.html
@@ -204,7 +202,7 @@ DOCSET_FEEDNAME        = "Doxygen generated docs"
 DOCSET_BUNDLE_ID       = com.state-machine.doc
 DOCSET_PUBLISHER_ID    = com.state-machine.doc
 DOCSET_PUBLISHER_NAME  = Quantum Leaps
-GENERATE_HTMLHELP      = YES
+GENERATE_HTMLHELP      = NO
 CHM_FILE               = ../../../html/qpc.chm
 HHC_LOCATION           =
 GENERATE_CHI           = NO

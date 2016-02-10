@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.2
-* Last updated on  2015-06-03
+* Last updated for version 5.6.2
+* Last updated on  2016-02-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -130,3 +130,30 @@ bool QActive_recall(QMActive * const me, QEQueue * const eq) {
     }
     return recalled;
 }
+
+/****************************************************************************/
+/**
+* @description
+* This function is part of the event deferral support. An active object
+* can use this function to flush a given QF event queue. The function makes
+* sure that the events are not leaked.
+*
+* @param[in,out] me  pointer (see @ref oop)
+* @param[in]     eq  pointer to a "raw" thread-safe queue to flush.
+*
+* @returns the number of events actually flushed from the queue.
+*
+* @sa QActive_defer(), QActive_recall(), QEQueue
+*/
+uint_fast16_t QActive_flushDeferred(QMActive const * const me,
+                                    QEQueue * const eq)
+{
+    uint_fast16_t n = (uint_fast16_t)0;
+    QEvt const *e;
+    for (e = QEQueue_get(eq); e != (QEvt const *)0; e = QEQueue_get(eq)) {
+        QF_gc(e); /* garbage collect */
+        ++n; /* count the flushed event */
+    }
+    return n;
+}
+

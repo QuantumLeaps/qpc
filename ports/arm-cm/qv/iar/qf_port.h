@@ -46,7 +46,7 @@
 #define QF_MAX_TICK_RATE        2
 
 /* QF interrupt disable/enable and log2()... */
-#if (__CORE__ == __ARM6M__)  /* Cortex-M0/M0+/M1 ?, see NOTE02 */
+#if (__CORE__ == __ARM6M__)  /* Cortex-M0/M0+/M1 ?, see NOTE2 */
 
     #define QF_INT_DISABLE()    __disable_interrupt()
     #define QF_INT_ENABLE()     __enable_interrupt()
@@ -59,7 +59,7 @@
     #define QF_INT_DISABLE()    __set_BASEPRI(QF_BASEPRI)
     #define QF_INT_ENABLE()     __set_BASEPRI(0U)
 
-    /* NOTE: keep in synch with the value defined in "qk_port.s", see NOTE4 */
+    /* NOTE: BASEPRI register value for disabling interrupts, see NOTE3 */
     #define QF_BASEPRI          (0xFFU >> 2)
 
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5 */
@@ -67,6 +67,7 @@
 
     /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
     #define QF_LOG2(n_) ((uint8_t)(32U - __CLZ(n_)))
+
 #endif
 
 /* QF critical section entry/exit... */

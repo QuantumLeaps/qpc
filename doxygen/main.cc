@@ -3,11 +3,11 @@
 @tableofcontents
 
 @htmlonly
-<img style="float:right; margin:0 8px 8px 15px; clear:right;" src="img/logo_qp.jpg" title="QP">
+<img style="float:right; margin:10px 8px 8px 15px; clear:right;" src="img/logo_qp.jpg" title="QP">
 @endhtmlonly
 
 @section about About QP/C
-<p><a class="extern" target="_blank" href="http://www.state-machine.com/products/"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight, open source <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Framework">active object (actor) framework</a> for building responsive and modular real-time embedded applications as systems of cooperating, event-driven <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Active">active objects</a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; framework is a member of a larger family consisting of QP/C, <a href="http://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a>, and <a href="http://www.state-machine.com/qpcn" target="_blank" class="extern">QP-nano</a> frameworks, which are all strictly quality controlled, thoroughly documented, and <a href="http://www.state-machine.com/licensing" target="_blank" class="extern">commercially licensable</a>.
+<p><a class="extern" target="_blank" href="http://www.state-machine.com/products/"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight, open source <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Framework">active object (actor) framework</a> for building responsive and modular real-time embedded applications as systems of cooperating, event-driven <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Active">active objects</a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; framework is a member of a larger family consisting of QP/C, <a href="http://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a>, and <a href="http://www.state-machine.com/qpn" target="_blank" class="extern">QP-nano</a> frameworks, which are all strictly quality controlled, thoroughly documented, and <a href="http://www.state-machine.com/licensing" target="_blank" class="extern">commercially licensable</a>.
 </p>
 
 All QP&trade; frameworks can run on @ref exa_native "bare-metal single-chip microcontrollers", completely replacing a traditional Real-Time Operating System (RTOS). The frameworks contain a selection of built-in real-time kernels, such as the cooperative @ref comp_qv "QV kernel", the preemptive non-blocking @ref comp_qk "QK kernel", and the preemptive, blocking @ref comp_qxk "QXK kernel", <span class="highlight">which provides all the features you might expect from a traditional <strong>RTOS kernel</strong></span>. @ref ports_native "Native QP ports" and ready-to-use @ref exa_native "examples" are provided for major @ref exa_ref_mcu "CPU families".
@@ -22,7 +22,7 @@ The QP frameworks are used in <a href="http://www.state-machine.com/about/custom
 
 ------------------------------------------------------------------------------
 @section start Downloading and Installing QP/C
-QP/C is available for download from <a class="extern" target="_blank" href="http://sourceforge.net/projects/qpc/files/QP-C">SourceForge.net</a>--the world's biggest open source repository. The summary of available downloads is also available from <a class="extern" target="_blank" href="http://www.state-machine.com/downloads">Quantum Leaps download page</a>. 
+QP/C is available for download from <a class="extern" target="_blank" href="http://sourceforge.net/projects/qpc/files/QP-C">SourceForge.net</a>--the world's biggest open source repository. The summary of available downloads is also available from the <a class="extern" target="_blank" href="http://www.state-machine.com/downloads">Quantum Leaps download page</a>. 
 
 The Quantum Leaps Application Note <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf"><strong>Getting Started with QP/C</strong></a> provides step-by-step instructions on how to download, install, and get started with QP/C quickly.
 

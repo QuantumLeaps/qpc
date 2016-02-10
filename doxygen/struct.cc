@@ -2,10 +2,17 @@
 
 @tableofcontents
 
-@section event_driven Event-Driven Programming
-Virtually all embedded systems are **event-driven** by nature, which means that they continuously wait for the occurrence of some internal or external event such as a time tick, an arrival of some data, a button press, or a touch on a touch-screen. After recognizing the event, such systems *react* by performing the appropriate computation that may include manipulating the hardware or generating "soft" events that trigger other internal software components. Once the event-handling is complete, the software goes back to waiting for the next event.
+<p>Virtually all embedded systems are **event-driven** by nature, which means that their main job is to *react to events*, such as button presses, touches on a screen, time ticks, or arrivals of some data packets. Consequently, most of the time, an embedded system is waiting for events, and only affter recognizing an event, the system *reacts* by performing the appropriate computation that may include manipulating the hardware or generating "soft" events that trigger other internal software components. Once the event-handling is complete, the software goes back to waiting for the next event.
+</p>
 
-However, most embedded systems are traditionally programmed in a **sequential** manner, where a program waits for *specific* events in various places in its execution path by either busy-polling or blocking on semaphore or other such mechanism of a traditional Real-Time Operating System (RTOS). Example of the basic sequential code is the traditional "Blinky" implementation:
+
+------------------------------------------------------------------------------
+@section paradigm Embedded Programming Paradigms
+
+
+<div class="separate"></div>
+@subsection sequential Traditional Sequential Programming
+In spite of the fundamental event-driven nature, most embedded systems are traditionally programmed in a **sequential** manner, where a program waits for *specific* events in various places in its execution path by either busy-polling or blocking on semaphore or other such mechanism of a traditional Real-Time Operating System (RTOS). Example of the basic sequential code is the traditional "Blinky" implementation:
 
 @code{.c}
 while (1) { /* RTOS task or a "superloop" */
@@ -18,6 +25,9 @@ while (1) { /* RTOS task or a "superloop" */
 
 Although this approach is functional in many situations, it does not work very well when there are multiple possible events whose arrival times and order you cannot predict and where it is important to handle the events in a timely manner. The fundamental problem is that while a sequential program is waiting for one kind of event (e.g., elapsing of a time interval) it is not doing anything else and is **not responsive** to other events (e.g., a button press).
 
+
+<div class="separate"></div>
+@subsection event_driven Event-Driven Programming
 For this and other reasons experienced developers turn to the long-known design strategy called **event-driven programming**, which requires a distinctly different way of thinking than conventional sequential programs. All event-driven programs are naturally divided into the application, which actually handles the events, and the supervisory event-driven infrastructure (**framework**), which waits for events and dispatches them to the application. The control resides in the event-driven framework, so from the application standpoint, the control is *inverted* compared to a traditional sequential program.
 
 The **QP/C framework** brings together two most effective techniques of structuring event-driven embedded systems: <a href="http://www.state-machine.com/doc/concepts.html#Active" target="_blank" class="extern">active objects</a> and <a href="http://www.state-machine.com/doc/concepts.html#HSM" target="_blank" class="extern">hierarchical state machines</a> (UML statecharts). The following sections describe the main components and structure of the framework.
@@ -118,7 +128,7 @@ The figure below shows the main classes comprising the QP/C framework and their 
 ------------------------------------------------------------------------------
 @section sm State Machines
 
-The behavior of each active object in QP/C is specified by means of a **hierarchical state machine** (UML statechart), which is the most effective and elegant technique of decomposing event-driven behavior. The most important innovation of UML state machines over classical finite state machines (FSMs) is the hierarchical state nesting. The value of state nesting lies in avoiding repetitions, which are inevitable in the traditional "flat" FSM formalism and are the main reason for the "state-transition explosion" in FSMs. The semantics of state nesting allow substates to define only the differences of behavior from the superstates, thus promoting sharing and reusing behavior.
+The behavior of each active object in QP/C is specified by means of a <a href="http://www.state-machine.com/doc/concepts.html#HSM" target="_blank" class="extern">hierarchical state machine</a> (UML statechart), which is the most effective and elegant technique of decomposing event-driven behavior. The most important innovation of UML state machines over classical finite state machines (FSMs) is the hierarchical state nesting. The value of state nesting lies in avoiding repetitions, which are inevitable in the traditional "flat" FSM formalism and are the main reason for the "state-transition explosion" in FSMs. The semantics of state nesting allow substates to define only the differences of behavior from the superstates, thus promoting sharing and reusing behavior.
 
 @htmlonly
 <div class="image">
@@ -176,7 +186,7 @@ The MISRA guidelines place great emphasis on the use of static code analysts too
 ------------------------------------------------------------------------------
 @section pc-lint PC-Lint Support
 
-The QP/C framework comes with extensive support for automatic rule checking by means of <a class="extern" target="_blank" href="http://www.gimpel.com/">PC-Lint</a>, which is designed not just for proving compliance of the Q/CP framework code, but more importantly, to aid in checking compliance of the application-level code. Any organization engaged in designing safety-related embedded software could benefit from the unprecedented quality infrastructure built around the QP/C framework.
+The QP/C framework comes with extensive support for automatic rule checking by means of <a class="extern" target="_blank" href="http://www.gimpel.com/">PC-Lint</a>, which is designed not just for proving compliance of the QP/C framework code, but more importantly, to aid in checking compliance of the application-level code. Any organization engaged in designing safety-related embedded software could benefit from the unprecedented quality infrastructure built around the QP/C framework.
 
 @sa @ref lint "Lint Port"
 

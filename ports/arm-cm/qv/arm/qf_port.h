@@ -59,7 +59,7 @@
     #define QF_INT_DISABLE()    QF_set_BASEPRI(QF_BASEPRI)
     #define QF_INT_ENABLE()     QF_set_BASEPRI(0U)
 
-    /* NOTE: keep in synch with the value defined in "qk_port.s", see NOTE4 */
+    /* NOTE: leave 2-bits for "kernel-unaware" interrupts, see NOTE4 */
     #define QF_BASEPRI          (0xFFU >> 2)
 
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5 */

@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.6.2
+* Last updated on  2016-02-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -378,6 +378,10 @@ bool QActive_defer(QMActive * const me,
 
 /*! Recall a deferred event from a given event queue. */
 bool QActive_recall(QMActive * const me, QEQueue * const eq);
+
+/*! Flush the specified deferred queue 'eq'. */
+uint_fast16_t QActive_flushDeferred(QMActive const * const me,
+                                    QEQueue * const eq);
 
 /*! Get an event from the event queue of an active object. */
 QEvt const *QActive_get_(QMActive *const me);

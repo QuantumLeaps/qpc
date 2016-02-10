@@ -3,14 +3,14 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.2
-* Date of the Last Update:  2015-06-02
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-01-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,8 +31,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -63,8 +63,19 @@ static DWORD WINAPI ticker_thread(LPVOID arg);
 
 /* QF functions ============================================================*/
 void QF_init(void) {
+    extern uint_fast8_t QF_maxPool_;
+    extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
+
     InitializeCriticalSection(&l_win32CritSect);
     QV_win32Event_ = CreateEvent(NULL, FALSE, FALSE, NULL);
+
+    /* clear the internal QF variables, so that the framework can (re)start
+    * correctly even if the startup code is not called to clear the
+    * uninitialized data (as is required by the C Standard).
+    */
+    QF_maxPool_ = (uint_fast8_t)0;
+    QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
+    QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
 }
 /****************************************************************************/
 void QF_enterCriticalSection_(void) {

@@ -46,7 +46,7 @@
 #define QF_MAX_TICK_RATE        2
 
 /* QF interrupt disable/enable and log2()... */
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 ?, see NOTE02 */
+#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 ?, see NOTE2 */
 
     #define QF_INT_DISABLE()    __asm volatile ("cpsid i")
     #define QF_INT_ENABLE()     __asm volatile ("cpsie i")
@@ -54,7 +54,7 @@
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE2 */
     #define QF_AWARE_ISR_CMSIS_PRI  0
 
-#else /* Cortex-M3/M4/M4F, see NOTE03 */
+#else /* Cortex-M3/M4/M4F, see NOTE3 */
 
     #define QF_SET_BASEPRI(val_) __asm volatile (\
         "movs r0,%0 \n\t" \
@@ -62,13 +62,13 @@
     #define QF_INT_DISABLE()    QF_SET_BASEPRI(QF_BASEPRI)
     #define QF_INT_ENABLE()     QF_SET_BASEPRI(0U)
 
-    /* NOTE: keep in synch with the value defined in "qk_port.s", NOTE4 */
+    /* BASEPRI limit for QF-aware ISR priorities, see NOTE4 */
     #define QF_BASEPRI          (0xFFU >> 2)
 
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5 */
     #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
-              /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
+    /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
     #define QF_LOG2(n_) ((uint8_t)(32U - __builtin_clz(n_)))
 
 #endif

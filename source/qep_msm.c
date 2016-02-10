@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.6.1
+* Last updated on  2015-12-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -518,6 +518,9 @@ bool QMsm_isInState(QMsm * const me, QMState const * const state) {
     bool inState = false; /* assume that this MSM is not in 'state' */
     QMState const *s;
 
+    /** @pre the QMsm state machine implementation strategy must be used */
+    Q_REQUIRE_ID(700, me->vptr->dispatch == &QMsm_dispatch_);
+
     for (s = me->state.obj; s != (QMState const *)0; s = s->superstate) {
         if (s == state) {
             inState = true; /* match found, return 'true' */
@@ -547,6 +550,9 @@ QMState const *QMsm_childStateObj(QMsm const * const me,
     QMState const *child = me->state.obj;
     bool isConfirmed = false; /* start with the child not confirmed */
     QMState const *s;
+
+    /** @pre the QMsm state machine implementation strategy must be used */
+    Q_REQUIRE_ID(800, me->vptr->dispatch == &QMsm_dispatch_);
 
     for (s = me->state.obj->superstate;
          s != (QMState const *)0;

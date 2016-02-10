@@ -108,6 +108,7 @@ WARN_LOGFILE           =
 INPUT                  = \
     main.cc \
     struct.cc \
+    srs.cc \
     modules.cc \
     qs.cc \
     exa.cc \
@@ -127,7 +128,8 @@ INPUT                  = \
     ../source \
     ../ports/lint \
     ../ports/lint/qk \
-    ../ports/lint/qv
+    ../ports/lint/qv \
+    ../ports/lint/qxk
 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = \
