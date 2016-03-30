@@ -3,14 +3,14 @@
 * @brief QF/C port to Win32 API
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.2
-* Date of the Last Update:  2015-06-03
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-03-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,8 +31,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -133,6 +133,14 @@ void QF_onClockTick(void);
 /* interface used only inside QF implementation, but not in applications */
 #ifdef QP_IMPL
 
+    /* Win32-specific scheduler locking, see NOTE2 */
+    #define QF_SCHED_STAT_TYPE_ struct { uint_fast8_t lockPrio; }
+    #define QF_SCHED_LOCK_(pLockStat_) do { \
+        QF_enterCriticalSection_(); \
+        ((pLockStat_)->lockPrio = (uint_fast8_t)QF_MAX_ACTIVE); \
+    } while (0)
+    #define QF_SCHED_UNLOCK_(dummy) QF_leaveCriticalSection_()
+
     /* Win32 OS object object implementation */
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         while ((me_)->eQueue.frontEvt == (QEvt *)0) { \
@@ -164,7 +172,7 @@ void QF_onClockTick(void);
     #include <windows.h> /* Win32 API */
     #include <stdlib.h>  /* for malloc() */
 
-    /* Windows "fudge factor" for oversizing the resources, see NOTE2 */
+    /* Windows "fudge factor" for oversizing the resources, see NOTE3 */
     #define QF_WIN32_FUDGE_FACTOR  100U
 
 #endif /* QP_IMPL */
@@ -200,6 +208,12 @@ void QF_onClockTick(void);
 * information.
 *
 * NOTE2:
+* Scheduler locking (used inside QF_publish_()) is implemented in this
+* port with the main critical section. This means that event multicasting
+* will appear atomic, in the sense that no thread will be able to post
+* events during multicasting.
+*
+* NOTE3:
 * Windows is not a deterministic real-time system, which means that the
 * system can occasionally and unexpectedly "choke and freeze" for a number
 * of seconds. The designers of Windows have dealt with these sort of issues

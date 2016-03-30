@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.1
-* Last updated on  2015-12-30
+* Last updated for version 5.6.2
+* Last updated on  2016-03-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -113,7 +113,6 @@ static void QXThread_start_(QMActive * const me, uint_fast8_t prio,
     QXK_stackInit_(me, (QXThreadHandler)me->super.temp.act, stkSto, stkSize);
 
     me->prio = prio;
-    me->thread.startPrio = prio;
     QF_add_(me); /* make QF aware of this naked thread */
 
     QF_CRIT_ENTRY_();
@@ -210,6 +209,8 @@ void QXThread_ctor(QXThread * const me,
 /****************************************************************************/
 /* must be called from within a critical section */
 void QXThread_block_(QXThread * const me) {
+    /* the thread holding the lock cannot block! */
+    Q_REQUIRE_ID(100,  me->super.prio != QXK_attr_.lockPrio);
     QXK_prioRemove(&QXK_attr_.readySet, me->super.prio);
     QXK_sched_();
 }
@@ -218,7 +219,7 @@ void QXThread_block_(QXThread * const me) {
 /* must be called from within a critical section */
 void QXThread_unblock_(QXThread * const me) {
     QXK_prioInsert(&QXK_attr_.readySet, me->super.prio);
-    if ((!QXK_ISR_CONTEXT_())              /* not inside ISR? */
+    if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
         && (QXK_attr_.curr != (void *)0))  /* multitasking started? */
     {
         QXK_sched_();
@@ -239,14 +240,14 @@ void QXThread_teArm_(QXThread * const me,
 
         /* is the time event unlinked?
         * NOTE: For the duration of a single clock tick of the specified tick
-        * rate a time event can be disarmed and yet still linked into the list,
+        * rate a time event can be disarmed and yet still linked in the list,
         * because un-linking is performed exclusively in QF_tickX().
         */
         if ((me->timeEvt.super.refCtr_ & (uint8_t)0x80) == (uint8_t)0) {
             me->timeEvt.super.refCtr_ |= (uint8_t)0x80; /* mark as linked */
 
             /* The time event is initially inserted into the separate
-            * "freshly armed" link list based on QF_timeEvtHead_[tickRate].act.
+            * "freshly armed" list based on QF_timeEvtHead_[tickRate].act.
             * Only later, inside the QF_tickX() function, the "freshly armed"
             * list is appended to the main list of armed time events based on
             * QF_timeEvtHead_[tickRate].next. Again, this is to keep any

@@ -3,14 +3,14 @@
 * @brief QF/C generic port to uC/OS-II V2.92
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-03-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,8 +31,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -67,6 +67,17 @@ void QF_setUCosTaskAttr(QActive *act, uint32_t attr);
 */
 #ifdef QP_IMPL
 
+    /* QF-specific scheduler locking, see NOTE2 */
+    #define QF_SCHED_STAT_TYPE_ struct { uint_fast8_t lockPrio; }
+    #define QF_SCHED_LOCK_(pLockStat_) do { \
+        if (OSIntNesting != (INT8U)0) { \
+            (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
+        } else { \
+            OSSchedLock(); \
+        } \
+    } while (0)
+    #define QF_SCHED_UNLOCK_(dummy) OSSchedUnlock()
+
     /* uC/OS-II event pool operations */
     #define QF_EPOOL_TYPE_ OS_MEM*
     #define QF_EPOOL_INIT_(pool_, poolSto_, poolSize_, evtSize_) do { \
@@ -100,5 +111,10 @@ void QF_setUCosTaskAttr(QActive *act, uint32_t attr);
 
 /*****************************************************************************
 * NOTE1:
-* The uC/OS critical section must be able to nest.
+* uC/OS-II critical section must be able to nest.
+*
+* NOTE2:
+* uC/OS-II provides only global scheduler locking for all thread priorities
+* by means of OSSchedLock() and OSSchedUnlock(). Therefore, locking the
+* scheduler only up to the specified lock priority is not supported.
 */

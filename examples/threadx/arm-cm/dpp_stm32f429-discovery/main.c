@@ -1,13 +1,13 @@
 /*****************************************************************************
-* Product: DPP example, ThreadX demo on Windows
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-07
+* Product: DPP example, ThreadX demo
+* Last updated for version 5.6.2
+* Last updated on  2016-03-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -50,11 +50,11 @@ static ULONG l_philoStk[N_PHILO][256]; /* stacks for the Philosophers */
 static ULONG l_tableStk[256];          /* stack for the Table */
 
 /*..........................................................................*/
-int main(int argc, char *argv[]) {
+int main() {
     Philo_ctor(); /* instantiate all Philosopher active objects */
     Table_ctor(); /* instantiate the Table active object */
 
-    BSP_init(argc, argv); /* initialize the Board Support Package */
+    BSP_init();   /* initialize the Board Support Package */
 
     tx_kernel_enter();
 
@@ -77,7 +77,7 @@ void tx_application_define(void *first_unused_memory) {
     QS_OBJ_DICTIONARY(l_tableQueueSto);
     QS_OBJ_DICTIONARY(l_philoQueueSto[0]);
     /*
-    NOTE: can't use more active objects in the ThreadX Windows demo!
+    NOTE: can't use more active objects in the ThreadX demo!
     QS_OBJ_DICTIONARY(l_philoQueueSto[1]);
     QS_OBJ_DICTIONARY(l_philoQueueSto[2]);
     QS_OBJ_DICTIONARY(l_philoQueueSto[3]);

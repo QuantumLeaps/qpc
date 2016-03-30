@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, preemptive QXK kernel
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-12-14
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-03-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -77,7 +77,7 @@ void UART0_IRQHandler(void);
 #define BTN_SW1     (1U << 4)
 #define BTN_SW2     (1U << 0)
 
-static uint32_t  l_rnd;    /* random seed */
+static uint32_t l_rnd;      /* random seed */
 static QXMutex l_rndMutex; /* to protect the random number generator */
 
 #ifdef Q_SPY
@@ -96,6 +96,7 @@ static QXMutex l_rndMutex; /* to protect the random number generator */
 
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,
+        PAUSED_STAT,
         COMMAND_STAT
     };
 
@@ -207,6 +208,7 @@ void BSP_init(void) {
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_OBJ_DICTIONARY(&l_GPIOPortA_IRQHandler);
     QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(PAUSED_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
 }
 /*..........................................................................*/
@@ -225,6 +227,10 @@ void BSP_displayPaused(uint8_t paused) {
     //GPIOF->DATA_Bits[LED_RED] = ((paused != 0U) ? LED_RED : 0U);
     QXTHREAD_POST_X(XT_Test, &pauseEvt, 1U, (void *)0);
     //QXThread_unblock(XT_Test); /*??? unblock the Test thread */
+
+    QS_BEGIN(PAUSED_STAT, (void *)0) /* application-specific record begin */
+        QS_U8(1, paused);  /* Paused status */
+    QS_END()
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
@@ -404,6 +410,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(QS_QEP_UNHANDLED);
 
     QS_FILTER_ON(PHILO_STAT);
+    QS_FILTER_ON(PAUSED_STAT);
     QS_FILTER_ON(COMMAND_STAT);
 
     return (uint8_t)1; /* return success */

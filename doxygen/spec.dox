@@ -1,0 +1,13 @@
+/*! @page spec Specifications
+
+The following documents contain specifications for the QP/C software framework.
+
+- @subpage srs_toc (Software Requirements Specification)
+- @subpage sas_toc (Software Architecture Specification)
+- @subpage sds_toc (Software Design Specification, a.k.a. Software Design Description SDD)
+
+@note
+The specification documents are included as an integral part of the "QP/C Reference Manual" for bi-directional @termref{traceabilty, traceabilty} of the @ref srs_toc "requirements" to the @ref sas_toc "architecture", the @ref sds_toc "design", the <a href="files.html"><strong>code</strong></a>, and the tests. Specifically, the electronic, hyper-text format of all these documents enables creating *hyper-links*, so it possible, for example, to simply click on a hyper-link to a requirement to get to its description.
+
+@next{srs_toc}
+*/

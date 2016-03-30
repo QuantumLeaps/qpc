@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.6.2
+* Last updated on  2016-03-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -119,17 +119,17 @@ enum QSpyRecords {
     QS_QF_RESERVED1,
     QS_QF_RESERVED0,
 
-    /* [50] QK/QV records */
-    QS_QK_MUTEX_LOCK,     /*!< QK mutex was locked */
-    QS_QK_MUTEX_UNLOCK,   /*!< QK mutex was unlocked */
-    QS_QVK_SCHEDULE,      /*!< QK/QV scheduled a new task to execute */
-    QS_QVK_IDLE,          /*!< QK/QV became idle */
-    QS_QK_RESUME,         /*!< QK resumed previous task (not idle) */
+    /* [50] built-in scheduler records */
+    QS_SCHED_LOCK,        /*!< scheduler was locked */
+    QS_SCHED_UNLOCK,      /*!< scheduler was unlocked */
+    QS_SCHED_NEXT,        /*!< scheduler found next task to execute */
+    QS_SCHED_IDLE,        /*!< scheduler became idle */
+    QS_SCHED_RESUME,      /*!< scheduler resumed previous task (not idle) */
 
     /* [55] Additional QEP records */
-    QS_QEP_TRAN_HIST,     /*!< a transition to history was taken */
-    QS_QEP_TRAN_EP,   /*!< a transition to entry point into a submachine */
-    QS_QEP_TRAN_XP,   /*!< a transition to exit  point out of a submachine */
+    QS_QEP_TRAN_HIST,     /*!< a tran to history was taken */
+    QS_QEP_TRAN_EP,       /*!< a tran to entry point into a submachine */
+    QS_QEP_TRAN_XP,       /*!< a tran to exit  point out of a submachine */
     QS_QEP_RESERVED1,
     QS_QEP_RESERVED0,
 

@@ -5,35 +5,65 @@ Hierarchical Event Processor
 
 QEP is a universal, UML-compliant event processor that enables developers to code UML state machines in highly readable ANSI-C, in which every state machine element is mapped to code precisely, unambiguously, and exactly once (traceability). QEP fully supports hierarchical state nesting, which is the fundamental mechanism for reusing behavior across many states instead of repeating the same actions and transitions over and over again.
 */
+
 /*###########################################################################*/
-/*!
-@defgroup qf QF
+/*! @defgroup qf QF
 
 @brief
 Active Object (Actor) Framework
 
 QF is a portable, event-driven, real-time framework for execution of active objects (concurrent state machines) specifically designed for real-time embedded (RTE) systems.
 */
-/*###########################################################################*/ /*!
-@defgroup qv QV
+
+/*###########################################################################*/
+/*! @defgroup qs QS
+
+@brief
+Software Tracing Instrumentation
+
+QS is software tracing system that enables developers to monitor live event-driven QP applications with minimal target system resources and without stopping or significantly slowing down the code. QS is an ideal tool for testing, troubleshooting, and optimizing QP applications. QS can even be used to support acceptance testing in product manufacturing.
+*/
+
+/*###########################################################################*/
+/*! @defgroup qv QV
 
 @brief
 Cooperative Kernel
 
-QV is a simple **cooperative** kernel (previously called "Vanilla" kernel). This kernel executes active objects one at a time, with priority-based scheduling performed before processing of each event. Due to naturally short duration of event processing in state machines, the simple QV kernel is often adequate for many real-time systems. 
+@description
+QV is a simple **cooperative** kernel (previously called "Vanilla" kernel). This kernel executes active objects one at a time, with priority-based scheduling performed before processing of each event. Due to naturally short duration of event processing in state machines, the simple QV kernel is often adequate for many real-time systems.
+
+
+------------------------------------------------------------------------------
+@section qv_overview QV Overview
+The QV scheduler is engaged after every RTC step of any @termref{active object} to choose the next active object to execute. The QV scheduler always chooses the highest-priority active object that has any events in its event queue. The QV scheduler then extracts the next event from this queue and dispatches it to the state machine associated with the active object. The state machine runs to completion, after which the QV scheduler runs and the cycle repeats.
+
+Please note that because the state machines always return to the QV scheduler after each RTC step, a single stack can be used to process all state machines (memory-friendly architecture).
+
+The QV scheduler can also very easily detect when all event queues are empty, at which point it can call the idle callback to let the application put the CPU and peripherals to a low-power sleep mode (power-friendly architecture).
+
+Given the simplicity, portability, and low-resource consumption, the QV scheduler is very attractive. It allows you to partition the problem into active objects and execute these active objects orderly. The task-level response of this scheduler is the longest RTC step in the whole system, but because event-driven active objects don’t block, the RTC steps tend to be very short (typically just a few microseconds). Also, often you can break up longer RTC steps into shorter pieces, by posting an event to self and returning (“Reminder” state pattern). The self-posted event then triggers the continuation of longer processing.
+
+ 
 */
+
 /*###########################################################################*/
-/*!
-@defgroup qk QK
+/*! @defgroup qk QK
 
 @brief
 Preemptive Non-Blocking Kernel
 
 QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specifically for executing active objects. QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis — RMA) and can be used in hard real-time systems.
+
+
+------------------------------------------------------------------------------
+@section qk_overview QK Overview
+
+Sometimes it is not practical to break up long RTC steps, and consequently the task-level response of the simple @ref "QV kernel" might be too slow. In this cases you need to use a *preemptive* kernel. The big advantage of preemptive kernel is that it effectively decouples high-priority task from low-priority tasks in the time domain. The timeliness of execution of high-priority task is almost independent on the low-priority tasks. But of course there is no such thing as a free lunch. Preemptive kernels open the whole new class of problems related to race conditions. So you need to be very careful about sharing any resources.
+
 */
 
-/*###########################################################################*//*!
-@defgroup qxk QXK
+/*###########################################################################*//*! @defgroup qxk QXK
 
 @brief
 Preemptive Blocking RTOS Kernel
@@ -55,7 +85,7 @@ Example illustrates: 6 active objects plus one "naked" thread, QXK blocking dela
 
 
 ------------------------------------------------------------------------------
-\section qxk_overview QXK Overview
+@section qxk_overview QXK Overview
 
 QXK works as most conventional RTOS kernels, by frequently switching the CPU from one thread to another in the process called *context switching*. As shown in the diagram below, each thread of execution (a.k.a. task) in QXK is assigned its own private **stack** area in RAM and its own data structure (often called the *thread control block*). The use of multiple stacks allows the kernel to **block** (suspend) threads at any moment, because the top of the stack of each thread is always available.
 
@@ -63,7 +93,7 @@ QXK works as most conventional RTOS kernels, by frequently switching the CPU fro
 @n
 
 <div class="separate"></div>
-\subsection qxk_classes Classes in QXK
+@subsection qxk_classes Classes in QXK
 The figure below shows the main classes introduced in the QXK kernel and their relation to the classes of the QP framework.
 
 @image html qxk_classes.gif "Classes of the QXK blocking kernel"
@@ -87,7 +117,7 @@ The main takeaway from the QXK class diagram is QXK's **optimal, tight integrati
 
 
 ------------------------------------------------------------------------------
-\section qxk_features QXK Features
+@section qxk_features QXK Features
 As you can see in the list below, <span class="highlight">QXK provides most features you might expect of a traditional blocking **RTOS** kernel and is <strong>recommended</strong> as the preferred RTOS kernel for QP/C applications</span> that need to mix active objects with traditional blocking code.
 
 <ul class="tag">
@@ -134,14 +164,14 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 
 
 <div class="separate"></div>
-\subsection qxk_kernel Kernel Initialization and Control
+@subsection qxk_kernel Kernel Initialization and Control
 - QXK_init()
 - QF_run()
 - QXK_onIdle()
 - QXK_getVersion()
 
 <div class="separate"></div>
-\subsection qxk_thread Thread Management
+@subsection qxk_thread Thread Management
 - ::QXThread structure (Thread Control Block)
 - QXThread_ctor()
 - QXTHREAD_START()
@@ -151,32 +181,32 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 - QXThread_delayCancel()
 
 <div class="separate"></div>
-\subsection qxk_isr Interrupt Management
+@subsection qxk_isr Interrupt Management
 - QXK_ISR_ENTRY()
 - QXK_ISR_EXIT()
 
 <div class="separate"></div>
-\subsection qxk_mutex Mutexes
+@subsection qxk_mutex Mutexes
 - ::QXMutex structure (Mutex Control Block)
 - QXMutex_init()
 - QXMutex_lock()
 - QXMutex_unlock()
 
 <div class="separate"></div>
-\subsection qxk_queue Message Queues
+@subsection qxk_queue Message Queues
 - QXTHREAD_POST_X() - posting messages to blocking threads
 - QACTIVE_POST_X()  - posting events to Active Objects
 - QXThread_queueGet() - waiting (blocking) on message queue
 
 <div class="separate"></div>
-\subsection qxk_sema Semaphores
+@subsection qxk_sema Semaphores
 - ::QXSemaphore structure (Semaphore Control Block)
 - QXSemaphore_init()
 - QXSemaphore_wait()
 - QXSemaphore_signal()
 
 <div class="separate"></div>
-\subsection qxk_mem Memory Pools
+@subsection qxk_mem Memory Pools
 - ::QMPool structure
 - QMPool_init()
 - QMPool_get()

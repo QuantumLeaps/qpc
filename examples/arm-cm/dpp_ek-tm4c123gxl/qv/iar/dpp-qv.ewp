@@ -2986,6 +2986,18 @@
   </group>
   <group>
     <name>QP_port</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qv\iar\qep_port.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qv\iar\qf_port.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qv\iar\qs_port.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qv\iar\qv_port.h</name>
+    </file>
   </group>
   <group>
     <name>QS</name>

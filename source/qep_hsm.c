@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.1
-* Last updated on  2015-12-30
+* Last updated for version 5.5.0
+* Last updated on  2015-09-04
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -564,11 +564,8 @@ bool QHsm_isIn(QHsm * const me, QStateHandler const state) {
     bool inState = false; /* assume that this HSM is not in 'state' */
     QState r;
 
-    /** @pre the QHsm state machine implementation strategy must be used
-    * and the state configuration must be stable
-    */
-    Q_REQUIRE_ID(600, (me->vptr->dispatch == &QHsm_dispatch_)
-                      && (me->temp.fun == me->state.fun));
+    /** @pre the state configuration must be stable */
+    Q_REQUIRE_ID(600, me->temp.fun == me->state.fun);
 
     do {
         /* do the states match? */
@@ -609,9 +606,6 @@ QStateHandler QHsm_childState(QHsm * const me,
     QStateHandler child = me->state.fun; /* start with the current state */
     bool isConfirmed = false; /* start with the child not confirmed */
     QState r;
-
-    /** @pre the QHsm state machine implementation strategy must be used */
-    Q_REQUIRE_ID(700, me->vptr->dispatch == &QHsm_dispatch_);
 
     /* establish stable state configuration */
     me->temp.fun = me->state.fun;

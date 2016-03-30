@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.6.0
-// Last updated on  2015-12-22
+// Last updated for version 5.6.2
+// Last updated on  2016-03-29
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -98,11 +98,17 @@ qpc.lnt               // QP/C options
  QF_PTR_AT_,
  QF_CRIT_ENTRY_,
  QF_CRIT_EXIT_,
+ QF_SCHED_LOCK_,
+ QF_SCHED_UNLOCK_,
+ QF_ISR_CONTEXT_,
  QF_PTR_RANGE_,
  QF_MPOOL_EL)
 -esym(960,            // MISRA04-19.4(req) Disallowed macro definition
  QF_CRIT_ENTRY_,
  QF_CRIT_EXIT_,
+ QF_SCHED_STAT_TYPE_,
+ QF_SCHED_LOCK_,
+ QF_SCHED_UNLOCK_,
  QF_EPOOL_TYPE_,
  QF_ACTIVE_SUPER_,
  QF_ACTIVE_STATE_,

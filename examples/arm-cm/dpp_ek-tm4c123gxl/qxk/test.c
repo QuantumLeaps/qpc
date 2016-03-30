@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-11-24
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-03-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -37,20 +37,27 @@
 
 /* local "naked" thread object .............................................*/
 static QXThread l_test;
+static QXMutex l_mutex;
 
 /* global pointer to the test thread .......................................*/
 QXThread * const XT_Test = &l_test;
 
+
 /*..........................................................................*/
 static void thread_function(void *par) {
-    (void)par;
+    QXMutex_init(&l_mutex, 3U);
 
+    (void)par;
     for (;;) {
 
-        (void)QXThread_queueGet(BSP_TICKS_PER_SEC*2U, 0U);
-        BSP_ledOn();
+        (void)QXThread_queueGet(BSP_TICKS_PER_SEC*2U, 0U); /* block */
 
-        QXThread_delay(BSP_TICKS_PER_SEC/4U, 0U);
+        QXMutex_lock(&l_mutex);
+        BSP_ledOn();
+        /* NOTE: can't block while holding a mutex... */
+        QXMutex_unlock(&l_mutex);
+
+        QXThread_delay(BSP_TICKS_PER_SEC/4U, 0U);  /* block */
         BSP_ledOff();
 
         QXThread_delay(BSP_TICKS_PER_SEC*3U/4U, 0U);

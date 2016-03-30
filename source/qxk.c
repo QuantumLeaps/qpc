@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.1
-* Last updated on  2015-12-30
+* Last updated for version 5.6.2
+* Last updated on  2016-03-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -152,7 +152,6 @@ int_t QF_run(void) {
 
     /* switch to the highest-priority task */
     QF_INT_DISABLE();
-    QXK_attr_.curr = &l_idleThread; /* mark QXK as running */
     QXK_prioFindMax(&QXK_attr_.readySet, p);
     QXK_attr_.next = QF_active_[p];
     QXK_start_(); /* start QXK multitasking (NOTE: enables interrupts) */
@@ -207,7 +206,6 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
     QXK_stackInit_(me, &thread_ao, stkSto, stkSize);
 
     me->prio = prio;
-    me->thread.startPrio = prio;
     QF_add_(me); /* make QF aware of this active object */
 
     QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
@@ -278,39 +276,6 @@ void QXK_init(void *idleStkSto, uint_fast16_t idleStkSize) {
 /****************************************************************************/
 /**
 * @description
-* Peforms QXK scheduling and context switch to the highest-priority thread
-* that is ready to run.
-*
-* @attention
-* QXK_sched_() must be always called with interrupts **disabled** and
-* returns with interrupts **disabled**.
-*/
-void QXK_sched_(void) {
-    uint_fast8_t p; /* next priority to run */
-
-    /* find the highest-priority thread that is ready to run */
-    QXK_prioFindMax(&QXK_attr_.readySet, p);
-
-    /* is the new priority different from the currently executing thread? */
-    if (p != ((QMActive volatile *)QXK_attr_.curr)->prio) {
-
-        QXK_attr_.next = QF_active_[p];
-
-        QS_BEGIN_NOCRIT_(QS_QVK_SCHEDULE, QS_priv_.aoObjFilter,
-                         QXK_attr_.next)
-            QS_TIME_();            /* timestamp */
-            QS_2U8_((uint8_t)p,    /* priority of the next AO */
-                                   /* priority of the curent AO */
-                    (uint8_t)((QMActive volatile *)QXK_attr_.curr)->prio);
-        QS_END_NOCRIT_()
-
-        QXK_CONTEXT_SWITCH_();
-    }
-}
-
-/****************************************************************************/
-/**
-* @description
 * Called when the thread handler function returns.
 *
 * @note
@@ -330,4 +295,41 @@ void QXK_threadRet_(void) {
     QXK_prioRemove(&QXK_attr_.readySet, p);
     QXK_sched_();
     QF_CRIT_EXIT_();
+}
+
+/****************************************************************************/
+/**
+* @description
+* Peforms QXK scheduling and context switch to the highest-priority thread
+* that is ready to run.
+*
+* @attention
+* QXK_sched_() must be always called with interrupts **disabled** and
+* returns with interrupts **disabled**.
+*/
+void QXK_sched_(void) {
+    uint_fast8_t p; /* next priority to run */
+
+    /* find the highest-priority thread that is ready to run */
+    QXK_prioFindMax(&QXK_attr_.readySet, p);
+
+    if (p < QXK_attr_.lockPrio) { /* is it below the lock prio? */
+        p = QXK_attr_.lockHolder; /* prio of the thread holding the lock */
+    }
+
+    /* is the new priority different from the currently executing thread? */
+    if (p != ((QMActive volatile *)QXK_attr_.curr)->prio) {
+        Q_ASSERT_ID(610, p <= (uint_fast8_t)QF_MAX_ACTIVE);
+        QXK_attr_.next = QF_active_[p];
+
+        QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.aoObjFilter,
+                         QXK_attr_.next)
+            QS_TIME_();         /* timestamp */
+            QS_2U8_((uint8_t)p, /* priority of the next AO */
+                                /* priority of the curent AO */
+                    (uint8_t)((QMActive volatile *)QXK_attr_.curr)->prio);
+        QS_END_NOCRIT_()
+
+        QXK_CONTEXT_SWITCH_();
+    }
 }

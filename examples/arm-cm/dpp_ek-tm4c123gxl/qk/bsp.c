@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, preemptive QK kernel
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-12-14
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-03-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -77,8 +77,8 @@ void UART0_IRQHandler(void);
 #define BTN_SW1     (1U << 4)
 #define BTN_SW2     (1U << 0)
 
-static uint32_t  l_rnd;    /* random seed */
-static QMutex l_rndMutex;  /* to protect the random number generator */
+static uint32_t l_rnd;      /* random seed */
+static QMutex   l_rndMutex; /* mutex to protect the random seed */
 
 #ifdef Q_SPY
 
@@ -239,8 +239,8 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
     GPIOF->DATA_Bits[LED_GREEN] = ((stat[0] == 'e') ? LED_GREEN : 0U);
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
-        QS_U8(1, n);                  /* Philosopher number */
-        QS_STR(stat);                 /* Philosopher status */
+        QS_U8(1, n);  /* Philosopher number */
+        QS_STR(stat); /* Philosopher status */
     QS_END()
 }
 /*..........................................................................*/
@@ -255,20 +255,20 @@ uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     float volatile x = 3.1415926F;
     x = x + 2.7182818F;
 
-    QMutex_lock(&l_rndMutex); /* lock the shared random seed */
+    QMutex_lock(&l_rndMutex); /* lock the random-seed mutex */
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
     rnd = l_rnd * (3U*7U*11U*13U*23U);
     l_rnd = rnd; /* set for the next time */
-    QMutex_unlock(&l_rndMutex); /* unlock the shared random seed */
+    QMutex_unlock(&l_rndMutex); /* unlock the random-seed mutex */
 
     return (rnd >> 8);
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
-    QMutex_init(&l_rndMutex, (N_PHILO + 1));
     l_rnd = seed;
+    QMutex_init(&l_rndMutex, N_PHILO); /* ceiling == max Philo priority */
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {

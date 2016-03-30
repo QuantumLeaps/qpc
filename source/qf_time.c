@@ -470,13 +470,8 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
         QS_OBJ_(me->act);      /* the target AO */
         QS_TEC_(me->ctr);      /* the number of ticks */
         QS_TEC_(me->interval); /* the interval */
-        QS_U8_((uint8_t)tickRate); /* the tick rate */
-        if (isArmed) {
-            QS_U8_((uint8_t)1); /* status: armed */
-        }
-        else {
-            QS_U8_((uint8_t)0); /* status: dis-armed */
-        }
+        QS_2U8_((uint8_t)tickRate,
+                ((isArmed != false) ? (uint8_t)1 : (uint8_t)0));
     QS_END_NOCRIT_()
 
     QF_CRIT_EXIT_();

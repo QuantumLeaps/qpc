@@ -3,14 +3,14 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.2
-* Date of the Last Update:  2015-06-03
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-03-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,8 +31,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -127,6 +127,12 @@ void QF_onClockTick(void);
 /* interface used only inside QF implementation, but not in applications */
 #ifdef QP_IMPL
 
+    /* Win32-QV specific scheduler locking, see NOTE2 */
+    #define QF_SCHED_STAT_TYPE_ struct { uint_fast8_t lockPrio; }
+    #define QF_SCHED_LOCK_(pLockStat_) \
+        ((pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1))
+    #define QF_SCHED_UNLOCK_(dummy) ((void)0)
+
     /* Win32 OS object object implementation */
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0)
@@ -160,7 +166,7 @@ void QF_onClockTick(void);
     extern QPSet64 QV_readySet_;   /* QV-ready set of active objects */
     extern HANDLE  QV_win32Event_; /* Win32 event to signal events */
 
-    /* Windows "fudge factor" for oversizing the resources, see NOTE2 */
+    /* Windows "fudge factor" for oversizing the resources, see NOTE3 */
     #define QF_WIN32_FUDGE_FACTOR  100U
 
 #endif /* QP_IMPL */
@@ -196,6 +202,10 @@ void QF_onClockTick(void);
 * information.
 *
 * NOTE2:
+* Scheduler locking (used inside QF_publish_()) is not needed in the single-
+* threaded Win32-QV port, because event multicasting is already atomic.
+*
+* NOTE3:
 * Windows is not a deterministic real-time system, which means that the
 * system can occasionally and unexpectedly "choke and freeze" for a number
 * of seconds. The designers of Windows have dealt with these sort of issues

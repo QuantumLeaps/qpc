@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.6.2
+* Last updated on  2016-03-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -98,16 +98,20 @@ void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal) {
 /****************************************************************************/
 /**
 * @description
-* This function posts (using the FIFO policy) the event @a e to ALL
-* active objects that have subscribed to the signal @a e->sig.
-* This function is designed to be callable from any part of the system,
-* including ISRs, device drivers, and active objects.
+* This function posts (using the FIFO policy) the event @a e to **all**
+* active objects that have subscribed to the signal @a e->sig, which is
+* called _multicasting_. The multicasting performed in this function is
+* very efficient based on reference-counting inside the published event
+* ("zero-copy" event multicasting). This function is designed to be
+* callable from any part of the system, including ISRs, device drivers,
+* and active objects.
 *
 * @note
-* In the general case, event publishing requires multicasting the
-* event to multiple subscribers. This happens in the caller's thread with
-* the scheduler locked to prevent preemption during the multicasting
-* process. (Please note that the interrupts are not locked.)
+* To avoid any unexpected re-ordering of events posted into AO queues,
+* the event multicasting is performed with scheduler __locked__. However,
+* the scheduler is locked only up to the priority level of the highest-
+* priority subscriber, so any AOs of even higher priority, which did not
+* subscribe to this event are _not_ affected.
 *
 * @attention this function should be called only via the macro QF_PUBLISH()
 */
@@ -139,41 +143,77 @@ void QF_publish_(QEvt const * const e, void const * const sender)
 
 #if (QF_MAX_ACTIVE <= 8)
     {
-        uint8_t tmp = QF_subscrList_[e->sig].bits[0];
-        while (tmp != (uint8_t)0) {
-            uint8_t p = QF_LOG2(tmp);
-            tmp &= QF_invPwr2Lkup[p]; /* clear subscriber bit */
-            /* the priority of the AO must be registered with the framework */
+        uint_fast8_t tmp = QF_subscrList_[e->sig].bits[0];
+        QF_SCHED_STAT_TYPE_ lockStat;
+        lockStat.lockPrio = (uint_fast8_t)0xFF; /* set as uninitialized */
+
+        while (tmp != (uint_fast8_t)0) {
+            /* find the most-significant bit number */
+            uint_fast8_t p = (uint_fast8_t)QF_LOG2(tmp);
+
+            /* remove the most-significant bit from the bitmask */
+            tmp &= (uint_fast8_t)QF_invPwr2Lkup[p];
+
+            /* has the scheduler been locked yet? */
+            if (lockStat.lockPrio == (uint_fast8_t)0xFF) {
+                lockStat.lockPrio = p;
+                QF_SCHED_LOCK_(&lockStat);
+            }
+
+            /* the prio of the AO must be registered with the framework */
             Q_ASSERT_ID(210, QF_active_[p] != (QMActive *)0);
 
             /* QACTIVE_POST() asserts internally if the queue overflows */
             QACTIVE_POST(QF_active_[p], e, sender);
         }
+
+        /* was the scheduler locked? */
+        if (lockStat.lockPrio <= (uint_fast8_t)QF_MAX_ACTIVE) {
+            QF_SCHED_UNLOCK_(&lockStat); /* unlock the scheduler */
+        }
     }
-#else
+#else /* (QF_MAX_ACTIVE > 8) */
     {
         uint_fast8_t i = (uint_fast8_t)Q_DIM(QF_subscrList_[0].bits);
+        QF_SCHED_STAT_TYPE_ lockStat;
+        lockStat.lockPrio = (uint_fast8_t)0xFF; /* set as uninitialized */
+
         /* go through all bytes in the subscription list */
         do {
             uint_fast8_t tmp;
             --i;
             tmp = (uint_fast8_t)QF_PTR_AT_(QF_subscrList_, e->sig).bits[i];
+
             while (tmp != (uint_fast8_t)0) {
+                /* find the most-significant bit number */
                 uint_fast8_t p = (uint_fast8_t)QF_LOG2(tmp);
 
-                /* clear the subscriber bit */
+                /* remove the most-significant bit from the bitmask */
                 tmp &= (uint_fast8_t)QF_invPwr2Lkup[p];
-                p = (uint_fast8_t)p + (uint_fast8_t)(i << 3);/*adj priority */
 
-                /* the priority level be registered with the framework */
+                /* convert bit number to the highest-priority subscriber */
+                p += (uint_fast8_t)(i << 3);
+
+                /* has the scheduler been locked yet? */
+                if (lockStat.lockPrio == (uint_fast8_t)0xFF) {
+                    lockStat.lockPrio = p;
+                    QF_SCHED_LOCK_(&lockStat);
+                }
+
+                /* the prio of the AO must be registered with the framework */
                 Q_ASSERT_ID(220, QF_active_[p] != (QMActive *)0);
 
                 /* QACTIVE_POST() asserts internally if the queue overflows */
                 QACTIVE_POST(QF_active_[p], e, sender);
             }
         } while (i != (uint_fast8_t)0);
+
+        /* was the scheduler locked? */
+        if (lockStat.lockPrio <= (uint_fast8_t)QF_MAX_ACTIVE) {
+            QF_SCHED_UNLOCK_(&lockStat); /* unlock the scheduler */
+        }
     }
-#endif
+#endif /* (QF_MAX_ACTIVE > 8) */
 
     /* run the garbage collector */
     QF_gc(e);

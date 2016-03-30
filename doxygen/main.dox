@@ -1,0 +1,131 @@
+/*! @mainpage About QP/C&trade;
+
+@tableofcontents
+
+@section ab_about What is it?
+<a class="extern" target="_blank" href="http://www.state-machine.com/products/"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight, open source <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Framework"><strong>active object (actor) framework</strong></a> for building responsive and modular real-time embedded applications as systems of cooperating, event-driven <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Active"><strong>active objects</strong></a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; framework is a member of a larger family consisting of QP/C, <a href="http://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a>, and <a href="http://www.state-machine.com/qpn" target="_blank" class="extern">QP-nano</a> frameworks, which are all strictly quality controlled, thoroughly documented, and available under @ref licensing "dual licensing model".
+
+@attention
+To use QP/C&trade; effectively, you need to understand the <a href="http://www.state-machine.com/doc/concepts.html" target="_blank" class="extern"><strong>key concepts</strong></a> that underline the architecture of the framework and your applications based on the framework.
+
+<div style="clear:both"></div>
+
+
+------------------------------------------------------------------------------
+@htmlonly
+<img style="float:right; margin:10px 8px 8px 15px; clear:right;" src="img/logo_qp.gif" title="QP">
+@endhtmlonly
+
+@section ab_goals What does it do?
+The main goals of the QP/C&trade; framework are:
+- to provide a reusable **architecture** based on <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Framework">active objects (actors)</a>, which is _safer_ and easier to understand than "free-threading" with a traditional RTOS.
+- to provide a simple-to-use coding techniques for <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#HSM">hierarchical state machines</a>, with which to implement the behavior of active objects.
+- to provide efficient and thread-safe event-driven mechanisms for active objects to communicate, such as direct event passing and publish-subscribe.
+- to provide event-driven timing services (time events).
+- to provide a selection of built-in real-time kernels to run the QP applications, such as the cooperative @ref qv "QV kernel", the preemptive non-blocking @ref qk "QK kernel", and the preemptive blocking @ref qxk "QXK kernel".
+- to provide testing support for applications based on software tracing (@ref qs "Q-Spy").
+- to provide portability layer and ready-to-use ports to @ref ports_rtos "3rd-party RTOSes" and desktop operating systems such as @ref posix "Linux" and @ref win32 "Windows".
+- to provide a target for modeling and automatic code generation from the <a href="http://www.state-machine.com/qm" target="_blank" class="extern">QM modeling tool</a>.
+
+
+------------------------------------------------------------------------------
+@section ab_special What's special about it?
+
+The QP/C&trade; framework is a unique offering on the embedded software market. It provides a modern, reusable **architecture** of embedded applications, which combines object-orientation with the particular model of concurrency, known as <a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#Active"><strong>active objects</strong></a> (actors). This architecture is generally **safer**, more responsive and easier to understand than naked threads of a Real-Time Operating System (RTOS).
+
+
+<div class="separate"></div>
+@subsection oop Object Orientation
+Even though it is written in @ref misra "MISRA-compliant" ANSI-C, QP/C&trade; is fundamentally an **object-oriented** framework, which means that the framework itself and your applications derived from the framework are fundamentally composed of <a href="https://en.wikipedia.org/wiki/Class_(computer_programming)" target="_blank" class="extern">classes</a> and only classes can have @ref sm "state machines" associated with them.<br>
+
+@note
+If you program in C and object-oriented programming is new to you, please refer to the Application Note <a class="pdf" target="_blank" href="http://www.state-machine.com/doc/AN_Simple_OOP_in_C.pdf">"Simple Object-Oriented Programming in C"</a>, which describes how you can implement the concepts of _classes_, _inheritance_, and _polymorphism_ to portable ANSI-C.
+<br>
+@htmlonly
+<div class="image">
+<a target="_blank" href="http://www.state-machine.com/doc/AN_OOP_in_C.pdf"><img border="0" src="img/AN_OOP_in_C.gif" title="Download PDF"></a>
+<div class="caption">
+Application Note: Object-Oriented Programming in C
+</div>
+</div>
+@endhtmlonly
+
+
+<div class="separate"></div>
+@subsection lightweight Lightweight
+The most unique characteristic of the QP/C&trade; framework is its very small footprint, especially in RAM. In this respect, QP/C&trade; requires less resources than even the smallest conventional Real-Time Operating System (RTOS) kernel. At the same time, QP gives you a much higher level of abstraction than a conventional RTOS. With QP, you work at the level of active objects, state machines and events, as opposed to "naked" threads of an RTOS.
+
+
+<div class="separate"></div>
+@subsection hsms Hierarchical State Machines
+The behavior of active objects is specified in QP by means of
+<a class="extern" target="_blank" href="http://www.state-machine.com/doc/concepts.html#HSM">hierarchical state machines (UML statecharts)</a>. The frameworks support manual coding of UML state machines in C or C++ as well as fully automatic code generation by means of the free graphical <a class="extern" target="_blank" href="http://www.state-machine.com/qm">QM&trade; modeling tool</a>.
+
+
+<div class="separate"></div>
+@subsection kernels Built-in Kernels
+All QP/C&trade; framework can run on @ref exa_native "bare-metal single-chip microcontrollers", completely replacing a traditional RTOS. The framework contain a selection of built-in real-time kernels, such as the cooperative @ref comp_qv "QV kernel", the preemptive non-blocking @ref comp_qk "QK kernel", and the preemptive, blocking @ref comp_qxk "QXK kernel", <span class="highlight">which provides all the features you might expect from a traditional <strong>RTOS kernel</strong></span>. @ref ports_native "Native QP ports" and ready-to-use @ref exa_native "examples" are provided for major @ref exa_ref_mcu "CPU families".
+
+
+<div class="separate"></div>
+@subsection inter Interoperability
+QP/C can also work with many traditional @ref exa_rtos "RTOSes" and @ref exa_rtos "desktop OSes" (such as Windows and Linux).
+
+
+<div class="separate"></div>
+@subsection maturity Maturity
+The QP&trade; family of embedded active object frameworks is one of the most mature in its class. It has been developed and refined for over 15 years.
+
+The QP&trade; frameworks are used in <a href="http://www.state-machine.com/about/customers.html" target="_blank" class="extern">millions of products worldwide</a> in aerospace, medical devices, consumer electronics, wired and wireless telecommunications, industrial automation, transportation, robotics, and many more. The QP&trade; frameworks and the <a class="extern" target="_blank" href="http://www.state-machine.com/qm">QM&trade; modeling tool</a> receive over <a class="extern" target="_blank" href="http://sourceforge.net/projects/qpc/files/stats/timeline?dates=2015-01-01+to+2015-12-31">40,000 downloads a year</a>.
+
+
+<div class="separate"></div>
+@subsection psicc2 Book
+The book, <a class="extern" target="_blank" href="http://www.state-machine.com/psicc2" ><strong>Practical UML Statecharts in C/C++, 2nd Edition</strong></a> provides a detailed design study of the QP frameworks and explains all the related concepts.
+
+@image html PSiCC2-3D.jpg "Practical UML Statecharts in C/C++, 2nd Edition"
+
+
+------------------------------------------------------------------------------
+@section licensing How is it licensed?
+
+QP/C is licensed under the increasingly popular <a class="extern" target="_blank" href="http://www.state-machine.com/licensing">dual licensing model</a>, in which both the open source software distribution mechanism and traditional closed source software distribution models are combined.
+
+@note If your company has a policy forbidding open source in your product, all QP frameworks can be licensed commercially, in which case you don't use any open source license and you do not violate your policy.
+
+
+<div class="separate"></div>
+@subsection open-source Open Source Projects
+If you are developing and distributing open source applications under the GNU General Public License (GPL), as published by the Free Software Foundation, then you are free to use the Quantum Leaps software under the <a class="extern" target="_blank" href="http://www.gnu.org/copyleft/gpl.html">GPL version 3</a> of the License, or (at your option) any later version. Please note that GPL requires that all modifications to the original code as well as your application code (Derivative Works as defined in the Copyright Law) must also be released under the terms of the GPL open source license.
+
+
+<div class="separate"></div>
+@subsection closed-source Closed Source Projects
+If you are developing and distributing traditional closed source applications, you can purchase one of <a class="extern" target="_blank" href="http://www.state-machine.com/licensing/index.html#Commercial">Quantum Leaps commercial licenses</a>, which are specifically designed for users interested in retaining the proprietary status of their code. All Quantum Leaps commercial licenses expressly supersede the GPL open source license. This means that when you license Quantum Leaps software under a commercial license, you specifically do not use the software under the open source license and therefore you are not subject to any of its terms. 
+
+
+------------------------------------------------------------------------------
+@section help How to get help?
+Please post any **technical questions** to the <a class="extern" target="_blank" href="http://sourceforge.net/p/qpc/discussion/668726"><strong>Free Support Forum</strong></a> hosted on SourceForge.net. Posts to this forum benefit the whole community and are typically answered the same day.
+
+Direct **Commercial Support** is available to the commercial licensees. Every commercial license includes one year of Technical Support for the licensed software. The support term can be extended annually.
+
+Training and consulting services are also available from Quantum Leaps. Please refer to the <a class="extern" target="_blank" href="http://www.state-machine.com/contact.html">Contact web-page</a> for more information.
+
+
+------------------------------------------------------------------------------
+@section contact Contact Information
+
+- Quantum Leaps Web site:   <a class="extern" target="_blank" href="http://www.state-machine.com">www.state-machine.com</a>
+
+- Quantum Leaps licensing:  <a class="extern" target="_blank" href="http://www.state-machine.com">www.state-machine.com/licensing</a>
+
+- QP/QM on SourceForge.net: <a class="extern" target="_blank" href="http://sourceforge.net/projects/qpc">sourceforge.net/projects/qpc</a>
+
+- e-mail: <a class="extern" target="_blank" href="mailto:info@state-machine.com">info@state-machine.com</a>
+
+@image html logo_ql_TM.jpg
+Copyright &copy; 2002-2016 Quantum Leaps, LLC. All Rights Reserved.
+
+@next{gs}
+*/

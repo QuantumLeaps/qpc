@@ -5,8 +5,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-12
+* Last updated for version 5.6.2
+* Last updated on  2016-03-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -74,20 +74,22 @@
 /*! Type of the QMActive.thread member for the QXK kernel */
 typedef struct {
     void *stack;            /*!< top of the per-thread stack */
-    uint_fast8_t startPrio; /*!< start priority of the thread */
+    /* ... possibly other thread attributes in the future */
 } QXK_ThreadType;
 
 /*! attributes of the QXK kernel */
 typedef struct {
-    void volatile *curr;    /*!< currently executing thread */
-    void volatile *next;    /*!< next thread to execute */
+    void volatile *curr;  /*!< currently executing thread */
+    void volatile *next;  /*!< next thread to execute */
+    uint_fast8_t volatile lockPrio;   /*!< lock prio (0 == no-lock) */
+    uint_fast8_t volatile lockHolder; /*!< prio of the lock holder */
 #ifndef QXK_ISR_CONTEXT_
     uint_fast8_t volatile intNest; /*!< ISR nesting level */
 #endif /* QXK_ISR_CONTEXT_ */
 #if (QF_MAX_ACTIVE <= 8)
-    QPSet8  readySet;       /*!< QXK ready-set of AOs and "naked" threads */
+    QPSet8  readySet;     /*!< QXK ready-set of AOs and "naked" threads */
 #else
-    QPSet64 readySet;       /*!< QXK ready-set of AOs and "naked" threads */
+    QPSet64 readySet;     /*!< QXK ready-set of AOs and "naked" threads */
 #endif
 } QXK_Attr;
 
@@ -122,29 +124,46 @@ void QXK_sched_(void);
 #define QXK_getVersion() (QP_versionStr)
 
 /****************************************************************************/
-/*! Priority Ceiling Mutex the QXK preemptive kernel */
+/*! QXK priority-ceiling mutex class */
 typedef struct {
-    uint8_t prioCeiling;
-    uint8_t lockNest;
-#if (QF_MAX_ACTIVE <= 8)
-    QPSet8  waitSet; /*!< set of "naked" threads waiting on this mutex */
-#else
-    QPSet64 waitSet; /*!< set of "naked" threads waiting on this mutex */
-#endif
+    uint_fast8_t lockPrio;   /*!< lock prio (priority ceiling) */
+    uint_fast8_t prevPrio;   /*!< previoius lock prio */
+    uint_fast8_t prevHolder; /*!< priority of the thread holding the lock */
 } QXMutex;
 
-/*! initialize the QXK priority-ceiling mutex */
-void QXMutex_init(QXMutex * const me, uint_fast8_t prioCeiling);
+/*! The QXMutex initialization */
+void QXMutex_init(QXMutex * const me, uint_fast8_t prio);
 
-/*! lock the QXK priority-ceiling mutex */
+/*! QXMutex lock */
 void QXMutex_lock(QXMutex * const me);
 
-/*! unlock the QXK priority-ceiling mutex */
-void QXMutex_unlock(QXMutex * const me);
+/*! QXMutex unlock */
+void QXMutex_unlock(QXMutex const * const me);
 
 /****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */
 #ifdef QP_IMPL
+
+    #ifndef QXK_ISR_CONTEXT_
+        /*! Internal port-specific macro that reports the execution context
+        * (ISR vs. thread).
+        */
+        /*! @returns true if the code executes in the ISR context and false
+        * otherwise
+        */
+        #define QXK_ISR_CONTEXT_() (QXK_attr_.intNest != (uint_fast8_t)0)
+    #endif /* QXK_ISR_CONTEXT_ */
+
+    /* QF-specific scheduler locking */
+    #define QF_SCHED_STAT_TYPE_ QXMutex
+    #define QF_SCHED_LOCK_(pLockStat_) do { \
+        if (QXK_ISR_CONTEXT_()) { \
+            (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
+        } else { \
+            QXMutex_lock((pLockStat_)); \
+        } \
+    } while (0)
+    #define QF_SCHED_UNLOCK_(pLockStat_) QXMutex_unlock((pLockStat_))
 
     #if (QF_MAX_ACTIVE <= 8)
         #define QXK_prioNotEmpty(set_)    QPSet8_notEmpty((set_))
@@ -157,16 +176,6 @@ void QXMutex_unlock(QXMutex * const me);
         #define QXK_prioInsert(set_, p_)  QPSet64_insert((set_), (p_))
         #define QXK_prioRemove(set_, p_)  QPSet64_remove((set_), (p_))
     #endif
-
-    #ifndef QXK_ISR_CONTEXT_
-        /*! Internal port-specific macro that reports the execution context
-        * (ISR vs. thread).
-        */
-        /*! @returns true if the code executes in the ISR context and false
-        * otherwise
-        */
-        #define QXK_ISR_CONTEXT_() (QXK_attr_.intNest != (uint_fast8_t)0)
-    #endif /* QXK_ISR_CONTEXT_ */
 
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         if ((me_)->eQueue.frontEvt == (QEvt *)0) { \

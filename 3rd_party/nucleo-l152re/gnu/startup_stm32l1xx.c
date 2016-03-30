@@ -2,7 +2,7 @@
  * Purpose: startup file for STM32L1xx Cortex-M3 device.
  *          Should be used with GCC 'GNU Tools ARM Embedded'
  * Version: CMSIS 4.3.0
- * Date: 20 August 2015
+ * Date: 2 March 2016
  *
  * Created from the CMSIS template for the specified device
  * Quantum Leaps, www.state-machine.com
@@ -146,9 +146,9 @@ int const g_pfnVectors[] = {
     (int)&Reset_Handler,            /* Reset Handler                  */
     (int)&NMI_Handler,              /* NMI Handler                    */
     (int)&HardFault_Handler,        /* Hard Fault Handler             */
-    0,                              /* Reserved                       */
-    0,                              /* Reserved                       */
-    0,                              /* Reserved                       */
+    (int)&MemManage_Handler,        /* The MPU fault handler          */
+    (int)&BusFault_Handler,         /* The bus fault handler          */
+    (int)&UsageFault_Handler,       /* The usage fault handler        */
     0,                              /* Reserved                       */
     0,                              /* Reserved                       */
     0,                              /* Reserved                       */

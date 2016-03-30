@@ -1,7 +1,51 @@
 /**
 @page history Revision History
 
+@section qpc_5_6_2 Version 5.6.2, 2016-03-31
+The main purpose of this release is to introduce _atomic event multicasting_, meaning that event publishing to all subscribers is now protected from preemption. This eliminates potential for re-ordering of events under preemptive kernels (such as QK, QXK, or 3rd-party RTOSes), when events are published from low-priority AOs and some higher-priority subscribers can preempt multicasting and post/publish events of their own (before the original event is posted to all subscribers).
 
+The atomic event multicasting is implemented by means of selective scheduler locking--very much like a priory-ceiling mutex. During event multicasting the scheduler gets locked, but only up to the highest-priority subscriber to a given event. The whole point here is that active objects with priorities above such "priority ceiling" are _not_ affected. Please see the discussion thread:
+
+https://sourceforge.net/p/qpc/discussion/668726/thread/c186bf45
+
+This release also changes the implementation of the priority-ceiling mutex in the preemptive built-in kernels: QK and QXK. Specifically, the implementation now re-uses the selective scheduler locking mechanism. In this new implementation, the QXMutex of the QXK kernel is much more efficient and lightweight, but it _cannot block_ while holding a mutex.
+
+Finally, this release changes the QP ports to 3rd-party RTOSes by performing any RTOS operations (like posting events to message queues) outside critical sections. Also the ports have been augmented to support scheduler locking (this feature depends on what's available in the specific RTOSes).
+
+Changes in detail:
+
+1. Added scheduler locking to QF_publish_() in qf_ps.c. This feature is added in a portable way, via macros #QF_SCHED_STAT_TYPE_, QF_SCHED_LOCK_() and QF_SCHED_UNLOCK_(), which need to be implemented in every QP port.
+
+2. Modified QV kernel to provide (dummy) implementation of selective scheduler locking.
+
+3. Modified QK kernel to implement selective scheduler locking via modified priority-ceiling mutex QMutex.
+
+4. Modified QXK kernel to implement selective scheduler locking via modified priority-ceiling mutex QXMutex.
+
+5. Modified embOS port to provide (global) scheduler locking, which affects all priorities, because that's all embOS supports. Also, modified the embOS port to perform event posting outside the QF critical section.
+
+6. Modified uC/OS-II port to provide (global) scheduler locking, which affects all priorities, because that's all uC/OS-II supports. Also, modified the uC/OS-II port to perform event posting outside the QF critical section.
+
+7. Modified ThreadX port to provide selective scheduler locking, by means of "priority-threshold" available in ThreadX. Also, modified the ThreadX port to perform event posting outside the QF critical section.
+
+8. Changed the ThreadX example to run on ARM Cortex-M4 board (STM32DiscoveryF4), instead of Win32 emulation (see qpc/examples/threadx/arm-cm/dpp_stm32f429-discovery).
+
+9. Modified the Win32 port to provide (global) scheduler locking, which is implemented by Win32 critical section.
+
+10. Fixed Bug#122 (QP didn't initiate some internal variables) https://sourceforge.net/p/qpc/bugs/122/ by adding explicit clearing of all QP variables in QF_init().
+
+11. Modified the POSIX port to dummy-out scheduler locking. This means that this port currently does NOT lock scheduler around event publishing. (At this point it is not clear how to implement POSIX scheduler locking in a portable way.)
+
+12. Modified QK and QXK examples in qpc/examples/arm-cm/dpp_ek-tm4c123gxl to demonstrate the usage of the new priority-ceiling mutexes.
+
+13. Fixed the 3rd-party file startup_stm32l32l1xx.c to include exceptions for Cortex-M3 (MemManage_Handler, BusFault_Handler, and UsageFault_Handler).
+
+14. Updated the 3rd-party files for the EK-TM4C123GXL board (TivaC LaunchPad).
+
+15. Modified Makefiles for the EK-TM4C123GXL board with GNU-ARM toolset to define the symbol TARGET_IS_TM4C123_RB1 for compatibility with the updated 3rd-party files.
+
+
+------------------------------------------------------------------------------
 @section qpc_5_6_1 Version 5.6.1, 2016-01-01
 This release is the first official (production) release of the new blocking @ref qxk "QXK" kernel.
 

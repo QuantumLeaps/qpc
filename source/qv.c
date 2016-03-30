@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.1
-* Last updated on  2015-12-30
+* Last updated for version 5.6.2
+* Last updated on  2016-03-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -145,7 +145,7 @@ int_t QF_run(void) {
             a = QF_active_[p];
 
 #ifdef Q_SPY
-            QS_BEGIN_NOCRIT_(QS_QVK_SCHEDULE, QS_priv_.aoObjFilter, a)
+            QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.aoObjFilter, a)
                 QS_TIME_();              /* timestamp */
                 QS_2U8_((uint8_t)p,      /* priority of the scheduled AO */
                         (uint8_t)pprev); /* previous priority */
@@ -169,7 +169,7 @@ int_t QF_run(void) {
         else { /* no AO ready to run --> idle */
 #ifdef Q_SPY
             if (pprev != (uint_fast8_t)0) {
-                QS_BEGIN_NOCRIT_(QS_QVK_IDLE, (void *)0, (void *)0)
+                QS_BEGIN_NOCRIT_(QS_SCHED_IDLE, (void *)0, (void *)0)
                     QS_TIME_();             /* timestamp */
                     QS_U8_((uint8_t)pprev); /* previous priority */
                 QS_END_NOCRIT_()

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example for QXK
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-11-24
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-03-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -89,9 +89,8 @@ int main() {
                   sizeof(philoStackSto[n]),  /* stack size [bytes] */
                   (QEvt *)0);                /* initialization event */
     }
-
     QACTIVE_START(AO_Table,                  /* AO to start */
-                  (uint_fast8_t)(N_PHILO + 2), /* QP priority of the AO */
+                  (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */
                   Q_DIM(tableQueueSto),      /* queue length [events] */
                   tableStackSto,             /* stack storage */

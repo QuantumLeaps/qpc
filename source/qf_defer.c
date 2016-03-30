@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.6.2
-* Last updated on  2016-02-10
+* Last updated on  2016-02-11
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -65,12 +65,13 @@ Q_DEFINE_THIS_MODULE("qf_defer")
 * An active object can use multiple event queues to defer events of
 * different kinds.
 *
-* @sa QActive_recall(), QEQueue
+* @sa QActive_recall(), QEQueue, QActive_flushDeferred()
 */
-bool QActive_defer(QMActive * const me, QEQueue * const eq,
+bool QActive_defer(QMActive const * const me, QEQueue * const eq,
                    QEvt const * const e)
 {
     (void)me; /* avoid compiler warning about 'me' not used */
+
     return QEQueue_post(eq, e, (uint_fast16_t)1);
 }
 
@@ -149,8 +150,11 @@ uint_fast16_t QActive_flushDeferred(QMActive const * const me,
                                     QEQueue * const eq)
 {
     uint_fast16_t n = (uint_fast16_t)0;
-    QEvt const *e;
-    for (e = QEQueue_get(eq); e != (QEvt const *)0; e = QEQueue_get(eq)) {
+    QEvt const *e = QEQueue_get(eq);
+
+    (void)me; /* avoid compiler warning about 'me' not used */
+
+    for (; e != (QEvt const *)0; e = QEQueue_get(eq)) {
         QF_gc(e); /* garbage collect */
         ++n; /* count the flushed event */
     }

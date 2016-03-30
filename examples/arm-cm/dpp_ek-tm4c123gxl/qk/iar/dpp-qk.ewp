@@ -154,12 +154,12 @@
         <option>
           <name>FPU2</name>
           <version>0</version>
-          <state>4</state>
+          <state>0</state>
         </option>
         <option>
           <name>NrRegs</name>
           <version>0</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>NEON</name>
@@ -345,7 +345,7 @@
         <option>
           <name>CCOptStrategy</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>CCOptLevelSlave</name>
@@ -420,7 +420,7 @@
         <option>
           <name>CCOptStrategySlave</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>CCGuardCalls</name>
@@ -2993,7 +2993,19 @@
   <group>
     <name>QP_port</name>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qep_port.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qf_port.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qk_port.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qk_port.s</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qs_port.h</name>
     </file>
   </group>
   <group>

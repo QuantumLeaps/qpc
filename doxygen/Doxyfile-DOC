@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "5.6.1"
+PROJECT_NUMBER         = "5.6.2"
 PROJECT_BRIEF          =
 PROJECT_LOGO           = images/header_logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -33,8 +33,9 @@ ALIASES += hint="@par <b>Hint</b>@n"
 ALIASES += usage="@par <b>Usage</b>@n"
 ALIASES += reqdef{2}="<div class="vmargin20"></div>@anchor \1 <TABLE><TR ALIGN="left"><TH NOWRAP>\1</TH><TH WIDTH="100%">\2</TH></TR></TABLE>"
 ALIASES += reqref{1}="@ref \1 \"\1\""
-ALIASES += termdef{2}="@anchor term_\1 @par \2"
-ALIASES += termref{2}="@ref term_\1 \"\2\""
+#ALIASES += termdef{2}="@anchor term_\1 @par \2"
+ALIASES += termdef{2}="@subsection term_\1 \2"
+ALIASES += termref{1}="@ref term_\1"
 
 TCL_SUBST              =
 OPTIMIZE_OUTPUT_FOR_C  = YES
@@ -109,28 +110,32 @@ WARN_LOGFILE           =
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = \
-    main.cc \
-    struct.cc \
-    srs.cc \
-    modules.cc \
-    qs.cc \
-    exa.cc \
-    exa_apps.cc \
-    exa_native.cc \
-    exa_rtos.cc \
-    exa_os.cc \
-    exa_mware.cc \
-    ports.cc \
-    ports_native.cc \
-    ports_rtos.cc \
-    ports_os.cc \
-    history.cc \
+    main.dox \
+    gs.dox \
+    struct.dox \
+    spec.dox \
+    srs.dox \
+    sas.dox \
+    sds.dox \
+    ../../doxygen/glossary.dox \
+    exa.dox \
+    exa_apps.dox \
+    exa_native.dox \
+    exa_rtos.dox \
+    exa_os.dox \
+    exa_mware.dox \
+    ports.dox \
+    ports_native.dox \
+    ports_rtos.dox \
+    ports_os.dox \
+    history.dox \
     macros.h \
-    metrics.cc
+    metrics.dox \
+    modules.dox
 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = \
-    *.cc \
+    *.dox \
     *.h \
     *.c \
     *.cpp \
@@ -186,10 +191,10 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = ../../html/qpc
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = header.html
-HTML_FOOTER            = footer.html
+HTML_HEADER            = ../../doxygen/header.html
+HTML_FOOTER            = ../../doxygen/footer.html
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  = ql.css
+HTML_EXTRA_STYLESHEET  = ../../doxygen/ql.css
 HTML_EXTRA_FILES       =
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100

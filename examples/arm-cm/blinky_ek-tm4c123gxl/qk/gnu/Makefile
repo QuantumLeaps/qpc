@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Blinky on EK-TM4C123GXL, QK, GNU-ARM gnutoolchains.com/arm-eabi
-# Last Updated for Version: 5.6.0
-# Date of the Last Update:  2015-12-11
+# Last Updated for Version: 5.6.2
+# Date of the Last Update:  2016-03-21
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -132,7 +132,7 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   :=
+DEFINES   := -DTARGET_IS_TM4C123_RB1
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]

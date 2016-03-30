@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*                                                                        */
-/*            Copyright (c) 1996-2008 by Express Logic Inc.               */
+/*            Copyright (c) 1996-2011 by Express Logic Inc.               */
 /*                                                                        */
 /*  This software is copyrighted by and is the sole property of Express   */
 /*  Logic, Inc.  All rights, title, ownership, or other interests         */
@@ -37,7 +37,7 @@
 /*                                                                        */
 /*  PORT SPECIFIC C INFORMATION                            RELEASE        */
 /*                                                                        */
-/*    tx_port.h                                          Win32/Visual     */
+/*    tx_port.h                                         Cortex-M4/IAR     */
 /*                                                           5.1          */
 /*                                                                        */
 /*  AUTHOR                                                                */
@@ -59,33 +59,31 @@
 /*                                                                        */
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
-/*  12-12-2005     William E. Lamie         Initial Win32/Visual C/C++    */
+/*  10-10-2010     William E. Lamie         Initial Cortex-M4 IAR         */
 /*                                            Support Version 5.0         */
-/*  12-12-2008     William E. Lamie         Modified comment(s), added    */
-/*                                            trace support, changed      */
-/*                                            interrupt disable/restore   */
-/*                                            macros to use interrupt     */
-/*                                            control function, added     */
-/*                                            macros for Win32-specific   */
-/*                                            initialization, increased   */
-/*                                            default memory size, and    */
-/*                                            updated release string,     */
-/*                                            resulting in version 5.1    */
+/*  07-15-2011     William E. Lamie         Modified comment(s), added    */
+/*                                            IAR thread-safe library     */
+/*                                            support, and updated        */
+/*                                            version string, resulting   */
+/*                                            in version 5.1              */
 /*                                                                        */
 /**************************************************************************/
 
 #ifndef TX_PORT_H
 #define TX_PORT_H
 
-#ifndef TX_ENABLE_EVENT_TRACE
-#define TX_ENABLE_EVENT_TRACE
-#endif
+
+/* Define default parameters for the Cortex-M4 build for smaller footprint.  */
+
+#define TX_TIMER_PROCESS_IN_ISR
+#define TX_DISABLE_PREEMPTION_THRESHOLD
+#define TX_DISABLE_NOTIFY_CALLBACKS
+#define TX_DISABLE_ERROR_CHECKING
 
 
 /* Determine if the optional ThreadX user define file should be used.  */
 
 #ifdef TX_INCLUDE_USER_DEFINE_FILE
-
 
 /* Yes, include the user defines in tx_user.h. The defines in this file may
    alternately be defined on the command line.  */
@@ -98,6 +96,10 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <intrinsics.h>
+#ifdef  TX_ENABLE_IAR_LIBRARY_SUPPORT
+#include <yvals.h>
+#endif
 
 
 /* Define ThreadX basic types for this port.  */
@@ -113,11 +115,6 @@ typedef short                                   SHORT;
 typedef unsigned short                          USHORT;
 
 
-/* Include windows include file.  */
-
-#include <windows.h>
-
-
 /* Define the priority levels for ThreadX.  Legal values range
    from 32 to 1024 and MUST be evenly divisible by 32.  */
 
@@ -130,7 +127,7 @@ typedef unsigned short                          USHORT;
    thread creation is less than this value, the thread create call will return an error.  */
 
 #ifndef TX_MINIMUM_STACK
-#define TX_MINIMUM_STACK                        200         /* Minimum stack size for this port */
+#define TX_MINIMUM_STACK                        200         /* Minimum stack size for this port  */
 #endif
 
 
@@ -138,7 +135,7 @@ typedef unsigned short                          USHORT;
    if TX_TIMER_PROCESS_IN_ISR is not defined.  */
 
 #ifndef TX_TIMER_THREAD_STACK_SIZE
-#define TX_TIMER_THREAD_STACK_SIZE              400         /* Default timer thread stack size - Not used in Win32 port!  */
+#define TX_TIMER_THREAD_STACK_SIZE              1024        /* Default timer thread stack size  */
 #endif
 
 #ifndef TX_TIMER_THREAD_PRIORITY
@@ -146,7 +143,7 @@ typedef unsigned short                          USHORT;
 #endif
 
 
-/* Define various constants for the ThreadX  port.  */
+/* Define various constants for the ThreadX Cortex-M3 port.  */
 
 #define TX_INT_DISABLE                          1           /* Disable interrupts               */
 #define TX_INT_ENABLE                           0           /* Enable interrupts                */
@@ -162,16 +159,11 @@ typedef unsigned short                          USHORT;
 */
 
 #ifndef TX_TRACE_TIME_SOURCE
-#define TX_TRACE_TIME_SOURCE                    ((ULONG) (_tx_win32_time_stamp.LowPart));
+#define TX_TRACE_TIME_SOURCE                    *((ULONG *) 0xE0001004)
 #endif
 #ifndef TX_TRACE_TIME_MASK
 #define TX_TRACE_TIME_MASK                      0xFFFFFFFFUL
 #endif
-
-
-/* Define the port-specific trace extension to pickup the Windows timer.  */
-
-#define TX_TRACE_PORT_EXTENSION                 QueryPerformanceCounter((LARGE_INTEGER *)&_tx_win32_time_stamp);
 
 
 /* Define the port specific options for the _tx_build_options variable. This variable indicates
@@ -185,13 +177,6 @@ typedef unsigned short                          USHORT;
    a function call.  */
 
 #define TX_INLINE_INITIALIZATION
-
-
-/* Define the Win32-specific initialization code that is expanded in the generic source.  */
-
-void    _tx_initialize_start_interrupts(void);
-
-#define TX_PORT_SPECIFIC_PRE_SCHEDULER_INITIALIZATION                       _tx_initialize_start_interrupts();
 
 
 /* Determine whether or not stack checking is enabled. By default, ThreadX stack checking is
@@ -209,14 +194,14 @@ void    _tx_initialize_start_interrupts(void);
    for the multiple macros is so that backward compatibility can be maintained with
    existing ThreadX kernel awareness modules.  */
 
-#define TX_THREAD_EXTENSION_0                                               HANDLE tx_thread_win32_thread_handle; \
-                                                                            DWORD  tx_thread_win32_thread_id; \
-                                                                            HANDLE tx_thread_win32_thread_run_semaphore; \
-                                                                            UINT   tx_thread_win32_suspension_type; \
-                                                                            UINT   tx_thread_win32_int_disabled_flag;
+#define TX_THREAD_EXTENSION_0
 #define TX_THREAD_EXTENSION_1
 #define TX_THREAD_EXTENSION_2
+#ifdef  TX_ENABLE_IAR_LIBRARY_SUPPORT
+#define TX_THREAD_EXTENSION_3           VOID    *tx_thread_iar_tls_pointer;
+#else
 #define TX_THREAD_EXTENSION_3
+#endif
 
 
 /* Define the port extensions of the remaining ThreadX objects.  */
@@ -242,8 +227,15 @@ void    _tx_initialize_start_interrupts(void);
    tx_thread_shell_entry, and tx_thread_terminate.  */
 
 
+#ifdef  TX_ENABLE_IAR_LIBRARY_SUPPORT
+#define TX_THREAD_CREATE_EXTENSION(thread_ptr)                      thread_ptr -> tx_thread_iar_tls_pointer =  __iar_dlib_perthread_allocate();
+#define TX_THREAD_DELETE_EXTENSION(thread_ptr)                      __iar_dlib_perthread_deallocate(thread_ptr -> tx_thread_iar_tls_pointer); \
+                                                                    thread_ptr -> tx_thread_iar_tls_pointer =  TX_NULL;
+#define TX_PORT_SPECIFIC_PRE_SCHEDULER_INITIALIZATION               __iar_dlib_perthread_access(0);
+#else
 #define TX_THREAD_CREATE_EXTENSION(thread_ptr)
 #define TX_THREAD_DELETE_EXTENSION(thread_ptr)
+#endif
 #define TX_THREAD_COMPLETED_EXTENSION(thread_ptr)
 #define TX_THREAD_TERMINATED_EXTENSION(thread_ptr)
 
@@ -270,6 +262,15 @@ void    _tx_initialize_start_interrupts(void);
 #define TX_TIMER_DELETE_EXTENSION(timer_ptr)
 
 
+/* Determine if the ARM architecture has the CLZ instruction. This is available on
+   architectures v5 and above. If available, redefine the macro for calculating the
+   lowest bit set.  */
+
+#define TX_LOWEST_SET_BIT_CALCULATE(m, b)       m = m & ((ULONG) (-((LONG) m))); \
+                                                b = (UINT) __CLZ(m); \
+                                                b = 31 - b;
+
+
 /* Define ThreadX interrupt lockout and restore macros for protection on
    access of critical kernel information.  The restore interrupt macro must
    restore the interrupt posture of the running thread prior to the value
@@ -277,13 +278,36 @@ void    _tx_initialize_start_interrupts(void);
    is used to define a local function save area for the disable and restore
    macros.  */
 
-UINT   _tx_thread_interrupt_control(UINT new_posture);
+/* The embedded assembler blocks are design so as to be inlinable by the
+   armlink linker inlining. This requires them to consist of either a
+   single 32-bit instruction, or either one or two 16-bit instructions
+   followed by a "BX lr". Note that to reduce the critical region size, the
+   16-bit "CPSID i" instruction is preceeded by a 16-bit NOP */
 
-#define TX_INTERRUPT_SAVE_AREA      UINT    tx_saved_posture;
+#ifdef TX_DISABLE_INLINE
 
-#define TX_DISABLE                          tx_saved_posture =  _tx_thread_interrupt_control(TX_INT_DISABLE);
+unsigned int                                    _tx_thread_interrupt_control(unsigned int new_posture);
 
-#define TX_RESTORE                          _tx_thread_interrupt_control(tx_saved_posture);
+#define TX_INTERRUPT_SAVE_AREA                  register int interrupt_save;
+
+#define TX_DISABLE                              interrupt_save = _tx_thread_interrupt_control(TX_INT_DISABLE);
+
+#define TX_RESTORE                              _tx_thread_interrupt_control(interrupt_save);
+
+#else
+
+#define TX_INTERRUPT_SAVE_AREA                  __istate_t interrupt_save;
+#define TX_DISABLE                              {interrupt_save = __get_interrupt_state();__disable_interrupt();};
+#define TX_RESTORE                              {__set_interrupt_state(interrupt_save);};
+
+#endif
+
+
+/* Define FPU extension for the Cortex-M4.  Each is assumed to be called in the context of the executing
+   thread.  */
+
+void    tx_thread_fpu_enable(void);
+void    tx_thread_fpu_disable(void);
 
 
 /* Define the interrupt lockout macros for each ThreadX object.  */
@@ -300,27 +324,10 @@ UINT   _tx_thread_interrupt_control(UINT new_posture);
 
 #ifdef TX_THREAD_INIT
 CHAR                            _tx_version_id[] =
-                                    "Copyright (c) 1996-2009 Express Logic Inc. * ThreadX Win32/Visual C/C++ Version G5.3.5.1 SN: Evaluation_Only_Version_071709 *";
+                                    "Copyright (c) 1996-2012 Express Logic Inc. * ThreadX Cortex-M4/IAR Version G5.5.5.1 SN: Evaluation_Only_Version_012012 *";
 #else
 extern  CHAR                    _tx_version_id[];
 #endif
 
 
-/* Define externals for the Win32 port of ThreadX.  */
-
-extern CRITICAL_SECTION                         _tx_win32_critical_section;
-extern HANDLE                                   _tx_win32_semaphore;
-extern ULONG                                    _tx_win32_global_int_disabled_flag;
-extern LARGE_INTEGER                            _tx_win32_time_stamp;
-
-
-#ifndef TX_WIN32_MEMORY_SIZE
-#define TX_WIN32_MEMORY_SIZE                    64000
 #endif
-
-#ifndef TX_TIMER_PERIODIC
-#define TX_TIMER_PERIODIC                       18
-#endif
-
-#endif
-

@@ -10,7 +10,7 @@
 * by the application.
 *
 * Quantum Leaps, LLC. www.state-machine.com
-* 2015-03-22
+* 2016-03-24
 *===========================================================================*/
 /*
 *********************************************************************************************************
@@ -59,7 +59,7 @@
 #define OS_MAX_QS                20u   /* Max. number of queue control blocks in your application      */
 #define OS_MAX_TASKS             20u   /* Max. number of tasks in your application, MUST be >= 2       */
 
-#define OS_SCHED_LOCK_EN          0u   /* Include code for OSSchedLock() and OSSchedUnlock()           */
+#define OS_SCHED_LOCK_EN          1u   /* Include code for OSSchedLock() and OSSchedUnlock()           */
 
 #define OS_TICK_STEP_EN           1u   /* Enable tick stepping feature for uC/OS-View                  */
 #define OS_TICKS_PER_SEC        100u   /* Set the number of ticks in one second                        */

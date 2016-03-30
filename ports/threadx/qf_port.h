@@ -3,14 +3,14 @@
 * @brief QF/C, port to ThreadX
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-03-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,8 +31,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -66,6 +66,28 @@
 * interface used only inside QF, but not in applications
 */
 #ifdef QP_IMPL
+
+    /* QF-specific scheduler locking (implemented in qf_port.c) */
+    typedef struct {
+        uint_fast8_t lockPrio;   /*!< lock prio [QF numbering scheme] */
+        UINT prevThre;           /*!< previoius preemption threshold */
+        TX_THREAD *lockHolder;   /*!< the thread holding the lock */
+    } QFSchedLock;
+
+    #define QF_SCHED_STAT_TYPE_ QFSchedLock
+    #define QF_SCHED_LOCK_(pLockStat_) do { \
+        if (_tx_thread_system_state != (UINT)0) { \
+            (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
+        } else { \
+            QFSchedLock_((pLockStat_)); \
+        } \
+    } while (0)
+    #define QF_SCHED_UNLOCK_(pLockStat_) QFSchedUnlock_((pLockStat_))
+
+    /* internal implementation of scheduler locking/unlocking */
+    void QFSchedLock_(QFSchedLock * const lockStat);
+    void QFSchedUnlock_(QFSchedLock const * const lockStat);
+    extern UINT _tx_thread_system_state; /* internal TX interrupt counter */
 
     /* TreadX block pool operations */
     #define QF_EPOOL_TYPE_              TX_BLOCK_POOL

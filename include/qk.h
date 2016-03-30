@@ -5,14 +5,14 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2014-12-14
+* Last updated for version 5.6.2
+* Last updated on  2016-03-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -33,8 +33,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -87,12 +87,12 @@ void QK_sched_(uint_fast8_t p);
 /*! Find the highest-priority task ready to run */
 uint_fast8_t QK_schedPrio_(void);
 
-/* public-scope objects */
-extern uint_fast8_t volatile QK_currPrio_; /*!< current task priority */
+/*! priority of the current task */
+extern uint_fast8_t volatile QK_currPrio_;
 
-#ifndef QK_ISR_CONTEXT_
+#ifndef QF_ISR_CONTEXT_
     extern uint_fast8_t volatile QK_intNest_;  /*!< ISR nesting level */
-#endif /* QK_ISR_CONTEXT_ */
+#endif /* QF_ISR_CONTEXT_ */
 
 /****************************************************************************/
 /*! QK initialization */
@@ -115,32 +115,59 @@ void QK_init(void);
 */
 void QK_onIdle(void);
 
-
 /****************************************************************************/
-/*! Priority Ceiling Mutex the QK preemptive kernel */
+/*! QK priority-ceiling mutex class */
 typedef struct {
-    uint8_t prioCeiling;
-    uint8_t lockNest;
+    uint_fast8_t lockPrio; /*!< lock prio (priority ceiling) */
+    uint_fast8_t prevPrio; /*!< previoius lock prio */
 } QMutex;
 
-/*! initialize the QK priority-ceiling mutex */
-void QMutex_init(QMutex * const me, uint_fast8_t prioCeiling);
+/*! The QK mutex initialization */
+void QMutex_init(QMutex * const me, uint_fast8_t prio);
 
-/*! lock the QK priority-ceiling mutex */
+/*! QMutex lock */
 void QMutex_lock(QMutex * const me);
 
-/*! unlock the QK priority-ceiling mutex */
-void QMutex_unlock(QMutex * const me);
+/*! QMutex unlock */
+void QMutex_unlock(QMutex const * const me);
 
+extern uint_fast8_t volatile QK_lockPrio_;   /*!< lock prio (0 == no-lock) */
 
 /****************************************************************************/
 /*! get the current QK version number string of the form "X.Y.Z" */
 #define QK_getVersion() (QP_versionStr)
 
-
 /****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */
 #ifdef QP_IMPL
+
+    #ifndef QK_ISR_CONTEXT_
+        /*! Internal port-specific macro that reports the execution context
+        * (ISR vs. thread).
+        */
+        /*! @returns true if the code executes in the ISR context and false
+        * otherwise
+        */
+        #define QK_ISR_CONTEXT_() (QK_intNest_ != (uint_fast8_t)0)
+    #endif /* QK_ISR_CONTEXT_ */
+
+    /* QF-specific scheduler locking */
+    /*! Internal port-specific macro to represent the scheduler lock status
+    * that needs to be preserved to allow nesting of locks.
+    */
+    #define QF_SCHED_STAT_TYPE_ QMutex
+
+    /*! Internal port-specific macro for selective scheduler locking. */
+    #define QF_SCHED_LOCK_(pLockStat_) do { \
+        if (QK_ISR_CONTEXT_()) { \
+            (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
+        } else { \
+            QMutex_lock((pLockStat_)); \
+        } \
+    } while (0)
+
+    /*! Internal port-specific macro for selective scheduler unlocking. */
+    #define QF_SCHED_UNLOCK_(pLockStat_) QMutex_unlock((pLockStat_))
 
     #if (QF_MAX_ACTIVE <= 8)
         #define QK_prioNotEmpty(set_)    QPSet8_notEmpty((set_))
@@ -155,18 +182,6 @@ void QMutex_unlock(QMutex * const me);
         #define QK_prioInsert(set_, p_)  QPSet64_insert((set_), (p_))
         #define QK_prioRemove(set_, p_)  QPSet64_remove((set_), (p_))
     #endif
-
-    #ifndef QK_ISR_CONTEXT_
-        /*!
-        * Internal port-specific macro that reports the execution context
-        * (ISR vs. thread).
-        */
-        /*!
-        * @returns true if the code executes in the ISR context and false
-        * otherwise
-        */
-        #define QK_ISR_CONTEXT_() (QK_intNest_ != (uint_fast8_t)0)
-    #endif /* QK_ISR_CONTEXT_ */
 
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         (Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0))

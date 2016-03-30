@@ -81,6 +81,12 @@ extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
 /* interface used only inside QF implementation, but not in applications */
 #ifdef QP_IMPL
 
+    /* QF-specific scheduler locking (not used at this point) */
+    #define QF_SCHED_STAT_TYPE_ struct { uint_fast8_t lockPrio; }
+    #define QF_SCHED_LOCK_(pLockStat_) \
+        ((pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1))
+    #define QF_SCHED_UNLOCK_(dummy) ((void)0)
+
     /* POSIX OS object object implementation */
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         while ((me_)->eQueue.frontEvt == (QEvt *)0) \

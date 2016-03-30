@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.6.2
-* Last updated on  2016-02-10
+* Last updated on  2016-03-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -372,14 +372,14 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig);
 void QActive_unsubscribeAll(QActive const * const me);
 
 
-/*! Defer an event to a given separate event queue. */
-bool QActive_defer(QMActive * const me,
+/*! Defer an event @p e to a given event queue @p eq. */
+bool QActive_defer(QMActive const * const me,
                    QEQueue * const eq, QEvt const * const e);
 
-/*! Recall a deferred event from a given event queue. */
+/*! Recall a deferred event from a given event queue @p eq. */
 bool QActive_recall(QMActive * const me, QEQueue * const eq);
 
-/*! Flush the specified deferred queue 'eq'. */
+/*! Flush the specified deferred queue @p eq. */
 uint_fast16_t QActive_flushDeferred(QMActive const * const me,
                                     QEQueue * const eq);
 

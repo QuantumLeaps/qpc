@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-03-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -167,11 +167,15 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         if (e->poolId_ != (uint8_t)0) { /* is it a pool event? */
             QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
         }
-        /* posting to the embOS mailbox must succeed, see NOTE3 */
-        Q_ALLEGE(OS_PutMailCond(&me->eQueue, (OS_CONST_PTR void *)&e)
-                 == (char)0);
 
-        status = true; /* return success */
+        QF_CRIT_EXIT_();
+
+        /* posting to the embOS mailbox must succeed, see NOTE3 */
+        Q_ALLEGE_ID(710,
+            OS_PutMailCond(&me->eQueue, (OS_CONST_PTR void *)&e)
+            == (char)0);
+
+        status = true; /* report success */
     }
     else {
         /* can tolerate dropping evts? */
@@ -187,9 +191,10 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_EQC_((QEQueueCtr)0); /* min # free entries (unknown) */
         QS_END_NOCRIT_()
 
-        status = false; /* return failure */
-    }
-    QF_CRIT_EXIT_();
+        QF_CRIT_EXIT_();
+
+        status = false; /* report failure */
+   }
 
     return status;
 }
@@ -212,11 +217,12 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
-    /* posting to the embOS mailbox must succeed, see NOTE3 */
-    Q_ALLEGE(OS_PutMailFrontCond(&me->eQueue, (OS_CONST_PTR void *)&e)
-             == (char)0);
-
     QF_CRIT_EXIT_();
+
+    /* posting to the embOS mailbox must succeed, see NOTE3 */
+    Q_ALLEGE_ID(810,
+        OS_PutMailFrontCond(&me->eQueue, (OS_CONST_PTR void *)&e)
+        == (char)0);
 }
 /*..........................................................................*/
 QEvt const *QActive_get_(QActive * const me) {

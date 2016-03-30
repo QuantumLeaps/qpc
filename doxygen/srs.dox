@@ -1,0 +1,229 @@
+/*! @page srs_toc SRS
+
+<h1>Software Requirements Specification (SRS)</h1>
+<p>This document specifies the requirements for the **QP/C** @termref{ao} @termref{framework} (later referenced simply as _QP/C_). This document describes the intended features of _QP/C_, as well as the interfaces to other software, hardware, and various other technical dependencies. The quick links to the main sections of this SRS are given below:
+</p>
+
+- @subpage srs_intro
+  + @ref srs_concepts
+  + @ref srs_purpose
+  + @ref srs_scope
+  + @ref srs_audience
+  + @ref srs_conv
+  + @ref srs_refs
+- @subpage srs_descr
+  + @ref srs_prod
+  + @ref srs_funct
+  + @ref srs_user
+  + @ref srs_assume
+- @subpage srs
+  + @ref srs_fun
+    - @ref srs_qf
+    - @ref srs_qep
+    - @ref srs_qv
+    - @ref srs_qk
+    - @ref srs_qxk
+  + @ref srs_non-fun
+  + @ref srs_constr
+
+
+@next{srs_intro}
+*/
+/*##########################################################################*/
+/*! @page srs_intro Introduction
+
+@tableofcontents
+
+<p>Embedded software developers face many challenges, but some of the most difficult problems fall into two main categories:
+</p>
+
+- problems related to concurrency, such as execution of interrupts and tasks of a Real-Time Operating System (@termref{RTOS})
+
+- problems related to execution logic, such as correctly choosing the right code to execute in response to a given event.
+
+
+
+
+
+<p>The embedded software industry is in the midst of a major revolution. Tremendous amount of new development lays ahead. This new software needs an actual @termref{architecture} that is _safer_, more extensible, and easier to understand than the usual "free-threading" approach of a traditional Real-Time Operating System (@termref{RTOS}).
+</p>
+This document describes the requirements of the QP/C software framework, which provides such a reusable software architecture for real-time embedded (RTE) systems. This architecture is based on event-driven, asynchronous, non-blocking, encapsulated @ref srs_ao "active objects".
+
+
+------------------------------------------------------------------------------
+@section srs_concepts Key Concepts
+This section introduces the key concepts related to this increasingly popular "reactive approach", and specifically how they apply to the QP/C active object framework. Please refer to the Section @ref srs_refs for more information about the concepts.
+
+
+<div class="separate"></div>
+@subsection srs_ao Active Objects
+<strong>Active objects</strong> (a.k.a. **actors**) are event-driven, strictly encapsulated software objects running in their own threads of control that communicate with one another asynchronously by exchanging events. The @termref{UML} specification further proposes the UML variant of **hierarchical state machines** (UML state machines), with which to model the _behavior_ of event-driven active objects.
+
+The Active Object design pattern inherently supports and automatically enforces the best practices of concurrent programming. Structuring applications as sets of collaborating active objects is valuable, because it dramatically improves the developers' ability to reason about concurrent code, gives them higher-level abstractions and idioms that raise the semantic level of their program, and lets them express their intent more directly and **safely** than working with "naked threads" of an @termref{RTOS} directly.
+
+
+<div class="separate"></div>
+@subsection srs_framework Active Object (Actor) Frameworks
+Active objects (actors) are universally implemented by means of a @termref{framework} that provides, at a minimum, an execution context (thread) for each active object, queuing of events, and event-based timing services.
+
+> **Inversion of Control** <br>The most important point to understand about a framework is how it differs from a toolkit, such as a traditional @termref{RTOS}. When you use an RTOS, <em>you</em> write the main body of each thread and <em>you</em> call the code from the (RT)OS (such as a semaphore, time delay, etc.) In contrast, when you use a framework, you reuse the whole architecture and write the code that <em>it</em> calls. This leads to <span class="label label-primary">inversion of control</span> compared to the traditional RTOS and is very characteristic to virtually all event-driven systems, such as Active Objects.
+
+The inversion of control is the main reason for the **architectural-reuse** and enforcement of the best practices, as opposed to re-inventing them for each project at hand. This reuse leads to a much higher consistency and **conceptual integrity** of the final product and dramatic **improvement of developer's productivity**.
+
+<div class="separate"></div>
+@subsection srs_encapsulation True Encapsulation for Concurrency
+In a sense active objects are the most stringent form of object-oriented programming (OOP), because the asynchronous communication enables active objects to be truly <strong>encapsulated</strong>. In contrast, the traditional OOP encapsulation, as provided by C++, C# or Java, does not really encapsulate anything in terms of concurrency. Any operation on an object runs in the caller's thread and the attributes of the object are subject to the same race conditions as global data, not encapsulated at all. To become thread-safe, operations need to be explicitly protected by a mutual exclusion mechanism, such as a mutex or a monitor, but this <span title="&quot;Sharing Is the Root of All Contention&quot; by Herb Sutter, DDJ 2009"><a class="extern" target="_blank" href="http://www.drdobbs.com/architecture-and-design/sharing-is-the-root-of-all-contention/214100002">reduces parallelism dramatically, causes contention, and is a natural enemy of scalability</a></span>.
+
+In contrast, all private attributes of an active object are truly encapsulated without any mutual exclusion mechanism, because they can be only accessed from the active object's own thread. Note that this <strong>encapsulation for concurrency</strong> is not a programming language feature, so it is no more difficult to achieve in C as in C++, but it requires a programming discipline to avoid sharing resources (<span title="&quot;Shared nothing architecture&quot;, Wikipedia"><a class="extern" target="_blank" href="http://en.wikipedia.org/wiki/Shared_nothing_architecture">shared-nothing principle</a></span>). However, the event-based communication helps immensely, because instead of sharing a resource, a dedicated active object can become the manager of the resource and the rest of the system can access the resource only via events posted to this manager active object.
+
+
+<div class="separate"></div>
+@subsection srs_asynch Asynchronous Communication
+Each active object has its own event queue and receives all events exclusively through this queue. Events are delivered <strong>asynchronously</strong>, meaning that an event producer merely posts an event to the event queue of the recipient active object but does <strong>not</strong> wait (<a href="#Blocking">block</a>) in line for the actual processing of the event. The event processing occurs always in the thread context of the recipient active object. The active object framework, such as QP, is responsible for delivering and queuing the events in a thread-safe and deterministic manner.
+
+
+<div class="separate"></div>
+@subsection srs_rtc Run-to-Completion Event Processing
+<p>Each active object handles events in run-to-completion (RTC) fashion, which also is exactly the semantics universally assumed by all state machine formalisms, including <span title="&quot;Run-to-completion execution model in UML State Machines&quot; Wikipedia"><a class="extern" target="_blank" href="http://en.wikipedia.org/wiki/UML_state_machine#Run-to-completion_execution_model">UML statecharts</a></span>. RTC simply means that an active object handles one event at a time, that is, the active object must complete the processing of an event before it can start processing of the next event from its queue.
+
+> **RTC versus Preemption** <br>In the case of active objects, where each object runs in its own thread, it is important to clearly distinguish the notion of RTC from the concept of <span title="&quot;Preemption (computing)&quot; Wikipedia"><a class="extern" target="_blank" href="http://en.wikipedia.org/wiki/Preemption_(computing)">thread preemption</a></span>. In particular, RTC does <strong>not</strong> mean that the active object thread has to monopolize the CPU until the RTC step is complete. Under a <em>preemptive</em> kernel, for example, an RTC step can be preempted by another thread executing on the same CPU. This is determined by the scheduling policy of the underlying kernel, not by the active object model. When the suspended thread is assigned CPU time again, it resumes from the point of preemption and, eventually, completes its event processing. As long as the preempting and the preempted threads don't not share any resources, there are <strong>no concurrency hazards</strong>.
+
+
+<div class="separate"></div>
+@subsection srs_blocking No Blocking
+Most conventional RTOS kernels manage the tasks and all inter-task communication based on <strong>blocking</strong>, such as waiting on a semaphore. However, blocking is problematic, because while a task is blocked waiting for one type of event, the task is not doing any other work and is <strong>not responsive</strong> to other events. Such a task cannot be easily extended to handle new events.
+
+In contrast, event-driven active objects don't need to block, because in event-driven systems the control is <a href="#Inversion">inverted</a> compared to traditional RTOS tasks. Instead of blocking to wait for an event, an active object simply finishes its RTC step and returns to the framework to be activated when the next event arrives. This arrangement allows active objects to remain <strong>responsive</strong> to events of all types, which is central to the unprecedented flexibility and extensibility of active object systems.
+
+
+<div class="separate"></div>
+@subsection srs_hsm Hierarchical State Machines
+As suggested in the UML specification and similar as in <span title="&quot;Real-Time Object-Oriented Modeling&quot; Wikipedia"><a class="extern" target="_blank" href="https://en.wikipedia.org/wiki/Real-Time_Object-Oriented_Modeling">ROOM</a></span>, the behavior of each Active Object can be specified by means of a <span class="label label-primary">hierarchical state machine</span> (<span title="&quot;UML state machine&quot;, Wikipedia"><a class="extern" target="_blank" href="http://en.wikipedia.org/wiki/UML_state_machine">UML statechart</a></span>), which is a very effective and elegant technique of decomposing event-driven behavior.
+
+
+------------------------------------------------------------------------------
+@section srs_purpose Purpose
+The purpose of the QP/C @termref{ao} @termref{framework} is to provide a reusable software @termref{architecture} and efficient implementation of the @termref{ao} model of computation for deeply embedded applications, such as single-chip microcontrollers.
+
+
+------------------------------------------------------------------------------
+@section srs_scope Project Scope
+
+
+------------------------------------------------------------------------------
+@section srs_audience Intended Audience
+
+This SRS document is primarily intended for **embedded software engineers**, who develop applications based on the QP/C framework.
+
+This SRS can be also of interest to test engineers, software architects, system engineers, quality-assurance engineers, hardware engineers, as well as managers overseeing the software development.
+
+
+------------------------------------------------------------------------------
+@section srs_conv Document Conventions
+
+<div class="separate"></div>
+@subsection srs_conv_num Numbering of Requirements
+
+
+<div class="separate"></div>
+@subsection srs_conv_shall Use of "Shall" and "Should"
+Requirement definitions use consistent terminology to indicate whether something is mandatory or desirable. _Shall_ is used to denote **mandatory** behavior. _Should_ is used to denote a **desirable** behavior that should typically take place, but might not happen all the time or might be optional in uncommon cases.
+
+
+------------------------------------------------------------------------------
+@section srs_refs References
+
+
+@next{srs_descr}
+*/
+/*##########################################################################*/
+/*! @page srs_descr Overall Description
+
+------------------------------------------------------------------------------
+@section srs_prod Product Perspective
+
+
+------------------------------------------------------------------------------
+@section srs_funct Product Functions
+
+- @reqref{RQPC101}
+- @reqref{RQPC102}
+
+
+------------------------------------------------------------------------------
+@section srs_user User Characteristics
+The main users of the QP/C framework are **embedded software engineers**, who develop applications based on the QP/C framework.
+
+
+
+------------------------------------------------------------------------------
+@section srs_assume Assumptions and Dependencies
+
+@next{srs}
+*/
+/*##########################################################################*/
+/*! @page srs Requirements
+
+
+------------------------------------------------------------------------------
+@section srs_fun Functional Requirements
+
+<div class="separate"></div>
+@subsection srs_qf Active Object Framework
+The software shall support hierarchical state nesting
+
+<div class="separate"></div>
+@subsection srs_qep State Machine Event Processor
+
+
+@reqdef{RQPC101, The software shall support hierarchical state nesting}
+@par Amplification
+State hierarchy is the primary mechanism of behavioral reuse in state machines.
+@par Rationale
+This is a useful thing to have
+
+@reqdef{RQPC102, The software shall support manual coding}
+
+
+<div class="separate"></div>
+@subsection srs_qv Cooperative Run-to-Completion Kernel
+
+
+<div class="separate"></div>
+@subsection srs_qk Preemptive Run-to-Completion Kernel
+
+
+<div class="separate"></div>
+@subsection srs_qxk Preemptive Blocking Kernel
+
+------------------------------------------------------------------------------
+@section srs_non-fun Non-functional Requirements
+
+<div class="separate"></div>
+@subsection srs_quality Software Quality Attributes
+
+
+<div class="separate"></div>
+@subsection srs_perform Performance Requirements
+
+
+<div class="separate"></div>
+@subsection srs_port Portability Requirements
+
+
+<div class="separate"></div>
+@subsection srs_safe Safety Requirements
+
+
+<div class="separate"></div>
+@subsection srs_secure Security Requirements
+
+
+------------------------------------------------------------------------------
+@section srs_constr Constraints
+
+<div class="separate"></div>
+@subsection srs_standards Compliance with Standards
+
+@next{sas_toc}
+*/
