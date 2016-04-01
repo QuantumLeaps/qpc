@@ -6,7 +6,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.6.2
-* Last updated on  2016-03-29
+* Last updated on  2016-03-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -86,7 +86,7 @@ void QV_onIdle(void);
 
     /* QF-specific scheduler locking (not needed in QV) */
     #define QF_SCHED_STAT_TYPE_ struct { uint_fast8_t lockPrio; }
-    #define QF_SCHED_LOCK_(pLockStat_) \
+    #define QF_SCHED_LOCK_(pLockStat_, dummy) \
         ((pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1))
     #define QF_SCHED_UNLOCK_(dummy) ((void)0)
 

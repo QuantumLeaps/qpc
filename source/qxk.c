@@ -152,6 +152,7 @@ int_t QF_run(void) {
 
     /* switch to the highest-priority task */
     QF_INT_DISABLE();
+    QXK_attr_.curr = &l_idleThread; /* mark QXK as running */
     QXK_prioFindMax(&QXK_attr_.readySet, p);
     QXK_attr_.next = QF_active_[p];
     QXK_start_(); /* start QXK multitasking (NOTE: enables interrupts) */

@@ -42,12 +42,6 @@
 
 /*! This macro defines the type of the thread handle used for the
 * active objects. */
-/**
-* The thread type in QK is the pointer to the thread-local storage (TLS).
-* This thread-local storage can be set on per-thread basis in
-* QActive_start(). Later, the QK scheduler uses this pointer for extended
-* context switch and passes the pointer to the macro #QK_TLS.
-*/
 #define QF_THREAD_TYPE         void *
 
 /*! Platform-dependent macro defining how QF should block the

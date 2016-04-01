@@ -3,14 +3,14 @@
 * @brief QF/C port to POSIX threads (pthreads)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 5.6.2
+* Date of the Last Update:  2016-03-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,8 +31,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -83,7 +83,7 @@ extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
 
     /* QF-specific scheduler locking (not used at this point) */
     #define QF_SCHED_STAT_TYPE_ struct { uint_fast8_t lockPrio; }
-    #define QF_SCHED_LOCK_(pLockStat_) \
+    #define QF_SCHED_LOCK_(pLockStat_, dummy) \
         ((pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1))
     #define QF_SCHED_UNLOCK_(dummy) ((void)0)
 

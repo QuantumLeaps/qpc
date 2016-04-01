@@ -4,7 +4,7 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-03-29
+* Date of the Last Update:  2016-03-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -69,10 +69,11 @@ void QF_setUCosTaskAttr(QActive *act, uint32_t attr);
 
     /* QF-specific scheduler locking, see NOTE2 */
     #define QF_SCHED_STAT_TYPE_ struct { uint_fast8_t lockPrio; }
-    #define QF_SCHED_LOCK_(pLockStat_) do { \
+    #define QF_SCHED_LOCK_(pLockStat_, prio_) do { \
         if (OSIntNesting != (INT8U)0) { \
             (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
         } else { \
+            (pLockStat_)->lockPrio = (prio_); \
             OSSchedLock(); \
         } \
     } while (0)

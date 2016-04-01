@@ -4,7 +4,7 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-03-30
+* Date of the Last Update:  2016-03-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -129,7 +129,7 @@ void QF_onClockTick(void);
 
     /* Win32-QV specific scheduler locking, see NOTE2 */
     #define QF_SCHED_STAT_TYPE_ struct { uint_fast8_t lockPrio; }
-    #define QF_SCHED_LOCK_(pLockStat_) \
+    #define QF_SCHED_LOCK_(pLockStat_, dummy) \
         ((pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1))
     #define QF_SCHED_UNLOCK_(dummy) ((void)0)
 

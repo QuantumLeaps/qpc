@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.6.2
-* Last updated on  2016-03-29
+* Last updated on  2016-03-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -121,6 +121,7 @@ void QF_publish_(QEvt const * const e)
 void QF_publish_(QEvt const * const e, void const * const sender)
 #endif
 {
+    QF_SCHED_STAT_TYPE_ lockStat;
     QF_CRIT_STAT_
 
     /** @pre the published signal must be within the configured range */
@@ -141,11 +142,11 @@ void QF_publish_(QEvt const * const e, void const * const sender)
     }
     QF_CRIT_EXIT_();
 
+    lockStat.lockPrio = (uint_fast8_t)0xFF; /* set as uninitialized */
+
 #if (QF_MAX_ACTIVE <= 8)
     {
         uint_fast8_t tmp = QF_subscrList_[e->sig].bits[0];
-        QF_SCHED_STAT_TYPE_ lockStat;
-        lockStat.lockPrio = (uint_fast8_t)0xFF; /* set as uninitialized */
 
         while (tmp != (uint_fast8_t)0) {
             /* find the most-significant bit number */
@@ -156,8 +157,7 @@ void QF_publish_(QEvt const * const e, void const * const sender)
 
             /* has the scheduler been locked yet? */
             if (lockStat.lockPrio == (uint_fast8_t)0xFF) {
-                lockStat.lockPrio = p;
-                QF_SCHED_LOCK_(&lockStat);
+                QF_SCHED_LOCK_(&lockStat, p);
             }
 
             /* the prio of the AO must be registered with the framework */
@@ -166,17 +166,10 @@ void QF_publish_(QEvt const * const e, void const * const sender)
             /* QACTIVE_POST() asserts internally if the queue overflows */
             QACTIVE_POST(QF_active_[p], e, sender);
         }
-
-        /* was the scheduler locked? */
-        if (lockStat.lockPrio <= (uint_fast8_t)QF_MAX_ACTIVE) {
-            QF_SCHED_UNLOCK_(&lockStat); /* unlock the scheduler */
-        }
     }
 #else /* (QF_MAX_ACTIVE > 8) */
     {
         uint_fast8_t i = (uint_fast8_t)Q_DIM(QF_subscrList_[0].bits);
-        QF_SCHED_STAT_TYPE_ lockStat;
-        lockStat.lockPrio = (uint_fast8_t)0xFF; /* set as uninitialized */
 
         /* go through all bytes in the subscription list */
         do {
@@ -196,8 +189,7 @@ void QF_publish_(QEvt const * const e, void const * const sender)
 
                 /* has the scheduler been locked yet? */
                 if (lockStat.lockPrio == (uint_fast8_t)0xFF) {
-                    lockStat.lockPrio = p;
-                    QF_SCHED_LOCK_(&lockStat);
+                    QF_SCHED_LOCK_(&lockStat, p);
                 }
 
                 /* the prio of the AO must be registered with the framework */
@@ -207,13 +199,13 @@ void QF_publish_(QEvt const * const e, void const * const sender)
                 QACTIVE_POST(QF_active_[p], e, sender);
             }
         } while (i != (uint_fast8_t)0);
-
-        /* was the scheduler locked? */
-        if (lockStat.lockPrio <= (uint_fast8_t)QF_MAX_ACTIVE) {
-            QF_SCHED_UNLOCK_(&lockStat); /* unlock the scheduler */
-        }
     }
 #endif /* (QF_MAX_ACTIVE > 8) */
+
+    /* was the scheduler locked? */
+    if (lockStat.lockPrio <= (uint_fast8_t)QF_MAX_ACTIVE) {
+        QF_SCHED_UNLOCK_(&lockStat); /* unlock the scheduler */
+    }
 
     /* run the garbage collector */
     QF_gc(e);

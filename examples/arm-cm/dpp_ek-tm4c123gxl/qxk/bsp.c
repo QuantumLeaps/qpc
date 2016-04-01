@@ -252,7 +252,7 @@ uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
-    QXMutex_init(&l_rndMutex, (N_PHILO + 1));
+    QXMutex_init(&l_rndMutex, N_PHILO);  /* ceiling <== max Philo priority */
     l_rnd = seed;
 }
 /*..........................................................................*/
@@ -438,7 +438,7 @@ void QS_onFlush(void) {
         while ((UART0->FR & UART_FR_TXFE) == 0) {
         }
 
-        while (fifo-- != 0) {    /* any bytes in the block? */
+        while (fifo-- != 0U) {    /* any bytes in the block? */
             UART0->DR = *block++; /* put into the TX FIFO */
         }
         fifo = UART_TXFIFO_DEPTH; /* re-load the Tx FIFO depth */

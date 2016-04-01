@@ -84,24 +84,6 @@
     QF_INT_ENABLE(); \
 } while (0)
 
-/* QF-specific scheduler locking */
-/*! Internal port-specific macro to represent the scheduler lock status
-* that needs to be preserved to allow nesting of locks.
-*/
-#define QF_SCHED_STAT_TYPE_ QMutex
-
-/*! Internal port-specific macro for selective scheduler locking. */
-#define QF_SCHED_LOCK_(pLockStat_) do { \
-    if (QK_ISR_CONTEXT_()) { \
-        (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
-    } else { \
-        QMutex_lock((pLockStat_)); \
-    } \
-} while (0)
-
-/*! Internal port-specific macro for selective scheduler unlocking. */
-#define QF_SCHED_UNLOCK_(pLockStat_) QMutex_unlock((pLockStat_))
-
 
 #include "qk.h" /* QK platform-independent public interface */
 

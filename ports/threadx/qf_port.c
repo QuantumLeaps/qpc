@@ -231,7 +231,7 @@ QEvt const *QActive_get_(QActive * const me) {
 }
 
 /*..........................................................................*/
-void QFSchedLock_(QFSchedLock * const lockStat) {
+void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio) {
     QS_CRIT_STAT_
     lockStat->lockHolder = tx_thread_identify();
 
@@ -240,9 +240,10 @@ void QFSchedLock_(QFSchedLock * const lockStat) {
 
     /* change the preemption threshold of the current thread */
     Q_ALLEGE_ID(710, tx_thread_preemption_change(lockStat->lockHolder,
-                     (QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - lockStat->lockPrio),
+                     (QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - prio),
                      &lockStat->prevThre) == TX_SUCCESS);
 
+    lockStat->lockPrio = prio;
     QS_BEGIN_(QS_SCHED_LOCK, (void *)0, (void *)0)
         QS_TIME_(); /* timestamp */
         QS_2U8_((uint8_t)(QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE

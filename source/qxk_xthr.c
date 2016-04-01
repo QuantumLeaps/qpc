@@ -209,7 +209,7 @@ void QXThread_ctor(QXThread * const me,
 /****************************************************************************/
 /* must be called from within a critical section */
 void QXThread_block_(QXThread * const me) {
-    /* the thread holding the lock cannot block! */
+    /*! @pre the thread holding the lock cannot block! */
     Q_REQUIRE_ID(100,  me->super.prio != QXK_attr_.lockPrio);
     QXK_prioRemove(&QXK_attr_.readySet, me->super.prio);
     QXK_sched_();

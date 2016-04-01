@@ -4,7 +4,7 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-03-29
+* Date of the Last Update:  2016-03-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -75,17 +75,17 @@
     } QFSchedLock;
 
     #define QF_SCHED_STAT_TYPE_ QFSchedLock
-    #define QF_SCHED_LOCK_(pLockStat_) do { \
+    #define QF_SCHED_LOCK_(pLockStat_, prio_) do { \
         if (_tx_thread_system_state != (UINT)0) { \
             (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
         } else { \
-            QFSchedLock_((pLockStat_)); \
+            QFSchedLock_((pLockStat_), (prio_)); \
         } \
     } while (0)
     #define QF_SCHED_UNLOCK_(pLockStat_) QFSchedUnlock_((pLockStat_))
 
     /* internal implementation of scheduler locking/unlocking */
-    void QFSchedLock_(QFSchedLock * const lockStat);
+    void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio);
     void QFSchedUnlock_(QFSchedLock const * const lockStat);
     extern UINT _tx_thread_system_state; /* internal TX interrupt counter */
 

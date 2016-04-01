@@ -6,7 +6,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.6.2
-* Last updated on  2016-03-29
+* Last updated on  2016-03-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -129,7 +129,7 @@ void QMutex_init(QMutex * const me, uint_fast8_t prio);
 void QMutex_lock(QMutex * const me);
 
 /*! QMutex unlock */
-void QMutex_unlock(QMutex const * const me);
+void QMutex_unlock(QMutex * const me);
 
 extern uint_fast8_t volatile QK_lockPrio_;   /*!< lock prio (0 == no-lock) */
 
@@ -158,10 +158,11 @@ extern uint_fast8_t volatile QK_lockPrio_;   /*!< lock prio (0 == no-lock) */
     #define QF_SCHED_STAT_TYPE_ QMutex
 
     /*! Internal port-specific macro for selective scheduler locking. */
-    #define QF_SCHED_LOCK_(pLockStat_) do { \
+    #define QF_SCHED_LOCK_(pLockStat_, prio_) do { \
         if (QK_ISR_CONTEXT_()) { \
             (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
         } else { \
+            QMutex_init((pLockStat_), (prio_)); \
             QMutex_lock((pLockStat_)); \
         } \
     } while (0)

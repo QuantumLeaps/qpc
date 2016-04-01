@@ -44,6 +44,8 @@ Changes in detail:
 
 15. Modified Makefiles for the EK-TM4C123GXL board with GNU-ARM toolset to define the symbol TARGET_IS_TM4C123_RB1 for compatibility with the updated 3rd-party files.
 
+16. Implemented Feature Request #110 as well as the duplicate Request #62 by adding function QActive_flushDeferred()
+
 
 ------------------------------------------------------------------------------
 @section qpc_5_6_1 Version 5.6.1, 2016-01-01

@@ -9,7 +9,7 @@
   License Type: Windows Single User License
   Licensed To : Quantum Leaps, LLC
   License No. : WS2975                          License Date: Dec 15, 2013
-  Build Date  : Sep  2 2009                         Run Date: Mar 30, 2016
+  Build Date  : Sep  2 2009                         Run Date: Mar 31, 2016
   (C)1996-2009 M Squared Technologies LLC
   ________________________________________________________________________
 
@@ -61,7 +61,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 77       eLOC 77       lLOC 20       Comment 118      Lines      212
+  LOC 78       eLOC 78       lLOC 21       Comment 118      Lines      213
   ________________________________________________________________________
   End of File: ..\include\qk.h
 
@@ -148,7 +148,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 85       eLOC 84       lLOC 30       Comment 115      Lines      208
+  LOC 86       eLOC 85       lLOC 31       Comment 115      Lines      210
   ________________________________________________________________________
   End of File: ..\include\qxk.h
 
@@ -725,9 +725,9 @@
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Loops while / do        : 3     
-      Conditional if / else if: 5     
-  Complexity   Param 1       Return 1      Cyclo Vg 9       Total       11
-  LOC 61       eLOC 48       lLOC 34       Comment 55       Lines      106
+      Conditional if / else if: 4     
+  Complexity   Param 1       Return 1      Cyclo Vg 8       Total       10
+  LOC 54       eLOC 42       lLOC 29       Comment 52       Lines       98
 
   Function: QActive_subscribe
   Parameters: (QActive const * const me, enum_t const sig)
@@ -759,27 +759,27 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 144      eLOC 124      lLOC 69       Comment 211      Lines      369
+  LOC 137      eLOC 118      lLOC 64       Comment 208      Lines      361
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
 
   File Function Count....:          5
-  Total Function LOC.....:        127  Total Function Pts LOC :        1.1
-  Total Function eLOC....:        107  Total Function Pts eLOC:        1.0
-  Total Function lLOC....:         67  Total Function Pts lLOC:        0.5
+  Total Function LOC.....:        120  Total Function Pts LOC :        1.1
+  Total Function eLOC....:        101  Total Function Pts eLOC:        0.9
+  Total Function lLOC....:         62  Total Function Pts lLOC:        0.5
   Total Function Params .:          8  Total Function Return .:          5
-  Total Cyclo Complexity :         25  Total Function Complex.:         38
+  Total Cyclo Complexity :         24  Total Function Complex.:         37
          ------     -----     -----     ------     ------     -----       
-  Max Function LOC ......:         61  Average Function LOC ..:      25.40
-  Max Function eLOC .....:         48  Average Function eLOC .:      21.40
-  Max Function lLOC .....:         34  Average Function lLOC .:      13.40
+  Max Function LOC ......:         54  Average Function LOC ..:      24.00
+  Max Function eLOC .....:         42  Average Function eLOC .:      20.20
+  Max Function lLOC .....:         29  Average Function lLOC .:      12.40
          ------     -----     -----     ------     ------     -----       
   Max Function Parameters:          2  Avg Function Parameters:       1.60
   Max Function Returns ..:          1  Avg Function Returns ..:       1.00
   Max Interface Complex. :          3  Avg Interface Complex. :       2.60
-  Max Cyclomatic Complex.:          9  Avg Cyclomatic Complex.:       5.00
-  Max Total Complexity ..:         11  Avg Total Complexity ..:       7.60
+  Max Cyclomatic Complex.:          8  Avg Cyclomatic Complex.:       4.80
+  Max Total Complexity ..:         10  Avg Total Complexity ..:       7.40
   ________________________________________________________________________
   End of File: ..\source\qf_ps.c
 
@@ -1108,49 +1108,51 @@
   Function: QMutex_init
   Parameters: (QMutex * const me, uint_fast8_t prio)
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
-  LOC 3        eLOC 2        lLOC 1        Comment 17       Lines        3
+  LOC 4        eLOC 3        lLOC 2        Comment 17       Lines        4
 
   Function: QMutex_lock
   Parameters: (QMutex * const me)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 1     
-  Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
-  LOC 15       eLOC 13       lLOC 7        Comment 26       Lines       20
+      Logical and ( && )      : 1     
+  Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
+  LOC 16       eLOC 14       lLOC 7        Comment 28       Lines       23
 
   Function: QMutex_unlock
-  Parameters: (QMutex const * const me)
+  Parameters: (QMutex * const me)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
-  Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
-  LOC 20       eLOC 17       lLOC 10       Comment 27       Lines       24
+      Logical and ( && )      : 1     
+  Complexity   Param 1       Return 1      Cyclo Vg 4       Total        6
+  LOC 22       eLOC 19       lLOC 11       Comment 29       Lines       29
 
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
 
-  LOC 51       eLOC 45       lLOC 18       Comment 119      Lines      161
+  LOC 58       eLOC 51       lLOC 21       Comment 123      Lines      174
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
 
   File Function Count....:          3
-  Total Function LOC.....:         38  Total Function Pts LOC :        0.4
-  Total Function eLOC....:         32  Total Function Pts eLOC:        0.4
-  Total Function lLOC....:         18  Total Function Pts lLOC:        0.1
+  Total Function LOC.....:         42  Total Function Pts LOC :        0.5
+  Total Function eLOC....:         36  Total Function Pts eLOC:        0.4
+  Total Function lLOC....:         20  Total Function Pts lLOC:        0.2
   Total Function Params .:          4  Total Function Return .:          3
-  Total Cyclo Complexity :          6  Total Function Complex.:         13
+  Total Cyclo Complexity :          8  Total Function Complex.:         15
          ------     -----     -----     ------     ------     -----       
-  Max Function LOC ......:         20  Average Function LOC ..:      12.67
-  Max Function eLOC .....:         17  Average Function eLOC .:      10.67
-  Max Function lLOC .....:         10  Average Function lLOC .:       6.00
+  Max Function LOC ......:         22  Average Function LOC ..:      14.00
+  Max Function eLOC .....:         19  Average Function eLOC .:      12.00
+  Max Function lLOC .....:         11  Average Function lLOC .:       6.67
          ------     -----     -----     ------     ------     -----       
   Max Function Parameters:          2  Avg Function Parameters:       1.33
   Max Function Returns ..:          1  Avg Function Returns ..:       1.00
   Max Interface Complex. :          3  Avg Interface Complex. :       2.33
-  Max Cyclomatic Complex.:          3  Avg Cyclomatic Complex.:       2.00
-  Max Total Complexity ..:          5  Avg Total Complexity ..:       4.33
+  Max Cyclomatic Complex.:          4  Avg Cyclomatic Complex.:       2.67
+  Max Total Complexity ..:          6  Avg Total Complexity ..:       5.00
   ________________________________________________________________________
   End of File: ..\source\qk_mutex.c
 
@@ -1627,7 +1629,7 @@
   Function: QF_run
   Parameters: (void)
   Complexity   Param 0       Return 1      Cyclo Vg 1       Total        2
-  LOC 10       eLOC 9        lLOC 8        Comment 20       Lines       19
+  LOC 11       eLOC 10       lLOC 9        Comment 21       Lines       20
 
   Function: QActive_start_
   Parameters: (QMActive * const me, uint_fast8_t prio, QEvt const *qSto[],
@@ -1670,21 +1672,21 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 127      eLOC 111      lLOC 67       Comment 197      Lines      335
+  LOC 128      eLOC 112      lLOC 68       Comment 198      Lines      336
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
 
   File Function Count....:         10
-  Total Function LOC.....:        106  Total Function Pts LOC :        1.0
-  Total Function eLOC....:         90  Total Function Pts eLOC:        0.9
-  Total Function lLOC....:         63  Total Function Pts lLOC:        0.5
+  Total Function LOC.....:        107  Total Function Pts LOC :        1.0
+  Total Function eLOC....:         91  Total Function Pts eLOC:        0.9
+  Total Function lLOC....:         64  Total Function Pts lLOC:        0.5
   Total Function Params .:         12  Total Function Return .:         10
   Total Cyclo Complexity :         21  Total Function Complex.:         43
          ------     -----     -----     ------     ------     -----       
-  Max Function LOC ......:         21  Average Function LOC ..:      10.60
-  Max Function eLOC .....:         18  Average Function eLOC .:       9.00
-  Max Function lLOC .....:         11  Average Function lLOC .:       6.30
+  Max Function LOC ......:         21  Average Function LOC ..:      10.70
+  Max Function eLOC .....:         18  Average Function eLOC .:       9.10
+  Max Function lLOC .....:         11  Average Function lLOC .:       6.40
          ------     -----     -----     ------     ------     -----       
   Max Function Parameters:          7  Avg Function Parameters:       1.20
   Max Function Returns ..:          1  Avg Function Returns ..:       1.00
@@ -1701,7 +1703,7 @@
   Function: QXMutex_init
   Parameters: (QXMutex * const me, uint_fast8_t prio)
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
-  LOC 3        eLOC 2        lLOC 1        Comment 17       Lines        3
+  LOC 4        eLOC 3        lLOC 2        Comment 17       Lines        4
 
   Function: QXMutex_lock
   Parameters: (QXMutex * const me)
@@ -1709,42 +1711,44 @@
       Function Base           : 1
       Conditional if / else if: 1     
       Inlined if-else ( ? : ) : 1     
-  Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
-  LOC 20       eLOC 18       lLOC 10       Comment 31       Lines       29
+      Logical and ( && )      : 1     
+  Complexity   Param 1       Return 1      Cyclo Vg 4       Total        6
+  LOC 20       eLOC 18       lLOC 9        Comment 32       Lines       28
 
   Function: QXMutex_unlock
-  Parameters: (QXMutex const * const me)
+  Parameters: (QXMutex * const me)
     Cyclomatic Complexity Vg Detail
       Function Base           : 1
       Conditional if / else if: 2     
-  Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
-  LOC 20       eLOC 17       lLOC 10       Comment 28       Lines       25
+      Logical and ( && )      : 1     
+  Complexity   Param 1       Return 1      Cyclo Vg 4       Total        6
+  LOC 22       eLOC 19       lLOC 11       Comment 30       Lines       29
 
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
 
-  LOC 56       eLOC 50       lLOC 21       Comment 125      Lines      174
+  LOC 62       eLOC 55       lLOC 23       Comment 128      Lines      182
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
 
   File Function Count....:          3
-  Total Function LOC.....:         43  Total Function Pts LOC :        0.4
-  Total Function eLOC....:         37  Total Function Pts eLOC:        0.4
-  Total Function lLOC....:         21  Total Function Pts lLOC:        0.2
+  Total Function LOC.....:         46  Total Function Pts LOC :        0.5
+  Total Function eLOC....:         40  Total Function Pts eLOC:        0.4
+  Total Function lLOC....:         22  Total Function Pts lLOC:        0.2
   Total Function Params .:          4  Total Function Return .:          3
-  Total Cyclo Complexity :          7  Total Function Complex.:         14
+  Total Cyclo Complexity :          9  Total Function Complex.:         16
          ------     -----     -----     ------     ------     -----       
-  Max Function LOC ......:         20  Average Function LOC ..:      14.33
-  Max Function eLOC .....:         18  Average Function eLOC .:      12.33
-  Max Function lLOC .....:         10  Average Function lLOC .:       7.00
+  Max Function LOC ......:         22  Average Function LOC ..:      15.33
+  Max Function eLOC .....:         19  Average Function eLOC .:      13.33
+  Max Function lLOC .....:         11  Average Function lLOC .:       7.33
          ------     -----     -----     ------     ------     -----       
   Max Function Parameters:          2  Avg Function Parameters:       1.33
   Max Function Returns ..:          1  Avg Function Returns ..:       1.00
   Max Interface Complex. :          3  Avg Interface Complex. :       2.33
-  Max Cyclomatic Complex.:          3  Avg Cyclomatic Complex.:       2.33
-  Max Total Complexity ..:          5  Avg Total Complexity ..:       4.67
+  Max Cyclomatic Complex.:          4  Avg Cyclomatic Complex.:       3.00
+  Max Total Complexity ..:          6  Avg Total Complexity ..:       5.33
   ________________________________________________________________________
   End of File: ..\source\qxk_mutex.c
 
@@ -1949,9 +1953,9 @@
 
                          ~~ Total Project Summary ~~
 
-  LOC 5120     eLOC 4591     lLOC 2183     Comment 7116     Lines    12438
+  LOC 5129     eLOC 4599     lLOC 2186     Comment 7121     Lines    12455
   Average per File, metric/41 files
-  LOC 124      eLOC 111      lLOC 53       Comment 173      Lines      303
+  LOC 125      eLOC 112      lLOC 53       Comment 173      Lines      303
 
   ------------------------------------------------------------------------
 
@@ -2145,8 +2149,8 @@
 
   Function: QF_publish_
   Parameters: (QEvt const * const e)
-  Complexity   Param 1       Return 1      Cyclo Vg 9       Total       11
-  LOC 61       eLOC 48       lLOC 34       Comment 55       Lines      106
+  Complexity   Param 1       Return 1      Cyclo Vg 8       Total       10
+  LOC 54       eLOC 42       lLOC 29       Comment 52       Lines       98
 
   Function: QActive_subscribe
   Parameters: (QActive const * const me, enum_t const sig)
@@ -2277,17 +2281,17 @@
   Function: QMutex_init
   Parameters: (QMutex * const me, uint_fast8_t prio)
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
-  LOC 3        eLOC 2        lLOC 1        Comment 17       Lines        3
+  LOC 4        eLOC 3        lLOC 2        Comment 17       Lines        4
 
   Function: QMutex_lock
   Parameters: (QMutex * const me)
-  Complexity   Param 1       Return 1      Cyclo Vg 2       Total        4
-  LOC 15       eLOC 13       lLOC 7        Comment 26       Lines       20
+  Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
+  LOC 16       eLOC 14       lLOC 7        Comment 28       Lines       23
 
   Function: QMutex_unlock
-  Parameters: (QMutex const * const me)
-  Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
-  LOC 20       eLOC 17       lLOC 10       Comment 27       Lines       24
+  Parameters: (QMutex * const me)
+  Complexity   Param 1       Return 1      Cyclo Vg 4       Total        6
+  LOC 22       eLOC 19       lLOC 11       Comment 29       Lines       29
 
   Function: QS_initBuf
   Parameters: (uint8_t sto[], uint_fast16_t stoSize)
@@ -2498,7 +2502,7 @@
   Function: QF_run
   Parameters: (void)
   Complexity   Param 0       Return 1      Cyclo Vg 1       Total        2
-  LOC 10       eLOC 9        lLOC 8        Comment 20       Lines       19
+  LOC 11       eLOC 10       lLOC 9        Comment 21       Lines       20
 
   Function: QActive_start_
   Parameters: (QMActive * const me, uint_fast8_t prio, QEvt const *qSto[],
@@ -2530,17 +2534,17 @@
   Function: QXMutex_init
   Parameters: (QXMutex * const me, uint_fast8_t prio)
   Complexity   Param 2       Return 1      Cyclo Vg 1       Total        4
-  LOC 3        eLOC 2        lLOC 1        Comment 17       Lines        3
+  LOC 4        eLOC 3        lLOC 2        Comment 17       Lines        4
 
   Function: QXMutex_lock
   Parameters: (QXMutex * const me)
-  Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
-  LOC 20       eLOC 18       lLOC 10       Comment 31       Lines       29
+  Complexity   Param 1       Return 1      Cyclo Vg 4       Total        6
+  LOC 20       eLOC 18       lLOC 9        Comment 32       Lines       28
 
   Function: QXMutex_unlock
-  Parameters: (QXMutex const * const me)
-  Complexity   Param 1       Return 1      Cyclo Vg 3       Total        5
-  LOC 20       eLOC 17       lLOC 10       Comment 28       Lines       25
+  Parameters: (QXMutex * const me)
+  Complexity   Param 1       Return 1      Cyclo Vg 4       Total        6
+  LOC 22       eLOC 19       lLOC 11       Comment 30       Lines       29
 
   Function: QXSemaphore_init
   Parameters: (QXSemaphore * const me, uint_fast16_t count)
@@ -2639,26 +2643,26 @@
   LOC 54       eLOC 46       lLOC 33       Comment 25       Lines       70
 
   Total: Functions  
-  LOC 3009     eLOC 2512     lLOC 1663     InCmp 348      CycloCmp     473
+  LOC 3010     eLOC 2514     lLOC 1662     InCmp 348      CycloCmp     476
   Function Points         FP(LOC) 23.5    FP(eLOC) 19.6   FP(lLOC)    13.0
 
   ------------------------------------------------------------------------
 
                       ~~ Project Functional Analysis ~~
 
-  Total Functions .......:        132  Total Physical Lines ..:       3949
-  Total LOC .............:       3009  Total Function Pts LOC :       23.5
-  Total eLOC ............:       2512  Total Function Pts eLOC:       19.6
-  Total lLOC.............:       1663  Total Function Pts lLOC:       13.0
-  Total Cyclomatic Comp. :        473  Total Interface Comp. .:        348
+  Total Functions .......:        132  Total Physical Lines ..:       3955
+  Total LOC .............:       3010  Total Function Pts LOC :       23.5
+  Total eLOC ............:       2514  Total Function Pts eLOC:       19.6
+  Total lLOC.............:       1662  Total Function Pts lLOC:       13.0
+  Total Cyclomatic Comp. :        476  Total Interface Comp. .:        348
   Total Parameters ......:        216  Total Return Points ...:        132
-  Total Comment Lines ...:       2699  Total Blank Lines .....:        511
+  Total Comment Lines ...:       2704  Total Blank Lines .....:        510
          ------     -----     -----     ------     ------     -----       
-  Avg Physical Lines ....:      29.92
-  Avg LOC ...............:      22.80  Avg eLOC ..............:      19.03
-  Avg lLOC ..............:      12.60  Avg Cyclomatic Comp. ..:       3.58
+  Avg Physical Lines ....:      29.96
+  Avg LOC ...............:      22.80  Avg eLOC ..............:      19.05
+  Avg lLOC ..............:      12.59  Avg Cyclomatic Comp. ..:       3.61
   Avg Interface Comp. ...:       2.64  Avg Parameters ........:       1.64
-  Avg Return Points .....:       1.00  Avg Comment Lines .....:      20.45
+  Avg Return Points .....:       1.00  Avg Comment Lines .....:      20.48
          ------     -----     -----     ------     ------     -----       
   Max LOC ...............:        254
   Max eLOC ..............:        197  Max lLOC ..............:        125

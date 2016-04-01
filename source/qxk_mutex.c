@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.6.2
-* Last updated on  2016-03-30
+* Last updated on  2016-03-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -54,6 +54,10 @@
 
 Q_DEFINE_THIS_MODULE("qxk_mutex")
 
+enum {
+    MUTEX_UNUSED = 0xFF
+};
+
 /****************************************************************************/
 /**
 * @description
@@ -68,11 +72,12 @@ Q_DEFINE_THIS_MODULE("qxk_mutex")
 * @sa QXMutex_lock(), QXMutex_unlock()
 *
 * @usage
-* The following example shows how ti initialize, lock and unlock QXK mutex:
+* The following example shows how to initialize, lock and unlock QXK mutex:
 * @include qxk_mux.c
 */
 void QXMutex_init(QXMutex * const me, uint_fast8_t prio) {
     me->lockPrio = prio;
+    me->prevPrio = (uint_fast8_t)MUTEX_UNUSED;
 }
 
 /****************************************************************************/
@@ -95,22 +100,21 @@ void QXMutex_init(QXMutex * const me, uint_fast8_t prio) {
 * @sa QXMutex_init(), QXMutex_unlock()
 *
 * @usage
-* The following example shows how ti initialize, lock and unlock QXK mutex:
+* The following example shows how to initialize, lock and unlock QXK mutex:
 * @include qxk_mux.c
 */
 void QXMutex_lock(QXMutex * const me) {
     QF_CRIT_STAT_
     QF_CRIT_ENTRY_();
 
-    /** @pre scheduler cannot be locked from the ISR context */
-    Q_REQUIRE_ID(700, !QXK_ISR_CONTEXT_());
-
-    /** @pre scheduler cannot be locked from the ISR context */
-    Q_REQUIRE_ID(700, !QXK_ISR_CONTEXT_());
+    /** @pre scheduler cannot be locked from the ISR context
+    * and the mutex must be unused
+    */
+    Q_REQUIRE_ID(700, (!QXK_ISR_CONTEXT_())
+                      && (me->prevPrio == (uint_fast8_t)MUTEX_UNUSED));
 
     me->prevPrio   = QXK_attr_.lockPrio;   /* save previous lock prio */
     me->prevHolder = QXK_attr_.lockHolder; /* save previous lock holder */
-
 
     if (QXK_attr_.lockPrio < me->lockPrio) { /* raising the lock prio? */
         QXK_attr_.lockPrio = me->lockPrio;
@@ -144,18 +148,22 @@ void QXMutex_lock(QXMutex * const me) {
 * @sa QXMutex_init(), QXMutex_lock()
 *
 * @usage
-* The following example shows how ti initialize, lock and unlock QXK mutex:
+* The following example shows how to initialize, lock and unlock QXK mutex:
 * @include qxk_mux.c
 */
-void QXMutex_unlock(QXMutex const * const me) {
+void QXMutex_unlock(QXMutex * const me) {
     uint_fast8_t p;
     QF_CRIT_STAT_
     QF_CRIT_ENTRY_();
 
-    /** @pre scheduler cannot be unlocked from the ISR context */
-    Q_REQUIRE_ID(800, !QXK_ISR_CONTEXT_());
+    /** @pre scheduler cannot be unlocked from the ISR context
+    * and the mutex must NOT be unused
+    */
+    Q_REQUIRE_ID(800, (!QXK_ISR_CONTEXT_())
+                      && (me->prevPrio != (uint_fast8_t)MUTEX_UNUSED));
 
     p = me->prevPrio; /* the previouis lock prio */
+    me->prevPrio = (uint_fast8_t)MUTEX_UNUSED;
 
     QS_BEGIN_NOCRIT_(QS_SCHED_UNLOCK, (void *)0, (void *)0)
         QS_TIME_(); /* timestamp */

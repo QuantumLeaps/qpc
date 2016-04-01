@@ -28,13 +28,12 @@ INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 4
 ALIASES += next{1}="<hr><b>Next:</b> @ref \1</p>"
-ALIASES += description="@par <b>Description</b>@n"
+ALIASES += description="@par <b>Description</b>"
 ALIASES += hint="@par <b>Hint</b>@n"
 ALIASES += usage="@par <b>Usage</b>@n"
 ALIASES += reqdef{2}="<div class="vmargin20"></div>@anchor \1 <TABLE><TR ALIGN="left"><TH NOWRAP>\1</TH><TH WIDTH="100%">\2</TH></TR></TABLE>"
 ALIASES += reqref{1}="@ref \1 \"\1\""
-#ALIASES += termdef{2}="@anchor term_\1 @par \2"
-ALIASES += termdef{2}="@subsection term_\1 \2"
+ALIASES += termdef{2}="@anchor term_\1 @par \2"
 ALIASES += termref{1}="@ref term_\1"
 
 TCL_SUBST              =
@@ -149,8 +148,7 @@ EXCLUDE                = \
 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
-EXCLUDE_SYMBOLS        = \
-    QP_IMPL
+EXCLUDE_SYMBOLS        =
 
 EXAMPLE_PATH           = \
     snippets \
@@ -313,7 +311,7 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = Q_SPY
+PREDEFINED             = Q_SPY QP_IMPL
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

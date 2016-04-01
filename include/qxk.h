@@ -6,7 +6,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.6.2
-* Last updated on  2016-03-30
+* Last updated on  2016-03-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -138,7 +138,7 @@ void QXMutex_init(QXMutex * const me, uint_fast8_t prio);
 void QXMutex_lock(QXMutex * const me);
 
 /*! QXMutex unlock */
-void QXMutex_unlock(QXMutex const * const me);
+void QXMutex_unlock(QXMutex * const me);
 
 /****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */
@@ -156,13 +156,15 @@ void QXMutex_unlock(QXMutex const * const me);
 
     /* QF-specific scheduler locking */
     #define QF_SCHED_STAT_TYPE_ QXMutex
-    #define QF_SCHED_LOCK_(pLockStat_) do { \
+    #define QF_SCHED_LOCK_(pLockStat_, prio_) do { \
         if (QXK_ISR_CONTEXT_()) { \
             (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
         } else { \
+            QXMutex_init((pLockStat_), (prio_)); \
             QXMutex_lock((pLockStat_)); \
         } \
     } while (0)
+
     #define QF_SCHED_UNLOCK_(pLockStat_) QXMutex_unlock((pLockStat_))
 
     #if (QF_MAX_ACTIVE <= 8)
