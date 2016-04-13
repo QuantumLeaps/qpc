@@ -1,6 +1,11 @@
 /**
 @page history Revision History
 
+@section qpc_5_6_3 Version 5.6.3, 2016-04-12
+This release fixes a serious Bug #126 (https://sourceforge.net/p/qpc/bugs/126 ) in the QK preemptive scheduler introduced in QP 5.6.2.
+
+
+------------------------------------------------------------------------------
 @section qpc_5_6_2 Version 5.6.2, 2016-03-31
 The main purpose of this release is to introduce _atomic event multicasting_, meaning that event publishing to all subscribers is now protected from preemption. This eliminates potential for re-ordering of events under preemptive kernels (such as QK, QXK, or 3rd-party RTOSes), when events are published from low-priority AOs and some higher-priority subscribers can preempt multicasting and post/publish events of their own (before the original event is posted to all subscribers).
 
