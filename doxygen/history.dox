@@ -1,6 +1,11 @@
 /**
 @page history Revision History
 
+@section qpc_5_6_4 Version 5.6.4, 2016-04-25
+This release fixes a serious Bug #128 (https://sourceforge.net/p/qpc/bugs/128 ) in the QK port to ARM Cortex-M introduced back in QP 5.6.1
+
+
+------------------------------------------------------------------------------
 @section qpc_5_6_3 Version 5.6.3, 2016-04-12
 This release fixes a serious Bug #126 (https://sourceforge.net/p/qpc/bugs/126 ) in the QK preemptive scheduler introduced in QP 5.6.2.
 

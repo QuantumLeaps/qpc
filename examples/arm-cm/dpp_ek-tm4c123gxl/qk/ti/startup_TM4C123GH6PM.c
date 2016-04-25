@@ -2,7 +2,7 @@
  * Purpose: startup file for TM4C123GH6PM Cortex-M4 device.
  *          Should be used with TI CCS-ARM Compiler
  * Version: CMSIS 4.3.0
- * Date: 2015-Nov-10
+ * Date: 2016-Apr-22
  *
  * Created from the CMSIS template for the specified device
  * Quantum Leaps, www.state-machine.com
@@ -373,6 +373,7 @@ void Default_Handler(void) {
     );
 }
 /*..........................................................................*/
+/* defined in QK port
 void NMI_Handler(void) {
     __asm(
         "  .global assert_failed\n\r"
@@ -381,6 +382,7 @@ void NMI_Handler(void) {
         "  b.w assert_failed\n\r"
     );
 }
+*/
 /*..........................................................................*/
 void MemManage_Handler(void) {
     __asm(

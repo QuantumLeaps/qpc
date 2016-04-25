@@ -124,7 +124,6 @@
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_isIn' 
 "C:\qp\qpc\include\qep.h" 412 1 Warning 526: Symbol 'QHsm_top(const void *, const QEvt *)' (line 412, file C:\qp\qpc\include\qep.h, module C:\qp\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\philo.c) not defined
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QHsm_top' 
- Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QK_nextPrio_' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_filterOff' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_f32' 
  Note 960: Violates MISRA 2004 Required Rule 8.9, undefined symbol: 'QS_f64' 
@@ -299,5 +298,5 @@ Count   Type    Number  Text
 3       Info    765     external '___' (___) could be made static
 112     Info    769     global enumeration constant '___' (___) not referenced
 2       Note    950     Non-ANSI reserved word or construct: '___'
-125     Note    960     Violates MISRA 2004 Required Rule ___, ___
+124     Note    960     Violates MISRA 2004 Required Rule ___, ___
 2       Note    963     Qualifier const or volatile ___ a type; use ___ to reverse the test

@@ -2,7 +2,7 @@
 ; * @file     startup_TM4C123GH6PM.s for IAR ARM assembler
 ; * @brief    CMSIS Cortex-M4F Core Device Startup File for TM4C123GH6PM
 ; * @version  CMSIS 4.3.0
-; * @date     20 August 2015
+; * @date     24 April 2016
 ; *
 ; * @description
 ; * Created from the CMSIS template for the specified device
@@ -521,11 +521,10 @@ PWM1Gen2_IRQHandler
 PWM1Gen3_IRQHandler
 PWM1Fault_IRQHandler
         MOVS    r0,#0
-        MOVS    r1,#-1      ; 0xFFFFFFF
+        MOVS    r1,#0xFF
         B       assert_failed
 
-;******************************************************************************
-;
+;*****************************************************************************
 ; The function assert_failed defines the error/assertion handling policy
 ; for the application. After making sure that the stack is OK, this function
 ; calls Q_onAssert, which should NOT return (typically reset the CPU).
@@ -535,11 +534,12 @@ PWM1Fault_IRQHandler
 ; The C proptotype of the assert_failed() and Q_onAssert() functions are:
 ; void assert_failed(char const *file, int line);
 ; void Q_onAssert   (char const *file, int line);
-;******************************************************************************
+;*****************************************************************************
         PUBLIC  assert_failed
         EXTERN  Q_onAssert
 assert_failed
-        LDR    sp,=sfe(CSTACK)   ; re-set the SP in case of stack overflow
+        LDR    r2,=sfe(CSTACK)   ; load the original top of stack
+        MOV    sp,r2             ; re-set the SP in case of stack overflow
         BL     Q_onAssert        ; call the application-specific handler
 
         B      .                 ; should not be reached, but just in case...

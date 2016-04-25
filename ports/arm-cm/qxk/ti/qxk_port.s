@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), TI-ARM assembler
-; Last Updated for Version: 5.6.0
-; Date of the Last Update:  2015-12-12
+; Last Updated for Version: 5.6.4
+; Date of the Last Update:  2016-04-24
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -205,6 +205,12 @@ PendSV_Handler: .asmfunc
     CPSID   i                 ; disable interrupts (set PRIMASK)
   .endif                      ; M0/M0+/M1
     ISB                       ; flush the instruction pipeline
+
+    ; un-pend any PendSV pended from the time this PendSV was called...
+    LDR     r2,ICSR_addr      ; Interrupt Control and State Register
+    MOVS    r1,#1
+    LSLS    r1,r1,#27         ; r0 := (1 << 27) (UNPENDSVSET bit)
+    STR     r1,[r2]           ; ICSR[27] := 1 (unpend PendSV)
 
     ; store the SP of the current QXK thread...
     LDR     r1,QXK_attr_addr

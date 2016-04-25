@@ -1,10 +1,10 @@
 /**
 * @file
-* @brief QK/C port to ARM Cortex-M, ARM-KEIL compiler
+* @brief QK/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.5.2
-* Date of the Last Update:  2015-11-08
+* Last Updated for Version: 5.6.4
+* Date of the Last Update:  2016-04-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,8 +31,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -50,19 +50,8 @@ static __inline uint32_t QK_get_IPSR(void) {
 
 /* QK interrupt entry and exit */
 #define QK_ISR_ENTRY() ((void)0)
-
-#define QK_ISR_EXIT()  do { \
-    uint_fast8_t nextPrio_; \
-    QF_INT_DISABLE(); \
-    nextPrio_ = QK_schedPrio_(); \
-    if (nextPrio_ != (uint_fast8_t)0) { \
-        QK_nextPrio_ = nextPrio_; \
-        (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28)); \
-    } \
-    QF_INT_ENABLE(); \
-} while (0)
-
-extern uint_fast8_t QK_nextPrio_; /* priority of the next task to execute */
+#define QK_ISR_EXIT()  \
+    ((*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28)))
 
 #include "qk.h" /* QK platform-independent public interface */
 

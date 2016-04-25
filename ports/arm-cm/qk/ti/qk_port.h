@@ -3,14 +3,14 @@
 * @brief QF/C port to Cortex-M, preemptive QK kernel, TI-ARM (CCS) toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.5.2
-* Date of the Last Update:  2015-11-08
+* Last Updated for Version: 5.6.4
+* Date of the Last Update:  2016-04-24
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -39,9 +39,16 @@
 #ifndef qk_port_h
 #define qk_port_h
 
-/* QK interrupt entry and exit (defined in assembly) */
-void QK_ISR_ENTRY(void);
-void QK_ISR_EXIT(void);
+/* determination if the code executes in the ISR context */
+#define QK_ISR_CONTEXT_() (QK_get_IPSR() != (uint32_t)0)
+
+/* QK interrupt entry and exit */
+#define QK_ISR_ENTRY() ((void)0)
+#define QK_ISR_EXIT()  \
+    ((*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28)))
+
+/* get the IPSR (defined in assembly) */
+uint32_t QK_get_IPSR(void);
 
 #include "qk.h" /* QK platform-independent public interface */
 

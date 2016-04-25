@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), IAR ARM assembler
-; Last Updated for Version: 5.6.0
-; Date of the Last Update:  2015-12-11
+; Last Updated for Version: 5.6.4
+; Date of the Last Update:  2016-04-21
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -34,7 +34,7 @@
 
     PUBLIC  QK_init
     PUBLIC  PendSV_Handler    ; CMSIS-compliant PendSV exception name
-    PUBLIC  QK_nextPrio_      ; priority of the next task to execute
+    PUBLIC  NMI_Handler       ; CMSIS-compliant NMI exception name
 
     EXTERN  QK_schedPrio_     ; external reference
     EXTERN  QK_sched_         ; external reference
@@ -42,21 +42,13 @@
     ; NOTE: keep in synch with QF_BASEPRI value defined in "qf_port.h" !!!
 QF_BASEPRI EQU (0xFF >> 2)
 
-    RSEG .data:DATA:NOROOT(2)
-;*****************************************************************************
-; Global priority of the next task to execute or zero to indicate return
-; to the preempted task
-;*****************************************************************************
-QK_nextPrio_:
-    DC32   0
-
 
     RSEG CODE:CODE:NOROOT(2)
 ;*****************************************************************************
 ; The QK_init function sets the priorities of PendSV to 0xFF (lowest).
 ; The priority is set within a critical section.
 ;*****************************************************************************
-QK_init
+QK_init:
     MRS     r0,PRIMASK        ; store the state of the PRIMASK in r0
     CPSID   i                 ; disable interrupts (set PRIMASK)
 
@@ -92,7 +84,6 @@ QK_init
 ; check for the asynchronous preemption.
 ;*****************************************************************************
 PendSV_Handler:
-
 #if (__CORE__ == __ARM6M__)   ; Cortex-M0/M0+/M1 ?
     CPSID   i                 ; disable interrupts (set PRIMASK)
 #else ; M3/M4/M7
@@ -101,14 +92,15 @@ PendSV_Handler:
 #endif ; M3/M4/M7
     ISB                       ; reset the instruction pipeline
 
-    LDR     r0,=QK_nextPrio_
-    LDR     r0,[r0]
-    CMP     r0,#0
-    BNE.N   PendSV_sched      ; if QK_nextPrio_ != 0, branch to scheduler
+#ifdef __ARMVFP__             ; if VFP available...
+    PUSH    {r0,lr}           ; push lr (EXC_RETURN) plus stack "aligner"
+#endif                        ; VFP available
 
-    ; QK_nextPrio_ == 0: return to the preempted task...
-    ADD     sp,sp,#(8*4)      ; remove one 8-register exception frame
+    BL      QK_schedPrio_     ; call QK_schedPrio_()
+    CMP     r0,#0             ; is the returned next prio 0?
+    BNE.N   PendSV_sched      ; if next prio != 0, branch to scheduler
 
+PendSV_ret:
 #if (__CORE__ == __ARM6M__)   ; Cortex-M0/M0+/M1 ?
     CPSIE   i                 ; enable interrupts (clear PRIMASK)
     MOVS    r0,#6
@@ -126,18 +118,20 @@ PendSV_Handler:
 #endif                        ; no VFP
 #endif                        ; M3/M4/M7
 
-PendSV_sched:
-#ifdef __ARMVFP__             ; if VFP available...
-    PUSH    {r0,lr}           ; push lr (EXC_RETURN) plus stack "aligner"
-#endif                        ; VFP available
-
+PendSV_sched:                 ; call the QK scheduler...
+    ; NOTE: The QK scheduler must be called in a task context, while
+    ; we are still in the PendSV exception context. The switch to the
+    ; task context is accomplished by returning from PendSV using a
+    ; fabricated exception stack frame, where the return address is
+    ; the QK scheduler.
+    ; NOTE: the QK scheduler is called with interrupts DISABLED.
     MOVS    r3,#1
     LSLS    r3,r3,#24         ; r3:=(1 << 24), set the T bit  (new xpsr)
     LDR     r2,=QK_sched_     ; address of the QK scheduler   (new pc)
     LDR     r1,=PendSV_sched_ret ; return address after the call (new lr)
 
     SUB     sp,sp,#8*4        ; reserve space for exception stack frame
-    STR     r0,[sp]           ; save the prio argument        (new r0)
+    STR     r0,[sp]           ; save the prio argument (new r0)
     ADD     r0,sp,#5*4        ; r0 := 5 registers below the top of stack
     STM     r0!,{r1-r3}       ; save xpsr,pc,lr
 
@@ -146,28 +140,53 @@ PendSV_sched:
     BX      r0                ; exception-return to the QK scheduler
 
 PendSV_sched_ret:
-    LDR     r0,=QK_nextPrio_
-    MOVS    r1,#0
-    STR     r1,[r0]           ; QK_nextPrio_ = 0;
+    ; NOTE: After the QK scheduler returns, we need to resume the preempted
+    ; task. However, this must be accomplished by a return-from-exception,
+    ; while we are still in the task context. The switch to the exception
+    ; contex is accomplished by triggering the NMI exception.
+    ; NOTE: The NMI exception is triggered with nterrupts DISABLED,
+    ; because QK scheduler disables interrutps before return.
 
-#if (__CORE__ == __ARM6M__)   ; Cortex-M0/M0+/M1 ?
-    CPSIE   i                 ; enable interrupts (clear PRIMASK)
-#else                         ; M3/M4/M7
+    ; before triggering the NMI exception, make sure that the
+    ; VFP stack frame will NOT be used...
 #ifdef __ARMVFP__             ; if VFP available...
     MRS     r0,CONTROL        ; r0 := CONTROL
     BICS    r0,r0,#4          ; r0 := r0 & ~4 (FPCA bit)
     MSR     CONTROL,r0        ; CONTROL := r0 (clear CONTROL[2] FPCA bit)
 #endif                        ; VFP available
-    MOVS    r0,#0
-    MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
-#endif                        ; M3/M4/M7
 
-    ; trigger PendSV to return to preempted task...
+    ; trigger NMI to return to preempted task...
     LDR     r0,=0xE000ED04    ; Interrupt Control and State Register
     MOVS    r1,#1
-    LSLS    r1,r1,#28         ; r0 := (1 << 28) (PENDSVSET bit)
-    STR     r1,[r0]           ; ICSR[28] := 1 (pend PendSV)
-    B       .                 ; wait for preemption by PendSV
+    LSLS    r1,r1,#31         ; r0 := (1 << 31) (NMI bit)
+    STR     r1,[r0]           ; ICSR[31] := 1 (pend NMI)
+    B       .                 ; wait for preemption by NMI
+
+
+;*****************************************************************************
+; The NMI_Handler exception handler is used for returning back to the
+; interrupted task. The NMI exception simply removes its own interrupt
+; stack frame from the stack and returns to the preempted task using the
+; interrupt stack frame that must be at the top of the stack.
+;
+; NOTE: The NMI exception is entered with interrupts DISABLED, so it needs
+; to re-enable interrupts before it returns to the preempted task.
+;*****************************************************************************
+NMI_Handler:
+    ADD     sp,sp,#(8*4)      ; remove one 8-register exception frame
+
+#if (__CORE__ == __ARM6M__)   ; Cortex-M0/M0+/M1 ?
+    CPSIE   i                 ; enable interrupts (clear PRIMASK)
+    BX      lr                ; return to the preempted task
+#else                         ; M3/M4/M7
+    MOVS    r0,#0
+    MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
+#ifdef __ARMVFP__             ; if VFP available...
+    POP     {r0,pc}           ; pop stack "aligner" and EXC_RETURN to PC
+#else                         ; no VFP
+    BX      lr                ; return to the preempted task
+#endif                        ; no VFP
+#endif                        ; M3/M4/M7
 
     ALIGNROM 2,0xFF           ; make sure the END is properly aligned
 
