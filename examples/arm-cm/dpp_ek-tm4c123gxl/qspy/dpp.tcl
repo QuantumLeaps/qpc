@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # Product: QSpyView -- Customization example for DPP application
-# Last updated for version 5.5.0
-# Last updated on  2015-08-21
+# Last updated for version 5.6.4
+# Last updated on  2016-04-25
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -65,11 +65,13 @@ proc onPause {} {
 
 
 # specific canvas for DPP ====================================================
-image create photo ::img::e       -file img/eating.gif
-image create photo ::img::h       -file img/hungry.gif
-image create photo ::img::t       -file img/thinking.gif
-image create photo ::img::BTN_UP  -file img/BTN_UP.gif
-image create photo ::img::BTN_DWN -file img/BTN_DWN.gif
+set scriptFolder [file dirname [file normalize [info script]]]
+
+image create photo ::img::e       -file $scriptFolder/img/eating.gif
+image create photo ::img::h       -file $scriptFolder/img/hungry.gif
+image create photo ::img::t       -file $scriptFolder/img/thinking.gif
+image create photo ::img::BTN_UP  -file $scriptFolder/img/BTN_UP.gif
+image create photo ::img::BTN_DWN -file $scriptFolder/img/BTN_DWN.gif
 
 wm geometry .canv =400x260
 .canv.c configure -width  400

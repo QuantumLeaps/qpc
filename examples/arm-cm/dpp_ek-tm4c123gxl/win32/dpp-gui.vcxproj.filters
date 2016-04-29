@@ -2,10 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="bsp.c" />
-    <ClCompile Include="..\main.c" />
     <ClCompile Include="..\philo.c" />
     <ClCompile Include="..\table.c" />
     <ClCompile Include="..\..\..\..\include\qstamp.c" />
+    <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />

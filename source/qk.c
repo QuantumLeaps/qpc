@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.3
-* Last updated on  2016-04-12
+* Last updated for version 5.6.4
+* Last updated on  2016-04-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -311,7 +311,7 @@ void QK_sched_(uint_fast8_t p) {
         /* find new highest-prio AO ready to run... */
         QK_prioFindMax(&QK_readySet_, p);
 
-        /* is the new priority below the current preemption threshold? */
+        /* is the new priority below the initial preemption threshold? */
         if (p <= pin) {
             p = (uint_fast8_t)0;
         }

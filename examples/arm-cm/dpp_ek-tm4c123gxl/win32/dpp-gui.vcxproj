@@ -238,7 +238,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\include\qstamp.c" />
-    <ClCompile Include="..\main.c" />
     <ClCompile Include="..\philo.c" />
     <ClCompile Include="..\table.c" />
     <ClCompile Include="bsp.c">
@@ -249,6 +248,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='QSpy|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='QSpy|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\bsp.h" />
