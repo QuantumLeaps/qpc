@@ -1,17 +1,26 @@
-/*****************************************************************************
-* Product: Win32 GUI facilities for building realistic embedded front panels
-* Date of the Last Update:  Aug 16, 2013
+/**
+* @file
+* @brief QWIN GUI facilities for building realistic embedded front panels
+* @cond
+******************************************************************************
+* Last Updated for Version: 5.6.4
+* Date of the Last Update:  2016-05-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
 * by the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
+*
+* Alternatively, this program may be distributed and modified under the
+* terms of Quantum Leaps commercial licenses, which expressly supersede
+* the GNU General Public License and are specifically designed for
+* licensees interested in retaining the proprietary status of their code.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,11 +31,12 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
-*****************************************************************************/
-#include "win32_gui.h"
+* http://www.state-machine.com
+* mailto:info@state-machine.com
+******************************************************************************
+* @endcond
+*/
+#include "qwin_gui.h"
 #include <stdlib.h>
 
 /*--------------------------------------------------------------------------*/
@@ -87,7 +97,7 @@ enum OwnerDrawnButtonAction OwnerDrawnButton_draw(
     if ((lpdis->itemAction & ODA_DRAWENTIRE) != 0U) {
         if (me->hCursor != NULL) {
            SetClassLong(lpdis->hwndItem, GCL_HCURSOR, (LONG)me->hCursor);
-           me->hCursor = NULL;                       /* mark the cursor set */
+           me->hCursor = NULL; /* mark the cursor set */
         }
         DrawBitmap(lpdis->hDC, me->hBitmapUp,
                    lpdis->rcItem.left, lpdis->rcItem.top);
@@ -129,8 +139,8 @@ void GraphicDisplay_init(GraphicDisplay * const me,
 
     me->hItem = hItem;
 
-    bi24BitInfo.bmiHeader.biBitCount    = 3U*8U;             /* 3 RGB bytes */
-    bi24BitInfo.bmiHeader.biCompression = BI_RGB;              /* RGB color */
+    bi24BitInfo.bmiHeader.biBitCount    = 3U*8U;  /* 3 RGB bytes */
+    bi24BitInfo.bmiHeader.biCompression = BI_RGB; /* RGB color */
     bi24BitInfo.bmiHeader.biPlanes      = 1U;
     bi24BitInfo.bmiHeader.biSize        = sizeof(bi24BitInfo.bmiHeader);
     bi24BitInfo.bmiHeader.biWidth       = me->width  * me->xScale;

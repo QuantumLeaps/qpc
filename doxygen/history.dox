@@ -113,6 +113,28 @@ Changes in detail:
 
 
 ------------------------------------------------------------------------------
+@section qpc_5_5_1 Version 5.5.1, 2015-10-05
+The main focus of this release is to improve the AAPCS compliance of the
+ARM Cortex-M port to the QK preemptive kernel. Specifically, the PendSV
+handler in assembly did not always maintain the 8-byte stack alignment,
+which is required by AAPCS. This version corrects the stack misalignment
+in the qk_port.s files for all supported ARM compilers (ARM-Keil, GNU,
+IAR, and TI CCS). All these ports should also be ready for ARM Cortex-M7.
+
+Also, this release adds support for the TI CCS ARM compiler.
+Specifically, a new ARM Cortex-M ports have been added (in directories
+`qpc\ports\arm-cm\qk\ti\` and `qpc\ports\arm-cm\qk\ti\`) and TI CCS
+example projects have been provided (in directories
+`qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qk\ti\` and
+`qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qv\ti\`).
+
+Finally, this release corrects a bug in the DPP example for
+EK-TM4C123GXL with the QV (Vanilla) cooperative kernel. Specifically,
+the file `qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qv\bsp.c` did not
+re-enable interrupts in the QV_onIdle() callback.
+
+
+------------------------------------------------------------------------------
 @section qpc_5_5_0 Version 5.5.0, 2015-09-04
 
 The main purpose of this release is the extension of the QS software tracing system to bi-directional communication with embedded Targets. Specifically, the QS-RX (receive channel for QS) has been added with the following capabilities:

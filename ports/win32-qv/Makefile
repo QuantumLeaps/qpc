@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C port to Win32 API, MinGW toolset
-# Last Updated for Version: 5.5.0
-# Date of the Last Update:  2015-08-04
+# Last Updated for Version: 5.6.4
+# Date of the Last Update:  2016-05-02
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,8 +28,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# Web:   http://www.state-machine.com
-# Email: info@state-machine.com
+# http://www.state-machine.com
+# mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
 # building configurations: Debug (default), Release, and Spy
@@ -93,7 +93,7 @@ C_SRCS := \
 	qf_qeq.c \
 	qf_qmact.c \
 	qf_time.c \
-	win32_gui.c \
+	qwin_gui.c \
 	qf_port.c
 
 C_QS_SRCS := \
@@ -106,7 +106,7 @@ C_QS_SRCS := \
 CPP_SRCS :=
 
 # defines
-DEFINES  := -DWIN32_GUI
+DEFINES  := -DQWIN_GUI
 
 #-----------------------------------------------------------------------------
 # MinGW toolset (NOTE: assumed to be on your PATH)

@@ -1,10 +1,10 @@
 /**
 * @file
-* @brief Win32 GUI facilities for building realistic embedded front panels
+* @brief QWIN GUI facilities for building realistic embedded front panels
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.2
-* Date of the Last Update:  2015-06-04
+* Last Updated for Version: 5.6.4
+* Date of the Last Update:  2016-05-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,12 +31,12 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
-#include "win32_gui.h"
+#include "qwin_gui.h"
 #include <stdlib.h>
 
 /*--------------------------------------------------------------------------*/

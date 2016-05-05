@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, Deferred Event console, Win32, MinGW
-# Last updated for version 5.5.0
-# Last updated on  2015-08-14
+# Last Updated for Version: 5.6.4
+# Date of the Last Update:  2016-05-04
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -174,7 +174,7 @@ LINKFLAGS := -Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
 # is it a GUI application (any GUI resources provided?) ...
 ifneq (,$(RC_SRCS))
 LINKFLAGS += -mwindows
-DEFINES += -DWIN32_GUI
+DEFINES += -DQWIN_GUI
 endif
 
 #-----------------------------------------------------------------------------

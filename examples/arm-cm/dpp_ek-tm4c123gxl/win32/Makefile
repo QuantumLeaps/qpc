@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, DPP-GUI, Win32, MinGW
-# Last updated for version 5.6.0
-# Last updated on  2015-12-11
+# Last updated for version 5.6.4
+# Last updated on  2016-05-03
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -172,7 +172,7 @@ LINKFLAGS := -Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
 # is it a GUI application (any GUI resources provided?) ...
 ifneq (,$(RC_SRCS))
 LINKFLAGS += -mwindows
-DEFINES += -DWIN32_GUI
+DEFINES += -DQWIN_GUI
 endif
 
 #-----------------------------------------------------------------------------

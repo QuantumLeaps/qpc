@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-03-31
+* Last Updated for Version: 5.6.4
+* Date of the Last Update:  2016-05-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -78,8 +78,8 @@ void QF_setTickRate(uint32_t ticksPerSec); /* set clock tick rate */
 /* application-level clock tick callback */
 void QF_onClockTick(void);
 
-/* special adaptations for Win32 GUI applications */
-#ifdef WIN32_GUI
+/* special adaptations for QWIN GUI applications */
+#ifdef QWIN_GUI
     /* replace main() with main_gui() as the entry point to a GUI app. */
     #define main() main_gui()
     int_t main_gui(); /* prototype of the GUI application entry point */

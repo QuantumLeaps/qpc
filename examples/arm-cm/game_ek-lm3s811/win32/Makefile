@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, Game-GUI, Win32, MinGW
-# Last updated for version 5.5.0
-# Last updated on  2015-09-25
+# Last updated for version 5.6.4
+# Last updated on  2016-05-03
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -141,10 +141,10 @@ ifeq (rel, $(CONF)) # Release configuration ..................................
 BIN_DIR := rel
 
 CFLAGS = -ffunction-sections -fdata-sections \
-	-Os -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O1 -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
 
 CPPFLAGS = -ffunction-sections -fdata-sections \
-	-Os -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O1 -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
@@ -175,7 +175,7 @@ LINKFLAGS := -Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
 # is it a GUI application (any GUI resources provided?) ...
 ifneq (,$(RC_SRCS))
 LINKFLAGS += -mwindows
-DEFINES += -DWIN32_GUI
+DEFINES += -DQWIN_GUI
 endif
 
 #-----------------------------------------------------------------------------
