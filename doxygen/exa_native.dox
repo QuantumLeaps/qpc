@@ -1,49 +1,125 @@
 /*##########################################################################*/
-/*! @page exa_native Native Examples (Bare-Metal)
+/*! @page exa_native Native Examples (Built-in Kernels)
+
+<p>The QP/C framework contains real-time kernels (@ref comp_qv, @ref comp_qk, and @ref comp_qxk), so it can run natively ("bare-metal") on single-chip microcontrollers, completely replacing a traditional RTOS. Click on the following links to see examples for the specified built-in kernels:
+</p>
+
+- @subpage exa_qv
+- @subpage exa_qk
+- @subpage exa_qxk
+
+
+------------------------------------------------------------------------------
+Click on the following links to see examples for the specified CPU architectures:
+
+- @subpage exa_arm-cm
+- @subpage exa_arm7-9
+- @subpage exa_msp430
+
+*/
+/*##########################################################################*/
+/*! @page exa_qv QV Kernel (Non-Preemptive, Priority-Based, Non-Blocking)
 
 @htmlonly
 <script src="preview.js" type="text/javascript"></script>
 @endhtmlonly
-
-@tableofcontents
-
-<p>The QP/C framework contains real-time kernels (@ref comp_qv and @ref comp_qk), so it can run natively ("bare-metal") on single-chip microcontrollers, completely replacing a traditional RTOS. The following ready-to-use, native (bare-metal) examples are provided for QP/C:
-</p>
 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
-- @subpage exa_arm-cm (Cortex-M0/M0+/M3/M4F)
-    - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
-    - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
-    - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
-    - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
-    - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
-    - @ref arm-cm_game_ek-lm3s811  <a class="preview board" href="bd_EK-LM3S811.jpg" title="EK-LM3S811"></a>
-
-- @subpage exa_arm7-9 ("classic" ARM)
-    - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
-
-- @subpage exa_msp430 ("classic" MSP430 and "extended" MSP430x)
-    - @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
-    - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
-    - @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+- @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
+- @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
+- @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
+- @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
+- @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+- @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
+- @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 */
 /*##########################################################################*/
-/*! @page exa_arm-cm ARM Cortex-M
+/*! @page exa_qk QK Kernel (Preemptive, Priority-Based, Non-Blocking)
 
 @htmlonly
 <script src="preview.js" type="text/javascript"></script>
 @endhtmlonly
 
-The native (bare-metal) QP/C examples for ARM Cortex-M are as follows:
+@note
+You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
+
+- @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
+- @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
+- @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
+- @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
+- @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+- @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
+- @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+*/
+/*##########################################################################*/
+/*! @page exa_qxk QXK Kernel (Preemptive, Priority-Based, Blocking)
+
+@htmlonly
+<script src="preview.js" type="text/javascript"></script>
+@endhtmlonly
+
+@note
+You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
+
+- @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+*/
+/*##########################################################################*/
+/*! @page exa_arm-cm ARM Cortex-M (Cortex-M0/M0+/M3/M4F)
+
+@htmlonly
+<script src="preview.js" type="text/javascript"></script>
+@endhtmlonly
+
+@note
+You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
 - @subpage arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @subpage arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - @subpage arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @subpage arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - @subpage arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
 - @subpage arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
 - @subpage arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
-- @subpage arm-cm_game_ek-lm3s811  <a class="preview board" href="bd_EK-LM3S811.jpg" title="EK-LM3S811"></a>
+- @subpage arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+*/
+/*##########################################################################*/
+/*! @page exa_arm7-9 ARM7/ARM9 ("classic" ARM)
+
+@htmlonly
+<script src="preview.js" type="text/javascript"></script>
+@endhtmlonly
+
+@note
+You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
+
+- @subpage arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
+*/
+/*##########################################################################*/
+/*! @page exa_msp430 MSP430 ("classic" MSP430 and "extended" MSP430x)
+
+@htmlonly
+<script src="preview.js" type="text/javascript"></script>
+@endhtmlonly
+
+@note
+You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
+
+- @subpage msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+- @subpage msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
+- @subpage msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 */
 /*##########################################################################*/
 /*! @page arm-cm_blinky_ek-tm4c123gxl Blinky on EK-TM4C123GXL
@@ -61,6 +137,18 @@ Simple "Blinky" example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM 
 @image html under_construction.jpg
 */
 /*##########################################################################*/
+/*! @page arm-cm_blinky_efm32-slstk3401a Blinky on EFM32-SLSTK3401A
+
+@image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
+@n
+Simple "Blinky" example for for Silicon Labs Pearl Gecko MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
+@n
+@image html blinky_win32.png Blinky emulation running in a Windows console
+@n
+@n
+@image html under_construction.jpg
+*/
+/*##########################################################################*/
 /*! @page arm-cm_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
 
 @image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
@@ -69,6 +157,15 @@ Dining Philosophers Problem (DPP) example for Texas Instruments TivaC123GXL MCU 
 
 @image html dpp_win32.png DPP emulation running in Windows GUI
 @n
+@n
+@image html under_construction.jpg
+*/
+/*##########################################################################*/
+/*! @page arm-cm_dpp_efm32-slstk3401a DPP on EFM32-SLSTK3401A
+
+@image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
+@n
+Dining Philosophers Problem (DPP) example for for Silicon Labs Pearl Gecko MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
 @n
 @image html under_construction.jpg
 */
@@ -103,15 +200,12 @@ Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) wit
 @image html under_construction.jpg
 */
 /*##########################################################################*/
-/*! @page arm-cm_game_ek-lm3s811 "Fly 'n' Shoot" Game on EK-LM3S811
+/*! @page arm-cm_game_efm32-slstk3401a "Fly 'n' Shoot" Game on EFM32-SLSTK3401A
 
-@image html bd_EK-LM3S811.jpg EK-LM3S811 board
+@image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
 
-"Fly 'n' Shoot" game example for Texas Instruments LM3S811 MCU (Cortex-M3), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
+"Fly 'n' Shoot" game example for Silicon Labs Pearl Gecko MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
 
-@image html bd_EK-LM3S811_game.jpg Game playing on EK-LM3S811 board
-@n
-@n
 @image html game_win32.png Game emulation running in Windows GUI
 @n
 @n
@@ -138,7 +232,6 @@ Dining Philosophers Problem (DPP) example for Atmel AT91SAM7S MCU (ARM7) with GN
 
 @image html under_construction.jpg
 */
-
 /*##########################################################################*/
 /*! @page exa_msp430 MSP430
 

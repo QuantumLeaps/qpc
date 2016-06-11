@@ -171,7 +171,7 @@ static void *idleThread(void *par) { /* the expected P-Thread signature */
     while (l_running) {
         uint16_t nBytes = 256U;
         uint8_t const *block;
-        struct timeval timeout = { 0 }; /* timeout for select() */
+        struct timeval timeout =  { 0, 10000 }; /* timeout for select() */
 
         QF_CRIT_ENTRY(dummy);
         block = QS_getBlock(&nBytes);
@@ -180,7 +180,6 @@ static void *idleThread(void *par) { /* the expected P-Thread signature */
         if (block != (uint8_t *)0) {
             QSPY_parse(block, nBytes);
         }
-        timeout.tv_usec = 10000;
         select(0, 0, 0, 0, &timeout);   /* sleep for a while */
     }
     return (void *)0;  /* return success */

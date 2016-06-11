@@ -3,8 +3,8 @@
 * @brief QWIN GUI facilities for building realistic embedded front panels
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.4
-* Date of the Last Update:  2016-05-02
+* Last Updated for Version: 5.6.5
+* Date of the Last Update:  2016-05-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -39,12 +39,14 @@
 #include "qwin_gui.h"
 #include <stdlib.h>
 
+static HWND l_hWnd;
+static HDC  l_hDC;
+
 /*--------------------------------------------------------------------------*/
 HWND CreateCustDialog(HINSTANCE hInst, int iDlg, HWND hParent,
                       WNDPROC lpfnWndProc, LPCTSTR lpWndClass)
 {
     WNDCLASSEX wndclass;
-    HWND       hWnd;
 
     wndclass.cbSize        = sizeof(wndclass);
     wndclass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -61,31 +63,36 @@ HWND CreateCustDialog(HINSTANCE hInst, int iDlg, HWND hParent,
 
     RegisterClassEx(&wndclass);
 
-    hWnd = CreateDialog(hInst, MAKEINTRESOURCE(iDlg), hParent, NULL);
+    l_hWnd = CreateDialog(hInst, MAKEINTRESOURCE(iDlg), hParent, NULL);
+    l_hDC = GetDC(l_hWnd); /* obtain the DC for the client area of the window */
 
     /* NOTE: WM_INITDIALOG provides stimulus for initializing dialog controls.
     * Dialog box procedures typically use this message to initialize controls
     * and carry out any other initialization tasks that affect the appearance
     * of the dialog box.
     */
-    SendMessage(hWnd, WM_INITDIALOG, (WPARAM)0, (LPARAM)0);
+    SendMessage(l_hWnd, WM_INITDIALOG, (WPARAM)0, (LPARAM)0);
 
-    return hWnd;
+    return l_hWnd;
 }
 
 /*--------------------------------------------------------------------------*/
 void OwnerDrawnButton_init(OwnerDrawnButton * const me,
+                           UINT itemID,
                            HBITMAP hBitmapUp, HBITMAP hBitmapDwn,
                            HCURSOR hCursor)
 {
+    me->itemID      = itemID;
     me->hBitmapUp   = hBitmapUp;
     me->hBitmapDown = hBitmapDwn;
     me->hCursor     = hCursor;
+    me->isDepressed = 0;
 }
 /*..........................................................................*/
 void OwnerDrawnButton_xtor(OwnerDrawnButton * const me) {
     DeleteObject(me->hBitmapUp);
     DeleteObject(me->hBitmapDown);
+    DeleteObject(me->hCursor);
 }
 /*..........................................................................*/
 enum OwnerDrawnButtonAction OwnerDrawnButton_draw(
@@ -101,62 +108,85 @@ enum OwnerDrawnButtonAction OwnerDrawnButton_draw(
         }
         DrawBitmap(lpdis->hDC, me->hBitmapUp,
                    lpdis->rcItem.left, lpdis->rcItem.top);
+        me->isDepressed = 0;
         ret = BTN_PAINTED;
     }
     else if ((lpdis->itemAction & ODA_SELECT) != 0U) {
         if ((lpdis->itemState & ODS_SELECTED) != 0U) {
             DrawBitmap(lpdis->hDC, me->hBitmapDown,
                        lpdis->rcItem.left, lpdis->rcItem.top);
+            me->isDepressed = !0;
             ret = BTN_DEPRESSED;
         }
         else {
             /* NOTE: the bitmap for button "UP" look will be
             * drawn in the ODA_DRAWENTIRE action
             */
+            me->isDepressed = 0;
             ret = BTN_RELEASED;
         }
     }
     return ret;
 }
+/*..........................................................................*/
+void OwnerDrawnButton_set(OwnerDrawnButton * const me, int isDepressed) {
+    if (me->isDepressed != isDepressed) {
+        HWND hItem = GetDlgItem(l_hWnd, me->itemID);
+        me->isDepressed = isDepressed;
+        if (isDepressed) {
+            DrawBitmap(GetDC(hItem), me->hBitmapDown, 0, 0);
+        }
+        else {
+            DrawBitmap(GetDC(hItem), me->hBitmapUp, 0, 0);
+        }
+    }
+}
+/*..........................................................................*/
+BOOL OwnerDrawnButton_isDepressed(OwnerDrawnButton const * const me) {
+    return me->isDepressed;
+}
 
 /*--------------------------------------------------------------------------*/
 void GraphicDisplay_init(GraphicDisplay * const me,
-                    UINT width,  UINT xScale,
-                    UINT height, UINT yScale,
-                    HWND hItem,  BYTE const bgColor[3])
+                         UINT width,  UINT height,
+                         UINT itemID, BYTE const bgColor[3])
 {
-    HDC hDC;
     BITMAPINFO bi24BitInfo;
+    RECT rect;
 
-    me->width  = width;
-    me->xScale = xScale;
-    me->height = height;
-    me->yScale = yScale;
+    me->src_width  = width;
+    me->src_height = height;
+
+    me->hItem      = GetDlgItem(l_hWnd, itemID);
+    me->dst_hDC    = GetDC(me->hItem);
+    GetWindowRect(me->hItem, &rect);
+    me->dst_width  = rect.right - rect.left;
+    me->dst_height = rect.bottom - rect.top;
 
     me->bgColor[0] = bgColor[0];
     me->bgColor[1] = bgColor[1];
     me->bgColor[2] = bgColor[2];
 
-    me->hItem = hItem;
-
     bi24BitInfo.bmiHeader.biBitCount    = 3U*8U;  /* 3 RGB bytes */
     bi24BitInfo.bmiHeader.biCompression = BI_RGB; /* RGB color */
     bi24BitInfo.bmiHeader.biPlanes      = 1U;
     bi24BitInfo.bmiHeader.biSize        = sizeof(bi24BitInfo.bmiHeader);
-    bi24BitInfo.bmiHeader.biWidth       = me->width  * me->xScale;
-    bi24BitInfo.bmiHeader.biHeight      = me->height * me->yScale;
+    bi24BitInfo.bmiHeader.biWidth       = me->src_width;
+    bi24BitInfo.bmiHeader.biHeight      = me->src_height;
 
-    hDC = CreateCompatibleDC(NULL);
-    me->hBitmap = CreateDIBSection(hDC, &bi24BitInfo, DIB_RGB_COLORS,
+    me->src_hDC = CreateCompatibleDC(me->dst_hDC);
+    me->hBitmap = CreateDIBSection(me->src_hDC, &bi24BitInfo, DIB_RGB_COLORS,
                                    (void **)&me->bits, 0, 0);
-    DeleteDC(hDC);
+    SelectObject(me->src_hDC, me->hBitmap);
 
     GraphicDisplay_clear(me);
     GraphicDisplay_redraw(me);
 }
 /*..........................................................................*/
 void GraphicDisplay_xtor(GraphicDisplay * const me) {
+    DeleteDC(me->src_hDC);
     DeleteObject(me->hBitmap);
+    OutputDebugString("GraphicDisplay_xtor\n");
 }
 /*..........................................................................*/
 void GraphicDisplay_clear(GraphicDisplay * const me) {
@@ -166,42 +196,16 @@ void GraphicDisplay_clear(GraphicDisplay * const me) {
     BYTE b = me->bgColor[2];
     BYTE *bits = me->bits;
 
-    for (n = me->width*me->xScale * me->height * me->yScale;
-         n != 0U;
-         --n, bits += 3)
-    {
+    for (n = me->src_width * me->src_height; n != 0U; --n, bits += 3) {
         bits[0] = b;
         bits[1] = g;
         bits[2] = r;
     }
 }
 /*..........................................................................*/
-void GraphicDisplay_setPixel(GraphicDisplay * const me, UINT x, UINT y,
-                        BYTE const color[3])
-{
-    UINT sx, sy;
-    BYTE *pixelRGB = &me->bits[3*(me->xScale*x
-                  + me->xScale*me->width * me->yScale*(me->height - 1U - y))];
-    BYTE r = color[0];
-    BYTE g = color[1];
-    BYTE b = color[2];
-    for (sy = me->yScale; sy != 0U;
-         --sy, pixelRGB += me->xScale*me->width*3U)
-    {
-        for (sx = 3U*me->xScale; sx != 0U; sx -= 3U) {
-            pixelRGB[sx - 3U] = b;
-            pixelRGB[sx - 2U] = g;
-            pixelRGB[sx - 1U] = r;
-        }
-    }
-}
-/*..........................................................................*/
-void GraphicDisplay_clearPixel(GraphicDisplay * const me, UINT x, UINT y) {
-    GraphicDisplay_setPixel(me, x, y, me->bgColor);
-}
-/*..........................................................................*/
 void GraphicDisplay_redraw(GraphicDisplay * const me) {
-    SendMessage(me->hItem, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)me->hBitmap);
+    StretchBlt(me->dst_hDC, 0, 0, me->dst_width, me->dst_height,
+               me->src_hDC, 0, 0, me->src_width, me->src_height, SRCCOPY);
 }
 
 /* SegmentDisplay ----------------------------------------------------------*/
@@ -237,11 +241,11 @@ void SegmentDisplay_xtor(SegmentDisplay * const me) {
 }
 /*..........................................................................*/
 BOOL SegmentDisplay_initSegment(SegmentDisplay * const me,
-                                UINT segmentNum, HWND hSegment)
+                                UINT segmentNum, UINT segmentID)
 {
-    if ((segmentNum < me->segmentNum) && (hSegment != NULL)) {
-        me->hSegment[segmentNum] = hSegment;
-        return TRUE;
+    if (segmentNum < me->segmentNum) {
+        me->hSegment[segmentNum] = GetDlgItem(l_hWnd, segmentID);
+        return me->hSegment[segmentNum] != NULL;
     }
     else {
         return FALSE;

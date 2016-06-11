@@ -99,7 +99,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="QP/qs_rx.c|QP/qs.c|QP/qs_fp.c|QP/qs_64bit.c|QP/qv.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="QP/qxk.c|QP/qxk_xthr.c|QP/qxk_sema.c|QP/qxk_mutex.c|QP/qs_rx.c|QP/qs.c|QP/qs_fp.c|QP/qs_64bit.c|QP/qv.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -192,7 +192,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="QP/qs_rx.c|QP/qv.c|QP/qs.c|QP/qs_fp.c|QP/qs_64bit.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="QP/qxk.c|QP/qxk_xthr.c|QP/qxk_sema.c|QP/qxk_mutex.c|QP/qs_rx.c|QP/qv.c|QP/qs.c|QP/qs_fp.c|QP/qs_64bit.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -282,7 +282,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="QP/qv.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="QP/qxk_xthr.c|QP/qxk.c|QP/qxk_sema.c|QP/qxk_mutex.c|QP/qv.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

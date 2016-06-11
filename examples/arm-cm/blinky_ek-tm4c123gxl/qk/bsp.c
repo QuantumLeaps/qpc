@@ -74,11 +74,6 @@ void GPIOPortA_IRQHandler(void);
 #define LED_RED     (1U << 1)
 #define LED_GREEN   (1U << 3)
 #define LED_BLUE    (1U << 2)
-static uint32_t const l_led_pin[] = {
-    LED_GREEN,
-    LED_RED,
-    LED_BLUE
-};
 
 #define BTN_SW1     (1U << 4)
 #define BTN_SW2     (1U << 0)
@@ -140,16 +135,16 @@ void BSP_init(void) {
                          GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
 }
 /*..........................................................................*/
-void BSP_ledOff(uint_fast8_t n) {
-    GPIOF->DATA_Bits[l_led_pin[n]] = 0U;
+void BSP_ledOff(void) {
+    GPIOF->DATA_Bits[LED_GREEN] = 0U;
 }
 /*..........................................................................*/
-void BSP_ledOn(uint_fast8_t n) {
+void BSP_ledOn(void) {
     /* exercise the FPU with some floating point computations */
     float volatile x = 3.1415926F;
     x = x + 2.7182818F;
 
-    GPIOF->DATA_Bits[l_led_pin[n]] = 0xFFU;
+    GPIOF->DATA_Bits[LED_GREEN] = 0xFFU;
 }
 
 

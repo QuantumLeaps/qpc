@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Blinky" on MSP-EXP430F5529LP, cooperative QV kernel
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.6.5
+* Last updated on  2016-06-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -85,13 +85,11 @@ void BSP_init(void) {
     P4DIR |= LED2;  /* set LED2 pin to output  */
 }
 /*..........................................................................*/
-void BSP_ledOff(uint_fast8_t n) {
-    (void)n; /* avoid compiler warning about unused parameter */
+void BSP_ledOff(void) {
     P1OUT &= ~LED1; /* turn LED1 off */
 }
 /*..........................................................................*/
-void BSP_ledOn(uint_fast8_t n) {
-    (void)n; /* avoid compiler warning about unused parameter */
+void BSP_ledOn(void) {
     P1OUT |= LED1;  /* turn LED1 on */
 }
 

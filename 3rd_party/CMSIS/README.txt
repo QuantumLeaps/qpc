@@ -20,9 +20,3 @@ the original distribution has been removed. However, the CMSIS-RTOS RTX
 documentation is available online at:
 
 http://www.keil.com/pack/doc/CMSIS/General/html
-
-
-RTOS Libraries
-=============
-The RTOS part of the CMIS V4.4.0 has been copied to the separate directory
-CMSIS_RTOS in the "3rd_party" folder.

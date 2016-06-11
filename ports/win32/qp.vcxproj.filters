@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Win32-GUI">
-      <UniqueIdentifier>{a9d19e53-4919-44a0-b925-5b00e2189525}</UniqueIdentifier>
-    </Filter>
     <Filter Include="QS">
       <UniqueIdentifier>{56273036-d67c-489b-bc4b-84d286c6a000}</UniqueIdentifier>
     </Filter>
@@ -12,6 +9,9 @@
     </Filter>
     <Filter Include="QP">
       <UniqueIdentifier>{f23cedd0-0f13-4d39-b4f1-77eaa32e87fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QWIN-GUI">
+      <UniqueIdentifier>{a9d19e53-4919-44a0-b925-5b00e2189525}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -54,9 +54,6 @@
     <ClCompile Include="qf_port.c">
       <Filter>QP_port</Filter>
     </ClCompile>
-    <ClCompile Include="win32_gui.c">
-      <Filter>Win32-GUI</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\qs.c">
       <Filter>QS</Filter>
     </ClCompile>
@@ -69,6 +66,9 @@
     <ClCompile Include="..\..\source\qs_rx.c">
       <Filter>QS</Filter>
     </ClCompile>
+    <ClCompile Include="qwin_gui.c">
+      <Filter>QWIN-GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\qf_pkg.h">
@@ -80,11 +80,11 @@
     <ClInclude Include="qf_port.h">
       <Filter>QP_port</Filter>
     </ClInclude>
-    <ClInclude Include="win32_gui.h">
-      <Filter>Win32-GUI</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\qs_pkg.h">
       <Filter>QS</Filter>
+    </ClInclude>
+    <ClInclude Include="qwin_gui.h">
+      <Filter>QWIN-GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

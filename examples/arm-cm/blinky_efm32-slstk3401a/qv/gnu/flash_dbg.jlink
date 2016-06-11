@@ -1,0 +1,6 @@
+si 1
+speed 4000
+r
+h
+loadbin dbg\blinky-qv.bin, 0
+exit

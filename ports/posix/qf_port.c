@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.4
-* Date of the Last Update:  2016-04-25
+* Last Updated for Version: 5.6.5
+* Date of the Last Update:  2016-06-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -53,7 +53,7 @@
 Q_DEFINE_THIS_MODULE("qf_port")
 
 /* Global objects ----------------------------------------------------------*/
-pthread_mutex_t QF_pThreadMutex_ = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t QF_pThreadMutex_;
 
 /* Local objects -----------------------------------------------------------*/
 static bool l_isRunning;
@@ -67,6 +67,9 @@ void QF_init(void) {
 
     /* lock memory so we're never swapped out to disk */
     /*mlockall(MCL_CURRENT | MCL_FUTURE);  uncomment when supported */
+
+    /* init the global mutex with the default non-recursive initializer */
+    pthread_mutex_init(&QF_pThreadMutex_, NULL);
 
     /* clear the internal QF variables, so that the framework can (re)start
     * correctly even if the startup code is not called to clear the

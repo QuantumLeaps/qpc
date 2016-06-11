@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Blinky" on MSP-EXP430G2, preemptive QK kernel
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.6.5
+* Last updated on  2016-06-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -88,12 +88,12 @@ void BSP_init(void) {
     P1DIR |= (LED1 | LED2);  /* set LED1 and LED2 pins to output  */
 }
 /*..........................................................................*/
-void BSP_ledOff(uint_fast8_t n) {
-    P1OUT &= ~l_led_pin[n];        /* turn LED[n] off */
+void BSP_ledOff(void) {
+    P1OUT &= ~LED1;  /* turn LED1 off */
 }
 /*..........................................................................*/
-void BSP_ledOn(uint_fast8_t n) {
-    P1OUT |= l_led_pin[n];         /* turn LED[n] on */
+void BSP_ledOn(void) {
+    P1OUT |= LED1;   /* turn LED1 on */
 }
 
 /* QF callbacks ============================================================*/

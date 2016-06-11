@@ -1,6 +1,6 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-L053R8 board, preemptive QK kernel
-* Last Updated for Version: 5.5.0
+* Last Updated for Version: 5.6.4
 * Date of the Last Update:  2015-08-20
 *
 *                    Q u a n t u m     L e a P s
@@ -346,6 +346,7 @@ void QS_onFlush(void) {
         while ((USART2->ISR & 0x0080U) == 0U) { /* while TXE not empty */
         }
         USART2->TDR  = (b & 0xFFU);  /* put into the DR register */
+        QF_INT_DISABLE();
     }
     QF_INT_ENABLE();
 }

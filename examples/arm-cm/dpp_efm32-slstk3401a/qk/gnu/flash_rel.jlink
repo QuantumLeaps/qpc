@@ -1,0 +1,6 @@
+si 1
+speed 4000
+r
+h
+loadbin rel\dpp-qk.bin, 0
+exit

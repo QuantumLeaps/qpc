@@ -34,7 +34,7 @@ lint*.txt
 *.Miro
 *.bak
 
-doc/
+eclipse/
 test/
 test_ports/
 dbg/
@@ -46,8 +46,6 @@ settings/
 Debug/
 Release/
 Spy/
-
-*.CS_/
 
 lib/
 obj/

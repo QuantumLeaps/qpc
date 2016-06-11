@@ -1,6 +1,23 @@
 /**
 @page history Revision History
 
+@section qpc_5_6_5 Version 5.6.5, 2016-06-06
+This release adds support for the new board: EFM32-SLSTK3401A (Pearl Gecko Starter Kit from Silicon Labs). This board replaces the Stellaris EK-LM3S811 board, which has been discontinued. (The Stellaris EK-LM3S811 board had been used in the "Fly 'n' Shoot" game example accompanying the PSiCC2 book).
+
+This release also introduces a new version of the QWIN GUI Toolkit in the Windows prototypes for the "Fly 'n' Shoot" game and the DPP-GUI
+version (see http://www.state-machine.com/products/index.html#QWIN).
+
+Additionally, this release also includes the QP/C integration with the emWin emgedded GUI from SEGGER, which is also the same product as
+uC/GUI distributed by Micrium (@ref exa_emwin).
+
+Finally, this relase comes with updated project files for TI Code Composer Studio (both for ARM Cortex-M and for MSP430).
+
+This release fixes the following bugs:
+- bug#130 (POSIX port stop->start leads to reuse of sestroyed mutex).
+- bug#131 (QF_newRef_ increments reference counter without QF_CRIT_ENTRY_()).
+
+
+------------------------------------------------------------------------------
 @section qpc_5_6_4 Version 5.6.4, 2016-04-25
 This release fixes a serious Bug #128 (https://sourceforge.net/p/qpc/bugs/128 ) in the QK port to ARM Cortex-M introduced back in QP 5.6.1
 

@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-08-03
+* Last updated for version 5.6.5
+* Last updated on  2016-06-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -262,13 +262,17 @@ void QF_gc(QEvt const * const e) {
 * The only allowed use is thorough the macro Q_NEW_REF().
 */
 QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef) {
+    QF_CRIT_STAT_
+
     /* the provided event reference must not be in use */
     Q_REQUIRE_ID(500, evtRef == (QEvt const *)0);
 
+    QF_CRIT_ENTRY_();
     /* is the current event dynamic? */
     if (e->poolId_ != (uint8_t)0) {
         QF_EVT_REF_CTR_INC_(e); /* increments the ref counter */
     }
+    QF_CRIT_EXIT_();
 
     return e;
 }

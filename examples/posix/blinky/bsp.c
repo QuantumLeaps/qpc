@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Blinky example, POSIX
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.6.5
+* Last updated on  2016-06-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -91,14 +91,12 @@ void BSP_init() {
            QP_VERSION_STR);
 }
 /*..........................................................................*/
-void BSP_ledOff(uint_fast8_t n) {
-    (void)n; /* avoid compiler warning about unused parameter */
-    printf("OFF\n");
+void BSP_ledOff(void) {
+    printf("LED OFF\n");
 }
 /*..........................................................................*/
-void BSP_ledOn(uint_fast8_t n) {
-    (void)n; /* avoid compiler warning about unused parameter */
-    printf("ON\n");
+void BSP_ledOn(void) {
+    printf("LED ON\n");
 }
 /*..........................................................................*/
 void Q_onAssert(char const *module, int loc) {

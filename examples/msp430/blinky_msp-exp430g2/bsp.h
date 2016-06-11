@@ -37,7 +37,7 @@
 #define BSP_TICKS_PER_SEC    50U
 
 void BSP_init(void);
-void BSP_ledOff(uint_fast8_t n);
-void BSP_ledOn(uint_fast8_t n);
+void BSP_ledOff(void);
+void BSP_ledOn(void);
 
 #endif /* bsp_h */

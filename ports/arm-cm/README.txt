@@ -6,17 +6,24 @@ ports are provided:
 
 arm-cm
 |
-+-qk      - port to the preemptive QK kernel
-| +-arm   - port with the ARM-KEIL toolset (MDK-ARM)
-| +-gnu   - port with the GNU-ARM toolset
-| +-iar   - port with the IAR-ARM toolset (IAR EWARM)
-| +-ti    - port with the TI CCS ARM toolset
-|
 +-qv      - port to the cooperative QV kernel
 | +-arm   - port with the ARM-KEIL toolset (MDK-ARM)
 | +-gnu   - port with the GNU-ARM toolset
 | +-iar   - port with the IAR-ARM toolset (IAR EWARM)
 | +-ti    - port with the TI CCS ARM toolset
+|
++-qk      - port to the preemptive, non-blocking QK kernel
+| +-arm   - port with the ARM-KEIL toolset (MDK-ARM)
+| +-gnu   - port with the GNU-ARM toolset
+| +-iar   - port with the IAR-ARM toolset (IAR EWARM)
+| +-ti    - port with the TI CCS ARM toolset
+|
++-qxk      - port to the preemptive, blocking QXK kernel
+| +-arm   - port with the ARM-KEIL toolset (MDK-ARM)
+| +-gnu   - port with the GNU-ARM toolset
+| +-iar   - port with the IAR-ARM toolset (IAR EWARM)
+| +-ti    - port with the TI CCS ARM toolset
+
 
 
 Please see the README.txt files in the sub-directories for more information

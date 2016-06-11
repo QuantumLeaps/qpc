@@ -116,6 +116,7 @@ DEFINES  := -DQWIN_GUI
 #    http://sourceforge.net/projects/qpc/files/Qtools/
 
 CC    := gcc
+CPP   := g++
 LIB   := ar
 
 

@@ -244,7 +244,14 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 
 
 ------------------------------------------------------------------------------
-@section exa_ref_native Native Examples (Bare-Metal)
+@section exa_ref_kernel Native Examples (by Built-in Kernel)
+- @ref exa_qv
+- @ref exa_qk
+- @ref exa_qxk
+
+
+------------------------------------------------------------------------------
+@section exa_ref_native Native Examples (by Processor)
 - @ref exa_arm-cm (Cortex-M0/M0+/M3/M4/M4F)
 - @ref exa_arm7-9 ("classic ARM")
 - @ref exa_msp430 ("classic" MSP430 and "extended" MSP430x)
@@ -267,7 +274,7 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 ------------------------------------------------------------------------------
 @section exa_ref_mwware Examples for Third-Party Middleware
 - @ref exa_lwip (open source, see http://lwip.wikia.com/wiki/LwIP_Wiki )
-- @ref exa_emwin (SEGGER) &mdash; coming soon...
+- @ref exa_emwin (SEGGER, a.k.a. uC/GUI by Micrium)
 
 
 ------------------------------------------------------------------------------
@@ -279,10 +286,10 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 
 - ARM Cortex-M Boards:
     - <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL">EK-TM4C123GXL</a> (TivaC LaunchPad)
+    - <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A">EFM32-SLSTK3401A</a>
     - <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768">mbed-LPC1768</a>
     - <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8">NUCLEO-L053R8</a>
     - <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE">NUCLEO-L152RE</a>
-    - <a class="preview board" href="bd_EK-LM3S811.jpg" title="EK-LM3S811">EK-LM3S811</a>
     - <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965">EK-LM3S6965</a>
     - <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery">STM32F4-Discovery</a>
 
@@ -300,12 +307,14 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
     - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
 - ARM Cortex-M3
     - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
-    - @ref arm-cm_game_ek-lm3s811  <a class="preview board" href="bd_EK-LM3S811.jpg" title="EK-LM3S811"></a>
     - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
     - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a>
 - ARM Cortex-M4F (with hardware FPU)
     - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+    - @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
     - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+    - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+    - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - ARM7 / ARM9
     - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 
@@ -326,37 +335,37 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - ARM architecture
     - ARM (ARM-Keil)
         - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+        - @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
         - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+        - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
         - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
         - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
         - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
-        - @ref arm-cm_game_ek-lm3s811  <a class="preview board" href="bd_EK-LM3S811.jpg" title="EK-LM3S811"></a>
+        - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
     - GNU-ARM
         - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+        - @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
         - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+        - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
         - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
         - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
         - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
-        - @ref arm-cm_game_ek-lm3s811  <a class="preview board" href="bd_EK-LM3S811.jpg" title="EK-LM3S811"></a>
+        - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
         - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a>
         - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
     - IAR EWARM
         - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+        - @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
         - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+        - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
         - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
         - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
         - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
-        - @ref arm-cm_game_ek-lm3s811  <a class="preview board" href="bd_EK-LM3S811.jpg" title="EK-LM3S811"></a>
+        - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
         - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a>
         - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
-
-- AVR architecture
-    - GNU-AVR (WinAVR)
-        - @ref avr_blinky_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
-        - @ref avr_dpp_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
-    - IAR EWAVR
-        - @ref avr_blinky_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
-        - @ref avr_dpp_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
+    - TI ARM
+        - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 
 - MSP430 architecture
     - CCS-430
@@ -377,13 +386,17 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
     - @ref avr_dpp_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
 - NXP
     - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
+- Silicon Labs
+    - @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+    - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+    - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - STMicroelectronics
     - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
     - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
 - Texas Instruments
     - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
     - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
-    - @ref arm-cm_game_ek-lm3s811  <a class="preview board" href="bd_EK-LM3S811.jpg" title="EK-LM3S811"></a>
+    - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
     - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a>
 
 @next{exa_native}

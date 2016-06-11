@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, DPP console, POSIX, GNU compiler
-# Last updated for version 5.5.0
-# Last updated on  2015-08-14
+# Last updated for version 5.6.5
+# Last updated on  2016-06-07
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -101,7 +101,7 @@ LINK  := gcc    # for C programs
 #LINK  := g++   # for C++ programs
 
 MKDIR := mkdir -p
-RM    := rm
+RM    := rm -f
 
 #-----------------------------------------------------------------------------
 # build options for various configurations
@@ -207,10 +207,7 @@ endif
 
 .PHONY : clean
 clean:
-	-$(RM) $(BIN_DIR)/*.o \
-	$(BIN_DIR)/*.d \
-	$(BIN_DIR)/*. \
-	$(BIN_DIR)/*.map
+	-$(RM) $(BIN_DIR)/*
 	
 show:
 	@echo PROJECT  = $(PROJECT)

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Simple Blinky example
-* Last Updated for Version: 5.5.0
-* Date of the Last Update:  2015-08-30
+* Last Updated for Version: 5.6.5
+* Date of the Last Update:  2016-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -73,7 +73,7 @@ QState Blinky_off(Blinky * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            BSP_ledOff(0U);
+            BSP_ledOff();
             status = Q_HANDLED();
             break;
         }
@@ -93,7 +93,7 @@ QState Blinky_on(Blinky * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            BSP_ledOn(0U);
+            BSP_ledOn();
             status = Q_HANDLED();
             break;
         }

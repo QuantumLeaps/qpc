@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Simple Blinky example
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-16
+* Last Updated for Version: 5.6.5
+* Date of the Last Update:  2016-06-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "blinky.h"
@@ -84,7 +84,7 @@ QState Blinky_off(Blinky * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            BSP_ledOff(0U);
+            BSP_ledOff();
             status = Q_HANDLED();
             break;
         }
@@ -104,7 +104,7 @@ QState Blinky_on(Blinky * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            BSP_ledOn(0U);
+            BSP_ledOn();
             status = Q_HANDLED();
             break;
         }
