@@ -3,14 +3,14 @@
 * @brief QK/C port port to MSP430, IAR-430 compiler
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 5.7.0
+* Date of the Last Update:  2016-07-11
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,8 +31,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -40,11 +40,11 @@
 #define qk_port_h
 
 /* QK interrupt entry and exit... */
-#define QK_ISR_ENTRY()    (++QK_intNest_)
+#define QK_ISR_ENTRY()    (++QK_attr_.intNest)
 
 #define QK_ISR_EXIT()     do { \
-    --QK_intNest_; \
-    if (QK_intNest_ == (uint_fast8_t)0) { \
+    --QK_attr_.intNest; \
+    if (QK_attr_.intNest == (uint_fast8_t)0) { \
         uint_fast8_t p = QK_schedPrio_(); \
         if (p != (uint_fast8_t)0) { \
             QK_sched_(p); \

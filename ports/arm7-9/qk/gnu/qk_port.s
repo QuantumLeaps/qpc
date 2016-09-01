@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK port to ARM7-9, GNU-ARM assembler
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-01
+* Last Updated for Version: 5.7.0
+* Date of the Last Update:  2016-07-11
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 
     .equ    NO_IRQ,      0x80   /* mask to disable interrupts (IRQ) */
@@ -37,6 +37,9 @@
     .equ    FIQ_MODE,    0x11
     .equ    IRQ_MODE,    0x12
     .equ    SYS_MODE,    0x1F
+
+    /* NOTE: keep in synch with the QK_Attr struct in "qk.h" !!! */
+    .equ    QK_INT_NEST  16
 
     .text
     .arm
@@ -110,10 +113,10 @@ QK_irq:
     MSR     cpsr_c,#(SYS_MODE | NO_IRQ) /* SYSTEM mode, IRQ disabled */
 /* IRQ entry }}} */
 
-    LDR     r0,=QK_intNest_     /* load address in already saved r0 */
-    LDRB    r12,[r0]            /* load original QK_intNest_ into saved r12 */
+    LDR     r0,=QK_attr_        /* load address in already saved r0 */
+    LDR     r12,[r0,#QK_INT_NEST] /* load QK_attr_.intNest into saved r12 */
     ADD     r12,r12,#1          /* increment the nesting level */
-    STRB    r12,[r0]            /* store the value in QK_intNest_ */
+    STR     r12,[r0,#QK_INT_NEST] /* store the value in QK_attr_.intNest */
 
     /*     MSR     cpsr_c,#(SYS_MODE | NO_IRQ) ; enable FIQ
     * NOTE: BSP_irq might re-enable IRQ interrupts (the FIQ is enabled
@@ -123,11 +126,11 @@ QK_irq:
     MOV     lr,pc               /* copy the return address to link register */
     BX      r12                 /* call the C IRQ-handler (ARM/THUMB) */
 
-    MSR     cpsr_c,#(SYS_MODE | NO_IRQ) /* make sure IRQ are disabled */
-    LDR     r0,=QK_intNest_     /* load address */
-    LDRB    r12,[r0]            /* load original QK_intNest_ into saved r12 */
+    MSR     cpsr_c,#(SYS_MODE | NO_IRQ) /* make sure IRQs are disabled */
+    LDR     r0,=QK_attr_        /* load address */
+    LDR     r12,[r0,#QK_INT_NEST] /* load QK_attr_.intNest into saved r12 */
     SUBS    r12,r12,#1          /* decrement the nesting level */
-    STRB    r12,[r0]            /* store the value in QK_intNest_ */
+    STR     r12,[r0,#QK_INT_NEST] /* store the value in QK_attr_.intNest */
     BNE     QK_irq_exit         /* branch if interrupt nesting not zero */
 
     LDR     r12,=QK_schedPrio_

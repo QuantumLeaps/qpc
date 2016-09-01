@@ -28,6 +28,7 @@ Q_DEFINE_THIS_FILE
 typedef struct {
 /* protected: */
     QHsm super;
+
 /* private state histories */
     QStateHandler his_doorClosed;
 } ToastOven;

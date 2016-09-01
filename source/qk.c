@@ -4,14 +4,14 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.4
-* Last updated on  2016-04-25
+* Last updated for version 5.7.0
+* Last updated on  2016-08-11
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -55,15 +55,7 @@
 Q_DEFINE_THIS_MODULE("qk")
 
 /* Public-scope objects *****************************************************/
-uint_fast8_t volatile QK_currPrio_; /* priority of the current task */
-uint_fast8_t volatile QK_lockPrio_; /* scheduler lock ceiling */
-uint_fast8_t volatile QK_intNest_;  /* ISR nesting level */
-
-#if (QF_MAX_ACTIVE <= 8)
-    QPSet8  QK_readySet_; /* QK ready-set (8-bits) */
-#else /* (QF_MAX_ACTIVE > 8) */
-    QPSet64 QK_readySet_; /* QK ready-set (64-bits) */
-#endif /* (QF_MAX_ACTIVE > 8) */
+QK_Attr QK_attr_; /* global attributes of the QK kernel */
 
 /****************************************************************************/
 /**
@@ -80,21 +72,17 @@ void QF_init(void) {
     extern uint_fast8_t QF_maxPool_;
     extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
 
-    QK_currPrio_ = (uint_fast8_t)0; /* priority of the QK idle loop */
-    QK_lockPrio_ = (uint_fast8_t)QF_MAX_ACTIVE; /* scheduler locked */
-
-#ifndef QK_ISR_CONTEXT_
-    QK_intNest_ = (uint_fast8_t)0; /* no nesting level */
-#endif /* QK_ISR_CONTEXT_ */
-
     /* clear the internal QF variables, so that the framework can start
     * correctly even if the startup code fails to clear the uninitialized
     * data (as is required by the C Standard).
     */
     QF_maxPool_ = (uint_fast8_t)0;
-    QF_bzero(&QK_readySet_,       (uint_fast16_t)sizeof(QK_readySet_));
     QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
     QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
+    QF_bzero(&QK_attr_,           (uint_fast16_t)sizeof(QK_attr_));
+
+    QK_attr_.curr = (uint_fast8_t)0; /* priority of the QK idle loop */
+    QK_attr_.lockPrio = (uint_fast8_t)QF_MAX_ACTIVE; /* scheduler locked */
 
     QK_init(); /* QK-port initialization, might be defined in assembly */
 }
@@ -122,7 +110,7 @@ static void initial_events(void); /* prototype */
 static void initial_events(void) {
     uint_fast8_t p;
 
-    QK_lockPrio_ = (uint_fast8_t)0; /* scheduler unlocked */
+    QK_attr_.lockPrio = (uint_fast8_t)0; /* scheduler unlocked */
     p = QK_schedPrio_();
 
     /* any active objects need to be scheduled before starting event loop? */
@@ -137,15 +125,7 @@ static void initial_events(void) {
 * QF_run() is typically called from your startup code after you initialize
 * the QF and start at least one active object with QActive_start().
 *
-* @returns QF_run() typically does not return in embedded applications.
-* However, when QP runs on top of an operating system,  QF_run() might
-* return and in this case the return represents the error code (0 for
-* success). Typically the value returned from QF_run() is subsequently
-* passed on as return from main().
-*
-* @note This function is strongly platform-dependent and is not implemented
-* in the QF, but either in the QF port or in the Board Support Package (BSP)
-* for the given application. All QF ports must implement QF_run().
+* @returns In QK, the QF_run() function does not return.
 */
 int_t QF_run(void) {
     QF_INT_DISABLE();
@@ -158,7 +138,7 @@ int_t QF_run(void) {
         QK_onIdle(); /* application-specific QK on-idle callback */
     }
 
-#ifdef __GNUC__ /* GNU compiler? */
+#ifdef __GNUC__
     return (int_t)0;
 #endif
 }
@@ -191,34 +171,59 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
 {
+    uint_fast8_t p;
+    QF_CRIT_STAT_
+
     Q_REQUIRE_ID(500, ((uint_fast8_t)0 < prio)
-                      && (prio <= (uint_fast8_t)QF_MAX_ACTIVE));
+                      && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
+                      && (stkSto == (void *)0)
+                      && (stkSize == (uint_fast16_t)0));
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
     me->prio = prio;   /* set the current priority of the AO */
+    QF_CRIT_ENTRY_();
     QF_add_(me); /* make QF aware of this active object */
-
-    /* QK kernel does not need per-thread stack */
-    Q_ASSERT_ID(510, (stkSto == (void *)0) && (stkSize == (uint_fast16_t)0));
+    QF_CRIT_EXIT_();
 
     QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH();                /* flush the trace buffer to the host */
+
+    /* See if this AO needs to be scheduled in case QK is already running */
+    QF_CRIT_ENTRY_();
+    p = QK_schedPrio_();
+    if (p != (uint_fast8_t)0) {
+        QK_sched_(p);
+    }
+    QF_CRIT_EXIT_();
 }
 
 /****************************************************************************/
 /**
 * @description
-* The preferred way of calling this function is from within the active
-* object that needs to stop. In other words, an active object should stop
-* itself rather than being stopped by someone else. This policy works
-* best, because only the active object itself "knows" when it has reached
-* the appropriate state for the shutdown.
+* This function must be called from within the AO that needs to stop.
+* In other words, an AO should stop itself rather than being stopped by
+* someone else. This policy works best, because only the AO itself "knows"
+* when it has reached the appropriate state for the shutdown.
 *
 * @note By the time the AO calls QActive_stop(), it should have unsubscribed
 * from all events and no more events should be directly-posted to it.
 */
 void QActive_stop(QMActive *me) {
+    uint_fast8_t p;
+    QF_CRIT_STAT_
+
+    QF_CRIT_ENTRY_();
+    /** @pre QActive_stop() must be called from the AO that wants to stop. */
+    Q_REQUIRE_ID(600, (me == QF_active_[QK_attr_.curr]));
+
     QF_remove_(me); /* remove this active object from the QF */
+
+    QK_prioRemove(&QK_attr_.readySet, me->prio);
+    p = QK_schedPrio_();
+    if (p != (uint_fast8_t)0) {
+        QK_sched_(p);
+    }
+    QF_CRIT_EXIT_();
 }
 
 /****************************************************************************/
@@ -239,13 +244,13 @@ uint_fast8_t QK_schedPrio_(void) {
     uint_fast8_t p; /* for priority */
 
     /* find the highest-prio AO with non-empty event queue */
-    QK_prioFindMax(&QK_readySet_, p);
+    QK_prioFindMax(&QK_attr_.readySet, p);
 
     /* is the highest-prio below the current-prio? */
-    if (p <= QK_currPrio_) {
+    if (p <= QK_attr_.curr) {
         p = (uint_fast8_t)0; /* active object not eligible */
     }
-    else if (p <= QK_lockPrio_) { /* is it below the lock prio? */
+    else if (p <= QK_attr_.lockPrio) { /* is it below the lock prio? */
         p = (uint_fast8_t)0; /* active object not eligible */
     }
     else {
@@ -267,7 +272,7 @@ uint_fast8_t QK_schedPrio_(void) {
 * returns with interrupts __disabled__.
 */
 void QK_sched_(uint_fast8_t p) {
-    uint_fast8_t pin = QK_currPrio_; /* save the initial priority */
+    uint_fast8_t pin = QK_attr_.curr; /* save the initial priority */
     QMActive *a;
 
     /* QS tracing or thread-local storage? */
@@ -275,12 +280,12 @@ void QK_sched_(uint_fast8_t p) {
     uint_fast8_t pprev = pin;
 #endif /* Q_SPY */
 
-    /* loop until have ready-to-run AOs of higher priority than the initial */
-    do {
+    /* loop until no more ready-to-run AOs of higher priority than the initial */
+    do  {
         QEvt const *e;
         a = QF_active_[p]; /* obtain the pointer to the AO */
 
-        QK_currPrio_ = p;  /* this becomes the current task priority */
+        QK_attr_.curr = p; /* this becomes the current task priority */
 
         QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.aoObjFilter, a)
             QS_TIME_();            /* timestamp */
@@ -309,13 +314,13 @@ void QK_sched_(uint_fast8_t p) {
         QF_INT_DISABLE(); /* unconditionally disable interrupts */
 
         /* find new highest-prio AO ready to run... */
-        QK_prioFindMax(&QK_readySet_, p);
+        QK_prioFindMax(&QK_attr_.readySet, p);
 
         /* is the new priority below the initial preemption threshold? */
         if (p <= pin) {
             p = (uint_fast8_t)0;
         }
-        else if (p <= QK_lockPrio_) { /* is it below the lock prio? */
+        else if (p <= QK_attr_.lockPrio) { /* is it below the lock prio? */
             p = (uint_fast8_t)0; /* active object not eligible */
         }
         else {
@@ -323,7 +328,7 @@ void QK_sched_(uint_fast8_t p) {
         }
     } while (p != (uint_fast8_t)0);
 
-    QK_currPrio_ = pin; /* restore the initial priority */
+    QK_attr_.curr = pin; /* restore the initial priority */
 
 #ifdef Q_SPY
     if (pin != (uint_fast8_t)0) { /* resuming an active object? */

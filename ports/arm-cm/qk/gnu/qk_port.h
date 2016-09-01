@@ -3,8 +3,8 @@
 * @brief QK/C port to ARM Cortex-M, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.4
-* Date of the Last Update:  2016-04-22
+* Last Updated for Version: 5.7.0
+* Date of the Last Update:  2016-07-11
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -52,8 +52,16 @@ static inline uint32_t QK_get_IPSR(void) {
 
 /* QK interrupt entry and exit */
 #define QK_ISR_ENTRY() ((void)0)
-#define QK_ISR_EXIT()  \
-    ((*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28)))
+#define QK_ISR_EXIT()  do { \
+    uint_fast8_t nextPrio_; \
+    QF_INT_DISABLE(); \
+    nextPrio_ = QK_schedPrio_(); \
+    if (nextPrio_ != (uint_fast8_t)0) { \
+        QK_attr_.next = nextPrio_; \
+        (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28)); \
+    } \
+    QF_INT_ENABLE(); \
+} while (0)
 
 #include "qk.h" /* QK platform-independent public interface */
 

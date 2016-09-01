@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QV port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), TI-ARM assembler
-; Last Updated for Version: 5.6.1
-; Date of the Last Update:  2015-12-30
+; Last Updated for Version: 5.6.6
+; Date of the Last Update:  2016-07-14
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -59,7 +59,6 @@ assert_failed: .asmfunc
     LDR     r0,[r0,#0]        ; r0 := contents of VTOR
     LDR     r0,[r0]           ; r0 := VT[0] (first entry is the top of stack)
     MSR     MSP,r0            ; main SP := initial top of stack
-    ISB                       ; flush the instruction pipeline
     BL      Q_onAssert
     .endasmfunc
 

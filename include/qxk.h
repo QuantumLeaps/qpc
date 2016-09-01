@@ -5,8 +5,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-31
+* Last updated for version 5.7.0
+* Last updated on  2016-07-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -117,11 +117,9 @@ void QXK_init(void *idleStkSto, uint_fast16_t idleStkSize);
 */
 void QXK_onIdle(void);
 
+/****************************************************************************/
 /*! QXK scheduler */
 void QXK_sched_(void);
-
-/*! get the current QXK version number string of the form "X.Y.Z" */
-#define QXK_getVersion() (QP_versionStr)
 
 /****************************************************************************/
 /*! QXK priority-ceiling mutex class */
@@ -141,6 +139,10 @@ void QXMutex_lock(QXMutex * const me);
 void QXMutex_unlock(QXMutex * const me);
 
 /****************************************************************************/
+/*! get the current QXK version number string of the form "X.Y.Z" */
+#define QXK_getVersion() (QP_versionStr)
+
+/****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */
 #ifdef QP_IMPL
 
@@ -155,7 +157,12 @@ void QXMutex_unlock(QXMutex * const me);
     #endif /* QXK_ISR_CONTEXT_ */
 
     /* QF-specific scheduler locking */
+    /*! Internal port-specific macro to represent the scheduler lock status
+    * that needs to be preserved to allow nesting of locks.
+    */
     #define QF_SCHED_STAT_TYPE_ QXMutex
+
+    /*! Internal port-specific macro for selective scheduler locking. */
     #define QF_SCHED_LOCK_(pLockStat_, prio_) do { \
         if (QXK_ISR_CONTEXT_()) { \
             (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
@@ -165,6 +172,7 @@ void QXMutex_unlock(QXMutex * const me);
         } \
     } while (0)
 
+    /*! Internal port-specific macro for selective scheduler unlocking. */
     #define QF_SCHED_UNLOCK_(pLockStat_) QXMutex_unlock((pLockStat_))
 
     #if (QF_MAX_ACTIVE <= 8)
