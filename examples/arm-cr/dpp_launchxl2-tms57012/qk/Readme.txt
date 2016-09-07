@@ -1,15 +1,14 @@
 Testing Interrupt Preemption
 ============================
-The BSP contains code for testing interrupt preemption.
-This code is based on the System Software Interrupt (SSI)
-capability of the TMS570 CPU. Specifically, the SSI (#21)
-interrupt has been used for this purpose. The BSP contains
-the ssi IRQ handler defined as follows:
+The BSP contains code for testing interrupt preemption. This code
+is based on the System Software Interrupt (SSI) capability of the
+TMS570 CPU. Specifically, the SSI interrupt has been used for this
+purpose. The BSP contains the ssi IRQ handler defined as follows:
 
-QK_IRQ_BEGIN(ssi)  /* System Software Interrupt for testing */
+QK_IRQ_BEGIN(ssiTest)  /* System Software Interrupt for testing */
     systemREG1->SSIF = 0x01; /* clear the SSI0 source */
     QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
-                 &l_GPIO_LOW_LEVEL);
+                 &l_ssiTest);
 QK_IRQ_END()
 
 
@@ -29,16 +28,16 @@ the System SSKEY1 register in your debugger.
 
 IAR Debugger
 ------------
-In IAR C-Spy debugger, open the Regiser view and select the SYS1
-(Primary System Control) tab. Scroll down to the SSIR1 register, which
-has two fields: SSDATA1 and SSKEY1. You type 0x75 to SSKEY1 and press
-Enter. The SSI interrupt is triggered immediately.
+In IAR debugger, open the Regiser view and select the SYS1 (Primary
+System Control) tab. Scroll down to the SSIR1 register, which has two
+fields: SSDATA1 and SSKEY1. You type 0x75 to SSKEY1 and press Enter.
+The SSI interrupt is triggered immediately.
 
 CCS Debugger
 ------------
 In CCS debugger, open the Registers view and select the Sys regiser
 group. Scroll down to the SSIr1, which has the SSDATA1 and SSKEY1
-fileds combined. You type 0x7500 to the Value of the SSIr1 and press
+fields combined. You type 0x7500 to the Value of the SSIr1 and press
 Enter. The SSI interrupt is triggered immediately.
 
 

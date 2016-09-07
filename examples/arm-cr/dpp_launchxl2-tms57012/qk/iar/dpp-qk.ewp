@@ -89,7 +89,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>TMS570LS2124PGE	TexasInstruments TMS570LS2124PGE</state>
+          <state>TMS570LS1224PGE	TexasInstruments TMS570LS1224PGE</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -149,7 +149,7 @@
         </option>
         <option>
           <name>GFPUDeviceSlave</name>
-          <state>TMS570LS2124PGE	TexasInstruments TMS570LS2124PGE</state>
+          <state>TMS570LS1224PGE	TexasInstruments TMS570LS1224PGE</state>
         </option>
         <option>
           <name>FPU2</name>
