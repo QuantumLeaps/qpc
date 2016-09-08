@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), TI-ARM assembler
-; Last Updated for Version: 5.6.4
-; Date of the Last Update:  2016-04-24
+; Last Updated for Version: 5.7.0
+; Date of the Last Update:  2016-07-14
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -83,7 +83,6 @@ QXK_start_:
     LDR     r0,[r0,#0]        ; r0 := contents of VTOR
     LDR     r0,[r0]           ; r0 := VT[0] (first entry is the top of stack)
     MSR     MSP,r0            ; main SP := initial top of stack
-    ISB                       ; flush the instruction pipeline
 
     ; set the current QXK thread to the next QXK thread
     LDR     r1,QXK_attr_addr
@@ -181,7 +180,9 @@ QXK_start_:
 PendSV_Handler: .asmfunc
 
     MRS     r0,PSP            ; r0 := Process Stack Pointer
-    ISB                       ; flush the instruction pipeline
+    LDR     r2,ICSR_addr      ; Interrupt Control and State Register
+    LDR     r3,QXK_attr_addr
+
 
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
      STMDB   r0!,{r4-r11}      ; save r4-r11 on top of the exception frame
@@ -190,8 +191,8 @@ PendSV_Handler: .asmfunc
     IT      EQ                ; if lr[4] is zero...
     VSTMDBEQ r0!,{s16-s31}    ; ... save VFP registers s16..s31
   .endif                      ; VFP available
-    MOVS    r3,#QF_BASEPRI
-    MSR     BASEPRI,r3        ; selectively disable interrupts
+    MOVS    r1,#QF_BASEPRI
+    MSR     BASEPRI,r1        ; selectively disable interrupts
   .else                       ; M0/M0+/M1
     SUBS    r0,r0,#(8*4)      ; make room for 8 registers r4-r11
     MOVS    r1,r0             ; r1 := temporary PSP (do not clobber r0!)
@@ -204,17 +205,21 @@ PendSV_Handler: .asmfunc
     ; NOTE: at this point r0 still holds the top of stack
     CPSID   i                 ; disable interrupts (set PRIMASK)
   .endif                      ; M0/M0+/M1
-    ISB                       ; flush the instruction pipeline
 
-    ; un-pend any PendSV pended from the time this PendSV was called...
-    LDR     r2,ICSR_addr      ; Interrupt Control and State Register
+
+    ; NOTE: This PendSV exception handler can be preempted by an
+    ; interrupt, which might pend PendSV exception again. This
+    ; would be a problem, because the QK scheduler would run again
+    ; after this PendSV instance, so the same AO would be scheduled
+    ; twice. The following write to ICSR[7] un-pends any such spurious
+    ; instance of PendSV.
     MOVS    r1,#1
-    LSLS    r1,r1,#27         ; r0 := (1 << 27) (UNPENDSVSET bit)
+    LSLS    r1,r1,#27         ; r1 := (1 << 27) (UNPENDSVSET bit)
     STR     r1,[r2]           ; ICSR[27] := 1 (unpend PendSV)
 
-    ; store the SP of the current QXK thread...
-    LDR     r1,QXK_attr_addr
-    LDR     r2,[r1,#QXK_CURR]
+    ; store the SP of the current QXK thread,
+    ; which was set in QXK_ISR_EXIT().
+    LDR     r2,[r3,#QXK_CURR]
     STR     r0,[r2,#QMACTIVE_THREAD] ; QXK_attr_.curr->thread := r0
 
   .if __TI_VFP_SUPPORT__      ; if VFP available...
@@ -223,8 +228,8 @@ PendSV_Handler: .asmfunc
   .endif                      ; VFP available
 
     ; set current to the next...
-    LDR     r2,[r1,#QXK_NEXT] ; r2 := QXK_attr_.next
-    STR     r2,[r1,#QXK_CURR] ; QXK_attr_.curr := r2
+    LDR     r2,[r3,#QXK_NEXT] ; r2 := QXK_attr_.next
+    STR     r2,[r3,#QXK_CURR] ; QXK_attr_.curr := r2
 
     ; restore the SP of the next thread...
     LDR     r0,[r2,#QMACTIVE_THREAD] ; r0 := QXK_attr_.next->thread (SP)
@@ -261,11 +266,10 @@ PendSV_Handler: .asmfunc
     LDMIA   r1!,{r4-r7}       ; pop the low registers
     ; NOTE: at this point r0 holds the new top of stack
   .endif                      ; M0/M0+/M1
-    DSB                       ; make sure all data access completes
+
 
     ; set the PSP to the next thread's SP
     MSR     PSP,r0            ; Process Stack Pointer := r0
-    ISB                       ; flush the instruction pipeline
 
     BX      lr                ; return to the next thread
     .endasmfunc
@@ -417,7 +421,6 @@ QXK_ISR_ENTRY: .asmfunc
   .else                       ; M0/M0+/M1
     CPSID   i                 ; disable interrupts (set PRIMASK)
   .endif                      ; M0/M0+/M1
-    ISB                       ; flush the instruction pipeline
 
     ; ++QXK_attr_.intNest
     LDR     r1,QXK_attr_addr  ; address of the QXK_attr
@@ -456,7 +459,6 @@ QXK_ISR_EXIT: .asmfunc
   .else                       ; M0/M0+/M1
     CPSID   i                 ; disable interrupts (set PRIMASK)
   .endif                      ; M0/M0+/M1
-    ISB                       ; flush the instruction pipeline
 
     ; --QXK_attr_.intNest
     LDR     r1,QXK_attr_addr  ; address of the QXK_attr
@@ -495,7 +497,7 @@ assert_failed: .asmfunc
     LDR     r0,[r0,#0]        ; r0 := contents of VTOR
     LDR     r0,[r0]           ; r0 := VT[0] (first entry is the top of stack)
     MSR     MSP,r0            ; main SP := initial top of stack
-    ISB                       ; flush the instruction pipeline
+
     BL      Q_onAssert
     .endasmfunc
 

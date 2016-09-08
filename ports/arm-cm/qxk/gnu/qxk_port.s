@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), GNU-ARM assembler
-* Last Updated for Version: 5.6.4
-* Date of the Last Update:  2016-04-23
+* Last Updated for Version: 5.7.0
+* Date of the Last Update:  2016-07-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -73,7 +73,6 @@ QXK_start_:
     LDR     r0,[r0,#0]        /* r0 := contents of VTOR */
     LDR     r0,[r0]           /* r0 := VT[0] (first entry is top of stack) */
     MSR     MSP,r0            /* main SP := initial top of stack */
-    ISB                       /* flush the instruction pipeline  */
 
     /* set the current QXK thread to the next QXK thread */
     LDR     r1,=QXK_attr_
@@ -175,7 +174,8 @@ QXK_start_:
 PendSV_Handler:
 
     MRS     r0,PSP            /* r0 := Process Stack Pointer */
-    ISB                       /* flush the instruction pipeline */
+    LDR     r2,=0xE000ED04    /* Interrupt Control and State Register */
+    LDR     r3,=QXK_attr_
 
   .if  __ARM_ARCH == 6        /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     SUBS    r0,r0,#(8*4)      /* make room for 8 registers r4-r11 */
@@ -195,20 +195,24 @@ PendSV_Handler:
     IT      EQ                /* if lr[4] is zero... */
     VSTMDBEQ r0!,{s16-s31}    /* ... save VFP registers s16..s31 */
   .endif                      /* VFP available */
-    MOVS    r3,#QF_BASEPRI
-    MSR     BASEPRI,r3        /* selectively disable interrupts */
+    MOVS    r1,#QF_BASEPRI
+    MSR     BASEPRI,r1        /* selectively disable interrupts */
   .endif                      /* M3/M4/M7 */
-    ISB                       /* reset the instruction pipeline */
 
-    /* un-pend any PendSV pended from the time this PendSV was called... */
-    LDR     r2,=0xE000ED04    /* Interrupt Control and State Register  */
+    /* NOTE: This PendSV exception handler can be preempted by an
+    * interrupt, which might pend PendSV exception again. This
+    * would be a problem, because the QK scheduler would run again
+    * after this PendSV instance, so the same AO would be scheduled
+    * twice. The following write to ICSR[7] un-pends any such spurious
+    * instance of PendSV.
+    */
     MOVS    r1,#1
-    LSLS    r1,r1,#27         /* r0 := (1 << 27) (UNPENDSVSET bit) */
+    LSLS    r1,r1,#27         /* r1 := (1 << 27) (UNPENDSVSET bit) */
     STR     r1,[r2]           /* ICSR[27] := 1 (unpend PendSV) */
 
     /* store the SP of the current QXK thread... */
     LDR     r1,=QXK_attr_
-    LDR     r2,[r1,#QXK_CURR]
+    LDR     r2,[r3,#QXK_CURR]
     STR     r0,[r2,#QMACTIVE_THREAD] /* QXK_attr_.curr->thread := r0 */
 
   .ifdef  __FPU_PRESENT       /* if VFP available... */
@@ -217,8 +221,8 @@ PendSV_Handler:
   .endif                      /* VFP available */
 
     /* set current to the next... */
-    LDR     r2,[r1,#QXK_NEXT] /* r2 := QXK_attr_.next */
-    STR     r2,[r1,#QXK_CURR] /* QXK_attr_.curr := r2 */
+    LDR     r2,[r3,#QXK_NEXT] /* r2 := QXK_attr_.next */
+    STR     r2,[r3,#QXK_CURR] /* QXK_attr_.curr := r2 */
 
     /* restore the SP of the next thread... */
     LDR     r0,[r2,#QMACTIVE_THREAD] /* r0 := QXK_attr_.next->thread (SP) */
@@ -253,11 +257,9 @@ PendSV_Handler:
 
     LDMIA   r0!,{r4-r11}      /* restore r4-r11 from next thread's stack */
   .endif                      /* M3/M4/M7 */
-    DSB                       /* make sure all data access completes */
 
     /* set the PSP to the next thread's SP */
     MSR     PSP,r0            /* Process Stack Pointer := r0 */
-    ISB                       /* flush the instruction pipeline */
 
     BX      lr                /* return to the next thread */
     .size   PendSV_Handler, . - PendSV_Handler

@@ -28,17 +28,17 @@
 		<link>
 			<name>QP</name>
 			<type>2</type>
-			<location>C:/qp/qpc/source</location>
+			<location>PARENT-5-PROJECT_LOC/source</location>
 		</link>
 		<link>
 			<name>QP_include</name>
 			<type>2</type>
-			<location>C:/qp/qpc/include</location>
+			<location>PARENT-5-PROJECT_LOC/include</location>
 		</link>
 		<link>
 			<name>QP_port</name>
 			<type>2</type>
-			<location>C:/qp/qpc/ports/msp430/qk/ccs</location>
+			<location>PARENT-5-PROJECT_LOC/ports/msp430/qk/ccs</location>
 		</link>
 		<link>
 			<name>bsp.c</name>

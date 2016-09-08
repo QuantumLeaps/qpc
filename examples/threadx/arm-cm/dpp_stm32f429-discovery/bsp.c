@@ -344,12 +344,19 @@ QSTimeCtr QS_onGetTime(void) {  /* NOTE: invoked with interrupts DISABLED */
 /*..........................................................................*/
 void QS_onFlush(void) {
     uint16_t b;
+    QF_CRIT_STAT_TYPE intStat;
+
+    QF_CRIT_ENTRY(intStat);
     while ((b = QS_getByte()) != QS_EOD) { /* while not End-Of-Data... */
+        QF_CRIT_EXIT(intStat);
         while ((USART2->SR & USART_FLAG_TXE) == 0) { /* while TXE not empty */
         }
         USART2->DR = (b & 0xFFU); /* put into the DR register */
+        QF_CRIT_ENTRY(intStat);
     }
+    QF_CRIT_EXIT(intStat);
 }
+
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 

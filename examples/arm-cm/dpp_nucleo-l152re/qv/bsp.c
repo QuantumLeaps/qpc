@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, STM32 NUCLEO-L152RE board, cooperative QV kernel
-* Last Updated for Version: 5.5.0
-* Date of the Last Update:  2015-08-20
+* Last Updated for Version: 5.6.5
+* Date of the Last Update:  2016-07-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -343,6 +343,7 @@ void QS_onFlush(void) {
         while ((USART2->SR & 0x0080U) == 0U) { /* while TXE not empty */
         }
         USART2->DR  = (b & 0xFFU);  /* put into the DR register */
+        QF_INT_DISABLE();
     }
     QF_INT_ENABLE();
 }

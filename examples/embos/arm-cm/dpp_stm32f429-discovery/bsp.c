@@ -376,12 +376,18 @@ QSTimeCtr QS_onGetTime(void) {  /* NOTE: invoked with interrupts DISABLED */
 /*..........................................................................*/
 void QS_onFlush(void) {
     uint16_t b;
+
+    QF_INT_DISABLE();
     while ((b = QS_getByte()) != QS_EOD) {      /* while not End-Of-Data... */
+        QF_INT_ENABLE();
         while ((USART2->SR & USART_FLAG_TXE) == 0) { /* while TXE not empty */
         }
         USART2->DR = (b & 0xFF);                /* put into the DR register */
+        QF_INT_DISABLE();
     }
+    QF_INT_ENABLE();
 }
+
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 

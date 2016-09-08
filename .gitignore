@@ -9,7 +9,6 @@
 *.exe
 *.EXE
 *.map
-*.ewd
 *.dep
 *.pdf
 *.PDF

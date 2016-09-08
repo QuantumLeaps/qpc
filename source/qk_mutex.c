@@ -4,8 +4,8 @@
 * @brief QMutex_init(), QMutex_lock and QMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-31
+* Last updated for version 5.7.0
+* Last updated on  2016-07-11
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -110,15 +110,15 @@ void QMutex_lock(QMutex * const me) {
     Q_REQUIRE_ID(700, (!QK_ISR_CONTEXT_())
                       && (me->prevPrio == (uint_fast8_t)MUTEX_UNUSED));
 
-    me->prevPrio = QK_lockPrio_;   /* save the previous prio */
-    if (QK_lockPrio_ < me->lockPrio) { /* raising the lock prio? */
-        QK_lockPrio_ = me->lockPrio;
+    me->prevPrio = QK_attr_.lockPrio;   /* save the previous prio */
+    if (QK_attr_.lockPrio < me->lockPrio) { /* raising the lock prio? */
+        QK_attr_.lockPrio = me->lockPrio;
     }
 
     QS_BEGIN_NOCRIT_(QS_SCHED_LOCK, (void *)0, (void *)0)
         QS_TIME_(); /* timestamp */
         QS_2U8_((uint8_t)me->prevPrio,  /* the previouis lock prio */
-                (uint8_t)QK_lockPrio_); /* the new lock prio */
+                (uint8_t)QK_attr_.lockPrio); /* the new lock prio */
     QS_END_NOCRIT_()
 
     QF_CRIT_EXIT_();
@@ -157,14 +157,14 @@ void QMutex_unlock(QMutex * const me) {
     QS_BEGIN_NOCRIT_(QS_SCHED_UNLOCK, (void *)0, (void *)0)
         QS_TIME_(); /* timestamp */
         QS_2U8_((uint8_t)me->prevPrio,  /* the previouis lock priority */
-                (uint8_t)QK_lockPrio_); /* the current lock priority */
+                (uint8_t)QK_attr_.lockPrio); /* the lock priority */
     QS_END_NOCRIT_()
 
     p = me->prevPrio;
     me->prevPrio = (uint_fast8_t)MUTEX_UNUSED;
 
-    if (QK_lockPrio_ > p) {
-        QK_lockPrio_ = p; /* restore the previous lock prio */
+    if (QK_attr_.lockPrio > p) {
+        QK_attr_.lockPrio = p; /* restore the previous lock prio */
         p = QK_schedPrio_(); /* find the highest-prio AO ready to run */
         if (p != (uint_fast8_t)0) { /* priority found? */
             QK_sched_(p); /* schedule any unlocked AOs */

@@ -41,7 +41,11 @@
 //Q_DEFINE_THIS_FILE
 
 #ifdef Q_SPY
-    #error Simple Blinky Application does not provide Spy build configuration
+#error Simple Blinky Application does not provide Spy build configuration
+#endif
+
+#if (((~QP_RELEASE & 0xFFFFFFFFU) % 0x3E8U) < 570)
+#error Required QP version 5.7.0 or higher.
 #endif
 
 /* Local-scope objects -----------------------------------------------------*/

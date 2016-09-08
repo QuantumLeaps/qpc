@@ -28,17 +28,17 @@
 		<link>
 			<name>QP</name>
 			<type>2</type>
-			<location>C:/qp/qpc/source</location>
+			<location>PARENT-5-PROJECT_LOC/source</location>
 		</link>
 		<link>
 			<name>QP_include</name>
 			<type>2</type>
-			<location>C:/qp/qpc/include</location>
+			<location>PARENT-5-PROJECT_LOC/include</location>
 		</link>
 		<link>
 			<name>QP_port</name>
 			<type>2</type>
-			<location>C:/qp/qpc/ports/arm-cm/qxk/ti</location>
+			<location>PARENT-5-PROJECT_LOC/ports/arm-cm/qxk/ti</location>
 		</link>
 		<link>
 			<name>bsp.c</name>
@@ -63,7 +63,7 @@
 		<link>
 			<name>ek-tm4c123gxl</name>
 			<type>2</type>
-			<location>C:/qp/qpc/3rd_party/ek-tm4c123gxl</location>
+			<location>PARENT-5-PROJECT_LOC/3rd_party/ek-tm4c123gxl</location>
 		</link>
 		<link>
 			<name>philo.c</name>

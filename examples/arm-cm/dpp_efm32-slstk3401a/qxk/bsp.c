@@ -326,10 +326,10 @@ void QF_onCleanup(void) {
 /*..........................................................................*/
 void QXK_onIdle(void) {
     /* toggle the User LED on and then off, see NOTE01 */
-    QF_INT_DISABLE();
-    GPIO->P[LED_PORT].DOUT |=  (1U << LED1_PIN);
-    GPIO->P[LED_PORT].DOUT &= ~(1U << LED1_PIN);
-    QF_INT_ENABLE();
+//    QF_INT_DISABLE();
+//    GPIO->P[LED_PORT].DOUT |=  (1U << LED1_PIN);
+//    GPIO->P[LED_PORT].DOUT &= ~(1U << LED1_PIN);
+//    QF_INT_ENABLE();
 
 #ifdef Q_SPY
     QS_rxParse();  /* parse all the received bytes */

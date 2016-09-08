@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.7.0
+* Last updated on  2016-08-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -75,7 +75,7 @@ static QMState const l_msm_top_s = {
 
 /*! helper function to exit the current state up to the transition source */
 static void QMsm_exitToTranSource_(QMsm * const me, QMState const *s,
-                                   QMState const * const ts);
+                                   QMState const *ts);
 
 /*! helper function to execute a transition to history */
 static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist);
@@ -257,15 +257,24 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
                 QActionHandler const act = me->state.act; /* save XP action */
                 me->state.obj = s; /* restore the original state */
 
-                QS_BEGIN_(QS_QEP_TRAN_XP, QS_priv_.smObjFilter, me)
-                    QS_OBJ_(me); /* this state machine object */
-                    QS_FUN_(me->state.obj->stateHandler);/* source handler */
-                    QS_FUN_(tatbl->target->stateHandler);/* target handler */
-                QS_END_()
-
-                QMsm_exitToTranSource_(me, s, t);
-                (void)QMsm_execTatbl_(me, tatbl);
                 r = (*act)(me); /* execute the XP action */
+                if (r == (QState)Q_RET_TRAN) {
+                    QMsm_exitToTranSource_(me, s, t);
+                    /* take the tran-to-XP segment inside submachine */
+                    (void)QMsm_execTatbl_(me, tatbl);
+                    me->state.obj = s; /* restore original state (history) */
+#ifdef Q_SPY
+                    t = me->temp.tatbl->target; /* store for tracing */
+#endif /* Q_SPY */
+                    /* take the XP-Segment from submachine-state */
+                    r = QMsm_execTatbl_(me, me->temp.tatbl);
+
+                    QS_BEGIN_(QS_QEP_TRAN_XP, QS_priv_.smObjFilter, me)
+                        QS_OBJ_(me); /* this state machine object */
+                        QS_FUN_(s);  /* source handler */
+                        QS_FUN_(t);  /* target handler */
+                    QS_END_()
+                }
             }
             else {
                 /* no other return value should be produced */
@@ -311,7 +320,6 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
 
     }
 #endif /* Q_SPY */
-
     else {
         /* empty */
     }
@@ -408,32 +416,26 @@ QState QMsm_execTatbl_(QMsm * const me, QMTranActTable const *tatbl) {
 * @param[in]     ts   pointer to the transition source state
 */
 static void QMsm_exitToTranSource_(QMsm * const me, QMState const *s,
-                                   QMState const * const ts)
+                                   QMState const *ts)
 {
     /* exit states from the current state to the tran. source state */
     while (s != ts) {
         /* exit action provided in state 's'? */
         if (s->exitAction != Q_ACTION_CAST(0)) {
-            QState r = (*s->exitAction)(me); /* execute the exit action */
+            QS_CRIT_STAT_
 
-            /*  is it a regular exit? */
-            if (r == (QState)Q_RET_EXIT) {
-                QS_CRIT_STAT_
+            /* execute the exit action, which must return Q_RET_EXIT status */
+            (void)(*s->exitAction)(me);
 
-                QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.smObjFilter, me)
-                    QS_OBJ_(me);              /* this state machine object */
-                    QS_FUN_(s->stateHandler); /* the exited state handler */
-                QS_END_()
+            QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.smObjFilter, me)
+                QS_OBJ_(me);              /* this state machine object */
+                QS_FUN_(s->stateHandler); /* the exited state handler */
+            QS_END_()
 
-                s = s->superstate; /* advance to the superstate */
-            }
-            /*  is it exit from a submachine? */
-            else if (r == (QState)Q_RET_SUPER_SUB) {
-                /* advance to the current host state of the submachie */
-                s = me->temp.obj;
-            }
-            else {
-                Q_ERROR_ID(510);
+            s = s->superstate; /* advance to the superstate */
+            /* reached the top of a submachine? */
+            if (s == (QMState const *)0) {
+                ts = s; /* force exit from the while loop */
             }
         }
         else {
@@ -455,7 +457,7 @@ static void QMsm_exitToTranSource_(QMsm * const me, QMState const *s,
 * in the last entered state or #Q_RET_NULL if no such transition was taken.
 */
 static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist){
-    QMState const *s;
+    QMState const *s = hist;
     QMState const *ts = me->state.obj; /* transition source */
     QMState const *entry[QMSM_MAX_ENTRY_DEPTH_];
     QState r;
@@ -468,12 +470,15 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist){
         QS_FUN_(hist->stateHandler); /* target state handler */
     QS_END_()
 
-    for (s = hist; s != ts; s = s->superstate) {
-        Q_ASSERT_ID(610, s != (QMState const *)0);
+    while (s != ts) {
         if (s->entryAction != (QActionHandler)0) {
             entry[i] = s;
             ++i;
             Q_ASSERT_ID(620, i <= (uint_fast8_t)Q_DIM(entry));
+        }
+        s = s->superstate;
+        if (s == 0) {
+            ts = s; /* force exit from the for-loop */
         }
     }
 

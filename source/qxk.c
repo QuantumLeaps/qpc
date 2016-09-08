@@ -281,7 +281,7 @@ void QXK_init(void *idleStkSto, uint_fast16_t idleStkSize) {
 *
 * @note
 * Most thread handler functions are structured as endless loops that never
-* return. But it is also possible to structure threads as on-shot functions
+* return. But it is also possible to structure threads as one-shot functions
 * that perform their job and return. In that case this function peforms
 * cleanup after the thread.
 */
