@@ -180,9 +180,6 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 */
 #define Q_EVT_CAST(class_) ((class_ const *)e)
 
-/*! Helper macro to "stringify" the argument @p x_ */
-#define Q_STRINGIFY(x_) #x_
-
 /*! Helper macro to calculate static dimension of a 1-dim @p array_ */
 #define Q_DIM(array_) (sizeof(array_) / sizeof((array_)[0]))
 

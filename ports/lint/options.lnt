@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.6.2
-// Last updated on  2016-03-29
+// Last updated for version 5.7.0
+// Last updated on  2016-09-08
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -213,7 +213,8 @@ qpc.lnt               // QP/C options
  QS_BEGIN_NOCRIT_)
 -estring(960,         // MISRA04-18.4(req) declaration of union type
  QSRxExtState)
-
+-esym(754,            // Info: Symbol not referenced
+ U32Rep::u32)
  
 // Warning 537 "Repeated include file" is generated only for QEP source code
 // This warning is redundant, because all QP header files are protected

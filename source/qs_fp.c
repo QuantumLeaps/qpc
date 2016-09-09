@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.3.0
-* Last updated on  2014-03-27
+* Last updated for version 5.7.0
+* Last updated on  2016-09-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -90,22 +90,35 @@ void QS_f64(uint8_t format, float64_t d) {
     uint8_t *buf   = QS_priv_.buf;
     QSCtr   head   = QS_priv_.head;
     QSCtr   end    = QS_priv_.end;
-    int_fast8_t i;
+    uint32_t i;
+    /* static constant untion to detect endianness of the machine */
+    static union U32Rep {
+        uint32_t u32;
+        uint8_t  u8;
+    } const endian = { (uint32_t)1 };
 
     fu64.d = d; /* assign the binary representation */
 
     QS_priv_.used += (QSCtr)9; /* 9 bytes about to be added */
     QS_INSERT_ESC_BYTE(format) /* insert the format byte */
 
+    /* is this a big-endian machine? */
+    if (endian.u8 == (uint8_t)0) {
+        /* swap fu64.i.u1 <-> fu64.i.u2... */
+        i = fu64.i.u1;
+        fu64.i.u1 = fu64.i.u2;
+        fu64.i.u2 = i;
+    }
+
     /* output 4 bytes from fu64.i.u1 ... */
-    for (i = (int_fast8_t)4; i != (int_fast8_t)0; --i) {
+    for (i = (uint32_t)4; i != (uint32_t)0; --i) {
         format = (uint8_t)fu64.i.u1;
         QS_INSERT_ESC_BYTE(format)
         fu64.i.u1 >>= 8;
     }
 
     /* output 4 bytes from fu64.i.u2 ... */
-    for (i = (int_fast8_t)4; i != (int_fast8_t)0; --i) {
+    for (i = (uint32_t)4; i != (uint32_t)0; --i) {
         format = (uint8_t)fu64.i.u2;
         QS_INSERT_ESC_BYTE(format)
         fu64.i.u2 >>= 8;

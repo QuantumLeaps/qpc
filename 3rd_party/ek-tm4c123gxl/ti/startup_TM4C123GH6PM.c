@@ -2,7 +2,7 @@
  * Purpose: startup file for TM4C123GH6PM Cortex-M4 device.
  *          Should be used with TI CCS-ARM Compiler
  * Version: CMSIS 4.3.0
- * Date: 2015-Nov-10
+ * Date: 2016-Sep-09
  *
  * Created from the CMSIS template for the specified device
  * Quantum Leaps, www.state-machine.com
@@ -193,7 +193,7 @@ int const g_pfnVectors[] = {
     0,                            /* Reserved                        */
     0,                            /* Reserved                        */
     0,                            /* Reserved                        */
-    (int)&Default_Handler, //(int)&SVC_Handler,            /* SVCall handler                  */
+    (int)&SVC_Handler,            /* SVCall handler                  */
     (int)&DebugMon_Handler,       /* Debug monitor handler           */
     0,                            /* Reserved                        */
     (int)&PendSV_Handler,         /* The PendSV handler              */
@@ -364,6 +364,7 @@ void Reset_Handler(void) {
 }
 
 /* fault exception handlers ------------------------------------------------*/
+#pragma WEAK (Default_Handler)
 void Default_Handler(void) {
     __asm volatile (
         "  .global assert_failed\n\r"
@@ -373,6 +374,7 @@ void Default_Handler(void) {
     );
 }
 /*..........................................................................*/
+#pragma WEAK (NMI_Handler)
 void NMI_Handler(void) {
     __asm(
         "  .global assert_failed\n\r"
@@ -382,6 +384,7 @@ void NMI_Handler(void) {
     );
 }
 /*..........................................................................*/
+#pragma WEAK (MemManage_Handler)
 void MemManage_Handler(void) {
     __asm(
         "  .global assert_failed\n\r"
@@ -391,6 +394,7 @@ void MemManage_Handler(void) {
     );
 }
 /*..........................................................................*/
+#pragma WEAK (HardFault_Handler)
 void HardFault_Handler(void) {
     __asm volatile (
         "  .global assert_failed\n\r"
@@ -400,6 +404,7 @@ void HardFault_Handler(void) {
     );
 }
 /*..........................................................................*/
+#pragma WEAK (BusFault_Handler)
 void BusFault_Handler(void) {
     __asm volatile (
         "  .global assert_failed\n\r"
@@ -409,6 +414,7 @@ void BusFault_Handler(void) {
     );
 }
 /*..........................................................................*/
+#pragma WEAK (UsageFault_Handler)
 void UsageFault_Handler(void) {
     __asm volatile (
         "  .global assert_failed\n\r"
@@ -417,15 +423,48 @@ void UsageFault_Handler(void) {
         "  b.w assert_failed\n\r"
     );
 }
+
 /*..........................................................................*/
+#pragma WEAK (SVC_Handler)
+void SVC_Handler(void) {
+    __asm volatile (
+        "  .global assert_failed\n\r"
+        "  mov r0,#0\n\r"
+        "  mov r1,#11\n\r"
+        "  b.w assert_failed\n\r"
+    );
+}
+/*..........................................................................*/
+#pragma WEAK (DebugMon_Handler)
 void DebugMon_Handler(void) {
     __asm volatile (
         "  .global assert_failed\n\r"
         "  mov r0,#0\n\r"
-        "  mov r1,#6\n\r"
+        "  mov r1,#12\n\r"
         "  b.w assert_failed\n\r"
     );
 }
+/*..........................................................................*/
+#pragma WEAK (PendSV_Handler)
+void PendSV_Handler(void) {
+    __asm volatile (
+        "  .global assert_failed\n\r"
+        "  mov r0,#0\n\r"
+        "  mov r1,#13\n\r"
+        "  b.w assert_failed\n\r"
+    );
+}
+/*..........................................................................*/
+#pragma WEAK (SysTick_Handler)
+void SysTick_Handler(void) {
+    __asm volatile (
+        "  .global assert_failed\n\r"
+        "  mov r0,#0\n\r"
+        "  mov r1,#14\n\r"
+        "  b.w assert_failed\n\r"
+    );
+}
+
 /*..........................................................................*/
 void _init(void) { /* dummy */
 }
