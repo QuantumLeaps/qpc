@@ -1,10 +1,10 @@
 /**
 * @file
-* @brief QF/C port to Cortex-M, preemptive QXK kernel, TI-ARM toolset
+* @brief QF/C port to Cortex-M, dual-mode QXK kernel, TI-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-12-12
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -56,17 +56,12 @@
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE4 */
     #define QF_AWARE_ISR_CMSIS_PRI  (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
+    /* QF interrupt disable/enable */
     #define QF_INT_DISABLE()    QF_set_BASEPRI(QF_BASEPRI)
     #define QF_INT_ENABLE()     QF_set_BASEPRI(0U)
 
-    /* the intrinsic function _norm() generates the CLZ instruction */
-    #define QF_LOG2(n_) ((uint8_t)(32U - _norm(n_)))
-
-    /* assembly function for setting the BASEPRI register */
-    //__attribute__((always_inline))
-    //static inline void __set_BASEPRI(unsigned basePri) {
-    //    __asm ("  msr basepri, basePri");
-    //}
+    /* Cortex-M3/M4/M7 provide the CLZ instruction for fast LOG2 */
+    #define QF_LOG2(n_) ((uint_fast8_t)(32U - __clz(n_)))
 
     void QF_set_BASEPRI(unsigned basePri);
 
@@ -83,7 +78,7 @@
 #endif /* not M3/M4/M7 */
 
 /* QF critical section entry/exit */
-/* QF_CRIT_STAT_TYPE not defined: unconditional interrupt enabling" policy */
+/* QF_CRIT_STAT_TYPE not defined: unconditional interrupt disabling policy */
 #define QF_CRIT_ENTRY(dummy)    QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)     QF_INT_ENABLE()
 #define QF_CRIT_EXIT_NOP()      __asm(" ISB")
@@ -91,7 +86,7 @@
 #include "qep_port.h"   /* QEP port */
 #include "qxk_port.h"   /* QXK port */
 #include "qf.h"         /* QF platform-independent public interface */
-#include "qxthread.h"   /* QXK naked thread */
+#include "qxthread.h"   /* QXK extended thread interface */
 
 /*****************************************************************************
 * NOTE1:

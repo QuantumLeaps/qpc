@@ -5,8 +5,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.0
-* Last updated on  2016-08-08
+* Last updated for version 5.7.1
+* Last updated on  2016-09-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,9 +41,9 @@
 #ifndef qk_h
 #define qk_h
 
-#include "qequeue.h"  /* QK kernel uses the native QF event queue  */
-#include "qmpool.h"   /* QK kernel uses the native QF memory pool  */
-#include "qpset.h"    /* QK kernel uses the native QF priority set */
+#include "qequeue.h"  /* QK kernel uses the native QP event queue  */
+#include "qmpool.h"   /* QK kernel uses the native QP memory pool  */
+#include "qpset.h"    /* QK kernel uses the native QP priority set */
 
 /****************************************************************************/
 /* QF configuration for QK */
@@ -61,17 +61,12 @@
 typedef struct {
     uint_fast8_t volatile curr;  /*!< priority of the current executing AO */
     uint_fast8_t volatile next;  /*!< priority of the next AO to execute */
-    void volatile        *aux;   /*!< auxiliary attribute used in the port */
     uint_fast8_t volatile lockPrio;   /*!< lock prio (0 == no-lock) */
     uint_fast8_t volatile lockHolder; /*!< prio of the lock holder */
 #ifndef QK_ISR_CONTEXT_
     uint_fast8_t volatile intNest;    /*!< ISR nesting level */
 #endif /* QK_ISR_CONTEXT_ */
-#if (QF_MAX_ACTIVE <= 8)
-    QPSet8  readySet;     /*!< QK ready-set of AOs and "naked" threads */
-#else
-    QPSet64 readySet;     /*!< QK ready-set of AOs and "naked" threads */
-#endif
+    QPSet readySet; /*!< QK ready-set of AOs */
 } QK_Attr;
 
 /*! global attributes of the QK kernel */
@@ -158,25 +153,11 @@ void QMutex_unlock(QMutex * const me);
     /*! Internal port-specific macro for selective scheduler unlocking. */
     #define QF_SCHED_UNLOCK_(pLockStat_) QMutex_unlock((pLockStat_))
 
-    #if (QF_MAX_ACTIVE <= 8)
-        #define QK_prioNotEmpty(set_)    QPSet8_notEmpty((set_))
-        #define QK_prioIsSet(set_, p_)   QPSet8_hasElement((set_), (p_))
-        #define QK_prioFindMax(set_, p_) QPSet8_findMax((set_), (p_))
-        #define QK_prioInsert(set_, p_)  QPSet8_insert((set_), (p_))
-        #define QK_prioRemove(set_, p_)  QPSet8_remove((set_), (p_))
-    #else
-        #define QK_prioNotEmpty(set_)    QPSet64_notEmpty((set_))
-        #define QK_prioIsSet(set_, p_)   QPSet64_hasElement((set_), (p_))
-        #define QK_prioFindMax(set_, p_) QPSet64_findMax((set_), (p_))
-        #define QK_prioInsert(set_, p_)  QPSet64_insert((set_), (p_))
-        #define QK_prioRemove(set_, p_)  QPSet64_remove((set_), (p_))
-    #endif
-
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         (Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0))
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
-        QK_prioInsert(&QK_attr_.readySet, (me_)->prio); \
+        QPSet_insert(&QK_attr_.readySet, (me_)->prio); \
         if (!QK_ISR_CONTEXT_()) { \
             uint_fast8_t p = QK_schedPrio_(); \
             if (p != (uint_fast8_t)0) { \
@@ -186,7 +167,7 @@ void QMutex_unlock(QMutex * const me);
     } while (0)
 
     #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-        QK_prioRemove(&QK_attr_.readySet, (me_)->prio)
+        QPSet_remove(&QK_attr_.readySet, (me_)->prio)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool

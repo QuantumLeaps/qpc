@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.0
-* Last updated on  2016-08-12
+* Last updated for version 5.7.1
+* Last updated on  2016-09-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -459,7 +459,7 @@ static void QMsm_exitToTranSource_(QMsm * const me, QMState const *s,
 static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist){
     QMState const *s = hist;
     QMState const *ts = me->state.obj; /* transition source */
-    QMState const *entry[QMSM_MAX_ENTRY_DEPTH_];
+    QMState const *epath[QMSM_MAX_ENTRY_DEPTH_];
     QState r;
     uint_fast8_t i = (uint_fast8_t)0;  /* transition entry path index */
     QS_CRIT_STAT_
@@ -472,9 +472,9 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist){
 
     while (s != ts) {
         if (s->entryAction != (QActionHandler)0) {
-            entry[i] = s;
+            epath[i] = s;
             ++i;
-            Q_ASSERT_ID(620, i <= (uint_fast8_t)Q_DIM(entry));
+            Q_ASSERT_ID(620, i <= (uint_fast8_t)Q_DIM(epath));
         }
         s = s->superstate;
         if (s == 0) {
@@ -485,11 +485,11 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist){
     /* retrace the entry path in reverse (desired) order... */
     while (i > (uint_fast8_t)0) {
         --i;
-        r = (*entry[i]->entryAction)(me); /* run entry action in entry[i] */
+        r = (*epath[i]->entryAction)(me); /* run entry action in epath[i] */
 
         QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.smObjFilter, me)
             QS_OBJ_(me);
-            QS_FUN_(entry[i]->stateHandler); /* entered state handler */
+            QS_FUN_(epath[i]->stateHandler); /* entered state handler */
         QS_END_()
     }
 

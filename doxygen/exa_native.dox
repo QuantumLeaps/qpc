@@ -73,8 +73,10 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
-- @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
+
 */
 /*##########################################################################*/
 /*! @page exa_arm-cm ARM Cortex-M (Cortex-M0/M0+/M3/M4F)

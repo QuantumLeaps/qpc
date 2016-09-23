@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.1
-* Last updated on  2015-12-30
+* Last updated for version 5.7.1
+* Last updated on  2016-09-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -57,7 +57,7 @@ Q_DEFINE_THIS_MODULE("qxk_sema")
 /****************************************************************************/
 void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count) {
     me->count = count;
-    QF_bzero(&me->waitSet, (uint_fast16_t)sizeof(me->waitSet));
+    QPSet_setEmpty(&me->waitSet);
 }
 
 /****************************************************************************/
@@ -67,23 +67,24 @@ bool QXSemaphore_wait(QXSemaphore * const me,
     QXThread *thr;
     QF_CRIT_STAT_
 
-
     QF_CRIT_ENTRY_();
     thr = (QXThread *)QXK_attr_.curr;
 
     Q_REQUIRE_ID(100, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
-        /* this must be a "naked" thread (no state) */
-        && (thr->super.super.state.act == (QActionHandler)0));
+        && (thr != (QXThread *)0)); /* current thread must be extended */
 
     if (me->count > (uint_fast16_t)0) {
         --me->count;
     }
     else {
+#ifndef NDEBUG
+        /* remember the blocking object */
         thr->super.super.temp.obj = (QMState const *)me;
+#endif /* NDEBUG */
         QXThread_teArm_(thr, (QSignal)QXK_SEMA_SIG, nTicks, tickRate);
-        QXK_prioInsert(&me->waitSet,        thr->super.prio);
-        QXK_prioRemove(&QXK_attr_.readySet, thr->super.prio);
-        QXK_sched_();
+        QPSet_insert(&me->waitSet,        thr->super.prio);
+        QPSet_remove(&QXK_attr_.readySet, thr->super.prio);
+        (void)QXK_sched_();
     }
     QF_CRIT_EXIT_();
 
@@ -96,22 +97,25 @@ void QXSemaphore_signal(QXSemaphore * const me) {
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    if (QXK_prioNotEmpty(&me->waitSet)) {
+    if (QPSet_notEmpty(&me->waitSet)) {
         uint_fast8_t p;
+        QXThread *thr;
 
-        QXK_prioFindMax(&me->waitSet,       p);
-        QXK_prioInsert(&QXK_attr_.readySet, p);
-        QXK_prioRemove(&me->waitSet,        p);
+        QPSet_findMax(&me->waitSet,       p);
+        QPSet_insert(&QXK_attr_.readySet, p);
+        QPSet_remove(&me->waitSet,        p);
 
-        (void)QXThread_teDisarm_((QXThread *)QF_active_[p]);
+        thr = (QXThread *)QF_active_[p]; /* thread waiting on the semaphore */
 
-        /* the waitSet is not empty, so the semaphore count must be zero */
-        Q_ASSERT_ID(910, me->count == (uint_fast16_t)0);
+        Q_ASSERT_ID(910, (thr->super.thread != (void *)0) /* extended thread */
+            && (me->count == (uint_fast16_t)0)); /* sema counter must be 0 */
 
-        if ((!QXK_ISR_CONTEXT_())              /* not inside ISR? */
-            && (QXK_attr_.curr != (void *)0))  /* multitasking started? */
+        (void)QXThread_teDisarm_(thr);
+
+        if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
+            && (QF_active_[0] != (QMActive *)0))  /* kernel started? */
         {
-            QXK_sched_();
+            (void)QXK_sched_();
         }
     }
     else {

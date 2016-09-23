@@ -112,7 +112,7 @@ void SysTick_Handler(void) {
     uint32_t current;
     uint32_t tmp;
 
-    QXK_ISR_ENTRY();   /* inform QXK about entering an ISR */
+    QXK_ISR_ENTRY();  /* inform QXK about entering an ISR */
 
 #ifdef Q_SPY
     {
@@ -144,14 +144,16 @@ void SysTick_Handler(void) {
         }
     }
 
-    QXK_ISR_EXIT();  /* inform QXK about exiting an ISR */
+    QXK_ISR_EXIT(); /* inform QXK about exiting an ISR */
 }
 /*..........................................................................*/
 void GPIOPortA_IRQHandler(void) {
     QXK_ISR_ENTRY(); /* inform QXK about entering an ISR */
 
-    QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
-                 &l_GPIOPortA_IRQHandler);
+    //QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
+    //             &l_GPIOPortA_IRQHandler);
+    QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), /* for testing... */
+               &l_GPIOPortA_IRQHandler);
 
     QXK_ISR_EXIT();  /* inform QXK about exiting an ISR */
 }
@@ -160,7 +162,7 @@ void GPIOPortA_IRQHandler(void) {
 /*
 * ISR for receiving bytes from the QSPY Back-End
 * NOTE: This ISR is "QF-unaware" meaning that it does not interact with
-* the QF/QXK and is never disabled. Such ISRs don't need to call QXK_ISR_ENTRY/
+* the QF/QXK and is not disabled. Such ISRs don't need to call QXK_ISR_ENTRY/
 * QXK_ISR_EXIT and they cannot post or publish events.
 */
 void UART0_IRQHandler(void) {
@@ -217,16 +219,18 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
     //GPIOF->DATA_Bits[LED_RED]     = ((stat[0] == 'e') ? 0xFFU : 0U);
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
-        QS_U8(1, n);                  /* Philosopher number */
-        QS_STR(stat);                 /* Philosopher status */
+        QS_U8(1, n);  /* Philosopher number */
+        QS_STR(stat); /* Philosopher status */
     QS_END()
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
-    //GPIOF->DATA_Bits[LED_RED] = ((paused != 0U) ? LED_RED : 0U);
-    QXTHREAD_POST_X(XT_Test, &pauseEvt, 1U, (void *)0);
-    //QXThread_unblock(XT_Test); /*??? unblock the Test thread */
+    if (paused != 0U) {
+        GPIOF->DATA_Bits[LED_GREEN] = 0xFFU;
+    }
+    else {
+        GPIOF->DATA_Bits[LED_GREEN] = 0x0U;
+    }
 
     QS_BEGIN(PAUSED_STAT, (void *)0) /* application-specific record begin */
         QS_U8(1, paused);  /* Paused status */
@@ -256,11 +260,6 @@ void BSP_randomSeed(uint32_t seed) {
     l_rnd = seed;
 }
 /*..........................................................................*/
-void BSP_terminate(int16_t result) {
-    (void)result;
-}
-
-/*..........................................................................*/
 void BSP_wait4SW1(void) {
     while (GPIOF->DATA_Bits[BTN_SW1] != 0) {
         GPIOF->DATA = LED_RED;
@@ -274,6 +273,10 @@ void BSP_ledOn(void) {
 /*..........................................................................*/
 void BSP_ledOff(void) {
     GPIOF->DATA_Bits[LED_RED] = 0x00U;
+}
+/*..........................................................................*/
+void BSP_terminate(int16_t result) {
+    (void)result;
 }
 
 /*..........................................................................*/
@@ -307,11 +310,17 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QXK_onIdle(void) {
+    float volatile x;
+
     /* toggle the User LED on and then off, see NOTE01 */
     QF_INT_DISABLE();
     GPIOF->DATA_Bits[LED_BLUE] = 0xFFU;  /* turn the Blue LED on  */
     GPIOF->DATA_Bits[LED_BLUE] = 0U;     /* turn the Blue LED off */
     QF_INT_ENABLE();
+
+    /* Some flating point code is to exercise the VFP... */
+    x = 1.73205F;
+    x = x * 1.73205F;
 
 #ifdef Q_SPY
     QS_rxParse();  /* parse all the received bytes */
@@ -324,8 +333,8 @@ void QXK_onIdle(void) {
         block = QS_getBlock(&fifo);  /* try to get next block to transmit */
         QF_INT_ENABLE();
 
-        while (fifo-- != 0) {        /* any bytes in the block? */
-            UART0->DR = *block++;    /* put into the FIFO */
+        while (fifo-- != 0) {  /* any bytes in the block? */
+            UART0->DR = *block++;  /* put into the FIFO */
         }
     }
 #elif defined NDEBUG
@@ -349,6 +358,7 @@ void Q_onAssert(char const *module, int loc) {
 #ifndef NDEBUG
     BSP_wait4SW1();
 #endif
+
     NVIC_SystemReset();
 }
 
@@ -481,7 +491,7 @@ void QS_onCommand(uint8_t cmdId, uint32_t param) {
 *
 * Only ISRs prioritized at or below the QF_AWARE_ISR_CMSIS_PRI level (i.e.,
 * with the numerical values of priorities equal or higher than
-* QF_AWARE_ISR_CMSIS_PRI) are allowed to call the QXK_ISR_ENTRY/QXK_ISR_ENTRY
+* QF_AWARE_ISR_CMSIS_PRI) are allowed to call the QXK_ISR_ENTRY/QXK_ISR_EXIT
 * macros or any other QF/QXK  services. These ISRs are "QF-aware".
 *
 * Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority

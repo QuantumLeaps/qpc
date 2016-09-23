@@ -2,7 +2,7 @@
 ; * @file     startup_efm32pg1b.s for IAR ARM assembler
 ; * @brief    CMSIS Cortex-M4F Core Device Startup File for TM4C123GH6PM
 ; * @version  CMSIS 4.3.0
-; * @date     07 May 2016
+; * @date     07 Sep 2016
 ; *
 ; * @description
 ; * Created from the CMSIS template for the specified device
@@ -130,6 +130,17 @@ __Vectors_Size  EQU   __Vectors_End - __Vectors
         EXTERN  __iar_program_start
 Reset_Handler
         BL      SystemInit  ; CMSIS system initialization
+
+        ; pre-fill the CSTACK with 0xDEADBEEF...................
+        LDR     r0,=0xDEADBEEF
+        MOV     r1,r0
+        LDR     r2,=sfb(CSTACK)
+        LDR     r3,=sfe(CSTACK)
+Reset_stackInit_fill:
+        STMIA   r2!,{r0,r1}
+        CMP     r2,r3
+        BLT.N   Reset_stackInit_fill
+
         BL      __iar_program_start ; IAR startup code
 ;.............................................................................
         PUBWEAK NMI_Handler

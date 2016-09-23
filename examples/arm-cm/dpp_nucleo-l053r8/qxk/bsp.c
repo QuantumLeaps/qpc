@@ -183,7 +183,7 @@ void BSP_displayPaused(uint8_t paused) {
     else {
         //GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED[n] off */
     }
-    QXTHREAD_POST_X(XT_Test, &pauseEvt, 1U, (void *)0);
+    //QXTHREAD_POST_X(XT_Test, &pauseEvt, 1U, (void *)0);
     //QXThread_unblock(XT_Test); /*??? unblock the Test thread */
 }
 /*..........................................................................*/
@@ -211,11 +211,11 @@ void BSP_wait4SW1(void) {
 }
 /*..........................................................................*/
 void BSP_ledOn(void) {
-    GPIOA->BSRR |= (LED_LD2);        /* turn LED2 on  */
+    //GPIOA->BSRR |= (LED_LD2);        /* turn LED2 on  */
 }
 /*..........................................................................*/
 void BSP_ledOff(void) {
-    GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED2 off */
+    //GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED2 off */
 }
 
 /* QF callbacks ============================================================*/

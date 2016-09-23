@@ -38,7 +38,8 @@ if (registered == (uint8_t)0) {
 QS_SIG_DICTIONARY(HUNGRY_SIG, me);  /* signal for each Philos */
 QS_SIG_DICTIONARY(TIMEOUT_SIG, me); /* signal for each Philos */
 
-QActive_subscribe(&amp;me-&gt;super, EAT_SIG);</action>
+QActive_subscribe(&amp;me-&gt;super, EAT_SIG);
+QActive_subscribe(&amp;me-&gt;super, TEST_SIG);</action>
      <initial_glyph conn="2,3,5,1,20,5,-3">
       <action box="0,-2,6,2"/>
      </initial_glyph>
@@ -55,6 +56,11 @@ QActive_subscribe(&amp;me-&gt;super, EAT_SIG);</action>
 Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
       <tran_glyph conn="2,17,3,-1,13">
        <action box="0,-2,14,2"/>
+      </tran_glyph>
+     </tran>
+     <tran trig="TEST">
+      <tran_glyph conn="2,20,3,-1,13">
+       <action box="0,-2,11,4"/>
       </tran_glyph>
      </tran>
      <state_glyph node="2,5,17,16">
@@ -131,14 +137,14 @@ QS_SIG_DICTIONARY(DONE_SIG,      (void *)0); /* global signals */
 QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
 QS_SIG_DICTIONARY(PAUSE_SIG,     (void *)0);
 QS_SIG_DICTIONARY(SERVE_SIG,     (void *)0);
-QS_SIG_DICTIONARY(TERMINATE_SIG, (void *)0);
+QS_SIG_DICTIONARY(TEST_SIG,      (void *)0);
 
 QS_SIG_DICTIONARY(HUNGRY_SIG,    me); /* signal just for Table */
 
 QActive_subscribe(&amp;me-&gt;super, DONE_SIG);
 QActive_subscribe(&amp;me-&gt;super, PAUSE_SIG);
 QActive_subscribe(&amp;me-&gt;super, SERVE_SIG);
-QActive_subscribe(&amp;me-&gt;super, TERMINATE_SIG);
+QActive_subscribe(&amp;me-&gt;super, TEST_SIG);
 
 for (n = 0U; n &lt; N_PHILO; ++n) {
     me-&gt;fork[n] = FREE;
@@ -150,8 +156,7 @@ for (n = 0U; n &lt; N_PHILO; ++n) {
      </initial_glyph>
     </initial>
     <state name="active">
-     <tran trig="TERMINATE">
-      <action>BSP_terminate(0);</action>
+     <tran trig="TEST">
       <tran_glyph conn="2,11,3,-1,14">
        <action box="0,-2,11,4"/>
       </tran_glyph>
@@ -348,7 +353,7 @@ enum DPPSignals {
     DONE_SIG,       /* published by Philosopher when done eating */
     PAUSE_SIG,      /* published by BSP to pause serving forks */
     SERVE_SIG,      /* published by BSP to serve re-start serving forks */
-    TERMINATE_SIG,  /* published by BSP to terminate the application */
+    TEST_SIG,       /* published by BSP to test the application */
     MAX_PUB_SIG,    /* the last published signal */
 
     HUNGRY_SIG,     /* posted direclty to Table from hungry Philo */
@@ -368,8 +373,10 @@ $declare(AOs::Table_ctor)
 $declare(AOs::AO_Table)
 
 #ifdef qxk_h
-    void Test_ctor(void);
-    extern QXThread * const XT_Test;
+    void Test1_ctor(void);
+    extern QXThread * const XT_Test1;
+    void Test2_ctor(void);
+    extern QXThread * const XT_Test2;
 #endif /* qxk_h */
 
 #endif /* dpp_h */</text>

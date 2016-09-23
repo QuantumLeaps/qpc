@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Linker script for for DPP on EK-TM4C123GXL, QXK kernel, GNU-ARM
-* Last Updated for Version: 5.6.1
-* Date of the Last Update:  2015-12-30
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,7 +41,7 @@ MEMORY { /* memory map of Tiva TM4C123GH6PM */
 }
 
 /* The size of the stack used by the application. NOTE: you need to adjust */
-STACK_SIZE = 512;
+STACK_SIZE = 1024;
 
 /* The size of the heap used by the application. NOTE: you need to adjust */
 HEAP_SIZE = 0;

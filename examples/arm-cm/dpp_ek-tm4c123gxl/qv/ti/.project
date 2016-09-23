@@ -28,7 +28,7 @@
 		<link>
 			<name>QP</name>
 			<type>2</type>
-			<location>C:/qp/qpc/source</location>
+			<location>PARENT-5-PROJECT_LOC/source</location>
 		</link>
 		<link>
 			<name>QP_include</name>

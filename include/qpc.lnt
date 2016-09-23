@@ -1,7 +1,7 @@
 //============================================================================
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last updated for version 5.6.2
-// Last updated on  2016-03-23
+// Last updated for version 5.7.1
+// Last updated on  2016-09-21
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -203,21 +203,16 @@
  QACTIVE_POST_X,
  QACTIVE_POST_LIFO)
 -estring(961,         // MISRA04-19.7(adv) function-like macro
+ QPSet_setEmpty,
+ QPSet_isEmpty,
+ QPSet_notEmpty,
+ QPSet_hasElement,
+ QPSet_insert,
+ QPSet_remove,
+ QPSet_findMax,
  QEQueue_getNFree,
  QEQueue_getNMin,
  QEQueue_isEmpty,
- QPSet8_isEmpty,
- QPSet8_notEmpty,
- QPSet8_hasElement,
- QPSet8_insert,
- QPSet8_remove,
- QPSet8_findMax,
- QPSet64_isEmpty,
- QPSet64_notEmpty,
- QPSet64_hasElement,
- QPSet64_insert,
- QPSet64_remove,
- QPSet64_findMax,
  QTimeEvt_ctor,
  QTimeEvt_postIn,
  QTimeEvt_postEvery,
@@ -256,7 +251,6 @@
  QF_EPOOL_TYPE_,
  QF_ACTIVE_SUPER_,
  QF_ACTIVE_STATE_,
- QPSet8_findMax,
  QTimeEvt_ctor)
 -emacro(929,          // MISRA04-11.4(adv) cast from pointer to pointer
  Q_NEW,
@@ -267,9 +261,9 @@
 -emacro(960,          // MISRA04-17.4(req) pointer increment
  QF_PTR_INC_)
 -emacro(717,          // do ... while(0)
- QPSet64_insert,
- QPSet64_remove,
- QPSet64_findMax,
+ QPSet_setEmpty,
+ QPSet_insert,
+ QPSet_remove,
  QTimeEvt_postIn,
  QTimeEvt_postEvery)
 -estring(960,         // MISRA04-8.7(req) could use block scope
@@ -314,12 +308,19 @@
  QXK_ISR_EXIT,
  QXK_getVersion,
  QXTHREAD_START,
- QXTHREAD_POST_X)
+ QXTHREAD_POST_X,
+ Q_XTHREAD_CAST)
+-emacro(960,          // MISRA04-11.1(req) Conversions involving
+ Q_XTHREAD_CAST)      // fun. pointers must be to/from integral types
+-emacro(929,          // MISRA04-11.4(adv) cast pointer to pointer
+ Q_XTHREAD_CAST)
 -esym(960,            // MISRA04-19.4(req) Disallowed macro definition
  QXTHREAD_START,
  QXTHREAD_POST_X)
 -estring(960,         // MISRA04-8.7(req) could use block scope
  QXK_intNest_)
+-esym(960,            // MISRA04-20.2(req) Re-use of C90 identifier pattern
+ topPrio)
 
 // QS
 -emacro(506, QS_*)    // MISRA04-13.7(req) constant value boolean

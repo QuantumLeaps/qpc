@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 API
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.4
-* Date of the Last Update:  2016-05-03
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -65,6 +65,17 @@
 /* QF_CRIT_STAT_TYPE not defined */
 #define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
+
+#ifdef _MSC_VER /* Microsoft C/C++ compiler? */
+    /* use built-in intrinsic function for fast LOG2 */
+    #define QF_LOG2(x_) ((uint_fast8_t)(32U - __lzcnt(x_)))
+    #include <intrin.h>    /* VC++ intrinsic functions */
+#elif __GNUC__  /* GNU C/C++ compiler? */
+    /* use built-in intrinsic function for fast LOG2 */
+    #define QF_LOG2(x_) ((uint_fast8_t)(32U - __builtin_clz(x_)))
+#else
+    /* use the internal LOG2() implementation */
+#endif
 
 #include "qep_port.h"  /* QEP port */
 #include "qequeue.h"   /* Win32 needs event-queue */

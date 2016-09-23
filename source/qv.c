@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-23
+* Last updated for version 5.7.1
+* Last updated on  2016-09-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -55,11 +55,7 @@
 Q_DEFINE_THIS_MODULE("qv")
 
 /* Package-scope objects ****************************************************/
-#if (QF_MAX_ACTIVE <= 8)
-    QPSet8  QV_readySet_; /* QV-ready set of active objects */
-#else
-    QPSet64 QV_readySet_; /* QV-ready set of active objects */
-#endif
+QPSet QV_readySet_; /* QV ready-set of active objects */
 
 /****************************************************************************/
 /**
@@ -135,13 +131,8 @@ int_t QF_run(void) {
         QF_INT_DISABLE();
 
         /* find the maximum priority AO ready to run */
-#if (QF_MAX_ACTIVE <= 8)
-        if (QPSet8_notEmpty(&QV_readySet_)) {
-            QPSet8_findMax(&QV_readySet_, p);
-#else
-        if (QPSet64_notEmpty(&QV_readySet_)) {
-            QPSet64_findMax(&QV_readySet_, p);
-#endif
+        if (QPSet_notEmpty(&QV_readySet_)) {
+            QPSet_findMax(&QV_readySet_, p);
             a = QF_active_[p];
 
 #ifdef Q_SPY

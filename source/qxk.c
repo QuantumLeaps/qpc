@@ -1,11 +1,11 @@
 /**
 * @file
-* @brief QXK preemptive kernel core functions
+* @brief QXK preemptive dual-mode kernel core functions
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-29
+* Last updated for version 5.7.1
+* Last updated on  2016-09-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -39,7 +39,7 @@
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
-#include "qxk_pkg.h"      /* QXK package-scope internal interface */
+#include "qf_pkg.h"       /* QF package-scope internal interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
     #include "qs_port.h"  /* include QS port */
@@ -59,33 +59,6 @@ QXK_Attr QXK_attr_; /* global attributes of the QXK kernel */
 
 /* Local-scope objects ******************************************************/
 static QXThread l_idleThread;
-
-static void thread_ao(void *par);
-static void thread_idle(void *par);
-
-
-/****************************************************************************/
-static void thread_ao(void *par) { /* signature of QXThreadHandler */
-    /* event-loop of an AO's thread... */
-    for (;;) {
-        QEvt const *e = QActive_get_((QMActive *)par);
-        QMSM_DISPATCH((QMsm *)par, e); /* dispatch to the AO's SM */
-        QF_gc(e); /* check if the event is garbage, and collect it if so */
-    }
-}
-
-/****************************************************************************/
-static void thread_idle(void *par) { /* signature of QXThreadHandler */
-    (void)par;
-
-    QF_INT_DISABLE();
-    QF_onStartup(); /* application-specific startup callback */
-    QF_INT_ENABLE();
-
-    for (;;) {
-        QXK_onIdle();
-    }
-}
 
 /****************************************************************************/
 /**
@@ -110,6 +83,12 @@ void QF_init(void) {
     QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
     QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
     QF_bzero(&QXK_attr_,          (uint_fast16_t)sizeof(QXK_attr_));
+    QF_bzero(&l_idleThread,       (uint_fast16_t)sizeof(l_idleThread));
+
+    QXK_attr_.topPrio  = (uint_fast8_t)0; /* priority of the QXK idle loop */
+    QXK_attr_.lockPrio = (uint_fast8_t)QF_MAX_ACTIVE; /* scheduler locked */
+
+    QXK_init(); /* QXK-port initialization, might be defined in assembly */
 }
 
 /****************************************************************************/
@@ -130,37 +109,40 @@ void QF_stop(void) {
 }
 
 /****************************************************************************/
+/*! process all events posted during initialization */
+static void initial_events(void); /* prototype */
+static void initial_events(void) {
+    QXK_attr_.lockPrio = (uint_fast8_t)0; /* scheduler unlocked */
+
+    /* any active objects need to be scheduled before starting event loop? */
+    if (QXK_sched_() != (uint_fast8_t)0) {
+        QXK_activate_(); /* process all events produced so far */
+    }
+}
+
+/****************************************************************************/
 /**
 * @description
 * QF_run() is typically called from your startup code after you initialize
-* the QF and start at least one active object or "naked" thrad (with
-* QACTIVE_START() or QXTHREAD_START(), respectively).
+* the QF and start at least one active object with QActive_start().
 *
-* @returns QF_run() typically does not return in embedded applications.
-* However, when QP runs on top of an operating system,  QF_run() might
-* return and in this case the return represents the error code (0 for
-* success). Typically the value returned from QF_run() is subsequently
-* passed on as return from main().
+* @returns In QXK, the QF_run() function does not return.
 */
 int_t QF_run(void) {
-    uint_fast8_t p; /* next priority to run */
-
-    /** @pre QXK_init() must be called __before__ QF_run() to initialize
-    * the QXK idle thread.
-    */
-    Q_REQUIRE_ID(100, QF_active_[0] == &l_idleThread.super);
-
-    /* switch to the highest-priority task */
     QF_INT_DISABLE();
-    QXK_attr_.curr = &l_idleThread; /* mark QXK as running */
-    QXK_prioFindMax(&QXK_attr_.readySet, p);
-    QXK_attr_.next = QF_active_[p];
-    QXK_start_(); /* start QXK multitasking (NOTE: enables interrupts) */
+    QF_active_[0] = &l_idleThread.super; /* NOTE: indicates kernel-started */
+    initial_events(); /* process all events posted during initialization */
+    QF_onStartup(); /* application-specific startup callback */
+    QF_INT_ENABLE();
 
-    /* the QXK start should not return, but just in case... */
-    Q_ERROR_ID(110);
+    /* the QXK idle loop... */
+    for (;;) {
+        QXK_onIdle(); /* application-specific QXK idle callback */
+    }
 
+#ifdef __GNUC__
     return (int_t)0;
+#endif
 }
 
 /****************************************************************************/
@@ -193,31 +175,27 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
 {
     QF_CRIT_STAT_
 
-    Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't start AO's in an ISR! */
+    Q_REQUIRE_ID(500, ((uint_fast8_t)0 < prio)
                       && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
-                      && (qSto != (QEvt const **)0)
-                      && (qLen != (uint_fast16_t)0)
-                      && (stkSto != (void *)0)
-                      && (stkSize != (uint_fast16_t)0));
+                      && (stkSto == (void *)0)
+                      && (stkSize == (uint_fast16_t)0));
 
-    /* initialize the built-in queue */
-    QEQueue_init(&me->eQueue, qSto, qLen);
-
-    /* initialize the stack of the private thread */
-    QXK_stackInit_(me, &thread_ao, stkSto, stkSize);
-
-    me->prio = prio;
+    QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
+    me->thread = (void *)0; /* no private stack for AO */
+    me->prio = prio;   /* set the current priority of the AO */
+    QF_CRIT_ENTRY_();
     QF_add_(me); /* make QF aware of this active object */
+    QF_CRIT_EXIT_();
 
     QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH();                /* flush the trace buffer to the host */
 
+    /* see if this AO needs to be scheduled in case QXK is running */
     QF_CRIT_ENTRY_();
-    QXK_prioInsert(&QXK_attr_.readySet, me->prio);
-
-    /* Is QXK running? */
-    if (QXK_attr_.curr != (void *)0) {
-        QXK_sched_();
+    if (QF_active_[0] != (QMActive *)0) { /* QXK kernel already running? */
+        if (QXK_sched_() != (uint_fast8_t)0) { /* activation needed? */
+            QXK_activate_();
+        }
     }
     QF_CRIT_EXIT_();
 }
@@ -225,7 +203,7 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
 /****************************************************************************/
 /**
 * @description
-* This function must be called from within the AO/thread that needs to stop.
+* This function must be called from within the AO that needs to stop.
 * In other words, an AO should stop itself rather than being stopped by
 * someone else. This policy works best, because only the AO itself "knows"
 * when it has reached the appropriate state for the shutdown.
@@ -236,101 +214,204 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
 void QActive_stop(QMActive *me) {
     QF_CRIT_STAT_
 
+    QF_CRIT_ENTRY_();
     /** @pre QActive_stop() must be called from the AO that wants to stop. */
-    Q_REQUIRE_ID(300, (!QXK_ISR_CONTEXT_()) /* don't stop AO's from an ISR! */
-                      && (me == QXK_attr_.curr));
+    Q_REQUIRE_ID(600, (me == QF_active_[QXK_attr_.topPrio]));
 
     QF_remove_(me); /* remove this active object from the QF */
 
-    QF_CRIT_ENTRY_();
-    QXK_prioRemove(&QXK_attr_.readySet, me->prio);
-    QXK_sched_();
+    QPSet_remove(&QXK_attr_.readySet, me->prio);
+    if (QXK_sched_() != (uint_fast8_t)0) {
+        QXK_activate_();
+    }
     QF_CRIT_EXIT_();
 }
 
 /****************************************************************************/
 /**
 * @description
-* Initializes QXK and must be called by the application exactly once
-* before QF_run().
-*
-* @param[in]     idleStkSto  pointer to the stack storage for the idle thread
-* @param[in]     idleStkSize idle thread stack size (in bytes)
-*
-*
-* @note QXK_init() must be called once before QF_run().
-*/
-void QXK_init(void *idleStkSto, uint_fast16_t idleStkSize) {
-    /* create the idle thread... */
-    QMActive_ctor(&l_idleThread.super, Q_STATE_CAST(&thread_idle));
-
-    QXK_stackInit_(&l_idleThread,
-                   (QXThreadHandler)l_idleThread.super.super.temp.act,
-                   idleStkSto, idleStkSize);
-    l_idleThread.super.prio = (uint_fast8_t)0; /* idle thread prio is zero */
-
-    QF_INT_DISABLE();
-    QF_active_[0] = &l_idleThread.super;
-    QF_INT_ENABLE();
-}
-
-/****************************************************************************/
-/**
-* @description
-* Called when the thread handler function returns.
-*
-* @note
-* Most thread handler functions are structured as endless loops that never
-* return. But it is also possible to structure threads as one-shot functions
-* that perform their job and return. In that case this function peforms
-* cleanup after the thread.
-*/
-void QXK_threadRet_(void) {
-    uint_fast8_t p;
-    QF_CRIT_STAT_
-
-    QF_CRIT_ENTRY_();
-    p = ((QMActive volatile *)QXK_attr_.curr)->prio;
-    /* remove this AO/Thread from the QF */
-    QF_active_[p] = (QMActive *)0;
-    QXK_prioRemove(&QXK_attr_.readySet, p);
-    QXK_sched_();
-    QF_CRIT_EXIT_();
-}
-
-/****************************************************************************/
-/**
-* @description
-* Peforms QXK scheduling and context switch to the highest-priority thread
+* The QXK scheduler finds the priority of the highest-priority thread
 * that is ready to run.
+*
+* @returns the 1-based priority of the the active object to run next,
+* or zero if no eligible active object is found.
 *
 * @attention
 * QXK_sched_() must be always called with interrupts **disabled** and
 * returns with interrupts **disabled**.
 */
-void QXK_sched_(void) {
-    uint_fast8_t p; /* next priority to run */
+uint_fast8_t QXK_sched_(void) {
+    uint_fast8_t p; /* next thread priority */
+    QMActive *next;
 
-    /* find the highest-priority thread that is ready to run */
-    QXK_prioFindMax(&QXK_attr_.readySet, p);
+    /* find the highest-prio AO with non-empty event queue */
+    QPSet_findMax(&QXK_attr_.readySet, p);
 
     if (p < QXK_attr_.lockPrio) { /* is it below the lock prio? */
         p = QXK_attr_.lockHolder; /* prio of the thread holding the lock */
     }
 
-    /* is the new priority different from the currently executing thread? */
-    if (p != ((QMActive volatile *)QXK_attr_.curr)->prio) {
-        Q_ASSERT_ID(610, p <= (uint_fast8_t)QF_MAX_ACTIVE);
-        QXK_attr_.next = QF_active_[p];
+    next = QF_active_[p];
+    Q_ASSERT_ID(610, next != (QMActive *)0); /* thred must be registered */
 
-        QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.aoObjFilter,
-                         QXK_attr_.next)
-            QS_TIME_();         /* timestamp */
-            QS_2U8_((uint8_t)p, /* priority of the next AO */
-                                /* priority of the curent AO */
-                    (uint8_t)((QMActive volatile *)QXK_attr_.curr)->prio);
+    if (QXK_attr_.curr == (void *)0) { /* is the current thread AO-thread? */
+        if (next->thread == (void *)0) { /* is the next an AO-thread? */
+            if (p <= QXK_attr_.topPrio) {
+                QXK_attr_.next = (void *)0;
+                p = (uint_fast8_t)0; /* no activation needed */
+            }
+            else {
+                QXK_attr_.next = next;
+            }
+        }
+        else {  /* this is an extened thread */
+
+            QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.aoObjFilter,
+                             QXK_attr_.next)
+                QS_TIME_();         /* timestamp */
+                QS_2U8_((uint8_t)p, /* priority of the next AO */
+                                    /* priority of the curent AO */
+                        (uint8_t)QXK_attr_.topPrio);
+            QS_END_NOCRIT_()
+
+            QXK_attr_.next = next;
+            p = (uint_fast8_t)0; /* no activation needed */
+            QXK_CONTEXT_SWITCH_();
+        }
+    }
+    else { /* currently executing an extended thread */
+        /* is the new prio different from the current prio? */
+        if (p != ((QMActive volatile *)QXK_attr_.curr)->prio) {
+
+            QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.aoObjFilter,
+                             QXK_attr_.next)
+                QS_TIME_();         /* timestamp */
+                QS_2U8_((uint8_t)p, /* priority of the next AO */
+                                    /* priority of the curent AO */
+                        (uint8_t)((QMActive volatile *)QXK_attr_.curr)->prio);
+            QS_END_NOCRIT_()
+
+            QXK_attr_.next = next;
+            p = (uint_fast8_t)0; /* no activation needed */
+            QXK_CONTEXT_SWITCH_();
+        }
+        else {
+            QXK_attr_.next = (void *)0;
+            p = (uint_fast8_t)0; /* no activation needed */
+        }
+    }
+    return p;
+}
+
+/****************************************************************************/
+/**
+* @attention
+* QXK_activate_() must be always called with interrupts **disabled**  and
+* returns with interrupts **disabled**.
+*
+* @note
+* The activate function might enable interrupts internally, but it always
+* returns with interrupts __disabled__.
+*/
+void QXK_activate_(void) {
+    uint_fast8_t p = ((QMActive const *)QXK_attr_.next)->prio;
+    uint_fast8_t pin = QXK_attr_.topPrio; /* save the initial top priority */
+    QMActive *a;
+
+    /* QS tracing or thread-local storage? */
+#ifdef Q_SPY
+    uint_fast8_t pprev = pin;
+#endif /* Q_SPY */
+
+    /* loop until no more ready-to-run AOs of higher prio than the initial */
+    do  {
+        QEvt const *e;
+
+        a = QF_active_[p]; /* obtain the pointer to the AO */
+
+        QXK_attr_.topPrio = p; /* this becomes the top AO prio */
+        QXK_attr_.next = (void *)0; /* clear the next AO */
+
+        QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.aoObjFilter, a)
+            QS_TIME_();            /* timestamp */
+            QS_2U8_((uint8_t)p, /* prio of the scheduled AO */
+                    (uint8_t)pprev); /* previous priority */
         QS_END_NOCRIT_()
 
-        QXK_CONTEXT_SWITCH_();
+#ifdef Q_SPY
+        if (p != pprev) {  /* changing priorities? */
+            pprev = p;     /* update previous priority */
+        }
+#endif /* Q_SPY */
+
+        QF_INT_ENABLE(); /* unconditionally enable interrupts */
+
+        /* perform the run-to-completion (RTC) step...
+        * 1. retrieve the event from the AO's event queue, which by this
+        *    time must be non-empty and QActive_get_() asserts it.
+        * 2. dispatch the event to the AO's state machine.
+        * 3. determine if event is garbage and collect it if so
+        */
+        e = QActive_get_(a);
+        QMSM_DISPATCH(&a->super, e);
+        QF_gc(e);
+
+        QF_INT_DISABLE(); /* unconditionally disable interrupts */
+
+        /* find new highest-prio AO ready to run... */
+        QPSet_findMax(&QXK_attr_.readySet, p);
+
+        if (p < QXK_attr_.lockPrio) { /* is it below the lock prio? */
+            p = QXK_attr_.lockHolder; /* prio of the thread holding the lock */
+        }
+        a = QF_active_[p];
+        Q_ASSERT_ID(710, a != (QMActive *)0); /* must be registered */
+
+        /* is the next an AO-thread? */
+        if (a->thread == (void *)0) {
+            if (p <= pin) {
+                QXK_attr_.next = (void *)0;
+                p = (uint_fast8_t)0; /* no activation needed */
+            }
+            else {
+                QXK_attr_.next = a;
+            }
+        }
+        else {  /* next is the extened thread */
+
+            QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.aoObjFilter,
+                             QXK_attr_.next)
+                QS_TIME_();         /* timestamp */
+                QS_2U8_((uint8_t)p, /* priority of the next AO */
+                                    /* priority of the curent AO */
+                        (uint8_t)QXK_attr_.topPrio);
+            QS_END_NOCRIT_()
+
+            QXK_attr_.next = a;
+            p = (uint_fast8_t)0; /* no activation needed */
+            QXK_CONTEXT_SWITCH_();
+        }
+    } while (p != (uint_fast8_t)0); /* while activation needed */
+
+    QXK_attr_.topPrio = pin; /* restore the initial top priority */
+
+#ifdef Q_SPY
+    if (pin != (uint_fast8_t)0) { /* resuming an active object? */
+        a = QF_active_[pin]; /* the pointer to the preempted AO */
+
+        QS_BEGIN_NOCRIT_(QS_SCHED_RESUME, QS_priv_.aoObjFilter, a)
+            QS_TIME_();              /* timestamp */
+            QS_2U8_((uint8_t)pin,    /* priority of the resumed AO */
+                    (uint8_t)pprev); /* previous priority */
+        QS_END_NOCRIT_()
     }
+    else {  /* resuming priority==0 --> idle */
+        QS_BEGIN_NOCRIT_(QS_SCHED_IDLE, (void *)0, (void *)0)
+            QS_TIME_();              /* timestamp */
+            QS_U8_((uint8_t)pprev);  /* previous priority */
+        QS_END_NOCRIT_()
+    }
+#endif /* Q_SPY */
 }
+
+

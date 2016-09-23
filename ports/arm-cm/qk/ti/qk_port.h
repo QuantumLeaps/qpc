@@ -3,8 +3,8 @@
 * @brief QK/C port to Cortex-M, TI-ARM (CCS) toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.0
-* Date of the Last Update:  2016-07-11
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -44,6 +44,7 @@
 
 /* QK interrupt entry and exit */
 #define QK_ISR_ENTRY() ((void)0)
+
 #define QK_ISR_EXIT()  do { \
     uint_fast8_t nextPrio_; \
     QF_INT_DISABLE(); \

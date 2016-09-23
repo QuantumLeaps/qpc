@@ -3,8 +3,8 @@
 * @brief QXK/C port to ARM Cortex-M, IAR-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-11-22
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-15
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -50,7 +50,9 @@
 
 #define QXK_ISR_EXIT()  do { \
     QF_INT_DISABLE(); \
-    QXK_sched_(); \
+    if (QXK_sched_() != (uint_fast8_t)0) { \
+        QXK_CONTEXT_SWITCH_(); \
+    } \
     QF_INT_ENABLE(); \
 } while (0)
 

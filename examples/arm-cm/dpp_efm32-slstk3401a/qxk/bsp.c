@@ -144,11 +144,22 @@ void SysTick_Handler(void) {
     QXK_ISR_EXIT(); /* inform QXK about exiting an ISR */
 }
 /*..........................................................................*/
+/* The following IRQ handler is for testing various preemption scenarios
+* in QXK. The general testing strategy is to trigger this IRQ manually
+* from the debugger. To do so in IAR, you need to:
+* 1. open the Register view
+* 2. open NVIC registers
+* 3. scroll down to NVIC_ISPR0 register
+* 4. write 0x200 to NVIC_ISPR0.SETPEND register
+*/
 void GPIO_EVEN_IRQHandler(void) {
     QXK_ISR_ENTRY(); /* inform QXK about entering an ISR */
 
-    QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
-                 &l_GPIO_EVEN_IRQHandler);
+//    QACTIVE_POST(AO_Table, Q_NEW(QEvt, TEST_SIG), /* for testing... */
+//                 &l_GPIO_EVEN_IRQHandler);
+
+    QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), /* for testing... */
+               &l_GPIO_EVEN_IRQHandler);
 
     QXK_ISR_EXIT();  /* inform QXK about exiting an ISR */
 }
@@ -178,30 +189,7 @@ void BSP_init(void) {
     */
     SystemCoreClockUpdate();
 
-    /* configure the FPU usage by choosing one of the options... */
-#if 1
-    /* OPTION 1:
-    * Use the automatic FPU state preservation and the FPU lazy stacking.
-    *
-    * NOTE:
-    * Use the following setting when FPU is used in more than one task or
-    * in any ISRs. This setting is the safest and recommended, but requires
-    * extra stack space and CPU cycles.
-    */
-    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
-#else
-    /* OPTION 2:
-    * Do NOT to use the automatic FPU state preservation and
-    * do NOT to use the FPU lazy stacking.
-    *
-    * NOTE:
-    * Use the following setting when FPU is used in ONE task only and not
-    * in any ISR. This setting is very efficient, but if more than one task
-    * (or ISR) start using the FPU, this can lead to corruption of the
-    * FPU registers. This option should be used with CAUTION.
-    */
-    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
-#endif
+    /* NOTE: The VFP (hardware Floating Point) unit is configured by QXK */
 
     /* enable clock for to the peripherals used by this application... */
     CMU_ClockEnable(cmuClock_HFPER, true);
@@ -253,6 +241,10 @@ void BSP_displayPaused(uint8_t paused) {
     else {
         GPIO->P[LED_PORT].DOUT &= ~(1U << LED0_PIN);
     }
+
+    QS_BEGIN(PAUSED_STAT, (void *)0) /* application-specific record begin */
+        QS_U8(1, paused);  /* Paused status */
+    QS_END()
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
@@ -262,20 +254,20 @@ uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     float volatile x = 3.1415926F;
     x = x + 2.7182818F;
 
-    QXMutex_lock(&l_rndMutex); /* lock the random-seed mutex */
+    QXMutex_lock(&l_rndMutex); /* lock the shared random seed */
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
     rnd = l_rnd * (3U*7U*11U*13U*23U);
     l_rnd = rnd; /* set for the next time */
-    QXMutex_unlock(&l_rndMutex); /* unlock the random-seed mutex */
+    QXMutex_unlock(&l_rndMutex); /* unlock the shared random seed */
 
     return (rnd >> 8);
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
+    QXMutex_init(&l_rndMutex, N_PHILO);  /* ceiling <== max Philo priority */
     l_rnd = seed;
-    QXMutex_init(&l_rndMutex, N_PHILO); /* ceiling == max Philo priority */
 }
 /*..........................................................................*/
 void BSP_wait4PB1(void) {
@@ -325,11 +317,17 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QXK_onIdle(void) {
+    float volatile x;
+
     /* toggle the User LED on and then off, see NOTE01 */
 //    QF_INT_DISABLE();
 //    GPIO->P[LED_PORT].DOUT |=  (1U << LED1_PIN);
 //    GPIO->P[LED_PORT].DOUT &= ~(1U << LED1_PIN);
 //    QF_INT_ENABLE();
+
+    /* Some flating point code is to exercise the VFP... */
+    x = 1.73205F;
+    x = x * 1.73205F;
 
 #ifdef Q_SPY
     QS_rxParse();  /* parse all the received bytes */
@@ -449,6 +447,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(QS_QEP_UNHANDLED);
 
     QS_FILTER_ON(PHILO_STAT);
+    QS_FILTER_ON(PAUSED_STAT);
     QS_FILTER_ON(COMMAND_STAT);
 
     return (uint8_t)1; /* return success */
@@ -515,14 +514,14 @@ void QS_onCommand(uint8_t cmdId, uint32_t param) {
 *
 * Only ISRs prioritized at or below the QF_AWARE_ISR_CMSIS_PRI level (i.e.,
 * with the numerical values of priorities equal or higher than
-* QF_AWARE_ISR_CMSIS_PRI) are allowed to call the QK_ISR_ENTRY/QK_ISR_ENTRY
-* macros or any other QF/QK  services. These ISRs are "QF-aware".
+* QF_AWARE_ISR_CMSIS_PRI) are allowed to call the QXK_ISR_ENTRY/QXK_ISR_EXIT
+* macros or any other QF/QXK  services. These ISRs are "QF-aware".
 *
 * Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority
 * level (i.e., with the numerical values of priorities less than
 * QF_AWARE_ISR_CMSIS_PRI) are never disabled and are not aware of the kernel.
-* Such "QF-unaware" ISRs cannot call any QF/QK services. In particular they
-* can NOT call the macros QK_ISR_ENTRY/QK_ISR_ENTRY. The only mechanism
+* Such "QF-unaware" ISRs cannot call any QF/QXK services. In particular they
+* can NOT call the macros QXK_ISR_ENTRY/QXK_ISR_ENTRY. The only mechanism
 * by which a "QF-unaware" ISR can communicate with the QF framework is by
 * triggering a "QF-aware" ISR, which can post/publish events.
 *

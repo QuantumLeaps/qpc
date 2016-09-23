@@ -143,7 +143,7 @@ void SysTick_Handler(void) {
     QK_ISR_EXIT();  /* inform QK about exiting an ISR */
 }
 /*..........................................................................*/
-void GPIO_EVEN_IRQHandler(void) {
+void GPIO_EVEN_IRQHandler(void) { /* to be triggered from debugger, NOTE03 */
     QK_ISR_ENTRY(); /* inform QK about entering an ISR */
 
     QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
@@ -516,4 +516,8 @@ void QS_onCommand(uint8_t cmdId, uint32_t param) {
 * of the LED is proportional to the frequency of invcations of the idle loop.
 * Please note that the LED is toggled with interrupts locked, so no interrupt
 * execution time contributes to the brightness of the User LED.
+*
+* NOTE03:
+* To trigger GPIO_EVEN_IRQHandler() from debugger:
+* IAR EWARM: go to the NVIC_ISPR0 register and write 0x200 to SETPEND.
 */

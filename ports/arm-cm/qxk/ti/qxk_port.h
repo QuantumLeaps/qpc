@@ -3,14 +3,14 @@
 * @brief QXK port to Cortex-M, TI-ARM (CCS) toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-12-12
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -39,12 +39,25 @@
 #ifndef qxk_port_h
 #define qxk_port_h
 
+/* determination if the code executes in the ISR context */
+#define QXK_ISR_CONTEXT_() (QXK_get_IPSR() != (uint32_t)0)
+
 #define QXK_CONTEXT_SWITCH_() \
     (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28))
 
-/* QK interrupt entry and exit (defined in assembly) */
-void QXK_ISR_ENTRY(void);
-void QXK_ISR_EXIT(void);
+/* QXK interrupt entry and exit */
+#define QXK_ISR_ENTRY() ((void)0)
+
+#define QXK_ISR_EXIT()  do { \
+    QF_INT_DISABLE(); \
+    if (QXK_sched_() != (uint_fast8_t)0) { \
+        QXK_CONTEXT_SWITCH_(); \
+    } \
+    QF_INT_ENABLE(); \
+} while (0)
+
+/* get the IPSR (defined in assembly) */
+uint32_t QXK_get_IPSR(void);
 
 #include "qxk.h" /* QXK platform-independent public interface */
 

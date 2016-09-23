@@ -3,8 +3,8 @@
 * @brief QF/C port to POSIX threads (pthreads)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-03-31
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -66,11 +66,11 @@
 #define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
 
-#include <pthread.h>    /* POSIX-thread API */
-#include "qep_port.h"   /* QEP port */
-#include "qequeue.h"    /* POSIX needs event-queue */
-#include "qmpool.h"     /* POSIX needs memory-pool */
-#include "qf.h"         /* QF platform-independent public interface */
+#include <pthread.h>   /* POSIX-thread API */
+#include "qep_port.h"  /* QEP port */
+#include "qequeue.h"   /* POSIX needs event-queue */
+#include "qmpool.h"    /* POSIX needs memory-pool */
+#include "qf.h"        /* QF platform-independent public interface */
 
 void QF_setTickRate(uint32_t ticksPerSec); /* set clock tick rate */
 void QF_onClockTick(void); /* clock tick callback (provided in the app) */

@@ -1,11 +1,11 @@
 /**
 * @file
-* @brief QXK/C naked (blocking) thread.
+* @brief QXK/C eXtended (blocking) thread.
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-04
+* Last updated for version 5.7.1
+* Last updated on  2016-09-21
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,11 +41,11 @@
 #define qxthread_h
 
 /****************************************************************************/
-/*! Extended (blocking) thread of the QXK preemptive kernel */
+/*! eXtended (blocking) thread of the QXK preemptive kernel */
 /**
 * @description
-* QXThread represents the "naked" (blocking) thread of the QXK preemptive
-* kernel. Each blocking thread in the application must be represented by
+* QXThread represents the eXtended (blocking) thread of the QXK preemptive
+* kernel. Each extended thread in the application must be represented by
 * the corresponding ::QXThread instance
 *
 * @note
@@ -56,13 +56,13 @@
 * @sa ::QMActive
 *
 * @usage
-* The following example illustrates how to instantiate a "naked" thread
+* The following example illustrates how to instantiate an extended thread
 * in your application.
 * @include qf_qxthread.c
 */
 typedef struct {
-    QMActive super;
-    QTimeEvt timeEvt;
+    QMActive super;    /* inherit QMactive */
+    QTimeEvt timeEvt;  /* time event to handle timeouts */
 } QXThread;
 
 /*! Virtual Table for the ::QXThread class (inherited from ::QMActiveVtbl) */
@@ -73,13 +73,13 @@ typedef struct {
 */
 typedef QMActiveVtbl QXThreadVtbl;
 
-/*! Polymorphically start a "naked" extended thread. */
+/*! Polymorphically start an extended thread. */
 /**
 * @description
 * Starts execution of the thread and registers the thread with the framework.
 *
 * @param[in,out] me_      pointer (see @ref oop)
-* @param[in]     prio_    priority at which to start the "naked" thread
+* @param[in]     prio_    priority of the extended-thread
 * @param[in]     qSto_    pointer to the storage for the ring buffer of the
 *                         message queue (possibly NULL)
 * @param[in]     qLen_    length of the message queue [events] (possibly 0)
@@ -95,9 +95,9 @@ typedef QMActiveVtbl QXThreadVtbl;
                   (stkSto_), (stkLen_), (param_))
 
 /*! Thread handler pointer-to-function */
-typedef void (*QXThreadHandler)(void *par);
+typedef void (*QXThreadHandler)(QXThread * const me);
 
-/*! constructor of a "naked" thread */
+/*! constructor of an extended-thread */
 void QXThread_ctor(QXThread * const me, QXThreadHandler handler,
                    uint_fast8_t tickRate);
 
@@ -145,21 +145,26 @@ bool QXThread_delay(uint_fast16_t const nTicks, uint_fast8_t const tickRate);
 bool QXThread_delayCancel(QXThread * const me);
 
 /*! obtain a message from the private message queue (block if no messages) */
-void const *QXThread_queueGet(uint_fast16_t const nTicks,
+QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
                               uint_fast8_t const tickRate);
 
-/*! no-timeout sepcification when blocking on queues or semaphores */
+/*! no-timeout special timeout value when blocking on queues or semaphores */
 #define QXTHREAD_NO_TIMEOUT  ((uint_fast16_t)0)
+
+/*! Perform cast to QXThreadHandler. */
+/**
+* @description
+* This macro encapsulates the cast of a specific thread handler function
+* pointer to ::QXThreadHandler, which violates MISRA-C 2004 rule 11.4(adv).
+* This macro helps to localize this deviation.
+*/
+#define Q_XTHREAD_CAST(handler_)  ((QXThreadHandler)(handler_))
 
 /****************************************************************************/
 /*! Counting Semaphore of the QXK preemptive kernel */
 typedef struct {
     uint_fast16_t count;
-#if (QF_MAX_ACTIVE <= 8)
-    QPSet8  waitSet; /*!< set of "naked" threads waiting on this semaphore */
-#else
-    QPSet64 waitSet; /*!< set of "naked" threads waiting on this semaphore */
-#endif
+    QPSet waitSet; /*!< set of extended-threads waiting on this semaphore */
 } QXSemaphore;
 
 /*! initialize the counting semaphore */

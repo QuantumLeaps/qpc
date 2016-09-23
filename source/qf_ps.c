@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-31
+* Last updated for version 5.7.1
+* Last updated on  2016-09-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -121,6 +121,7 @@ void QF_publish_(QEvt const * const e)
 void QF_publish_(QEvt const * const e, void const * const sender)
 #endif
 {
+    QPSet tmp;
     QF_SCHED_STAT_TYPE_ lockStat;
     QF_CRIT_STAT_
 
@@ -144,63 +145,24 @@ void QF_publish_(QEvt const * const e, void const * const sender)
 
     lockStat.lockPrio = (uint_fast8_t)0xFF; /* set as uninitialized */
 
-#if (QF_MAX_ACTIVE <= 8)
-    {
-        uint_fast8_t tmp = QF_subscrList_[e->sig].bits[0];
+    tmp = QF_PTR_AT_(QF_subscrList_, e->sig);
+    while (QPSet_notEmpty(&tmp)) {
+        uint_fast8_t p;
 
-        while (tmp != (uint_fast8_t)0) {
-            /* find the most-significant bit number */
-            uint_fast8_t p = (uint_fast8_t)QF_LOG2(tmp);
+        QPSet_findMax(&tmp, p);
+        QPSet_remove(&tmp, p);
 
-            /* remove the most-significant bit from the bitmask */
-            tmp &= (uint_fast8_t)QF_invPwr2Lkup[p];
-
-            /* has the scheduler been locked yet? */
-            if (lockStat.lockPrio == (uint_fast8_t)0xFF) {
-                QF_SCHED_LOCK_(&lockStat, p);
-            }
-
-            /* the prio of the AO must be registered with the framework */
-            Q_ASSERT_ID(210, QF_active_[p] != (QMActive *)0);
-
-            /* QACTIVE_POST() asserts internally if the queue overflows */
-            QACTIVE_POST(QF_active_[p], e, sender);
+        /* has the scheduler been locked yet? */
+        if (lockStat.lockPrio == (uint_fast8_t)0xFF) {
+            QF_SCHED_LOCK_(&lockStat, p);
         }
+
+        /* the prio of the AO must be registered with the framework */
+        Q_ASSERT_ID(210, QF_active_[p] != (QMActive *)0);
+
+        /* QACTIVE_POST() asserts internally if the queue overflows */
+        QACTIVE_POST(QF_active_[p], e, sender);
     }
-#else /* (QF_MAX_ACTIVE > 8) */
-    {
-        uint_fast8_t i = (uint_fast8_t)Q_DIM(QF_subscrList_[0].bits);
-
-        /* go through all bytes in the subscription list */
-        do {
-            uint_fast8_t tmp;
-            --i;
-            tmp = (uint_fast8_t)QF_PTR_AT_(QF_subscrList_, e->sig).bits[i];
-
-            while (tmp != (uint_fast8_t)0) {
-                /* find the most-significant bit number */
-                uint_fast8_t p = (uint_fast8_t)QF_LOG2(tmp);
-
-                /* remove the most-significant bit from the bitmask */
-                tmp &= (uint_fast8_t)QF_invPwr2Lkup[p];
-
-                /* convert bit number to the highest-priority subscriber */
-                p += (uint_fast8_t)(i << 3);
-
-                /* has the scheduler been locked yet? */
-                if (lockStat.lockPrio == (uint_fast8_t)0xFF) {
-                    QF_SCHED_LOCK_(&lockStat, p);
-                }
-
-                /* the prio of the AO must be registered with the framework */
-                Q_ASSERT_ID(220, QF_active_[p] != (QMActive *)0);
-
-                /* QACTIVE_POST() asserts internally if the queue overflows */
-                QACTIVE_POST(QF_active_[p], e, sender);
-            }
-        } while (i != (uint_fast8_t)0);
-    }
-#endif /* (QF_MAX_ACTIVE > 8) */
 
     /* was the scheduler locked? */
     if (lockStat.lockPrio <= (uint_fast8_t)QF_MAX_ACTIVE) {
@@ -239,7 +201,6 @@ void QF_publish_(QEvt const * const e, void const * const sender)
 */
 void QActive_subscribe(QActive const * const me, enum_t const sig) {
     uint_fast8_t p = me->prio;
-    uint_fast8_t i = (uint_fast8_t)QF_div8Lkup[p];
     QF_CRIT_STAT_
 
     Q_REQUIRE_ID(300, ((enum_t)Q_USER_SIG <= sig)
@@ -256,7 +217,8 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
     QS_END_NOCRIT_()
 
     /* set the priority bit */
-    QF_PTR_AT_(QF_subscrList_, sig).bits[i] |= QF_pwr2Lkup[p];
+    QPSet_insert(&QF_PTR_AT_(QF_subscrList_, sig), p);
+
     QF_CRIT_EXIT_();
 }
 
@@ -284,7 +246,6 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
 */
 void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
     uint_fast8_t p = me->prio;
-    uint_fast8_t i = (uint_fast8_t)QF_div8Lkup[p];
     QF_CRIT_STAT_
 
     /** @pre the singal and the prioriy must be in ragne, the AO must also
@@ -304,7 +265,8 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
     QS_END_NOCRIT_()
 
     /* clear priority bit */
-    QF_PTR_AT_(QF_subscrList_, sig).bits[i] &= QF_invPwr2Lkup[p];
+    QPSet_remove(&QF_PTR_AT_(QF_subscrList_, sig), p);
+
     QF_CRIT_EXIT_();
 }
 
@@ -331,20 +293,17 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
 */
 void QActive_unsubscribeAll(QActive const * const me) {
     uint_fast8_t p = me->prio;
-    uint_fast8_t i;
     enum_t sig;
 
     Q_REQUIRE_ID(500, ((uint_fast8_t)0 < p)
                        && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
                        && (QF_active_[p] == me));
 
-    i = (uint_fast8_t)QF_div8Lkup[p];
     for (sig = (enum_t)Q_USER_SIG; sig < QF_maxSignal_; ++sig) {
         QF_CRIT_STAT_
         QF_CRIT_ENTRY_();
-        if ((QF_PTR_AT_(QF_subscrList_, sig).bits[i]
-             & QF_pwr2Lkup[p]) != (uint8_t)0)
-        {
+        if (QPSet_hasElement(&QF_PTR_AT_(QF_subscrList_, sig), p)) {
+            QPSet_remove(&QF_PTR_AT_(QF_subscrList_, sig), p);
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_UNSUBSCRIBE,
                              QS_priv_.aoObjFilter, me)
@@ -352,9 +311,6 @@ void QActive_unsubscribeAll(QActive const * const me) {
                 QS_SIG_((QSignal)sig); /* the signal of this event */
                 QS_OBJ_(me);           /* this active object */
             QS_END_NOCRIT_()
-
-            /* clear the priority bit */
-            QF_PTR_AT_(QF_subscrList_, sig).bits[i] &= QF_invPwr2Lkup[p];
         }
         QF_CRIT_EXIT_();
     }

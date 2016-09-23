@@ -1,12 +1,35 @@
 /**
 @page history Revision History
 
+@section qpc_5_7_1 Version 5.7.1-beta, 2016-09-23
+This beta-release brings the first "dual-mode" version of the QXK kernel.
+"Dual-mode" QXK means that QXK executes non-blocking active objects
+like the QK kernel using the single stack (Main Stack on ARM Cortex-M),
+but can also execute traditional *blocking* threads (extended threads).
+Only the extended threads need their private stack spaces and the overhead
+of the full context switch. The QXK examples have been updated for more
+thourough demonstration of the QXK features. The QXK examples are available
+in the following directories: dpp_efm32-slstk3401a, dpp_ek-tm4c123gxl, and
+dpp_nucleo-l053r8.
+
+This release also changes the implementation of the priority-set to use
+32-bit bitmasks instead of 8-bit bitmasks. This is more efficient on
+32-processors. The implementation of Log-base-2 (to quickly find the
+highest-priority element in the priority-set) has been also changed
+to use 32-bit bitmasks.
+
+The internal automatic variable 'entry' has been renamed to 'epath' in
+qep_msm.c, because 'entry' turns out to be an (obsolete) reserved word
+in ANSI C. This avoids violating MISRA-C:2004 Rule 20.2.  
+
+
+------------------------------------------------------------------------------
 @section qpc_5_7_0 Version 5.7.0, 2016-08-31
 This release adds support for sub-machines and sub-machine states for reusing pieces of state machines (an advanced UML concept) to the QMsm-state machine implementation strategy. This feature is to match the upcoming QM 4.0.0.
 
 Also, this release adds support for the ARM Cortex-R processor. Specifically, the release contains a generic port to ARM Cortex-R with the IAR and TI-CCS toolsets and examples for the TI Hercules TMS570LS12x safety MCU (LAUNCHPADXL2-TMS57012).
 
-Also, this release changes once more the QK port to ARM Cortex-M, to reduce the interrupt latecy. This has been achieved by shortening the critical section in the PendSV exception. Also, this QK port to Cortex-M no longer uses the NMI exception.
+Also, this release changes once more the QK port to ARM Cortex-M, to reduce the interrupt latecy. This has been achieved by shortening the critical section in the PendSV exception.
 
 Also, this release changes slightly the QXK port to ARM Cortex-M, where again the critical section in PendSV has been slighly shortened.
 

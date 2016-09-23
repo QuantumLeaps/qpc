@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.7.1
+* Last updated on  2016-09-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -164,68 +164,8 @@ void QF_bzero(void * const start, uint_fast16_t len) {
     }
 }
 
-/* power-of-two lookup tables ***********************************************/
-uint8_t const QF_pwr2Lkup[65] = {
-    (uint8_t)0x00, /* unused location */
-    (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
-    (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80,
-    (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
-    (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80,
-    (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
-    (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80,
-    (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
-    (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80,
-    (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
-    (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80,
-    (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
-    (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80,
-    (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
-    (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80,
-    (uint8_t)0x01, (uint8_t)0x02, (uint8_t)0x04, (uint8_t)0x08,
-    (uint8_t)0x10, (uint8_t)0x20, (uint8_t)0x40, (uint8_t)0x80
-};
-
-uint8_t const QF_invPwr2Lkup[65] = {
-    (uint8_t)0xFF, /* unused location */
-    (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
-    (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F,
-    (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
-    (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F,
-    (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
-    (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F,
-    (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
-    (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F,
-    (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
-    (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F,
-    (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
-    (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F,
-    (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
-    (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F,
-    (uint8_t)0xFE, (uint8_t)0xFD, (uint8_t)0xFB, (uint8_t)0xF7,
-    (uint8_t)0xEF, (uint8_t)0xDF, (uint8_t)0xBF, (uint8_t)0x7F
-};
-
-uint8_t const QF_div8Lkup[65] = {
-    (uint8_t)0, /* unused location */
-    (uint8_t)0, (uint8_t)0, (uint8_t)0, (uint8_t)0,
-    (uint8_t)0, (uint8_t)0, (uint8_t)0, (uint8_t)0,
-    (uint8_t)1, (uint8_t)1, (uint8_t)1, (uint8_t)1,
-    (uint8_t)1, (uint8_t)1, (uint8_t)1, (uint8_t)1,
-    (uint8_t)2, (uint8_t)2, (uint8_t)2, (uint8_t)2,
-    (uint8_t)2, (uint8_t)2, (uint8_t)2, (uint8_t)2,
-    (uint8_t)3, (uint8_t)3, (uint8_t)3, (uint8_t)3,
-    (uint8_t)3, (uint8_t)3, (uint8_t)3, (uint8_t)3,
-    (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4,
-    (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4,
-    (uint8_t)5, (uint8_t)5, (uint8_t)5, (uint8_t)5,
-    (uint8_t)5, (uint8_t)5, (uint8_t)5, (uint8_t)5,
-    (uint8_t)6, (uint8_t)6, (uint8_t)6, (uint8_t)6,
-    (uint8_t)6, (uint8_t)6, (uint8_t)6, (uint8_t)6,
-    (uint8_t)7, (uint8_t)7, (uint8_t)7, (uint8_t)7,
-    (uint8_t)7, (uint8_t)7, (uint8_t)7, (uint8_t)7
-};
-
-#ifdef QF_LOG2LKUP
+/* log-base-2 implementation ************************************************/
+#ifndef QF_LOG2
 
 /* log-base-2 lookup table **************************************************/
 uint8_t const QF_log2Lkup[256] = {
@@ -295,4 +235,41 @@ uint8_t const QF_log2Lkup[256] = {
     (uint8_t)8, (uint8_t)8, (uint8_t)8, (uint8_t)8
 };
 
-#endif /* #ifdef QF_LOG2LKUP */
+#if (__STDC_VERSION__ >= 199901L) /* is it C99 compiler? */
+
+    extern inline uint_fast8_t QF_LOG2(uint32_t x);
+
+#else
+
+    /* out-of line definition of the function QF_LOG2() */
+    uint_fast8_t QF_LOG2(uint32_t x) {
+        uint_fast8_t n;
+        uint_fast8_t i;
+
+        if ((x >> 16) != (uint32_t)0) {
+            if ((x >> 24) != (uint32_t)0) {
+                i = (uint_fast8_t)(x >> 24);
+                n = (uint_fast8_t)24;
+            }
+            else {
+                i = (uint_fast8_t)(x >> 16);
+                n = (uint_fast8_t)16;
+            }
+        }
+        else {
+            if ((x >> 8) != (uint32_t)0) {
+                i = (uint_fast8_t)(x >> 8);
+                n = (uint_fast8_t)8;
+            }
+            else {
+                i = (uint_fast8_t)(x);
+                n = (uint_fast8_t)0;
+            }
+        }
+        return (uint_fast8_t)QF_log2Lkup[i] + n;
+    }
+
+
+#endif /* __STDC_VERSION__ */
+
+#endif /* QF_LOG2 */

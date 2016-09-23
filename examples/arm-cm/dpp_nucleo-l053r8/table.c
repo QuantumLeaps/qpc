@@ -115,14 +115,14 @@ static QState Table_initial(Table * const me, QEvt const * const e) {
     QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
     QS_SIG_DICTIONARY(PAUSE_SIG,     (void *)0);
     QS_SIG_DICTIONARY(SERVE_SIG,     (void *)0);
-    QS_SIG_DICTIONARY(TERMINATE_SIG, (void *)0);
+    QS_SIG_DICTIONARY(TEST_SIG,      (void *)0);
 
     QS_SIG_DICTIONARY(HUNGRY_SIG,    me); /* signal just for Table */
 
     QActive_subscribe(&me->super, DONE_SIG);
     QActive_subscribe(&me->super, PAUSE_SIG);
     QActive_subscribe(&me->super, SERVE_SIG);
-    QActive_subscribe(&me->super, TERMINATE_SIG);
+    QActive_subscribe(&me->super, TEST_SIG);
 
     for (n = 0U; n < N_PHILO; ++n) {
         me->fork[n] = FREE;
@@ -136,9 +136,8 @@ static QState Table_initial(Table * const me, QEvt const * const e) {
 static QState Table_active(Table * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
-        /* ${AOs::Table::SM::active::TERMINATE} */
-        case TERMINATE_SIG: {
-            BSP_terminate(0);
+        /* ${AOs::Table::SM::active::TEST} */
+        case TEST_SIG: {
             status_ = QM_HANDLED();
             break;
         }

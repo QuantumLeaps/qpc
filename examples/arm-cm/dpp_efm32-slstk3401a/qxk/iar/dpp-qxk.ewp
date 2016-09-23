@@ -77,7 +77,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.60.1.11206</state>
+          <state>7.70.1.11471</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -345,7 +345,7 @@
         <option>
           <name>CCOptStrategy</name>
           <version>0</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCOptLevelSlave</name>
@@ -399,11 +399,11 @@
         </option>
         <option>
           <name>IccStaticDestr</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IccCppInlineSemantics</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IccCmsis</name>
@@ -420,7 +420,7 @@
         <option>
           <name>CCOptStrategySlave</name>
           <version>0</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCGuardCalls</name>
@@ -1047,7 +1047,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.60.1.11206</state>
+          <state>7.70.1.11471</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -1316,7 +1316,7 @@
         <option>
           <name>CCOptStrategy</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>CCOptLevelSlave</name>
@@ -1374,7 +1374,7 @@
         </option>
         <option>
           <name>IccCppInlineSemantics</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IccCmsis</name>
@@ -1391,7 +1391,7 @@
         <option>
           <name>CCOptStrategySlave</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>CCGuardCalls</name>
@@ -2018,7 +2018,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.60.1.11206</state>
+          <state>7.70.1.11471</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -3013,6 +3013,9 @@
       <name>$PROJ_DIR$\..\..\..\..\..\source\qxk.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\include\qxk.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\source\qxk_mutex.c</name>
     </file>
     <file>
@@ -3023,6 +3026,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\source\qxk_xthr.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\include\qxthread.h</name>
     </file>
   </group>
   <group>

@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.0
-* Last updated on  2016-08-11
+* Last updated for version 5.7.1
+* Last updated on  2016-09-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -218,7 +218,7 @@ void QActive_stop(QMActive *me) {
 
     QF_remove_(me); /* remove this active object from the QF */
 
-    QK_prioRemove(&QK_attr_.readySet, me->prio);
+    QPSet_remove(&QK_attr_.readySet, me->prio);
     p = QK_schedPrio_();
     if (p != (uint_fast8_t)0) {
         QK_sched_(p);
@@ -244,7 +244,7 @@ uint_fast8_t QK_schedPrio_(void) {
     uint_fast8_t p; /* for priority */
 
     /* find the highest-prio AO with non-empty event queue */
-    QK_prioFindMax(&QK_attr_.readySet, p);
+    QPSet_findMax(&QK_attr_.readySet, p);
 
     /* is the highest-prio below the current-prio? */
     if (p <= QK_attr_.curr) {
@@ -314,7 +314,7 @@ void QK_sched_(uint_fast8_t p) {
         QF_INT_DISABLE(); /* unconditionally disable interrupts */
 
         /* find new highest-prio AO ready to run... */
-        QK_prioFindMax(&QK_attr_.readySet, p);
+        QPSet_findMax(&QK_attr_.readySet, p);
 
         /* is the new priority below the initial preemption threshold? */
         if (p <= pin) {

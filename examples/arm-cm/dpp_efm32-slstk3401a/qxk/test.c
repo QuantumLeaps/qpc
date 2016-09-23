@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-03-30
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -36,35 +36,80 @@
 #include "bsp.h"
 
 /* local "naked" thread object .............................................*/
-static QXThread l_test;
+static QXThread l_test1;
+static QXThread l_test2;
 static QXMutex l_mutex;
+static QXSemaphore l_sema;
 
 /* global pointer to the test thread .......................................*/
-QXThread * const XT_Test = &l_test;
-
+QXThread * const XT_Test1 = &l_test1;
+QXThread * const XT_Test2 = &l_test2;
 
 /*..........................................................................*/
-static void thread_function(void *par) {
+static void Thread1_run(QXThread * const me) {
+
     QXMutex_init(&l_mutex, 3U);
 
-    (void)par;
+    (void)me;
     for (;;) {
+        float volatile x;
 
-        (void)QXThread_queueGet(BSP_TICKS_PER_SEC*2U, 0U); /* block */
-
-        QXMutex_lock(&l_mutex);
+        /* wait on a semaphore (BLOCK) */
+        QXSemaphore_wait(&l_sema, QXTHREAD_NO_TIMEOUT, 0U);
         BSP_ledOn();
-        /* NOTE: can't block while holding a mutex... */
+
+        /* some flating point code to exercise the VFP... */
+        QXMutex_lock(&l_mutex);
+        x = 1.4142135F;
+        x = x * 1.4142135F;
         QXMutex_unlock(&l_mutex);
 
-        QXThread_delay(BSP_TICKS_PER_SEC/4U, 0U);  /* block */
-        BSP_ledOff();
+        QXThread_delay(BSP_TICKS_PER_SEC/8U, 0U);  /* BLOCK */
 
-        QXThread_delay(BSP_TICKS_PER_SEC*3U/4U, 0U);
+        /* publish to thread2 */
+        QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), &l_test1);
     }
 }
 
 /*..........................................................................*/
-void Test_ctor(void) {
-    QXThread_ctor(&l_test, &thread_function, 0U);
+void Test1_ctor(void) {
+    QXThread_ctor(&l_test1, Q_XTHREAD_CAST(&Thread1_run), 0U);
+}
+
+/*..........................................................................*/
+static void Thread2_run(QXThread * const me) {
+
+    /* subscribe to the test signal */
+    QActive_subscribe(&me->super, TEST_SIG);
+
+    /* initialize the semaphore before using it
+    * NOTE: the semaphore is initialized in the highest-priority thread
+    * that uses it. Alternatively, the semaphore can be initialized
+    * before any thread runs.
+    */
+    QXSemaphore_init(&l_sema, 0U); /* start with zero count */
+
+    for (;;) {
+        QEvt const *e;
+        float volatile x;
+
+        /* signal thread1... */
+        QXSemaphore_signal(&l_sema);
+
+        /* some flating point code to exercise the VFP... */
+        x = 1.4142135F;
+        x = x * 1.4142135F;
+
+        /* wait on the internal event queue (BLOCK) */
+        e = QXThread_queueGet(QXTHREAD_NO_TIMEOUT, 0U);
+        BSP_ledOff();
+        QF_gc(e); /* recycle the event manually! */
+
+        QXThread_delay(BSP_TICKS_PER_SEC, 0U);  /* BLOCK */
+    }
+}
+
+/*..........................................................................*/
+void Test2_ctor(void) {
+    QXThread_ctor(&l_test2, Q_XTHREAD_CAST(&Thread2_run), 0U);
 }

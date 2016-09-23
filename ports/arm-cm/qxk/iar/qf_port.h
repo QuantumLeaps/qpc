@@ -1,10 +1,10 @@
 /**
 * @file
-* @brief QF/C port to Cortex-M, preemptive QXK kernel, IAR-ARM toolset
+* @brief QF/C port to Cortex-M, preemptive dual-mode QXK kernel, IAR-ARM
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-11-20
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -46,7 +46,7 @@
 #define QF_MAX_TICK_RATE        2
 
 /* QF interrupt disable/enable and log2()... */
-#if (__CORE__ == __ARM6M__)  /* Cortex-M0/M0+/M1 ?, see NOTE02 */
+#if (__CORE__ == __ARM6M__)  /* Cortex-M0/M0+/M1 ?, see NOTE2 */
 
     #define QF_INT_DISABLE()    __disable_interrupt()
     #define QF_INT_ENABLE()     __enable_interrupt()
@@ -59,14 +59,14 @@
     #define QF_INT_DISABLE()    __set_BASEPRI(QF_BASEPRI)
     #define QF_INT_ENABLE()     __set_BASEPRI(0U)
 
-    /* NOTE: keep in synch with the value defined in qxk_port.s, see NOTE4 */
+    /* NOTE: keep in synch with the value defined in "qxk_port.s", NOTE4 */
     #define QF_BASEPRI          (0xFFU >> 2)
 
     /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5 */
     #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
     /* Cortex-M3/M4/M7 provide the CLZ instruction for fast LOG2 */
-    #define QF_LOG2(n_) ((uint8_t)(32U - __CLZ(n_)))
+    #define QF_LOG2(n_) ((uint_fast8_t)(32U - __CLZ(n_)))
 #endif
 
 /* QF critical section entry/exit... */
@@ -79,7 +79,7 @@
 #include "qep_port.h"   /* QEP port */
 #include "qxk_port.h"   /* QXK port */
 #include "qf.h"         /* QF platform-independent public interface */
-#include "qxthread.h"   /* QXK naked thread */
+#include "qxthread.h"   /* QXK extended thread interface */
 
 /*****************************************************************************
 * NOTE1:

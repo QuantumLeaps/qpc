@@ -1,7 +1,7 @@
 //============================================================================
 // Product: PC-Lint 9.x standard option file
-// Last Updated for Version: 5.4.0
-// Date of the Last Update:  2015-03-11
+// Last Updated for Version: 5.7.1
+// Date of the Last Update:  2016-09-18
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -39,6 +39,10 @@
 
 -width(0,0)     // do not break lines
 +flm            // make sure no foreign includes change the format
+
+-D__STDC_VERSION__=199409L // C89 Standard last ammended 1994-04
+//-D__STDC_VERSION__=199901L // C99 Standard 1999-01
++rw(inline, entry)
 
 -zero(99)       // don't stop make because of warnings
 

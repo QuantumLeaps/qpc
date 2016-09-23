@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.4
-* Date of the Last Update:  2016-05-03
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -66,6 +66,17 @@
 #define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
 
+#ifdef _MSC_VER /* Microsoft C/C++ compiler? */
+    /* use built-in intrinsic function for fast LOG2 */
+    #define QF_LOG2(x_) ((uint_fast8_t)(32U - __lzcnt(x_)))
+    #include <intrin.h>    /* VC++ intrinsic functions */
+#elif __GNUC__  /* GNU C/C++ compiler? */
+    /* use built-in intrinsic function for fast LOG2 */
+    #define QF_LOG2(x_) ((uint_fast8_t)(32U - __builtin_clz(x_)))
+#else
+    /* use the internal LOG2() implementation */
+#endif
+
 #include "qep_port.h"  /* QEP port */
 #include "qequeue.h"   /* Win32-QV needs the native event-queue */
 #include "qmpool.h"    /* Win32-QV needs the native memory-pool */
@@ -87,40 +98,38 @@ void QF_onClockTick(void);
 
 /* portable "safe" facilities from <stdio.h> and <string.h> ... */
 #ifdef _MSC_VER /* Microsoft C/C++ compiler? */
+    #define SNPRINTF_S(buf_, len_, format_, ...) \
+        _snprintf_s(buf_, len_, _TRUNCATE, format_, ##__VA_ARGS__)
 
-#define SNPRINTF_S(buf_, len_, format_, ...) \
-    _snprintf_s(buf_, len_, _TRUNCATE, format_, ##__VA_ARGS__)
+    #define STRNCPY_S(dest_, src_, len_) \
+        strncpy_s(dest_, len_, src_, _TRUNCATE)
 
-#define STRNCPY_S(dest_, src_, len_) \
-    strncpy_s(dest_, len_, src_, _TRUNCATE)
+    #define FOPEN_S(fp_, fName_, mode_) \
+        if (fopen_s(&fp_, fName_, mode_) != 0) { \
+            fp_ = (FILE *)0; \
+        } else (void)0
 
-#define FOPEN_S(fp_, fName_, mode_) \
-    if (fopen_s(&fp_, fName_, mode_) != 0) { \
-        fp_ = (FILE *)0; \
-    } else (void)0
+    #define CTIME_S(buf_, len_, time_) \
+        ctime_s((char *)buf_, len_, time_)
 
-#define CTIME_S(buf_, len_, time_) \
-    ctime_s((char *)buf_, len_, time_)
+    #define SSCANF_S(buf_, format_, ...) \
+        sscanf_s(buf_, format_, ##__VA_ARGS__)
 
-#define SSCANF_S(buf_, format_, ...) \
-    sscanf_s(buf_, format_, ##__VA_ARGS__)
+    #else /* other C/C++ compilers (GNU, etc.) */
 
-#else /* other C/C++ compilers (GNU, etc.) */
+    #define SNPRINTF_S(buf_, len_, format_, ...) \
+        snprintf(buf_, len_, format_, ##__VA_ARGS__)
 
-#define SNPRINTF_S(buf_, len_, format_, ...) \
-    snprintf(buf_, len_, format_, ##__VA_ARGS__)
+    #define STRNCPY_S(dest_, src_, len_) strncpy(dest_, src_, len_)
 
-#define STRNCPY_S(dest_, src_, len_) strncpy(dest_, src_, len_)
+    #define FOPEN_S(fp_, fName_, mode_) \
+        (fp_ = fopen(fName_, mode_))
 
-#define FOPEN_S(fp_, fName_, mode_) \
-    (fp_ = fopen(fName_, mode_))
+    #define CTIME_S(buf_, len_, time_) \
+        strncpy((char *)buf_, ctime(time_), len_)
 
-#define CTIME_S(buf_, len_, time_) \
-    strncpy((char *)buf_, ctime(time_), len_)
-
-#define SSCANF_S(buf_, format_, ...) \
-    sscanf(buf_, format_, ##__VA_ARGS__)
-
+    #define SSCANF_S(buf_, format_, ...) \
+        sscanf(buf_, format_, ##__VA_ARGS__)
 #endif /* _MSC_VER */
 
 /****************************************************************************/
@@ -138,11 +147,11 @@ void QF_onClockTick(void);
         Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0)
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-        QPSet64_insert(&QV_readySet_, (me_)->prio); \
+        QPSet_insert(&QV_readySet_, (me_)->prio); \
             (void)SetEvent(QV_win32Event_)
 
     #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-        QPSet64_remove(&QV_readySet_, (me_)->prio)
+        QPSet_remove(&QV_readySet_, (me_)->prio)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_  QMPool
@@ -161,9 +170,8 @@ void QF_onClockTick(void);
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h> /* Win32 API */
     #include <stdlib.h>  /* for malloc() */
-    #include "qpset.h"   /* Win32-QV needs the native QP priority set */
 
-    extern QPSet64 QV_readySet_;   /* QV-ready set of active objects */
+    extern QPSet   QV_readySet_;   /* QV-ready set of active objects */
     extern HANDLE  QV_win32Event_; /* Win32 event to signal events */
 
     /* Windows "fudge factor" for oversizing the resources, see NOTE3 */

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.7.0
-// Last updated on  2016-09-08
+// Last updated for version 5.7.1
+// Last updated on  2016-09-18
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -120,7 +120,6 @@ qpc.lnt               // QP/C options
 -efunc(818,           // MISRA04-16.7(adv) 'stkSto' could be const
  QActive_start_)
 -efunc(527, QF_run)   // MISRA04-14.17(req) Unreachable code
--efunc(550, QF_tick)  // Symbol 'dummy' not accessed
 -emacro({717},        // do ... while(0);
  QACTIVE_EQUEUE_SIGNAL_,
  QACTIVE_EQUEUE_ONEMPTY_)
@@ -129,32 +128,9 @@ qpc.lnt               // QP/C options
 // QV
 
 // QK
--esym(960,            // MISRA04-19.4(req) Disallowed macro definition
- QK_prioNotEmpty,
- QK_prioIsSet,
- QK_prioFindMax,
- QK_prioInsert,
- QK_prioRemove)
--estring(961,         // MISRA04-19.7(adv) function-like macro
- QK_prioNotEmpty,
- QK_prioIsSet,
- QK_prioFindMax,
- QK_prioInsert,
- QK_prioRemove)
 
 // QXK
--esym(960,            // MISRA04-19.4(req) Disallowed macro definition
- QXK_prioNotEmpty,
- QXK_prioIsSet,
- QXK_prioFindMax,
- QXK_prioInsert,
- QXK_prioRemove)
 -estring(961,         // MISRA04-19.7(adv) function-like macro
- QXK_prioNotEmpty,
- QXK_prioIsSet,
- QXK_prioFindMax,
- QXK_prioInsert,
- QXK_prioRemove,
  QXK_CONTEXT_SWITCH_)
 
 // QS -- the following options are needed only when Q_SPY is defined

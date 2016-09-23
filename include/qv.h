@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-31
+* Last updated for version 5.7.1
+* Last updated on  2016-09-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,9 +41,9 @@
 #ifndef qv_h
 #define qv_h
 
-#include "qequeue.h" /* QV kernel uses the native QP event queue  */
-#include "qmpool.h"  /* QV kernel uses the native QP memory pool  */
-#include "qpset.h"   /* QV kernel uses the native QP priority set */
+#include "qequeue.h"  /* QV kernel uses the native QP event queue  */
+#include "qmpool.h"   /* QV kernel uses the native QP memory pool  */
+#include "qpset.h"    /* QV kernel uses the native QP priority set */
 
 /*! This macro defines the type of the event queue used for the
 * active objects. For the built-in QV kernel, this is ::QEqueue.
@@ -94,17 +94,11 @@ void QV_onIdle(void);
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0)
 
-    #if (QF_MAX_ACTIVE <= 8)
-        #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-            QPSet8_insert(&QV_readySet_, (me_)->prio)
-        #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-            QPSet8_remove(&QV_readySet_, (me_)->prio)
-    #else
-        #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-            QPSet64_insert(&QV_readySet_, (me_)->prio)
-        #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-            QPSet64_remove(&QV_readySet_, (me_)->prio)
-    #endif
+    #define QACTIVE_EQUEUE_SIGNAL_(me_) \
+        QPSet_insert(&QV_readySet_, (me_)->prio)
+
+    #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
+        QPSet_remove(&QV_readySet_, (me_)->prio)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool
@@ -114,11 +108,7 @@ void QV_onIdle(void);
     #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
     #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), (e_)))
 
-    #if (QF_MAX_ACTIVE <= 8)
-        extern QPSet8 QV_readySet_;  /*!< QV-ready set of AOs */
-    #else
-        extern QPSet64 QV_readySet_; /*!< QV-ready set of AOs */
-    #endif
+    extern QPSet QV_readySet_; /*!< QV ready-set of AOs */
 
 #endif /* QP_IMPL */
 

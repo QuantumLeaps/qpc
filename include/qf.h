@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-29
+* Last updated for version 5.7.1
+* Last updated on  2016-09-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,7 +41,7 @@
 #define qf_h
 
 /****************************************************************************/
-#if (QF_MAX_ACTIVE < 1) || (63 < QF_MAX_ACTIVE)
+#if (QF_MAX_ACTIVE < 1) || (64 < QF_MAX_ACTIVE)
     #error "QF_MAX_ACTIVE not defined or out of range. Valid range is 1..63"
 #endif
 
@@ -80,6 +80,10 @@
     * 1, 2, or 4; default 2
     */
     #define QF_TIMEEVT_CTR_SIZE  2
+#endif
+
+#ifndef qpset_h
+#include "qpset.h"
 #endif
 
 /****************************************************************************/
@@ -491,6 +495,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me);
 /*! Get the current value of the down-counter of a time event. */
 QTimeEvtCtr QTimeEvt_ctr(QTimeEvt const * const me);
 
+
 /****************************************************************************/
 /* QF facilities */
 
@@ -503,21 +508,7 @@ QTimeEvtCtr QTimeEvt_ctr(QTimeEvt const * const me);
 *
 * @sa ::QSubscrList for the description of the data members
 */
-typedef struct {
-
-    /*! An array of bits representing subscriber active objects. */
-    /**
-    * @description
-    * Each bit in the array corresponds to the unique priority of the AO.
-    * The size of the array is determined of the maximum number of AOs
-    * in the application configured by the #QF_MAX_ACTIVE macro.
-    * For example, an active object of priority p is a subscriber if the
-    * following is true: ((bits[QF_div8Lkup[p]] & QF_pwr2Lkup[p]) != 0)
-    *
-    * @sa QF_psInit(), ::QF_div8Lkup, ::QF_pwr2Lkup, #QF_MAX_ACTIVE
-    */
-    uint8_t bits[((QF_MAX_ACTIVE - 1) / 8) + 1];
-} QSubscrList;
+typedef QPSet QSubscrList;
 
 /* public functions */
 
@@ -805,58 +796,6 @@ void QF_bzero(void * const start, uint_fast16_t len);
     */
     #define QF_CRIT_EXIT_NOP()   ((void)0)
 #endif
-
-/****************************************************************************/
-/* Useful lookup tables ...*/
-/*! Lookup table for @c (1 << ((n-1) % 8)), where n is the index into
-* the table. */
-/**
-* @note Index range n = 0..64. The first index (n == 0) should never be used.
-*/
-extern uint8_t const QF_pwr2Lkup[65];
-
-/*! Lookup table for @c ~(1 << ((n-1) % 8)), where n is the index
-* into the table. */
-/**
-* @note Index range n = 0..64. The first index (n == 0) should never be used.
-*/
-extern uint8_t const QF_invPwr2Lkup[65];
-
-/*! Lookup table for @c (n-1)/8 , where n is the index into the table. */
-/**
-* @note Index range n = 0..64. The first index (n == 0) should never be used.
-*/
-extern uint8_t const QF_div8Lkup[65];
-
-/* Log-base-2 calculations ...*/
-#ifndef QF_LOG2
-
-    /*! Macro to return (log2(n_) + 1), where @p n_ = 0..255. */
-    /**
-    * @description
-    * This macro delivers the 1-based number of the most significant 1-bit
-    * of a byte. This macro can be re-implemented in the QP ports, if the CPU
-    * supports special instructions, such as CLZ (count leading zeros).
-    *
-    * If the macro is not defined in the port, the default implementation
-    * uses a lookup table.
-    */
-    #define QF_LOG2(n_) (QF_log2Lkup[(n_)])
-
-    /*! Lookup table for (log2(n) + 1), where n is the index into the table */
-    /**
-    * @description
-    * This lookup delivers the 1-based number of the most significant 1-bit
-    * of a byte.
-    */
-    extern uint8_t const QF_log2Lkup[256];
-
-    /*! Macro to include the QF_log2Lkup table in the code or skip it,
-    * if undefined.
-    */
-    #define QF_LOG2LKUP 1
-
-#endif /* QF_LOG2 */
 
 /*! array of registered active objects */
 /**

@@ -3,8 +3,8 @@
 * @brief QF/C port to Cortex-M, preemptive QK kernel, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-12-11
+* Last Updated for Version: 5.7.1
+* Date of the Last Update:  2016-09-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -69,7 +69,7 @@
     #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
     /* Cortex-M3/M4/M4F provide the CLZ instruction for fast LOG2 */
-    #define QF_LOG2(n_) ((uint8_t)(32U - __builtin_clz(n_)))
+    #define QF_LOG2(n_) ((uint_fast8_t)(32U - __builtin_clz(n_)))
 
 #endif
 

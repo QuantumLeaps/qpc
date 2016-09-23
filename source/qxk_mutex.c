@@ -1,11 +1,11 @@
 /**
 * @file
-* @ingroup qkx
-* @brief QXMutex_init(), QXMutex_lock(), and QXMutex_unlock() definitions.
+* @ingroup qxk
+* @brief QXMutex_init(), QXMutex_lock and QXMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-31
+* Last updated for version 5.7.1
+* Last updated on  2016-09-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -119,14 +119,17 @@ void QXMutex_lock(QXMutex * const me) {
     if (QXK_attr_.lockPrio < me->lockPrio) { /* raising the lock prio? */
         QXK_attr_.lockPrio = me->lockPrio;
     }
-    QXK_attr_.lockHolder = (QXK_attr_.curr != (void *)0)
-                           ? ((QMActive volatile *)QXK_attr_.curr)->prio
-                           : (uint_fast8_t)0;
+    if (QXK_attr_.curr != (void *)0) {
+        QXK_attr_.lockHolder = ((QMActive volatile *)QXK_attr_.curr)->prio;
+    }
+    else {
+        QXK_attr_.lockHolder = (uint_fast8_t)0;
+    }
 
     QS_BEGIN_NOCRIT_(QS_SCHED_LOCK, (void *)0, (void *)0)
         QS_TIME_(); /* timestamp */
-        QS_2U8_((uint8_t)me->prevPrio, /* the previouis lock priority */
-                (uint8_t)QXK_attr_.lockPrio); /* the new lock priority */
+        QS_2U8_((uint8_t)me->prevPrio,  /* the previouis lock prio */
+                (uint8_t)QXK_attr_.lockPrio); /* the new lock prio */
     QS_END_NOCRIT_()
 
     QF_CRIT_EXIT_();
@@ -162,20 +165,23 @@ void QXMutex_unlock(QXMutex * const me) {
     Q_REQUIRE_ID(800, (!QXK_ISR_CONTEXT_())
                       && (me->prevPrio != (uint_fast8_t)MUTEX_UNUSED));
 
-    p = me->prevPrio; /* the previouis lock prio */
+    p = me->prevPrio;
     me->prevPrio = (uint_fast8_t)MUTEX_UNUSED;
+    QXK_attr_.lockHolder = me->prevHolder; /* restore previous lock holder */
 
     QS_BEGIN_NOCRIT_(QS_SCHED_UNLOCK, (void *)0, (void *)0)
         QS_TIME_(); /* timestamp */
-        QS_2U8_((uint8_t)p,                   /* the previouis lock prio */
-                (uint8_t)QXK_attr_.lockPrio); /* the current lock prio */
+        QS_2U8_((uint8_t)me->prevPrio,  /* the previouis lock priority */
+                (uint8_t)QXK_attr_.lockPrio); /* the lock priority */
     QS_END_NOCRIT_()
 
-    QXK_attr_.lockHolder = me->prevHolder; /* restore previous lock holder */
+
+
     if (QXK_attr_.lockPrio > p) {
         QXK_attr_.lockPrio = p; /* restore the previous lock prio */
-        if (QXK_attr_.curr != (void *)0) { /* is QXK running? */
-            QXK_sched_(); /* schedule any unlocked thread */
+        /* find the highest-prio AO ready to run */
+        if (QXK_sched_() != (uint_fast8_t)0) { /* priority found? */
+            QXK_activate_(); /* activate any unlocked AOs */
         }
     }
     QF_CRIT_EXIT_();

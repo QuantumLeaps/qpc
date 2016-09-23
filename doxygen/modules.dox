@@ -53,7 +53,7 @@ Given the simplicity, portability, and low-resource consumption, the QV schedule
 @brief
 Preemptive Non-Blocking Kernel
 
-QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specifically for executing active objects. QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis — RMA) and can be used in hard real-time systems.
+QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specifically for executing active objects. QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using the single stack (MSP in Cortex-M). Active objects process their events in run-to-completion fashion and remove themselves from the call stack, the same way as nested interrupts. At the same time high-priority active objects can preempt lower-priority active objects, in the same way as interrupts can preempt each other under a prioritized interrupt controller. QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis RMA) and can be used in hard real-time systems.
 
 
 ------------------------------------------------------------------------------
@@ -66,9 +66,9 @@ Sometimes it is not practical to break up long RTC steps, and consequently the t
 /*###########################################################################*//*! @defgroup qxk QXK
 
 @brief
-Preemptive Blocking RTOS Kernel
+Preemptive Dual-Mode Blocking RTOS Kernel
 
-QXK is a small, preemptive, priority-based, **blocking** kernel that provides typical services of a conventional __RTOS__ (Real-Time Operating System). QXK has been designed specifically for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
+QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that executes active objects like the @ref qk "QK kernel", but can also execute traditional __blocking__ threads (extended threads). In this respect, QXK behaves exactly as a conventional __RTOS__ (Real-Time Operating System). QXK has been designed specifically for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
 
 Currently, the QXK kernel has been ported to the following CPUs:
 
@@ -77,20 +77,20 @@ Supported toolchains include: ARM-KEIL MDK, IAR-ARM, GNU-ARM, TI-ARM.
 
 Currently, the QXK kernel is illustrated by the following examples:
 
+- @ref arm-cm_dpp_efm32-slstk3401a@n
+Example illustrates: 6 active objects plus two extended threads, QXK blocking delay, QXK semaphore, QXK mutex, QXK blocking message queue.
+
 - @ref arm-cm_dpp_ek-tm4c123gxl@n
-Example illustrates: 6 active objects plus one "naked" thread, QXK blocking delay, QXK semaphore, QXK mutex, QXK blocking message queue.
+Example illustrates: 6 active objects plus two extended threads, QXK blocking delay, QXK semaphore, QXK mutex, QXK blocking message queue.
 
 - @ref arm-cm_dpp_nucleo-l053r8@n
-Example illustrates: 6 active objects plus one "naked" thread, QXK blocking delay, QXK semaphore, QXK mutex, QXK blocking message queue.
+Example illustrates: 6 active objects plus two extended threads, QXK blocking delay, QXK semaphore, QXK mutex, QXK blocking message queue.
 
 
 ------------------------------------------------------------------------------
 @section qxk_overview QXK Overview
 
-QXK works as most conventional RTOS kernels, by frequently switching the CPU from one thread to another in the process called *context switching*. As shown in the diagram below, each thread of execution (a.k.a. task) in QXK is assigned its own private **stack** area in RAM and its own data structure (often called the *thread control block*). The use of multiple stacks allows the kernel to **block** (suspend) threads at any moment, because the top of the stack of each thread is always available.
-
-@image html qxk_ctx-switch.gif "Context-switching among multiple threads with private stacks"
-@n
+QXK distinguishes two kinds of threads: basic-threads (non-blocking, run-to-completion activations) and extended-threads (blocking, typically structrued as endless loops). The basic threads all nest on the same stack (MSP in ARM Cortex-M). The extended-threads use private per-thread stacks, as in conventional RTOS kernels. Any switching from basic- to extended-thread or extended- to extended-thread requires full context switch. On the other hand, switching from basic-thread to another basic-thread requires only activation of the basic-thread, which is much simpler and faster.
 
 <div class="separate"></div>
 @subsection qxk_classes Classes in QXK
