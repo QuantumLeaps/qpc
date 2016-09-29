@@ -1,26 +1,36 @@
 /**
 @page history Revision History
 
-@section qpc_5_7_1 Version 5.7.1-beta, 2016-09-23
-This beta-release brings the first "dual-mode" version of the QXK kernel.
-"Dual-mode" QXK means that QXK executes non-blocking active objects
-like the QK kernel using the single stack (Main Stack on ARM Cortex-M),
-but can also execute traditional *blocking* threads (extended threads).
-Only the extended threads need their private stack spaces and the overhead
-of the full context switch. The QXK examples have been updated for more
-thourough demonstration of the QXK features. The QXK examples are available
-in the following directories: dpp_efm32-slstk3401a, dpp_ek-tm4c123gxl, and
-dpp_nucleo-l053r8.
+@section qpc_5_7_2 Version 5.7.2, 2016-10-07
+This is the first production release of the "dual-mode" QXK kernel.
+"Dual-mode" QXK means that QXK supports both basic-threads (BC1 class
+from the OSEK/VDX RTOS specification) as well as extended-threads
+(EC1 class from the OSEK/VDX RTOS specification. In other words,
+QXK executes active objects (basic threads) like the QK kernel using the
+single stack (Main Stack on ARM Cortex-M), but can also execute
+traditional *blocking* threads (extended threads).
 
-This release also changes the implementation of the priority-set to use
-32-bit bitmasks instead of 8-bit bitmasks. This is more efficient on
-32-processors. The implementation of Log-base-2 (to quickly find the
-highest-priority element in the priority-set) has been also changed
-to use 32-bit bitmasks.
+Only the extended threads (::QXThread class) need their private stack
+spaces and the overhead of the full context switch. The basic threads
+(::QMActive and ::QActive classes) run efficiently using the main stack with
+much lower context switch overhead.
 
-The internal automatic variable 'entry' has been renamed to 'epath' in
-qep_msm.c, because 'entry' turns out to be an (obsolete) reserved word
-in ANSI C. This avoids violating MISRA-C:2004 Rule 20.2.  
+The QXK examples have been updated for more thorough demonstration of
+the QXK features. The QXK examples are available in the following
+directories: dpp_efm32-slstk3401a, dpp_ek-tm4c123gxl, and dpp_nucleo-l053r8.
+
+This release fixes several issues in QXK 5.7.1-beta  with handling
+timeouts while blocking in extended-threads, such as timed blocking on
+event queues and semaphores.
+
+This release also changes the internal QK implementation to match the
+terminology applied in the QXK kernel (e.g., QK_sched_() has been renamed
+to QK_activate_() and QK_schedPrio_() to QK_sched_()). These changes fall
+into the category of refactoring and have no impact on the API or
+performance.
+
+Finally, this release improves the implementation of scheduler locking
+in publish-subscribe event delivery.
 
 
 ------------------------------------------------------------------------------

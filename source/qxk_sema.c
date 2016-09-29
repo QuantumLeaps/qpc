@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-18
+* Last updated for version 5.7.2
+* Last updated on  2016-09-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -55,12 +55,51 @@
 Q_DEFINE_THIS_MODULE("qxk_sema")
 
 /****************************************************************************/
+/**
+* @description
+* Initializes a semaphore with the specified count. If the semaphore is used
+* for resource sharing, the initial value of the semaphore count should be
+* set to the number of identical resources guarded by the semaphore. If the
+* semaphore is used as a signaling mechanism, the initial count should set
+* to 0.
+*
+* @param[in,out] me     pointer (see @ref oop)
+* @param[in]     count  initial value of the semaphore counter
+*
+* @note
+* QXSemaphore_init() must be called **before** the semaphore can be used
+* (signaled or waited on).
+*/
 void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count) {
     me->count = count;
     QPSet_setEmpty(&me->waitSet);
 }
 
 /****************************************************************************/
+/**
+* @description
+* When an extended thread calls QXSemaphore_wait() and the value of the
+* semaphore counter is greater than 0, QXSemaphore_wait() decrements the
+* semaphore counter and returns (true) to its caller. However, if the value
+* of the semaphore counter is 0, the function places the calling thread in
+* the waiting list for the semaphore. The thread waits until the semaphore
+* is signaled by calling QXSemaphore_signal(), or the specified timeout
+* expires. If the semaphore is signaled before the timeout expires, QXK
+* resumes the highest-priority extended thread waiting for the semaphore.
+*
+* @param[in,out] me     pointer (see @ref oop)
+* @param[in]  nTicks    number of clock ticks (at the associated rate)
+*                       to wait for the semaphore. The value of
+*                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
+*                       occur and the semaphore will wait indefinitely.
+* @param[in]  tickRate  system clock tick rate serviced in this call.
+*
+* @returns
+* true if the semaphore has been signaled, and false if the timeout occured.
+*
+* @note
+* Multiple extended threads can wait for a given semahpre.
+*/
 bool QXSemaphore_wait(QXSemaphore * const me,
                       uint_fast16_t const nTicks, uint_fast8_t const tickRate)
 {
@@ -71,20 +110,27 @@ bool QXSemaphore_wait(QXSemaphore * const me,
     thr = (QXThread *)QXK_attr_.curr;
 
     Q_REQUIRE_ID(100, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
-        && (thr != (QXThread *)0)); /* current thread must be extended */
+        && (thr != (QXThread *)0) /* current thread must be extended */
+        && (thr->super.super.temp.obj == (QMState const *)0)); /* !blocked */
 
     if (me->count > (uint_fast16_t)0) {
         --me->count;
+        thr->timeEvt.super.sig = (QSignal)QXK_SEMA_SIG; /* non-zero signal */
     }
     else {
-#ifndef NDEBUG
         /* remember the blocking object */
         thr->super.super.temp.obj = (QMState const *)me;
-#endif /* NDEBUG */
         QXThread_teArm_(thr, (QSignal)QXK_SEMA_SIG, nTicks, tickRate);
         QPSet_insert(&me->waitSet,        thr->super.prio);
         QPSet_remove(&QXK_attr_.readySet, thr->super.prio);
         (void)QXK_sched_();
+        QF_CRIT_EXIT_();
+        QF_CRIT_EXIT_NOP(); /* BLOCK here */
+
+        QF_CRIT_ENTRY_();
+        /* the blocking object must be this semaphore */
+        Q_ASSERT_ID(110, thr->super.super.temp.obj == (QMState const *)me);
+        thr->super.super.temp.obj = (QMState const *)0; /* clear */
     }
     QF_CRIT_EXIT_();
 
@@ -93,6 +139,21 @@ bool QXSemaphore_wait(QXSemaphore * const me,
 }
 
 /****************************************************************************/
+/**
+* @description
+* If the semaphore counter value is 0 or more, it is incremented, and
+* this function returns to its caller. If the extended threads are waiting
+* for the semaphore to be signaled, QXSemaphore_signal() removes the highest-
+* priority thread waiting for the semaphore from the waiting list and makes
+* this thread ready-to-run. The QXK scheduler is then called to determine if
+* the awakened thread is now the highest-priority thread that is ready-to-run.
+*
+* @param[in,out] me     pointer (see @ref oop)
+*
+* @note
+* A semaphore can be signaled from many places, including from ISRs, basic
+* threads (AOs), and extended threads.
+*/
 void QXSemaphore_signal(QXSemaphore * const me) {
     QF_CRIT_STAT_
 
@@ -107,13 +168,15 @@ void QXSemaphore_signal(QXSemaphore * const me) {
 
         thr = (QXThread *)QF_active_[p]; /* thread waiting on the semaphore */
 
-        Q_ASSERT_ID(910, (thr->super.thread != (void *)0) /* extended thread */
+        Q_ASSERT_ID(210,
+            (thr->super.thread != (void *)0) /* must be extended thread */
             && (me->count == (uint_fast16_t)0)); /* sema counter must be 0 */
 
+        /* disarm the internal time event */
         (void)QXThread_teDisarm_(thr);
 
         if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
-            && (QF_active_[0] != (QMActive *)0))  /* kernel started? */
+            && (QF_active_[0] != (QMActive *)0))  /* QXK started? */
         {
             (void)QXK_sched_();
         }

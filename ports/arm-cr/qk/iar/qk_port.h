@@ -3,8 +3,8 @@
 * @brief QK/C port to ARM Cortex-R, IAR-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.0
-* Date of the Last Update:  2016-08-28
+* Last Updated for Version: 5.7.2
+* Date of the Last Update:  2016-09-26
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -74,9 +74,8 @@
 #define QK_IRQ_END() \
     } --QK_attr_.intNest; \
     if (QK_attr_.intNest == (uint_fast8_t)0) { \
-        uint_fast8_t p = QK_schedPrio_(); \
-        if (p != (uint_fast8_t)0) { \
-            QK_sched_(p); \
+        if (QK_sched_() != (uint_fast8_t)0) { \
+            QK_activate_(); \
         } \
     } \
     __asm(" POP {R3, LR}\n" \
@@ -93,9 +92,8 @@
 #define QK_IRQ_END() \
     } --QK_attr_.intNest; \
     if (QK_attr_.intNest == (uint_fast8_t)0) { \
-        uint_fast8_t p = QK_schedPrio_(); \
-        if (p != (uint_fast8_t)0) { \
-            QK_sched_(p); \
+        if (QK_sched_() != (uint_fast8_t)0) { \
+            QK_activate_(); \
         } \
     } \
     __asm(" POP {R3, LR}\n" \

@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-21
+* Last updated for version 5.7.2
+* Last updated on  2016-09-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -112,14 +112,14 @@ void QXThread_ctor(QXThread * const me,
 static void QXThread_init_(QMsm * const me, QEvt const * const e) {
     (void)me;
     (void)e;
-    Q_ERROR_ID(100);
+    Q_ERROR_ID(110);
 }
 
 /****************************************************************************/
 static void QXThread_dispatch_(QMsm * const me, QEvt const * const e) {
     (void)me;
     (void)e;
-    Q_ERROR_ID(200);
+    Q_ERROR_ID(120);
 }
 
 /****************************************************************************/
@@ -153,11 +153,11 @@ static void QXThread_start_(QMActive * const me, uint_fast8_t prio,
 {
     QF_CRIT_STAT_
 
-    Q_REQUIRE_ID(300, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
-                      && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
-                      && (stkSto != (void *)0) /* stack must be provided */
-                      && (stkSize != (uint_fast16_t)0)
-                      && (me->super.state.act == (QActionHandler)0));
+    Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
+        && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
+        && (stkSto != (void *)0) /* stack must be provided */
+        && (stkSize != (uint_fast16_t)0)
+        && (me->super.state.act == (QActionHandler)0));
 
     (void)ie; /* parameter not referenced */
 
@@ -172,9 +172,12 @@ static void QXThread_start_(QMActive * const me, uint_fast8_t prio,
     QXK_stackInit_(me, Q_XTHREAD_CAST(me->super.temp.act), stkSto, stkSize);
 
     me->prio = prio;
-    QF_add_(me); /* make QF aware of this extended thread */
 
     QF_CRIT_ENTRY_();
+    QF_add_(me); /* make QF aware of this extended thread */
+
+    /* the new thread is not blocked on any object */
+    me->super.temp.obj = (QMState const *)0;
 
     /* extended-thread becomes ready immediately */
     QPSet_insert(&QXK_attr_.readySet, me->prio);
@@ -183,30 +186,6 @@ static void QXThread_start_(QMActive * const me, uint_fast8_t prio,
     if (QF_active_[0] != (QMActive *)0) { /* QXK kernel already running? */
         (void)QXK_sched_();
     }
-    QF_CRIT_EXIT_();
-}
-
-/****************************************************************************/
-/**
-* @description
-* Called when the extended-thread handler function returns.
-*
-* @note
-* Most thread handler functions are structured as endless loops that never
-* return. But it is also possible to structure threads as one-shot functions
-* that perform their job and return. In that case this function peforms
-* cleanup after the thread.
-*/
-void QXK_threadRet_(void) {
-    uint_fast8_t p;
-    QF_CRIT_STAT_
-
-    QF_CRIT_ENTRY_();
-    p = ((QMActive volatile *)QXK_attr_.curr)->prio;
-    /* remove this thread from the QF */
-    QF_active_[p] = (QMActive *)0;
-    QPSet_remove(&QXK_attr_.readySet, p);
-    (void)QXK_sched_();
     QF_CRIT_EXIT_();
 }
 
@@ -255,28 +234,31 @@ static bool QXThread_post_(QMActive * const me, QEvt const * const e,
     /* is it the private time event? */
     if (e == &((QXThread *)me)->timeEvt.super) {
         QF_CRIT_ENTRY_();
-        status = true;
         /* the private time event is disarmed and not in any queue,
         * so it is safe to change its signal. The signal of 0 means
-        * that the time event __has__ expired.
+        * that the time event has expired.
         */
         ((QXThread *)me)->timeEvt.super.sig = (QSignal)0;
 
         QXThread_unblock_((QXThread *)me);
         QF_CRIT_EXIT_();
+
+        status = true;
     }
     /* is the event queue provided? */
     else if (me->eQueue.end != (QEQueueCtr)0) {
         QEQueueCtr nFree; /* temporary to avoid UB for volatile access */
 
-        QF_CRIT_ENTRY_();
-        (void)QXThread_teDisarm_((QXThread *)me);
-        QF_CRIT_EXIT_();
-
         /** @pre event pointer must be valid */
-        Q_REQUIRE_ID(100, e != (QEvt const *)0);
+        Q_REQUIRE_ID(300, e != (QEvt const *)0);
 
         QF_CRIT_ENTRY_();
+
+        /* is the owner thread blocked on its internal event queue? */
+        if (me->super.temp.obj == (QMState const *)&me->eQueue) {
+            (void)QXThread_teDisarm_((QXThread *)me);
+        }
+
         nFree = me->eQueue.nFree; /* get volatile into the temporary */
 
         /* margin available? */
@@ -307,9 +289,12 @@ static bool QXThread_post_(QMActive * const me, QEvt const * const e,
             if (me->eQueue.frontEvt == (QEvt const *)0) {
                 me->eQueue.frontEvt = e;    /* deliver event directly */
 
-                QPSet_insert(&QXK_attr_.readySet, me->prio);
-                if (!QXK_ISR_CONTEXT_()) {
-                    Q_ALLEGE_ID(110, QXK_sched_() == (uint_fast8_t)0);
+                /* is this thread blocked on the queue? */
+                if (me->super.temp.obj == (QMState const *)&me->eQueue) {
+                    QPSet_insert(&QXK_attr_.readySet, me->prio);
+                    if (!QXK_ISR_CONTEXT_()) {
+                        (void)QXK_sched_();
+                    }
                 }
             }
             /* queue is not empty, insert event into the ring-buffer */
@@ -321,13 +306,15 @@ static bool QXThread_post_(QMActive * const me, QEvt const * const e,
                 }
                 --me->eQueue.head; /* advance the head (counter clockwise) */
             }
+            QF_CRIT_EXIT_();
+
             status = true; /* event posted successfully */
         }
         else {
             /** @note assert if event cannot be posted and dropping events is
             * not acceptable
             */
-            Q_ASSERT_ID(110, margin != (uint_fast16_t)0);
+            Q_ASSERT_ID(310, margin != (uint_fast16_t)0);
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                              QS_priv_.aoObjFilter, me)
@@ -340,15 +327,16 @@ static bool QXThread_post_(QMActive * const me, QEvt const * const e,
                 QS_EQC_(margin);      /* margin requested */
             QS_END_NOCRIT_()
 
+            QF_CRIT_EXIT_();
+
             QF_gc(e); /* recycle the event to avoid a leak */
             status = false; /* event not posted */
         }
-        QF_CRIT_EXIT_();
     }
     else { /* the queue is not available */
          QF_gc(e); /* make sure the event is not leaked */
          status = false;
-         Q_ERROR_ID(410); /* extened thread does not expect events */
+         Q_ERROR_ID(320); /* extened thread does not expect events */
     }
 
     return status;
@@ -367,7 +355,110 @@ static bool QXThread_post_(QMActive * const me, QEvt const * const e,
 static void QXThread_postLIFO_(QMActive * const me, QEvt const * const e) {
     (void)me;
     (void)e;
-    Q_ERROR_ID(510);
+    Q_ERROR_ID(410);
+}
+
+/****************************************************************************/
+/**
+* @description
+* The QXThread_queueGet() operation allows the calling extended thread to
+* receive QP events directly into its own built-in event queue from an ISR,
+* basic thread (AO), or another extended thread.
+*
+* If QXThread_queueGet() is called when no events are present in the thread’s
+* event queue, the operation blocks the current extended thread until either
+* an event is received, or a user-specified timeout expires.
+*
+* @param[in]  nTicks    number of clock ticks (at the associated rate)
+*                       to wait for the event to arrive. The value of
+*                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
+*                       occur and the queue will block indefinitely.
+* @param[in]  tickRate  system clock tick rate serviced in this call.
+*
+* @returns
+* Returns pointer to the event. If the pointer is not NULL, the event
+* was delivered. Otherwise the event pointer of NULL indicates that the
+* queue has timed out.
+*/
+QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
+                              uint_fast8_t const tickRate)
+{
+    QXThread *thr;
+    QEQueueCtr nFree;
+    QEvt const *e;
+    QF_CRIT_STAT_
+
+    QF_CRIT_ENTRY_();
+    thr = (QXThread *)QXK_attr_.curr;
+
+    Q_REQUIRE_ID(500, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
+        && (thr != (QXThread *)0)     /* current thread must be extended */
+        && (thr->super.super.temp.obj == (QMState const *)0)); /* !blocked */
+
+    /* is the queue empty? */
+    if (thr->super.eQueue.frontEvt == (QEvt *)0) {
+
+        /* remember the blocking object (the thread's queue) */
+        thr->super.super.temp.obj = (QMState const *)&thr->super.eQueue;
+
+        QXThread_teArm_(thr, (QSignal)QXK_QUEUE_SIG, nTicks, tickRate);
+        QPSet_remove(&QXK_attr_.readySet, thr->super.prio);
+        (void)QXK_sched_();
+        QF_CRIT_EXIT_();
+        QF_CRIT_EXIT_NOP(); /* BLOCK here */
+
+        QF_CRIT_ENTRY_();
+        /* the blocking object must be this queue */
+        Q_ASSERT_ID(510, thr->super.super.temp.obj
+                         == (QMState const *)&thr->super.eQueue);
+        thr->super.super.temp.obj = (QMState const *)0; /* clear */
+    }
+
+    /* is the queue not empty? */
+    if (thr->super.eQueue.frontEvt != (QEvt *)0) {
+        e = thr->super.eQueue.frontEvt; /* always remove from the front */
+        nFree= thr->super.eQueue.nFree +(QEQueueCtr)1; /* volatile into tmp */
+        thr->super.eQueue.nFree = nFree; /* update the number of free */
+
+        /* any events in the ring buffer? */
+        if (nFree <= thr->super.eQueue.end) {
+
+            /* remove event from the tail */
+            thr->super.eQueue.frontEvt =
+                QF_PTR_AT_(thr->super.eQueue.ring, thr->super.eQueue.tail);
+            if (thr->super.eQueue.tail == (QEQueueCtr)0) { /* need to wrap? */
+                thr->super.eQueue.tail = thr->super.eQueue.end;  /* wrap */
+            }
+            --thr->super.eQueue.tail;
+
+            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET, QS_priv_.aoObjFilter, thr)
+                QS_TIME_();                   /* timestamp */
+                QS_SIG_(e->sig);              /* the signal of this event */
+                QS_OBJ_(&thr->super);         /* this active object */
+                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+                QS_EQC_(nFree);               /* number of free entries */
+            QS_END_NOCRIT_()
+        }
+        else {
+            thr->super.eQueue.frontEvt = (QEvt const *)0; /* empty queue */
+
+            /* all entries in the queue must be free (+1 for fronEvt) */
+            Q_ASSERT_ID(520, nFree == (thr->super.eQueue.end +(QEQueueCtr)1));
+
+            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST, QS_priv_.aoObjFilter, thr)
+                QS_TIME_();                   /* timestamp */
+                QS_SIG_(e->sig);              /* the signal of this event */
+                QS_OBJ_(&thr->super);         /* this active object */
+                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+            QS_END_NOCRIT_()
+        }
+    }
+    else { /* the queue is still empty -- the timeout must have fired */
+         e = (QEvt const *)0;
+    }
+    QF_CRIT_EXIT_();
+
+    return e;
 }
 
 /****************************************************************************/
@@ -380,7 +471,7 @@ static void QXThread_postLIFO_(QMActive * const me, QEvt const * const e) {
 */
 void QXThread_block_(QXThread * const me) {
     /*! @pre the thread holding the lock cannot block! */
-    Q_REQUIRE_ID(100,  me->super.prio != QXK_attr_.lockPrio);
+    Q_REQUIRE_ID(600,  me->super.prio != QXK_attr_.lockPrio);
     QPSet_remove(&QXK_attr_.readySet, me->super.prio);
     (void)QXK_sched_();
 }
@@ -396,7 +487,7 @@ void QXThread_block_(QXThread * const me) {
 void QXThread_unblock_(QXThread * const me) {
     QPSet_insert(&QXK_attr_.readySet, me->super.prio);
     if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
-        && (QXK_attr_.curr != (void *)0))  /* multitasking started? */
+        && (QF_active_[0] != (QMActive *)0))  /* kernel started? */
     {
         (void)QXK_sched_();
     }
@@ -405,8 +496,8 @@ void QXThread_unblock_(QXThread * const me) {
 /****************************************************************************/
 /**
 * @description
-* Intenral implementation of arming the private time event for
-* a given timeout at a given system tick rate.
+* Intenral implementation of arming the private time event for a given
+* timeout at a given system tick rate.
 *
 * @note
 * must be called from within a critical section
@@ -415,6 +506,9 @@ void QXThread_teArm_(QXThread * const me,
                      QSignal sig,
                      uint_fast16_t const nTicks, uint_fast8_t const tickRate)
 {
+    /* the time event must be unused */
+    Q_REQUIRE_ID(700, me->timeEvt.ctr == (QTimeEvtCtr)0);
+
     me->timeEvt.super.sig = sig;
 
     if (nTicks != QXTHREAD_NO_TIMEOUT) {
@@ -464,48 +558,30 @@ bool QXThread_teDisarm_(QXThread * const me) {
     return wasArmed;
 }
 
-
 /****************************************************************************/
-/*! block (suspend) the current extended thread */
-void QXThread_block(void) {
-    QXThread *thr;
-    QF_CRIT_STAT_
-
-    QF_CRIT_ENTRY_();
-    thr = (QXThread *)QXK_attr_.curr;
-    Q_REQUIRE_ID(700, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
-        && (thr != (QXThread *)0)); /* current thread must be extended */
-    QXThread_block_(thr);
-    QF_CRIT_EXIT_();
-}
-
-/****************************************************************************/
-/*! unblock (resume) a given extended thread */
-void QXThread_unblock(QXThread * const me) {
-    QF_CRIT_STAT_
-
-    /* the unblocked thread must be an extended thread */
-    Q_REQUIRE_ID(800, me->super.thread != (void *)0);
-
-    QF_CRIT_ENTRY_();
-    QXThread_unblock_(me);
-    QF_CRIT_EXIT_();
-}
-
-/****************************************************************************/
-/*! delay (timed block) the current extended thread */
+/*! delay (timed block) the current extended thread (static, no me-pointer) */
 bool QXThread_delay(uint_fast16_t const nTicks, uint_fast8_t const tickRate) {
     QXThread *thr;
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
     thr = (QXThread *)QXK_attr_.curr;
-#ifndef NDEBUG
+
+    /* the delaying thread must not be blocked on any object  */
+    Q_REQUIRE_ID(900, thr->super.super.temp.obj == (QMState const *)0);
+
     /* remember the blocking object */
     thr->super.super.temp.obj = (QMState const *)&thr->timeEvt;
-#endif /* NDEBUG */
     QXThread_teArm_(thr, (QSignal)QXK_DELAY_SIG, nTicks, tickRate);
     QXThread_block_(thr);
+    QF_CRIT_EXIT_();
+    QF_CRIT_EXIT_NOP(); /* BLOCK here */
+
+    QF_CRIT_ENTRY_();
+    /* the blocking object must be the time event */
+    Q_ENSURE_ID(990, thr->super.super.temp.obj
+                          == (QMState const *)&thr->timeEvt);
+    thr->super.super.temp.obj =  (QMState const *)0; /* clear */
     QF_CRIT_EXIT_();
 
     /* signal of zero means that the time event was posted without
@@ -521,86 +597,39 @@ bool QXThread_delayCancel(QXThread * const me) {
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    wasArmed = QXThread_teDisarm_(me);
-    QXThread_unblock_(me);
+    if (me->super.super.temp.obj == (QMState const *)&me->timeEvt) {
+        wasArmed = QXThread_teDisarm_(me);
+        QXThread_unblock_(me);
+    }
+    else {
+        wasArmed = false;
+    }
     QF_CRIT_EXIT_();
 
     return wasArmed;
 }
 
 /****************************************************************************/
-/*! obtain an event from the private event queue (block if no events) */
-QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
-                              uint_fast8_t const tickRate)
-{
-    QXThread *thr;
-    QEQueueCtr nFree;
-    QEvt const *e;
+/**
+* @description
+* Called when the extended-thread handler function returns.
+*
+* @note
+* Most thread handler functions are structured as endless loops that never
+* return. But it is also possible to structure threads as one-shot functions
+* that perform their job and return. In that case this function peforms
+* cleanup after the thread.
+*/
+void QXK_threadRet_(void) {
+    uint_fast8_t p;
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    thr = (QXThread *)QXK_attr_.curr;
-
-    Q_REQUIRE_ID(900, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
-        && (thr != (QXThread *)0)); /* current thread must be extended */
-
-    /* is the queue empty? -- block and wait for event(s) */
-    if (thr->super.eQueue.frontEvt == (QEvt *)0) {
-#ifndef NDEBUG
-        /* remember the blocking object */
-        thr->super.super.temp.obj = (QMState const *)&thr->super.eQueue;
-#endif /* NDEBUG */
-        QXThread_teArm_(thr, (QSignal)QXK_QUEUE_SIG, nTicks, tickRate);
-        QPSet_remove(&QXK_attr_.readySet, thr->super.prio);
-        Q_ALLEGE_ID(910, QXK_sched_() == (uint_fast8_t)0);
-        QF_CRIT_EXIT_();
-        QF_CRIT_EXIT_NOP();
-        QF_CRIT_ENTRY_();
-    }
-
-    /* is the queue not empty? */
-    if (thr->super.eQueue.frontEvt != (QEvt *)0) {
-        e = thr->super.eQueue.frontEvt; /* always remove from the front */
-        nFree= thr->super.eQueue.nFree +(QEQueueCtr)1; /* volatile into tmp */
-        thr->super.eQueue.nFree = nFree; /* update the number of free */
-
-        /* any events in the ring buffer? */
-        if (nFree <= thr->super.eQueue.end) {
-
-            /* remove event from the tail */
-            thr->super.eQueue.frontEvt =
-                QF_PTR_AT_(thr->super.eQueue.ring, thr->super.eQueue.tail);
-            if (thr->super.eQueue.tail == (QEQueueCtr)0) { /* need to wrap? */
-                thr->super.eQueue.tail = thr->super.eQueue.end;  /* wrap */
-            }
-            --thr->super.eQueue.tail;
-
-            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET, QS_priv_.aoObjFilter, thr)
-                QS_TIME_();                   /* timestamp */
-                QS_SIG_(e->sig);              /* the signal of this event */
-                QS_OBJ_(&thr->super);         /* this active object */
-                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-                QS_EQC_(nFree);               /* number of free entries */
-            QS_END_NOCRIT_()
-        }
-        else {
-            thr->super.eQueue.frontEvt = (QEvt const *)0; /* empty queue */
-
-            /* all entries in the queue must be free (+1 for fronEvt) */
-            Q_ASSERT_ID(910, nFree == (thr->super.eQueue.end +(QEQueueCtr)1));
-
-            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST, QS_priv_.aoObjFilter, thr)
-                QS_TIME_();                   /* timestamp */
-                QS_SIG_(e->sig);              /* the signal of this event */
-                QS_OBJ_(&thr->super);         /* this active object */
-                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_END_NOCRIT_()
-        }
-    }
-    else { /* the queue is still empty -- the timeout must have fired */
-         e = (QEvt const *)0;
-    }
+    p = ((QMActive volatile *)QXK_attr_.curr)->prio;
+    /* remove this thread from the QF */
+    QF_active_[p] = (QMActive *)0;
+    QPSet_remove(&QXK_attr_.readySet, p);
+    (void)QXK_sched_();
     QF_CRIT_EXIT_();
-
-    return e;
 }
+

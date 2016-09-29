@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example extened for QXK
-* Last Updated for Version: 5.7.1
-* Date of the Last Update:  2016-09-07
+* Last Updated for Version: 5.7.2
+* Date of the Last Update:  2016-09-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : http://www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -42,7 +42,7 @@ int main() {
     static QSubscrList subscrSto[MAX_PUB_SIG];
     static QF_MPOOL_EL(TableEvt) smlPoolSto[2*N_PHILO]; /* small pool */
 
-    /* stack for the extended test threads */
+    /* stacks and queues for the extended test threads */
     static void const *test1QueueSto[5];
     static uint64_t test1StackSto[64];
     static void const *test2QueueSto[5];
@@ -74,7 +74,6 @@ int main() {
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     /* start the extended thread */
-//#if 0
     QXTHREAD_START(&XT_Test1->super,         /* Thread to start */
                   (uint_fast8_t)1U,          /* QP priority of the thread */
                   test1QueueSto,             /* message queue storage */
@@ -82,9 +81,8 @@ int main() {
                   test1StackSto,             /* stack storage */
                   sizeof(test1StackSto),     /* stack size [bytes] */
                   (QEvt *)0);                /* initialization event */
-//#endif
 
-    /* start the active objects... */
+    /* start the Philo active objects... */
     for (n = 0U; n < N_PHILO; ++n) {
         QACTIVE_START(AO_Philo[n],           /* AO to start */
                       (uint_fast8_t)(n + 2), /* QP priority of the AO */
@@ -94,7 +92,6 @@ int main() {
                       0U,                    /* size of the stack [bytes] */
                      (QEvt *)0);             /* initialization event */
     }
-//#if 0
     QXTHREAD_START(&XT_Test2->super,         /* Thread to start */
                   (uint_fast8_t)(N_PHILO + 2), /* QP priority of the thread */
                   test2QueueSto,             /* message queue storage */
@@ -102,7 +99,7 @@ int main() {
                   test2StackSto,             /* stack storage */
                   sizeof(test2StackSto),     /* stack size [bytes] */
                   (QEvt *)0);                /* initialization event */
-//#endif
+
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 3), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */

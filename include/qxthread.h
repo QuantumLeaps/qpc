@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-21
+* Last updated for version 5.7.2
+* Last updated on  2016-09-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -132,13 +132,7 @@ void QXThread_ctor(QXThread * const me, QXThreadHandler handler,
 #define QXTHREAD_POST_X(me_, e_, margin_, sender_) \
     QACTIVE_POST_X(&(me_)->super, (e_), (margin_), (sender_))
 
-/*! block (suspend) the current "naked" thread */
-void QXThread_block(void);
-
-/*! unblock (resume) a given thread */
-void QXThread_unblock(QXThread * const me);
-
-/*! delay (block) the current "naked" thread for a specified # ticks */
+/*! delay (block) the current extended thread for a specified # ticks */
 bool QXThread_delay(uint_fast16_t const nTicks, uint_fast8_t const tickRate);
 
 /*! cancel the delay */

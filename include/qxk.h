@@ -5,8 +5,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-22
+* Last updated for version 5.7.2
+* Last updated on  2016-09-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -67,15 +67,15 @@
 /****************************************************************************/
 /*! attributes of the QXK kernel */
 typedef struct {
-    void *curr;              /*!< pointer to the current thread to execute */
-    void *next;              /*!< pointer to the next thread to execute */
-    uint_fast8_t topPrio;    /*!< prio of the AO at the top of stack */
-    uint_fast8_t lockPrio;   /*!< lock prio (0 == no-lock) */
-    uint_fast8_t lockHolder; /*!< prio of the lock holder */
+    void *curr;  /*!< pointer to the current thread (0 for basic) */
+    void *next;  /*!< pointer to the next thread to execute */
+    uint_fast8_t volatile actPrio;    /*!< prio of the active basic thread */
+    uint_fast8_t volatile lockPrio;   /*!< lock prio (0 == no-lock) */
+    uint_fast8_t volatile lockHolder; /*!< prio of the lock holder */
 #ifndef QXK_ISR_CONTEXT_
     uint_fast8_t intNest;    /*!< ISR nesting level */
 #endif /* QXK_ISR_CONTEXT_ */
-    QPSet readySet;          /*!< QXK ready-set of AOs and extended-threads */
+    QPSet readySet;          /*!< ready-set of basuc- and extended-threads */
 } QXK_Attr;
 
 /*! global attributes of the QXK kernel */
@@ -137,8 +137,7 @@ void QXMutex_unlock(QXMutex * const me);
 #ifdef QP_IMPL
 
     #ifndef QXK_ISR_CONTEXT_
-        /*! Internal port-specific macro that reports the execution context
-        * (ISR vs. thread).
+        /*! Internal macro that reports the execution context (ISR vs. thread)
         */
         /*! @returns true if the code executes in the ISR context and false
         * otherwise
@@ -147,23 +146,27 @@ void QXMutex_unlock(QXMutex * const me);
     #endif /* QXK_ISR_CONTEXT_ */
 
     /* QF-specific scheduler locking */
-    /*! Internal port-specific macro to represent the scheduler lock status
+    /*! Internal macro to represent the scheduler lock status
     * that needs to be preserved to allow nesting of locks.
     */
-    #define QF_SCHED_STAT_TYPE_ QXMutex
+    #define QF_SCHED_STAT_ QXMutex schedLock_;
 
-    /*! Internal port-specific macro for selective scheduler locking. */
-    #define QF_SCHED_LOCK_(pLockStat_, prio_) do { \
+    /*! Internal macro for selective scheduler locking. */
+    #define QF_SCHED_LOCK_(prio_) do { \
         if (QXK_ISR_CONTEXT_()) { \
-            (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
+            schedLock_.lockPrio = (uint_fast8_t)0; \
         } else { \
-            QXMutex_init((pLockStat_), (prio_)); \
-            QXMutex_lock((pLockStat_)); \
+            QXMutex_init(&schedLock_, (prio_)); \
+            QXMutex_lock(&schedLock_); \
         } \
     } while (0)
 
-    /*! Internal port-specific macro for selective scheduler unlocking. */
-    #define QF_SCHED_UNLOCK_(pLockStat_) QXMutex_unlock((pLockStat_))
+    /*! Internal macro for selective scheduler unlocking. */
+    #define QF_SCHED_UNLOCK_() do { \
+        if (schedLock_.lockPrio != (uint_fast8_t)0) { \
+            QXMutex_unlock(&schedLock_); \
+        } \
+    } while (0)
 
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         (Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0))

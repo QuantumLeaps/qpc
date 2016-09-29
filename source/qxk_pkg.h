@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-27
+* Last updated for version 5.7.2
+* Last updated on  2016-09-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -57,10 +57,10 @@ enum QXK_Timeouts {
     QXK_SEMA_SIG
 };
 
-/*! internal functin to block (suspend) a given "naked" thread */
+/*! internal functin to block (suspend) a given extended thread */
 void QXThread_block_(QXThread * const me);
 
-/*! internal function to unblock (resume) a given "naked" thread. */
+/*! internal function to unblock (resume) a given extended thread. */
 void QXThread_unblock_(QXThread * const me);
 
 /*! internal function to arm the private time event for a given thread. */

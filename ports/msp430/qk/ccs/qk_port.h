@@ -3,8 +3,8 @@
 * @brief QK/C port port to MSP430, CCS-430 compiler
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.0
-* Date of the Last Update:  2016-07-11
+* Last Updated for Version: 5.7.2
+* Date of the Last Update:  2016-09-26
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,9 +45,8 @@
 #define QK_ISR_EXIT()     do { \
     --QK_attr_.intNest; \
     if (QK_attr_.intNest == (uint_fast8_t)0) { \
-        uint_fast8_t p = QK_schedPrio_(); \
-        if (p != (uint_fast8_t)0) { \
-            QK_sched_(p); \
+        if (QK_sched_() != (uint_fast8_t)0) { \
+            QK_activate_(); \
         } \
     } \
     else { \

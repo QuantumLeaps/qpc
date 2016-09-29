@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-14
+* Last updated for version 5.7.2
+* Last updated on  2016-09-26
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -76,9 +76,8 @@
     QF_INT_DISABLE(); \
     --QK_intNest_; \
     if (QK_intNest_ == (uint_fast8_t)0) { \
-        uint_fast8_t nextPrio_ = QK_schedPrio_(); \
-        if (nextPrio_ != (uint_fast8_t)0) { \
-            QK_sched_(nextPrio_); \
+        if (QK_sched_() != (uint_fast8_t)0) { \
+            QK_activate_(); \
         } \
     } \
     QF_INT_ENABLE(); \

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK port to ARM7-9, GNU-ARM assembler
-* Last Updated for Version: 5.7.0
-* Date of the Last Update:  2016-07-11
+* Last Updated for Version: 5.7.2
+* Date of the Last Update:  2016-09-26
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -133,15 +133,15 @@ QK_irq:
     STR     r12,[r0,#QK_INT_NEST] /* store the value in QK_attr_.intNest */
     BNE     QK_irq_exit         /* branch if interrupt nesting not zero */
 
-    LDR     r12,=QK_schedPrio_
-    MOV     lr,pc               /* copy the return address to link register */
-    BX      r12                 /* call QK_schedPrio_ (ARM/THUMB) */
-    CMP     r0,#0               /* check the returned priority */
-    BEQ     QK_irq_exit         /* branch if priority zero */
-
     LDR     r12,=QK_sched_
     MOV     lr,pc               /* copy the return address to link register */
     BX      r12                 /* call QK_sched_ (ARM/THUMB) */
+    CMP     r0,#0               /* check the returned priority */
+    BEQ     QK_irq_exit         /* branch if priority zero */
+
+    LDR     r12,=QK_activate_
+    MOV     lr,pc               /* copy the return address to link register */
+    BX      r12                 /* call QK_activate_ (ARM/THUMB) */
 
 QK_irq_exit:
 /* IRQ exit {{{ */              /* IRQ/FIQ disabled--return from scheduler */

@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-17
+* Last updated for version 5.7.2
+* Last updated on  2016-09-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,11 +40,11 @@
 #ifndef qf_h
 #define qf_h
 
-/****************************************************************************/
-#if (QF_MAX_ACTIVE < 1) || (64 < QF_MAX_ACTIVE)
-    #error "QF_MAX_ACTIVE not defined or out of range. Valid range is 1..63"
+#ifndef qpset_h
+#include "qpset.h"
 #endif
 
+/****************************************************************************/
 #ifndef QF_EVENT_SIZ_SIZE
     /*! Default value of the macro configurable value in qf_port.h */
     #define QF_EVENT_SIZ_SIZE 2
@@ -80,10 +80,6 @@
     * 1, 2, or 4; default 2
     */
     #define QF_TIMEEVT_CTR_SIZE  2
-#endif
-
-#ifndef qpset_h
-#include "qpset.h"
 #endif
 
 /****************************************************************************/
@@ -503,7 +499,7 @@ QTimeEvtCtr QTimeEvt_ctr(QTimeEvt const * const me);
 /**
 * @description
 * This data type represents a set of active objects that subscribe to
-* a given signal. The set is represented as an array of bits, where each
+* a given signal. The set is represented as a priority-set, where each
 * bit corresponds to the unique priority of an active object.
 *
 * @sa ::QSubscrList for the description of the data members

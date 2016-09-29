@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QK port to ARM Cortex-M (M0,M0+,M3,M4,M7), IAR ARM assembler
-; Last Updated for Version: 5.7.1
-; Date of the Last Update:  2016-09-22
+; Last Updated for Version: 5.7.2
+; Date of the Last Update:  2016-09-26
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -36,20 +36,16 @@
     PUBLIC  PendSV_Handler    ; CMSIS-compliant PendSV exception name
     PUBLIC  NMI_Handler       ; CMSIS-compliant NMI exception name
 
-    EXTERN  QK_sched_         ; external reference
+    EXTERN  QK_activate_      ; external reference
     EXTERN  QK_attr_          ; QK attribute structure
 
     ; NOTE: keep in synch with QF_BASEPRI value defined in "qf_port.h" !!!
-QF_BASEPRI EQU (0xFF >> 2)
-
-    ; NOTE: keep in synch with the QK_Attr struct in "qk.h" !!!
-QK_CURR    EQU 0
-QK_NEXT    EQU 4
+QF_BASEPRI  EQU (0xFF >> 2)
 
     RSEG CODE:CODE:NOROOT(2)
 ;*****************************************************************************
 ; The QK_init() function sets the priority of PendSV to 0xFF (lowest).
-; This operation is performed in a critical section.
+; This operation is performed in a nestable critical section.
 ;*****************************************************************************
 QK_init:
     MRS     r0,PRIMASK        ; store the state of the PRIMASK in r0
@@ -87,10 +83,8 @@ QK_init:
 ; check for the asynchronous preemption.
 ;*****************************************************************************
 PendSV_Handler:
-    ; Prepare some constants (an address and a bitmask) before entering
-    ; a critical section...
-    LDR     r3,=QK_attr_
-    LDR     r2,=0xE000ED04    ; Interrupt Control and State Register
+    ; Prepare some constants in registers before entering critical section
+    LDR     r3,=0xE000ED04    ; Interrupt Control and State Register
     MOVS    r1,#1
     LSLS    r1,r1,#27         ; r0 := (1 << 27) (UNPENDSVSET bit)
 
@@ -98,6 +92,9 @@ PendSV_Handler:
 #if (__CORE__ == __ARM6M__)   ; Cortex-M0/M0+/M1 ?
     CPSID   i                 ; disable interrupts (set PRIMASK)
 #else ; M3/M4/M7
+#ifdef __ARMVFP__             ; if VFP available...
+    PUSH    {r0,lr}           ; ... push lr (EXC_RETURN) plus stack-aligner
+#endif                        ; VFP available
     MOVS    r0,#QF_BASEPRI
     MSR     BASEPRI,r0        ; selectively disable interrupts
 #endif                        ; M3/M4/M7
@@ -105,64 +102,27 @@ PendSV_Handler:
     ; The PendSV exception handler can be preempted by an interrupt,
     ; which might pend PendSV exception again. The following write to
     ; ICSR[27] un-pends any such spurious instance of PendSV.
-    STR     r1,[r2]           ; ICSR[27] := 1 (unpend PendSV)
+    STR     r1,[r3]           ; ICSR[27] := 1 (unpend PendSV)
 
-    ; Check QK_attr_.next, which contains the priority of the next thread
-    ; to run, which is set in QK_ISR_EXIT(). If this priority is non-zero
-    ; (QK_attr_.next != 0), this next thread needs to be scheduled.
-    ; Otherwise, if (QK_attr_.next == 0), this PendSV exception needs to
-    ; simply return without activating the QK scheduler.
+    ; The QK activator must be called in a Thread mode, while this code
+    ; executes in the Handler mode of the PendSV exception. The switch
+    ; to the Thread mode is accomplished by returning from PendSV using
+    ; a fabricated exception stack frame, where the return address is
+    ; QK_activate_().
     ;
-    LDR     r0,[r3,#QK_NEXT]  ; r0 := QK_attr_.next
-    CMP     r0,#0             ; if (QK_attr_.next == 0) ...
-    BEQ     PendSV_ret
-
-    ; set QK_attr_.next to 0 for the next time
-    MOVS    r1,#0
-    STR     r1,[r3,#QK_NEXT]  ; QK_attr_.next := 0
-
-PendSV_call_sched:
-#ifdef __ARMVFP__             ; if VFP available...
-    PUSH    {r0,lr}           ; ... push lr (EXC_RETURN) plus stack-aligner
-#endif                        ; VFP available
-
-    ; The QK scheduler must be called in a thread context, while this code
-    ; executes in the handler contex of the PendSV exception. The switch
-    ; to the thread context is accomplished by returning from PendSV using
-    ; a fabricated exception stack frame, where the return address is the
-    ; QK scheduler QK_sched_().
-    ;
-    ; NOTE: the QK scheduler is called with interrupts DISABLED and also
-    ; it returns with interrupts DISABLED.
-    MOVS    r3,#1
-    LSLS    r3,r3,#24         ; r3:=(1 << 24), set the T bit  (new xpsr)
-    LDR     r2,=QK_sched_     ; address of the QK scheduler   (new pc)
-    LDR     r1,=Thread_ret    ; return address after the call (new lr)
+    ; NOTE: the QK activator is called with interrupts DISABLED and also
+    ; returns with interrupts DISABLED.
+    LSRS    r3,r1,#3          ; r3 := (1 << 24), set the T bit (new xpsr)
+    LDR     r2,=QK_activate_  ; address of the QK activator    (new pc)
+    LDR     r1,=Thread_ret    ; return address after the call  (new lr)
 
     SUB     sp,sp,#8*4        ; reserve space for exception stack frame
-    STR     r0,[sp]           ; save the prio argument (new r0)
     ADD     r0,sp,#5*4        ; r0 := 5 registers below the top of stack
     STM     r0!,{r1-r3}       ; save xpsr,pc,lr
 
     MOVS    r0,#6
     MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
     BX      r0                ; exception-return to the QK scheduler
-
-    ; This part of the code executes when PendSV returns to the preempted task
-PendSV_ret:
-#if (__CORE__ == __ARM6M__)   ; Cortex-M0/M0+/M1 ?
-    CPSIE   i                 ; enable interrupts (clear PRIMASK)
-#else                         ; M3/M4/M7
-    MOVS    r0,#0
-    MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
-#endif                        ; M3/M4/M7
-    ; >>>>>>>>>>>>>>>>>>>>>>>> CRITICAL SECTION END >>>>>>>>>>>>>>>>>>>>>>>>>>
-
-#ifdef __ARMVFP__             ; if VFP available...
-    POP     {r0,pc}           ; pop stack "aligner" and EXC_RETURN to PC
-#else                         ; VFP not available...
-    BX      lr                ; return to the preempted task
-#endif                        ; VFP
 
 
 ;*****************************************************************************

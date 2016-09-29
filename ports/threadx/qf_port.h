@@ -3,8 +3,8 @@
 * @brief QF/C, port to ThreadX
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-03-31
+* Last Updated for Version: 5.7.2
+* Date of the Last Update:  2016-09-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -67,29 +67,33 @@
 */
 #ifdef QP_IMPL
 
-    /* QF-specific scheduler locking (implemented in qf_port.c) */
+    /* ThreadX-specific scheduler locking (implemented in qf_port.c) */
     typedef struct {
         uint_fast8_t lockPrio;   /*!< lock prio [QF numbering scheme] */
         UINT prevThre;           /*!< previoius preemption threshold */
         TX_THREAD *lockHolder;   /*!< the thread holding the lock */
     } QFSchedLock;
 
-    #define QF_SCHED_STAT_TYPE_ QFSchedLock
-    #define QF_SCHED_LOCK_(pLockStat_, prio_) do { \
+    #define QF_SCHED_STAT_ QFSchedLock lockStat_;
+    #define QF_SCHED_LOCK_(prio_) do { \
         if (_tx_thread_system_state != (UINT)0) { \
-            (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
+            lockStat_.lockPrio = (uint_fast8_t)0; \
         } else { \
-            QFSchedLock_((pLockStat_), (prio_)); \
+            QFSchedLock_(&lockStat_, (prio_)); \
         } \
     } while (0)
-    #define QF_SCHED_UNLOCK_(pLockStat_) QFSchedUnlock_((pLockStat_))
+    #define QF_SCHED_UNLOCK_() do { \
+        if (lockStat_.lockPrio != (uint_fast8_t)0) { \
+            QFSchedUnlock_(&lockStat_); \
+        } \
+    } while (0)
 
     /* internal implementation of scheduler locking/unlocking */
     void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio);
     void QFSchedUnlock_(QFSchedLock const * const lockStat);
     extern UINT _tx_thread_system_state; /* internal TX interrupt counter */
 
-    /* TreadX block pool operations */
+    /* TreadX block pool operations... */
     #define QF_EPOOL_TYPE_              TX_BLOCK_POOL
     #define QF_EPOOL_INIT_(pool_, poolSto_, poolSize_, evtSize_) \
         Q_ALLEGE(tx_block_pool_create(&(pool_), "P", (evtSize_), \

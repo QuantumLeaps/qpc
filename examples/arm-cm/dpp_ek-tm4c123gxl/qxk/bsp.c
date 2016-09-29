@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, preemptive QXK kernel
-* Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-03-30
+* Last Updated for Version: 5.7.2
+* Date of the Last Update:  2016-09-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -226,7 +226,13 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
     if (paused != 0U) {
+        static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
+				
         GPIOF->DATA_Bits[LED_GREEN] = 0xFFU;
+
+        /* for testing the extended threads... */
+        QXThread_delayCancel(XT_Test2); /* make sure Test2 is not delayed */
+        QACTIVE_POST_X(&XT_Test2->super, &pauseEvt, 1U, (void *)0);
     }
     else {
         GPIOF->DATA_Bits[LED_GREEN] = 0x0U;

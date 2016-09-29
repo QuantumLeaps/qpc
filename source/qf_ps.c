@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-17
+* Last updated for version 5.7.2
+* Last updated on  2016-09-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -121,8 +121,6 @@ void QF_publish_(QEvt const * const e)
 void QF_publish_(QEvt const * const e, void const * const sender)
 #endif
 {
-    QPSet tmp;
-    QF_SCHED_STAT_TYPE_ lockStat;
     QF_CRIT_STAT_
 
     /** @pre the published signal must be within the configured range */
@@ -137,48 +135,50 @@ void QF_publish_(QEvt const * const e, void const * const sender)
         QS_2U8_(e->poolId_, e->refCtr_);/* pool Id & ref Count of the event */
     QS_END_NOCRIT_()
 
-    /* is it a dynamic event? */
-    if (e->poolId_ != (uint8_t)0) {
-        QF_EVT_REF_CTR_INC_(e); /* increment reference counter, NOTE01 */
-    }
-    QF_CRIT_EXIT_();
-
-    lockStat.lockPrio = (uint_fast8_t)0xFF; /* set as uninitialized */
-
-    tmp = QF_PTR_AT_(QF_subscrList_, e->sig);
-    while (QPSet_notEmpty(&tmp)) {
+    if (QPSet_notEmpty(&QF_PTR_AT_(QF_subscrList_, e->sig))) {
+        QPSet tmp;
         uint_fast8_t p;
+        QF_SCHED_STAT_
 
-        QPSet_findMax(&tmp, p);
-        QPSet_remove(&tmp, p);
-
-        /* has the scheduler been locked yet? */
-        if (lockStat.lockPrio == (uint_fast8_t)0xFF) {
-            QF_SCHED_LOCK_(&lockStat, p);
+        /* is it a dynamic event? */
+        if (e->poolId_ != (uint8_t)0) {
+            /* NOTE: QF_publish_() increments the reference counter to prevent
+            * premature recycling of the event while the multicasting is still
+            * in progress. At the end of the function, the garbage collector
+            * step decrements the reference counter and recycles the event if
+            * the counter drops to zero. This covers the case when the event
+            * was published without any subscribers.
+            */
+            QF_EVT_REF_CTR_INC_(e); /* increment reference counter, NOTE01 */
         }
+        QF_CRIT_EXIT_();
 
-        /* the prio of the AO must be registered with the framework */
-        Q_ASSERT_ID(210, QF_active_[p] != (QMActive *)0);
+        tmp = QF_PTR_AT_(QF_subscrList_, e->sig);
+        QPSet_findMax(&tmp, p);
 
-        /* QACTIVE_POST() asserts internally if the queue overflows */
-        QACTIVE_POST(QF_active_[p], e, sender);
+        QF_SCHED_LOCK_(p); /* lock the scheduler upto prio 'p' */
+        do { /* loop over all subscribers */
+            /* the prio of the AO must be registered with the framework */
+            Q_ASSERT_ID(210, QF_active_[p] != (QMActive *)0);
+
+            /* QACTIVE_POST() asserts internally if the queue overflows */
+            QACTIVE_POST(QF_active_[p], e, sender);
+
+            QPSet_remove(&tmp, p);
+            if (QPSet_notEmpty(&tmp)) {
+                QPSet_findMax(&tmp, p);
+            }
+            else {
+                p = (uint_fast8_t)0;
+            }
+        } while (p != (uint_fast8_t)0);
+        QF_SCHED_UNLOCK_(); /* unlock the scheduler */
+
+        QF_gc(e); /* run the garbage collector */
     }
-
-    /* was the scheduler locked? */
-    if (lockStat.lockPrio <= (uint_fast8_t)QF_MAX_ACTIVE) {
-        QF_SCHED_UNLOCK_(&lockStat); /* unlock the scheduler */
+    else {
+        QF_CRIT_EXIT_();
     }
-
-    /* run the garbage collector */
-    QF_gc(e);
-
-    /* NOTE: QF_publish_() increments the reference counter to prevent
-    * premature recycling of the event while the multicasting is still
-    * in progress. At the end of the function, the garbage collector step
-    * decrements the reference counter and recycles the event if the
-    * counter drops to zero. This covers the case when the event was
-    * published without any subscribers.
-    */
 }
 
 /****************************************************************************/

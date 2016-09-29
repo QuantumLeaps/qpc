@@ -4,8 +4,8 @@
 * @brief QMutex_init(), QMutex_lock and QMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.0
-* Last updated on  2016-07-11
+* Last updated for version 5.7.2
+* Last updated on  2016-09-26
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -165,9 +165,8 @@ void QMutex_unlock(QMutex * const me) {
 
     if (QK_attr_.lockPrio > p) {
         QK_attr_.lockPrio = p; /* restore the previous lock prio */
-        p = QK_schedPrio_(); /* find the highest-prio AO ready to run */
-        if (p != (uint_fast8_t)0) { /* priority found? */
-            QK_sched_(p); /* schedule any unlocked AOs */
+        if (QK_sched_() != (uint_fast8_t)0) { /* priority found? */
+            QK_activate_(); /* activate any unlocked AOs */
         }
     }
     QF_CRIT_EXIT_();

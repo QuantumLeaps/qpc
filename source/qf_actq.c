@@ -8,8 +8,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.2
-* Last updated on  2015-06-03
+* Last updated for version 5.7.2
+* Last updated on  2016-09-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -152,6 +152,8 @@ bool QActive_post_(QMActive * const me, QEvt const * const e,
             }
             --me->eQueue.head; /* advance the head (counter clockwise) */
         }
+        QF_CRIT_EXIT_();
+
         status = true; /* event posted successfully */
     }
     else {
@@ -170,10 +172,11 @@ bool QActive_post_(QMActive * const me, QEvt const * const e,
             QS_EQC_(margin);      /* margin requested */
         QS_END_NOCRIT_()
 
+        QF_CRIT_EXIT_();
+
         QF_gc(e); /* recycle the event to avoid a leak */
         status = false; /* event not posted */
     }
-    QF_CRIT_EXIT_();
 
     return status;
 }

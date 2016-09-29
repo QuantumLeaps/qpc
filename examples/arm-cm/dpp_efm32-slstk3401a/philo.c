@@ -35,11 +35,12 @@ typedef struct {
 static QState Philo_initial(Philo * const me, QEvt const * const e);
 static QState Philo_thinking  (Philo * const me, QEvt const * const e);
 static QState Philo_thinking_e(Philo * const me);
+static QState Philo_thinking_x(Philo * const me);
 static QMState const Philo_thinking_s = {
     (QMState const *)0, /* superstate (top) */
     Q_STATE_CAST(&Philo_thinking),
     Q_ACTION_CAST(&Philo_thinking_e),
-    Q_ACTION_CAST(0), /* no exit action */
+    Q_ACTION_CAST(&Philo_thinking_x),
     Q_ACTION_CAST(0)  /* no intitial tran. */
 };
 static QState Philo_hungry  (Philo * const me, QEvt const * const e);
@@ -143,6 +144,11 @@ static QState Philo_thinking_e(Philo * const me) {
     return QM_ENTRY(&Philo_thinking_s);
 }
 /* ${AOs::Philo::SM::thinking} */
+static QState Philo_thinking_x(Philo * const me) {
+    QTimeEvt_disarm(&me->timeEvt);
+    return QM_EXIT(&Philo_thinking_s);
+}
+/* ${AOs::Philo::SM::thinking} */
 static QState Philo_thinking(Philo * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
@@ -150,10 +156,11 @@ static QState Philo_thinking(Philo * const me, QEvt const * const e) {
         case TIMEOUT_SIG: {
             static struct {
                 QMState const *target;
-                QActionHandler act[2];
+                QActionHandler act[3];
             } const tatbl_ = { /* transition-action table */
                 &Philo_hungry_s, /* target state */
                 {
+                    Q_ACTION_CAST(&Philo_thinking_x), /* exit */
                     Q_ACTION_CAST(&Philo_hungry_e), /* entry */
                     Q_ACTION_CAST(0) /* zero terminator */
                 }

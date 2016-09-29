@@ -64,7 +64,7 @@ enum {
 * Initializes QXK priority-ceiling mutex to the specified ceiling priority.
 *
 * @param[in,out] me      pointer (see @ref oop)
-* @param[in] prio        ceiling priority of the mutex
+* @param[in]     prio    ceiling priority of the mutex
 *
 * @note
 * A mutex must be initialized before it can be locked or unlocked.
@@ -91,11 +91,15 @@ void QXMutex_init(QXMutex * const me, uint_fast8_t prio) {
 * A mutex must be initialized before it can be locked or unlocked.
 *
 * @note
+* A QXK mutex can be used from both basic threads (AOs) and extended threads.
+*
+* @note
 * QXMutex_lock() must be always followed by the corresponding
 * QXMutex_unlock().
 *
 * @attention
-* A thread holding a mutex __cannot block__.
+* QXK will fire an assertion if a thread holding the mutex attempts
+* to block.
 *
 * @sa QXMutex_init(), QXMutex_unlock()
 *
@@ -119,12 +123,10 @@ void QXMutex_lock(QXMutex * const me) {
     if (QXK_attr_.lockPrio < me->lockPrio) { /* raising the lock prio? */
         QXK_attr_.lockPrio = me->lockPrio;
     }
-    if (QXK_attr_.curr != (void *)0) {
-        QXK_attr_.lockHolder = ((QMActive volatile *)QXK_attr_.curr)->prio;
-    }
-    else {
-        QXK_attr_.lockHolder = (uint_fast8_t)0;
-    }
+    QXK_attr_.lockHolder =
+       (QXK_attr_.curr != (void *)0)
+       ? ((QMActive volatile *)QXK_attr_.curr)->prio
+       : (uint_fast8_t)0;
 
     QS_BEGIN_NOCRIT_(QS_SCHED_LOCK, (void *)0, (void *)0)
         QS_TIME_(); /* timestamp */
@@ -146,7 +148,14 @@ void QXMutex_lock(QXMutex * const me) {
 * A mutex must be initialized before it can be locked or unlocked.
 *
 * @note
+* A QXK mutex can be used from both basic threads (AOs) and extended threads.
+*
+* @note
 * QXMutex_unlock() must always follow the corresponding QXMutex_lock().
+*
+* @attention
+* QXK will fire an assertion if a thread holding the mutex attempts
+* to block.
 *
 * @sa QXMutex_init(), QXMutex_lock()
 *
@@ -163,7 +172,7 @@ void QXMutex_unlock(QXMutex * const me) {
     * and the mutex must NOT be unused
     */
     Q_REQUIRE_ID(800, (!QXK_ISR_CONTEXT_())
-                      && (me->prevPrio != (uint_fast8_t)MUTEX_UNUSED));
+                 && (me->prevPrio != (uint_fast8_t)MUTEX_UNUSED));
 
     p = me->prevPrio;
     me->prevPrio = (uint_fast8_t)MUTEX_UNUSED;
@@ -175,13 +184,11 @@ void QXMutex_unlock(QXMutex * const me) {
                 (uint8_t)QXK_attr_.lockPrio); /* the lock priority */
     QS_END_NOCRIT_()
 
-
-
     if (QXK_attr_.lockPrio > p) {
         QXK_attr_.lockPrio = p; /* restore the previous lock prio */
-        /* find the highest-prio AO ready to run */
+        /* find the highest-prio thread ready to run */
         if (QXK_sched_() != (uint_fast8_t)0) { /* priority found? */
-            QXK_activate_(); /* activate any unlocked AOs */
+            QXK_activate_(); /* activate any unlocked basic threads */
         }
     }
     QF_CRIT_EXIT_();

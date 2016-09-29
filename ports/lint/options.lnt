@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.7.1
+// Last updated for version 5.7.2
 // Last updated on  2016-09-18
 //
 //                    Q u a n t u m     L e a P s
@@ -106,7 +106,7 @@ qpc.lnt               // QP/C options
 -esym(960,            // MISRA04-19.4(req) Disallowed macro definition
  QF_CRIT_ENTRY_,
  QF_CRIT_EXIT_,
- QF_SCHED_STAT_TYPE_,
+ QF_SCHED_STAT_,
  QF_SCHED_LOCK_,
  QF_SCHED_UNLOCK_,
  QF_EPOOL_TYPE_,
@@ -122,7 +122,9 @@ qpc.lnt               // QP/C options
 -efunc(527, QF_run)   // MISRA04-14.17(req) Unreachable code
 -emacro({717},        // do ... while(0);
  QACTIVE_EQUEUE_SIGNAL_,
- QACTIVE_EQUEUE_ONEMPTY_)
+ QACTIVE_EQUEUE_ONEMPTY_,
+ QF_SCHED_LOCK_,
+ QF_SCHED_UNLOCK_)
 -esym(960, 8.8)       // MISRA04-8.8(req) Seems to be checked incorrectly...
 
 // QV

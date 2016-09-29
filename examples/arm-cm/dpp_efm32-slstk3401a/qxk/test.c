@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.7.1
-* Date of the Last Update:  2016-09-20
+* Last Updated for Version: 5.7.2
+* Date of the Last Update:  2016-09-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -54,17 +54,17 @@ static void Thread1_run(QXThread * const me) {
     for (;;) {
         float volatile x;
 
-        /* wait on a semaphore (BLOCK) */
-        QXSemaphore_wait(&l_sema, QXTHREAD_NO_TIMEOUT, 0U);
+        /* wait on a semaphore (BLOCK with timeout) */
+        (void)QXSemaphore_wait(&l_sema, BSP_TICKS_PER_SEC, 0U);
         BSP_ledOn();
 
+        QXMutex_lock(&l_mutex); /* exercise the mutex */
         /* some flating point code to exercise the VFP... */
-        QXMutex_lock(&l_mutex);
         x = 1.4142135F;
         x = x * 1.4142135F;
         QXMutex_unlock(&l_mutex);
 
-        QXThread_delay(BSP_TICKS_PER_SEC/8U, 0U);  /* BLOCK */
+        QXThread_delay(BSP_TICKS_PER_SEC/7, 0U);  /* BLOCK */
 
         /* publish to thread2 */
         QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), &l_test1);
@@ -91,21 +91,23 @@ static void Thread2_run(QXThread * const me) {
 
     for (;;) {
         QEvt const *e;
-        float volatile x;
-
-        /* signal thread1... */
-        QXSemaphore_signal(&l_sema);
 
         /* some flating point code to exercise the VFP... */
+        float volatile x;
         x = 1.4142135F;
         x = x * 1.4142135F;
 
-        /* wait on the internal event queue (BLOCK) */
-        e = QXThread_queueGet(QXTHREAD_NO_TIMEOUT, 0U);
+        /* wait on the internal event queue (BLOCK) with timeout */
+        e = QXThread_queueGet(BSP_TICKS_PER_SEC/2, 0U);
         BSP_ledOff();
-        QF_gc(e); /* recycle the event manually! */
 
-        QXThread_delay(BSP_TICKS_PER_SEC, 0U);  /* BLOCK */
+        if (e != (QEvt *)0) { /* event actually delivered? */
+            QF_gc(e); /* recycle the event manually! */
+        }
+        else {
+            QXThread_delay(BSP_TICKS_PER_SEC/2, 0U);  /* wait more (BLOCK) */
+            QXSemaphore_signal(&l_sema); /* signal Thread1 */
+        }
     }
 }
 

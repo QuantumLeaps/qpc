@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.1
-* Date of the Last Update:  2016-09-22
+* Last Updated for Version: 5.7.2
+* Date of the Last Update:  2016-09-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -137,10 +137,9 @@ void QF_onClockTick(void);
 #ifdef QP_IMPL
 
     /* Win32-QV specific scheduler locking, see NOTE2 */
-    #define QF_SCHED_STAT_TYPE_ struct { uint_fast8_t lockPrio; }
-    #define QF_SCHED_LOCK_(pLockStat_, dummy) \
-        ((pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1))
-    #define QF_SCHED_UNLOCK_(dummy) ((void)0)
+    #define QF_SCHED_STAT_
+    #define QF_SCHED_LOCK_(dummy) ((void)0)
+    #define QF_SCHED_UNLOCK_()    ((void)0)
 
     /* Win32 OS object object implementation */
     #define QACTIVE_EQUEUE_WAIT_(me_) \

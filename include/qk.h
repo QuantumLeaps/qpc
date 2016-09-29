@@ -5,8 +5,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-22
+* Last updated for version 5.7.2
+* Last updated on  2016-09-26
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -59,10 +59,10 @@
 /****************************************************************************/
 /*! attributes of the QK kernel */
 typedef struct {
-    uint_fast8_t volatile curr;  /*!< priority of the current executing AO */
-    uint_fast8_t volatile next;  /*!< priority of the next AO to execute */
+    uint_fast8_t volatile actPrio;  /*!< prio of the active AO */
+    uint_fast8_t volatile nextPrio; /*!< prio of the next AO to execute */
     uint_fast8_t volatile lockPrio;   /*!< lock prio (0 == no-lock) */
-    uint_fast8_t volatile lockHolder; /*!< prio of the lock holder */
+    uint_fast8_t volatile lockHolder; /*!< prio of the AO holding the lock */
 #ifndef QK_ISR_CONTEXT_
     uint_fast8_t volatile intNest;    /*!< ISR nesting level */
 #endif /* QK_ISR_CONTEXT_ */
@@ -94,11 +94,13 @@ void QK_init(void);
 void QK_onIdle(void);
 
 /****************************************************************************/
-/*! QK scheduler */
-void QK_sched_(uint_fast8_t p);
+/*! QK scheduler finds the highest-priority thread ready to run */
+uint_fast8_t QK_sched_(void);
 
-/*! Find the highest-priority task ready to run */
-uint_fast8_t QK_schedPrio_(void);
+/*! QK activator activates the next active object. The activated AO preempts
+* the currently executing AOs.
+*/
+void QK_activate_(void);
 
 /****************************************************************************/
 /*! QK priority-ceiling mutex class */
@@ -125,8 +127,7 @@ void QMutex_unlock(QMutex * const me);
 #ifdef QP_IMPL
 
     #ifndef QK_ISR_CONTEXT_
-        /*! Internal port-specific macro that reports the execution context
-        * (ISR vs. thread).
+        /*! Internal macro that reports the execution context (ISR vs. thread)
         */
         /*! @returns true if the code executes in the ISR context and false
         * otherwise
@@ -134,34 +135,38 @@ void QMutex_unlock(QMutex * const me);
         #define QK_ISR_CONTEXT_() (QK_attr_.intNest != (uint_fast8_t)0)
     #endif /* QK_ISR_CONTEXT_ */
 
-    /* QF-specific scheduler locking */
-    /*! Internal port-specific macro to represent the scheduler lock status
+    /* QK-specific scheduler locking */
+    /*! Internal macro to represent the scheduler lock status
     * that needs to be preserved to allow nesting of locks.
     */
-    #define QF_SCHED_STAT_TYPE_ QMutex
+    #define QF_SCHED_STAT_ QMutex schedLock_;
 
-    /*! Internal port-specific macro for selective scheduler locking. */
-    #define QF_SCHED_LOCK_(pLockStat_, prio_) do { \
+    /*! Internal macro for selective scheduler locking. */
+    #define QF_SCHED_LOCK_(prio_) do { \
         if (QK_ISR_CONTEXT_()) { \
-            (pLockStat_)->lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1); \
+            schedLock_.lockPrio = (uint_fast8_t)0; \
         } else { \
-            QMutex_init((pLockStat_), (prio_)); \
-            QMutex_lock((pLockStat_)); \
+            QMutex_init(&schedLock_, (prio_)); \
+            QMutex_lock(&schedLock_); \
         } \
     } while (0)
 
-    /*! Internal port-specific macro for selective scheduler unlocking. */
-    #define QF_SCHED_UNLOCK_(pLockStat_) QMutex_unlock((pLockStat_))
+    /*! Internal macro for selective scheduler unlocking. */
+    #define QF_SCHED_UNLOCK_() do { \
+        if (schedLock_.lockPrio != (uint_fast8_t)0) { \
+            QMutex_unlock(&schedLock_); \
+        } \
+    } while (0)
 
+    /* native event queue operations... */
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         (Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0))
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
         QPSet_insert(&QK_attr_.readySet, (me_)->prio); \
         if (!QK_ISR_CONTEXT_()) { \
-            uint_fast8_t p = QK_schedPrio_(); \
-            if (p != (uint_fast8_t)0) { \
-                QK_sched_(p); \
+            if (QK_sched_() != (uint_fast8_t)0) { \
+                QK_activate_(); \
             } \
         } \
     } while (0)

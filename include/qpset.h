@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-18
+* Last updated for version 5.7.2
+* Last updated on  2016-09-26
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,6 +40,10 @@
 #ifndef qpset_h
 #define qpset_h
 
+#if (QF_MAX_ACTIVE < 1) || (64 < QF_MAX_ACTIVE)
+    #error "QF_MAX_ACTIVE not defined or out of range. Valid range is 1..64"
+#endif
+
 #if (QF_MAX_ACTIVE <= 32)
 
 /****************************************************************************/
@@ -50,7 +54,7 @@
 * capable of storing up to 32 priority levels.
 */
 typedef struct {
-    uint32_t bits;  /*!< bitmask with a bit for each element */
+    uint32_t volatile bits;  /*!< bitmask with a bit for each element */
 } QPSet;
 
 /*! Makes the priority set @p me_ empty */
@@ -90,7 +94,7 @@ typedef struct {
 * capable of storing up to 64 priority levels.
 */
 typedef struct {
-    uint32_t bits[2];
+    uint32_t volatile bits[2];
 } QPSet;
 
 /*! Makes the priority set @p me_ empty */
@@ -100,12 +104,18 @@ typedef struct {
 } while (0)
 
 /*! Evaluates to TRUE if the priority set @p me_ is empty */
+/* the following logic avoids UB in volatile access for MISRA compliantce */
 #define QPSet_isEmpty(me_) \
-    (((me_)->bits[0] == (uint32_t)0) && ((me_)->bits[1] == (uint32_t)0))
+    (((me_)->bits[0] == (uint32_t)0) \
+     ? ((me_)->bits[1] == (uint32_t)0) \
+     : 0)
 
 /*! Evaluates to TRUE if the priority set @p me_ is not empty */
+/* the following logic avoids UB in volatile access for MISRA compliantce */
 #define QPSet_notEmpty(me_) \
-    (((me_)->bits[0] != (uint32_t)0) || ((me_)->bits[1] != (uint32_t)0))
+    (((me_)->bits[0] != (uint32_t)0) \
+     ? 1 \
+     : ((me_)->bits[1] != (uint32_t)0))
 
 /*! Evaluates to TRUE if the priority set @p me_ has element @p n_. */
 #define QPSet_hasElement(me_, n_) \

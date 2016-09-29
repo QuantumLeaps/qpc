@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), ARM-Keil assembler
-; Last Updated for Version: 5.7.1
-; Date of the Last Update:  2016-09-16
+; Last Updated for Version: 5.7.2
+; Date of the Last Update:  2016-09-25
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -421,6 +421,7 @@ QXK_stackInit_
 
     MOV     r12,r0            ; temporarily save r0 in r12 (act)
     STR     r1,[r0,#QMACTIVE_THREAD] ; temporarily save the thread routine
+    ADDS    r3,r2,r3          ; r3 := end of stack (top of stack)
 
     ; round up the beginning of stack to the 8-byte boundary
     ; r2 := (((r2 -1) >> 3) + 1) << 3;
@@ -431,7 +432,6 @@ QXK_stackInit_
 
     ; round down the end of stack to the 8-byte boundary
     ; r3 := (r3 >> 3) << 3;
-    ADDS    r3,r2,r3          ; r3 := end of stack (top of stack)
     LSRS    r0,r3,#3
     LSLS    r3,r0,#3
 
