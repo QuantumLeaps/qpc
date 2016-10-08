@@ -149,17 +149,15 @@ void QF_onClockTick(void);
     #define QF_SCHED_LOCK_(dummy) QF_enterCriticalSection_()
     #define QF_SCHED_UNLOCK_()    QF_leaveCriticalSection_()
 
-    /* Win32 OS object object implementation */
+    /* Win32 active object event queue customization... */
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         while ((me_)->eQueue.frontEvt == (QEvt *)0) { \
             QF_CRIT_EXIT_(); \
             (void)WaitForSingleObject((me_)->osObject, (DWORD)INFINITE); \
             QF_CRIT_ENTRY_(); \
         }
-
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
         (void)SetEvent((me_)->osObject)
-
     #define QACTIVE_EQUEUE_ONEMPTY_(me_) ((void)0)
 
     /* native QF event pool operations */

@@ -227,7 +227,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 void BSP_displayPaused(uint8_t paused) {
     if (paused != 0U) {
         static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
-				
+
         GPIOF->DATA_Bits[LED_GREEN] = 0xFFU;
 
         /* for testing the extended threads... */

@@ -141,14 +141,12 @@ void QF_onClockTick(void);
     #define QF_SCHED_LOCK_(dummy) ((void)0)
     #define QF_SCHED_UNLOCK_()    ((void)0)
 
-    /* Win32 OS object object implementation */
+    /* Win32-QV active object event queue customization... */
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0)
-
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
         QPSet_insert(&QV_readySet_, (me_)->prio); \
             (void)SetEvent(QV_win32Event_)
-
     #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
         QPSet_remove(&QV_readySet_, (me_)->prio)
 

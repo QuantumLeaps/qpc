@@ -53,7 +53,7 @@
 
 #include "ucos_ii.h"  /* uC/OS-II API */
 
-#include "qep_port.h" /* QEP port, includes the master uC/OS-II include */
+#include "qep_port.h" /* QEP port */
 #include "qequeue.h"  /* native QF event queue for deferring events */
 #include "qf.h"       /* QF platform-independent public interface */
 

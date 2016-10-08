@@ -5,6 +5,7 @@ The main purpose of integrating QP/C with conventional RTOSes is to enable you t
 
 - @subpage embos
 - @subpage threadx
+- @subpage ti-rtos
 - @subpage ucos-ii
 
 @attention
@@ -28,6 +29,24 @@ You do **not** need to use a traditional RTOS just to achieve preemptive multita
 @image html under_construction.jpg
 
 */
+/*##########################################################################*/
+/*! @page ti-rtos TI-RTOS Kernel (SYS/BIOS)
+
+@section ti-rtos_about About the QP Port to TI-RTOS
+This directory contains a generic platform-independent QP/C port to TI-RTOS.
+
+Typically, you should not need to change the files in this directory to adapt the QP-TI-RTOS port on any CPU/Compiler to which TI-RTOS has been ported, because all the CPU and compiler specifics are handled by the TI-RTOS.
+
+@note
+The TI-RTOS is too big to fit into the 3rd_party directory in the QP/C distribution. Also, TI-RTOS requires its own tooling
+and build process (XDCTOOLS). Please refer to the TI Application Note "TI-RTOS 2.16 for TivaC Getting Started Guide" (Literature
+Number: SPRUHU5D) for more information.
+
+
+@image html under_construction.jpg
+
+*/
+
 /*##########################################################################*/
 /*! @page ucos-ii uC/OS-II
 

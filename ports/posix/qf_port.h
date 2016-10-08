@@ -86,14 +86,12 @@ extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
     #define QF_SCHED_LOCK_(dummy) ((void)0)
     #define QF_SCHED_UNLOCK_()    ((void)0)
 
-    /* POSIX OS object object implementation */
+    /* POSIX active object event queue customization... */
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         while ((me_)->eQueue.frontEvt == (QEvt *)0) \
             pthread_cond_wait(&(me_)->osObject, &QF_pThreadMutex_)
-
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
         pthread_cond_signal(&(me_)->osObject)
-
     #define QACTIVE_EQUEUE_ONEMPTY_(me_) ((void)0)
 
     /* native QF event pool operations */

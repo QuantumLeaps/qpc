@@ -230,7 +230,7 @@ void QActive_stop(QMActive *me) {
 * no eligible active object is ready to run.
 *
 * @attention
-* QK_schedPrio_() must be always called with interrupts **disabled** and
+* QK_sched_() must be always called with interrupts **disabled** and
 * returns with interrupts **disabled**.
 */
 uint_fast8_t QK_sched_(void) {

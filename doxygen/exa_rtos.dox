@@ -5,6 +5,7 @@ The main purpose of integrating QP/C with conventional RTOSes is to enable you t
 
 - @subpage exa_embos
 - @subpage exa_threadx
+- @subpage exa_ti-rtos
 - @subpage exa_ucos-ii
 
 @note
@@ -88,6 +89,30 @@ Due to the limitations of the ThreadX library for Windows, the DPP example can o
 
 @next{exa_ucos-ii}
 */
+
+/*##########################################################################*/
+/*! @page exa_ti-rtos TI-RTOS
+@htmlonly
+<script src="preview.js" type="text/javascript"></script>
+@endhtmlonly
+
+The QP/C examples for TI-RTOS are as follows:
+
+- ARM Cortex-M
+    - @subpage ti-rtos_dpp_ek-tm4c123gxl (Cortex-M4F) <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+
+*/
+/*##########################################################################*/
+/*! @page ti-rtos_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
+
+@image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
+
+DPP example for Texas Instruments TivaC123GXL MCU (Cortex-M4F) with CCS and IAR EWARM toolsets.
+
+@image html under_construction.jpg
+
+*/
+
 
 /*##########################################################################*/
 /*! @page exa_ucos-ii uC/OS-II

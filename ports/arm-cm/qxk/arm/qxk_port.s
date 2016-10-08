@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), ARM-Keil assembler
-; Last Updated for Version: 5.7.2
-; Date of the Last Update:  2016-09-25
+; Last Updated for Version: 5.7.3
+; Date of the Last Update:  2016-10-07
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -59,12 +59,13 @@ QMACTIVE_PRIO   EQU 44
     THUMB
 
     PRESERVE8                 ; this code preserves 8-byte stack alignment
+    ALIGN                     ; ensures alignment
 
 ;*****************************************************************************
 ; The QXK_init() function sets the priority of PendSV to 0xFF (lowest).
 ; This operation is performed in a nestable critical section.
 ;*****************************************************************************
-QXK_init
+QXK_init     FUNCTION
     MRS     r0,PRIMASK        ; store the state of the PRIMASK in r0
     CPSID   i                 ; disable interrupts (set PRIMASK)
 
@@ -77,6 +78,7 @@ QXK_init
 
     MSR     PRIMASK,r0        ; restore the original PRIMASK
     BX      lr                ; return to the caller
+    ENDFUNC
 
 
 ;*****************************************************************************
@@ -98,10 +100,10 @@ QXK_init
 ;
 ; Due to tail-chaining and its lowest priority, the PendSV exception will be
 ; entered immediately after the exit from the *last* nested interrupt (or
-; exception). In QXK, this is exactly the time when the QXK scheduler needs to
-; check for the asynchronous preemption.
+; exception). In QXK, this is exactly the time when the QXK activator needs to
+; handle the asynchronous preemption.
 ;*****************************************************************************
-PendSV_Handler
+PendSV_Handler FUNCTION
     ; Prepare some constants (an address and a bitmask) before entering
     ; a critical section...
     LDR     r3,=QXK_attr_
@@ -153,7 +155,8 @@ PendSV_activate
     ; it returns with interrupts DISABLED.
     MOVS    r3,#1
     LSLS    r3,r3,#24         ; r3:=(1 << 24), set the T bit  (new xpsr)
-    LDR     r2,=QXK_activate_ ; address of the QXK activator  (new pc)
+    LDR     r2,=QXK_activate_ ; address of QXK_activate_
+    SUBS    r2,r2,#1          ; align Thumb-address at halfword (new pc)
     LDR     r1,=Thread_ret    ; return address after the call (new lr)
 
     SUB     sp,sp,#8*4        ; reserve space for exception stack frame
@@ -340,6 +343,7 @@ PendSV_restore_ex
     MSR     PSP,r2            ; Process Stack Pointer := r2
 
     BX      lr                ; return to the next extended-thread
+    ENDFUNC
 
 
 ;*****************************************************************************
@@ -348,7 +352,7 @@ PendSV_restore_ex
 ; NOTE: Thread_ret does not execute in the PendSV context!
 ; NOTE: Thread_ret executes entirely with interrupts DISABLED.
 ;*****************************************************************************
-Thread_ret
+Thread_ret FUNCTION
     ; After the QXK activator returns, we need to resume the preempted
     ; thread. However, this must be accomplished by a return-from-exception,
     ; while we are still in the thread context. The switch to the exception
@@ -369,6 +373,7 @@ Thread_ret
     LSLS    r1,r1,#31         ; r1 := (1 << 31) (NMI bit)
     STR     r1,[r0]           ; ICSR[31] := 1 (pend NMI)
     B       .                 ; wait for preemption by NMI
+    ENDFUNC
 
 
 ;*****************************************************************************
@@ -380,7 +385,7 @@ Thread_ret
 ; NOTE: The NMI exception is entered with interrupts DISABLED, so it needs
 ; to re-enable interrupts before it returns to the preempted task.
 ;*****************************************************************************
-NMI_Handler
+NMI_Handler FUNCTION
     ADD     sp,sp,#(8*4)      ; remove one 8-register exception frame
 
   IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
@@ -395,6 +400,7 @@ NMI_Handler
     BX      lr                ; return to the preempted task
   ENDIF                       ; no VFP
   ENDIF                       ; M3/M4/M7
+    ENDFUNC
 
 
 ;*****************************************************************************
@@ -412,7 +418,7 @@ NMI_Handler
 ; aware of this QXK thread. In that case there can be no external
 ; communication with this thread, so no critical section is needed.
 ;*****************************************************************************
-QXK_stackInit_
+QXK_stackInit_ FUNCTION
     ; assignment of parameters (AAPCS)
     ; r0 - QMActive pointer (act)
     ; r1 - thread routine
@@ -513,6 +519,7 @@ QXK_stackInit_fill
     STMIA   r3!,{r2}          ; xPSR
 
     BX      lr                ; return to the caller
+    ENDFUNC
 
     ALIGN                     ; make sure the END is properly aligned
 

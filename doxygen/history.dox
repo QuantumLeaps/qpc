@@ -1,7 +1,23 @@
 /**
 @page history Revision History
 
-@section qpc_5_7_2 Version 5.7.2, 2016-10-07
+
+@section qpc_5_7_3 Version 5.7.3, 2016-10-07
+This release adds QP ports to the TI-RTOS kernel (SYS/BIOS) with TI-CCS
+and IAR EWARM toolsets. Examples are provided for the EK-TM4C123GXL
+(TivaC LaunchPad) in the directory:
+
+qpc/examples/ti-rtos/arm-cm/dpp_ek-tm4c123gxl 
+
+NOTE: The examples require a separate installation of the TI-RTOS
+(file tirtos_tivac_setupwin32_2_16_01_14.exe)
+
+Also, this release fixes the following bugs:
+- bug#140 (PendSV_Handler() exception stacked PC not halfword aligned).
+
+
+------------------------------------------------------------------------------
+@section qpc_5_7_2 Version 5.7.2, 2016-09-30
 This is the first production release of the "dual-mode" QXK kernel.
 "Dual-mode" QXK means that QXK supports both basic-threads (BC1 class
 from the OSEK/VDX RTOS specification) as well as extended-threads

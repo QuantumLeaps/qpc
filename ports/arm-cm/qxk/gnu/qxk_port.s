@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), GNU-ARM assembler
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-25
+* Last Updated for Version: 5.7.3
+* Date of the Last Update:  2016-10-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -33,6 +33,7 @@
 *****************************************************************************/
 
     .syntax unified
+    .thumb
 
     /* NOTE: keep in synch with QF_BASEPRI value defined in "qf_port.h" !!! */
     .equ QF_BASEPRI,(0xFF >> 2)
@@ -68,7 +69,7 @@ QXK_init:
 
     MSR     PRIMASK,r0        /* restore the original PRIMASK */
     BX      lr                /* return to the caller */
-    .size   QXK_init, . - QXK_init
+  .size   QXK_init, . - QXK_init
 
 
 /*****************************************************************************
@@ -90,8 +91,8 @@ QXK_init:
 *
 * Due to tail-chaining and its lowest priority, the PendSV exception will be
 * entered immediately after the exit from the *last* nested interrupt (or
-* exception). In QXK, this is exactly the time when the QXK scheduler needs to
-* check for the asynchronous preemption.
+* exception). In QXK, this is exactly the time when the QXK activator needs to
+* handle the asynchronous preemption.
 *****************************************************************************/
     .section .text.PendSV_Handler
     .global PendSV_Handler    /* CMSIS-compliant exception name */
@@ -106,7 +107,8 @@ PendSV_Handler:
     MOVS    r1,#1
     LSLS    r1,r1,#27         /* r0 := (1 << 27) (UNPENDSVSET bit) */
 
-    /*<<<<<<<<<<<<<<<<<<<<<<< CRITICAL SECTION BEGIN <<<<<<<<<<<<<<<<<<<<<<<*/
+
+    /* <<<<<<<<<<<<<<<<<<<<<<< CRITICAL SECTION BEGIN <<<<<<<<<<<<<<<<<<<<< */
   .if  __ARM_ARCH == 6        /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     CPSID   i                 /* disable interrupts (set PRIMASK) */
   .else                       /* M3/M4/M7 */
@@ -153,8 +155,9 @@ PendSV_activate:
     */
     MOVS    r3,#1
     LSLS    r3,r3,#24         /* r3:=(1 << 24), set the T bit  (new xpsr) */
-    LDR     r2,=QXK_activate_ /* address of the QXK activator  (new pc) */
-    LDR     r1,=Thread_ret    /* return address after the call (new lr) */
+    LDR     r2,=QXK_activate_ /* address of QXK_activate_ */
+    SUBS    r2,r2,#1          /* align Thumb-address at halfword (new pc) */
+    LDR     r1,=Thread_ret    /* return address after the call   (new lr) */
 
     SUB     sp,sp,#8*4        /* reserve space for exception stack frame */
     ADD     r0,sp,#5*4        /* r0 := 5 registers below the top of stack */
@@ -395,7 +398,6 @@ Thread_ret:
     .section .text.NMI_Handler
     .global NMI_Handler
     .type   NMI_Handler, %function
-    .thumb
 
 NMI_Handler:
     ADD     sp,sp,#(8*4)      /* remove one 8-register exception frame */
@@ -412,7 +414,7 @@ NMI_Handler:
     BX      lr                /* return to the preempted task */
   .endif                      /* VFP available */
   .endif                      /* M3/M4/M7 */
-    .size   NMI_Handler, . - NMI_Handler
+  .size   NMI_Handler, . - NMI_Handler
 
 
 /*****************************************************************************
@@ -433,7 +435,6 @@ NMI_Handler:
     .section .text.QXK_stackInit_
     .global QXK_stackInit_
     .type   QXK_stackInit_, %function
-    .thumb
 
 QXK_stackInit_:
     /* assignment of parameters (AAPCS)
@@ -539,6 +540,6 @@ QXK_stackInit_fill:
     STMIA   r3!,{r2}          /* xPSR */
 
     BX      lr                /* return to the caller */
-    .size   QXK_stackInit_, . - QXK_stackInit_
+  .size   QXK_stackInit_, . - QXK_stackInit_
 
-    .end
+  .end

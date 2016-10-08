@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QK port to ARM Cortex-M (M0,M0+,M3,M4,M7), TI-ARM assembler
-; Last Updated for Version: 5.7.2
-; Date of the Last Update:  2016-09-26
+; Last Updated for Version: 5.7.3
+; Date of the Last Update:  2016-10-07
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -90,8 +90,8 @@ QK_init:    .asmfunc
 ;
 ; Due to tail-chaining and its lowest priority, the PendSV exception will be
 ; entered immediately after the exit from the *last* nested interrupt (or
-; exception). In QK, this is exactly the time when the QK scheduler needs to
-; check for the asynchronous preemption.
+; exception). In QK, this is exactly the time when the QK activator needs to
+; handle the asynchronous preemption.
 ;*****************************************************************************
 PendSV_Handler: .asmfunc
 
@@ -124,9 +124,10 @@ PendSV_Handler: .asmfunc
     ;
     ; NOTE: the QK activator is called with interrupts DISABLED and also
     ; returns with interrupts DISABLED.
-    LSRS    r3,r1,#3          ; r3 := (1 << 24), set the T bit (new xpsr)
-    LDR     r2,QK_activate_addr ; address of the QK activator  (new pc)
-    LDR     r1,Thread_ret_addr ; return address after the call (new lr)
+    LSRS    r3,r1,#3          ; r3 := (r1 >> 3), set the T bit (new xpsr)
+    LDR     r2,QK_activate_addr ; address of QK_activate_
+    SUBS    r2,r2,#1          ; align Thumb-address at halfword (new pc)
+    LDR     r1,Thread_ret_addr ; return address after the call  (new lr)
 
     SUB     sp,sp,#8*4        ; reserve space for exception stack frame
     ADD     r0,sp,#5*4        ; r0 := 5 registers below the top of stack
@@ -134,7 +135,7 @@ PendSV_Handler: .asmfunc
 
     MOVS    r0,#6
     MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
-    BX      r0                ; exception-return to the QK scheduler
+    BX      r0                ; exception-return to the QK activator
   .endasmfunc
 
 
@@ -145,12 +146,12 @@ PendSV_Handler: .asmfunc
 ; NOTE: Thread_ret executes entirely with interrupts DISABLED.
 ;*****************************************************************************
 Thread_ret: .asmfunc          ; to ensure that the label is THUMB
-    ; After the QK scheduler returns, we need to resume the preempted
+    ; After the QK activator returns, we need to resume the preempted
     ; task. However, this must be accomplished by a return-from-exception,
     ; while we are still in the task context. The switch to the exception
     ; contex is accomplished by triggering the NMI exception.
     ; NOTE: The NMI exception is triggered with nterrupts DISABLED,
-    ; because QK scheduler disables interrutps before return.
+    ; because QK activator disables interrutps before return.
 
     ; before triggering the NMI exception, make sure that the
     ; VFP stack frame will NOT be used...

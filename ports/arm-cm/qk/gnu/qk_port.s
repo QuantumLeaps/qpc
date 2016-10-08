@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK port to ARM Cortex-M (M0,M0+,M3,M4,M7), GNU-ARM assembler
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-26
+* Last Updated for Version: 5.7.3
+* Date of the Last Update:  2016-10-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -60,7 +60,7 @@ QK_init:
 
     MSR     PRIMASK,r0        /* restore the original PRIMASK */
     BX      lr                /* return to the caller */
-    .size   QK_init, . - QK_init
+  .size   QK_init, . - QK_init
 
 
 /*****************************************************************************
@@ -80,8 +80,8 @@ QK_init:
 *
 * Due to tail-chaining and its lowest priority, the PendSV exception will be
 * entered immediately after the exit from the *last* nested interrupt (or
-* exception). In QK, this is exactly the time when the QK scheduler needs to
-* check for the asynchronous preemption.
+* exception). In QK, this is exactly the time when the QK activator needs to
+* handle the asynchronous preemption.
 *****************************************************************************/
     .section .text.PendSV_Handler
     .global PendSV_Handler    /* CMSIS-compliant exception name */
@@ -120,9 +120,10 @@ PendSV_Handler:
     * NOTE: the QK activator is called with interrupts DISABLED and also
     * returns with interrupts DISABLED.
     */
-    LSRS    r3,r1,#3          /* r3 := (1 << 24), set the T bit (new xpsr) */
-    LDR     r2,=QK_activate_  /* address of the QK activator    (new pc) */
-    LDR     r1,=Thread_ret    /* return address after the call  (new lr) */
+    LSRS    r3,r1,#3          /* r3 := (r1 >> 3), set the T bit (new xpsr) */
+    LDR     r2,=QK_activate_  /* address of QK_activate_ */
+    SUBS    r2,r2,#1          /* align Thumb-address at halfword (new pc) */
+    LDR     r1,=Thread_ret    /* return address after the call   (new lr) */
 
     SUB     sp,sp,#8*4        /* reserve space for exception stack frame */
     STR     r0,[sp]           /* save the prio argument (new r0) */
@@ -131,7 +132,7 @@ PendSV_Handler:
 
     MOVS    r0,#6
     MVNS    r0,r0             /* r0 := ~6 == 0xFFFFFFF9 */
-    BX      r0                /* exception-return to the QK scheduler */
+    BX      r0                /* exception-return to the QK activator */
   .size   PendSV_Handler, . - PendSV_Handler
 
 
@@ -145,12 +146,12 @@ PendSV_Handler:
     .type   Thread_ret, %function
 
 Thread_ret:
-    /* After the QK scheduler returns, we need to resume the preempted
+    /* After the QK activator returns, we need to resume the preempted
     * task. However, this must be accomplished by a return-from-exception,
     * while we are still in the task context. The switch to the exception
     * contex is accomplished by triggering the NMI exception.
     * NOTE: The NMI exception is triggered with nterrupts DISABLED,
-    * because QK scheduler disables interrutps before return.
+    * because QK activator disables interrutps before return.
     */
 
     /* before triggering the PendSV exception, make sure that the
@@ -200,6 +201,6 @@ NMI_Handler:
     BX      lr                /* return to the preempted task */
   .endif                      /* VFP available */
   .endif                      /* M3/M4/M7 */
-    .size   NMI_Handler, . - NMI_Handler
+  .size   NMI_Handler, . - NMI_Handler
 
   .end

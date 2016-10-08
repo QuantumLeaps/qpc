@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), IAR-ARM assembler
-; Last Updated for Version: 5.7.2
-; Date of the Last Update:  2016-09-25
+; Last Updated for Version: 5.7.3
+; Date of the Last Update:  2016-10-07
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -56,6 +56,11 @@ QMACTIVE_PRIO   EQU 44
 
 
     RSEG CODE:CODE:NOROOT(2)
+    THUMB
+
+    PRESERVE8                 ; this code preserves 8-byte stack alignment
+    ALIGNROM  2               ; ensures alignment at 2^2 boundary
+
 ;*****************************************************************************
 ; The QXK_init() function sets the priority of PendSV to 0xFF (lowest).
 ; This operation is performed in a nestable critical section.
@@ -94,8 +99,8 @@ QXK_init:
 ;
 ; Due to tail-chaining and its lowest priority, the PendSV exception will be
 ; entered immediately after the exit from the *last* nested interrupt (or
-; exception). In QXK, this is exactly the time when the QXK scheduler needs to
-; check for the asynchronous preemption.
+; exception). In QXK, this is exactly the time when the QXK activator needs to
+; handle the asynchronous preemption.
 ;*****************************************************************************
 PendSV_Handler:
     ; Prepare some constants (an address and a bitmask) before entering
@@ -148,9 +153,10 @@ PendSV_activate:
     ; NOTE: the QXK activator is called with interrupts DISABLED and also
     ; it returns with interrupts DISABLED.
     MOVS    r3,#1
-    LSLS    r3,r3,#24         ; r3:=(1 << 24), set the T bit  (new xpsr)
-    LDR     r2,=QXK_activate_ ; address of the QXK activator  (new pc)
-    LDR     r1,=Thread_ret    ; return address after the call (new lr)
+    LSLS    r3,r3,#24         ; r3 := (1 << 24), set the T bit  (new xpsr)
+    LDR     r2,=QXK_activate_ ; address of QXK_activate_
+    SUBS    r2,r2,#1          ; align Thumb-address at halfword (new pc)
+    LDR     r1,=Thread_ret    ; return address after the call   (new lr)
 
     SUB     sp,sp,#8*4        ; reserve space for exception stack frame
     ADD     r0,sp,#5*4        ; r0 := 5 registers below the top of stack
@@ -344,6 +350,7 @@ PendSV_restore_ex:
 ; NOTE: Thread_ret does not execute in the PendSV context!
 ; NOTE: Thread_ret executes entirely with interrupts DISABLED.
 ;*****************************************************************************
+    REQUIRE Thread_ret        ; forces (THUMB) symbol to be referenced
 Thread_ret:
     ; After the QXK activator returns, we need to resume the preempted
     ; thread. However, this must be accomplished by a return-from-exception,
@@ -510,6 +517,6 @@ QXK_stackInit_fill:
 
     BX      lr                ; return to the caller
 
-    ALIGNROM 2,0xFF           ; make sure the END is properly aligned
+    ALIGNROM  2               ; ensures alignment at 2^2 boundary
 
     END
