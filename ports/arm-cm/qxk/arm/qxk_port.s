@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), ARM-Keil assembler
 ; Last Updated for Version: 5.7.3
-; Date of the Last Update:  2016-10-07
+; Date of the Last Update:  2016-10-09
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -326,7 +326,7 @@ PendSV_restore_ex
     MVNS    r1,r1             ; r1 := ~2 == 0xFFFFFFFD
     MOV     lr,r1             ; make sure PSP is used
   ELSE                        ; M3/M4/M7
-    MOVS    r1,#1
+    MOVS    r1,#0
     MSR     BASEPRI,r1        ; enable interrupts (clear BASEPRI)
   IF {TARGET_FPU_VFP} == {TRUE} ; if VFP available...
     LDMIA   r2!,{r1,lr}       ; restore aligner and EXC_RETURN into lr
