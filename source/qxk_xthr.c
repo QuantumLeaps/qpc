@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-30
+* Last updated for version 5.7.4
+* Last updated on  2016-11-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -183,9 +183,7 @@ static void QXThread_start_(QMActive * const me, uint_fast8_t prio,
     QPSet_insert(&QXK_attr_.readySet, me->prio);
 
     /* see if this thread needs to be scheduled in case QXK is running */
-    if (QF_active_[0] != (QMActive *)0) { /* QXK kernel already running? */
-        (void)QXK_sched_();
-    }
+    (void)QXK_sched_();
     QF_CRIT_EXIT_();
 }
 

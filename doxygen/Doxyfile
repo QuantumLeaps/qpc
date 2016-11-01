@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "5.7.3"
+PROJECT_NUMBER         = "5.7.4"
 PROJECT_BRIEF          =
 PROJECT_LOGO           = images/header_logo_ql.png
 OUTPUT_DIRECTORY       =

@@ -3,8 +3,8 @@
 * @brief QWIN GUI facilities for building realistic embedded front panels
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.5
-* Date of the Last Update:  2016-05-13
+* Last Updated for Version: 5.7.4
+* Date of the Last Update:  2016-10-21
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -103,7 +103,8 @@ enum OwnerDrawnButtonAction OwnerDrawnButton_draw(
 
     if ((lpdis->itemAction & ODA_DRAWENTIRE) != 0U) {
         if (me->hCursor != NULL) {
-           SetClassLong(lpdis->hwndItem, GCL_HCURSOR, (LONG)me->hCursor);
+           SetClassLongPtr(lpdis->hwndItem,
+                           GCLP_HCURSOR, (LONG_PTR)me->hCursor);
            me->hCursor = NULL; /* mark the cursor set */
         }
         DrawBitmap(lpdis->hDC, me->hBitmapUp,

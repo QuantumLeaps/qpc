@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-28
+* Last updated for version 5.7.4
+* Last updated on  2016-11-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -175,9 +175,7 @@ void QXSemaphore_signal(QXSemaphore * const me) {
         /* disarm the internal time event */
         (void)QXThread_teDisarm_(thr);
 
-        if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
-            && (QF_active_[0] != (QMActive *)0))  /* QXK started? */
-        {
+        if (!QXK_ISR_CONTEXT_()) { /* not inside ISR? */
             (void)QXK_sched_();
         }
     }

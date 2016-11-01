@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-28
+* Last updated for version 5.7.4
+* Last updated on  2016-11-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -121,6 +121,7 @@ void QF_publish_(QEvt const * const e)
 void QF_publish_(QEvt const * const e, void const * const sender)
 #endif
 {
+    QPSet subscrList; /* local, modifiable copy of the subscriber list */
     QF_CRIT_STAT_
 
     /** @pre the published signal must be within the configured range */
@@ -135,28 +136,29 @@ void QF_publish_(QEvt const * const e, void const * const sender)
         QS_2U8_(e->poolId_, e->refCtr_);/* pool Id & ref Count of the event */
     QS_END_NOCRIT_()
 
-    if (QPSet_notEmpty(&QF_PTR_AT_(QF_subscrList_, e->sig))) {
-        QPSet tmp;
+    /* is it a dynamic event? */
+    if (e->poolId_ != (uint8_t)0) {
+        /* NOTE: The reference counter of a dynamic event is incremented to
+        * prevent premature recycling of the event while the multicasting
+        * is still in progress. At the end of the function, the garbage
+        * collector step (QF_gc()) decrements the reference counter and
+        * recycles the event if the counter drops to zero. This covers the
+        * case when the event was published without any subscribers.
+        */
+        QF_EVT_REF_CTR_INC_(e);
+    }
+
+    /* make a local, modifiable copy of the subscriber list */
+    subscrList = QF_PTR_AT_(QF_subscrList_, e->sig);
+    QF_CRIT_EXIT_();
+
+    if (QPSet_notEmpty(&subscrList)) { /* any subscribers? */
         uint_fast8_t p;
         QF_SCHED_STAT_
 
-        /* is it a dynamic event? */
-        if (e->poolId_ != (uint8_t)0) {
-            /* NOTE: QF_publish_() increments the reference counter to prevent
-            * premature recycling of the event while the multicasting is still
-            * in progress. At the end of the function, the garbage collector
-            * step decrements the reference counter and recycles the event if
-            * the counter drops to zero. This covers the case when the event
-            * was published without any subscribers.
-            */
-            QF_EVT_REF_CTR_INC_(e); /* increment reference counter, NOTE01 */
-        }
-        QF_CRIT_EXIT_();
+        QPSet_findMax(&subscrList, p); /* the highest-prio subscriber */
 
-        tmp = QF_PTR_AT_(QF_subscrList_, e->sig);
-        QPSet_findMax(&tmp, p);
-
-        QF_SCHED_LOCK_(p); /* lock the scheduler upto prio 'p' */
+        QF_SCHED_LOCK_(p); /* lock the scheduler up to prio 'p' */
         do { /* loop over all subscribers */
             /* the prio of the AO must be registered with the framework */
             Q_ASSERT_ID(210, QF_active_[p] != (QMActive *)0);
@@ -164,21 +166,22 @@ void QF_publish_(QEvt const * const e, void const * const sender)
             /* QACTIVE_POST() asserts internally if the queue overflows */
             QACTIVE_POST(QF_active_[p], e, sender);
 
-            QPSet_remove(&tmp, p);
-            if (QPSet_notEmpty(&tmp)) {
-                QPSet_findMax(&tmp, p);
+            QPSet_remove(&subscrList, p); /* remove the handled subscriber */
+            if (QPSet_notEmpty(&subscrList)) { /* still more subscribers? */
+                QPSet_findMax(&subscrList, p); /* highest-prio subscriber */
             }
             else {
-                p = (uint_fast8_t)0;
+                p = (uint_fast8_t)0; /* no more subscribers */
             }
         } while (p != (uint_fast8_t)0);
         QF_SCHED_UNLOCK_(); /* unlock the scheduler */
+    }
 
-        QF_gc(e); /* run the garbage collector */
-    }
-    else {
-        QF_CRIT_EXIT_();
-    }
+    /* The following garbage collection step decrements the reference counter
+    * and recycles the event if the counter drops to zero. This covers both
+    * cases when the event was published with or without any subscribers.
+    */
+    QF_gc(e);
 }
 
 /****************************************************************************/

@@ -1,15 +1,23 @@
 /*! @page exa_os Examples for Third-Party OS
 
-- @subpage exa_posix
+- @subpage exa_posix "POSIX"
 - @subpage exa_win32
 - @subpage exa_win32-qv
 
+@next{exa_posix}
 */
 /*##########################################################################*/
-/*! @page exa_posix POSIX (Linux, etc.)
+/*! @page exa_posix POSIX (Linux, VxWorks, QNX, INTEGRITY, etc.)
 
-@image html under_construction.jpg
+<p>The <span class="img folder">examples/posix</span> folder contains the following examples:
+</p>
 
+- <span class="img folder">blinky</span> Simple "Blinky" (command-line)
+- <span class="img folder">dpp</span> DPP (command-line)
+- <span class="img folder">qmsmtst</span> Test State Machine based on QP::QMsm with QM model
+- <span class="img folder">qhsmtst</span> Test State Machine based on QP::QHsm with QM model
+
+@next{exa_win32}
 */
 
 /*##########################################################################*/
@@ -36,6 +44,8 @@
 @sa
 - @ref exa_win32-qv
 - @ref win32
+
+@next{exa_win32-qv}
 */
 
 /*##########################################################################*/

@@ -7,14 +7,22 @@
 - @subpage blinky
 - @subpage dpp
 - @subpage game
+- @subpage pelican
 
 Additionally, the QP/C distribution contains several application examples described in the <a class="extern" target="_blank" href="http://www.state-machine.com/psicc2">PSiCC2</a> book.
 
-- Calculator
-- QHsmTst
-- PELICAN
-- ...
+- Calculator example from Chapter 2 of PSiCC2
+- Orthogonal Component design pattern
+- Orthogonal Component with QM model design pattern
+- Deferred Event design pattern
+- Transition-to-History (with ::QHsm class)
+- Transition-to-History (with ::QMsm class)
+- QMsmTst Test State Machine based on QP::QMsm with QM model
+- QHsmTst Test State Machine based on QP::QHsm with QM model
+- Reminder design pattern from Chapter 5 of PSiCC2
+- Reminder design pattern different version
 
+@next{blinky}
 */
 
 /*##########################################################################*/
@@ -49,10 +57,8 @@ The very simple state machine of the Blinky AO is shown in the figure below:
 
   <li><span class="tag">3</span> When the `TIMEOUT` event arrives in the "off" state, the "off" state transitions to the "on" state
   </li>
-  
   <li><span class="tag">4</span> The "on" state turns the LED on in the entry action (`BSP_ledOn()`).
   </li>
-  
   <li><span class="tag">5</span> When the `TIMEOUT` event arrives in the "on" state, the "on" state transitions back to "off", which cases execution of the entry action, in which the LED is turned off. From that point on the cycle repeats forever because the `TIMEOUT` events keep getting generated at the pre-determined rate.
   </li>
 </ul>
@@ -64,7 +70,7 @@ listing below. The code has been specifically organized not to access target res
 
 @note
 The Blinky source code (blinky.c) is actually the same on all platforms, including Windows
-and the embedded boards. The only difference is in the Board Support Package (bsp.c), which is 
+and the embedded boards. The only difference is in the Board Support Package (bsp.c), which is
 specific for the target.
 
 @includelineno examples/arm-cm/blinky_ek-tm4c123gxl/blinky.c
@@ -75,22 +81,26 @@ As you can see, the structure of the state machine is very clearly recognizable 
 @subsection blinky_ao Defining Active Object (AO) Class
 
 
-
 - hand-coding the simple state machine of the Blinky AO;
 - using a periodic time event;
 - initializing the QP framework; and
 - starting an AO.
-
-
 
 @next{dpp}
 */
 /*##########################################################################*/
 /*! @page dpp Dining Philosophers Problem (DPP)
 
-@image html dpp_win32.jpg
+The Dining Philosophers Problem (DPP) example is described in the <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_DPP.pdf">Application Note: Dining Philosophers Problem (DPP) Example</a>.
 
-@image html under_construction.jpg
+@htmlonly
+<div class="image">
+<a target="_blank" href="http://www.state-machine.com/doc/AN_DPP.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: Dining Philosophers Problem (DPP) Example
+</div>
+</div>
+@endhtmlonly
 
 @next{game}
 */
@@ -98,10 +108,35 @@ As you can see, the structure of the state machine is very clearly recognizable 
 /*##########################################################################*/
 /*! @page game "Fly 'n' Shoot" Game
 
-@image html game_win32.jpg
+The "Fly 'n' Shoot" game example is described in the <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_Fly-n-Shoot.pdf">Application Note: Fly 'n' Shoot Game Example</a>.
 
-@image html under_construction.jpg
+@htmlonly
+<div class="image">
+<a target="_blank" href="http://www.state-machine.com/doc/AN_Fly-n-Shoot.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: Fly 'n' Shoot Game Example
+</div>
+</div>
+@endhtmlonly
 
+@next{pelican}
+*/
+
+/*##########################################################################*/
+/*! @page pelican PEdestrian LIgtht CONtrolled (PELICAN) Crossing
+
+The "Fly 'n' Shoot" game example is described in the <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_PELICAN.pdf">Application Note: PEdestrian LIght CONtrolled (PELICAN) Crossing Example</a>.
+
+@htmlonly
+<div class="image">
+<a target="_blank" href="http://www.state-machine.com/doc/AN_PELICAN.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: PEdestrian LIght CONtrolled (PELICAN) Crossing Example
+</div>
+</div>
+@endhtmlonly
+
+@next{ports}
 */
 
 

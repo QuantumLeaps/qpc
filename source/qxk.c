@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-23
+* Last updated for version 5.7.4
+* Last updated on  2016-11-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -39,7 +39,7 @@
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
-#include "qf_pkg.h"       /* QF package-scope internal interface */
+#include "qxk_pkg.h"      /* QXK package-scope internal interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
     #include "qs_port.h"  /* include QS port */
@@ -85,11 +85,12 @@ void QF_init(void) {
     QF_bzero(&QXK_attr_,          (uint_fast16_t)sizeof(QXK_attr_));
     QF_bzero(&l_idleThread,       (uint_fast16_t)sizeof(l_idleThread));
 
-    /* priority of the QXK idle loop */
-    QXK_attr_.actPrio  = (uint_fast8_t)0;
-
-    /* scheduler locked */
+    /* setup the QXK scheduler as initially locked and not running */
     QXK_attr_.lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1);
+
+    /* setup the QXK idle loop... */
+    QF_active_[0] = &l_idleThread.super; /* register idle thread with QF */
+    QXK_attr_.actPrio = (uint_fast8_t)0; /* set the idle thread priority */
 
     QXK_init(); /* QXK-port initialization, might be defined in assembly */
 }
@@ -115,7 +116,7 @@ void QF_stop(void) {
 /*! process all events posted during initialization */
 static void initial_events(void); /* prototype */
 static void initial_events(void) {
-    QXK_attr_.lockPrio = (uint_fast8_t)0; /* scheduler unlocked */
+    QXK_attr_.lockPrio = (uint_fast8_t)0; /* unlock the scheduler */
 
     /* any active objects need to be scheduled before starting event loop? */
     if (QXK_sched_() != (uint_fast8_t)0) {
@@ -134,7 +135,6 @@ static void initial_events(void) {
 */
 int_t QF_run(void) {
     QF_INT_DISABLE();
-    QF_active_[0] = &l_idleThread.super; /* NOTE: indicates kernel-started */
     initial_events(); /* process all events posted during initialization */
     QF_onStartup(); /* application-specific startup callback */
     QF_INT_ENABLE();
@@ -199,10 +199,8 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
 
     /* see if this AO needs to be scheduled in case QXK is running */
     QF_CRIT_ENTRY_();
-    if (QF_active_[0] != (QMActive *)0) { /* QXK kernel already running? */
-        if (QXK_sched_() != (uint_fast8_t)0) { /* activation needed? */
-            QXK_activate_();
-        }
+    if (QXK_sched_() != (uint_fast8_t)0) { /* activation needed? */
+        QXK_activate_();
     }
     QF_CRIT_EXIT_();
 }
