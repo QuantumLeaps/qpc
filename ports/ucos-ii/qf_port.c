@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 5.7.4
+* Date of the Last Update:  2016-11-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -128,7 +128,7 @@ static void task_function(void *pdata) { /* uC/OS-II task signature */
     OSTaskDel(OS_PRIO_SELF); /* make uC/OS-II forget about this task */
 }
 /*..........................................................................*/
-void QActive_stop(QActive *me) {
+void QActive_stop(QActive * const me) {
     INT8U err;
     me->thread = (uint32_t)0; /* stop the thread loop */
     OSQDel(me->eQueue, OS_DEL_ALWAYS, &err); /* cleanup the queue */

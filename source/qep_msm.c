@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-20
+* Last updated for version 5.7.4
+* Last updated on  2016-11-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -519,7 +519,7 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist){
 *
 * @returns 'true' if the MSM "is in" the @p state and 'false' otherwise
 */
-bool QMsm_isInState(QMsm * const me, QMState const * const state) {
+bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
     bool inState = false; /* assume that this MSM is not in 'state' */
     QMState const *s;
 

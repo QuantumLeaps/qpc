@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.3
-* Date of the Last Update:  2016-10-06
+* Last Updated for Version: 5.7.4
+* Date of the Last Update:  2016-11-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -122,7 +122,7 @@ static void swi_function(UArg arg0, UArg arg1) { /* TI-RTOS Swi signature */
     }
 }
 /*..........................................................................*/
-void QActive_stop(QActive *me) {
+void QActive_stop(QActive * const me) {
     QF_remove_(me);  /* remove the AO from the framework */
 }
 

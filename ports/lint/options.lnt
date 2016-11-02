@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.7.2
-// Last updated on  2016-09-18
+// Last updated for version 5.7.4
+// Last updated on  2016-11-02
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -52,8 +52,6 @@ qpc.lnt               // QP/C options
 -strong(AXJ)          // Strong type checking
 
 // general
--esym(715, me)        // Info: Symbol 'me' not referenced
--esym(818, me)        // Info: Pointer 'me' could be pointing to const
 +e900                 // prints a success message at the end
 
 // QEP

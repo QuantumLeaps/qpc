@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-27
+* Last updated for version 5.7.4
+* Last updated on  2016-11-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -58,10 +58,10 @@ enum QXK_Timeouts {
 };
 
 /*! internal functin to block (suspend) a given extended thread */
-void QXThread_block_(QXThread * const me);
+void QXThread_block_(QXThread const * const me);
 
 /*! internal function to unblock (resume) a given extended thread. */
-void QXThread_unblock_(QXThread * const me);
+void QXThread_unblock_(QXThread const * const me);
 
 /*! internal function to arm the private time event for a given thread. */
 void QXThread_teArm_(QXThread * const me,
@@ -70,7 +70,7 @@ void QXThread_teArm_(QXThread * const me,
                      uint_fast8_t const tickRate);
 
 /*! internal function to disarm the private time event for a given thread. */
-bool QXThread_teDisarm_(QXThread * const me);
+bool QXThread_teDisarm_(QXThread const * const me);
 
 #include "qf_pkg.h"  /* QF package-scope interface */
 

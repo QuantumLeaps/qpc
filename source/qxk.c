@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.7.4
-* Last updated on  2016-11-01
+* Last updated on  2016-11-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -216,7 +216,7 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
 * @note By the time the AO calls QActive_stop(), it should have unsubscribed
 * from all events and no more events should be directly-posted to it.
 */
-void QActive_stop(QMActive *me) {
+void QActive_stop(QMActive * const me) {
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();

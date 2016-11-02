@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.7.4
-* Last updated on  2016-11-01
+* Last updated on  2016-11-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -463,7 +463,7 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
 * @note
 * must be called from within a critical section
 */
-void QXThread_block_(QXThread * const me) {
+void QXThread_block_(QXThread const * const me) {
     /*! @pre the thread holding the lock cannot block! */
     Q_REQUIRE_ID(600,  me->super.prio != QXK_attr_.lockPrio);
     QPSet_remove(&QXK_attr_.readySet, me->super.prio);
@@ -478,7 +478,7 @@ void QXThread_block_(QXThread * const me) {
 * @note
 * must be called from within a critical section
 */
-void QXThread_unblock_(QXThread * const me) {
+void QXThread_unblock_(QXThread const * const me) {
     QPSet_insert(&QXK_attr_.readySet, me->super.prio);
     if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
         && (QF_active_[0] != (QMActive *)0))  /* kernel started? */

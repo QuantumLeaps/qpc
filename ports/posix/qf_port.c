@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.5
-* Date of the Last Update:  2016-06-08
+* Last Updated for Version: 5.7.4
+* Date of the Last Update:  2016-11-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -186,7 +186,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->thread = (uint8_t)1;
 }
 /*..........................................................................*/
-void QActive_stop(QActive *me) {
+void QActive_stop(QActive * const me) {
     me->thread = (uint8_t)0; /* stop the QActive thread loop */
 }
 

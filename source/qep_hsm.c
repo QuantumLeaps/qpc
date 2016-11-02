@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-09-04
+* Last updated for version 5.7.4
+* Last updated on  2016-11-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -260,8 +260,11 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
     QState r;
     QS_CRIT_STAT_
 
-    /** @pre the state configuration must be stable */
-    Q_REQUIRE_ID(400, t == me->temp.fun);
+    /** @pre the current state must be initialized and
+    * the state configuration must be stable
+    */
+    Q_REQUIRE_ID(400, (t != Q_STATE_CAST(0))
+                      && (t == me->temp.fun));
 
     QS_BEGIN_(QS_QEP_DISPATCH, QS_priv_.smObjFilter, me)
         QS_TIME_();         /* time stamp */

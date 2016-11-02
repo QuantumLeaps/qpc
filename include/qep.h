@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.7.4
-* Last updated on  2016-11-04
+* Last updated on  2016-11-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -356,7 +356,7 @@ QState QMsm_execTatbl_(QMsm * const me, QMTranActTable const *tatbl);
 /*! Tests if a given state is part of the current active state
 * configuration in a MSM.
 */
-bool QMsm_isInState(QMsm * const me, QMState const * const state);
+bool QMsm_isInState(QMsm const * const me, QMState const * const state);
 
 /****************************************************************************/
 /*! Hierarchical State Machine. */

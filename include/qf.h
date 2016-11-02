@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-23
+* Last updated for version 5.7.4
+* Last updated on  2016-11-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -642,7 +642,7 @@ bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate);
 void QF_add_(QMActive * const a);
 
 /*! Remove the active object from the framework. */
-void QF_remove_(QMActive const * const a);
+void QF_remove_(QMActive * const a);
 
 /*! Obtain the minimum of free entries of the given event pool. */
 uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId);
