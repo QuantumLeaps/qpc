@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: DPP example for Windows
-* Last Updated for Version: 5.7.5
-* Date of the Last Update:  2016-11-08
+* Product: "Fly 'n' Shoot" game example for Windows
+* Last updated for version 5.7.5
+* Last updated on  2016-11-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,62 +28,73 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : http://www.state-machine.com
+* Web:   www.state-machine.com
 * Email: info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
-#include "dpp.h"
 #include "bsp.h"
+#include "game.h"
 
 /* "fudge factor" for Windows, see NOTE1 */
 enum { WIN_FUDGE_FACTOR = 10 };
 
 /*..........................................................................*/
 int main() {
-    static QEvt const *tableQueueSto[N_PHILO*WIN_FUDGE_FACTOR];
-    static QEvt const *philoQueueSto[N_PHILO][N_PHILO*WIN_FUDGE_FACTOR];
-    static QF_MPOOL_EL(TableEvt) smlPoolSto[2*N_PHILO*WIN_FUDGE_FACTOR];
+    static QEvt const *missileQueueSto[2*WIN_FUDGE_FACTOR];
+    static QEvt const *shipQueueSto[3*WIN_FUDGE_FACTOR];
+    static QEvt const *tunnelQueueSto[(GAME_MINES_MAX + 5)*WIN_FUDGE_FACTOR];
+    static QF_MPOOL_EL(QEvt) smlPoolSto[10*WIN_FUDGE_FACTOR];
+    static QF_MPOOL_EL(ObjectImageEvt)
+           medPoolSto[(2*GAME_MINES_MAX + 10)*WIN_FUDGE_FACTOR];
+
     static QSubscrList subscrSto[MAX_PUB_SIG];
-    uint8_t n;
 
-    Philo_ctor(); /* instantiate all Philosopher active objects */
-    Table_ctor(); /* instantiate the Table active object */
+    /* explicitly invoke the active objects' ctors... */
+    Missile_ctor();
+    Ship_ctor();
+    Tunnel_ctor();
 
-    QF_init();    /* initialize the framework and the underlying RT kernel */
-    BSP_init();   /* initialize the Board Support Package */
+    QF_init();  /* initialize the framework and the underlying RT kernel */
+    BSP_init(); /* initialize the Board Support Package */
 
-    /* object dictionaries... */
-    QS_OBJ_DICTIONARY(smlPoolSto);
-    QS_OBJ_DICTIONARY(tableQueueSto);
-    QS_OBJ_DICTIONARY(philoQueueSto[0]);
-    QS_OBJ_DICTIONARY(philoQueueSto[1]);
-    QS_OBJ_DICTIONARY(philoQueueSto[2]);
-    QS_OBJ_DICTIONARY(philoQueueSto[3]);
-    QS_OBJ_DICTIONARY(philoQueueSto[4]);
-
-    /* initialize publish-subscribe... */
+    /* init publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
 
-    /* initialize event pools... */
+    /* initialize the event pools... */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
+    QF_poolInit(medPoolSto, sizeof(medPoolSto), sizeof(medPoolSto[0]));
+
+    /* send object dictionaries for event queues... */
+    QS_OBJ_DICTIONARY(missileQueueSto);
+    QS_OBJ_DICTIONARY(shipQueueSto);
+    QS_OBJ_DICTIONARY(tunnelQueueSto);
+
+    /* send object dictionaries for event pools... */
+    QS_OBJ_DICTIONARY(smlPoolSto);
+    QS_OBJ_DICTIONARY(medPoolSto);
+
+    /* send signal dictionaries for globally published events... */
+    QS_SIG_DICTIONARY(TIME_TICK_SIG,      (void *)0);
+    QS_SIG_DICTIONARY(PLAYER_TRIGGER_SIG, (void *)0);
+    QS_SIG_DICTIONARY(PLAYER_QUIT_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(GAME_OVER_SIG,      (void *)0);
 
     /* start the active objects... */
-    for (n = 0U; n < N_PHILO; ++n) {
-        QACTIVE_START(AO_Philo[n],           /* AO to start */
-                      (uint_fast8_t)(n + 1), /* QP priority of the AO */
-                      philoQueueSto[n],      /* event queue storage */
-                      Q_DIM(philoQueueSto[n]), /* queue length [events] */
-                      (void *)0,             /* stack storage (not used) */
-                      0U,                    /* size of the stack [bytes] */
-                     (QEvt *)0);             /* initialization event */
-    }
-    QACTIVE_START(AO_Table,                  /* AO to start */
-                  (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
-                  tableQueueSto,             /* event queue storage */
-                  Q_DIM(tableQueueSto),      /* queue length [events] */
-                  (void *)0,                 /* stack storage (not used) */
-                  0U,                        /* size of the stack [bytes] */
-                  (QEvt *)0);                /* initialization event */
+    QACTIVE_START(AO_Tunnel,
+                  1U,                /* QP priority */
+                  tunnelQueueSto,  Q_DIM(tunnelQueueSto), /* evt queue */
+                  (void *)0, 0U,     /* no per-thread stack */
+                  (QEvt *)0);        /* no initialization event */
+    QACTIVE_START(AO_Ship,
+                  2U,                /* QP priority */
+                  shipQueueSto,    Q_DIM(shipQueueSto), /* evt queue */
+                  (void *)0, 0U,     /* no per-thread stack */
+                  (QEvt *)0);        /* no initialization event */
+    QACTIVE_START(AO_Missile,
+                  3U,                /* QP priority */
+                  missileQueueSto, Q_DIM(missileQueueSto), /* evt queue */
+                  (void *)0, 0U,     /* no per-thread stack */
+                  (QEvt *)0);        /* no initialization event */
 
     return QF_run(); /* run the QF application */
 }
@@ -108,4 +119,3 @@ int main() {
 * this case, the generous WIN_FUDGE_FACTOR is used to oversize the
 * event queues and event pools.
 */
-

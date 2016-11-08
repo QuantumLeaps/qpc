@@ -47,6 +47,7 @@ targetConfigs/
 Debug/
 Release/
 Spy/
+QSpy/
 
 lib/
 obj/

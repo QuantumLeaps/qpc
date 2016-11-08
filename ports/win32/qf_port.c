@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-01-22
+* Last Updated for Version: 5.7.5
+* Date of the Last Update:  2016-11-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -106,7 +106,6 @@ int_t QF_run(void) {
     QF_onCleanup();  /* cleanup callback */
     QS_EXIT();       /* cleanup the QSPY connection */
     //DeleteCriticalSection(&l_win32CritSect);
-    //free all "fudged" event pools...
     return (int_t)0; /* return success */
 }
 /****************************************************************************/
@@ -129,10 +128,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
 {
-    DWORD threadId;
     int   win32Prio;
-    void *fudgedQSto;
-    uint_fast16_t fudgedQLen;
 
     Q_REQUIRE_ID(700, ((uint_fast8_t)0 < prio) /* priority must be in range */
                  && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
@@ -144,15 +140,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = prio; /* set QF priority of this AO before adding it to QF */
     QF_add_(me);     /* make QF aware of this active object */
 
-    /* ignore the original storage for the event queue 'qSto' and
-    * instead allocate an oversized "fudged" storage for the queue.
-    * See also NOTE2 in qf_port.h.
-    */
-    Q_ASSERT_ID(710, (uint32_t)qLen * QF_WIN32_FUDGE_FACTOR < USHRT_MAX);
-    fudgedQLen = qLen * QF_WIN32_FUDGE_FACTOR; /* fudge the queue length */
-    fudgedQSto = calloc(fudgedQLen, sizeof(QEvt *)); /* new queue storage */
-    Q_ASSERT_ID(720, fudgedQSto != (void *)0); /* allocation must succeed */
-    QEQueue_init(&me->eQueue, (QEvt const **)fudgedQSto, fudgedQLen);
+    QEQueue_init(&me->eQueue, qSto, qLen);
 
     /* save osObject as integer, in case it contains the Win32 priority */
     win32Prio = (me->osObject != (void *)0)
@@ -173,9 +161,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     /* create a Win32 thread for the AO;
     * The thread is created with THREAD_PRIORITY_NORMAL
     */
-    me->thread = CreateThread(NULL, stkSize,
-                              &ao_thread, me, 0, &threadId);
-    Q_ASSERT_ID(730, me->thread != (HANDLE)0); /* thread must be created */
+    me->thread = CreateThread(NULL, stkSize, &ao_thread, me, 0, NULL);
+    Q_ASSERT_ID(730, me->thread != (HANDLE)0); /* must succeed */
 
     /* was the thread priority provided? */
     if (win32Prio != 0) {

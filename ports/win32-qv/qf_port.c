@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.1
-* Date of the Last Update:  2016-09-22
+* Last Updated for Version: 5.7.5
+* Date of the Last Update:  2016-11-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -156,9 +156,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
 {
-    void *fudgedQSto;
-    uint_fast16_t fudgedQLen;
-
     Q_REQUIRE_ID(700, ((uint_fast8_t)0 < prio) /* priority must be in range */
                  && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
                  && (qSto != (QEvt const **)0) /* queue storage must be... */
@@ -169,16 +166,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = prio; /* set QF priority of this AO before adding it to QF */
     QF_add_(me);     /* make QF aware of this active object */
 
-    /* ignore the original storage for the event queue 'qSto' and
-    * instead allocate an oversized "fudged" storage for the queue.
-    * See also NOTE2 in qf_port.h.
-    */
-    Q_ASSERT_ID(710, (uint32_t)qLen * QF_WIN32_FUDGE_FACTOR < USHRT_MAX);
-    fudgedQLen = qLen * QF_WIN32_FUDGE_FACTOR; /* fudge the queue length */
-    fudgedQSto = calloc(fudgedQLen, sizeof(QEvt *)); /* new queue storage */
-    Q_ASSERT_ID(720, fudgedQSto != (void *)0); /* allocation must succeed */
-    QEQueue_init(&me->eQueue, (QEvt const **)fudgedQSto, fudgedQLen);
-
+    QEQueue_init(&me->eQueue, qSto, qLen);
 
     QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */

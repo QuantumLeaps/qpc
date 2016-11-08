@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 API
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-26
+* Last Updated for Version: 5.7.5
+* Date of the Last Update:  2016-11-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -162,13 +162,8 @@ void QF_onClockTick(void);
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_  QMPool
-    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) do { \
-        uint_fast32_t fudgedSize = (poolSize_) * QF_WIN32_FUDGE_FACTOR; \
-        void *fudgedSto = malloc(fudgedSize); \
-        Q_ASSERT_ID(210, fudgedSto != (void *)0); \
-        (void)(poolSto_); \
-        QMPool_init(&(p_), fudgedSto, fudgedSize, evtSize_); \
-    } while (0)
+    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+        QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_))
 
     #define QF_EPOOL_EVENT_SIZE_(p_)  ((p_).blockSize)
     #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
@@ -177,9 +172,6 @@ void QF_onClockTick(void);
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h> /* Win32 API */
     #include <stdlib.h>  /* for malloc() */
-
-    /* Windows "fudge factor" for oversizing the resources, see NOTE3 */
-    #define QF_WIN32_FUDGE_FACTOR  100U
 
 #endif /* QP_IMPL */
 
@@ -218,25 +210,6 @@ void QF_onClockTick(void);
 * port with the main critical section. This means that event multicasting
 * will appear atomic, in the sense that no thread will be able to post
 * events during multicasting.
-*
-* NOTE3:
-* Windows is not a deterministic real-time system, which means that the
-* system can occasionally and unexpectedly "choke and freeze" for a number
-* of seconds. The designers of Windows have dealt with these sort of issues
-* by massively oversizing the resources available to the applications. For
-* example, the default Windows GUI message queues size is 10,000 entries,
-* which can dynamically grow to an even larger number. Also the stacks of
-* Win32 threads can dynamically grow to several megabytes.
-*
-* In contrast, the event queues, event pools, and stack size inside the
-* real-time embedded (RTE) systems can be (and must be) much smaller,
-* because you typically can put an upper bound on the real-time behavior
-* and the resulting delays.
-*
-* To be able to run the unmodified applications designed originally for
-* RTE systems on Windows, and to reduce the odds of resource shortages in
-* this case, the generous QF_WIN32_FUDGE_FACTOR is used to oversize the
-* event queues and event pools.
 */
 
 #endif /* qf_port_h */

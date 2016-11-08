@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-28
+* Last Updated for Version: 5.7.5
+* Date of the Last Update:  2016-11-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -98,38 +98,43 @@ void QF_onClockTick(void);
 
 /* portable "safe" facilities from <stdio.h> and <string.h> ... */
 #ifdef _MSC_VER /* Microsoft C/C++ compiler? */
-    #define SNPRINTF_S(buf_, len_, format_, ...) \
-        _snprintf_s(buf_, len_, _TRUNCATE, format_, ##__VA_ARGS__)
 
-    #define STRNCPY_S(dest_, src_, len_) \
-        strncpy_s(dest_, len_, src_, _TRUNCATE)
+#define SNPRINTF_S(buf_, len_, format_, ...) \
+    _snprintf_s(buf_, len_, _TRUNCATE, format_, ##__VA_ARGS__)
 
-    #define FOPEN_S(fp_, fName_, mode_) \
-        if (fopen_s(&fp_, fName_, mode_) != 0) { \
-            fp_ = (FILE *)0; \
-        } else (void)0
+#define STRNCPY_S(dest_, src_, len_) \
+    strncpy_s(dest_, len_, src_, _TRUNCATE)
 
-    #define CTIME_S(buf_, len_, time_) \
-        ctime_s((char *)buf_, len_, time_)
+#define FOPEN_S(fp_, fName_, mode_) \
+    if (fopen_s(&fp_, fName_, mode_) != 0) { \
+        fp_ = (FILE *)0; \
+    } else (void)0
 
-    #define SSCANF_S(buf_, format_, ...) \
-        sscanf_s(buf_, format_, ##__VA_ARGS__)
+#define CTIME_S(buf_, len_, time_) \
+    ctime_s((char *)buf_, len_, time_)
 
-    #else /* other C/C++ compilers (GNU, etc.) */
+#define SSCANF_S(buf_, format_, ...) \
+    sscanf_s(buf_, format_, ##__VA_ARGS__)
 
-    #define SNPRINTF_S(buf_, len_, format_, ...) \
-        snprintf(buf_, len_, format_, ##__VA_ARGS__)
+#else /* other C/C++ compilers (GNU, etc.) */
 
-    #define STRNCPY_S(dest_, src_, len_) strncpy(dest_, src_, len_)
+#define SNPRINTF_S(buf_, len_, format_, ...) \
+    snprintf(buf_, len_, format_, ##__VA_ARGS__)
 
-    #define FOPEN_S(fp_, fName_, mode_) \
-        (fp_ = fopen(fName_, mode_))
+#define STRNCPY_S(dest_, src_, len_) strncpy(dest_, src_, len_)
 
-    #define CTIME_S(buf_, len_, time_) \
-        strncpy((char *)buf_, ctime(time_), len_)
+#define FOPEN_S(fp_, fName_, mode_) \
+    (fp_ = fopen(fName_, mode_))
 
-    #define SSCANF_S(buf_, format_, ...) \
-        sscanf(buf_, format_, ##__VA_ARGS__)
+#define CTIME_S(buf_, len_, time_) \
+    strncpy((char *)buf_, ctime(time_), len_)
+
+#define SSCANF_S(buf_, format_, ...) \
+    sscanf(buf_, format_, ##__VA_ARGS__)
+
+#define SSCANF_S(buf_, format_, ...) \
+    sscanf(buf_, format_, ##__VA_ARGS__)
+
 #endif /* _MSC_VER */
 
 /****************************************************************************/
@@ -152,13 +157,8 @@ void QF_onClockTick(void);
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_  QMPool
-    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) do { \
-        uint_fast32_t fudgedSize = (poolSize_) * QF_WIN32_FUDGE_FACTOR; \
-        void *fudgedSto = malloc(fudgedSize); \
-        Q_ASSERT_ID(210, fudgedSto != (void *)0); \
-        (void)(poolSto_); \
-        QMPool_init(&(p_), fudgedSto, fudgedSize, evtSize_); \
-    } while (0)
+    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+        QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_))
 
     #define QF_EPOOL_EVENT_SIZE_(p_)  ((p_).blockSize)
     #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
@@ -170,9 +170,6 @@ void QF_onClockTick(void);
 
     extern QPSet   QV_readySet_;   /* QV-ready set of active objects */
     extern HANDLE  QV_win32Event_; /* Win32 event to signal events */
-
-    /* Windows "fudge factor" for oversizing the resources, see NOTE3 */
-    #define QF_WIN32_FUDGE_FACTOR  100U
 
 #endif /* QP_IMPL */
 
@@ -209,25 +206,6 @@ void QF_onClockTick(void);
 * NOTE2:
 * Scheduler locking (used inside QF_publish_()) is not needed in the single-
 * threaded Win32-QV port, because event multicasting is already atomic.
-*
-* NOTE3:
-* Windows is not a deterministic real-time system, which means that the
-* system can occasionally and unexpectedly "choke and freeze" for a number
-* of seconds. The designers of Windows have dealt with these sort of issues
-* by massively oversizing the resources available to the applications. For
-* example, the default Windows GUI message queues size is 10,000 entries,
-* which can dynamically grow to an even larger number. Also the stacks of
-* Win32 threads can dynamically grow to several megabytes.
-*
-* In contrast, the event queues, event pools, and stack size inside the
-* real-time embedded (RTE) systems can be (and must be) much smaller,
-* because you typically can put an upper bound on the real-time behavior
-* and the resulting delays.
-*
-* To be able to run the unmodified applications designed originally for
-* RTE systems on Windows, and to reduce the odds of resource shortages in
-* this case, the generous QF_WIN32_FUDGE_FACTOR is used to oversize the
-* event queues and event pools.
 */
 
 #endif /* qf_port_h */
