@@ -4,8 +4,8 @@
 * @brief QXMutex_init(), QXMutex_lock and QXMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-14
+* Last updated for version 5.8.0
+* Last updated on  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -125,7 +125,7 @@ void QXMutex_lock(QXMutex * const me) {
     }
     QXK_attr_.lockHolder =
        (QXK_attr_.curr != (void *)0)
-       ? ((QMActive volatile *)QXK_attr_.curr)->prio
+       ? ((QActive volatile *)QXK_attr_.curr)->prio
        : (uint_fast8_t)0;
 
     QS_BEGIN_NOCRIT_(QS_SCHED_LOCK, (void *)0, (void *)0)

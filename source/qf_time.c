@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-01-27
+* Last updated for version 5.8.0
+* Last updated on  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -121,7 +121,7 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
 
             /* is time event about to expire? */
             if (t->ctr == (QTimeEvtCtr)0) {
-                QMActive *act = (QMActive *)t->act; /* temp. for volatile */
+                QActive *act = (QActive *)t->act; /* temp. for volatile */
 
                 /* periodic time evt? */
                 if (t->interval != (QTimeEvtCtr)0) {
@@ -228,7 +228,7 @@ bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate) {
 * object **before** arming the Time Event. The ideal place for initializing
 * the time event(s) associated with a given AO is the AO's constructor.
 */
-void QTimeEvt_ctorX(QTimeEvt * const me, QMActive * const act,
+void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
                     enum_t const sig, uint_fast8_t tickRate)
 {
     /** @pre The signal must be valid and the tick rate in range */

@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.4
-* Last updated on  2016-11-02
+* Last updated for version 5.8.0
+* Last updated on  2016-11-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -69,8 +69,9 @@ QK_Attr QK_attr_; /* global attributes of the QK kernel */
 * uninitialized data (as is required by the C Standard).
 */
 void QF_init(void) {
-    extern uint_fast8_t QF_maxPool_;
-    extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
+    QF_maxPool_      = (uint_fast8_t)0;
+    QF_subscrList_   = (QSubscrList *)0;
+    QF_maxPubSignal_ = (enum_t)0;
 
     /* clear the internal QF variables, so that the framework can start
     * correctly even if the startup code fails to clear the uninitialized
@@ -163,7 +164,7 @@ int_t QF_run(void) {
 * The following example shows starting an AO when a per-task stack is needed:
 * @include qf_start.c
 */
-void QActive_start_(QMActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
@@ -181,7 +182,7 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
     QF_add_(me); /* make QF aware of this active object */
     QF_CRIT_EXIT_();
 
-    QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH();                /* flush the trace buffer to the host */
 
     /* See if this AO needs to be scheduled in case QK is already running */
@@ -203,7 +204,7 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
 * @note By the time the AO calls QActive_stop(), it should have unsubscribed
 * from all events and no more events should be directly-posted to it.
 */
-void QActive_stop(QMActive * const me) {
+void QActive_stop(QActive * const me) {
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
@@ -266,7 +267,7 @@ uint_fast8_t QK_sched_(void) {
 void QK_activate_(void) {
     uint_fast8_t pin = QK_attr_.actPrio;  /* save the active priority */
     uint_fast8_t p   = QK_attr_.nextPrio; /* the next prio to run */
-    QMActive *a;
+    QActive *a;
 
     /* QS tracing or thread-local storage? */
 #ifdef Q_SPY
@@ -305,10 +306,14 @@ void QK_activate_(void) {
         * 3. determine if event is garbage and collect it if so
         */
         e = QActive_get_(a);
-        QMSM_DISPATCH(&a->super, e);
+        QHSM_DISPATCH(&a->super, e);
         QF_gc(e);
 
         QF_INT_DISABLE(); /* unconditionally disable interrupts */
+
+        if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
+            QPSet_remove(&QK_attr_.readySet, p);
+        }
 
         /* find new highest-prio AO ready to run... */
         QPSet_findMax(&QK_attr_.readySet, p);

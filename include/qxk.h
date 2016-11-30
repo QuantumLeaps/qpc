@@ -5,8 +5,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-28
+* Last updated for version 5.8.0
+* Last updated on  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -180,8 +180,7 @@ void QXMutex_unlock(QXMutex * const me);
         } \
     } while (0)
 
-    #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-        QPSet_remove(&QXK_attr_.readySet, (me_)->prio)
+    #define QACTIVE_EQUEUE_ONEMPTY_(me_) ((void)0)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool

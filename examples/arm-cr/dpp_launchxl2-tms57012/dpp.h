@@ -23,13 +23,18 @@ enum DPPSignals {
     DONE_SIG,       /* published by Philosopher when done eating */
     PAUSE_SIG,      /* published by BSP to pause serving forks */
     SERVE_SIG,      /* published by BSP to serve re-start serving forks */
-    TERMINATE_SIG,  /* published by BSP to terminate the application */
+    TEST_SIG,       /* published by BSP to test the application */
     MAX_PUB_SIG,    /* the last published signal */
 
     HUNGRY_SIG,     /* posted direclty to Table from hungry Philo */
     TIMEOUT_SIG,    /* used by Philosophers for time events */
     MAX_SIG         /* the last signal */
 };
+
+
+#if ((QP_VERSION < 580) || (QP_VERSION != ((QP_RELEASE^4294967295) % 0x3E8)))
+#error qpc version 5.8.0 or higher required
+#endif
 
 /*${Events::TableEvt} ......................................................*/
 typedef struct {
@@ -53,12 +58,14 @@ extern QMActive * const AO_Philo[N_PHILO];
 /*${AOs::Table_ctor} .......................................................*/
 void Table_ctor(void);
 
-extern QMActive * const AO_Table;
+extern QActive * const AO_Table;
 
 
 #ifdef qxk_h
-    void Test_ctor(void);
-    extern QXThread * const XT_Test;
+    void Test1_ctor(void);
+    extern QXThread * const XT_Test1;
+    void Test2_ctor(void);
+    extern QXThread * const XT_Test2;
 #endif /* qxk_h */
 
 #endif /* dpp_h */

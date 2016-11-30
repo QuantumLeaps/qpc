@@ -24,6 +24,11 @@
 
 Q_DEFINE_THIS_FILE
 
+
+#if ((QP_VERSION < 580) || (QP_VERSION != ((QP_RELEASE^4294967295) % 0x3E8)))
+#error qpc version 5.8.0 or higher required
+#endif
+
 /*${SMs::ToastOven} ........................................................*/
 typedef struct {
 /* protected: */
@@ -75,7 +80,8 @@ static QState ToastOven_doorClosed(ToastOven * const me, QEvt const * const e) {
         }
         /* ${SMs::ToastOven::SM::doorClosed} */
         case Q_EXIT_SIG: {
-            me->his_doorClosed = QHsm_state(me); /* save history */
+            /* save deep history */
+            me->his_doorClosed = QHsm_state(me);
             status_ = Q_HANDLED();
             break;
         }

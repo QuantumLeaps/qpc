@@ -1,7 +1,7 @@
  /*****************************************************************************
 * Product: DPP example, Windows (console)
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.8.0
+* Last updated on  2016-11-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -66,7 +66,7 @@ void QF_onClockTick(void) {
     if (_kbhit()) { /* any key pressed? */
         int ch = _getch();
         if (ch == '\33') { /* see if the ESC key pressed */
-            QF_PUBLISH(Q_NEW(QEvt, TERMINATE_SIG), &l_clock_tick);
+            BSP_terminate(0);
         }
         else if (ch == 'p') {
             QF_PUBLISH(Q_NEW(QEvt, PAUSE_SIG), &l_clock_tick);

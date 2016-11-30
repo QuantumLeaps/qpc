@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-29
+* Last updated for version 5.8.0
+* Last updated on  2016-11-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -68,7 +68,7 @@ static void thread_function(ULONG thread_input) { /* ThreadX signature */
     act->osObject = (uint8_t)1; /* enable event-loop (see QActive_stop()) */
     while (act->osObject) { /* event-loop */
         QEvt const *e = QActive_get_(act);
-        QMSM_DISPATCH(&act->super, e);
+        QHSM_DISPATCH(&act->super, e);
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
 
@@ -98,7 +98,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = prio;  /* save the QF priority */
     QF_add_(me);      /* make QF aware of this active object */
-    QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
 
     QS_FLUSH(); /* flush the trace buffer to the host */
 

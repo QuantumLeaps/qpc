@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.4
-* Last updated on  2016-11-02
+* Last updated for version 5.8.0
+* Last updated on  2016-11-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -113,15 +113,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
 * @note Must be called only by the constructors of the derived state
 * machines.
 *
-* @note Must be called only ONCE before QMSM_INIT().
-*
-* @note
-* QHsm inherits QMsm, so by the @ref oop convention it should call the
-* constructor of the superclass, i.e., QMsm_ctor(). However, this would pull
-* in the QMsmVtbl, which in turn will pull in the code for QMsm_init_() and
-* QMsm_dispatch_() implemetations. To avoid this code size penalty, in case
-* ::QMsm is not used in a given project, the QHsm_ctor() performs direct
-* intitialization of the Vtbl, which avoids pulling in the code for QMsm.
+* @note Must be called only ONCE before QHSM_INIT().
 *
 * @usage
 * The following example illustrates how to invoke QHsm_ctor() in the
@@ -133,7 +125,6 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial) {
         &QHsm_init_,
         &QHsm_dispatch_
     };
-    /* do not call the QMsm_ctor() here */
     me->vptr  = &vtbl;
     me->state.fun = Q_STATE_CAST(&QHsm_top);
     me->temp.fun  = initial;
@@ -252,7 +243,7 @@ QState QHsm_top(void const * const me, QEvt const * const e) {
 *
 * @note
 * This function should be called only via the virtual table (see
-* QMSM_DISPATCH()) and should NOT be called directly in the applications.
+* QHSM_DISPATCH()) and should NOT be called directly in the applications.
 */
 void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
     QStateHandler t = me->state.fun;
@@ -602,9 +593,11 @@ bool QHsm_isIn(QHsm * const me, QStateHandler const state) {
 * @note this function is designed to be called during state transitions,
 * so it does not necessarily start in a stable state configuration.
 * However, the function establishes stable state configuration upon exit.
+*
+* @sa QHsm_childState()
 */
-QStateHandler QHsm_childState(QHsm * const me,
-                              QStateHandler const parent)
+QStateHandler QHsm_childState_(QHsm * const me,
+                               QStateHandler const parent)
 {
     QStateHandler child = me->state.fun; /* start with the current state */
     bool isConfirmed = false; /* start with the child not confirmed */

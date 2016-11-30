@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.4
-* Last updated on  2016-11-01
+* Last updated for version 5.8.0
+* Last updated on  2016-11-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -52,7 +52,7 @@ Q_DEFINE_THIS_MODULE("qf_ps")
 
 /* Package-scope objects ****************************************************/
 QSubscrList *QF_subscrList_;
-enum_t QF_maxSignal_;
+enum_t QF_maxPubSignal_;
 
 /****************************************************************************/
 /**
@@ -83,8 +83,8 @@ enum_t QF_maxSignal_;
 * @include qf_main.c
 */
 void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal) {
-    QF_subscrList_ = subscrSto;
-    QF_maxSignal_  = maxSignal;
+    QF_subscrList_   = subscrSto;
+    QF_maxPubSignal_ = maxSignal;
 
     /* zero the subscriber list, so that the framework can start correctly
     * even if the startup code fails to clear the uninitialized data
@@ -125,7 +125,7 @@ void QF_publish_(QEvt const * const e, void const * const sender)
     QF_CRIT_STAT_
 
     /** @pre the published signal must be within the configured range */
-    Q_REQUIRE_ID(200, e->sig < (QSignal)QF_maxSignal_);
+    Q_REQUIRE_ID(200, e->sig < (QSignal)QF_maxPubSignal_);
 
     QF_CRIT_ENTRY_();
 
@@ -161,7 +161,7 @@ void QF_publish_(QEvt const * const e, void const * const sender)
         QF_SCHED_LOCK_(p); /* lock the scheduler up to prio 'p' */
         do { /* loop over all subscribers */
             /* the prio of the AO must be registered with the framework */
-            Q_ASSERT_ID(210, QF_active_[p] != (QMActive *)0);
+            Q_ASSERT_ID(210, QF_active_[p] != (QActive *)0);
 
             /* QACTIVE_POST() asserts internally if the queue overflows */
             QACTIVE_POST(QF_active_[p], e, sender);
@@ -207,7 +207,7 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
     QF_CRIT_STAT_
 
     Q_REQUIRE_ID(300, ((enum_t)Q_USER_SIG <= sig)
-              && (sig < QF_maxSignal_)
+              && (sig < QF_maxPubSignal_)
               && ((uint_fast8_t)0 < p) && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
               && (QF_active_[p] == me));
 
@@ -255,7 +255,7 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
     * be registered with the framework
     */
     Q_REQUIRE_ID(400, ((enum_t)Q_USER_SIG <= sig)
-              && (sig < QF_maxSignal_)
+              && (sig < QF_maxPubSignal_)
               && ((uint_fast8_t)0 < p) && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
               && (QF_active_[p] == me));
 
@@ -302,7 +302,7 @@ void QActive_unsubscribeAll(QActive const * const me) {
                        && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
                        && (QF_active_[p] == me));
 
-    for (sig = (enum_t)Q_USER_SIG; sig < QF_maxSignal_; ++sig) {
+    for (sig = (enum_t)Q_USER_SIG; sig < QF_maxPubSignal_; ++sig) {
         QF_CRIT_STAT_
         QF_CRIT_ENTRY_();
         if (QPSet_hasElement(&QF_PTR_AT_(QF_subscrList_, sig), p)) {

@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-29
+* Last updated for version 5.8.0
+* Last updated on  2016-11-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -95,7 +95,7 @@ extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
 extern QF_EPOOL_TYPE_ QF_pool_[QF_MAX_EPOOL]; /*!< allocate event pools */
 extern uint_fast8_t QF_maxPool_;     /*!< # of initialized event pools */
 extern QSubscrList *QF_subscrList_;  /*!< the subscriber list array */
-extern enum_t QF_maxSignal_;         /*!< the maximum published signal */
+extern enum_t QF_maxPubSignal_;      /*!< the maximum published signal */
 
 /*! structure representing a free block in the Native QF Memory Pool */
 typedef struct QFreeBlock {

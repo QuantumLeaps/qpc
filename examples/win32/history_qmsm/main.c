@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: History with QM example, Win32
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.8.0
+* Last updated on  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -52,7 +52,7 @@ int main() {
 
       /* instantiate the ToastOven HSM and trigger the initial transition */
     ToastOven_ctor();
-    QMSM_INIT(the_oven, (QEvt *)0);
+    QHSM_INIT(the_oven, (QEvt *)0);
 
     for (;;) {
         QEvt e;
@@ -71,7 +71,7 @@ int main() {
             case 0x1B: e.sig = TERMINATE_SIG;   break;
         }
                                /* dispatch the event into the state machine */
-        QMSM_DISPATCH(the_oven,  &e);
+        QHSM_DISPATCH(the_oven,  &e);
     }
     return 0;
 }

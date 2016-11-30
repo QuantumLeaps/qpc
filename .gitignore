@@ -32,6 +32,7 @@
 lint*.txt
 *.Miro
 *.bak
+*.qlc
 JLink*.*
 
 eclipse/

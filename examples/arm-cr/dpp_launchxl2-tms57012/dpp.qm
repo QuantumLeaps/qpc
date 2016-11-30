@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="3.3.0">
+<model version="4.0.0" links="0">
  <documentation>Dining Philosopher Problem example
-
 NOTE: Requries QP5.</documentation>
  <framework name="qpc"/>
  <package name="Events" stereotype="0x01">
@@ -10,7 +9,7 @@ NOTE: Requries QP5.</documentation>
   </class>
  </package>
  <package name="AOs" stereotype="0x02">
-  <class name="Philo" superclass="qpc::QMActive">
+  <class name="Philo" superclass="qpc::QActive">
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
    <statechart>
     <initial target="../1">
@@ -38,15 +37,17 @@ if (registered == (uint8_t)0) {
 QS_SIG_DICTIONARY(HUNGRY_SIG, me);  /* signal for each Philos */
 QS_SIG_DICTIONARY(TIMEOUT_SIG, me); /* signal for each Philos */
 
-QActive_subscribe(&amp;me-&gt;super, EAT_SIG);</action>
+QActive_subscribe(&amp;me-&gt;super, EAT_SIG);
+QActive_subscribe(&amp;me-&gt;super, TEST_SIG);</action>
      <initial_glyph conn="2,3,5,1,20,5,-3">
       <action box="0,-2,6,2"/>
      </initial_glyph>
     </initial>
     <state name="thinking">
      <entry>QTimeEvt_armX(&amp;me-&gt;timeEvt, THINK_TIME, 0U);</entry>
+     <exit>QTimeEvt_disarm(&amp;me-&gt;timeEvt);</exit>
      <tran trig="TIMEOUT" target="../../2">
-      <tran_glyph conn="2,12,3,1,20,13,-3">
+      <tran_glyph conn="2,13,3,1,20,12,-3">
        <action box="0,-2,6,2"/>
       </tran_glyph>
      </tran>
@@ -57,8 +58,14 @@ Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
        <action box="0,-2,14,2"/>
       </tran_glyph>
      </tran>
+     <tran trig="TEST">
+      <tran_glyph conn="2,20,3,-1,13">
+       <action box="0,-2,11,4"/>
+      </tran_glyph>
+     </tran>
      <state_glyph node="2,5,17,16">
       <entry box="1,2,5,2"/>
+      <exit box="1,4,6,2"/>
      </state_glyph>
     </state>
     <state name="hungry">
@@ -112,7 +119,7 @@ Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
     <state_diagram size="37,61"/>
    </statechart>
   </class>
-  <class name="Table" superclass="qpc::QMActive">
+  <class name="Table" superclass="qpc::QActive">
    <attribute name="fork[N_PHILO]" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="isHungry[N_PHILO]" type="uint8_t" visibility="0x02" properties="0x00"/>
    <statechart>
@@ -131,14 +138,14 @@ QS_SIG_DICTIONARY(DONE_SIG,      (void *)0); /* global signals */
 QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
 QS_SIG_DICTIONARY(PAUSE_SIG,     (void *)0);
 QS_SIG_DICTIONARY(SERVE_SIG,     (void *)0);
-QS_SIG_DICTIONARY(TERMINATE_SIG, (void *)0);
+QS_SIG_DICTIONARY(TEST_SIG,      (void *)0);
 
 QS_SIG_DICTIONARY(HUNGRY_SIG,    me); /* signal just for Table */
 
 QActive_subscribe(&amp;me-&gt;super, DONE_SIG);
 QActive_subscribe(&amp;me-&gt;super, PAUSE_SIG);
 QActive_subscribe(&amp;me-&gt;super, SERVE_SIG);
-QActive_subscribe(&amp;me-&gt;super, TERMINATE_SIG);
+QActive_subscribe(&amp;me-&gt;super, TEST_SIG);
 
 for (n = 0U; n &lt; N_PHILO; ++n) {
     me-&gt;fork[n] = FREE;
@@ -150,8 +157,7 @@ for (n = 0U; n &lt; N_PHILO; ++n) {
      </initial_glyph>
     </initial>
     <state name="active">
-     <tran trig="TERMINATE">
-      <action>BSP_terminate(0);</action>
+     <tran trig="TEST">
       <tran_glyph conn="2,11,3,-1,14">
        <action box="0,-2,11,4"/>
       </tran_glyph>
@@ -316,13 +322,13 @@ me-&gt;fork[n] = FREE;</action>
    </statechart>
   </class>
   <attribute name="AO_Philo[N_PHILO]" type="QMActive * const" visibility="0x00" properties="0x00"/>
-  <attribute name="AO_Table" type="QMActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Table" type="QActive * const" visibility="0x00" properties="0x00"/>
   <operation name="Philo_ctor" type="void" visibility="0x00" properties="0x00">
    <code>uint8_t n;
 Philo *me;
 for (n = 0U; n &lt; N_PHILO; ++n) {
     me = &amp;l_philo[n];
-    QMActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Philo_initial));
+    QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Philo_initial));
     QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, TIMEOUT_SIG, 0U);
 }</code>
   </operation>
@@ -330,7 +336,7 @@ for (n = 0U; n &lt; N_PHILO; ++n) {
    <code>uint8_t n;
 Table *me = &amp;l_table;
 
-QMActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Table_initial));
+QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Table_initial));
 
 for (n = 0U; n &lt; N_PHILO; ++n) {
     me-&gt;fork[n] = FREE;
@@ -348,7 +354,7 @@ enum DPPSignals {
     DONE_SIG,       /* published by Philosopher when done eating */
     PAUSE_SIG,      /* published by BSP to pause serving forks */
     SERVE_SIG,      /* published by BSP to serve re-start serving forks */
-    TERMINATE_SIG,  /* published by BSP to terminate the application */
+    TEST_SIG,       /* published by BSP to test the application */
     MAX_PUB_SIG,    /* the last published signal */
 
     HUNGRY_SIG,     /* posted direclty to Table from hungry Philo */
@@ -368,8 +374,10 @@ $declare(AOs::Table_ctor)
 $declare(AOs::AO_Table)
 
 #ifdef qxk_h
-    void Test_ctor(void);
-    extern QXThread * const XT_Test;
+    void Test1_ctor(void);
+    extern QXThread * const XT_Test1;
+    void Test2_ctor(void);
+    extern QXThread * const XT_Test2;
 #endif /* qxk_h */
 
 #endif /* dpp_h */</text>

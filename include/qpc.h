@@ -4,8 +4,8 @@
 * @ingroup qep qf qv qk qxk qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.8.0
+* Last updated on  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -91,6 +91,15 @@ extern char_t const Q_APP_BUILD_TIME[9];
 
 #endif /* #ifndef QP_API_VERSION */
 
+/****************************************************************************/
+#if (QP_API_VERSION < 580)
+
+/*! @deprecated call to the QMSM_INIT() operation; instead use: QHSM_INIT() */
+#define QMSM_INIT(me_, e_)     QHSM_INIT((me_), (e_))
+
+/*! @deprecated call to the QMSM_DISPATCH() operation;
+* instead use: QHSM_DISPATCH() */
+#define QMSM_DISPATCH(me_, e_) QHSM_DISPATCH((me_), (e_))
 
 /****************************************************************************/
 #if (QP_API_VERSION < 540)
@@ -131,19 +140,19 @@ typedef QHsm        QFsm;
 /*! @deprecated macro for odd 8-bit CPUs. */
 #define Q_ROM_VAR
 
-/*! @deprecated call to the QHsm init operation; instead use: QMSM_INIT() */
-#define QHsm_init(me_, e_)     QMSM_INIT((me_), (e_))
+/*! @deprecated call to the QMsm init operation; instead use: QHSM_INIT() */
+#define QMsm_init(me_, e_)     QHSM_INIT((me_), (e_))
 
-/*! @deprecated call to the QHsm dispatch operation;
-* instead use: QMSM_DISPATCH() */
-#define QHsm_dispatch(me_, e_) QMSM_DISPATCH((me_), (e_))
+/*! @deprecated call to the QMsm dispatch operation;
+* instead use: QHSM_DISPATCH() */
+#define QMsm_dispatch(me_, e_) QHSM_DISPATCH((me_), (e_))
 
-/*! @deprecated call to the QFsm init operation; instead use: QMSM_INIT()  */
-#define QFsm_init(me_, e_)     QMSM_INIT((me_), (e_))
+/*! @deprecated call to the QFsm init operation; instead use: QHSM_INIT()  */
+#define QFsm_init(me_, e_)     QHSM_INIT((me_), (e_))
 
 /*! @deprecated to the QFsm dispatch operation;
-* instead use: QMSM_DISPATCH() */
-#define QFsm_dispatch(me_, e_) QMSM_DISPATCH((me_), (e_))
+* instead use: QHSM_DISPATCH() */
+#define QFsm_dispatch(me_, e_) QHSM_DISPATCH((me_), (e_))
 
 /*! @deprecated interface defined for backwards compatibility;
 * instead use: QEQueue_post()  */
@@ -176,7 +185,7 @@ typedef QHsm        QFsm;
 
 /*! @deprecated time event constructor; instead use: QTimeEvt_ctorX() */
 #define QTimeEvt_ctor(me_, sig_) \
-    QTimeEvt_ctorX((me_), (QMActive *)0, (sig_), (uint8_t)0)
+    QTimeEvt_ctorX((me_), (QActive *)0, (sig_), (uint8_t)0)
 
 /*! @deprecated time event one-shot arm operation;
 * instead use: QTimeEvt_armX() */
@@ -205,6 +214,7 @@ typedef QEvt QEvent;
 #endif /* QP_API_VERSION < 450 */
 #endif /* QP_API_VERSION < 500 */
 #endif /* QP_API_VERSION < 540 */
+#endif /* QP_API_VERSION < 580 */
 
 #ifdef __cplusplus
 }

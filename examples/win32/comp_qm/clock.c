@@ -25,10 +25,15 @@
 Q_DEFINE_THIS_FILE
 
 /* Active object class -----------------------------------------------------*/
+
+#if ((QP_VERSION < 580) || (QP_VERSION != ((QP_RELEASE^4294967295) % 0x3E8)))
+#error qpc version 5.8.0 or higher required
+#endif
+
 /*${Components::AlarmClock} ................................................*/
 typedef struct {
 /* protected: */
-    QMActive super;
+    QActive super;
 
 /* private: */
     uint32_t current_time;
@@ -40,44 +45,10 @@ typedef struct {
 
 /* protected: */
 static QState AlarmClock_initial(AlarmClock * const me, QEvt const * const e);
-static QState AlarmClock_timekeeping  (AlarmClock * const me, QEvt const * const e);
-static QState AlarmClock_timekeeping_e(AlarmClock * const me);
-static QState AlarmClock_timekeeping_x(AlarmClock * const me);
-static QState AlarmClock_timekeeping_i(AlarmClock * const me);
-static QMState const AlarmClock_timekeeping_s = {
-    (QMState const *)0, /* superstate (top) */
-    Q_STATE_CAST(&AlarmClock_timekeeping),
-    Q_ACTION_CAST(&AlarmClock_timekeeping_e),
-    Q_ACTION_CAST(&AlarmClock_timekeeping_x),
-    Q_ACTION_CAST(&AlarmClock_timekeeping_i)
-};
-static QState AlarmClock_mode24h  (AlarmClock * const me, QEvt const * const e);
-static QState AlarmClock_mode24h_e(AlarmClock * const me);
-static QMState const AlarmClock_mode24h_s = {
-    &AlarmClock_timekeeping_s, /* superstate */
-    Q_STATE_CAST(&AlarmClock_mode24h),
-    Q_ACTION_CAST(&AlarmClock_mode24h_e),
-    Q_ACTION_CAST(0), /* no exit action */
-    Q_ACTION_CAST(0)  /* no intitial tran. */
-};
-static QState AlarmClock_mode12h  (AlarmClock * const me, QEvt const * const e);
-static QState AlarmClock_mode12h_e(AlarmClock * const me);
-static QMState const AlarmClock_mode12h_s = {
-    &AlarmClock_timekeeping_s, /* superstate */
-    Q_STATE_CAST(&AlarmClock_mode12h),
-    Q_ACTION_CAST(&AlarmClock_mode12h_e),
-    Q_ACTION_CAST(0), /* no exit action */
-    Q_ACTION_CAST(0)  /* no intitial tran. */
-};
-static QState AlarmClock_final  (AlarmClock * const me, QEvt const * const e);
-static QState AlarmClock_final_e(AlarmClock * const me);
-static QMState const AlarmClock_final_s = {
-    (QMState const *)0, /* superstate (top) */
-    Q_STATE_CAST(&AlarmClock_final),
-    Q_ACTION_CAST(&AlarmClock_final_e),
-    Q_ACTION_CAST(0), /* no exit action */
-    Q_ACTION_CAST(0)  /* no intitial tran. */
-};
+static QState AlarmClock_timekeeping(AlarmClock * const me, QEvt const * const e);
+static QState AlarmClock_mode24h(AlarmClock * const me, QEvt const * const e);
+static QState AlarmClock_mode12h(AlarmClock * const me, QEvt const * const e);
+static QState AlarmClock_final(AlarmClock * const me, QEvt const * const e);
 
 
 /* Local objects -----------------------------------------------------------*/
@@ -90,7 +61,7 @@ QMActive * const APP_alarmClock = &l_alarmClock.super; /* "opaque" pointer */
 void AlarmClock_ctor(void) {
     AlarmClock * const me = &l_alarmClock;
 
-    QMActive_ctor(&me->super, Q_STATE_CAST(&AlarmClock_initial));
+    QActive_ctor(&me->super, Q_STATE_CAST(&AlarmClock_initial));
     Alarm_ctor(&me->alarm); /* orthogonal component ctor */
 
     /* private time event ctor */
@@ -101,91 +72,51 @@ void AlarmClock_ctor(void) {
 /*${Components::AlarmClock} ................................................*/
 /*${Components::AlarmClock::SM} ............................................*/
 static QState AlarmClock_initial(AlarmClock * const me, QEvt const * const e) {
-    static struct {
-        QMState const *target;
-        QActionHandler act[3];
-    } const tatbl_ = { /* transition-action table */
-        &AlarmClock_timekeeping_s, /* target state */
-        {
-            Q_ACTION_CAST(&AlarmClock_timekeeping_e), /* entry */
-            Q_ACTION_CAST(&AlarmClock_timekeeping_i), /* init.tran. */
-            Q_ACTION_CAST(0) /* zero terminator */
-        }
-    };
     /* ${Components::AlarmClock::SM::initial} */
     (void)e; /* avoid compiler warning about unused parameter */
     me->current_time = 0U;
 
     /* (!) trigger the initial transition in the component */
-    QMSM_INIT((QMsm *)&me->alarm, (QEvt *)0);
-    return QM_TRAN_INIT(&tatbl_);
+    QHSM_INIT((QHsm *)&me->alarm, (QEvt *)0);
+    return Q_TRAN(&AlarmClock_timekeeping);
 }
 /*${Components::AlarmClock::SM::timekeeping} ...............................*/
-/* ${Components::AlarmClock::SM::timekeeping} */
-static QState AlarmClock_timekeeping_e(AlarmClock * const me) {
-    /* periodic timeout every second */
-    QTimeEvt_armX(&me->timeEvt, BSP_TICKS_PER_SEC,
-                                BSP_TICKS_PER_SEC);
-    return QM_ENTRY(&AlarmClock_timekeeping_s);
-}
-/* ${Components::AlarmClock::SM::timekeeping} */
-static QState AlarmClock_timekeeping_x(AlarmClock * const me) {
-    QTimeEvt_disarm(&me->timeEvt);
-    return QM_EXIT(&AlarmClock_timekeeping_s);
-}
-/* ${Components::AlarmClock::SM::timekeeping::initial} */
-static QState AlarmClock_timekeeping_i(AlarmClock * const me) {
-    static struct {
-        QMState const *target;
-        QActionHandler act[2];
-    } const tatbl_ = { /* transition-action table */
-        &AlarmClock_mode24h_s, /* target state */
-        {
-            Q_ACTION_CAST(&AlarmClock_mode24h_e), /* entry */
-            Q_ACTION_CAST(0) /* zero terminator */
-        }
-    };
-    /* ${Components::AlarmClock::SM::timekeeping::initial} */
-    return QM_TRAN_INIT(&tatbl_);
-}
-/* ${Components::AlarmClock::SM::timekeeping} */
 static QState AlarmClock_timekeeping(AlarmClock * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
+        /* ${Components::AlarmClock::SM::timekeeping} */
+        case Q_ENTRY_SIG: {
+            /* periodic timeout every second */
+            QTimeEvt_armX(&me->timeEvt, BSP_TICKS_PER_SEC,
+                                        BSP_TICKS_PER_SEC);
+            status_ = Q_HANDLED();
+            break;
+        }
+        /* ${Components::AlarmClock::SM::timekeeping} */
+        case Q_EXIT_SIG: {
+            QTimeEvt_disarm(&me->timeEvt);
+            status_ = Q_HANDLED();
+            break;
+        }
+        /* ${Components::AlarmClock::SM::timekeeping::initial} */
+        case Q_INIT_SIG: {
+            status_ = Q_TRAN(&AlarmClock_mode24h);
+            break;
+        }
         /* ${Components::AlarmClock::SM::timekeeping::CLOCK_24H} */
         case CLOCK_24H_SIG: {
-            static struct {
-                QMState const *target;
-                QActionHandler act[2];
-            } const tatbl_ = { /* transition-action table */
-                &AlarmClock_mode24h_s, /* target state */
-                {
-                    Q_ACTION_CAST(&AlarmClock_mode24h_e), /* entry */
-                    Q_ACTION_CAST(0) /* zero terminator */
-                }
-            };
-            status_ = QM_TRAN(&tatbl_);
+            status_ = Q_TRAN(&AlarmClock_mode24h);
             break;
         }
         /* ${Components::AlarmClock::SM::timekeeping::CLOCK_12H} */
         case CLOCK_12H_SIG: {
-            static struct {
-                QMState const *target;
-                QActionHandler act[2];
-            } const tatbl_ = { /* transition-action table */
-                &AlarmClock_mode12h_s, /* target state */
-                {
-                    Q_ACTION_CAST(&AlarmClock_mode12h_e), /* entry */
-                    Q_ACTION_CAST(0) /* zero terminator */
-                }
-            };
-            status_ = QM_TRAN(&tatbl_);
+            status_ = Q_TRAN(&AlarmClock_mode12h);
             break;
         }
         /* ${Components::AlarmClock::SM::timekeeping::ALARM} */
         case ALARM_SIG: {
             BSP_showMsg("Wake up!!!");
-            status_ = QM_HANDLED();
+            status_ = Q_HANDLED();
             break;
         }
         /* ${Components::AlarmClock::SM::timekeeping::ALARM_SET, ALARM_ON, ALARM_OFF} */
@@ -193,45 +124,33 @@ static QState AlarmClock_timekeeping(AlarmClock * const me, QEvt const * const e
         case ALARM_ON_SIG: /* intentionally fall through */
         case ALARM_OFF_SIG: {
             /* (!) synchronously dispatch to the orthogonal component */
-            QMSM_DISPATCH((QMsm *)&me->alarm, e);
-            status_ = QM_HANDLED();
+            QHSM_DISPATCH((QHsm *)&me->alarm, e);
+            status_ = Q_HANDLED();
             break;
         }
         /* ${Components::AlarmClock::SM::timekeeping::TERMINATE} */
         case TERMINATE_SIG: {
-            static struct {
-                QMState const *target;
-                QActionHandler act[3];
-            } const tatbl_ = { /* transition-action table */
-                &AlarmClock_final_s, /* target state */
-                {
-                    Q_ACTION_CAST(&AlarmClock_timekeeping_x), /* exit */
-                    Q_ACTION_CAST(&AlarmClock_final_e), /* entry */
-                    Q_ACTION_CAST(0) /* zero terminator */
-                }
-            };
             BSP_showMsg("--> final");
-            status_ = QM_TRAN(&tatbl_);
+            status_ = Q_TRAN(&AlarmClock_final);
             break;
         }
         default: {
-            status_ = QM_SUPER();
+            status_ = Q_SUPER(&QHsm_top);
             break;
         }
     }
     return status_;
 }
 /*${Components::AlarmClock::SM::timekeeping::mode24h} ......................*/
-/* ${Components::AlarmClock::SM::timekeeping::mode24h} */
-static QState AlarmClock_mode24h_e(AlarmClock * const me) {
-    BSP_showMsg("*** 24-hour mode");
-    (void)me; /* avoid compiler warning in case 'me' is not used */
-    return QM_ENTRY(&AlarmClock_mode24h_s);
-}
-/* ${Components::AlarmClock::SM::timekeeping::mode24h} */
 static QState AlarmClock_mode24h(AlarmClock * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
+        /* ${Components::AlarmClock::SM::timekeeping::mode24h} */
+        case Q_ENTRY_SIG: {
+            BSP_showMsg("*** 24-hour mode");
+            status_ = Q_HANDLED();
+            break;
+        }
         /* ${Components::AlarmClock::SM::timekeeping::mode24h::TICK} */
         case TICK_SIG: {
             TimeEvt pe; /* temporary synchronous event for the component */
@@ -245,28 +164,27 @@ static QState AlarmClock_mode24h(AlarmClock * const me, QEvt const * const e) {
             pe.current_time = me->current_time;
 
             /* (!) synchronously dispatch to the orthogonal component */
-            QMSM_DISPATCH(&me->alarm.super, &pe.super);
-            status_ = QM_HANDLED();
+            QHSM_DISPATCH(&me->alarm.super, &pe.super);
+            status_ = Q_HANDLED();
             break;
         }
         default: {
-            status_ = QM_SUPER();
+            status_ = Q_SUPER(&AlarmClock_timekeeping);
             break;
         }
     }
     return status_;
 }
 /*${Components::AlarmClock::SM::timekeeping::mode12h} ......................*/
-/* ${Components::AlarmClock::SM::timekeeping::mode12h} */
-static QState AlarmClock_mode12h_e(AlarmClock * const me) {
-    BSP_showMsg("*** 12-hour mode");
-    (void)me; /* avoid compiler warning in case 'me' is not used */
-    return QM_ENTRY(&AlarmClock_mode12h_s);
-}
-/* ${Components::AlarmClock::SM::timekeeping::mode12h} */
 static QState AlarmClock_mode12h(AlarmClock * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
+        /* ${Components::AlarmClock::SM::timekeeping::mode12h} */
+        case Q_ENTRY_SIG: {
+            BSP_showMsg("*** 12-hour mode");
+            status_ = Q_HANDLED();
+            break;
+        }
         /* ${Components::AlarmClock::SM::timekeeping::mode12h::TICK} */
         case TICK_SIG: {
             TimeEvt pe; /* temporary synchronous event for the component */
@@ -280,34 +198,32 @@ static QState AlarmClock_mode12h(AlarmClock * const me, QEvt const * const e) {
             pe.current_time = me->current_time;
 
             /* (!) synchronously dispatch to the orthogonal component */
-            QMSM_DISPATCH(&me->alarm.super, &pe.super);
-            status_ = QM_HANDLED();
+            QHSM_DISPATCH(&me->alarm.super, &pe.super);
+            status_ = Q_HANDLED();
             break;
         }
         default: {
-            status_ = QM_SUPER();
+            status_ = Q_SUPER(&AlarmClock_timekeeping);
             break;
         }
     }
     return status_;
 }
 /*${Components::AlarmClock::SM::final} .....................................*/
-/* ${Components::AlarmClock::SM::final} */
-static QState AlarmClock_final_e(AlarmClock * const me) {
-    QF_stop(); /* terminate the application */
-    (void)me; /* avoid compiler warning in case 'me' is not used */
-    return QM_ENTRY(&AlarmClock_final_s);
-}
-/* ${Components::AlarmClock::SM::final} */
 static QState AlarmClock_final(AlarmClock * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
+        /* ${Components::AlarmClock::SM::final} */
+        case Q_ENTRY_SIG: {
+            QF_stop(); /* terminate the application */
+            status_ = Q_HANDLED();
+            break;
+        }
         default: {
-            status_ = QM_SUPER();
+            status_ = Q_SUPER(&QHsm_top);
             break;
         }
     }
-    (void)me; /* avoid compiler warning in case 'me' is not used */
     return status_;
 }
 

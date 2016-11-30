@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.1
-* Last updated on  2016-09-17
+* Last updated for version 5.8.0
+* Last updated on  2016-11-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,6 +40,7 @@
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
+#include "qf_pkg.h"       /* QF package-scope internal interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
     #include "qs_port.h"  /* include QS port */
@@ -69,8 +70,9 @@ QPSet QV_readySet_; /* QV ready-set of active objects */
 * uninitialized data (as is required by the C Standard).
 */
 void QF_init(void) {
-    extern uint_fast8_t QF_maxPool_;
-    extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
+    QF_maxPool_      = (uint_fast8_t)0;
+    QF_subscrList_   = (QSubscrList *)0;
+    QF_maxPubSignal_ = (enum_t)0;
 
     /* clear the internal QF variables, so that the framework can start
     * correctly even if the startup code fails to clear the uninitialized
@@ -123,12 +125,11 @@ int_t QF_run(void) {
     QF_onStartup(); /* application-specific startup callback */
 
     /* the combined event-loop and background-loop of the QV kernel */
+    QF_INT_DISABLE();
     for (;;) {
         QEvt const *e;
-        QMActive *a;
+        QActive *a;
         uint_fast8_t p;
-
-        QF_INT_DISABLE();
 
         /* find the maximum priority AO ready to run */
         if (QPSet_notEmpty(&QV_readySet_)) {
@@ -154,8 +155,14 @@ int_t QF_run(void) {
             * 3. determine if event is garbage and collect it if so
             */
             e = QActive_get_(a);
-            QMSM_DISPATCH(&a->super, e);
+            QHSM_DISPATCH(&a->super, e);
             QF_gc(e);
+
+            QF_INT_DISABLE();
+
+            if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
+                QPSet_remove(&QV_readySet_, p);
+            }
         }
         else { /* no AO ready to run --> idle */
 #ifdef Q_SPY
@@ -177,6 +184,8 @@ int_t QF_run(void) {
             * mode.
             */
             QV_onIdle();
+
+            QF_INT_DISABLE();
         }
     }
 #ifdef __GNUC__  /* GNU compiler? */
@@ -207,7 +216,7 @@ int_t QF_run(void) {
 * The following example shows starting an AO when a per-task stack is needed:
 * @include qf_start.c
 */
-void QActive_start_(QMActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
@@ -224,7 +233,7 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
     QEQueue_init(&me->eQueue, qSto, qLen);
     me->prio = prio; /* set QF priority of this AO before adding it to QF */
     QF_add_(me);     /* make QF aware of this active object */
-    QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
 
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 }
@@ -241,6 +250,6 @@ void QActive_start_(QMActive * const me, uint_fast8_t prio,
 * @note By the time the AO calls QActive_stop(), it should have unsubscribed
 * from all events and no more events should be directly-posted to it.
 */
-void QActive_stop(QMActive * const me) {
+void QActive_stop(QActive * const me) {
     QF_remove_(me);  /* remove the AO from the framework */
 }

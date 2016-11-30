@@ -57,18 +57,18 @@ Q_DEFINE_THIS_MODULE("qxk_xthr")
 /****************************************************************************/
 static void QXThread_init_(QMsm * const me, QEvt const * const e);
 static void QXThread_dispatch_(QMsm * const me, QEvt const * const e);
-static void QXThread_start_(QMActive * const me, uint_fast8_t prio,
+static void QXThread_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie);
 #ifndef Q_SPY
-static bool QXThread_post_(QMActive * const me, QEvt const * const e,
+static bool QXThread_post_(QActive * const me, QEvt const * const e,
                     uint_fast16_t const margin);
 #else
-static bool QXThread_post_(QMActive * const me, QEvt const * const e,
+static bool QXThread_post_(QActive * const me, QEvt const * const e,
                     uint_fast16_t const margin, void const * const sender);
 #endif
-static void QXThread_postLIFO_(QMActive * const me, QEvt const * const e);
+static void QXThread_postLIFO_(QActive * const me, QEvt const * const e);
 
 
 /****************************************************************************/
@@ -99,7 +99,7 @@ void QXThread_ctor(QXThread * const me,
         &QXThread_postLIFO_
     };
 
-    QMActive_ctor(&me->super, Q_STATE_CAST(handler)); /* superclass' ctor */
+    QActive_ctor(&me->super, Q_STATE_CAST(handler)); /* superclass' ctor */
     me->super.super.vptr = &vtbl.super; /* set the vptr to QXThread v-table */
     me->super.super.state.act = Q_ACTION_CAST(0); /* mark as extended thread */
 
@@ -146,7 +146,7 @@ static void QXThread_dispatch_(QMsm * const me, QEvt const * const e) {
 * The following example shows starting an extended thread:
 * @include qxk_xthread_start.c
 */
-static void QXThread_start_(QMActive * const me, uint_fast8_t prio,
+static void QXThread_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
@@ -212,16 +212,16 @@ static void QXThread_start_(QMActive * const me, uint_fast8_t prio,
 * this case.
 *
 * @note
-* For compatibility with the V-table from the superclass QMActive, the
-* me-pointer is typed as pointing to QMActive. However, the me pointer
+* For compatibility with the V-table from the superclass QActive, the
+* me-pointer is typed as pointing to QActive. However, the me pointer
 * here actually points to the QXThread subclass. Therefore the downcast
 * (QXThread *)me is always correct.
 */
 #ifndef Q_SPY
-static bool QXThread_post_(QMActive * const me, QEvt const * const e,
+static bool QXThread_post_(QActive * const me, QEvt const * const e,
                            uint_fast16_t const margin)
 #else
-static bool QXThread_post_(QMActive * const me, QEvt const * const e,
+static bool QXThread_post_(QActive * const me, QEvt const * const e,
                            uint_fast16_t const margin,
                            void const * const sender)
 #endif
@@ -346,7 +346,7 @@ static bool QXThread_post_(QMActive * const me, QEvt const * const e,
 *
 * @sa QActive_postLIFO_()
 */
-static void QXThread_postLIFO_(QMActive * const me, QEvt const * const e) {
+static void QXThread_postLIFO_(QActive * const me, QEvt const * const e) {
     (void)me;
     (void)e;
     Q_ERROR_ID(410);
@@ -481,7 +481,7 @@ void QXThread_block_(QXThread const * const me) {
 void QXThread_unblock_(QXThread const * const me) {
     QPSet_insert(&QXK_attr_.readySet, me->super.prio);
     if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
-        && (QF_active_[0] != (QMActive *)0))  /* kernel started? */
+        && (QF_active_[0] != (QActive *)0))  /* kernel started? */
     {
         (void)QXK_sched_();
     }
@@ -619,9 +619,9 @@ void QXK_threadRet_(void) {
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    p = ((QMActive volatile *)QXK_attr_.curr)->prio;
+    p = ((QActive volatile *)QXK_attr_.curr)->prio;
     /* remove this thread from the QF */
-    QF_active_[p] = (QMActive *)0;
+    QF_active_[p] = (QActive *)0;
     QPSet_remove(&QXK_attr_.readySet, p);
     (void)QXK_sched_();
     QF_CRIT_EXIT_();

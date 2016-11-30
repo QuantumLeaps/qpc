@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.4
-* Last updated on  2016-11-02
+* Last updated for version 5.8.0
+* Last updated on  2016-11-21
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,49 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      574
+#define QP_VERSION      580
 
 /*! The current QP version number string of the form X.Y.Z, where X is
 * a 1-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "5.7.4"
+#define QP_VERSION_STR  "5.8.0"
 
-/*! Tamperproof current QP release (5.7.4) and date (16-11-04) */
-#define QP_RELEASE      0x9FF978C1U
-
-/****************************************************************************/
-#ifndef Q_SIGNAL_SIZE
-
-    /*! The size (in bytes) of the signal of an event. Valid values:
-    * 1, 2, or 4; default 1 */
-    /**
-    * @description
-    * This macro can be defined in the QEP port file (qep_port.h) to
-    * configure the ::QSignal type. When the macro is not defined, the
-    * default of 2 bytes is applied.
-    */
-    #define Q_SIGNAL_SIZE 2
-#endif
-#if (Q_SIGNAL_SIZE == 1)
-    typedef uint8_t QSignal;
-#elif (Q_SIGNAL_SIZE == 2)
-    /*! QSignal represents the signal of an event. */
-    /**
-    * @description
-    * The relationship between an event and a signal is as follows. A signal
-    * in UML is the specification of an asynchronous stimulus that triggers
-    * reactions, and as such is an essential part of an event.
-    * (The signal conveys the type of the occurrence-what happened?)
-    * However, an event can also contain additional quantitative information
-    * about the occurrence in form of event parameters.
-    */
-    typedef uint16_t QSignal;
-#elif (Q_SIGNAL_SIZE == 4)
-    typedef uint32_t QSignal;
-#else
-    #error "Q_SIGNAL_SIZE defined incorrectly, expected 1, 2, or 4"
-#endif
+/*! Tamperproof current QP release (5.8.0) and date (2016-11-30) */
+#define QP_RELEASE      0x9FF5811BU
 
 
 /****************************************************************************/
@@ -125,6 +92,48 @@ typedef float float32_t;
 * trace records.
 */
 typedef double float64_t;
+
+
+/*! the current QP version number string in ROM, based on QP_VERSION_STR */
+extern char_t const QP_versionStr[6];
+
+/*! get the current QEP version number string of the form "X.Y.Z" */
+#define QEP_getVersion() (QP_versionStr)
+
+
+/****************************************************************************/
+#ifndef Q_SIGNAL_SIZE
+
+    /*! The size (in bytes) of the signal of an event. Valid values:
+    * 1, 2, or 4; default 1 */
+    /**
+    * @description
+    * This macro can be defined in the QEP port file (qep_port.h) to
+    * configure the ::QSignal type. When the macro is not defined, the
+    * default of 2 bytes is applied.
+    */
+    #define Q_SIGNAL_SIZE 2
+#endif
+#if (Q_SIGNAL_SIZE == 1)
+    typedef uint8_t QSignal;
+#elif (Q_SIGNAL_SIZE == 2)
+    /*! QSignal represents the signal of an event. */
+    /**
+    * @description
+    * The relationship between an event and a signal is as follows. A signal
+    * in UML is the specification of an asynchronous stimulus that triggers
+    * reactions, and as such is an essential part of an event.
+    * (The signal conveys the type of the occurrence-what happened?)
+    * However, an event can also contain additional quantitative information
+    * about the occurrence in form of event parameters.
+    */
+    typedef uint16_t QSignal;
+#elif (Q_SIGNAL_SIZE == 4)
+    typedef uint32_t QSignal;
+#else
+    #error "Q_SIGNAL_SIZE defined incorrectly, expected 1, 2, or 4"
+#endif
+
 
 /****************************************************************************/
 /*! Event structure. */
@@ -168,7 +177,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 * "cast pointer to pointer". This macro encapsulates this deviation and
 * provides a descriptive name for the reason of this cast.
 */
-#define Q_MSM_UPCAST(ptr_) ((QMsm *)(ptr_))
+#define Q_HSM_UPCAST(ptr_) ((QHsm *)(ptr_))
 
 /*! Perform downcast of an event onto a subclass of QEvt @p class_ */
 /**
@@ -194,6 +203,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 */
 #define Q_UINT2PTR_CAST(type_, uint_)  ((type_ *)(uint_))
 
+
 /****************************************************************************/
 /*! typedef of the return type from a state/action-handler function. */
 typedef uint_fast8_t QState;
@@ -208,7 +218,7 @@ typedef QState (*QActionHandler)(void * const me);
 /**
 * @description
 * This macro encapsulates the cast of a specific state handler function
-* pointer to QStateHandler, which violates MISRA-C 2004 rule 11.4(advisory).
+* pointer to ::QStateHandler, which violates MISRA-C 2004 rule 11.4(advisory).
 * This macro helps to localize this deviation.
 *
 * @usage
@@ -224,6 +234,158 @@ typedef QState (*QActionHandler)(void * const me);
 * This macro helps to localize this deviation.
 */
 #define Q_ACTION_CAST(action_)  ((QActionHandler)(action_))
+
+/* forward declarations... */
+struct QMState;
+struct QMTranActTable;
+struct QHsmVtbl;
+
+/*! Attribute of for the ::QHsm class (Hierarchical State Machine). */
+/**
+* @description
+* This union represents possible values stored in the 'state' and 'temp'
+* attributes of the ::QHsm class.
+*/
+union QHsmAttr {
+    QStateHandler  fun;          /*!< pointer to a state-handler function */
+    QActionHandler act;          /*!< pointer to an action-handler function */
+    struct QMState const *obj;   /*!< pointer to QMState object */
+    struct QMTranActTable const *tatbl; /*!< transition-action table */
+};
+
+/****************************************************************************/
+/* Hierarchical State Machine */
+
+/**
+* @description
+* ::QHsm represents a Hierarchical State Machine (HSM) with full support for
+* hierarchical nesting of states, entry/exit actions, initial transitions,
+* and transitions to history in any composite state. This class is designed
+* for ease of manual coding of HSMs in C, but it is also supported by the
+* QM modeling tool.
+* @n
+* ::QHsm is also the base class for the ::QMsm state machine, which provides
+* a superior efficiency, but requires the use of the QM modeling tool to
+* generate code.
+*
+* @note ::QHsm is not intended to be instantiated directly, but rather serves
+* as the base structure for derivation of state machines in the application
+* code.
+*
+* @usage
+* The following example illustrates how to derive a state machine structure
+* from QHsm. Please note that the QHsm member super is defined as the FIRST
+* member of the derived struct.
+* @include qep_qhsm.c
+*/
+typedef struct {
+    struct QHsmVtbl const *vptr; /*!< virtual pointer */
+    union QHsmAttr state; /*!< current active state (state-variable) */
+    union QHsmAttr temp;  /*!< temporary: tran. chain, target state, etc. */
+} QHsm;
+
+/*! Virtual table for the ::QHsm class. */
+struct QHsmVtbl {
+    /*! Triggers the top-most initial transition in a HSM. */
+    void (*init)(QHsm * const me, QEvt const * const e);
+
+    /*! Dispatches an event to a SM. */
+    void (*dispatch)(QHsm * const me, QEvt const * const e);
+};
+
+/*! Protected "constructor" of ::QHsm */
+void QHsm_ctor(QHsm * const me, QStateHandler initial);
+
+/*! Polymorphically executes the top-most initial transition in a HSM */
+/**
+* @param[in,out] me_ pointer (see @ref oop)
+* @param[in]     e_  constant pointer the ::QEvt or a class derived from
+*                    ::QEvt (see @ref oop)
+* @note Must be called only ONCE after the SM "constructor".
+*
+* @usage
+* The following example illustrates how to initialize a SM, and dispatch
+* events to it:
+* @include qep_qhsm_use.c
+*/
+#define QHSM_INIT(me_, e_) ((*(me_)->vptr->init)((me_), (e_)))
+
+/*! Implementation of the top-most initial transition in ::QHsm subclass */
+void QHsm_init_(QHsm * const me, QEvt const * const e);
+
+/*! Polymorphically dispatches an event to a HSM */
+/**
+* @description
+* Processes one event at a time in Run-to-Completion fashion.
+*
+* @param[in,out] me_ pointer (see @ref oop)
+* @param[in]     e_  constant pointer the ::QEvt or a structure derived from
+*                     ::QEvt (see @ref oop)
+* @note Must be called after the "constructor" and after QHSM_INIT().
+*/
+#define QHSM_DISPATCH(me_, e_) ((*(me_)->vptr->dispatch)((me_), (e_)))
+
+/*! Implementation of dispatching events to a ::QHsm subclass */
+void QHsm_dispatch_(QHsm * const me, QEvt const * const e);
+
+/*! Obtain the current active state from a HSM (read only). */
+/**
+* @param[in] me_ pointer (see @ref oop)
+* @returns the current active state of a ::QHsm subclass
+* @note this macro is used in QM for auto-generating code for state history
+*/
+#define QHsm_state(me_) (Q_STATE_CAST(Q_HSM_UPCAST(me_)->state.fun))
+
+/*! Obtain the current active child state of a given parent in ::QHsm */
+/**
+* @param[in] me_     pointer (see @ref oop)
+* @param[in] parent_ pointer to the parent state-handler
+* @returns the current active child state-handler of a given parent
+* @note this macro is used in QM for auto-generating code for state history
+*/
+#define QHsm_childState(me_, parent_) \
+    QHsm_childState_(Q_HSM_UPCAST(me_), Q_STATE_CAST(parent_))
+
+/*! Helper function to obtain the current active child state of a parent */
+QStateHandler QHsm_childState_(QHsm * const me,
+                               QStateHandler const parent);
+
+/*! Tests if a given state is part of the current active state
+* configuration in ::QHsm subclasses.
+*/
+bool QHsm_isIn(QHsm * const me, QStateHandler const state);
+
+/* protected methods */
+
+/*! the top-state. */
+QState QHsm_top(void const * const me, QEvt const * const e);
+
+
+/****************************************************************************/
+/*! QM State Machine implementation strategy */
+/**
+* @description
+* ::QMsm (QM State Machine) provides a more efficient state machine
+* implementation strategy than ::QHsm, but requires the use of the QM
+* modeling tool, but are the fastest and need the least run-time
+* support (the smallest event-processor taking up the least code space).
+*
+* @note
+* ::QMsm is not intended to be instantiated directly, but rather serves as
+* the base structure for derivation of state machines in the application code.
+*
+* @usage
+* The following example illustrates how to derive a state machine structure
+* from ::QMsm. Please note that the ::QMsm member 'super' is defined as the
+* _first_ member of the derived struct.
+* @include qep_qmsm.c
+*
+* @sa @ref oop
+*/
+typedef QHsm QMsm;
+
+/*! virtual table for the ::QMsm class. */
+typedef struct QHsmVtbl QMsmVtbl;
 
 /*! State object for the ::QMsm class (Meta State Machine). */
 /**
@@ -246,111 +408,43 @@ typedef struct QMState {
 } QMState;
 
 /*! Transition-Action Table for the Meta State Machine. */
-typedef struct {
-    QMState        const *target;
+typedef struct QMTranActTable {
+    QMState const *target;
     QActionHandler const act[1];
 } QMTranActTable;
 
-/*! Attribute of for the ::QMsm class (Meta State Machine). */
-/**
-* @description
-* This union represents possible values stored in the 'state' and 'temp'
-* attributes of the ::QMsm class.
-*/
-union QMAttr {
-    QMState        const *obj;   /*!< pointer to QMState object */
-    QMTranActTable const *tatbl; /*!< transition-action table */
-    QStateHandler  fun;          /*!< pointer to a state-handler function */
-    QActionHandler act;          /*!< pointer to an action-handler function */
-};
-
-
-/****************************************************************************/
-/*! virtual table for the ::QMsm class. */
-typedef struct QMsmVtbl QMsmVtbl;
-
-/*! Meta State Machine. */
-/**
-* @description
-* QMsm represents the most fundamental State Machine in QP. The application-
-* level state machines derived directly from QMsm typically require the use
-* of the QM modeling tool, but are the fastest and need the least run-time
-* support (the smallest event-processor taking up the least code space).@n
-* @n
-* QMsm is also the base class for the QHsm state machine, which can be coded
-* and maintained by hand (as well as by QM), but isn't as fast and require
-* significantly more run-time code (0.5-1KB) to execute.
-*
-* @note QMsm is not intended to be instantiated directly, but rather serves
-* as the base structure for derivation of state machines in the application
-* code.
-*
-* @usage
-* The following example illustrates how to derive a state machine structure
-* from QMsm. Please note that the QMsm member 'super' is defined as the
-* _first_ member of the derived struct.
-* @include qep_qmsm.c
-*
-* @sa @ref oop
-*/
-typedef struct {
-    QMsmVtbl const *vptr; /*!< virtual pointer */
-    union QMAttr state;   /*!< current active state (state-variable) */
-    union QMAttr temp;    /*!< temporary: tran. chain, target state, etc. */
-} QMsm;
-
-/*! Virtual table for the ::QMsm class. */
-struct QMsmVtbl {
-    /*! Triggers the top-most initial transition in a SM. */
-    void (*init)(QMsm * const me, QEvt const * const e);
-
-    /*! Dispatches an event to a SM. */
-    void (*dispatch)(QMsm * const me, QEvt const * const e);
-};
-
-/*! Protected "constructor" of a ::QMsm */
+/*! Protected "constructor" of ::QMsm */
 void QMsm_ctor(QMsm * const me, QStateHandler initial);
 
-/*! Obtain the current active state from a MSM (read only) */
-#define QMsm_stateObj(me_) (Q_MSM_UPCAST(me_)->state.obj)
-
-/*! Obtain the current active child state of a given parent (read only) */
-QMState const *QMsm_childStateObj(QMsm const * const me,
-                                  QMState const * const parent);
-
-/*! Polymorphically executes the top-most initial transition in a SM. */
-/**
-* @param[in,out] me_ pointer (see @ref oop)
-* @param[in]     e_  constant pointer the ::QEvt or a class derived from
-*                     ::QEvt (see @ref oop)
-* @note Must be called only ONCE after the SM "constructor".
-*
-* @usage
-* The following example illustrates how to initialize a SM, and dispatch
-* events to it:
-* @include qep_qmsm_use.c
-*/
-#define QMSM_INIT(me_, e_) ((*(me_)->vptr->init)((me_), (e_)))
-
-/*! Implementation of the top-most initial transition in ::QMsm. */
+/*! Implementation of the top-most initial transition in ::QMsm */
 void QMsm_init_(QMsm * const me, QEvt const * const e);
 
-/*! Polymorphically dispatches an event to a SM. */
-/**
-* @description
-* Processes one event at a time in Run-to-Completion fashion.
-*
-* @param[in,out] me_ pointer (see @ref oop)
-* @param[in]     e_  constant pointer the ::QEvt or a structure derived from
-*                     ::QEvt (see @ref oop)
-* @note Must be called after the "constructor" and after QMSM_INIT().
-*/
-#define QMSM_DISPATCH(me_, e_) ((*(me_)->vptr->dispatch)((me_), (e_)))
-
-/*! Implementation of disparching events to QMsm. */
+/*! Implementation of disparching events to ::QMsm */
 void QMsm_dispatch_(QMsm * const me, QEvt const * const e);
 
-/*! Internal helper function to exectue a transition-action table. */
+/*! Obtain the current active state from a MSM (read only) */
+/**
+* @param[in] me_     pointer (see @ref oop)
+* @returns the current active state-object
+* @note this macro is used in QM for auto-generating code for state history
+*/
+#define QMsm_stateObj(me_) (Q_HSM_UPCAST(me_)->state.obj)
+
+/*! Obtain the current active child state of a given parent in ::QMsm */
+/**
+* @param[in] me_     pointer (see @ref oop)
+* @param[in] parent_ pointer to the parent state-object
+* @returns the current active child state-object of a given parent
+* @note this macro is used in QM for auto-generating code for state history
+*/
+#define QMsm_childStateObj(me_, parent_) \
+    QMsm_childStateObj_(Q_HSM_UPCAST(me_), (parent_))
+
+/*! Helper function to obtain the current active child state of a parent */
+QMState const *QMsm_childStateObj_(QMsm const * const me,
+                                   QMState const * const parent);
+
+/*! Internal helper function to execute a transition-action table. */
 QState QMsm_execTatbl_(QMsm * const me, QMTranActTable const *tatbl);
 
 /*! Tests if a given state is part of the current active state
@@ -358,66 +452,42 @@ QState QMsm_execTatbl_(QMsm * const me, QMTranActTable const *tatbl);
 */
 bool QMsm_isInState(QMsm const * const me, QMState const * const state);
 
-/****************************************************************************/
-/*! Hierarchical State Machine. */
-/**
-* @description
-* QHsm represents a Hierarchical State Machine (HSM) with full support for
-* hierarchical nesting of states, entry/exit actions, and initial transitions
-* in any composite state. QHsm inherits QMsm "as is" without adding new
-* attributes, so it is typedef'ed as QMsm.
-*
-* @note QHsm is not intended to be instantiated directly, but rather serves
-* as the base structure for derivation of state machines in the application
-* code.
+/*! Macro to call in a state-handler when it executes a regular
+* or and initial transition. Applicable only to ::QHsm subclasses.
+* @include qep_qtran.c
+*/
+#define Q_TRAN(target_)  \
+    ((Q_HSM_UPCAST(me))->temp.fun = Q_STATE_CAST(target_), (QState)Q_RET_TRAN)
+
+/*! Macro to call in a state-handler when it executes a transition
+* to history. Applicable only to HSMs.
 *
 * @usage
-* The following example illustrates how to derive a state machine structure
-* from QHsm. Please note that the QHsm member super is defined as the FIRST
-* member of the derived struct.
-* @include qep_qhsm.c
+* @include qep_qhist.c
 */
-typedef QMsm QHsm;
+#define Q_TRAN_HIST(hist_)  \
+    ((Q_HSM_UPCAST(me))->temp.fun = (hist_), (QState)Q_RET_TRAN_HIST)
 
-/* public methods */
-
-/*! protected "constructor" of a HSM. */
-void QHsm_ctor(QHsm * const me, QStateHandler initial);
-
-/*! Obtain the current active state from a HSM (read only). */
-/**
-* @param[in] me_ pointer (see @ref oop)
-* @returns the current active state of a HSM
+/*! Macro to call in a state-handler when it designates the
+* superstate of a given state. Applicable only to ::QHsm subclasses.
+*
+* @usage
+* @include qep_qtran.c
 */
-#define QHsm_state(me_) (Q_STATE_CAST(Q_MSM_UPCAST(me_)->state.fun))
+#define Q_SUPER(super_)  \
+    ((Q_HSM_UPCAST(me))->temp.fun = Q_STATE_CAST(super_), (QState)Q_RET_SUPER)
 
-/*! Obtain the current active child state of a given parent (read only) */
-QStateHandler QHsm_childState(QHsm * const me,
-                              QStateHandler const parent);
-
-/*! Implementation of the top-most initial transition in QHsm */
-void QHsm_init_(QHsm * const me, QEvt const * const e);
-
-/*! Implementation of dispatching events to QHsm */
-void QHsm_dispatch_(QHsm * const me, QEvt const * const e);
-
-/*! Tests if a given state is part of the current active state
-* configuration in a HSM.
+/*! Macro to call in a state-handler when it handles an event.
+*  Applicable to both HSMs and FSMs.
 */
-bool QHsm_isIn(QHsm * const me, QStateHandler const state);
+#define Q_HANDLED()      ((QState)Q_RET_HANDLED)
 
-/* protected methods */
+/*! Macro to call in a state-handler when it attempts to handle
+* an event but a guard condition evaluates to 'false' and there is no other
+* explicit way of handling the event. Applicable only to ::QHsm subclasses.
+*/
+#define Q_UNHANDLED()    ((QState)Q_RET_UNHANDLED)
 
-/*! the top-state. */
-QState QHsm_top(void const * const me, QEvt const * const e);
-
-
-/****************************************************************************/
-/*! the current QP version number string in ROM, based on QP_VERSION_STR */
-extern char_t const QP_versionStr[6];
-
-/*! get the current QEP version number string of the form "X.Y.Z" */
-#define QEP_getVersion() (QP_versionStr)
 
 /****************************************************************************/
 /*! All possible values returned from state/action handlers */
@@ -441,7 +511,7 @@ enum {
     /* no side effects */
     Q_RET_NULL,      /*!< return value without any effect */
 
-    /* transitions need to execute transition-action table in QMsm */
+    /* transitions need to execute transition-action table in ::QMsm */
     Q_RET_TRAN,      /*!< event handled (regular transition) */
     Q_RET_TRAN_INIT, /*!< initial transition in a state or submachine */
     Q_RET_TRAN_HIST, /*!< event handled (transition to history) */
@@ -451,16 +521,16 @@ enum {
 
 #ifdef Q_SPY
     /*! Macro to call in a QM action-handler when it executes
-    * an entry action. Applicable only to QMSMs.
+    * an entry action. Applicable only to ::QMsm subclasses.
     */
     #define QM_ENTRY(state_) \
-        ((Q_MSM_UPCAST(me))->temp.obj = (state_), (QState)Q_RET_ENTRY)
+        ((Q_HSM_UPCAST(me))->temp.obj = (state_), (QState)Q_RET_ENTRY)
 
     /*! Macro to call in a QM action-handler when it executes
-    * an exit action. Applicable only to QMSMs.
+    * an exit action. Applicable only to ::QMsm subclasses.
     */
     #define QM_EXIT(state_) \
-        ((Q_MSM_UPCAST(me))->temp.obj = (state_), (QState)Q_RET_EXIT)
+        ((Q_HSM_UPCAST(me))->temp.obj = (state_), (QState)Q_RET_EXIT)
 
 #else
     #define QM_ENTRY(dummy) ((QState)Q_RET_ENTRY)
@@ -469,51 +539,58 @@ enum {
 
 #endif /* Q_SPY */
 
+/*! Macro to call in a QM submachine exit-handler.
+* Applicable only to ::QMsm subclasses.
+*/
+#define QM_SM_EXIT(state_) \
+    ((Q_HSM_UPCAST(me))->temp.obj = (state_), (QState)Q_RET_EXIT)
+
 /*! Macro to call in a QM state-handler when it executes a regular
-* transition. Applicable only to QMSMs.
+* transition. Applicable only to ::QMsm subclasses.
 */
 #define QM_TRAN(tatbl_) \
-    ((Q_MSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_), \
+    ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_), \
         (QState)Q_RET_TRAN)
 
 /*! Macro to call in a QM state-handler when it executes an initial
-* transition. Applicable only to QMSMs.
+* transition. Applicable only to ::QMsm subclasses.
 */
 #define QM_TRAN_INIT(tatbl_) \
-    ((Q_MSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_), \
+    ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_), \
         (QState)Q_RET_TRAN_INIT)
 
 /*! Macro to call in a QM state-handler when it executes a transition
-* to history. Applicable only to QMSMs.
+* to history. Applicable only to ::QMsm subclasses.
 */
 #define QM_TRAN_HIST(history_, tatbl_) \
-    ((((Q_MSM_UPCAST(me))->state.obj = (history_)), \
-      ((Q_MSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_))), \
+    ((((Q_HSM_UPCAST(me))->state.obj = (history_)), \
+      ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_))), \
        (QState)Q_RET_TRAN_HIST)
 
 /*! Macro to call in a QM state-handler when it executes a transition
 * to the submachine via an entry point.
 */
 #define QM_TRAN_EP(tatbl_) \
-    ((Q_MSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_), \
+    ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_), \
         (QState)Q_RET_TRAN_EP)
 
 /*! Macro to call in a QM state-handler when it executes a transition
-* to exit point. Applicable only to QMSMs.
+* to exit point. Applicable only to ::QMsm subclasses.
 */
 #define QM_TRAN_XP(xp_, tatbl_) \
-    ((((Q_MSM_UPCAST(me))->state.act = (xp_)), \
-        ((Q_MSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_))),\
+    ((((Q_HSM_UPCAST(me))->state.act = (xp_)), \
+        ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_))),\
         (QState)Q_RET_TRAN_XP)
 
 /*! Macro to call in a QM state-handler when it handled an event.
-* Applicable only to QMSMs.
+* Applicable only to ::QMsm subclasses.
 */
 #define QM_HANDLED()     ((QState)Q_RET_HANDLED)
 
 /*! Macro to call in a QM state-handler when when it attempts to
 * handle an event but a guard condition evaluates to 'false' and there is
-* no other explicit way of handling the event. Applicable only to QMSMs.
+* no other explicit way of handling the event. Applicable only to
+* ::QMsm subclasses.
 */
 #define QM_UNHANDLED()   ((QState)Q_RET_UNHANDLED)
 
@@ -526,45 +603,7 @@ enum {
 * host state to handle an event. Applicable only to QMSMs.
 */
 #define QM_SUPER_SUB(host_) \
-    ((Q_MSM_UPCAST(me))->temp.obj = (host_), (QState)Q_RET_SUPER_SUB)
-
-
-/*! Macro to call in a state-handler when it executes a regular
-* or and initial transition. Applicable only to QHsm subclasses.
-* @include qep_qtran.c
-*/
-#define Q_TRAN(target_)  \
-    ((Q_MSM_UPCAST(me))->temp.fun = Q_STATE_CAST(target_), (QState)Q_RET_TRAN)
-
-/*! Macro to call in a state-handler when it executes a transition
-* to history. Applicable only to HSMs.
-*
-* @usage
-* @include qep_qhist.c
-*/
-#define Q_TRAN_HIST(hist_)  \
-    ((Q_MSM_UPCAST(me))->temp.fun = (hist_), (QState)Q_RET_TRAN_HIST)
-
-/*! Macro to call in a state-handler when it designates the
-* superstate of a given state. Applicable only to QHsm subclasses.
-*
-* @usage
-* @include qep_qtran.c
-*/
-#define Q_SUPER(super_)  \
-    ((Q_MSM_UPCAST(me))->temp.fun = Q_STATE_CAST(super_), (QState)Q_RET_SUPER)
-
-/*! Macro to call in a state-handler when it handles an event.
-*  Applicable to both HSMs and FSMs.
-*/
-#define Q_HANDLED()      ((QState)Q_RET_HANDLED)
-
-/*! Macro to call in a state-handler when it attempts to handle
-* an event but a guard condition evaluates to 'false' and there is no other
-* explicit way of handling the event. Applicable only to QHsm subclasses.
-*/
-#define Q_UNHANDLED()    ((QState)Q_RET_UNHANDLED)
-
+    ((Q_HSM_UPCAST(me))->temp.obj = (host_), (QState)Q_RET_SUPER_SUB)
 
 /*! QEP reserved signals */
 enum {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="3.3.0">
+<model version="4.0.0" links="0">
  <documentation>&quot;Fly 'n' Shoot&quot; game model from Chapters 1 &amp; 9 of PSiCC2
 
 NOTE: Requries QP5.</documentation>
@@ -22,7 +22,7 @@ NOTE: Requries QP5.</documentation>
   </class>
  </package>
  <package name="AOs" stereotype="0x02">
-  <class name="Tunnel" superclass="qpc::QMActive">
+  <class name="Tunnel" superclass="qpc::QActive">
    <documentation>Tunnel Active Object</documentation>
    <attribute name="blinkTimeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
    <attribute name="screenTimeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
@@ -114,7 +114,7 @@ if ((me-&gt;last_mine_x + GAME_MINES_DIST_MIN &lt; GAME_TUNNEL_WIDTH)
         ope.super.sig = MINE_PLANT_SIG;
         ope.x = me-&gt;last_mine_x;
         ope.y = me-&gt;last_mine_y;
-        QMSM_DISPATCH(me-&gt;mines[n], (QEvt *)&amp;ope); /* direct dispatch */
+        QHSM_DISPATCH(me-&gt;mines[n], (QEvt *)&amp;ope); /* direct dispatch */
     }
 }</code>
    </operation>
@@ -124,7 +124,7 @@ if ((me-&gt;last_mine_x + GAME_MINES_DIST_MIN &lt; GAME_TUNNEL_WIDTH)
 
 for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
     if (me-&gt;mines[n] != (QMsm *)0) { /* is the mine used? */
-        QMSM_DISPATCH(me-&gt;mines[n], e);
+        QHSM_DISPATCH(me-&gt;mines[n], e);
     }
 }</code>
    </operation>
@@ -132,8 +132,8 @@ for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
     <initial target="../1/2">
      <action>uint8_t n;
 for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
-    QMSM_INIT(me-&gt;mine1_pool[n], (QEvt *)0);/*initial tran. for Mine1 */
-    QMSM_INIT(me-&gt;mine2_pool[n], (QEvt *)0);/*initial tran. for Mine2 */
+    QHSM_INIT(me-&gt;mine1_pool[n], (QEvt *)0);/*initial tran. for Mine1 */
+    QHSM_INIT(me-&gt;mine2_pool[n], (QEvt *)0);/*initial tran. for Mine2 */
 }
 BSP_randomSeed(1234); /* seed the pseudo-random generator */
 
@@ -475,7 +475,7 @@ QF_stop(); /* stop QF and cleanup */</entry>
     <state_diagram size="68,94"/>
    </statechart>
   </class>
-  <class name="Ship" superclass="qpc::QMActive">
+  <class name="Ship" superclass="qpc::QActive">
    <documentation>Ship Active Object</documentation>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint16_t" visibility="0x02" properties="0x00">
@@ -630,7 +630,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)gameOver, me);</action>
     <state_diagram size="40,62"/>
    </statechart>
   </class>
-  <class name="Missile" superclass="qpc::QMActive">
+  <class name="Missile" superclass="qpc::QActive">
    <documentation>Missile Active Object</documentation>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
@@ -740,7 +740,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
     <state_diagram size="46,55"/>
    </statechart>
   </class>
-  <class name="Mine1" superclass="qpc::QMsm">
+  <class name="Mine1" superclass="qpc::QHsm">
    <documentation>The Mine1 orthogonal component</documentation>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
@@ -904,7 +904,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
     <state_diagram size="53,68"/>
    </statechart>
   </class>
-  <class name="Mine2" superclass="qpc::QMsm">
+  <class name="Mine2" superclass="qpc::QHsm">
    <documentation>The Mine2 orthogonal component</documentation>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
@@ -1076,13 +1076,13 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
     <state_diagram size="53,68"/>
    </statechart>
   </class>
-  <attribute name="AO_Tunnel" type="QMActive * const" visibility="0x00" properties="0x00"/>
-  <attribute name="AO_Ship" type="QMActive * const" visibility="0x00" properties="0x00"/>
-  <attribute name="AO_Missile" type="QMActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Tunnel" type="QActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Ship" type="QActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Missile" type="QActive * const" visibility="0x00" properties="0x00"/>
   <operation name="Tunnel_ctor" type="void" visibility="0x00" properties="0x01">
    <code>uint8_t n;
 Tunnel *me = &amp;l_tunnel;
-QMActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Tunnel_initial));
+QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Tunnel_initial));
 QTimeEvt_ctorX(&amp;me-&gt;blinkTimeEvt,  &amp;me-&gt;super, BLINK_TIMEOUT_SIG,  0U);
 QTimeEvt_ctorX(&amp;me-&gt;screenTimeEvt, &amp;me-&gt;super, SCREEN_TIMEOUT_SIG, 0U);
 for (n = 0; n &lt; GAME_MINES_MAX; ++n) {
@@ -1095,31 +1095,31 @@ me-&gt;last_mine_y = 0;</code>
   </operation>
   <operation name="Ship_ctor" type="void" visibility="0x00" properties="0x01">
    <code>Ship *me = &amp;l_ship;
-QMActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Ship_initial));
+QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Ship_initial));
 me-&gt;x = GAME_SHIP_X;
 me-&gt;y = (GAME_SHIP_Y &lt;&lt; 2);</code>
   </operation>
   <operation name="Missile_ctor" type="void" visibility="0x00" properties="0x01">
    <code>Missile *me = &amp;l_missile;
-QMActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Missile_initial));</code>
+QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Missile_initial));</code>
   </operation>
-  <operation name="Mine1_ctor" type="QMsm *" visibility="0x00" properties="0x01">
+  <operation name="Mine1_ctor" type="QHsm *" visibility="0x00" properties="0x01">
    <parameter name="id" type="uint8_t"/>
    <code>Mine1 *me;
 Q_REQUIRE(id &lt; GAME_MINES_MAX);
 me = &amp;l_mine1[id];
 /* superclass' ctor */
-QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine1_initial));
-return (QMsm *)me;</code>
+QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine1_initial));
+return (QHsm *)me;</code>
   </operation>
-  <operation name="Mine2_ctor" type="QMsm *" visibility="0x00" properties="0x01">
+  <operation name="Mine2_ctor" type="QHsm *" visibility="0x00" properties="0x01">
    <parameter name="id" type="uint8_t"/>
    <code>Mine2 *me;
 Q_REQUIRE(id &lt; GAME_MINES_MAX);
 me = &amp;l_mine2[id];
 /* superclass' ctor */
-QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine2_initial));
-return (QMsm *)me;</code>
+QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine2_initial));
+return (QHsm *)me;</code>
   </operation>
  </package>
  <directory name=".">

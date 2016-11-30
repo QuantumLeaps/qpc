@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.5
-* Date of the Last Update:  2016-11-08
+* Last Updated for Version: 5.8.0
+* Date of the Last Update:  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -103,12 +103,12 @@ int_t QF_run(void) {
     Q_ASSERT_ID(310, ticker != (HANDLE)0); /* thread must be created */
 
     /* the combined event-loop and background-loop of the QV kernel */
+    QF_INT_DISABLE();
     while (l_isRunning) {
         QEvt const *e;
         QActive *a;
         uint_fast8_t p;
 
-        QF_INT_DISABLE();
 
         /* find the maximum priority AO ready to run */
         if (QPSet_notEmpty(&QV_readySet_)) {
@@ -124,8 +124,14 @@ int_t QF_run(void) {
             * 3. determine if event is garbage and collect it if so
             */
             e = QActive_get_(a);
-            QMSM_DISPATCH(&a->super, e);
+            QHSM_DISPATCH(&a->super, e);
             QF_gc(e);
+
+            QF_INT_DISABLE();
+
+            if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
+                QPSet_remove(&QV_readySet_, p);
+            }
         }
         else {
             /* the QV kernel in embedded systems calls here the QV_onIdle()
@@ -134,9 +140,13 @@ int_t QF_run(void) {
             * QP events become available.
             */
             QF_INT_ENABLE();
+
             (void)WaitForSingleObject(QV_win32Event_, (DWORD)INFINITE);
+
+            QF_INT_ENABLE();
         }
     }
+    QF_INT_ENABLE();
     QF_onCleanup();  /* cleanup callback */
     QS_EXIT();       /* cleanup the QSPY connection */
 
@@ -168,7 +178,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     QEQueue_init(&me->eQueue, qSto, qLen);
 
-    QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 
     (void)stkSize; /* avoid the "unused parameter" compiler warning */

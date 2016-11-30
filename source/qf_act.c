@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.4
-* Last updated on  2016-11-02
+* Last updated for version 5.8.0
+* Last updated on  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -50,7 +50,7 @@
 Q_DEFINE_THIS_MODULE("qf_act")
 
 /* public objects ***********************************************************/
-QMActive *QF_active_[QF_MAX_ACTIVE + 1]; /* to be used by QF ports only */
+QActive *QF_active_[QF_MAX_ACTIVE + 1]; /* to be used by QF ports only */
 
 /****************************************************************************/
 /**
@@ -66,7 +66,7 @@ QMActive *QF_active_[QF_MAX_ACTIVE + 1]; /* to be used by QF ports only */
 *
 * @sa QF_remove_()
 */
-void QF_add_(QMActive * const a) {
+void QF_add_(QActive * const a) {
     uint_fast8_t p = a->prio;
     QF_CRIT_STAT_
 
@@ -77,7 +77,7 @@ void QF_add_(QMActive * const a) {
     */
     Q_REQUIRE_ID(100, ((uint_fast8_t)0 < p)
                        && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
-              && (QF_active_[p] == (QMActive *)0));
+              && (QF_active_[p] == (QActive *)0));
 
     QF_CRIT_ENTRY_();
 
@@ -106,7 +106,7 @@ void QF_add_(QMActive * const a) {
 *
 * @sa QF_add_()
 */
-void QF_remove_(QMActive * const a) {
+void QF_remove_(QActive * const a) {
     uint_fast8_t p = a->prio;
     QF_CRIT_STAT_
 
@@ -120,8 +120,8 @@ void QF_remove_(QMActive * const a) {
 
     QF_CRIT_ENTRY_();
 
-    QF_active_[p] = (QMActive *)0;  /* free-up the priority level */
-    a->super.state.obj = (QMState *)0; /* invalidate the state */
+    QF_active_[p] = (QActive *)0; /* free-up the priority level */
+    a->super.state.fun = Q_STATE_CAST(0); /* invalidate the state */
 
     QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_REMOVE, QS_priv_.aoObjFilter, a)
         QS_TIME_();         /* timestamp */

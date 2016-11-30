@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-28
+* Last updated for version 5.8.0
+* Last updated on  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -53,7 +53,7 @@
 * The customization of the thread occurs in the QXThread_ctor(), where you
 * provide the thred-handler function as the parameter.
 *
-* @sa ::QMActive
+* @sa ::QActive
 *
 * @usage
 * The following example illustrates how to instantiate an extended thread
@@ -61,17 +61,17 @@
 * @include qf_qxthread.c
 */
 typedef struct {
-    QMActive super;    /* inherit QMactive */
-    QTimeEvt timeEvt;  /* time event to handle timeouts */
+    QActive super;    /* inherit QActive */
+    QTimeEvt timeEvt; /* time event to handle timeouts */
 } QXThread;
 
-/*! Virtual Table for the ::QXThread class (inherited from ::QMActiveVtbl) */
+/*! Virtual Table for the ::QXThread class (inherited from ::QActiveVtbl) */
 /**
 * @note
-* ::QXThread inherits ::QMActive without adding any new virtual
-* functions and therefore, ::QXThreadVtbl is typedef'ed as ::QMActiveVtbl.
+* ::QXThread inherits ::QActive without adding any new virtual
+* functions and therefore, ::QXThreadVtbl is typedef'ed as ::QActiveVtbl.
 */
-typedef QMActiveVtbl QXThreadVtbl;
+typedef QActiveVtbl QXThreadVtbl;
 
 /*! Polymorphically start an extended thread. */
 /**

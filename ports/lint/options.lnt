@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.7.4
-// Last updated on  2016-11-02
+// Last updated for version 5.8.0
+// Last updated on  2016-11-29
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -80,8 +80,10 @@ qpc.lnt               // QP/C options
  QF_EVT_REF_CTR_INC_,
  QF_EVT_REF_CTR_DEC_,
  QF_EPOOL_PUT_)
--esym(960,            // MISRA04-8.7(req) could define at block scope 
- QF_log2Lkup)
+-esym(960,            // MISRA04-8.7(req) could define at block scope
+ QF_log2Lkup,
+ QF_subscrList_,
+ QF_maxPubSignal_)
 -emacro(960,          // MISRA04-17.4(req) pointer arithmetic
  QF_PTR_AT_)
 -emacro(946,          // MISRA04-17.2(req),17.3(req)

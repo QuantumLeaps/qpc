@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.4
-* Date of the Last Update:  2016-11-02
+* Last Updated for Version: 5.8.0
+* Date of the Last Update:  2016-11-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -87,7 +87,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = prio; /* save the QF priority */
     QF_add_(me); /* make QF aware of this active object */
-    QMSM_INIT(&me->super, ie);  /* thake the top-most initial tran. */
+    QHSM_INIT(&me->super, ie);  /* thake the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* map from QP to uC/OS priority */
@@ -120,7 +120,7 @@ static void task_function(void *pdata) { /* uC/OS-II task signature */
     ((QActive *)pdata)->thread = (uint32_t)1; /* enable event-loop, NOTE2 */
     while (((QActive *)pdata)->thread != (uint32_t)0) { /* event-loop */
         QEvt const *e = QActive_get_((QActive *)pdata);
-        QMSM_DISPATCH((QMsm *)pdata, e); /* dispatch to the AO's SM */
+        QHSM_DISPATCH((QMsm *)pdata, e); /* dispatch to the AO's SM */
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
 

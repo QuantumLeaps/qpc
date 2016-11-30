@@ -1,6 +1,54 @@
 /**
 @page history Revision History
 
+@section qpc_5_8_0 Version 5.8.0, 2016-11-30
+
+The main purpose of this milestone QP/C release is to finally provide
+the baseline framework fully compatible with the upcoming QM 4.0.0.
+
+This release changes the class hierarchy so that QHsm becomes the base
+class of ::QMsm and ::QActive. Also, ::QActive becomes the base class of
+::QMActive, which reverses the changes introduced in version 4.1.
+
+The modified @ref classes "class hierarchy" better reflects the fact that ::QHsm state
+machine implementation strategy is simpler and supports less functionality
+than the more advanced ::QMsm strategy. For example, only the ::QMsm class
+fully supports sub-machines and sub-machine states that are the main
+feature of QM 4.x. This clean progression of supported functionality from
+subclasses to superclasses allows QM to easier check and enforce that
+advanced features are not generated for subclasses that don't have the
+required capabilities. (With previous class hierarchy with ::QMsm as the
+base class all subclasses, including QHsm, would technically inherit the
+advanced functionality, which is not the case).
+
+@note
+ALl changes in QP/C 5.8.0 remain transparent for the existing QP/C applications,
+because of the provided backwards compatiblity layer in qpc.h.
+
+Also, this release changes the implementation of the QV, QK, and QXK kernels
+in that the ready-set representing active threads is cleared only *after*
+completion of the RTC-step, not when the last event is removed from the
+corresponding event queue. In case of the QXK kernel this change fixes the
+high-priority <a href="https://sourceforge.net/p/qpc/bugs/147/">bug#147</a>.
+But even in case of the QV and QK kernels, where this behavior didn't lead
+to any bugs, the policy better reflects the semantics of the ready-set.
+
+This release also updates the CMSIS interface included in the 3rd_party/CMSIS
+folder to the latest CMSIS-5.
+
+All examples and QM models have been updated to the new upcoming QM 4.0.0.
+All these models require QM 4.x.
+
+Finally, the complete list of bugs fixed in this release is as follows:
+
+- <a href="https://sourceforge.net/p/qpc/bugs/147/">bug#147</a> "QXK: PendSV_error is triggered on special conditions"
+- <a href="https://sourceforge.net/p/qpc/bugs/146/">bug#146</a> "Misra-C 2004 warning for rule 8.3 in qxk.c"
+- <a href="https://sourceforge.net/p/qpc/bugs/144/">bug#144</a> "Obsolete Win32 API in qwin_gui.c"
+- <a href="https://sourceforge.net/p/qpc/bugs/143/">bug#143</a> "QACTIVE_POST_LIFO() on initial transition asserts on QXK"
+- <a href="https://sourceforge.net/p/qpc/bugs/124/">bug#124</a> "Windows port now cause memory leakage"
+
+
+------------------------------------------------------------------------------
 @section qpc_5_7_4 Version 5.7.4, 2016-11-04
 This release fixes the following bugs:
 - bug#145 QF_PUBLISH() leaks events that have no subscribers

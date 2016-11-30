@@ -50,6 +50,11 @@ enum GameSignals { /* signals used in the game */
     MAX_SIG /* the last signal (keep always last) */
 };
 
+
+#if ((QP_VERSION < 580) || (QP_VERSION != ((QP_RELEASE^4294967295) % 0x3E8)))
+#error qpc version 5.8.0 or higher required
+#endif
+
 /*${Events::ObjectPosEvt} ..................................................*/
 typedef struct {
 /* protected: */
@@ -127,18 +132,18 @@ void Missile_ctor(void);
 
 /* instantiation of the Mines orthogonal components */
 /*${AOs::Mine1_ctor} .......................................................*/
-QMsm * Mine1_ctor(uint8_t id);
+QHsm * Mine1_ctor(uint8_t id);
 
 /*${AOs::Mine2_ctor} .......................................................*/
-QMsm * Mine2_ctor(uint8_t id);
+QHsm * Mine2_ctor(uint8_t id);
 
 
 /* opaque pointers to active objects in the application */
-extern QMActive * const AO_Tunnel;
+extern QActive * const AO_Tunnel;
 
-extern QMActive * const AO_Ship;
+extern QActive * const AO_Ship;
 
-extern QMActive * const AO_Missile;
+extern QActive * const AO_Missile;
 
 
 #endif  /* game_h */

@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.4
-* Last updated on  2016-11-02
+* Last updated for version 5.8.0
+* Last updated on  2016-11-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -90,7 +90,15 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist);
 * @param[in,out] me       pointer (see @ref oop)
 * @param[in]     initial  the top-most initial transition for the MSM.
 *
-* @note  Must be called only ONCE before QMSM_INIT().
+* @note  Must be called only ONCE before QHSM_INIT().
+*
+* @note
+* QMsm inherits QHsm, so by the @ref oop convention it should call the
+* constructor of the superclass, i.e., QHsm_ctor(). However, this would pull
+* in the QHsmVtbl, which in turn will pull in the code for QHsm_init_() and
+* QHsm_dispatch_() implemetations. To avoid this code size penalty, in case
+* ::QHsm is not used in a given project, the QMsm_ctor() performs direct
+* intitialization of the Vtbl, which avoids pulling in the code for QMsm.
 *
 * @usage
 * The following example illustrates how to invoke QMsm_ctor() in the
@@ -102,6 +110,7 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial) {
         &QMsm_init_,
         &QMsm_dispatch_
     };
+    /* do not call the QHsm_ctor() here */
     me->vptr = &vtbl;
     me->state.obj = &l_msm_top_s; /* the current state (top) */
     me->temp.fun  = initial;      /* the initial transition handler */
@@ -166,7 +175,7 @@ void QMsm_init_(QMsm * const me, QEvt const * const e) {
 *
 * @note
 * This function should be called only via the virtual table (see
-* QMSM_DISPATCH()) and should NOT be called directly in the applications.
+* QHSM_DISPATCH()) and should NOT be called directly in the applications.
 */
 void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
     QMState const *s = me->state.obj; /* store the current state */
@@ -424,22 +433,19 @@ static void QMsm_exitToTranSource_(QMsm * const me, QMState const *s,
         if (s->exitAction != Q_ACTION_CAST(0)) {
             QS_CRIT_STAT_
 
-            /* execute the exit action, which must return Q_RET_EXIT status */
-            (void)(*s->exitAction)(me);
+            (void)(*s->exitAction)(me); /* execute the exit action */
 
             QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.smObjFilter, me)
                 QS_OBJ_(me);              /* this state machine object */
                 QS_FUN_(s->stateHandler); /* the exited state handler */
             QS_END_()
-
-            s = s->superstate; /* advance to the superstate */
-            /* reached the top of a submachine? */
-            if (s == (QMState const *)0) {
-                ts = s; /* force exit from the while loop */
-            }
         }
-        else {
-            s = s->superstate; /* advance to the superstate */
+
+        s = s->superstate; /* advance to the superstate */
+
+        if (s == (QMState const *)0) { /* reached the top of a submachine? */
+            s = me->temp.obj; /* the superstate from QM_SM_EXIT() */
+            Q_ASSERT_ID(510, s != (QMState const *)0); /* must be valid */
         }
     }
 }
@@ -545,9 +551,11 @@ bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
 *
 * @returns the child of a given @c parent state, which is an ancestor of
 * the currently active state
+*
+* @sa QMsm_childStateObj()
 */
-QMState const *QMsm_childStateObj(QMsm const * const me,
-                                  QMState const * const parent)
+QMState const *QMsm_childStateObj_(QMsm const * const me,
+                                   QMState const * const parent)
 {
     QMState const *child = me->state.obj;
     bool isConfirmed = false; /* start with the child not confirmed */

@@ -8,8 +8,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-29
+* Last updated for version 5.8.0
+* Last updated on  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -97,10 +97,10 @@ Q_DEFINE_THIS_MODULE("qf_actq")
 * @sa QActive_post_(), QActive_postLIFO()
 */
 #ifndef Q_SPY
-bool QActive_post_(QMActive * const me, QEvt const * const e,
+bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin)
 #else
-bool QActive_post_(QMActive * const me, QEvt const * const e,
+bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
 #endif
 {
@@ -195,7 +195,7 @@ bool QActive_post_(QMActive * const me, QEvt const * const e,
 *
 * @sa QActive_post_()
 */
-void QActive_postLIFO_(QMActive * const me, QEvt const * const e) {
+void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QEvt const *frontEvt;  /* temporary to avoid UB for volatile access */
     QEQueueCtr nFree;      /* temporary to avoid UB for volatile access */
     QF_CRIT_STAT_
@@ -259,7 +259,7 @@ void QActive_postLIFO_(QMActive * const me, QEvt const * const e) {
 * @returns a pointer to the received event. The returned pointer is always
 * valid (can't be NULL).
 */
-QEvt const *QActive_get_(QMActive * const me) {
+QEvt const *QActive_get_(QActive * const me) {
     QEQueueCtr nFree;
     QEvt const *e;
     QF_CRIT_STAT_
@@ -331,7 +331,7 @@ uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
     QF_CRIT_STAT_
 
     Q_REQUIRE_ID(400, (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
-                      && (QF_active_[prio] != (QMActive *)0));
+                      && (QF_active_[prio] != (QActive *)0));
 
     QF_CRIT_ENTRY_();
     min = (uint_fast16_t)QF_active_[prio]->eQueue.nMin;

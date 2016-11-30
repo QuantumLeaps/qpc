@@ -31,6 +31,11 @@ enum DPPSignals {
     MAX_SIG         /* the last signal */
 };
 
+
+#if ((QP_VERSION < 580) || (QP_VERSION != ((QP_RELEASE^4294967295) % 0x3E8)))
+#error qpc version 5.8.0 or higher required
+#endif
+
 /*${Events::TableEvt} ......................................................*/
 typedef struct {
 /* protected: */
@@ -53,7 +58,7 @@ extern QMActive * const AO_Philo[N_PHILO];
 /*${AOs::Table_ctor} .......................................................*/
 void Table_ctor(void);
 
-extern QMActive * const AO_Table;
+extern QActive * const AO_Table;
 
 
 #ifdef qxk_h

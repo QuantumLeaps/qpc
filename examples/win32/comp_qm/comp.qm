@@ -13,11 +13,11 @@ NOTE: Requries QP5.</documentation>
   </class>
  </package>
  <package name="Components" stereotype="0x02">
-  <class name="Alarm" superclass="qpc::QMsm">
+  <class name="Alarm" superclass="qpc::QHsm">
    <documentation>Alarm &quot;Orthogonal Component&quot;</documentation>
    <attribute name="alarm_time" type="uint32_t" visibility="0x02" properties="0x00"/>
    <operation name="ctor" type="void" visibility="0x00" properties="0x00">
-    <code>QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Alarm_initial));</code>
+    <code>QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Alarm_initial));</code>
    </operation>
    <statechart>
     <initial target="../1">
@@ -102,7 +102,7 @@ QACTIVE_POST(APP_alarmClock, Q_NEW(QEvt, ALARM_SIG), me);</action>
     <state_diagram size="46,48"/>
    </statechart>
   </class>
-  <class name="AlarmClock" superclass="qpc::QMActive">
+  <class name="AlarmClock" superclass="qpc::QActive">
    <documentation>Alarm clock &quot;Container&quot;</documentation>
    <attribute name="current_time" type="uint32_t" visibility="0x02" properties="0x00"/>
    <attribute name="alarm" type="Alarm" visibility="0x02" properties="0x00"/>
@@ -113,7 +113,7 @@ QACTIVE_POST(APP_alarmClock, Q_NEW(QEvt, ALARM_SIG), me);</action>
 me-&gt;current_time = 0U;
 
 /* (!) trigger the initial transition in the component */
-QMSM_INIT((QMsm *)&amp;me-&gt;alarm, (QEvt *)0);</action>
+QHSM_INIT((QHsm *)&amp;me-&gt;alarm, (QEvt *)0);</action>
      <initial_glyph conn="2,4,5,1,44,4,-2">
       <action box="0,-2,6,2"/>
      </initial_glyph>
@@ -146,7 +146,7 @@ QTimeEvt_armX(&amp;me-&gt;timeEvt, BSP_TICKS_PER_SEC,
      </tran>
      <tran trig="ALARM_SET, ALARM_ON, ALARM_OFF">
       <action>/* (!) synchronously dispatch to the orthogonal component */
-QMSM_DISPATCH((QMsm *)&amp;me-&gt;alarm, e);</action>
+QHSM_DISPATCH((QHsm *)&amp;me-&gt;alarm, e);</action>
       <tran_glyph conn="2,22,3,-1,18">
        <action box="0,-2,11,6"/>
       </tran_glyph>
@@ -171,7 +171,7 @@ pe.super.sig = TIME_SIG;
 pe.current_time = me-&gt;current_time;
 
 /* (!) synchronously dispatch to the orthogonal component */
-QMSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
+QHSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
        <tran_glyph conn="4,44,3,-1,16">
         <action box="0,-2,8,2"/>
        </tran_glyph>
@@ -194,7 +194,7 @@ pe.super.sig = TIME_SIG;
 pe.current_time = me-&gt;current_time;
 
 /* (!) synchronously dispatch to the orthogonal component */
-QMSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
+QHSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
        <tran_glyph conn="4,58,3,-1,16">
         <action box="0,-2,8,2"/>
        </tran_glyph>
@@ -217,13 +217,13 @@ QMSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
     <state_diagram size="50,80"/>
    </statechart>
   </class>
-  <attribute name="APP_alarmClock" type="QMActive * const" visibility="0x00" properties="0x00">
+  <attribute name="APP_alarmClock" type="QActive * const" visibility="0x00" properties="0x00">
    <documentation>Opaque pointer to the single instance of the AlarmClock AO</documentation>
   </attribute>
   <operation name="AlarmClock_ctor" type="void" visibility="0x00" properties="0x00">
    <code>AlarmClock * const me = &amp;l_alarmClock;
 
-QMActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;AlarmClock_initial));
+QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;AlarmClock_initial));
 Alarm_ctor(&amp;me-&gt;alarm); /* orthogonal component ctor */
 
 /* private time event ctor */

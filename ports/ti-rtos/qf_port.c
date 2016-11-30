@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.4
-* Date of the Last Update:  2016-11-02
+* Last Updated for Version: 5.8.0
+* Date of the Last Update:  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -110,7 +110,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
 /*..........................................................................*/
 static void swi_function(UArg arg0, UArg arg1) { /* TI-RTOS Swi signature */
-    QMActive *act = (QMActive *)arg0;
+    QActive *act = (QActive *)arg0;
     QEvt const *e = QActive_get_(act);
     QMSM_DISPATCH(&act->super, e); /* dispatch to the AO's SM */
     QF_gc(e); /* check if the event is garbage, and collect it if so */

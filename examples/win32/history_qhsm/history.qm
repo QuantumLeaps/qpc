@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="3.3.0">
+<model version="4.0.0" links="0">
  <documentation>QHsmTst is a contrived state machine from Chapter 2 of the PSiCC2 book for testing all possible transition topologies with up to 4-levels of state nesting.</documentation>
  <framework name="qpc"/>
  <package name="SMs" stereotype="0x02">
@@ -19,7 +19,7 @@
        <action box="0,-2,6,2"/>
       </initial_glyph>
      </initial>
-     <history target="../8">
+     <history type="deep" target="../8">
       <history_glyph conn="52,16,1,0,-8,4"/>
      </history>
      <tran trig="TERMINATE" target="../../3">
@@ -85,8 +85,8 @@
     <state name="doorOpen">
      <entry>printf(&quot;door-Open,lamp-On;&quot;);</entry>
      <exit>printf(&quot;lamp-Off;&quot;);</exit>
-     <tran trig="CLOSE" target="../../1/1">
-      <tran_glyph conn="60,16,3,1,-8">
+     <tran trig="CLOSE" target="../../1" cpref="../../1/1">
+      <tran_glyph conn="60,16,3,1,-7">
        <action box="-6,-2,7,2"/>
       </tran_glyph>
      </tran>

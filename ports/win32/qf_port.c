@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.5
-* Date of the Last Update:  2016-11-08
+* Last Updated for Version: 5.8.0
+* Date of the Last Update:  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -150,7 +150,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     /* create the Win32 "event" to throttle the AO's event queue */
     me->osObject = CreateEvent(NULL, FALSE, FALSE, NULL);
 
-    QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 
     /* stack size not provided? */
@@ -180,7 +180,7 @@ static DWORD WINAPI ao_thread(LPVOID arg) { /* for CreateThread() */
     /* Active Object's event loop. QActive_stop() stops the loop */
     do {
         QEvt const *e = QActive_get_(act); /* wait for event */
-        QMSM_DISPATCH(&act->super, e);     /* dispatch to the AO's SM */
+        QHSM_DISPATCH(&act->super, e);     /* dispatch to the AO's SM */
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     } while (act->thread != (HANDLE)0);
 

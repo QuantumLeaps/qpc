@@ -70,7 +70,7 @@ void QXThread_teArm_(QXThread * const me,
                      uint_fast8_t const tickRate);
 
 /*! internal function to disarm the private time event for a given thread. */
-bool QXThread_teDisarm_(QXThread const * const me);
+bool QXThread_teDisarm_(QXThread * const me);
 
 #include "qf_pkg.h"  /* QF package-scope interface */
 

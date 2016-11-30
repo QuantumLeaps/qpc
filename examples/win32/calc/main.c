@@ -1,13 +1,13 @@
 /*****************************************************************************
-* Product:  Calculator Example
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 02, 2013
+* Product:  calc Example
+* Last Updated for Version: 5.8.0
+* Date of the Last Update:  2016-11-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2016 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* http://www.state-machine.com
+* mailto:info@quantum-leaps.com
 *****************************************************************************/
 #include "qep_port.h"
 #include "bsp.h"
@@ -42,7 +41,7 @@
 
 /*..........................................................................*/
 int main() {
-    Calc_ctor();            /* explicitly instantiate the calculator object */
+    Calc_ctor(); /* explicitly instantiate the calculator object */
 
     printf("Calculator example, QEP version: %s\n"
            "Press '0' .. '9'     to enter a digit\n"
@@ -57,25 +56,25 @@ int main() {
            "Press <Esc>          to quit.\n\n",
            QEP_getVersion());
 
-    QMSM_INIT(the_calc, (QEvt *)0);           /* trigger initial transition */
+    QHSM_INIT(the_calc, (QEvt *)0); /* trigger initial transition */
 
-    for (;;) {                                                /* event loop */
-        CalcEvt e;                                      /* Calculator event */
+    for (;;) { /* event loop */
+        CalcEvt e; /* Calculator event */
 
-        BSP_display();                                  /* show the display */
+        BSP_display(); /* show the display */
 
         printf(": ");
         fflush(stdout);
-        e.key_code = (uint8_t)_getche();            /* get a char with echo */
+        e.key_code = (uint8_t)_getche(); /* get a char with echo */
         printf(" ");
 
         switch (e.key_code) {
-            case 'c':                         /* intentionally fall through */
+            case 'c': /* intentionally fall through */
             case 'C': {
                 ((QEvt *)&e)->sig = C_SIG;
                 break;
             }
-            case 'e':                         /* intentionally fall through */
+            case 'e': /* intentionally fall through */
             case 'E': {
                 ((QEvt *)&e)->sig = CE_SIG;
                 break;
@@ -84,14 +83,14 @@ int main() {
                 ((QEvt *)&e)->sig = DIGIT_0_SIG;
                 break;
             }
-            case '1':                         /* intentionally fall through */
-            case '2':                         /* intentionally fall through */
-            case '3':                         /* intentionally fall through */
-            case '4':                         /* intentionally fall through */
-            case '5':                         /* intentionally fall through */
-            case '6':                         /* intentionally fall through */
-            case '7':                         /* intentionally fall through */
-            case '8':                         /* intentionally fall through */
+            case '1': /* intentionally fall through */
+            case '2': /* intentionally fall through */
+            case '3': /* intentionally fall through */
+            case '4': /* intentionally fall through */
+            case '5': /* intentionally fall through */
+            case '6': /* intentionally fall through */
+            case '7': /* intentionally fall through */
+            case '8': /* intentionally fall through */
             case '9': {
                 ((QEvt *)&e)->sig = DIGIT_1_9_SIG;
                 break;
@@ -100,30 +99,30 @@ int main() {
                 ((QEvt *)&e)->sig = POINT_SIG;
                 break;
             }
-            case '+':                         /* intentionally fall through */
-            case '-':                         /* intentionally fall through */
-            case '*':                         /* intentionally fall through */
+            case '+': /* intentionally fall through */
+            case '-': /* intentionally fall through */
+            case '*': /* intentionally fall through */
             case '/': {
                 ((QEvt *)&e)->sig = OPER_SIG;
                 break;
             }
-            case '=':                         /* intentionally fall through */
-            case '\r': {                                       /* Enter key */
+            case '=': /* intentionally fall through */
+            case '\r': { /* Enter key */
                 ((QEvt *)&e)->sig = EQUALS_SIG;
                 break;
             }
-            case '\33': {                                        /* ESC key */
+            case '\33': { /* ESC key */
                 ((QEvt *)&e)->sig = OFF_SIG;
                 break;
             }
             default: {
-                ((QEvt *)&e)->sig = 0;                   /* invalid event */
+                ((QEvt *)&e)->sig = 0; /* invalid event */
                 break;
             }
         }
 
-        if (((QEvt *)&e)->sig != 0) {           /* valid event generated? */
-            QMSM_DISPATCH(the_calc, (QEvt *)&e);        /* dispatch event */
+        if (((QEvt *)&e)->sig != 0) {  /* valid event generated? */
+            QHSM_DISPATCH(the_calc, (QEvt *)&e); /* dispatch event */
         }
     }
     return 0;

@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-02-11
+* Last updated for version 5.8.0
+* Last updated on  2016-11-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -67,7 +67,7 @@ Q_DEFINE_THIS_MODULE("qf_defer")
 *
 * @sa QActive_recall(), QEQueue, QActive_flushDeferred()
 */
-bool QActive_defer(QMActive const * const me, QEQueue * const eq,
+bool QActive_defer(QActive const * const me, QEQueue * const eq,
                    QEvt const * const e)
 {
     (void)me; /* avoid compiler warning about 'me' not used */
@@ -95,7 +95,7 @@ bool QActive_defer(QMActive const * const me, QEQueue * const eq,
 *
 * @sa QActive_recall(), QEQueue, QActive_postLIFO_()
 */
-bool QActive_recall(QMActive * const me, QEQueue * const eq) {
+bool QActive_recall(QActive * const me, QEQueue * const eq) {
     QEvt const *e = QEQueue_get(eq); /* get an event from deferred queue */
     bool recalled;
 
@@ -146,7 +146,7 @@ bool QActive_recall(QMActive * const me, QEQueue * const eq) {
 *
 * @sa QActive_defer(), QActive_recall(), QEQueue
 */
-uint_fast16_t QActive_flushDeferred(QMActive const * const me,
+uint_fast16_t QActive_flushDeferred(QActive const * const me,
                                     QEQueue * const eq)
 {
     uint_fast16_t n = (uint_fast16_t)0;

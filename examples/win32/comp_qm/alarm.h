@@ -18,10 +18,15 @@
 #ifndef alarm_h
 #define alarm_h
 
+
+#if ((QP_VERSION < 580) || (QP_VERSION != ((QP_RELEASE^4294967295) % 0x3E8)))
+#error qpc version 5.8.0 or higher required
+#endif
+
 /*${Components::Alarm} .....................................................*/
 typedef struct {
 /* protected: */
-    QMsm super;
+    QHsm super;
 
 /* private: */
     uint32_t alarm_time;
@@ -32,13 +37,8 @@ void Alarm_ctor(Alarm * const me);
 
 /* protected: */
 QState Alarm_initial(Alarm * const me, QEvt const * const e);
-QState Alarm_off  (Alarm * const me, QEvt const * const e);
-QState Alarm_off_e(Alarm * const me);
-QState Alarm_off_x(Alarm * const me);
-extern QMState const Alarm_off_s;
-QState Alarm_on  (Alarm * const me, QEvt const * const e);
-QState Alarm_on_e(Alarm * const me);
-extern QMState const Alarm_on_s;
+QState Alarm_off(Alarm * const me, QEvt const * const e);
+QState Alarm_on(Alarm * const me, QEvt const * const e);
 
 
 void Alarm_ctor(Alarm * const me);

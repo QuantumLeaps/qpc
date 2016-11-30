@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QHsmTst Example, Win32
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.8.0
+* Last updated on  2016-11-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,8 +31,7 @@
 * http://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
-#include "qep_port.h"
-#include "qassert.h"
+#include "qpc.h"
 #include "qhsmtst.h"
 
 #include <conio.h>
@@ -48,57 +47,57 @@ static void dispatch(QSignal sig);
 
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
-    QHsmTst_ctor();                       /* instantiate the QHsmTst object */
+    QHsmTst_ctor();   /* instantiate the QHsmTst object */
 
-    if (argc > 1) {                                  /* file name provided? */
+    if (argc > 1) {   /* file name provided? */
         l_outFile = fopen(argv[1], "w");
     }
 
-    if (l_outFile == (FILE *)0) {                   /* interactive version? */
-        l_outFile = stdout;            /* use the stdout as the output file */
+    if (l_outFile == (FILE *)0) { /* interactive version? */
+        l_outFile = stdout; /* use the stdout as the output file */
 
         printf("QHsmTst example, built on %s at %s,\n"
-               "QEP: %s.\nPress ESC to quit...\n",
-               __DATE__, __TIME__, QEP_getVersion());
+               "QP: %s.\nPress ESC to quit...\n",
+               __DATE__, __TIME__, QP_VERSION_STR);
 
-        QMSM_INIT(the_hsm, (QEvt *)0);        /* the top-most initial tran. */
+        QHSM_INIT(the_hsm, (QEvt *)0); /* the top-most initial tran. */
 
-        for (;;) {                                            /* event loop */
+        for (;;) { /* event loop */
             QEvt e;
             int c;
 
             printf("\n>");
-            c = _getche();    /* get a character from the console with echo */
+            c = _getche(); /* get a character from the console with echo */
             printf(": ");
 
-            if ('a' <= c && c <= 'i') {                        /* in range? */
+            if ('a' <= c && c <= 'i') { /* in range? */
                 e.sig = (QSignal)(c - 'a' + A_SIG);
             }
-            else if ('A' <= c && c <= 'I') {                   /* in range? */
+            else if ('A' <= c && c <= 'I') { /* in range? */
                 e.sig = (QSignal)(c - 'A' + A_SIG);
             }
-            else if (c == '\33') {                          /* the ESC key? */
-                e.sig = TERMINATE_SIG;    /* terminate the interactive test */
+            else if (c == '\33') { /* the ESC key? */
+                e.sig = TERMINATE_SIG; /* terminate the interactive test */
             }
             else {
                 e.sig = IGNORE_SIG;
             }
 
-            QMSM_DISPATCH(the_hsm, &e);               /* dispatch the event */
+            QHSM_DISPATCH(the_hsm, &e); /* dispatch the event */
         }
     }
-    else {                                                 /* batch version */
-        printf("QHsmTst example, built on %s at %s, QEP %s\n"
+    else { /* batch version */
+        printf("QHsmTst example, built on %s at %s, QP %s\n"
                "output saved to %s\n",
-               __DATE__, __TIME__, QEP_getVersion(),
+               __DATE__, __TIME__, QP_VERSION_STR,
                argv[1]);
 
-        fprintf(l_outFile, "QHsmTst example, QEP %s\n",
-                QEP_getVersion());
+        fprintf(l_outFile, "QHsmTst example, QP %s\n",
+                QP_VERSION_STR);
 
-        QMSM_INIT(the_hsm, (QEvt *)0);        /* the top-most initial tran. */
+        QHSM_INIT(the_hsm, (QEvt *)0); /* the top-most initial tran. */
 
-                                       /* testing of dynamic transitions... */
+        /* testing of dynamic transitions... */
         dispatch(A_SIG);
         dispatch(B_SIG);
         dispatch(D_SIG);
@@ -147,8 +146,9 @@ static void dispatch(QSignal sig) {
     Q_REQUIRE((A_SIG <= sig) && (sig <= I_SIG));
     e.sig = sig;
     fprintf(l_outFile, "\n%c:", 'A' + sig - A_SIG);
-    QMSM_DISPATCH(the_hsm, &e);                       /* dispatch the event */
+    QHSM_DISPATCH(the_hsm, &e); /* dispatch the event */
 }
+
 /*--------------------------------------------------------------------------*/
 #ifdef Q_SPY
 #include "qs_port.h"
