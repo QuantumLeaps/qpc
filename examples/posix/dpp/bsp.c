@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, POSIX
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.8.0
+* Last updated on  2016-11-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -134,7 +134,7 @@ void QF_onClockTick(void) {
         char ch;
         read(0, &ch, 1);
         if (ch == '\33') { /* ESC pressed? */
-            QF_PUBLISH(Q_NEW(QEvt, TERMINATE_SIG), &l_clock_tick);
+            BSP_terminate(0);
         }
         else if (ch == 'p') {
             QF_PUBLISH(Q_NEW(QEvt, PAUSE_SIG), &l_clock_tick);

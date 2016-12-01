@@ -22,8 +22,8 @@ base class all subclasses, including QHsm, would technically inherit the
 advanced functionality, which is not the case).
 
 @note
-ALl changes in QP/C 5.8.0 remain transparent for the existing QP/C applications,
-because of the provided backwards compatiblity layer in qpc.h.
+All changes in QP/C 5.8.0 remain transparent for the existing QP/C applications,
+because of the provided backwards compatibility layer in qpc.h.
 
 Also, this release changes the implementation of the QV, QK, and QXK kernels
 in that the ready-set representing active threads is cleared only *after*

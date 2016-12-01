@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.4
-* Date of the Last Update:  2016-11-02
+* Last Updated for Version: 5.8.0
+* Date of the Last Update:  2016-11-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -122,7 +122,7 @@ static void *thread_routine(void *arg) { /* the expected POSIX signature */
     /* loop until m_thread is cleared in QActive_stop() */
     do {
         QEvt const *e = QActive_get_(act); /* wait for the event */
-        QMSM_DISPATCH(&act->super, e);     /* dispatch to the SM */
+        QHSM_DISPATCH(&act->super, e);     /* dispatch to the HSM */
         QF_gc(e);    /* check if the event is garbage, and collect it if so */
     } while (act->thread != (uint8_t)0);
     QF_remove_(act); /* remove this object from any subscriptions */
@@ -148,7 +148,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = (uint8_t)prio;
     QF_add_(me); /* make QF aware of this active object */
 
-    QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 
     pthread_attr_init(&attr);

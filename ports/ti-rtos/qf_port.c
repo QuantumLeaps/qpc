@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 5.8.0
-* Date of the Last Update:  2016-11-19
+* Date of the Last Update:  2016-11-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -91,7 +91,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QEQueue_init(&me->eQueue, qSto, qLen);
     me->prio = prio; /* set QF priority of this AO before adding it to QF */
     QF_add_(me);     /* make QF aware of this active object */
-    QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
 
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 
@@ -112,7 +112,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 static void swi_function(UArg arg0, UArg arg1) { /* TI-RTOS Swi signature */
     QActive *act = (QActive *)arg0;
     QEvt const *e = QActive_get_(act);
-    QMSM_DISPATCH(&act->super, e); /* dispatch to the AO's SM */
+    QHSM_DISPATCH(&act->super, e); /* dispatch to the AO's SM */
     QF_gc(e); /* check if the event is garbage, and collect it if so */
     (void)arg1; /* unused parameter */
 
