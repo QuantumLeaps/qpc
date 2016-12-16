@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-03-13
+* Last updated for version 5.8.1
+* Last updated on  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* http://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -75,8 +75,10 @@ void QEQueue_init(QEQueue * const me, QEvt const *qSto[],
     me->frontEvt = (QEvt const *)0; /* no events in the queue */
     me->ring     = &qSto[0];        /* the beginning of the ring buffer */
     me->end      = (QEQueueCtr)qLen;
-    me->head     = (QEQueueCtr)0;
-    me->tail     = (QEQueueCtr)0;
+    if (qLen != (uint_fast16_t)0) {
+        me->head = (QEQueueCtr)0;
+        me->tail = (QEQueueCtr)0;
+    }
     me->nFree    = (QEQueueCtr)(qLen + (uint_fast16_t)1); /*+1 for frontEvt */
     me->nMin     = me->nFree;
 

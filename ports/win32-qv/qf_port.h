@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.0
-* Date of the Last Update:  2016-11-08
+* Last Updated for Version: 5.8.1
+* Date of the Last Update:  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -152,7 +152,6 @@ void QF_onClockTick(void);
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
         QPSet_insert(&QV_readySet_, (me_)->prio); \
             (void)SetEvent(QV_win32Event_)
-    #define QACTIVE_EQUEUE_ONEMPTY_(me_) ((void)0)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_  QMPool

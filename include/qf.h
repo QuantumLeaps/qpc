@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-19
+* Last updated for version 5.8.1
+* Last updated on  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -790,6 +790,23 @@ void QF_bzero(void * const start, uint_fast16_t len);
 * @note Not to be used by Clients directly, only in ports of QF
 */
 extern QActive *QF_active_[QF_MAX_ACTIVE + 1];
+
+
+/****************************************************************************/
+/*! QTicker Active Object class */
+/**
+* @description
+* The QTicker is an efficient active object specialized to process
+* QF system clock tick at a specified tick frequency [0..QF_MAX_TICK_RATE].
+* Placing system clock tick processing in an active object allows you
+* to remove the non-deterministic QF::TICK_X() processing from the interrupt
+* level and move it into the thread-level, where you can prioritize it
+* as low as you wish.
+*/
+typedef QActive QTicker;
+
+/*! Constructor of the QTicker Active Object class */
+void QTicker_ctor(QTicker * const me, uint8_t tickRate);
 
 /****************************************************************************/
 /*! get the current QF version number string of the form "X.Y.Z" */

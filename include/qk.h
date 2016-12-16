@@ -5,8 +5,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-19
+* Last updated for version 5.8.1
+* Last updated on  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -73,13 +73,6 @@ typedef struct {
 extern QK_Attr QK_attr_;
 
 /****************************************************************************/
-/*! QK initialization */
-/**
-* QK_init() is called from QF_init() in qk.c. This function is
-* defined in the QK ports.
-*/
-void QK_init(void);
-
 /*! QK idle callback (customized in BSPs for QK) */
 /**
 * QK_onIdle() is called continuously by the QK idle loop. This callback
@@ -170,8 +163,6 @@ void QMutex_unlock(QMutex * const me);
             } \
         } \
     } while (0)
-
-    #define QACTIVE_EQUEUE_ONEMPTY_(me_) ((void)0)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool

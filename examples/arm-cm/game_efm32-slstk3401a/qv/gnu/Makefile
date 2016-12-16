@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for Game on EMF32-SLSTK3401A, QV kernel, GNU-ARM
-# Last Updated for Version: 5.6.5
-# Date of the Last Update:  2016-06-02
+# Last Updated for Version: 5.8.1
+# Date of the Last Update:  2016-12-15
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -132,7 +132,8 @@ QP_SRCS := \
 	qf_qeq.c \
 	qf_qmact.c \
 	qf_time.c \
-	qv.c
+	qv.c \
+	qv_port.c
 
 QP_ASMS :=
 

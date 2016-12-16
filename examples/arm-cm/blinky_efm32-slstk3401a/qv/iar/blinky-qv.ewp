@@ -77,7 +77,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.60.1.11206</state>
+          <state>7.70.1.11471</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -3005,6 +3005,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\source\qv_pkg.h</name>
+    </file>
+  </group>
+  <group>
+    <name>QP_port</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qv\iar\qv_port.c</name>
     </file>
   </group>
   <group>

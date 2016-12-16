@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-03-23
+* Last Updated for Version: 5.8.1
+* Date of the Last Update:  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -35,6 +35,9 @@
 #include "dpp.h"
 #include "bsp.h"
 
+static QTicker l_ticker0;
+QActive *the_Ticker0 = &l_ticker0;
+
 /*..........................................................................*/
 int main() {
     static QEvt const *tableQueueSto[N_PHILO];
@@ -45,6 +48,7 @@ int main() {
 
     Philo_ctor(); /* instantiate all Philosopher active objects */
     Table_ctor(); /* instantiate the Table active object */
+    QTicker_ctor(&l_ticker0, 0U); /* ticker AO for tick rate 0 */
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init();   /* initialize the Board Support Package */
@@ -64,10 +68,12 @@ int main() {
     /* initialize event pools... */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
+    QACTIVE_START(the_Ticker0, 1U, 0, 0, 0, 0, 0);
+
     /* start the active objects... */
     for (n = 0U; n < N_PHILO; ++n) {
         QACTIVE_START(AO_Philo[n],           /* AO to start */
-                      (uint_fast8_t)(n + 1), /* QP priority of the AO */
+                      (uint_fast8_t)(n + 2), /* QP priority of the AO */
                       philoQueueSto[n],      /* event queue storage */
                       Q_DIM(philoQueueSto[n]), /* queue length [events] */
                       (void *)0,             /* stack storage (not used) */
@@ -75,7 +81,7 @@ int main() {
                       (QEvt *)0);            /* initialization event */
     }
     QACTIVE_START(AO_Table,                  /* AO to start */
-                  (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
+                  (uint_fast8_t)(N_PHILO + 2), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */
                   Q_DIM(tableQueueSto),      /* queue length [events] */
                   (void *)0,                 /* stack storage (not used) */

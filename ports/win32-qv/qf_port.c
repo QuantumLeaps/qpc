@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.0
-* Date of the Last Update:  2016-11-19
+* Last Updated for Version: 5.8.1
+* Date of the Last Update:  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -168,8 +168,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 {
     Q_REQUIRE_ID(700, ((uint_fast8_t)0 < prio) /* priority must be in range */
                  && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
-                 && (qSto != (QEvt const **)0) /* queue storage must be... */
-                 && (qLen > (uint_fast16_t)0)  /* ...provided */
                  && (stkSto == (void *)0));    /* statck storage must NOT...
                                                * ... be provided */
 

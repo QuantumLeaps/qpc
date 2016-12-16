@@ -66,9 +66,6 @@
             } \
         } \
     } while (0)
-
-    #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-        (QPSet8_remove(&QK_readySet_, (me_)->prio))
 #else
     /*! Platform-dependent macro defining how QF should signal the
     * active object task that an event has just arrived. */
@@ -93,22 +90,6 @@
             } \
         } \
     } while (0)
-
-    /*! Platform-dependent macro defining the action QF should
-    * take when the native QF event queue becomes empty. */
-    /**
-    * The macro is necessary only when the native QF event queue is used.
-    * The signaling of task involves unblocking the task if it is blocked.
-    *
-    * \note QACTIVE_EQUEUE_ONEMPTY_() is called from a critical section.
-    * It should not leave the critical section.
-    *
-    * \note This is just an example of QACTIVE_EQUEUE_ONEMPTY_() for the
-    * QK-port of QF. In other QF ports you need to define the macro
-    * appropriately for the underlying kernel/OS you're using.
-    */
-    #define QACTIVE_EQUEUE_ONEMPTY_(me_) \
-        QPSet64_remove(&QK_readySet_, (me_)->prio)
 #endif
 
 /*! This macro defines the type of the event pool used in the QK kernel. */

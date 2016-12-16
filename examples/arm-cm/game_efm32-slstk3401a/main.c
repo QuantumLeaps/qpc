@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example
-* Last updated for version 5.6.5
-* Last updated on  2016-06-03
+* Last updated for version 5.8.1
+* Last updated on  2016-12-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -35,6 +35,9 @@
 #include "bsp.h"
 #include "game.h"
 
+static QTicker l_ticker0; /* ticker active object for tick rate 0 */
+QActive *the_Ticker0 = &l_ticker0;
+
 /*..........................................................................*/
 int main() {
     static QEvt const * missileQueueSto[2];
@@ -47,6 +50,7 @@ int main() {
     static QSubscrList    subscrSto[MAX_PUB_SIG];
 
     /* explicitly invoke the active objects' ctors... */
+    QTicker_ctor(&l_ticker0, 0U); /* active object for tick rate 0 */
     Missile_ctor();
     Ship_ctor();
     Tunnel_ctor();
@@ -77,18 +81,21 @@ int main() {
     QS_SIG_DICTIONARY(GAME_OVER_SIG,      (void *)0);
 
     /* start the active objects... */
-    QACTIVE_START(AO_Tunnel,
+    QACTIVE_START(the_Ticker0,
                   1U,                /* QP priority */
+                  0, 0, 0, 0, 0);    /* no queue, no stack , no init. event */
+    QACTIVE_START(AO_Tunnel,
+                  2U,                /* QP priority */
                   tunnelQueueSto,  Q_DIM(tunnelQueueSto), /* evt queue */
                   (void *)0, 0U,     /* no per-thread stack */
                   (QEvt *)0);        /* no initialization event */
     QACTIVE_START(AO_Ship,
-                  2U,                /* QP priority */
+                  3U,                /* QP priority */
                   shipQueueSto,    Q_DIM(shipQueueSto), /* evt queue */
                   (void *)0, 0U,     /* no per-thread stack */
                   (QEvt *)0);        /* no initialization event */
     QACTIVE_START(AO_Missile,
-                  3U,                /* QP priority */
+                  4U,                /* QP priority */
                   missileQueueSto, Q_DIM(missileQueueSto), /* evt queue */
                   (void *)0, 0U,     /* no per-thread stack */
                   (QEvt *)0);        /* no initialization event */

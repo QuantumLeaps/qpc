@@ -3,8 +3,8 @@
 * @brief QF/C generic port to TI-RTOS kernel (SYS/BIOS)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.3
-* Date of the Last Update:  2016-10-05
+* Last Updated for Version: 5.8.1
+* Date of the Last Update:  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -75,7 +75,6 @@
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         (Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0))
     #define QACTIVE_EQUEUE_SIGNAL_(me_) Swi_post((me_)->thread)
-    #define QACTIVE_EQUEUE_ONEMPTY_(dummy) ((void)0)
 
     /* native QF event pool operations... */
     #define QF_EPOOL_TYPE_            QMPool

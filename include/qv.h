@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-19
+* Last updated for version 5.8.1
+* Last updated on  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -95,8 +95,6 @@ void QV_onIdle(void);
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
         QPSet_insert(&QV_readySet_, (me_)->prio)
-
-    #define QACTIVE_EQUEUE_ONEMPTY_(me_) ((void)0)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool

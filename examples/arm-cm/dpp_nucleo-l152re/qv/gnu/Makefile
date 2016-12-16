@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for DPP on NUCLEO-L152RE, QV kernel, GNU-ARM
-# Last Updated for Version: 5.6.0
-# Date of the Last Update:  2015-12-10
+# Last Updated for Version: 5.8.1
+# Date of the Last Update:  2016-12-15
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -118,7 +118,8 @@ QP_SRCS := \
 	qf_qeq.c \
 	qf_qmact.c \
 	qf_time.c \
-	qv.c
+	qv.c \
+	qv_port.c
 
 QP_ASMS :=
 

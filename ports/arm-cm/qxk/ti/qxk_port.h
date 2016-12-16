@@ -3,8 +3,8 @@
 * @brief QXK port to Cortex-M, TI-ARM (CCS) toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.1
-* Date of the Last Update:  2016-09-22
+* Last Updated for Version: 5.8.1
+* Date of the Last Update:  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -58,6 +58,10 @@
 
 /* get the IPSR (defined in assembly) */
 uint32_t QXK_get_IPSR(void);
+
+/* initialization of the QXK kernel */
+#define QXK_INIT() QXK_init()
+void QXK_init(void);
 
 #include "qxk.h" /* QXK platform-independent public interface */
 

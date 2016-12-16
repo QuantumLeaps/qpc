@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QK port to ARM Cortex-M (M0,M0+,M3,M4,M7), TI-ARM assembler
-; Last Updated for Version: 5.7.3
-; Date of the Last Update:  2016-10-07
+; Last Updated for Version: 5.8.1
+; Date of the Last Update:  2016-12-12
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -55,21 +55,84 @@ QF_BASEPRI: .equ  (0xFF >> 2)
     .thumb
 
 ;*****************************************************************************
-; The QK_init() function sets the priority of PendSV to 0xFF (lowest).
-; This operation is performed in a nestable critical section.
+; The QK_init() function sets the priority of PendSV to 0xFF (lowest urgency).
+; For Cortex-M3/4/7, it also sets priorities of all other exceptions and IRQs
+; to the safe value. All this is performed in a nestable critical section.
 ;*****************************************************************************
 QK_init:    .asmfunc
-    MRS     r0,PRIMASK        ; store the state of the PRIMASK in r0
-    CPSID   i                 ; disable interrupts (set PRIMASK)
+    MRS     r0,PRIMASK        ; store the state of the PRIMASK
+    MOV     r12,r0            ; r12 := PRIMASK
+    CPSID   i                 ; PRIMASK := 1
 
-    LDR     r1,SHPR_addr      ; System Handler Priority Register
-    LDR     r2,[r1,#8]        ; load the System 12-15 Priority Register
-    MOVS    r3,#0xFF
-    LSLS    r3,r3,#16
-    ORRS    r2,r3             ; set PRI_14 (PendSV) to 0xFF
-    STR     r2,[r1,#8]        ; write the System 12-15 Priority Register
+  .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__ ; M3/4/7?
+    ; NOTE:
+    ; On Cortex-M3/M4/.., this QK port disables interrupts by means of the
+    ; BASEPRI register. However, this method cannot disable interrupt
+    ; priority zero, which is the default for all interrupts out of reset.
+    ; The following code changes the SysTick priority and all IRQ priorities
+    ; to the safe value QF_BASEPRI, wich the QF critical section can disable.
+    ; This avoids breaching of the QF critical sections in case the
+    ; application programmer forgets to explicitly set priorities of all
+    ; "kernel aware" interrupts.
 
-    MSR     PRIMASK,r0        ; restore the original PRIMASK
+    ; set all prioriy bytes to QF_BASEPRI in r1
+    MOVS    r1,#QF_BASEPRI
+    LSLS    r1,r1,#8
+    ORRS    r1,r1,#QF_BASEPRI
+    LSLS    r1,r1,#8
+    ORRS    r1,r1,#QF_BASEPRI
+    LSLS    r1,r1,#8
+    ORRS    r1,r1,#QF_BASEPRI
+
+    LDR     r3,SHPR_addr      ; System Handler Priority Register
+    LDR     r2,[r3]           ; r2 := SYSPRI1
+    ORRS    r2,r1             ; r2 |= "all values to QF_BASEPRI"
+    STR     r2,[r3]           ; SYSPRI1 |= r2, Usage-fault/Bus-fault/Mem-fault
+
+    LDR     r2,[r3,#4]        ; r2 := SYSPRI2
+    ORRS    r2,r1             ; r2 |= "all values to QF_BASEPRI"
+    STR     r2,[r3,#4]        ; SYSPRI2 := r2, SVCall
+
+    LDR     r2,[r3,#8]        ; r2 := SYSPRI3
+    ORRS    r1,r1,#(0xFF << 16) ; r1 |= 0xFF for PendSV
+    ORRS    r2,r1
+    STR     r2,[r3,#8]        ; SYSPRI3 |= r2, SysTick/PendSV/Debug
+
+    ; set again all prioriy bytes to QF_BASEPRI in r1
+    MOVS    r1,#QF_BASEPRI
+    LSLS    r1,r1,#8
+    ORRS    r1,r1,#QF_BASEPRI
+    LSLS    r1,r1,#8
+    ORRS    r1,r1,#QF_BASEPRI
+    LSLS    r1,r1,#8
+    ORRS    r1,r1,#QF_BASEPRI
+
+    LDR     r3,ICTR_addr      ; Interrupt Controller Type Register
+    LDR     r3,[r3]           ; r3 := INTLINESUM
+    LSLS    r3,r3,#3
+    ADDS    r3,r3,#8          ; r3 == number of NVIC_PRIO registers
+
+    ; loop over all implemented NVIC_PRIO registers for IRQs...
+QK_init_irq:
+    SUBS    r3,r3,#1
+    LDR     r2,PRI0_addr      ; NVIC_PRI0 register
+    STR     r1,[r2,r3,LSL #2] ; NVIC_PRI0[r3]  := r1
+    CMP     r3,#0
+    BNE     QK_init_irq
+
+  .else                       ; Cortex-M0/M0+/M1 ?
+
+    LDR     r3,=0xE000ED18    ; System Handler Priority Register
+    LDR     r2,[r3,#8]        ; r2 := SYSPRI3
+    MOVS    r0,#0xFF
+    LSLS    r0,r0,#16
+    ORRS    r2,r1
+    STR     r2,[r3,#8]        ; SYSPRI3 := r2, PendSV <- 0xFF
+
+  .endif                      ; M0/M0+/M1
+
+    MOV     r0,r12            ; r0 := original PRIMASK
+    MSR     PRIMASK,r0        ; PRIMASK := r0
     BX      lr                ; return to the caller
   .endasmfunc
 
@@ -242,6 +305,8 @@ assert_failed: .asmfunc
 SHPR_addr:        .word 0xE000ED18
 ICSR_addr:        .word 0xE000ED04
 VTOR_addr:        .word 0xE000ED08
+ICTR_addr:        .word 0xE000E004 ; Interrupt Controller Type Register
+PRI0_addr:        .word 0xE000E400 ; NVIC_PRI0 register
 
 ;*****************************************************************************
 ; Addresses for PC-relative LDR

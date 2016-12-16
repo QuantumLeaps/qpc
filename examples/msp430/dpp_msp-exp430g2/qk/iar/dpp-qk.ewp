@@ -3464,9 +3464,6 @@
       <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qf_port.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qk_port.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qk_port.h</name>
     </file>
     <file>

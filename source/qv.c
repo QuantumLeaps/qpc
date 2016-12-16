@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-29
+* Last updated for version 5.8.1
+* Last updated on  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -82,6 +82,10 @@ void QF_init(void) {
     QF_bzero(&QV_readySet_,       (uint_fast16_t)sizeof(QV_readySet_));
     QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
     QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
+
+#ifdef QV_INIT
+    QV_INIT(); /* port-specific initialization of the QV kernel */
+#endif
 }
 
 /****************************************************************************/

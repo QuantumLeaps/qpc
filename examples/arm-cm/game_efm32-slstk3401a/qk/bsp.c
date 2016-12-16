@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, EFM32-SLSTK3401A board, QK kernel
-* Last updated for version 5.6.5
-* Last updated on  2016-06-02
+* Last updated for version 5.8.1
+* Last updated on  2016-12-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -123,7 +123,9 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK_X(0U, &l_SysTick_Handler);    /* process time events for rate 0 */
+    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    QACTIVE_POST(the_Ticker0, 0, 0); /* post a don't-care event to Ticker0 */
+
     QF_PUBLISH(&tickEvt, &l_SysTick_Handler); /* publish to all subscribers */
 
     {

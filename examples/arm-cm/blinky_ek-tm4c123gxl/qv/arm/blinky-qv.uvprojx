@@ -516,6 +516,13 @@
         </Group>
         <Group>
           <GroupName>QP_port</GroupName>
+          <Files>
+            <File>
+              <FileName>qv_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\ports\arm-cm\qv\arm\qv_port.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>QS</GroupName>
@@ -1119,6 +1126,13 @@
         </Group>
         <Group>
           <GroupName>QP_port</GroupName>
+          <Files>
+            <File>
+              <FileName>qv_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\ports\arm-cm\qv\arm\qv_port.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>QS</GroupName>
@@ -1723,6 +1737,13 @@
         </Group>
         <Group>
           <GroupName>QP_port</GroupName>
+          <Files>
+            <File>
+              <FileName>qv_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\ports\arm-cm\qv\arm\qv_port.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>QS</GroupName>

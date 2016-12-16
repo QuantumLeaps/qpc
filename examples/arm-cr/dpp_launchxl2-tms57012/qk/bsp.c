@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "DPP" on LAUCHXL2-TMS570LS12 board, preemptive QK kernel
-* Last Updated for Version: 5.7.0
-* Date of the Last Update:  2016-08-29
+* Last Updated for Version: 5.8.1
+* Date of the Last Update:  2016-12-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -225,9 +225,6 @@ void BSP_terminate(int16_t result) {
 
 
 /* QF callbacks ============================================================*/
-void QK_init(void) {
-}
-
 void QF_onStartup(void) {
     rtiInit(); /* configure RTI with UC counter of 7 */
     rtiSetPeriod(rtiCOUNTER_BLOCK0,

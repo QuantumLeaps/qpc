@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example on EFM32-SLSTK3401A board
-* Last updated for version 5.6.5
-* Last updated on  2016-06-02
+* Last updated for version 5.8.1
+* Last updated on  2016-12-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -57,7 +57,9 @@ bool BSP_isWallHit(uint8_t bmp_id, uint8_t x, uint8_t y);
 void BSP_displayOn(void);
 void BSP_displayOff(void);
 
-void BSP_randomSeed(uint32_t seed);   /* random seed */
-uint32_t BSP_random(void);            /* pseudo-random generator */
+void BSP_randomSeed(uint32_t seed); /* random seed */
+uint32_t BSP_random(void);          /* pseudo-random generator */
+
+extern QActive *the_Ticker0; /* "Ticker" active object for tick rate 0 */
 
 #endif /* bsp_h */

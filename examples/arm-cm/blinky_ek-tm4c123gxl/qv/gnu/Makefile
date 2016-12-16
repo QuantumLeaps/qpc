@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for Blinky on EK-TM4C123GXL, QV kernel, GNU-ARM
-# Last Updated for Version: 5.6.2
-# Date of the Last Update:  2016-03-21
+# Last Updated for Version: 5.8.1
+# Date of the Last Update:  2016-12-15
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -117,7 +117,8 @@ QP_SRCS := \
 	qf_qeq.c \
 	qf_qmact.c \
 	qf_time.c \
-	qv.c
+	qv.c \
+	qv_port.c
 
 QP_ASMS :=
 

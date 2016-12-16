@@ -3,8 +3,8 @@
 * @brief QXK/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.1
-* Date of the Last Update:  2016-09-15
+* Last Updated for Version: 5.8.1
+* Date of the Last Update:  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -61,6 +61,10 @@ static __inline uint32_t QXK_get_IPSR(void) {
     } \
     QF_INT_ENABLE(); \
 } while (0)
+
+/* initialization of the QXK kernel */
+#define QXK_INIT() QXK_init()
+void QXK_init(void);
 
 #include "qxk.h" /* QXK platform-independent public interface */
 

@@ -8,8 +8,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-19
+* Last updated for version 5.8.1
+* Last updated on  2016-12-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -295,8 +295,6 @@ QEvt const *QActive_get_(QActive * const me) {
         /* all entries in the queue must be free (+1 for fronEvt) */
         Q_ASSERT_ID(310, nFree == (me->eQueue.end + (QEQueueCtr)1));
 
-        QACTIVE_EQUEUE_ONEMPTY_(me);
-
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST, QS_priv_.aoObjFilter, me)
             QS_TIME_();                   /* timestamp */
             QS_SIG_(e->sig);              /* the signal of this event */
@@ -338,4 +336,105 @@ uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
     QF_CRIT_EXIT_();
 
     return min;
+}
+
+
+/****************************************************************************/
+/****************************************************************************/
+static void QTicker_init_(QHsm * const me, QEvt const * const e);
+static void QTicker_dispatch_(QHsm * const me, QEvt const * const e);
+#ifdef Q_SPY
+    /*! virtual function to asynchronously post (FIFO) an event to an AO */
+    static bool QTicker_post_(QActive * const me, QEvt const * const e,
+                   uint_fast16_t const margin, void const * const sender);
+#else
+    static bool QTicker_post_(QActive * const me, QEvt const * const e,
+                      uint_fast16_t const margin);
+#endif
+static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
+
+/*..........................................................................*/
+/*! "constructor" of QTicker */
+void QTicker_ctor(QTicker * const me, uint8_t tickRate) {
+    static QActiveVtbl const vtbl = {  /* QActiveVtbl virtual table */
+        { &QTicker_init_,
+          &QTicker_dispatch_ },
+        &QActive_start_,
+        &QTicker_post_,
+        &QTicker_postLIFO_
+    };
+    QActive_ctor(me, Q_STATE_CAST(0)); /* superclass' ctor */
+    me->super.vptr = &vtbl.super; /* hook the vptr */
+
+    /*  reuse eQueue.head for tick-rate */
+    me->eQueue.head = (QEQueueCtr)tickRate;
+}
+/*..........................................................................*/
+static void QTicker_init_(QHsm * const me, QEvt const * const e) {
+    (void)me;
+    (void)e;
+    ((QActive *)me)->eQueue.tail = (QEQueueCtr)0;
+}
+/*..........................................................................*/
+static void QTicker_dispatch_(QHsm * const me, QEvt const * const e) {
+    QEQueueCtr n;
+    QF_CRIT_STAT_
+
+    (void)e; /* unused parameter */
+
+    QF_CRIT_ENTRY_();
+    n = ((QActive *)me)->eQueue.tail; /* # ticks since last call */
+    ((QActive *)me)->eQueue.tail = (QEQueueCtr)0; /* clear the # ticks */
+    QF_CRIT_EXIT_();
+
+    for (; n > (QEQueueCtr)0; --n) {
+        QF_TICK_X(((QActive const *)me)->eQueue.head, me);
+    }
+}
+/*..........................................................................*/
+#ifndef Q_SPY
+static bool QTicker_post_(QActive * const me, QEvt const * const e,
+                          uint_fast16_t const margin)
+#else
+static bool QTicker_post_(QActive * const me, QEvt const * const e,
+                          uint_fast16_t const margin,
+                          void const * const sender)
+#endif
+{
+    QF_CRIT_STAT_
+
+    (void)e; /* unused parameter */
+    (void)margin; /* unused parameter */
+
+    QF_CRIT_ENTRY_();
+    if (me->eQueue.frontEvt == (QEvt const *)0) {
+
+        static QEvt const tickEvt = { (QSignal)0, (uint8_t)0, (uint8_t)0 };
+        me->eQueue.frontEvt = &tickEvt; /* deliver event directly */
+        --me->eQueue.nFree; /* one less free event */
+
+        QACTIVE_EQUEUE_SIGNAL_(me); /* signal the event queue */
+    }
+
+    ++me->eQueue.tail; /* account for one more tick event */
+
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.aoObjFilter, me)
+        QS_TIME_();           /* timestamp */
+        QS_OBJ_(sender);      /* the sender object */
+        QS_SIG_((QSignal)0);  /* the signal of the event */
+        QS_OBJ_(me);          /* this active object */
+        QS_2U8_((uint8_t)0, (uint8_t)0); /* pool Id & refCtr of the evt */
+        QS_EQC_((uint8_t)0);  /* number of free entries */
+        QS_EQC_((uint8_t)0);  /* min number of free entries */
+    QS_END_NOCRIT_()
+
+    QF_CRIT_EXIT_();
+
+    return true; /* the event is always posted correctly */
+}
+/*..........................................................................*/
+static void QTicker_postLIFO_(QActive * const me, QEvt const * const e) {
+    (void)me;
+    (void)e;
+    Q_ERROR_ID(900);
 }

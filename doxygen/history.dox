@@ -1,8 +1,45 @@
 /**
 @page history Revision History
 
-@section qpc_5_8_0 Version 5.8.0, 2016-11-30
+@section qpc_5_8_1 Version 5.8.1, 2016-12-16
+This release is in response to a recent finding that many QP users of the
+ports to ARM Cortex-M3/M4 forget to explicitly set their interrupt priorities,
+as described in the AppNote <a href="http://www.state-machine.com/doc/AN_ARM-Cortex-M_Interrupt-Priorities.pdf" target="_blank" class="extern">"Setting ARM Cortex-M Interrupt Priorities in QP 5.x"</a>.
 
+Specifically, this release improves safety of QP ports to ARM Cortex-M3/M4,
+by initializing the interrupt priorities to a safe default in a generic,
+portable way. This QP port includes such a fix for QV/QK/QXK ports to ARM Cortex-M3/M4.
+
+Additionally, this release introduces the new ::QTicker class, which is an
+efficient active object specialized to process QF system clock tick at a
+specified tick frequency [0..(#QF_MAX_TICK_RATE - 1)]. Placing system clock tick
+processing in an active object allows you to remove the non-deterministic
+QF_TICK_X() processing from the interrupt level and move it into the thread-level,
+where you can prioritize it as low as you wish.
+
+Changes in detail:
+- modified the QV, QK, and QXK source code to call QV_init(), QK_init(), and
+  QXK_init(), respectively.
+- modified the ARM Cortex-M ports of QV, QK, and QXK to initialize
+  priorities all exceptions and IRQs to the safe value #QF_BASEPRI.
+
+@note The QV port now has a new **qv_port.c** module that needs to
+  be added to the build.
+
+- added declaration of the ::QTicker class to qf.h
+- added implementation of the ::QTicker class to qf_actq.c
+- modified the following examples to demonstrate the use of the ::QTicker:
+  + qpc/examples/arm-cm/dpp_efm32-slstk3401a/qk
+  + qpc/examples/arm-cm/game_efm32-slstk3401a/qv
+  + qpc/examples/arm-cm/game_efm32-slstk3401a/qk
+- added the header file **cmsis_ccs.h** to qpc/3rd_party/CMSIS/Include directory
+ (used in the examples for the Code Composer Studio). The file has been
+ dropped during the upgrade to CMSIS 5.0.1, because it is not part of the
+ standard distribution.
+
+
+------------------------------------------------------------------------------
+@section qpc_5_8_0 Version 5.8.0, 2016-11-30
 The main purpose of this milestone QP/C release is to finally provide
 the baseline framework fully compatible with the upcoming QM 4.0.0.
 
