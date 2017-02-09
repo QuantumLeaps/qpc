@@ -48,31 +48,5 @@ Application Note: Getting Started with QP/C
 </div>
 @endhtmlonly
 
-
-------------------------------------------------------------------------------
-@section gs_files Directories and Files
-
-The following annotated directory tree lists the top-level directories provided in the standard QP/C distribution.
-
-<ul class="tag">
-  <li><span class="img folder">qpc/</span>
-  </li>
-  <ul class="tag">
-    <li><span class="img folder">3rd_party/</span> &mdash; Third-Party code used in the QP/C @ref ports "ports" and @ref exa "examples"
-    </li>
-    <li><span class="img folder">examples/</span> &mdash; @ref exa "QP/C Examples"
-    </li>
-    <li><span class="img folder">ports/</span> &mdash; @ref ports "QP/C Ports"
-    </li>
-    <li><span class="img folder">include/</span> &mdash; Platform-independent QP/C API (see <a href="dir_d44c64559bbebec7f509842c48db8b23.html"><strong>include</strong></a>)
-    </li>
-    <li><span class="img folder">source/</span> &mdash; Platform-independent QP/C source code (see @ref <a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html"><strong>source</strong></a>)
-    </li>
-  </ul>
-</ul>
-
-@note
-The standard QP/C distribution contains many @ref exa "Example Projects", which are specifically designed to help you learn to use QP/C and to serve you as starting points for your own projects.
-
 @next{struct}
 */

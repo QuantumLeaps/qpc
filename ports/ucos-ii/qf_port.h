@@ -3,8 +3,8 @@
 * @brief QF/C generic port to uC/OS-II V2.92
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-28
+* Last Updated for Version: 5.8.2
+* Date of the Last Update:  2017-02-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -44,7 +44,7 @@
 #define QF_THREAD_TYPE       uint32_t
 
 /* The maximum number of active objects in the application */
-#define QF_MAX_ACTIVE        (OS_MAX_TASKS < 64 ? OS_MAX_TASKS : 63)
+#define QF_MAX_ACTIVE ((OS_LOWEST_PRIO - 1 < 64) ? (OS_LOWEST_PRIO - 1) : 64)
 
 /* uC/OS-II critical section operations (critical section type 3), NOTE1 */
 #define QF_CRIT_STAT_TYPE    OS_CPU_SR

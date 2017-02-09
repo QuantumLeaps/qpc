@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Blinky" example
-* Last Updated for Version: 5.6.4
-* Date of the Last Update:  2016-05-07
+* Last Updated for Version: 5.8.2
+* Date of the Last Update:  2017-01-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -34,7 +34,7 @@
 #ifndef bsp_h
 #define bsp_h
 
-#define BSP_TICKS_PER_SEC    100U
+#define BSP_TICKS_PER_SEC    1000U
 
 void BSP_init(void);
 void BSP_ledOff(void);

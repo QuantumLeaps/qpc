@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK port to ARM7-9, GNU-ARM assembler
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-26
+* Last Updated for Version: 5.8.2
+* Date of the Last Update:  2017-01-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -39,7 +39,7 @@
     .equ    SYS_MODE,    0x1F
 
     /* NOTE: keep in synch with the QK_Attr struct in "qk.h" !!! */
-    .equ    QK_INT_NEST  16
+    .equ    QK_INT_NEST, 16
 
     .text
     .arm

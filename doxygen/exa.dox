@@ -10,9 +10,9 @@
 @section exa_gen General Comments
 The QP/C distribution contains many @subpage exa_ref "example projects" to demonstrate various QP/C features. Each example project is described on its own dedicated page that you can find using several criteria (see @ref exa_ref). The example projects have the following main goals:
 
-- **to help you learn how to use QP/C** &mdash; the examples show the intended way of using QP/C features and structuring QP/C applications.
+- <strong>to help you learn how to use QP/C</strong> &mdash; the examples show the intended way of using QP/C features and structuring QP/C applications.
 
-- **to provide you with a starting point for your own projects** &mdash; the examples are complete working projects, with correctly pre-configured tools, such as compiler options, linker script, debugger setup, etc.
+- <strong>to provide you with a starting point for your own projects</strong> &mdash; the examples are complete working projects, with correctly pre-configured tools, such as compiler options, linker script, debugger setup, etc.
 
 @note
 It is highly recommended that you create your own projects by **copying and modifying** existing example projects rather than starting your QP/C projects from scratch.
@@ -22,7 +22,7 @@ It is highly recommended that you create your own projects by **copying and modi
 @subsection exa_code Example Code Structure
 Starting with QP/C release 5.4.0, **all** examples are bundled into the QP/C download, as opposed to being distributed as separate QP Development Kits (QDKs). The main benefit is of this approach is that it greatly reduces chances of mistakes in combining the mainline QP/C code with various QDKs. The downside is that the QP/C distribution becomes quite large and that examples can't be added or updated independently from the QP/C baseline code.
 
-All examples are located in sub-directories of the <span class="img folder">examples</span> @ref qpc_files "top-level folder", with the hierarchical organization outlined below:
+All examples are located in sub-directories of the <span class="img folder">examples</span> <a href="files.html">top-level folder</a>, with the hierarchical organization outlined below:
 
 <ul class="tag">
   <li><span class="img folder">examples/</span>
@@ -124,7 +124,6 @@ All examples are located in sub-directories of the <span class="img folder">exam
       </ul>
     </ul>
   </ul>
-</ul>
 
 <ul class="tag">
   <li><span class="tag">A</span> @subpage exa_native "Native examples" are located in sub-directories named after the CPU architecture, such as <span class="img folder">arm-cm</span> for ARM Cortex-M. Under that directory, the sub-directories <span class="img folder">blinky_ek-tm4c123gxl</span> contain the specific example on the specified board, such as "Blinky" on the EK-TM4C123GXL board here. In the specific example folder, you find sub-folders for the @ref comp_qk "QK" and @ref comp_qv "QV" kernels, respectively.
@@ -191,7 +190,7 @@ The auto-generated files are saved as **read-only**. This protects them from ina
 
 ------------------------------------------------------------------------------
 @subsection exa_sec_3rd Third-Party Code
-The QP/C example projects often need to use various additional code, such as MCU register definition files, startup code, device drivers, etc., which are provided by Third-Party vendors. All such code is located in the <span class="img folder">3rd_party</span> @ref qpc_files "top-level folder".
+The QP/C example projects often need to use various additional code, such as MCU register definition files, startup code, device drivers, etc., which are provided by Third-Party vendors. All such code is located in the <span class="img folder">3rd_party</span> <a href="files.html">top-level folder</a>.
 
 @note
 As far as possible, the code in the <span class="img folder">3rd_party</span> folder has been left unchanged from the original source. (Any modified code is clearly identified by top-level comments that detail the applied changes.) For that reason, the Third-Party code might produce **compilation warnings** in your builds.
@@ -252,7 +251,8 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 
 ------------------------------------------------------------------------------
 @section exa_ref_native Native Examples (by Processor)
-- @ref exa_arm-cm (Cortex-M0/M0+/M3/M4/M4F)
+- @ref exa_arm-cm
+- @ref exa_arm-cr
 - @ref exa_arm7-9 ("classic ARM")
 - @ref exa_msp430 ("classic" MSP430 and "extended" MSP430x)
 
@@ -273,7 +273,7 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 
 
 ------------------------------------------------------------------------------
-@section exa_ref_mwware Examples for Third-Party Middleware
+@section exa_ref_mware Examples for Third-Party Middleware
 - @ref exa_lwip (open source, see http://lwip.wikia.com/wiki/LwIP_Wiki )
 - @ref exa_emwin (SEGGER, a.k.a. uC/GUI by Micrium)
 
@@ -293,6 +293,10 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
     - <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE">NUCLEO-L152RE</a>
     - <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965">EK-LM3S6965</a>
     - <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery">STM32F4-Discovery</a>
+    - <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
+
+- ARM Cortex-R Boards:
+    - <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 
 - ARM7 Boards:
     - <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK">AT91SAM7S-EK</a>
@@ -310,12 +314,17 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
     - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
     - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
     - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a>
-- ARM Cortex-M4F (with hardware FPU)
+- ARM Cortex-M4 (with hardware FPU)
     - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
     - @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
     - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
     - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
-    - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+    - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- ARM Cortex-M7 (with hardware FPU)
+    - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
+- ARM Cortex-R
+    - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
+    - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - ARM7 / ARM9
     - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 
@@ -323,12 +332,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
     - @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
     - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
     - @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
-
-- PIC24 /dsPIC (coming soon...)
-- PIC32 (coming soon...)
-- Renesas RX (coming soon...)
-- TI TMS320C28x (C28x) (coming soon...)
-- TI TMS320C55x (C55x) (coming soon...)
 
 
 ------------------------------------------------------------------------------
@@ -343,6 +346,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
         - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
         - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
         - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+        - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
     - GNU-ARM
         - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
         - @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
@@ -352,6 +356,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
         - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
         - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
         - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+        - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
         - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a>
         - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
     - IAR EWARM
@@ -363,10 +368,15 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
         - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
         - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
         - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+        - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
+        - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
+        - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
         - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a>
         - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
     - TI ARM
         - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+        - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
+        - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 
 - MSP430 architecture
     - CCS-430
@@ -383,21 +393,22 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 @section exa_ref_vendor Examples by MCU Vendor
 - Atmel
     - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
-    - @ref avr_blinky_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
-    - @ref avr_dpp_arduino-uno <a class="preview board" href="bd_Arduino-UNO.jpg" title="Arduino-UNO"></a>
 - NXP
     - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
 - Silicon Labs
     - @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
     - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
     - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
-- STMicroelectronics
+- ST Microelectronics
     - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
     - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
+    - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
 - Texas Instruments
     - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
     - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
     - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+    - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
+    - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
     - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a>
 
 @next{exa_native}

@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.0
-* Date of the Last Update:  2016-11-30
+* Last Updated for Version: 5.8.2
+* Date of the Last Update:  2016-12-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -125,7 +125,7 @@ static void *thread_routine(void *arg) { /* the expected POSIX signature */
         QHSM_DISPATCH(&act->super, e);     /* dispatch to the HSM */
         QF_gc(e);    /* check if the event is garbage, and collect it if so */
     } while (act->thread != (uint8_t)0);
-    QF_remove_(act); /* remove this object from any subscriptions */
+    QF_remove_(act); /* remove this object from the framework */
     pthread_cond_destroy(&act->osObject); /* cleanup the condition variable */
     return (void *)0; /* return success */
 }

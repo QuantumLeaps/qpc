@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-14
+* Last Updated for Version: 5.8.2
+* Date of the Last Update:  2016-12-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -183,7 +183,7 @@ static DWORD WINAPI ao_thread(LPVOID arg) { /* for CreateThread() */
     } while (act->thread != (HANDLE)0);
 
     QActive_unsubscribeAll(act); /* make sure that no events are subscribed */
-    QF_remove_(act);  /* remove this object from any subscriptions */
+    QF_remove_(act);  /* remove this object from the framework */
     CloseHandle(act->osObject); /* cleanup the OS event */
     free((void *)act->eQueue.ring); /* free the fudged queue storage */
     return (DWORD)0; /* return success */

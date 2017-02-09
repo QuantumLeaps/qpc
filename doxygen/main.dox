@@ -75,10 +75,10 @@ QP/C can also work with many traditional @ref exa_rtos "RTOSes" and @ref exa_rto
 
 
 <div class="separate"></div>
-@subsection maturity Maturity
-The QP&trade; family of embedded active object frameworks is one of the most mature in its class. It has been developed and refined for over 15 years.
+@subsection popular Popularity &amp; Maturity
+With over 15 years of continuous development and <a class="extern" target="_blank" href="https://sourceforge.net/projects/qpc/files/stats/timeline?dates=2016-01-01+to+2016-12-31">60,000 downloads a year</a>, the QP&trade; framework family is the most mature and popular such solution on the embedded software market.
 
-The QP&trade; frameworks are used in <a href="http://www.state-machine.com/about/customers.html" target="_blank" class="extern">millions of products worldwide</a> in aerospace, medical devices, consumer electronics, wired and wireless telecommunications, industrial automation, transportation, robotics, and many more. The QP&trade; frameworks and the <a class="extern" target="_blank" href="http://www.state-machine.com/qm">QM&trade; modeling tool</a> receive over <a class="extern" target="_blank" href="http://sourceforge.net/projects/qpc/files/stats/timeline?dates=2015-01-01+to+2015-12-31">40,000 downloads a year</a>.
+The QP&trade; frameworks are used in <a href="http://www.state-machine.com/about/customers.html" target="_blank" class="extern">millions of products worldwide</a> in aerospace, medical devices, consumer electronics, wired and wireless telecommunications, industrial automation, transportation, robotics, and many more.
 
 
 <div class="separate"></div>
@@ -127,7 +127,7 @@ Training and consulting services are also available from Quantum Leaps. Please r
 - e-mail: <a class="extern" target="_blank" href="mailto:info@state-machine.com">info@state-machine.com</a>
 
 @image html logo_ql_TM.jpg
-Copyright &copy; 2002-2016 Quantum Leaps, LLC. All Rights Reserved.
+Copyright &copy; 2002-2017 Quantum Leaps, LLC. All Rights Reserved.
 
 @next{gs}
 */

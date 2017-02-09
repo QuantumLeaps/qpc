@@ -3,8 +3,8 @@
 * @brief QF/C port to POSIX threads (pthreads)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-14
+* Last Updated for Version: 5.8.2
+* Date of the Last Update:  2016-12-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,7 +45,7 @@
 #define QF_THREAD_TYPE       uint8_t
 
 /* The maximum number of active objects in the application */
-#define QF_MAX_ACTIVE        63
+#define QF_MAX_ACTIVE        64
 
 /* The number of system clock tick rates */
 #define QF_MAX_TICK_RATE     2
@@ -91,6 +91,7 @@ extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
         while ((me_)->eQueue.frontEvt == (QEvt *)0) \
             pthread_cond_wait(&(me_)->osObject, &QF_pThreadMutex_)
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
+        Q_ASSERT_ID(410, QF_active_[(me_)->prio] != (QActive *)0); \
         pthread_cond_signal(&(me_)->osObject)
 
     /* native QF event pool operations */

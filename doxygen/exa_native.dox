@@ -1,7 +1,9 @@
+namespace QP {
+
 /*##########################################################################*/
 /*! @page exa_native Native Examples (Built-in Kernels)
 
-<p>The QP/C framework contains real-time kernels (@ref comp_qv, @ref comp_qk, and @ref comp_qxk), so it can run natively ("bare-metal") on single-chip microcontrollers, completely replacing a traditional RTOS. Click on the following links to see examples for the specified built-in kernels:
+<p>The QP/C framework contains real-time kernels (@ref comp_qv and @ref comp_qk), so it can run natively ("bare-metal") on single-chip microcontrollers, completely replacing a traditional RTOS. Click on the following links to see examples for the specified built-in kernels:
 </p>
 
 - @subpage exa_qv
@@ -13,6 +15,7 @@
 Click on the following links to see examples for the specified CPU architectures:
 
 - @subpage exa_arm-cm
+- @subpage exa_arm-cr
 - @subpage exa_arm7-9
 - @subpage exa_msp430
 
@@ -35,6 +38,9 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
 - @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
 - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
+- @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
+- @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 - @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
@@ -58,6 +64,9 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
 - @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
 - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
+- @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
+- @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 - @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
@@ -73,13 +82,12 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
-- @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
-- @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
-
+- @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
 */
 /*##########################################################################*/
-/*! @page exa_arm-cm ARM Cortex-M (Cortex-M0/M0+/M3/M4F)
+/*! @page exa_arm-cm ARM Cortex-M (Cortex-M0/M0+/M3/M4/M7)
 
 @htmlonly
 <script src="preview.js" type="text/javascript"></script>
@@ -95,7 +103,21 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @subpage arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
 - @subpage arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
 - @subpage arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
+- @subpage arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Disco"></a>
 - @subpage arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+*/
+/*##########################################################################*/
+/*! @page exa_arm-cr ARM Cortex-R
+
+@htmlonly
+<script src="preview.js" type="text/javascript"></script>
+@endhtmlonly
+
+@note
+You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
+
+- @subpage arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
+- @subpage arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 */
 /*##########################################################################*/
 /*! @page exa_arm7-9 ARM7/ARM9 ("classic" ARM)
@@ -202,6 +224,15 @@ Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) wit
 @image html under_construction.jpg
 */
 /*##########################################################################*/
+/*! @page arm-cm_dpp_stm32f746g-disco DPP on STM32F746G-Discovery
+
+@image html bd_STM32F746G-Disco.jpg STM32F746G-Discovery
+
+Dining Philosophers Problem (DPP) example for STM32F746G-Discovery MCU (Cortex-M7) with ARM-Keil, GNU-ARM, and IAR-ARM toolsets.
+
+@image html under_construction.jpg
+*/
+/*##########################################################################*/
 /*! @page arm-cm_game_efm32-slstk3401a "Fly 'n' Shoot" Game on EFM32-SLSTK3401A
 
 @image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
@@ -211,6 +242,25 @@ Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) wit
 @image html game_win32.png Game emulation running in Windows GUI
 @n
 @n
+@image html under_construction.jpg
+*/
+
+/*##########################################################################*/
+/*! @page arm-cr_blinky_launchxl2-tms57012 Blinky on LAUNCHXL2-TMS57012
+
+@image html bd_LAUNCHXL2-TMS57012.jpg LAUNCHXL2-TMS57012
+
+@ref blinky "Blinky" example for LAUNCHXL2-TMS57012 MCU (Cortex-R, Hercules) with IAR-ARM and TI toolsets.
+
+@image html under_construction.jpg
+*/
+/*##########################################################################*/
+/*! @page arm-cr_dpp_launchxl2-tms57012 DPP on LAUNCHXL2-TMS57012
+
+@image html bd_LAUNCHXL2-TMS57012.jpg LAUNCHXL2-TMS57012
+
+Dining Philosophers Problem (DPP) example for LAUNCHXL2-TMS57012 MCU (Cortex-R, Hercules) with IAR-ARM and TI toolsets.
+
 @image html under_construction.jpg
 */
 
@@ -290,3 +340,5 @@ To receive the QS data over the Virtual COM Port, you need to make sure that the
 
 @image html under_construction.jpg
 */
+
+} // namespace QP

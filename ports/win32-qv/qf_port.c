@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-14
+* Last Updated for Version: 5.8.2
+* Date of the Last Update:  2016-12-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -109,13 +109,17 @@ int_t QF_run(void) {
         QActive *a;
         uint_fast8_t p;
 
-
         /* find the maximum priority AO ready to run */
         if (QPSet_notEmpty(&QV_readySet_)) {
 
             QPSet_findMax(&QV_readySet_, p);
             a = QF_active_[p];
             QF_INT_ENABLE();
+
+            /* the active object 'a' must still be registered in QF
+            * (e.g., it must not be stopped)
+            */
+            Q_ASSERT_ID(320, a != (QActive *)0);
 
             /* perform the run-to-completion (RTS) step...
             * 1. retrieve the event from the AO's event queue, which by this

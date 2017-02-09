@@ -90,7 +90,7 @@ Example illustrates: 6 active objects plus two extended threads, QXK blocking de
 ------------------------------------------------------------------------------
 @section qxk_overview QXK Overview
 
-QXK distinguishes two kinds of threads: basic-threads (non-blocking, run-to-completion activations) and extended-threads (blocking, typically structrued as endless loops). The basic threads all nest on the same stack (MSP in ARM Cortex-M). The extended-threads use private per-thread stacks, as in conventional RTOS kernels. Any switching from basic- to extended-thread or extended- to extended-thread requires full context switch. On the other hand, switching from basic-thread to another basic-thread requires only activation of the basic-thread, which is much simpler and faster.
+QXK distinguishes two kinds of threads: **basic**-threads (non-blocking, run-to-completion activations) and **extended**-threads (blocking, typically structrued as endless loops). The basic-threads all nest on the same stack (Main Stack Pointer in ARM Cortex-M). The extended-threads use private per-thread stacks, as in conventional RTOS kernels. Any switching from basic- to extended-thread or extended- to extended-thread requires full context switch. On the other hand, switching from basic-thread to another basic-thread requires only activation of the basic-thread, which is much simpler and faster.
 
 <div class="separate"></div>
 @subsection qxk_classes Classes in QXK
@@ -99,16 +99,16 @@ The figure below shows the main classes introduced in the QXK kernel and their r
 @image html qxk_classes.gif "Classes of the QXK blocking kernel"
 
 <ul class="tag">
-  <li><span class="tag">0</span> The abstract ::QMActive class represents active objects in QP. This class contains the @c thread object of the underlying kernel (QXK thread-control-block in this case) as well as the event queue and the unique priority of the active object.
+  <li><span class="tag">0</span> The abstract ::QActive class represents active objects in QP. This class contains the @c thread object of the underlying kernel (QXK thread-control-block in this case) as well as the event queue and the unique priority of the active object.
   </li>
 
-  <li><span class="tag">1</span> The ::QXThread class represents the "naked" blocking threads of the QXK kernel. It inherits ::QMActive, so that "naked" threads can be treated as active objects internally in the framework. However, the "naked" threads do not implement state machines. Instead, the data fields used for storing the current state in active objects are re-used to store the address of the QXK primitive that blocks the "naked" thread. The ::QXThread class also contains the @c timeEvt object (see ::QTimeEvt) for generating timeouts when the "naked" thread is blocked.
+  <li><span class="tag">1</span> The ::QXThread class represents the "naked" blocking threads of the QXK kernel. It inherits ::QActive, so that extended-threads can be treated as active objects internally in the framework. However, the extended-threads do not implement state machines. Instead, the data fields used for storing the current state in active objects are re-used to store the private stack of the extended-thread. The ::QXThread class also contains the @c timeEvt object (see ::QTimeEvt) for generating timeouts when the extended-thread is blocked.
   </li>
 
-  <li><span class="tag">2</span> The ::QXMutex class represents the @ref qxk_mutex "priority-ceiling mutex" of the QXK kernel. The mutex can be used by both the "naked" threads and active object threads (in case they share resources that need to be protected). However, using any blocking mechanism inside active objects is not recommended, because it delays run-to-completion event processing.
+  <li><span class="tag">2</span> The ::QXMutex class represents the @ref qxk_mutex "priority-ceiling mutex" of the QXK kernel. The mutex can be used by both the extended-threads and active object threads (in case they share resources that need to be protected). However, using any blocking mechanism inside active objects is not recommended, because it delays run-to-completion event processing.
   </li>
 
-  <li><span class="tag">3</span> The ::QXSemaphore class represents the @ref qxk_sema "counting semaphore" of the QXK kernel. The semaphore can be waited on only in the "naked" threads and the QXK kernel would assert if an active object thread would attempt to wait on a semaphore. On the other hand, a semaphore can be signaled from anywhere in the code, including active objects and ISRs.
+  <li><span class="tag">3</span> The ::QXSemaphore class represents the @ref qxk_sema "counting semaphore" of the QXK kernel. The semaphore can be waited on only in the extended-threads and the QXK kernel would assert if an active object thread would attempt to wait on a semaphore. On the other hand, a semaphore can be signaled from anywhere in the code, including active objects and ISRs.
   </li>
 </ul>
 
@@ -132,12 +132,12 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 
 - active object threads that can block only while waiting on events from the private event queue and should not block otherwise (e.g., inside state machines). QXK asserts when an active object thread attempts to use a timed-delay or attempts to block on a semaphore. This is because active objects have non-blocking alternatives for these operations (time-events and event posting, respectively).
 
-- "naked" threads, that can block anywhere in their thread-handler function, whereas QXK provides a typical assortments of blocking primitives for "naked" threads, such as time-delay, message queue, semaphore, or a mutex;
+- extended-threads, that can block anywhere in their thread-handler function, whereas QXK provides a typical assortments of blocking primitives for extended-threads, such as time-delay, message queue, semaphore, or a mutex;
 
 <li><span class="bullet">&gt;</span>Tightly integrated mechanisms for communication between event-driven active objects and "naked" blocking threads:
 </li>
 
-- Active objects can signal semaphores and send messages to "naked" threads.
+- Active objects can signal semaphores and send messages to extended-threads.
 
 - "Naked" threads can post or publish events to active objects;
 
@@ -146,13 +146,13 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 
 > NOTE: Priority-ceiling protocol implemented in QXK is immune to priority-inversions.
 
-<li><span class="bullet">&gt;</span>Counting Semaphores with optional timeout that can block multiple "naked" threads;
+<li><span class="bullet">&gt;</span>Counting Semaphores with optional timeout that can block multiple extended-threads;
 </li>
 
-<li><span class="bullet">&gt;</span>Blocking "zero-copy" message queue with optional timeout bound to each "naked" thread;
+<li><span class="bullet">&gt;</span>Blocking "zero-copy" message queue with optional timeout bound to each extended-thread;
 </li>
 
-<li><span class="bullet">&gt;</span>Deterministic fixed-size memory pools for dynamic memory management available both to "naked" threads and active objects;
+<li><span class="bullet">&gt;</span>Deterministic fixed-size memory pools for dynamic memory management available both to extended-threads and active objects;
 </li>
 
 <li><span class="bullet">&gt;</span>Interrupt management, including "zero-latency", kernel-unaware interrupts that are never disabled;
@@ -175,8 +175,6 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 - ::QXThread structure (Thread Control Block)
 - QXThread_ctor()
 - QXTHREAD_START()
-- QXThread_block()
-- QXThread_unblock()
 - QXThread_delay()
 - QXThread_delayCancel()
 

@@ -3,8 +3,8 @@
 * @brief QF/C port to Cortex-M, preemptive QK kernel, TI-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.1
-* Date of the Last Update:  2016-09-18
+* Last Updated for Version: 5.8.2
+* Date of the Last Update:  2017-02-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,34 +45,40 @@
 /* The maximum number of system clock tick rates */
 #define QF_MAX_TICK_RATE        2
 
-/* is the target M3/M4/M7? see NOTE2 */
+/* is the target M3/M4/M7? */
 #if (defined __TI_TMS470_V7M3__) \
     || (defined __TI_TMS470_V7M4__) \
     || (defined __TI_TMS470_V7M7__)
 
-    /* BASEPRI limit for QF-aware ISR priorities, see NOTE3 */
-    #define QF_BASEPRI          (0xFFU >> 2)
-
-    /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE4 */
-    #define QF_AWARE_ISR_CMSIS_PRI  (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
-
-    /* QF interrupt disable/enable */
+    /* Cortex-M3/M4/M7 interrupt disabling policy, see NOTE3 */
     #define QF_INT_DISABLE()    QF_set_BASEPRI(QF_BASEPRI)
     #define QF_INT_ENABLE()     QF_set_BASEPRI(0U)
+
+    /* BASEPRI threshold for "QF-aware" interrupts, see NOTE3.
+    * CAUTION: keep in synch with the value defined in "qk_port.s"
+    */
+    #define QF_BASEPRI          (0xFFU >> 2)
+
+    /* CMSIS threshold for "QF-aware" interrupts, see NOTE4 */
+    #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
     /* Cortex-M3/M4/M7 provide the CLZ instruction for fast LOG2 */
     #define QF_LOG2(n_) ((uint_fast8_t)(32U - __clz(n_)))
 
     void QF_set_BASEPRI(unsigned basePri);
 
+    /* Cortex-M3/M4/M7 alternative interrupt disabling with PRIMASK */
+    #define QF_PRIMASK_DISABLE() __asm(" CPSID I")
+    #define QF_PRIMASK_ENABLE()  __asm(" CPSIE I")
+
 /* not M3/M4/M7, assuming no BASEPRI register or CLZ instruction */
 #else
 
-    /* QF interrupt disable/enable */
+    /* Cortex-M0/M0+/M1(v6-M, v6S-M) interrupt disabling policy, see NOTE2 */
     #define QF_INT_DISABLE()    __asm(" CPSID I")
     #define QF_INT_ENABLE()     __asm(" CPSIE I")
 
-    /* QF-aware ISR priority for CMSIS function NVIC_SetPriority(), NOTE5 */
+    /* CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE4 */
     #define QF_AWARE_ISR_CMSIS_PRI  0
 
 #endif /* not M3/M4/M7 */
@@ -90,43 +96,38 @@
 /*****************************************************************************
 * NOTE1:
 * The maximum number of active objects QF_MAX_ACTIVE can be increased
-* up to 63, if necessary. Here it is set to a lower level to save some RAM.
+* up to 64, if necessary. Here it is set to a lower level to save some RAM.
 *
 * NOTE2:
-* On Cortex-M3/M4/M7, the interrupt disable/enable policy uses the BASEPRI
-* register (which is not implemented in Cortex-M0/M0+/M1) to disable
-* interrupts only with priority lower than the level specified by the
-* QF_BASEPRI macro. The interrupts with priorities above QF_BASEPRI (i.e.,
-* with numerical priority values lower than QF_BASEPRI) are not disabled in
-* this method. These free-running interrupts are not allowed to call any QF
-* services, because QF is not aware of these interrupts. Coversely, only
-* "QF-aware" interrupts, with numerical values of priorities eqal to or
-* higher than QF_BASEPRI, can call QF services.
-*
-* NOTE3:
-* For Cortex-M3/M4/M7, the macro QF_BASEPRI leaves the top 2 priority bits
-* empty for QF-aware interrupts. This is the highest-possible priority
-* (lowest possible numerical value) for the guaranteed 3 priority bits
-* implemented in the NVIC.
-*
-* NOTE4:
-* The QF_AWARE_ISR_CMSIS_PRI macro is useful as an offset for enumerating
-* the QF-aware interrupt priority levels in the applications, whereas the
-* numerical values of the QF-aware interrupts must be greater or equal to
-* QF_AWARE_ISR_CMSIS_PRI. The enumerated values based on
-* QF_AWARE_ISR_CMSIS_PRI can be passed directly to the CMSIS function
-* NVIC_SetPriority(), which shifts them by (8 - __NVIC_PRIO_BITS) into the
-* correct bit position, while __NVIC_PRIO_BITS is the CMSIS macro defining
-* the number of implemented priority bits in the NVIC. Please note that
-* the macro QF_AWARE_ISR_CMSIS_PRI is intended only for applications and
-* is not used inside the QF port, which remains generic and not dependent
-* on the number of implemented priority bits in the NVIC.
-*
-* NOTE5:
 * On Cortex-M0/M0+/M1 (architecture v6-M, v6S-M), the interrupt disabling
 * policy uses the PRIMASK register to disable interrupts globally. The
 * QF_AWARE_ISR_CMSIS_PRI level is zero, meaning that all interrupts are
-* "kernel-aware".
+* "QF-aware".
+*
+* NOTE3:
+* On Cortex-M3/M4/M7, the interrupt disable/enable policy uses the BASEPRI
+* register (which is not implemented in Cortex-M0/M0+/M1) to disable
+* interrupts only with priority lower than the threshold specified by the
+* QF_BASEPRI macro. The interrupts with priorities above QF_BASEPRI (i.e.,
+* with numerical priority values lower than QF_BASEPRI) are NOT disabled in
+* this method. These free-running interrupts have very low ("zero") latency,
+* but they are not allowed to call any QF services, because QF is unaware
+* of them ("QF-unaware" interrutps). Consequently, only interrupts with
+* numerical values of priorities eqal to or higher than QF_BASEPRI
+* ("QF-aware" interrupts ), can call QF services.
+*
+* NOTE4:
+* The QF_AWARE_ISR_CMSIS_PRI macro is useful as an offset for enumerating
+* the "QF-aware" interrupt priorities in the applications, whereas the
+* numerical values of the "QF-aware" interrupts must be greater or equal to
+* QF_AWARE_ISR_CMSIS_PRI. The values based on QF_AWARE_ISR_CMSIS_PRI can be
+* passed directly to the CMSIS function NVIC_SetPriority(), which shifts
+* them by (8 - __NVIC_PRIO_BITS) into the correct bit position, while
+* __NVIC_PRIO_BITS is the CMSIS macro defining the number of implemented
+* priority bits in the NVIC. Please note that the macro QF_AWARE_ISR_CMSIS_PRI
+* is intended only for applications and is not used inside the QF port, which
+* remains generic and not dependent on the number of implemented priority bits
+* implemented in the NVIC.
 */
 
 #endif /* qf_port_h */

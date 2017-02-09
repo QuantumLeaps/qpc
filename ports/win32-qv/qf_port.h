@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-14
+* Last Updated for Version: 5.8.2
+* Date of the Last Update:  2017-01-26
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -66,16 +66,7 @@
 #define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
 
-#ifdef _MSC_VER /* Microsoft C/C++ compiler? */
-    /* use built-in intrinsic function for fast LOG2 */
-    #define QF_LOG2(x_) ((uint_fast8_t)(32U - __lzcnt(x_)))
-    #include <intrin.h>    /* VC++ intrinsic functions */
-#elif __GNUC__  /* GNU C/C++ compiler? */
-    /* use built-in intrinsic function for fast LOG2 */
-    #define QF_LOG2(x_) ((uint_fast8_t)(32U - __builtin_clz(x_)))
-#else
-    /* use the internal LOG2() implementation */
-#endif
+/* QF_LOG2 not defined -- use the internal LOG2() implementation */
 
 #include "qep_port.h"  /* QEP port */
 #include "qequeue.h"   /* Win32-QV needs the native event-queue */

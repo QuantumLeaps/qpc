@@ -1,6 +1,27 @@
 /**
 @page history Revision History
 
+@section qpc_5_8_2 Version 5.8.2, 2017-02-08
+This release adds examples for the ARM Cortex-<strong>M7</strong> CPU. Specifically,
+the release contains the standard @ref dpp "Dining Philosophers Problem (DPP)"
+examples for the @ref arm-cm_dpp_stm32f746g-disco "STM32F746G-Discovery board",
+all build-in kernels (QV, QK, and QXK), and ARM-KEIL, IAR EWARM, GNU-ARM toolsets.
+
+To provide examples for STM32F746G-Discovery board, the release now
+provides the folder `3rd_party/stm32f7-discovery` with the support code
+for the STM32F7xx MCUs, which contains parts of STM32CubeF7 library.
+
+Also, the `3rd_party/CMSIS` folder now provides the new CMSIS V5.0.1.
+
+Finally, this release fixes the following bugs:
+- bug#159 QP/C/C++ Win32 ports don't work on all x86 CPUs
+- bug#157 In QPC ucosii port, conversion of AO's priority to OS task
+  priority is incorrect.
+- bug#152 Typo (qpc\ports\arm7-9\qk\gnu\qk_port.s:42) prevents
+  compilation
+
+
+------------------------------------------------------------------------------
 @section qpc_5_8_1 Version 5.8.1, 2016-12-16
 This release is in response to a recent finding that many QP users of the
 ports to ARM Cortex-M3/M4 forget to explicitly set their interrupt priorities,

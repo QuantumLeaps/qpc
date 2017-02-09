@@ -2,7 +2,7 @@
 <model version="4.0.0" links="0">
  <documentation>Calc is the model of the Calculator described in Chapter 4 of PSiCC2
 This version demonstrates the use of sub-machines and sub-machine states.</documentation>
- <framework name="qpc" license="../../../QPC-EVAL-161130.qlc"/>
+ <framework name="qpc" license="../../../QPC-EVAL-170201.qlc"/>
  <package name="Events" stereotype="0x01">
   <class name="CalcEvt" superclass="qpc::QEvt">
    <attribute name="key_code" type="uint8_t" visibility="0x00" properties="0x00"/>
