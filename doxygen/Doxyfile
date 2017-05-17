@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "5.8.2"
+PROJECT_NUMBER         = "5.9.0"
 PROJECT_BRIEF          =
 PROJECT_LOGO           = images/header_logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -191,10 +191,10 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = ../../html/qpc
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = ../../doxygen/header.html
-HTML_FOOTER            = ../../doxygen/footer.html
+HTML_HEADER            = ../../html/header.html
+HTML_FOOTER            = ../../html/footer.html
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  = ../../doxygen/ql.css
+HTML_EXTRA_STYLESHEET  = ../../html/ql.css
 HTML_EXTRA_FILES       =
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100

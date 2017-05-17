@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : http://www.state-machine.com
+* Web  : https://state-machine.com
 * Email: info@state-machine.com
 *****************************************************************************/
 #include <stdint.h>

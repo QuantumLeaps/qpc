@@ -3,8 +3,8 @@
 * @brief QXK/C port to ARM Cortex-M, IAR-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-14
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-03-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -42,8 +42,20 @@
 /* determination if the code executes in the ISR context */
 #define QXK_ISR_CONTEXT_() (__get_IPSR() != (uint32_t)0)
 
-#define QXK_CONTEXT_SWITCH_() \
-    (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28))
+#if (__CORE__ == __ARM6M__)  /* Cortex-M0/M0+/M1? */
+
+    #define QXK_CONTEXT_SWITCH_() \
+        (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28))
+
+#else /* Cortex-M3/M4/M7 */
+
+    #define QXK_CONTEXT_SWITCH_() do { \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
+        __DSB(); \
+        __ISB(); \
+    } while (0)
+
+#endif
 
 /* QXK interrupt entry and exit */
 #define QXK_ISR_ENTRY() ((void)0)
@@ -51,7 +63,7 @@
 #define QXK_ISR_EXIT()  do { \
     QF_INT_DISABLE(); \
     if (QXK_sched_() != (uint_fast8_t)0) { \
-        QXK_CONTEXT_SWITCH_(); \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
     } \
     QF_INT_ENABLE(); \
 } while (0)

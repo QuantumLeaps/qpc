@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -213,7 +213,7 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
 
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_SUBSCRIBE, QS_priv_.aoObjFilter, me)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_SUBSCRIBE, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();             /* timestamp */
         QS_SIG_((QSignal)sig);  /* the signal of this event */
         QS_OBJ_(me);            /* this active object */
@@ -261,7 +261,7 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
 
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_UNSUBSCRIBE, QS_priv_.aoObjFilter, me)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_UNSUBSCRIBE, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();             /* timestamp */
         QS_SIG_((QSignal)sig);  /* the signal of this event */
         QS_OBJ_(me);            /* this active object */
@@ -309,7 +309,7 @@ void QActive_unsubscribeAll(QActive const * const me) {
             QPSet_remove(&QF_PTR_AT_(QF_subscrList_, sig), p);
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_UNSUBSCRIBE,
-                             QS_priv_.aoObjFilter, me)
+                             QS_priv_.locFilter[AO_OBJ], me)
                 QS_TIME_();            /* timestamp */
                 QS_SIG_((QSignal)sig); /* the signal of this event */
                 QS_OBJ_(me);           /* this active object */

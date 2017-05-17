@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, EFM32-SLSTK3401A board, QK kernel
-* Last updated for version 5.8.1
-* Last updated on  2016-12-12
+* Last updated for version 5.9.0
+* Last updated on  2017-04-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -893,13 +893,19 @@ void QS_onReset(void) {
 }
 /*..........................................................................*/
 /*! callback function to execute a user command (to be implemented in BSP) */
-void QS_onCommand(uint8_t cmdId, uint32_t param) {
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
+{
     void assert_failed(char const *module, int loc);
     (void)cmdId;
-    (void)param;
+    (void)param1;
+    (void)param2;
+    (void)param3;
     QS_BEGIN(COMMAND_STAT, (void *)1) /* application-specific record begin */
         QS_U8(2, cmdId);
-        QS_U32(8, param);
+        QS_U32(8, param1);
+        QS_U32(8, param2);
+        QS_U32(8, param3);
     QS_END()
 
     if (cmdId == 10U) {

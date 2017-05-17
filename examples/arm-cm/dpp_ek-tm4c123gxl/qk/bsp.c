@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, preemptive QK kernel
-* Last Updated for Version: 5.6.2
-* Date of the Last Update:  2016-03-30
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-04-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -403,18 +403,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
-    QS_FILTER_ON(COMMAND_STAT);
+    QS_FILTER_ON(QS_ALL_RECORDS);
 
     return (uint8_t)1; /* return success */
 }
@@ -456,13 +445,19 @@ void QS_onReset(void) {
 }
 /*..........................................................................*/
 /*! callback function to execute a user command (to be implemented in BSP) */
-void QS_onCommand(uint8_t cmdId, uint32_t param) {
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
+{
     void assert_failed(char const *module, int loc);
     (void)cmdId;
-    (void)param;
-    QS_BEGIN(COMMAND_STAT, (void *)0) /* application-specific record begin */
+    (void)param1;
+    (void)param2;
+    (void)param3;
+    QS_BEGIN(COMMAND_STAT, (void *)1) /* application-specific record begin */
         QS_U8(2, cmdId);
-        QS_U32(8, param);
+        QS_U32(8, param1);
+        QS_U32(8, param2);
+        QS_U32(8, param3);
     QS_END()
 
     if (cmdId == 10U) {

@@ -1,6 +1,6 @@
 Important - Read carefully:
 
-This license is a legal agreement between YOU (either an individual or a single entity) and SEGGER Microcontroller Systeme GmbH & Co. KG (called SEGGER).
+This license is a legal agreement between YOU (either an individual or a single entity) and SEGGER Microcontroller GmbH & Co. KG (called SEGGER).
 By downloading and/or using the starterkit software, you agree to be bound by the terms of this agreement.
 
 1. Content of contract
@@ -53,4 +53,4 @@ The product is not fault-tolerant and is not designed, manufactured or intended 
 (g) The relationship between Licensor and Licensee is that of independent contractors and neither Licensee nor its agents shall have any authority to bind Licensor in any way.
 (h) If any SEGGER Microcontroller Systeme GmbH & Co. KG professional services are being provided, then such professional services are provided pursuant to the terms of a separate professional services agreement between the parties. The parties acknowledge that such services are acquired independently of the product licensed hereunder, and that provision of such services is not essential to the functionality of such product.
 
-© 2004-2013 SEGGER Microcontroller GmbH & Co. KG
+© 2004-2017 SEGGER Microcontroller GmbH & Co. KG

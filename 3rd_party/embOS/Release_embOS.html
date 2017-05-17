@@ -8,416 +8,509 @@
   H1, H2, H3, H4, H5 { font-family: Arial, Helvetica, sans-serif;}
   PRE {  color: black;  margin-left: 2%; }
   BODY { color: black;  margin-left: 2%; font-family: Verdana, Arial, Helvetica, sans-serif; font-size=75%}
-  table{ color: black;  font-family: Verdana; font-size=100%}
+  table{ color: black;  font-family: Verdana; font-size=100%; valign="top"}
   .maintext {
-	  font-size: 10px;
-	  color: #000000;
-	  margin-left: 20px;
-	  margin-right: 20px;
+    font-size: 10px;
+    color: #000000;
+    margin-left: 20px;
+    margin-right: 20px;
   }
   h1.newsbox {
-	  color: #FFFFFF;
-	  font-weight: bold;
-	  font-size: 13px;
-	  padding-left: 10px;
-	  background: #526194 no-repeat right;
-	  border: thin solid #000000;
-	  margin-right: 5px;
-	  margin-left: 5px;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 13px;
+    padding-left: 10px;
+    background: #526194 no-repeat right;
+    border: thin solid #000000;
+    margin-right: 5px;
+    margin-left: 5px;
   }
   .heading2 {
-	  color: #336699;
-	  font-weight: bold;
-	  font-size: 12px;
-	  padding-left: 25px;
+    color: #336699;
+    font-weight: bold;
+    font-size: 12px;
+    padding-left: 25px;
   }
 </style>
 
 <body bgcolor="#FFFFFF">
 
-<h3>Release notes for embOS Version 4.00 for Cortex-M and IAR compiler V6.x</h3>
+<h3>Release notes for embOS Version 4.34</h3>
 <!--  ****** Modifiable information starts here ******** -->
       <ol class="maintext">
-        <li><A HREF="#toolchain">Tool chain used for build</A> </li>
         <li><A HREF="#features">New features</A> </li>
         <li><A HREF="#improvements">Improvements</A> </li>
         <li><A HREF="#pcorr">Program corrections</A> </li>
-        <li><A HREF="#problems">Known problems/limitations</A> </li>
         <li><A HREF="#history">Release history</A> </li>
         <li><A HREF="#misc">Miscellaneous</A> </li>
       </ol>
       <!-- ****************************************************************** -->
-      <!-- TOOL CHAIN (Compiler) Information                                  -->
-      <!-- ****************************************************************** -->
-      <h1 class="newsbox"><a name="toolchain"></a>Tool chain used for build</h1>
-      <p class="maintext">The following tools have been used:</p>
-      <pre class="maintext">
-Compiler:  IAR ICCARM   6.50.5.4819
-Assembler: IAR IASMARM  6.50.5.4819
-Librarian: IAR IARCHIVE 9.13.10.84
-Workbench: IAR IARIDE   6.50.5.2674
-</pre>
-      <!-- ****************************************************************** -->
       <!-- NEW FEATURES                                                       -->
       <!-- ****************************************************************** -->
       <h1 class="newsbox"><a name="features"></a>New features</h1>
+      <h2 class="heading2">Version 4.34</h2>
+      <ol class="maintext">
+        <li>Event objects now support AND logic, therefore new API functions OS_EVENT_SetMaskMode() and OS_EVENT_GetMaskMode() have been added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.32</h2>
+      <ol class="maintext">
+        <li>New API functions OS_EVENT_SetMask(), OS_EVENT_GetMask(), OS_EVENT_WaitMask() and OS_EVENT_WaitMaskTimed() added.</li>
+        <li>New API functions OS_PutMailTimed() and OS_PutMailTimed1() added.</li>
+        <li>New API functions OS_WD_Add(), OS_WD_Check(), OS_WD_Config(), OS_WD_Remove() and OS_WD_Trigger() added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.30</h2>
+      <ol class="maintext">
+        <li>New API functions OS_GetMailTimed1(), OS_ClearSingleEvent(), OS_RemoveTerminateHook() and OS_MPU_SwitchToUnprivStateEx() added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.26</h2>
+      <ol class="maintext">
+        <li>New API function OS_RemoveOnTerminateHooks() added.</li>
+        <li>embOS version mismatch check added.<br>
+          embOS checks now at runtime in OS_Start() if the embOS library and the RTOS.h are from the same version.<br>
+          This is a very common mistake. In case of a version mismatch OS_Error() is called.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.24</h2>
+      <ol class="maintext">
+        <li>Spinlock API for multi-core support added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.22</h2>
+      <ol class="maintext">
+        <li>New API functions OS_Q_PutEx(), OS_Q_PutBlockedEx(), and OS_Q_PutTimedEx() added.<br>
+          The new functions can be used to store a message, of which the distinct parts are distributed in memory, into a queue.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.20</h2>
+      <ol class="maintext">
+        <li>MPU support added.</li>
+        <li>OS_AddExtendTaskContext() added.<br>
+          OS_AddExtendTaskContext() can be used to have unlimited task context extensions.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.16</h2>
+      <ol class="maintext">
+        <li>MISRA-C:2012 compliance updated.<br>
+          MISRA-C:2012 compliance is now checked with Gimpel Lint V9.0.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.14</h2>
+      <ol class="maintext">
+        <li>New API function OS_SetDefaultTaskContextExtension() added.<br>
+          OS_SetDefaultTaskContextExtension() can be used to set a default task context extension for newly created tasks.
+        </li>
+        <li>New API macros OS_INT_PRIO_PRESERVE() and OS_INT_PRIO_RESTORE() added.<br>
+          OS_INT_PRIO_PRESERVE() / OS_INT_PRIO_RESTORE() can be used to preserve and restore the embOS interrupt status.
+        </li>
+        <li>New API functions OS_TriggerTimer() and OS_TriggerTimerEx() added.<br>
+          OS_TriggerTimer() ends up a software timer at once and calls the software timer callback function.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.12</h2>
+      <ol class="maintext">
+        <li>Support for SYSVIEW API trace added.</li>
+        <li>New mailbox API functions OS_Mail_GetPtr(), OS_Mail_GetPtrCond() and OS_Mail_Purge() added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.10</h2>
+      <ol class="maintext">
+        <li>MISRA C:2012 compliance<br>
+        embOS is fully MISRA C:2012 compliant. Compliance matrix and deviations are documented in a separate PDF document.</li>
+      </ol>
+      <h2 class="heading2">Version 4.06</h2>
+      <ol class="maintext">
+        <li>Support for Percepio embOS-Trace added.<br>
+          embOS can now be used with the Percepio embOS-Trace application to trace the embOS API and embOS internals.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.04</h2>
+      <ol class="maintext">
+        <li>Task priorities extended to 32bit on 32bit CPUs.</li>
+      </ol>
+      <h2 class="heading2">Version 4.02</h2>
+      <ol class="maintext">
+        <li>New functions OS_GetTime_us(), OS_GetTime_us64() and OS_Config_SysTimer() added.<br>
+           OS_GetTime_us() returns the current system time in usec.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.00a</h2>
+      <ol class="maintext">
+        <li>New tickless function OS_StopTicklessMode() added.</li>
+        <li>New const variable OS_DebugInfo added.<br>
+          This structure includes the field offsets of struct OS_GLOBAL and OS_TASK required by remote debugger for thread-awareness.
+        </li>
+        <li>New profiling functions OS_STAT_Enable(), OS_STAT_Disable() and OS_STAT_GetTaskExecTime() added.<br>
+          These function can be used to enable/disable the profiling and to get the total execution time of a task.
+        </li>
+      </ol>
       <h2 class="heading2">Version 4.00</h2>
       <ol class="maintext">
-        <li>Update to latest embOS generic sources V4.00.</li>
-        <li>New start project for ST STM32F072 added.</li>
-      </ol>
-      <h2 class="heading2">Version 3.90.1</h2>
-      <ol class="maintext">
-        <li>New project for Atmel SAMG53 added.<br>
-          embOS for Cortex M and IAR compiler now comes with a start project for Atmel SAMG53 CPU.<br>
-          The start project is prepared to run on the Atmel SAMG53 Xplained Pro starter board.<br>
-          The start project can be downloaded into the internal flash of the CPU using the on-board CMSIS-DAP and CSpy.</li>
-        <li>New project for Atmel SAMG54 added.<br>
-          embOS for Cortex M and IAR compiler now comes with a start project for Atmel SAMG53 CPU.<br>
-          The start project is prepared to run on the Atmel SAMG53 Xplained Pro starter board.<br>
-          The start project can be downloaded into the internal flash of the CPU using the on-board CMSIS-DAP and CSpy.</li>
+        <li>Tickless support added.<br>
+        embOS now supports tickless mode. This is useful for low power operations, e.g. battery powered devices.
+        </li>
       </ol>
       <h2 class="heading2">Version 3.90</h2>
       <ol class="maintext">
-        <li>Update to latest embOS generic sources V3.90.<br>
-          All new features and modifications of the new embOS version are described in the generic release notes and manual.
-        <li>Start projects and assembly files updated for EWARM 7.10<br>
-          Start projects and assembly files can now be used with the new EWARM version 7.10. without errors or warnings.<br>
-          All projects can still be used with the older IAR embedded workbench V6.</li>
+        <li>Functions to enable/disable global interrupts added.<br>
+          embOS now offers the following functions to enable and disable all interrupts, including high priority interrupts:<br>
+          OS_INTERRUPT_MaskGlobal()
+          OS_INTERRUPT_UnmaskGlobal()<br>
+          Using the following functions allows nested calls, because the interrupt state can be saved and restored:<br>
+          OS_INTERRUPT_PreserveGlobal()
+          OS_INTERRUPT_PreserveAndMaskGlobal()
+          OS_INTERRUPT_RestoreGlobal()
+        </li>
       </ol>
-      <h2 class="heading2">Version 3.88g2</h2>
+      <h2 class="heading2">Version 3.88h</h2>
       <ol class="maintext">
-        <li>New project for ST LIS331 CPU.<br>
-        embOS for Cortex M and IAR compiler now comes with a start project for the ST LIS331 CPU.<br>
-        The start project is prepared to be downloaded into the internal flash of the CPU using J-link or ST-LINK.<br>
-        A support package for the IAR workbench is required. This can be received from ST on request.</li>
-        <li>New project for TI TM4C129.<br>
-        embOS for Cortex M and IAR compiler now comes with a start project for the TI TM4C129 CPU.<br>
-        The start project was built for the TI TM4C129 development kit and is prepared to be downloaded into the internal flash of the CPU.<br>
+        <li>OS_GetNumIdleTicks() added.<br>
+          Can be used to examine the number of ticks spent idle.<br>
+          This is the number ticks until the next time scheduled action will be started.</li>
+        <li>OS_AdjustTime() added.<br>
+          Can be used to add an amount of time to the embOS internal time variable.</li>
       </ol>
-      <h2 class="heading2">Version 3.88g1</h2>
+      <h2 class="heading2">Version 3.88d</h2>
       <ol class="maintext">
-        <li>New project for ST STM32F429 discovery board added.</li>
-        <li>New project for IAR STM32F429_SK board added.</li>
-      </ol>
-      <h2 class="heading2">Version 3.88g</h2>
-      <ol class="maintext">
-        <li>Update to latest embOS generic sources V3.88g.</li>
+        <li>Compatibility macros to older versions added.<br>
+          In version 3.88c, some compatibility macros to address internal variables were removed from RTOS.h.<br>
+          With version 3.88d, the following macros are available again:<br>
+          OS_pTask, OS_pCurrentTask, OS_pActiveTask, OS_pTimer, OS_pCurrentTimer, OS_Counters, OS_Pending, OS_TimeDex</li>
       </ol>
       <h2 class="heading2">Version 3.88c</h2>
       <ol class="maintext">
-        <li>Update to latest embOS generic sources V3.88c.</li>
+        <li>New API function OS_InInterrupt()<br>
+          The new API function OS_InInterrupt() can be used to examine if the calling function is running in an embOS interrupt handler.<br>
+          The function is available in all library modes.</li>
+        <li>New API function OS_Q_PutTimed()<br>
+          The new function OS_Q_PutTimed() can be used to put data into a queue with a given timeout.<br>
+          The function suspends the calling task for the given timeout if no space for the message is avaialable in the queue.</li>
+        <li>New profiling functions to measure CPU load at runtime<br>
+          The new functions OS_AddLoadMeasurement(), OS_GetLoadMeasurement() and OS_INC_IDLE_CNT() can be used to examine the total CPU load at runtime.<br>
+          The measurement period can be set by function, the global variable OC_CPU_Load can be read by debuggers with life watch capability.
       </ol>
-      <h2 class="heading2">Version 3.88b</h2>
+      <h2 class="heading2">Version 3.88a</h2>
       <ol class="maintext">
-        <li>Update to latest embOS generic sources V3.88b.</li>
+        <li>Reset behaviour of OS_EVENT objects can be controlled.<br>
+          The new API function OS_EVENT_SetResetMode() allows setting of the reset behaviour of existing event objects.<br>
+          The embOS functions for event objects unfortunately were inconsistent in respect of the reset behaviour of events.<br>
+          Setting the reset mode with the new function OS_EVENT_SetResetMode() allows to set the reset behaviour to semiauto, manual, or automatic reset.<br>
+          Manual reset guaranties that the event object remains set when waiting tasks are resumed. The event has to be reset manually by the task.<br>
+          Automatic reset allways resets the event when waiting tasks are resumed. The task does not need to reset the event.<br>
+          The semiauto mode is the mode used in previous versions of embOS as described in the manual.</li>
+        <li>New extended function for event object creation.<br>
+          The new function OS_EVENT_CreateEx() allows to create an event object and set the reset behavior to semiauto, manual or automatic reset.</li>
+        <li>Type of reset behaviour of event objects can be retrieved.<br>
+          The new function OS_EVENT_GetResetMode() retrieves the current setting of the reset behaviour of an event object.</li>
+        <li>Message size for mailboxes enlarged.<br>
+          Previous version of embOS allowed message sizes of up to 127 bytes for mailboxes.<br>
+          Now embOS allows messages sizes of up to 32767 bytes for mailboxes.<br>
+          However, the total size of one mailbox buffer is still limited to 64KBytes on 16bit CPUs.<br>
+          The debug builds of embOS now call OS_Error() with error code OS_ERR_MB_BUFFER_SIZE if the total size limit of one mailbox buffer is exceeded when calling OS_CreateMB().</li>
       </ol>
-      <h2 class="heading2">Version 3.86n</h2>
+      <h2 class="heading2">Version 3.88</h2>
       <ol class="maintext">
-        <li>Thread safe system library support with compiler 6.4 or newer described.<br>
-          Activation of thread safe system library support with IAR compiler 6.4 or newer requires additional linker options which are now described in the compiler and CPU specific manual.
-        </li>
-        <li>New embOS sources V3.86n.<br>
-          All new features and modifications of the new embOS version are described in the generic release notes and manual.
-        </li>
+        <li>Fully tested with Parasoft C/C++test MISRA check<br>
+          MISRA violations suppressed in source code with Parasoft comments.</li>
       </ol>
       <h2 class="heading2">Version 3.86l</h2>
       <ol class="maintext">
-        <li>New embOS sources V3.86l.<br>
-          All new features and modifications of the new embOS version are described in the generic release notes and manual.
+        <li>MISRA rule compliance improved.<br>
+          All violations of MISRA rule 10.1 fixed.<br>
+          All violations of MISRA rule 12.7 fixed.<br>
+          All violations of MISRA rule 14.9 fixed.<br>
+          All violations of MISRA rule 16.4 fixed.<br>
+          All violations of MISRA rule 16.8 fixed.
         </li>
-        <li>New start project for Atmel AT91SAM3X-EK added.</li>
-        <li>New start project for Freescale TWR-KL25 added.</li>
-        <li>New start project for Infineon XMC4500 Hexagon Application Kit added.</li>
-        <li>New start project for Infineon XMC4500 Relax Lite Kit added.</li>
-        <li>New start project for NXP LPC4088 Embedded Artists evalboard added.</li>
-        <li>New start project for Keil MCB4357 evalboard (NXP LPC4357) added.</li>
-        <li>New start project for IAR STM32F051R8-SK evalboard added.</li>
       </ol>
-      <h2 class="heading2">Version 3.86g</h2>
+      <h2 class="heading2">Version 3.86k</h2>
       <ol class="maintext">
-        <li>New embOS sources V3.86g.<br>
-          All new features and modifications of the new embOS version are described in the generic release notes and manual.
-        </li>
+        <li>New embOS API functions OS_Q_GetMessageSize() and OS_Q_PeekPtr().<br>
+          The new function OS_Q_GetMessageSize() reads the size of the first message in a queue.</li>
+          The new function OS_Q_PeekPtr() reads a message from a queue without removing it.</li>
+        <li>embOS is now compliant to MISRA 2004 rules.</li>
       </ol>
       <h2 class="heading2">Version 3.86f</h2>
       <ol class="maintext">
-        <li>New embOS sources V3.86f.<br>
-          All new features and modifications of the new embOS version are described in the generic release notes and manual.
+        <li>Task events default to 32bit on 32bit CPUs.<br>
+          The default for task events for 32bit CPUs was modified from unsigned char to unsigned long.<br>
+          On 32bit CPUs, now the type OS_TASK_EVENT is defined as OS_U32 per default, allowing 32 different task events.<br>
+          All previous versions limited the task events for all CPUs to 8bit per default.
         </li>
-        <li>Task events are 32bits wide<br>
-          With embOS version 3.86f, the task events for 32bit CPUs are 32bit wide now, allowing more individual events sent to tasks.
-        </li>
-      </ol>
-      <h2 class="heading2">Version 3.86e</h2>
-      <ol class="maintext">
-        <li>New embOS sources V3.86e.<br>
-          All new features and modifications of the new embOS version are described in the generic release notes and manual.
-        </li>
-      </ol>
-      <h2 class="heading2">Version 3.86d</h2>
-      <ol class="maintext">
-        <li>New embOS sources V3.86d.<br>
-          All new features and modifications of the new embOS version are described in the generic release notes and manual.
+        <li>OS_ON_TERMINATE_HOOK added<br>
+          embOS now supports a linked list of functions which are called when a task is terminated.<br>
+          The new embOS function OS_AddOnTerminateHook() can be used to insert a callback function in the list of functions which are called when a task is terminated.<br>
+          The callback function gets the task ID as paramter.<br>
+          The callback function can be used to free or remove task specific objects which were created by the application.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.84c</h2>
+      <h2 class="heading2">Version 3.86b</h2>
       <ol class="maintext">
-        <li>New start project for the Hitex NXP LPC1850 eval board added.</li>
-        <li>New start project for the IAR Fujitsu MB9BF618T SK eval board added.</li>
-        <li>New start project for the Freescale Tower K70 eval board added.</li>
-        <li>New start project for the Toshiba Topas TMPM369 eval board added.</li>
-        <li>Update to latest embOS generic sources V3.84c.</li>
+        <li>New embOS API function OS_PeekMail().<br>
+          The new function OS_PeekMail() reads a mail from a mailbox without removing it.</li>
       </ol>
-      <h2 class="heading2">Version 3.84.1</h2>
+      <h2 class="heading2">Version 3.86</h2>
       <ol class="maintext">
-        <li>embOS plugin for CSpy supports Cortex M4F<br>
-          The new embOS IAR plugin version 6.0.6.7 delivered with embOS V3.84.1 now supports task sensitive call stack for Cortex M4 CPUs with floating point unit.<br>
-          Previous versions of the plugin can be used, but did not show the task sensitive call stack.
+        <li>Timeout handling for &quot;waitable&quot; objects modified<br>
+        Previous versions of timed wait functions for waitable objects might have returned with no timeout condition when the object became avaialble after the timeout time.<br>
+        This happened when the waiting task was blocked by higher priority tasks and did not start after the timeout period.<br>
+        When the object became availabel after expiration of the timeout time but before the waiting tasks started again, no timeout condition was signaled to the task.<br>
+        This behaviour is changed with version 3.86 of embOS. When the object was not avaialble within the timeout time, a timeout is signaled to the waiting task, regardless the object may become avaialble until the task runs again.<br>
+        Following functions were modified:
+        <ul>
+        <li>OS_EVENT_WaitTimed()</li>
+        <li>OS_GetMailTimed()</li>
+        <li>OS_MEMF_AllocTimed()</li>
+        <li>OS_Q_GetPtrTimed()</li>
+        <li>OS_UseTimed()</li>
+        <li>OS_WaitCSemaTimed()</li>
+        <li>OS_WaitMailTimed()</li>
+        </ul>
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.84b</h2>
+      <ol class="maintext">
+        <li>New embOS API function OS_Q_PutBlocked().<br>
+        The new blocking function for Queues OS_Q_PutBlocked() suspends the task when the queue is full.
         </li>
       </ol>
       <h2 class="heading2">Version 3.84</h2>
       <ol class="maintext">
-        <li>Support for Cortex M4F with floating point unit added.</li>
-        <li>New start project for the Energy Micro EFM32-GG990-DK eval board.</li>
-        <li>New start project for the NXP LPC1788_EA eval board.</li>
-        <li>New start project for the NXP LPC1788_uEZGUI eval board.</li>
-        <li>New start project for the NXP LPC1788-SK eval board.</li>
-        <li>New start project for the IAR STM32F207-SK eval board.</li>
-        <li>New start project for the ST STM32F457IG-Eval eval board.</li>
-        <li>New start project for the ST STM32F457IG-Discovery eval board.</li>
-        <li>Update to latest embOS generic sources V3.84.<br>
-        New generic features of the version 3.84 are described in the embOS generic release notes file Release_Generic.html
+        <li>New system stack check functions.<br>
+        New functions to analyze the system stack load during runtime are available now:<br>
+        <ul>
+        <li>OS_GetSysStackBase() delivers the base address of the system stack.</li>
+        <li>OS_GetSysStackSize() delivers the size of the system stack.</li>
+        <li>OS_GetSysStackSpace() delivers the free (unused) space on the system stack.</li>
+        <li>OS_GetSysStackUsed() delivers the maximum amount of stack space used on the system stack.</li>
+        </ul>
+        </li>
+        <br>
+        <li>New interrupt stack check functions.<br>
+        For CPUs which support a separate interrupt stack, new functions to analyze the interrupt stack load during runtime are available now:<br>
+        <ul>
+        <li>OS_GetIntStackBase() delivers the base address of the interrupt stack.</li>
+        <li>OS_GetIntStackSize() delivers the size of the interrupt stack.</li>
+        <li>OS_GetIntStackSpace() delivers the free (unused) space on the interrupt stack.</li>
+        <li>OS_GetIntStackUsed() delivers the maximum amount of stack space used on the interrupt stack.</li>
+        </ul>
         </li>
       </ol>
-
+      <h2 class="heading2">Version 3.82x</h2>
+      <ol class="maintext">
+        <li>OS_RegionCnt overflow check added.<br>
+        Overflow check is activated when OS_DEBUG_LEVEL >= 2.<br>
+        <li>Macro OS_EnterInterrupt() modified.<br>
+        OS_ASSERT_CPU_IN_ISR_MODE() moved to first line in macro OS_EnterInterrupt().</li>
+      </ol>
+      <h2 class="heading2">Version 3.82w</h2>
+      <ol class="maintext">
+        <li>GCC compiler warning eliminated.<br>
+        GCC compiler warning in OS_MEMF_Create.c eliminated.</li>
+        <li>Code modified for Lint.<br>
+        All embOS generic sources are tested with Lint.</li>
+      </ol>
       <h2 class="heading2">Version 3.82u</h2>
       <ol class="maintext">
-        <li>New start project for the IAR STM32L152VB-SK eval board.<br>
-        The embOS version 3.82u for IAR compiler V6 and Cortex-M now comes with start projects for the IAR STM32L152VB-SK eval board.<br>
-        The sample project can be downloaded into the CPUs Flash using J-Link.<br>
-        The sample project was built with the latest IAR workbench V6.20 and uses CMSIS.
+        <li>Fixed size memory blocks may be larger than 64KB on 32bit CPUs.<br>
+          The fixed size memory pool data types were modified to allow larger pools and block sizes on 32bit CPUs. The sizes may now be up to 2^31 bytes.<br>
+          For 16bit CPUs the block and pool sizes remain unchanged to previous versions and may be 64KB.
         </li>
-        <li>Update to latest embOS generic sources V3.82u.<br>
-        New features of the version 3.82u are described in the embOS generic release notes file Release_Generic.html
+        <li>Software timer handling can be excluded.<br>
+          The new compile-time switch OS_SUPPORT_TIMER may be used to exclude embOS software timer handling from build when compiling the sources.<br>
+          If software timer are not needed by the application, excluding the software timer handling will decrease code and data size and speed up the scheduler.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82t</h2>
+      <ol class="maintext">
+        <li>Trial time limitation increased to 12 hours.<br>
+          The trial time limitation is increased from 15 minutes to 12 hours.
         </li>
       </ol>
       <h2 class="heading2">Version 3.82s</h2>
       <ol class="maintext">
-        <li>Update to latest embOS generic sources V3.82s.
+        <li>New API function OS_UseTimed()<br>
+          OS_UseTimed() may be used to request a resource semaphore with time out. The function blocks until the resource is available or the timeout expired.
         </li>
-        <li>New library mode DPL added.
-        </li>
-        <li>New start projects for STM32 devices added.<br>
-        The embOS version 3.82s for IAR compiler V6 and Cortex-M now comes with start projects for STM32L cpu and STM32F100 cpu.<br>
-        The sample projects run on ST STM32 MB819 and ST STM32 Discovery evalboard and can be downloaded into the CPUs Flash using J-Link.<br>
-        </li>
-        <li>New start projects for EFM32 devices added.<br>
-        The embOS version 3.82s for IAR compiler V6 and Cortex-M now comes with start projects for G2XX and G8XX cpu module for EnergyMicro EFM32-G2XX-DK evalboard.<br>
-        </li>
-        <li>New start project for Fujitsu MB9BF506 SK FM3 100PMC evalboard.<br>
-        The embOS version 3.82s for IAR compiler V6 and Cortex-M now comes with start project for Fujitsu MB9BF506 SK FM3 100PMC evalboard.<br>
-        The sample projects can be downloaded into the CPUs Flash using J-Link.<br>
-        </li> 
       </ol>
-      <h2 class="heading2">Version 3.82m</h2>
+      <h2 class="heading2">Version 3.82o</h2>
       <ol class="maintext">
-        <li>Support for Freescale Kinetis added.<br>
-        The embOS version 3.82m for IAR compiler V6 and Cortex-M now comes with start projects for the Freescale Kinetis K40 and K60 CPUs.<br>
-        The sample projects run on the Kinetis TWR starter kit boards and can be downloaded into the CPUs Flash using J-Link.<br>
+        <li>New API function OS_WaitMailTimed()<br>
+          OS_WaitMailTimed() may be used to suspend a task for a given timeout or until a message is available in a mailbox without retrieving the mail.
         </li>
-        <li>Support for EnergyMicro CPU added.<br>
-        The embOS version 3.82m for IAR and Cortex-M now comes with a start project for the EnergyMicro EFM32 CPU.<br>
-        The sample project runs on the EFM32-G8XX-STK starter board and can be downloaded into the CPUs Flash using the onboard J-Link.
-        </li>
-        <li>Support for Cortex-M4 added.<br>
-        Previous versions of embOS for Cortex-M could not be compiled when a Cortex-M4 CPUs was selected.<br>
-        The embOS version 3.82m for IAR and Cortex-M now can be used with Cortex-M4 CPUs.
-        </li>
-        <li>Support for embOSView via J-Link for Cortex-M0 added.<br>
-        Previous versions of embOS for Cortex-M could not use J-Link with embOSview for Cortex-M0 CPUs.
-        With embOS version 3.82m for IAR and Cortex-M J-Link can be used with embOSView on Cortex-M0 targets.
+      </ol>
+      <h2 class="heading2">Version 3.82n</h2>
+      <ol class="maintext">
+        <li>New API functions for task suspension and synchronization.<br>
+          OS_SuspendAllTasks() may be used to suspend all task except the running task.<br>
+          OS_SetInitialSuspendCnt() can be used to create tasks that are initially suspended and will not run until they are resumed.<br>
+          OS_ResumAllSuspendedTasks() may be used to resume all suspended task at once without the need to address specific tasks.
         </li>
       </ol>
       <h2 class="heading2">Version 3.82l</h2>
       <ol class="maintext">
         <li>Thread local storage supported.<br>
-           embOS for Cortex-M and IAR compiler now supports the thread local storage implementation of the new IAR dlib V6.
-        </li>
-        <li>Update to IAR Compiler / workbench V6
+          For some ports, a thread local storage (TLS) may be used and can be initialized individually for every task by a call of OS_TLS_Init().<br>
+          The new TLS implementation requires additional CPU specifc fucntions and support by the compiler specific runtime library, it may be available for some ports only.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.82h1</h2>
+      <h2 class="heading2">Version 3.82k</h2>
       <ol class="maintext">
-        <li>embOS Cortex-M3 and embOS Cortex-M0 are merged to embOS Cortex-M.
+        <li>New API function OS_Delayus().<br>
+          The new function OS_Delayus() can be used to perform a delay with micro second resolution. The calling task will wait for the given delay time without suspension.<br>
+          During the wait time, other tasks may be activated by interrupt, the embOS scheduling is not blocked.<br>
+          The function works well when the embOS timer has a resolution of at least 1us or better.
         </li>
+        <li>New API function OS_Q_Delete().<br>
+          This new function deletes a queue. Queues can be fully dynamically created and deleted now. The resources of the queue may be re-used after deletion.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82g</h2>
+      <ol class="maintext">
+        <li>OS_Start() in assembly source replaced by OS_StartASM().<br>
+        OS_Start() now is a generic function which sets OS_Running to 1 and then calls OS_StartASM().</li>
       </ol>
       <h2 class="heading2">Version 3.82h</h2>
       <ol class="maintext">
-        <li>Profiling with embOSView via J-Link<br>
-        All embOS start projects and the embOS libraries were modified to allow communication with embOSView via J-Link.<br>
-        The new embOSView version 3.82g allows selection of a communication to a Cortex M3 using J-Link with JTAG or SWD interface.<br>
-        The communication to embOSView starts after the call of OS_Start() and can be used in parallel with a debugging session which uses J-Link as debugging probe.
+        <li>Internal data types modified.<br>
+          A data type was defined for Ipl_EI and Ipl_DI. This allows variable size of integers which is supported by some tool chains.
         </li>
-        <li>Fully CMSIS compliant projects<br>
-        All start projects of embOS for Cortex-M3 are now fully CMSIS compliant.<br>
-        The projects come with new startup code and vector tables which are fully CMSIS compliant.<br>
-        When CMSIS shall be used for the application, the chip specific CMSIS startup code and vector tables can be used.<br>
-        CMSIS libraries of the chip vendor are not required to run embOS, embOS can be used as is.<br>
-        </li>
-        <li>Generic CMSIS project template<br>
-        embOS for Cortex M3 now comes with a generic CMSIS compatible start project which runs on any Cortex M3 CPU.<br>
-        To run the project on a specific chip, the startup code and the vector table may be replaced by the chip vendor specific versions of these files.<br>
-        No modification on any embOS function or file is required. The vendor specific CMSIS files will guarantee that the embOS timer runs at expected rate of 1ms.
+        <li>OS_Info module modifed.<br>
+          The OS_Info module included the standard header stdio.h without any need. The include is removed now.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.82e2</h2>
+      <h2 class="heading2">Version 3.82g</h2>
       <ol class="maintext">
-        <li>BSP for ATMEL AT91SAM3S added<br>
-        embOS now comes with a start project for the AT91SAM3S which is prepared to run on the SAM3S-EK eval board.<br>
-        The start project contains debug configurations for flash or RAM.<br>
-        Both UART connectors of the board may be used for embOSView.<br>
-        The project comes with new startup code and vector tables which are fully CMSIS compliant.
-        </li>
-        <li>CMSIS compliant scheduler call implemented<br>
-        The embOS scheduler function was renamed to be fully CMSIS compliant.<br>
-        Target CPU specific CMSIS libraries may be used together with embOS now.<br>
-        There is no need to modify the vector tables which come with the CMSIS libraries.
+        <li>OS_Start() in assembly source replaced by OS_StartASM().<br>
+        OS_Start() now is a generic function which sets OS_Running to 1 and then calls OS_StartASM().</li>
+      </ol>
+      <h2 class="heading2">Version 3.82f</h2>
+      <ol class="maintext">
+        <li>OS_IsRunning() implemented.<br>
+          The new API function OS_IsRunning() can be used to examine whether the embOS scheduler was started by a call of OS_Start().<br>
+          This may be helpful for some applications and functions to decide whether blocking function calls can be used.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.82e1</h2>
+      <h2 class="heading2">Version 3.82a</h2>
       <ol class="maintext">
-        <li>Projects for LPC176x updated.<br>
-        The debugger configuration settings of previous versions caused some trouble when the target should be accessed with J-Link.</li>
-      </ol>
-      <h2 class="heading2">Version 3.82e</h2>
-      <ol class="maintext">
-        <li>CMSIS compliant project for STM32/MB672 added.</li>
-      </ol>
-      <h2 class="heading2">Version 3.82c</h2>
-      <ol class="maintext">
-        <li>BSP for TMPM330 added</li>
-        <li>Profiling support added to STM32 MB784 eval bord BSP.</li>
-        <li>Update to latest embOS generic sources V3.82c</li>
-        <li>All projects have now remarks enabled</li>
-      </ol>
-      <h2 class="heading2">Version 3.80g3</h2>
-      <ol class="maintext">
-        <li>Project for AT91SAM3U runs with IAR flashloader<br>
-          The embOS start project for the AT91SAM3U CPU was modified to run with the Flasherloader which comes with the latest IAR workbench (EW-ARM 5.40.<br>
-          The flashloader can be used with any J-link version, but the project requires version 5.40 or later of the IAR workbench.<br>
-          EW-ARM 5.40 is the first version that supports the AT91SAM3U.
+        <li>Error handling for queues implemented.<br>
+           embOS checks in debug version the correct queue handling.
+        </li>
+        <li>OS_Q_IsInUse() implemented.<br>
+          New queue function which returns whether the queue is currently in use.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.80g1</h2>
+      <h2 class="heading2">Version 3.82</h2>
       <ol class="maintext">
-        <li>Support for ST STM32F107 added<br>
-          embOS version 3.80g1 comes with a ready to go start project for the ST32MF107 CPU.<br>
-          The start project is prepared to run on the ST MB 784 eval board and supports flash programming using C-Spy and J-Link.
-        </li>
-        <li>Support for IAR LPC1766-SK added<br>
-          embOS version 3.80g1 comes with a ready to go start project for the IAR LPC1766-SK eval board.<br>
-          The start project is prepared to run on the eval board and supports flash programming using C-Spy and J-Link.<br>
-          The project is built for the workbench / compiler version 5.30 which delivers the flash loader for the LPC 1766.
+        <li>Scheduling and task switch time optimized.<br>
+          The internal scheduling functions OS_ChangeTask() and OS_Switch() were optimized to speed up context switching.<br>
+          By recompiling the sources, the optimization may be enabled or disabled by the definition of OS_GLOBAL_IS_RETURNED and OS_GLOBAL_IS_PARA.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.80g</h2>
+      <h2 class="heading2">Version 3.80l</h2>
       <ol class="maintext">
-        <li>Scheduling optimized<br>
-          Update to new embOS version 3.80 with optimized internal data structures to speed up scheduling and task switches.<br>
-          The new embOS version requires the C-Spy plugin V3.80 or later. The plugin comes with embOS.
+        <li>Macro OS_U32_TO_PTR_TYPE  added.<br>
+        The new macro OS_U32_TO_PTR_TYPE casts an OS_U32 to pointer type to avoid warnings on some tool chains with different memory models.
         </li>
-        <li>New embOS plugin with task sensitivity<br>
-          embOS version 3.80g for Cortex M3 now comes with the new embOS IAR plugin V3.80.1 for C-Spy which supports task sensitivity for Cortex M3.<br>
-          Task sensitivity is supported since embOS version 3.62c.<br>
-          Previous versions of embOS for Cortex M3 can be used with the new plugin, but do not support the task sensitivity.
+        <li>New macro OS_EI_HP_ON_ENTRY()<br>
+        OS_EI_HP_ON_ENTRY() enables high-prio interrupts if necessary: Some CPUs (such as M16C) disable all interrupts on ISR entry.
         </li>
-        <li>Support for ATMEL AT91SAM3U<br>
-          embOS version 3.80g comes with a ready to go start project for the new ATMEL AT91SAM3U series.<br>
-          Debugging and flash programming using C-Spy and J-Link is supported.<br>
-          The latest version of J-Link software is required to allow programming of the AT91SAM3U.
+      </ol>
+      <h2 class="heading2">Version 3.80k</h2>
+      <ol class="maintext">
+        <li>New fast tick handler.<br>
+          embOS V3.80k comes with an alternate faster tick handler OS_TICK_HandleNoHook().<br>
+          This tick handler does not support the tick hook function and therefore executes faster.<br>
+          It may be used instead of the regular tick handler OS_TICK_Handle() which is used in the default start projects.<br>
+          When using this new fast tick handler, it is the users responsibility, not to install any tick hook functions, as those will not be called by embOS.
         </li>
-        <li>Support for NXP LPC176x series<br>
-          embOS version 3.80g comes with a ready to go start project for the new NXP LPC176x series.<br>
-          The start project is prepared to run on the KEIL eval board and supports flash programming using C-Spy and J-Link.<br>
-          The project is built for the workbench / compiler version 5.30 which delivers the flash loader for the LPC 1766.
+        <li>Task events modified.<br>
+          The data type of task events may now be modified from unsigned char to unsigned short or unsigned int to allow more than 8 task events.<br>
+          The modification is done be defining the type of task events via the OS_TASK_EVENT definition in RTOS.h<br>
+          This type defaults to unsigned char to be compatible with previous versions of embOS. A modification requires recompilation of the embOS sources.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.80h</h2>
+      <ol class="maintext">
+        <li>Interrupt entry functions modified, internal modification.<br>
+          For some CPUs the CPU state can not be examined. A modification of the interrupt entry functions was required to inhibit an interrupt level assertion, introduced with version 3.80f, for those CPUs.<br>
+          The performance is not affected by this modification.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.80f</h2>
+      <ol class="maintext">
+        <li>Interrupt level assertions added<br>
+          The debug version of embOS now comes with additional error handler functionality.<br>
+          The error handler can detect illegal function calls under various conditions. OS_Error() will be called when one of the following conditions is detected:<br>
+          <ul>
+          <li>OS_ERR_NOT_IN_ISR:            *** OS_EnterInterrupt() has been called, but CPU is not in ISR state</li>
+          <li>OS_ERR_IN_ISR:                *** OS_EnterInterrupt() has not been called, but CPU is in ISR state</li>
+          <li>OS_ERR_CPU_STATE_ISR_ILLEGAL: *** OS-function called from ISR with high priority</li>
+          <li>OS_ERR_CPU_STATE_ILLEGAL:     *** CPU runs in illegal mode</li>
+          <li>OS_ERR_CPU_STATE_UNKNOWN:     *** CPU runs in unknown mode or mode could not be read</li>
+          </ul>
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.62a</h2>
+      <ol class="maintext">
+        <li>OS_STACK_ALIGN implemented<br>
+          OS_STACK_ALIGN may be defined to ensure a specific task stack alignment during task creation.<br>
+          To ensure a stack alignment of 8 bytes, OS_STACK_ALIGN has to be defined to 8 in the CPU specific embOS internal header file OS_Priv.h.<br>
+          Modification of this define requires recompilation of the embOS libraries.
         </li>
       </ol>
       <h2 class="heading2">Version 3.62</h2>
       <ol class="maintext">
-        <li>Update to embOS sources 3.62<br>
-          embOS comes with new features which are explained in the generic release notes and manual.
-        </li>
-        <li>Update to new EWARM compiler version 5.20<br>
-          embOS version 3.62 was built with the IAR compiler V5.20 and the start projects were updated to be used with the new workbench.
+        <li>OS_TICK_Config() and OS_TICK_HandleEx() implemented<br>
+          The extended embOS tick handler was modified to handle a runtime configurable tick increment and fractions.<br>
+          These parameter are setup by the new OS_TICK_Config() function and may be re configured during runtime.
         </li>
       </ol>
       <h2 class="heading2">Version 3.60d</h2>
       <ol class="maintext">
-        <li>Update to embOS sources 3.60d<br>
-          embOS comes with several new features which are explained in the generic release notes and manual.
-        </li>
         <li>OS_POWER module implemented.<br>
           The OS_POWER module may be used to control different power saving modes when entering idle state.<br>
           Individual flags for different peripherals may be set whenever a peripheral needs power or clock, and may be reset, when power is not needed.<br>
           The state of the power flags may be examined during OS_Idle by a call of OS_POWER_GetMask().<br>
           This allows to switch off all of those peripherals which are not needed during idle times.
         </li>
-        <li>BSP for IAR STM-SK Eval board renamed to STM32F103_STM_SK.<br>
-          BSP is now for IAR STM-SK only instead of IAR STM-SK and ST MB525.
-        </li>
-        <li>BSP for ST MB525 Eval board added.<br>
-          Start project and board support package for STM32F103 CPU and ST MB525 eval board added.
-        </li>
-        <li>BSP for ST MB672 Eval board added.<br>
-          Start project and board support package for STM32F103 CPU and ST MB672 eval board added.
-        </li>
       </ol>
       <h2 class="heading2">Version 3.60a</h2>
       <ol class="maintext">
-        <li>Update to embOS sources 3.60a<br>
-          embOS comes with several new features which are explained in the generic release notes and manual.
+        <li>embOS trial versions may run an unlimited number of tasks.<br>
+          The embOS trial versions run unlimited as long as only 3 tasks are created.<br>
+          Since version 3.60a, a time limit is added to the trial version. During the first 15 minutes, an unlimited number of tasks can be created.<br>
+          If more than three tasks were created during the time limit time, the system stops and calls OS_Error() when the time limit exceeded.
         </li>
       </ol>
       <h2 class="heading2">Version 3.60</h2>
       <ol class="maintext">
-        <li>IAR Embedded Workbench for ARM V5.11 compatibility<br>
-          Source and project updates to be compatible with IAR Embedded Workbench for ARM V5.11.
+        <li>OS_AddTickHook() and OS_RemoveTickHook() implemented.<br>
+          These new functions allow the application to add and remove user function calls (hook functions) to the OS timer tick handler.
         </li>
       </ol>
       <h2 class="heading2">Version 3.52c</h2>
       <ol class="maintext">
         <li>OS_SetTaskName() introduced<br>
           OS_SetTaskName() allows modification of task names on the fly.<br>
-          This may be useful if the functionality of a task changes during runtime and the new state should be shown using embOSView or an other task visualisation tool.
+          This may be useful if the functionality of a task changes during runtime and the new state should be shown using embOSView or an other task visualization tool.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.52a</h2>
+      <h2 class="heading2">Version 3.52</h2>
       <ol class="maintext">
-        <li>Luminary Micro LM3S1968 CPU support<br>
-          Start project and board support package for LM3S1968 CPUs added.
+        <li>OS_CallISR() and OS_CallNestableISR() introduced<br>
+          These new functions are required for some specific CPUs, but may be used in general to call an interrupt handler function without the need of using OS_EnterInterrupt() / OS_LeaveInterrupt() in the handler function.
         </li>
-        <li>Luminary Micro LM3S8962 CPU support<br>
-          Start project and board support package for LM3S8962 CPUs added.
-        </li>
-        <li>Task switch time can be measured by application<br>
-          embOS now comes with sample applications which allow accurate measurement of task switch time in a running application.<br>
+      </ol>
+      <h2 class="heading2">Version 3.50b</h2>
+      <ol class="maintext">
+        <li>New library mode XR allows extremely compact applications<br>
+          The new XR libraries may be used to build extremely compact applications to save space in RAM and ROM and speed up context switching time.<br>
+          The XR embOS libraries are compiled with round robin scheduling disabled and task names disabled, which results in smaller data structures, smaller code size and faster context switching time.
         </li>
       </ol>
       <h2 class="heading2">Version 3.40c</h2>
       <ol class="maintext">
         <li>OS_Yield() may suspend a task unconditionally<br>
           When tasks are running on round robin with timeslice, the function OS_Yield() can be used to end the timeslice of the running task immediately and activate an other task with the same priority which is ready for execution.
-          The function has no effect on tasks that are not running on round robin.          
-        </li>
-        <li>UART and PLL added<br>
-          Uart and PLL initialization to BSP added.
-        </li>
-      </ol>
-      <h2 class="heading2">Version 3.40a</h2>
-      <ol class="maintext">
-        <li>New BSP for STM32F10 added.<br>
-          embOS now comes with board support package for STM32F10.
+          The function has no effect on tasks that are not running on round robin.
         </li>
       </ol>
       <h2 class="heading2">Version 3.40</h2>
@@ -425,11 +518,17 @@ Workbench: IAR IARIDE   6.50.5.2674
         <li>Task switch time can be measured by application<br>
           embOS now comes with sample applications which allow accurate measurement of task switch time in a running application.<br>
         </li>
+      </ol>
+      <h2 class="heading2">Version 3.32o</h2>
+      <ol class="maintext">
         <li>Automatic call of OS_INIT_SYS_LOCKS() removed.<br>
           During initialization of embOS, OS_INIT_SYS_LOCK() is not called automatically.<br>
           As most of the applications do not need thread safe system libraries, an automatic activation of syslocks causes unwanted overhead.<br>
           If supported and required, the user may call OS_INIT_SYS_LOCKS() from his own application after normal initialization of embOS.<br>
         </li>
+      </ol>
+      <h2 class="heading2">Version 3.32m</h2>
+      <ol class="maintext">
         <li>OS_TimerEx, Extended timer implemented<br>
           Extended timers are software timers which call a user defined callback function when the timer expires.<br>
           In comparison to normal embOS timers, a parameter is passed to the timer callback function.<br>
@@ -438,63 +537,454 @@ Workbench: IAR IARIDE   6.50.5.2674
       </ol>
       <h2 class="heading2">Version 3.32j</h2>
       <ol class="maintext">
-        <li>
-          Initial version for Cortex M3
+        <li>OS_CSemaRequest implemented<br>
+          May be used to decrement a counting semaphore conditionally, if a signal is available.<br>
+          The function never blocks the calling task and delivers a result which indicates whether the semaphore was available.
         </li>
+      </ol>
+      <h2 class="heading2">Version 3.32f</h2>
+      <ol class="maintext">
+        <li>OS_INIT_SYS_LOCKS() implemented<br>
+          May be used to include initialization code for thread safe system libraries.<br>
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.32d</h2>
+      <ol class="maintext">
+        <li>OS_Q_GetPtrTimed() implemented<br>
+          New queue retrieval function which waits for a message with specified timeout.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.32c</h2>
+      <ol class="maintext">
+        <li>OS_EVENT_WaitTimed() implemented<br>
+          New event object function to wait for an event with a timeout limit.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.32b</h2>
+      <ol class="maintext">
+        <li>Task context modified for debug builds<br>
+          The number of task activations is now part of the task context in debug builds.<br>
+          The number of activations are therefore displayed in the task list window of embOS plugin, when an embOS debug library is used.<br>
+          Previous versions of embOS showed this information in profiling builds only.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.32a</h2>
+      <ol class="maintext">
+        <li>A parameter may be passed to a task function<br>
+          Using the new embOS functions OS_CREATETASK_EX() or OS_CreateTaskEx() allows to pass a void pointer as parameter to a task.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.32</h2>
+      <ol class="maintext">
+        <li>Event objects introduced<br>
+          Event objects are standalone objects which are not assigned to a specific task.<br>
+          Event objects may be used to synchronize one or multiple task to a specific event.<br>
+          Events can be triggered from a task, a timer, or an interrupt handler.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.30a</h2>
+      <ol class="maintext">
+        <li>embOS internal time handling modified to allow long delays<br>
+          For 8- and 16-bit CPUs the maximum range for delays and timer periods is limited to 32767 embOS timer ticks, because time comparison ist done by integer calculation.<br>
+          By recompiling sources with data type OS_TIME defined as signed long, longer delays and timer periods up to 2147483647 ticks can be realized.<br>
+          The embOS libraries of object versions for 8- and 16-bit CPUs are still delivered with the limitation to 32767 timer ticks.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28p</h2>
+      <ol class="maintext">
+        <li>New error handling for version without round robin scheduling<br>
+          In debug versions of embOS, OS_Error() is called with error code OS_ERR_TASK_PRIORITY, if a task is created with a priority which is already assigned to an other task.<br>
+          OS_Error() is also called with the same error code, if a task priority is assigned by call of OS_SetPriority() and the new priority is already assigned to an other task.<br>
+          Round robin switching can be disabled by recompiling sources with OS_RR_SUPPORTED defined as 0.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28l</h2>
+      <ol class="maintext">
+        <li>OS_SignalCSemaMax()<br>
+          New counting semaphore handling function which specifies a maximum count value.<br>
+          This allows counting semaphores used as binary semaphores.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28i</h2>
+      <ol class="maintext">
+        <li>OS_DeleteRSema()<br>
+          New resource semaphore handling function allows to delete resource semaphores during runtime.<br>
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28h</h2>
+      <ol class="maintext">
+        <li>Additional error checks in debug builds of embOS<br>
+          OS_CreateRSema() now generates an error, when the addressed resource semaphore was already created before.<br>
+          OS_CreateCSema() now generates an error, when the addressed counting semaphore was already created before.<br>
+          OS_CreateMB() now generates an error, when the mailbox was already created before.<br>
+          OS_CreateTimer() now generates an error, when the software timer was already created before.<br>
+          OS_MEMF_Create() now generates an error, when the addressed fixed size memory pool was already created before.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28g</h2>
+      <ol class="maintext">
+        <li>OS_GetSuspendCnt()<br>
+          New info function to examine suspension state and count of a task.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.26</h2>
+      <ol class="maintext">
+        <li>OS_Terminate() modified<br>
+          Tasks may be terminated anytime, regardless of task state.<br>
+          All resources claimed by the terminated task are automatically released.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.22a</h2>
+      <ol class="maintext">
+        <li>OS_PutMailFront() / OS_PutMailFront1()<br>
+          New mailbox functions to enable LIFO behavior of mailboxes.
+        </li><br>
+        <li>OS_PutMailFrontCond() / OS_PutMailFrontCond1()<br>
+          New conditional mailbox functions to enable LIFO behavior of mailboxes.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.20</h2>
+      <ol class="maintext">
+        <li>OS_Suspend() / OS_Resume() implemented
+        <br>
+        New functions to suspend and resume tasks unconditionally.</li><br>
+        <li>Fixed size memory blocks implemented
+        <br>
+        New functions to allocate fixed size memory blocks from embOS.</li><br>
+        <li>Dynamic memory allocation supported by embOS
+        <br>
+        Thread safe dynamic memory allocation functions implemented.</li>
+      </ol>
+      <h2 class="heading2">Version 3.10k</h2>
+      <ol class="maintext">
+        <li>OS_GetMailTimed()
+        <br>
+        New mailbox retrieving function with timeout.</li>
+      </ol>
+      <h2 class="heading2">Version 3.10d</h2>
+      <ol class="maintext">
+        <li>OS_GetpCurrentTimer()
+        <br>
+        New info routine. May be used in timer callback routines to examine which
+        timer expired.</li><br>
+        <li>OS_GetpCurrentTask()
+        <br>
+        New info routine. May be used to examine current running task.</li>
+      </ol>
+      <h2 class="heading2">Version 3.10</h2>
+      <ol class="maintext">
+        <li>Data format for communication with embOSView modified
+        <br>
+        For terminal I/O in embOSView, the data format was changed. Therefore
+        embOSView V3.10 or later is required.</li><br>
+        <li>OS_WaitSingleEvent()
+        <br>
+        Unmasked events remain unchanged when function returns.</li><br>
+        <li>OS_WaitSingleEventTimed()
+        <br>
+        Unmasked events remain unchanged when function returns. Timeout for waiting
+        can be specified.</li>
+      </ol>
+      <h2 class="heading2">Version 3.08a</h2>
+      <ol class="maintext">
+        <li>Message Queue functionality enhanced
+        <br>
+        OS_Q_GetPtrCond() function enables conditional request of data from Queue
+        without task suspension.<br>
+        OS_Q_GetMessageCnt() functions delivers number of messages in the queue.</li>
+      </ol>
+      <h2 class="heading2">Version 3.08</h2>
+      <ol class="maintext">
+        <li>Message Queues
+        <br>
+        Message queues enable intertask communication with messages of various
+        size.</li>
+      </ol>
+      <h2 class="heading2">Version 3.06f</h2>
+      <ol class="maintext">
+        <li>OS_Use now returns a value
+        <br>
+        When using a resource semaphore with a call of OS_Use(), the actual usage
+        counter of the requested semaphore is returned as integer value. This
+        may be helpful for some applications and is a lot more efficient than
+        calling OS_Use() and then check the usage counter by calling OS_GetSemaValue().</li>
+      </ol>
+      <h2 class="heading2">Version 3.06</h2>
+      <ol class="maintext">
+        All features of generic 3.06 kernel supported. </P>
       </ol>
       <!-- ****************************************************************** -->
       <!-- Improvements                                                       -->
       <!-- ****************************************************************** -->
       <h1 class="newsbox"><a name="improvements"></a>Improvements</h1>
-      <h2 class="heading2">Version 3.86g</h2>
+      <h2 class="heading2">Version 4.30</h2>
       <ol class="maintext">
-        <li>Nested interrupt handling improved.<br>
-          Unnecessary enabling and disabling of interrupts removed from OS_EnterNestableInterrupt() and OS_LeaveNestableInterrupt().<br>
-          Thus, interrupthandling of nested interrupts runs faster.
+        <li>OS_ResumeAllSuspendedTasks() renamed to OS_ResumeAllTasks().<br>
+        OS_RemoveOnTerminateHooks() renamed to OS_RemoveAllTerminateHooks().<br>
+        OS_AddOnTerminateHook() renamed to OS_AddTerminateHook().<br>
+        The legacy function names can still be used for compatibility.
         </li>
+        <li>Major embOS source code refactoring.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.26</h2>
+      <ol class="maintext">
+        <li>embOS scheduler regarding priority inheritance improved.<br>
+        The scheduler was improved regarding priority inheritance for better performance.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.24</h2>
+      <ol class="maintext">
+        <li>Several SYSVIEW trace macros added to indicate task termination and execution end of API function.</li>
+      </ol>
+      <h2 class="heading2">Version 4.14</h2>
+      <ol class="maintext">
+        <li>SYSVIEW and Percepio trace macros to OS_Mail_GetPtr(), OS_Mail_GetPtrCond() and OS_Mail_Purge() added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.12b</h2>
+      <ol class="maintext">
+        <li>SYSVIEW trace macros added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.12a</h2>
+      <ol class="maintext">
+        <li>SYSVIEW trace macros added/modified.</li>
+        <li>OS_InInterrupt() modified.<br>
+            OS_InInterrupt() does no longer return the value of OS_InInt which was set by OS_EnterInterrupt()/OS_EnterNestableInterrupt().<br>
+            Now It rather returns the actual CPU interrupt state. This function is no longer available with every embOS port.
+      </ol>
+      <h2 class="heading2">Version 4.12</h2>
+      <ol class="maintext">
+        <li>Percepio embOS-Trace macro in OS_CreateTimerEx() removed.</li>
+      </ol>
+      <h2 class="heading2">Version 4.10b</h2>
+      <ol class="maintext">
+        <li>OS_SendString() parameter declaration modified to avoid compiler warning.</li>
+      </ol>
+      <h2 class="heading2">Version 4.10</h2>
+      <ol class="maintext">
+        <li>Percepio embOS-Trace defines added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.06a</h2>
+      <ol class="maintext">
+        <li>Percepio embOS-Trace macros added/modified.</li>
+      </ol>
+      <h2 class="heading2">Version 3.88e</h2>
+      <ol class="maintext">
+        <li>Assertion into OS_Delayus() added.<br>
+        The assertion checks if interrupts are enabled before calling this function.</li>
+      </ol>
+      <h2 class="heading2">Version 3.88b</h2>
+      <ol class="maintext">
+        <li>Internal data structure changed to efficiently access embOS version.</li>
       </ol>
       <h2 class="heading2">Version 3.86e</h2>
       <ol class="maintext">
-        <li>Modified Hardfault handler<br>
-          The hardfault handler was modified and is now included in the RTOSInit files.<br>
-          When semihosting for terminal outputs is activated in the project settings, printf outputs are controlled by break instructions in the code.<br>
-          If the CPU is started in normal mode without debugger, the break instruction will force a hardfault exception.<br>
-          The new hardfault handler in RTOSInit detects this state, resets the hardfault condition and continues execution of the application.<br>
-          The previuos implementation did not handle the hardfault correctly. The application or the calling task ran in an endless loop.
+        <li>OS_malloc(), OS_free(), OS_realloc() modified.<br>
+        To allow thread safe heap management, OS_malloc() creates or uses a semaphore when called.<br>
+        The new versions of OS_malloc(), OS_free() and OS_realloc() use the semaphore when called from tasks only. The semaphore is not needed, before embOS is started.</li>
+      </ol>
+      <h2 class="heading2">Version 3.86b</h2>
+      <ol class="maintext">
+        <li>Several macro definitions in RTOS.h modified to be compliant to MISRA rules.</li>
+      </ol>
+      <h2 class="heading2">Version 3.84a</h2>
+      <ol class="maintext">
+        <li>OSInfo now checks if OS_CPU is defined.<br>
+          When compiling sources, the value of OS_CPU is now checked and has to be defined, it should not be empty.<br>
+          The value of OS_CPU reflects the CPU variant which was selected to build the embOS library and is shown in the sytem information window when using embOSView.<br>
+          Previous versions of embOS did not check if this value was defined.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.86d</h2>
+      <h2 class="heading2">Version 3.82u</h2>
       <ol class="maintext">
-        <li>OS_EnterNestableInterrupt() improved<br>
-          A needless call of enable interrupt function removed. Execution speed improved.
+        <li>Software timer handling optimized.<br>
+          The software timer handler was removed form the scheduler and put into a separate module.<br>
+          If software timer are not used by the application, the software timer handler will not be linked in, thus reducing the required kernel code size.
+        </li>
+        <li>Generic timer tick handler modified.<br>
+          The preprocessor conditional defines which guarantee safe code for processors which can not perform atomic 32bit calculations or pointer operations was modifed.<br>
+          This is an internal modification which has no effect on any current embOS port.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.84.1</h2>
+      <h2 class="heading2">Version 3.82s</h2>
       <ol class="maintext">
-        <li>Fully interruptible stack layout for OS_Idle()<br>
-          The embOS stack management for Cortex M now uses the main stack as stack for OS_Idle which allows fully interruptible usage of the stack in OS_Idle().
-          The previous versions of embOS for Cortex M did not allow usage of the stack in OS_Idle().
+        <li>Nestable interrupt handling improved.<br>
+        Some embOS functions might have inhibited re-enabling of interrupts when a nestable interrupt was called during task suspension caused by the function.<br>
+        The following API functions were affected and have been modified to correct this behavior:<br>
+        OS_WaitEvent()<br>
+        OS_WaitEventTimed()<br>
+        OS_WaitSingleEvent()<br>
+        OS_WaitSingelEventTimed()<br>
+        OS_MEMF_AllocTimed()<br>
+        OS_Yield()<br>
+      </ol>
+      <h2 class="heading2">Version 3.82r</h2>
+      <ol class="maintext">
+        <li>Thread local storage handling improved.<br>
+        For embOS ports which support thread local storage, the task switch time was slightly increased, even for tasks which did not use thread local storage.<br>
+        The implementation of thread local storage now is improved and does not affect the context switch time of tasks which do not use thread local storage.
+        </li>
+        <li>OS_TLS_Init() contains a new assertion.<br>
+        OS_TLS_Init() must not be called multiple times from the same task.<br>
+        In debug builds of embOS, the new implementation of OS_TLS_Int() now calls the OS_Error() function with error code OS_ERR_TLS_INIT when OS_TLS_Init() is called multiple times from the same task.
+        </li>
+        <li>OS_Terminate() contains a new assertion.<br>
+        OS_Terminate() must not be called from an embOS software timer callback function.<br>
+        In debug builds of embOS, the new implementation of OS_Terminate() now calls the OS_Error() function with error code OS_ERR_ILLEGAL_IN_TIMER when OS_Terminate() is called from an embOS timer.
+        </li>
+        <li>OS_ExtendTaskContext() contains a new assertion.<br>
+        For every task, the context can be extended only once.<br>
+        In debug builds of embOS, the new implementation of OS_ExtendTaskContext() now calls the OS_Error() function with the new error code OS_ERR_EXTEND_CONTEXT when OS_ExtendTaskContext() is called multiple times from the same task.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.80g2</h2>
+      <h2 class="heading2">Version 3.82q</h2>
       <ol class="maintext">
-        <li>Systick timer initialization modified<br>
-          The SYSTICK timer is normally used as system timer for embOS. Previous versions of embOS for Cortex-M3 initialized the interrupt priority during the system initialization called from OS_InitKern().<br>
-          Now the systick timer initialization is completely done during OS_InitHW() and can therefore be modified if required by the application.<br>
-          By modification of OS_InitHW(), any peripheral timer may be used as system timer for embOS, leaving the systick timer untouched.
+        <li>OS_EnterNestableInterrupt() optimized to reduce interrupt latency.<br>
+        OS_EnterNestableInterrupt() caused some interrupt latency for zero latency interrupts when an embOS debug library was used.<br>
+        Only CPUs which disable interrupts on interrupt entry were affected, for example Renesas M16C / M32C.<br>
+        OS_EnterNestableInterrupt() for those CPUs was optimized to reduce the interrupt latency of high priority interrupts.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.80g1</h2>
+      <h2 class="heading2">Version 3.82p</h2>
       <ol class="maintext">
-        <li>Code modified to avoid warnings<br>
-          Some compile time switches were not predefined in some projects and therefore produced a warning when remarks were enabled.<br>
-          This did not cause any problem, but might have been confusing.
+        <li>OS_Suspend() now contains an assertion<br>
+        OS_Suspend() must not be called from an interrupt handler as it could cause a task switch immediately.<br>
+        In debug versions of embOS, OS_Suspend() now runs into OS_Error() if called from an interrupt handler or timer.
+        </li>
+        <li>OS_PutMail functions parameter declaration changed.<br>
+        The functions OS_Putmail(), OS_PutMailCond, OS_PutMailFront() and OS_PutMailFrontCond() now have a const pointer qualifier for the data that shall be put into the mailbox.<br>
+        The const qualifier clarifies and ensures that the data is not modifed by the function.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82k</h2>
+      <ol class="maintext">
+        <li>Queue management optimized.<br>
+        Previous versions of embOS needed 2 integer words of mamangement information stored into the queue buffer for every data item in the queue.<br>
+        With verion 3.82k, the data management was optimized and only one additional integer word, the data size, is stored into the buffer together with the data.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82i</h2>
+      <ol class="maintext">
+        <li>OS_StartTimer() modified to avoid warnings under GCC when compiling sources.<br>
+        When compiling sources with optimization under GCC, the code in OS_StartTimer() generated a &quot;strict alias violation&quot; warning.<br>
+        Some casts were removed and one pointer type was modified to eliminate this warning.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82e</h2>
+      <ol class="maintext">
+        <li>Stack overflow check for system stack and interrupt stack added.<br>
+        In stack check builds, embOS now checks the system stack and the interrupt stack (if present) during every call of the scheduler.<br>
+        If a stack overflow is detected, the error handler OS_Error() is called with one of the new error codes OS_ERR_SYS_STACK or OS_ERR_INT_STACK.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82d</h2>
+      <ol class="maintext">
+        <li>Variable type changed to avoid GCC warnings</li>
+        <li>Changes in OS_Global initialization to avoid GCC warnings.</li>
+      </ol>
+      <h2 class="heading2">Version 3.82c</h2>
+      <ol class="maintext">
+        <li>Initialization of OS_Global in OSGlobal.c changed to avoid GCC warnings.
+        </li>
+        <li>The definition OS_MODEL was moved from OS_RAW.h to OSINFO.c because CPU name and library name will now be placed in OS_Priv.h.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82b</h2>
+      <ol class="maintext">
+        <li>Communication functions for embOSView may be used from tasks.<br>
+          The embOS internal communication functions for embOSView, OS_OnRx() and OS_OnTx() may now be called from a task.<br>
+          Previous versions of embOS did not allow calling these functions from outside an interrupt handler and called OS_Error() in debug builds.<br>
+          Right now, theses functions and the communication protocol are not documented. The user should not call these functions.<br>
+          The modification was done for future extensions.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.80i</h2>
+      <ol class="maintext">
+        <li>Resource semaphore handling speed optimized.<br>
+          OS_Use() and OS_Unuse() were optimized to allow faster locking and unlocking on rersource semaphores.<br>
+          The embOS scheduler was optimized to allow faster activation of tasks waiting on resources semaphores.
+        </li><br>
+        <li>Support for CPUs with growing stack addresses supported.<br>
+          To handle CPUs with growing stack addresses, OS_CreateTask() and OS_CreateTaskEx() were modified.
+          The compile time switch OS_STACK_AT_BOTTOM is now honored by these functions and stack is handled correctly for those CPUs.<br>
+          Existing embOS version are not affected, this modification was made for newer versions for CPUs with growing stack addresses.
+        </li><br>
+      </ol>
+      <h2 class="heading2">Version 3.80g</h2>
+      <ol class="maintext">
+        <li>embOS internal semaphores can be shown with the embOS plugin for IAR C-Spy.<br>
+          The embOS plugin for IAR did not show the system locking semaphores used for malloc and other non re-entrant system functions when no other resource semaphores were used in the application.<br>
+          These semaphores can be now be seen in the Resource semaphore window of the embOS C-Spy plugin.
+        </li><br>
+      </ol>
+      <h2 class="heading2">Version 3.80</h2>
+      <ol class="maintext">
+        <li>OS_Suspend() / OS_Resume() optimized.<br>
+          The OS_Suspend() and OS_Resume() functions were optimized to perform faster task switches on 32bit CPUs.
+        </li><br>
+        <li>Internal data structures and scheduler optimized.<br>
+          Internal data structures were modified to allow more efficient access. Together with a modification of the scheduler, this results in faster task switches and interrupt handling.
+        </li><br>
+        <li>OS_InitKern() does not enable interrupts.<br>
+          The previous OS_InitKern() function enabled interrupts by a call of OS_RestoreI(), thus enabling interrupts, as long as OS_IncDI() was not called before.<br>
+          The new OS_InitKern() function does not automatically enable interrupts. The interrupt enable state remains unchanged.
+        </li><br>
+      </ol>
+      <h2 class="heading2">Version 3.62c</h2>
+      <ol class="maintext">
+        <li>New error code OS_ERR_IDLE_RETURNS<br>
+          The debug version of embOS now checks whether OS_Idle() returns in which case OS_Error() is called with the new error code.<br>
+          OS_Idle() has to be implemented as an endless loop and must never return. If OS_Idle() is modified and returns by accident, the behavior is unpredictable and this error might be difficult to find.<br>
+          The new version of embOS now catches a return from OS_Idle() and calls OS_Error().
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.62b</h2>
+      <ol class="maintext">
+        <li>New error code OS_ERR_ISR_NO_HANDLER<br>
+          The new error code is generated and OS_Error() is called, if an un-initialized interrupt handler is called.<br>
+          This error handling is available on some ports of embOS, especially those, where embOS initializes an interrupt vector table in RAM.<br>
+          During initialization, a default dummy handler is installed for all interrupt sources. This handler should normally be replaced by installing application specific interrupt handlers.<br>
+          Because the default dummy interrupt handler should never be called by an application, it calls OS_Error() with the new error code OS_ERR_ISR_NO_HANDLER to signal the setup error.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.62</h2>
+      <ol class="maintext">
+        <li>Internal representation of scheduler states modified.<br>
+          The states which control pending task switches and show the reason of the task switch are handled in compact structure now.<br>
+          The previous version used bit fields and definitions which were difficult to understand and which were difficult to handle.<br>
+          The new definition and structure is easier to handle which results in faster code execution.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.60e</h2>
+      <ol class="maintext">
+        <li>OS_ERR_WRONG_STACK error code added.<br>
+          Some ports of embOS for CPUs with different stack pointers require that the CPU enters main() with a specific stack selected.<br>
+          These ports of embOS now contain code to examine the stack used in main and call OS_error() with the new error code OS_ERR_WRON_STACK, if the startup code entered main with the wrong stack-pointer selected.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.60c</h2>
+      <ol class="maintext">
+        <li>OS_ASSERT_INIT_CALLED()<br>
+          A new assertion is added which checks whether OS_InitKern() was called before tasks are created.<br>
+          In debug builds, the OS_Error() function will be called, if tasks are created before calling OS_InitKern().
+        </li><br>
+        <li>OS_GetTaskName() modified.<br>
+          In previous versions, OS_GetTaskName() had to be called with a valid task ID. Now, the NULL pointer may be passed as argument to address the current task.<br>
+          The function will always return a valid string.<br>
+          The previous implementation might have returned a NULL pointer, which could cause problems, if the result was not evaluated be the calling function.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.60b</h2>
+      <ol class="maintext">
+        <li>OS_ASSERT_ISR_LEVEL()<br>
+          A new assertion was defined which will call OS_Error() if the CPU runs in interrupt mode but OS_EnterInterrupt() or OS_EnterNestableInterrupt() was not called.<br>
+          With version 3.60b the assertion is not implemented, it is just defined and usage is prepared. The implementation will be made in future versions of embOS.
         </li>
       </ol>
       <h2 class="heading2">Version 3.60</h2>
       <ol class="maintext">
-        <li>IAR Embedded Workbench for ARM V5.11 compatibility<br>
-          embOS for CM3 for IAR V511 is now compatible with IAR Embedded Workbench for ARM V5.11.
+        <li>OS_GetVersion() implemented as function<br>
+          OS_GetVersion() may be used by the application to retrieve the embOS library version. The result may be used to verify whether the library version matches the embOS header file RTOS.h.
         </li>
       </ol>
       <h2 class="heading2">Version 3.52e</h2>
@@ -503,23 +993,43 @@ Workbench: IAR IARIDE   6.50.5.2674
           All embOS variables are located in one module now. In previous versions of embOS, some module specific embOS variables were located in the module they were used for.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.52a</h2>
+      <h2 class="heading2">Version 3.52</h2>
+      <ol class="maintext">
+        <li>OS_TickHandler() and OS_TickHandler_Ex() removed.<br>
+          These two functions are obsolete, because they can be replaced by OS_HandleTick() and OS_HandleTick_EX(), if OS_EnterInterrupt() / OS_LeaveInterrupt is used in the interrupt handler.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.50c</h2>
+      <ol class="maintext">
+        <li>OS_GetTime32() optimized for 32bit CPUs<br>
+          For 32bit CPUs, OS_GetTime32() is now automatically replaced by an efficient macro which delivers value of the embOS internal time variable.<br>
+          In previous versions of embOS, a function was called, when it was not over-written in the CPU specific part of the OS header file.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.50b</h2>
+      <ol class="maintext">
+        <li>Internal optimizations<br>
+          Some internal optimizations were performed to optimize task switching time and interrupt latencies.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.50b</h2>
+      <ol class="maintext">
+        <li>Internal optimizations<br>
+          Some internal optimizations were performed to optimize task switching time and interrupt latencies.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.50</h2>
       <ol class="maintext">
         <li>Scheduler optimized<br>
           The embOS scheduler was optimized to reduce task switching time and interrupt latencies.<br>
         </li>
+      </ol>
+      <h2 class="heading2">Version 3.40d</h2>
+      <ol class="maintext">
         <li>OS_Yield() now writes an entry into the trace buffer<br>
           When using the debug library with trace capabilities, OS_Yield() writes an entry into the trace buffer which shows the function call and the calling task.<br>
           embOSView version 3.40d is required to show this entry.
         </li>
-        <li>Task switch to OS_Idle() modified.<br>
-          The call of OS_Idle() from OS_ChangeTask can be overwritten (inhibited) by defining the macro OS_IDLE() which is normally defined as OS_Idle().<br>
-          This allows task switching via an exception for specific CPU/compiler versions.
-        </li> 
-        <li>Pointer comparison improved for fixed size memory pools (OS_MEMF module).<br>
-          Some compiler produced wrong pointer comparison code in far memory model.<br>
-          For specific CPU/compiler versions, the new OS_POINTER_TO_VALUE() function was introduced to deliver correct results in pointer comparison.
-        </li> 
       </ol>
       <h2 class="heading2">Version 3.40b</h2>
       <ol class="maintext">
@@ -531,142 +1041,454 @@ Workbench: IAR IARIDE   6.50.5.2674
       <h2 class="heading2">Version 3.40a</h2>
       <ol class="maintext">
         <li>Counting semaphores improved.<br>
-          Counting semaphores are now int values and an overflow will be caught, so that embOS runs into OS_Error().
+          The counters of counting semaphores are now integer values.<br>
+          Error handling is also improved. When a counting semaphore overflows, the embOS error handler OS_Error() is called in debug builds.
         </li>
       </ol>
       <h2 class="heading2">Version 3.40</h2>
       <ol class="maintext">
         <li>Task switch time improved.<br>
           Scheduling optimized to improve task switch time.
-        </li> 
+        </li><br>
         <li>Task switch time improved for task events.<br>
-          Task event handling modified to improve task switch time for tasks waiting on events. 
-        </li> 
+          Task event handling modified to improve task switch time for tasks waiting on events.
+        </li><br>
         <li>Interrupt latency improved.<br>
           During task switch, the time period when interrupts are disabled is reduced.
-        </li> 
+        </li><br>
         <li>embOS timer tick handler improved.<br>
           The standard timer tick handler run faster now. The embOS internal time variable is incremented by 1 on every timer tick.<br>
           When different increments are required, the new timer tick handler OS_HandleTick_Ex(), OS_TickHandler_Ex() or OS_HandleTickDI_Ex() have to be used by application.<br>
           Different increments may be configured by a call of OS_CONFIG().
-        </li> 
+        </li>
       </ol>
-      <h2 class="heading2">Version 3.32j</h2>
+      <h2 class="heading2">Version 3.32i</h2>
       <ol class="maintext">
-        <li>
-          NONE, initial version for Cortex M3.
-        </li> 
+        <li>Task switch to OS_Idle() modified.<br>
+          The call of OS_Idle() from OS_ChangeTask can be overwritten (inhibited) by defining the macro OS_IDLE() which is normally defined as OS_Idle().<br>
+          This allows task switching via an exception for specific CPU/compiler versions.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.32g</h2>
+      <ol class="maintext">
+        <li>Pointer comparison improved for fixed size memory pools (OS_MEMF module).<br>
+          Some compiler produced wrong pointer comparison code in far memory model.<br>
+          For specific CPU/compiler versions, the new OS_POINTER_TO_VALUE() function was introduced to deliver correct results in pointer comparison.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28n</h2>
+      <ol class="maintext">
+        <li>embOS round-robin scheduling may be disabled.<br>
+          Round-robin scheduling may be disabled by recompiling sources with OS_RR_SUPPORTED defined as 0.<br>
+          This will save some bytes of RAM and ROM and may make sense for small CPUs.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28g</h2>
+      <ol class="maintext">
+        <li>embOS scheduling simplified<br>
+          Task activation and deactivation on &quot;waitable objects&quot; as mailboxes, semaphores, events, fixed size memory blocks now all use the same scheduling method.<br>
+          This modification saves ROM and RAM and makes scheduler easier to understand and to maintain.<br>
+          Applications which accessed internal data structures of waitable objects directly have to be modified.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.24</h2>
+      <ol class="maintext">
+        <li>Stack check performance increased<br>
+        Stack check now runs much faster on 32- and 16-bit target CPUs.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.10q</h2>
+      <ol class="maintext">
+        OS_CreateTask now initializes profiling variables. (Required if TCB is used multiple times)
+      </ol>
+      <h2 class="heading2">Version 3.06</h2>
+      <ol class="maintext">
+        First version. None.
       </ol>
       <!-- ****************************************************************** -->
       <!-- PROGRAM CORRECTIONS                                                -->
       <!-- ****************************************************************** -->
       <h1 class="newsbox"><a name="pcorr"></a>Program corrections</h1>
-      <h2 class="heading2">Version 3.88g2</h2>
+      <h2 class="heading2">Version 4.20</h2>
       <ol class="maintext">
-        <li>Start projects for Cortex-M0 devices corrected.<br>
-        The start projects for Cortex M0 devices had code for variable vector tables and programming the VTOR register implemented.<br>
-        Cortex M0 devices don't support a variable vector table, the vector table has to be located at address 0x0.<br>
-        Code for programming the VTOR register is removed from the RTOSInit files now.<br>
-        This correction affects the start projects for the following CPUs:<br>
-        Freescale KL25<br>
-        Infineon  UMF51x<br>
-        NXP LPC 1000<br>
-        NXP LPC 122x<br>
-        ST  STM32F05<br>
-        The problem existed on all previous versions of embOS Cortex M IAR and is fixed with version 3.88g2.   
+        <li>
+          OS_WaitMailTimed() corrected<br>
+          OS_WaitMailTimed() returned with disabled interrupts when a message was already in the mailbox.
+          The problem existed in all previous embOS versions and is fixed with version 4.20.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.88c</h2>
+      <h2 class="heading2">Version 4.14a</h2>
       <ol class="maintext">
-        <li>OS_Start() fixed.<br>
-        A problem with OS_Start() could cause that embOS did not start.<br>
-        The problem existed on all previous versions of embOS Cortex M IAR and is fixed with version 3.88c.   
+        <li>
+          OS_Q_Create() corrected.<br>
+          OS_Q_Create() did not work correctly when integer size is 16bit and pointer size is greater than 16bit.<br>
+          The queue buffer address is not correctly calculated and stored in the queue control structure.<br>
+          The problem existed in all previous embOS versions and is fixed with version 4.14a.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.88b</h2>
+      <h2 class="heading2">Version 4.14</h2>
       <ol class="maintext">
-        <li>Scheduling fixed.<br>
-          A problem with the scheduler could cause that a task not in ready state was not suspended and continued running.<br>
-          Higher priority tasks were blocked even when they were ready to execute.<br>
-          The problem existed on all previous versions of embOS Cortex M IAR and is fixed with version 3.88b.
+        <li>
+          OS_StopTicklessMode() corrected.<br>
+          OS_StopTicklessMode() did not check if any delay was expired and if it is necessary to call the scheduler for further actions.<br>
+          This could cause that a task or software timer was activated with an one system tick delay.<br>
+          The problem existed in all previous embOS versions and is fixed with version 4.14.
         </li>
+      </ol>
+      <h2 class="heading2">Version 4.12a</h2>
+      <ol class="maintext">
+        <li>
+          OS_StartTimer() corrected.<br>
+          When a task was interrupted in OS_StartTimer() by another task which also calls OS_StartTimer() for the same OS_TIMER, it could happen that the internal list of timers was corrupted.<br>
+          The problem existed in all earlier embOS versions and is fixed with version 4.12a.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.12</h2>
+      <ol class="maintext">
+        <li>
+          OS_Alloc() corrected.<br>
+          OS_Alloc() could fail when calling for the first time from more than one task.<br>
+          The 2nd task could try to initialize the resource semaphore which was already initialized by the first call of OS_Alloc().<br>
+          The problem existed in all earlier embOS versions and is fixed with version 4.12.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.10b</h2>
+      <ol class="maintext">
+        <li>
+          OS_TerminateTask() corrected.<br>
+          This should already be corrected with V3.90a but was actually not.<br>
+          Please find more details below in description of V3.90a.
+        </li>
+        <li>
+          OS_AdjustTime() corrected.<br>
+          embOS usec precise system time could return wrong values when using with embOS tickless mode.<br>
+          The problem existed since embOS versions 4.02 and is fixed with version 4.10b.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.10a</h2>
+      <ol class="maintext">
+        <li>
+          OS_GetTime_us() / OS_GetTime_us64() corrected.<br>
+          It could happen that OS_GetTime_us() / OS_GetTime_us64() return wrong results when the interrupt pending flag was set during function execution.<br>
+          The problem existed since embOS versions 4.02 and is fixed with version 4.10a.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.10</h2>
+      <ol class="maintext">
+        <li>
+          OS_GetNumIdleTicks() corrected.<br>
+          It could happen that OS_GetNumIdleTicks() returns wrong results, e.g. when a software timer was stopped in OS_Idle() before calling OS_GetNumIdleTicks().<br>
+          The problem existed since embOS versions 4.00 and is fixed with version 4.10.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.06b</h2>
+      <ol class="maintext">
+        <li>
+         Percepio embOS-Trace macro in OS_TerminateTask() corrected.<br>
+          OS_TerminateTask(NULL) reads from address 0x14 which might fail on some CPUs without memory at 0x00.<br>
+          The problem existed since embOS versions 4.06 and is fixed with version 4.06b.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.06a</h2>
+      <ol class="maintext">
+        <li>
+          Declaration of OS_Counters modified.<br>
+          The Region counter is now declared as volatile. Otherwise some compilers with high optimization remove OS_EnterRegion().<br>
+          The problem existed in all previous embOS versions and is fixed with version 4.06a.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.06</h2>
+      <ol class="maintext">
+        <li>
+          OS_StopTicklessMode() corrected.<br>
+          If an interruppt occurred while OS_StopTicklessMode() was executed a NULL function callback pointer could be called.<br>
+          The problem existed since embOS versions 4.00a and is fixed with version 4.06.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.04a</h2>
+      <ol class="maintext">
+        <li>
+          OS_Config_SysTimer(), OS_GetTime_us() and OS_GetTime_us64() were not included in the embOS built.<br>
+          The problem existed since embOS versions 4.04 and is fixed with version 4.04a.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.04</h2>
+      <ol class="maintext">
+        <li>OS_SendString() corrected.<br>
+            When an interrupt activates another task which also calls OS_SendString() it could happen that a task was not resumed again after it was suspended by OS_SendString().<br>
+            The problem existed in all previous embOS versions and is fixed with version 4.04.
+        </li>
+        <li>OS_GetTime_us() corrected.<br>
+          An internal calculation overflow could cause that not the full 32bit return value range could be used.<br>
+          The problem existed since embOS versions 4.02 and is fixed with version 4.04.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.02a</h2>
+      <ol class="maintext">
+        <li>Compile error fixed when disabling embOS tickless feature.<br>
+          A compile error occurred when disabling the embOS tickless feature with the compile-time switch OS_SUPPORT_TICKLESS.<br>
+          The problem existed since version 4.00 of embOS and is fixed with version 4.02a.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.00a</h2>
+      <ol class="maintext">
+        <li>OS_SendString() corrected.<br>
+          When an interrupt activates a higher priority task which also calls OS_SendString() embOS could stop in an endless loop in OS_SendString().<br>
+          The problem existed in all previous embOS versions and is fixed with version 4.00a.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.90a</h2>
+      <ol class="maintext">
+        <li>OS_TerminateTask() corrected.<br>
+            Terminating a task which was suspended by OS_SendString(), ended in a call of OS_Error() later on when the transmission interrupt of the embOSView communication tried to re-activate the non-existing task.<br>
+            OS_TerminateTask() was modified to avoid this problem. When terminating such task, the control variables for embOSView communication are set to not activate that task.<br>
+            The problem existed in all previous embOS versions and is fixed with version 3.90a.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.88g</h2>
+      <ol class="maintext">
+        <li>OS_Q_Clear() corrected.<br>
+            OS_Q_Clear() did not activate tasks which were waiting on the queue.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.88f</h2>
+      <ol class="maintext">
+        <li>Internal const variable definition corrected.<br>
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.88e</h2>
+      <ol class="maintext">
+        <li>Internal function prototype corrected.<br>
+        Function prototype in trace modul corrected.<br>
+        With the incorrect function prototype some embOS ports did not build without compiler error.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.88d</h2>
+      <ol class="maintext">
+        <li>Compatibility macros to older versions added.<br>
+          In version 3.88c, some compatibility macros to address internal veriables were removed from RTOS.h.<br>
+          With version 3.88d, the following macros are available again:<br>
+          OS_pTask, OS_pCurrentTask, OS_pActiveTask, OS_pTimer, OS_pCurrentTimer, OS_Counters, OS_Pending, OS_TimeDex</li>
+      </ol>
+      <h2 class="heading2">Version 3.88a</h2>
+      <ol class="maintext">
+        <li>embOS software timer handling corrected.<br>
+           During software timer handling, a NULL-pointer might have been de-referenced.<br>
+           On targets with MMU, this caused an exception when memory at address 0x0 was not enabled.<br>
+           The problem existed since version 3.86g of embOS and is fixed with version 3.86n.
+         </li>
       </ol>
       <h2 class="heading2">Version 3.86n</h2>
       <ol class="maintext">
-        <li>Thread safe system locking functions modified.<br>
-          A problem was reported which occured when the application was ended without starting embOS.<br>
-          When thread safe system locks were initialized during main(), the destroy function of the system locks might have crashed when the application run to exit without starting embOS before.<br>
-          The modified destroy function of the embOS syslocks now is not called when embOS was not started before, because there is nor need to destroy the syslocks in this case.
+        <li>embOS heap management functions corrected.<br>
+           Locking the heap by a resource semaphore must not be controlled by OS_IsRunning().
+           The previous implementation did not use (and initialize) the semaphore as long as embOS was not started.<br>
+           This caused a problem when data was allocated during main(), without semaphore, but released from a task, which then addressed the semaphore which did not exist.<br>
+           When OS_malloc() was not called from main(), the problem did not occur.<br>
+           The problem existed since version 3.86e of embOS and is fixed with version 3.86n.
+         </li>
+      </ol>
+      <h2 class="heading2">Version 3.86m</h2>
+      <ol class="maintext">
+        <li>embOS scheduler corrected.<br>
+           The scheduler failed when a task which was suspended and on timeout reached its timeout and at the same moment during execution of the scheduler,
+           a higher priority task was activated by an interrupt.<br>
+           The higher priority task was put in ready state, but was not started.<br>
+           The problem existed in all previous embOS versions and is fixed with version 3.86m.
+        </li>
+        <li>OS_TerminateTask() corrected.<br>
+           Setting OS_pActiveTask, the pointer to the task to activate next, has to be an atomic operation.<br>
+           To ensure atomic operation, interrupts have to be disabled before setting OS_pActiveTask when OS_PTR_OP_IS_ATOMIC is defined to 0.
+           This was not handled correctly in previous versions of embOS and might have caused problems with CPUs which can not write pointer values as atomic operation.
+           Most likely, all 32bit CPUs can write a pointer value as an atomic operation. The problem might have occurred on those 16- or 8-bit CPUs which can not.
+           The problem is fixed with version 3.86m.
+        </li>
+        <li>Internal function OS_InsertTask() corrected.<br.>
+           Insertion of a task into the linked list of tasks has to use atomic operations, when the next pointer of the previous task is updated to point to the new task that shall be inserted.<br>
+           The corrected version disables interrupts before the next pointer of the previous task is updated, when OS_PTR_OP_IS_ATOMIC is defined to 0.<br>
+           This was not handled correctly in previous versions of embOS and might have caused problems with CPUs which can not write pointer values as atomic operation,
+           when tasks were created dynamically when embOS was already started, or OS_SetPriority() was called after starting embOS.
+           Most likely, all 32bit CPUs can write a pointer value as an atomic operation. The problem might have occurred on those 16- or 8-bit CPUs which can not.
+           The internal function OS_InsertTask() is called during task creation or OS_SetPriority().<br>
+        </li>
+        <li>Definition of OS_VERSION corrected.<br.>
+           The definition of OS_VERSION was modified with version 3.86l of embOS to comply to MISRA rules.<br>
+           As long as OS_VERSION was used internally in embOS, no problem occurred.<br>
+           Unfortunately, when user software tried to evaluate OS_VERSION for comparison, the expression could not be evaluated, compilation stopped with errors.
+           The problem exsisted in version 3.86l of embOS only and is fixed with version 3.86m.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86l</h2>
+      <ol class="maintext">
+        <li>Assertions in OS_AddTickHook() corrected.<br>
+           The function OS_AddTickHook() must not be called from interrupt handlers. It may be called from main() or tasks only.<br>
+           Previuos versions of embOS did not detect when this function was called from an ISR.<br>
+           With embOS version V3.86l, OS_Error() is called in debug builds when the function is called from an ISR handler.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86i</h2>
+      <ol class="maintext">
+        <li>OS_EnterNestableInterrupt() modified.<br>
+           When embOS was compiled with optimization using IAR RX compiler the execution of the incrementation of region counter was delayed in OS_EnterNestableInterrupt().<br>
+           The new macro OS_IntEnterRegion is now used in OS_EnterNestableInterrupt().<br>
+           This macro can be overwritten in the cpu/compiler specific header file with OS_EnterRegionFunc() to avoid that interrupts are enabled before the region counter is incremented.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86h</h2>
+      <ol class="maintext">
+        <li>OS_EVENT handling with timeout corrected.<br>
+           Previous versions of embOS lost an event when tasks were waiting on the event by a all of OS_EVENT_WaitTimed() and the event was signaled after the timeout expired.<br>
+           When the waiting tasks were not activated by the scheduler when the timeout expired, which might have happened, when an other task ran in a critical region, a following call of OS_EVENT_Set() did not signal the event, so the event got lost.<br>
+           The waiting tasks reported a timeout when they continued execution.<br>
+           The problem existed in all revious versions of embOS and is fixed with version 3.86h.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86f</h2>
+      <ol class="maintext">
+        <li>OS_ERR_TIMESLICE removed<br>
+           Previous versions of embOS called the error handler OS_Error() with error code OS_ERR_TIMESLICE, when a task with a timeslice value of 0 was created.<br>
+           Now, a timeslice value of zero is legal. It allows pure cooperative scheduling between tasks with th esame priority as described in the generic manual, chapter 4.<br>
+           The OS_ERR_TIMESLICE assertion was introduced with embOS version 3.82n and is removed with version 3.86f.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86e</h2>
+      <ol class="maintext">
+        <li>Stack info functions for release build corrected<br>
+           The API function macros were not defined properly in the release build.<br>
+           When used in an application with relase build, the following functions generated compiler errors and could not be used:
+           <br>OS_GetSysStackBase()
+           <br>OS_GetSysStackSize()
+           <br>OS_GetSysStackSpace()
+           <br>OS_GetSysStackUsed()
+           <br>OS_GetIntStackBase()
+           <br>OS_GetIntStackSize()
+           <br>OS_GetIntStackSpace()
+           <br>OS_GetIntStackUsed()
+           <br>The problem existed since embOS version 3.84 and is fixed with version 3.86e
         </li>
       </ol>
       <h2 class="heading2">Version 3.86d</h2>
       <ol class="maintext">
-        <li>OS_ExtendTaskContext_TLS_VFP() corrected.<br>
-        The previous version of this function did not work correctly.<br>
-        Saving the task context desroyed the task stack.<br>
-        The problem existed on all previous versions of embOS for Cortex M4F and is fixed with version 3.86d of embOS.
-      </ol> 
-      <h2 class="heading2">Version 3.84c1</h2>
+        <li>Timeout handling for waitable objects corrected<br>
+           When the timeout had already expired when the wait function with timeout was called, the function came back with interrupts disabled.
+           This might have happened when other tasks with higher priority or interrupts blocked the calling task right after calling a wait functing.
+           The application might have been kept blocked for ever when the calling task did not call any other function which re-enabled interrupts by OS_RestoreI().
+           The problem existed in embOS versions since version 3.86 and is fixed with version 3.86d.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86c</h2>
       <ol class="maintext">
-        <li>Scheduling for Cortex M4 with VFP corrected.<br>
-        The previous versions of embOS for Cortex M4 with VFP crashed when the VFP was activated and used by multiple tasks.<br>
-        Initialization for VFP and scheduling was modified to fix the problem.<br>
-        The problem existed on Cortex M4 applications with activated VFP only and is fixed with version 3.84c1 of embOS.
-      </ol> 
+        <li>Missing prototype for OS_EnterRegionFunc() added</li>
+      </ol>
+      <h2 class="heading2">Version 3.86a</h2>
+      <ol class="maintext">
+        <li>Queue handling corrected.<br>
+          When OS_Q_PutBlocked() was used in an application, OS_Purge() called from a lower priority task might have ended in an endless loop.</li>
+      </ol>
+      <h2 class="heading2">Version 3.86</h2>
+      <ol class="maintext">
+        <li>Support for task events with timeout corrected<br>
+        Previous versions of the functions OS_WaitEventTimed() and OS_WaitSingleEventTimed() limited the number of task events to 8, even when the definition of the type OS_TASK_EVENT was defined to a larger data type.<br>
+        Because of an error in an internal function, task events were truncated to 8 bit, regardless the definition of OS_TASK_EVENT.<br>
+        The problem existed in all previous versions of embOS and is fixed with version 3.86
+        </li>
+      </ol>
       <h2 class="heading2">Version 3.84c</h2>
       <ol class="maintext">
-        <li>OS_Start() corrected.<br>
-        A hard fault exception could occur when an interrupt is executed after OS_Start() and before the scheduler runs for the first time.</li>
-      </ol> 
+        <li>OS_Q_Put() corrected.<br>
+        OS_Q_Put() existed twice in embOS generic sources V3.84b.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82w</h2>
+      <ol class="maintext">
+        <li>Resource semaphore handling corrected.<br>
+           On 8 or 16 bit CPUs with high interrupt load, the scheduler might have failed when an interrupt occurred during a resource semaphore with waiting tasks was released by a call of OS_Unuse().<br>
+           This happened on CPUs which could not perform atomic pointer or 32bit operations.<br>
+           The system might have crashed, or might not have activated tasks with higher priority.<br>
+           The problem existed in all embOS versions since version 3.80i and is corrected with version 3.82w.<br>
+           Usage of OS_UseTimed() might have caused the same problems on all CPUs when the timeout expired during the resource semaphore was freed and waiting tasks were activated from another task by calling OS_Unuse().
+         </li>
+      </ol>
+      <h2 class="heading2">Version 3.82s</h2>
+      <ol class="maintext">
+        <li>OS_WaitCSemaTimed() corrected<br>
+           The function might have blocked a task longer than expected.<br>
+           This happened when the task was restarted during the timeout by a semaphore signal and the semaphore was not available for the task, because it was claimed by a higher prioritized task during task activation.<br>
+           In this case, the task was suspended again with the initial full timeout value.<br>
+           The problem existed in all previous versions fo embOS and is corrected with version 3.82s.
+         </li>
+      </ol>
       <h2 class="heading2">Version 3.82m</h2>
       <ol class="maintext">
         <li>Queue management corrected.<br>
         Queue management failed when the Q-buffer was filled up to the end. This might have happened, when messages are produced faster then they were consumed.<br>
         The OS_Q_Purge() and OS_Q_Put() functions did not handle this case correctly and caused the queue to be corrupted.<br>
-        OS_Error() might have been called with error number 143, or OS_Q_GetPtr() might have returned with a wrong message size or a message zize of 0.<br>
+        OS_Error() might have been called with error number 143, or OS_Q_GetPtr() might have returned with a wrong message size or a message size of 0.<br>
         The problem existed since version 3.82k of embOS and is fixed with version 3.82m.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.80h</h2>
+      <h2 class="heading2">Version 3.82k</h2>
       <ol class="maintext">
-        <li>BSP for AT91SAM3U corrected.<br>
-          The previous versions of the initialization code for the AT91SAM3U did not initialize the second Flash memory controller for devices with 256KB Flash.<br>
-          This resulted in Flash read errors when the Flash memory in the second Flash bank was accessed.
+        <li>Queue management corrected.<br>
+        Queue mamagement failed when multiple producer put data into the same queue and one of the producer was an ISR handler.<br>
+        When the ISR handler was called during a running transfer into the queue, the data in the queue could be corrupted.<br>
+        The problem existed in all previous versions of embOS and is fixed with version 3.82k.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.80g3</h2>
+      <h2 class="heading2">Version 3.80k</h2>
       <ol class="maintext">
-        <li>Systick timer initialization corrected<br>
-          The previous version V3.80g2 of embOS for Cortex-M3 still affected the SYSTICK timer settings during a call of OS_InitKern().<br>
-          The Systick timer was disabled.<br>
-          Now the systick timer initialization is completely done during OS_InitHW() and can therefore be modified if required by the application.
+        <li>Trace functions corrected.<br>
+          The previous version of embOS intoduced a bug in the trace module. Task names were not shown and the task sensitive filter did not work.<br>
+          The problem existed in version 3.80i in trace libaries only and is corrected in version 3.80k.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.52e1</h2>
+      <h2 class="heading2">Version 3.62c</h2>
       <ol class="maintext">
-        <li>OS_TaskEx corrected<br>
-         Parameter passing to OS_TaskEx did not work. A task always received a NULL pointer.
-         The problem existed in all previous embOS versions for CM3 and is fixed with version 3.52e1.
-         </li>
+        <li>OS_GetPriority() corrected.<br>
+          In OS_GetPriority() was called with NULL as paramter, the debug version of embOS called OS_Error() with error code OS_TASK_INV.<br>
+          The NULL pointer is allowed now and the function delivers the priority of the running task as described in the documentation.<br>
+          This error existed in all previous versions of embOS and is fixed with version 3.62c.
+        </li>
       </ol>
-      <h2 class="heading2">Version 3.52e</h2>
+      <h2 class="heading2">Version 3.60e</h2>
       <ol class="maintext">
-        <li>Interrupt table in RAM corrected<br>
-         Variable interrupt table in RAM did not work correct.
-         </li>
+        <li>OS_EVENT_Create() corrected.<br>
+          OS_EVENT_Create() might have called the error-handler OS_Error() with errorcode OS_ERR_2USE_EVENTOBJ if an event-object was created dynamically or as a local object in a function.<br>
+          This happened, if the un-initialized data area of the event object contained one specific byte (id code) of the event object.<br>
+          The problem existed in all previous embOS versions and is fixed with version 3.60e.
+        </li><br>
+        <li>embOSView corrected.<br>
+          When the update interval of embOSView was set to 200ms or a longer value, the reaction of user input or mouse events was blocked for the same time.<br>
+          The problem existed since version 3.32 of embOSView and is fixed with version 3.52b.
+        </li>
       </ol>
       <h2 class="heading2">Version 3.52b</h2>
       <ol class="maintext">
         <li>OS_SendString() corrected.<br>
           When sending an empty string, the calling task was suspended forever.<br>
           The problem existed in all previous embOS versions and is fixed with version 3.52b.
-        </li>
+        </li><br>
         <li>embOSView corrected.<br>
           When the update interval of embOSView was set to 200ms or a longer value, the reaction of user input or mouse events was blocked for the same time.<br>
           The problem existed since version 3.32 of embOSView and is fixed with version 3.52b.
         </li>
       </ol>
       <h2 class="heading2">Version 3.52a</h2>
+      <ol class="maintext">
+        <li>OS_Terminate() for XR-build corrected.<br>
+          OS_Terminate() in XR-builds might have failed and the system stuck in an endless loop.<br>
+          All other library modes were not affected.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.50a</h2>
+      <ol class="maintext">
+        <li>System stack check corrected<br>
+          The system stack check failed in the case the system stack grows from lower addresses to higher addresses.<br>
+          In this case, the system stack was not correctly filled with the stack check pattern.<br>
+          The problem existed for embOS for PIC only and is fixed with version 3.50a.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.40d</h2>
       <ol class="maintext">
         <li>OS_Suspend() corrected<br>
           When using the debug library with trace capabilities, a call of OS_Suspend() wrote a wrong trace code into the trace buffer.<br>
@@ -675,7 +1497,7 @@ Workbench: IAR IARIDE   6.50.5.2674
           The problem existed in all previous embOS versions and is fixed with version 3.40d.
         </li>
       </ol>
-      <h2 class="heading2">Version 3.40</h2>
+      <h2 class="heading2">Version 3.32o</h2>
       <ol class="maintext">
         <li>OS_Unuse() corrected<br>
           OS_Unuse() must not be called from a task that does not claim the resource semaphore.<br>
@@ -683,418 +1505,1161 @@ Workbench: IAR IARIDE   6.50.5.2674
           All previous versions of embOS did not call OS_Error().
           Now, OS_Error() will be called in that situation with error code 156: OS_ERR_RESOURCE_OWNER().
         </li>
+      </ol>
+      <h2 class="heading2">Version 3.32l</h2>
+      <ol class="maintext">
         <li>OS_EVENT_Delete() corrected<br>
-          OS_EVENT_Delete() did not work correctly. OS_LeaveRegion() was called inside the function without calling OS_EnterRegion() bfore.<br>
-          In debug builds of embOS, the error handler OS_Error() was called with error 151 (OS_ERR_LEAVEREGION_BEFORE_ENTERREGION).<br>
+          OS_EVENT_Delete() did not work correctly. OS_LeaveRegion() was called inside the function without calling OS_EnterRegion() before.<br>
+          In debug builds of embOS, the error-handler OS_Error() was called with error 151 (OS_ERR_LEAVEREGION_BEFORE_ENTERREGION).<br>
           In release builds the system was blocked because the underflow of region count inhibits all further task switches, or system crashes, because incrementing the region count the next time allows task switches instead of blocking them.
           The problem existed in all previous versions and is fixed with version 3.32l.
-        </li>
+        </li><br>
         <li>Round-robin task switching corrected.<br>
           Round robin task switching did not work correctly in previous version. A task which was blocked for some reason could be activated. The system crashed during task switch.<br>
           The problem existed since version 3.32j and is fixed with version 3.32l.
         </li>
+      </ol>
+      <h2 class="heading2">Version 3.32k</h2>
+      <ol class="maintext">
         <li>Handler function _OS_OnTx() for serial communication to embOSView corrected.<br>
           The transmission handler for communication with embOSView might have sent incorrect data to embOSView, because internal control state was updated after sending the data.<br>
           The problem occurred on a new embOS port for a specific CPU only and is fixed with version 3.32k.<br>
         </li>
       </ol>
-      <h2 class="heading2">Version 3.32j</h2>
+      <h2 class="heading2">Version 3.32h</h2>
       <ol class="maintext">
-        <li>
-          NONE, initial version for Cortex M3.
+        <li>OS_Error() was required in release build when resource semaphores were used.<br>
+          When using release build libraries and resource semaphores, the embOS error handler OS_Error() was required and the file OS_Error.c had to be compiled and linked in a project.<br>
+          The problem existed since version 3.28i of embOS and is fixed with version 3.32h.
         </li>
       </ol>
-      <!-- ****************************************************************** -->
-      <!-- KNOWN PROBLEMS                                                     -->
-      <!-- ****************************************************************** -->
-      <h1 class="newsbox"><a name="problems"></a>Known problems/limitations</h1>
-      <h2 class="heading2">Version 3.32j</h2>
+      <h2 class="heading2">Version 3.32e</h2>
       <ol class="maintext">
-        <li>
-          NONE.
+        <li>OS_GetMessageCnt() corrected.<br>
+          The type of the retun value of OS_GetMessageCnt() was an unsigned integer in release builds, but an integer in debubg builds.<br>
+          This was corrected to return an unsigned integer in all builds.<br>
+          The problem existed in all previous versions of embOS end is fixed with version 3.32e.
         </li>
+      </ol>
+      <h2 class="heading2">Version 3.32a</h2>
+      <ol class="maintext">
+        <li>embOSView corrected.<br>
+          embOSView sometimes showed wrong task state &quot;Terminated&quot; for tasks which were not terminated.<br>
+          This bug existed in all previous versions of emBOSView and is fixed with version 3.32a.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.30d</h2>
+      <ol class="maintext">
+        <li>OS_MEMF_Create() corrected.<br>
+          Alignment check of buffers for fixed size memory blocks did not work correctly in debug libraries of embOS.<br>
+          OS_Error() was called during OS_MEMF_Create(), even though the memory pool buffers start address was correctly aligned.<br>
+          This problem existed since embOS version 3.28m in all debug build libraries and is fixed with version 3.30d.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.30b</h2>
+      <ol class="maintext">
+        <li>OS_Suspend() corrected.<br>
+          OS_Suspend() did not work correctly, when an activated task with higher priority than the running task was suspended.<br>
+          When the task with highest priority was suspended during system initialization before embOS was started,
+          embOS crashed during the call of OS_Start(),
+          or called the embOS error handler OS_Error() with error code OS_ERR_INV_TASK (128).<br>
+          The same crash occurred, when the application was running in a critical region and a task with higher priority was activated,
+          but not started because of the critical region, and was then suspended by a call of OS_Suspend().<br>
+          This problem existed in all previous embOS versions and is fixed with version 3.30b.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28q</h2>
+      <ol class="maintext">
+        <li>Problem with suspended tasks which were on delay fixed.<br>
+          If a task which was on delay was suspended, the delay timer for that task was not handled.<br>
+          This might have resulted in additional longer delay when the task was resumed later.<br>
+          This problem existed in all previous embOS versions and is fixed with version 3.28q.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28p</h2>
+      <ol class="maintext">
+        <li>OS_Suspend() corrected.<br>
+          OS_Suspend() did not work correctly, when the current task was suspended from within an interrupt handler, or from a critical region.<br>
+          The application crashed, or called the embOS error handler OS_Error() with error code OS_ERR_INV_TASK (128).<br>
+          As OS_Suspend() automatically enters a critical region in debug-trace builds, OS_Suspend() also failed, when it was called to suspend the current task in debug-trace builds of embOS.<br>
+          This problem existed in all previous embOS versions and is fixed with version 3.28p.
+        </li><br>
+        <li>Alignment problems fixed for fixed size memory blocks<br>
+          Some CPUs, mainly the 32bit RISC types, require aligned buffer start addresses for fixed size memory pools.<br>
+          The debug version of embOS now checks alignment of buffer start address and data blocks in the buffer.
+          If data blocks and buffer start address is not aligned, an error is generated and embOS error handler is called during creation of a fixed size memory pool.<br>
+          This problem existed in all previous embOS versions and is fixed with version 3.28m.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28l</h2>
+      <ol class="maintext">
+        <li>OS_MEMF_Free() added<br>
+          The function OS_MEMF_Free() was not included in embOS libraries, but was documented in embOS users manual and was also declared in RTOS.h.<br>
+          This problem existed in all previous embOS versions and is fixed with version 3.28l.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28k</h2>
+      <ol class="maintext">
+        <li>OS_MEMF_IsInPool() corrected<br>
+          OS_MEMF_IsInPool() failed, if a pointer was checked which pointed to the first address after the memory pool.
+          This pointer was reported as belonging to the pool.<br>
+          This problem existed in all previous embOS versions and is fixed with
+          version 3.28g.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.28g</h2>
+      <ol class="maintext">
+        <li>OS_WakeTask() for trace build corrected<br>
+          OS_WakeTask() in trace build disabled task switches.<br>
+          This problem existed since version 3.24 and is fixed with
+          version 3.28g.
+        </li><br>
+        <li>OS_GetMailTimed() / mailbox handling corrected<br>
+          During call of OS_GetMailTimed, interrupts were re-enabled too early. If a mail was just put into a mailbox and the timeout occurred at the same time, a mailbox internal control variables which managed waiting tasks was set to a wrong value.<br>
+          This resulted in wrong mailbox handling and caused task waiting for mail kept suspended, even though, mail was available.
+          This problem existed in all previous versions of embOS and is fixed with version 3.28g.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.26a</h2>
+      <ol class="maintext">
+        <li>OS_MEMF_Release() corrected<br>
+          OS_MEMF_Release() might have failed according to absolute address of memory block.<br>
+          The problem occurred because address calculation was done with 16bit integer value.<br>
+          Calculation was modified to use 32bit values to fix the problem.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.20c</h2>
+      <ol class="maintext">
+        <li>OS_GetMailTimed() corrected<br>
+          OS_GetMailTimed() did not retrieve a mail after 256 calls, the waiting
+          task remained suspended. Corrected with version 3.20c of embOS.<br>
+          This problem exists in all previous embOS versions and is fixed with
+          version 3.20c. </li>
+      </ol>
+      <h2 class="heading2">Version 3.10r</h2>
+      <ol class="maintext">
+        <li>OS_TASK structure definition modified
+        <br>
+        Previous definition of OS_Task structure may cause linker warnings [w6]
+        and [w35] even though everything was correct.<br>
+        The problem was caused by unions defined inside a structure.<br>
+        OS_TASK definition was modified to avoid those linker warnings.</li>
+      </ol>
+      <h2 class="heading2">Version 3.10q</h2>
+      <ol class="maintext">
+        <li>OS_GetMail
+        <br>
+        OS_GetMail functions corrected (interrupts disabled before call of _GetMail).</li>
+        <br>
+        <li>OS_Terminate problem with RR
+        <br>
+        OS_Terminate problem with RR tasks corrected. TimerTick could set RR/PP
+        pending between UNMARKTASK and OS_Switch. OS_Switch will then call OS_DoRR,
+        which could append OS_pCurrentTask (the one you want to terminate if e.g.
+        OS_Terminate(NULL)). </li>
+      </ol>
+      <h2 class="heading2">Version 3.10n</h2>
+      <ol class="maintext">
+        <li>Sample interrupt handler
+        <br>
+        For embOS it is not legal to call OS_EnterInterrupt again after final
+        call of OS_LeaveInterrupt has been made. In the sample OS_irq_handler
+        shipped with embOS, there was a possible call of OS_EnterInterrupt after
+        OS_LeaveInterrupt. The sample OS_irq_handler implementation has been corrected.</li>
+      </ol>
+      <h2 class="heading2">Version 3.06h</h2>
+      <ol class="maintext">
+        <li>OS_Unuse error code corrected
+        <br>
+        When calling OS_Unuse() more often than OS_Use(), the debug version generated
+        an OS_ERR_TASKLIST_CORRUPT error instead of OS_ERR_UNUSE_BEFORE_USE.<br>
+        This problem exists in all previous embOS versions and is fixed with version
+        3.06h. </li>
+      </ol>
+      <h2 class="heading2">Version 3.06f</h2>
+      <ol class="maintext">
+        <li>Round Robin Task Problem corrected
+        <br>
+        In very specific situation it was possible that a round robin task got
+        100%<br>
+        of CPU time for round robin tasks instead of sharing that time with other<br>
+        round robin tasks.</li>
       </ol>
       <!-- ****************************************************************** -->
       <!-- Release history                                                    -->
       <!-- ****************************************************************** -->
       <h1 class="newsbox"><a name="history"></a>Release history</h1>
       <table class="maintext">
-        <tr> 
+        <tr>
           <td width=20%>Version</td>
           <td width=30%>Release date</td>
           <td>Short explanation</td>
         </tr>
         <tr>
-          <td valign="top">V4.00</td>
-          <td valign="top">13. Jun 2014</td>
+          <td valign="top">V4.34</td>
+          <td valign="top">08. Mar 2017</td>
           <td>
-            New embOS sources V4.00.<br>
-            Start project for ST STM32F072 added.
+            New API functions OS_EVENT_SetMaskMode() and OS_EVENT_GetMaskMode().<br>
           </td>
         </tr>
         <tr>
-          <td valign="top">V3.90.1</td>
-          <td valign="top">24. Mar 2014</td>
+          <td valign="top">V4.32</td>
+          <td valign="top">10. Jan 2017</td>
           <td>
-            New start project for Atmel SAMG53.<br>
-            New start project for Atmel SAMG54.
+            New API functions OS_EVENT_SetMask(), OS_EVENT_GetMask(), OS_EVENT_WaitMask() and OS_EVENT_WaitMaskTimed() added.<br>
+            New API functions OS_PutMailTimed() and OS_PutMailTimed1() added.<br>
+            New API functions OS_WD_Add(), OS_WD_Check(), OS_WD_Config(), OS_WD_Remove() and OS_WD_Trigger() added.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.30</td>
+          <td valign="top">08. Dec 2016</td>
+          <td>
+            New API functions OS_GetMailTimed1(), OS_ClearSingleEvent(), OS_RemoveTerminateHook() and OS_MPU_SwitchToUnprivStateEx() added.<br>
+            OS_ResumeAllSuspendedTasks() renamed to OS_ResumeAllTasks().<br>
+            OS_RemoveOnTerminateHooks renamed to OS_RemoveAllTerminateHooks()<br>
+            OS_AddOnTerminateHook() renamed to OS_AddTerminateHook().<br>
+            Source code refactoring.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.26</td>
+          <td valign="top">07. Sep 2016</td>
+          <td>
+            New API function OS_RemoveOnTerminateHooks() added.<br>
+            embOS version mismatch check added.<br>
+            embOS scheduler improved.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.24</td>
+          <td valign="top">28. Jun 2016</td>
+          <td>
+            Spinlock API for multi-core support added.<br>
+            Several SYSVIEW trace macros added to indicate task termination and execution end of API functions.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.22</td>
+          <td valign="top">25. May 2016</td>
+          <td>
+            OS_Q_PutEx(), OS_Q_PutBlockedEx(), and OS_Q_PutTimedEx() added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.20</td>
+          <td valign="top">22. Apr 2016</td>
+          <td>
+            MPU support added.<br>
+            OS_AddExtendTaskContext() added.<br>
+            OS_WaitMailTimed() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.16</td>
+          <td valign="top">22. Jan 2016</td>
+          <td>
+            MISRA-C:2012 compliance updated.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.14a</td>
+          <td valign="top">15. Jan 2016</td>
+          <td>
+            OS_Q_Create() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.14</td>
+          <td valign="top">03. Nov 2015</td>
+          <td>
+            New API fucntion OS_SetDefaultTaskContextExtension() added.<br>
+            New macros OS_INT_PRIO_PRESERVE() and OS_INT_PRIO_RESTORE() added.<br>
+            New API functions OS_TriggerTimer() and OS_TriggerTimerEx() added.<br>
+            SYSVIEW and Percepio trace macros added.<br>
+            OS_StopTicklessMode() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.12b</td>
+          <td valign="top">22. Sep 2015</td>
+          <td>
+            SYSVIEW trace macros added.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.12a</td>
+          <td valign="top">17. Sep 2015</td>
+          <td>
+            OS_StartTimer() corrected.<br>
+            SYSVIEW trace macros added/modified.<br>
+            OS_InInterrupt() modified.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.12</td>
+          <td valign="top">19. Aug 2015</td>
+          <td>
+            OS_Alloc() corrected.<br>
+            Percepio embOS-Trace macro in OS_CreateTimerEx() removed.<br>
+            New mailbox API functions OS_Mail_GetPtr(), OS_Mail_GetPtrCond() and OS_Mail_Purge() added.<br>
+            Support for SYSVIEW API trace added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.10b</td>
+          <td valign="top">29. May 2015</td>
+          <td>
+            OS_TerminateTask() corrected.<br>
+            OS_AdjustTime() corrected<br>
+            OS_SendString() parameter declaration modified to avoid compiler warning.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.10a</td>
+          <td valign="top">13. May 2015</td>
+          <td>
+            OS_GetTime_us() / OS_GetTime_us64() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.10</td>
+          <td valign="top">30. Apr 2015</td>
+          <td>
+            embOS is MISRA C:2012 compliant.<br>
+            Percepio embOS-Trace defines added.<br>
+            OS_GetNumIdleTicks() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.06b</td>
+          <td valign="top">24. Mar 2015</td>
+          <td>
+            Percepio embOS-Trace macro in OS_TerminateTask() corrected.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.06a</td>
+          <td valign="top">16. Mar 2015</td>
+          <td>
+            Percepio embOS-Trace macros added/modified.<br>
+            OS_Counters declaration modified.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.06</td>
+          <td valign="top">12. Mar 2015</td>
+          <td>
+            Support for Percepio embOS-Trace added.<br>
+            OS_StopTicklessMode() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.04a</td>
+          <td valign="top">01. Dec 2014</td>
+          <td>
+            OS_Config_SysTimer(), OS_GetTime_us() and OS_GetTime_us64() were not included in the embOS built.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.04</td>
+          <td valign="top">12. Nov 2014</td>
+          <td>
+            Task priorities extended to 32bit.<br>
+            OS_SendString() corrected.<br>
+            OS_GetTime_us() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.02a</td>
+          <td valign="top">15. Sep 2014</td>
+          <td>
+            Compile error fixed when disabling embOS tickless feature with the compile-time switch OS_SUPPORT_TICKLESS.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.02</td>
+          <td valign="top">15. Aug 2014</td>
+          <td>
+            New functions OS_GetTime_us(), OS_GetTime_us64() and OS_Config_SysTimer() added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.00a</td>
+          <td valign="top">21. Jul 2014</td>
+          <td>
+            New tickless function OS_StopTicklessMode() added.<br>
+            New const variable OS_DebugInfo added.<br>
+            New profiling functions OS_STAT_Enable(), OS_STAT_Disable() and OS_STAT_GetTaskExecTime() added.<br>
+            OS_SendString() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.00</td>
+          <td valign="top">06. Jun 2014</td>
+          <td>
+             Tickless support added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.90a</td>
+          <td valign="top">09. Apr 2014</td>
+          <td>
+             OS_TerminateTask() corrected.
           </td>
         </tr>
         <tr>
           <td valign="top">V3.90</td>
-          <td valign="top">19. Jan 2014</td>
+          <td valign="top">17. Feb 2014</td>
           <td>
-            New embOS sources V3.90.
+             Functions to disable/enable global interrupts added.
           </td>
         </tr>
         <tr>
-          <td valign="top">V3.88g2</td>
-          <td valign="top">12. Jan 2014</td>
-          <td>
-            New startproject for ST LIS331 device.<br>
-            New start project for TI TM4C129.<br>
-            RTOSInit for Cortex M0 corrected.
-          </td>
-        </tr>
-        <tr>
-          <td valign="top">V3.88g1</td>
-          <td valign="top">17. Dec 2013</td>
-          <td>
-            New startprojects for ST devices.
+          <td valign="top">V3.88h</td>
+          <td valign="top">20. Dec 2013</td>
+          <td>OS_GetNumIdleTicks() added.<br>
+              OS_AdjustTime() added.
           </td>
         </tr>
         <tr>
           <td valign="top">V3.88g</td>
-          <td valign="top">05. Nov 2013</td>
-          <td>
-            New embOS sources V3.88g.
-          </td>
+          <td valign="top">30. Oct 2013</td>
+          <td>OS_Q_Clear() corrected.</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.88f</td>
+          <td valign="top">22. Sep 2013</td>
+          <td>Internal const variable definition corrected.</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.88e</td>
+          <td valign="top">06. Sep 2013</td>
+          <td>Internal function prototype corrected.<br>
+          Assertion into OS_Delayus() added.
+        </tr>
+        <tr>
+          <td valign="top">V3.88d</td>
+          <td valign="top">04. Sep 2013</td>
+          <td>Compatibility macros to older versions added.<br>
         </tr>
         <tr>
           <td valign="top">V3.88c</td>
-          <td valign="top">13. Aug 2013</td>
-          <td>
-            New embOS sources V3.88c.<br>
-            OS_Start() fixed.
-          </td>
+          <td valign="top">08. Aug 2013</td>
+          <td>New API functions OS_InInterrupt(), OS_Q_PutTimed() added.<br>
+          Additional new profiling functionality</td>
         </tr>
         <tr>
           <td valign="top">V3.88b</td>
-          <td valign="top">29. May 2013</td>
+          <td valign="top">28. May 2013</td>
+          <td>Internal data structure changed.</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.88a</td>
+          <td valign="top">02. May 2013</td>
           <td>
-            New embOS sources V3.88b.<br>
-            Scheduling fixed.
+            Event object handling enhanced.<br>
+            Mailbox message size enlarged.<br>
+            Timer handling corrected.<br>
+            Release notes corrected for V3.86m
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.88</td>
+          <td valign="top">19. Feb 2013</td>
+          <td>
+            Fully tested with Parasoft C/C++test MISRA check.<br>
           </td>
         </tr>
         <tr>
           <td valign="top">V3.86n</td>
-          <td valign="top">10. Dec 2012</td>
+          <td valign="top">07. Dec 2012</td>
           <td>
-            New embOS sources V3.86n.<br>
-            embOS syslocks for IAR runtime environment modified.
+            Problem with embOS heap management fixed.<br>
           </td>
         </tr>
-        <tr> 
+        <tr>
+          <td valign="top">V3.86m</td>
+          <td valign="top">05. Dec 2012</td>
+          <td>
+            Scheduler corrected.<br>
+            Definition of OS_VERSION corrected.
+          </td>
+        </tr>
+        <tr>
           <td valign="top">V3.86l</td>
-          <td valign="top">26. Nov 2012</td>
+          <td valign="top">21. Nov 2012</td>
           <td>
-            New embOS sources V3.86l.<br>
+            MISRA rule compliance improved.<br>
+            OS_AddTickHook() corrected.
           </td>
         </tr>
-        <tr> 
+        <tr>
+          <td valign="top">V3.86k</td>
+          <td valign="top">02. Oct 2012</td>
+          <td>
+            New embOS API functions OS_Q_GetMessageSize() and OS_Q_PeekPtr().<br>
+            embOS is now compliant to MISRA 2004 rules.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.86i</td>
+          <td valign="top">26. Sep 2012</td>
+          <td>
+            OS_EnterNestableInterrupt() modified.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.86h</td>
+          <td valign="top">06. Sep 2012</td>
+          <td>
+            OS_EVENT handling with timeout corrected.
+          </td>
+        </tr>
+        <tr>
           <td valign="top">V3.86g</td>
-          <td valign="top">06. Aug 2012</td>
+          <td valign="top">04. Aug 2012</td>
           <td>
-            New embOS sources V3.86g.<br>
-            Interrupt handling improved.
+            OS_RetriggerTimer() corrected.
           </td>
         </tr>
-        <tr> 
+        <tr>
           <td valign="top">V3.86f</td>
-          <td valign="top">26. Jul 2012</td>
+          <td valign="top">25. Jul 2012</td>
           <td>
-            New embOS sources V3.86f.<br>
-            Task events are 32bit wide now.
+            Task events default to 32bit on 32bit CPUs.<br>
+            New OS_AddOnTerminateHook() function.<br>
+            OS_ERR_TIMESLICE removed.
           </td>
         </tr>
-        <tr> 
+        <tr>
           <td valign="top">V3.86e</td>
-          <td valign="top">08. Jun 2012</td>
+          <td valign="top">29. May 2012</td>
           <td>
-            New embOS sources V3.86e.<br>
-            HardFault_Handler() modified.
+            OS_malloc(), OS_free(), OS_realloc() modified.<br>
+            Stack info functions corrected.
           </td>
         </tr>
-        <tr> 
+        <tr>
           <td valign="top">V3.86d</td>
-          <td valign="top">10. May 2012</td>
+          <td valign="top">9. May 2012</td>
           <td>
-            OS_ExtendTaskContext_TLS_VFP() corrected.<br>
-            OS_EnterNestableInterrupt() improved.<br>
-            New embOS sources V3.86d.
+            Timeout handling for waitable objectes corrected.
           </td>
         </tr>
-        <tr> 
-          <td valign="top">V3.84d</td>
+        <tr>
+          <td valign="top">V3.86c</td>
+          <td valign="top">8. May 2012</td>
+          <td>
+            Missing OS_EnterRegionFunc() prototype added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.86b</td>
+          <td valign="top">2. May 2012</td>
+          <td>
+            New API function OS_PeekMail()<br>
+            RTOS.h macro definitions modified.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.86a</td>
           <td valign="top">30. Apr 2012</td>
           <td>
-            Queue management corrected.
+            Queue handling corrected.<br>
           </td>
         </tr>
-        <tr> 
-          <td valign="top">V3.84c1</td>
-          <td valign="top">03. Feb 2012</td>
+        <tr>
+          <td valign="top">V3.86</td>
+          <td valign="top">22. Mar 2012</td>
           <td>
-            Scheduling for Cortex M4 with VFP corrected.
+            New timeout handling for waitable objects.<br>
+            OS task events corrected.
           </td>
         </tr>
-        <tr> 
+        <tr>
           <td valign="top">V3.84c</td>
-          <td valign="top">18. Jan 2012</td>
+          <td valign="top">05. Jan 2012</td>
           <td>
-            New start projects added.<br>
-            Update to latest embOS generic sources V3.84c<br>            
-            OS_Start() corrected.
+            OS_Q_Put() removed from OSQ.c.
           </td>
         </tr>
-        <tr> 
-          <td valign="top">V3.84.1</td>
-          <td valign="top">04. Nov 2011</td>
+        <tr>
+          <td valign="top">V3.84b</td>
+          <td valign="top">21. Dec 2011</td>
           <td>
-            Stack management improved, OS_Idle() may use stack.<br>
-            embOS plugin for Cortex M4 with VFP.
+            New embOS API function OS_Q_PutBlocked().
           </td>
         </tr>
-        <tr> 
+        <tr>
+          <td valign="top">V3.84a</td>
+          <td valign="top">22. Nov 2011</td>
+          <td>
+            New compile-time check ensures, OS_CPU is defined when compiling sources.
+          </td>
+        </tr>
+        <tr>
           <td valign="top">V3.84</td>
-          <td valign="top">27. Oct 2011</td>
+          <td valign="top">27. Sep 2011</td>
           <td>
-            Support for Cortex M4F with floating point unit added.<br>
-            New start projects for the EFM32 devices added.<br>
-            New start projects for the NXP devices added.<br>
-            New start projects for the STM32 devices added.<br>
-            Update to latest embOS generic sources V3.84<br>            
+            New stack check functions for system and interrupt stack.
           </td>
         </tr>
-        <tr> 
+        <tr>
+          <td valign="top">V3.82x</td>
+          <td valign="top">12. Sep 2011</td>
+          <td>
+            OS_RegionCnt overflow check added.<br>
+            Macro OS_EnterInterrupt() modified.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.82w</td>
+          <td valign="top">10. Aug 2011</td>
+          <td>
+            GCC compiler warning eliminated.<br>
+            Code modified for Lint.<br>
+            Resource semaphore handling corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.82v</td>
+          <td valign="top">15. Jul 2011</td>
+          <td>
+            OS_Terminate() renamed to OS_TerminateTask().
+          </td>
+        </tr>
+        <tr>
           <td valign="top">V3.82u</td>
-          <td valign="top">05. July 2011</td>
+          <td valign="top">25. May 2011</td>
           <td>
-            Update to latest embOS generic sources V3.82u<br>
-            New start project for IAR STM32L152BV-SK board.<br>
+            Generic tick handler modified.<br>
+            Software timer handling improved.
           </td>
         </tr>
-        <tr> 
+        <tr>
+          <td valign="top">V3.82t</td>
+          <td valign="top">03. May 2011</td>
+          <td>
+            Trial time limitation increased to 12 hours.
+          </td>
+        </tr>
+        <tr>
           <td valign="top">V3.82s</td>
-          <td valign="top">23. Mar  2011</td>
+          <td valign="top">18. Mar 2011</td>
           <td>
-            Update to latest embOS generic sources V3.82s<br>
-            New library mode DPL added.<br>
-            New start projects for STM32 devices added.<br>
-            New start projects for EFM32 devices added.<br>
-            New start project for Fujitsu device added.
+            OS_UseTimed() implemented.<br>
+            Improvements<br>
+            Corrections.
           </td>
         </tr>
-        <tr> 
-          <td valign="top">V3.82m</td>
-          <td valign="top">24. Nov  2010</td>
+        <tr>
+          <td valign="top">V3.82r</td>
+          <td valign="top">28. Jan 2011</td>
           <td>
-            Freescale Kinetis supported.<br>
-            EnergyMicro supported.<br>
+            TLS support improved.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.82q</td>
+          <td valign="top">18. Jan 2011</td>
+          <td>
+            OS_EnterNestableInterrupt() optimized.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.82p</td>
+          <td valign="top">12. Jan 2011</td>
+          <td>
+            OS_PutMail functions parameter qualifier modified.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.82o</td>
+          <td valign="top">04. Jan 2011</td>
+          <td>
+            New API function OS_WaitMailTimed()
+          </td>
+        </tr>
+          <td valign="top">V3.82n</td>
+          <td valign="top">06. Dec 2010</td>
+          <td>
+            New API functions for task suspension and synchronization.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.82m</td>
+          <td valign="top">16. Nov 2010</td>
+          <td>
             Queue handling corrected.
           </td>
         </tr>
-        <tr> 
-          <td>V3.82l</td>
-          <td>25. Oct  2010</td>
+        <tr>
+          <td valign="top">V3.82l</td>
+          <td valign="top">26. Oct 2010</td>
           <td>
-            Update to IAR compiler V6.
+            TLS support added
           </td>
         </tr>
-        <tr> 
-          <td>V3.82h1</td>
-          <td>21. July  2010</td>
+        <tr>
+          <td valign="top">V3.82k</td>
+          <td valign="top">21. Sep 2010</td>
           <td>
-            embOS CM3 IAR now also supports Cortex M0.
+            Queue handling corrected.<br>
+            New API functions for queues and delay.
           </td>
         </tr>
-        <tr> 
-          <td>V3.82h</td>
-          <td>31. Mai  2010</td>
+        <tr>
+          <td valign="top">V3.82i</td>
+          <td valign="top">26. Jul 2010</td>
           <td>
-            embOSView runs via J-Link.<br>
-            Fully CMSIS compliant<br>
+            Warnings under GCC eliminated.<br>
           </td>
         </tr>
-        <tr> 
-          <td>V3.82e2</td>
-          <td>10. Feb  2010</td>
+        <tr>
+          <td valign="top">V3.82h</td>
+          <td valign="top">28. May 2010</td>
           <td>
-            CMSIS compliant BSP for AT91SAM3S added.
+            Internal data types modified.<br>
           </td>
         </tr>
-        <tr> 
-          <td>V3.82e1</td>
-          <td>29. Jan  2010</td>
+        <tr>
+          <td valign="top">V3.82g</td>
+          <td valign="top">12. May 2010</td>
           <td>
-            Projects for LPC176x updated.
+            OS_Start() modified.<br>
           </td>
         </tr>
-        <tr> 
-          <td>V3.82e</td>
-          <td>28. Jan  2010</td>
+        <tr>
+          <td valign="top">V3.82f</td>
+          <td valign="top">16. Apr 2010</td>
           <td>
-            CMSIS compliant project for STM32/MB672 added.
+            New function OS_IsRunning() implemented.
           </td>
         </tr>
-        <tr> 
-          <td>V3.82c</td>
-          <td>10. Dec 2009</td>
+        <tr>
+          <td valign="top">V3.82e</td>
+          <td valign="top">17. Dec 2009</td>
           <td>
-            BSP for TMPM330 added.<br>
-            Profiling support for MB784 added.<br>
-            Update to latest embOS generic sources V3.82c</li>
-            Remarks enabled for all projects<br>
+            Stack check for system and interrupt stack added.
           </td>
         </tr>
-        <tr> 
-          <td>V3.80h</td>
-          <td>06. Aug 2009</td>
+        <tr>
+          <td valign="top">V3.82d</td>
+          <td valign="top">16. Dec 2009</td>
           <td>
-            BSP for AT91SAM3U corrected.
+            Variable type changed to avoid GCC warnings<br>
+            Changes in OS_Global initialization to avoid GCC warnings.
           </td>
         </tr>
-        <tr> 
-          <td>V3.80g3</td>
-          <td>14. Jul 2009</td>
+        <tr>
+          <td valign="top">V3.82c</td>
+          <td valign="top">18. Nov 2009</td>
           <td>
-            Timer initialization modified.
+            Changes in OS_Global initialization to avoid GCC warnings.<br>
+            Definition OS_MODEL moved from OS_RAW.h to OSINFO.c.
           </td>
         </tr>
-        <tr> 
-          <td>V3.80g2</td>
-          <td>09. Jul 2009</td>
+        <tr>
+          <td valign="top">V3.82b</td>
+          <td valign="top">28. Oct 2009</td>
           <td>
-            Timer initialization modified.
+            Communication to embOSView modified.
           </td>
         </tr>
-        <tr> 
-          <td>V3.80g1</td>
-          <td>09. Jul 2009</td>
+        <tr>
+          <td valign="top">V3.82a</td>
+          <td valign="top">25. Sep 2009</td>
           <td>
-            ST STM32F107 supported.<br>
-            IAR LPC1766-SK supported.
+            Error handling for queues implemented.<br>
+            OS_Q_IsInUse() implemented.
           </td>
         </tr>
-        <tr> 
-          <td>V3.80g</td>
-          <td>05. Jun 2009</td>
+        <tr>
+          <td valign="top">V3.82</td>
+          <td valign="top">17. Sep 2009</td>
           <td>
-            New embOS plugin supported<br>
-            New optimized embOS sources.
+            Scheduling optimized.
           </td>
         </tr>
-        <tr> 
-          <td>V3.62</td>
-          <td>01. Oct 2008</td>
+        <tr>
+          <td valign="top">V3.80l</td>
+          <td valign="top">07. Sep 2009</td>
           <td>
-            Update to new embOS sources 3.62.<br>
-            Update to IAR compiler V5.20.
+            New Macros OS_U32_TO_PTR_TYPE() and OS_EI_HP_ON_ENTRY() added.<br>
           </td>
         </tr>
-        <tr> 
-          <td>V3.60d</td>
-          <td>05. Jun 2008</td>
+        <tr>
+          <td valign="top">V3.80k</td>
+          <td valign="top">02. Sep 2009</td>
           <td>
-            Update to new embOS sources 3.60d.<br>
-            OS_POWER module implemented.<br>
-            BSP for IAR STM-SK split up into IAR STM-SK and ST MB525.<br>
-            BSP for ST MB672 eval board added.
+            Trace functions corrected.<br>
           </td>
         </tr>
-        <tr> 
-          <td>V3.60a</td>
-          <td>12. Mar 2008</td>
+        <tr>
+          <td valign="top">V3.80i</td>
+          <td valign="top">11. Aug 2009</td>
           <td>
-            Update to embOS version 3.60a.
+            Optimized resource semaphore handling.<br>
           </td>
         </tr>
-        <tr> 
-          <td>V3.60</td>
-          <td>11. Jan 2008</td>
+        <tr>
+          <td valign="top">V3.80h</td>
+          <td valign="top">27. Jul 2009</td>
           <td>
-            Update to IAR compiler V5.11.
+            Modified interrupt entry.<br>
           </td>
         </tr>
-        <tr> 
-          <td>V3.52e1</td>
-          <td>21. Dec 2007</td>
+        <tr>
+          <td valign="top">V3.80g</td>
+          <td valign="top">05. Jun 2009</td>
           <td>
-            OS_TaskEx corrected.
+            Improved embOS plugin.<br>
           </td>
         </tr>
-        <tr> 
-          <td>V3.52e</td>
-          <td>29. Nov 2007</td>
+        <tr>
+          <td valign="top">V3.80f</td>
+          <td valign="top">03. Jun 2009</td>
           <td>
-            New generic embOS sources.<br>
-            Interrupt table in RAM corrected.
+            Improved error handler.<br>
           </td>
         </tr>
-        <tr> 
-          <td>V3.52a</td>
-          <td>17. Sep 2007</td>
+        <tr>
+          <td valign="top">V3.80</td>
+          <td valign="top">14. Nov 2008</td>
           <td>
-            New BSPs for Luminary Micro LM3S1968 and LM3s8962 CPUs.<br>
-            Scheduler optimized.<br>
-            Task switch to OS_Idle() modified. 
+            Improved scheduler.<br>
           </td>
         </tr>
-        <tr> 
-          <td>V3.40c</td>
-          <td>28. Jun 2007</td>
+        <tr>
+          <td valign="top">V3.62c</td>
+          <td valign="top">24. Oct 2008</td>
           <td>
-            OS_Yield() implemented.<br>
-            Uart and PLL for BSP/STM32F10 added.
+            OS_GetPriority() corrected.<br>
+            Additional error handling.
           </td>
         </tr>
-        <tr> 
-          <td>V3.40a</td>
-          <td>05. Jun 2007</td>
+        <tr>
+          <td valign="top">V3.62a</td>
+          <td valign="top">06. Oct 2008</td>
           <td>
-            Counting semaphores improvement.<br>
-            BSP for STM32F10 added.
+            OS_STACK_ALIGN implemented.
           </td>
         </tr>
-        <tr> 
-          <td>V3.40</td>
-          <td>24. May 2007</td>
+        <tr>
+          <td valign="top">V3.62</td>
+          <td valign="top">01. Sep 2008</td>
           <td>
-            New start projects for LM3S6965 and LM3S6965.
-            New embOS sources 3.40.
+            Tick handler modified.
           </td>
         </tr>
-        <tr> 
-          <td>V3.32j</td>
-          <td>06. Jan 2007</td>
+        <tr>
+          <td valign="top">V3.60e</td>
+          <td valign="top">25. Aug 2008</td>
           <td>
-            Initial version for Cortex M3
+            OS_EVENT_Create() corrected.
           </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.60d</td>
+          <td valign="top">28. Mai 2008</td>
+          <td>
+            OS_POWER module implemented.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.60c</td>
+          <td valign="top">24. Apr 2008</td>
+          <td>
+            OS_GetTaskName() improved.
+            OS_ASSERT_INIT_CALLED() added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.60b</td>
+          <td valign="top">25. Jan 2008</td>
+          <td>
+            OS_ASSERT_ISR_LEVEL() defined.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.60a</td>
+          <td valign="top">25. Jan 2008</td>
+          <td>
+            Time limit for trial version added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.60</td>
+          <td valign="top">18. Nov 2007</td>
+          <td>
+            System tick hook functions introduced.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.52e</td>
+          <td valign="top">12. Nov 2007</td>
+          <td>
+            Location of embOS variables modified.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.52c</td>
+          <td valign="top">17. Oct 2007</td>
+          <td>
+            OS_SetTaskName() introduced.<br>
+            OS_SendString() corrected.<br>
+            embOSView corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.52a</td>
+          <td valign="top">03. Sep 2007</td>
+          <td>
+            OS_Terminate() in XR-builds corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.52</td>
+          <td valign="top">17. Aug 2007</td>
+          <td>
+            OS_CallISR(), OS_CallNestableISR() introduced.<br>
+            OS_TickHandler(), OS_TickHandler_Ex() removed.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.50c</td>
+          <td valign="top">10. Aug 2007</td>
+          <td>
+            OS_GetTime32() optimized.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.50b</td>
+          <td valign="top">16. Jul 2007</td>
+          <td>
+            Task switching time and interrupt latencies improved.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.50a</td>
+          <td valign="top">12. Jul 2007</td>
+          <td>
+            System stack check for PIC corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.50</td>
+          <td valign="top">10. Jul 2007</td>
+          <td>
+            embOS scheduler optimized.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.40d</td>
+          <td valign="top">05. Jul 2007</td>
+          <td>
+            OS_Suspend() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.40c</td>
+          <td valign="top">22. Jun 2007</td>
+          <td>
+            OS_Yield() implemented.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.40b</td>
+          <td valign="top">19. Jun 2007</td>
+          <td>
+            Queue handling improved.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.40a</td>
+          <td valign="top">05. Jun 2007</td>
+          <td>
+            Counting semaphores improved.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.40</td>
+          <td valign="top">08. May 2007</td>
+          <td>
+            Improvements.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32o</td>
+          <td valign="top">19. Apr 2007</td>
+          <td>
+            OS_Unuse() error handling improved.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32n</td>
+          <td valign="top">16. Apr 2007</td>
+          <td>
+            OS_SUSPEND_TASK_ON_TERMINATE implemented.<br>
+            Fixes a Windows bug which caused emBOS Simulation to crash.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32m</td>
+          <td valign="top">02. Apr 2007</td>
+          <td>
+            OS_TimerEx implemented.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32l</td>
+          <td valign="top">28. Mar 2007</td>
+          <td>
+            Round robin switching corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32k</td>
+          <td valign="top">21. Mar 2007</td>
+          <td>
+            Communication to embOSView modified.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32j</td>
+          <td valign="top">31. Jan 2007</td>
+          <td>
+            OS_CSemaRequest() implemented.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32i</td>
+          <td valign="top">26. Jan 2007</td>
+          <td>
+            Switch to OS_Idle() modified.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32h</td>
+          <td valign="top">15. Jan 2007</td>
+          <td>
+            Error handling for resource semaphores corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32g</td>
+          <td valign="top">30. Dec 2006</td>
+          <td>
+            OS_PTR_TO_VALUE() added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32f</td>
+          <td valign="top">07. Dec 2006</td>
+          <td>
+            OS_INIT_SYS_LOCKS() added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32e</td>
+          <td valign="top">07. Nov 2006</td>
+          <td>
+            OS_GetMessageCnt() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32d</td>
+          <td valign="top">05. Nov 2006</td>
+          <td>
+            OS_Q_GetPtrTimed() added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32c</td>
+          <td valign="top">22. Sep 2006</td>
+          <td>
+            OS_EVENT_WaitTimed() added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32b</td>
+          <td valign="top">18. Sep 2006</td>
+          <td>
+            Enhanced debug information.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32a</td>
+          <td valign="top">04. Aug 2006</td>
+          <td>Extended task implemented
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.32</td>
+          <td valign="top">18. Jul 2006</td>
+          <td>Event objects implemented</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.30d</td>
+          <td valign="top">20. Jun 2006</td>
+          <td>OS_MEMF_Create() corrected</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.30b</td>
+          <td valign="top">18. May 2006</td>
+          <td>New sources version 3.30b, OS_Suspend() corrected</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.28p</td>
+          <td valign="top">16. Feb 2006</td>
+          <td>New error handling for version without round robin scheduling</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.28i</td>
+          <td valign="top">14. Oct 2005</td>
+          <td>New embOS sources 3.28i with new function OS_DeleteRSema()</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.28h</td>
+          <td valign="top">29. Aug 2005</td>
+          <td>New embOS sources 3.28h, Enhanced error checks</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.28g</td>
+          <td valign="top">23. Aug 2005</td>
+          <td>New embOS sources 3.28g</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.24</td>
+          <td valign="top">25. Nov 2004</td>
+          <td>New embOS sources 3.24</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.20d</td>
+          <td valign="top">22. Jan 2004</td>
+          <td>New embOS sources V3.20, OS_GetMailTimed corrected</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.10k</td>
+          <td valign="top">13. Jan 2003</td>
+          <td>Upgrade to new generic source V3.10k</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.06f</td>
+          <td valign="top">24. Oct 2001</td>
+          <td>Upgrade to new generic source V3.06f</td>
+        </tr>
+        <tr>
+          <td valign="top">V3.06</td>
+          <td valign="top">23. Jul 2001</td>
+          <td>First version with release history</td>
         </tr>
       </table>
-      <!-- ****************************************************************** -->
-      <!-- MISCELLANEOUS                                                      -->
-      <!-- ****************************************************************** -->
-      <h1 class="newsbox"><a name="misc"></a>Miscellaneous</h1>
-      <p class="maintext">This document was first released with version 3.32j of 
-        the software.<br>
-        Software released earlier is documented internally. This information is 
-        available at request.
-      </p>
 <!-- ****** Modifiable information ends here ******** -->
 <hr>
 <p class="maintext">
-Copyright 2001-2014 SEGGER Microcontroller GmbH &amp; Co. KG. All rights reserved.<br>
+Copyright 2001-2017 SEGGER Microcontroller GmbH &amp; Co. KG. All rights reserved.<br>
 For more information, please visit our website <a href ="http://www.segger.com/">www.segger.com</a> or contact us at <a href ="mailto:info@segger.com">info@segger.com</a><br>
 </p>
 </body>

@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-18
+* Last updated for version 5.9.0
+* Last updated on  2017-05-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -46,6 +46,9 @@
 #endif /* Q_SPY */
 
 Q_DEFINE_THIS_MODULE("qep_hsm")
+
+/****************************************************************************/
+char_t const QP_versionStr[6] = QP_VERSION_STR;
 
 /****************************************************************************/
 /*! internal QEP constants */
@@ -78,7 +81,7 @@ static QEvt const QEP_reservedEvt_[] = {
 /*! helper macro to trigger exit action in an HSM */
 #define QEP_EXIT_(state_) do { \
     if (QEP_TRIG_((state_), Q_EXIT_SIG) == (QState)Q_RET_HANDLED) { \
-        QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.smObjFilter, me) \
+        QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.locFilter[SM_OBJ], me) \
             QS_OBJ_(me); \
             QS_FUN_(state_); \
         QS_END_() \
@@ -88,7 +91,7 @@ static QEvt const QEP_reservedEvt_[] = {
 /*! helper macro to trigger entry action in an HSM */
 #define QEP_ENTER_(state_) do { \
     if (QEP_TRIG_((state_), Q_ENTRY_SIG) == (QState)Q_RET_HANDLED) { \
-        QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.smObjFilter, me) \
+        QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.locFilter[SM_OBJ], me) \
             QS_OBJ_(me); \
             QS_FUN_(state_); \
         QS_END_() \
@@ -121,11 +124,11 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
 * @include qep_qhsm_ctor.c
 */
 void QHsm_ctor(QHsm * const me, QStateHandler initial) {
-    static QMsmVtbl const vtbl = { /* QHsm virtual table */
+    static struct QHsmVtbl const vtbl = { /* QHsm virtual table */
         &QHsm_init_,
         &QHsm_dispatch_
     };
-    me->vptr  = &vtbl;
+    me->vptr      = &vtbl;
     me->state.fun = Q_STATE_CAST(&QHsm_top);
     me->temp.fun  = initial;
 }
@@ -158,7 +161,7 @@ void QHsm_init_(QHsm * const me, QEvt const * const e) {
     /* the top-most initial transition must be taken */
     Q_ASSERT_ID(210, r == (QState)Q_RET_TRAN);
 
-    QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.smObjFilter, me)
+    QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.locFilter[SM_OBJ], me)
         QS_OBJ_(me);           /* this state machine object */
         QS_FUN_(t);            /* the source state */
         QS_FUN_(me->temp.fun); /* the target of the initial transition */
@@ -166,8 +169,8 @@ void QHsm_init_(QHsm * const me, QEvt const * const e) {
 
     /* drill down into the state hierarchy with initial transitions... */
     do {
-        QStateHandler path[QHSM_MAX_NEST_DEPTH_];
-        int_fast8_t ip = (int_fast8_t)0; /* transition entry path index */
+        QStateHandler path[QHSM_MAX_NEST_DEPTH_]; /* tran entry path array */
+        int_fast8_t ip = (int_fast8_t)0;          /* tran entry path index */
 
         path[0] = me->temp.fun;
         (void)QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
@@ -191,7 +194,7 @@ void QHsm_init_(QHsm * const me, QEvt const * const e) {
 
 #ifdef Q_SPY
         if (r == (QState)Q_RET_TRAN) {
-            QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.smObjFilter, me)
+            QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.locFilter[SM_OBJ], me)
                 QS_OBJ_(me);           /* this state machine object */
                 QS_FUN_(t);            /* the source state */
                 QS_FUN_(me->temp.fun); /* the target of the initial tran. */
@@ -201,7 +204,7 @@ void QHsm_init_(QHsm * const me, QEvt const * const e) {
 
     } while (r == (QState)Q_RET_TRAN);
 
-    QS_BEGIN_(QS_QEP_INIT_TRAN, QS_priv_.smObjFilter, me)
+    QS_BEGIN_(QS_QEP_INIT_TRAN, QS_priv_.locFilter[SM_OBJ], me)
         QS_TIME_();    /* time stamp */
         QS_OBJ_(me);   /* this state machine object */
         QS_FUN_(t);    /* the new active state */
@@ -255,9 +258,9 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
     * the state configuration must be stable
     */
     Q_REQUIRE_ID(400, (t != Q_STATE_CAST(0))
-                      && (t == me->temp.fun));
+                       && (t == me->temp.fun));
 
-    QS_BEGIN_(QS_QEP_DISPATCH, QS_priv_.smObjFilter, me)
+    QS_BEGIN_(QS_QEP_DISPATCH, QS_priv_.locFilter[SM_OBJ], me)
         QS_TIME_();         /* time stamp */
         QS_SIG_(e->sig);    /* the signal of the event */
         QS_OBJ_(me);        /* this state machine object */
@@ -271,7 +274,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
 
         if (r == (QState)Q_RET_UNHANDLED) { /* unhandled due to a guard? */
 
-            QS_BEGIN_(QS_QEP_UNHANDLED, QS_priv_.smObjFilter, me)
+            QS_BEGIN_(QS_QEP_UNHANDLED, QS_priv_.locFilter[SM_OBJ], me)
                 QS_SIG_(e->sig); /* the signal of the event */
                 QS_OBJ_(me);     /* this state machine object */
                 QS_FUN_(s);      /* the current state */
@@ -293,9 +296,9 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
         /* exit current state to transition source s... */
         for (; t != s; t = me->temp.fun) {
             if (QEP_TRIG_(t, Q_EXIT_SIG) == (QState)Q_RET_HANDLED) {
-                QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.smObjFilter, me)
-                    QS_OBJ_(me); /* this state machine object */
-                    QS_FUN_(t);  /* the exited state */
+                QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.locFilter[SM_OBJ], me)
+                    QS_OBJ_(me);  /* this state machine object */
+                    QS_FUN_(t);   /* the exited state */
                 QS_END_()
 
                 (void)QEP_TRIG_(t, QEP_EMPTY_SIG_); /* find superstate of t */
@@ -307,10 +310,10 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
 #ifdef Q_SPY
         if (r == (QState)Q_RET_TRAN_HIST) {
 
-            QS_BEGIN_(QS_QEP_TRAN_HIST, QS_priv_.smObjFilter, me)
-                QS_OBJ_(me);     /* this state machine object */
-                QS_FUN_(t);      /* the source of the transition */
-                QS_FUN_(path[0]);/* the target of the tran. to history */
+            QS_BEGIN_(QS_QEP_TRAN_HIST, QS_priv_.locFilter[SM_OBJ], me)
+                QS_OBJ_(me);      /* this state machine object */
+                QS_FUN_(t);       /* the source of the transition */
+                QS_FUN_(path[0]); /* the target of the tran. to history */
             QS_END_()
 
         }
@@ -327,9 +330,9 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
         /* drill into the target hierarchy... */
         while (QEP_TRIG_(t, Q_INIT_SIG) == (QState)Q_RET_TRAN) {
 
-            QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.smObjFilter, me)
-                QS_OBJ_(me); /* this state machine object */
-                QS_FUN_(t);  /* the source (pseudo)state */
+            QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.locFilter[SM_OBJ], me)
+                QS_OBJ_(me);           /* this state machine object */
+                QS_FUN_(t);            /* the source (pseudo)state */
                 QS_FUN_(me->temp.fun); /* the target of the transition */
             QS_END_()
 
@@ -357,7 +360,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
             t = path[0]; /* current state becomes the new source */
         }
 
-        QS_BEGIN_(QS_QEP_TRAN, QS_priv_.smObjFilter, me)
+        QS_BEGIN_(QS_QEP_TRAN, QS_priv_.locFilter[SM_OBJ], me)
             QS_TIME_();          /* time stamp */
             QS_SIG_(e->sig);     /* the signal of the event */
             QS_OBJ_(me);         /* this state machine object */
@@ -369,7 +372,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
 #ifdef Q_SPY
     else if (r == (QState)Q_RET_HANDLED) {
 
-        QS_BEGIN_(QS_QEP_INTERN_TRAN, QS_priv_.smObjFilter, me)
+        QS_BEGIN_(QS_QEP_INTERN_TRAN, QS_priv_.locFilter[SM_OBJ], me)
             QS_TIME_();          /* time stamp */
             QS_SIG_(e->sig);     /* the signal of the event */
             QS_OBJ_(me);         /* this state machine object */
@@ -379,7 +382,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
     }
     else {
 
-        QS_BEGIN_(QS_QEP_IGNORED, QS_priv_.smObjFilter, me)
+        QS_BEGIN_(QS_QEP_IGNORED, QS_priv_.locFilter[SM_OBJ], me)
             QS_TIME_();          /* time stamp */
             QS_SIG_(e->sig);     /* the signal of the event */
             QS_OBJ_(me);         /* this state machine object */
@@ -497,7 +500,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
                             }
                         } while (iq >= (int_fast8_t)0);
 
-                        /* not found? */
+                        /* LCA not found? */
                         if (r != (QState)Q_RET_HANDLED) {
                             /* (g) check each source->super->...
                             * for each target->super...
@@ -509,7 +512,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
                                     == (QState)Q_RET_HANDLED)
                                 {
                                     QS_BEGIN_(QS_QEP_STATE_EXIT,
-                                              QS_priv_.smObjFilter, me)
+                                              QS_priv_.locFilter[SM_OBJ], me)
                                         QS_OBJ_(me);
                                         QS_FUN_(t);
                                     QS_END_()
@@ -525,7 +528,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
                                         ip = (int_fast8_t)(iq-(int_fast8_t)1);
                                         /* cause breaking out of inner loop */
                                         iq = (int_fast8_t)(-1);
-                                        r = (QState)Q_RET_HANDLED;
+                                        r = (QState)Q_RET_HANDLED; /* break */
                                     }
                                     else {
                                         --iq;

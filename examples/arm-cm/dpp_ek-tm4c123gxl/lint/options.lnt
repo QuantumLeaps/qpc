@@ -36,7 +36,7 @@
 -iC:\tools\gnu_arm-eabi\arm-eabi\include
 
 // define ARM Architecture
--D__ARM_ARCH=7        
+-D__ARM_ARCH=7
 
 // the location of the QTools lint directory (need to adjust!!!)
 -iC:\tools\qtools\lint

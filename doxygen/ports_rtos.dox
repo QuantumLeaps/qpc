@@ -1,20 +1,27 @@
 /*##########################################################################*/
 /*! @page ports_rtos Ports to Third-Party RTOS
 
-The main purpose of integrating QP/C with conventional RTOSes is to enable you to incorporate various communication stacks (TCP/IP, USB, CAN, etc.) as well as other middleware, which requires the ability to **block** the task code.
+<p>The most important reason why you might consider using a traditional RTOS kernel for executing event-driven QP/C applications is compatibility with the existing software. For example, most communication stacks (TCP/IP, USB, CAN, etc.) are designed for a traditional **blocking** kernel. In addition, a lot of legacy code requires blocking mechanisms, such as semaphores or time-delays. A conventional RTOS allows you to run the existing software components as regular "blocking" tasks in parallel to the event-driven QP/C application.
+</p>
+
+Another reason you might be interested in running QP/C on top of a conventional RTOS is **safety certification**, which your RTOS kernel might have but the built-in QP kernels currently don't provide.
+
+@note
+You do **not** need to use a traditional RTOS just to achieve preemptive multitasking with QP. The @ref comp_qk "preemptive QK kernel", available as part of the QP package, supports preemptive priority-based multitasking and is fully compatible with Rate Monotonic Scheduling to achieve guaranteed, hard real-time performance. The preemptive, run-to-completion QK kernel perfectly matches the run-to-completion execution semantics of active objects, yet it is simpler, faster, and more efficient than any traditional blocking kernel.
+
+The QP/C framework can work with virtually any traditional real-time operating
+system (RTOS). The currently supported 3rd-party RTOS kernels are:
 
 - @subpage embos
 - @subpage threadx
 - @subpage ti-rtos
 - @subpage ucos-ii
+- <a href="http://erika.tuxfamily.org/drupal/news/qp-framework-erika-enterprise" target="_blank" class="extern">OSEK/VDX RTOS ERIKA Enterprise</a>
+
+Combined with a conventional RTOS, QP/C takes full advantage of the multitasking capabilities of the RTOS by executing each active object in a separate RTOS task. The QP/C Platform Abstraction Layer (PAL) includes an abstract RTOS interface to enable integration between QP/C and the underlying RTOS. Specifically, the PAL allows adapting most message queue variants as event queues of active objects as well as most memory partitions as QP/C event pools.
 
 @attention
 Starting from version 5.6.0, QP/C includes the conventional, preemptive @ref qxk " blocking QXK kernel", which is recommended as the preferred RTOS kernel for applications that need to mix active objects with traditional blocking code. Due to the tight and optimal integration between QXK and the rest of QP, QXK offers better performance and smaller memory footprint than any @ref ports_rtos "QP port to a 3rd-party RTOS". Additionally, QXK is already included in QP, so you avoid additional licensing costs of 3rd-party kernels.
-
-\n
-@note
-You do **not** need to use a traditional RTOS just to achieve preemptive multitasking with QP. The @ref comp_qk "preemptive QK kernel", available as part of the QP package, supports preemptive priority-based multitasking and is fully compatible with Rate Monotonic Scheduling to achieve guaranteed, hard real-time performance. The preemptive, run-to-completion QK kernel perfectly matches the run-to-completion execution semantics of active objects, yet it is simpler, faster, and more efficient than any traditional blocking kernel.
-
 
 */
 /*##########################################################################*/

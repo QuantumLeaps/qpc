@@ -4,8 +4,8 @@
 * @brief QMutex_init(), QMutex_lock and QMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-29
+* Last updated for version 5.9.0
+* Last updated on  2017-03-02
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -154,14 +154,16 @@ void QMutex_unlock(QMutex * const me) {
     Q_REQUIRE_ID(800, (!QK_ISR_CONTEXT_())
                       && (me->prevPrio != (uint_fast8_t)MUTEX_UNUSED));
 
-    QS_BEGIN_NOCRIT_(QS_SCHED_UNLOCK, (void *)0, (void *)0)
-        QS_TIME_(); /* timestamp */
-        QS_2U8_((uint8_t)me->prevPrio,  /* the previouis lock priority */
-                (uint8_t)QK_attr_.lockPrio); /* the lock priority */
-    QS_END_NOCRIT_()
-
     p = me->prevPrio;
     me->prevPrio = (uint_fast8_t)MUTEX_UNUSED;
+
+    QS_BEGIN_NOCRIT_(QS_SCHED_UNLOCK, (void *)0, (void *)0)
+        QS_TIME_(); /* timestamp */
+        QS_2U8_((uint8_t)QK_attr_.lockPrio, /* the previouis lock priority */
+                (uint8_t)((QK_attr_.lockPrio > p) /* the new lock priority */
+                          ? p
+                          : QK_attr_.lockPrio));
+    QS_END_NOCRIT_()
 
     if (QK_attr_.lockPrio > p) {
         QK_attr_.lockPrio = p; /* restore the previous lock prio */

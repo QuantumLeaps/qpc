@@ -1,6 +1,58 @@
 /**
 @page history Revision History
 
+@section qpc_5_9_0 Version 5.9.0, 2017-05-19
+The main purpose of this milestone QP/C release is to provide support for the powerful **Unit Testing Framework** called
+<a href="https://state-machine.com/qtools/qutest.html" target="_blank" class="extern"><strong>QUTest&trade;</strong> (pronounced *cutest*)</a>.
+QUTest&trade; is the fundamental tooling for Test-Driven Development (TDD) of QP/C applications, which is a highly recommended best-practice. This release introduces changes in the QS-RX (receive) channel and adds several new callbacks.
+
+@note The signatrue of the QS_onCommand() has changed and the function now takes 3 arbitrary 32-bit parameters instead of one. This introduces backwards-incompatibility with previous code that used QS_onCommand().
+
+
+This release also changes the critical section for QP/C ports to ARM Cortex-M
+in that the policy of "save and restore interrupt status" is used. This policy
+permits nesting of critical sections, which was requested by customers.
+
+Additionally, this release changes the selective interrupt disabling for
+ARM Cortex-M3/4/7 (with the BASEPRI register) to address the hardware problem
+on ARM Cortex-M7 core r0p1 (ARM-EPM-064408, errata 837070). The QP ports to
+ARM Cortex-M3/4/7 now implement the workaround recommended by ARM, which is
+to surround MSR BASEPRI with the "CPSID i"/"CPSIE i" pair. This workaround
+works also for Cortex-M3/M4 cores.
+
+New ports:
+- ports/win32-qutest folder contains port to QUTest for Windows
+- ports/posix-qutest folder contains port to QUTest for POSIX (Linux)
+- ports/arm-cm/qutest folder contains port to QUTest for ARM Cortex-M
+
+New examples:
+- examples/qutest/dpp folder contains the QUTest DPP test for various
+  platforms (Win32, EFM32-SLSTK3401A and EK-TM4C123GXL)
+- examples/qutest/qhsmtst folder contains the QUTest test for
+  the QHsmTst state machine (structural test)
+- examples/qutest/qmsmtst folder contains the QUTest test for
+  the QMsmTst state machine (structural test)
+- examples/qutest/self_test folder contains the QUTest self-test for
+  various features of QUTest
+- examples/qutest/TDDbook_Flash folder contains the QUTest
+  of a flash memory driver from Chapter 10 of the "TDD-book" by James
+  Grenning.
+- examples/qutest/TDDbook_LedDriver folder contains the QUTest
+  of a flash memory driver from Chapters 3&4 of the "TDD-book" by James
+  Grenning.
+- examples/qutest/TDDbook_Sprintf folder contains the QUTest
+  of a flash memory driver from Chapter 1 of the "TDD-book" by James
+  Grenning.
+
+Updates of 3rd_party software:
+- the 3rd_party/CMSIS folder has been updated to CMSIS 5.0.2.
+- the 3rd_party/embOS folder has been updated to embOS 4.34.1
+
+Finally, this release fixes the following bugs:
+- bug#162 "QF critical sections require modification for M7 core"
+
+
+------------------------------------------------------------------------------
 @section qpc_5_8_2 Version 5.8.2, 2017-02-08
 This release adds examples for the ARM Cortex-<strong>M7</strong> CPU. Specifically,
 the release contains the standard @ref dpp "Dining Philosophers Problem (DPP)"
@@ -25,7 +77,7 @@ Finally, this release fixes the following bugs:
 @section qpc_5_8_1 Version 5.8.1, 2016-12-16
 This release is in response to a recent finding that many QP users of the
 ports to ARM Cortex-M3/M4 forget to explicitly set their interrupt priorities,
-as described in the AppNote <a href="http://www.state-machine.com/doc/AN_ARM-Cortex-M_Interrupt-Priorities.pdf" target="_blank" class="extern">"Setting ARM Cortex-M Interrupt Priorities in QP 5.x"</a>.
+as described in the AppNote <a href="https://www.state-machine.com/doc/AN_ARM-Cortex-M_Interrupt-Priorities.pdf" target="_blank" class="extern">"Setting ARM Cortex-M Interrupt Priorities in QP 5.x"</a>.
 
 Specifically, this release improves safety of QP ports to ARM Cortex-M3/M4,
 by initializing the interrupt priorities to a safe default in a generic,
@@ -120,7 +172,7 @@ This release adds QP ports to the TI-RTOS kernel (SYS/BIOS) with TI-CCS
 and IAR EWARM toolsets. Examples are provided for the EK-TM4C123GXL
 (TivaC LaunchPad) in the directory:
 
-qpc/examples/ti-rtos/arm-cm/dpp_ek-tm4c123gxl 
+qpc/examples/ti-rtos/arm-cm/dpp_ek-tm4c123gxl
 
 NOTE: The examples require a separate installation of the TI-RTOS
 (file tirtos_tivac_setupwin32_2_16_01_14.exe)
@@ -190,7 +242,7 @@ Changes in detail:
 This release adds support for the new board: EFM32-SLSTK3401A (Pearl Gecko Starter Kit from Silicon Labs). This board replaces the Stellaris EK-LM3S811 board, which has been discontinued. (The Stellaris EK-LM3S811 board had been used in the "Fly 'n' Shoot" game example accompanying the PSiCC2 book).
 
 This release also introduces a new version of the QWIN GUI Toolkit in the Windows prototypes for the "Fly 'n' Shoot" game and the DPP-GUI
-version (see http://www.state-machine.com/products/index.html#QWIN).
+version (see https://www.state-machine.com/products/#QWIN).
 
 Additionally, this release also includes the QP/C integration with the emWin emgedded GUI from SEGGER, which is also the same product as
 uC/GUI distributed by Micrium (@ref exa_emwin).
@@ -360,7 +412,7 @@ The main purpose of this release is the extension of the QS software tracing sys
 9. Remotely reset of the Target
 
 
-This QP/C version complements the recent release of Qtools 5.5.0, where the <a href="http://www.state-machine.com/qspy ">QSPY host application</a> has been extended with a UDP socket, which is open for communication with various Front-Ends (GUI-based or headless). An example Front-End written in Tcl/Tk called "QspyView" has been developed to demonstrate all the features. The example application located in the directory qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qspy contains customization of the "qspyview" script for the DPP application. Please refer to the documentation of this example (@ref arm-cm_dpp_ek-tm4c123gxl) for more information.
+This QP/C version complements the recent release of Qtools 5.5.0, where the <a href="https://www.state-machine.com/qspy ">QSPY host application</a> has been extended with a UDP socket, which is open for communication with various Front-Ends (GUI-based or headless). An example Front-End written in Tcl/Tk called "QspyView" has been developed to demonstrate all the features. The example application located in the directory qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qspy contains customization of the "qspyview" script for the DPP application. Please refer to the documentation of this example (@ref arm-cm_dpp_ek-tm4c123gxl) for more information.
 
 Finally, this release adds a state machine operation for implementing
 the shallow history mechanism. The operation is called "childState",
@@ -536,7 +588,7 @@ This release fixes the following bugs:
 
 Additionally, this release improves the uC/OS-II port in that it is now generic and applicable for any CPU, for which uC/OS-II port exists. Specifically, all references to DOS or x86 have been removed from the QP port and any CPU-specific dependencies have been placed in the separate part of the port.
 
-Finally, this release improves the "QP/C Reference Manual" generated by Doxygen and available both inside the QP/C baseline distribution (qpc.chm file) and online at: http://www.state-machine.com/qpc  
+Finally, this release improves the "QP/C Reference Manual" generated by Doxygen and available both inside the QP/C baseline distribution (qpc.chm file) and online at: https://www.state-machine.com/qpc
 
 
 ------------------------------------------------------------------------------
@@ -679,7 +731,7 @@ to 15 by breaking up the QHsm_dispatch_() function. The code metrics
 report, including cyclomatic complexity by function as well as other
 standard code metrics (e.g., lines of code), is now included in the
 "QP/C Reference Manual", see
-http://www.state-machine.com/qpc/metrics.html
+https://www.state-machine.com/qpc/metrics.html
 
 Also, in this release all internal QP data that were previously
 uninitialized are now explicitly initialized to zero. In other words,
@@ -884,7 +936,7 @@ NVIC_SetPriority() CMSIS function.
 
 For more information, please read the short Application Note "Setting
 ARM Cortex-M Interrupt Priorities in QP 5.1" available at:
-http://www.state-machine.com/doc/AN_ARM-Cortex-M_Interrupt-Priorities.pdf
+https://www.state-machine.com/doc/AN_ARM-Cortex-M_Interrupt-Priorities.pdf
 
 
 ------------------------------------------------------------------------------

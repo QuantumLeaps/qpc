@@ -1,8 +1,8 @@
 /**************************************************************************//**
  * @file     cmsis_gcc.h
  * @brief    CMSIS compiler GCC header file
- * @version  V5.0.1
- * @date     02. February 2017
+ * @version  V5.0.2
+ * @date     13. February 2017
  ******************************************************************************/
 /*
  * Copyright (c) 2009-2017 ARM Limited. All rights reserved.
@@ -33,39 +33,71 @@
 
 /* CMSIS compiler specific defines */
 #ifndef   __ASM
-  #define __ASM                     __asm
+  #define __ASM                                  __asm
 #endif
 #ifndef   __INLINE
-  #define __INLINE                  inline
+  #define __INLINE                               inline
 #endif
 #ifndef   __STATIC_INLINE
-  #define __STATIC_INLINE           static inline
+  #define __STATIC_INLINE                        static inline
 #endif
 #ifndef   __NO_RETURN
-  #define __NO_RETURN               __attribute__((noreturn))
+  #define __NO_RETURN                            __attribute__((noreturn))
 #endif
 #ifndef   __USED
-  #define __USED                    __attribute__((used))
+  #define __USED                                 __attribute__((used))
 #endif
 #ifndef   __WEAK
-  #define __WEAK                    __attribute__((weak))
-#endif
-#ifndef   __UNALIGNED_UINT32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpacked"
-#pragma GCC diagnostic ignored "-Wattributes"
-  struct __attribute__((packed)) T_UINT32 { uint32_t v; };
-#pragma GCC diagnostic pop
-  #define __UNALIGNED_UINT32(x)     (((struct T_UINT32 *)(x))->v)
-#endif
-#ifndef   __ALIGNED
-  #define __ALIGNED(x)              __attribute__((aligned(x)))
+  #define __WEAK                                 __attribute__((weak))
 #endif
 #ifndef   __PACKED
-  #define __PACKED                  __attribute__((packed, aligned(1)))
+  #define __PACKED                               __attribute__((packed, aligned(1)))
 #endif
 #ifndef   __PACKED_STRUCT
-  #define __PACKED_STRUCT           struct __attribute__((packed, aligned(1)))
+  #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+#endif
+#ifndef   __UNALIGNED_UINT32        /* deprecated */
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wpacked"
+  #pragma GCC diagnostic ignored "-Wattributes"
+  struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+  #pragma GCC diagnostic pop
+  #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+#endif
+#ifndef   __UNALIGNED_UINT16_WRITE
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wpacked"
+  #pragma GCC diagnostic ignored "-Wattributes"
+  __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+  #pragma GCC diagnostic pop
+  #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))->v) = (val))
+#endif
+#ifndef   __UNALIGNED_UINT16_READ
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wpacked"
+  #pragma GCC diagnostic ignored "-Wattributes"
+  __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  #pragma GCC diagnostic pop
+  #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(addr))->v)
+#endif
+#ifndef   __UNALIGNED_UINT32_WRITE
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wpacked"
+  #pragma GCC diagnostic ignored "-Wattributes"
+  __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  #pragma GCC diagnostic pop
+  #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))->v) = (val))
+#endif
+#ifndef   __UNALIGNED_UINT32_READ
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wpacked"
+  #pragma GCC diagnostic ignored "-Wattributes"
+  __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+  #pragma GCC diagnostic pop
+  #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(addr))->v)
+#endif
+#ifndef   __ALIGNED
+  #define __ALIGNED(x)                           __attribute__((aligned(x)))
 #endif
 
 
@@ -297,6 +329,33 @@ __attribute__((always_inline)) __STATIC_INLINE void __set_MSP(uint32_t topOfMain
 __attribute__((always_inline)) __STATIC_INLINE void __TZ_set_MSP_NS(uint32_t topOfMainStack)
 {
   __ASM volatile ("MSR msp_ns, %0" : : "r" (topOfMainStack) : );
+}
+#endif
+
+
+#if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+/**
+  \brief   Get Stack Pointer (non-secure)
+  \details Returns the current value of the non-secure Stack Pointer (SP) when in secure state.
+  \return               SP Register value
+ */
+__attribute__((always_inline)) __STATIC_INLINE uint32_t __TZ_get_SP_NS(void)
+{
+  register uint32_t result;
+
+  __ASM volatile ("MRS %0, sp_ns" : "=r" (result) );
+  return(result);
+}
+
+
+/**
+  \brief   Set Stack Pointer (non-secure)
+  \details Assigns the given value to the non-secure Stack Pointer (SP) when in secure state.
+  \param [in]    topOfStack  Stack Pointer value to set
+ */
+__attribute__((always_inline)) __STATIC_INLINE void __TZ_set_SP_NS(uint32_t topOfStack)
+{
+  __ASM volatile ("MSR sp_ns, %0" : : "r" (topOfStack) : );
 }
 #endif
 

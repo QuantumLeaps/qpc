@@ -68,7 +68,7 @@ so it assumes the presence of a DHCP server, such as a typical Ethernet
 router. The IP address acquired from the DHCP will be displayed at the top
 of the screen. You should type this IP address at your browser, for example:
 
-http:://192.168.1.77
+http://192.168.1.77
 
 This should open an example website served by the EK-LM3S6965 board. This
 website contains a few menu item for testing SSI, CGI, and UDP. Please
@@ -136,8 +136,8 @@ qfsgen Utility to Generate Websites
 Quantum Leaps provides a cross-platform, command-line utility, called
 "qfsgen", which converts all the files in a given folder (your website) into
 a C header file that contains a bunch of constant byte arrays representing
-your files and directories. This generated file (fsdata.h) is included
-in the fs.c ROM-Based File System implementation.
+your files and directories. This generated file (fsdata.h) is subsequently
+included in the fs.c ROM-Based File System implementation.
 
 The "qfsgen" utility (both compiled executable and source code) is
 provided in the Qtools collection, available for download from:
@@ -149,6 +149,16 @@ NOTE: The qfsgen utility is a simple executable (versions are available
 for Windows and Linux), which does not require any interpreters to run
 (such as Python, etc.)
 ***
+
+You use the qfsgen utility from command-prompt. First, change current
+directory to examples\lwip\arm-cm\lwip_ek-lm3s6965 and from there
+execute:
+
+qfsgen website -h
+
+This will recursively generate the file-system corresponding to the
+directory website with HTTP headers (-h option).
+
 
 Utilities to Test UDP
 ---------------------

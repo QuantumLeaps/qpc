@@ -29,7 +29,7 @@ The standard QP/C distribution contains many @ref exa "Example Projects", which 
 
 ------------------------------------------------------------------------------
 @section comp Components of QP/C
-<p>As shown in the diagram below, the QP/C framework has a layered structure. The Target hardware sits at the bottom. The Board Support Package (BSP) above it provides access to the board-specific features, such as the peripherals. The real-time kernel (QV, QK, QXK, or a conventional 3rd-party RTOS) provides the foundation for multitasking, such as task scheduling, context-switching, and inter-task communication. Based on these services, the event-driven framework (QF) supplies the event-driven infrastructure for executing <a href="http://www.state-machine.com/doc/concepts.html#Active" target="_blank" class="extern">active objects</a> and ensuring thread-safe event-driven exchanges among them. Finally, the event-processor (QEP) implements the hierarchical state machine semantics (based on UML statecharts). The top layer is the application-level code consisting of loosely-coupled active objects.
+<p>As shown in the diagram below, the QP/C framework has a layered structure. The Target hardware sits at the bottom. The Board Support Package (BSP) above it provides access to the board-specific features, such as the peripherals. The real-time kernel (QV, QK, QXK, or a conventional 3rd-party RTOS) provides the foundation for multitasking, such as task scheduling, context-switching, and inter-task communication. Based on these services, the event-driven framework (QF) supplies the event-driven infrastructure for executing <a href="https://www.state-machine.com/doc/concepts#Active" target="_blank" class="extern">active objects</a> and ensuring thread-safe event-driven exchanges among them. Finally, the event-processor (QEP) implements the hierarchical state machine semantics (based on UML statecharts). The top layer is the application-level code consisting of loosely-coupled active objects.
 </p>
 
 @image html qp_components.jpg "Components of the QP Framework"
@@ -37,11 +37,11 @@ The standard QP/C distribution contains many @ref exa "Example Projects", which 
 
 <div class="separate"></div>
 @subsection comp_qep QEP Hierarchical Event Processor
-QEP is a universal, UML-compliant event processor that provides implementation of <a href="http://www.state-machine.com/doc/concepts.html#HSM" target="_blank" class="extern">hierarchical state machines</a> (UML statecharts) in highly readable ANSI-C. The hallmark of QEP implementation strategy is **traceability**, which means that every state machine element is mapped to code precisely, unambiguously, and exactly once. QEP fully supports hierarchical state nesting, which is the fundamental mechanism for reusing behavior across many states instead of repeating the same actions and transitions over and over again. (<span class="highlight">See @ref qep for detailed documentation</span>).
+QEP is a universal, UML-compliant event processor that provides implementation of <a href="https://www.state-machine.com/doc/concepts#HSM" target="_blank" class="extern">hierarchical state machines</a> (UML statecharts) in highly readable ANSI-C. The hallmark of QEP implementation strategy is **traceability**, which means that every state machine element is mapped to code precisely, unambiguously, and exactly once. QEP fully supports hierarchical state nesting, which is the fundamental mechanism for reusing behavior across many states instead of repeating the same actions and transitions over and over again. (<span class="highlight">See @ref qep for detailed documentation</span>).
 
 <div class="separate"></div>
 @subsection comp_qf QF Active-Object Framework
-QF is a lightweight, event-driven, <a href="http://www.state-machine.com/doc/concepts.html#Framework" target="_blank" class="extern">active object framework</a> specifically designed for real-time embedded (RTE) systems. The main job of the framework is  to guarantee **thread-safe**, run-to-completion event processing within each <a href="http://www.state-machine.com/doc/concepts.html#Active" target="_blank" class="extern">active object</a>. This includes direct event posting as well as publish-subscribe event delivery, event queuing, and time events (time-delayed requests for posing events). (<span class="highlight">See @ref qf  for detailed documentation</span>).
+QF is a lightweight, event-driven, <a href="https://www.state-machine.com/doc/concepts#Framework" target="_blank" class="extern">active object framework</a> specifically designed for real-time embedded (RTE) systems. The main job of the framework is  to guarantee **thread-safe**, run-to-completion event processing within each <a href="https://www.state-machine.com/doc/concepts#Active" target="_blank" class="extern">active object</a>. This includes direct event posting as well as publish-subscribe event delivery, event queuing, and time events (time-delayed requests for posing events). (<span class="highlight">See @ref qf  for detailed documentation</span>).
 
 <div class="separate"></div>
 @subsection comp_qv  QV Cooperative Kernel
@@ -74,14 +74,14 @@ The figure below shows the main classes comprising the QP/C framework and their 
   <li><span class="tag">0</span> The ::QEvt class represents events without parameters and serves as the base class for derivation of time events and any events with parameters. For example, application-level events `ObjectPosEvt` and `ObjectImageEvt` inherit ::QEvt and add to it some parameters (see [8]).
   </li>
 
-  <li><span class="tag">1</span> The abstract ::QHsm class represents a Hierarchical State Machine (HSM) with full support for hierarchical nesting of states, entry/exit actions, initial transitions, and transitions to history in any composite state. This class is designed for ease of manual coding of HSMs in C, but it is also supported by the <a class="extern" target="_blank" href="http://www.state-machine.com/qm">QM modeling tool</a>.
-::QHsm is also the base class for the ::QMsm state machine, which provides a superior efficiency, but requires the use of the <a class="extern" target="_blank" href="http://www.state-machine.com/qm">QM modeling tool</a> to generate code.
+  <li><span class="tag">1</span> The abstract ::QHsm class represents a Hierarchical State Machine (HSM) with full support for hierarchical nesting of states, entry/exit actions, initial transitions, and transitions to history in any composite state. This class is designed for ease of manual coding of HSMs in C, but it is also supported by the <a class="extern" target="_blank" href="https://www.state-machine.com/qm">QM modeling tool</a>.
+::QHsm is also the base class for the ::QMsm state machine, which provides a superior efficiency, but requires the use of the <a class="extern" target="_blank" href="https://www.state-machine.com/qm">QM modeling tool</a> to generate code.
   </li>
 
-  <li><span class="tag">2</span> The abstract ::QActive class represents an active object that uses the ::QHsm style implementation strategy for state machines. This strategy is tailored to manual coding, but it is also supported by the <a class="extern" target="_blank" href="http://www.state-machine.com/qm">QM modeling tool</a>. The resulting code is slower than in the ::QMsm-style implementation strategy. The @ref game application provides an example of application-level classes deriving from ::QActive and ::QHsm (see [6] and [7]).
+  <li><span class="tag">2</span> The abstract ::QActive class represents an active object that uses the ::QHsm style implementation strategy for state machines. This strategy is tailored to manual coding, but it is also supported by the <a class="extern" target="_blank" href="https://www.state-machine.com/qm">QM modeling tool</a>. The resulting code is slower than in the ::QMsm-style implementation strategy. The @ref game application provides an example of application-level classes deriving from ::QActive and ::QHsm (see [6] and [7]).
   </li>
 
-  <li><span class="tag">3</span> The abstract ::QMsm class (QM State Machine) derives from ::QHsm and implements the fastest and the most efficient strategy for coding hierarchical state machines, but this strategy is not human-maintainable and requires the use of the <a class="extern" target="_blank" href="http://www.state-machine.com/qm">QM modeling tool</a>. The class is abstract, meaning that it is not designed to be instantiated directly, but rather only for inheritance.
+  <li><span class="tag">3</span> The abstract ::QMsm class (QM State Machine) derives from ::QHsm and implements the fastest and the most efficient strategy for coding hierarchical state machines, but this strategy is not human-maintainable and requires the use of the <a class="extern" target="_blank" href="https://www.state-machine.com/qm">QM modeling tool</a>. The class is abstract, meaning that it is not designed to be instantiated directly, but rather only for inheritance.
   </li>
 
   <li><span class="tag">4</span> The abstract ::QMActive class represents an active object that uses the ::QMsm state machine implementation strategy. This strategy requires the use of the QM modeling tool to generate state machine code automatically, but the code is faster than in the ::QHsm style implementation strategy and needs less run-time support (smaller event-processor).
@@ -105,13 +105,13 @@ The figure below shows the main classes comprising the QP/C framework and their 
 ------------------------------------------------------------------------------
 @section sm State Machines
 
-The behavior of each active object in QP/C is specified by means of a <a href="http://www.state-machine.com/doc/concepts.html#HSM" target="_blank" class="extern">hierarchical state machine</a> (UML statechart), which is the most effective and elegant technique of decomposing event-driven behavior. The most important innovation of UML state machines over classical finite state machines (FSMs) is the hierarchical state nesting. The value of state nesting lies in avoiding repetitions, which are inevitable in the traditional "flat" FSM formalism and are the main reason for the "state-transition explosion" in FSMs. The semantics of state nesting allow substates to define only the differences of behavior from the superstates, thus promoting sharing and reusing behavior.
+The behavior of each active object in QP/C is specified by means of a <a href="https://www.state-machine.com/doc/concepts#HSM" target="_blank" class="extern">hierarchical state machine</a> (UML statechart), which is the most effective and elegant technique of decomposing event-driven behavior. The most important innovation of UML state machines over classical finite state machines (FSMs) is the hierarchical state nesting. The value of state nesting lies in avoiding repetitions, which are inevitable in the traditional "flat" FSM formalism and are the main reason for the "state-transition explosion" in FSMs. The semantics of state nesting allow substates to define only the differences of behavior from the superstates, thus promoting sharing and reusing behavior.
 
 @note
-The Quantum Leaps Application Note <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_Crash_Course_in_UML_State_Machines.pdf"><strong>A Crash Course in UML State Machines</strong></a> introduces the main state machine concepts backed up by examples.
+The Quantum Leaps Application Note <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_Crash_Course_in_UML_State_Machines.pdf"><strong>A Crash Course in UML State Machines</strong></a> introduces the main state machine concepts backed up by examples.
 @htmlonly
 <div class="image">
-<a target="_blank" href="http://www.state-machine.com/doc/AN_Crash_Course_in_UML_State_Machines.pdf"><img border="0" src="img/AN_Crash_Course_in_UML_State_Machines.gif" title="Download PDF"></a>
+<a target="_blank" href="https://www.state-machine.com/doc/AN_Crash_Course_in_UML_State_Machines.pdf"><img border="0" src="img/AN_Crash_Course_in_UML_State_Machines.gif" title="Download PDF"></a>
 <div class="caption">
 Application Note: A Crash Course in UML State Machines
 </div>
@@ -126,11 +126,11 @@ The hallmark of the QP/C implementation of UML state machines is **traceability*
 
 ------------------------------------------------------------------------------
 @section coding Coding Standard
-The QP/C framework has been developed in strict adherence to the documented <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_QL_Coding_Standard.pdf"><strong>Quantum Leaps Coding Standard</strong></a>.
+The QP/C framework has been developed in strict adherence to the documented <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_QL_Coding_Standard.pdf"><strong>Quantum Leaps Coding Standard</strong></a>.
 
 @htmlonly
 <div class="image">
-<a target="_blank" href="http://www.state-machine.com/doc/AN_QL_Coding_Standard.pdf"><img border="0" src="img/AN_Coding_Standard.jpg " title="Download PDF"></a>
+<a target="_blank" href="https://www.state-machine.com/doc/AN_QL_Coding_Standard.pdf"><img border="0" src="img/AN_Coding_Standard.jpg " title="Download PDF"></a>
 <div class="caption">
 Application Note: Quantum Leaps C/C++ Coding Standard
 </div>
@@ -146,14 +146,14 @@ Application Note: Quantum Leaps C/C++ Coding Standard
 
 @htmlonly
 <div class="image">
-<a target="_blank" href="http://www.state-machine.com/doc/AN_QP-C_MISRA.pdf"><img border="0" src="img/AN_MISRA-QPC.jpg" title="Download PDF"></a>
+<a target="_blank" href="https://www.state-machine.com/doc/AN_QP-C_MISRA.pdf"><img border="0" src="img/AN_MISRA-QPC.jpg" title="Download PDF"></a>
 <div class="caption">
 Application Note: QP/C MISRA-C:2004 Compliance Matrix
 </div>
 </div>
 @endhtmlonly
 
-All deviations are carefully limited into very specific contexts and are documented with the Application Note: <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_QP-C_MISRA.pdf"><strong>QP/C MISRA-C:2004 Compliance Matrix</strong></a>.
+All deviations are carefully limited into very specific contexts and are documented with the Application Note: <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_QP-C_MISRA.pdf"><strong>QP/C MISRA-C:2004 Compliance Matrix</strong></a>.
 
 @note
 MISRA and MISRA C are registered trademarks of MIRA Ltd, held on behalf of the MISRA Consortium.

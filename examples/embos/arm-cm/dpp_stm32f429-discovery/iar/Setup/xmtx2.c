@@ -1,16 +1,15 @@
 /*********************************************************************
-*               SEGGER MICROCONTROLLER GmbH & Co KG                  *
-*       Solutions for real time microcontroller applications         *
+*                SEGGER Microcontroller GmbH & Co. KG                *
+*                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2014  SEGGER Microcontroller GmbH & Co KG         *
+*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
 *                                                                    *
-*       www.segger.com     Support: support@segger.com               *
+*       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
 **********************************************************************
 *                                                                    *
 *       embOS * Real time operating system for microcontrollers      *
-*                                                                    *
 *                                                                    *
 *       Please note:                                                 *
 *                                                                    *
@@ -22,7 +21,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.00                                             *
+*       OS version: 4.34.1                                           *
 *                                                                    *
 **********************************************************************
 
@@ -36,7 +35,6 @@ Purpose : xmtx file interface -- thread locking and unlocking
 #include <yvals.h>
 #include "RTOS.h"
 
-_STD_BEGIN
 
 #if _MULTI_THREAD
 
@@ -53,7 +51,7 @@ _STD_BEGIN
 *
 *       __iar_file_Mtxinit()
 */
-void __iar_file_Mtxinit(__iar_Rmtx *m) {
+__ATTRIBUTES void __iar_file_Mtxinit(__iar_Rmtx* m) {
   OS__iar_system_Mtxinit(m);    // Mapped to system mutex
 }
 
@@ -61,7 +59,7 @@ void __iar_file_Mtxinit(__iar_Rmtx *m) {
 *
 *       __iar_file_Mtxdst()
 */
-void __iar_file_Mtxdst(__iar_Rmtx *m) {
+__ATTRIBUTES void __iar_file_Mtxdst(__iar_Rmtx* m) {
   OS__iar_system_Mtxdst(m);     // Mapped to system mutex
 }
 
@@ -69,7 +67,7 @@ void __iar_file_Mtxdst(__iar_Rmtx *m) {
 *
 *       __iar_file_Mtxlock()
 */
-void __iar_file_Mtxlock(__iar_Rmtx *m) {
+__ATTRIBUTES void __iar_file_Mtxlock(__iar_Rmtx* m) {
   OS__iar_system_Mtxlock(m);    // Mapped to system mutex
 }
 
@@ -77,13 +75,11 @@ void __iar_file_Mtxlock(__iar_Rmtx *m) {
 *
 *       __iar_file_Mtxunlock()
 */
-void __iar_file_Mtxunlock(__iar_Rmtx *m) {
+__ATTRIBUTES void __iar_file_Mtxunlock(__iar_Rmtx* m) {
   OS__iar_system_Mtxunlock(m);  // Mapped to system mutex
 }
 #endif /* _DLIB_FILE_DESCRIPTOR */
 
 #endif /* _MULTI_THREAD */
-
-_STD_END
 
 /****** End Of File *************************************************/

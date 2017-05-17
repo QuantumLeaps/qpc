@@ -1,7 +1,7 @@
 ;*****************************************************************************
-; Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), TI-ARM assembler
-; Last Updated for Version: 5.8.1
-; Date of the Last Update:  2016-12-12
+; Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), TI-ARM assembler
+; Last Updated for Version: 5.9.0
+; Date of the Last Update:  2017-03-17
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -28,7 +28,7 @@
 ; along with this program. If not, see <http://www.gnu.org/licenses/>.
 ;
 ; Contact information:
-; http://www.state-machine.com
+; https://state-machine.com
 ; mailto:info@state-machine.com
 ;*****************************************************************************
 
@@ -40,6 +40,8 @@
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
     .global QF_set_BASEPRI    ; set BASEPRI register
   .endif                      ; M3/M4/M7
+
+    .global QF_crit_entry     ; enter critical section
     .global QXK_get_IPSR      ; get the IPSR
     .global assert_failed     ; low-level assert handler
 
@@ -55,7 +57,6 @@ QF_BASEPRI        .equ (0xFF >> 2)
 QXK_CURR          .equ 0
 QXK_NEXT          .equ 4
 QXK_TOP_PRIO      .equ 8
-QXK_INT_NEST      .equ 20
 
     ; NOTE: keep in synch with the QMActive struct in "qf.h/qxk.h" !!!
 QMACTIVE_THREAD   .equ 40
@@ -76,8 +77,8 @@ QXK_init:   .asmfunc
 
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__ ; M3/4/7?
     ; NOTE:
-    ; On Cortex-M3/M4/.., this QXK port disables interrupts by means of the
-    ; BASEPRI register. However, this method cannot disable interrupt
+    ; On Cortex-M3/M4/M7.., this QK port disables interrupts by means of
+    ; the BASEPRI register. However, this method cannot disable interrupt
     ; priority zero, which is the default for all interrupts out of reset.
     ; The following code changes the SysTick priority and all IRQ priorities
     ; to the safe value QF_BASEPRI, wich the QF critical section can disable.
@@ -134,8 +135,8 @@ QXK_init_irq:
 
     LDR     r3,=0xE000ED18    ; System Handler Priority Register
     LDR     r2,[r3,#8]        ; r2 := SYSPRI3
-    MOVS    r0,#0xFF
-    LSLS    r0,r0,#16
+    MOVS    r1,#0xFF
+    LSLS    r1,r1,#16
     ORRS    r2,r1
     STR     r2,[r3,#8]        ; SYSPRI3 := r2, PendSV <- 0xFF
 
@@ -180,7 +181,9 @@ PendSV_Handler: .asmfunc
     ; <<<<<<<<<<<<<<<<<<<<<<< CRITICAL SECTION BEGIN <<<<<<<<<<<<<<<<<<<<<<<<<
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
     MOVS    r0,#QF_BASEPRI
-    MSR     BASEPRI,r0        ; selectively disable interrupts
+    CPSID   i                 ; selectively disable interrutps with BASEPRI
+    MSR     BASEPRI,r0        ; apply the workaround the Cortex-M7 erraturm
+    CPSIE   i                 ; 837070, see ARM-EPM-064408.
   .else                       ; M0/M0+
     CPSID   i                 ; disable interrupts (set PRIMASK)
   .endif                      ; M0/M0+
@@ -209,16 +212,16 @@ PendSV_Handler: .asmfunc
 
 PendSV_activate:
   .if __TI_VFP_SUPPORT__      ; if VFP available...
-    PUSH    {r0,lr}           ; ... push lr (EXC_RETURN) plus stack-aligner
+    PUSH    {r0,lr}           ; ...push lr (EXC_RETURN) plus stack-aligner
   .endif                      ; VFP available
     ; The QXK activator must be called in a thread context, while this code
     ; executes in the handler contex of the PendSV exception. The switch
     ; to the Thread mode is accomplished by returning from PendSV using
-    ; a fabricated exception stack frame, where the return address is the
-    ; QXK activator QXK_activate_().
+    ; a fabricated exception stack frame, where the return address is
+    ; QXK_activate_().
     ;
     ; NOTE: the QXK activator is called with interrupts DISABLED and also
-    ; it returns with interrupts DISABLED.
+    ; returns with interrupts DISABLED.
     MOVS    r3,#1
     LSLS    r3,r3,#24         ; r3:=(1 << 24), set the T bit  (new xpsr)
     LDR     r2,QXK_activate_addr ; address of QXK_activate_
@@ -424,6 +427,8 @@ Thread_ret: .asmfunc          ; to ensure that the label is THUMB
     ; thread. However, this must be accomplished by a return-from-exception,
     ; while we are still in the thread context. The switch to the exception
     ; contex is accomplished by triggering the NMI exception.
+    ; NOTE: The NMI exception is triggered with nterrupts DISABLED,
+    ; because QXK activator disables interrutps before return.
 
     ; before triggering the NMI exception, make sure that the
     ; VFP stack frame will NOT be used...
@@ -431,9 +436,10 @@ Thread_ret: .asmfunc          ; to ensure that the label is THUMB
     MRS     r0,CONTROL        ; r0 := CONTROL
     BICS    r0,r0,#4          ; r0 := r0 & ~4 (FPCA bit)
     MSR     CONTROL,r0        ; CONTROL := r0 (clear CONTROL[2] FPCA bit)
+    ISB                       ; ISB after MSR CONTROL (ARM AN 321, Sect.4.16)
   .endif                      ; VFP available
 
-    ; trigger NMI to return to preempted task...
+    ; trigger NMI to return to preempted thread...
     ; NOTE: The NMI exception is triggered with nterrupts DISABLED
     LDR     r0,ICSR_addr      ; Interrupt Control and State Register
     MOVS    r1,#1
@@ -596,15 +602,37 @@ QXK_stackInit_fill:
 ; NOTE: The BASEPRI register is implemented only in ARMv7 architecture
 ; and is **not** available in ARMv6 (M0/M0+/M1)
 ;
-; C prototype: void QF_set_BASEPRI(unsigned basePri);
+; C prototype: void QF_set_BASEPRI(unsigned basepri);
 ;*****************************************************************************
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
 QF_set_BASEPRI: .asmfunc
-    MSR     BASEPRI,r0        ; set BASEPRI
+    MSR     BASEPRI,r0        ; BASEPRI := r0 (basepri parameter)
     BX      lr                ; return to the caller
   .endasmfunc
   .endif                      ; M3/M4/M7
 
+;*****************************************************************************
+; The QF_crit_entry function enters the QF critical section
+; passed in r0.
+; NOTE: The BASEPRI register is implemented only in ARMv7 architecture
+; and is **not** available in ARMv6 (M0/M0+/M1)
+;
+; C prototype: unsigned QF_crit_entry(void);
+;*****************************************************************************
+QF_crit_entry: .asmfunc
+  .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
+    MRS     r0,BASEPRI        ; r0 := BASEPRI (to return)
+    MOVS    r1,#QF_BASEPRI
+    CPSID   i                 ; selectively disable interrutps with BASEPRI
+    MSR     BASEPRI,r1        ; apply the workaround the Cortex-M7 erraturm
+    CPSIE   i                 ; 837070, see ARM-EPM-064408.
+    BX      lr                ; return to the caller (previous BASEPRI in r0)
+  .else                       ; M0/M0+
+    MRS     r0,PRIMASK        ; r0 := PRIMASK (to return)
+    CPSID   i                 ; globally disable interrutps with PRIMASK
+    BX      lr                ; return to the caller (previous PRIMASK in r0)
+  .endif                      ; M0/M0+
+  .endasmfunc
 
 ;*****************************************************************************
 ; The QXK_get_IPSR function gets the IPSR register and returns it in r0.
@@ -614,7 +642,6 @@ QXK_get_IPSR: .asmfunc
     MRS     r0,ipsr           ; r0 := IPSR
     BX      lr                ; return to the caller
   .endasmfunc
-
 
 ;*****************************************************************************
 ; The assert_failed() function restores the SP (in case stack is corrupted)
@@ -626,9 +653,10 @@ assert_failed: .asmfunc
     LDR     r0,[r0,#0]        ; r0 := contents of VTOR
     LDR     r0,[r0]           ; r0 := VT[0] (first entry is the top of stack)
     MSR     MSP,r0            ; main SP := initial top of stack
+    DSB                       ; DSB/ISB pair if instructions needed...
+    ISB                       ; ...after MSR MSP (ARM AN 321, Sect.4.10)
     BL      Q_onAssert
   .endasmfunc
-
 
 ;*****************************************************************************
 ; Constants for PC-relative LDR

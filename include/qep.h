@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.2
-* Last updated on  2017-01-05
+* Last updated for version 5.9.0
+* Last updated on  2017-05-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -45,17 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      582
+#define QP_VERSION      590
 
 /*! The current QP version number string of the form X.Y.Z, where X is
 * a 1-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "5.8.2"
+#define QP_VERSION_STR  "5.9.0"
 
-/*! Tamperproof current QP release (5.8.2) and date (2017-02-08) */
-#define QP_RELEASE      0x9A8C4FB9U
-
+/*! Tamperproof current QP release (5.9.0) and date (2017-05-19) */
+#define QP_RELEASE      0x9A5CDB41U
 
 /****************************************************************************/
 /* typedefs for basic numerical types; MISRA-C 2004 rule 6.3(req). */
@@ -164,7 +163,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 #endif
 
 /****************************************************************************/
-/*! Perform upcast from a subclass of ::QMsm to the base class ::QMsm */
+/*! Perform upcast from a subclass of ::QHsm to the base class ::QHsm */
 /**
 * @description
 * Upcasting from a subclass to superclass is a very frequent and __safe__
@@ -387,7 +386,7 @@ typedef QHsm QMsm;
 /*! virtual table for the ::QMsm class. */
 typedef struct QHsmVtbl QMsmVtbl;
 
-/*! State object for the ::QMsm class (Meta State Machine). */
+/*! State object for the ::QMsm class (QM State Machine). */
 /**
 * @description
 * This class groups together the attributes of a ::QMsm state, such as the
@@ -443,9 +442,6 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e);
 /*! Helper function to obtain the current active child state of a parent */
 QMState const *QMsm_childStateObj_(QMsm const * const me,
                                    QMState const * const parent);
-
-/*! Internal helper function to execute a transition-action table. */
-QState QMsm_execTatbl_(QMsm * const me, QMTranActTable const *tatbl);
 
 /*! Tests if a given state is part of the current active state
 * configuration in a MSM.

@@ -131,7 +131,7 @@ void QMPool_init(QMPool * const me, void * const poolSto,
     me->start = poolSto;         /* the original start this pool buffer */
     me->end   = fb;              /* the last block in this pool */
 
-    QS_BEGIN_(QS_QF_MPOOL_INIT, QS_priv_.mpObjFilter, me->start)
+    QS_BEGIN_(QS_QF_MPOOL_INIT, QS_priv_.locFilter[MP_OBJ], me->start)
         QS_OBJ_(me->start);      /* the memory managed by this pool */
         QS_MPC_(me->nTot);       /* the total number of blocks */
     QS_END_()
@@ -171,7 +171,7 @@ void QMPool_put(QMPool * const me, void *b) {
     me->free_head = b;      /* set as new head of the free list */
     ++me->nFree;            /* one more free block in this pool */
 
-    QS_BEGIN_NOCRIT_(QS_QF_MPOOL_PUT, QS_priv_.mpObjFilter, me->start)
+    QS_BEGIN_NOCRIT_(QS_QF_MPOOL_PUT, QS_priv_.locFilter[MP_OBJ], me->start)
         QS_TIME_();         /* timestamp */
         QS_OBJ_(me->start); /* the memory managed by this pool */
         QS_MPC_(me->nFree); /* the number of free blocks in the pool */
@@ -248,7 +248,8 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
 
         me->free_head = fb_next; /* set the head to the next free block */
 
-        QS_BEGIN_NOCRIT_(QS_QF_MPOOL_GET, QS_priv_.mpObjFilter, me->start)
+        QS_BEGIN_NOCRIT_(QS_QF_MPOOL_GET,
+                         QS_priv_.locFilter[MP_OBJ], me->start)
             QS_TIME_();         /* timestamp */
             QS_OBJ_(me->start); /* the memory managed by this pool */
             QS_MPC_(me->nFree); /* # of free blocks in the pool */
@@ -261,7 +262,7 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
         fb = (QFreeBlock *)0;
 
         QS_BEGIN_NOCRIT_(QS_QF_MPOOL_GET_ATTEMPT,
-                         QS_priv_.mpObjFilter, me->start)
+                         QS_priv_.locFilter[MP_OBJ], me->start)
             QS_TIME_();         /* timestamp */
             QS_OBJ_(me->start); /* the memory managed by this pool */
             QS_MPC_(me->nFree); /* the number of free blocks in the pool */

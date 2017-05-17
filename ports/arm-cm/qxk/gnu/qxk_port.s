@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), GNU-ARM assembler
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-12
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-03-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 
@@ -65,15 +65,15 @@ QXK_init:
 
     LDR     r3,=0xE000ED18    /* System Handler Priority Register */
     LDR     r2,[r3,#8]        /* r2 := SYSPRI3 */
-    MOVS    r0,#0xFF
-    LSLS    r0,r0,#16
+    MOVS    r1,#0xFF
+    LSLS    r1,r1,#16
     ORRS    r2,r1
     STR     r2,[r3,#8]        /* SYSPRI3 := r2, PendSV <- 0xFF */
 
   .else                       /* M3/M4/M7 */
     /* NOTE:
-    * On Cortex-M3/M4/.., this QXK port disables interrupts by means of the
-    * BASEPRI register. However, this method cannot disable interrupt
+    * On Cortex-M3/M4/M7.., this QXK port disables interrupts by means of
+    * the BASEPRI register. However, this method cannot disable interrupt
     * priority zero, which is the default for all interrupts out of reset.
     * The following code changes the SysTick priority and all IRQ priorities
     * to the safe value QF_BASEPRI, wich the QF critical section can disable.
@@ -176,7 +176,9 @@ PendSV_Handler:
     CPSID   i                 /* disable interrupts (set PRIMASK) */
   .else                       /* M3/M4/M7 */
     MOVS    r0,#QF_BASEPRI
-    MSR     BASEPRI,r0        /* selectively disable interrupts */
+    CPSID   i                 /* selectively disable interrutps with BASEPRI */
+    MSR     BASEPRI,r0        /* apply the workaround the Cortex-M7 erraturm */
+    CPSIE   i                 /* 837070, see ARM-EPM-064408. */
   .endif                      /* M3/M4/M7 */
 
     /* The PendSV exception handler can be preempted by an interrupt,
@@ -210,8 +212,8 @@ PendSV_activate:
     /* The QXK activator must be called in a thread context, while this code
     * executes in the handler contex of the PendSV exception. The switch
     * to the Thread mode is accomplished by returning from PendSV using
-    * a fabricated exception stack frame, where the return address is the
-    * QXK activator QXK_activate_().
+    * a fabricated exception stack frame, where the return address is
+    * QXK_activate_().
     *
     * NOTE: the QXK activator is called with interrupts DISABLED and also
     * it returns with interrupts DISABLED.
@@ -346,6 +348,7 @@ PendSV_save_ex:
 
     LDR     r1,[r3,#QXK_CURR] /* r1 := QXK_attr_.curr (restore value) */
   .else                       /* M3/M4/M7 */
+    ISB                       /* reset pipeline after fetching PSP */
     STMDB   r0!,{r4-r11}      /* save r4-r11 on top of the exception frame */
   .ifdef  __FPU_PRESENT       /* if VFP available... */
     TST     lr,#(1 << 4)      /* is it return with the VFP exception frame? */
@@ -436,6 +439,7 @@ Thread_ret:
     MRS     r0,CONTROL        /* r0 := CONTROL */
     BICS    r0,r0,#4          /* r0 := r0 & ~4 (FPCA bit) */
     MSR     CONTROL,r0        /* CONTROL := r0 (clear CONTROL[2] FPCA bit) */
+    ISB                       /* ISB after MSR CONTROL (ARM AN321,Sect.4.16)*/
   .endif                      /* VFP available */
 
     /* trigger NMI to return to preempted task...

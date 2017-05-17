@@ -28,12 +28,12 @@
 
 ------------------------------------------------------------------------------
 @section arm-cm_qv Cooperative QV Kernel
-The QV port to ARM Cortex-M has been described in detail in Section 3 of the Quantum Leaps Application Note: <a href="http://www.state-machine.com/doc/AN_QP_and_ARM-Cortex-M-ARM-KEIL.pdf" target="_blank" class="extern" title="Read PDF">QP and ARM Cortex-M with ARM-KEIL</a>. The Application Note focuses on the ARM-KEIL toolset, but the general principles apply to all supported toolsets, such as IAR-ARM, GNU-ARM, and TI-ARM.
+The QV port to ARM Cortex-M has been described in detail in Section 3 of the Quantum Leaps Application Note: <a href="https://www.state-machine.com/doc/AN_QP_and_ARM-Cortex-M-ARM-KEIL.pdf" target="_blank" class="extern" title="Read PDF">QP and ARM Cortex-M with ARM-KEIL</a>. The Application Note focuses on the ARM-KEIL toolset, but the general principles apply to all supported toolsets, such as IAR-ARM, GNU-ARM, and TI-ARM.
 
 
 ------------------------------------------------------------------------------
 @section arm-cm_qk Preemptive Non-Blocking QK Kernel
-The QK port to ARM Cortex-M has been described in detail in Section 4 of the Quantum Leaps Application Note: <a href="http://www.state-machine.com/doc/AN_QP_and_ARM-Cortex-M-ARM-KEIL.pdf" target="_blank" class="extern" title="Read PDF">QP and ARM Cortex-M with ARM-KEIL</a>. The Application Note focuses on the ARM-KEIL toolset, but the general principles apply to all supported toolsets, such as IAR-ARM, GNU-ARM, and TI-ARM.
+The QK port to ARM Cortex-M has been described in detail in Section 4 of the Quantum Leaps Application Note: <a href="https://www.state-machine.com/doc/AN_QP_and_ARM-Cortex-M-ARM-KEIL.pdf" target="_blank" class="extern" title="Read PDF">QP and ARM Cortex-M with ARM-KEIL</a>. The Application Note focuses on the ARM-KEIL toolset, but the general principles apply to all supported toolsets, such as IAR-ARM, GNU-ARM, and TI-ARM.
 
 
 ------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ The preemptive, blocking QXK kernel works on ARM Cortex-M as follows:
 @n
 > NOTE: Right before starting multitasking, the QXK kernel re-uses the main C-stack as the Main Stack (for interrupts and exceptions), and assigns the provided idle stack to the internal idle thread.
 
-5. You need to explicitly **assign priorities of the all interrupts** used in your application, according to the Application Note: <a href="http://www.state-machine.com/doc/AN_ARM-Cortex-M_Interrupt-Priorities.pdf" target="_blank" class="extern" title="Read PDF">Setting ARM Cortex-M Interrupt Priorities in QP 5.1 and Higher</a>.
+5. You need to explicitly **assign priorities of the all interrupts** used in your application, according to the Application Note: <a href="https://www.state-machine.com/doc/AN_ARM-Cortex-M_Interrupt-Priorities.pdf" target="_blank" class="extern" title="Read PDF">Setting ARM Cortex-M Interrupt Priorities in QP 5.1 and Higher</a>.
 
 6. It is strongly recommended that you do not assign the lowest NVIC priority (0xFF) to any interrupt in your application, because it is used by the PendSV handler. For example, with 3 bits of priority implemented in the NVIC, this leaves the following 7 priority levels for you (listed from the lowest to the highest urgency): 0xC0, 0xA0, 0x80, 0x60, 0x40, 0x20, and 0x00 (the highest priority).
 @n
@@ -82,7 +82,7 @@ A QXK thread (both an active object thread and a "naked" blocking thread) that u
 
 @image html under_construction.jpg
 
-@section arm-cr_qk Preemptive QK Kernel 
+@section arm-cr_qk Preemptive QK Kernel
 
 \includelineno ports/arm-cr/qk/iar/qk_port.s
 
@@ -94,7 +94,7 @@ A QXK thread (both an active object thread and a "naked" blocking thread) that u
 
 @image html under_construction.jpg
 
-@section arm7-9_qk Preemptive QK Kernel 
+@section arm7-9_qk Preemptive QK Kernel
 
 \includelineno ports/arm7-9/qk/iar/qk_port.s
 
@@ -106,7 +106,7 @@ A QXK thread (both an active object thread and a "naked" blocking thread) that u
 
 @image html under_construction.jpg
 
-@section msp430_qk Preemptive QK Kernel 
+@section msp430_qk Preemptive QK Kernel
 
 @section msp430_qv Cooperative QV Kernel
 

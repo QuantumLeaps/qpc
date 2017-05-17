@@ -9,7 +9,7 @@
 - @subpage game
 - @subpage pelican
 
-Additionally, the QP/C distribution contains several application examples described in the <a class="extern" target="_blank" href="http://www.state-machine.com/psicc2">PSiCC2</a> book.
+Additionally, the QP/C distribution contains several application examples described in the <a class="extern" target="_blank" href="https://www.state-machine.com/psicc2">PSiCC2</a> book.
 
 - Calculator example from Chapter 2 of PSiCC2
 - Orthogonal Component design pattern
@@ -91,11 +91,11 @@ As you can see, the structure of the state machine is very clearly recognizable 
 /*##########################################################################*/
 /*! @page dpp Dining Philosophers Problem (DPP)
 
-The Dining Philosophers Problem (DPP) example is described in the <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_DPP.pdf">Application Note: Dining Philosophers Problem (DPP) Example</a>.
+The Dining Philosophers Problem (DPP) example is described in the <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_DPP.pdf">Application Note: Dining Philosophers Problem (DPP) Example</a>.
 
 @htmlonly
 <div class="image">
-<a target="_blank" href="http://www.state-machine.com/doc/AN_DPP.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<a target="_blank" href="https://www.state-machine.com/doc/AN_DPP.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
 <div class="caption">
 Application Note: Dining Philosophers Problem (DPP) Example
 </div>
@@ -108,11 +108,11 @@ Application Note: Dining Philosophers Problem (DPP) Example
 /*##########################################################################*/
 /*! @page game "Fly 'n' Shoot" Game
 
-The "Fly 'n' Shoot" game example is described in the <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_Fly-n-Shoot.pdf">Application Note: Fly 'n' Shoot Game Example</a>.
+The "Fly 'n' Shoot" game example is described in the <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_Fly-n-Shoot.pdf">Application Note: Fly 'n' Shoot Game Example</a>.
 
 @htmlonly
 <div class="image">
-<a target="_blank" href="http://www.state-machine.com/doc/AN_Fly-n-Shoot.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<a target="_blank" href="https://www.state-machine.com/doc/AN_Fly-n-Shoot.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
 <div class="caption">
 Application Note: Fly 'n' Shoot Game Example
 </div>
@@ -125,11 +125,11 @@ Application Note: Fly 'n' Shoot Game Example
 /*##########################################################################*/
 /*! @page pelican PEdestrian LIgtht CONtrolled (PELICAN) Crossing
 
-The "Fly 'n' Shoot" game example is described in the <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_PELICAN.pdf">Application Note: PEdestrian LIght CONtrolled (PELICAN) Crossing Example</a>.
+The "Fly 'n' Shoot" game example is described in the <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_PELICAN.pdf">Application Note: PEdestrian LIght CONtrolled (PELICAN) Crossing Example</a>.
 
 @htmlonly
 <div class="image">
-<a target="_blank" href="http://www.state-machine.com/doc/AN_PELICAN.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<a target="_blank" href="https://www.state-machine.com/doc/AN_PELICAN.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
 <div class="caption">
 Application Note: PEdestrian LIght CONtrolled (PELICAN) Crossing Example
 </div>

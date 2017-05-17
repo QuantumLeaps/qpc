@@ -1,16 +1,15 @@
 /*********************************************************************
-*               SEGGER MICROCONTROLLER GmbH & Co KG                  *
-*       Solutions for real time microcontroller applications         *
+*                SEGGER Microcontroller GmbH & Co. KG                *
+*                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2014  SEGGER Microcontroller GmbH & Co KG         *
+*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
 *                                                                    *
-*       www.segger.com     Support: support@segger.com               *
+*       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
 **********************************************************************
 *                                                                    *
 *       embOS * Real time operating system for microcontrollers      *
-*                                                                    *
 *                                                                    *
 *       Please note:                                                 *
 *                                                                    *
@@ -22,7 +21,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.00                                             *
+*       OS version: 4.34.1                                           *
 *                                                                    *
 **********************************************************************
 
@@ -35,10 +34,9 @@ Purpose : xmtx system interface -- thread locking and unlocking
 
 #include <yvals.h>
 #include "RTOS.h"
+#include "DLib_Threads.h"
 
 #if _MULTI_THREAD  // Used in multi thread supported libraries only
-
-_STD_BEGIN
 
 /*********************************************************************
 *
@@ -51,7 +49,7 @@ _STD_BEGIN
 *
 *       __iar_system_Mtxinit()
 */
-void __iar_system_Mtxinit(__iar_Rmtx *m) {
+__ATTRIBUTES void __iar_system_Mtxinit(__iar_Rmtx* m) {
   OS__iar_system_Mtxinit(m);
 }
 
@@ -59,7 +57,7 @@ void __iar_system_Mtxinit(__iar_Rmtx *m) {
 *
 *       __iar_system_Mtxdst()
 */
-void __iar_system_Mtxdst(__iar_Rmtx *m) {
+__ATTRIBUTES void __iar_system_Mtxdst(__iar_Rmtx* m) {
   OS__iar_system_Mtxdst(m);
 }
 
@@ -67,7 +65,7 @@ void __iar_system_Mtxdst(__iar_Rmtx *m) {
 *
 *       __iar_system_Mtxlock()
 */
-void __iar_system_Mtxlock(__iar_Rmtx *m) {
+__ATTRIBUTES void __iar_system_Mtxlock(__iar_Rmtx* m) {
   OS__iar_system_Mtxlock(m);
 }
 
@@ -75,13 +73,9 @@ void __iar_system_Mtxlock(__iar_Rmtx *m) {
 *
 *       __iar_system_Mtxunlock()
 */
-void __iar_system_Mtxunlock(__iar_Rmtx *m) {
+__ATTRIBUTES void __iar_system_Mtxunlock(__iar_Rmtx* m) {
   OS__iar_system_Mtxunlock(m);
 }
-
-_STD_END
-
-/********************************************************************/
 
 #endif // _MULTI_THREAD
 

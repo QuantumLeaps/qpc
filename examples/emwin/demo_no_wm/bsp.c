@@ -29,7 +29,7 @@
 *
 * Contact information:
 * Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          http://www.state-machine.com
+*                          https://state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
 #include "qp_port.h"

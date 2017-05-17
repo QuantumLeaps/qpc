@@ -1,0 +1,1406 @@
+<html>
+<head>
+<title>Release notes</title>
+</head>
+
+<style>
+  H2, H3, H4 { color: blue }
+  H1, H2, H3, H4, H5 { font-family: Arial, Helvetica, sans-serif;}
+  PRE {  color: black;  margin-left: 2%; }
+  BODY { color: black;  margin-left: 2%; font-family: Verdana, Arial, Helvetica, sans-serif; font-size=75%}
+  table{ color: black;  font-family: Verdana; font-size=100%}
+  .maintext {
+    font-size: 10px;
+    color: #000000;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  h1.newsbox {
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 13px;
+    padding-left: 10px;
+    background: #526194 no-repeat right;
+    border: thin solid #000000;
+    margin-right: 5px;
+    margin-left: 5px;
+  }
+  .heading2 {
+    color: #336699;
+    font-weight: bold;
+    font-size: 12px;
+    padding-left: 25px;
+  }
+</style>
+
+<body bgcolor="#FFFFFF">
+
+<h3>Release notes for embOS Version 4.34.1 for Cortex-M and IAR compiler V8.x</h3>
+<!--  ****** Modifiable information starts here ******** -->
+      <ol class="maintext">
+        <li><A HREF="#toolchain">Tool chain used for build</A> </li>
+        <li><A HREF="#features">New features</A> </li>
+        <li><A HREF="#improvements">Improvements</A> </li>
+        <li><A HREF="#pcorr">Program corrections</A> </li>
+        <li><A HREF="#problems">Known problems/limitations</A> </li>
+        <li><A HREF="#history">Release history</A> </li>
+        <li><A HREF="#misc">Miscellaneous</A> </li>
+      </ol>
+      <!-- ****************************************************************** -->
+      <!-- TOOL CHAIN (Compiler) Information                                  -->
+      <!-- ****************************************************************** -->
+      <h1 class="newsbox"><a name="toolchain"></a>Tool chain used for build</h1>
+      <p class="maintext">The following tools have been used:</p>
+      <pre class="maintext">
+Compiler:  IAR ANSI C/C++ Compiler V8.11.1.13263/W32 for ARM
+Assembler: IAR Assembler V8.11.1.13263/W32 for ARM
+Librarian: IAR Archive Tool V10.1.4.185
+Workbench: IAR Embedded Workbench for ARM 8.11.1.13272
+</pre>
+      <!-- ****************************************************************** -->
+      <!-- NEW FEATURES                                                       -->
+      <!-- ****************************************************************** -->
+      <h1 class="newsbox"><a name="features"></a>New features</h1>
+      <h2 class="heading2">Version 4.34.1</h2>
+      <ol class="maintext">
+        <li>Update for IAR EWARM V8.11</li>
+      </ol>
+      <h2 class="heading2">Version 4.34</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.34.</li>
+        <li>Update for IAR EWARM V8.10</li>
+      </ol>
+      <h2 class="heading2">Version 4.30</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.30.</li>
+        <li>New start project for the NordicSemi nRF52 Preview Development Kit added.</li>
+        <li>New start project for the TI MSP432P401R LaunchPad Development Kit added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.26</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.26.</li>
+        <li>New start project for the NXP LPC1549 Xpresso v2 eval board added.</li>
+        <li>New start project for the SiliconLabs EZR32 Leopard Gecko added.</li>
+        <li>New start project for the ST STM32F767 added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.22</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.22.</li>
+        <li>VFP register handling is now automatically performed by embOS.<br>
+          embOS API functions OS_ExtendTaskContext_VFP(), OS_VFP_Save(), OS_VFP_Restore(), and OS_ExtendTaskContext_TLS_VFP() are deprecated. Compatibility with older embOS versions is ensured through macro definitions.</li>
+        <li>New start project for the Atmel SAM4E-EK eval board added.</li>
+        <li>New start project for the ST STM32L152C Discovery board added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.16</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.16.</li>
+        <li>New start project for the Freescale FRDM_K22F board added.</li>
+        <li>New start project for the Olimex STM32-P407 evalboard added.</li>
+        <li>New start project for the SEGGER emPower evalboard added.</li>
+        <li>New start project for the ST STM32L476 Discovery board added.</li>
+        <li>New start project for the TI TMS470M Development Kit added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.14</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.14.</li>
+        <li>New start project for Freescale Kinetis K26 added.</li>
+        <li>New start project for ST STM32F746G-Discovery added.</li>
+        <li>
+          Added Segger SystemView to all projects.<br>
+          The Segger SystemView User Guide is available at <a href ="https://www.segger.com/systemview.html">www.segger.com</a>.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.12a</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.12a.</li>
+        <li>New start project for ST STM32F401xC-Discovery eval board added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.10</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.10.</li>
+      </ol>
+      <h2 class="heading2">Version 4.06b</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.06b.</li>
+      </ol>
+      <h2 class="heading2">Version 4.06a</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.06a.</li>
+        <li>New start project for Freescale TWR-VF6 added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.04a2</h2>
+      <ol class="maintext">
+        <li>New start project for Atmel SAMV71 XPlainedUltra evalboard added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.04a1</h2>
+      <ol class="maintext">
+        <li>New start project for ST STM32F756G-Eval added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.04a</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.04a.</li>
+      </ol>
+      <h2 class="heading2">Version 4.02a</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.02a.</li>
+      </ol>
+      <h2 class="heading2">Version 4.02</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.02.</li>
+      </ol>
+      <h2 class="heading2">Version 4.00</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V4.00.</li>
+        <li>New start project for ST STM32F072 added.</li>
+      </ol>
+      <h2 class="heading2">Version 3.90.1</h2>
+      <ol class="maintext">
+        <li>New project for Atmel SAMG53 added.<br>
+          embOS for Cortex M and IAR compiler now comes with a start project for Atmel SAMG53 CPU.<br>
+          The start project is prepared to run on the Atmel SAMG53 Xplained Pro starter board.<br>
+          The start project can be downloaded into the internal flash of the CPU using the on-board CMSIS-DAP and CSpy.</li>
+        <li>New project for Atmel SAMG54 added.<br>
+          embOS for Cortex M and IAR compiler now comes with a start project for Atmel SAMG53 CPU.<br>
+          The start project is prepared to run on the Atmel SAMG53 Xplained Pro starter board.<br>
+          The start project can be downloaded into the internal flash of the CPU using the on-board CMSIS-DAP and CSpy.</li>
+      </ol>
+      <h2 class="heading2">Version 3.90</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V3.90.<br>
+          All new features and modifications of the new embOS version are described in the generic release notes and manual.
+        <li>Start projects and assembly files updated for EWARM 7.10<br>
+          Start projects and assembly files can now be used with the new EWARM version 7.10. without errors or warnings.<br>
+          All projects can still be used with the older IAR embedded workbench V6.</li>
+      </ol>
+      <h2 class="heading2">Version 3.88g2</h2>
+      <ol class="maintext">
+        <li>New project for ST LIS331 CPU.<br>
+        embOS for Cortex M and IAR compiler now comes with a start project for the ST LIS331 CPU.<br>
+        The start project is prepared to be downloaded into the internal flash of the CPU using J-link or ST-LINK.<br>
+        A support package for the IAR workbench is required. This can be received from ST on request.</li>
+        <li>New project for TI TM4C129.<br>
+        embOS for Cortex M and IAR compiler now comes with a start project for the TI TM4C129 CPU.<br>
+        The start project was built for the TI TM4C129 development kit and is prepared to be downloaded into the internal flash of the CPU.<br>
+      </ol>
+      <h2 class="heading2">Version 3.88g1</h2>
+      <ol class="maintext">
+        <li>New project for ST STM32F429 discovery board added.</li>
+        <li>New project for IAR STM32F429_SK board added.</li>
+      </ol>
+      <h2 class="heading2">Version 3.88g</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V3.88g.</li>
+      </ol>
+      <h2 class="heading2">Version 3.88c</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V3.88c.</li>
+      </ol>
+      <h2 class="heading2">Version 3.88b</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V3.88b.</li>
+      </ol>
+      <h2 class="heading2">Version 3.86n</h2>
+      <ol class="maintext">
+        <li>Thread safe system library support with compiler 6.4 or newer described.<br>
+          Activation of thread safe system library support with IAR compiler 6.4 or newer requires additional linker options which are now described in the compiler and CPU specific manual.
+        </li>
+        <li>New embOS sources V3.86n.<br>
+          All new features and modifications of the new embOS version are described in the generic release notes and manual.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86l</h2>
+      <ol class="maintext">
+        <li>New embOS sources V3.86l.<br>
+          All new features and modifications of the new embOS version are described in the generic release notes and manual.
+        </li>
+        <li>New start project for Atmel AT91SAM3X-EK added.</li>
+        <li>New start project for Freescale TWR-KL25 added.</li>
+        <li>New start project for Infineon XMC4500 Hexagon Application Kit added.</li>
+        <li>New start project for Infineon XMC4500 Relax Lite Kit added.</li>
+        <li>New start project for NXP LPC4088 Embedded Artists evalboard added.</li>
+        <li>New start project for Keil MCB4357 evalboard (NXP LPC4357) added.</li>
+        <li>New start project for IAR STM32F051R8-SK evalboard added.</li>
+      </ol>
+      <h2 class="heading2">Version 3.86g</h2>
+      <ol class="maintext">
+        <li>New embOS sources V3.86g.<br>
+          All new features and modifications of the new embOS version are described in the generic release notes and manual.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86f</h2>
+      <ol class="maintext">
+        <li>New embOS sources V3.86f.<br>
+          All new features and modifications of the new embOS version are described in the generic release notes and manual.
+        </li>
+        <li>Task events are 32bits wide<br>
+          With embOS version 3.86f, the task events for 32bit CPUs are 32bit wide now, allowing more individual events sent to tasks.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86e</h2>
+      <ol class="maintext">
+        <li>New embOS sources V3.86e.<br>
+          All new features and modifications of the new embOS version are described in the generic release notes and manual.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86d</h2>
+      <ol class="maintext">
+        <li>New embOS sources V3.86d.<br>
+          All new features and modifications of the new embOS version are described in the generic release notes and manual.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.84c</h2>
+      <ol class="maintext">
+        <li>New start project for the Hitex NXP LPC1850 eval board added.</li>
+        <li>New start project for the IAR Fujitsu MB9BF618T SK eval board added.</li>
+        <li>New start project for the Freescale Tower K70 eval board added.</li>
+        <li>New start project for the Toshiba Topas TMPM369 eval board added.</li>
+        <li>Update to latest embOS generic sources V3.84c.</li>
+      </ol>
+      <h2 class="heading2">Version 3.84.1</h2>
+      <ol class="maintext">
+        <li>embOS plugin for CSpy supports Cortex M4F<br>
+          The new embOS IAR plugin version 6.0.6.7 delivered with embOS V3.84.1 now supports task sensitive call stack for Cortex M4 CPUs with floating point unit.<br>
+          Previous versions of the plugin can be used, but did not show the task sensitive call stack.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.84</h2>
+      <ol class="maintext">
+        <li>Support for Cortex M4F with floating point unit added.</li>
+        <li>New start project for the Energy Micro EFM32-GG990-DK eval board.</li>
+        <li>New start project for the NXP LPC1788_EA eval board.</li>
+        <li>New start project for the NXP LPC1788_uEZGUI eval board.</li>
+        <li>New start project for the NXP LPC1788-SK eval board.</li>
+        <li>New start project for the IAR STM32F207-SK eval board.</li>
+        <li>New start project for the ST STM32F457IG-Eval eval board.</li>
+        <li>New start project for the ST STM32F457IG-Discovery eval board.</li>
+        <li>Update to latest embOS generic sources V3.84.<br>
+        New generic features of the version 3.84 are described in the embOS generic release notes file Release_Generic.html
+        </li>
+      </ol>
+
+      <h2 class="heading2">Version 3.82u</h2>
+      <ol class="maintext">
+        <li>New start project for the IAR STM32L152VB-SK eval board.<br>
+        The embOS version 3.82u for IAR compiler V6 and Cortex-M now comes with start projects for the IAR STM32L152VB-SK eval board.<br>
+        The sample project can be downloaded into the CPUs Flash using J-Link.<br>
+        The sample project was built with the latest IAR workbench V6.20 and uses CMSIS.
+        </li>
+        <li>Update to latest embOS generic sources V3.82u.<br>
+        New features of the version 3.82u are described in the embOS generic release notes file Release_Generic.html
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82s</h2>
+      <ol class="maintext">
+        <li>Update to latest embOS generic sources V3.82s.
+        </li>
+        <li>New library mode DPL added.
+        </li>
+        <li>New start projects for STM32 devices added.<br>
+        The embOS version 3.82s for IAR compiler V6 and Cortex-M now comes with start projects for STM32L cpu and STM32F100 cpu.<br>
+        The sample projects run on ST STM32 MB819 and ST STM32 Discovery evalboard and can be downloaded into the CPUs Flash using J-Link.<br>
+        </li>
+        <li>New start projects for EFM32 devices added.<br>
+        The embOS version 3.82s for IAR compiler V6 and Cortex-M now comes with start projects for G2XX and G8XX cpu module for EnergyMicro EFM32-G2XX-DK evalboard.<br>
+        </li>
+        <li>New start project for Fujitsu MB9BF506 SK FM3 100PMC evalboard.<br>
+        The embOS version 3.82s for IAR compiler V6 and Cortex-M now comes with start project for Fujitsu MB9BF506 SK FM3 100PMC evalboard.<br>
+        The sample projects can be downloaded into the CPUs Flash using J-Link.<br>
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82m</h2>
+      <ol class="maintext">
+        <li>Support for Freescale Kinetis added.<br>
+        The embOS version 3.82m for IAR compiler V6 and Cortex-M now comes with start projects for the Freescale Kinetis K40 and K60 CPUs.<br>
+        The sample projects run on the Kinetis TWR starter kit boards and can be downloaded into the CPUs Flash using J-Link.<br>
+        </li>
+        <li>Support for EnergyMicro CPU added.<br>
+        The embOS version 3.82m for IAR and Cortex-M now comes with a start project for the EnergyMicro EFM32 CPU.<br>
+        The sample project runs on the EFM32-G8XX-STK starter board and can be downloaded into the CPUs Flash using the onboard J-Link.
+        </li>
+        <li>Support for Cortex-M4 added.<br>
+        Previous versions of embOS for Cortex-M could not be compiled when a Cortex-M4 CPUs was selected.<br>
+        The embOS version 3.82m for IAR and Cortex-M now can be used with Cortex-M4 CPUs.
+        </li>
+        <li>Support for embOSView via J-Link for Cortex-M0 added.<br>
+        Previous versions of embOS for Cortex-M could not use J-Link with embOSview for Cortex-M0 CPUs.
+        With embOS version 3.82m for IAR and Cortex-M J-Link can be used with embOSView on Cortex-M0 targets.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82l</h2>
+      <ol class="maintext">
+        <li>Thread local storage supported.<br>
+           embOS for Cortex-M and IAR compiler now supports the thread local storage implementation of the new IAR dlib V6.
+        </li>
+        <li>Update to IAR Compiler / workbench V6
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82h1</h2>
+      <ol class="maintext">
+        <li>embOS Cortex-M3 and embOS Cortex-M0 are merged to embOS Cortex-M.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82h</h2>
+      <ol class="maintext">
+        <li>Profiling with embOSView via J-Link<br>
+        All embOS start projects and the embOS libraries were modified to allow communication with embOSView via J-Link.<br>
+        The new embOSView version 3.82g allows selection of a communication to a Cortex M3 using J-Link with JTAG or SWD interface.<br>
+        The communication to embOSView starts after the call of OS_Start() and can be used in parallel with a debugging session which uses J-Link as debugging probe.
+        </li>
+        <li>Fully CMSIS compliant projects<br>
+        All start projects of embOS for Cortex-M3 are now fully CMSIS compliant.<br>
+        The projects come with new startup code and vector tables which are fully CMSIS compliant.<br>
+        When CMSIS shall be used for the application, the chip specific CMSIS startup code and vector tables can be used.<br>
+        CMSIS libraries of the chip vendor are not required to run embOS, embOS can be used as is.<br>
+        </li>
+        <li>Generic CMSIS project template<br>
+        embOS for Cortex M3 now comes with a generic CMSIS compatible start project which runs on any Cortex M3 CPU.<br>
+        To run the project on a specific chip, the startup code and the vector table may be replaced by the chip vendor specific versions of these files.<br>
+        No modification on any embOS function or file is required. The vendor specific CMSIS files will guarantee that the embOS timer runs at expected rate of 1ms.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82e2</h2>
+      <ol class="maintext">
+        <li>BSP for ATMEL AT91SAM3S added<br>
+        embOS now comes with a start project for the AT91SAM3S which is prepared to run on the SAM3S-EK eval board.<br>
+        The start project contains debug configurations for flash or RAM.<br>
+        Both UART connectors of the board may be used for embOSView.<br>
+        The project comes with new startup code and vector tables which are fully CMSIS compliant.
+        </li>
+        <li>CMSIS compliant scheduler call implemented<br>
+        The embOS scheduler function was renamed to be fully CMSIS compliant.<br>
+        Target CPU specific CMSIS libraries may be used together with embOS now.<br>
+        There is no need to modify the vector tables which come with the CMSIS libraries.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.82e1</h2>
+      <ol class="maintext">
+        <li>Projects for LPC176x updated.<br>
+        The debugger configuration settings of previous versions caused some trouble when the target should be accessed with J-Link.</li>
+      </ol>
+      <h2 class="heading2">Version 3.82e</h2>
+      <ol class="maintext">
+        <li>CMSIS compliant project for STM32/MB672 added.</li>
+      </ol>
+      <h2 class="heading2">Version 3.82c</h2>
+      <ol class="maintext">
+        <li>BSP for TMPM330 added</li>
+        <li>Profiling support added to STM32 MB784 eval bord BSP.</li>
+        <li>Update to latest embOS generic sources V3.82c</li>
+        <li>All projects have now remarks enabled</li>
+      </ol>
+      <h2 class="heading2">Version 3.80g3</h2>
+      <ol class="maintext">
+        <li>Project for AT91SAM3U runs with IAR flashloader<br>
+          The embOS start project for the AT91SAM3U CPU was modified to run with the Flasherloader which comes with the latest IAR workbench (EW-ARM 5.40.<br>
+          The flashloader can be used with any J-link version, but the project requires version 5.40 or later of the IAR workbench.<br>
+          EW-ARM 5.40 is the first version that supports the AT91SAM3U.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.80g1</h2>
+      <ol class="maintext">
+        <li>Support for ST STM32F107 added<br>
+          embOS version 3.80g1 comes with a ready to go start project for the ST32MF107 CPU.<br>
+          The start project is prepared to run on the ST MB 784 eval board and supports flash programming using C-Spy and J-Link.
+        </li>
+        <li>Support for IAR LPC1766-SK added<br>
+          embOS version 3.80g1 comes with a ready to go start project for the IAR LPC1766-SK eval board.<br>
+          The start project is prepared to run on the eval board and supports flash programming using C-Spy and J-Link.<br>
+          The project is built for the workbench / compiler version 5.30 which delivers the flash loader for the LPC 1766.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.80g</h2>
+      <ol class="maintext">
+        <li>Scheduling optimized<br>
+          Update to new embOS version 3.80 with optimized internal data structures to speed up scheduling and task switches.<br>
+          The new embOS version requires the C-Spy plugin V3.80 or later. The plugin comes with embOS.
+        </li>
+        <li>New embOS plugin with task sensitivity<br>
+          embOS version 3.80g for Cortex M3 now comes with the new embOS IAR plugin V3.80.1 for C-Spy which supports task sensitivity for Cortex M3.<br>
+          Task sensitivity is supported since embOS version 3.62c.<br>
+          Previous versions of embOS for Cortex M3 can be used with the new plugin, but do not support the task sensitivity.
+        </li>
+        <li>Support for ATMEL AT91SAM3U<br>
+          embOS version 3.80g comes with a ready to go start project for the new ATMEL AT91SAM3U series.<br>
+          Debugging and flash programming using C-Spy and J-Link is supported.<br>
+          The latest version of J-Link software is required to allow programming of the AT91SAM3U.
+        </li>
+        <li>Support for NXP LPC176x series<br>
+          embOS version 3.80g comes with a ready to go start project for the new NXP LPC176x series.<br>
+          The start project is prepared to run on the KEIL eval board and supports flash programming using C-Spy and J-Link.<br>
+          The project is built for the workbench / compiler version 5.30 which delivers the flash loader for the LPC 1766.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.62</h2>
+      <ol class="maintext">
+        <li>Update to embOS sources 3.62<br>
+          embOS comes with new features which are explained in the generic release notes and manual.
+        </li>
+        <li>Update to new EWARM compiler version 5.20<br>
+          embOS version 3.62 was built with the IAR compiler V5.20 and the start projects were updated to be used with the new workbench.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.60d</h2>
+      <ol class="maintext">
+        <li>Update to embOS sources 3.60d<br>
+          embOS comes with several new features which are explained in the generic release notes and manual.
+        </li>
+        <li>OS_POWER module implemented.<br>
+          The OS_POWER module may be used to control different power saving modes when entering idle state.<br>
+          Individual flags for different peripherals may be set whenever a peripheral needs power or clock, and may be reset, when power is not needed.<br>
+          The state of the power flags may be examined during OS_Idle by a call of OS_POWER_GetMask().<br>
+          This allows to switch off all of those peripherals which are not needed during idle times.
+        </li>
+        <li>BSP for IAR STM-SK Eval board renamed to STM32F103_STM_SK.<br>
+          BSP is now for IAR STM-SK only instead of IAR STM-SK and ST MB525.
+        </li>
+        <li>BSP for ST MB525 Eval board added.<br>
+          Start project and board support package for STM32F103 CPU and ST MB525 eval board added.
+        </li>
+        <li>BSP for ST MB672 Eval board added.<br>
+          Start project and board support package for STM32F103 CPU and ST MB672 eval board added.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.60a</h2>
+      <ol class="maintext">
+        <li>Update to embOS sources 3.60a<br>
+          embOS comes with several new features which are explained in the generic release notes and manual.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.60</h2>
+      <ol class="maintext">
+        <li>IAR Embedded Workbench for ARM V5.11 compatibility<br>
+          Source and project updates to be compatible with IAR Embedded Workbench for ARM V5.11.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.52c</h2>
+      <ol class="maintext">
+        <li>OS_SetTaskName() introduced<br>
+          OS_SetTaskName() allows modification of task names on the fly.<br>
+          This may be useful if the functionality of a task changes during runtime and the new state should be shown using embOSView or an other task visualisation tool.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.52a</h2>
+      <ol class="maintext">
+        <li>Luminary Micro LM3S1968 CPU support<br>
+          Start project and board support package for LM3S1968 CPUs added.
+        </li>
+        <li>Luminary Micro LM3S8962 CPU support<br>
+          Start project and board support package for LM3S8962 CPUs added.
+        </li>
+        <li>Task switch time can be measured by application<br>
+          embOS now comes with sample applications which allow accurate measurement of task switch time in a running application.<br>
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.40c</h2>
+      <ol class="maintext">
+        <li>OS_Yield() may suspend a task unconditionally<br>
+          When tasks are running on round robin with timeslice, the function OS_Yield() can be used to end the timeslice of the running task immediately and activate an other task with the same priority which is ready for execution.
+          The function has no effect on tasks that are not running on round robin.
+        </li>
+        <li>UART and PLL added<br>
+          Uart and PLL initialization to BSP added.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.40a</h2>
+      <ol class="maintext">
+        <li>New BSP for STM32F10 added.<br>
+          embOS now comes with board support package for STM32F10.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.40</h2>
+      <ol class="maintext">
+        <li>Task switch time can be measured by application<br>
+          embOS now comes with sample applications which allow accurate measurement of task switch time in a running application.<br>
+        </li>
+        <li>Automatic call of OS_INIT_SYS_LOCKS() removed.<br>
+          During initialization of embOS, OS_INIT_SYS_LOCK() is not called automatically.<br>
+          As most of the applications do not need thread safe system libraries, an automatic activation of syslocks causes unwanted overhead.<br>
+          If supported and required, the user may call OS_INIT_SYS_LOCKS() from his own application after normal initialization of embOS.<br>
+        </li>
+        <li>OS_TimerEx, Extended timer implemented<br>
+          Extended timers are software timers which call a user defined callback function when the timer expires.<br>
+          In comparison to normal embOS timers, a parameter is passed to the timer callback function.<br>
+          The parameter value is initialized during timer creation.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.32j</h2>
+      <ol class="maintext">
+        <li>
+          Initial version for Cortex M3
+        </li>
+      </ol>
+      <!-- ****************************************************************** -->
+      <!-- Improvements                                                       -->
+      <!-- ****************************************************************** -->
+      <h1 class="newsbox"><a name="improvements"></a>Improvements</h1>
+      <h2 class="heading2">Version 4.26.1</h2>
+      <ol class="maintext">
+        <li>Ensured suitability of SEGGER SystemView and SEGGER HardFault Handler for C++ compilers.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.26</h2>
+      <ol class="maintext">
+        <li>Modified workaround for Cortex-M7 r0p1 (Erratum 837070, ARM-EPM-064408) to be user-configurable at compile time.</li>
+      </ol>
+      <h2 class="heading2">Version 4.22</h2>
+      <ol class="maintext">
+        <li>Additional debug check for task termination added.</li>
+      </ol>
+      <h2 class="heading2">Version 4.16</h2>
+      <ol class="maintext">
+        <li>Advanced Hard Fault Handler added to all projects.</li>
+      </ol>
+      <h2 class="heading2">Version 3.86g</h2>
+      <ol class="maintext">
+        <li>Nested interrupt handling improved.<br>
+          Unnecessary enabling and disabling of interrupts removed from OS_EnterNestableInterrupt() and OS_LeaveNestableInterrupt().<br>
+          Thus, interrupthandling of nested interrupts runs faster.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86e</h2>
+      <ol class="maintext">
+        <li>Modified Hardfault handler<br>
+          The hardfault handler was modified and is now included in the RTOSInit files.<br>
+          When semihosting for terminal outputs is activated in the project settings, printf outputs are controlled by break instructions in the code.<br>
+          If the CPU is started in normal mode without debugger, the break instruction will force a hardfault exception.<br>
+          The new hardfault handler in RTOSInit detects this state, resets the hardfault condition and continues execution of the application.<br>
+          The previuos implementation did not handle the hardfault correctly. The application or the calling task ran in an endless loop.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86d</h2>
+      <ol class="maintext">
+        <li>OS_EnterNestableInterrupt() improved<br>
+          A needless call of enable interrupt function removed. Execution speed improved.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.84.1</h2>
+      <ol class="maintext">
+        <li>Fully interruptible stack layout for OS_Idle()<br>
+          The embOS stack management for Cortex M now uses the main stack as stack for OS_Idle which allows fully interruptible usage of the stack in OS_Idle().
+          The previous versions of embOS for Cortex M did not allow usage of the stack in OS_Idle().
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.80g2</h2>
+      <ol class="maintext">
+        <li>Systick timer initialization modified<br>
+          The SYSTICK timer is normally used as system timer for embOS. Previous versions of embOS for Cortex-M3 initialized the interrupt priority during the system initialization called from OS_InitKern().<br>
+          Now the systick timer initialization is completely done during OS_InitHW() and can therefore be modified if required by the application.<br>
+          By modification of OS_InitHW(), any peripheral timer may be used as system timer for embOS, leaving the systick timer untouched.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.80g1</h2>
+      <ol class="maintext">
+        <li>Code modified to avoid warnings<br>
+          Some compile time switches were not predefined in some projects and therefore produced a warning when remarks were enabled.<br>
+          This did not cause any problem, but might have been confusing.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.60</h2>
+      <ol class="maintext">
+        <li>IAR Embedded Workbench for ARM V5.11 compatibility<br>
+          embOS for CM3 for IAR V511 is now compatible with IAR Embedded Workbench for ARM V5.11.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.52e</h2>
+      <ol class="maintext">
+        <li>All embOS variables located in one module.<br>
+          All embOS variables are located in one module now. In previous versions of embOS, some module specific embOS variables were located in the module they were used for.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.52a</h2>
+      <ol class="maintext">
+        <li>Scheduler optimized<br>
+          The embOS scheduler was optimized to reduce task switching time and interrupt latencies.<br>
+        </li>
+        <li>OS_Yield() now writes an entry into the trace buffer<br>
+          When using the debug library with trace capabilities, OS_Yield() writes an entry into the trace buffer which shows the function call and the calling task.<br>
+          embOSView version 3.40d is required to show this entry.
+        </li>
+        <li>Task switch to OS_Idle() modified.<br>
+          The call of OS_Idle() from OS_ChangeTask can be overwritten (inhibited) by defining the macro OS_IDLE() which is normally defined as OS_Idle().<br>
+          This allows task switching via an exception for specific CPU/compiler versions.
+        </li>
+        <li>Pointer comparison improved for fixed size memory pools (OS_MEMF module).<br>
+          Some compiler produced wrong pointer comparison code in far memory model.<br>
+          For specific CPU/compiler versions, the new OS_POINTER_TO_VALUE() function was introduced to deliver correct results in pointer comparison.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.40b</h2>
+      <ol class="maintext">
+        <li>Queue management improved.<br>
+          For some CPUs, the buffer start address for Queues has to be aligned.
+          Now embOS automatically corrects the alignment, if required.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.40a</h2>
+      <ol class="maintext">
+        <li>Counting semaphores improved.<br>
+          Counting semaphores are now int values and an overflow will be caught, so that embOS runs into OS_Error().
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.40</h2>
+      <ol class="maintext">
+        <li>Task switch time improved.<br>
+          Scheduling optimized to improve task switch time.
+        </li>
+        <li>Task switch time improved for task events.<br>
+          Task event handling modified to improve task switch time for tasks waiting on events.
+        </li>
+        <li>Interrupt latency improved.<br>
+          During task switch, the time period when interrupts are disabled is reduced.
+        </li>
+        <li>embOS timer tick handler improved.<br>
+          The standard timer tick handler run faster now. The embOS internal time variable is incremented by 1 on every timer tick.<br>
+          When different increments are required, the new timer tick handler OS_HandleTick_Ex(), OS_TickHandler_Ex() or OS_HandleTickDI_Ex() have to be used by application.<br>
+          Different increments may be configured by a call of OS_CONFIG().
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.32j</h2>
+      <ol class="maintext">
+        <li>
+          NONE, initial version for Cortex M3.
+        </li>
+      </ol>
+      <!-- ****************************************************************** -->
+      <!-- PROGRAM CORRECTIONS                                                -->
+      <!-- ****************************************************************** -->
+      <h1 class="newsbox"><a name="pcorr"></a>Program corrections</h1>
+      <h2 class="heading2">Version 4.26</h2>
+      <ol class="maintext">
+        <li>Corrected automatic state preservation during OS_Idle() with Cortex M4F/M7.<br>
+          Under certain circumstances, automatic state preservation and restauration could erroneously be enabled during OS_Idle().
+          The problem existed in version 4.22 of embOS Cortex M IAR and is fixed with version 4.26.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.22</h2>
+      <ol class="maintext">
+        <li>Applied workaround for interrupt handling with Cortex-M7 r0p1.<br>
+          Erratum 837070, ARM-EPM-064408: Increasing priority using a write to BASEPRI does not take effect immediately. Appropiate workaround was applied.
+          The problem, which is exclusive for Cortex-M7 r0p1, existed on all previous versions of embOS Cortex M IAR and is fixed with version 4.22.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.16</h2>
+      <ol class="maintext">
+        <li>Big-endian libraries fixed.<br>
+          Big-endian libraries contained little-endian code by mistake.<br>
+          The problem existed on all previous versions of embOS Cortex M IAR and is fixed with version 4.16.
+        </li>
+        <li>
+        Task switch fixed.<br>
+        The task switch fix introduced in V4.04a2 could fail under unsual circumstances on Cortex-M3/M4 targets.<br>
+        A task which was suspended by a cooperative task switch was not activated at once but with the next system tick at the latest.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.06a</h2>
+      <ol class="maintext">
+        <li>OS_EnterRegion() fixed.<br>
+          Under specific circumstances IAR could remove OS_EnterRegion() when compiling with high optimization.<br>
+          This could cause that the preemptive task switch was not disabled even when OS_EnterRegion() was called.<br>
+          The problem existed on all previous versions of embOS Cortex M IAR and is fixed with version 4.06a.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.04a2</h2>
+      <ol class="maintext">
+        <li>Task switch fixed.<br>
+          A problem with the task switch could cause that a task was not activated at once when it was triggered by an interrupt.<br>
+          The problem existed on all previous versions of embOS Cortex M IAR and is fixed with version 4.04a2.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.04a1</h2>
+      <ol class="maintext">
+        <li>embOS libraries fixed.<br>
+          The embOS libraries were built with a 256 kByte code size limitation by mistake.<br>
+          The problem existed since embOS Cortex M IAR version V4.04a and is fixed with version 4.04a1.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 4.02.1</h2>
+      <ol class="maintext">
+        <li>OS_LeaveNestableInterrupt() fixed.<br>
+          A problem with OS_LeaveNestableInterrupt() could cause that a task switch which was triggered by an interrupt routine which
+          interrupted another interrupt routine was not executed.<br>
+          The problem existed on all previous versions of embOS Cortex M IAR and is fixed with version 4.02.1.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.88g2</h2>
+      <ol class="maintext">
+        <li>Start projects for Cortex-M0 devices corrected.<br>
+        The start projects for Cortex M0 devices had code for variable vector tables and programming the VTOR register implemented.<br>
+        Cortex M0 devices don't support a variable vector table, the vector table has to be located at address 0x0.<br>
+        Code for programming the VTOR register is removed from the RTOSInit files now.<br>
+        This correction affects the start projects for the following CPUs:<br>
+        Freescale KL25<br>
+        Infineon  UMF51x<br>
+        NXP LPC 1000<br>
+        NXP LPC 122x<br>
+        ST  STM32F05<br>
+        The problem existed on all previous versions of embOS Cortex M IAR and is fixed with version 3.88g2.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.88c</h2>
+      <ol class="maintext">
+        <li>OS_Start() fixed.<br>
+        A problem with OS_Start() could cause that embOS did not start.<br>
+        The problem existed on all previous versions of embOS Cortex M IAR and is fixed with version 3.88c.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.88b</h2>
+      <ol class="maintext">
+        <li>Scheduling fixed.<br>
+          A problem with the scheduler could cause that a task not in ready state was not suspended and continued running.<br>
+          Higher priority tasks were blocked even when they were ready to execute.<br>
+          The problem existed on all previous versions of embOS Cortex M IAR and is fixed with version 3.88b.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86n</h2>
+      <ol class="maintext">
+        <li>Thread safe system locking functions modified.<br>
+          A problem was reported which occured when the application was ended without starting embOS.<br>
+          When thread safe system locks were initialized during main(), the destroy function of the system locks might have crashed when the application run to exit without starting embOS before.<br>
+          The modified destroy function of the embOS syslocks now is not called when embOS was not started before, because there is nor need to destroy the syslocks in this case.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.86d</h2>
+      <ol class="maintext">
+        <li>OS_ExtendTaskContext_TLS_VFP() corrected.<br>
+        The previous version of this function did not work correctly.<br>
+        Saving the task context desroyed the task stack.<br>
+        The problem existed on all previous versions of embOS for Cortex M4F and is fixed with version 3.86d of embOS.
+      </ol>
+      <h2 class="heading2">Version 3.84c1</h2>
+      <ol class="maintext">
+        <li>Scheduling for Cortex M4 with VFP corrected.<br>
+        The previous versions of embOS for Cortex M4 with VFP crashed when the VFP was activated and used by multiple tasks.<br>
+        Initialization for VFP and scheduling was modified to fix the problem.<br>
+        The problem existed on Cortex M4 applications with activated VFP only and is fixed with version 3.84c1 of embOS.
+      </ol>
+      <h2 class="heading2">Version 3.84c</h2>
+      <ol class="maintext">
+        <li>OS_Start() corrected.<br>
+        A hard fault exception could occur when an interrupt is executed after OS_Start() and before the scheduler runs for the first time.</li>
+      </ol>
+      <h2 class="heading2">Version 3.82m</h2>
+      <ol class="maintext">
+        <li>Queue management corrected.<br>
+        Queue management failed when the Q-buffer was filled up to the end. This might have happened, when messages are produced faster then they were consumed.<br>
+        The OS_Q_Purge() and OS_Q_Put() functions did not handle this case correctly and caused the queue to be corrupted.<br>
+        OS_Error() might have been called with error number 143, or OS_Q_GetPtr() might have returned with a wrong message size or a message zize of 0.<br>
+        The problem existed since version 3.82k of embOS and is fixed with version 3.82m.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.80h</h2>
+      <ol class="maintext">
+        <li>BSP for AT91SAM3U corrected.<br>
+          The previous versions of the initialization code for the AT91SAM3U did not initialize the second Flash memory controller for devices with 256KB Flash.<br>
+          This resulted in Flash read errors when the Flash memory in the second Flash bank was accessed.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.80g3</h2>
+      <ol class="maintext">
+        <li>Systick timer initialization corrected<br>
+          The previous version V3.80g2 of embOS for Cortex-M3 still affected the SYSTICK timer settings during a call of OS_InitKern().<br>
+          The Systick timer was disabled.<br>
+          Now the systick timer initialization is completely done during OS_InitHW() and can therefore be modified if required by the application.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.52e1</h2>
+      <ol class="maintext">
+        <li>OS_TaskEx corrected<br>
+         Parameter passing to OS_TaskEx did not work. A task always received a NULL pointer.
+         The problem existed in all previous embOS versions for CM3 and is fixed with version 3.52e1.
+         </li>
+      </ol>
+      <h2 class="heading2">Version 3.52e</h2>
+      <ol class="maintext">
+        <li>Interrupt table in RAM corrected<br>
+         Variable interrupt table in RAM did not work correct.
+         </li>
+      </ol>
+      <h2 class="heading2">Version 3.52b</h2>
+      <ol class="maintext">
+        <li>OS_SendString() corrected.<br>
+          When sending an empty string, the calling task was suspended forever.<br>
+          The problem existed in all previous embOS versions and is fixed with version 3.52b.
+        </li>
+        <li>embOSView corrected.<br>
+          When the update interval of embOSView was set to 200ms or a longer value, the reaction of user input or mouse events was blocked for the same time.<br>
+          The problem existed since version 3.32 of embOSView and is fixed with version 3.52b.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.52a</h2>
+      <ol class="maintext">
+        <li>OS_Suspend() corrected<br>
+          When using the debug library with trace capabilities, a call of OS_Suspend() wrote a wrong trace code into the trace buffer.<br>
+          Instead of writing the code for task suspension, the code for task termination was written.<br>
+          The function itself worked correctly, only the data written into the trace buffer was wrong.<br>
+          The problem existed in all previous embOS versions and is fixed with version 3.40d.
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.40</h2>
+      <ol class="maintext">
+        <li>OS_Unuse() corrected<br>
+          OS_Unuse() must not be called from a task that does not claim the resource semaphore.<br>
+          According to the documentation, the debug build of embOS should generate a call to OS_Error() if this fault happens.<br>
+          All previous versions of embOS did not call OS_Error().
+          Now, OS_Error() will be called in that situation with error code 156: OS_ERR_RESOURCE_OWNER().
+        </li>
+        <li>OS_EVENT_Delete() corrected<br>
+          OS_EVENT_Delete() did not work correctly. OS_LeaveRegion() was called inside the function without calling OS_EnterRegion() bfore.<br>
+          In debug builds of embOS, the error handler OS_Error() was called with error 151 (OS_ERR_LEAVEREGION_BEFORE_ENTERREGION).<br>
+          In release builds the system was blocked because the underflow of region count inhibits all further task switches, or system crashes, because incrementing the region count the next time allows task switches instead of blocking them.
+          The problem existed in all previous versions and is fixed with version 3.32l.
+        </li>
+        <li>Round-robin task switching corrected.<br>
+          Round robin task switching did not work correctly in previous version. A task which was blocked for some reason could be activated. The system crashed during task switch.<br>
+          The problem existed since version 3.32j and is fixed with version 3.32l.
+        </li>
+        <li>Handler function _OS_OnTx() for serial communication to embOSView corrected.<br>
+          The transmission handler for communication with embOSView might have sent incorrect data to embOSView, because internal control state was updated after sending the data.<br>
+          The problem occurred on a new embOS port for a specific CPU only and is fixed with version 3.32k.<br>
+        </li>
+      </ol>
+      <h2 class="heading2">Version 3.32j</h2>
+      <ol class="maintext">
+        <li>
+          NONE, initial version for Cortex M3.
+        </li>
+      </ol>
+      <!-- ****************************************************************** -->
+      <!-- KNOWN PROBLEMS                                                     -->
+      <!-- ****************************************************************** -->
+      <h1 class="newsbox"><a name="problems"></a>Known problems/limitations</h1>
+      <h2 class="heading2">Version 3.32j</h2>
+      <ol class="maintext">
+        <li>
+          NONE.
+        </li>
+      </ol>
+      <!-- ****************************************************************** -->
+      <!-- Release history                                                    -->
+      <!-- ****************************************************************** -->
+      <h1 class="newsbox"><a name="history"></a>Release history</h1>
+      <table class="maintext">
+        <tr>
+          <td width=20%>Version</td>
+          <td width=30%>Release date</td>
+          <td>Short explanation</td>
+        </tr>
+        <tr>
+          <td valign="top">V4.34.1</td>
+          <td valign="top">13. Apr 2017</td>
+          <td>
+            Update for IAR EWARM V8.11.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.34</td>
+          <td valign="top">27. Mar 2017</td>
+          <td>
+            Update to latest embOS generic sources V4.34.<br>
+            Update for IAR EWARM V8.10.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.30</td>
+          <td valign="top">13. Dec 2016</td>
+          <td>
+            Update to latest embOS generic sources V4.30.<br>
+            New start project for the NordicSemi nRF52 Preview Development Kit added.<br>
+            New start project for the TI MSP432P401R LaunchPad Development Kit added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.26.1</td>
+          <td valign="top">17. Nov 2016</td>
+          <td>
+            Ensured suitability of SEGGER SystemView and SEGGER HardFault Handler for C++ compilers.
+        </li>
+        <tr>
+          <td valign="top">V4.26</td>
+          <td valign="top">27. Oct 2016</td>
+          <td>
+            Update to latest embOS generic sources V4.26.<br>
+            New start project for the NXP LPC1549 Xpresso v2 eval board added.<br>
+            New start project for the SiliconLabs EZR32 Leopard Gecko added.<br>
+            New start project for the ST STM32F767 added.<br>
+            Modified workaround for Cortex-M7 r0p1 to be user-configurable at compile time.<br>
+            Corrected automatic state preservation during OS_Idle() with Cortex M4F/M7.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.22</td>
+          <td valign="top">31. May 2016</td>
+          <td>
+            Update to latest embOS generic sources V4.22.<br>
+            VFP register handling is now automatically performed by embOS.<br>
+            New start project for the Atmel SAM4E-EK eval board added.<br>
+            New start project for the ST STM32L152C Discovery board added.<br>
+            Applied workaround for interrupt handling with Cortex-M7 r0p1.<br>
+            Additional debug check for task termination added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.16</td>
+          <td valign="top">24. Mar 2016</td>
+          <td>
+            Update to latest embOS generic sources V4.16.<br>
+            New start project for the Freescale FRDM_K22F board added.<br>
+            New start project for the Olimex STM32-P407 evalboard added.<br>
+            New start project for the SEGGER emPower evalboard added.<br>
+            New start project for the ST STM32L476 Discovery board added.<br>
+            New start project for the TI TMS470M Development Kit added.<br>
+            Advanced Hard Fault Handler added to all projects.<br>
+            Task switch fixed.<br>
+            Big-endian libraries fixed.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.14</td>
+          <td valign="top">22. Dec 2015</td>
+          <td>
+            Update to latest embOS generic sources V4.14.<br>
+            New start project for Freescale Kinetis K26 added.<br>
+            New start project for ST STM32F746G-Discovery added.<br>
+            Added Segger SystemView to all projects.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.12a</td>
+          <td valign="top">17. Sep 2015</td>
+          <td>
+            Update to latest embOS generic sources V4.12a.<br>
+            Start project for ST STM32F401xC-Discovery eval board added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.10</td>
+          <td valign="top">04. May 2015</td>
+          <td>
+            Update to latest embOS generic sources V4.10.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.06b</td>
+          <td valign="top">31. Mar 2015</td>
+          <td>
+            Update to latest embOS generic sources V4.06b.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.06a</td>
+          <td valign="top">18. Mar 2015</td>
+          <td>
+            Update to latest embOS generic sources V4.06a.<br>
+            Sstart project for Freescale TWR-VF6 added.<br>
+            OS_EnterRegion() fixed.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.04a2</td>
+          <td valign="top">04. Mar 2015</td>
+          <td>
+            Task switch fixed.<br>
+            Start project for Atmel SAMV71 XPlainedUltra added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.04a1</td>
+          <td valign="top">03. Feb 2015</td>
+          <td>
+            embOS library code size limitation fixed.<br>
+            Start project for ST STM32F756G-Eval added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.04a</td>
+          <td valign="top">09. Jan 2015</td>
+          <td>
+            New embOS sources V4.04a.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.02a</td>
+          <td valign="top">18. Sep 2014</td>
+          <td>
+            New embOS sources V4.02a.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.02.1</td>
+          <td valign="top">15. Sep 2014</td>
+          <td>
+            OS_LeaveNestableInterrupt() fixed.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.02</td>
+          <td valign="top">19. Aug 2014</td>
+          <td>
+            New embOS sources V4.02.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V4.00</td>
+          <td valign="top">13. Jun 2014</td>
+          <td>
+            New embOS sources V4.00.<br>
+            Start project for ST STM32F072 added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.90.1</td>
+          <td valign="top">24. Mar 2014</td>
+          <td>
+            New start project for Atmel SAMG53.<br>
+            New start project for Atmel SAMG54.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.90</td>
+          <td valign="top">19. Jan 2014</td>
+          <td>
+            New embOS sources V3.90.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.88g2</td>
+          <td valign="top">12. Jan 2014</td>
+          <td>
+            New startproject for ST LIS331 device.<br>
+            New start project for TI TM4C129.<br>
+            RTOSInit for Cortex M0 corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.88g1</td>
+          <td valign="top">17. Dec 2013</td>
+          <td>
+            New startprojects for ST devices.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.88g</td>
+          <td valign="top">05. Nov 2013</td>
+          <td>
+            New embOS sources V3.88g.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.88c</td>
+          <td valign="top">13. Aug 2013</td>
+          <td>
+            New embOS sources V3.88c.<br>
+            OS_Start() fixed.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.88b</td>
+          <td valign="top">29. May 2013</td>
+          <td>
+            New embOS sources V3.88b.<br>
+            Scheduling fixed.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.86n</td>
+          <td valign="top">10. Dec 2012</td>
+          <td>
+            New embOS sources V3.86n.<br>
+            embOS syslocks for IAR runtime environment modified.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.86l</td>
+          <td valign="top">26. Nov 2012</td>
+          <td>
+            New embOS sources V3.86l.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.86g</td>
+          <td valign="top">06. Aug 2012</td>
+          <td>
+            New embOS sources V3.86g.<br>
+            Interrupt handling improved.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.86f</td>
+          <td valign="top">26. Jul 2012</td>
+          <td>
+            New embOS sources V3.86f.<br>
+            Task events are 32bit wide now.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.86e</td>
+          <td valign="top">08. Jun 2012</td>
+          <td>
+            New embOS sources V3.86e.<br>
+            HardFault_Handler() modified.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.86d</td>
+          <td valign="top">10. May 2012</td>
+          <td>
+            OS_ExtendTaskContext_TLS_VFP() corrected.<br>
+            OS_EnterNestableInterrupt() improved.<br>
+            New embOS sources V3.86d.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.84d</td>
+          <td valign="top">30. Apr 2012</td>
+          <td>
+            Queue management corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.84c1</td>
+          <td valign="top">03. Feb 2012</td>
+          <td>
+            Scheduling for Cortex M4 with VFP corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.84c</td>
+          <td valign="top">18. Jan 2012</td>
+          <td>
+            New start projects added.<br>
+            Update to latest embOS generic sources V3.84c<br>
+            OS_Start() corrected.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.84.1</td>
+          <td valign="top">04. Nov 2011</td>
+          <td>
+            Stack management improved, OS_Idle() may use stack.<br>
+            embOS plugin for Cortex M4 with VFP.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.84</td>
+          <td valign="top">27. Oct 2011</td>
+          <td>
+            Support for Cortex M4F with floating point unit added.<br>
+            New start projects for the EFM32 devices added.<br>
+            New start projects for the NXP devices added.<br>
+            New start projects for the STM32 devices added.<br>
+            Update to latest embOS generic sources V3.84<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.82u</td>
+          <td valign="top">05. July 2011</td>
+          <td>
+            Update to latest embOS generic sources V3.82u<br>
+            New start project for IAR STM32L152BV-SK board.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.82s</td>
+          <td valign="top">23. Mar  2011</td>
+          <td>
+            Update to latest embOS generic sources V3.82s<br>
+            New library mode DPL added.<br>
+            New start projects for STM32 devices added.<br>
+            New start projects for EFM32 devices added.<br>
+            New start project for Fujitsu device added.
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">V3.82m</td>
+          <td valign="top">24. Nov  2010</td>
+          <td>
+            Freescale Kinetis supported.<br>
+            EnergyMicro supported.<br>
+            Queue handling corrected.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.82l</td>
+          <td>25. Oct  2010</td>
+          <td>
+            Update to IAR compiler V6.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.82h1</td>
+          <td>21. July  2010</td>
+          <td>
+            embOS CM3 IAR now also supports Cortex M0.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.82h</td>
+          <td>31. Mai  2010</td>
+          <td>
+            embOSView runs via J-Link.<br>
+            Fully CMSIS compliant<br>
+          </td>
+        </tr>
+        <tr>
+          <td>V3.82e2</td>
+          <td>10. Feb  2010</td>
+          <td>
+            CMSIS compliant BSP for AT91SAM3S added.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.82e1</td>
+          <td>29. Jan  2010</td>
+          <td>
+            Projects for LPC176x updated.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.82e</td>
+          <td>28. Jan  2010</td>
+          <td>
+            CMSIS compliant project for STM32/MB672 added.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.82c</td>
+          <td>10. Dec 2009</td>
+          <td>
+            BSP for TMPM330 added.<br>
+            Profiling support for MB784 added.<br>
+            Update to latest embOS generic sources V3.82c</li>
+            Remarks enabled for all projects<br>
+          </td>
+        </tr>
+        <tr>
+          <td>V3.80h</td>
+          <td>06. Aug 2009</td>
+          <td>
+            BSP for AT91SAM3U corrected.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.80g3</td>
+          <td>14. Jul 2009</td>
+          <td>
+            Timer initialization modified.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.80g2</td>
+          <td>09. Jul 2009</td>
+          <td>
+            Timer initialization modified.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.80g1</td>
+          <td>09. Jul 2009</td>
+          <td>
+            ST STM32F107 supported.<br>
+            IAR LPC1766-SK supported.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.80g</td>
+          <td>05. Jun 2009</td>
+          <td>
+            New embOS plugin supported<br>
+            New optimized embOS sources.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.62</td>
+          <td>01. Oct 2008</td>
+          <td>
+            Update to new embOS sources 3.62.<br>
+            Update to IAR compiler V5.20.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.60d</td>
+          <td>05. Jun 2008</td>
+          <td>
+            Update to new embOS sources 3.60d.<br>
+            OS_POWER module implemented.<br>
+            BSP for IAR STM-SK split up into IAR STM-SK and ST MB525.<br>
+            BSP for ST MB672 eval board added.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.60a</td>
+          <td>12. Mar 2008</td>
+          <td>
+            Update to embOS version 3.60a.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.60</td>
+          <td>11. Jan 2008</td>
+          <td>
+            Update to IAR compiler V5.11.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.52e1</td>
+          <td>21. Dec 2007</td>
+          <td>
+            OS_TaskEx corrected.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.52e</td>
+          <td>29. Nov 2007</td>
+          <td>
+            New generic embOS sources.<br>
+            Interrupt table in RAM corrected.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.52a</td>
+          <td>17. Sep 2007</td>
+          <td>
+            New BSPs for Luminary Micro LM3S1968 and LM3s8962 CPUs.<br>
+            Scheduler optimized.<br>
+            Task switch to OS_Idle() modified.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.40c</td>
+          <td>28. Jun 2007</td>
+          <td>
+            OS_Yield() implemented.<br>
+            Uart and PLL for BSP/STM32F10 added.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.40a</td>
+          <td>05. Jun 2007</td>
+          <td>
+            Counting semaphores improvement.<br>
+            BSP for STM32F10 added.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.40</td>
+          <td>24. May 2007</td>
+          <td>
+            New start projects for LM3S6965 and LM3S6965.
+            New embOS sources 3.40.
+          </td>
+        </tr>
+        <tr>
+          <td>V3.32j</td>
+          <td>06. Jan 2007</td>
+          <td>
+            Initial version for Cortex M3
+          </td>
+        </tr>
+      </table>
+<!-- ****** Modifiable information ends here ******** -->
+<hr>
+<p class="maintext">
+Copyright 2001-2017 SEGGER Microcontroller GmbH &amp; Co. KG. All rights reserved.<br>
+For more information, please visit our website <a href ="http://www.segger.com/">www.segger.com</a> or contact us at <a href ="mailto:info@segger.com">info@segger.com</a><br>
+</p>
+</body>
+</html>

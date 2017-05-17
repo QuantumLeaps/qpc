@@ -55,7 +55,7 @@ static Philo l_philo[N_PHILO];   /* storage for all Philos */
 #define PHILO_ID(me_)    ((uint8_t)((me_) - l_philo))
 
 /* Global objects ----------------------------------------------------------*/
-QMActive * const AO_Philo[N_PHILO] = { /* "opaque" pointers to Philo AO */
+QActive * const AO_Philo[N_PHILO] = { /* "opaque" pointers to Philo AO */
     &l_philo[0].super,
     &l_philo[1].super,
     &l_philo[2].super,

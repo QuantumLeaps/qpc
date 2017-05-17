@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK port to ARM Cortex-M (M0,M0+,M3,M4,M7), GNU-ARM assembler
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-12
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-03-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 
@@ -57,15 +57,15 @@ QK_init:
 
     LDR     r3,=0xE000ED18    /* System Handler Priority Register */
     LDR     r2,[r3,#8]        /* r2 := SYSPRI3 */
-    MOVS    r0,#0xFF
-    LSLS    r0,r0,#16
+    MOVS    r1,#0xFF
+    LSLS    r1,r1,#16
     ORRS    r2,r1
     STR     r2,[r3,#8]        /* SYSPRI3 := r2, PendSV <- 0xFF */
 
   .else                       /* M3/M4/M7 */
     /* NOTE:
-    * On Cortex-M3/M4/.., this QK port disables interrupts by means of the
-    * BASEPRI register. However, this method cannot disable interrupt
+    * On Cortex-M3/M4/M7.., this QK port disables interrupts by means of
+    * the BASEPRI register. However, this method cannot disable interrupt
     * priority zero, which is the default for all interrupts out of reset.
     * The following code changes the SysTick priority and all IRQ priorities
     * to the safe value QF_BASEPRI, wich the QF critical section can disable.
@@ -166,7 +166,9 @@ PendSV_Handler:
     PUSH    {r0,lr}           /* ... push EXC_RETURN plus stack-aligner */
   .endif                      /* VFP */
     MOVS    r0,#QF_BASEPRI
-    MSR     BASEPRI,r0        /* selectively disable interrupts */
+    CPSID   i                 /* selectively disable interrutps with BASEPRI */
+    MSR     BASEPRI,r0        /* apply the workaround the Cortex-M7 erraturm */
+    CPSIE   i                 /* 837070, see ARM-EPM-064408. */
   .endif                      /* M3/M4/M7 */
 
     /* The PendSV exception handler can be preempted by an interrupt,
@@ -211,27 +213,27 @@ PendSV_Handler:
 
 Thread_ret:
     /* After the QK activator returns, we need to resume the preempted
-    * task. However, this must be accomplished by a return-from-exception,
-    * while we are still in the task context. The switch to the exception
+    * thread. However, this must be accomplished by a return-from-exception,
+    * while we are still in the thread context. The switch to the exception
     * contex is accomplished by triggering the NMI exception.
-    * NOTE: The NMI exception is triggered with nterrupts DISABLED,
-    * because QK activator disables interrutps before return.
     */
 
-    /* before triggering the PendSV exception, make sure that the
+    /* before triggering the NMI exception, make sure that the
     * VFP stack frame will NOT be used...
     */
   .ifdef  __FPU_PRESENT       /* if VFP available... */
     MRS     r0,CONTROL        /* r0 := CONTROL */
     BICS    r0,r0,#4          /* r0 := r0 & ~4 (FPCA bit) */
     MSR     CONTROL,r0        /* CONTROL := r0 (clear CONTROL[2] FPCA bit) */
+    ISB                       /* ISB after MSR CONTROL (ARM AN321,Sect.4.16)*/
   .endif                      /* VFP available */
 
-
-    /* trigger NMI to return to preempted task... */
+    /* trigger NMI to return to preempted task...
+    * NOTE: The NMI exception is triggered with nterrupts DISABLED
+    */
     LDR     r0,=0xE000ED04    /* Interrupt Control and State Register */
     MOVS    r1,#1
-    LSLS    r1,r1,#31         /* r0 := (1 << 31) (NMI bit) */
+    LSLS    r1,r1,#31         /* r1 := (1 << 31) (NMI bit) */
     STR     r1,[r0]           /* ICSR[31] := 1 (pend NMI) */
     B       .                 /* wait for preemption by NMI */
   .size   Thread_ret, . - Thread_ret
@@ -261,7 +263,7 @@ NMI_Handler:
     MSR     BASEPRI,r0        /* enable interrupts (clear BASEPRI) */
   .ifdef  __FPU_PRESENT       /* if VFP available... */
     POP     {r0,pc}           /* pop stack "aligner" and EXC_RETURN to PC */
-  .else
+  .else                       /* no VFP */
     BX      lr                /* return to the preempted task */
   .endif                      /* VFP available */
   .endif                      /* M3/M4/M7 */

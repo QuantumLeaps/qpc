@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.8.0
-// Last updated on  2016-11-29
+// Last updated for version 5.9.0
+// Last updated on  2017-05-10
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -40,7 +40,7 @@
 -i.                   // QP/C port includes (see also qk/ and qv/)
 -i../../include       // QP/C includes
 
--si4                  // sizeof(int) 
+-si4                  // sizeof(int)
 -ss2                  // sizeof(short)
 -spD4                 // sizeof(void *)
 -spP4                 // sizeof(function pointer)
@@ -70,9 +70,9 @@ qpc.lnt               // QP/C options
  QEP_EXIT_)
 -efunc(632,           // Assignment to strong type 'QStateHandler'
  QHsm_init)
- -efunc(661,          // Possible access of out-of-bounds pointer
+-efunc(661,           // Possible access of out-of-bounds pointer
  QMsm_execTatbl_)
--efunc(644,           // Variable 'entry' may not be initialized 
+-efunc(644,           // Variable 'entry' may not be initialized
  QMsm_enterHistory_)
 
 // QF
@@ -91,7 +91,9 @@ qpc.lnt               // QP/C options
 -emacro(929,          // MISRA04-11.4(adv) cast pointer to pointer
  QF_EVT_REF_CTR_INC_,
  QF_EVT_REF_CTR_DEC_,
- QF_EPOOL_PUT_)
+ QF_EPOOL_PUT_,
+ QMSM_CAST,
+ QTICKER_CAST)
 -estring(961,         // MISRA04-19.7(adv) function-like macro
  QF_EVT_REF_CTR_INC_,
  QF_EVT_REF_CTR_DEC_,
@@ -102,7 +104,9 @@ qpc.lnt               // QP/C options
  QF_SCHED_UNLOCK_,
  QF_ISR_CONTEXT_,
  QF_PTR_RANGE_,
- QF_MPOOL_EL)
+ QF_MPOOL_EL,
+ QMSM_CAST,
+ QTICKER_CAST)
 -esym(960,            // MISRA04-19.4(req) Disallowed macro definition
  QF_CRIT_ENTRY_,
  QF_CRIT_EXIT_,
@@ -117,6 +121,8 @@ qpc.lnt               // QP/C options
  QACTIVE_EQUEUE_WAIT_,
  QACTIVE_EQUEUE_SIGNAL_,
  QACTIVE_EQUEUE_ONEMPTY_)
+-emacro(740,          // MISRA04-1.2(req) Unusual pointer cast (icomp. indirect types)
+ QMSM_CAST)
 -efunc(818,           // MISRA04-16.7(adv) 'stkSto' could be const
  QActive_start_)
 -efunc(527, QF_run)   // MISRA04-14.17(req) Unreachable code
@@ -193,7 +199,7 @@ qpc.lnt               // QP/C options
  QSRxExtState)
 -esym(754,            // Info: Symbol not referenced
  U32Rep::u32)
- 
+
 // Warning 537 "Repeated include file" is generated only for QEP source code
 // This warning is redundant, because all QP header files are protected
 // by #ifndef xxx_h ... #endif preprocessor checks.

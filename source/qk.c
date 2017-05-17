@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.1
-* Last updated on  2016-12-14
+* Last updated for version 5.9.0
+* Last updated on  2017-03-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -73,11 +73,6 @@ void QF_init(void) {
     QF_subscrList_   = (QSubscrList *)0;
     QF_maxPubSignal_ = (enum_t)0;
 
-    /* clear the internal QF variables, so that the framework can start
-    * correctly even if the startup code fails to clear the uninitialized
-    * data (as is required by the C Standard).
-    */
-    QF_maxPool_ = (uint_fast8_t)0;
     QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
     QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
     QF_bzero(&QK_attr_,           (uint_fast16_t)sizeof(QK_attr_));
@@ -137,7 +132,6 @@ int_t QF_run(void) {
     for (;;) {
         QK_onIdle(); /* application-specific QK on-idle callback */
     }
-
 #ifdef __GNUC__
     return (int_t)0;
 #endif
@@ -154,10 +148,9 @@ int_t QF_run(void) {
 * @param[in]     prio    priority at which to start the active object
 * @param[in]     qSto    pointer to the storage for the ring buffer of the
 *                        event queue (used only with the built-in ::QEQueue)
-* @param[in]     qLen    length of the event queue (in events)
-* @param[in]     stkSto  pointer to the stack storage (used only when
-*                        per-AO stack is needed)
-* @param[in]     stkSize stack size (in bytes)
+* @param[in]     qLen    length of the event queue [events]
+* @param[in]     stkSto  pointer to the stack storage (must be NULL in QK)
+* @param[in]     stkSize stack size [bytes]
 * @param[in]     ie      pointer to the initial event (might be NULL).
 *
 * @note This function should be called via the macro QACTIVE_START().
@@ -173,23 +166,27 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 {
     QF_CRIT_STAT_
 
-    Q_REQUIRE_ID(500, ((uint_fast8_t)0 < prio)
+    /** @pre AO cannot be started from an ISR, the priority must be in range
+    * and the stack storage must not be provided, because the QK kernel does
+    * not need per-AO stacks.
+    */
+    Q_REQUIRE_ID(500, (!QK_ISR_CONTEXT_())
+                      && ((uint_fast8_t)0 < prio)
                       && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
-                      && (stkSto == (void *)0)
-                      && (stkSize == (uint_fast16_t)0));
+                      && (stkSto == (void *)0));
+
+    (void)stkSize; /* unused parameter */
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
     me->prio = prio;   /* set the current priority of the AO */
-    QF_CRIT_ENTRY_();
     QF_add_(me); /* make QF aware of this active object */
-    QF_CRIT_EXIT_();
 
     QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH();                /* flush the trace buffer to the host */
 
     /* See if this AO needs to be scheduled in case QK is already running */
     QF_CRIT_ENTRY_();
-    if (QK_sched_() != (uint_fast8_t)0) {
+    if (QK_sched_() != (uint_fast8_t)0) { /* activation needed? */
         QK_activate_();
     }
     QF_CRIT_EXIT_();
@@ -209,12 +206,12 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 void QActive_stop(QActive * const me) {
     QF_CRIT_STAT_
 
-    QF_CRIT_ENTRY_();
     /** @pre QActive_stop() must be called from the AO that wants to stop. */
     Q_REQUIRE_ID(600, (me == QF_active_[QK_attr_.actPrio]));
 
     QF_remove_(me); /* remove this active object from the QF */
 
+    QF_CRIT_ENTRY_();
     QPSet_remove(&QK_attr_.readySet, me->prio);
     if (QK_sched_() != (uint_fast8_t)0) {
         QK_activate_();
@@ -287,7 +284,7 @@ void QK_activate_(void) {
         a = QF_active_[p]; /* obtain the pointer to the AO */
         QK_attr_.actPrio = p; /* this becomes the active priority */
 
-        QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.aoObjFilter, a)
+        QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ], a)
             QS_TIME_();            /* timestamp */
             QS_2U8_((uint8_t)p,    /* priority of the scheduled AO */
                     (uint8_t)pprev); /* previous priority */
@@ -338,7 +335,7 @@ void QK_activate_(void) {
     if (pin != (uint_fast8_t)0) { /* resuming an active object? */
         a = QF_active_[pin]; /* the pointer to the preempted AO */
 
-        QS_BEGIN_NOCRIT_(QS_SCHED_RESUME, QS_priv_.aoObjFilter, a)
+        QS_BEGIN_NOCRIT_(QS_SCHED_RESUME, QS_priv_.locFilter[AO_OBJ], a)
             QS_TIME_();              /* timestamp */
             QS_2U8_((uint8_t)pin,    /* priority of the resumed AO */
                     (uint8_t)pprev); /* previous priority */

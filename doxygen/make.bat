@@ -1,8 +1,8 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 5.8.2
-:: Date of the Last Update:  2017-02-07
+:: Last Updated for Version: 5.9.0
+:: Date of the Last Update:  2017-05-03
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -29,7 +29,7 @@
 :: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: http://www.state-machine.com
+:: https://state-machine.com
 :: mailto:info@state-machine.com
 :: ==========================================================================
 setlocal
@@ -38,7 +38,7 @@ echo usage:
 echo make
 echo make -CHM
 
-set VERSION=5.8.2
+set VERSION=5.9.0
 
 :: Generate Resource Standard Metrics for QP/C ............................... 
 set DOXHOME="C:\tools\doxygen\bin"

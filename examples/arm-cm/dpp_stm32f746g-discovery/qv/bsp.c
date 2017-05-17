@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, STM32746G-Discovery board, cooperative QV kernel
-* Last Updated for Version: 5.8.2
-* Date of the Last Update:  2017-02-08
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-04-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -128,11 +128,7 @@ void SysTick_Handler(void) {
         }
     }
 }
-/*..........................................................................*/
-//void GPIO_EVEN_IRQHandler(void) {
-//    QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
-//                 &l_GPIO_EVEN_IRQHandler);
-//}
+
 /*..........................................................................*/
 #ifdef Q_SPY
 /*
@@ -148,20 +144,17 @@ void USART1_IRQHandler(void) {
         l_uartHandle.Instance->ISR &= ~USART_ISR_RXNE; /* clear interrupt */
     }
 }
+/*..........................................................................*/
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle) {
+    (void)UartHandle;
+    /* dummy implementation needed for STM32Cube */
+}
 #endif
 
 /*..........................................................................*/
 void BSP_init(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct;
     RCC_ClkInitTypeDef RCC_ClkInitStruct;
-
-    /* NOTE:
-    * The global interrupt disable code prevents interrutps from firing
-    * prematurely until QF_onStartup(), when QF is fully initialized.
-    * Unfortunately, the STM32Cube code that must be called from here,
-    * configures and starts interrutps (such as SysTick).
-    */
-    QF_PRIMASK_DISABLE(); /* globally disable interrupts until QF_onStart() */
 
     SCB_EnableICache(); /* Enable I-Cache */
     SCB_EnableDCache(); /* Enable D-Cache */
@@ -299,7 +292,6 @@ void QF_onStartup(void) {
     NVIC_EnableIRQ(USART1_IRQn); /* UART1 interrupt used for QS-RX */
 #endif
 
-    QF_PRIMASK_ENABLE(); /* ready to accept interrupts */
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
@@ -389,22 +381,15 @@ uint8_t QS_onStartup(void const *arg) {
         return (uint8_t)0; /* return failure */
     }
 
+    /* Set UART to receive 1 byte at a time via interrupt */
+    HAL_UART_Receive_IT(&l_uartHandle, (uint8_t *)qsRxBuf, 1);
+
     QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
-    QS_FILTER_ON(COMMAND_STAT);
+    QS_FILTER_ON(QS_SM_RECORDS);
+    QS_FILTER_ON(QS_UA_RECORDS);
 
     return (uint8_t)1; /* return success */
 }
@@ -442,13 +427,17 @@ void QS_onReset(void) {
 }
 /*..........................................................................*/
 /*! callback function to execute a user command (to be implemented in BSP) */
-void QS_onCommand(uint8_t cmdId, uint32_t param) {
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
+{
     void assert_failed(char const *module, int loc);
     (void)cmdId;
-    (void)param;
+    (void)param1;
+    (void)param2;
+    (void)param3;
     QS_BEGIN(COMMAND_STAT, (void *)1) /* application-specific record begin */
         QS_U8(2, cmdId);
-        QS_U32(8, param);
+        QS_U32(8, param1);
     QS_END()
 
     if (cmdId == 10U) {

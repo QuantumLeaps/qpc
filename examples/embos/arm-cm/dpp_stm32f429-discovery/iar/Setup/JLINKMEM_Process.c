@@ -1,16 +1,15 @@
 /*********************************************************************
-*               SEGGER MICROCONTROLLER GmbH & Co KG                  *
-*       Solutions for real time microcontroller applications         *
+*                SEGGER Microcontroller GmbH & Co. KG                *
+*                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2014  SEGGER Microcontroller GmbH & Co KG         *
+*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
 *                                                                    *
-*       www.segger.com     Support: support@segger.com               *
+*       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
 **********************************************************************
 *                                                                    *
 *       embOS * Real time operating system for microcontrollers      *
-*                                                                    *
 *                                                                    *
 *       Please note:                                                 *
 *                                                                    *
@@ -22,7 +21,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.00                                             *
+*       OS version: 4.34.1                                           *
 *                                                                    *
 **********************************************************************
 

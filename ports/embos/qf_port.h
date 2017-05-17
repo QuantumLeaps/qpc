@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-28
+* Last Updated for Version: 5.9.0 / embOS v4.34.1
+* Date of the Last Update:  2017-05-04
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -77,12 +77,12 @@ void QF_setEmbOsTaskAttr(QActive *act, uint32_t attr);
     /* embOS-specific scheduler locking, see NOTE3 */
     #define QF_SCHED_STAT_
     #define QF_SCHED_LOCK_(dummy) do { \
-        if (OS_InInt == (OS_U8)0) { \
+        if (OS_InInterrupt() == (OS_BOOL)0) { \
             OS_EnterRegion(); \
         } \
     } while (0)
     #define QF_SCHED_UNLOCK_() do { \
-        if (OS_InInt == (OS_U8)0) { \
+        if (OS_InInterrupt() == (OS_BOOL)0) { \
             OS_LeaveRegion(); \
         } \
     } while (0)

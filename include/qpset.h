@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -175,9 +175,9 @@ typedef struct {
     /*! function that returns (log2(x_) + 1), where @p x_ is uint32_t */
     /**
     * @description
-    * This function returns the 1-based number of the most significant 1-bit
-    * of a 32-bit number. This function can be replaced in the QP ports, if
-    * the CPU supports special instructions, such as CLZ (count leading zeros).
+    * This function returns the number of the most significant 1-bit of a
+    * 32-bit number. This function can be replaced in the QP ports, if the
+    * CPU supports special instructions, such as CLZ (count leading zeros).
     */
     inline uint_fast8_t QF_LOG2(uint32_t x) {
         uint_fast8_t n;
@@ -207,13 +207,6 @@ typedef struct {
     }
 
 #else /* older C compiler */
-    /*! function that returns (log2(x_) + 1), where @p x_ is uint32_t */
-    /**
-    * @description
-    * This function returns the 1-based number of the most significant 1-bit
-    * of a 32-bit number. This function can be replaced in the QP ports, if
-    * the CPU supports special instructions, such as CLZ (count leading zeros).
-    */
     uint_fast8_t QF_LOG2(uint32_t x);
 
 #endif /* __STDC_VERSION__ */
@@ -221,4 +214,3 @@ typedef struct {
 #endif /* QF_LOG2 */
 
 #endif /* qpset_h */
-

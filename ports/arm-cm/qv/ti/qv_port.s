@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QV port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), TI-ARM assembler
-; Last Updated for Version: 5.8.1
-; Date of the Last Update:  2016-12-12
+; Last Updated for Version: 5.9.0
+; Date of the Last Update:  2017-03-17
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -28,11 +28,15 @@
 ; along with this program. If not, see <http://www.gnu.org/licenses/>.
 ;
 ; Contact information:
-; http://www.state-machine.com
+; https://state-machine.com
 ; mailto:info@state-machine.com
 ;*****************************************************************************
 
+  .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
     .global QF_set_BASEPRI    ; set BASEPRI register
+  .endif                      ; M3/M4/M7
+
+    .global QF_crit_entry     ; enter critical section
     .global assert_failed     ; low-level assert handler
 
     .ref    Q_onAssert        ; external reference
@@ -42,15 +46,44 @@ QF_BASEPRI: .equ  (0xFF >> 2)
 
     .text
     .thumb
+
 ;*****************************************************************************
 ; The QF_set_BASEPRI function sets the BASEPRI register to the value
 ; passed in r0.
-; C prototype: void QF_set_BASEPRI(uint32_t basePri);
+; NOTE: The BASEPRI register is implemented only in ARMv7 architecture
+; and is **not** available in ARMv6 (M0/M0+/M1)
+;
+; C prototype: void QF_set_BASEPRI(unsigned basepri);
 ;*****************************************************************************
+  .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
 QF_set_BASEPRI: .asmfunc
-    MSR     BASEPRI,r0        ; set BASEPRI
+    MSR     BASEPRI,r0        ; BASEPRI := r0 (basepri parameter)
     BX      lr                ; return to the caller
-    .endasmfunc
+  .endasmfunc
+  .endif                      ; M3/M4/M7
+
+;*****************************************************************************
+; The QF_crit_entry function enters the QF critical section
+; passed in r0.
+; NOTE: The BASEPRI register is implemented only in ARMv7 architecture
+; and is **not** available in ARMv6 (M0/M0+/M1)
+;
+; C prototype: unsigned QF_crit_entry(void);
+;*****************************************************************************
+QF_crit_entry: .asmfunc
+  .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
+    MRS     r0,BASEPRI        ; r0 := BASEPRI (to return)
+    MOVS    r1,#QF_BASEPRI
+    CPSID   i                 ; selectively disable interrutps with BASEPRI
+    MSR     BASEPRI,r1        ; apply the workaround the Cortex-M7 erraturm
+    CPSIE   i                 ; 837070, see ARM-EPM-064408.
+    BX      lr                ; return to the caller (previous BASEPRI in r0)
+  .else                       ; M0/M0+
+    MRS     r0,PRIMASK        ; r0 := PRIMASK (to return)
+    CPSID   i                 ; globally disable interrutps with PRIMASK
+    BX      lr                ; return to the caller (previous PRIMASK in r0)
+  .endif                      ; M0/M0+
+  .endasmfunc
 
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__ ; M3/4/7?
 ;*****************************************************************************
@@ -65,8 +98,8 @@ QV_init:    .asmfunc
     CPSID   i                 ; PRIMASK := 1
 
     ; NOTE:
-    ; On Cortex-M3/M4/.., this QK port disables interrupts by means of the
-    ; BASEPRI register. However, this method cannot disable interrupt
+    ; On Cortex-M3/M4/M7.., this QK port disables interrupts by means of
+    ; the BASEPRI register. However, this method cannot disable interrupt
     ; priority zero, which is the default for all interrupts out of reset.
     ; The following code changes the SysTick priority and all IRQ priorities
     ; to the safe value QF_BASEPRI, wich the QF critical section can disable.
@@ -136,9 +169,10 @@ assert_failed: .asmfunc
     LDR     r0,[r0,#0]        ; r0 := contents of VTOR
     LDR     r0,[r0]           ; r0 := VT[0] (first entry is the top of stack)
     MSR     MSP,r0            ; main SP := initial top of stack
-    ISB                       ; flush the instruction pipeline
+    DSB                       ; DSB/ISB pair if instructions needed...
+    ISB                       ; ...after MSR MSP (ARM AN 321, Sect.4.10)
     BL      Q_onAssert
-    .endasmfunc
+  .endasmfunc
 
 ;*****************************************************************************
 ; Addresses for PC-relative LDR

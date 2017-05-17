@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.4
-* Last updated on  2016-11-02
+* Last updated for version 5.9.0
+* Last updated on  2017-05-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -101,7 +101,7 @@ void QXThread_ctor(QXThread * const me,
 
     QActive_ctor(&me->super, Q_STATE_CAST(handler)); /* superclass' ctor */
     me->super.super.vptr = &vtbl.super; /* set the vptr to QXThread v-table */
-    me->super.super.state.act = Q_ACTION_CAST(0); /* mark as extended thread */
+    me->super.super.state.act = Q_ACTION_CAST(0); /*mark as extended thread */
 
     /* construct the time event member added in the QXThread class */
     QTimeEvt_ctorX(&me->timeEvt, &me->super, (enum_t)QXK_DELAY_SIG, tickRate);
@@ -173,12 +173,12 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = prio;
 
-    QF_CRIT_ENTRY_();
-    QF_add_(me); /* make QF aware of this extended thread */
-
     /* the new thread is not blocked on any object */
     me->super.temp.obj = (QMState const *)0;
 
+    QF_add_(me); /* make QF aware of this extended thread */
+
+    QF_CRIT_ENTRY_();
     /* extended-thread becomes ready immediately */
     QPSet_insert(&QXK_attr_.readySet, me->prio);
 
@@ -257,7 +257,8 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
         /* margin available? */
         if (nFree > (QEQueueCtr)margin) {
 
-            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.aoObjFilter, me)
+            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
+                             QS_priv_.locFilter[AO_OBJ], me)
                 QS_TIME_();               /* timestamp */
                 QS_OBJ_(sender);          /* the sender object */
                 QS_SIG_(e->sig);          /* the signal of the event */
@@ -311,7 +312,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
             Q_ASSERT_ID(310, margin != (uint_fast16_t)0);
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
-                             QS_priv_.aoObjFilter, me)
+                             QS_priv_.locFilter[AO_OBJ], me)
                 QS_TIME_();           /* timestamp */
                 QS_OBJ_(sender);      /* the sender object */
                 QS_SIG_(e->sig);      /* the signal of the event */
@@ -359,7 +360,7 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e) {
 * receive QP events directly into its own built-in event queue from an ISR,
 * basic thread (AO), or another extended thread.
 *
-* If QXThread_queueGet() is called when no events are present in the thread’s
+* If QXThread_queueGet() is called when no events are present in the thread's
 * event queue, the operation blocks the current extended thread until either
 * an event is received, or a user-specified timeout expires.
 *
@@ -425,7 +426,8 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
             }
             --thr->super.eQueue.tail;
 
-            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET, QS_priv_.aoObjFilter, thr)
+            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET,
+                             QS_priv_.locFilter[AO_OBJ], thr)
                 QS_TIME_();                   /* timestamp */
                 QS_SIG_(e->sig);              /* the signal of this event */
                 QS_OBJ_(&thr->super);         /* this active object */
@@ -439,7 +441,8 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
             /* all entries in the queue must be free (+1 for fronEvt) */
             Q_ASSERT_ID(520, nFree == (thr->super.eQueue.end +(QEQueueCtr)1));
 
-            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST, QS_priv_.aoObjFilter, thr)
+            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST,
+                             QS_priv_.locFilter[AO_OBJ], thr)
                 QS_TIME_();                   /* timestamp */
                 QS_SIG_(e->sig);              /* the signal of this event */
                 QS_OBJ_(&thr->super);         /* this active object */
@@ -626,4 +629,3 @@ void QXK_threadRet_(void) {
     (void)QXK_sched_();
     QF_CRIT_EXIT_();
 }
-

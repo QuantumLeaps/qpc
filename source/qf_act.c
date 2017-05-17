@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -83,7 +83,7 @@ void QF_add_(QActive * const a) {
 
     QF_active_[p] = a; /* register the active object at this priority */
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_ADD, QS_priv_.aoObjFilter, a)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_ADD, QS_priv_.locFilter[AO_OBJ], a)
         QS_TIME_();         /* timestamp */
         QS_OBJ_(a);         /* the active object */
         QS_U8_((uint8_t)p); /* the priority of the active object */
@@ -123,7 +123,7 @@ void QF_remove_(QActive * const a) {
     QF_active_[p] = (QActive *)0; /* free-up the priority level */
     a->super.state.fun = Q_STATE_CAST(0); /* invalidate the state */
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_REMOVE, QS_priv_.aoObjFilter, a)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_REMOVE, QS_priv_.locFilter[AO_OBJ], a)
         QS_TIME_();         /* timestamp */
         QS_OBJ_(a);         /* the active object */
         QS_U8_((uint8_t)p); /* the priority of the active object */

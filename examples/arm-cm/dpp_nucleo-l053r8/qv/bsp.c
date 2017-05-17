@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-L053R8 board, cooperative QV kernel
-* Last Updated for Version: 5.6.5
-* Date of the Last Update:  2016-07-05
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-02-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -241,10 +241,10 @@ void QV_onIdle(void) {  /* called with interrupts disabled, see NOTE01 */
     * see the datasheet for your particular Cortex-M MCU.
     */
     /* !!!CAUTION!!!
-    * The QF_CPU_SLEEP() contains the WFI instruction, which stops the CPU
+    * The QV_CPU_SLEEP() contains the WFI instruction, which stops the CPU
     * clock, which unfortunately disables the JTAG port, so the ST-Link
     * debugger can no longer connect to the board. For that reason, the call
-    * to QF_CPU_SLEEP() has to be used with CAUTION.
+    * to QV_CPU_SLEEP() has to be used with CAUTION.
     */
     /* NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
     * reset the board, then connect with ST-Link Utilities and erase the part.

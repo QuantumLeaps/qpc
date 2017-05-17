@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), ARM-Keil assembler
-; Last Updated for Version: 5.8.1
-; Date of the Last Update:  2016-12-12
+; Last Updated for Version: 5.9.0
+; Date of the Last Update:  2017-03-17
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -28,7 +28,7 @@
 ; along with this program. If not, see <http://www.gnu.org/licenses/>.
 ;
 ; Contact information:
-; http://www.state-machine.com
+; https://state-machine.com
 ; mailto:info@state-machine.com
 ;*****************************************************************************
 
@@ -73,18 +73,18 @@ QXK_init     FUNCTION
 
   IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
 
-    LDR     r1,=0xE000ED18    ; System Handler Priority Register
-    LDR     r2,[r1,#8]        ; load the System 12-15 Priority Register
-    MOVS    r3,#0xFF
-    LSLS    r3,r3,#16
-    ORRS    r2,r3             ; set PRI_14 (PendSV) to 0xFF
-    STR     r2,[r1,#8]        ; write the System 12-15 Priority Register
+    LDR     r3,=0xE000ED18    ; System Handler Priority Register
+    LDR     r2,[r3,#8]        ; r2 := SYSPRI3
+    MOVS    r1,#0xFF
+    LSLS    r1,r1,#16
+    ORRS    r2,r1
+    STR     r2,[r3,#8]        ; SYSPRI3 := r2, PendSV <- 0xFF
 
   ELSE                        ; Cortex-M3/M4/..
 
     ; NOTE:
-    ; On Cortex-M3/M4/.., this QXK port disables interrupts by means of the
-    ; BASEPRI register. However, this method cannot disable interrupt
+    ; On Cortex-M3/M4/M7.., this QK port disables interrupts by means of
+    ; the BASEPRI register. However, this method cannot disable interrupt
     ; priority zero, which is the default for all interrupts out of reset.
     ; The following code changes the SysTick priority and all IRQ priorities
     ; to the safe value QF_BASEPRI, wich the QF critical section can disable.
@@ -180,7 +180,9 @@ PendSV_Handler FUNCTION
     CPSID   i                 ; disable interrupts (set PRIMASK)
   ELSE                        ; M3/M4/M7
     MOVS    r0,#QF_BASEPRI
-    MSR     BASEPRI,r0        ; selectively disable interrupts
+    CPSID   i                 ; selectively disable interrutps with BASEPRI
+    MSR     BASEPRI,r0        ; apply the workaround the Cortex-M7 erraturm
+    CPSIE   i                 ; 837070, see ARM-EPM-064408.
   ENDIF                       ; M3/M4/M7
 
     ; The PendSV exception handler can be preempted by an interrupt,
@@ -212,16 +214,16 @@ PendSV_activate
     ; The QXK activator must be called in a thread context, while this code
     ; executes in the handler contex of the PendSV exception. The switch
     ; to the Thread mode is accomplished by returning from PendSV using
-    ; a fabricated exception stack frame, where the return address is the
-    ; QXK activator QXK_activate_().
+    ; a fabricated exception stack frame, where the return address is
+    ; QXK_activate_().
     ;
     ; NOTE: the QXK activator is called with interrupts DISABLED and also
     ; it returns with interrupts DISABLED.
     MOVS    r3,#1
-    LSLS    r3,r3,#24         ; r3:=(1 << 24), set the T bit  (new xpsr)
+    LSLS    r3,r3,#24         ; r3 := (1 << 24), set the T bit  (new xpsr)
     LDR     r2,=QXK_activate_ ; address of QXK_activate_
     SUBS    r2,r2,#1          ; align Thumb-address at halfword (new pc)
-    LDR     r1,=Thread_ret    ; return address after the call (new lr)
+    LDR     r1,=Thread_ret    ; return address after the call   (new lr)
 
     SUB     sp,sp,#8*4        ; reserve space for exception stack frame
     ADD     r0,sp,#5*4        ; r0 := 5 registers below the top of stack
@@ -344,6 +346,7 @@ PendSV_save_ex
 
     LDR     r1,[r3,#QXK_CURR] ; r1 := QXK_attr_.curr (restore value)
   ELSE                        ; M3/M4/M7
+    ISB                       ; reset pipeline after fetching PSP
     STMDB   r0!,{r4-r11}      ; save r4-r11 on top of the exception frame
   IF {TARGET_FPU_VFP} == {TRUE} ; if VFP available...
     TST     lr,#(1 << 4)      ; is it return with the VFP exception frame?
@@ -421,6 +424,8 @@ Thread_ret FUNCTION
     ; thread. However, this must be accomplished by a return-from-exception,
     ; while we are still in the thread context. The switch to the exception
     ; contex is accomplished by triggering the NMI exception.
+    ; NOTE: The NMI exception is triggered with nterrupts DISABLED,
+    ; because QK activator disables interrutps before return.
 
     ; before triggering the NMI exception, make sure that the
     ; VFP stack frame will NOT be used...
@@ -428,6 +433,7 @@ Thread_ret FUNCTION
     MRS     r0,CONTROL        ; r0 := CONTROL
     BICS    r0,r0,#4          ; r0 := r0 & ~4 (FPCA bit)
     MSR     CONTROL,r0        ; CONTROL := r0 (clear CONTROL[2] FPCA bit)
+    ISB                       ; ISB after MSR CONTROL (ARM AN 321, Sect.4.16)
   ENDIF                       ; VFP available
 
     ; trigger NMI to return to preempted task...

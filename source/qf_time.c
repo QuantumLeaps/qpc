@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-19
+* Last updated for version 5.9.0
+* Last updated on 2017-03-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -135,14 +135,15 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
                     /* do NOT advance the prev pointer */
 
                     QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_AUTO_DISARM,
-                                     QS_priv_.teObjFilter, t)
+                                     QS_priv_.locFilter[TE_OBJ], t)
                         QS_OBJ_(t);            /* this time event object */
                         QS_OBJ_(act);          /* the target AO */
                         QS_U8_((uint8_t)tickRate); /* tick rate */
                     QS_END_NOCRIT_()
                 }
 
-                QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_POST, QS_priv_.teObjFilter, t)
+                QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_POST,
+                                 QS_priv_.locFilter[TE_OBJ], t)
                     QS_TIME_();                /* timestamp */
                     QS_OBJ_(t);                /* the time event object */
                     QS_SIG_(t->super.sig);     /* signal of this time event */
@@ -329,7 +330,7 @@ void QTimeEvt_armX(QTimeEvt * const me,
         QF_timeEvtHead_[tickRate].act = me;
     }
 
-    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_ARM, QS_priv_.teObjFilter, me)
+    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_ARM, QS_priv_.locFilter[TE_OBJ], me)
         QS_TIME_();                /* timestamp */
         QS_OBJ_(me);               /* this time event object */
         QS_OBJ_(me->act);          /* the active object */
@@ -368,7 +369,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
     if (me->ctr != (QTimeEvtCtr)0) {
         wasArmed = true;
 
-        QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_DISARM, QS_priv_.teObjFilter, me)
+        QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_DISARM, QS_priv_.locFilter[TE_OBJ], me)
             QS_TIME_();            /* timestamp */
             QS_OBJ_(me);           /* this time event object */
             QS_OBJ_(me->act);      /* the target AO */
@@ -384,7 +385,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
         wasArmed = false;
 
         QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_DISARM_ATTEMPT,
-                         QS_priv_.teObjFilter, me)
+                         QS_priv_.locFilter[TE_OBJ], me)
             QS_TIME_();            /* timestamp */
             QS_OBJ_(me);           /* this time event object */
             QS_OBJ_(me->act);      /* the target AO */
@@ -464,7 +465,7 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
     }
     me->ctr = nTicks; /* re-load the tick counter (shift the phasing) */
 
-    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_REARM, QS_priv_.teObjFilter, me)
+    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_REARM, QS_priv_.locFilter[TE_OBJ], me)
         QS_TIME_();            /* timestamp */
         QS_OBJ_(me);           /* this time event object */
         QS_OBJ_(me->act);      /* the target AO */
@@ -499,7 +500,7 @@ QTimeEvtCtr QTimeEvt_ctr(QTimeEvt const * const me) {
     QF_CRIT_ENTRY_();
     ret = me->ctr;
 
-    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_CTR, QS_priv_.teObjFilter, me)
+    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_CTR, QS_priv_.locFilter[TE_OBJ], me)
         QS_TIME_();              /* timestamp */
         QS_OBJ_(me);             /* this time event object */
         QS_OBJ_(me->act);        /* the target AO */

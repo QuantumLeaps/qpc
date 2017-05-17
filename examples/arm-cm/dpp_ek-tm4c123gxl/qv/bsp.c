@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, cooperative QV kernel
-* Last Updated for Version: 5.5.0
-* Date of the Last Update:  2015-08-20
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-04-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -435,13 +435,19 @@ void QS_onReset(void) {
 }
 /*..........................................................................*/
 /*! callback function to execute a user command (to be implemented in BSP) */
-void QS_onCommand(uint8_t cmdId, uint32_t param) {
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
+{
     void assert_failed(char const *module, int loc);
     (void)cmdId;
-    (void)param;
-    QS_BEGIN(COMMAND_STAT, (void *)0) /* application-specific record begin */
+    (void)param1;
+    (void)param2;
+    (void)param3;
+    QS_BEGIN(COMMAND_STAT, (void *)1) /* application-specific record begin */
         QS_U8(2, cmdId);
-        QS_U32(8, param);
+        QS_U32(8, param1);
+        QS_U32(8, param2);
+        QS_U32(8, param3);
     QS_END()
 
     if (cmdId == 10U) {

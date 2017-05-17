@@ -3,8 +3,8 @@
 * @brief QXK port to Cortex-M, TI-ARM (CCS) toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-14
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-03-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -42,8 +42,23 @@
 /* determination if the code executes in the ISR context */
 #define QXK_ISR_CONTEXT_() (QXK_get_IPSR() != (uint32_t)0)
 
+/* is the target M3/M4/M7? */
+#if (defined __TI_TMS470_V7M3__) \
+    || (defined __TI_TMS470_V7M4__) \
+    || (defined __TI_TMS470_V7M7__)
+
+    #define QXK_CONTEXT_SWITCH_() do { \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
+        __asm(" DSB"); \
+        __asm(" ISB"); \
+    } while (0)
+
+#else
+
 #define QXK_CONTEXT_SWITCH_() \
     (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28))
+
+#endif /* not M3/M4/M7 */
 
 /* QXK interrupt entry and exit */
 #define QXK_ISR_ENTRY() ((void)0)
@@ -51,7 +66,7 @@
 #define QXK_ISR_EXIT()  do { \
     QF_INT_DISABLE(); \
     if (QXK_sched_() != (uint_fast8_t)0) { \
-        QXK_CONTEXT_SWITCH_(); \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
     } \
     QF_INT_ENABLE(); \
 } while (0)

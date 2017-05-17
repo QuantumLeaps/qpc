@@ -1,16 +1,15 @@
 /*********************************************************************
-*               SEGGER MICROCONTROLLER GmbH & Co KG                  *
-*       Solutions for real time microcontroller applications         *
+*                SEGGER Microcontroller GmbH & Co. KG                *
+*                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2014  SEGGER Microcontroller GmbH & Co KG         *
+*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
 *                                                                    *
-*       www.segger.com     Support: support@segger.com               *
+*       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
 **********************************************************************
 *                                                                    *
 *       embOS * Real time operating system for microcontrollers      *
-*                                                                    *
 *                                                                    *
 *       Please note:                                                 *
 *                                                                    *
@@ -22,7 +21,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.00                                             *
+*       OS version: 4.34.1                                           *
 *                                                                    *
 **********************************************************************
 
@@ -50,8 +49,8 @@ Purpose : OS error handler. Not required in "R" (release) builds
 
  Run-time error reaction
 
- When this happens, a fatal error has occured and the kernel
- can not continue. In linux, the equivalent would be a
+ When this happens, a fatal error has occurred and the kernel
+ can not continue. In Linux, the equivalent would be a
  "kernel panic"
 
  This routine can be modified to suit your needs ...
@@ -112,7 +111,7 @@ OS_ERR_MAILBOX_DELETE                 (136 = 0x88)
 OS_ERR_CSEMA_DELETE                   (137 = 0x89)
 OS_ERR_RSEMA_DELETE                   (138 = 0x8A)
 
-*** Internal errors, please contact SEGGER Microcontrollersysteme ***
+*** Internal errors, please contact SEGGER Microcontroller ***
 OS_ERR_MAILBOX_NOT_IN_LIST            (140 = 0x8C)
 OS_ERR_TASKLIST_CORRUPT               (142 = 0x8E)
 
@@ -121,6 +120,10 @@ OS_ERR_QUEUE_INUSE                    (143 = 0x8F)
 OS_ERR_QUEUE_NOT_INUSE                (144 = 0x90)
 OS_ERR_QUEUE_INVALID                  (145 = 0x91)
 OS_ERR_QUEUE_DELETE                   (146 = 0x92)
+
+*** Mailbox errors *******************************
+OS_ERR_MB_INUSE                       (147 = 0x93)
+OS_ERR_MB_NOT_INUSE                   (148 = 0x94)
 
 *** Not matching routine calls or macro usage ****
 OS_ERR_UNUSE_BEFORE_USE               (150 = 0x96)
@@ -151,7 +154,7 @@ OS_ERR_CPU_STATE_ISR_ILLEGAL          (166 = 0xA6)  *** OS-function called from 
 OS_ERR_CPU_STATE_ILLEGAL              (167 = 0xA7)  *** CPU runs in illegal mode
 OS_ERR_CPU_STATE_UNKNOWN              (168 = 0xA8)  *** CPU runs in unknown mode or mode could not be read
 
-*** Double used data structures **
+*** Double used data structures ******************
 OS_ERR_2USE_TASK                      (170 = 0xAA)
 OS_ERR_2USE_TIMER                     (171 = 0xAB)
 OS_ERR_2USE_MAILBOX                   (172 = 0xAC)
@@ -160,10 +163,13 @@ OS_ERR_2USE_CSEMA                     (174 = 0xAE)
 OS_ERR_2USE_RSEMA                     (175 = 0xAF)
 OS_ERR_2USE_MEMF                      (176 = 0xB0)
 
-*** Communication errors (OSCOM) **
+*** Communication errors (OSCOM) *****************
 OS_ERR_NESTED_RX_INT                  (180 = 0xB4)
 
-*** Fixed block memory pool  ***
+*** Spinlock *************************************
+OS_ERR_SPINLOCK_INV_CORE              (185 = 0xB9)
+
+*** Fixed block memory pool  *********************
 OS_ERR_MEMF_INV                       (190 = 0xBE)
 OS_ERR_MEMF_INV_PTR                   (191 = 0xBF)
 OS_ERR_MEMF_PTR_FREE                  (192 = 0xC0)
@@ -171,25 +177,49 @@ OS_ERR_MEMF_RELEASE                   (193 = 0xC1)
 OS_ERR_MEMF_POOLADDR                  (194 = 0xC2)
 OS_ERR_MEMF_BLOCKSIZE                 (195 = 0xC3)
 
-*** Task suspend / resume errors ***
+*** Task suspend / resume errors *****************
 OS_ERR_SUSPEND_TOO_OFTEN              (200 = 0xC8)
 OS_ERR_RESUME_BEFORE_SUSPEND          (201 = 0xC9)
 
-*** Other task related errors ***
+*** Other task related errors ********************
 OS_ERR_TASK_PRIORITY                  (202 = 0xCA)
+OS_ERR_TASK_PRIORITY_INVALID          (203 = 0xCB)
 
-*** Event object ***
+*** Event object *********************************
 OS_ERR_EVENT_INVALID                  (210 = 0xD2)
 OS_ERR_EVENT_DELETE                   (212 = 0xD4)
 
-*** Tick Hook ***
+*** Waitlist (checked build) *********************
+OS_ERR_WAITLIST_RING                  (220 = 0xDC)
+OS_ERR_WAITLIST_PREV                  (221 = 0xDD)
+OS_ERR_WAITLIST_NEXT                  (222 = 0xDE)
+
+*** Tick Hook ************************************
 OS_ERR_TICKHOOK_INVALID               (223 = 0xDF)
 OS_ERR_TICKHOOK_FUNC_INVALID          (224 = 0xE0)
 
-*** Cache related ***
+*** Other potential problems discovered in checked build
+OS_ERR_NOT_IN_REGION                  (225 = 0xE1)
+
+*** Cache related ********************************
 OS_ERR_NON_ALIGNED_INVALIDATE         (230 = 0xE6)  *** Cache invalidation needs to be cache line aligned
 
-*** embOS special build, or internal
+*** System timer config related ******************
+OS_ERR_NON_TIMERCYCLES_FUNC           (235 = 0xEB)
+OS_ERR_NON_TIMERINTPENDING_FUNC       (236 = 0xEC)
+
+*** MPU related **********************************
+OS_ERR_MPU_NOT_PRESENT                (240 = 0xF0)
+OS_ERR_MPU_INVALID_REGION             (241 = 0xF1)
+OS_ERR_MPU_INVALID_SIZE               (242 = 0xF2)
+OS_ERR_MPU_INVALID_PERMISSION         (243 = 0xF3)
+OS_ERR_MPU_INVALID_ALIGNMENT          (244 = 0xF4)
+OS_ERR_MPU_INVALID_OBJECT             (245 = 0xF5)
+
+*** OS version mismatch between library and RTOS.h
+OS_ERR_VERSION_MISMATCH               (253 = 0xFD)
+
+*** embOS special build, or internal *************
 OS_ERR_TRIAL_LIMIT                    (254 = 0xFE)
 
 */

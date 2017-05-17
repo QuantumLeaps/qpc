@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EFM32-SLSTK3401A board, preemptive QXK kernel
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-29
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-04-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -48,7 +48,7 @@ Q_DEFINE_THIS_FILE
 * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
 */
 enum KernelUnawareISRs { /* see NOTE00 */
-    UART0_PRIO,
+    USART0_RX_PRIO,
     /* ... */
     MAX_KERNEL_UNAWARE_CMSIS_PRI  /* keep always last */
 };
@@ -118,7 +118,8 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); // post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -144,15 +145,7 @@ void SysTick_Handler(void) {
     QXK_ISR_EXIT(); /* inform QXK about exiting an ISR */
 }
 /*..........................................................................*/
-/* The following IRQ handler is for testing various preemption scenarios
-* in QXK. The general testing strategy is to trigger this IRQ manually
-* from the debugger. To do so in IAR, you need to:
-* 1. open the Register view
-* 2. open NVIC registers
-* 3. scroll down to NVIC_ISPR0 register
-* 4. write 0x200 to NVIC_ISPR0.SETPEND register
-*/
-void GPIO_EVEN_IRQHandler(void) {
+void GPIO_EVEN_IRQHandler(void) { /* for testing, NOTE03 */
     QXK_ISR_ENTRY(); /* inform QXK about entering an ISR */
 
 //    QACTIVE_POST(AO_Table, Q_NEW(QEvt, TEST_SIG), /* for testing... */
@@ -301,7 +294,7 @@ void QF_onStartup(void) {
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(USART0_RX_IRQn, UART0_PRIO);
+    NVIC_SetPriority(USART0_RX_IRQn, USART0_RX_PRIO);
     NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
     NVIC_SetPriority(GPIO_EVEN_IRQn, GPIO_EVEN_PRIO);
     /* ... */
@@ -486,13 +479,19 @@ void QS_onReset(void) {
 }
 /*..........................................................................*/
 /*! callback function to execute a user command (to be implemented in BSP) */
-void QS_onCommand(uint8_t cmdId, uint32_t param) {
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
+{
     void assert_failed(char const *module, int loc);
     (void)cmdId;
-    (void)param;
-    QS_BEGIN(COMMAND_STAT, (void *)0) /* application-specific record begin */
+    (void)param1;
+    (void)param2;
+    (void)param3;
+    QS_BEGIN(COMMAND_STAT, (void *)1) /* application-specific record begin */
         QS_U8(2, cmdId);
-        QS_U32(8, param);
+        QS_U32(8, param1);
+        QS_U32(8, param2);
+        QS_U32(8, param3);
     QS_END()
 
     if (cmdId == 10U) {
@@ -530,4 +529,13 @@ void QS_onCommand(uint8_t cmdId, uint32_t param) {
 * of the LED is proportional to the frequency of invcations of the idle loop.
 * Please note that the LED is toggled with interrupts locked, so no interrupt
 * execution time contributes to the brightness of the User LED.
+*
+* NOTE03:
+* GPIO_EVEN_IRQHandler() is for testing various preemption scenarios in QXK.
+* The general testing strategy is to trigger this IRQ manually from the
+* debugger. To do so in IAR, you need to:
+* 1. open the Register view
+* 2. open NVIC registers
+* 3. scroll down to NVIC_ISPR0 register
+* 4. write 0x200 to NVIC_ISPR0.SETPEND register
 */

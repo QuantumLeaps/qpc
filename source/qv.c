@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.1
-* Last updated on  2016-12-14
+* Last updated for version 5.9.0
+* Last updated on  2017-03-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -33,7 +33,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -62,7 +62,7 @@ QPSet QV_readySet_; /* QV ready-set of active objects */
 /**
 * @description
 * Initializes QF and must be called exactly once before any other QF
-* function. Typcially, QF_init() is called from main() even before
+* function. Typically, QF_init() is called from main() even before
 * initializing the Board Support Package (BSP).
 *
 * @note QF_init() clears the internal QF variables, so that the framework
@@ -74,14 +74,9 @@ void QF_init(void) {
     QF_subscrList_   = (QSubscrList *)0;
     QF_maxPubSignal_ = (enum_t)0;
 
-    /* clear the internal QF variables, so that the framework can start
-    * correctly even if the startup code fails to clear the uninitialized
-    * data (as is required by the C Standard).
-    */
-    QF_maxPool_ = (uint_fast8_t)0;
-    QF_bzero(&QV_readySet_,       (uint_fast16_t)sizeof(QV_readySet_));
     QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
     QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
+    QF_bzero(&QV_readySet_,       (uint_fast16_t)sizeof(QV_readySet_));
 
 #ifdef QV_INIT
     QV_INIT(); /* port-specific initialization of the QV kernel */
@@ -128,7 +123,7 @@ int_t QF_run(void) {
 
     QF_onStartup(); /* application-specific startup callback */
 
-    /* the combined event-loop and background-loop of the QV kernel */
+    /* the combined event-loop and background-loop of the QV kernel... */
     QF_INT_DISABLE();
     for (;;) {
         QEvt const *e;
@@ -141,7 +136,7 @@ int_t QF_run(void) {
             a = QF_active_[p];
 
 #ifdef Q_SPY
-            QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.aoObjFilter, a)
+            QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ], a)
                 QS_TIME_();              /* timestamp */
                 QS_2U8_((uint8_t)p,      /* priority of the scheduled AO */
                         (uint8_t)pprev); /* previous priority */
@@ -208,10 +203,9 @@ int_t QF_run(void) {
 * @param[in]     prio    priority at which to start the active object
 * @param[in]     qSto    pointer to the storage for the ring buffer of the
 *                        event queue (used only with the built-in ::QEQueue)
-* @param[in]     qLen    length of the event queue (in events)
-* @param[in]     stkSto  pointer to the stack storage (used only when
-*                        per-AO stack is needed)
-* @param[in]     stkSize stack size (in bytes)
+* @param[in]     qLen    length of the event queue [events]
+* @param[in]     stkSto  pointer to the stack storage (must be NULL in QV)
+* @param[in]     stkSize stack size [bytes]
 * @param[in]     ie      pointer to the initial event (might be NULL).
 *
 * @note This function should be called via the macro QACTIVE_START().
@@ -225,35 +219,40 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
 {
-    /** @pre the priority must be in range and the stack storage must not
+    /** @pre The priority must be in range and the stack storage must not
     * be provided, because the QV kernel does not need per-AO stacks.
     */
-    Q_REQUIRE_ID(400, ((uint_fast8_t)0 < prio)
-                 && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
-                 && (stkSto == (void *)0));
+    Q_REQUIRE_ID(500, ((uint_fast8_t)0 < prio)
+                      && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
+                      && (stkSto == (void *)0));
 
-    (void)stkSize; /* avoid the "unused parameter" compiler warning */
+    (void)stkSize; /* unused parameter */
 
-    QEQueue_init(&me->eQueue, qSto, qLen);
-    me->prio = prio; /* set QF priority of this AO before adding it to QF */
-    QF_add_(me);     /* make QF aware of this active object */
+    QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
+    me->prio = prio;   /* set the current priority of the AO */
+    QF_add_(me); /* make QF aware of this active object */
+
     QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
-
-    QS_FLUSH(); /* flush the QS trace buffer to the host */
+    QS_FLUSH();                /* flush the trace buffer to the host */
 }
 
 /****************************************************************************/
 /**
 * @description
-* The preferred way of calling this function is from within the active
-* object that needs to stop. In other words, an active object should stop
-* itself rather than being stopped by someone else. This policy works
-* best, because only the active object itself "knows" when it has reached
-* the appropriate state for the shutdown.
+* This function must be called from within the AO that needs to stop.
+* In other words, an AO should stop itself rather than being stopped by
+* someone else. This policy works best, because only the AO itself "knows"
+* when it has reached the appropriate state for the shutdown.
 *
 * @note By the time the AO calls QActive_stop(), it should have unsubscribed
 * from all events and no more events should be directly-posted to it.
 */
 void QActive_stop(QActive * const me) {
-    QF_remove_(me);  /* remove the AO from the framework */
+    QF_CRIT_STAT_
+
+    QF_remove_(me); /* remove this active object from the QF */
+
+    QF_CRIT_ENTRY_();
+    QPSet_remove(&QV_readySet_, me->prio); /* make sure it is not ready */
+    QF_CRIT_EXIT_();
 }

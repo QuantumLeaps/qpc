@@ -1,0 +1,6 @@
+si 1
+speed 4000
+r
+h
+loadbin efm32-slstk3401a\test_qhsm.bin, 0
+exit

@@ -23,7 +23,7 @@
 /*##########################################################################*/
 /*! @page exa_win32 Win32 API (Windows)
 
-<p>The <span class="img folder">examples/win32</span> folder contains all examples described in the book <a class="extern" target="_blank" href="http://www.state-machine.com/psicc2" >Practical UML Statecharts in C/C++, 2nd Edition</a>. These examples include:
+<p>The <span class="img folder">examples/win32</span> folder contains all examples described in the book <a class="extern" target="_blank" href="https://www.state-machine.com/psicc2" >Practical UML Statecharts in C/C++, 2nd Edition</a>. These examples include:
 </p>
 
 - <span class="img folder">blinky</span> Simple "Blinky" for Windows (command line)
@@ -58,7 +58,7 @@
 - <span class="img folder">game-gui</span> "Fly 'n' Shoot" game from Chapter 1 of PSiCC2
 
 @note
-All examples for @ref exa_win32 will also work with the @ref win32-qv "Win32-QV port" without any modifications to the source code, because @ref win32-qv "Win32-QV port" is designed as a drop-in replacement for the standard @ref win32 "Win32 port". To build the examples with @ref win32-qv "Win32-QV port" you merely need to include <span class="img folder">ports/win32-qv</span> instead of <span class="img folder">ports/win32</span> and you need to link the @ref win32-qv "Win32-QV" QP library.  
+All examples for @ref exa_win32 will also work with the @ref win32-qv "Win32-QV port" without any modifications to the source code, because @ref win32-qv "Win32-QV port" is designed as a drop-in replacement for the standard @ref win32 "Win32 port". To build the examples with @ref win32-qv "Win32-QV port" you merely need to include <span class="img folder">ports/win32-qv</span> instead of <span class="img folder">ports/win32</span> and you need to link the @ref win32-qv "Win32-QV" QP library.
 
 @sa
 - @ref exa_win32

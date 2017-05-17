@@ -1,8 +1,8 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C build script for PC-Lint(TM), Standard C compiler
-:: Last Updated for Version: 5.7.2
-:: Date of the Last Update:  2016-09-28
+:: Last Updated for Version: 5.8.3
+:: Date of the Last Update:  2017-03-27
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -29,7 +29,7 @@
 :: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: http://www.state-machine.com
+:: https://state-machine.com
 :: mailto:info@state-machine.com
 :: ===========================================================================
 setlocal

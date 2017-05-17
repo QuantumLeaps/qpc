@@ -3,14 +3,14 @@
 * @brief QF/C port to Cortex-M, cooperative QV kernel, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.2
-* Date of the Last Update:  2017-02-03
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-05-04
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -52,23 +52,67 @@
     #define QF_INT_DISABLE()    __disable_irq()
     #define QF_INT_ENABLE()     __enable_irq()
 
-    /* CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE4 */
+    /* QF critical section entry/exit (save and restore interrupt status) */
+    #define QF_CRIT_STAT_TYPE   unsigned
+    #define QF_CRIT_ENTRY(primask_) do { \
+        (primask_) = QF_get_PRIMASK(); \
+        QF_INT_DISABLE(); \
+    } while (0)
+    #define QF_CRIT_EXIT(primask_) QF_set_PRIMASK((primask_))
+
+    /* CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE5 */
     #define QF_AWARE_ISR_CMSIS_PRI 0
+
+    /* inline function for getting the PRIMASK register */
+    static __inline unsigned QF_get_PRIMASK(void) {
+        register unsigned __regPriMask __asm("primask");
+        return __regPriMask;
+    }
+
+    /* inline function for setting the PRIMASK register */
+    static __inline void QF_set_PRIMASK(unsigned primask) {
+        register unsigned __regPriMask __asm("primask");
+        __regPriMask = primask;
+    }
 
 #else /* Cortex-M3/M4/M7 */
 
-    /* Cortex-M3/M4/M7 interrupt disabling policy, see NOTE3 */
-    #define QF_INT_DISABLE()    QF_set_BASEPRI(QF_BASEPRI)
-    #define QF_INT_ENABLE()     QF_set_BASEPRI(0U)
+    /* Cortex-M3/M4/M7 alternative interrupt disabling with PRIMASK */
+    #define QF_PRIMASK_DISABLE() __disable_irq()
+    #define QF_PRIMASK_ENABLE()  __enable_irq()
 
-    /* BASEPRI threshold for "QF-aware" interrupts, see NOTE3 */
+    /* Cortex-M3/M4/M7 interrupt disabling policy, see NOTE3 and NOTE4 */
+    #define QF_INT_DISABLE() do { \
+        QF_PRIMASK_DISABLE(); \
+        QF_set_BASEPRI(QF_BASEPRI); \
+        QF_PRIMASK_ENABLE(); \
+    } while (0)
+    #define QF_INT_ENABLE()      QF_set_BASEPRI(0U)
+
+    /* QF critical section entry/exit (save and restore interrupt status) */
+    #define QF_CRIT_STAT_TYPE   unsigned
+    #define QF_CRIT_ENTRY(basepri_) do {\
+        (basepri_) = QF_get_BASEPRI(); \
+        QF_INT_DISABLE(); \
+    } while (0)
+    #define QF_CRIT_EXIT(basepri_) QF_set_BASEPRI((basepri_))
+
+    /* BASEPRI threshold for "QF-aware" interrupts, see NOTE3.
+    * CAUTION: keep in synch with the value defined in "qk_port.s"
+    */
     #define QF_BASEPRI          (0xFFU >> 2)
 
-    /* CMSIS threshold for "QF-aware" interrupts, see NOTE4 */
+    /* CMSIS threshold for "QF-aware" interrupts, see NOTE5 */
     #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
     /* Cortex-M3/M4/M7 provide the CLZ instruction for fast LOG2 */
     #define QF_LOG2(n_) ((uint_fast8_t)(32U - __clz(n_)))
+
+    /* inline function for getting the BASEPRI register */
+    static __inline unsigned QF_get_BASEPRI(void) {
+        register unsigned volatile __regBasePri __asm("basepri");
+        return __regBasePri;
+    }
 
     /* inline function for setting the BASEPRI register */
     static __inline void QF_set_BASEPRI(unsigned basePri) {
@@ -76,15 +120,8 @@
         __regBasePri = basePri;
     }
 
-    /* Cortex-M3/M4/M7 alternative interrupt disabling with PRIMASK */
-    #define QF_PRIMASK_DISABLE() __disable_irq()
-    #define QF_PRIMASK_ENABLE()  __enable_irq()
 #endif
 
-/* QF critical section entry/exit... */
-/* QF_CRIT_STAT_TYPE not defined: unconditional interrupt disabling policy */
-#define QF_CRIT_ENTRY(dummy)    QF_INT_DISABLE()
-#define QF_CRIT_EXIT(dummy)     QF_INT_ENABLE()
 #define QF_CRIT_EXIT_NOP()      __asm("isb")
 
 #include "qep_port.h" /* QEP port */
@@ -115,6 +152,13 @@
 * ("QF-aware" interrupts ), can call QF services.
 *
 * NOTE4:
+* The selective disabling of "QF-aware" interrupts with the BASEPRI register
+* has a problem on ARM Cortex-M7 core r0p1 (see ARM-EPM-064408, errata
+* 837070). The workaround recommended by ARM is to surround MSR BASEPRI with
+* the CPSID i/CPSIE i pair, which is implemented in the QF_INT_DISABLE()
+* macro. This workaround works also for Cortex-M3/M4 cores.
+*
+* NOTE5:
 * The QF_AWARE_ISR_CMSIS_PRI macro is useful as an offset for enumerating
 * the "QF-aware" interrupt priorities in the applications, whereas the
 * numerical values of the "QF-aware" interrupts must be greater or equal to

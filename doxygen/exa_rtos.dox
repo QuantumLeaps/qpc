@@ -57,7 +57,7 @@ VDD                | VCC
 GND                | GND
 </center>
 
-@image html bd_STM32F4-Discovery_RS232.jpg STM32F4-Discovery board connected to RS232 level shifter 
+@image html bd_STM32F4-Discovery_RS232.jpg STM32F4-Discovery board connected to RS232 level shifter
 
 The output is generated at 115200 baud rate.
 
@@ -115,7 +115,7 @@ VDD                | VCC
 GND                | GND
 </center>
 
-@image html bd_STM32F4-Discovery_RS232.jpg STM32F4-Discovery board connected to RS232 level shifter 
+@image html bd_STM32F4-Discovery_RS232.jpg STM32F4-Discovery board connected to RS232 level shifter
 
 The output is generated at 115200 baud rate.
 

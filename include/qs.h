@@ -1,11 +1,11 @@
 /**
 * @file
 * @brief QS/C platform-independent public interface.
-* @ingroup qs
+* @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.2
-* Last updated on  2016-03-23
+* Last updated for version 5.9.0
+* Last updated on  2017-05-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -84,13 +84,13 @@ enum QSpyRecords {
     QS_QF_ACTIVE_UNSUBSCRIBE, /*!< an AO unsubscribed to an event */
     QS_QF_ACTIVE_POST_FIFO, /*!< an event was posted (FIFO) directly to AO */
     QS_QF_ACTIVE_POST_LIFO, /*!< an event was posted (LIFO) directly to AO */
-    QS_QF_ACTIVE_GET, /*!< AO got an event and its queue is still not empty */
-    QS_QF_ACTIVE_GET_LAST,  /*!< AO got an event and its queue is empty */
+    QS_QF_ACTIVE_GET,     /*!< AO got an event and its queue is not empty */
+    QS_QF_ACTIVE_GET_LAST,/*!< AO got an event and its queue is empty */
     QS_QF_EQUEUE_INIT,    /*!< an event queue was initialized */
     QS_QF_EQUEUE_POST_FIFO, /*!< an event was posted (FIFO) to a raw queue */
     QS_QF_EQUEUE_POST_LIFO, /*!< an event was posted (LIFO) to a raw queue */
     QS_QF_EQUEUE_GET,     /*!< get an event and queue still not empty */
-    QS_QF_EQUEUE_GET_LAST,  /*!< get the last event from the queue */
+    QS_QF_EQUEUE_GET_LAST,/*!< get the last event from the queue */
     QS_QF_MPOOL_INIT,     /*!< a memory pool was initialized */
     QS_QF_MPOOL_GET,      /*!< a memory block was removed from memory pool */
     QS_QF_MPOOL_PUT,      /*!< a memory block was returned to memory pool */
@@ -130,27 +130,50 @@ enum QSpyRecords {
     QS_QEP_TRAN_HIST,     /*!< a tran to history was taken */
     QS_QEP_TRAN_EP,       /*!< a tran to entry point into a submachine */
     QS_QEP_TRAN_XP,       /*!< a tran to exit  point out of a submachine */
-    QS_QEP_RESERVED1,
-    QS_QEP_RESERVED0,
 
-    /* [60] Miscellaneous QS records (not maskable) */
+    /* [58] Miscellaneous QS records (not maskable) */
+    QS_TEST_PAUSED,       /*!< test has been paused */
+    QS_TEST_PROBE_GET,    /*!< reports that Test-Probe has been used */
     QS_SIG_DICT,          /*!< signal dictionary entry */
     QS_OBJ_DICT,          /*!< object dictionary entry */
     QS_FUN_DICT,          /*!< function dictionary entry */
     QS_USR_DICT,          /*!< user QS record dictionary entry */
     QS_TARGET_INFO,       /*!< reports the Target information */
-    QS_RESERVED0,
+    QS_TARGET_DONE,       /*!< reports completion of a user callback */
     QS_RX_STATUS,         /*!< reports QS data receive status */
-    QS_TEST_STATUS,       /*!< reports test status */
+    QS_MSC_RESERVED1,
     QS_PEEK_DATA,         /*!< reports the data from the PEEK query */
     QS_ASSERT_FAIL,       /*!< assertion failed in the code */
 
-    /* [70] Application-specific QS records */
+    /* [70] Application-specific (User) QS records */
     QS_USER               /*!< the first record available to QS users */
 };
 
-/*! Specification of all QS records for  QS_FILTER_ON() and QS_FILTER_OFF() */
-#define QS_ALL_RECORDS    ((uint_fast8_t)0xFF)
+/*! QS record groups for QS_FILTER_ON() and QS_FILTER_OFF() */
+enum QSpyRecordGroups {
+    QS_ALL_RECORDS = 0xF0,/*!< all maskable QS records */
+    QS_SM_RECORDS,        /*!< State Machine QS records */
+    QS_AO_RECORDS,        /*!< Active Object QS records */
+    QS_EQ_RECORDS,        /*!< Event Queues QS records */
+    QS_MP_RECORDS,        /*!< Memory Pools QS records */
+    QS_TE_RECORDS,        /*!< Time Events QS records */
+    QS_QF_RECORDS,        /*!< QF QS records */
+    QS_SC_RECORDS,        /*!< Scheduler QS records */
+    QS_U0_RECORDS,        /*!< User Group 70-79 records */
+    QS_U1_RECORDS,        /*!< User Group 80-89 records */
+    QS_U2_RECORDS,        /*!< User Group 90-99 records */
+    QS_U3_RECORDS,        /*!< User Group 100-109 records */
+    QS_U4_RECORDS,        /*!< User Group 110-124 records */
+    QS_UA_RECORDS         /*!< All User records */
+};
+
+/*! QS user record group offsets */
+enum QSpyUserRecords {
+    QS_USER0 = QS_USER,       /*!< offset for User Group 0 */
+    QS_USER1 = QS_USER0 + 10, /*!< offset for User Group 1 */
+    QS_USER2 = QS_USER1 + 10, /*!< offset for User Group 2 */
+    QS_USER3 = QS_USER2 + 10  /*!< offset for User Group 3 */
+};
 
 #ifndef QS_TIME_SIZE
 
@@ -354,8 +377,7 @@ QSTimeCtr QS_onGetTime(void);
 * routine if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
 * @sa QS_onStartup(), example of setting up a QS filter in QS_FILTER_ON
 */
-#define QS_INIT(arg_) ((QS_onStartup(arg_) != (uint8_t)0) \
-                      ? (QS_onFlush(), (uint8_t)1) : (uint8_t)0)
+#define QS_INIT(arg_)           (QS_onStartup(arg_))
 
 /*! Cleanup the QS facility. */
 /**
@@ -416,7 +438,7 @@ QSTimeCtr QS_onGetTime(void);
 *
 * @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
-#define QS_FILTER_SM_OBJ(obj_)  (QS_priv_.smObjFilter = (obj_))
+#define QS_FILTER_SM_OBJ(obj_)  (QS_priv_.locFilter[SM_OBJ] = (obj_))
 
 /*! Local Filter for a given active object @p obj_. */
 /**
@@ -437,7 +459,7 @@ QSTimeCtr QS_onGetTime(void);
 *
 * @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
-#define QS_FILTER_AO_OBJ(obj_)  (QS_priv_.aoObjFilter = (obj_))
+#define QS_FILTER_AO_OBJ(obj_)  (QS_priv_.locFilter[AO_OBJ] = (obj_))
 
 /*! Local Filter for a given memory pool object @p obj_. */
 /**
@@ -457,7 +479,7 @@ QSTimeCtr QS_onGetTime(void);
 *
 * @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
-#define QS_FILTER_MP_OBJ(obj_)  (QS_priv_.mpObjFilter = (obj_))
+#define QS_FILTER_MP_OBJ(obj_)  (QS_priv_.locFilter[MP_OBJ] = (obj_))
 
 /*! Local Filter for a given event queue object @p obj_. */
 /**
@@ -477,7 +499,7 @@ QSTimeCtr QS_onGetTime(void);
 *
 * @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
-#define QS_FILTER_EQ_OBJ(obj_)  (QS_priv_.eqObjFilter = (obj_))
+#define QS_FILTER_EQ_OBJ(obj_)  (QS_priv_.locFilter[EQ_OBJ] = (obj_))
 
 /*! Local Filter for a given time event object @p obj_. */
 /**
@@ -498,7 +520,7 @@ QSTimeCtr QS_onGetTime(void);
 *
 * @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
-#define QS_FILTER_TE_OBJ(obj_)  (QS_priv_.teObjFilter = (obj_))
+#define QS_FILTER_TE_OBJ(obj_)  (QS_priv_.locFilter[TE_OBJ] = (obj_))
 
 /*! Local Filter for a generic application object @p obj_. */
 /**
@@ -515,7 +537,7 @@ QSTimeCtr QS_onGetTime(void);
 *
 * @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
-#define QS_FILTER_AP_OBJ(obj_)  (QS_priv_.apObjFilter = (obj_))
+#define QS_FILTER_AP_OBJ(obj_)  (QS_priv_.locFilter[AP_OBJ] = (obj_))
 
 /****************************************************************************/
 /* Macros to generate user QS records */
@@ -525,8 +547,8 @@ QSTimeCtr QS_onGetTime(void);
     if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
           & (uint_fast8_t)(1U << ((uint8_t)(rec_) & (uint8_t)7))) \
             != (uint_fast8_t)0) \
-        && ((QS_priv_.apObjFilter == (void *)0) \
-           || (QS_priv_.apObjFilter == (obj_)))) \
+        && ((QS_priv_.locFilter[AP_OBJ] == (void *)0) \
+           || (QS_priv_.locFilter[AP_OBJ] == (obj_)))) \
     { \
         QS_beginRec((uint_fast8_t)(rec_)); \
         QS_TIME_(); {
@@ -535,18 +557,23 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_END_NOCRIT() } \
     QS_END_NOCRIT_()
 
+#ifndef QS_REC_DONE
+    /*! macro to hook up user code when a QS record is produced */
+    #define QS_REC_DONE() ((void)0)
+#endif /* QS_REC_DONE */
+
 /* QS-specific critical section *********************************************/
 #ifdef QS_CRIT_ENTRY /* separate QS critical section defined? */
 
 #ifndef QS_CRIT_STAT_TYPE
     #define QS_CRIT_STAT_
     #define QS_CRIT_ENTRY_()    QS_CRIT_ENTRY(dummy)
-    #define QS_CRIT_EXIT_()     QS_CRIT_EXIT(dummy)
+    #define QS_CRIT_EXIT_()     QS_CRIT_EXIT(dummy); QS_REC_DONE()
 #else
     #define QS_CRIT_STAT_       QS_CRIT_STAT_TYPE critStat_;
     #define QS_CRIT_ENTRY_()    QS_CRIT_ENTRY(critStat_)
-    #define QS_CRIT_EXIT_()     QS_CRIT_EXIT(critStat_)
-#endif
+    #define QS_CRIT_EXIT_()     QS_CRIT_EXIT(critStat_); QS_REC_DONE()
+#endif /* QS_CRIT_STAT_TYPE */
 
 #else /* separate QS critical section not defined--use the QF definition */
 
@@ -586,16 +613,15 @@ QSTimeCtr QS_onGetTime(void);
     * Otherwise #QF_CRIT_EXIT is invoked with a dummy parameter.
     * @sa #QF_CRIT_EXIT
     */
-    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(dummy)
+    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(dummy); QS_REC_DONE()
 
-#else
+#else  /* simple unconditional interrupt disabling used */
     #define QS_CRIT_STAT_       QF_CRIT_STAT_TYPE critStat_;
     #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(critStat_)
+    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_); QS_REC_DONE()
+#endif /* simple unconditional interrupt disabling used */
 
-    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_)
-#endif
-
-#endif /* QS_CRIT_ENTRY */
+#endif /* separate QS critical section not defined */
 
 /*! Begin a user QS record with entering critical section. */
 /**
@@ -610,8 +636,8 @@ QSTimeCtr QS_onGetTime(void);
     if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
         & (uint_fast8_t)((uint_fast8_t)1 << ((uint8_t)(rec_) & (uint8_t)7))) \
             != (uint_fast8_t)0) \
-        && ((QS_priv_.apObjFilter == (void *)0) \
-            || (QS_priv_.apObjFilter == (obj_)))) \
+        && ((QS_priv_.locFilter[AP_OBJ] == (void *)0) \
+            || (QS_priv_.locFilter[AP_OBJ] == (obj_)))) \
     { \
         QS_CRIT_STAT_ \
         QS_CRIT_ENTRY_(); \
@@ -910,12 +936,8 @@ enum {
 * @include qs_sigLog0.txt
 */
 #define QS_SIG_DICTIONARY(sig_, obj_) do { \
-    if (((QS_priv_.glbFilter[(uint8_t)QS_SIG_DICT >> 3] \
-      & (uint8_t)(1U << ((uint8_t)QS_SIG_DICT & (uint8_t)7))) != (uint8_t)0))\
-    { \
-        static char_t const sig_name_[] = #sig_; \
-        QS_sig_dict((sig_), (obj_), &sig_name_[0]); \
-    } \
+    static char_t const sig_name_[] = #sig_; \
+    QS_sig_dict((sig_), (obj_), &sig_name_[0]); \
 } while (0)
 
 /*! Output object dictionary record */
@@ -933,12 +955,8 @@ enum {
 * @include qs_objDic.c
 */
 #define QS_OBJ_DICTIONARY(obj_) do { \
-    if (((QS_priv_.glbFilter[(uint8_t)QS_OBJ_DICT >> 3] \
-      & (uint8_t)(1U << ((uint8_t)QS_OBJ_DICT & (uint8_t)7))) != (uint8_t)0))\
-    { \
-        static char_t const obj_name_[] = #obj_; \
-        QS_obj_dict((obj_), &obj_name_[0]); \
-    } \
+    static char_t const obj_name_[] = #obj_; \
+    QS_obj_dict((obj_), &obj_name_[0]); \
 } while (0)
 
 /*! Output function dictionary record */
@@ -955,27 +973,19 @@ enum {
 * dictionary.
 */
 #define QS_FUN_DICTIONARY(fun_) do { \
-    if (((QS_priv_.glbFilter[(uint8_t)QS_FUN_DICT >> 3] \
-      & (uint8_t)(1U << ((uint8_t)QS_FUN_DICT & (uint8_t)7))) != (uint8_t)0))\
-    { \
-        static char_t const fun_name_[] = #fun_; \
-        QS_fun_dict((void (*)(void))(fun_), &fun_name_[0]); \
-    } \
+    static char_t const fun_name_[] = #fun_; \
+    QS_fun_dict((void (*)(void))(fun_), &fun_name_[0]); \
 } while (0)
 
-/*! Output user QS rectord dictionary record */
+/*! Output user QS-record dictionary record */
 /**
 * @description
-* A user QS record dictionary record associates the numerical value of a
+* A user QS-record dictionary record associates the numerical value of a
 * user record with the human-readable identifier.
 */
 #define QS_USR_DICTIONARY(rec_) do { \
-    if (((QS_priv_.glbFilter[(uint8_t)QS_USR_DICT >> 3] \
-      & (uint8_t)(1U << ((uint8_t)QS_USR_DICT & (uint8_t)7))) != (uint8_t)0))\
-    { \
-        static char_t const usr_name_[] = #rec_; \
-        QS_usr_dict((rec_), &usr_name_[0]); \
-    } \
+    static char_t const usr_name_[] = #rec_; \
+    QS_usr_dict((rec_), &usr_name_[0]); \
 } while (0)
 
 /*! Output the assertion failure trace record */
@@ -1042,16 +1052,21 @@ enum {
 /* QS private data (the transmit channel) */
 typedef uint_fast16_t QSCtr;  /*!< QS ring buffer counter and offset type */
 
+/*! Kinds of objects used in QS. */
+enum QSpyObjKind {
+    SM_OBJ,  /*!< state machine object for QEP */
+    AO_OBJ,  /*!< active object */
+    MP_OBJ,  /*!< event pool object */
+    EQ_OBJ,  /*!< raw queue object */
+    TE_OBJ,  /*!< time event object */
+    AP_OBJ,  /*!< generic Application-specific object */
+    MAX_OBJ
+};
+
 /*! Private QS data to keep track of the filters and the trace buffer. */
 typedef struct {
-    uint8_t    glbFilter[16]; /*!< global on/off QS filter */
-    void const *smObjFilter;  /*!< state machine for QEP local filter */
-    void const *aoObjFilter;  /*!< active object for QF local filter */
-    void const *mpObjFilter;  /*!<  event pool for QF local filter */
-    void const *eqObjFilter;  /*!<  raw queue for QF local filter */
-    void const *teObjFilter;  /*!<  time event for QF local filter */
-    void const *apObjFilter;  /*!<  generic object Application local filter */
-
+    uint8_t     glbFilter[16];         /*!< global on/off QS filter */
+    void const *locFilter[MAX_OBJ];    /*!< local QS filters */
     uint8_t *buf;         /*!< pointer to the start of the ring buffer */
     QSCtr    end;         /*!< offset of the end of the ring buffer */
     QSCtr    head;        /*!< offset to where next byte will be inserted */
@@ -1078,20 +1093,20 @@ enum QSpyRxRecords {
     QS_RX_INFO,           /*!< query Target info (ver, config, tstamp) */
     QS_RX_COMMAND,        /*!< execute a user-defined command in the Target */
     QS_RX_RESET,          /*!< reset the Target */
-    QS_RX_TICK,           /*!< call QF_tick() */
+    QS_RX_TICK,           /*!< call QF_TICK_X() in the Target */
     QS_RX_PEEK,           /*!< peek Target memory */
     QS_RX_POKE,           /*!< poke Target memory */
-    QS_RX_RESERVED7,      /*!< reserved for future use */
-    QS_RX_RESERVED6,      /*!< reserved for future use */
-    QS_RX_RESERVED5,      /*!< reserved for future use */
-    QS_RX_RESERVED4,      /*!< reserved for future use */
+    QS_RX_FILL,           /*!< fill Target memory */
+    QS_RX_TEST_SETUP,     /*!< test setup */
+    QS_RX_TEST_TEARDOWN,  /*!< test teardown */
+    QS_RX_TEST_PROBE,     /*!< set a Test-Probe in the Target */
     QS_RX_GLB_FILTER,     /*!< set global filters in the Target */
     QS_RX_LOC_FILTER,     /*!< set local  filters in the Target */
     QS_RX_AO_FILTER,      /*!< set local AO filter in the Target */
-    QS_RX_RESERVED3,      /*!< reserved for future use */
-    QS_RX_RESERVED2,      /*!< reserved for future use */
+    QS_RX_CURR_OBJ,       /*!< set the "current-object" in the Target */
+    QS_RX_TEST_CONTINUE,  /*!< continue a test after QS_TEST_PAUSE() */
     QS_RX_RESERVED1,      /*!< reserved for future use */
-    QS_RX_EVENT           /*!< inject an event to the Target (post/publish) */
+    QS_RX_EVENT           /*!< inject an event to the Target */
 };
 
 /*! Initialize the QS RX data buffer. */
@@ -1100,12 +1115,14 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize);
 /*! Parse all bytes present in the QS RX data buffer */
 void QS_rxParse(void);
 
-/*! Private QS-RX data to keep track of the lock-free buffer. */
+/*! Private QS-RX data to keep track of the lock-free buffer */
 typedef struct {
-    uint8_t *buf;         /*!< pointer to the start of the ring buffer */
-    QSCtr end;            /*!< offset of the end of the ring buffer */
-    QSCtr head;           /*!< offset to where next byte will be inserted */
-    QSCtr tail;           /*!< offset of where next byte will be extracted */
+    void     *currObj[MAX_OBJ]; /*!< current objects */
+    uint8_t  *buf;        /*!< pointer to the start of the ring buffer */
+    QSCtr     end;        /*!< offset of the end of the ring buffer */
+    QSCtr     head;       /*!< offset to where next byte will be inserted */
+    QSCtr     tail;       /*!< offset of where next byte will be extracted */
+    bool      inTestLoop; /*!< QUTest event loop is running */
 } QSrxPriv;
 
 extern QSrxPriv QS_rxPriv_;
@@ -1129,12 +1146,54 @@ extern QSrxPriv QS_rxPriv_;
 /*! Obtain the number of free bytes in the QS RX data buffer */
 uint16_t QS_rxGetNfree(void);
 
-/*! callback function to reset the target (to be implemented in the BSP) */
+/*! callback function to reset the Target (to be implemented in the BSP) */
 void QS_onReset(void);
 
 /*! callback function to execute user commands (to be implemented in BSP) */
-void QS_onCommand(uint8_t cmdId, uint32_t param);
+void QS_onCommand(uint8_t cmdId,   uint32_t param1,
+                  uint32_t param2, uint32_t param3);
+
+#ifdef Q_UTEST
+    /*! callback to setup a unit test inside the Target */
+    void QS_onTestSetup(void);
+
+    /*! callback to teardown after a unit test inside the Target */
+    void QS_onTestTeardown(void);
+
+    /*! callback to run the test loop */
+    void QS_onTestLoop(void);
+
+    /*! callback to "massage" the test event, if neccessary */
+    void QS_onTestEvt(QEvt *e);
+
+    /*! QS internal function to get the Test-Probe for a given API */
+    uint32_t QS_getTestProbe_(void (* const api)(void));
+
+    /*! QS macro to define the Test-Probe for a given @p fun_ */
+    #define QS_TEST_PROBE_DEF(fun_) \
+        uint32_t const qs_tp_ = QS_getTestProbe_((void (*)(void))(fun_));
+
+    /*! QS macro to apply a Test-Probe */
+    #define QS_TEST_PROBE(code_) \
+        if (qs_tp_ != (uint32_t)0) { code_ }
+
+    /*! QS macro to apply a Test-Probe */
+    #define QS_TEST_PROBE_ID(id_, code_) \
+        if (qs_tp_ == (uint32_t)(id_)) { code_ }
+
+    /*! QS macro to pause test execution and enter the test event loop */
+    #define QS_TEST_PAUSE() do { \
+        QS_beginRec((uint_fast8_t)QS_TEST_PAUSED); \
+        QS_endRec(); \
+        QS_onTestLoop(); \
+    } while (0)
+
+#else
+    /* dummy definitions when not building for QUTEST */
+    #define QS_TEST_PROBE_DEF(fun_)
+    #define QS_TEST_PROBE(code_)
+    #define QS_TEST_PROBE_ID(id_, code_)
+    #define QS_TEST_PAUSE()  ((void)0)
+#endif /* Q_UTEST */
 
 #endif /* qs_h  */
-
-

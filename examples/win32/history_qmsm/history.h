@@ -14,7 +14,7 @@
 * This license is available only for evaluation purposes and
 * the generated code is still licensed under the terms of GPL.
 * Please submit request for extension of the evaluaion period at:
-* http://www.state-machine.com/licensing/index.html#RequestForm
+* https://state-machine.com/licensing/index.html#RequestForm
 *****************************************************************************/
 /*${.::history.h} ..........................................................*/
 #ifndef history_h

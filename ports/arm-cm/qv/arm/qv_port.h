@@ -3,8 +3,8 @@
 * @brief QV/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-14
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-03-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -51,10 +51,10 @@
 
     /* macro to put the CPU to sleep inside QV_onIdle() */
     #define QV_CPU_SLEEP() do { \
-        __disable_irq(); \
+        QF_PRIMASK_DISABLE(); \
         QF_INT_ENABLE(); \
         __wfi(); \
-        __enable_irq(); \
+        QF_PRIMASK_ENABLE(); \
     } while (0)
 
     /* initialization of the QV kernel for Cortex-M3/M4/M4F */

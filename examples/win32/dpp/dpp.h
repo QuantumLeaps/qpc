@@ -52,7 +52,7 @@ typedef struct {
 /*${AOs::Philo_ctor} .......................................................*/
 void Philo_ctor(void);
 
-extern QMActive * const AO_Philo[N_PHILO];
+extern QActive * const AO_Philo[N_PHILO];
 
 
 /*${AOs::Table_ctor} .......................................................*/

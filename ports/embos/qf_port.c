@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.0
-* Date of the Last Update:  2016-11-29
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-05-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -154,7 +154,8 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     nFree = (uint_fast16_t)(me->eQueue.maxMsg - me->eQueue.nofMsg);
 
     if (nFree > margin) {
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.aoObjFilter, me)
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
+                         QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();             /* timestamp */
             QS_OBJ_(sender);        /* the sender object */
             QS_SIG_(e->sig);        /* the signal of the event */
@@ -171,7 +172,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QF_CRIT_EXIT_();
 
         /* posting to the embOS mailbox must succeed, see NOTE3 */
-        Q_ALLEGE_ID(710,
+        Q_ALLEGE_ID(410,
             OS_PutMailCond(&me->eQueue, (OS_CONST_PTR void *)&e)
             == (char)0);
 
@@ -179,16 +180,17 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     }
     else {
         /* can tolerate dropping evts? */
-        Q_ASSERT(margin != (uint_fast16_t)0);
+        Q_ASSERT_ID(420, margin != (uint_fast16_t)0);
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT, QS_priv_.aoObjFilter, me)
-            QS_TIME_();             /* timestamp */
-            QS_OBJ_(sender);        /* the sender object */
-            QS_SIG_(e->sig);        /* the signal of the event */
-            QS_OBJ_(me);            /* this active object (recipient) */
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
+                         QS_priv_.locFilter[AO_OBJ], me)
+            QS_TIME_();         /* timestamp */
+            QS_OBJ_(sender);    /* the sender object */
+            QS_SIG_(e->sig);    /* the signal of the event */
+            QS_OBJ_(me);        /* this active object (recipient) */
             QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_EQC_((QEQueueCtr)nFree); /* # free entries available */
-            QS_EQC_((QEQueueCtr)0); /* min # free entries (unknown) */
+            QS_EQC_((QEQueueCtr)nFree);  /* # free entries available */
+            QS_EQC_((QEQueueCtr)margin); /* margin requested */
         QS_END_NOCRIT_()
 
         QF_CRIT_EXIT_();
@@ -203,7 +205,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_STAT_
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.aoObjFilter, me)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();             /* timestamp */
         QS_SIG_(e->sig);        /* the signal of this event */
         QS_OBJ_(me);            /* this active object */
@@ -220,7 +222,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_EXIT_();
 
     /* posting to the embOS mailbox must succeed, see NOTE3 */
-    Q_ALLEGE_ID(810,
+    Q_ALLEGE_ID(510,
         OS_PutMailFrontCond(&me->eQueue, (OS_CONST_PTR void *)&e)
         == (char)0);
 }
@@ -231,7 +233,7 @@ QEvt const *QActive_get_(QActive * const me) {
 
     OS_GetMail(&me->eQueue, (void *)&e);
 
-    QS_BEGIN_(QS_QF_ACTIVE_GET, QS_priv_.aoObjFilter, me)
+    QS_BEGIN_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();             /* timestamp */
         QS_SIG_(e->sig);        /* the signal of this event */
         QS_OBJ_(me);            /* this active object */
@@ -263,4 +265,3 @@ QEvt const *QActive_get_(QActive * const me) {
 * but this is OK, because the QF/embOS critical sections are designed
 * to nest.
 */
-

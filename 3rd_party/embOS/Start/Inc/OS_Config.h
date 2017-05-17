@@ -1,16 +1,15 @@
 /*********************************************************************
-*               SEGGER MICROCONTROLLER GmbH & Co KG                  *
-*       Solutions for real time microcontroller applications         *
+*                SEGGER Microcontroller GmbH & Co. KG                *
+*                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2014  SEGGER Microcontroller GmbH & Co KG         *
+*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
 *                                                                    *
-*       www.segger.com     Support: support@segger.com               *
+*       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
 **********************************************************************
 *                                                                    *
 *       embOS * Real time operating system for microcontrollers      *
-*                                                                    *
 *                                                                    *
 *       Please note:                                                 *
 *                                                                    *
@@ -22,13 +21,13 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.00                                             *
+*       OS version: 4.34.1                                           *
 *                                                                    *
 **********************************************************************
 
 ----------------------------------------------------------------------
 File    : OS_Config.h
-Purpose : Configuration settings for the OS build and OS_VIEW
+Purpose : Configuration settings for the OS build and embOSView
 --------  END-OF-HEADER  ---------------------------------------------
 */
 
@@ -43,14 +42,14 @@ Purpose : Configuration settings for the OS build and OS_VIEW
 */
 
 #ifndef   DEBUG           // Should be overwritten by project settings
-  #define DEBUG     (0)   // in debug builds
+  #define DEBUG     (0)   // in debug configurations
 #endif
 
 /*********************************************************************
 *
-*       Configuration for RTOS build and UART
+*       Configuration for RTOS build and embOSView communication
 *
-*  One of the following builds needs to be selected for both DEBUG and Release builds:
+*  One of the following builds needs to be selected for both Debug and Release configuration:
 *
 *  OS_LIBMODE_XR    Extremely small release build without Round robin
 *  OS_LIBMODE_R     Release build
@@ -65,7 +64,7 @@ Purpose : Configuration settings for the OS build and OS_VIEW
   #define OS_LIBMODE_DP
 #else
   #define OS_LIBMODE_R
-  #define OS_VIEW_ENABLE (0)
+  #define OS_VIEW_IFSELECT  OS_VIEW_DISABLED  // embOSView communication is disabled per default in release configuration
 #endif
 
 /********************************************************************/

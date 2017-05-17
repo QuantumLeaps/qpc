@@ -37,11 +37,11 @@ When the *Tree View* is **unlinked** from the Current Topic, the *Tree View* wil
 
 ------------------------------------------------------------------------------
 @section gs_an Getting Started with QP/C App Note
-The Quantum Leaps Application Note <a class="extern" target="_blank" href="http://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf"><strong>Getting Started with QP/C</strong></a> provides step-by-step instructions on how to download, install, and get started with QP/C quickly. The application note also contains a **QP/C Tutorial**, in which you build a simple "Blinky" application.
+The Quantum Leaps Application Note <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf"><strong>Getting Started with QP/C</strong></a> provides step-by-step instructions on how to download, install, and get started with QP/C quickly. The application note also contains a **QP/C Tutorial**, in which you build a simple "Blinky" application.
 
 @htmlonly
 <div class="image">
-<a target="_blank" href="http://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf"><img border="0" src="img/AN_Getting_Started_with_QPC.jpg" title="Download PDF"></a>
+<a target="_blank" href="https://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf"><img border="0" src="img/AN_Getting_Started_with_QPC.jpg" title="Download PDF"></a>
 <div class="caption">
 Application Note: Getting Started with QP/C
 </div>

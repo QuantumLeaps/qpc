@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C port to Win32 API, MinGW toolset
-# Last Updated for Version: 5.6.4
-# Date of the Last Update:  2016-05-02
+# Last Updated for Version: 5.8.3
+# Date of the Last Update:  2017-03-22
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,11 +28,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# http://www.state-machine.com
+# https://state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
-# building configurations: Debug (default), Release, and Spy
+# building configurations: Debug (default), Release, Spy, Qutest
 # make
 # make CONF=rel
 # make CONF=spy

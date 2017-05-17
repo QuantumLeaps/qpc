@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-19
+* Last updated for version 5.9.0
+* Last updated on  2017-03-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -41,6 +41,11 @@
 #include "qf_port.h"      /* QF port */
 #include "qf_pkg.h"       /* QF package-scope interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
+#ifdef Q_SPY              /* QS software tracing enabled? */
+    #include "qs_port.h"  /* include QS port */
+#else
+    #include "qs_dummy.h" /* disable the QS software tracing */
+#endif /* Q_SPY */
 
 Q_DEFINE_THIS_MODULE("qf_defer")
 
@@ -160,4 +165,3 @@ uint_fast16_t QActive_flushDeferred(QActive const * const me,
     }
     return n;
 }
-

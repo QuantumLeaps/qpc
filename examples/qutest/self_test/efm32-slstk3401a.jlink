@@ -1,0 +1,6 @@
+si 1
+speed 4000
+r
+h
+loadbin efm32-slstk3401a\test_qutest.bin, 0
+exit

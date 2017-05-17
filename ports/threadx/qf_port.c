@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -140,7 +140,8 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     nFree = (uint_fast16_t)me->eQueue.tx_queue_available_storage;
 
     if (nFree > margin) {
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.aoObjFilter, me)
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
+                         QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();             /* timestamp */
             QS_OBJ_(sender);        /* the sender object */
             QS_SIG_(e->sig);        /* the signal of the event */
@@ -167,7 +168,8 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         /* can tolerate dropping evts? */
         Q_ASSERT(margin != (uint_fast16_t)0);
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT, QS_priv_.aoObjFilter, me)
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
+                         QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();             /* timestamp */
             QS_OBJ_(sender);        /* the sender object */
             QS_SIG_(e->sig);        /* the signal of the event */
@@ -189,7 +191,8 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_STAT_
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.aoObjFilter, me)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO,
+                     QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();             /* timestamp */
         QS_SIG_(e->sig);        /* the signal of this event */
         QS_OBJ_(me);            /* this active object */
@@ -202,6 +205,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     if (e->poolId_ != (uint8_t)0) { /* is it a pool event? */
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
+
     QF_CRIT_EXIT_();
 
     /* LIFO posting must succeed, see NOTE1 */
@@ -218,7 +222,7 @@ QEvt const *QActive_get_(QActive * const me) {
         tx_queue_receive(&me->eQueue, (VOID *)&e, TX_WAIT_FOREVER)
         == TX_SUCCESS);
 
-    QS_BEGIN_(QS_QF_ACTIVE_GET, QS_priv_.aoObjFilter, me)
+    QS_BEGIN_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();             /* timestamp */
         QS_SIG_(e->sig);        /* the signal of this event */
         QS_OBJ_(me);            /* this active object */

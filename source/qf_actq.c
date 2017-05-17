@@ -8,14 +8,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.1
-* Last updated on  2016-12-14
+* Last updated for version 5.8.2
+* Last updated on  2017-02-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -36,8 +36,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* https://state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -117,7 +117,8 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     /* margin available? */
     if (nFree > (QEQueueCtr)margin) {
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.aoObjFilter, me)
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
+                         QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();               /* timestamp */
             QS_OBJ_(sender);          /* the sender object */
             QS_SIG_(e->sig);          /* the signal of the event */
@@ -162,7 +163,8 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         */
         Q_ASSERT_ID(110, margin != (uint_fast16_t)0);
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT, QS_priv_.aoObjFilter, me)
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
+                         QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();           /* timestamp */
             QS_OBJ_(sender);      /* the sender object */
             QS_SIG_(e->sig);      /* the signal of the event */
@@ -206,7 +208,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     /* the queue must be able to accept the event (cannot overflow) */
     Q_ASSERT_ID(210, nFree != (QEQueueCtr)0);
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.aoObjFilter, me)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();                  /* timestamp */
         QS_SIG_(e->sig);             /* the signal of this event */
         QS_OBJ_(me);                 /* this active object */
@@ -281,7 +283,7 @@ QEvt const *QActive_get_(QActive * const me) {
         }
         --me->eQueue.tail;
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET, QS_priv_.aoObjFilter, me)
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();                   /* timestamp */
             QS_SIG_(e->sig);              /* the signal of this event */
             QS_OBJ_(me);                  /* this active object */
@@ -295,7 +297,8 @@ QEvt const *QActive_get_(QActive * const me) {
         /* all entries in the queue must be free (+1 for fronEvt) */
         Q_ASSERT_ID(310, nFree == (me->eQueue.end + (QEQueueCtr)1));
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST, QS_priv_.aoObjFilter, me)
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST,
+                         QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();                   /* timestamp */
             QS_SIG_(e->sig);              /* the signal of this event */
             QS_OBJ_(me);                  /* this active object */
@@ -341,6 +344,16 @@ uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
 
 /****************************************************************************/
 /****************************************************************************/
+/*! Perform downcast to QTicker pointer. */
+/**
+* @description
+* This macro encapsulates the downcast to (QTicker *), which is used in
+* QTicker_init_() and QTicker_dispatch_(). Such casts can trigger PC-Lint
+* "Note 929: cast from pointer to pointer [MISRA-04 Rule 11.4, advisory]"
+* and this macro helps to encapsulate this deviation.
+*/
+#define QTICKER_CAST(me_)  ((QTicker *)(me_))
+
 static void QTicker_init_(QHsm * const me, QEvt const * const e);
 static void QTicker_dispatch_(QHsm * const me, QEvt const * const e);
 #ifdef Q_SPY
@@ -349,7 +362,7 @@ static void QTicker_dispatch_(QHsm * const me, QEvt const * const e);
                    uint_fast16_t const margin, void const * const sender);
 #else
     static bool QTicker_post_(QActive * const me, QEvt const * const e,
-                      uint_fast16_t const margin);
+                   uint_fast16_t const margin);
 #endif
 static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
 
@@ -373,7 +386,7 @@ void QTicker_ctor(QTicker * const me, uint8_t tickRate) {
 static void QTicker_init_(QHsm * const me, QEvt const * const e) {
     (void)me;
     (void)e;
-    ((QActive *)me)->eQueue.tail = (QEQueueCtr)0;
+    QTICKER_CAST(me)->eQueue.tail = (QEQueueCtr)0;
 }
 /*..........................................................................*/
 static void QTicker_dispatch_(QHsm * const me, QEvt const * const e) {
@@ -383,12 +396,12 @@ static void QTicker_dispatch_(QHsm * const me, QEvt const * const e) {
     (void)e; /* unused parameter */
 
     QF_CRIT_ENTRY_();
-    n = ((QActive *)me)->eQueue.tail; /* # ticks since last call */
-    ((QActive *)me)->eQueue.tail = (QEQueueCtr)0; /* clear the # ticks */
+    n = QTICKER_CAST(me)->eQueue.tail; /* # ticks since last call */
+    QTICKER_CAST(me)->eQueue.tail = (QEQueueCtr)0; /* clear the # ticks */
     QF_CRIT_EXIT_();
 
     for (; n > (QEQueueCtr)0; --n) {
-        QF_TICK_X(((QActive const *)me)->eQueue.head, me);
+        QF_TICK_X(QTICKER_CAST(me)->eQueue.head, me);
     }
 }
 /*..........................................................................*/
@@ -418,7 +431,7 @@ static bool QTicker_post_(QActive * const me, QEvt const * const e,
 
     ++me->eQueue.tail; /* account for one more tick event */
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.aoObjFilter, me)
+    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();           /* timestamp */
         QS_OBJ_(sender);      /* the sender object */
         QS_SIG_((QSignal)0);  /* the signal of the event */

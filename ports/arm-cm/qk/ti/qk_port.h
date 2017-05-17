@@ -3,8 +3,8 @@
 * @brief QK/C port to Cortex-M, TI-ARM (CCS) toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-14
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-03-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -48,7 +48,7 @@
 #define QK_ISR_EXIT()  do { \
     QF_INT_DISABLE(); \
     if (QK_sched_() != (uint_fast8_t)0) { \
-        (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28)); \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
     } \
     QF_INT_ENABLE(); \
 } while (0)

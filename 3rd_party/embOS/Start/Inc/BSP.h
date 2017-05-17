@@ -1,16 +1,15 @@
 /*********************************************************************
-*               SEGGER MICROCONTROLLER GmbH & Co KG                  *
-*       Solutions for real time microcontroller applications         *
+*                SEGGER Microcontroller GmbH & Co. KG                *
+*                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2014  SEGGER Microcontroller GmbH & Co KG         *
+*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
 *                                                                    *
-*       www.segger.com     Support: support@segger.com               *
+*       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
 **********************************************************************
 *                                                                    *
 *       embOS * Real time operating system for microcontrollers      *
-*                                                                    *
 *                                                                    *
 *       Please note:                                                 *
 *                                                                    *
@@ -22,7 +21,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.00                                             *
+*       OS version: 4.34.1                                           *
 *                                                                    *
 **********************************************************************
 
@@ -32,7 +31,7 @@ Purpose : BSP (Board support package)
 --------  END-OF-HEADER  ---------------------------------------------
 */
 
-#ifndef BSP_H                           /* avoid multiple inclusion */
+#ifndef BSP_H                           /* Avoid multiple inclusion */
 #define BSP_H
 
 /*********************************************************************
@@ -41,12 +40,6 @@ Purpose : BSP (Board support package)
 *
 **********************************************************************
 */
-#define KEY_STAT_UP       (1 << 0)
-#define KEY_STAT_DOWN     (1 << 1)
-#define KEY_STAT_LEFT     (1 << 2)
-#define KEY_STAT_RIGHT    (1 << 3)
-#define KEY_STAT_BUTTON1  (1 << 4)
-#define KEY_STAT_BUTTON2  (1 << 5)
 
 /* In order to avoid warnings for undefined parameters */
 #ifndef BSP_USE_PARA
@@ -59,7 +52,7 @@ Purpose : BSP (Board support package)
 
 /*********************************************************************
 *
-*       Functions
+*       Prototypes
 *
 **********************************************************************
 */
@@ -72,60 +65,14 @@ extern "C" {
 *
 *       General
 */
-void     BSP_Init       (void);
-void     BSP_SetLED     (int Index);
-void     BSP_ClrLED     (int Index);
-void     BSP_ToggleLED  (int Index);
-unsigned BSP_GetKeyStat (void);
-
-/*********************************************************************
-*
-*       GUI
-*/
-void BSP_GUI_Init(void);
-
-/*********************************************************************
-*
-*       USB
-*/
-void BSP_USB_Attach         (void);
-void BSP_USB_InstallISR     (void (*pfISR)(void));
-void BSP_USB_InstallISR_Ex  (int ISRIndex, void (*pfISR)(void), int Prio);
-void BSP_USB_ISR_Handler    (void);
-
-/*********************************************************************
-*
-*       USBH
-*/
-void BSP_USBH_InstallISR    (void (*pfISR)(void));
-void BSP_USBH_Init          (void);
-
-/*********************************************************************
-*
-*       ETH
-*
-*  Functions for ethernet controllers (as far as present)
-*/
-void BSP_ETH_Init          (unsigned Unit);
-void BSP_ETH_InstallISR    (void (*pfISR)(void));
-void BSP_ETH_InstallISR_Ex (int ISRIndex, void (*pfISR)(void), int Prio);
-void BSP_ETH_ISR_Handler   (void);
-
-/*********************************************************************
-*
-*       CACHE
-*/
-void BSP_CACHE_CleanInvalidateRange (void * p, unsigned NumBytes);
-void BSP_CACHE_CleanRange           (void * p, unsigned NumBytes);
-void BSP_CACHE_InvalidateRange      (void * p, unsigned NumBytes);
-
-/********************************************************************/
+void BSP_Init     (void);
+void BSP_SetLED   (int Index);
+void BSP_ClrLED   (int Index);
+void BSP_ToggleLED(int Index);
 
 #ifdef __cplusplus
 }
 #endif
-
-/********************************************************************/
 
 #endif                                  /* avoid multiple inclusion */
 

@@ -53,7 +53,7 @@ static QState Table_paused(Table * const me, QEvt const * const e);
 static Table l_table; /* the single instance of the Table active object */
 
 /* Global-scope objects ----------------------------------------------------*/
-QMActive * const AO_Table = &l_table.super; /* "opaque" AO pointer */
+QActive * const AO_Table = &l_table.super; /* "opaque" AO pointer */
 
 /*..........................................................................*/
 /*${AOs::Table_ctor} .......................................................*/

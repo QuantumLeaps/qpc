@@ -1,1 +1,0 @@
-wish C:\qp\qtools\qspy\qspyview\qspyview.tcl dpp.tcl

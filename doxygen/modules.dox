@@ -6,7 +6,7 @@ Hierarchical Event Processor
 QEP is a universal, UML-compliant event processor that enables developers to code UML state machines in highly readable ANSI-C, in which every state machine element is mapped to code precisely, unambiguously, and exactly once (traceability). QEP fully supports hierarchical state nesting, which is the fundamental mechanism for reusing behavior across many states instead of repeating the same actions and transitions over and over again.
 */
 
-/*###########################################################################*/
+/*###########################################################################*/
 /*! @defgroup qf QF
 
 @brief
@@ -15,7 +15,7 @@ Active Object (Actor) Framework
 QF is a portable, event-driven, real-time framework for execution of active objects (concurrent state machines) specifically designed for real-time embedded (RTE) systems.
 */
 
-/*###########################################################################*/
+/*###########################################################################*/
 /*! @defgroup qs QS
 
 @brief
@@ -44,10 +44,10 @@ The QV scheduler can also very easily detect when all event queues are empty, at
 
 Given the simplicity, portability, and low-resource consumption, the QV scheduler is very attractive. It allows you to partition the problem into active objects and execute these active objects orderly. The task-level response of this scheduler is the longest RTC step in the whole system, but because event-driven active objects don’t block, the RTC steps tend to be very short (typically just a few microseconds). Also, often you can break up longer RTC steps into shorter pieces, by posting an event to self and returning (“Reminder” state pattern). The self-posted event then triggers the continuation of longer processing.
 
- 
+
 */
 
-/*###########################################################################*/
+/*###########################################################################*/
 /*! @defgroup qk QK
 
 @brief
@@ -63,7 +63,7 @@ Sometimes it is not practical to break up long RTC steps, and consequently the t
 
 */
 
-/*###########################################################################*//*! @defgroup qxk QXK
+/*###########################################################################*//*! @defgroup qxk QXK
 
 @brief
 Preemptive Dual-Mode Blocking RTOS Kernel
@@ -212,7 +212,7 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 
 */
 
-/*###########################################################################*//*! @dir ../include
+/*###########################################################################*//*! @dir ../include
 
 Platform-independent QP/C API
 
@@ -220,7 +220,7 @@ Platform-independent QP/C API
 The QP/C <span class="img folder">include</span> directory needs to be added to the compiler's include path in the applications using QP/C.
 */
 
-/*###########################################################################*//*! @dir ../source
+/*###########################################################################*//*! @dir ../source
 
 Platform-independent QP/C implementation
 

@@ -3,8 +3,8 @@
 * @brief QF/C port to Cortex-M, dual-mode QXK kernel, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.2
-* Date of the Last Update:  2017-02-03
+* Last Updated for Version: 5.9.0
+* Date of the Last Update:  2017-03-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -46,19 +46,24 @@
 #define QF_MAX_TICK_RATE        2
 
 /* QF interrupt disable/enable and log2()... */
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1? */
+#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
 
     /* Cortex-M0/M0+/M1(v6-M, v6S-M) interrupt disabling policy, see NOTE2 */
     #define QF_INT_DISABLE()    __asm volatile ("cpsid i")
     #define QF_INT_ENABLE()     __asm volatile ("cpsie i")
 
-    /* CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE4 */
+    /* CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE5 */
     #define QF_AWARE_ISR_CMSIS_PRI 0
 
 #else /* Cortex-M3/M4/M7 */
 
-    /* Cortex-M3/M4/M7 interrupt disabling policy, see NOTE3 */
-    #define QF_INT_DISABLE()    QF_SET_BASEPRI(QF_BASEPRI)
+    /* Cortex-M3/M4/M7 interrupt disabling policy, see NOTE3 and NOTE4 */
+    #define QF_INT_DISABLE() do { \
+        QF_PRIMASK_DISABLE(); \
+        QF_SET_BASEPRI(QF_BASEPRI); \
+        QF_PRIMASK_ENABLE(); \
+    } while (0)
+
     #define QF_INT_ENABLE()     QF_SET_BASEPRI(0U)
 
     /* BASEPRI threshold for "QF-aware" interrupts, see NOTE3.
@@ -82,16 +87,16 @@
     #define QF_PRIMASK_ENABLE()  __asm volatile ("cpsie i")
 #endif
 
-/* QF critical section entry/exit */
-/* QF_CRIT_STAT_TYPE not defined: unconditional interrupt disabling" policy */
+/* QF critical section entry/exit... */
+/* QF_CRIT_STAT_TYPE not defined: unconditional interrupt disabling policy */
 #define QF_CRIT_ENTRY(dummy)    QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)     QF_INT_ENABLE()
 #define QF_CRIT_EXIT_NOP()      __asm volatile ("isb")
 
-#include "qep_port.h"   /* QEP port */
-#include "qxk_port.h"   /* QXK port */
-#include "qf.h"         /* QF platform-independent public interface */
-#include "qxthread.h"   /* QXK extended thread interface */
+#include "qep_port.h" /* QEP port */
+#include "qxk_port.h" /* QXK dual-mode kernel port */
+#include "qf.h"       /* QF platform-independent public interface */
+#include "qxthread.h" /* QXK extended thread interface */
 
 /*****************************************************************************
 * NOTE1:
@@ -117,6 +122,13 @@
 * ("QF-aware" interrupts ), can call QF services.
 *
 * NOTE4:
+* The selective disabling of "QF-aware" interrupts with the BASEPRI register
+* has a problem on ARM Cortex-M7 core r0p1 (see ARM-EPM-064408, errata
+* 837070). The workaround recommended by ARM is to surround MSR BASEPRI with
+* the CPSID i/CPSIE i pair, which is implemented in the QF_INT_DISABLE()
+* macro. This workaround works also for Cortex-M3/M4 cores.
+*
+* NOTE5:
 * The QF_AWARE_ISR_CMSIS_PRI macro is useful as an offset for enumerating
 * the "QF-aware" interrupt priorities in the applications, whereas the
 * numerical values of the "QF-aware" interrupts must be greater or equal to

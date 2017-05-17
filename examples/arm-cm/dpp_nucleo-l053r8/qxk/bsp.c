@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -175,7 +175,6 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
     /* not enough LEDs to implement this feature */
     if (paused != (uint8_t)0) {
         //GPIOA->BSRR |= (LED_LD2);  /* turn LED[n] on  */

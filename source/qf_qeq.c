@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -82,7 +82,7 @@ void QEQueue_init(QEQueue * const me, QEvt const *qSto[],
     me->nFree    = (QEQueueCtr)(qLen + (uint_fast16_t)1); /*+1 for frontEvt */
     me->nMin     = me->nFree;
 
-    QS_BEGIN_(QS_QF_EQUEUE_INIT, QS_priv_.eqObjFilter, me)
+    QS_BEGIN_(QS_QF_EQUEUE_INIT, QS_priv_.locFilter[EQ_OBJ], me)
         QS_OBJ_(me);          /* this QEQueue object */
         QS_EQC_(me->end);     /* the length of the queue */
     QS_END_()
@@ -131,7 +131,8 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
     /* required margin available? */
     if (nFree > (QEQueueCtr)margin) {
 
-        QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_FIFO, QS_priv_.eqObjFilter, me)
+        QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_FIFO,
+                         QS_priv_.locFilter[EQ_OBJ], me)
             QS_TIME_();                      /* timestamp */
             QS_SIG_(e->sig);                 /* the signal of this event */
             QS_OBJ_(me);                     /* this queue object */
@@ -174,7 +175,8 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
         */
         Q_ASSERT_ID(210, margin != (uint_fast16_t)0);
 
-        QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_ATTEMPT, QS_priv_.eqObjFilter, me)
+        QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_ATTEMPT,
+                         QS_priv_.locFilter[EQ_OBJ], me)
             QS_TIME_();                      /* timestamp */
             QS_SIG_(e->sig);                 /* the signal of this event */
             QS_OBJ_(me);                     /* this queue object */
@@ -221,7 +223,7 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
     /** @pre the queue must be able to accept the event (cannot overflow) */
     Q_REQUIRE_ID(300, nFree != (QEQueueCtr)0);
 
-    QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_LIFO, QS_priv_.eqObjFilter, me)
+    QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_LIFO, QS_priv_.locFilter[EQ_OBJ], me)
         QS_TIME_();              /* timestamp */
         QS_SIG_(e->sig);         /* the signal of this event */
         QS_OBJ_(me);             /* this queue object */
@@ -292,7 +294,7 @@ QEvt const *QEQueue_get(QEQueue * const me) {
             }
             --me->tail;
 
-            QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_GET, QS_priv_.eqObjFilter, me)
+            QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_GET, QS_priv_.locFilter[EQ_OBJ], me)
                 QS_TIME_();           /* timestamp */
                 QS_SIG_(e->sig);      /* the signal of this event */
                 QS_OBJ_(me);          /* this queue object */
@@ -306,7 +308,8 @@ QEvt const *QEQueue_get(QEQueue * const me) {
             /* all entries in the queue must be free (+1 for fronEvt) */
             Q_ASSERT_ID(410, nFree == (me->end + (QEQueueCtr)1));
 
-            QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_GET_LAST, QS_priv_.eqObjFilter, me)
+            QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_GET_LAST,
+                             QS_priv_.locFilter[EQ_OBJ], me)
                 QS_TIME_();           /* timestamp */
                 QS_SIG_(e->sig);      /* the signal of this event */
                 QS_OBJ_(me);          /* this queue object */

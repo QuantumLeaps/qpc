@@ -4,14 +4,14 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-14
+* Last updated for version 5.9.0
+* Last updated on  2017-02-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -261,7 +261,7 @@ void intEnable(void);
 *
 * @note The provided code is just an example (for ARM Cortex-M).
 */
-#define QF_CPU_SLEEP() do { \
+#define QV_CPU_SLEEP() do { \
     __disable_interrupt(); \
     QF_INT_ENABLE(); \
     __WFI(); \
