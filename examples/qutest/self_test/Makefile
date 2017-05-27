@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST self-test; QP/C on Win32 host
-# Last updated for version 5.9.0
-# Last updated on  2017-05-14
+# Last updated for version 5.9.1
+# Last updated on  2017-05-26
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------

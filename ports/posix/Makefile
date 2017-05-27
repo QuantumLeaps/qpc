@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP/C port to POSIX, GNU toolset
-# Last Updated for Version: 5.5.0
-# Date of the Last Update:  2015-08-04
+# Last Updated for Version: 5.9.1
+# Date of the Last Update:  2017-05-25
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 # mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
-# building configurations: Debug (default), Release, and Spy
+# building configurations: Debug (default), Release and Spy
 # make
 # make CONF=rel
 # make CONF=spy
@@ -61,13 +61,14 @@ QP_PORT_DIR := .
 
 # list of all source directories used by this project
 VPATH = \
-	$(QPC)/source \
+	$(QPC)/src/qf \
+	$(QPC)/src/qs \
 	$(QP_PORT_DIR)
 
 # list of all include directories needed by this project
 INCLUDES  = \
 	-I$(QPC)/include \
-	-I$(QPC)/source \
+	-I$(QPC)/src \
 	-I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
@@ -109,7 +110,6 @@ CC    := gcc
 LIB   := ar
 
 
-
 ##############################################################################
 # Typically, you should not need to change anything below this line
 
@@ -122,18 +122,18 @@ RM    := rm -f
 
 LIBFLAGS := rs
 
-ifeq (rel, $(CONF))       # Release configuration ............................
+ifeq (rel, $(CONF))  # Release configuration .................................
 
 BIN_DIR := rel
 
-CFLAGS = -ffunction-sections -fdata-sections \
+CFLAGS = -c -ffunction-sections -fdata-sections \
 	-Os -Wall -W $(INCLUDES) $(DEFINES) -pthread -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
 BIN_DIR := spy
 
-CFLAGS = -g -ffunction-sections -fdata-sections \
+CFLAGS = -c -g -ffunction-sections -fdata-sections \
 	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread -DQ_SPY
 
 # add the QS sources...
@@ -143,7 +143,7 @@ else  # default Debug configuration ..........................................
 
 BIN_DIR := dbg
 
-CFLAGS = -g -ffunction-sections -fdata-sections \
+CFLAGS = -c -g -ffunction-sections -fdata-sections \
 	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread
 
 endif  # .....................................................................
@@ -180,10 +180,10 @@ $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
 
 $(BIN_DIR)/%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CPP) $(CPPFLAGS) $< -o $@
 
 # include dependency files only if our goal depends on their existence
 ifneq ($(MAKECMDGOALS),clean)
@@ -198,7 +198,7 @@ endif
 .PHONY : clean
 clean:
 	-$(RM) $(BIN_DIR)/*.o 	$(BIN_DIR)/*.d $(TARGET_LIB)
-	
+
 #-----------------------------------------------------------------------------
 # the show target for debugging
 #

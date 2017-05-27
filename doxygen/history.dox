@@ -1,12 +1,48 @@
 /**
 @page history Revision History
 
+@section qpc_5_9_1 Version 5.9.1, 2017-05-26
+This release fixes the following bug:
+- <a href="https://sourceforge.net/p/qpc/bugs/169/" target="_blank" class="extern">bug#169 "Submachine-state eXit Point does not work correctly"</a>
+
+@note
+The bug only affects sub-machines and does not affect any other
+aspects of QMsm-style state machines.
+
+Also, this release changes the organization of the QP/C source code to
+make it more friendly for the Eclipse CDT, as proposed in the <a href="https://sourceforge.net/p/qpc/feature-requests/123/" target="_blank" class="extern">feature
+request #123 "Eclipse-friendly source directory structure for QP/C/C++"</a>.
+Specifically, the QP/C source code is now provided in the
+`qpc/src/` directory with the following structure:
+
+@verbatim
+qpc\
+  +-source\  - exitsting source directory with "flat" structure
+  |            (for backwards-compatibility)
+  +-src\     - new source directory grouped by functionality
+     +-qf\    - core framework (QEP + QF)
+     +-qk\    - QK kernel
+     +-qv\    - QV kernel (only one file qv.c)
+     +-qxk\   - QXK kernel
+     +-qs\    - QS software tracing
+     +-qf_pkg.h
+     +-qs_pkg.h
+     +-qxk_pkg.h
+@endverbatim
+
+@note The original `qpc/source` directory is still provided for backwards
+compatibility with the existing QP/C projects. This directory will be
+phased out in the future QP/C releases. Please use the new source code
+structure provided in the `qpc/src` directory.
+
+
+------------------------------------------------------------------------------
 @section qpc_5_9_0 Version 5.9.0, 2017-05-19
 The main purpose of this milestone QP/C release is to provide support for the powerful **Unit Testing Framework** called
 <a href="https://state-machine.com/qtools/qutest.html" target="_blank" class="extern"><strong>QUTest&trade;</strong> (pronounced *cutest*)</a>.
 QUTest&trade; is the fundamental tooling for Test-Driven Development (TDD) of QP/C applications, which is a highly recommended best-practice. This release introduces changes in the QS-RX (receive) channel and adds several new callbacks.
 
-@note The signatrue of the QS_onCommand() has changed and the function now takes 3 arbitrary 32-bit parameters instead of one. This introduces backwards-incompatibility with previous code that used QS_onCommand().
+@note The signature of the QS_onCommand() has changed and the function now takes 3 arbitrary 32-bit parameters instead of one. This introduces backwards-incompatibility with previous code that used QS_onCommand().
 
 
 This release also changes the critical section for QP/C ports to ARM Cortex-M

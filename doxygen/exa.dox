@@ -293,10 +293,10 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
     - <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE">NUCLEO-L152RE</a>
     - <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965">EK-LM3S6965</a>
     - <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery">STM32F4-Discovery</a>
-    - <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
+    - <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery">STM32F746G-Discovery</a>
 
 - ARM Cortex-R Boards:
-    - <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
+    - <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012">LAUNCHXL2-TMS57012</a>
 
 - ARM7 Boards:
     - <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK">AT91SAM7S-EK</a>

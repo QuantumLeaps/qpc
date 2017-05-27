@@ -27,9 +27,14 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>EK_TM4C123GXL.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/EK_TM4C123GXL.c</locationURI>
+		</link>
+		<link>
 			<name>QP</name>
 			<type>2</type>
-			<locationURI>PARENT-5-PROJECT_LOC/source</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qf</locationURI>
 		</link>
 		<link>
 			<name>QP_include</name>
@@ -70,11 +75,6 @@
 			<name>table.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/table.c</locationURI>
-		</link>
-		<link>
-			<name>EK_TM4C123GXL.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/EK_TM4C123GXL.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

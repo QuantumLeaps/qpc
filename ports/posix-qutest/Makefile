@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST, QP/C, POSIX, GNU toolset
-# Last Updated for Version: 5.9.0
-# Date of the Last Update:  2017-04-18
+# Last Updated for Version: 5.9.1
+# Date of the Last Update:  2017-05-25
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -56,13 +56,14 @@ QP_PORT_DIR := .
 
 # list of all source directories used by this project
 VPATH = \
-	$(QPC)/source \
+	$(QPC)/src/qf \
+	$(QPC)/src/qs \
 	$(QP_PORT_DIR)
 
 # list of all include directories needed by this project
 INCLUDES  = \
 	-I$(QPC)/include \
-	-I$(QPC)/source \
+	-I$(QPC)/src \
 	-I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
@@ -114,10 +115,10 @@ RM    := rm -f
 
 BIN_DIR := posix
 
-CFLAGS = -g -O -Wall -Wstrict-prototypes -W $(INCLUDES) $(DEFINES) \
+CFLAGS = -c -g -O -Wall -Wstrict-prototypes -W $(INCLUDES) $(DEFINES) \
 	-DQ_SPY -DQ_UTEST -DQ_HOST
 
-CPPFLAGS = -fno-rtti -fno-exceptions \
+CPPFLAGS = -c -fno-rtti -fno-exceptions \
 	-O -Wall -W $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
 LIBFLAGS := rs
@@ -145,10 +146,10 @@ $(TARGET_LIB) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LIB) $(LIBFLAGS) $@ $^
 
 $(BIN_DIR)/%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CPP) $(CPPFLAGS) $< -o $@
 
 #-----------------------------------------------------------------------------
 # the clean target

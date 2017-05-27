@@ -15,73 +15,70 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\qep_hsm.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qep_msm.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qf_act.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qf_actq.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qf_defer.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qf_dyn.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qf_mem.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qf_ps.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qf_qact.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qf_qeq.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qf_qmact.c">
-      <Filter>QP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qf_time.c">
-      <Filter>QP</Filter>
-    </ClCompile>
     <ClCompile Include="qf_port.c">
       <Filter>QP_port</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qs.c">
-      <Filter>QS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qs_64bit.c">
-      <Filter>QS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qs_fp.c">
-      <Filter>QS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\qs_rx.c">
-      <Filter>QS</Filter>
     </ClCompile>
     <ClCompile Include="qwin_gui.c">
       <Filter>QWIN-GUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\qf\qep_hsm.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qep_msm.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_act.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_actq.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_defer.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_dyn.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_mem.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_ps.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_qact.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_qeq.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_qmact.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_time.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qs\qs.c">
+      <Filter>QS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qs\qs_64bit.c">
+      <Filter>QS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qs\qs_fp.c">
+      <Filter>QS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qs\qs_rx.c">
+      <Filter>QS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qs\qutest.c">
+      <Filter>QS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\qf_pkg.h">
-      <Filter>QP</Filter>
-    </ClInclude>
     <ClInclude Include="qep_port.h">
       <Filter>QP_port</Filter>
     </ClInclude>
     <ClInclude Include="qf_port.h">
       <Filter>QP_port</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\qs_pkg.h">
-      <Filter>QS</Filter>
     </ClInclude>
     <ClInclude Include="qwin_gui.h">
       <Filter>QWIN-GUI</Filter>

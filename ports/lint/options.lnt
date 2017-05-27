@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.9.0
-// Last updated on  2017-05-10
+// Last updated for version 5.9.1
+// Last updated on  2017-05-25
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -33,39 +33,40 @@
 //////////////////////////////////////////////////////////////////////////////
 
 // library headers
-+libclass()           // lint all header files, including "foreign"
-//-vf                 // print names of all source files
++libclass()       // lint all header files, including "foreign"
+//-vf             // print names of all source files
 
-+fdi                  // start #include search in dir of the including file
--i.                   // QP/C port includes (see also qk/ and qv/)
--i../../include       // QP/C includes
++fdi              // start #include search in dir of the including file
+-i.               // QP/C port includes (see also qk/ and qv/)
+-i../../include   // QP/C public includes
+-i../../src       // QP/C package-scope includes
 
--si4                  // sizeof(int)
--ss2                  // sizeof(short)
--spD4                 // sizeof(void *)
--spP4                 // sizeof(function pointer)
+-si4              // sizeof(int)
+-ss2              // sizeof(short)
+-spD4             // sizeof(void *)
+-spP4             // sizeof(function pointer)
 
 
-au-misra2.lnt         // MISRA-C:2004 options
-au-ds.lnt             // Dan Saks recommendations
-qpc.lnt               // QP/C options
--strong(AXJ)          // Strong type checking
+au-misra2.lnt     // MISRA-C:2004 options
+au-ds.lnt         // Dan Saks recommendations
+qpc.lnt           // QP/C options
+-strong(AXJ)      // Strong type checking
 
 // general
-+e900                 // prints a success message at the end
++e900             // prints a success message at the end
 
 // QEP
--emacro(960,          // MISRA04-14.3(req) null not in line by itself
+-emacro(960,      // MISRA04-14.3(req) null not in line by itself
  QEP_ENTER_,
  QEP_EXIT_)
--emacro(960,          // MISR04-17.4(req), pointer arithmetic
+-emacro(960,      // MISR04-17.4(req), pointer arithmetic
  QEP_ACT_PTR_INC_)
--estring(961,         // MISRA04-19.7(adv) function-like macro
+-estring(961,     // MISRA04-19.7(adv) function-like macro
  QEP_TRIG_,
  QEP_ENTER_,
  QEP_EXIT_,
  QEP_ACT_PTR_INC_)
--emacro(717,          // do ... while(0);
+-emacro(717,      // do ... while(0);
  QEP_ENTER_,
  QEP_EXIT_)
 -efunc(632,           // Assignment to strong type 'QStateHandler'

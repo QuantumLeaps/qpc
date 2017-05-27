@@ -26,19 +26,29 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>QK</name>
+			<type>2</type>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qk</locationURI>
+		</link>
+		<link>
 			<name>QP</name>
 			<type>2</type>
-			<location>PARENT-5-PROJECT_LOC/source</location>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qf</locationURI>
 		</link>
 		<link>
 			<name>QP_include</name>
 			<type>2</type>
-			<location>PARENT-5-PROJECT_LOC/include</location>
+			<locationURI>PARENT-5-PROJECT_LOC/include</locationURI>
 		</link>
 		<link>
 			<name>QP_port</name>
 			<type>2</type>
-			<location>PARENT-5-PROJECT_LOC/ports/msp430/qk/ccs</location>
+			<locationURI>PARENT-5-PROJECT_LOC/ports/msp430/qk/ccs</locationURI>
+		</link>
+		<link>
+			<name>QS</name>
+			<type>2</type>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qs</locationURI>
 		</link>
 		<link>
 			<name>bsp.c</name>

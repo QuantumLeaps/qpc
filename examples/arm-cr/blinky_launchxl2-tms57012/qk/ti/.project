@@ -26,9 +26,19 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>QK</name>
+			<type>2</type>
+			<location>C:/qp_lab/qpc/src/qk</location>
+		</link>
+		<link>
 			<name>QP</name>
 			<type>2</type>
-			<locationURI>PARENT-5-PROJECT_LOC/source</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qf</locationURI>
+		</link>
+		<link>
+			<name>QS</name>
+			<type>2</type>
+			<location>C:/qp_lab/qpc/src/qs</location>
 		</link>
 		<link>
 			<name>blinky.c</name>

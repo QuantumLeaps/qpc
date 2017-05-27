@@ -28,27 +28,32 @@
 		<link>
 			<name>QP</name>
 			<type>2</type>
-			<location>PARENT-5-PROJECT_LOC/source</location>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qf</locationURI>
 		</link>
 		<link>
 			<name>QP_include</name>
 			<type>2</type>
-			<location>PARENT-5-PROJECT_LOC/include</location>
+			<locationURI>PARENT-5-PROJECT_LOC/include</locationURI>
 		</link>
 		<link>
 			<name>QP_port</name>
 			<type>2</type>
-			<location>PARENT-5-PROJECT_LOC/ports/arm-cm/qxk/ti</location>
+			<locationURI>PARENT-5-PROJECT_LOC/ports/arm-cm/qxk/ti</locationURI>
+		</link>
+		<link>
+			<name>QS</name>
+			<type>2</type>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qs</locationURI>
+		</link>
+		<link>
+			<name>QXK</name>
+			<type>2</type>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qxk</locationURI>
 		</link>
 		<link>
 			<name>bsp.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/bsp.c</locationURI>
-		</link>
-		<link>
-			<name>main.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/main.c</locationURI>
 		</link>
 		<link>
 			<name>bsp.h</name>
@@ -63,7 +68,12 @@
 		<link>
 			<name>ek-tm4c123gxl</name>
 			<type>2</type>
-			<location>PARENT-5-PROJECT_LOC/3rd_party/ek-tm4c123gxl</location>
+			<locationURI>PARENT-5-PROJECT_LOC/3rd_party/ek-tm4c123gxl</locationURI>
+		</link>
+		<link>
+			<name>main.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/main.c</locationURI>
 		</link>
 		<link>
 			<name>philo.c</name>

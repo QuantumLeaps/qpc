@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EMF32-SLSTK3401A, QUTEST, GNU-ARM
-# Last updated for version 5.9.0
-# Last updated on  2017-05-17
+# Last updated for version 5.9.1
+# Last updated on  2017-05-26
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -73,7 +73,8 @@ VPATH = \
 	.. \
 	../.. \
 	../$(TARGET) \
-	$(QPC)/source \
+	$(QPC)/src/qf \
+	$(QPC)/src/qs \
 	$(QP_PORT_DIR) \
 	$(QPC)/3rd_party/efm32pg1b \
 	$(QPC)/3rd_party/efm32pg1b/gnu
@@ -84,7 +85,7 @@ INCLUDES  = \
 	-I.. \
 	-I../$(TARGET) \
 	-I$(QPC)/include \
-	-I$(QPC)/source \
+	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPC)/3rd_party/CMSIS/Include \
 	-I$(QPC)/3rd_party/efm32pg1b
@@ -112,7 +113,7 @@ C_SRCS := \
 	em_usart.c
 
 # C++ source files
-CPP_SRCS :=	
+CPP_SRCS :=
 
 OUTPUT    := $(PROJECT)
 LD_SCRIPT := ../$(TARGET)/test.ld

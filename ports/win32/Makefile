@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP/C port to Win32 API, MinGW toolset
-# Last Updated for Version: 5.8.3
-# Date of the Last Update:  2017-03-22
+# Last Updated for Version: 5.9.1
+# Date of the Last Update:  2017-05-25
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 # mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
-# building configurations: Debug (default), Release, Spy, Qutest
+# building configurations: Debug (default), Release and Spy
 # make
 # make CONF=rel
 # make CONF=spy
@@ -66,13 +66,14 @@ QP_PORT_DIR := .
 
 # list of all source directories used by this project
 VPATH = \
-	$(QPC)/source \
+	$(QPC)/src/qf \
+	$(QPC)/src/qs \
 	$(QP_PORT_DIR)
 
 # list of all include directories needed by this project
 INCLUDES  = \
 	-I$(QPC)/include \
-	-I$(QPC)/source \
+	-I$(QPC)/src \
 	-I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
@@ -137,7 +138,7 @@ LIBFLAGS := rs
 
 ifeq (rel, $(CONF))  # Release configuration .................................
 
-BIN_DIR = rel
+BIN_DIR := rel
 
 # gcc options
 CFLAGS = -c -ffunction-sections -fdata-sections \
@@ -197,10 +198,10 @@ $(TARGET_LIB) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LIB) $(LIBFLAGS) $@ $^
 
 $(BIN_DIR)/%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CPP) $(CPPFLAGS) $< -o $@
 
 #-----------------------------------------------------------------------------
 # the clean target
@@ -208,7 +209,7 @@ $(BIN_DIR)/%.o : %.cpp
 .PHONY : clean
 clean:
 	-$(RM) $(BIN_DIR)/*.o $(TARGET_LIB)
-	
+
 #-----------------------------------------------------------------------------
 # the show target for debugging
 #

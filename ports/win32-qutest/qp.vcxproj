@@ -34,7 +34,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='vc|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;../../include;../../source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;../../include;../../src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>Q_SPY;Q_HOST;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -70,25 +70,24 @@
     </CustomBuildStep>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\qep_hsm.c" />
-    <ClCompile Include="..\..\source\qep_msm.c" />
-    <ClCompile Include="..\..\source\qf_act.c" />
-    <ClCompile Include="..\..\source\qf_defer.c" />
-    <ClCompile Include="..\..\source\qf_dyn.c" />
-    <ClCompile Include="..\..\source\qf_mem.c" />
-    <ClCompile Include="..\..\source\qf_ps.c" />
-    <ClCompile Include="..\..\source\qf_qact.c" />
-    <ClCompile Include="..\..\source\qf_qeq.c" />
-    <ClCompile Include="..\..\source\qf_qmact.c" />
-    <ClCompile Include="..\..\source\qs.c" />
-    <ClCompile Include="..\..\source\qs_64bit.c" />
-    <ClCompile Include="..\..\source\qs_fp.c" />
-    <ClCompile Include="..\..\source\qs_rx.c" />
+    <ClCompile Include="..\..\src\qf\qep_hsm.c" />
+    <ClCompile Include="..\..\src\qf\qep_msm.c" />
+    <ClCompile Include="..\..\src\qf\qf_act.c" />
+    <ClCompile Include="..\..\src\qf\qf_defer.c" />
+    <ClCompile Include="..\..\src\qf\qf_dyn.c" />
+    <ClCompile Include="..\..\src\qf\qf_mem.c" />
+    <ClCompile Include="..\..\src\qf\qf_ps.c" />
+    <ClCompile Include="..\..\src\qf\qf_qact.c" />
+    <ClCompile Include="..\..\src\qf\qf_qeq.c" />
+    <ClCompile Include="..\..\src\qf\qf_qmact.c" />
+    <ClCompile Include="..\..\src\qs\qs.c" />
+    <ClCompile Include="..\..\src\qs\qs_64bit.c" />
+    <ClCompile Include="..\..\src\qs\qs_fp.c" />
+    <ClCompile Include="..\..\src\qs\qs_rx.c" />
+    <ClCompile Include="..\..\src\qs\qutest.c" />
     <ClCompile Include="qutest_port.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\qf_pkg.h" />
-    <ClInclude Include="..\..\source\qs_pkg.h" />
     <ClInclude Include="qep_port.h" />
     <ClInclude Include="qf_port.h" />
   </ItemGroup>

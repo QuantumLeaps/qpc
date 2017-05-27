@@ -31,10 +31,9 @@
 * https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
-#include "qpc.h"           /* for QUTEST */
+#include "qpc.h"    /* QUTest interface */
 
-#include <stdio.h>
-#include <string.h>
+#include <stdio.h>  /* CUT interface */
 
 Q_DEFINE_THIS_FILE
 
@@ -63,7 +62,6 @@ int main() {
 
 /*--------------------------------------------------------------------------*/
 void QS_onTestSetup(void) {
-    //memset(output, 0xAA, sizeof(output));
 }
 /*..........................................................................*/
 void QS_onTestTeardown(void) {
@@ -73,8 +71,6 @@ void QS_onTestTeardown(void) {
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    //printf("<TARGET> Command Id=%d,Par1=%ld,Par2=%ld,Par3=%ld\n",
-    //       (int)cmdId, (long)param1, (long)param2, (long)param3);
     switch (cmdId) {
         case 0: {   /* call the CUT and report results */
             int ret = sprintf(&output[8],
