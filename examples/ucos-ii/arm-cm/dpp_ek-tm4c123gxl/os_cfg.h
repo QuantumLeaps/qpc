@@ -45,7 +45,7 @@
 #define OS_ARG_CHK_EN             0u   /* Enable (1) or Disable (0) argument checking                  */
 #define OS_CPU_HOOKS_EN           1u   /* uC/OS-II hooks are found in the processor port files         */
 
-#define OS_DEBUG_EN               1u   /* Enable(1) debug variables                                    */
+#define OS_DEBUG_EN               0u   /* Enable(1) debug variables                                    */
 
 #define OS_EVENT_MULTI_EN         0u   /* Include code for OSEventPendMulti()                          */
 #define OS_EVENT_NAME_EN          1u   /* Enable names for Sem, Mutex, Mbox and Q                      */
@@ -113,7 +113,7 @@
 
 
                                        /* ---------------- MUTUAL EXCLUSION SEMAPHORES --------------- */
-#define OS_MUTEX_EN               0u   /* Enable (1) or Disable (0) code generation for MUTEX          */
+#define OS_MUTEX_EN               1u   /* Enable (1) or Disable (0) code generation for MUTEX          */
 #define OS_MUTEX_ACCEPT_EN        1u   /*     Include code for OSMutexAccept()                         */
 #define OS_MUTEX_DEL_EN           1u   /*     Include code for OSMutexDel()                            */
 #define OS_MUTEX_QUERY_EN         1u   /*     Include code for OSMutexQuery()                          */

@@ -97,11 +97,11 @@ ASM_SRCS :=
 
 # C source files
 C_SRCS := \
-	test_Flash.c \
-	Flash.c \
-	FakeMicroTime.c \
-	MockIO.c \
-	qutest_port.c \
+    test_Flash.c \
+    Flash.c \
+    FakeMicroTime.c \
+    MockIO.c \
+    qutest_port.c \
     startup_TM4C123GH6PM.c \
     system_TM4C123GH6PM.c
 
@@ -158,7 +158,7 @@ FLOAT_ABI := -mfloat-abi=softfp
 # see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -177,7 +177,7 @@ BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 # see http://www.ti.com/tool/lmflashprogrammer
 #
 ifeq ($(LMFLASH),)
-LMFLASH = C:/tools/TI/LM_Flash_Programmer/LMFlash.exe
+LMFLASH := $(QTOOLS)/../LM_Flash_Programmer/LMFlash.exe
 endif
 
 # make sure that the LMFLASH tool exists...
@@ -265,32 +265,32 @@ all : $(TARGET_BIN) run
 endif
 
 $(TARGET_BIN) : $(TARGET_ELF)
-	$(BIN) -O binary $< $@
-	$(LMFLASH) -q ek-tm4c123gxl $(TARGET_BIN)
-	echo Press RESET button on the EK-TM4C123GXL board
-	@pause
+    $(BIN) -O binary $< $@
+    $(LMFLASH) -q ek-tm4c123gxl $(TARGET_BIN)
+    echo Press RESET button on the EK-TM4C123GXL board
+    @pause
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
-	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
+    $(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+    $(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_BIN)
-	$(TCLSH) $(QUTEST)
+    $(TCLSH) $(QUTEST)
 
 $(BIN_DIR)/%.d : %.c
-	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
+    $(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
 $(BIN_DIR)/%.d : %.cpp
-	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
+    $(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
 
 $(BIN_DIR)/%.o : %.s
-	$(AS) $(ASFLAGS) $< -o $@
+    $(AS) $(ASFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+    $(CC) $(CFLAGS) -c $< -o $@
 
 $(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+    $(CPP) $(CPPFLAGS) -c $< -o $@
 
 .PHONY : clean show
 
@@ -302,28 +302,28 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 clean :
-	-$(RM) $(BIN_DIR)/*.o \
-	$(BIN_DIR)/*.d \
-	$(BIN_DIR)/*.bin \
-	$(BIN_DIR)/*.elf \
-	$(BIN_DIR)/*.map
-	
+    -$(RM) $(BIN_DIR)/*.o \
+    $(BIN_DIR)/*.d \
+    $(BIN_DIR)/*.bin \
+    $(BIN_DIR)/*.elf \
+    $(BIN_DIR)/*.map
+
 show :
-	@echo PROJECT      = $(PROJECT)
-	@echo TARGET_ELF   = $(TARGET_ELF)
-	@echo CONF         = $(CONF)
-	@echo VPATH        = $(VPATH)
-	@echo C_SRCS       = $(C_SRCS)
-	@echo CPP_SRCS     = $(CPP_SRCS)
-	@echo ASM_SRCS     = $(ASM_SRCS)
-	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
-	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
+    @echo PROJECT      = $(PROJECT)
+    @echo TARGET_ELF   = $(TARGET_ELF)
+    @echo CONF         = $(CONF)
+    @echo VPATH        = $(VPATH)
+    @echo C_SRCS       = $(C_SRCS)
+    @echo CPP_SRCS     = $(CPP_SRCS)
+    @echo ASM_SRCS     = $(ASM_SRCS)
+    @echo C_DEPS_EXT   = $(C_DEPS_EXT)
+    @echo C_OBJS_EXT   = $(C_OBJS_EXT)
 
-	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
-	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
+    @echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
+    @echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
 
-	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
-	@echo LIB_DIRS     = $(LIB_DIRS)
-	@echo LIBS         = $(LIBS)
-	@echo DEFINES      = $(DEFINES)
-	@echo QUTEST       = $(QUTEST)
+    @echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
+    @echo LIB_DIRS     = $(LIB_DIRS)
+    @echo LIBS         = $(LIBS)
+    @echo DEFINES      = $(DEFINES)
+    @echo QUTEST       = $(QUTEST)

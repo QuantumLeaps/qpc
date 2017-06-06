@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EK-TM4C123GXL, QUTEST, GNU-ARM
-# Last updated for version 5.9.1
-# Last updated on  2017-05-26
+# Last updated for version 5.9.2
+# Last updated on  2017-06-03
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -34,7 +34,7 @@
 #
 # examples of invoking this Makefile:
 # make -fek-tm4c123gxl.mak  # make and run the tests in the current directory
-# make -fek-tm4c123gxl.mak  TESTS=philo*.tcl  # make and run the selected tests
+# make -fek-tm4c123gxl.mak TESTS=philo*.tcl  # make and run the selected tests
 # make -fek-tm4c123gxl.mak norun  # only make but not run the tests
 # make -fek-tm4c123gxl.mak clean  # cleanup the build
 #
@@ -70,25 +70,21 @@ QP_PORT_DIR := $(QPC)/ports/arm-cm/qutest
 
 # list of all source directories used by this project
 VPATH = \
-	.. \
-	../.. \
-	../$(TARGET) \
-	$(QPC)/src/qf \
-	$(QPC)/src/qs \
-	$(QP_PORT_DIR) \
-	$(QPC)/3rd_party/ek-tm4c123gxl \
-	$(QPC)/3rd_party/ek-tm4c123gxl/gnu
+    ../$(TARGET) \
+    $(QPC)/src/qf \
+    $(QPC)/src/qs \
+    $(QP_PORT_DIR) \
+    $(QPC)/3rd_party/ek-tm4c123gxl \
+    $(QPC)/3rd_party/ek-tm4c123gxl/gnu
 
 # list of all include directories needed by this project
 INCLUDES  = \
-	-I. \
-	-I.. \
-	-I../$(TARGET) \
-	-I$(QPC)/include \
-	-I$(QPC)/src \
-	-I$(QP_PORT_DIR) \
-	-I$(QPC)/3rd_party/CMSIS/Include \
-	-I$(QPC)/3rd_party/ek-tm4c123gxl
+    -I../$(TARGET) \
+    -I$(QPC)/include \
+    -I$(QPC)/src \
+    -I$(QP_PORT_DIR) \
+    -I$(QPC)/3rd_party/CMSIS/Include \
+    -I$(QPC)/3rd_party/ek-tm4c123gxl
 
 #-----------------------------------------------------------------------------
 # files
@@ -99,10 +95,10 @@ ASM_SRCS :=
 
 # C source files
 C_SRCS := \
-	test_qutest.c \
-	qutest_port.c \
-	system_TM4C123GH6PM.c \
-	startup_TM4C123GH6PM.c
+    test_qutest.c \
+    qutest_port.c \
+    system_TM4C123GH6PM.c \
+    startup_TM4C123GH6PM.c
 
 # C++ source files
 CPP_SRCS :=
@@ -111,28 +107,28 @@ OUTPUT    := $(PROJECT)
 LD_SCRIPT := ../$(TARGET)/test.ld
 
 QP_SRCS := \
-	qep_hsm.c \
-	qep_msm.c \
-	qf_act.c \
-	qf_defer.c \
-	qf_dyn.c \
-	qf_mem.c \
-	qf_ps.c \
-	qf_qact.c \
-	qf_qeq.c \
-	qf_qmact.c \
-	qs.c \
-	qs_64bit.c \
-	qs_rx.c \
-	qs_fp.c \
-	qutest.c
+    qep_hsm.c \
+    qep_msm.c \
+    qf_act.c \
+    qf_defer.c \
+    qf_dyn.c \
+    qf_mem.c \
+    qf_ps.c \
+    qf_qact.c \
+    qf_qeq.c \
+    qf_qmact.c \
+    qs.c \
+    qs_64bit.c \
+    qs_rx.c \
+    qs_fp.c \
+    qutest.c
 
 QP_ASMS :=
 
 QS_SRCS := \
-	qs.c \
-	qs_rx.c \
-	qs_fp.c
+    qs.c \
+    qs_rx.c \
+    qs_fp.c
 
 LIB_DIRS  :=
 LIBS      :=
@@ -156,7 +152,7 @@ FLOAT_ABI := -mfloat-abi=softfp
 # see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -175,7 +171,7 @@ BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 # see http://www.ti.com/tool/lmflashprogrammer
 #
 ifeq ($(LMFLASH),)
-LMFLASH = C:/tools/TI/LM_Flash_Programmer/LMFlash.exe
+LMFLASH := $(QTOOLS)/../LM_Flash_Programmer/LMFlash.exe
 endif
 
 # make sure that the LMFLASH tool exists...
@@ -220,17 +216,17 @@ C_SRCS += $(QS_SRCS)
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-	-ffunction-sections -fdata-sections \
-	-O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
+    -ffunction-sections -fdata-sections \
+    -O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
 
 CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
+    -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
+    -O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
 
 
 LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib \
-	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
+    -mthumb -nostdlib \
+    -Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
 ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
 C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
@@ -253,7 +249,7 @@ endif
 # rules
 #
 
-.PHONY : run norun
+.PHONY : run norun flash
 
 ifeq ($(MAKECMDGOALS),norun)
 all : $(TARGET_BIN)
@@ -267,32 +263,36 @@ TESTS := *.tcl
 endif
 
 $(TARGET_BIN) : $(TARGET_ELF)
-	$(BIN) -O binary $< $@
-	$(LMFLASH) -q ek-tm4c123gxl $(TARGET_BIN)
-	echo Press RESET button on the EK-TM4C123GXL board
-	@pause
+    $(BIN) -O binary $< $@
+    $(LMFLASH) -q ek-tm4c123gxl $(TARGET_BIN)
+    echo Press RESET button on the EK-TM4C123GXL board
+    @pause
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
-	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
+    $(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+    $(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
+
+flash :
+    $(LMFLASH) -q ek-tm4c123gxl $(TARGET_BIN)
+    echo Press RESET button on the EK-TM4C123GXL board
 
 run : $(TARGET_BIN)
-	$(TCLSH) $(QUTEST)
+    $(TCLSH) $(QUTEST) $(TESTS)
 
 $(BIN_DIR)/%.d : %.c
-	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
+    $(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
 $(BIN_DIR)/%.d : %.cpp
-	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
+    $(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
 
 $(BIN_DIR)/%.o : %.s
-	$(AS) $(ASFLAGS) $< -o $@
+    $(AS) $(ASFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+    $(CC) $(CFLAGS) -c $< -o $@
 
 $(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+    $(CPP) $(CPPFLAGS) -c $< -o $@
 
 .PHONY : clean show
 
@@ -304,29 +304,29 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 clean :
-	-$(RM) $(BIN_DIR)/*.o \
-	$(BIN_DIR)/*.d \
-	$(BIN_DIR)/*.bin \
-	$(BIN_DIR)/*.elf \
-	$(BIN_DIR)/*.map
-	
+    -$(RM) $(BIN_DIR)/*.o \
+    $(BIN_DIR)/*.d \
+    $(BIN_DIR)/*.bin \
+    $(BIN_DIR)/*.elf \
+    $(BIN_DIR)/*.map
+
 show :
-	@echo PROJECT      = $(PROJECT)
-	@echo TESTS        = $(TESTS)
-	@echo TARGET_ELF   = $(TARGET_ELF)
-	@echo CONF         = $(CONF)
-	@echo VPATH        = $(VPATH)
-	@echo C_SRCS       = $(C_SRCS)
-	@echo CPP_SRCS     = $(CPP_SRCS)
-	@echo ASM_SRCS     = $(ASM_SRCS)
-	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
-	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
+    @echo PROJECT      = $(PROJECT)
+    @echo TESTS        = $(TESTS)
+    @echo TARGET_ELF   = $(TARGET_ELF)
+    @echo CONF         = $(CONF)
+    @echo VPATH        = $(VPATH)
+    @echo C_SRCS       = $(C_SRCS)
+    @echo CPP_SRCS     = $(CPP_SRCS)
+    @echo ASM_SRCS     = $(ASM_SRCS)
+    @echo C_DEPS_EXT   = $(C_DEPS_EXT)
+    @echo C_OBJS_EXT   = $(C_OBJS_EXT)
 
-	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
-	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
+    @echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
+    @echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
 
-	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
-	@echo LIB_DIRS     = $(LIB_DIRS)
-	@echo LIBS         = $(LIBS)
-	@echo DEFINES      = $(DEFINES)
-	@echo QUTEST       = $(QUTEST)
+    @echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
+    @echo LIB_DIRS     = $(LIB_DIRS)
+    @echo LIBS         = $(LIBS)
+    @echo DEFINES      = $(DEFINES)
+    @echo QUTEST       = $(QUTEST)

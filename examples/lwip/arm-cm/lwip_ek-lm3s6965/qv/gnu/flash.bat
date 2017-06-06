@@ -16,7 +16,7 @@ setlocal
 :: NOTE: Adjust the following symbol to the location of the
 :: LMFlash utility on your machine 
 ::
-set LMFLASH=C:\tools\TI\LM_Flash_Programmer\LMFlash.exe
+set LMFLASH=%QTOOLS%\..\LM_Flash_Programmer\LMFlash.exe
 
 if NOT exist "%LMFLASH%" (
     @echo The LMFLASH utility not found. Please adjust flash.bat 

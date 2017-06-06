@@ -171,7 +171,8 @@ void USART0_RX_IRQHandler(void) {
 void USART0_RX_IRQHandler(void) {}
 #endif
 
-/*..........................................................................*/
+
+/* BSP functions ===========================================================*/
 void BSP_init(void) {
     /* NOTE: SystemInit() already called from the startup code
     *  but SystemCoreClock needs to be updated
@@ -248,7 +249,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
-    QS_END()
+    QS_END()          /* application-specific record end */
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
@@ -287,7 +288,7 @@ void BSP_terminate(int16_t result) {
     (void)result;
 }
 
-/*..........................................................................*/
+/* QF callbacks ============================================================*/
 void QF_onStartup(void) {
     /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
@@ -430,18 +431,9 @@ uint8_t QS_onStartup(void const *arg) {
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
-    QS_FILTER_ON(COMMAND_STAT);
+    QS_FILTER_ON(QS_SM_RECORDS); /* state machine records */
+    //QS_FILTER_ON(QS_AO_RECORDS); /* active object records */
+    QS_FILTER_ON(QS_UA_RECORDS); /* all user records */
 
     return (uint8_t)1; /* return success */
 }
@@ -467,7 +459,7 @@ void QS_onFlush(void) {
         /* while TXE not empty */
         while ((l_USART0->STATUS & USART_STATUS_TXBL) == 0U) {
         }
-        l_USART0->TXDATA  = (b & 0xFFU);  /* put into the DR register */
+        l_USART0->TXDATA  = (b & 0xFFU); /* put into the DR register */
         QF_INT_DISABLE();
     }
     QF_INT_ENABLE();

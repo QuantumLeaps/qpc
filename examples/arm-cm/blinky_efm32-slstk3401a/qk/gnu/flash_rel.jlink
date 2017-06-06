@@ -1,6 +1,0 @@
-si 1
-speed 4000
-r
-h
-loadbin rel\blinky-qk.bin, 0
-exit

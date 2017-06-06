@@ -89,7 +89,7 @@ static QXMutex  l_rndMutex; /* mutex to protect the random seed */
 
 #endif
 
-/*..........................................................................*/
+/* ISRs used in this project ===============================================*/
 void SysTick_Handler(void) {
     /* state of the button debouncing, see below */
     static struct ButtonsDebouncing {
@@ -251,7 +251,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
-    QS_END()
+    QS_END()          /* application-specific record end */
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
@@ -383,8 +383,8 @@ void Q_onAssert(char const *module, int loc) {
 #ifdef Q_SPY
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsTxBuf[2*1024]; /* buffer for QS transmit channel */
-    static uint8_t qsRxBuf[100];    /* buffer for QS receive channel */
+    static uint8_t qsTxBuf[2*1024]; /* buffer for QS-TX channel */
+    static uint8_t qsRxBuf[100];    /* buffer for QS-RX channel */
 
     QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));

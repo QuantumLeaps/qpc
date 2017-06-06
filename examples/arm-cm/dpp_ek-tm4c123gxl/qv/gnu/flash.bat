@@ -17,7 +17,7 @@ setlocal
 :: NOTE: Adjust the following symbol to the location of the
 :: LMFlash utility on your machine 
 ::
-set LMFLASH=C:\tools\TI\LM_Flash_Programmer\LMFlash.exe
+set LMFLASH=%QTOOLS%\..\LM_Flash_Programmer\LMFlash.exe
 
 :: set the build directory depending on the first parameter %1
 set BUILD_DIR=dbg

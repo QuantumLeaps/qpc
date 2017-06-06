@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EMF32-SLSTK3401A, QUTEST, GNU-ARM
-# Last updated for version 5.9.1
-# Last updated on  2017-05-26
+# Last updated for version 5.9.2
+# Last updated on  2017-06-03
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -70,8 +70,6 @@ QP_PORT_DIR := $(QPC)/ports/arm-cm/qutest
 
 # list of all source directories used by this project
 VPATH = \
-	.. \
-	../.. \
 	../$(TARGET) \
 	$(QPC)/src/qf \
 	$(QPC)/src/qs \
@@ -81,8 +79,6 @@ VPATH = \
 
 # list of all include directories needed by this project
 INCLUDES  = \
-	-I. \
-	-I.. \
 	-I../$(TARGET) \
 	-I$(QPC)/include \
 	-I$(QPC)/src \
@@ -160,7 +156,7 @@ FLOAT_ABI := -mfloat-abi=softfp
 # see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -175,11 +171,11 @@ LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 
 #-----------------------------------------------------------------------------
-# JLINK toolset (NOTE: You need to adjust to your machine)
+# JLINK tool (NOTE: You need to adjust to your machine)
 # see https://www.segger.com/downloads/jlink
 #
 ifeq ($(JLINK),)
-JLINK = C:/tools/SEGGER/JLink/Jlink.exe
+JLINK := $(QTOOLS)/../JLink/JLink.exe
 endif
 
 # make sure that the JLINK tool exists...
@@ -257,7 +253,7 @@ endif
 # rules
 #
 
-.PHONY : run norun
+.PHONY : run norun flash
 
 ifeq ($(MAKECMDGOALS),norun)
 all : $(TARGET_BIN)
@@ -277,6 +273,9 @@ $(TARGET_BIN): $(TARGET_ELF)
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
+
+flash :
+	$(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
 
 run : $(TARGET_BIN)
 	$(TCLSH) $(QUTEST) $(TESTS)

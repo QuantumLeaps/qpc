@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.0.2" links="0">
+<model version="4.0.3" links="0">
  <documentation>Calc is the model of the Calculator described in Chapter 4 of PSiCC2
 This version demonstrates the use of sub-machines and sub-machine states.</documentation>
  <framework name="qpc" license="../../../QPC-EVAL-590.qlc"/>
@@ -117,8 +117,8 @@ me-&gt;oper = Q_EVT_CAST(CalcEvt)-&gt;key_code;</action>
       </state_glyph>
      </state>
      <smstate name="operand1" submachine="../../3">
-      <xpseg xpref="../../../3/4" target="../../3/6">
-       <xpseg_glyph conn="84,45,1,1,2,-19,-40">
+      <xpseg xpref="../../../3/4" target="../../3">
+       <xpseg_glyph conn="84,45,1,1,4,-17,-30">
         <action box="1,0,10,2"/>
        </xpseg_glyph>
       </xpseg>
@@ -277,7 +277,7 @@ BSP_exit();</entry>
      </epseg>
      <xp name="ce">
       <xp_glyph point="86,20,1">
-       <name box="-3,-3,5,2"/>
+       <name box="1,-3,5,2"/>
       </xp_glyph>
      </xp>
      <tran trig="CE" target=".." cpref="../4">

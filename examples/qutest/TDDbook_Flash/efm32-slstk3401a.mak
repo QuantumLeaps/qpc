@@ -69,24 +69,24 @@ QP_PORT_DIR := $(QPC)/ports/arm-cm/qutest
 
 # list of all source directories used by this project
 VPATH = \
-	.. \
-	../.. \
-	../$(TARGET) \
-	$(QPC)/source \
-	$(QP_PORT_DIR) \
-	$(QPC)/3rd_party/efm32pg1b \
-	$(QPC)/3rd_party/efm32pg1b/gnu
+    .. \
+    ../.. \
+    ../$(TARGET) \
+    $(QPC)/source \
+    $(QP_PORT_DIR) \
+    $(QPC)/3rd_party/efm32pg1b \
+    $(QPC)/3rd_party/efm32pg1b/gnu
 
 # list of all include directories needed by this project
 INCLUDES  = \
-	-I. \
-	-I.. \
-	-I../$(TARGET) \
-	-I$(QPC)/include \
-	-I$(QPC)/source \
-	-I$(QP_PORT_DIR) \
-	-I$(QPC)/3rd_party/CMSIS/Include \
-	-I$(QPC)/3rd_party/efm32pg1b
+    -I. \
+    -I.. \
+    -I../$(TARGET) \
+    -I$(QPC)/include \
+    -I$(QPC)/source \
+    -I$(QP_PORT_DIR) \
+    -I$(QPC)/3rd_party/CMSIS/Include \
+    -I$(QPC)/3rd_party/efm32pg1b
 
 #-----------------------------------------------------------------------------
 # files
@@ -97,47 +97,47 @@ ASM_SRCS :=
 
 # C source files
 C_SRCS := \
-	test_Flash.c \
-	Flash.c \
-	FakeMicroTime.c \
-	MockIO.c \
-	qutest_port.c \
-	startup_efm32pg1b.c \
-	system_efm32pg1b.c \
-	em_cmu.c \
-	em_emu.c \
-	em_gpio.c \
-	em_usart.c
+    test_Flash.c \
+    Flash.c \
+    FakeMicroTime.c \
+    MockIO.c \
+    qutest_port.c \
+    startup_efm32pg1b.c \
+    system_efm32pg1b.c \
+    em_cmu.c \
+    em_emu.c \
+    em_gpio.c \
+    em_usart.c
 
 # C++ source files
-CPP_SRCS :=	
+CPP_SRCS :=
 
 OUTPUT    := $(PROJECT)
 LD_SCRIPT := ../$(TARGET)/test.ld
 
 QP_SRCS := \
-	qep_hsm.c \
-	qep_msm.c \
-	qf_act.c \
-	qf_defer.c \
-	qf_dyn.c \
-	qf_mem.c \
-	qf_ps.c \
-	qf_qact.c \
-	qf_qeq.c \
-	qf_qmact.c \
-	qs.c \
-	qs_64bit.c \
-	qs_rx.c \
-	qs_fp.c \
-	qutest.c
+    qep_hsm.c \
+    qep_msm.c \
+    qf_act.c \
+    qf_defer.c \
+    qf_dyn.c \
+    qf_mem.c \
+    qf_ps.c \
+    qf_qact.c \
+    qf_qeq.c \
+    qf_qmact.c \
+    qs.c \
+    qs_64bit.c \
+    qs_rx.c \
+    qs_fp.c \
+    qutest.c
 
 QP_ASMS :=
 
 QS_SRCS := \
-	qs.c \
-	qs_rx.c \
-	qs_fp.c
+    qs.c \
+    qs_rx.c \
+    qs_fp.c
 
 LIB_DIRS  :=
 LIBS      :=
@@ -161,7 +161,7 @@ FLOAT_ABI := -mfloat-abi=softfp
 # see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -180,7 +180,7 @@ BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 # see https://www.segger.com/downloads/jlink
 #
 ifeq ($(JLINK),)
-JLINK = C:/tools/SEGGER/JLink/Jlink.exe
+JLINK := $(QTOOLS)/../JLink/JLink.exe
 endif
 
 # make sure that the JLINK tool exists...
@@ -225,17 +225,17 @@ C_SRCS += $(QS_SRCS)
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-	-ffunction-sections -fdata-sections \
-	-O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
+    -ffunction-sections -fdata-sections \
+    -O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
 
 CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
+    -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
+    -O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
 
 
 LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib \
-	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
+    -mthumb -nostdlib \
+    -Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
 ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
 C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
@@ -268,30 +268,30 @@ all : $(TARGET_BIN) run
 endif
 
 $(TARGET_BIN): $(TARGET_ELF)
-	$(BIN) -O binary $< $@
-	$(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
+    $(BIN) -O binary $< $@
+    $(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
-	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
+    $(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+    $(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_BIN)
-	$(TCLSH) $(QUTEST)
+    $(TCLSH) $(QUTEST)
 
 $(BIN_DIR)/%.d : %.c
-	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
+    $(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
 $(BIN_DIR)/%.d : %.cpp
-	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
+    $(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
 
 $(BIN_DIR)/%.o : %.s
-	$(AS) $(ASFLAGS) $< -o $@
+    $(AS) $(ASFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+    $(CC) $(CFLAGS) -c $< -o $@
 
 $(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+    $(CPP) $(CPPFLAGS) -c $< -o $@
 
 .PHONY : clean show
 
@@ -303,28 +303,28 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 clean :
-	-$(RM) $(BIN_DIR)/*.o \
-	$(BIN_DIR)/*.d \
-	$(BIN_DIR)/*.bin \
-	$(BIN_DIR)/*.elf \
-	$(BIN_DIR)/*.map
-	
+    -$(RM) $(BIN_DIR)/*.o \
+    $(BIN_DIR)/*.d \
+    $(BIN_DIR)/*.bin \
+    $(BIN_DIR)/*.elf \
+    $(BIN_DIR)/*.map
+
 show :
-	@echo PROJECT      = $(PROJECT)
-	@echo TARGET_ELF   = $(TARGET_ELF)
-	@echo CONF         = $(CONF)
-	@echo VPATH        = $(VPATH)
-	@echo C_SRCS       = $(C_SRCS)
-	@echo CPP_SRCS     = $(CPP_SRCS)
-	@echo ASM_SRCS     = $(ASM_SRCS)
-	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
-	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
+    @echo PROJECT      = $(PROJECT)
+    @echo TARGET_ELF   = $(TARGET_ELF)
+    @echo CONF         = $(CONF)
+    @echo VPATH        = $(VPATH)
+    @echo C_SRCS       = $(C_SRCS)
+    @echo CPP_SRCS     = $(CPP_SRCS)
+    @echo ASM_SRCS     = $(ASM_SRCS)
+    @echo C_DEPS_EXT   = $(C_DEPS_EXT)
+    @echo C_OBJS_EXT   = $(C_OBJS_EXT)
 
-	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
-	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
+    @echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
+    @echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
 
-	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
-	@echo LIB_DIRS     = $(LIB_DIRS)
-	@echo LIBS         = $(LIBS)
-	@echo DEFINES      = $(DEFINES)
-	@echo QUTEST       = $(QUTEST)
+    @echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
+    @echo LIB_DIRS     = $(LIB_DIRS)
+    @echo LIBS         = $(LIBS)
+    @echo DEFINES      = $(DEFINES)
+    @echo QUTEST       = $(QUTEST)

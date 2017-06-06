@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last updated for version 5.4.0
-* Last updated on  2015-04-23
+* Last updated for version 5.9.2
+* Last updated on  2017-06-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* https://state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #ifndef bsp_h
 #define bsp_h
@@ -43,6 +43,5 @@ void BSP_terminate(int16_t result);
 
 void BSP_randomSeed(uint32_t seed); /* random seed */
 uint32_t BSP_random(void);          /* pseudo-random generator */
-void BSP_onIdle(void);  /* idle callback from embOS RTOSInit.c */
 
 #endif /* bsp_h */

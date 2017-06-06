@@ -1,6 +1,0 @@
-si 1
-speed 4000
-r
-h
-loadbin spy\blinky-qv, 0
-exit

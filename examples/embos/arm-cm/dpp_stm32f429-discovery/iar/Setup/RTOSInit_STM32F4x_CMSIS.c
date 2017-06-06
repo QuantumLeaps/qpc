@@ -1,4 +1,7 @@
 /*********************************************************************
+* Quantum Leaps: commented out OS_Idle()
+*/
+/*********************************************************************
 *                SEGGER Microcontroller GmbH & Co. KG                *
 *                        The Embedded Experts                        *
 **********************************************************************
@@ -274,6 +277,7 @@ void OS_InitHW(void) {
 *    to be preserved. However, a simple program loop can be programmed
 *    (like toggling an output or incrementing a counter)
 */
+/* NOTE: OS_Idle() implemented now in the BSP
 void OS_Idle(void) {     // Idle loop: No task is ready to execute
   while (1) {            // Nothing to do ... wait for interrupt
     #if ((OS_VIEW_IFSELECT != OS_VIEW_IF_JLINK) && (OS_DEBUG == 0))
@@ -281,6 +285,7 @@ void OS_Idle(void) {     // Idle loop: No task is ready to execute
     #endif
   }
 }
+*/
 
 /*********************************************************************
 *

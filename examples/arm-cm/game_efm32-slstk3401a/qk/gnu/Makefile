@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for Game on EMF32-SLSTK3401A, QK kernel, GNU-ARM
-# Last Updated for Version: 5.6.5
-# Date of the Last Update:  2016-06-02
+# Last Updated for Version: 5.9.2
+# Date of the Last Update:  2017-06-03
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -165,7 +165,7 @@ FLOAT_ABI := -mfloat-abi=softfp
 # see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...

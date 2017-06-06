@@ -338,7 +338,7 @@
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\ucos-ii</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Ports\ARM-Cortex-M4\Generic\ARM</state>
@@ -1088,7 +1088,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>7.40.3.8937</state>
+                    <state>8.11.1.13270</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -1361,7 +1361,7 @@
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\ucos-ii</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Ports\ARM-Cortex-M4\Generic\ARM</state>
@@ -2111,7 +2111,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>7.40.3.8937</state>
+                    <state>8.11.1.13270</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -2384,7 +2384,7 @@
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\ucos-ii</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Ports\ARM-Cortex-M4\Generic\ARM</state>
@@ -3126,37 +3126,34 @@
     <group>
         <name>QP</name>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qep_hsm.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qep_hsm.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qep_msm.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qep_msm.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_act.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_act.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_defer.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_defer.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_dyn.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_dyn.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_pkg.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_ps.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_ps.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_qact.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_qact.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_qeq.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_qeq.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_qmact.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_qmact.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_time.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_time.c</name>
         </file>
     </group>
     <group>
@@ -3187,16 +3184,19 @@
             <configuration>Release</configuration>
         </excluded>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs_fp.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_64bit.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs_pkg.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_fp.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs_rx.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_rx.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qutest.c</name>
         </file>
     </group>
     <group>

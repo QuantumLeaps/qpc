@@ -161,7 +161,7 @@ FLOAT_ABI := -mfloat-abi=softfp
 # see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -180,7 +180,7 @@ BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 # see https://www.segger.com/downloads/jlink
 #
 ifeq ($(JLINK),)
-JLINK = C:/tools/SEGGER/JLink/Jlink.exe
+JLINK := $(QTOOLS)/../JLink/JLink.exe
 endif
 
 # make sure that the JLINK tool exists...

@@ -2106,7 +2106,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>7.40.3.8937</state>
+                    <state>8.11.1.13270</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -3152,13 +3152,19 @@
             <configuration>Release</configuration>
         </excluded>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs_fp.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_64bit.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs_pkg.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_fp.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_rx.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qutest.c</name>
         </file>
     </group>
     <group>
@@ -3200,7 +3206,4 @@
             <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\system_stm32f4xx.h</name>
         </file>
     </group>
-    <file>
-        <name>$PROJ_DIR$\ReadMe.txt</name>
-    </file>
 </project>
