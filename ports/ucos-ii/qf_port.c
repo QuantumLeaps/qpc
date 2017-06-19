@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-05-05
+* Last Updated for Version: 5.9.3
+* Date of the Last Update:  2017-06-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -152,7 +152,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
     nFree = (uint_fast16_t)(((OS_Q_DATA *)me->eQueue)->OSQSize
                             - ((OS_Q_DATA *)me->eQueue)->OSNMsgs);
-    if (nFree > margin) {
+    if (((margin == QF_NO_MARGIN) && (nFree > (QEQueueCtr)0))
+        || (nFree > (QEQueueCtr)margin))
+    {
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
                          QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();             /* timestamp */
@@ -169,20 +171,17 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
         }
 
-        /* NOTE:
-        * The following uC/OS-II OSQPost() API is called inside a critical
-        * section, but this is OK, because uC/OS-II critical sections are
-        * designed to nest
-        */
-        Q_ALLEGE_ID(410,
+        QF_CRIT_EXIT_();
+
+        /* posting the event to uC/OS-II message queue must succeed */
+        Q_ALLEGE_ID(710,
             OSQPost((OS_EVENT *)me->eQueue, (void *)e) == OS_ERR_NONE);
-        /* posting the event to uC/OS message queue must succeed */
 
         status = true; /* report success */
     }
     else {
         /* can tolerate dropping evts? */
-        Q_ASSERT_ID(420, margin != (uint_fast16_t)0);
+        Q_ASSERT_ID(520, margin != QF_NO_MARGIN);
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)
@@ -195,9 +194,10 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_EQC_((QEQueueCtr)margin); /* margin requested */
         QS_END_NOCRIT_()
 
+        QF_CRIT_EXIT_();
+
         status = false;   /* report failure */
     }
-    QF_CRIT_EXIT_();
 
     return status;
 }
@@ -220,16 +220,11 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
-    /* NOTE:
-    * The following uC/OS-II OSQPostFront() API is called inside a critical
-    * section, but this is OK, because uC/OS-II critical sections are
-    * designed to nest
-    */
-    Q_ALLEGE_ID(510,
-        OSQPostFront((OS_EVENT *)me->eQueue, (void *)e) == OS_ERR_NONE);
-    /* posting the event to uC/OS message queue must succeed */
-
     QF_CRIT_EXIT_();
+
+    /* posting the event to uC/OS message queue must succeed */
+    Q_ALLEGE_ID(810,
+        OSQPostFront((OS_EVENT *)me->eQueue, (void *)e) == OS_ERR_NONE);
 }
 /*..........................................................................*/
 QEvt const *QActive_get_(QActive * const me) {
@@ -237,7 +232,7 @@ QEvt const *QActive_get_(QActive * const me) {
     QS_CRIT_STAT_
     QEvt const *e = (QEvt *)OSQPend((OS_EVENT *)me->eQueue, 0U, &err);
 
-    Q_ASSERT_ID(610, err == OS_ERR_NONE);
+    Q_ASSERT_ID(910, err == OS_ERR_NONE);
 
     QS_BEGIN_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();             /* timestamp */

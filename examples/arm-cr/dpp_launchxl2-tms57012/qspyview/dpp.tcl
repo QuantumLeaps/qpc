@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # Product: QSpyView -- Customization example for DPP application
-# Last updated for version 5.6.4
-# Last updated on  2016-04-25
+# Last updated for version 5.9.2
+# Last updated on  2017-06-11
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -45,17 +45,21 @@ proc onMyCommand {} {
 
     # as an example, the following code sends a command to the Target
     variable ::qspy::QS_RX
-    ::qspy::sendPkt [binary format cci $::qspy::QS_RX(COMMAND) 1 12345]
+    ::qspy::sendPkt [binary format cciii $qspy::QS_RX(COMMAND) 1 12345 0 0]
 }
 
 proc onPause {} {
     global theButtonId theBtnState
     if {[string equal $theBtnState BTN_UP]} {    ;# is DWN?
          set theBtnState BTN_DWN
-         ::qspy::sendEvent 6 6 0
+         ::qspy::sendCurrObj SM_AO l_table
+         ::qspy::sendEvent 255 PAUSE_SIG
+         #::qspy::sendEvent 6 6 0
     } else {
          set theBtnState BTN_UP
-         ::qspy::sendEvent 6 7 0
+         ::qspy::sendCurrObj SM_AO l_table
+         ::qspy::sendEvent 255 SERVE_SIG
+         #::qspy::sendEvent 6 7 0
     }
     .canv.c itemconfigure $theButtonId -image ::img::$theBtnState
 }
@@ -378,4 +382,3 @@ proc ::qspy::rec68 {} { ;# QS_PEEK_DATA
 }
 proc ::qspy::rec69 {} { ;# QS_ASSERT_FAIL
 }
-

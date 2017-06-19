@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-05-26
+* Last updated for version 5.9.3
+* Last updated on  2017-06-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -68,7 +68,7 @@ int_t QF_run(void) {
 
     QS_onTestLoop();   /* run the test loop */
     QS_onCleanup();    /* application cleanup */
-    return 0;          /* return no error */
+    return (int_t)0;   /* return no error */
 }
 
 /*..........................................................................*/
@@ -88,16 +88,17 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     nFree = me->eQueue.nFree; /* get volatile into the temporary */
 
     /* test probe for reaching the margin */
-    QS_TEST_PROBE_ID(1,
-        nFree = margin;
+    QS_TEST_PROBE(
+        nFree = (QEQueueCtr)(qs_tp_ - (uint32_t)1);
     )
 
     /* margin available? */
-    if (nFree > (QEQueueCtr)margin) {
-
+    if (((margin == QF_NO_MARGIN) && (nFree > (QEQueueCtr)0))
+        || (nFree > (QEQueueCtr)margin))
+    {
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
                          QS_priv_.locFilter[AO_OBJ], me)
-            //printf("QS_QF_ACTIVE_POST_FIFO\n");
+            /*printf("QS_QF_ACTIVE_POST_FIFO\n");*/
             QS_TIME_();               /* timestamp */
             QS_OBJ_(sender);          /* the sender object */
             QS_SIG_(e->sig);          /* the signal of the event */
@@ -121,7 +122,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         /** @note assert if event cannot be posted while dropping events is
         * not acceptable
         */
-        Q_ASSERT_ID(110, margin != (uint_fast16_t)0);
+        Q_ASSERT_ID(110, margin != QF_NO_MARGIN);
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)
@@ -138,7 +139,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
         QF_gc(e); /* recycle the event to avoid a leak */
         status = false; /* event not posted */
-   }
+    }
     return status;
 }
 /*..........................................................................*/
@@ -390,7 +391,7 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender) {
         QACTIVE_POST(act, &t->super, sender);
 
         /* explicitly dispatch the time event */
-        QHSM_DISPATCH((QHsm *)act, &t->super);
+        QHSM_DISPATCH(&act->super, &t->super);
     }
     else {
         QF_CRIT_EXIT_();
@@ -398,8 +399,8 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender) {
 }
 
 /****************************************************************************/
-void Q_onAssert(char const * const module, int_t loc) {
-    QS_ASSERTION(module, loc, (uint32_t)0); /* report assertion to QSPY */
+void Q_onAssert(char_t const * const module, int_t location) {
+    QS_ASSERTION(module, location, (uint32_t)0); /* report to QSPY */
     QS_onTestLoop(); /* loop to wait for commands (typically reset) */
     QS_onReset(); /* in case the QUTEST loop ever returns, reset manually */
 }

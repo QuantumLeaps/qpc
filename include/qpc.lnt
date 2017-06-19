@@ -1,7 +1,7 @@
 //============================================================================
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last updated for version 5.9.0
-// Last updated on  2017-05-16
+// Last updated for version 5.9.3
+// Last updated on  2017-06-19
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -435,9 +435,11 @@
  QS_TEST_PROBE,
  QS_TEST_PROBE_ID)
 -emacro(960,          // MISRA04-11.1(req) conversion of function pointers
- QS_FUN_DICTIONARY)
+ QS_FUN_DICTIONARY,
+ QS_TEST_PROBE_DEF)
 -emacro(929,          // MISRA04-11.4(adv) cast pointer to pointer
- QS_FUN_DICTIONARY)
+ QS_FUN_DICTIONARY,
+ QS_TEST_PROBE_DEF)
 -estring(9022,        // MISRA04-19.10(req) unparenthesized macro parameter
  QF_QS_ISR_ENTRY,
  QF_QS_ISR_EXIT,

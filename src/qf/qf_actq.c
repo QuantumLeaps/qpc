@@ -8,8 +8,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.1
-* Last updated on  2017-05-25
+* Last updated for version 5.9.3
+* Last updated on  2017-06-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -58,26 +58,24 @@ Q_DEFINE_THIS_MODULE("qf_actq")
 /**
 * @description
 * Direct event posting is the simplest asynchronous communication method
-* available in QF. The following example illustrates how the Philo active
-* object posts directly the HUNGRY event to the Table active object.@n
-* @n
-* The parameter @p margin specifies the minimum number of free slots in
-* the queue that must be available for posting to succeed. The function
-* returns 1 (success) if the posting succeeded (with the provided margin)
-* and 0 (failure) when the posting fails.
+* available in QF.
 *
 * @param[in,out] me     pointer (see @ref oop)
 * @param[in]     e      pointer to the event to be posted
-* @param[in]     margin number of required free slots in the queue
-*                       after posting the event.
+* @param[in]     margin number of required free slots in the queue after
+*                       posting the event. The special value #QF_NO_MARGIN
+*                       means that this function will assert if posting fails.
 *
-* @note this function should be called only via the macro QACTIVE_POST()
+* @returns  The function returns true (success) if the posting succeeded
+* (with the provided margin) and false (failure) when the posting fails.
+*
+* @attention This function should be called only via the macro QACTIVE_POST()
 * or QACTIVE_POST_X().
 *
-* @note The zero value of the @p margin parameter is special and denotes
-* situation when the post() operation is assumed to succeed (event delivery
-* guarantee). An assertion fires, when the event cannot be delivered in
-* this case.
+* @note The #QF_NO_MARGIN value of the @p margin parameter is special and
+* denotes situation when the post() operation is assumed to succeed (event
+* delivery guarantee). An assertion fires, when the event cannot be
+* delivered in this case.
 *
 * @note Direct event posting should not be confused with direct event
 * dispatching. In contrast to asynchronous event posting through event
@@ -115,7 +113,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     nFree = me->eQueue.nFree; /* get volatile into the temporary */
 
     /* margin available? */
-    if (nFree > (QEQueueCtr)margin) {
+    if (((margin == QF_NO_MARGIN) && (nFree > (QEQueueCtr)0))
+        || (nFree > (QEQueueCtr)margin))
+    {
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
                          QS_priv_.locFilter[AO_OBJ], me)
@@ -161,7 +161,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         /** @note assert if event cannot be posted and dropping events is
         * not acceptable
         */
-        Q_ASSERT_ID(110, margin != (uint_fast16_t)0);
+        Q_ASSERT_ID(110, margin != QF_NO_MARGIN);
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)

@@ -1,8 +1,8 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C build script for PC-Lint(TM), Standard C compiler
-:: Last Updated for Version: 5.9.1
-:: Date of the Last Update:  2017-05-25
+:: Last Updated for Version: 5.9.3
+:: Date of the Last Update:  2017-06-19
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -35,12 +35,8 @@
 setlocal
 
 :: Options for calling lin.bat
-::
-:: -DQ_SPY  // for linting the Spy configuration (default for QS)
-:: up to 4 other options, if needed
 
 :: NOTE: adjust to for your installation directory of PC-Lint
-:: 
 set PC_LINT=C:\tools\lint
 
 if NOT exist "%PC_LINT%" (
@@ -48,7 +44,7 @@ if NOT exist "%PC_LINT%" (
     goto end
 )
 
-set LINTFLAGS=..\..\include\std.lnt options.lnt %1 %2 %3 %4
+set LINTFLAGS=..\..\include\std.lnt options.lnt -DQ_SPY -DQ_UTEST %1 %2
 
 :: do the linting...
 %PC_LINT%\lint-nt -os(lint_qf.log)  %LINTFLAGS% -iqv ..\..\src\qf\*.c 
@@ -59,7 +55,7 @@ set LINTFLAGS=..\..\include\std.lnt options.lnt %1 %2 %3 %4
 
 %PC_LINT%\lint-nt -os(lint_qxk.log) %LINTFLAGS% -iqxk ..\..\src\qxk\*.c
 
-%PC_LINT%\lint-nt -os(lint_qs.log)  %LINTFLAGS% -iqv -DQ_SPY ..\..\src\qs\qs*.c
+%PC_LINT%\lint-nt -os(lint_qs.log)  %LINTFLAGS% -iqv -DQ_SPY ..\..\src\qs\*.c
 
 :end
 endlocal

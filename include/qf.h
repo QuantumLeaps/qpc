@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.1
-* Last updated on  2016-12-14
+* Last updated for version 5.9.3
+* Last updated on  2017-06-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -244,7 +244,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     */
     #define QACTIVE_POST(me_, e_, sender_) \
         ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
-                  (e_), (uint_fast16_t)0, (sender_)))
+                  (e_), QF_NO_MARGIN, (sender_)))
 
     /*! Polymorphically posts an event to an active object (FIFO)
     * without delivery guarantee. */
@@ -256,7 +256,9 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     * @param[in,out] me_   pointer (see @ref oop)
     * @param[in]     e_    pointer to the event to post
     * @param[in]     margin_ the minimum free slots in the queue, which
-    *                      must still be available after posting the event
+    *                must still be available after posting the event.
+    *                The special value #QF_NO_MARGIN causes asserting failure
+    *                in case event allocation fails.
     * @param[in]     sender_ pointer to the sender object.
     *
     * @returns 'true' if the posting succeeded, and 'false' if the posting
@@ -269,7 +271,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     * avoided.
     *
     * @note the pointer to the sender object is not necessarily a pointer
-    * to an active object. In fact, if QACTIVE_POST() is called from an
+    * to an active object. In fact, if QACTIVE_POST_X() is called from an
     * interrupt or other context, you can create a unique object just to
     * unambiguously identify the sender of the event.
     *
@@ -286,7 +288,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     #define QACTIVE_POST(me_, e_, sender_) \
         ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
-                  (e_), (uint_fast16_t)0))
+                  (e_), QF_NO_MARGIN))
 
     #define QACTIVE_POST_X(me_, e_, margin_, sender_) \
         ((*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
@@ -624,6 +626,11 @@ void QF_onCleanup(void);
 
 #endif
 
+/*! special value of margin that causes asserting failure in case
+* event allocation or event posting fails
+*/
+#define QF_NO_MARGIN ((uint_fast16_t)0xFFFF)
+
 /*! Invoke the system clock tick processing for rate 0 */
 #define QF_TICK(sender_)   QF_TICK_X((uint_fast8_t)0, (sender_))
 
@@ -654,7 +661,7 @@ QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef);
 
     #define Q_NEW(evtT_, sig_, ...) \
         (evtT_##_ctor((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
-                      (uint_fast16_t)0, (enum_t)0), (sig_), ##__VA_ARGS__))
+                      QF_NO_MARGIN, (enum_t)0), (sig_), ##__VA_ARGS__))
 
     #define Q_NEW_X(e_, evtT_, margin_, sig_, ...) do { \
         (e_) = (evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
@@ -670,8 +677,8 @@ QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef);
     /**
     * @description
     * The macro calls the internal QF function QF_newX_() with
-    * margin == 0, which causes an assertion when the event cannot be
-    * successfully allocated.
+    * margin == #QF_NO_MARGIN, which causes an assertion when the event
+    * cannot be successfully allocated.
     *
     * @param[in] evtT_ event type (class name) of the event to allocate
     * @param[in] sig_  signal to assign to the newly allocated event
@@ -690,7 +697,7 @@ QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef);
     */
     #define Q_NEW(evtT_, sig_) \
         ((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
-                           (uint_fast16_t)0, (sig_)))
+                           QF_NO_MARGIN, (sig_)))
 
     /*! Allocate a dynamic event (non-asserting version). */
     /**
@@ -700,7 +707,9 @@ QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef);
     *
     * @param[in] evtT_   event type (class name) of the event to allocate
     * @param[in] margin_ number of events that must remain available
-    *                    in the given pool after this allocation
+    *                    in the given pool after this allocation. The special
+    *                    value #QF_NO_MARGIN causes asserting failure in case
+    *                    event allocation or event posting fails.
     * @param[in] sig_    signal to assign to the newly allocated event
     *
     * @returns an event pointer cast to the type @p evtT_ or NULL if the

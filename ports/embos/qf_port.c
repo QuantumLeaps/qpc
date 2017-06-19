@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-05-05
+* Last Updated for Version: 5.9.3
+* Date of the Last Update:  2017-06-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -153,7 +153,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     QF_CRIT_ENTRY_();
     nFree = (uint_fast16_t)(me->eQueue.maxMsg - me->eQueue.nofMsg);
 
-    if (nFree > margin) {
+     if (((margin == QF_NO_MARGIN) && (nFree > (QEQueueCtr)0))
+        || (nFree > (QEQueueCtr)margin))
+    {
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
                          QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();             /* timestamp */
@@ -172,7 +174,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QF_CRIT_EXIT_();
 
         /* posting to the embOS mailbox must succeed, see NOTE3 */
-        Q_ALLEGE_ID(410,
+        Q_ALLEGE_ID(510,
             OS_PutMailCond(&me->eQueue, (OS_CONST_PTR void *)&e)
             == (char)0);
 
@@ -180,7 +182,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     }
     else {
         /* can tolerate dropping evts? */
-        Q_ASSERT_ID(420, margin != (uint_fast16_t)0);
+        Q_ASSERT_ID(520, margin != QF_NO_MARGIN);
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)
@@ -222,7 +224,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_EXIT_();
 
     /* posting to the embOS mailbox must succeed, see NOTE3 */
-    Q_ALLEGE_ID(510,
+    Q_ALLEGE_ID(810,
         OS_PutMailFrontCond(&me->eQueue, (OS_CONST_PTR void *)&e)
         == (char)0);
 }

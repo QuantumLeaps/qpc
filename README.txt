@@ -42,6 +42,14 @@ mailto:info@state-machine.com
 #######################################################################
 ##################### QP/C Revision History ###########################
 
+QP/C Version 5.9.3 (19-Jun-2017)
+--------------------------------
+This release implements the feature request #126 "Allow non-asserting
+event allocation for zero-margin allocations". Specifically, calling
+Q_NEW_X() or QACTIVE_POST_X() with the margin argument of zero will no
+longer assert if the allocation/posting fails. 
+
+
 QP/C Version 5.9.2 (05-Jun-2017)
 --------------------------------
 This release adapts the Makefiles for GNU-ARM to the new location of the

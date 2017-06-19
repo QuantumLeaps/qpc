@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.5
-* Last updated on  2016-06-09
+* Last updated for version 5.9.3
+* Last updated on  2017-06-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -132,17 +132,19 @@ void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
 *
 * @param[in] evtSize the size (in bytes) of the event to allocate
 * @param[in] margin  the number of un-allocated events still available
-*                    in a given event pool after the allocation completes
-* @param[in] sig the signal to be assigned to the allocated event
+*                    in a given event pool after the allocation completes.
+*                    The special value #QF_NO_MARGIN means that this function
+*                    will assert if allocation fails.
+* @param[in] sig     the signal to be assigned to the allocated event
 *
 * @returns pointer to the newly allocated event. This pointer can be NULL
 * only if margin!=0 and the event cannot be allocated with the specified
 * margin still available in the given pool.
 *
-* @note The internal QF function QF_newX_() raises an assertion when
-* the @p margin parameter is 0 and allocation of the event turns out to be
-* impossible due to event pool depletion, or incorrect (too big) size
-* of the requested event.
+* @note The internal QF function QF_newX_() raises an assertion when the
+* @p margin parameter is #QF_NO_MARGIN and allocation of the event turns
+* out to be impossible due to event pool depletion, or incorrect (too big)
+* size of the requested event.
 *
 * @note The application code should not call this function directly.
 * The only allowed use is thorough the macros Q_NEW() or Q_NEW_X().
@@ -169,7 +171,11 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
         QS_SIG_((QSignal)sig);  /* the signal of the event */
     QS_END_()
 
-    QF_EPOOL_GET_(QF_pool_[idx], e, margin); /* get e -- platform-dependent */
+    /* get e -- platform-dependent */
+    QF_EPOOL_GET_(QF_pool_[idx], e,
+                  ((margin != QF_NO_MARGIN)
+                      ? margin
+                      : (uint_fast16_t)0));
 
     /* was e allocated correctly? */
     if (e != (QEvt *)0) {
@@ -180,7 +186,7 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
     /* event cannot be allocated */
     else {
         /* must tolerate bad alloc. */
-        Q_ASSERT_ID(320, margin != (uint_fast16_t)0);
+        Q_ASSERT_ID(320, margin != QF_NO_MARGIN);
     }
     return e; /* can't be NULL if we can't tolerate bad allocation */
 }
