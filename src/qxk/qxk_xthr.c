@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.0
-* Last updated on  2017-05-06
+* Last updated for version 5.9.4
+* Last updated on  2017-07-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -622,7 +622,7 @@ void QXK_threadRet_(void) {
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    p = ((QActive volatile *)QXK_attr_.curr)->prio;
+    p = QXK_attr_.curr->prio;
     /* remove this thread from the QF */
     QF_active_[p] = (QActive *)0;
     QPSet_remove(&QXK_attr_.readySet, p);

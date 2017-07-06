@@ -1,12 +1,18 @@
 /**
 @page history Revision History
 
+@section qpc_5_9_4 Version 5.9.4, 2017-07-07
+This release adds Thread-Local Storage (TLS) feature for the dual-mode
+QXK kernel (see @ref qxk_tls).
+
+
+-----------------------------------------------------------------------------
 @section qpc_5_9_3 Version 5.9.3, 2017-06-19
 This release implements the feature request
 <a href="https://sourceforge.net/p/qpc/feature-requests/126/" target="_blank" class="extern">#126</a> "Allow non-asserting
 event allocation for zero-margin allocations". Specifically, calling
 Q_NEW_X() or QACTIVE_POST_X() with the margin argument of zero will no
-longer assert if the allocation/posting fails. 
+longer assert if the allocation/posting fails.
 
 
 -----------------------------------------------------------------------------

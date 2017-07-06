@@ -4,8 +4,8 @@
 * @brief QXMutex_init(), QXMutex_lock and QXMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.0
-* Last updated on  2017-03-02
+* Last updated for version 5.9.4
+* Last updated on  2017-07-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -124,8 +124,8 @@ void QXMutex_lock(QXMutex * const me) {
         QXK_attr_.lockPrio = me->lockPrio;
     }
     QXK_attr_.lockHolder =
-        (QXK_attr_.curr != (void *)0)
-        ? ((QActive volatile *)QXK_attr_.curr)->prio
+        (QXK_attr_.curr != (struct QActive *)0)
+        ? QXK_attr_.curr->prio
         : (uint_fast8_t)0;
 
     QS_BEGIN_NOCRIT_(QS_SCHED_LOCK, (void *)0, (void *)0)
@@ -180,10 +180,15 @@ void QXMutex_unlock(QXMutex * const me) {
 
     QS_BEGIN_NOCRIT_(QS_SCHED_UNLOCK, (void *)0, (void *)0)
         QS_TIME_(); /* timestamp */
-        QS_2U8_((uint8_t)QXK_attr_.lockPrio, /* the previouis lock priority */
-                (uint8_t)((QXK_attr_.lockPrio > p) /* the new lock priority */
-                          ? p
-                          : QXK_attr_.lockPrio));
+        if (QXK_attr_.lockPrio > p) {
+            QS_2U8_((uint8_t)QXK_attr_.lockPrio, /* previouis lock priority */
+                    (uint8_t)p);                 /* new lock priority */
+        }
+        else {
+            p = QXK_attr_.lockPrio;
+            QS_2U8_((uint8_t)p,  /* previouis lock priority */
+                    (uint8_t)p); /* new lock priority */
+        }
     QS_END_NOCRIT_()
 
     if (QXK_attr_.lockPrio > p) {

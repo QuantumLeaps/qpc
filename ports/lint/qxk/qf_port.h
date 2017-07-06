@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-14
+* Last updated for version 5.9.4
+* Last updated on  2017-07-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -44,7 +44,7 @@
 /**
 * @description
 * This macro *must* be defined in the QF port and should be in range
-* of 1..63, inclusive. The value of this macro determines the maximum
+* of 1..64, inclusive. The value of this macro determines the maximum
 * priority level of an active object in the system. Not all priority
 * levels must be used, but the maximum priority cannot exceed
 * #QF_MAX_ACTIVE.
@@ -55,7 +55,7 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_MAX_ACTIVE               63
+#define QF_MAX_ACTIVE               64
 
 /*! The maximum number of event pools in the application. */
 /**
@@ -75,7 +75,7 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_MAX_EPOOL               3
+#define QF_MAX_EPOOL                3
 
 /*! The size (in bytes) of the event-size representation in the QF.
 * Valid values: 1, 2, or 4; default 2
@@ -258,7 +258,7 @@ void critExit(QF_CRIT_STAT_TYPE stat);
 #include "qep_port.h"   /* QEP port */
 #include "qxk_port.h"   /* QXK port */
 #include "qf.h"         /* QF platform-independent public interface */
-#include "qxthread.h"   /* QXK naked thread */
+#include "qxthread.h"   /* QXK extended thread */
 
 #endif /* qf_port_h */
 

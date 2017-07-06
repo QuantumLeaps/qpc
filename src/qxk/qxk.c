@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.0
-* Last updated on  2017-03-13
+* Last updated for version 5.9.4
+* Last updated on  2017-07-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -189,7 +189,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                       && (stkSize == (uint_fast16_t)0));
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
-    me->thread = (void *)0; /* no private stack for AO */
+    me->osObject = (void *)0; /* no private stack for AO */
     me->prio = prio;   /* set the current priority of the AO */
     QF_add_(me); /* make QF aware of this active object */
 
@@ -260,12 +260,12 @@ uint_fast8_t QXK_sched_(void) {
     Q_ASSERT_ID(610, next != (QActive *)0);
 
     /* is the current thread a basic-thread? */
-    if (QXK_attr_.curr == (void *)0) {
+    if (QXK_attr_.curr == (struct QActive *)0) {
 
         /* is the next a basic-thread? */
-        if (next->thread == (void *)0) {
+        if (next->osObject == (void *)0) {
             if (p <= QXK_attr_.actPrio) {
-                QXK_attr_.next = (void *)0;
+                QXK_attr_.next = (struct QActive *)0;
                 p = (uint_fast8_t)0; /* no activation needed */
             }
             else {
@@ -290,14 +290,14 @@ uint_fast8_t QXK_sched_(void) {
     else { /* currently executing an extended-thread */
 
         /* is the new prio different from the current prio? */
-        if (p != ((QActive volatile *)QXK_attr_.curr)->prio) {
+        if (p != QXK_attr_.curr->prio) {
 
             QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ],
                              QXK_attr_.next)
                 QS_TIME_();         /* timestamp */
                 QS_2U8_((uint8_t)p, /* priority of the next AO */
                                     /* priority of the curent AO */
-                        (uint8_t)((QActive *)QXK_attr_.curr)->prio);
+                        (uint8_t)QXK_attr_.curr->prio);
             QS_END_NOCRIT_()
 
             QXK_attr_.next = next;
@@ -305,7 +305,7 @@ uint_fast8_t QXK_sched_(void) {
             QXK_CONTEXT_SWITCH_();
         }
         else {
-            QXK_attr_.next = (void *)0;
+            QXK_attr_.next = (struct QActive *)0;
             p = (uint_fast8_t)0; /* no activation needed */
         }
     }
@@ -324,7 +324,7 @@ uint_fast8_t QXK_sched_(void) {
 */
 void QXK_activate_(void) {
     uint_fast8_t pin = QXK_attr_.actPrio; /* save the initial active prio */
-    uint_fast8_t p   = ((QActive volatile *)QXK_attr_.next)->prio;
+    uint_fast8_t p   = QXK_attr_.next->prio;
     QActive *a;
 
     /* QS tracing or thread-local storage? */
@@ -339,7 +339,7 @@ void QXK_activate_(void) {
         a = QF_active_[p]; /* obtain the pointer to the AO */
 
         QXK_attr_.actPrio = p; /* this becomes the active prio */
-        QXK_attr_.next = (void *)0; /* clear the next AO */
+        QXK_attr_.next = (struct QActive *)0; /* clear the next AO */
 
         QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ], a)
             QS_TIME_();            /* timestamp */
@@ -381,9 +381,9 @@ void QXK_activate_(void) {
         Q_ASSERT_ID(710, a != (QActive *)0); /* must be registered */
 
         /* is the next an AO-thread? */
-        if (a->thread == (void *)0) {
+        if (a->osObject == (void *)0) {
             if (p <= pin) {
-                QXK_attr_.next = (void *)0;
+                QXK_attr_.next = (struct QActive *)0;
                 p = (uint_fast8_t)0; /* no activation needed */
             }
             else {
@@ -426,3 +426,16 @@ void QXK_activate_(void) {
     }
 #endif /* Q_SPY */
 }
+
+/****************************************************************************/
+struct QActive *QXK_current(void) {
+    struct QActive *curr;
+    QF_CRIT_STAT_
+
+    QF_CRIT_ENTRY_();
+    curr = QXK_attr_.curr;
+    QF_CRIT_EXIT_();
+
+    return curr;
+}
+

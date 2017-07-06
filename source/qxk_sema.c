@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.4
-* Last updated on  2016-11-01
+* Last updated for version 5.9.4
+* Last updated on  2017-07-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -169,7 +169,7 @@ void QXSemaphore_signal(QXSemaphore * const me) {
         thr = (QXThread *)QF_active_[p]; /* thread waiting on the semaphore */
 
         Q_ASSERT_ID(210,
-            (thr->super.thread != (void *)0) /* must be extended thread */
+            (thr->super.thread != (struct QActive *)0) /* must be extended */
             && (me->count == (uint_fast16_t)0)); /* sema counter must be 0 */
 
         /* disarm the internal time event */

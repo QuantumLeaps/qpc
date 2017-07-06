@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "5.9.3"
+PROJECT_NUMBER         = "5.9.4"
 PROJECT_BRIEF          =
 PROJECT_LOGO           = images/header_logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -121,6 +121,7 @@ INPUT                  = \
     exa_mware.dox \
     ports.dox \
     ports_native.dox \
+    ports_arm-cm.dox \
     ports_rtos.dox \
     ports_os.dox \
     history.dox \
@@ -129,10 +130,7 @@ INPUT                  = \
     modules.dox \
     ../include \
     ../src \
-    ../ports/lint \
-    ../ports/lint/qk \
-    ../ports/lint/qv \
-    ../ports/lint/qxk
+    ../ports/lint
 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = \

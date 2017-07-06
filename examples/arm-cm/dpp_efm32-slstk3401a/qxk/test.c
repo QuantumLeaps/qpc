@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-27
+* Last Updated for Version: 5.9.4
+* Date of the Last Update:  2017-07-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -35,11 +35,23 @@
 #include "dpp.h"
 #include "bsp.h"
 
-/* local "naked" thread object .............................................*/
+/* local "extended" thread object ..........................................*/
 static QXThread l_test1;
 static QXThread l_test2;
 static QXMutex l_mutex;
 static QXSemaphore l_sema;
+
+/* Thread-Local Storage for the "extended" threads .........................*/
+typedef struct {
+    uint32_t foo;
+    uint8_t bar[10];
+} TLS_test;
+static TLS_test l_tls1;
+static TLS_test l_tls2;
+
+static void lib_fun(uint32_t x) {
+    QXK_TLS(TLS_test *)->foo = x;
+}
 
 /* global pointer to the test thread .......................................*/
 QXThread * const XT_Test1 = &l_test1;
@@ -47,6 +59,8 @@ QXThread * const XT_Test2 = &l_test2;
 
 /*..........................................................................*/
 static void Thread1_run(QXThread * const me) {
+
+    me->super.thread = &l_tls1; /* initialize the TLS for Thread1 */
 
     QXMutex_init(&l_mutex, 3U);
 
@@ -68,6 +82,9 @@ static void Thread1_run(QXThread * const me) {
 
         /* publish to thread2 */
         QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), &l_test1);
+
+        /* test TLS */
+        lib_fun(1U);
     }
 }
 
@@ -78,6 +95,8 @@ void Test1_ctor(void) {
 
 /*..........................................................................*/
 static void Thread2_run(QXThread * const me) {
+
+    me->super.thread = &l_tls2; /* initialize the TLS for Thread2 */
 
     /* subscribe to the test signal */
     QActive_subscribe(&me->super, TEST_SIG);
@@ -108,6 +127,9 @@ static void Thread2_run(QXThread * const me) {
             QXThread_delay(BSP_TICKS_PER_SEC/2, 0U);  /* wait more (BLOCK) */
             QXSemaphore_signal(&l_sema); /* signal Thread1 */
         }
+
+        /* test TLS */
+        lib_fun(2U);
     }
 }
 

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for DPP on EMF32-SLSTK3401A, QXK kernel, GNU-ARM
-# Last Updated for Version: 5.9.2
-# Date of the Last Update:  2017-06-03
+# Last Updated for Version: 5.9.4
+# Date of the Last Update:  2017-07-05
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -69,7 +69,9 @@ QP_PORT_DIR := $(QPC)/ports/arm-cm/qxk/gnu
 VPATH = \
 	.. \
 	../.. \
-	$(QPC)/source \
+	$(QPC)/src/qf \
+	$(QPC)/src/qxk \
+	$(QPC)/src/qs \
 	$(QP_PORT_DIR) \
 	$(QPC)/3rd_party/efm32pg1b \
 	$(QPC)/3rd_party/efm32pg1b/gnu
@@ -78,7 +80,7 @@ VPATH = \
 INCLUDES  = \
 	-I../.. \
 	-I$(QPC)/include \
-	-I$(QPC)/source \
+	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPC)/3rd_party/CMSIS/Include \
 	-I$(QPC)/3rd_party/efm32pg1b

@@ -32,11 +32,11 @@
                 </option>
                 <option>
                     <name>Input description</name>
-                    <state>No specifier n, no float nor long long, no scan set, no assignment suppressing.</state>
+                    <state>No specifier n, no float nor long long, no scan set, no assignment suppressing, without multibyte support.</state>
                 </option>
                 <option>
                     <name>Output description</name>
-                    <state>No specifier a, A, no specifier n, no float nor long long, no flags.</state>
+                    <state>No specifier a, A, no specifier n, no float nor long long, no flags, without multibyte support.</state>
                 </option>
                 <option>
                     <name>GOutputBinary</name>
@@ -339,7 +339,7 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\efm32pg1b</state>
@@ -1087,7 +1087,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>7.70.1.11471</state>
+                    <state>8.11.1.13270</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -1361,7 +1361,7 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\efm32pg1b</state>
@@ -2109,7 +2109,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>7.70.1.11471</state>
+                    <state>8.11.1.13270</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -2383,7 +2383,7 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\efm32pg1b</state>
@@ -3123,64 +3123,52 @@
     <group>
         <name>QP</name>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qep_hsm.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qep_hsm.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qep_msm.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qep_msm.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_act.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_act.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_actq.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_actq.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_defer.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_defer.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_dyn.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_dyn.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_mem.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_mem.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_pkg.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_ps.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_ps.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_qact.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_qact.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_qeq.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_qeq.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_qmact.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_qmact.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_time.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qf_time.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qxk\qxk.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qxk.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qxk\qxk_mutex.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\include\qxk.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qxk\qxk_sema.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qxk_mutex.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qxk_pkg.h</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qxk_sema.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qxk_xthr.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\include\qxthread.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qxk\qxk_xthr.c</name>
         </file>
     </group>
     <group>

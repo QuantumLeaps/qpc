@@ -270,7 +270,7 @@ QEvt const *QActive_get_(QActive * const me) {
     QACTIVE_EQUEUE_WAIT_(me);  /* wait for event to arrive directly */
 
     e = me->eQueue.frontEvt; /* always remove event from the front location */
-    nFree= me->eQueue.nFree + (QEQueueCtr)1; /* get volatile into tmp */
+    nFree = me->eQueue.nFree + (QEQueueCtr)1; /* get volatile into tmp */
     me->eQueue.nFree = nFree; /* update the number of free */
 
     /* any events in the ring buffer? */

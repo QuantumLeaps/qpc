@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QK port to ARM Cortex-M (M0,M0+,M3,M4,M7), GNU-ARM assembler
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-03-17
+* Last Updated for Version: 5.9.3
+* Date of the Last Update:  2017-06-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -192,7 +192,6 @@ PendSV_Handler:
     LDR     r1,=Thread_ret    /* return address after the call   (new lr) */
 
     SUB     sp,sp,#8*4        /* reserve space for exception stack frame */
-    STR     r0,[sp]           /* save the prio argument (new r0) */
     ADD     r0,sp,#5*4        /* r0 := 5 registers below the top of stack */
     STM     r0!,{r1-r3}       /* save xpsr,pc,lr */
 

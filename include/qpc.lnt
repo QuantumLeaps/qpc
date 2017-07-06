@@ -1,7 +1,7 @@
 //============================================================================
 // Product: PC-Lint 9.x option file for linting QP/C applications
-// Last updated for version 5.9.3
-// Last updated on  2017-06-19
+// Last updated for version 5.9.4
+// Last updated on  2017-07-05
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -313,6 +313,7 @@
  QXK_ISR_ENTRY,
  QXK_ISR_EXIT,
  QXK_getVersion,
+ QXK_TLS,
  QXTHREAD_START,
  QXTHREAD_POST_X,
  Q_XTHREAD_CAST)

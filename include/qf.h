@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.3
-* Last updated on  2017-06-17
+* Last updated for version 5.9.4
+* Last updated on  2017-07-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -107,7 +107,7 @@ struct QEQueue; /* forward declaration */
 * __first__ member of the derived struct (see @ref oop).
 * @include qf_qactive.c
 */
-typedef struct {
+typedef struct QActive {
     QHsm super; /*!< inherits ::QHsm */
 
 #ifdef QF_EQUEUE_TYPE
@@ -155,7 +155,6 @@ typedef struct {
 
 /*! protected "constructor" of an ::QActive active object */
 void QActive_ctor(QActive * const me, QStateHandler initial);
-
 
 /*! Virtual table for the ::QActive class */
 typedef struct {

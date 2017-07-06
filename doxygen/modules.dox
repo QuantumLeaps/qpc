@@ -6,7 +6,7 @@ Hierarchical Event Processor
 QEP is a universal, UML-compliant event processor that enables developers to code UML state machines in highly readable ANSI-C, in which every state machine element is mapped to code precisely, unambiguously, and exactly once (traceability). QEP fully supports hierarchical state nesting, which is the fundamental mechanism for reusing behavior across many states instead of repeating the same actions and transitions over and over again.
 */
 
-/*###########################################################################*/
+/*##########################################################################*/
 /*! @defgroup qf QF
 
 @brief
@@ -15,16 +15,16 @@ Active Object (Actor) Framework
 QF is a portable, event-driven, real-time framework for execution of active objects (concurrent state machines) specifically designed for real-time embedded (RTE) systems.
 */
 
-/*###########################################################################*/
+/*##########################################################################*/
 /*! @defgroup qs QS
 
 @brief
 Software Tracing Instrumentation
 
-QS is software tracing system that enables developers to monitor live event-driven QP applications with minimal target system resources and without stopping or significantly slowing down the code. QS is an ideal tool for testing, troubleshooting, and optimizing QP applications. QS can even be used to support acceptance testing in product manufacturing.
+QS is software tracing system that enables developers to monitor live QP applications with minimal target system resources and without stopping or significantly slowing down the code. QS is an ideal tool for testing, troubleshooting, and optimizing QP applications. QS can even be used to support acceptance testing in product manufacturing. Please see <a href="https://state-machine.com/qtools/qs.html"><b>QS Manual</b></a> inside the <a href="https://state-machine.com/qtools" target="_blank" class="extern">QTools collection</a> for more information.
 */
 
-/*###########################################################################*/
+/*##########################################################################*/
 /*! @defgroup qv QV
 
 @brief
@@ -47,13 +47,13 @@ Given the simplicity, portability, and low-resource consumption, the QV schedule
 
 */
 
-/*###########################################################################*/
+/*##########################################################################*/
 /*! @defgroup qk QK
 
 @brief
-Preemptive Non-Blocking Kernel
+Preemptive Run-to-Completion Kernel
 
-QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specifically for executing active objects. QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using the single stack (MSP in Cortex-M). Active objects process their events in run-to-completion fashion and remove themselves from the call stack, the same way as nested interrupts. At the same time high-priority active objects can preempt lower-priority active objects, in the same way as interrupts can preempt each other under a prioritized interrupt controller. QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis RMA) and can be used in hard real-time systems.
+QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specifically for executing active objects. QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using the single stack. Active objects process their events in run-to-completion (RTC) fashion and remove themselves from the call stack, the same way as nested interrupts remove themselves from the stack upon completion. At the same time high-priority active objects can preempt lower-priority active objects, just like interrupts can preempt each other under a prioritized interrupt controller. QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis RMA) and can be used in hard real-time systems.
 
 
 ------------------------------------------------------------------------------
@@ -63,10 +63,11 @@ Sometimes it is not practical to break up long RTC steps, and consequently the t
 
 */
 
-/*###########################################################################*//*! @defgroup qxk QXK
+/*##########################################################################*/
+/*! @defgroup qxk QXK
 
 @brief
-Preemptive Dual-Mode Blocking RTOS Kernel
+Preemptive Dual-Mode (Run-to-Completion/Blocking) RTOS Kernel
 
 QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that executes active objects like the @ref qk "QK kernel", but can also execute traditional __blocking__ threads (extended threads). In this respect, QXK behaves exactly as a conventional __RTOS__ (Real-Time Operating System). QXK has been designed specifically for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
 
@@ -77,13 +78,13 @@ Supported toolchains include: ARM-KEIL MDK, IAR-ARM, GNU-ARM, TI-ARM.
 
 Currently, the QXK kernel is illustrated by the following examples:
 
-- @ref arm-cm_dpp_efm32-slstk3401a@n
+- @ref arm-cm_dpp_efm32-slstk3401a (ARM Cortex-M4F)@n
 Example illustrates: 6 active objects plus two extended threads, QXK blocking delay, QXK semaphore, QXK mutex, QXK blocking message queue.
 
-- @ref arm-cm_dpp_ek-tm4c123gxl@n
+- @ref arm-cm_dpp_ek-tm4c123gxl (ARM Cortex-M4F)@n
 Example illustrates: 6 active objects plus two extended threads, QXK blocking delay, QXK semaphore, QXK mutex, QXK blocking message queue.
 
-- @ref arm-cm_dpp_nucleo-l053r8@n
+- @ref arm-cm_dpp_nucleo-l053r8 (ARM Cortex-M0+)@n
 Example illustrates: 6 active objects plus two extended threads, QXK blocking delay, QXK semaphore, QXK mutex, QXK blocking message queue.
 
 
@@ -96,13 +97,13 @@ QXK distinguishes two kinds of threads: **basic**-threads (non-blocking, run-to-
 @subsection qxk_classes Classes in QXK
 The figure below shows the main classes introduced in the QXK kernel and their relation to the classes of the QP framework.
 
-@image html qxk_classes.gif "Classes of the QXK blocking kernel"
+@image html qxk_classes.gif "Classes of the QXK dual-mode kernel"
 
 <ul class="tag">
   <li><span class="tag">0</span> The abstract ::QActive class represents active objects in QP. This class contains the @c thread object of the underlying kernel (QXK thread-control-block in this case) as well as the event queue and the unique priority of the active object.
   </li>
 
-  <li><span class="tag">1</span> The ::QXThread class represents the "naked" blocking threads of the QXK kernel. It inherits ::QActive, so that extended-threads can be treated as active objects internally in the framework. However, the extended-threads do not implement state machines. Instead, the data fields used for storing the current state in active objects are re-used to store the private stack of the extended-thread. The ::QXThread class also contains the @c timeEvt object (see ::QTimeEvt) for generating timeouts when the extended-thread is blocked.
+  <li><span class="tag">1</span> The ::QXThread class represents the extended (blocking) threads of the QXK kernel. It inherits ::QActive, so that extended-threads can be treated as active objects internally in the framework. However, the extended-threads do not implement state machines. Instead, the data fields used for storing the current state in active objects are re-used to store the private stack of the extended-thread. The ::QXThread class also contains the @c timeEvt object (see ::QTimeEvt) for generating timeouts when the extended-thread is blocked.
   </li>
 
   <li><span class="tag">2</span> The ::QXMutex class represents the @ref qxk_mutex "priority-ceiling mutex" of the QXK kernel. The mutex can be used by both the extended-threads and active object threads (in case they share resources that need to be protected). However, using any blocking mechanism inside active objects is not recommended, because it delays run-to-completion event processing.
@@ -113,16 +114,16 @@ The figure below shows the main classes introduced in the QXK kernel and their r
 </ul>
 
 @note
-The main takeaway from the QXK class diagram is QXK's **optimal, tight integration** with the QP/C framework. The QXK kernel reuses all mechanisms already provided in QP, thus avoiding any code duplication, inefficient layers of indirection, and additional licensing costs, which are inevitable when using @ref ports_rtos "3rd-party RTOS kernels" to run QP/C applications.
+The main takeaway from the QXK class diagram is QXK's **optimal, tight integration** with the QP framework. The QXK kernel reuses all mechanisms already provided in QP, thus avoiding any code duplication, inefficient layers of indirection, and additional licensing costs, which are inevitable when using @ref ports_rtos "3rd-party RTOS kernels" to run QP applications.
 
 
 ------------------------------------------------------------------------------
 @section qxk_features QXK Features
-As you can see in the list below, <span class="highlight">QXK provides most features you might expect of a traditional blocking **RTOS** kernel and is <strong>recommended</strong> as the preferred RTOS kernel for QP/C applications</span> that need to mix active objects with traditional blocking code.
+As you can see in the list below, <span class="highlight">QXK provides most features you might expect of a traditional blocking **RTOS** kernel and is <strong>recommended</strong> as the preferred RTOS kernel for QP applications</span> that need to mix active objects with traditional blocking code.
 
 <ul class="tag">
 
-<li><span class="bullet">&gt;</span>Preemptive, priority-based scheduling of up to 64 threads. Each thread must be provided with its own private stack space and must be assigned its own unique priority (1..::QF_MAX_ACTIVE);
+<li><span class="bullet">&gt;</span>Preemptive, priority-based scheduling of up to 64 threads. Each thread must be assigned its own unique priority (1 .. #QF_MAX_ACTIVE);
 </li>
 
 > NOTE: QXK always executes the highest-priority thread that is ready to run (is not blocked). The scheduling algorithm used in QXK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis — RMA) and can be used in hard real-time systems.
@@ -130,16 +131,16 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 <li><span class="bullet">&gt;</span>All threads in QXK are capable of **blocking**. However, QXK distinguishes between two types of threads:
 </li>
 
-- active object threads that can block only while waiting on events from the private event queue and should not block otherwise (e.g., inside state machines). QXK asserts when an active object thread attempts to use a timed-delay or attempts to block on a semaphore. This is because active objects have non-blocking alternatives for these operations (time-events and event posting, respectively).
+- **basic threads** of active objects that are made ready-to-run by events posted to the active objects. Such basic threads are non-blocking, run-to-completion activations that cannot block in the middle of the RTC step. QXK asserts when a basic thread attempts to use a blocking mechanism, such as a time-delay or a semaphore-wait. All basic threads share the common stack.
 
-- extended-threads, that can block anywhere in their thread-handler function, whereas QXK provides a typical assortments of blocking primitives for extended-threads, such as time-delay, message queue, semaphore, or a mutex;
+- **extended threads** that can block anywhere in their thread-handler function, whereas QXK provides a typical assortments of blocking primitives for extended-threads, such as time-delay, blocking message queue, counting semaphore, or a mutex. Each extended thread must be provided with its own private stack.
 
-<li><span class="bullet">&gt;</span>Tightly integrated mechanisms for communication between event-driven active objects and "naked" blocking threads:
+<li><span class="bullet">&gt;</span>Tightly integrated mechanisms for communication between event-driven active objects and extended blocking threads:
 </li>
 
-- Active objects can signal semaphores and send messages to extended-threads.
+- Basic threads (Active Objects) can signal semaphores and send messages to extended threads.
 
-- "Naked" threads can post or publish events to active objects;
+- Extended threads can post or publish events to active objects;
 
 <li><span class="bullet">&gt;</span>Priority-Ceiling Mutexes with optional timeout;
 </li>
@@ -158,13 +159,18 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 <li><span class="bullet">&gt;</span>Interrupt management, including "zero-latency", kernel-unaware interrupts that are never disabled;
 </li>
 
-> NOTE: This feature is only supported on CPUs that allow selective interrupt disabling, such as ARM Cortex-M3/M4 (but not ARM Cortex-M0).
+> NOTE: This feature is only supported on CPUs that allow selective interrupt disabling, such as ARM Cortex-M3/M4 (but not ARM Cortex-M0);
+
+<li><span class="bullet">&gt;</span> @ref qxk_tls "Thread-Local Storage" for all threads (basic threads and extended threads).
+</li>
 
 </ul>
 
 
 <div class="separate"></div>
 @subsection qxk_kernel Kernel Initialization and Control
+
+@sa
 - QXK_init()
 - QF_run()
 - QXK_onIdle()
@@ -172,6 +178,8 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 
 <div class="separate"></div>
 @subsection qxk_thread Thread Management
+
+@sa
 - ::QXThread structure (Thread Control Block)
 - QXThread_ctor()
 - QXTHREAD_START()
@@ -180,11 +188,15 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 
 <div class="separate"></div>
 @subsection qxk_isr Interrupt Management
+
+@sa
 - QXK_ISR_ENTRY()
 - QXK_ISR_EXIT()
 
 <div class="separate"></div>
 @subsection qxk_mutex Mutexes
+
+@sa
 - ::QXMutex structure (Mutex Control Block)
 - QXMutex_init()
 - QXMutex_lock()
@@ -192,12 +204,16 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 
 <div class="separate"></div>
 @subsection qxk_queue Message Queues
+
+@sa
 - QXTHREAD_POST_X() - posting messages to blocking threads
 - QACTIVE_POST_X()  - posting events to Active Objects
 - QXThread_queueGet() - waiting (blocking) on message queue
 
 <div class="separate"></div>
 @subsection qxk_sema Semaphores
+
+@sa
 - ::QXSemaphore structure (Semaphore Control Block)
 - QXSemaphore_init()
 - QXSemaphore_wait()
@@ -205,31 +221,59 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 
 <div class="separate"></div>
 @subsection qxk_mem Memory Pools
+
+@sa
 - ::QMPool structure
 - QMPool_init()
 - QMPool_get()
 - QMPool_put()
 
-*/
+<div class="separate"></div>
+@subsection qxk_tls Thread Local Storage
+<b>Thread-local storage (TLS)</b> is a programming method that uses static or global memory local to a thread. TLS is specifically useful for writing library-type code, which is used in a multithreaded environment and needs to access per-thread data in an independent way.
 
-/*###########################################################################*//*! @dir ../include
+TLS is used in some places where ordinary, single-threaded programs would use static or global variables, but where this would be inappropriate in multithreaded cases. An example of such situations is where library-type functions use a global variable to set an error condition (for example the global variable errno used by many functions of the C library). If errno were simply a global variable, a call of a system function on one thread may overwrite the value previously set by a call of a system function on a different thread, possibly before following code on that different thread could check for the error condition. The solution is to have errno be a variable that looks like it is global, but in fact exists once per thread—i.e., it lives in *thread-local storage*. A second use case would be multiple threads accumulating information into a global variable. To avoid a race condition, every access to this global variable would have to be protected by a mutual-exclusion mechanism. Alternatively, each thread might accumulate into a thread-local variable (that, by definition, cannot be read from or written to from other threads, implying that there can be no race conditions). Threads then only have to synchronize a final accumulation from their own thread-local variable into a single, truly global variable.
 
-Platform-independent QP/C API
+The TLS implementations vary, but many systems, including QXK, implement TLS by providing a pointer-sized variable thread-local. This pointer can be set to arbitrarily sized memory blocks in a thread-local manner, by allocating such a memory block (statically or dynamically) and storing the memory address of that block in the thread-local variable.
 
-@note
-The QP/C <span class="img folder">include</span> directory needs to be added to the compiler's include path in the applications using QP/C.
-*/
+Typical usage of TLS in QXK is illustrated in the example <span class="img folder">qpc/examples/arm-cm/dpp_efm32-slstk3401a/qxk/</span>, <span class="img file_c">test.c</span>, and consists:
 
-/*###########################################################################*//*! @dir ../source
+- define the TLS structure
+@code{c}
+typedef struct {
+    uint32_t foo;
+    uint8_t bar[10];
+} TLS_test;
+@endcode
 
-Platform-independent QP/C implementation
+- allocate the TLS storage for all participating threads (extended or basic threads)
+@code{c}
+static TLS_test l_tls1;
+static TLS_test l_tls2;
+@endcode
 
-Files from this directory need to be added to the project, to build the QP/C framework from source code.
+- initialize the TLS per-thread pointer in each thread routine (for extended threads) or the top-most initial transition (for basic threads of active objects):
+@code{c}
+static void Thread1_run(QXThread * const me) {
+    me->super.thread = &l_tls1; /* initialize the TLS for Thread1 */
+    . . .
+}
+. . .
+static void Thread2_run(QXThread * const me) {
+    me->super.thread = &l_tls2; /* initialize the TLS for Thread2 */
+    . . .
+}
+@endcode
 
-@attention
-Not all QP/C source files should be added to every project. For example, native QP/C ports to the preemptive QK kernel should **not** contain the file <span class="img file_c">qv.c</span> and conversely, QP/C ports to the cooperative QV kernel should not contain the files <span class="img file_c">qk.c</span> and <span class="img file_c">qk_mutex.c</span>.
+- access the TLS from your code:
+@code{c}
+void lib_fun(uint32_t x) {
+    QXK_TLS(TLS_test *)->foo = x;
+}
+@endcode
 
-@note
-The QP/C <span class="img folder">source</span> directory needs to be added to the compiler's include path in the applications using QP/C, because QP/C is built from sources.
+@sa
+- QXK_current()
+- QXK_TLS()
 
 */

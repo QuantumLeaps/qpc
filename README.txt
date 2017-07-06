@@ -42,6 +42,11 @@ mailto:info@state-machine.com
 #######################################################################
 ##################### QP/C Revision History ###########################
 
+QP/C Version 5.9.4 (07-Jul-2017)
+--------------------------------
+This release adds Thread-Local Storage (TLS) feature for the dual-mode
+QXK kernel (https://state-machine.com/qpc/group__qxk.html#qxk_tls).
+
 QP/C Version 5.9.3 (19-Jun-2017)
 --------------------------------
 This release implements the feature request #126 "Allow non-asserting
@@ -96,11 +101,11 @@ qpc\
   +-source\  - exitsting source directory with "flat" structure
   |            (for backwards-compatibility)
   +-src\     - new source directory grouped by functionality
-     +-qf\    - core framework (QEP + QF)
-     +-qk\    - QK kernel
-     +-qv\    - QV kernel (only one file qv.c)
-     +-qxk\   - QXK kernel
-     +-qs\    - QS software tracing
+     +-qf\   - core framework (QEP + QF)
+     +-qk\   - QK kernel
+     +-qv\   - QV kernel (only one file qv.c)
+     +-qxk\  - QXK kernel
+     +-qs\   - QS software tracing
      +-qf_pkg.h
      +-qs_pkg.h
      +-qxk_pkg.h

@@ -18,7 +18,9 @@ The following annotated directory tree lists the top-level directories provided 
     </li>
     <li><span class="img folder">include/</span> &mdash; Platform-independent QP/C API (see <a href="dir_d44c64559bbebec7f509842c48db8b23.html"><strong>include</strong></a>)
     </li>
-    <li><span class="img folder">source/</span> &mdash; Platform-independent QP/C source code (see @ref <a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html"><strong>source</strong></a>)
+    <li><span class="img folder">src/</span> &mdash; Platform-independent QP/C source code (see @ref <a href="dir_68267d1309a1af8e8297ef4c3efbcdba.html"><strong>src</strong></a>)
+    </li>
+    <li><span class="img folder">source/</span> &mdash; Platform-independent QP/C source code for backwards compatibility (will be phased out in the future).
     </li>
   </ul>
 </ul>
@@ -169,5 +171,72 @@ The QP/C framework comes with extensive support for automatic rule checking by m
 @sa @ref lint "Lint Port"
 
 @next{exa}
+*/
+
+/*##########################################################################*/
+/*! @dir ../include
+
+Platform-independent QP/C API
+
+@note
+The QP/C <span class="img folder">include</span> directory needs to be added to the compiler's include path in the applications using QP/C.
+*/
+
+/*##########################################################################*/
+/*! @dir ../src
+
+Platform-independent QP/C source code
+
+Files from this directory need to be added to the project, to build the QP/C framework from source code.
+
+@note
+The QP/C <span class="img folder">src</span> directory needs to be added to the compiler's include path in the applications that build QP/C framework from sources (as opposed to using QP as a pre-built library).
+
+*/
+
+/*##########################################################################*/
+/*! @dir ../src/qf
+
+Platform-independent implementation of the @ref qep and @ref qf components.
+
+@note
+Typically, files in this directory need to be added to the application build, but some QP ports might not need all the files in this directory. For example, a QP port to a 3rd-party RTOS kernel might be using a message queue of the RTOS instead of the native QP event queue, in which case the file qf_actq.c would not be needed and should be excluded from the build.
+
+*/
+
+/*##########################################################################*/
+/*! @dir ../src/qv
+
+Platform-independent implementation of the @ref qv built-in kernel.
+
+@attention
+Files in this directory need to be included in the QP application build only if the application uses the @ref qv kernel.
+*/
+
+
+/*##########################################################################*/
+/*! @dir ../src/qk
+
+Platform-independent implementation of the @ref qk built-in kernel.
+
+@attention
+Files in this directory need to be included in the QP application build only if the application uses the @ref qk kernel.
+*/
+
+
+/*##########################################################################*/
+/*! @dir ../src/qxk
+
+Platform-independent implementation of the @ref qxk built-in kernel.
+
+@attention
+Files in this directory need to be included in the QP application build only if the application uses the @ref qxk kernel.
+*/
+
+
+/*##########################################################################*/
+/*! @dir ../src/qs
+
+Platform-independent implementation of the @ref qs component (software tracing).
 */
 
