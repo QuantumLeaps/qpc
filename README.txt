@@ -1,3 +1,5 @@
+![QP framework](https://state-machine.com/img/qp_banner.jpg)
+
 What's New?
 ===========
 Scroll down a bit to the section "QP/C Revision History".
@@ -187,14 +189,16 @@ for the STM32F7xx MCUs, which contains parts of STM32CubeF7 library.
 
 Also, the 3rd_party/CMSIS folder now provides the new CMSIS V5.0.1.
 
-Finally, this release fixes the following bugs:
+Finally, this release fixes the following bugs:
+
 - bug#159 QP/C/C++ Win32 ports don't work on all x86 CPUs
 - bug#157 In QPC ucosii port, conversion of AO's priority to OS task
   priority is incorrect.
 - bug#152 Typo (qpc\ports\arm7-9\qk\gnu\qk_port.s:42) prevents
   compilation
 
-
+
+
 QP/C Version 5.8.1 (16-Dec-2016)
 --------------------------------
 This release is in response to a recent finding that many QP users of
@@ -366,7 +370,8 @@ again the critical section in PendSV has been slighly shortened.
 Finally, this release replaces all absolute paths with relative paths
 in all CCS-Eclipse project files (for TivaC, Hercules, and MSP430).
 
-Changes in detail:
+Changes in detail:
+
 1. Modified qep_msm.c to correct the support for sub-machines and
    sub-machine states
 2. Added new port to ARM Cortex-R in the directory ports/arm-cr
