@@ -1,5 +1,3 @@
-![QP framework](https://state-machine.com/img/qp_banner.jpg)
-
 What's New?
 ===========
 Scroll down a bit to the section "QP/C Revision History".
