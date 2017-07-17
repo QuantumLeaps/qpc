@@ -116,7 +116,6 @@ INPUT                  = \
     srs.dox \
     sas.dox \
     sds.dox \
-    ../../doxygen/glossary.dox \
     exa.dox \
     exa_apps.dox \
     exa_native.dox \
@@ -125,7 +124,7 @@ INPUT                  = \
     exa_mware.dox \
     ports.dox \
     ports_native.dox \
-    ports_arm-cm.dox \
+    ../../doxygen/ports_arm-cm.dox \
     ports_rtos.dox \
     ports_os.dox \
     history.dox \
@@ -134,7 +133,9 @@ INPUT                  = \
     modules.dox \
     ../include \
     ../src \
-    ../ports/lint
+    ../ports/lint \
+    ../../doxygen/glossary.dox
+
 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = \
@@ -191,12 +192,12 @@ IGNORE_PREFIX          =
 # Configuration options related to the HTML output
 #---------------------------------------------------------------------------
 GENERATE_HTML          = YES
-HTML_OUTPUT            = ../../html/qpc
+HTML_OUTPUT            = ../../doxygen/qpc
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = ../../html/header.html
-HTML_FOOTER            = ../../html/footer.html
+HTML_HEADER            = ../../doxygen/header.html
+HTML_FOOTER            = ../../doxygen/footer.html
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  = ../../html/ql.css
+HTML_EXTRA_STYLESHEET  = ../../doxygen/ql.css
 HTML_EXTRA_FILES       =
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
@@ -210,7 +211,7 @@ DOCSET_BUNDLE_ID       = com.state-machine.doc
 DOCSET_PUBLISHER_ID    = com.state-machine.doc
 DOCSET_PUBLISHER_NAME  = Quantum Leaps
 GENERATE_HTMLHELP      = NO
-CHM_FILE               = ../../../html/qpc.chm
+CHM_FILE               = ../../../doxygen/qpc.chm
 HHC_LOCATION           =
 GENERATE_CHI           = NO
 CHM_INDEX_ENCODING     =

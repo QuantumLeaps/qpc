@@ -38,14 +38,14 @@ echo usage:
 echo make
 echo make -CHM
 
-set VERSION=5.9.7
+set VERSION=5.9.4
 
 :: Generate Resource Standard Metrics for QP/C ............................... 
 set DOXHOME="C:\tools\doxygen\bin"
 set RCMHOME="C:\tools\MSquared\M2 RSM"
 
 set RSM_OUTPUT=metrics.dox
-set RSM_INPUT=..\include\*.h ..\source\*.h ..\source\*.c
+set RSM_INPUT=..\include\*.h ..\src\*.h ..\src\qf\*.c ..\src\qv\*.c  ..\src\qk\*.c  ..\src\qxk\*.c
 
 echo /** @page metrics Code Metrics > %RSM_OUTPUT%
 echo.>> %RSM_OUTPUT%
