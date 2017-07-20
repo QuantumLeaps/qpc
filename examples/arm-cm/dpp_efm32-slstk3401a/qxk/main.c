@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example extened for QXK
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-03-13
+* Last Updated for Version: 5.9.5
+* Date of the Last Update:  2017-07-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -80,7 +80,7 @@ int main() {
     QACTIVE_START(the_Ticker0, 1U, 0, 0, 0, 0, 0);
 
     /* start the extended thread */
-    QXTHREAD_START(&XT_Test1->super,         /* Thread to start */
+    QXTHREAD_START(XT_Test1,                 /* Thread to start */
                   (uint_fast8_t)2U,          /* QP priority of the thread */
                   test1QueueSto,             /* message queue storage */
                   Q_DIM(test1QueueSto),      /* message length [events] */
@@ -98,7 +98,7 @@ int main() {
                       0U,                    /* size of the stack [bytes] */
                       (QEvt *)0);            /* initialization event */
     }
-    QXTHREAD_START(&XT_Test2->super,         /* Thread to start */
+    QXTHREAD_START(XT_Test2,                 /* Thread to start */
                   (uint_fast8_t)(N_PHILO + 3), /* QP priority of the thread */
                   test2QueueSto,             /* message queue storage */
                   Q_DIM(test2QueueSto),      /* message length [events] */

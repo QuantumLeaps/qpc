@@ -28,7 +28,7 @@ int main() {
     . . .
 
     /* start the "naked" thread */
-    QXTHREAD_START(&XT_Test->super,          /* Thread to start */
+    QXTHREAD_START(XT_Test,                  /* Thread to start */
                   (uint_fast8_t)10U,         /* QP priority of the thread */
                   testQueueSto,              /* message queue storage */
                   Q_DIM(testQueueSto),       /* message length [events] */

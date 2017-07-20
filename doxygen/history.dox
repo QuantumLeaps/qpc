@@ -1,6 +1,27 @@
 /**
 @page history Revision History
 
+@section qpc_5_9_5 Version 5.9.5, 2017-07-20
+This release changes the macro QXTHREAD_START() in the QXK kernel so that
+it can be used only with ::QXThread pointers and not ::QActive pointers.
+
+@note
+The change of QXTHREAD_START() has impact on existing QXK applications,
+because the calls like `QXTHREAD_START(&XT_Test1->super ...)` need to be
+changed to `QXTHREAD_START(XT_Test1 ...)`, where XT_Test1 is a pointer
+to `::QXThread *`.
+
+This release fixes the following bug:
+- <a href="https://sourceforge.net/p/qpc/bugs/178/" class="extern">bug#178</a> "GNU-ARM compiler reports "Error: unaligned opcodes..." in startup code for QP/C/C++/nano examples". The bug fix entails modifying the startup code for the GNU-ARM compiler in the `3rd_party` directory. Specifically, the proper alignment directives have been added to the inline assembly in the exception handlers.
+
+This release fixes the naming problem of the startup code for the
+STM32F7-Discovery board (in the `3rd_party/stm32f7-discovery/gnu/ and arm/`
+directories), where the startup code was renamed from `startup_stm32f4xx.c/s`
+to `startup_stm32f746xx.c/s`. The change has been also made in the example
+projects for the STM32F7-Discovery board (for ARM-KEIL and GNU-ARM toolsets).
+
+
+-----------------------------------------------------------------------------
 @section qpc_5_9_4 Version 5.9.4, 2017-07-07
 This release adds Thread-Local Storage (TLS) feature for the dual-mode
 QXK kernel (see @ref qxk_tls).

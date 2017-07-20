@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for DPP on STM32F746G-Discovery, QK kernel, GNU-ARM
-# Last Updated for Version: 5.8.2
-# Date of the Last Update:  2017-02-04
+# Last Updated for Version: 5.9.5
+# Date of the Last Update:  2017-07-19
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -105,7 +105,7 @@ C_SRCS := \
 	philo.c \
 	table.c \
 	test.c \
-	startup_stm32f4xx.c \
+	startup_stm32f746xx.c \
 	system_stm32f7xx.c \
 	stm32746g_discovery.c \
 	stm32f7xx_hal.c \

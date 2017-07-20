@@ -344,6 +344,7 @@ void NMI_Handler(void) {
         "    mov r1,#1\n\t"
         "    b assert_failed\n\t"
         "str_nmi: .asciz \"NMI\"\n\t"
+        "  .align 2\n\t"
     );
 }
 /*..........................................................................*/
@@ -354,6 +355,7 @@ void MemManage_Handler(void) {
         "    mov r1,#1\n\t"
         "    b assert_failed\n\t"
         "str_mem: .asciz \"MemManage\"\n\t"
+        "  .align 2\n\t"
     );
 }
 /*..........................................................................*/
@@ -364,6 +366,7 @@ void HardFault_Handler(void) {
         "    mov r1,#1\n\t"
         "    b assert_failed\n\t"
         "str_hrd: .asciz \"HardFault\"\n\t"
+        "  .align 2\n\t"
     );
 }
 /*..........................................................................*/
@@ -374,6 +377,7 @@ void BusFault_Handler(void) {
         "    mov r1,#1\n\t"
         "    b assert_failed\n\t"
         "str_bus: .asciz \"BusFault\"\n\t"
+        "  .align 2\n\t"
     );
 }
 /*..........................................................................*/
@@ -384,6 +388,7 @@ void UsageFault_Handler(void) {
         "    mov r1,#1\n\t"
         "    b assert_failed\n\t"
         "str_usage: .asciz \"UsageFault\"\n\t"
+        "  .align 2\n\t"
     );
 }
 /*..........................................................................*/
@@ -394,6 +399,7 @@ void Default_Handler(void) {
         "    mov r1,#1\n\t"
         "    b assert_failed\n\t"
         "str_dflt: .asciz \"Default\"\n\t"
+        "  .align 2\n\t"
     );
 }
 /*..........................................................................*/

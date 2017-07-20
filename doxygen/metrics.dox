@@ -1,7 +1,7 @@
 /** @page metrics Code Metrics
 
 @code
-                   Standard Code Metrics for QP/C 5.9.4
+                   Standard Code Metrics for QP/C 5.9.5
 
            Resource Standard Metrics (TM) for C, C++, C# and Java
                    Version 7.75 - mSquaredTechnologies.com
@@ -9,7 +9,7 @@
   License Type: Windows Single User License
   Licensed To : Quantum Leaps, LLC
   License No. : WS2975                          License Date: Dec 15, 2013
-  Build Date  : Sep  2 2009                         Run Date: Jul 15, 2017
+  Build Date  : Sep  2 2009                         Run Date: Jul 20, 2017
   (C)1996-2009 M Squared Technologies LLC
   ________________________________________________________________________
 
@@ -21,7 +21,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 43       eLOC 42       lLOC 3        Comment 240      Lines      303
+  LOC 49       eLOC 48       lLOC 3        Comment 240      Lines      309
   ________________________________________________________________________
   End of File: ..\include\qassert.h
 
@@ -188,7 +188,7 @@
 
                           ~~ Total File Summary ~~
 
-  LOC 31       eLOC 31       lLOC 15       Comment 132      Lines      176
+  LOC 32       eLOC 32       lLOC 15       Comment 132      Lines      177
   ________________________________________________________________________
   End of File: ..\include\qxthread.h
 
@@ -1361,27 +1361,27 @@
   Function: QXK_current
   Parameters: (void)
   Complexity   Param 0       Return 1      Cyclo Vg 1       Total        2
-  LOC 8        eLOC 7        lLOC 5        Comment 1        Lines       10
+  LOC 9        eLOC 8        lLOC 6        Comment 2        Lines       13
 
   ------------------------------------------------------------------------
 
                           ~~ Total File Summary ~~
 
-  LOC 220      eLOC 188      lLOC 104      Comment 237      Lines      441
+  LOC 221      eLOC 189      lLOC 105      Comment 238      Lines      444
   ------------------------------------------------------------------------
 
                         ~~ File Functional Summary ~~
 
   File Function Count....:          9
-  Total Function LOC.....:        200  Total Function Pts LOC :        1.7
-  Total Function eLOC....:        168  Total Function Pts eLOC:        1.5
-  Total Function lLOC....:        101  Total Function Pts lLOC:        0.8
+  Total Function LOC.....:        201  Total Function Pts LOC :        1.7
+  Total Function eLOC....:        169  Total Function Pts eLOC:        1.5
+  Total Function lLOC....:        102  Total Function Pts lLOC:        0.8
   Total Function Params .:          8  Total Function Return .:          9
   Total Cyclo Complexity :         29  Total Function Complex.:         46
          ------     -----     -----     ------     ------     -----
-  Max Function LOC ......:         75  Average Function LOC ..:      22.22
-  Max Function eLOC .....:         65  Average Function eLOC .:      18.67
-  Max Function lLOC .....:         36  Average Function lLOC .:      11.22
+  Max Function LOC ......:         75  Average Function LOC ..:      22.33
+  Max Function eLOC .....:         65  Average Function eLOC .:      18.78
+  Max Function lLOC .....:         36  Average Function lLOC .:      11.33
          ------     -----     -----     ------     ------     -----
   Max Function Parameters:          7  Avg Function Parameters:       0.89
   Max Function Returns ..:          1  Avg Function Returns ..:       1.00
@@ -1643,7 +1643,7 @@
 
                          ~~ Total Project Summary ~~
 
-  LOC 4299     eLOC 3891     lLOC 1723     Comment 6831     Lines    11274
+  LOC 4307     eLOC 3899     lLOC 1724     Comment 6832     Lines    11284
   Average per File, metric/36 files
   LOC 119      eLOC 108      lLOC 47       Comment 189      Lines      313
 
@@ -2090,7 +2090,7 @@
   Function: QXK_current
   Parameters: (void)
   Complexity   Param 0       Return 1      Cyclo Vg 1       Total        2
-  LOC 8        eLOC 7        lLOC 5        Comment 1        Lines       10
+  LOC 9        eLOC 8        lLOC 6        Comment 2        Lines       13
 
   Function: QXMutex_init
   Parameters: (QXMutex * const me, uint_fast8_t prio)
@@ -2199,24 +2199,24 @@
   LOC 10       eLOC 9        lLOC 7        Comment 12       Lines       12
 
   Total: Functions
-  LOC 2391     eLOC 2007     lLOC 1286     InCmp 290      CycloCmp     361
+  LOC 2392     eLOC 2008     lLOC 1287     InCmp 290      CycloCmp     361
   Function Points         FP(LOC) 18.5    FP(eLOC) 15.5   FP(lLOC)    10.0
 
   ------------------------------------------------------------------------
 
                       ~~ Project Functional Analysis ~~
 
-  Total Functions .......:        105  Total Physical Lines ..:       3310
-  Total LOC .............:       2391  Total Function Pts LOC :       18.5
-  Total eLOC ............:       2007  Total Function Pts eLOC:       15.5
-  Total lLOC.............:       1286  Total Function Pts lLOC:       10.0
+  Total Functions .......:        105  Total Physical Lines ..:       3313
+  Total LOC .............:       2392  Total Function Pts LOC :       18.5
+  Total eLOC ............:       2008  Total Function Pts eLOC:       15.5
+  Total lLOC.............:       1287  Total Function Pts lLOC:       10.0
   Total Cyclomatic Comp. :        361  Total Interface Comp. .:        290
   Total Parameters ......:        185  Total Return Points ...:        105
-  Total Comment Lines ...:       2698  Total Blank Lines .....:        491
+  Total Comment Lines ...:       2699  Total Blank Lines .....:        492
          ------     -----     -----     ------     ------     -----
-  Avg Physical Lines ....:      31.52
-  Avg LOC ...............:      22.77  Avg eLOC ..............:      19.11
-  Avg lLOC ..............:      12.25  Avg Cyclomatic Comp. ..:       3.44
+  Avg Physical Lines ....:      31.55
+  Avg LOC ...............:      22.78  Avg eLOC ..............:      19.12
+  Avg lLOC ..............:      12.26  Avg Cyclomatic Comp. ..:       3.44
   Avg Interface Comp. ...:       2.76  Avg Parameters ........:       1.76
   Avg Return Points .....:       1.00  Avg Comment Lines .....:      25.70
          ------     -----     -----     ------     ------     -----

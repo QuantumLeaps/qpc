@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.4
-* Last updated on  2017-07-06
+* Last updated for version 5.9.5
+* Last updated on  2017-07-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -435,6 +435,9 @@ struct QActive *QXK_current(void) {
     QF_CRIT_ENTRY_();
     curr = QXK_attr_.curr;
     QF_CRIT_EXIT_();
+
+    /** @post the current thread must be valid */
+    Q_ENSURE_ID(900, curr != (struct QActive *)0);
 
     return curr;
 }

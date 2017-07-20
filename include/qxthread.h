@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-19
+* Last updated for version 5.9.5
+* Last updated on  2017-07-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -91,8 +91,9 @@ typedef QActiveVtbl QXThreadVtbl;
 * @include qxk_start.c
 */
 #define QXTHREAD_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, param_) \
-    QACTIVE_START((me_), (prio_), (QEvt const **)(qSto_), (qLen_), \
-                  (stkSto_), (stkLen_), (param_))
+    ((*((QActiveVtbl const *)((me_)->super.super.vptr))->start)( \
+        &(me_)->super, (prio_), (QEvt const **)(qSto_), (qLen_), \
+        (stkSto_), (stkLen_), (param_)))
 
 /*! Thread handler pointer-to-function */
 typedef void (*QXThreadHandler)(QXThread * const me);
