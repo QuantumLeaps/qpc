@@ -1,7 +1,7 @@
 ;*****************************************************************************
-; Product: QV port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), TI-ARM assembler
-; Last Updated for Version: 5.9.0
-; Date of the Last Update:  2017-03-17
+; Product: QV port to ARM Cortex-M (M0,M0+,M3,M4,M7), TI-ARM assembler
+; Last Updated for Version: 5.9.6
+; Date of the Last Update:  2017-07-28
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -139,16 +139,17 @@ QV_init:    .asmfunc
     LSLS    r1,r1,#8
     ORRS    r1,r1,#QF_BASEPRI
 
+    LDR     r2,PRI0_addr      ; NVIC_PRI0 register
     LDR     r3,ICTR_addr      ; Interrupt Controller Type Register
-    LDR     r3,[r3]           ; r3 := INTLINESUM
+    LDR     r3,[r3]           ; r3 := ICTR
+    ANDS    r3,r3,#7          ; r3 := ICTR[0:2] (INTLINESNUM)
     LSLS    r3,r3,#3
-    ADDS    r3,r3,#8          ; r3 == number of NVIC_PRIO registers
+    ADDS    r3,r3,#8          ; r3 == (# NVIC_PRIO registers)/4
 
     ; loop over all implemented NVIC_PRIO registers for IRQs...
 QV_init_irq:
     SUBS    r3,r3,#1
-    LDR     r2,PRI0_addr      ; NVIC_PRI0 register
-    STR     r1,[r2,r3,LSL #2] ; NVIC_PRI0[r3]  := r1
+    STR     r1,[r2,r3,LSL #2] ; NVIC_PRI0[r3] := r1
     CMP     r3,#0
     BNE     QV_init_irq
 

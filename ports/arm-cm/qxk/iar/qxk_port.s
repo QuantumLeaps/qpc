@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), IAR-ARM assembler
-; Last Updated for Version: 5.9.4
-; Date of the Last Update:  2017-07-06
+; Last Updated for Version: 5.9.6
+; Date of the Last Update:  2017-07-28
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -51,7 +51,7 @@ QXK_NEXT        EQU 4
 QXK_TOP_PRIO    EQU 8
 
     ; NOTE: keep in synch with the QMActive struct in "qf.h/qxk.h" !!!
-QMACTIVE_OSOBJ EQU 40
+QMACTIVE_OSOBJ  EQU 40
 QMACTIVE_PRIO   EQU 48
 
 
@@ -123,20 +123,21 @@ QXK_init:
     LSLS    r1,r1,#8
     ORRS    r1,r1,#QF_BASEPRI
 
-    LDR     r3,=0xE000E004    ; Interrupt Controller Type Register
-    LDR     r3,[r3]           ; r3 := INTLINESUM
+    LDR     r2,=0xE000E400    ; NVIC_PRI0 register
+    LDR     r3,=0xE000E004    ; Interrupt Controller Type Register (ICTR)
+    LDR     r3,[r3]
+    ANDS    r3,r3,#7          ; r3 := ICTR[0:2] (INTLINESNUM)
     LSLS    r3,r3,#3
-    ADDS    r3,r3,#8          ; r3 == number of NVIC_PRIO registers
+    ADDS    r3,r3,#8          ; r3 == (# NVIC_PRIO registers)/4
 
     ; loop over all implemented NVIC_PRIO registers for IRQs...
 QXK_init_irq:
     SUBS    r3,r3,#1
-    LDR     r2,=0xE000E400    ; NVIC_PRI0 register
-    STR     r1,[r2,r3,LSL #2] ; NVIC_PRI0[r3]  := r1
+    STR     r1,[r2,r3,LSL #2] ; NVIC_PRI0[r3] := r1
     CMP     r3,#0
     BNE     QXK_init_irq
 
-#endif                        ; Cortex-M3/M4/...
+#endif                        ; Cortex-M3/M4/M7
 
     MOV     r0,r12            ; r0 := original PRIMASK
     MSR     PRIMASK,r0        ; PRIMASK := r0

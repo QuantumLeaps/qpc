@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.5
-* Last updated on  2017-07-19
+* Last updated for version 5.9.6
+* Last updated on  2017-07-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -158,15 +158,17 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
 /****************************************************************************/
 /*! Counting Semaphore of the QXK preemptive kernel */
 typedef struct {
-    uint_fast16_t count;
     QPSet waitSet; /*!< set of extended-threads waiting on this semaphore */
+    uint_fast16_t count;
+    uint_fast16_t max_count;
 } QXSemaphore;
 
 /*! initialize the counting semaphore */
-void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count);
+void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
+                      uint_fast16_t max_count);
 
 /*! signal (unblock) the semaphore */
-void QXSemaphore_signal(QXSemaphore * const me);
+bool QXSemaphore_signal(QXSemaphore * const me);
 
 /*! wait (block) on the semaphore */
 bool QXSemaphore_wait(QXSemaphore * const me,

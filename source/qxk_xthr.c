@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.4
-* Last updated on  2017-07-06
+* Last updated for version 5.9.6
+* Last updated on  2017-07-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -386,9 +386,15 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
     QF_CRIT_ENTRY_();
     thr = (QXThread *)QXK_attr_.curr;
 
+    /** @pre this function must:
+    * (1) NOT be called from an ISR; (2) be called from an extended thread;
+    * (3) the thread must NOT be holding a mutex and
+    * (4) the thread must NOT be already blocked on any object.
+    */
     Q_REQUIRE_ID(500, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
-        && (thr != (QXThread *)0)     /* current thread must be extended */
-        && (thr->super.super.temp.obj == (QMState const *)0)); /* !blocked */
+        && (thr != (QXThread *)0) /* current thread must be extended */
+        && (QXK_attr_.lockPrio == (uint_fast8_t)0) /* not holding a mutex */
+        && (thr->super.super.temp.obj == (QMState *)0)); /* not blocked */
 
     /* is the queue empty? */
     if (thr->super.eQueue.frontEvt == (QEvt *)0) {
@@ -467,7 +473,7 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
 * must be called from within a critical section
 */
 void QXThread_block_(QXThread const * const me) {
-    /*! @pre the thread holding the lock cannot block! */
+    /** @pre the thread holding the lock cannot block! */
     Q_REQUIRE_ID(600,  me->super.prio != QXK_attr_.lockPrio);
     QPSet_remove(&QXK_attr_.readySet, me->super.prio);
     (void)QXK_sched_();
@@ -503,7 +509,7 @@ void QXThread_teArm_(QXThread * const me,
                      QSignal sig,
                      uint_fast16_t const nTicks, uint_fast8_t const tickRate)
 {
-    /* the time event must be unused */
+    /** @pre the time event must be unused */
     Q_REQUIRE_ID(700, me->timeEvt.ctr == (QTimeEvtCtr)0);
 
     me->timeEvt.super.sig = sig;
@@ -564,8 +570,15 @@ bool QXThread_delay(uint_fast16_t const nTicks, uint_fast8_t const tickRate) {
     QF_CRIT_ENTRY_();
     thr = (QXThread *)QXK_attr_.curr;
 
-    /* the delaying thread must not be blocked on any object  */
-    Q_REQUIRE_ID(900, thr->super.super.temp.obj == (QMState const *)0);
+    /** @pre this function must:
+    * (1) NOT be called from an ISR; (2) be called from an extended thread;
+    * (3) the thread must NOT be holding a mutex and
+    * (4) the thread must NOT be already blocked on any object.
+    */
+    Q_REQUIRE_ID(900, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
+        && (thr != (QXThread *)0) /* current thread must be extended */
+        && (QXK_attr_.lockPrio == (uint_fast8_t)0) /* not holding a mutex */
+        && (thr->super.super.temp.obj == (QMState *)0)); /* not blocked */
 
     /* remember the blocking object */
     thr->super.super.temp.obj = (QMState const *)&thr->timeEvt;

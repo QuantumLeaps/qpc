@@ -1,8 +1,9 @@
 ![QP framework](https://state-machine.com/img/qp_banner.jpg)
 
+> **NOTE:** If your company has a policy forbidding open source in your product, all QP frameworks can be [licensed commercially](https://state-machine.com/licensing), in which case you don't use any open source license and you do not violate your policy.
+
 # What's New?
-View QP/C Revision History at: 
-https://state-machine.com/qpc/history.html
+View QP/C Revision History at: https://state-machine.com/qpc/history.html
 
 ---------------------------------------------------------------------------
 # About QP/C
@@ -71,14 +72,19 @@ https://state-machine.com/doc/AN_Getting_Started_with_QPC.pdf
 The guide also contains a tutorial, in which you build a simple "Blinky"
 application.
 
-> NOTE: QP/C can be unzipped anywhere in your file system, but the
-recommended location is `C:\qp\qpcpp` on Windows and `~/qp/qpcpp`
+> **NOTE:** QP/C can be unzipped anywhere in your file system, but the
+recommended location is `C:\qp\qpc` on Windows and `~/qp/qpc`
 on Linux/MacOS.
 
 ---------------------------------------------------------------------------
+# QP/C Licensing
+QP/C is licensed under the increasingly popular [dual licensing model](https://state-machine.com/licensing), in which both the open source software distribution mechanism and traditional closed source software distribution models are combined.
+
+> **NOTE:** If your company has a policy forbidding open source in your product, all QP frameworks can be [licensed commercially](https://state-machine.com/licensing), in which case you don't use any open source license and you do not violate your policy.
+
+---------------------------------------------------------------------------
 # QP/C Documentation
-The **QP/C Manual** is located online at:
-- https://state-machine.com/qpc
+The **QP/C Manual** is located online at: https://state-machine.com/qpc
 
 ---------------------------------------------------------------------------
 # How to get help?

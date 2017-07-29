@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.5
-* Last updated on  2017-07-19
+* Last updated for version 5.9.6
+* Last updated on  2017-07-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -58,7 +58,7 @@ Q_DEFINE_THIS_MODULE("qxk")
 QXK_Attr QXK_attr_; /* global attributes of the QXK kernel */
 
 /* Local-scope objects ******************************************************/
-static QXThread l_idleThread;
+static QActive l_idleThread;
 
 /****************************************************************************/
 /**
@@ -86,7 +86,7 @@ void QF_init(void) {
     QXK_attr_.lockPrio = (uint_fast8_t)(QF_MAX_ACTIVE + 1);
 
     /* setup the QXK idle loop... */
-    QF_active_[0] = &l_idleThread.super; /* register idle thread with QF */
+    QF_active_[0] = &l_idleThread;       /* register idle thread with QF */
     QXK_attr_.actPrio = (uint_fast8_t)0; /* set the idle thread priority */
 
 #ifdef QXK_INIT
@@ -434,6 +434,9 @@ struct QActive *QXK_current(void) {
 
     QF_CRIT_ENTRY_();
     curr = QXK_attr_.curr;
+    if (curr == (struct QActive *)0) { /* basic thread? */
+        curr = QF_active_[QXK_attr_.actPrio];
+    }
     QF_CRIT_EXIT_();
 
     /** @post the current thread must be valid */

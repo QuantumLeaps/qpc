@@ -3,8 +3,8 @@
 * @brief QV/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-14
+* Last Updated for Version: 5.9.6
+* Date of the Last Update:  2017-07-28
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -75,7 +75,7 @@ void QV_init(void) {
     SCB_SYSPRI[3] |= (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI;
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
-    n = 8 + (*SCnSCB_ICTR << 3); /* # interrupt priority registers */
+    n = 8U + ((*SCnSCB_ICTR & 0x7U) << 3); /* (# NVIC_PRIO registers)/4 */
     do {
         --n;
         NVIC_IP[n] = (QF_BASEPRI << 24) | (QF_BASEPRI << 16)

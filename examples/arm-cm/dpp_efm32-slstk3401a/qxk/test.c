@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.9.4
-* Date of the Last Update:  2017-07-06
+* Last Updated for Version: 5.9.6
+* Date of the Last Update:  2017-07-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -76,6 +76,7 @@ static void Thread1_run(QXThread * const me) {
         /* some flating point code to exercise the VFP... */
         x = 1.4142135F;
         x = x * 1.4142135F;
+        //QXThread_delay(1U, 0U); /*asserts (blocking while holding a mutex)*/
         QXMutex_unlock(&l_mutex);
 
         QXThread_delay(BSP_TICKS_PER_SEC/7, 0U);  /* BLOCK */
@@ -106,7 +107,9 @@ static void Thread2_run(QXThread * const me) {
     * that uses it. Alternatively, the semaphore can be initialized
     * before any thread runs.
     */
-    QXSemaphore_init(&l_sema, 0U); /* start with zero count */
+    QXSemaphore_init(&l_sema,
+                     0U,  /* count==0 (signaling semaphore) */
+                     1U); /* max_count==1 (binary semaphore) */
 
     for (;;) {
         QEvt const *e;

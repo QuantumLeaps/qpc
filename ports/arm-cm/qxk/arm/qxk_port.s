@@ -1,7 +1,7 @@
 ;*****************************************************************************
-; Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), ARM-Keil assembler
-; Last Updated for Version: 5.9.4
-; Date of the Last Update:  2017-07-06
+; Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), ARM-Keil assembler
+; Last Updated for Version: 5.9.6
+; Date of the Last Update:  2017-07-28
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -83,7 +83,7 @@ QXK_init     FUNCTION
   ELSE                        ; Cortex-M3/M4/..
 
     ; NOTE:
-    ; On Cortex-M3/M4/M7.., this QK port disables interrupts by means of
+    ; On Cortex-M3/M4/M7.., this QXK port disables interrupts by means of
     ; the BASEPRI register. However, this method cannot disable interrupt
     ; priority zero, which is the default for all interrupts out of reset.
     ; The following code changes the SysTick priority and all IRQ priorities
@@ -124,16 +124,17 @@ QXK_init     FUNCTION
     LSLS    r1,r1,#8
     ORRS    r1,r1,#QF_BASEPRI
 
-    LDR     r3,=0xE000E004    ; Interrupt Controller Type Register
-    LDR     r3,[r3]           ; r3 := INTLINESUM
+    LDR     r2,=0xE000E400    ; NVIC_PRI0 register
+    LDR     r3,=0xE000E004    ; Interrupt Controller Type Register (ICTR)
+    LDR     r3,[r3]
+    ANDS    r3,r3,#7          ; r3 := ICTR[0:2] (INTLINESNUM)
     LSLS    r3,r3,#3
-    ADDS    r3,r3,#8          ; r3 == number of NVIC_PRIO registers
+    ADDS    r3,r3,#8          ; r3 == (# NVIC_PRIO registers)/4
 
     ; loop over all implemented NVIC_PRIO registers for IRQs...
 QXK_init_irq
     SUBS    r3,r3,#1
-    LDR     r2,=0xE000E400    ; NVIC_PRI0 register
-    STR     r1,[r2,r3,LSL #2] ; NVIC_PRI0[r3]  := r1
+    STR     r1,[r2,r3,LSL #2] ; NVIC_PRI0[r3] := r1
     CMP     r3,#0
     BNE     QXK_init_irq
 

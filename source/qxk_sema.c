@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.5
-* Last updated on  2017-07-20
+* Last updated for version 5.9.6
+* Last updated on  2017-07-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -57,21 +57,30 @@ Q_DEFINE_THIS_MODULE("qxk_sema")
 /****************************************************************************/
 /**
 * @description
-* Initializes a semaphore with the specified count. If the semaphore is used
-* for resource sharing, the initial value of the semaphore count should be
-* set to the number of identical resources guarded by the semaphore. If the
-* semaphore is used as a signaling mechanism, the initial count should set
-* to 0.
+* Initializes a semaphore with the specified count and maximum count.
+* If the semaphore is used for resource sharing, both the initial count
+* and maximum count should be set to the number of identical resources
+* guarded by the semaphore. If the semaphore is used as a signaling
+* mechanism, the initial count should set to 0 and maximum count to 1
+* (binary semaphore).
 *
 * @param[in,out] me     pointer (see @ref oop)
 * @param[in]     count  initial value of the semaphore counter
+* @param[in]     max_count  maximum value of the semaphore counter.
+*                The purpose of the max_count is to limit the counter
+*                so that the semaphore cannot unblock more times than
+*                the maximum.
 *
 * @note
 * QXSemaphore_init() must be called **before** the semaphore can be used
 * (signaled or waited on).
 */
-void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count) {
+void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
+                      uint_fast16_t max_count)
+{
+    Q_REQUIRE_ID(100, max_count > (uint_fast16_t)0);
     me->count = count;
+    me->max_count = max_count;
     QPSet_setEmpty(&me->waitSet);
 }
 
@@ -109,9 +118,15 @@ bool QXSemaphore_wait(QXSemaphore * const me,
     QF_CRIT_ENTRY_();
     thr = (QXThread *)QXK_attr_.curr;
 
-    Q_REQUIRE_ID(100, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
+    /** @pre this function must:
+    * (1) NOT be called from an ISR; (2) be called from an extended thread;
+    * (3) the thread must NOT be holding a mutex and
+    * (4) the thread must NOT be already blocked on any object.
+    */
+    Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
         && (thr != (QXThread *)0) /* current thread must be extended */
-        && (thr->super.super.temp.obj == (QMState const *)0)); /* !blocked */
+        && (QXK_attr_.lockPrio == (uint_fast8_t)0) /* not holding a mutex */
+        && (thr->super.super.temp.obj == (QMState *)0)); /* not blocked */
 
     if (me->count > (uint_fast16_t)0) {
         --me->count;
@@ -129,7 +144,7 @@ bool QXSemaphore_wait(QXSemaphore * const me,
 
         QF_CRIT_ENTRY_();
         /* the blocking object must be this semaphore */
-        Q_ASSERT_ID(110, thr->super.super.temp.obj == (QMState const *)me);
+        Q_ASSERT_ID(210, thr->super.super.temp.obj == (QMState const *)me);
         thr->super.super.temp.obj = (QMState const *)0; /* clear */
     }
     QF_CRIT_EXIT_();
@@ -150,11 +165,15 @@ bool QXSemaphore_wait(QXSemaphore * const me,
 *
 * @param[in,out] me     pointer (see @ref oop)
 *
+* @returns true when the semaphore signaled and false when the semaphore
+* count exceeded the maximum.
+*
 * @note
 * A semaphore can be signaled from many places, including from ISRs, basic
 * threads (AOs), and extended threads.
 */
-void QXSemaphore_signal(QXSemaphore * const me) {
+bool QXSemaphore_signal(QXSemaphore * const me) {
+    bool signaled = true; /* assume that the semaphore will be signaled */
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
@@ -162,14 +181,14 @@ void QXSemaphore_signal(QXSemaphore * const me) {
         uint_fast8_t p;
         QXThread *thr;
 
+        /* find the highest-priority thread waiting on this semaphore */
         QPSet_findMax(&me->waitSet,       p);
         QPSet_insert(&QXK_attr_.readySet, p);
         QPSet_remove(&me->waitSet,        p);
+        thr = (QXThread *)QF_active_[p];
 
-        thr = (QXThread *)QF_active_[p]; /* thread waiting on the semaphore */
-
-        Q_ASSERT_ID(210,
-            (thr->super.osObject != (struct QActive *)0) /* must be extended */
+        Q_ASSERT_ID(210, (thr != (QXThread *)0) /* must be registered */
+            && (thr->super.osObject != (struct QActive *)0) /* extended thr.*/
             && (me->count == (uint_fast16_t)0)); /* sema counter must be 0 */
 
         /* disarm the internal time event */
@@ -180,8 +199,15 @@ void QXSemaphore_signal(QXSemaphore * const me) {
         }
     }
     else {
-        ++me->count;
+        if (me->count < me->max_count) {
+            ++me->count;
+        }
+        else {
+            signaled = false; /* semaphore NOT signaled */
+        }
     }
     QF_CRIT_EXIT_();
+
+    return signaled;
 }
 
