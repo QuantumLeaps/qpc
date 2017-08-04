@@ -73,7 +73,9 @@ VPATH = \
 VPATH = \
 	.. \
 	../.. \
-	$(QPC)/source \
+	$(QPC)/src/qf \
+	$(QPC)/src/qxk \
+	$(QPC)/src/qs \
 	$(QP_PORT_DIR) \
 	$(QPC)/3rd_party/stm32f7-discovery \
 	$(QPC)/3rd_party/stm32f7-discovery/gnu \
@@ -84,7 +86,7 @@ VPATH = \
 INCLUDES  = \
 	-I../.. \
 	-I$(QPC)/include \
-	-I$(QPC)/source \
+	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPC)/3rd_party/CMSIS/Include \
 	-I$(QPC)/3rd_party/stm32f7-discovery \

@@ -10,7 +10,7 @@
       <TargetName>dpp-dbg</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060020::V5.06 (build 20)::ARMCC</pCCUsed>
+      <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32L152RE</Device>
@@ -125,47 +125,6 @@
             <HexOffset>0</HexOffset>
             <Oh166RecLen>16</Oh166RecLen>
           </OPTHX>
-          <Simulator>
-            <UseSimulator>0</UseSimulator>
-            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>1</RunToMain>
-            <RestoreBreakpoints>1</RestoreBreakpoints>
-            <RestoreWatchpoints>1</RestoreWatchpoints>
-            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
-            <RestoreFunctions>1</RestoreFunctions>
-            <RestoreToolbox>1</RestoreToolbox>
-            <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
-            <RestoreSysVw>1</RestoreSysVw>
-          </Simulator>
-          <Target>
-            <UseTarget>1</UseTarget>
-            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>1</RunToMain>
-            <RestoreBreakpoints>1</RestoreBreakpoints>
-            <RestoreWatchpoints>1</RestoreWatchpoints>
-            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
-            <RestoreFunctions>0</RestoreFunctions>
-            <RestoreToolbox>1</RestoreToolbox>
-            <RestoreTracepoints>0</RestoreTracepoints>
-            <RestoreSysVw>1</RestoreSysVw>
-          </Target>
-          <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>11</TargetSelection>
-          <SimDlls>
-            <CpuDll></CpuDll>
-            <CpuDllArguments></CpuDllArguments>
-            <PeripheralDll></PeripheralDll>
-            <PeripheralDllArguments></PeripheralDllArguments>
-            <InitializationFile></InitializationFile>
-          </SimDlls>
-          <TargetDlls>
-            <CpuDll></CpuDll>
-            <CpuDllArguments></CpuDllArguments>
-            <PeripheralDll></PeripheralDll>
-            <PeripheralDllArguments></PeripheralDllArguments>
-            <InitializationFile></InitializationFile>
-            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
-          </TargetDlls>
         </DebugOption>
         <Utilities>
           <Flash1>
@@ -369,11 +328,13 @@
             <v6LangP>0</v6LangP>
             <vShortEn>0</vShortEn>
             <vShortWch>0</vShortWch>
+            <v6Lto>0</v6Lto>
+            <v6WtE>0</v6WtE>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>HSE_VALUE=4000000</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\source;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\nucleo-l152re</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\nucleo-l152re</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -494,82 +455,82 @@
             <File>
               <FileName>qep_hsm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_hsm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_hsm.c</FilePath>
             </File>
             <File>
               <FileName>qep_msm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_msm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_msm.c</FilePath>
             </File>
             <File>
               <FileName>qf_act.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_act.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_act.c</FilePath>
             </File>
             <File>
               <FileName>qf_actq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_actq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_actq.c</FilePath>
             </File>
             <File>
               <FileName>qf_defer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_defer.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_defer.c</FilePath>
             </File>
             <File>
               <FileName>qf_dyn.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_dyn.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_dyn.c</FilePath>
             </File>
             <File>
               <FileName>qf_mem.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_mem.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_mem.c</FilePath>
             </File>
             <File>
               <FileName>qf_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qf_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qf_pkg.h</FilePath>
             </File>
             <File>
               <FileName>qf_ps.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_ps.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_ps.c</FilePath>
             </File>
             <File>
               <FileName>qf_qact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qact.c</FilePath>
             </File>
             <File>
               <FileName>qf_qeq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qeq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qeq.c</FilePath>
             </File>
             <File>
               <FileName>qf_qmact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qmact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qmact.c</FilePath>
             </File>
             <File>
               <FileName>qf_time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_time.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_time.c</FilePath>
             </File>
             <File>
               <FileName>qk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
             <File>
               <FileName>qk_mutex.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk_mutex.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
             </File>
             <File>
               <FileName>qk_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qk_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -643,6 +604,8 @@
                 <v6LangP>0</v6LangP>
                 <vShortEn>0</vShortEn>
                 <vShortWch>0</vShortWch>
+                <v6Lto>0</v6Lto>
+                <v6WtE>0</v6WtE>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -673,22 +636,22 @@
             <File>
               <FileName>qs.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs.c</FilePath>
             </File>
             <File>
               <FileName>qs_64bit.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_64bit.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_64bit.c</FilePath>
             </File>
             <File>
               <FileName>qs_fp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_fp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
               <FileName>qs_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qs_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -813,47 +776,6 @@
             <HexOffset>0</HexOffset>
             <Oh166RecLen>16</Oh166RecLen>
           </OPTHX>
-          <Simulator>
-            <UseSimulator>0</UseSimulator>
-            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>1</RunToMain>
-            <RestoreBreakpoints>1</RestoreBreakpoints>
-            <RestoreWatchpoints>1</RestoreWatchpoints>
-            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
-            <RestoreFunctions>1</RestoreFunctions>
-            <RestoreToolbox>1</RestoreToolbox>
-            <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
-            <RestoreSysVw>1</RestoreSysVw>
-          </Simulator>
-          <Target>
-            <UseTarget>1</UseTarget>
-            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>1</RunToMain>
-            <RestoreBreakpoints>1</RestoreBreakpoints>
-            <RestoreWatchpoints>1</RestoreWatchpoints>
-            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
-            <RestoreFunctions>0</RestoreFunctions>
-            <RestoreToolbox>1</RestoreToolbox>
-            <RestoreTracepoints>0</RestoreTracepoints>
-            <RestoreSysVw>1</RestoreSysVw>
-          </Target>
-          <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>11</TargetSelection>
-          <SimDlls>
-            <CpuDll></CpuDll>
-            <CpuDllArguments></CpuDllArguments>
-            <PeripheralDll></PeripheralDll>
-            <PeripheralDllArguments></PeripheralDllArguments>
-            <InitializationFile></InitializationFile>
-          </SimDlls>
-          <TargetDlls>
-            <CpuDll></CpuDll>
-            <CpuDllArguments></CpuDllArguments>
-            <PeripheralDll></PeripheralDll>
-            <PeripheralDllArguments></PeripheralDllArguments>
-            <InitializationFile></InitializationFile>
-            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
-          </TargetDlls>
         </DebugOption>
         <Utilities>
           <Flash1>
@@ -1057,11 +979,13 @@
             <v6LangP>0</v6LangP>
             <vShortEn>0</vShortEn>
             <vShortWch>0</vShortWch>
+            <v6Lto>0</v6Lto>
+            <v6WtE>0</v6WtE>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>NDEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\source;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\nucleo-l152re</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\nucleo-l152re</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1182,82 +1106,82 @@
             <File>
               <FileName>qep_hsm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_hsm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_hsm.c</FilePath>
             </File>
             <File>
               <FileName>qep_msm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_msm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_msm.c</FilePath>
             </File>
             <File>
               <FileName>qf_act.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_act.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_act.c</FilePath>
             </File>
             <File>
               <FileName>qf_actq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_actq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_actq.c</FilePath>
             </File>
             <File>
               <FileName>qf_defer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_defer.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_defer.c</FilePath>
             </File>
             <File>
               <FileName>qf_dyn.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_dyn.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_dyn.c</FilePath>
             </File>
             <File>
               <FileName>qf_mem.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_mem.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_mem.c</FilePath>
             </File>
             <File>
               <FileName>qf_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qf_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qf_pkg.h</FilePath>
             </File>
             <File>
               <FileName>qf_ps.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_ps.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_ps.c</FilePath>
             </File>
             <File>
               <FileName>qf_qact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qact.c</FilePath>
             </File>
             <File>
               <FileName>qf_qeq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qeq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qeq.c</FilePath>
             </File>
             <File>
               <FileName>qf_qmact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qmact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qmact.c</FilePath>
             </File>
             <File>
               <FileName>qf_time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_time.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_time.c</FilePath>
             </File>
             <File>
               <FileName>qk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
             <File>
               <FileName>qk_mutex.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk_mutex.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
             </File>
             <File>
               <FileName>qk_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qk_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1331,6 +1255,8 @@
                 <v6LangP>0</v6LangP>
                 <vShortEn>0</vShortEn>
                 <vShortWch>0</vShortWch>
+                <v6Lto>0</v6Lto>
+                <v6WtE>0</v6WtE>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -1361,22 +1287,22 @@
             <File>
               <FileName>qs.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs.c</FilePath>
             </File>
             <File>
               <FileName>qs_64bit.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_64bit.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_64bit.c</FilePath>
             </File>
             <File>
               <FileName>qs_fp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_fp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
               <FileName>qs_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qs_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1501,47 +1427,6 @@
             <HexOffset>0</HexOffset>
             <Oh166RecLen>16</Oh166RecLen>
           </OPTHX>
-          <Simulator>
-            <UseSimulator>0</UseSimulator>
-            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>1</RunToMain>
-            <RestoreBreakpoints>1</RestoreBreakpoints>
-            <RestoreWatchpoints>1</RestoreWatchpoints>
-            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
-            <RestoreFunctions>1</RestoreFunctions>
-            <RestoreToolbox>1</RestoreToolbox>
-            <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
-            <RestoreSysVw>1</RestoreSysVw>
-          </Simulator>
-          <Target>
-            <UseTarget>1</UseTarget>
-            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>1</RunToMain>
-            <RestoreBreakpoints>1</RestoreBreakpoints>
-            <RestoreWatchpoints>1</RestoreWatchpoints>
-            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
-            <RestoreFunctions>0</RestoreFunctions>
-            <RestoreToolbox>1</RestoreToolbox>
-            <RestoreTracepoints>0</RestoreTracepoints>
-            <RestoreSysVw>1</RestoreSysVw>
-          </Target>
-          <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>11</TargetSelection>
-          <SimDlls>
-            <CpuDll></CpuDll>
-            <CpuDllArguments></CpuDllArguments>
-            <PeripheralDll></PeripheralDll>
-            <PeripheralDllArguments></PeripheralDllArguments>
-            <InitializationFile></InitializationFile>
-          </SimDlls>
-          <TargetDlls>
-            <CpuDll></CpuDll>
-            <CpuDllArguments></CpuDllArguments>
-            <PeripheralDll></PeripheralDll>
-            <PeripheralDllArguments></PeripheralDllArguments>
-            <InitializationFile></InitializationFile>
-            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
-          </TargetDlls>
         </DebugOption>
         <Utilities>
           <Flash1>
@@ -1745,11 +1630,13 @@
             <v6LangP>0</v6LangP>
             <vShortEn>0</vShortEn>
             <vShortWch>0</vShortWch>
+            <v6Lto>0</v6Lto>
+            <v6WtE>0</v6WtE>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>Q_SPY</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\source;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\nucleo-l152re</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\nucleo-l152re</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1870,82 +1757,82 @@
             <File>
               <FileName>qep_hsm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_hsm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_hsm.c</FilePath>
             </File>
             <File>
               <FileName>qep_msm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_msm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_msm.c</FilePath>
             </File>
             <File>
               <FileName>qf_act.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_act.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_act.c</FilePath>
             </File>
             <File>
               <FileName>qf_actq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_actq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_actq.c</FilePath>
             </File>
             <File>
               <FileName>qf_defer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_defer.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_defer.c</FilePath>
             </File>
             <File>
               <FileName>qf_dyn.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_dyn.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_dyn.c</FilePath>
             </File>
             <File>
               <FileName>qf_mem.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_mem.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_mem.c</FilePath>
             </File>
             <File>
               <FileName>qf_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qf_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qf_pkg.h</FilePath>
             </File>
             <File>
               <FileName>qf_ps.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_ps.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_ps.c</FilePath>
             </File>
             <File>
               <FileName>qf_qact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qact.c</FilePath>
             </File>
             <File>
               <FileName>qf_qeq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qeq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qeq.c</FilePath>
             </File>
             <File>
               <FileName>qf_qmact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qmact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qmact.c</FilePath>
             </File>
             <File>
               <FileName>qf_time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_time.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_time.c</FilePath>
             </File>
             <File>
               <FileName>qk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
             <File>
               <FileName>qk_mutex.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk_mutex.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
             </File>
             <File>
               <FileName>qk_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qk_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1985,22 +1872,22 @@
             <File>
               <FileName>qs.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs.c</FilePath>
             </File>
             <File>
               <FileName>qs_64bit.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_64bit.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_64bit.c</FilePath>
             </File>
             <File>
               <FileName>qs_fp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_fp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
               <FileName>qs_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qs_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
             </File>
           </Files>
         </Group>

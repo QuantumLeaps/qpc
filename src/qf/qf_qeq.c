@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.1
-* Last updated on  2016-12-14
+* Last updated for version 5.9.6
+* Last updated on  2017-08-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -101,12 +101,14 @@ void QEQueue_init(QEQueue * const me, QEvt const *qSto[],
 *
 * @param[in,out] me     pointer (see @ref oop)
 * @param[in]     e      pointer to the event to be posted to the queue
-* @param[in]     margin number of unused slots in the queue that must
-*                       be still available after posting the event
+* @param[in]     margin number of required free slots in the queue after
+*                       posting the event. The special value #QF_NO_MARGIN
+*                       means that this function will assert if posting
 * @note
-* The zero value of the @p margin parameter is special and denotes situation
-* when event posting is assumed to succeed (event delivery guarantee).
-* An assertion fires, when the event cannot be delivered in this case.
+* The #QF_NO_MARGIN value of the @p margin parameter is special and
+* denotes situation when the post() operation is assumed to succeed (event
+* delivery guarantee). An assertion fires, when the event cannot be
+* delivered in this case.
 *
 * @returns 'true' (success) when the posting succeeded with the provided
 * margin and 'false' (failure) when the posting fails.
@@ -129,7 +131,9 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
     nFree = me->nFree; /* get volatile into the temporary */
 
     /* required margin available? */
-    if (nFree > (QEQueueCtr)margin) {
+    if (((margin == QF_NO_MARGIN) && (nFree > (QEQueueCtr)0))
+        || (nFree > (QEQueueCtr)margin))
+    {
 
         QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_FIFO,
                          QS_priv_.locFilter[EQ_OBJ], me)
@@ -169,11 +173,10 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
         status = true; /* event posted successfully */
     }
     else {
-        /** @note If the @p margin is zero, assert that the queue can accept
-        * the event. This is to support the "guaranteed event delivery"
-        * policy for most events posted within the framework.
+        /** @note assert if event cannot be posted and dropping events is
+        * not acceptable
         */
-        Q_ASSERT_ID(210, margin != (uint_fast16_t)0);
+        Q_ASSERT_ID(210, margin != QF_NO_MARGIN);
 
         QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_ATTEMPT,
                          QS_priv_.locFilter[EQ_OBJ], me)

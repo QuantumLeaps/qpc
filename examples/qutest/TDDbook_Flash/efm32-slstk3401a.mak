@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EMF32-SLSTK3401A, QUTEST, GNU-ARM
-# Last updated for version 5.9.0
-# Last updated on  2017-05-17
+# Last updated for version 5.9.6
+# Last updated on  2017-08-02
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -69,24 +69,25 @@ QP_PORT_DIR := $(QPC)/ports/arm-cm/qutest
 
 # list of all source directories used by this project
 VPATH = \
-    .. \
-    ../.. \
-    ../$(TARGET) \
-    $(QPC)/source \
-    $(QP_PORT_DIR) \
-    $(QPC)/3rd_party/efm32pg1b \
-    $(QPC)/3rd_party/efm32pg1b/gnu
+	.. \
+	../.. \
+	../$(TARGET) \
+	$(QPC)/src/qf \
+	$(QPC)/src/qs \
+	$(QP_PORT_DIR) \
+	$(QPC)/3rd_party/efm32pg1b \
+	$(QPC)/3rd_party/efm32pg1b/gnu
 
 # list of all include directories needed by this project
 INCLUDES  = \
-    -I. \
-    -I.. \
-    -I../$(TARGET) \
-    -I$(QPC)/include \
-    -I$(QPC)/source \
-    -I$(QP_PORT_DIR) \
-    -I$(QPC)/3rd_party/CMSIS/Include \
-    -I$(QPC)/3rd_party/efm32pg1b
+	-I. \
+	-I.. \
+	-I../$(TARGET) \
+	-I$(QPC)/include \
+	-I$(QPC)/src \
+	-I$(QP_PORT_DIR) \
+	-I$(QPC)/3rd_party/CMSIS/Include \
+	-I$(QPC)/3rd_party/efm32pg1b
 
 #-----------------------------------------------------------------------------
 # files
@@ -268,30 +269,30 @@ all : $(TARGET_BIN) run
 endif
 
 $(TARGET_BIN): $(TARGET_ELF)
-    $(BIN) -O binary $< $@
-    $(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
+	$(BIN) -O binary $< $@
+	$(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-    $(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
-    $(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
+	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_BIN)
-    $(TCLSH) $(QUTEST)
+	$(TCLSH) $(QUTEST)
 
 $(BIN_DIR)/%.d : %.c
-    $(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
+	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
 $(BIN_DIR)/%.d : %.cpp
-    $(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
+	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
 
 $(BIN_DIR)/%.o : %.s
-    $(AS) $(ASFLAGS) $< -o $@
+	$(AS) $(ASFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.c
-    $(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BIN_DIR)/%.o : %.cpp
-    $(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CPP) $(CPPFLAGS) -c $< -o $@
 
 .PHONY : clean show
 
@@ -303,28 +304,28 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 clean :
-    -$(RM) $(BIN_DIR)/*.o \
-    $(BIN_DIR)/*.d \
-    $(BIN_DIR)/*.bin \
-    $(BIN_DIR)/*.elf \
-    $(BIN_DIR)/*.map
+	-$(RM) $(BIN_DIR)/*.o \
+	$(BIN_DIR)/*.d \
+	$(BIN_DIR)/*.bin \
+	$(BIN_DIR)/*.elf \
+	$(BIN_DIR)/*.map
 
 show :
-    @echo PROJECT      = $(PROJECT)
-    @echo TARGET_ELF   = $(TARGET_ELF)
-    @echo CONF         = $(CONF)
-    @echo VPATH        = $(VPATH)
-    @echo C_SRCS       = $(C_SRCS)
-    @echo CPP_SRCS     = $(CPP_SRCS)
-    @echo ASM_SRCS     = $(ASM_SRCS)
-    @echo C_DEPS_EXT   = $(C_DEPS_EXT)
-    @echo C_OBJS_EXT   = $(C_OBJS_EXT)
+	@echo PROJECT      = $(PROJECT)
+	@echo TARGET_ELF   = $(TARGET_ELF)
+	@echo CONF         = $(CONF)
+	@echo VPATH        = $(VPATH)
+	@echo C_SRCS       = $(C_SRCS)
+	@echo CPP_SRCS     = $(CPP_SRCS)
+	@echo ASM_SRCS     = $(ASM_SRCS)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
+	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
 
-    @echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
-    @echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
+	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
+	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
 
-    @echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
-    @echo LIB_DIRS     = $(LIB_DIRS)
-    @echo LIBS         = $(LIBS)
-    @echo DEFINES      = $(DEFINES)
-    @echo QUTEST       = $(QUTEST)
+	@echo ASM_OBJS_EXT = $(ASM_OBJS_EXT)
+	@echo LIB_DIRS     = $(LIB_DIRS)
+	@echo LIBS         = $(LIBS)
+	@echo DEFINES      = $(DEFINES)
+	@echo QUTEST       = $(QUTEST)

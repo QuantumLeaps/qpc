@@ -334,7 +334,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\source;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\nucleo-l053r8</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\nucleo-l053r8</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -450,82 +450,82 @@
             <File>
               <FileName>qep_hsm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_hsm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_hsm.c</FilePath>
             </File>
             <File>
               <FileName>qep_msm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_msm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_msm.c</FilePath>
             </File>
             <File>
               <FileName>qf_act.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_act.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_act.c</FilePath>
             </File>
             <File>
               <FileName>qf_actq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_actq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_actq.c</FilePath>
             </File>
             <File>
               <FileName>qf_defer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_defer.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_defer.c</FilePath>
             </File>
             <File>
               <FileName>qf_dyn.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_dyn.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_dyn.c</FilePath>
             </File>
             <File>
               <FileName>qf_mem.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_mem.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_mem.c</FilePath>
             </File>
             <File>
               <FileName>qf_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qf_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qf_pkg.h</FilePath>
             </File>
             <File>
               <FileName>qf_ps.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_ps.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_ps.c</FilePath>
             </File>
             <File>
               <FileName>qf_qact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qact.c</FilePath>
             </File>
             <File>
               <FileName>qf_qeq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qeq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qeq.c</FilePath>
             </File>
             <File>
               <FileName>qf_qmact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qmact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qmact.c</FilePath>
             </File>
             <File>
               <FileName>qf_time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_time.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_time.c</FilePath>
             </File>
             <File>
               <FileName>qk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
             <File>
               <FileName>qk_mutex.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk_mutex.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
             </File>
             <File>
               <FileName>qk_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qk_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -631,22 +631,22 @@
             <File>
               <FileName>qs.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs.c</FilePath>
             </File>
             <File>
               <FileName>qs_64bit.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_64bit.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_64bit.c</FilePath>
             </File>
             <File>
               <FileName>qs_fp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_fp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
               <FileName>qs_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qs_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -980,7 +980,7 @@
               <MiscControls></MiscControls>
               <Define>NDEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\source;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\nucleo-l053r8</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\nucleo-l053r8</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1096,82 +1096,82 @@
             <File>
               <FileName>qep_hsm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_hsm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_hsm.c</FilePath>
             </File>
             <File>
               <FileName>qep_msm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_msm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_msm.c</FilePath>
             </File>
             <File>
               <FileName>qf_act.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_act.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_act.c</FilePath>
             </File>
             <File>
               <FileName>qf_actq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_actq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_actq.c</FilePath>
             </File>
             <File>
               <FileName>qf_defer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_defer.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_defer.c</FilePath>
             </File>
             <File>
               <FileName>qf_dyn.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_dyn.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_dyn.c</FilePath>
             </File>
             <File>
               <FileName>qf_mem.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_mem.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_mem.c</FilePath>
             </File>
             <File>
               <FileName>qf_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qf_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qf_pkg.h</FilePath>
             </File>
             <File>
               <FileName>qf_ps.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_ps.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_ps.c</FilePath>
             </File>
             <File>
               <FileName>qf_qact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qact.c</FilePath>
             </File>
             <File>
               <FileName>qf_qeq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qeq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qeq.c</FilePath>
             </File>
             <File>
               <FileName>qf_qmact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qmact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qmact.c</FilePath>
             </File>
             <File>
               <FileName>qf_time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_time.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_time.c</FilePath>
             </File>
             <File>
               <FileName>qk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
             <File>
               <FileName>qk_mutex.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk_mutex.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
             </File>
             <File>
               <FileName>qk_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qk_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1277,22 +1277,22 @@
             <File>
               <FileName>qs.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs.c</FilePath>
             </File>
             <File>
               <FileName>qs_64bit.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_64bit.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_64bit.c</FilePath>
             </File>
             <File>
               <FileName>qs_fp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_fp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
               <FileName>qs_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qs_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1302,7 +1302,7 @@
       <TargetName>dpp-spy</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060020::V5.06 (build 20)::ARMCC</pCCUsed>
+      <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32L053R8</Device>
@@ -1626,7 +1626,7 @@
               <MiscControls></MiscControls>
               <Define>Q_SPY</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\source;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\nucleo-l053r8</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\arm;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\nucleo-l053r8</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1742,82 +1742,82 @@
             <File>
               <FileName>qep_hsm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_hsm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_hsm.c</FilePath>
             </File>
             <File>
               <FileName>qep_msm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qep_msm.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qep_msm.c</FilePath>
             </File>
             <File>
               <FileName>qf_act.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_act.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_act.c</FilePath>
             </File>
             <File>
               <FileName>qf_actq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_actq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_actq.c</FilePath>
             </File>
             <File>
               <FileName>qf_defer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_defer.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_defer.c</FilePath>
             </File>
             <File>
               <FileName>qf_dyn.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_dyn.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_dyn.c</FilePath>
             </File>
             <File>
               <FileName>qf_mem.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_mem.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_mem.c</FilePath>
             </File>
             <File>
               <FileName>qf_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qf_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qf_pkg.h</FilePath>
             </File>
             <File>
               <FileName>qf_ps.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_ps.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_ps.c</FilePath>
             </File>
             <File>
               <FileName>qf_qact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qact.c</FilePath>
             </File>
             <File>
               <FileName>qf_qeq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qeq.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qeq.c</FilePath>
             </File>
             <File>
               <FileName>qf_qmact.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_qmact.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_qmact.c</FilePath>
             </File>
             <File>
               <FileName>qf_time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qf_time.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_time.c</FilePath>
             </File>
             <File>
               <FileName>qk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
             <File>
               <FileName>qk_mutex.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qk_mutex.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
             </File>
             <File>
               <FileName>qk_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qk_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1857,22 +1857,22 @@
             <File>
               <FileName>qs.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs.c</FilePath>
             </File>
             <File>
               <FileName>qs_64bit.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_64bit.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_64bit.c</FilePath>
             </File>
             <File>
               <FileName>qs_fp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\source\qs_fp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
               <FileName>qs_pkg.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\source\qs_pkg.h</FilePath>
+              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
             </File>
           </Files>
         </Group>

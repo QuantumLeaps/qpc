@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Product: PC-Lint 9.x option file for linting QP/C
-// Last updated for version 5.9.1
-// Last updated on  2017-05-25
+// Last updated for version 5.9.6
+// Last updated on  2017-08-01
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -127,6 +127,8 @@ qpc.lnt           // QP/C options
 -efunc(818,           // MISRA04-16.7(adv) 'stkSto' could be const
  QActive_start_)
 -efunc(527, QF_run)   // MISRA04-14.17(req) Unreachable code
+-efunc(845,
+ QEQueue_post)        // MISRA04-13.7(req) The left argument to '&&' is zero
 -emacro({717},        // do ... while(0);
  QACTIVE_EQUEUE_SIGNAL_,
  QACTIVE_EQUEUE_ONEMPTY_,

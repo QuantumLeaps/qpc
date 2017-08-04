@@ -1,6 +1,10 @@
 ![QP framework](https://state-machine.com/img/qp_banner.jpg)
 
-> **NOTE:** If your company has a policy forbidding open source in your product, all QP frameworks can be [licensed commercially](https://state-machine.com/licensing), in which case you don't use any open source license and you do not violate your policy.
+> **NOTE:** If your company has a policy forbidding open source in your
+product, all QP frameworks can be
+[licensed commercially](https://state-machine.com/licensing),
+in which case you don't use any open source license and you do not violate
+your policy.
 
 # What's New?
 View QP/C Revision History at: https://state-machine.com/qpc/history.html
@@ -78,9 +82,15 @@ on Linux/MacOS.
 
 ---------------------------------------------------------------------------
 # QP/C Licensing
-QP/C is licensed under the increasingly popular [dual licensing model](https://state-machine.com/licensing), in which both the open source software distribution mechanism and traditional closed source software distribution models are combined.
+QP/C is licensed under the increasingly popular
+[dual licensing model](https://state-machine.com/licensing), in which both
+the open source software distribution mechanism and traditional closed
+source software distribution models are combined.
 
-> **NOTE:** If your company has a policy forbidding open source in your product, all QP frameworks can be [licensed commercially](https://state-machine.com/licensing), in which case you don't use any open source license and you do not violate your policy.
+> **NOTE:** If your company has a policy forbidding open source in your
+product, all QP frameworks can be
+[licensed commercially](https://state-machine.com/licensing), in which case
+you don't use any open source license and you do not violate your policy.
 
 ---------------------------------------------------------------------------
 # QP/C Documentation

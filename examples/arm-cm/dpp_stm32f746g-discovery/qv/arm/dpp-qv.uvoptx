@@ -1195,7 +1195,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qep_hsm.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qep_hsm.c</PathWithFileName>
       <FilenameWithoutPath>qep_hsm.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1207,7 +1207,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qep_msm.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qep_msm.c</PathWithFileName>
       <FilenameWithoutPath>qep_msm.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1219,7 +1219,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qf_act.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_act.c</PathWithFileName>
       <FilenameWithoutPath>qf_act.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1231,7 +1231,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qf_actq.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_actq.c</PathWithFileName>
       <FilenameWithoutPath>qf_actq.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1243,7 +1243,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qf_defer.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_defer.c</PathWithFileName>
       <FilenameWithoutPath>qf_defer.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1255,7 +1255,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qf_dyn.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_dyn.c</PathWithFileName>
       <FilenameWithoutPath>qf_dyn.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1267,7 +1267,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qf_mem.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_mem.c</PathWithFileName>
       <FilenameWithoutPath>qf_mem.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1279,7 +1279,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qf_ps.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_ps.c</PathWithFileName>
       <FilenameWithoutPath>qf_ps.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1291,7 +1291,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qf_qact.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_qact.c</PathWithFileName>
       <FilenameWithoutPath>qf_qact.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1303,7 +1303,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qf_qeq.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_qeq.c</PathWithFileName>
       <FilenameWithoutPath>qf_qeq.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1315,7 +1315,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qf_qmact.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_qmact.c</PathWithFileName>
       <FilenameWithoutPath>qf_qmact.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1327,7 +1327,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qf_time.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_time.c</PathWithFileName>
       <FilenameWithoutPath>qf_time.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1339,7 +1339,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qv.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qv\qv.c</PathWithFileName>
       <FilenameWithoutPath>qv.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1379,7 +1379,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qs.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qs\qs.c</PathWithFileName>
       <FilenameWithoutPath>qs.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1391,7 +1391,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qs_64bit.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qs\qs_64bit.c</PathWithFileName>
       <FilenameWithoutPath>qs_64bit.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1403,7 +1403,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qs_fp.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qs\qs_fp.c</PathWithFileName>
       <FilenameWithoutPath>qs_fp.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1415,7 +1415,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\source\qs_rx.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qs\qs_rx.c</PathWithFileName>
       <FilenameWithoutPath>qs_rx.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

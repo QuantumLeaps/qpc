@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.0
-* Last updated on  2017-03-17
+* Last updated for version 5.9.6
+* Last updated on  2017-08-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -77,7 +77,7 @@ bool QActive_defer(QActive const * const me, QEQueue * const eq,
 {
     (void)me; /* avoid compiler warning about 'me' not used */
 
-    return QEQueue_post(eq, e, (uint_fast16_t)1);
+    return QEQueue_post(eq, e, (uint_fast16_t)0);
 }
 
 /****************************************************************************/

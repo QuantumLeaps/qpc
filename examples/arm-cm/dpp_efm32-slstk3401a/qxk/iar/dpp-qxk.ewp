@@ -3184,16 +3184,16 @@
             <configuration>Release</configuration>
         </excluded>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs_fp.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_fp.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs_pkg.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs_pkg.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\source\qs_rx.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_rx.c</name>
         </file>
     </group>
 </project>

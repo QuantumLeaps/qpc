@@ -1,6 +1,22 @@
 /**
 @page history Revision History
 
+@section qpc_5_9_6 Version 5.9.6, 2017-08-04
+The main focus of this release are improvements to the "dual-mode" QXK kernel. Specifically, this release implements the <a href="https://sourceforge.net/p/qpc/feature-requests/128/" class="extern">featrue request #128 "QP Semaphore Max Value Setting"</a> for QXK. This feature changes the QXK function QXSemaphore_init(), which now takes additional parameter `count`. This parameter specifies the maximum allowed count for the semaphore (e.g., count of 1 makes the semaphore a binary-semaphore).
+
+@note
+This change breaks backwards-compatibility with the existing code that uses the QXSemaphore_init() function.
+
+This release also fixes a bug inside the assertions in QXSemaphore_signal(), where the check for the extended-thread is performed.
+
+Also, this release adds assertions to the QXK code, which ensure that any available blocking calls can only be made from extended-threads and not from basic-threads (active objects) or ISRs.
+
+Also, this release adds protection in the IRQ priorities initialization in QK/QV/QXK for ARM Cortex-M3/M4/M7, so that the number of IRQs is extracted from bits 0-2 of the ICTR register (INTLINESNUM).
+
+Finally, this release consistently changes all example projects (for all toolchains) to use the **src/** directory for QP/C source code, instead of the **source/** directory. The source/ directory is now truly obsolete, but is still provided in this release for backwards compatibility with user projects.
+
+
+-----------------------------------------------------------------------------
 @section qpc_5_9_5 Version 5.9.5, 2017-07-20
 This release changes the macro QXTHREAD_START() in the QXK kernel so that
 it can be used only with ::QXThread pointers and not ::QActive pointers.
