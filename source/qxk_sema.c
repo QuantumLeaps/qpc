@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.6
-* Last updated on  2017-07-27
+* Last updated for version 5.9.7
+* Last updated on  2017-08-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -78,6 +78,7 @@ Q_DEFINE_THIS_MODULE("qxk_sema")
 void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
                       uint_fast16_t max_count)
 {
+    /** @pre max_count must be greater than zero */
     Q_REQUIRE_ID(100, max_count > (uint_fast16_t)0);
     me->count = count;
     me->max_count = max_count;
@@ -104,14 +105,12 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
 * @param[in]  tickRate  system clock tick rate serviced in this call.
 *
 * @returns
-* true if the semaphore has been signaled, and false if the timeout occured.
+* 'true' if the semaphore has been signaled and 'false' if a timeout occured.
 *
 * @note
 * Multiple extended threads can wait for a given semahpre.
 */
-bool QXSemaphore_wait(QXSemaphore * const me,
-                      uint_fast16_t const nTicks, uint_fast8_t const tickRate)
-{
+bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
     QXThread *thr;
     QF_CRIT_STAT_
 
@@ -119,13 +118,16 @@ bool QXSemaphore_wait(QXSemaphore * const me,
     thr = (QXThread *)QXK_attr_.curr;
 
     /** @pre this function must:
-    * (1) NOT be called from an ISR; (2) be called from an extended thread;
-    * (3) the thread must NOT be holding a mutex and
-    * (4) the thread must NOT be already blocked on any object.
+    * - NOT be called from an ISR;
+    * - the semaphore must be initialized
+    * - be called from an extended thread;
+    * - the thread must NOT be holding a scheduler lock;
+    * - the thread must NOT be already blocked on any object.
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
+        && (me->max_count > (uint_fast16_t)0) /* sema must be initialized */
         && (thr != (QXThread *)0) /* current thread must be extended */
-        && (QXK_attr_.lockPrio == (uint_fast8_t)0) /* not holding a mutex */
+        && (QXK_attr_.lockHolder != thr->super.prio) /* not holding a lock */
         && (thr->super.super.temp.obj == (QMState *)0)); /* not blocked */
 
     if (me->count > (uint_fast16_t)0) {
@@ -135,22 +137,58 @@ bool QXSemaphore_wait(QXSemaphore * const me,
     else {
         /* remember the blocking object */
         thr->super.super.temp.obj = (QMState const *)me;
-        QXThread_teArm_(thr, (QSignal)QXK_SEMA_SIG, nTicks, tickRate);
+        QXThread_teArm_(thr, (QSignal)QXK_SEMA_SIG, nTicks);
         QPSet_insert(&me->waitSet,        thr->super.prio);
         QPSet_remove(&QXK_attr_.readySet, thr->super.prio);
-        (void)QXK_sched_();
+        (void)QXK_sched_(); /* schedule the next thread */
         QF_CRIT_EXIT_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here */
 
         QF_CRIT_ENTRY_();
         /* the blocking object must be this semaphore */
-        Q_ASSERT_ID(210, thr->super.super.temp.obj == (QMState const *)me);
+        Q_ASSERT_ID(210, thr->super.super.temp.obj == (QMState *)me);
         thr->super.super.temp.obj = (QMState const *)0; /* clear */
     }
     QF_CRIT_EXIT_();
 
     /* signal of non-zero means that the time event has not expired */
     return (bool)(thr->timeEvt.super.sig != (QSignal)0);
+}
+
+/****************************************************************************/
+/**
+* @description
+* This function checks if the semaphore counter is greater than 0,
+* in which case the counter is decremented.
+*
+* @param[in,out] me     pointer (see @ref oop)
+*
+* @returns
+* 'true' if the semaphore has count available and 'false' NOT available.
+*
+* @note
+* This function can be called from any context, including ISRs and basic
+* threds (active objects).
+*/
+bool QXSemaphore_tryWait(QXSemaphore * const me) {
+    bool isAvailable;
+    QF_CRIT_STAT_
+
+    /** @pre the semaphore must be initialized */
+    Q_REQUIRE_ID(300, (me->max_count > (uint_fast16_t)0));
+
+    QF_CRIT_ENTRY_();
+    /* is the semaphore available? */
+    if (me->count > (uint_fast16_t)0) {
+        --me->count;
+        isAvailable = true;
+    }
+    else { /* the semaphore is NOT available (would block) */
+        isAvailable = false;
+    }
+    QF_CRIT_EXIT_();
+
+    return isAvailable;
 }
 
 /****************************************************************************/
@@ -165,8 +203,9 @@ bool QXSemaphore_wait(QXSemaphore * const me,
 *
 * @param[in,out] me     pointer (see @ref oop)
 *
-* @returns true when the semaphore signaled and false when the semaphore
-* count exceeded the maximum.
+* @returns
+* 'true' when the semaphore signaled and 'false' when the semaphore count
+* exceeded the maximum.
 *
 * @note
 * A semaphore can be signaled from many places, including from ISRs, basic
@@ -175,6 +214,9 @@ bool QXSemaphore_wait(QXSemaphore * const me,
 bool QXSemaphore_signal(QXSemaphore * const me) {
     bool signaled = true; /* assume that the semaphore will be signaled */
     QF_CRIT_STAT_
+
+    /** @pre the semaphore must be initialized */
+    Q_REQUIRE_ID(400, (me->max_count > (uint_fast16_t)0));
 
     QF_CRIT_ENTRY_();
     if (QPSet_notEmpty(&me->waitSet)) {
@@ -187,7 +229,7 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
         QPSet_remove(&me->waitSet,        p);
         thr = (QXThread *)QF_active_[p];
 
-        Q_ASSERT_ID(210, (thr != (QXThread *)0) /* must be registered */
+        Q_ASSERT_ID(410, (thr != (QXThread *)0) /* must be registered */
             && (thr->super.osObject != (struct QActive *)0) /* extended thr.*/
             && (me->count == (uint_fast16_t)0)); /* sema counter must be 0 */
 
@@ -195,6 +237,7 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
         (void)QXThread_teDisarm_(thr);
 
         if (!QXK_ISR_CONTEXT_()) { /* not inside ISR? */
+            /* schedule the next thread if multitasking started */
             (void)QXK_sched_();
         }
     }

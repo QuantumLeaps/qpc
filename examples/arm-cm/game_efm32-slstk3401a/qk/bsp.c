@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, EFM32-SLSTK3401A board, QK kernel
-* Last updated for version 5.9.0
-* Last updated on  2017-04-14
+* Last updated for version 5.9.7
+* Last updated on  2017-08-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -87,7 +87,6 @@ static uint32_t l_fb[BSP_SCREEN_HEIGHT + 1][BSP_SCREEN_WIDTH / 32U];
 static uint32_t l_walls[GAME_TUNNEL_HEIGHT + 1][BSP_SCREEN_WIDTH / 32U];
 
 static unsigned l_rnd;  /* random seed */
-static QMutex   l_rndMutex; /* mutex to protect the random seed */
 
 static void paintBits(uint8_t x, uint8_t y, uint8_t const *bits, uint8_t h);
 static void paintBitsClear(uint8_t x, uint8_t y,
@@ -655,21 +654,21 @@ void BSP_displayOff(void) {
 /*..........................................................................*/
 uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
     uint32_t rnd;
+    QSchedStatus lockStat;
 
+    lockStat = QK_schedLock(AO_Tunnel->prio); /* lock up to Table's prio */
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
-    QMutex_lock(&l_rndMutex); /* lock the random-seed mutex */
     rnd = l_rnd * (3U*7U*11U*13U*23U);
     l_rnd = rnd; /* set for the next time */
-    QMutex_unlock(&l_rndMutex); /* unlock the random-seed mutex */
+    QK_schedUnlock(lockStat); /* unlock the scheduler */
 
     return (rnd >> 8);
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
     l_rnd = seed;
-    QMutex_init(&l_rndMutex, 1U); /* ceiling == Tunnel priority */
 }
 
 /*--------------------------------------------------------------------------*/

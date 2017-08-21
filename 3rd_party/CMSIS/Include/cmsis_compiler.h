@@ -53,6 +53,7 @@
  */
 #elif defined ( __ICCARM__ )
 
+
   #ifndef   __ASM
     #define __ASM                                  __asm
   #endif
@@ -64,6 +65,21 @@
   #endif
 
   #include <cmsis_iar.h>
+
+  /* CMSIS compiler control architecture macros */
+  #if (__CORE__ == __ARM6M__) || (__CORE__ == __ARM6SM__)
+    #ifndef __ARM_ARCH_6M__
+      #define __ARM_ARCH_6M__                      1
+    #endif
+  #elif (__CORE__ == __ARM7M__)
+    #ifndef __ARM_ARCH_7M__
+      #define __ARM_ARCH_7M__                      1
+    #endif
+  #elif (__CORE__ == __ARM7EM__)
+    #ifndef __ARM_ARCH_7EM__
+      #define __ARM_ARCH_7EM__                     1
+    #endif
+  #endif
 
   #ifndef   __NO_RETURN
     #define __NO_RETURN                            __noreturn
@@ -79,6 +95,9 @@
   #endif
   #ifndef   __PACKED_STRUCT
     #define __PACKED_STRUCT                        __packed struct
+  #endif
+  #ifndef   __PACKED_UNION
+    #define __PACKED_UNION                         __packed union
   #endif
   #ifndef   __UNALIGNED_UINT32        /* deprecated */
     __packed struct T_UINT32 { uint32_t v; };
@@ -103,6 +122,32 @@
   #ifndef   __ALIGNED
     #warning No compiler specific solution for __ALIGNED. __ALIGNED is ignored.
     #define __ALIGNED(x)
+  #endif
+  #ifndef   __RESTRICT
+    #warning No compiler specific solution for __RESTRICT. __RESTRICT is ignored.
+    #define __RESTRICT
+  #endif
+
+  // Workaround for missing __CLZ intrinsic in
+  // various versions of the IAR compilers.
+  // __IAR_FEATURE_CLZ__ should be defined by
+  // the compiler that supports __CLZ internally.
+  #if (defined (__ARM_ARCH_6M__)) && (__ARM_ARCH_6M__ == 1) && (!defined (__IAR_FEATURE_CLZ__))
+    __STATIC_INLINE uint32_t __CLZ(uint32_t data)
+    {
+      if (data == 0u) { return 32u; }
+
+      uint32_t count = 0;
+      uint32_t mask = 0x80000000;
+
+      while ((data & mask) == 0)
+      {
+        count += 1u;
+        mask = mask >> 1u;
+      }
+
+      return (count);
+    }
   #endif
 
 
@@ -136,6 +181,9 @@
   #ifndef   __PACKED_STRUCT
     #define __PACKED_STRUCT                        struct __attribute__((packed))
   #endif
+  #ifndef   __PACKED_UNION
+    #define __PACKED_UNION                         union __attribute__((packed))
+  #endif
   #ifndef   __UNALIGNED_UINT32        /* deprecated */
     struct __attribute__((packed)) T_UINT32 { uint32_t v; };
     #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
@@ -158,6 +206,10 @@
   #endif
   #ifndef   __ALIGNED
     #define __ALIGNED(x)                           __attribute__((aligned(x)))
+  #endif
+  #ifndef   __RESTRICT
+    #warning No compiler specific solution for __RESTRICT. __RESTRICT is ignored.
+    #define __RESTRICT
   #endif
 
 
@@ -195,6 +247,9 @@
   #ifndef   __PACKED_STRUCT
     #define __PACKED_STRUCT                        struct __packed__
   #endif
+  #ifndef   __PACKED_UNION
+    #define __PACKED_UNION                         union __packed__
+  #endif
   #ifndef   __UNALIGNED_UINT32        /* deprecated */
     struct __packed__ T_UINT32 { uint32_t v; };
     #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
@@ -217,6 +272,10 @@
   #endif
   #ifndef   __ALIGNED
     #define __ALIGNED(x)              __align(x)
+  #endif
+  #ifndef   __RESTRICT
+    #warning No compiler specific solution for __RESTRICT. __RESTRICT is ignored.
+    #define __RESTRICT
   #endif
 
 
@@ -252,6 +311,9 @@
   #ifndef   __PACKED_STRUCT
     #define __PACKED_STRUCT                        @packed struct
   #endif
+  #ifndef   __PACKED_UNION
+    #define __PACKED_UNION                         @packed union
+  #endif
   #ifndef   __UNALIGNED_UINT32        /* deprecated */
     @packed struct T_UINT32 { uint32_t v; };
     #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
@@ -275,6 +337,10 @@
   #ifndef   __ALIGNED
     #warning No compiler specific solution for __ALIGNED. __ALIGNED is ignored.
     #define __ALIGNED(x)
+  #endif
+  #ifndef   __RESTRICT
+    #warning No compiler specific solution for __RESTRICT. __RESTRICT is ignored.
+    #define __RESTRICT
   #endif
 
 

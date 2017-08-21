@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.2
-* Date of the Last Update:  2016-12-22
+* Last Updated for Version: 5.9.7
+* Date of the Last Update:  2017-08-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -147,7 +147,7 @@ int_t QF_run(void) {
 
             (void)WaitForSingleObject(QV_win32Event_, (DWORD)INFINITE);
 
-            QF_INT_ENABLE();
+            QF_INT_DISABLE();
         }
     }
     QF_INT_ENABLE();

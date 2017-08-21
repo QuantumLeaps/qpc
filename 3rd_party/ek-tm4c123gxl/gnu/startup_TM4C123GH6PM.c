@@ -42,7 +42,7 @@
  ---------------------------------------------------------------------------*/
 
 /* start and end of stack defined in the linker script ---------------------*/
-extern int __stack_start__;
+/*extern int __stack_start__;*/
 extern int __stack_end__;
 
 /* Weak prototypes for error handlers --------------------------------------*/

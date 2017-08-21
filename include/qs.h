@@ -4,8 +4,8 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.0
-* Last updated on  2017-05-16
+* Last updated for version 5.9.7
+* Last updated on  2017-08-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -116,8 +116,8 @@ enum QSpyRecords {
     QS_QF_ACTIVE_POST_ATTEMPT,/*!< attempt to post an evt to AO failed */
     QS_QF_EQUEUE_POST_ATTEMPT,/*!< attempt to post an evt to QEQueue failed */
     QS_QF_MPOOL_GET_ATTEMPT,  /*!< attempt to get a memory block failed */
-    QS_QF_RESERVED1,
-    QS_QF_RESERVED0,
+    QS_MUTEX_LOCK,        /*!< a mutex was locked */
+    QS_MUTEX_UNLOCK,      /*!< a mutex was unlocked */
 
     /* [50] built-in scheduler records */
     QS_SCHED_LOCK,        /*!< scheduler was locked */

@@ -64,6 +64,9 @@ The most unique characteristic of the QP/C&trade; framework is its very small fo
 The behavior of active objects is specified in QP by means of
 <a class="extern" target="_blank" href="https://state-machine.com/doc/concepts#HSM">hierarchical state machines (UML statecharts)</a>. The frameworks support manual coding of UML state machines in C or C++ as well as fully automatic code generation by means of the free graphical <a class="extern" target="_blank" href="https://state-machine.com/qm">QM&trade; modeling tool</a>.
 
+@remarks
+State machines can be an incredibly powerful technique, but they require an event-driven **infrastructure** (framework) that provides, at a minimum: a run-to-completion (RTC) execution context for each state machine, queuing of events, and event-based timing services. This is really the pivotal point. Without an event-driven framewok (like QP/C), state machines are like <a class="extern" target="_blank" href="https://state-machine.com/doc/concepts#Infrastructure">cars without an infrastructure of roads</a>.
+
 
 <div class="separate"></div>
 @subsection kernels Built-in Kernels

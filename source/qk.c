@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.0
-* Last updated on  2017-03-13
+* Last updated for version 5.9.7
+* Last updated on  2017-08-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -170,7 +170,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     * and the stack storage must not be provided, because the QK kernel does
     * not need per-AO stacks.
     */
-    Q_REQUIRE_ID(500, (!QK_ISR_CONTEXT_())
+    Q_REQUIRE_ID(300, (!QK_ISR_CONTEXT_())
                       && ((uint_fast8_t)0 < prio)
                       && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
                       && (stkSto == (void *)0));
@@ -178,10 +178,11 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     (void)stkSize; /* unused parameter */
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
-    me->prio = prio;   /* set the current priority of the AO */
+
+    me->prio = prio;   /* set the QF priority of the AO */
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. (virtual) */
     QS_FLUSH();                /* flush the trace buffer to the host */
 
     /* See if this AO needs to be scheduled in case QK is already running */
@@ -207,7 +208,7 @@ void QActive_stop(QActive * const me) {
     QF_CRIT_STAT_
 
     /** @pre QActive_stop() must be called from the AO that wants to stop. */
-    Q_REQUIRE_ID(600, (me == QF_active_[QK_attr_.actPrio]));
+    Q_REQUIRE_ID(400, (me == QF_active_[QK_attr_.actPrio]));
 
     QF_remove_(me); /* remove this active object from the QF */
 
@@ -217,6 +218,112 @@ void QActive_stop(QActive * const me) {
         QK_activate_();
     }
     QF_CRIT_EXIT_();
+}
+
+/****************************************************************************/
+/**
+* @description
+* This function locks the QK scheduler to the specified ceiling.
+*
+* @param[in]   ceiling    priority ceiling to which the QK scheduler
+*                         needs to be locked
+*
+* @returns
+* The previous QK Scheduler lock status, which is to be used to unlock
+* the scheduler by restoring its previous lock status in QK_schedUnlock().
+*
+* @note
+* QK_schedLock() must be always followed by the corresponding
+* QK_schedUnlock().
+*
+* @sa QK_schedUnlock()
+*
+* @usage
+* The following example shows how to lock and unlock the QK scheduler:
+* @include qk_lock.c
+*/
+QSchedStatus QK_schedLock(uint_fast8_t ceiling) {
+    QSchedStatus stat;
+    QF_CRIT_STAT_
+    QF_CRIT_ENTRY_();
+
+    /** @pre The QK scheduler lock:
+    * - cannot be called from an ISR;
+    */
+    Q_REQUIRE_ID(600, !QK_ISR_CONTEXT_());
+
+    /* first store the previous lock prio */
+    if (QK_attr_.lockPrio < ceiling) { /* raising the lock prio? */
+        stat = (QSchedStatus)(QK_attr_.lockPrio << 8);
+        QK_attr_.lockPrio = ceiling;
+
+        QS_BEGIN_NOCRIT_(QS_SCHED_LOCK, (void *)0, (void *)0)
+            QS_TIME_(); /* timestamp */
+            QS_2U8_((uint8_t)stat,   /* the previous lock prio */
+                    (uint8_t)QK_attr_.lockPrio); /* the new lock prio */
+        QS_END_NOCRIT_()
+
+        /* add the previous lock holder priority */
+        stat |= (QSchedStatus)QK_attr_.lockHolder;
+
+        QK_attr_.lockHolder = QK_attr_.actPrio;
+    }
+    else {
+       stat = (QSchedStatus)0xFF;
+    }
+    QF_CRIT_EXIT_();
+
+    return stat; /* return the status to be saved in a stack variable */
+}
+
+/****************************************************************************/
+/**
+* @description
+* This function unlocks the QK scheduler to the previous status.
+*
+* @param[in]   stat       previous QK Scheduler lock status returned from
+*                         QK_schedLock()
+* @note
+* QK_schedUnlock() must always follow the corresponding QK_schedLock().
+*
+* @sa QK_schedLock()
+*
+* @usage
+* The following example shows how to lock and unlock the QK scheduler:
+* @include qk_lock.c
+*/
+void QK_schedUnlock(QSchedStatus stat) {
+    /* has the scheduler been actually locked by the last QK_schedLock()? */
+    if (stat != (QSchedStatus)0xFF) {
+        uint_fast8_t lockPrio = QK_attr_.lockPrio; /* volatilie into tmp */
+        uint_fast8_t prevPrio = (uint_fast8_t)(stat >> 8);
+        QF_CRIT_STAT_
+        QF_CRIT_ENTRY_();
+
+        /** @pre The scheduler cannot be unlocked:
+        * - from the ISR context; and
+        * - the current lock priority must be greater than the previous
+        */
+        Q_REQUIRE_ID(700, (!QK_ISR_CONTEXT_())
+                          && (lockPrio > prevPrio));
+
+        QS_BEGIN_NOCRIT_(QS_SCHED_UNLOCK, (void *)0, (void *)0)
+            QS_TIME_(); /* timestamp */
+            QS_2U8_((uint8_t)lockPrio,  /* lock prio before unlocking */
+                    (uint8_t)prevPrio); /* lock priority after unlocking */
+        QS_END_NOCRIT_()
+
+        /* restore the previous lock priority and lock holder */
+        QK_attr_.lockPrio   = prevPrio;
+        QK_attr_.lockHolder = (uint_fast8_t)(stat & (QSchedStatus)0xFF);
+
+        /* find the highest-prio thread ready to run */
+        if (QK_sched_() != (uint_fast8_t)0) { /* priority found? */
+            QK_activate_(); /* activate any unlocked basic threads */
+        }
+
+        QF_CRIT_EXIT_();
+    }
 }
 
 /****************************************************************************/
@@ -247,7 +354,7 @@ uint_fast8_t QK_sched_(void) {
         p = (uint_fast8_t)0; /* active object not eligible */
     }
     else {
-        Q_ASSERT_ID(610, p <= (uint_fast8_t)QF_MAX_ACTIVE);
+        Q_ASSERT_ID(410, p <= (uint_fast8_t)QF_MAX_ACTIVE);
         QK_attr_.nextPrio = p; /* next AO to run */
     }
     return p;
@@ -274,7 +381,7 @@ void QK_activate_(void) {
 #endif /* Q_SPY */
 
     /* QK_attr_.nextPrio must be non-zero upon entry to QK_activate_() */
-    Q_REQUIRE_ID(800, p != (uint_fast8_t)0);
+    Q_REQUIRE_ID(500, p != (uint_fast8_t)0);
 
     QK_attr_.nextPrio = (uint_fast8_t)0; /* clear for the next time */
 
@@ -325,7 +432,7 @@ void QK_activate_(void) {
             p = (uint_fast8_t)0; /* active object not eligible */
         }
         else {
-            Q_ASSERT_ID(710, p <= (uint_fast8_t)QF_MAX_ACTIVE);
+            Q_ASSERT_ID(510, p <= (uint_fast8_t)QF_MAX_ACTIVE);
         }
     } while (p != (uint_fast8_t)0);
 
@@ -349,5 +456,3 @@ void QK_activate_(void) {
     }
 #endif /* Q_SPY */
 }
-
-

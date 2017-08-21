@@ -103,18 +103,10 @@ void QF_stop(void) {
 /****************************************************************************/
 /**
 * @description
-* QF_run() is typically called from your startup code after you initialize
-* the QF and start at least one active object with QActive_start().
+* QF_run() is typically called from main() after you initialize
+* the QF and start at least one active object with QACTIVE_START().
 *
-* @returns QF_run() typically does not return in embedded applications.
-* However, when QP runs on top of an operating system,  QF_run() might
-* return and in this case the return represents the error code (0 for
-* success). Typically the value returned from QF_run() is subsequently
-* passed on as return from main().
-*
-* @note This function is strongly platform-dependent and is not implemented
-* in the QF, but either in the QF port or in the Board Support Package (BSP)
-* for the given application. All QF ports must implement QF_run().
+* @returns In QV, the QF_run() function does not return.
 */
 int_t QF_run(void) {
 #ifdef Q_SPY

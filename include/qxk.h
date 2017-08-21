@@ -5,8 +5,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.4
-* Last updated on  2017-07-06
+* Last updated for version 5.9.7
+* Last updated on  2017-08-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -81,11 +81,11 @@ struct QActive; /* forward declaration */
 /****************************************************************************/
 /*! attributes of the QXK kernel */
 typedef struct {
-    struct QActive *curr;  /*!< pointer to the current thread (0 for basic) */
-    struct QActive *next;  /*!< pointer to the next thread to execute */
-    uint_fast8_t volatile actPrio;    /*!< prio of the active basic thread */
-    uint_fast8_t volatile lockPrio;   /*!< lock prio (0 == no-lock) */
-    uint_fast8_t volatile lockHolder; /*!< prio of the lock holder */
+    struct QActive *curr;    /*!< pointer to the current thread (0==basic) */
+    struct QActive *next;    /*!< pointer to the next thread to execute */
+    uint_fast8_t actPrio;    /*!< prio of the active AO */
+    uint_fast8_t lockPrio;   /*!< lock prio (0 == no-lock) */
+    uint_fast8_t lockHolder; /*!< prio of the lock holder */
 #ifndef QXK_ISR_CONTEXT_
     uint_fast8_t intNest;    /*!< ISR nesting level */
 #endif /* QXK_ISR_CONTEXT_ */
@@ -123,21 +123,16 @@ void QXK_activate_(void);
 struct QActive *QXK_current(void);
 
 /****************************************************************************/
-/*! QXK priority-ceiling mutex class */
-typedef struct {
-    uint_fast8_t lockPrio;   /*!< lock prio (priority ceiling) */
-    uint_fast8_t prevPrio;   /*!< previoius lock prio */
-    uint_fast8_t prevHolder; /*!< priority of the thread holding the lock */
-} QXMutex;
+/*! QXK Scheduler locking */
 
-/*! The QXMutex initialization */
-void QXMutex_init(QXMutex * const me, uint_fast8_t prio);
+/*! The scheduler lock status */
+typedef uint_fast16_t QSchedStatus;
 
-/*! QXMutex lock */
-void QXMutex_lock(QXMutex * const me);
+/*! QXK Scheduler lock */
+QSchedStatus QXK_schedLock(uint_fast8_t ceiling);
 
-/*! QXMutex unlock */
-void QXMutex_unlock(QXMutex * const me);
+/*! QXK Scheduler unlock */
+void QXK_schedUnlock(QSchedStatus stat);
 
 /****************************************************************************/
 /*! get the current QXK version number string of the form "X.Y.Z" */
@@ -160,27 +155,26 @@ void QXMutex_unlock(QXMutex * const me);
     /*! Internal macro to represent the scheduler lock status
     * that needs to be preserved to allow nesting of locks.
     */
-    #define QF_SCHED_STAT_ QXMutex schedLock_;
+    #define QF_SCHED_STAT_ QSchedStatus lockStat_;
 
     /*! Internal macro for selective scheduler locking. */
     #define QF_SCHED_LOCK_(prio_) do { \
         if (QXK_ISR_CONTEXT_()) { \
-            schedLock_.lockPrio = (uint_fast8_t)0; \
+            lockStat_ = (QSchedStatus)0xFF; \
         } else { \
-            QXMutex_init(&schedLock_, (prio_)); \
-            QXMutex_lock(&schedLock_); \
+            lockStat_ = QXK_schedLock((prio_)); \
         } \
     } while (0)
 
     /*! Internal macro for selective scheduler unlocking. */
     #define QF_SCHED_UNLOCK_() do { \
-        if (schedLock_.lockPrio != (uint_fast8_t)0) { \
-            QXMutex_unlock(&schedLock_); \
+        if (lockStat_ != (QSchedStatus)0xFF) { \
+            QXK_schedUnlock(lockStat_); \
         } \
     } while (0)
 
     #define QACTIVE_EQUEUE_WAIT_(me_) \
-        (Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0))
+        (Q_ASSERT_ID(110, (me_)->eQueue.frontEvt != (QEvt *)0))
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
         QPSet_insert(&QXK_attr_.readySet, (me_)->prio); \

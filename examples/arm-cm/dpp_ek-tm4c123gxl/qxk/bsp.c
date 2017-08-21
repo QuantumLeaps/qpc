@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, preemptive QXK kernel
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-04-14
+* Last Updated for Version: 5.9.7
+* Date of the Last Update:  2017-08-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -78,7 +78,6 @@ void UART0_IRQHandler(void);
 #define BTN_SW2     (1U << 0)
 
 static uint32_t l_rnd;      /* random seed */
-static QXMutex l_rndMutex; /* to protect the random number generator */
 
 #ifdef Q_SPY
 
@@ -121,7 +120,8 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); // post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -244,33 +244,30 @@ void BSP_displayPaused(uint8_t paused) {
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
-    uint32_t rnd;
+    uint32_t rnd = 0x100;
+    QSchedStatus lockStat;
+    QSchedStatus lockStat1;
 
     /* Some flating point code is to exercise the VFP... */
     float volatile x = 3.1415926F;
     x = x + 2.7182818F;
 
-    QXMutex_lock(&l_rndMutex); /* lock the shared random seed */
+    lockStat = QXK_schedLock(N_PHILO); /* lock scheduler around shared seed */
+
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
     rnd = l_rnd * (3U*7U*11U*13U*23U);
+    lockStat1 = QXK_schedLock(N_PHILO + 1); /* nested lock */
     l_rnd = rnd; /* set for the next time */
-    QXMutex_unlock(&l_rndMutex); /* unlock the shared random seed */
+    QXK_schedUnlock(lockStat1); /* unlock the scheduler */
+    QXK_schedUnlock(lockStat); /* unlock the scheduler */
 
     return (rnd >> 8);
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
-    QXMutex_init(&l_rndMutex, N_PHILO);  /* ceiling <== max Philo priority */
     l_rnd = seed;
-}
-/*..........................................................................*/
-void BSP_wait4SW1(void) {
-    while (GPIOF->DATA_Bits[BTN_SW1] != 0) {
-        GPIOF->DATA = LED_RED;
-        GPIOF->DATA = 0U;
-    }
 }
 /*..........................................................................*/
 void BSP_ledOn(void) {
@@ -362,7 +359,8 @@ void Q_onAssert(char const *module, int loc) {
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
-    BSP_wait4SW1();
+    for (;;) {
+    }
 #endif
 
     NVIC_SystemReset();

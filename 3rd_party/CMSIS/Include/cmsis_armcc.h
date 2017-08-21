@@ -73,6 +73,9 @@
 #ifndef   __PACKED_STRUCT
   #define __PACKED_STRUCT                        __packed struct
 #endif
+#ifndef   __PACKED_UNION
+  #define __PACKED_UNION                         __packed union
+#endif
 #ifndef   __UNALIGNED_UINT32        /* deprecated */
   #define __UNALIGNED_UINT32(x)                  (*((__packed uint32_t *)(x)))
 #endif
@@ -91,7 +94,9 @@
 #ifndef   __ALIGNED
   #define __ALIGNED(x)                           __attribute__((aligned(x)))
 #endif
-
+#ifndef   __RESTRICT
+  #define __RESTRICT                             __restrict
+#endif
 
 /* ###########################  Core Function Access  ########################### */
 /** \ingroup  CMSIS_Core_FunctionInterface

@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.6
-* Last updated on  2017-07-27
+* Last updated for version 5.9.7
+* Last updated on  2017-08-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -153,6 +153,12 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 {
     QF_CRIT_STAT_
 
+    /** @pre this function must:
+    * - NOT be called from an ISR;
+    * - the thread priority cannot exceed #QF_MAX_ACTIVE;
+    * - the stack storage must be provided;
+    * - the thread object must be instantiated (see QXThread_ctor()).
+    */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
         && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
         && (stkSto != (void *)0) /* stack must be provided */
@@ -166,12 +172,13 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
         QEQueue_init(&me->eQueue, qSto, qLen);
     }
 
-    /* extended thread constructor puts the thread handerl in place of
+    /* extended thread constructor puts the thread handler in place of
     * the top-most initial transition 'me->super.temp.act'
     */
     QXK_stackInit_(me, Q_XTHREAD_CAST(me->super.temp.act), stkSto, stkSize);
 
     me->prio = prio;
+    me->startPrio = prio;
 
     /* the new thread is not blocked on any object */
     me->super.temp.obj = (QMState const *)0;
@@ -368,16 +375,12 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e) {
 *                       to wait for the event to arrive. The value of
 *                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
 *                       occur and the queue will block indefinitely.
-* @param[in]  tickRate  system clock tick rate serviced in this call.
-*
 * @returns
 * Returns pointer to the event. If the pointer is not NULL, the event
 * was delivered. Otherwise the event pointer of NULL indicates that the
 * queue has timed out.
 */
-QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
-                              uint_fast8_t const tickRate)
-{
+QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
     QXThread *thr;
     QEQueueCtr nFree;
     QEvt const *e;
@@ -387,13 +390,14 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
     thr = (QXThread *)QXK_attr_.curr;
 
     /** @pre this function must:
-    * (1) NOT be called from an ISR; (2) be called from an extended thread;
-    * (3) the thread must NOT be holding a mutex and
-    * (4) the thread must NOT be already blocked on any object.
+    * - NOT be called from an ISR;
+    * - be called from an extended thread;
+    * - the thread must NOT be holding a scheduler lock;
+    * - the thread must NOT be already blocked on any object.
     */
     Q_REQUIRE_ID(500, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
         && (thr != (QXThread *)0) /* current thread must be extended */
-        && (QXK_attr_.lockPrio == (uint_fast8_t)0) /* not holding a mutex */
+        && (QXK_attr_.lockHolder != thr->super.prio) /* not holding a lock */
         && (thr->super.super.temp.obj == (QMState *)0)); /* not blocked */
 
     /* is the queue empty? */
@@ -402,7 +406,7 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
         /* remember the blocking object (the thread's queue) */
         thr->super.super.temp.obj = (QMState const *)&thr->super.eQueue;
 
-        QXThread_teArm_(thr, (QSignal)QXK_QUEUE_SIG, nTicks, tickRate);
+        QXThread_teArm_(thr, (QSignal)QXK_QUEUE_SIG, nTicks);
         QPSet_remove(&QXK_attr_.readySet, thr->super.prio);
         (void)QXK_sched_();
         QF_CRIT_EXIT_();
@@ -474,7 +478,8 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
 */
 void QXThread_block_(QXThread const * const me) {
     /** @pre the thread holding the lock cannot block! */
-    Q_REQUIRE_ID(600,  me->super.prio != QXK_attr_.lockPrio);
+    Q_REQUIRE_ID(600, (QXK_attr_.lockHolder != me->super.prio));
+
     QPSet_remove(&QXK_attr_.readySet, me->super.prio);
     (void)QXK_sched_();
 }
@@ -505,9 +510,8 @@ void QXThread_unblock_(QXThread const * const me) {
 * @note
 * must be called from within a critical section
 */
-void QXThread_teArm_(QXThread * const me,
-                     QSignal sig,
-                     uint_fast16_t const nTicks, uint_fast8_t const tickRate)
+void QXThread_teArm_(QXThread * const me, QSignal sig,
+                     uint_fast16_t const nTicks)
 {
     /** @pre the time event must be unused */
     Q_REQUIRE_ID(700, me->timeEvt.ctr == (QTimeEvtCtr)0);
@@ -524,6 +528,7 @@ void QXThread_teArm_(QXThread * const me,
         * because un-linking is performed exclusively in QF_tickX().
         */
         if ((me->timeEvt.super.refCtr_ & (uint8_t)0x80) == (uint8_t)0) {
+            uint_fast8_t tickRate = (uint_fast8_t)me->timeEvt.super.refCtr_;
             me->timeEvt.super.refCtr_ |= (uint8_t)0x80; /* mark as linked */
 
             /* The time event is initially inserted into the separate
@@ -563,7 +568,7 @@ bool QXThread_teDisarm_(QXThread * const me) {
 
 /****************************************************************************/
 /*! delay (timed block) the current extended thread (static, no me-pointer) */
-bool QXThread_delay(uint_fast16_t const nTicks, uint_fast8_t const tickRate) {
+bool QXThread_delay(uint_fast16_t const nTicks) {
     QXThread *thr;
     QF_CRIT_STAT_
 
@@ -571,25 +576,26 @@ bool QXThread_delay(uint_fast16_t const nTicks, uint_fast8_t const tickRate) {
     thr = (QXThread *)QXK_attr_.curr;
 
     /** @pre this function must:
-    * (1) NOT be called from an ISR; (2) be called from an extended thread;
-    * (3) the thread must NOT be holding a mutex and
-    * (4) the thread must NOT be already blocked on any object.
+    * - NOT be called from an ISR;
+    * - be called from an extended thread;
+    * - the thread must NOT be holding a scheduler lock and;
+    * - the thread must NOT be already blocked on any object.
     */
-    Q_REQUIRE_ID(900, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
+    Q_REQUIRE_ID(800, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
         && (thr != (QXThread *)0) /* current thread must be extended */
-        && (QXK_attr_.lockPrio == (uint_fast8_t)0) /* not holding a mutex */
+        && (QXK_attr_.lockHolder != thr->super.prio) /* not holding a lock */
         && (thr->super.super.temp.obj == (QMState *)0)); /* not blocked */
 
     /* remember the blocking object */
     thr->super.super.temp.obj = (QMState const *)&thr->timeEvt;
-    QXThread_teArm_(thr, (QSignal)QXK_DELAY_SIG, nTicks, tickRate);
+    QXThread_teArm_(thr, (QSignal)QXK_DELAY_SIG, nTicks);
     QXThread_block_(thr);
     QF_CRIT_EXIT_();
     QF_CRIT_EXIT_NOP(); /* BLOCK here */
 
     QF_CRIT_ENTRY_();
     /* the blocking object must be the time event */
-    Q_ENSURE_ID(990, thr->super.super.temp.obj
+    Q_ENSURE_ID(890, thr->super.super.temp.obj
                           == (QMState const *)&thr->timeEvt);
     thr->super.super.temp.obj =  (QMState const *)0; /* clear */
     QF_CRIT_EXIT_();

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "DPP" example on STM32F4-Discovery board, preemptive QK kernel
-* Last Updated for Version: 5.9.1
-* Date of the Last Update:  2017-06-01
+* Last Updated for Version: 5.9.7
+* Date of the Last Update:  2017-08-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -82,7 +82,6 @@ void USART2_IRQHandler(void);
 #define BTN_B1            GPIO_Pin_0
 
 static uint32_t l_rnd;      /* random seed */
-static QMutex   l_rndMutex; /* mutex to protect the random seed */
 
 #ifdef Q_SPY
     static QSTimeCtr QS_tickTime_;
@@ -284,28 +283,25 @@ void BSP_displayPaused(uint8_t paused) {
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     uint32_t rnd;
+    QSchedStatus lockStat;
 
-    /* exercise the FPU with some floating point computations */
-    /* NOTE: this code can be only called from a task that created with
-    * the option OS_TASK_OPT_SAVE_FP.
-    */
+    /* Some flating point code is to exercise the VFP... */
     float volatile x = 3.1415926F;
     x = x + 2.7182818F;
 
-    QMutex_lock(&l_rndMutex); /* lock the random-seed mutex */
+    lockStat = QK_schedLock(N_PHILO); /* lock scheduler up to N_PHILO prio */
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
     rnd = l_rnd * (3U*7U*11U*13U*23U);
     l_rnd = rnd; /* set for the next time */
-    QMutex_unlock(&l_rndMutex); /* unlock the random-seed mutex */
+    QK_schedUnlock(lockStat); /* unlock the scheduler */
 
     return (rnd >> 8);
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
     l_rnd = seed;
-    QMutex_init(&l_rndMutex, N_PHILO); /* ceiling == max Philo priority */
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {

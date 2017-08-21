@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.6
-* Last updated on  2017-07-27
+* Last updated for version 5.9.7
+* Last updated on  2017-08-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -53,7 +53,15 @@
 * The customization of the thread occurs in the QXThread_ctor(), where you
 * provide the thred-handler function as the parameter.
 *
-* @sa ::QActive
+* @sa
+* - QXThread_ctor()
+* - QXTHREAD_START()
+* - QXTHREAD_POST_X()
+* - Q_XTHREAD_CAST()
+* - QXThread_delay()
+* - QXThread_delayCancel()
+* - QXThread_queueGet()
+* - ::QActive
 *
 * @usage
 * The following example illustrates how to instantiate an extended thread
@@ -134,14 +142,13 @@ void QXThread_ctor(QXThread * const me, QXThreadHandler handler,
     QACTIVE_POST_X(&(me_)->super, (e_), (margin_), (sender_))
 
 /*! delay (block) the current extended thread for a specified # ticks */
-bool QXThread_delay(uint_fast16_t const nTicks, uint_fast8_t const tickRate);
+bool QXThread_delay(uint_fast16_t const nTicks);
 
 /*! cancel the delay */
 bool QXThread_delayCancel(QXThread * const me);
 
 /*! obtain a message from the private message queue (block if no messages) */
-QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
-                              uint_fast8_t const tickRate);
+QEvt const *QXThread_queueGet(uint_fast16_t const nTicks);
 
 /*! no-timeout special timeout value when blocking on queues or semaphores */
 #define QXTHREAD_NO_TIMEOUT  ((uint_fast16_t)0)
@@ -157,6 +164,24 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks,
 
 /****************************************************************************/
 /*! Counting Semaphore of the QXK preemptive kernel */
+/**
+* @description
+* QXSemaphore is a blocking mechanism applicable only to the extended threads
+* ::QXThread. The semaphore is initialized with the maximum count, which
+* allows you to create a binary semaphore (when the maximum count is 1) and
+* counting semaphore when the maximum count is > 1.
+*
+* @sa
+* - QXSemaphore_init()
+* - QXSemaphore_signal()
+* - QXSemaphore_wait()
+* - QXSemaphore_tryWait()
+*
+* @usage
+* The following example illustrates how to instantiate the semaphore
+* in your application.
+* @include qf_qxsema.c
+*/
 typedef struct {
     QPSet waitSet; /*!< set of extended-threads waiting on this semaphore */
     uint_fast16_t count;
@@ -167,13 +192,67 @@ typedef struct {
 void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
                       uint_fast16_t max_count);
 
+/*! wait (block) on the semaphore */
+bool QXSemaphore_wait(QXSemaphore * const me,
+                      uint_fast16_t const nTicks);
+
+/*! try wait on the semaphore (non-blocking) */
+bool QXSemaphore_tryWait(QXSemaphore * const me);
+
 /*! signal (unblock) the semaphore */
 bool QXSemaphore_signal(QXSemaphore * const me);
 
-/*! wait (block) on the semaphore */
-bool QXSemaphore_wait(QXSemaphore * const me,
-                      uint_fast16_t const nTicks,
-                      uint_fast8_t const tickRate);
+
+/****************************************************************************/
+/*! Priority Ceiling Mutex the QXK preemptive kernel */
+/**
+* @description
+* ::QXMutex is a blocking mutual exclusion mechanism. The mutex is
+* initialized with the ceiling QP priority, which must be bigger than any
+* extended thread competing for this mutex. The QP priority level used a the
+* ceiling must be not used for any other active object or thread in the
+* application.
+*
+* @note
+* ::QXMutex should be used in situations when at least one of the extended
+* threads contending for the mutex blocks while holding the mutex (between
+* the QXMutex_lock() and QXMutex_unlock() operations). If no blocking is
+* needed while holding the mutex, the more efficient non-blocking mechanism
+* of @ref QXK_schedLock() "selective QXK scheduler locking" should be used
+* instead. @ref QXK_schedLock() "Selective scheduler locking" is available
+* for both @ref ::QActive "basic threads" and @ref ::QXThread extended
+* threads, so it is applicable to situations where resources are shared
+* among all these threads.
+*
+* @sa
+* - QXMutex_init()
+* - QXMutex_lock()
+* - QXMutex_tryLock()
+* - QXMutex_unlock()
+*
+* @usage
+* The following example illustrates how to instantiate the mutex in your
+* application.
+* @include qf_qxmux.c
+*/
+typedef struct {
+    QPSet waitSet; /*!< set of extended-threads waiting on this mutex */
+    uint_fast8_t ceiling;
+    uint_fast8_t lockNest;
+} QXMutex;
+
+/*! initialize the QXK priority-ceiling mutex ::QXMutex */
+void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling);
+
+/*! lock the QXK priority-ceiling mutex ::QXMutex */
+bool QXMutex_lock(QXMutex * const me,
+                  uint_fast16_t const nTicks);
+
+/*! try to lock the QXK priority-ceiling mutex ::QXMutex */
+bool QXMutex_tryLock(QXMutex * const me);
+
+/*! unlock the QXK priority-ceiling mutex ::QXMutex */
+void QXMutex_unlock(QXMutex * const me);
 
 #endif /* qxthread_h */
 

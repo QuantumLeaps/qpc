@@ -1,7 +1,7 @@
 About CMSIS
 ===========
 This folder contains the Cortex Microcontroller Software Interface Standard
-(CMSIS) V5.0.2, which provides a single standard across all Cortex-Mx
+(CMSIS) V5.1.0, which provides a single standard across all Cortex-Mx
 processor series vendors. It enables code re-use and code sharing across
 software projects and reduces time-to-market for new embedded applications.
 

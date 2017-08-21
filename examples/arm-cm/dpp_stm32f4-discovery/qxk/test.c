@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.9.6
-* Date of the Last Update:  2017-07-27
+* Last Updated for Version: 5.9.7
+* Date of the Last Update:  2017-08-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -58,7 +58,7 @@ static void Thread1_run(QXThread * const me) {
         (void)QXSemaphore_wait(&l_sema, BSP_TICKS_PER_SEC, 0U);
         //BSP_ledOn();
 
-        QXMutex_lock(&l_mutex); /* exercise the mutex */
+        QXMutex_lock(&l_mutex, QXTHREAD_NO_TIMEOUT, 0U); /* lock the mutex */
         /* some flating point code to exercise the VFP... */
         x = 1.4142135F;
         x = x * 1.4142135F;

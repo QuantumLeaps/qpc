@@ -1,6 +1,37 @@
 /**
 @page history Revision History
 
+@section qpc_5_9_7 Version 5.9.7, 2017-08-18
+The main focus of this release are new requested features for the @ref qxk "dual-mode QXK kernel":
+- <a href="https://sourceforge.net/p/qpc/feature-requests/129" class="extern">feature#129 "Allow blocking while holding a mutex in QXK"</a>; and
+- <a href="https://sourceforge.net/p/qpc/feature-requests/130" class="extern">feature#130 "Allow QXK mutex locks to nest while acquired by the same thread"</a>; and
+- <a href="https://sourceforge.net/p/qpc/feature-requests/131" class="extern">feature#131 "Add a non-blocking "tryLock()" operation to the QXK mutex"</a>.
+
+Additionally, this release adds also the non-blocking QXSemaphore_tryWait() operation.
+
+In the process of re-implementing the ::QXMutex class, the previouis non-blocking priority ceiling mutex has been replaced with an equivalent selective QXK scheduler locking up to the specified ceiling priority. Specifically, this feature has been implemented with two new operations QXK_schedLock() and QXK_schedUnlock().
+
+For consistency, the non-blocking mutex of the @ref qk "QK kernel" has been also replaced by the operations QK_schedLock() and QK_schedUnlock().
+
+All related QXK and QK examples have been updated to use the selective scheduler locking instead of the mutex. The new blocking QXK mutex has been demonstrated in the following updated examples:
+- @ref arm-cm_dpp_efm32-slstk3401a
+- @ref arm-cm_dpp_ek-tm4c123gxl
+
+@attention
+The changes to ::QXMutex in QXK and the now obsolete QMutex in QK **break backwards-compatiblity** with the exising code that relies these features. In the exising code, the mutexes should be replaced with selective scheduler locking.
+
+@attention
+Also, the blocking APIs with timeouts, such as QXMutex_lock(), QXSemaphore_wait(), QXThread_delay(), and QXThread_queueGet() no longer require the last `tickRate` parameter. This also **breaks backward-compatiblity** with the exising code that uses these operations. 
+
+This release also updates CMSIS to version 5.1.0 (3rd_party/CMSIS).
+
+This release also adds the @ref api "API Reference" section to the QP/C documentation.
+
+Finally, this release fixes the following bug:
+- <a href="https://sourceforge.net/p/qpc/bugs" class="extern">bug#181 "Win32-qv port and QF_run "idle" time"</a>
+
+
+-----------------------------------------------------------------------------
 @section qpc_5_9_6 Version 5.9.6, 2017-08-04
 The main focus of this release are improvements to the "dual-mode" QXK kernel. Specifically, this release implements the <a href="https://sourceforge.net/p/qpc/feature-requests/128/" class="extern">featrue request #128 "QP Semaphore Max Value Setting"</a> for QXK. This feature changes the QXK function QXSemaphore_init(), which now takes additional parameter `count`. This parameter specifies the maximum allowed count for the semaphore (e.g., count of 1 makes the semaphore a binary-semaphore).
 

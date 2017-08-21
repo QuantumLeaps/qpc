@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.4
-* Last updated on  2016-11-02
+* Last updated for version 5.9.7
+* Last updated on  2017-08-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -43,8 +43,8 @@
 /*! internal QXK function to start multitasking (typically in assembly) */
 void QXK_start_(void);
 
-/*! initialize the private stack of a given AO */
-void QXK_stackInit_(void *act, QXThreadHandler handler,
+/*! initialize the private stack of a given QXThread */
+void QXK_stackInit_(void *thr, QXThreadHandler handler,
                     void *stkSto, uint_fast16_t stkSize);
 
 /*! called when a thread function returns */
@@ -66,8 +66,7 @@ void QXThread_unblock_(QXThread const * const me);
 /*! internal function to arm the private time event for a given thread. */
 void QXThread_teArm_(QXThread * const me,
                      QSignal sig,
-                     uint_fast16_t const nTicks,
-                     uint_fast8_t const tickRate);
+                     uint_fast16_t const nTicks);
 
 /*! internal function to disarm the private time event for a given thread. */
 bool QXThread_teDisarm_(QXThread * const me);

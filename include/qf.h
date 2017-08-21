@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.4
-* Last updated on  2017-07-05
+* Last updated for version 5.9.7
+* Last updated on  2017-08-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -119,7 +119,8 @@ typedef struct QActive {
     * to deliver QF events to the active object. Alternatively, QF provides
     * a native event queue implementation that can be used as well.
     *
-    * @note The native QF event queue is configured by defining the macro
+    * @note
+    * The native QF event queue is configured by defining the macro
     * #QF_EQUEUE_TYPE as ::QEQueue.
     */
     QF_EQUEUE_TYPE eQueue;
@@ -148,8 +149,13 @@ typedef struct QActive {
     QF_THREAD_TYPE thread;
 #endif
 
-    /*! QF priority associated with the active object. */
+    /*! QF priority (1..#QF_MAX_ACTIVE) of this active object. */
     uint_fast8_t prio;
+
+#ifdef qxk_h  /* QXK kernel used? */
+    /*! QF start priority (1..#QF_MAX_ACTIVE) of this active object. */
+    uint_fast8_t startPrio;
+#endif
 
 } QActive;
 
@@ -228,13 +234,15 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     * @param[in]     e_    pointer to the event to post
     * @param[in]     sender_ pointer to the sender object.
     *
-    * @note The @p sendedr_ parameter is actually only used when QS tracing
+    * @note
+    * The @p sendedr_ parameter is actually only used when QS tracing
     * is enabled (macro #Q_SPY is defined). When QS software tracing is
     * disenabled, the QACTIVE_POST() macro does not pass the @p sender_
     * argument, so the overhead of passing this extra argument is entirely
     * avoided.
     *
-    * @note the pointer to the sender object is not necessarily a pointer
+    * @note
+    * The pointer to the sender object is not necessarily a pointer
     * to an active object. In fact, if QACTIVE_POST() is called from an
     * interrupt or other context, you can create a unique object just to
     * unambiguously identify the sender of the event.
@@ -263,13 +271,15 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     * @returns 'true' if the posting succeeded, and 'false' if the posting
     * failed due to insufficient margin of free slots available in the queue.
     *
-    * @note The @p sender_ parameter is actually only used when QS tracing
+    * @note
+    * The @p sender_ parameter is actually only used when QS tracing
     * is enabled (macro #Q_SPY is defined). When QS software tracing is
     * disabled, the QACTIVE_POST() macro does not pass the @p sender_
     * argument, so the overhead of passing this extra argument is entirely
     * avoided.
     *
-    * @note the pointer to the sender object is not necessarily a pointer
+    * @note
+    * The pointer to the sender object is not necessarily a pointer
     * to an active object. In fact, if QACTIVE_POST_X() is called from an
     * interrupt or other context, you can create a unique object just to
     * unambiguously identify the sender of the event.
@@ -430,12 +440,15 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial);
 *
 * @sa ::QTimeEvt for the description of the data members @n @ref oop
 *
-* @note QF manages the time events in the function QF_tickX_(), which
-* must be called periodically, preferably from the clock tick ISR.
+* @note
+* QF manages the time events in the function QF_tickX_(), which must be called
+* periodically, from the clock tick ISR or from the special ::QTicker
+* active object.
 *
-* @note In this version of QF ::QTimeEvt objects should be allocated
-* statically rather than dynamically from event pools. Currently, QF will
-* not correctly recycle the dynamically allocated Time Events.
+* @note
+* Even though ::QTimeEvt is a subclass of ::QEvt, ::QTimeEvt instances can NOT
+* be allocated dynamically from event pools. In other words, it is illegal to
+* allocate ::QTimeEvt instances with the Q_NEW() or Q_NEW_X() macros.
 */
 typedef struct QTimeEvt {
     QEvt super; /*<! inherits ::QEvt */
@@ -566,7 +579,8 @@ void QF_onCleanup(void);
     *          @p sender_ parameter, so the overhead of passing this
     *          extra argument is entirely avoided.
     *
-    * @note the pointer to the sender object is not necessarily a pointer
+    * @note
+    * the pointer to the sender object is not necessarily a pointer
     * to an active object. In fact, if QF_PUBLISH() is called from an
     * interrupt or other context, you can create a unique object just to
     * unambiguously identify the publisher of the event.
