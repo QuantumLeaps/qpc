@@ -21,7 +21,7 @@ All related QXK and QK examples have been updated to use the selective scheduler
 The changes to ::QXMutex in QXK and the now obsolete QMutex in QK **break backwards-compatiblity** with the exising code that relies these features. In the exising code, the mutexes should be replaced with selective scheduler locking.
 
 @attention
-Also, the blocking APIs with timeouts, such as QXMutex_lock(), QXSemaphore_wait(), QXThread_delay(), and QXThread_queueGet() no longer require the last `tickRate` parameter. This also **breaks backward-compatiblity** with the exising code that uses these operations. 
+Also, the blocking APIs with timeouts, such as QXMutex_lock(), QXSemaphore_wait(), QXThread_delay(), and QXThread_queueGet() no longer require the last `tickRate` parameter. This also **breaks backward-compatiblity** with the exising code that uses these operations.
 
 This release also updates CMSIS to version 5.1.0 (3rd_party/CMSIS).
 

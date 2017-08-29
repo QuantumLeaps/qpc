@@ -41,7 +41,7 @@ OPTIMIZE_OUTPUT_FOR_C  = YES
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
 OPTIMIZE_OUTPUT_VHDL   = NO
-EXTENSION_MAPPING      =
+EXTENSION_MAPPING      = lnt=Objective-C
 MARKDOWN_SUPPORT       = YES
 AUTOLINK_SUPPORT       = YES
 BUILTIN_STL_SUPPORT    = NO
@@ -71,7 +71,7 @@ HIDE_FRIEND_COMPOUNDS  = NO
 HIDE_IN_BODY_DOCS      = NO
 INTERNAL_DOCS          = NO
 CASE_SENSE_NAMES       = NO
-HIDE_SCOPE_NAMES       = NO
+HIDE_SCOPE_NAMES       = YES
 HIDE_COMPOUND_REFERENCE= NO
 SHOW_INCLUDE_FILES     = YES
 SHOW_GROUPED_MEMB_INC  = NO
@@ -133,7 +133,6 @@ INPUT                  = \
     ../ports/lint \
     ../../doxygen/glossary.dox
 
-
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = \
     *.dox \
@@ -141,7 +140,8 @@ FILE_PATTERNS          = \
     *.c \
     *.cpp \
     *.s \
-    *.asm
+    *.asm \
+    *.lnt
 
 RECURSIVE              = YES
 EXCLUDE                = \
@@ -313,7 +313,7 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = Q_SPY QP_IMPL
+PREDEFINED             = Q_SPY QP_IMPL Q_UTEST
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

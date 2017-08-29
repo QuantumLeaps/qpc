@@ -1,6 +1,6 @@
 /**
 * @file
-* @brief QHsm implementation
+* @brief ::QHsm implementation
 * @ingroup qep
 * @cond
 ******************************************************************************

@@ -1,7 +1,7 @@
  /*****************************************************************************
 * Product: DPP example, Windows (console)
-* Last updated for version 5.8.0
-* Last updated on  2016-11-29
+* Last updated for version 5.9.7
+* Last updated on  2017-08-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -84,6 +84,8 @@ void Q_onAssert(char const * const module, int_t loc) {
 }
 /*..........................................................................*/
 void BSP_init(int argc, char *argv[]) {
+    (void)argc;
+    (void)argv;
 
     printf("Dining Philosophers Problem example"
            "\nQP %s\n"

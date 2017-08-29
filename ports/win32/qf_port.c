@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.2
-* Date of the Last Update:  2016-12-22
+* Last Updated for Version: 5.9.7
+* Date of the Last Update:  2017-08-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -54,6 +54,7 @@ Q_DEFINE_THIS_MODULE("qf_port")
 
 /* Local objects ===========================================================*/
 static CRITICAL_SECTION l_win32CritSect;
+static CRITICAL_SECTION l_startupCritSect;
 static DWORD l_tickMsec = 10U; /* clock tick in msec (argument for Sleep()) */
 static bool  l_isRunning;      /* flag indicating when QF is running */
 
@@ -65,6 +66,12 @@ void QF_init(void) {
     extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
 
     InitializeCriticalSection(&l_win32CritSect);
+
+    /* initialize and enter the startup critical section object to block
+    * any active objects started before calling QF_run()
+    */
+    InitializeCriticalSection(&l_startupCritSect);
+    EnterCriticalSection(&l_startupCritSect);
 
     /* clear the internal QF variables, so that the framework can (re)start
     * correctly even if the startup code is not called to clear the
@@ -91,6 +98,11 @@ int_t QF_run(void) {
 
     QF_onStartup(); /* application-specific startup callback */
 
+    /* leave the startup critical section to unblock any active objects
+    * started before calling QF_run()
+    */
+    LeaveCriticalSection(&l_startupCritSect);
+
     l_isRunning = true; /* QF is running */
 
     /* set the ticker thread priority below normal to prevent
@@ -105,6 +117,7 @@ int_t QF_run(void) {
     }
     QF_onCleanup();  /* cleanup callback */
     QS_EXIT();       /* cleanup the QSPY connection */
+    //DeleteCriticalSection(&l_startupCritSect);
     //DeleteCriticalSection(&l_win32CritSect);
     return (int_t)0; /* return success */
 }
@@ -128,7 +141,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
 {
-    int   win32Prio;
+    int win32Prio;
 
     Q_REQUIRE_ID(700, ((uint_fast8_t)0 < prio) /* priority must be in range */
                  && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
@@ -174,6 +187,11 @@ void QActive_stop(QActive * const me) {
 /****************************************************************************/
 static DWORD WINAPI ao_thread(LPVOID arg) { /* for CreateThread() */
     QActive *act = (QActive *)arg;
+
+    /* block this thread until the startup critical section is exited
+    * from QF_run() */
+    EnterCriticalSection(&l_startupCritSect);
+    LeaveCriticalSection(&l_startupCritSect);
 
     /* Active Object's event loop. QActive_stop() stops the loop */
     do {

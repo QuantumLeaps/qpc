@@ -164,7 +164,7 @@ Given the simplicity, portability, and low-resource consumption, the QV schedule
 
 
 ------------------------------------------------------------------------------
-@section api_qk Preemptive Run-to-Completion Kernel (QK)
+@section api_qk QK (Preemptive Run-to-Completion Kernel)
 QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specifically for executing active objects. QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using the single stack. Active objects process their events in run-to-completion (RTC) fashion and remove themselves from the call stack, the same way as nested interrupts remove themselves from the stack upon completion. At the same time high-priority active objects can preempt lower-priority active objects, just like interrupts can preempt each other under a prioritized interrupt controller. QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis RMA) and can be used in hard real-time systems.
 
 
@@ -185,7 +185,7 @@ QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specif
 
 
 ------------------------------------------------------------------------------
-@section api_qxk Preemptive Dual-Mode (Run-to-Completion/Blocking) RTOS Kernel
+@section api_qxk QXK (Preemptive Dual-Mode RTOS Kernel)
 QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that executes active objects like the @ref qk "QK kernel", but can also execute traditional __blocking__ threads (extended threads). In this respect, QXK behaves exactly as a conventional __RTOS__ (Real-Time Operating System). QXK has been designed specifically for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
 
 

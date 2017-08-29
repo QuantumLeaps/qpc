@@ -1,8 +1,9 @@
 /**
 * @file
-* @brief QActive native queue operations (based on QEQueue)
+* @brief ::QActive native queue operations (based on ::QEQueue)
 *
-* @note this source file is only included in the QF library when the native
+* @note
+* this source file is only included in the application build when the native
 * QF active object queue is used (instead of a message queue of an RTOS).
 *
 * @ingroup qf

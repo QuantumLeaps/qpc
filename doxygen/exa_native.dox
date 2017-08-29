@@ -145,53 +145,333 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @subpage msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 - @subpage msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 */
+
 /*##########################################################################*/
 /*! @page arm-cm_blinky_ek-tm4c123gxl Blinky on EK-TM4C123GXL
 
+@tableofcontents
+
+<p>This example implements the @ref blinky "Blinky sample application" on the EK-TM4C123GLX board (ARM Cortex-M4F).
+</p>
+
 @image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
-@n
-@n
+
+
+The Blinky example is located in the directory <span class="img folder">qpc/examples/arm-cm/blinky_ek-tm4c123gxl</span>, which is organized as follows:
+
+@code{.x}
+ qpc/                - QP/C installation directory
+  +-examples/        - QP/C examples directory (application)
+  | +-arm-cm/        - QP/C examples for ARM Cortex-M
+  | | +-blinky_ek-tm4c123gxl/ - Blinky example on the EK-TM4C123GLX board
+  | | | +-qk/        - QK version
+  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | | +-blinky-qk.uvprojx - uVision project
+  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | | +-Makefile          - Makefile for building the project
+  | | | | +-iar/     - IAR-ARM toolset
+  | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
+  | | | | +-bsp.c    - BSP for the QK kernel
+  | | | +-qv/        - QV version
+  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | | +-blinky-qk.uvprojx - uVision project
+  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | | +-Makefile          - Makefile for building the project with GNU-ARM
+  | | | | +-iar/     - IAR-ARM toolset
+  | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
+  | | | | +-bsp.c    - BSP for the QV kernel
+  | | | +-win32/     - Windows emulation (multithreaded)
+  | | | | +-Makefile          - Makefile for building the project with MinGW
+  | | | | +-bsp.c    - BSP for the Win32
+  | | | +-win32-qv/  - Windows emulation (single thread)
+  | | | | +-Makefile          - Makefile for building the project with MinGW
+  | | | | +-bsp.c    - BSP for the Win32-QV
+@endcode
+
+
+------------------------------------------------------------------------------
+@section arm-cm_blinky_ek-tm4c123gxl_feat Features Demonstrated
+- cooperative QV kernel
+  + with ARM-KEIL toolset
+  + with GNU-ARM toolset
+  + with IAR-ARM toolset
+- preemptive run-to-completion QK kernel
+  + with ARM-KEIL toolset
+  + with GNU-ARM toolset
+  + with IAR-ARM toolset
+- Windows emulation (console multithreaded)
+- Windows emulation (console, single threaded: win32-qv)
+
+
+------------------------------------------------------------------------------
+@section arm-cm_blinky_ek-tm4c123gxl_run Running the Example
+Once programmed into the board, the example blinks the on-board LED about once a second.
+
 @image html blinky_ek-tm4c123gxl.gif Blinky on EK-TM4C123GLX (TivaC LaunchPad)
-@n
-Simple "Blinky" example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
-@n
+
+
+------------------------------------------------------------------------------
+@section arm-cm_blinky_ek-tm4c123gxl_win Windows Emulation
+The Windows emulation is a simple console application that produces the following output:
+
 @image html blinky_win32.png Blinky emulation running in a Windows console
-@n
-@n
-@image html under_construction.jpg
+
+@next{arm-cm_blinky_efm32-slstk3401a}
 */
 /*##########################################################################*/
 /*! @page arm-cm_blinky_efm32-slstk3401a Blinky on EFM32-SLSTK3401A
 
+@tableofcontents
+
+<p>This example implements the @ref blinky "Blinky sample application" on the EFM32-SLSTK3401A board (ARM Cortex-M4F).
+</p>
+
 @image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
-@n
-Simple "Blinky" example for for Silicon Labs Pearl Gecko MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
-@n
+
+The Blinky example is located in the directory <span class="img folder">qpc/examples/arm-cm/blinky_efm32-slstk3401a</span>, which is organized as follows:
+
+@code{.x}
+ qpc/                - QP/C installation directory
+  +-examples/        - QP/C examples directory (application)
+  | +-arm-cm/        - QP/C examples for ARM Cortex-M
+  | | +-blinky_efm32-slstk3401a/ - Blinky example on the EFM32-SLSTK3401A board
+  | | | +-qk/        - QK version
+  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | | +-blinky-qk.uvprojx - uVision project
+  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | | +-Makefile          - Makefile for building the project
+  | | | | +-iar/     - IAR-ARM toolset
+  | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
+  | | | | +-bsp.c    - BSP for the QK kernel
+  | | | +-qv/        - QV version
+  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | | +-blinky-qk.uvprojx - uVision project
+  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | | +-Makefile          - Makefile for building the project with GNU-ARM
+  | | | | +-iar/     - IAR-ARM toolset
+  | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
+  | | | | +-bsp.c    - BSP for the QV kernel
+  | | | +-win32/     - Windows emulation (multithreaded)
+  | | | | +-Makefile          - Makefile for building the project with MinGW
+  | | | | +-bsp.c    - BSP for the Win32
+  | | | +-win32-qv/  - Windows emulation (single thread)
+  | | | | +-Makefile          - Makefile for building the project with MinGW
+  | | | | +-bsp.c    - BSP for the Win32-QV
+@endcode
+
+
+------------------------------------------------------------------------------
+@section arm-cm_blinky_efm32-slstk3401a_feat Features Demonstrated
+- cooperative QV kernel
+  + with ARM-KEIL toolset
+  + with GNU-ARM toolset
+  + with IAR-ARM toolset
+- preemptive run-to-completion QK kernel
+  + with ARM-KEIL toolset
+  + with GNU-ARM toolset
+  + with IAR-ARM toolset
+- Windows emulation (console multithreaded)
+- Windows emulation (console, single threaded: win32-qv)
+
+
+------------------------------------------------------------------------------
+@section arm-cm_blinky_efm32-slstk3401a_run Running the Example
+Once programmed into the board, the example blinks the on-board LED about once a second.
+
+
+------------------------------------------------------------------------------
+@section arm-cm_blinky_efm32-slstk3401a_win Windows Emulation
+The Windows emulation is a simple console application that produces the following output:
+
 @image html blinky_win32.png Blinky emulation running in a Windows console
-@n
-@n
-@image html under_construction.jpg
+
+@next{arm-cm_dpp_ek-tm4c123gxl}
 */
 /*##########################################################################*/
 /*! @page arm-cm_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
 
+@tableofcontents
+
+<p>This example implements the @ref dpp "Dining Philosophers Problem" sample application on the EK-TM4C123GLX board (ARM Cortex-M4F).
+</p>
+
 @image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
 
-Dining Philosophers Problem (DPP) example for Texas Instruments TivaC123GXL MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
+The DPP example is located in the directory <span class="img folder">qpc/examples/arm-cm/dpp_ek-tm4c123gxl</span>, which is organized as follows:
 
-@image html dpp_win32.png DPP emulation running in Windows GUI
-@n
-@n
-@image html under_construction.jpg
+@code{.x}
+ qpc/                - QP/C installation directory
+  +-examples/        - QP/C examples directory (applications)
+  | +-arm-cm/        - QP/C examples for ARM Cortex-M
+  | | +-dpp_ek-tm4c123gxl/ - DPP example on the EK-TM4C123GLX board
+  | | | +-lint/      - PC-Lint version (static analysis of the application code)
+  | | | | +-lin.bat  - batch file for running the PC-Lint
+  | | | | +-options.lnt - PC-Lint options file for the DPP application code
+  | | | +-qk/        - QK version
+  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | | +-dpp-qk.uvprojx - uVision project
+  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | | +-Makefile          - Makefile for building the project
+  | | | | +-iar/     - IAR-ARM toolset
+  | | | | | +-dpp-qk.eww     - IAR EW-ARM workspace
+  | | | | +-ti/      - TI-ARM toolset (CCS)
+  | | | | | +-.ccsproject  - CCS project
+  | | | | | +-.cproject    - C Eclipse project
+  | | | | | +-.project     - Eclipse project
+  | | | | +-bsp.c    - BSP for the QK kernel
+  | | | | +-main.c   - main() for the QK kernel
+  | | | +-qv/        - QV version
+  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | | +-dpp-qk.uvprojx - uVision project
+  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | | +-Makefile          - Makefile for building the project with GNU-ARM
+  | | | | +-iar/     - IAR-ARM toolset
+  | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
+  | | | | +-bsp.c    - BSP for the QV kernel
+  | | | | +-main.c   - main() for the QV kernel
+  | | | +-qxk/       - QXK version
+  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | | +-dpp-qk.uvprojx - uVision project
+  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | | +-Makefile          - Makefile for building the project
+  | | | | +-iar/     - IAR-ARM toolset
+  | | | | | +-dpp-qk.eww     - IAR EW-ARM workspace
+  | | | | +-ti/      - TI-ARM toolset (CCS)
+  | | | | | +-.ccsproject  - CCS project
+  | | | | | +-.cproject    - C Eclipse project
+  | | | | | +-.project     - Eclipse project
+  | | | | +-bsp.c    - BSP for the QXK kernel
+  | | | | +-main.c   - main() for the QXK kernel
+  | | | | +-test.c   - extended (blocking) test threads
+  | | | +-qspyview/  - visualization and monitoring for the DPP example
+  | | | | +-dpp.tcl        - QSpyView specialization for the DPP
+  | | | | +-qspyview.bat   - batch file for launching QSpyView for DPP
+@endcode
+
+
+------------------------------------------------------------------------------
+@section arm-cm_dpp_ek-tm4c123gxl_feat Features Demonstrated
+- cooperative QV kernel
+  + with ARM-KEIL toolset
+  + with GNU-ARM toolset
+  + with IAR-ARM toolset
+  + with TI-ARM toolset (CCS)
+- preemptive run-to-completion QK kernel
+  + with ARM-KEIL toolset
+  + with GNU-ARM toolset
+  + with IAR-ARM toolset
+  + with TI-ARM toolset (CCS)
+- preemptive dual-mode QXK kernel
+  + with ARM-KEIL toolset
+  + with GNU-ARM toolset
+  + with IAR-ARM toolset
+  + with TI-ARM toolset (CCS)
+- QP/Spy software tracing (output)
+- QP/Spy software tracing (input QS-RX)
+- Unit Testing with QUTest
+- Windows emulation with GUI (multithreaded)
+- Windows emulation with GUI (single threaded, win32-qv)
+
+
+------------------------------------------------------------------------------
+@section arm-cm_dpp_ek-tm4c123gxl_run Running the Example
+Once programmed into the board, the example rapidly toggles the Blue LED from the idle loop (blue LED glows) and toggles the Red and Green LEDs as the Philosophers change their state. Additionally, you can depress and hold the SW1 button (left) to PAUSE the application (Table transitions into the "paused" state). Releasing the SW1 button causes transition back to the "serving" state.
+
+
+------------------------------------------------------------------------------
+@section arm-cm_dpp_ek-tm4c123gxl_qutest Unit Testing
+The examples demonstrates the QUTest unit tests for the application.
+
+
+------------------------------------------------------------------------------
+@section arm-cm_dpp_ek-tm4c123gxl_spy QP/Spy Software Tracing
+The application also demonstrates <a href="https://state-machine.com/qtools/qpspy.html" target="_blank" class="extern">QP/Spy</a> software tracing output and input. To exercise this feature, you need to build and upload the Spy build configuration into the board.
+
 */
 /*##########################################################################*/
 /*! @page arm-cm_dpp_efm32-slstk3401a DPP on EFM32-SLSTK3401A
 
+@tableofcontents
+
+<p>This example implements the @ref dpp "Dining Philosophers Problem" sample application on the EFM32-SLSTK3401A board (ARM Cortex-M4F).
+</p>
+
 @image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
-@n
-Dining Philosophers Problem (DPP) example for for Silicon Labs Pearl Gecko MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
-@n
-@image html under_construction.jpg
+
+The DPP example is located in the directory <span class="img folder">qpc/examples/arm-cm/dpp_efm32-slstk3401a</span> and includes versions for @ref qv "cooperative QV kernel", the  @ref qk "preemptive QK kernel", and the @ref qxk "preemptive dual mode QXK RTOS kernel"  each provided for the ARM-KEIL, GNU-ARM, and IAR-ARM. The following annotated directory listing describes the contents of the example folder:
+
+@code{.x}
+ qpc/                - QP/C installation directory
+  +-examples/        - QP/C examples directory (application)
+  | +-arm-cm/        - QP/C examples for ARM Cortex-M
+  | | +-dpp_efm32-slstk3401a/ - DPP example on the EK-TM4C123GLX board
+  | | | +-lint/      - PC-Lint version (static analysis of the application code)
+  | | | | +-lin.bat  - batch file for running the PC-Lint
+  | | | | +-options.lnt - PC-Lint options file for the DPP application code
+  | | | +-qk/        - QK version
+  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | | +-dpp-qk.uvprojx - uVision project
+  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | | +-Makefile          - Makefile for building the project
+  | | | | +-iar/     - IAR-ARM toolset
+  | | | | | +-dpp-qk.eww     - IAR EW-ARM workspace
+  | | | | +-bsp.c    - BSP for the QK kernel
+  | | | | +-main.c   - main() for the QK kernel
+  | | | +-qv/        - QV version
+  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | | +-dpp-qk.uvprojx - uVision project
+  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | | +-Makefile          - Makefile for building the project with GNU-ARM
+  | | | | +-iar/     - IAR-ARM toolset
+  | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
+  | | | | +-bsp.c    - BSP for the QV kernel
+  | | | | +-main.c   - main() for the QV kernel
+  | | | +-qxk/       - QXK version
+  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | | +-dpp-qk.uvprojx - uVision project
+  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | | +-Makefile          - Makefile for building the project
+  | | | | +-iar/     - IAR-ARM toolset
+  | | | | | +-dpp-qk.eww     - IAR EW-ARM workspace
+  | | | | +-bsp.c    - BSP for the QXK kernel
+  | | | | +-main.c   - main() for the QXK kernel
+  | | | | +-test.c   - extended (blocking) test threads
+  | | | +-qspyview/  - visualization and monitoring for the DPP example
+  | | | | +-dpp.tcl        - QSpyView specialization for the DPP
+  | | | | +-qspyview.bat   - batch file for launching QSpyView for DPP
+@endcode
+
+
+------------------------------------------------------------------------------
+@section arm-cm_dpp_efm32-slstk3401a_feat Features Demonstrated
+- cooperative QV kernel
+  + with ARM-KEIL toolset
+  + with GNU-ARM toolset
+  + with IAR-ARM toolset
+- preemptive run-to-completion QK kernel
+  + with ARM-KEIL toolset
+  + with GNU-ARM toolset
+  + with IAR-ARM toolset
+- preemptive dual-mode QXK kernel
+  + with ARM-KEIL toolset
+  + with GNU-ARM toolset
+  + with IAR-ARM toolset
+- QP/Spy software tracing (output)
+- QP/Spy software tracing (input QS-RX)
+- Unit Testing with QUTest
+- Windows emulation with GUI (multithreaded)
+- Windows emulation with GUI (single threaded, win32-qv)
+
+
+------------------------------------------------------------------------------
+@section arm-cm_dpp_efm32-slstk3401a_run Running the Example
+Once programmed into the board, the example rapidly toggles the LED1 from the idle loop (LED1 glows) and toggles LED0 as the Philosophers change their state. Additionally, you can depress and hold the BTN0 button (left) to PAUSE the application (Table transitions into the "paused" state). Releasing the BTN0 button causes transition back to the "serving" state.
+
+
+------------------------------------------------------------------------------
+@section arm-cm_dpp_efm32-slstk3401a_spy QP/Spy Software Tracing
+The application also demonstrates <a href="https://state-machine.com/qtools/qpspy.html" target="_blank" class="extern">QP/Spy</a> software tracing output and input. To exercise this feature, you need to build and upload the Spy build configuration into the board.
+
 */
 /*##########################################################################*/
 /*! @page arm-cm_dpp_mbed-lpc1768 DPP on mbed-LPC1768

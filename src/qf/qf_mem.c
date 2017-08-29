@@ -1,7 +1,7 @@
 /**
 * @file
 * @ingroup qf
-* @brief Memory management services
+* @brief ::QMPool implementatin (Memory Pool)
 * @cond
 ******************************************************************************
 * Last updated for version 5.5.0

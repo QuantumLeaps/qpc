@@ -1,6 +1,6 @@
 /**
 * @file
-* @brief QEQueue implementation
+* @brief ::QEQueue implementation (QP native thread-safe queue)
 * @ingroup qf
 * @cond
 ******************************************************************************
