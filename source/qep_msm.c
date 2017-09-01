@@ -1,6 +1,6 @@
 /**
 * @file
-* @brief QMsm implementation
+* @brief ::QMsm implementation
 * @ingroup qep
 * @cond
 ******************************************************************************

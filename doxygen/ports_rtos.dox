@@ -27,13 +27,33 @@ Starting from version 5.6.0, QP/C includes the conventional, preemptive @ref qxk
 /*##########################################################################*/
 /*! @page embos embOS
 
-@image html under_construction.jpg
+<p>The QP/C/C++ ports and examples for embOS are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://state-machine.com/doc/AN_RTOS-embOS.pdf"><strong>QP and embOS</strong></a>.
+</p>
+
+@htmlonly
+<div class="image">
+<a target="_blank" href="https://state-machine.com/doc/AN_RTOS-embOS.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: QP and embOS
+</div>
+</div>
+@endhtmlonly
 
 */
 /*##########################################################################*/
 /*! @page threadx ThreadX
 
-@image html under_construction.jpg
+<p>The QP/C/C++ ports and examples for ThreadX are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://state-machine.com/doc/AN_RTOS-ThreadX.pdf"><strong>QP and ThreadX</strong></a>.
+</p>
+
+@htmlonly
+<div class="image">
+<a target="_blank" href="https://state-machine.com/doc/AN_RTOS-ThreadX.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: QP and ThreadX
+</div>
+</div>
+@endhtmlonly
 
 */
 /*##########################################################################*/
@@ -341,6 +361,16 @@ qpc
 @note
 Specifically, the QP source files qf_actq.c and qf_mem.c must **NOT** be included in the build, because this functionality is taken from uC/OS-II.
 
-@image html under_construction.jpg
+<p>The QP/C/C++ ports and examples for uC/OS-II are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://state-machine.com/doc/AN_RTOS-uCOS2.pdf"><strong>QP and uC/OS-II</strong></a>.
+</p>
+
+@htmlonly
+<div class="image">
+<a target="_blank" href="https://state-machine.com/doc/AN_RTOS-uCOS2.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: QP and uC/OS-II
+</div>
+</div>
+@endhtmlonly
 
 */

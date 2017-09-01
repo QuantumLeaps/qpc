@@ -1,3 +1,0 @@
-
-
-"C:\qp_lab\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\lint\options.lnt" 49 1 Error 307: Can't open indirect file 'co-gnu-arm.lnt'

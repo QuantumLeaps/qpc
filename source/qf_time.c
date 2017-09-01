@@ -1,6 +1,6 @@
 /**
 * @file
-* @brief QF time events and time management services
+* @brief ::QTimeEvt implementation and QF system clock tick QF_tickX_())
 * @ingroup qf
 * @cond
 ******************************************************************************

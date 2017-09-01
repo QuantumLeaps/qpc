@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.3
-* Last updated on  2017-06-19
+* Last updated for version 5.9.7
+* Last updated on  2017-08-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -270,14 +270,14 @@ void QF_gc(QEvt const * const e) {
 QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef) {
     QF_CRIT_STAT_
 
-    /* the provided event reference must not be in use */
-    Q_REQUIRE_ID(500, evtRef == (QEvt const *)0);
+    /*! @pre the event must be dynamic and the provided event reference
+    * must not be already in use */
+    Q_REQUIRE_ID(500,
+        (e->poolId_ != (uint8_t)0)
+        && (evtRef == (QEvt const *)0));
 
     QF_CRIT_ENTRY_();
-    /* is the current event dynamic? */
-    if (e->poolId_ != (uint8_t)0) {
-        QF_EVT_REF_CTR_INC_(e); /* increments the ref counter */
-    }
+    QF_EVT_REF_CTR_INC_(e); /* increments the ref counter */
     QF_CRIT_EXIT_();
 
     return e;

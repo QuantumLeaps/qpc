@@ -1,6 +1,6 @@
 /**
 * @file
-* @brief QActive services and QF support code
+* @brief ::QActive services and ::QF support code
 * @ingroup qf
 * @cond
 ******************************************************************************
