@@ -102,7 +102,7 @@ The **QP/C Manual** is located online at: https://state-machine.com/qpc
 - [Bug Reports](https://sourceforge.net/p/qpc/bugs/)
 - [Feature Requests](https://sourceforge.net/p/qpc/feature-requests/)
 - [Quantum Leaps website](https://state-machine.com)
-- [Quantum Lepas licensing](https://state-machine.com/licensing)
+- [Quantum Leaps licensing](https://state-machine.com/licensing)
 - [info@state-machine.com](mailto:info@state-machine.com)
 
    [QP]: <https://state-machine.com/products/#QP>
