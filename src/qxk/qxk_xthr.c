@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.7
-* Last updated on  2017-08-20
+* Last updated for version 5.9.8
+* Last updated on  2017-09-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -81,12 +81,15 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e);
 * @param[in,out] me       pointer (see @ref oop)
 * @param[in]     handler  the thread-handler function
 *
-* @note  Must be called only ONCE before QXTHREAD_START().
+* @note
+* Must be called only ONCE before QXTHREAD_START().
 *
 * @usage
 * The following example illustrates how to invoke QXThread_ctor() in the
 * main() function
-* @include qxk_xthread_ctor.c
+*
+* @include
+* qxk_xthread_ctor.c
 */
 void QXThread_ctor(QXThread * const me,
                    QXThreadHandler handler, uint_fast8_t tickRate)
@@ -140,7 +143,8 @@ static void QXThread_dispatch_(QMsm * const me, QEvt const * const e) {
 * @param[in]     stkSize stack size [in bytes] (must not be zero)
 * @param[in]     ie      pointer to the initial event (not used).
 *
-* @note This function should be called via the macro QXTHREAD_START().
+* @note
+* Should be called via the macro QXTHREAD_START().
 *
 * @usage
 * The following example shows starting an extended thread:
@@ -208,19 +212,22 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 *
 * @param[in,out] me     pointer (see @ref oop)
 * @param[in]     e      pointer to the event to be posted
-* @param[in]     margin number of required free slots in the queue
-*                       after posting the event.
+* @param[in]     margin number of required free slots in the queue after
+*                       posting the event. The special value #QF_NO_MARGIN
+*                       means that this function will assert if posting fails.
 *
-* @note this function should be called only via the macro QXTHREAD_POST_X().
+* @note
+* Should be called only via the macro QXTHREAD_POST_X().
 *
-* @note The zero value of the @p margin parameter is special and denotes
+* @note
+* The #QF_NO_MARGIN value of the @p margin parameter is special and denotes
 * situation when the post() operation is assumed to succeed (event delivery
-* guarantee). An assertion fires, when the event cannot be delivered in
-* this case.
+* guarantee). An assertion fires, when the event cannot be delivered in this
+* case.
 *
 * @note
 * For compatibility with the V-table from the superclass QActive, the
-* me-pointer is typed as pointing to QActive. However, the me pointer
+* me-pointer is typed as pointing to QActive. However, the @p me pointer
 * here actually points to the QXThread subclass. Therefore the downcast
 * (QXThread *)me is always correct.
 */
@@ -262,7 +269,9 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
         nFree = me->eQueue.nFree; /* get volatile into the temporary */
 
         /* margin available? */
-        if (nFree > (QEQueueCtr)margin) {
+        if (((margin == QF_NO_MARGIN) && (nFree > (QEQueueCtr)0))
+            || (nFree > (QEQueueCtr)margin))
+        {
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
                              QS_priv_.locFilter[AO_OBJ], me)
@@ -316,7 +325,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
             /** @note assert if event cannot be posted and dropping events is
             * not acceptable
             */
-            Q_ASSERT_ID(310, margin != (uint_fast16_t)0);
+            Q_ASSERT_ID(310, margin != QF_NO_MARGIN);
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                              QS_priv_.locFilter[AO_OBJ], me)
@@ -338,7 +347,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
     else { /* the queue is not available */
          QF_gc(e); /* make sure the event is not leaked */
          status = false;
-         Q_ERROR_ID(320); /* extened thread does not expect events */
+         Q_ERROR_ID(320); /* this extended thread cannot accept events */
     }
 
     return status;
@@ -352,7 +361,8 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
 * @param[in] me pointer (see @ref oop)
 * @param[in  e  pointer to the event to post to the queue
 *
-* @sa QActive_postLIFO_()
+* @sa
+* QActive_postLIFO_()
 */
 static void QXThread_postLIFO_(QActive * const me, QEvt const * const e) {
     (void)me;
@@ -376,9 +386,8 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e) {
 *                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
 *                       occur and the queue will block indefinitely.
 * @returns
-* Returns pointer to the event. If the pointer is not NULL, the event
-* was delivered. Otherwise the event pointer of NULL indicates that the
-* queue has timed out.
+* A pointer to the event. If the pointer is not NULL, the event was delivered.
+* Otherwise the event pointer of NULL indicates that the queue has timed out.
 */
 QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
     QXThread *thr;
@@ -474,7 +483,7 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
 * Intenral implementation of blocking the given extended thread.
 *
 * @note
-* must be called from within a critical section
+* Must be called from within a critical section
 */
 void QXThread_block_(QXThread const * const me) {
     /** @pre the thread holding the lock cannot block! */
@@ -508,7 +517,7 @@ void QXThread_unblock_(QXThread const * const me) {
 * timeout at a given system tick rate.
 *
 * @note
-* must be called from within a critical section
+* Must be called from within a critical section
 */
 void QXThread_teArm_(QXThread * const me, QSignal sig,
                      uint_fast16_t const nTicks)
@@ -550,7 +559,7 @@ void QXThread_teArm_(QXThread * const me, QSignal sig,
 * Intenral implementation of disarming the private time event.
 *
 * @note
-* must be called from within a critical section
+* Must be called from within a critical section
 */
 bool QXThread_teDisarm_(QXThread * const me) {
     bool wasArmed;

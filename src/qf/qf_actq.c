@@ -9,8 +9,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.3
-* Last updated on  2017-06-19
+* Last updated for version 5.9.8
+* Last updated on  2017-09-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -67,28 +67,19 @@ Q_DEFINE_THIS_MODULE("qf_actq")
 *                       posting the event. The special value #QF_NO_MARGIN
 *                       means that this function will assert if posting fails.
 *
-* @returns  The function returns true (success) if the posting succeeded
-* (with the provided margin) and false (failure) when the posting fails.
+* @returns
+* 'true' (success) if the posting succeeded (with the provided margin) and
+* 'false' (failure) when the posting fails.
 *
-* @attention This function should be called only via the macro QACTIVE_POST()
+* @attention
+* This function should be called only via the macro QACTIVE_POST()
 * or QACTIVE_POST_X().
 *
-* @note The #QF_NO_MARGIN value of the @p margin parameter is special and
-* denotes situation when the post() operation is assumed to succeed (event
-* delivery guarantee). An assertion fires, when the event cannot be
-* delivered in this case.
-*
-* @note Direct event posting should not be confused with direct event
-* dispatching. In contrast to asynchronous event posting through event
-* queues, direct event dispatching is synchronous. Direct event
-* dispatching occurs when you call QMSM_DISPATCH().
-*
 * @note
-* This function is used internally by a QF port to extract events from
-* the event queue of an active object. This function depends on the event
-* queue implementation and is sometimes implemented in the QF port
-* (file qf_port.c). Depending on the underlying OS or kernel, the
-* function might block the calling thread when no events are available.
+* The #QF_NO_MARGIN value of the @p margin parameter is special and denotes
+* situation when the post() operation is assumed to succeed (event delivery
+* guarantee). An assertion fires, when the event cannot be delivered in this
+* case.
 *
 * @usage
 * @include qf_post.c
@@ -190,8 +181,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 * posts an event to the event queue of the active object @p me using the
 * Last-In-First-Out (LIFO) policy.
 *
-* @note The LIFO policy should be used only for self-posting and with
-* caution because it alters order of events in the queue.
+* @note
+* The LIFO policy should be used only for self-posting and with caution,
+* because it alters order of events in the queue.
 *
 * @param[in] me pointer (see @ref oop)
 * @param[in  e  pointer to the event to post to the queue
@@ -259,8 +251,17 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 *
 * @param[in,out] me  pointer (see @ref oop)
 *
-* @returns a pointer to the received event. The returned pointer is always
+* @returns
+* a pointer to the received event. The returned pointer is guaranteed to be
 * valid (can't be NULL).
+*
+* @note
+* This function is used internally by a QF port to extract events from
+* the event queue of an active object. This function depends on the event
+* queue implementation and is sometimes customized in the QF port
+* (file qf_port.h). Depending on the definition of the macro
+* QACTIVE_EQUEUE_WAIT_(), the function might block the calling thread when
+* no events are available.
 */
 QEvt const *QActive_get_(QActive * const me) {
     QEQueueCtr nFree;
@@ -317,16 +318,17 @@ QEvt const *QActive_get_(QActive * const me) {
 * an active object with priority @p prio, since the active object
 * was started.
 *
-* @note QF_getQueueMin() is available only when the native QF event
-* queue implementation is used. Requesting the queue minimum of an unused
+* @note
+* This function is available only when the native QF event queue
+* implementation is used. Requesting the queue minimum of an unused
 * priority level raises an assertion in the QF. (A priority level becomes
 * used in QF after the call to the QF_add_() function.)
 *
 * @param[in] prio  Priority of the active object, whose queue is queried
 *
-* @returns the minimum of free ever present in the given event
-* queue of an active object with priority @p prio, since the active object
-* was started.
+* @returns
+* the minimum of free ever present in the given event queue of an active
+* object with priority @p prio, since the active object was started.
 */
 uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
     uint_fast16_t min;
