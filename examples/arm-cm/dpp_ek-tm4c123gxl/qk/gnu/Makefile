@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for DPP on EK-TM4C123GXL, QK kernel, GNU-ARM
-# Last Updated for Version: 5.9.1
-# Date of the Last Update:  2017-05-25
+# Last Updated for Version: 5.9.8
+# Date of the Last Update:  2017-09-15
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -120,8 +120,7 @@ QP_SRCS := \
 	qf_qeq.c \
 	qf_qmact.c \
 	qf_time.c \
-	qk.c \
-	qk_mutex.c
+	qk.c
 
 QP_ASMS := \
     qk_port.s

@@ -1,6 +1,29 @@
 /**
 @page history Revision History
 
+@section qpc_5_9_8 Version 5.9.8, 2017-09-15
+This release fixes the QXK kernel [bug#182 " Inconsistent QXThread_post_() behavior with respect to the 'margin' parameter"](https://sourceforge.net/p/qpc/bugs/182/).
+
+Also, the pre-condition assertion in the function QF_newRef_() (file `src/qf/qf_dyn.c`) has been modified to allow creating event references only for dynamic events `(e->poolId_ == 0)`.
+
+Improved comments in the soruce code.
+
+Modifed ARM Cortex-M examples with the GNU-ARM toolset to be consistent with QP/C++ (support for RTTI and C++ Exception handling), as follows:
+
+- removed definitions of `_init()` and `_fini()` from the GNU-ARM startup code for all supported boards in the `3rd_party` directory
+
+- commented out the call to `__libc_init_array()` in the GNU-ARM startup code for all supported boards in the `3rd_party` directory (because it requires `_init()`)
+
+- Modified all GNU-ARM linker scripts (.ld files) to add the following symbols:
+
+@verbatim
+   __exidx_start = .;
+   .ARM.exidx   : { *(.ARM.exidx* .gnu.linkonce.armexidx.*) } >RAM
+   __exidx_end = .;
+@endverbatim
+
+
+-----------------------------------------------------------------------------
 @section qpc_5_9_7 Version 5.9.7, 2017-08-18
 The main focus of this release are new requested features for the @ref qxk "dual-mode QXK kernel":
 - <a href="https://sourceforge.net/p/qpc/feature-requests/129" class="extern">feature#129 "Allow blocking while holding a mutex in QXK"</a>; and

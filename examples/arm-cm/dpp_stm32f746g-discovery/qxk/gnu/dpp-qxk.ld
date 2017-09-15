@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Linker script for STM32F746NG, GNU-ARM linker
-* Last Updated for Version: 5.8.2
-* Date of the Last Update:  2017-02-04
+* Last Updated for Version: 5.9.8
+* Date of the Last Update:  2017-09-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 OUTPUT_FORMAT("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
@@ -114,6 +114,10 @@ SECTIONS {
         _ebss = .;         /* define a global symbol at bss end */
         __bss_end__ = .;
     } >RAM
+
+    __exidx_start = .;
+    .ARM.exidx   : { *(.ARM.exidx* .gnu.linkonce.armexidx.*) } >RAM
+    __exidx_end = .;
 
     PROVIDE ( end = _ebss );
     PROVIDE ( _end = _ebss );

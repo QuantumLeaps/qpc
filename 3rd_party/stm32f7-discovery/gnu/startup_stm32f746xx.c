@@ -2,7 +2,7 @@
  * Purpose: startup file for stm32f4xx Cortex-M4 device.
  *          Should be used with GCC 'GNU Tools ARM Embedded'
  * Version: CMSIS 5.0.1
- * Date:    2017-Jan-27
+ * Date:    2017-09-13
  *
  * Created from the CMSIS template for the specified device
  * Quantum Leaps, www.state-machine.com
@@ -311,6 +311,8 @@ void Reset_Handler(void) {
     extern unsigned const __data_load; /* initialization values for .data  */
     extern unsigned __bss_start__; /* start of .bss in the linker script */
     extern unsigned __bss_end__;   /* end of .bss in the linker script */
+    extern void software_init_hook(void) __attribute__((weak));
+
     unsigned const *src;
     unsigned *dst;
 
@@ -322,17 +324,24 @@ void Reset_Handler(void) {
         *dst = *src;
     }
 
-    /* zero fill the .bss segment... */
+    /* zero fill the .bss segment in RAM... */
     for (dst = &__bss_start__; dst < &__bss_end__; ++dst) {
         *dst = 0;
     }
 
-    /* call all static constructors in C++ (harmless in C programs) */
-    __libc_init_array();
+    /* init hook provided? */
+    if (&software_init_hook != (void (*)(void))(0)) {
+        /* give control to the RTOS */
+        software_init_hook(); /* this will also call __libc_init_array */
+    }
+    else {
+        /* call all static constructors in C++ (comment out in C programs) */
+        //__libc_init_array();
+        (void)main(); /* application's entry point; should never return! */
+    }
 
-    (void)main(); /* application's entry point; should never return! */
-
-    assert_failed("Reset_Handler", __LINE__); /* just in case... */
+    /* the previous code should not return, but assert just in case... */
+    assert_failed("Reset_Handler", __LINE__);
 }
 
 
@@ -401,12 +410,6 @@ void Default_Handler(void) {
         "str_dflt: .asciz \"Default\"\n\t"
         "  .align 2\n\t"
     );
-}
-/*..........................................................................*/
-void _init(void) { /* dummy */
-}
-/*..........................................................................*/
-void _fini(void) { /* dummy */
 }
 
 

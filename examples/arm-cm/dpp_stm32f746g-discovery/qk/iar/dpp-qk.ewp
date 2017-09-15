@@ -2988,9 +2988,6 @@
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\qk\qk.c</name>
     </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\qk\qk_mutex.c</name>
-    </file>
   </group>
   <group>
     <name>QP_port</name>

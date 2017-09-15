@@ -582,11 +582,6 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
-            <File>
-              <FileName>qk_mutex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1268,11 +1263,6 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
-            <File>
-              <FileName>qk_mutex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1953,11 +1943,6 @@
               <FileName>qk.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
-            </File>
-            <File>
-              <FileName>qk_mutex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
             </File>
           </Files>
         </Group>

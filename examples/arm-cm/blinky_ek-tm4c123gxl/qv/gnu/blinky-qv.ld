@@ -1,13 +1,13 @@
 /*****************************************************************************
-* Product: Linker script for for EK-TM4C123GXL, GNU-ARM (Sourcery CodeBench)
-* Last Updated for Version: 5.2.0
-* Date of the Last Update:  Dec 17, 2013
+* Product: Linker script for EK-TM4C123GXL, GNU-ARM linker
+* Last Updated for Version: 5.9.8
+* Date of the Last Update:  2017-09-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -33,32 +33,32 @@
 *****************************************************************************/
 OUTPUT_FORMAT("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
-ENTRY(Reset_Handler)                                         /* entry Point */
+ENTRY(Reset_Handler) /* entry Point */
 
-MEMORY {                                 /* memory map of Tiva TM4C123GH6PM */
+MEMORY { /* memory map of Tiva TM4C123GH6PM */
     ROM (rx)  : ORIGIN = 0x00000000, LENGTH = 256K
     RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 32K
 }
 
 /* The size of the stack used by the application. NOTE: you need to adjust  */
-STACK_SIZE = 512;
+STACK_SIZE = 1024;
 
 /* The size of the heap used by the application. NOTE: you need to adjust   */
 HEAP_SIZE = 0;
 
 SECTIONS {
 
-    .isr_vector : {                 /* the vector table goes FIRST into ROM */
-        KEEP(*(.isr_vector))                                /* vector table */
+    .isr_vector : {        /* the vector table goes FIRST into ROM */
+        KEEP(*(.isr_vector)) /* vector table */
         . = ALIGN(4);
     } >ROM
 
-    .text : {                                         /* code and constants */
+    .text : {              /* code and constants */
         . = ALIGN(4);
-        *(.text)                                   /* .text sections (code) */
-        *(.text*)                                 /* .text* sections (code) */
-        *(.rodata)           /* .rodata sections (constants, strings, etc.) */
-        *(.rodata*)         /* .rodata* sections (constants, strings, etc.) */
+        *(.text)           /* .text sections (code) */
+        *(.text*)          /* .text* sections (code) */
+        *(.rodata)         /* .rodata sections (constants, strings, etc.) */
+        *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
 
         KEEP (*(.init))
         KEEP (*(.fini))
@@ -86,7 +86,7 @@ SECTIONS {
         PROVIDE_HIDDEN (__fini_array_end = .);
     } >ROM
 
-    _etext = .;                            /* global symbols at end of code */
+    _etext = .;            /* global symbols at end of code */
 
     .stack : {
         __stack_start__ = .;
@@ -98,8 +98,8 @@ SECTIONS {
     .data :  AT (_etext) {
         __data_load = LOADADDR (.data);
         __data_start = .;
-        *(.data)                                          /* .data sections */
-        *(.data*)                                        /* .data* sections */
+        *(.data)           /* .data sections */
+        *(.data*)          /* .data* sections */
         . = ALIGN(4);
         __data_end__ = .;
         _edata = __data_end__;
@@ -111,9 +111,13 @@ SECTIONS {
         *(.bss*)
         *(COMMON)
         . = ALIGN(4);
-        _ebss = .;                     /* define a global symbol at bss end */
+        _ebss = .;         /* define a global symbol at bss end */
         __bss_end__ = .;
     } >RAM
+
+    __exidx_start = .;
+    .ARM.exidx   : { *(.ARM.exidx* .gnu.linkonce.armexidx.*) } >RAM
+    __exidx_end = .;
 
     PROVIDE ( end = _ebss );
     PROVIDE ( _end = _ebss );

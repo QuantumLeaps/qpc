@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Linker script for STM32F407VG, GNU-ARM linker
-* Last Updated for Version: 5.9.1
-* Date of the Last Update:  2017-06-01
+* Last Updated for Version: 5.9.8
+* Date of the Last Update:  2017-09-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -114,6 +114,10 @@ SECTIONS {
         _ebss = .;         /* define a global symbol at bss end */
         __bss_end__ = .;
     } >RAM
+
+    __exidx_start = .;
+    .ARM.exidx   : { *(.ARM.exidx* .gnu.linkonce.armexidx.*) } >RAM
+    __exidx_end = .;
 
     PROVIDE ( end = _ebss );
     PROVIDE ( _end = _ebss );

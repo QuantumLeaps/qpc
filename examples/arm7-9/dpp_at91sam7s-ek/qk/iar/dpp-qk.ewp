@@ -4659,9 +4659,6 @@
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qk\qk.c</name>
         </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\src\qk\qk_mutex.c</name>
-        </file>
         <configuration>
             <name>Debug</name>
             <settings>

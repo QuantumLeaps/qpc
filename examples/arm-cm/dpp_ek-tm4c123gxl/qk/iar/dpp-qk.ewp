@@ -2996,9 +2996,6 @@
       <name>$PROJ_DIR$\..\..\..\..\..\src\qk\qk.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\qk\qk_mutex.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\qk_pkg.h</name>
     </file>
   </group>

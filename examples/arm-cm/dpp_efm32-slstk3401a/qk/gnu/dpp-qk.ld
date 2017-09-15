@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Linker script for EFM32-SLSTK3401A, GNU-ARM linker
-* Last Updated for Version: 5.6.5
-* Date of the Last Update:  2016-06-06
+* Last Updated for Version: 5.9.8
+* Date of the Last Update:  2017-09-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -114,6 +114,10 @@ SECTIONS {
         _ebss = .;         /* define a global symbol at bss end */
         __bss_end__ = .;
     } >RAM
+
+    __exidx_start = .;
+    .ARM.exidx   : { *(.ARM.exidx* .gnu.linkonce.armexidx.*) } >RAM
+    __exidx_end = .;
 
     PROVIDE ( end = _ebss );
     PROVIDE ( _end = _ebss );

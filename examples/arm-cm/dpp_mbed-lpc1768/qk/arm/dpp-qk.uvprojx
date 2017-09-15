@@ -542,11 +542,6 @@
               <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
             <File>
-              <FileName>qk_mutex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
-            </File>
-            <File>
               <FileName>qk_pkg.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
@@ -1205,11 +1200,6 @@
               <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
             <File>
-              <FileName>qk_mutex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
-            </File>
-            <File>
               <FileName>qk_pkg.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
@@ -1866,11 +1856,6 @@
               <FileName>qk.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
-            </File>
-            <File>
-              <FileName>qk_mutex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\src\qk\qk_mutex.c</FilePath>
             </File>
             <File>
               <FileName>qk_pkg.h</FileName>
