@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.3
-* Last updated on  2017-06-17
+* Last updated for version 5.9.8
+* Last updated on  2017-09-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -139,9 +139,24 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     QF_CRIT_ENTRY_();
     nFree = (uint_fast16_t)me->eQueue.tx_queue_available_storage;
 
-    if (((margin == QF_NO_MARGIN) && (nFree > (QEQueueCtr)0))
-        || (nFree > (QEQueueCtr)margin))
-    {
+    if (margin == QF_NO_MARGIN) {
+        if (nFree > (QEQueueCtr)0) {
+            status = true; /* can post */
+        }
+        else {
+            status = false; /* cannot post */
+            Q_ERROR_ID(510); /* must be able to post the event */
+        }
+    }
+    else if (nFree > (QEQueueCtr)margin) {
+        status = true; /* can post */
+    }
+    else {
+        status = false; /* cannot post */
+    }
+
+    if (status) { /* can post the event? */
+
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
                          QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();             /* timestamp */
@@ -160,15 +175,11 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QF_CRIT_EXIT_();
 
         /* posting to the ThreadX message queue must succeed, see NOTE1 */
-        Q_ALLEGE_ID(510,
+        Q_ALLEGE_ID(520,
             tx_queue_send(&me->eQueue, (VOID *)&e, TX_NO_WAIT)
             == TX_SUCCESS);
-
-        status = true; /* report success */
     }
     else {
-        /* can tolerate dropping evts? */
-        Q_ASSERT_ID(520, margin != QF_NO_MARGIN);
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)
@@ -182,8 +193,6 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QS_END_NOCRIT_()
 
         QF_CRIT_EXIT_();
-
-        status = false; /* report failure */
     }
 
     return status;

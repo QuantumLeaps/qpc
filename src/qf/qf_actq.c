@@ -10,7 +10,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 5.9.8
-* Last updated on  2017-09-07
+* Last updated on  2017-09-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -104,10 +104,23 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     QF_CRIT_ENTRY_();
     nFree = me->eQueue.nFree; /* get volatile into the temporary */
 
-    /* margin available? */
-    if (((margin == QF_NO_MARGIN) && (nFree > (QEQueueCtr)0))
-        || (nFree > (QEQueueCtr)margin))
-    {
+    if (margin == QF_NO_MARGIN) {
+        if (nFree > (QEQueueCtr)0) {
+            status = true; /* can post */
+        }
+        else {
+            status = false; /* cannot post */
+            Q_ERROR_ID(110); /* must be able to post the event */
+        }
+    }
+    else if (nFree > (QEQueueCtr)margin) {
+        status = true; /* can post */
+    }
+    else {
+        status = false; /* cannot post */
+    }
+
+    if (status) { /* can post the event? */
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
                          QS_priv_.locFilter[AO_OBJ], me)
@@ -146,14 +159,8 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             --me->eQueue.head; /* advance the head (counter clockwise) */
         }
         QF_CRIT_EXIT_();
-
-        status = true; /* event posted successfully */
     }
     else {
-        /** @note assert if event cannot be posted and dropping events is
-        * not acceptable
-        */
-        Q_ASSERT_ID(110, margin != QF_NO_MARGIN);
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)
@@ -169,7 +176,6 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QF_CRIT_EXIT_();
 
         QF_gc(e); /* recycle the event to avoid a leak */
-        status = false; /* event not posted */
     }
 
     return status;
