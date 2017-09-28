@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.7
-* Last updated on  2017-08-20
+* Last updated for version 5.9.9
+* Last updated on  2017-08-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -184,8 +184,8 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks);
 */
 typedef struct {
     QPSet waitSet; /*!< set of extended-threads waiting on this semaphore */
-    uint_fast16_t count;
-    uint_fast16_t max_count;
+    uint16_t count;
+    uint16_t max_count;
 } QXSemaphore;
 
 /*! initialize the counting semaphore */
@@ -237,8 +237,9 @@ bool QXSemaphore_signal(QXSemaphore * const me);
 */
 typedef struct {
     QPSet waitSet; /*!< set of extended-threads waiting on this mutex */
-    uint_fast8_t ceiling;
-    uint_fast8_t lockNest;
+    uint8_t ceiling;
+    uint8_t lockNest;
+    uint8_t holderPrio;
 } QXMutex;
 
 /*! initialize the QXK priority-ceiling mutex ::QXMutex */

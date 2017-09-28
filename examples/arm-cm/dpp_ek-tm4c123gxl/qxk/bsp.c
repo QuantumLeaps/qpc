@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, preemptive QXK kernel
-* Last Updated for Version: 5.9.7
-* Date of the Last Update:  2017-08-18
+* Last Updated for Version: 5.9.9
+* Date of the Last Update:  2017-09-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -413,21 +413,10 @@ uint8_t QS_onStartup(void const *arg) {
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
-    QS_FILTER_ON(PAUSED_STAT);
-    QS_FILTER_ON(COMMAND_STAT);
-
-    QS_FILTER_ON(QS_ALL_RECORDS); //???
+    QS_FILTER_ON(QS_SM_RECORDS); /* state machine records */
+    QS_FILTER_ON(QS_UA_RECORDS); /* all usedr records */
+    //QS_FILTER_ON(QS_MUTEX_LOCK);
+    //QS_FILTER_ON(QS_MUTEX_UNLOCK);
 
     return (uint8_t)1; /* return success */
 }

@@ -77,16 +77,16 @@ int main() {
     /* initialize event pools... */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
-    QACTIVE_START(the_Ticker0, 1U, 0, 0, 0, 0, 0);
-
     /* start the extended thread */
     QXTHREAD_START(XT_Test1,                 /* Thread to start */
-                  (uint_fast8_t)2U,          /* QP priority of the thread */
+                  (uint_fast8_t)1,           /* QP priority of the thread */
                   test1QueueSto,             /* message queue storage */
                   Q_DIM(test1QueueSto),      /* message length [events] */
                   test1StackSto,             /* stack storage */
                   sizeof(test1StackSto),     /* stack size [bytes] */
                   (QEvt *)0);                /* initialization event */
+
+    /* NOTE: leave priority 2 free for a mutex */
 
     /* start the Philo active objects... */
     for (n = 0U; n < N_PHILO; ++n) {
@@ -98,16 +98,25 @@ int main() {
                       0U,                    /* size of the stack [bytes] */
                       (QEvt *)0);            /* initialization event */
     }
+
+    /* example of prioritizing the Ticker0 active object */
+    QACTIVE_START(the_Ticker0, (uint_fast8_t)(N_PHILO + 3),
+                  0, 0, 0, 0, 0);
+
+    /* NOTE: leave priority (N_PHILO + 4) free for mutex */
+
     QXTHREAD_START(XT_Test2,                 /* Thread to start */
-                  (uint_fast8_t)(N_PHILO + 3), /* QP priority of the thread */
+                  (uint_fast8_t)(N_PHILO + 5), /* QP priority of the thread */
                   test2QueueSto,             /* message queue storage */
                   Q_DIM(test2QueueSto),      /* message length [events] */
                   test2StackSto,             /* stack storage */
                   sizeof(test2StackSto),     /* stack size [bytes] */
                   (QEvt *)0);                /* initialization event */
 
+    /* NOTE: leave priority (N_PHILO + 6) free for mutex */
+
     QACTIVE_START(AO_Table,                  /* AO to start */
-                  (uint_fast8_t)(N_PHILO + 4), /* QP priority of the AO */
+                  (uint_fast8_t)(N_PHILO + 7), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */
                   Q_DIM(tableQueueSto),      /* queue length [events] */
                   (void *)0,                 /* stack storage (not used) */

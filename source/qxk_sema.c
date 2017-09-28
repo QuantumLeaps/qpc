@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.7
-* Last updated on  2017-08-19
+* Last updated for version 5.9.9
+* Last updated on  2017-09-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -80,8 +80,8 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
 {
     /** @pre max_count must be greater than zero */
     Q_REQUIRE_ID(100, max_count > (uint_fast16_t)0);
-    me->count = count;
-    me->max_count = max_count;
+    me->count     = (uint16_t)count;
+    me->max_count = (uint16_t)max_count;
     QPSet_setEmpty(&me->waitSet);
 }
 
@@ -111,11 +111,11 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
 * Multiple extended threads can wait for a given semahpre.
 */
 bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
-    QXThread *thr;
+    QXThread *curr;
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    thr = (QXThread *)QXK_attr_.curr;
+    curr = (QXThread *)QXK_attr_.curr;
 
     /** @pre this function must:
     * - NOT be called from an ISR;
@@ -125,34 +125,34 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
     * - the thread must NOT be already blocked on any object.
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
-        && (me->max_count > (uint_fast16_t)0) /* sema must be initialized */
-        && (thr != (QXThread *)0) /* current thread must be extended */
-        && (QXK_attr_.lockHolder != thr->super.prio) /* not holding a lock */
-        && (thr->super.super.temp.obj == (QMState *)0)); /* not blocked */
+        && (me->max_count > (uint16_t)0) /* sema must be initialized */
+        && (curr != (QXThread *)0) /* curr must be extended */
+        && (QXK_attr_.lockHolder != curr->super.prio) /* not holding a lock */
+        && (curr->super.super.temp.obj == (QMState *)0)); /* not blocked */
 
-    if (me->count > (uint_fast16_t)0) {
+    if (me->count > (uint16_t)0) {
         --me->count;
-        thr->timeEvt.super.sig = (QSignal)QXK_SEMA_SIG; /* non-zero signal */
+        curr->timeEvt.super.sig = (QSignal)QXK_SEMA_SIG; /* non-zero signal */
     }
     else {
         /* remember the blocking object */
-        thr->super.super.temp.obj = (QMState const *)me;
-        QXThread_teArm_(thr, (QSignal)QXK_SEMA_SIG, nTicks);
-        QPSet_insert(&me->waitSet,        thr->super.prio);
-        QPSet_remove(&QXK_attr_.readySet, thr->super.prio);
+        curr->super.super.temp.obj = (QMState const *)me;
+        QXThread_teArm_(curr, (QSignal)QXK_SEMA_SIG, nTicks);
+        QPSet_insert(&me->waitSet,        curr->super.prio);
+        QPSet_remove(&QXK_attr_.readySet, curr->super.prio);
         (void)QXK_sched_(); /* schedule the next thread */
         QF_CRIT_EXIT_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here */
 
         QF_CRIT_ENTRY_();
         /* the blocking object must be this semaphore */
-        Q_ASSERT_ID(210, thr->super.super.temp.obj == (QMState *)me);
-        thr->super.super.temp.obj = (QMState const *)0; /* clear */
+        Q_ASSERT_ID(210, curr->super.super.temp.obj == (QMState *)me);
+        curr->super.super.temp.obj = (QMState const *)0; /* clear */
     }
     QF_CRIT_EXIT_();
 
     /* signal of non-zero means that the time event has not expired */
-    return (bool)(thr->timeEvt.super.sig != (QSignal)0);
+    return (bool)(curr->timeEvt.super.sig != (QSignal)0);
 }
 
 /****************************************************************************/
@@ -175,11 +175,11 @@ bool QXSemaphore_tryWait(QXSemaphore * const me) {
     QF_CRIT_STAT_
 
     /** @pre the semaphore must be initialized */
-    Q_REQUIRE_ID(300, (me->max_count > (uint_fast16_t)0));
+    Q_REQUIRE_ID(300, (me->max_count > (uint16_t)0));
 
     QF_CRIT_ENTRY_();
     /* is the semaphore available? */
-    if (me->count > (uint_fast16_t)0) {
+    if (me->count > (uint16_t)0) {
         --me->count;
         isAvailable = true;
     }
@@ -216,7 +216,7 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
     QF_CRIT_STAT_
 
     /** @pre the semaphore must be initialized */
-    Q_REQUIRE_ID(400, (me->max_count > (uint_fast16_t)0));
+    Q_REQUIRE_ID(400, (me->max_count > (uint16_t)0));
 
     QF_CRIT_ENTRY_();
     if (QPSet_notEmpty(&me->waitSet)) {
@@ -231,7 +231,7 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
 
         Q_ASSERT_ID(410, (thr != (QXThread *)0) /* must be registered */
             && (thr->super.osObject != (struct QActive *)0) /* extended thr.*/
-            && (me->count == (uint_fast16_t)0)); /* sema counter must be 0 */
+            && (me->count == (uint16_t)0)); /* sema counter must be 0 */
 
         /* disarm the internal time event */
         (void)QXThread_teDisarm_(thr);

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.9.7
-* Date of the Last Update:  2017-08-20
+* Last Updated for Version: 5.9.9
+* Date of the Last Update:  2017-09-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -64,19 +64,19 @@ static void Thread1_run(QXThread * const me) {
 
     (void)me;
     for (;;) {
-        float volatile x;
-
         QXMutex_lock(&l_mutex, QXTHREAD_NO_TIMEOUT); /* lock the mutex */
         BSP_ledOn();
 
         if (QXMutex_tryLock(&l_mutex)) { /* exercise the mutex */
+            float volatile x;
 
             /* some flating point code to exercise the VFP... */
             x = 1.4142135F;
             x = x * 1.4142135F;
 
-            QXSemaphore_signal(&l_sema); /* signal Thread2 */
-            QXThread_delay(10U); /* blocking while holding a mutex */
+            (void)QXSemaphore_signal(&l_sema); /* signal Thread2 */
+
+            QXThread_delay(10U);  /* BLOCK while holding a mutex */
 
             QXMutex_unlock(&l_mutex);
         }
@@ -103,7 +103,7 @@ void Test1_ctor(void) {
 static void Thread2_run(QXThread * const me) {
 
     /* initialize the semaphore before using it
-    * NOTE: Here the semaphore is initialized in the highest-priority thread
+    * NOTE: the semaphore is initialized in the highest-priority thread
     * that uses it. Alternatively, the semaphore can be initialized
     * before any thread runs.
     */
@@ -112,11 +112,12 @@ static void Thread2_run(QXThread * const me) {
                      1U); /* max_count==1 (binary semaphore) */
 
     /* initialize the mutex before using it
-    * NOTE: Here the semaphore is initialized in the highest-priority thread
-    * that uses it. Alternatively, the semaphore can be initialized
+    * NOTE: Here the mutex is initialized in the highest-priority thread
+    * that uses it. Alternatively, the mutex can be initialized
     * before any thread runs.
     */
-    QXMutex_init(&l_mutex, N_PHILO + 6U);
+    //QXMutex_init(&l_mutex, 0U); /* priority-ceiling NOT used */
+    QXMutex_init(&l_mutex, N_PHILO + 6U); /*priority-ceiling protocol used*/
 
     me->super.thread = &l_tls2; /* initialize the TLS for Thread2 */
 
@@ -125,7 +126,7 @@ static void Thread2_run(QXThread * const me) {
 
     for (;;) {
         /* wait on a semaphore (BLOCK indefinitely) */
-        (void)QXSemaphore_wait(&l_sema, QXTHREAD_NO_TIMEOUT);
+        QXSemaphore_wait(&l_sema, QXTHREAD_NO_TIMEOUT);
 
         QXMutex_lock(&l_mutex, QXTHREAD_NO_TIMEOUT); /* lock the mutex */
         QXThread_delay(1U);  /* wait more (BLOCK) */
