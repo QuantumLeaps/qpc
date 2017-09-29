@@ -1,6 +1,21 @@
 /**
 @page history Revision History
 
+@section qpc_5_9_9 Version 5.9.9, 2017-09-29
+This release implements the feature request [#132 "Extend the QXK mutex to support also simple operation without the priority-ceiling protocol"](https://sourceforge.net/p/qpc/feature-requests/132/).
+
+@note
+This release is completely backwards-compatible with the @ref qpc_5_9_8 "previous QP/C release 5.9.8".
+
+Specifically, the ::QXMutex class has been extended as follows:
+- a mutex initialized with ceiling==0 (QXMutex_init(0)) means "no ceiling", so such mutex will NOT use the priority-ceiling protocol.
+- in this case the mutex will NOT require a unique priority level
+- in this case the mutex will not change (boost) the priority of the holding thread in the QXMutex_lock() operation.
+- in this case the mutex will still support nesting of locks (as before), up to 255 levels of nesting.
+- when initialized with `ceiling>0`, ::QXMutex WILL use the priority-ceiling protocol, as before. It will require that the ceiling priority be unique and not used by any other thread or mutex. In other words, the previous functionality remains unchanged.
+
+
+-----------------------------------------------------------------------------
 @section qpc_5_9_8 Version 5.9.8, 2017-09-15
 This release fixes the QXK kernel [bug#182 " Inconsistent QXThread_post_() behavior with respect to the 'margin' parameter"](https://sourceforge.net/p/qpc/bugs/182/).
 
