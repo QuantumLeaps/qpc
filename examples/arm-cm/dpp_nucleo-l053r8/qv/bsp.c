@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-L053R8 board, cooperative QV kernel
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-02-28
+* Last Updated for Version: 5.9.9
+* Date of the Last Update:  2017-10-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -95,7 +95,8 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
     }
 #endif
 
-    QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* get state of the user button */
     /* Perform the debouncing of buttons. The algorithm for debouncing
@@ -122,7 +123,7 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
-    /* NOTE: SystemInit() already called from the startup code
+    /* NOTE: SystemInit() has been already called from the startup code
     *  but SystemCoreClock needs to be updated
     */
     SystemCoreClockUpdate();
@@ -142,10 +143,10 @@ void BSP_init(void) {
     RCC->IOPENR |=  (1U << 2);
 
     /* Configure Button (PC.13) pins as input, no pull-up, pull-down */
-    GPIOC->MODER   &= ~(3UL << 2*13);
-    GPIOC->OSPEEDR &= ~(3UL << 2*13);
-    GPIOC->OSPEEDR |=  (1UL << 2*13);
-    GPIOC->PUPDR   &= ~(3UL << 2*13);
+    GPIOC->MODER   &= ~(3U << 2*13);
+    GPIOC->OSPEEDR &= ~(3U << 2*13);
+    GPIOC->OSPEEDR |=  (1U << 2*13);
+    GPIOC->PUPDR   &= ~(3U << 2*13);
 
     BSP_randomSeed(1234U); /* seed the random number generator */
 
@@ -194,6 +195,21 @@ void BSP_randomSeed(uint32_t seed) {
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {
     (void)result;
+}
+/*..........................................................................*/
+void BSP_wait4SW1(void) {
+    while ((GPIOC->IDR  & BTN_B1) != 0U) {
+        GPIOA->BSRR |= (LED_LD2);        /* turn LED2 on  */
+        GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED2 off */
+    }
+}
+/*..........................................................................*/
+void BSP_ledOn(void) {
+    //GPIOA->BSRR |= (LED_LD2);        /* turn LED2 on  */
+}
+/*..........................................................................*/
+void BSP_ledOff(void) {
+    //GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED2 off */
 }
 
 /* QF callbacks ============================================================*/
@@ -266,6 +282,10 @@ void Q_onAssert(char const *module, int loc) {
     (void)module;
     (void)loc;
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+
+#ifndef NDEBUG
+    BSP_wait4SW1();
+#endif
     NVIC_SystemReset();
 }
 

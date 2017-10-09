@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-L053R8 board, preemptive QK kernel
-* Last Updated for Version: 5.6.4
-* Date of the Last Update:  2015-08-20
+* Last Updated for Version: 5.9.9
+* Date of the Last Update:  2017-10-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -97,7 +97,8 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
     }
 #endif
 
-    QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* get state of the user button */
     /* Perform the debouncing of buttons. The algorithm for debouncing
@@ -199,6 +200,21 @@ void BSP_randomSeed(uint32_t seed) {
 void BSP_terminate(int16_t result) {
     (void)result;
 }
+/*..........................................................................*/
+void BSP_wait4SW1(void) {
+    while ((GPIOC->IDR  & BTN_B1) != 0U) {
+        GPIOA->BSRR |= (LED_LD2);        /* turn LED2 on  */
+        GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED2 off */
+    }
+}
+/*..........................................................................*/
+void BSP_ledOn(void) {
+    //GPIOA->BSRR |= (LED_LD2);        /* turn LED2 on  */
+}
+/*..........................................................................*/
+void BSP_ledOff(void) {
+    //GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED2 off */
+}
 
 /* QF callbacks ============================================================*/
 void QF_onStartup(void) {
@@ -267,6 +283,10 @@ void Q_onAssert(char const *module, int loc) {
     (void)module;
     (void)loc;
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+
+#ifndef NDEBUG
+    BSP_wait4SW1();
+#endif
     NVIC_SystemReset();
 }
 

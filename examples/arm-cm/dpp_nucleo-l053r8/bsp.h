@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-11-22
+* Last Updated for Version: 5.9.9
+* Date of the Last Update:  2017-10-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,5 +48,7 @@ uint32_t BSP_random(void);            /* pseudo-random generator */
 void BSP_wait4SW1(void);
 void BSP_ledOn(void);
 void BSP_ledOff(void);
+
+extern QActive *the_Ticker0;
 
 #endif /* bsp_h */

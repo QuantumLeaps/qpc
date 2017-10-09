@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-L053R8 board, preemptive QXK kernel
-* Last Updated for Version: 5.6.5
-* Date of the Last Update:  2016-07-05
+* Last Updated for Version: 5.9.9
+* Date of the Last Update:  2017-10-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -97,7 +97,8 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
     }
 #endif
 
-    QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* get state of the user button */
     /* Perform the debouncing of buttons. The algorithm for debouncing
@@ -183,7 +184,6 @@ void BSP_displayPaused(uint8_t paused) {
         //GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED[n] off */
     }
     //QXTHREAD_POST_X(XT_Test, &pauseEvt, 1U, (void *)0);
-    //QXThread_unblock(XT_Test); /*??? unblock the Test thread */
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
@@ -302,6 +302,7 @@ void Q_onAssert(char const *module, int loc) {
 #define __USART_BRR(__PCLK, __BAUD) \
     ((__DIVMANT(__PCLK, __BAUD) << 4)|(__DIVFRAQ(__PCLK, __BAUD) & 0x0F))
 
+/*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[2*1024]; /* buffer for Quantum Spy */
 
