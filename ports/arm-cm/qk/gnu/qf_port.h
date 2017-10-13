@@ -3,8 +3,8 @@
 * @brief QF/C port to Cortex-M, preemptive QK kernel, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-05-04
+* Last Updated for Version: 6.0.0
+* Date of the Last Update:  2017-10-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -52,46 +52,36 @@
     #define QF_INT_DISABLE()    __asm volatile ("cpsid i")
     #define QF_INT_ENABLE()     __asm volatile ("cpsie i")
 
-    /* QF critical section entry/exit (save and restore interrupt status) */
+    /* QF critical section (save and restore interrupt status), see NOTE6 */
     #define QF_CRIT_STAT_TYPE   uint32_t
     #define QF_CRIT_ENTRY(primask_) do { \
-        QF_GET_PRIMASK((primask_)); \
-        QF_INT_DISABLE(); \
+        __asm volatile ("mrs %0,PRIMASK" : "=r" (primask_) ::); \
+        __asm volatile ("cpsid i" :: "" (primask_) : ); \
     } while (0)
-    #define QF_CRIT_EXIT(primask_) QF_SET_PRIMASK((primask_))
+    #define QF_CRIT_EXIT(primask_) \
+        __asm volatile ("msr PRIMASK,%0" :: "r" (primask_) : )
 
-    /* CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE5 */
+    /* CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE4 */
     #define QF_AWARE_ISR_CMSIS_PRI 0
-
-    /* macro for getting the PRIMASK register */
-    #define QF_GET_PRIMASK(primask_) __asm volatile (\
-        "mrs %0,PRIMASK" : "=r" (primask_) :: )
-
-    /* macro for setting the PRIMASK register */
-    #define QF_SET_PRIMASK(primask_) __asm volatile (\
-        "msr PRIMASK,%0" :: "r" (primask_) : )
 
 #else /* Cortex-M3/M4/M7 */
 
-    /* Cortex-M3/M4/M7 alternative interrupt disabling with PRIMASK */
-    #define QF_PRIMASK_DISABLE() __asm volatile ("cpsid i")
-    #define QF_PRIMASK_ENABLE()  __asm volatile ("cpsie i")
+    /* Cortex-M3/M4/M7 interrupt disabling policy, see NOTE3,4 */
+    #define QF_INT_DISABLE() __asm volatile (\
+        "cpsid i\n\t" "msr BASEPRI,%0\n\t" "cpsie i" :: "r" (QF_BASEPRI) : )
+    #define QF_INT_ENABLE()  __asm volatile (\
+        "msr BASEPRI,%0" :: "r" (0) : )
 
-    /* Cortex-M3/M4/M7 interrupt disabling policy, see NOTE3 and NOTE4 */
-    #define QF_INT_DISABLE() do { \
-        QF_PRIMASK_DISABLE(); \
-        QF_SET_BASEPRI(QF_BASEPRI); \
-        QF_PRIMASK_ENABLE(); \
+    /* QF critical section (save and restore interrupt status), see NOTE5,6 */
+    #define QF_CRIT_STAT_TYPE   uint32_t
+    #define QF_CRIT_ENTRY(basepri_) do { \
+        __asm volatile ("mrs %0,BASEPRI" : "=r" (basepri_) :: ); \
+        __asm volatile ("cpsid i" :: "" (basepri_) : ); \
+        __asm volatile ("msr BASEPRI,%0" :: "r" (QF_BASEPRI) : ); \
+        __asm volatile ("cpsie i" :: "" (basepri_) : ); \
     } while (0)
-    #define QF_INT_ENABLE()     QF_SET_BASEPRI(0U)
-
-    /* QF critical section entry/exit (save and restore interrupt status) */
-    #define QF_CRIT_STAT_TYPE   unsigned long
-    #define QF_CRIT_ENTRY(basepri_) do {\
-        QF_GET_BASEPRI((basepri_)); \
-        QF_INT_DISABLE(); \
-    } while (0)
-    #define QF_CRIT_EXIT(basepri_) QF_SET_BASEPRI((basepri_))
+    #define QF_CRIT_EXIT(basepri_) \
+        __asm volatile ("msr BASEPRI,%0" :: "r" (basepri_) : )
 
     /* BASEPRI threshold for "QF-aware" interrupts, see NOTE3.
     * CAUTION: keep in synch with the value defined in "qk_port.s"
@@ -104,13 +94,6 @@
     /* Cortex-M3/M4/M7 provide the CLZ instruction for fast LOG2 */
     #define QF_LOG2(n_) ((uint_fast8_t)(32U - __builtin_clz(n_)))
 
-    /* macro for getting the BASEPRI register */
-    #define QF_GET_BASEPRI(basepri_) __asm volatile (\
-        "mrs %0,BASEPRI" : "=r" (basepri_) :: )
-
-    /* macro for setting the BASEPRI register */
-    #define QF_SET_BASEPRI(basepri_) __asm volatile (\
-        "msr BASEPRI,%0" :: "r" (basepri_) : )
 #endif
 
 #define QF_CRIT_EXIT_NOP()      __asm volatile ("isb")
@@ -143,13 +126,6 @@
 * ("QF-aware" interrupts ), can call QF services.
 *
 * NOTE4:
-* The selective disabling of "QF-aware" interrupts with the BASEPRI register
-* has a problem on ARM Cortex-M7 core r0p1 (see ARM-EPM-064408, errata
-* 837070). The workaround recommended by ARM is to surround MSR BASEPRI with
-* the CPSID i/CPSIE i pair, which is implemented in the QF_INT_DISABLE()
-* macro. This workaround works also for Cortex-M3/M4 cores.
-*
-* NOTE5:
 * The QF_AWARE_ISR_CMSIS_PRI macro is useful as an offset for enumerating
 * the "QF-aware" interrupt priorities in the applications, whereas the
 * numerical values of the "QF-aware" interrupts must be greater or equal to
@@ -161,6 +137,22 @@
 * is intended only for applications and is not used inside the QF port, which
 * remains generic and not dependent on the number of implemented priority bits
 * implemented in the NVIC.
+*
+* NOTE5:
+* The selective disabling of "QF-aware" interrupts with the BASEPRI register
+* has a problem on ARM Cortex-M7 core r0p1 (see ARM-EPM-064408, errata
+* 837070). The workaround recommended by ARM is to surround MSR BASEPRI with
+* the CPSID i/CPSIE i pair, which is implemented in the QF_INT_DISABLE()
+* macro. This workaround works also for Cortex-M3/M4 cores.
+*
+* NOTE6:
+* The critical section for Cortex-M0(+)/M1 (ARMv6-M architecture) is
+* specifically defined to avoid the GNU-ARM bug 1722849 (see
+* https://bugs.launchpad.net/gcc-arm-embedded/+bug/1722849 ). Specifically,
+* the in-line assembly for disabling of interrupts with "cpsid i" has an
+* artificial dependency on the (primask_) argument. This ensures that
+* the GNU-ARM compiler will evaluate the preceeding "mrs %0,PRIMASK"
+* __before__ evaluating "cpsid i".
 */
 
 #endif /* qf_port_h */

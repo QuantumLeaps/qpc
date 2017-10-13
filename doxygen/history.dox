@@ -1,6 +1,18 @@
 /**
 @page history Revision History
 
+@section qpc_6_0_0 Version 6.0.0, 2017-10-13
+This release fixes two bugs found in the QXK kernel:
+- [bug#185](https://sourceforge.net/p/qpc/bugs/185/) "QXK: PendSV_Handler uses inconsistent stack frames for saving and restoring AO for Cortex-M0(+)"
+- [bug#186](https://sourceforge.net/p/qpc/bugs/186/) "QXK: Extended thread context switch causes assertion in PendSV_Handler"
+
+Additionally, this release includes a workaround for a [bug indetified in the GNU-ARM toolset](https://bugs.launchpad.net/gcc-arm-embedded/+bug/1722849). This problem affected the ARMv6-M architecture (Cortex-M0/M0+/M1) and manifested itself in generation of incorrect code for the QP critical section at certain gcc optimization levels (such as -O). This bug was first discovered and filed as [bug#184](https://sourceforge.net/p/qpc/bugs/184/). The bug affected the GNU-ARM ports to all built-in kernels @ref qv "QV", @ref qk "QK", and @ref qxk "QXK".
+
+@note
+This release no longer contains the directory `qpc/source`, which was scheduled to be phased out in QP5. In QP6 the source code is found only in the `qpc/src` directory.
+
+
+-----------------------------------------------------------------------------
 @section qpc_5_9_9 Version 5.9.9, 2017-09-29
 This release implements the feature request [#132 "Extend the QXK mutex to support also simple operation without the priority-ceiling protocol"](https://sourceforge.net/p/qpc/feature-requests/132/).
 
@@ -145,7 +157,7 @@ Finally, this release implements the feature request #125 "Include QPC
 Demo application for STM32F4 processor without RTOS" (see
 https://sourceforge.net/p/qpc/feature-requests/125/ ). The DPP demo for
 the STM32F4-Discovery board has been added in the directory:
-qpc\examples\arm-cm\dpp_stm32f4-discovery . This demo includes QV, QK and
+qpc/examples/arm-cm/dpp_stm32f4-discovery . This demo includes QV, QK and
 QXK kernels and ARM-Keil, GNU-ARM, and IAR-ARM toolsets. The demos support
 bi-directional QP/Spy.
 
@@ -166,15 +178,15 @@ Specifically, the QP/C source code is now provided in the
 `qpc/src/` directory with the following structure:
 
 @verbatim
-qpc\
-  +-source\  - exitsting source directory with "flat" structure
+qpc/
+  +-source/  - exitsting source directory with "flat" structure
   |            (for backwards-compatibility)
-  +-src\     - new source directory grouped by functionality
-     +-qf\    - core framework (QEP + QF)
-     +-qk\    - QK kernel
-     +-qv\    - QV kernel (only one file qv.c)
-     +-qxk\   - QXK kernel
-     +-qs\    - QS software tracing
+  +-src/     - new source directory grouped by functionality
+     +-qf/    - core framework (QEP + QF)
+     +-qk/    - QK kernel
+     +-qv/    - QV kernel (only one file qv.c)
+     +-qxk/   - QXK kernel
+     +-qs/    - QS software tracing
      +-qf_pkg.h
      +-qs_pkg.h
      +-qxk_pkg.h
@@ -255,7 +267,7 @@ Finally, this release fixes the following bugs:
 - bug#159 QP/C/C++ Win32 ports don't work on all x86 CPUs
 - bug#157 In QPC ucosii port, conversion of AO's priority to OS task
   priority is incorrect.
-- bug#152 Typo (qpc\ports\arm7-9\qk\gnu\qk_port.s:42) prevents
+- bug#152 Typo (qpc/ports/arm7-9/qk/gnu/qk_port.s:42) prevents
   compilation
 
 
@@ -563,14 +575,14 @@ IAR, and TI CCS). All these ports should also be ready for ARM Cortex-M7.
 
 Also, this release adds support for the TI CCS ARM compiler.
 Specifically, a new ARM Cortex-M ports have been added (in directories
-`qpc\ports\arm-cm\qk\ti\` and `qpc\ports\arm-cm\qk\ti\`) and TI CCS
+`qpc/ports/arm-cm/qk/ti/` and `qpc/ports/arm-cm/qk/ti/`) and TI CCS
 example projects have been provided (in directories
-`qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qk\ti\` and
-`qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qv\ti\`).
+`qpc/examples/arm-cm/dpp_ek-tm4c123gxl/qk/ti/` and
+`qpc/examples/arm-cm/dpp_ek-tm4c123gxl/qv/ti/`).
 
 Finally, this release corrects a bug in the DPP example for
 EK-TM4C123GXL with the QV (Vanilla) cooperative kernel. Specifically,
-the file `qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qv\bsp.c` did not
+the file `qpc/examples/arm-cm/dpp_ek-tm4c123gxl/qv/bsp.c` did not
 re-enable interrupts in the QV_onIdle() callback.
 
 
@@ -598,7 +610,7 @@ The main purpose of this release is the extension of the QS software tracing sys
 9. Remotely reset of the Target
 
 
-This QP/C version complements the recent release of Qtools 5.5.0, where the <a href="https://www.state-machine.com/qspy ">QSPY host application</a> has been extended with a UDP socket, which is open for communication with various Front-Ends (GUI-based or headless). An example Front-End written in Tcl/Tk called "QspyView" has been developed to demonstrate all the features. The example application located in the directory qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qspy contains customization of the "qspyview" script for the DPP application. Please refer to the documentation of this example (@ref arm-cm_dpp_ek-tm4c123gxl) for more information.
+This QP/C version complements the recent release of Qtools 5.5.0, where the <a href="https://www.state-machine.com/qspy ">QSPY host application</a> has been extended with a UDP socket, which is open for communication with various Front-Ends (GUI-based or headless). An example Front-End written in Tcl/Tk called "QspyView" has been developed to demonstrate all the features. The example application located in the directory qpc/examples/arm-cm/dpp_ek-tm4c123gxl/qspy contains customization of the "qspyview" script for the DPP application. Please refer to the documentation of this example (@ref arm-cm_dpp_ek-tm4c123gxl) for more information.
 
 Finally, this release adds a state machine operation for implementing
 the shallow history mechanism. The operation is called "childState",
@@ -610,28 +622,28 @@ Changes in detail:
 1. Modified the QS software tracing component to add new functionality,
 such as the QS-RX input channel. Also added new trace records.
 
-2. Added file "qstamp.c" (in the qpc\include\ folder) to provide
+2. Added file "qstamp.c" (in the qpc/include/ folder) to provide
 time-stamp of the application build.
 
 3. Added function QMsm_childStateObj() to the QMsm class and
 QHsm_childState() to the QHsm class. These functions have been added to
 support the shallow-history mechanism.
 
-4. Modified all example projects (qpc\examples\ folder) to include the
+4. Modified all example projects (qpc/examples/ folder) to include the
 "qstamp.c" file and force its re-compilation for each new build, so that
 every build has an up-to-date and unique time stamp.
 
 5. Extended the DPP on TivaC LauchPad example (directory
-qpc\examples\arm-cm\dpp_ek-tm4c123gxl\) to demonstrate QS-RX (QS receive
+qpc/examples/arm-cm/dpp_ek-tm4c123gxl/) to demonstrate QS-RX (QS receive
 channel).
 
 6. Provided example of customizing the "QspyView" Tcl/Tk script for the
-DPP application in the directory qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qspy\
+DPP application in the directory qpc/examples/arm-cm/dpp_ek-tm4c123gxl/qspy/
 
-7. Modified all examples (qpc\examples\ folder) to call the
+7. Modified all examples (qpc/examples/ folder) to call the
 QS_ASSERTION() macro to the Q_onAssert() callback function.
 
-8. Modified the startup code (in the qpc\3rd_party\ folder) for ARM
+8. Modified the startup code (in the qpc/3rd_party/ folder) for ARM
 Cortex-M to invoke the Q_onAssert() callback from the assert_failure()
 exception handler. This is to allow application-level code to define
 Q_onAssert() for each specific project.
@@ -667,7 +679,7 @@ Changes in detail:
 
 8. Updated all Windows examples to the latest QP API by compiling the code with the macro #QP_API_VERSION set to 9999 (latest API without backwards compatibility)
 
-9. Improved the PC-Lint support for checking the application-level code located in in `examples\arm-cm\dpp_ek-tm4c123gxl\lint`
+9. Improved the PC-Lint support for checking the application-level code located in in `examples/arm-cm/dpp_ek-tm4c123gxl/lint`
 
 
 ------------------------------------------------------------------------------
@@ -688,7 +700,7 @@ Also, this release brings several cosmetic improvements:
 
 4. The `qpc/ports/arm-cm/qk/gnu/qk_port.s` ARM Cortex-M port to QK with GNU has been modified to use the CMSIS-compliant symbol __FPU_PRESENT instead of the FPU_VFP_V4_SP_D16 symbol.
 
-5. All Makefiles for the GNU toolset have been cleaned up, whereas any `\` (back-slash) characters in the paths have been repalced with `/` (forward-slash) characters. Also all these Makefiles have been updated to provide the __FPU_PRESENT to C and assembler when the hardware FPU is used.
+5. All Makefiles for the GNU toolset have been cleaned up, whereas any `/` (back-slash) characters in the paths have been repalced with `/` (forward-slash) characters. Also all these Makefiles have been updated to provide the __FPU_PRESENT to C and assembler when the hardware FPU is used.
 
 6. The file display drver for the EK-LM2S811 board locate at `qpc/3rd_party/ek-lm3s811/display96x16x1.c` has been modified to fix the problem with incorrect hardware delay with the GNU compiler at higher levels of optimization. The in-line assembly for the GNU compiler has been updated such that the delay loop cannot be "optimized away".
 

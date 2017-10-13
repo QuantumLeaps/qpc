@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.7
-* Last updated on  2017-08-20
+* Last updated for version 6.0.0
+* Last updated on  2017-10-11
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -429,7 +429,10 @@ uint_fast8_t QXK_sched_(void) {
             QXK_CONTEXT_SWITCH_();
         }
         else {
-            QXK_attr_.next = (struct QActive *)0;
+            /* the current QXK thread must be the same as 'next' */
+            Q_ASSERT_ID(620, QXK_attr_.curr == next);
+
+            QXK_attr_.next = next;
             p = (uint_fast8_t)0; /* no activation needed */
         }
     }

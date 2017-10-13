@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-L053R8 board, preemptive QXK kernel
-* Last Updated for Version: 5.9.9
-* Date of the Last Update:  2017-10-09
+* Last Updated for Version: 6.0.0
+* Date of the Last Update:  2017-10-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -47,6 +47,7 @@ Q_DEFINE_THIS_FILE
 enum KernelAwareISRs {
     GPIOPORTA_PRIO = QF_AWARE_ISR_CMSIS_PRI, /* see NOTE00 */
     SYSTICK_PRIO,
+    EXTI0_1_PRIO,
     /* ... */
     MAX_KERNEL_AWARE_CMSIS_PRI /* keep always last */
 };
@@ -54,6 +55,7 @@ enum KernelAwareISRs {
 Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
 void SysTick_Handler(void);
+void EXTI0_1_IRQHandler(void);
 
 /* Local-scope defines -----------------------------------------------------*/
 /* LED pins available on the board (just one user LED LD2--Green on PA.5) */
@@ -88,7 +90,7 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
     uint32_t current;
     uint32_t tmp;
 
-    QXK_ISR_ENTRY();   /* inform QXK about entering an ISR */
+    QXK_ISR_ENTRY(); /* inform QXK about entering an ISR */
 
 #ifdef Q_SPY
     {
@@ -122,8 +124,17 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
         }
     }
 
-    QXK_ISR_EXIT();             /* inform QXK about exiting an ISR */
+    QXK_ISR_EXIT();  /* inform QXK about exiting an ISR */
 }
+/*..........................................................................*/
+/* interrupt handler for testing preemptions in QXK */
+void EXTI0_1_IRQHandler(void) {
+    static QEvt const testEvt = { TEST_SIG, 0U, 0U };
+    QXK_ISR_ENTRY(); /* inform QXK about entering an ISR */
+    QXTHREAD_POST_X(XT_Test2, &testEvt, 0U, (void *)0);
+    QXK_ISR_EXIT();  /* inform QXK about exiting an ISR */
+}
+
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
@@ -183,7 +194,6 @@ void BSP_displayPaused(uint8_t paused) {
     else {
         //GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED[n] off */
     }
-    //QXTHREAD_POST_X(XT_Test, &pauseEvt, 1U, (void *)0);
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
@@ -229,9 +239,11 @@ void QF_onStartup(void) {
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
     NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
+    NVIC_SetPriority(EXTI0_1_IRQn,   EXTI0_1_PRIO);
     /* ... */
 
     /* enable IRQs... */
+    NVIC_EnableIRQ(EXTI0_1_IRQn);
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
@@ -372,6 +384,18 @@ void QS_onFlush(void) {
     }
     QF_INT_ENABLE();
 }
+
+/*???
+void bug_test(void) {
+    uint32_t i;
+    for(i = 0; i < 10; i++) {
+        QS_BEGIN(123, 0);
+        QS_U32(8, 0);
+        QS_END();
+    }
+}
+*/
+
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 

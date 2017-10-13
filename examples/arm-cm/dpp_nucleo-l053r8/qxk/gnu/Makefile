@@ -1,6 +1,6 @@
 ##############################################################################
-# Product: Makefile for DPP on NUCLEO-L053R8, QXK kernel, GNU-ARM
-# Last Updated for Version: 5.9.9
+# Product: Makefile for QP/C, DPP on NUCLEO-L053R8, QXK kernel, GNU-ARM
+# Last Updated for Version: 6.0.0
 # Date of the Last Update:  2017-10-09
 #
 #                    Q u a n t u m     L e a P s

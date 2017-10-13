@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), GNU-ARM assembler
-* Last Updated for Version: 5.9.6
-* Date of the Last Update:  2017-07-28
+* Last Updated for Version: 6.0.0
+* Date of the Last Update:  2017-10-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -225,8 +225,8 @@ PendSV_activate:
     SUBS    r2,r2,#1          /* align Thumb-address at halfword (new pc) */
     LDR     r1,=Thread_ret    /* return address after the call   (new lr) */
 
-    SUB     sp,sp,#8*4        /* reserve space for exception stack frame */
-    ADD     r0,sp,#5*4        /* r0 := 5 registers below the top of stack */
+    SUB     sp,sp,#(8*4)      /* reserve space for exception stack frame */
+    ADD     r0,sp,#(5*4)      /* r0 := 5 registers below the top of stack */
     STM     r0!,{r1-r3}       /* save xpsr,pc,lr */
 
     MOVS    r0,#6
@@ -249,12 +249,15 @@ PendSV_error:
     */
 PendSV_save_ao:
   .if  __ARM_ARCH == 6        /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
-    PUSH    {r4-r7}           /* save the low registers */
+    SUB     sp,sp,#(8*4)      /* make room for 8 registers r4-r11 */
+    MOV     r0,sp             /* r0 := temporary stack pointer */
+    STMIA   r0!,{r4-r7}       /* save the low registers */
     MOV     r4,r8             /* move the high registers to low registers...*/
     MOV     r5,r9
     MOV     r6,r10
     MOV     r7,r11
-    PUSH    {r4-r7}           /* save the high registers */
+    STMIA   r0!,{r4-r7}       /* save the high registers */
+    MOV     r0,r12            /* restore QXK_attr_.next in r0 */
   .else                       /* M3/M4/M7 */
     PUSH    {r4-r11}          /* save r4-r11 on top of the exception frame */
   .ifdef  __FPU_PRESENT       /* if VFP available... */
@@ -285,7 +288,7 @@ PendSV_restore_ao:
   .if  __ARM_ARCH == 6        /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     MOV     r0,sp             /* r0 := top of stack */
     MOV     r1,r0
-    ADDS    r1,r1,#(4*4)      /* point r0 to the 4 high registers r7-r11 */
+    ADDS    r1,r1,#(4*4)      /* point r1 to the 4 high registers r7-r11 */
     LDMIA   r1!,{r4-r7}       /* pop the 4 high registers into low registers*/
     MOV     r8,r4             /* move low registers into high registers */
     MOV     r9,r5
@@ -531,9 +534,9 @@ QXK_stackInit_:
     LSLS    r3,r0,#3
 
     /* make room for the thread's stack frame... */
-    SUBS    r3,r3,#16*4       /* r3 := top of the 16-register stack frame */
+    SUBS    r3,r3,#(16*4)     /* r3 := top of the 16-register stack frame */
   .ifdef  __FPU_PRESENT       /* if VFP available... */
-    SUBS    r3,r3,#2*4        /* r3 := top of the 18-register stack frame */
+    SUBS    r3,r3,#(2*4)      /* r3 := top of the 18-register stack frame */
   .endif                      /* VFP available */
 
     /* pre-fill the unused part of the stack with 0xDEADBEEF................*/

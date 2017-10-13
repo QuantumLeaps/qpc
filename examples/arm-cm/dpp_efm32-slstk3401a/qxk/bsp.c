@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EFM32-SLSTK3401A board, preemptive QXK kernel
-* Last Updated for Version: 5.9.9
-* Date of the Last Update:  2017-09-27
+* Last Updated for Version: 6.0.0
+* Date of the Last Update:  2017-10-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -489,6 +489,16 @@ void QS_onCommand(uint8_t cmdId,
     }
     else if (cmdId == 11U) {
         assert_failed("QS_onCommand", 123);
+    }
+}
+
+/*??? */
+void bug_test(void) {
+    uint32_t i;
+    for(i = 0; i < 10; i++) {
+        QS_BEGIN(123, 0);
+        QS_U32(8, 0);
+        QS_END();
     }
 }
 
