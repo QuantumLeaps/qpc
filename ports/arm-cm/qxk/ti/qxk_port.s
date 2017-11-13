@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), TI-ARM assembler
-; Last Updated for Version: 6.0.0
-; Date of the Last Update:  2017-10-10
+; Last Updated for Version: 6.0.1
+; Date of the Last Update:  2017-10-17
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -43,7 +43,6 @@
 
     .global QF_crit_entry     ; enter critical section
     .global QXK_get_IPSR      ; get the IPSR
-    .global assert_failed     ; low-level assert handler
 
     .ref    QXK_attr_         ; QXK attribute structure
     .ref    QXK_threadRet_    ; return from an extended thread function
@@ -198,7 +197,7 @@ PendSV_Handler: .asmfunc
     ; to run, which is set in QXK_ISR_EXIT(). This pointer must not be NULL.
     LDR     r0,[r3,#QXK_NEXT] ; r1 := QXK_attr_.next
     CMP     r0,#0             ; is (QXK_attr_.next == 0)?
-    BEQ     PendSV_error      ; branch if (QXK_attr_.next == 0)
+    BEQ     PendSV_return     ; branch if (QXK_attr_.next == 0)
 
     ; Load pointers into registers...
     MOV     r12,r0            ; save QXK_attr_.next in r12
@@ -236,11 +235,6 @@ PendSV_activate:
     MOVS    r0,#6
     MVNS    r0,r0             ; r0 := ~6 == 0xFFFFFFF9
     BX      r0                ; exception-return to the QXK activator
-
-    ;-------------------------------------------------------------------------
-PendSV_error:
-    LDR     r3,assert_failed_addr
-    BX      r3                ; long-branch to the assertion-handler
 
     ;=========================================================================
     ; Saving AO-thread before crossing to eXtended-thread
@@ -285,7 +279,8 @@ PendSV_save_ao:
     ; r12 -> QXK_attr_.next
 PendSV_restore_ao:
     MOVS    r0,#0
-    STR     r0,[r3,#QXK_CURR] ; QXK_attr_.curr := 0 (QXK_attr_.next)
+    STR     r0,[r3,#QXK_CURR] ; QXK_attr_.curr := 0
+    STR     r0,[r3,#QXK_NEXT] ; QXK_attr_.next := 0
 
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
   .if __TI_VFP_SUPPORT__      ; if VFP available...
@@ -320,7 +315,8 @@ PendSV_restore_ao:
     CMP     r1,r0
     BCC     PendSV_activate   ; if (next->prio > topPrio) activate the next AO
 
-    ; otherwise re-enable interrupts and return to the preempted AO-thread
+    ; otherwise re-enable interrupts and return from PendSV
+PendSV_return:
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__
     MOVS    r0,#0
     MSR     BASEPRI,r0        ; enable interrupts (clear BASEPRI)
@@ -381,6 +377,8 @@ PendSV_save_ex:
     ; r12 -> QXK_attr_.next
 PendSV_restore_ex:
     STR     r0,[r3,#QXK_CURR] ; QXK_attr_.curr := r0 (QXK_attr_.next)
+    MOVS    r0,#0
+    STR     r0,[r3,#QXK_NEXT] ; QXK_attr_.next := 0
 
     ; exit the critical section
   .if __TI_TMS470_V7M3__ | __TI_TMS470_V7M4__ ; | __TI_TMS470_V7M7__

@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.0
-* Last updated on  2017-10-11
+* Last updated for version 6.0.1
+* Last updated on  2017-10-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -386,7 +386,7 @@ uint_fast8_t QXK_sched_(void) {
     /* is the current thread a basic-thread? */
     if (QXK_attr_.curr == (struct QActive *)0) {
 
-        /* is the next a basic-thread? */
+        /* is next a basic-thread? */
         if (next->osObject == (void *)0) {
             if (p <= QXK_attr_.actPrio) {
                 QXK_attr_.next = (struct QActive *)0;
@@ -413,26 +413,22 @@ uint_fast8_t QXK_sched_(void) {
     }
     else { /* currently executing an extended-thread */
 
-        /* is the new prio different from the current prio? */
-        if (p != QXK_attr_.curr->prio) {
+        /* is the next thread different from the current? */
+        if (next != QXK_attr_.curr) {
 
             QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ],
                              QXK_attr_.next)
                 QS_TIME_();         /* timestamp */
-                QS_2U8_((uint8_t)p, /* priority of the next AO */
-                                    /* priority of the curent AO */
-                        (uint8_t)QXK_attr_.curr->prio);
+                QS_2U8_((uint8_t)p, /* next prio */
+                        (uint8_t)QXK_attr_.curr->prio); /* curr prio */
             QS_END_NOCRIT_()
 
             QXK_attr_.next = next;
             p = (uint_fast8_t)0; /* no activation needed */
             QXK_CONTEXT_SWITCH_();
         }
-        else {
-            /* the current QXK thread must be the same as 'next' */
-            Q_ASSERT_ID(620, QXK_attr_.curr == next);
-
-            QXK_attr_.next = next;
+        else { /* next is the same as the current */
+            QXK_attr_.next = (QActive *)0; /* no need to context-switch */
             p = (uint_fast8_t)0; /* no activation needed */
         }
     }
@@ -505,7 +501,8 @@ void QXK_activate_(void) {
         }
         a = QF_active_[p];
 
-        Q_ASSERT_ID(710, a != (QActive *)0); /* must be registered */
+        /* the AO must be registered in QF */
+        Q_ASSERT_ID(710, a != (QActive *)0);
 
         /* is the next a basic thread? */
         if (a->osObject == (void *)0) {
@@ -522,9 +519,8 @@ void QXK_activate_(void) {
             QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ],
                              QXK_attr_.next)
                 QS_TIME_();         /* timestamp */
-                QS_2U8_((uint8_t)p, /* priority of the next AO */
-                                    /* priority of the curent AO */
-                        (uint8_t)QXK_attr_.actPrio);
+                QS_2U8_((uint8_t)p, /* next prio */
+                        (uint8_t)QXK_attr_.actPrio); /* curr prio */
             QS_END_NOCRIT_()
 
             QXK_attr_.next = a;
@@ -541,8 +537,8 @@ void QXK_activate_(void) {
 
         QS_BEGIN_NOCRIT_(QS_SCHED_RESUME, QS_priv_.locFilter[AO_OBJ], a)
             QS_TIME_();              /* timestamp */
-            QS_2U8_((uint8_t)pin,    /* priority of the resumed AO */
-                    (uint8_t)pprev); /* previous priority */
+            QS_2U8_((uint8_t)pin,    /* resumed prio */
+                    (uint8_t)pprev); /* previous prio */
         QS_END_NOCRIT_()
     }
     else {  /* resuming priority==0 --> idle */

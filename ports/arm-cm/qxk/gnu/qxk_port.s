@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), GNU-ARM assembler
-* Last Updated for Version: 6.0.0
-* Date of the Last Update:  2017-10-10
+* Last Updated for Version: 6.0.1
+* Date of the Last Update:  2017-10-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -193,7 +193,7 @@ PendSV_Handler:
     */
     LDR     r0,[r3,#QXK_NEXT] /* r1 := QXK_attr_.next */
     CMP     r0,#0             /* is (QXK_attr_.next == 0)? */
-    BEQ     PendSV_error      /* branch if (QXK_attr_.next == 0) */
+    BEQ     PendSV_return     /* branch if (QXK_attr_.next == 0) */
 
     /* Load pointers into registers... */
     MOV     r12,r0            /* save QXK_attr_.next in r12 */
@@ -232,11 +232,6 @@ PendSV_activate:
     MOVS    r0,#6
     MVNS    r0,r0             /* r0 := ~6 == 0xFFFFFFF9 */
     BX      r0                /* exception-return to the QXK activator */
-
-    /*----------------------------------------------------------------------*/
-PendSV_error:
-    LDR     r3,=assert_failed
-    BX      r3                /* long-branch to the assertion-handler */
 
     /*========================================================================
     * Saving AO-thread before crossing to eXtended-thread
@@ -283,7 +278,8 @@ PendSV_save_ao:
     */
 PendSV_restore_ao:
     MOVS    r0,#0
-    STR     r0,[r3,#QXK_CURR] /* QXK_attr_.curr := 0 (QXK_attr_.next) */
+    STR     r0,[r3,#QXK_CURR] /* QXK_attr_.curr := 0 */
+    STR     r0,[r3,#QXK_NEXT] /* QXK_attr_.next := 0 */
 
   .if  __ARM_ARCH == 6        /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     MOV     r0,sp             /* r0 := top of stack */
@@ -318,7 +314,8 @@ PendSV_restore_ao:
     CMP     r1,r0
     BCC     PendSV_activate   /* if (next->prio > topPrio) activate next AO */
 
-    /* otherwise re-enable interrupts and return to the preempted AO-thread */
+    /* otherwise re-enable interrupts and return from PendSV */
+PendSV_return:
   .if  __ARM_ARCH == 6        /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     CPSIE   i                 /* enable interrupts (clear PRIMASK) */
   .else                       /* M3/M4/M7 */
@@ -381,6 +378,8 @@ PendSV_save_ex:
     */
 PendSV_restore_ex:
     STR     r0,[r3,#QXK_CURR] /* QXK_attr_.curr := r0 (QXK_attr_.next) */
+    MOVS    r0,#0
+    STR     r0,[r3,#QXK_NEXT] /* QXK_attr_.next := 0 */
 
     /* exit the critical section */
   .if  __ARM_ARCH == 6        /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */

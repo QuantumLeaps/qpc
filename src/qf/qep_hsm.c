@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.0
-* Last updated on  2017-05-10
+* Last updated for version 6.0.1
+* Last updated on  2017-10-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -590,11 +590,14 @@ bool QHsm_isIn(QHsm * const me, QStateHandler const state) {
 * @param[in] me     pointer (see @ref oop)
 * @param[in] parent pointer to the state-handler function
 *
-* @returns the child of a given @c parent state, which is an ancestor of
-* the currently active state
+* @returns
+* the child of a given @c parent state, which is an ancestor of the current
+* active state. For the corner case when the currently active state is the
+* given @c parent state, function returns the @c parent state.
 *
-* @note this function is designed to be called during state transitions,
-* so it does not necessarily start in a stable state configuration.
+* @note
+* this function is designed to be called during state transitions, so it
+* does not necessarily start in a stable state configuration.
 * However, the function establishes stable state configuration upon exit.
 *
 * @sa QHsm_childState()
@@ -603,7 +606,7 @@ QStateHandler QHsm_childState_(QHsm * const me,
                                QStateHandler const parent)
 {
     QStateHandler child = me->state.fun; /* start with the current state */
-    bool isConfirmed = false; /* start with the child not confirmed */
+    bool isFound = false; /* start with the child not found */
     QState r;
 
     /* establish stable state configuration */
@@ -611,7 +614,7 @@ QStateHandler QHsm_childState_(QHsm * const me,
     do {
         /* is this the parent of the current child? */
         if (me->temp.fun == parent) {
-            isConfirmed = true; /* child is confirmed */
+            isFound = true; /* child is found */
             r = (QState)Q_RET_IGNORED; /* break out of the loop */
         }
         else {
@@ -621,8 +624,8 @@ QStateHandler QHsm_childState_(QHsm * const me,
     } while (r != (QState)Q_RET_IGNORED); /* QHsm_top() state not reached */
     me->temp.fun = me->state.fun; /* establish stable state configuration */
 
-    /** @post the child must be confirmed */
-    Q_ENSURE_ID(710, isConfirmed != false);
+    /** @post the child must be found */
+    Q_ENSURE_ID(810, isFound != false);
 
     return child; /* return the child */
 }

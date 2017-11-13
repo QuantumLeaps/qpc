@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.6
-* Last updated on  2017-08-01
+* Last updated for version 6.0.1
+* Last updated on  2017-10-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -64,13 +64,15 @@ Q_DEFINE_THIS_MODULE("qf_defer")
 *                    an event from.
 * @param[in]     e   pointer to the event to be deferred
 *
-* @returns 'true' (success) when the event could be deferred and 'false'
-* (failure) if event deferral failed due to overflowing the queue.
+* @returns
+* 'true' (success) when the event could be deferred and 'false' (failure)
+* if event deferral failed due to overflowing the queue.
 *
 * An active object can use multiple event queues to defer events of
 * different kinds.
 *
-* @sa QActive_recall(), QEQueue, QActive_flushDeferred()
+* @sa
+* QActive_recall(), QEQueue, QActive_flushDeferred()
 */
 bool QActive_defer(QActive const * const me, QEQueue * const eq,
                    QEvt const * const e)
@@ -92,13 +94,15 @@ bool QActive_defer(QActive const * const me, QEQueue * const eq,
 * @param[in,out] me  pointer (see @ref oop)
 * @param[in]     eq  pointer to a "raw" thread-safe queue to recall
 *                    an event from.
+* @returns
+* 'true' if an event has been recalled and 'false' if not.
 *
-* @returns 'true' if an event has been recalled and 'false' if not.
-*
-* @note An active object can use multiple event queues to defer events of
+* @note
+* An active object can use multiple event queues to defer events of
 * different kinds.
 *
-* @sa QActive_recall(), QEQueue, QActive_postLIFO_()
+* @sa
+* QActive_recall(), ::QEQueue, QACTIVE_POST_LIFO()
 */
 bool QActive_recall(QActive * const me, QEQueue * const eq) {
     QEvt const *e = QEQueue_get(eq); /* get an event from deferred queue */
@@ -147,9 +151,11 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
 * @param[in,out] me  pointer (see @ref oop)
 * @param[in]     eq  pointer to a "raw" thread-safe queue to flush.
 *
-* @returns the number of events actually flushed from the queue.
+* @returns
+* the number of events actually flushed from the queue.
 *
-* @sa QActive_defer(), QActive_recall(), QEQueue
+* @sa
+* QActive_defer(), QActive_recall(), QEQueue
 */
 uint_fast16_t QActive_flushDeferred(QActive const * const me,
                                     QEQueue * const eq)

@@ -9,18 +9,54 @@
 /*##########################################################################*/
 /*! @page posix POSIX
 
-@image html under_construction.jpg
+<p>The QP/C/C++ ports and examples for POSIX (e.g., Embedded Linux, BSD, VxWorks, QNX, etc.) are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://state-machine.com/doc/AN_QP_and_POSIX.pdf"><strong>QP and POSIX</strong></a>.
+</p>
+
+@htmlonly
+<div class="image">
+<a target="_blank" href="https://state-machine.com/doc/AN_QP_and_POSIX.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: QP and POSIX
+</div>
+</div>
+@endhtmlonly
+
+The standard QP/C distribution contains the POSIX port and @ref exa_posix "Example Projects for POSIX".
 
 */
 /*##########################################################################*/
 /*! @page win32 Win32 API (Windows)
 
-@image html under_construction.jpg
+<p>The QP/C/C++ ports and examples for Windows (e.g., Windows Embedded, WindowsCE etc.) are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://state-machine.com/doc/AN_QP_and_Win32.pdf"><strong>QP and Win32 (Windows)</strong></a>.
+</p>
+
+@htmlonly
+<div class="image">
+<a target="_blank" href="https://state-machine.com/doc/AN_QP_and_Win32.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: QP and Win32 (Windows)
+</div>
+</div>
+@endhtmlonly
+
+The standard QP/C distribution contains the Win32 (Windows) port and @ref exa_win32 "Example Projects for Win32 (Windows)".
 
 */
 /*##########################################################################*/
 /*! @page win32-qv Win32-QV (Windows with QV)
 
-@image html under_construction.jpg
+<p>The QP/C/C++ ports and examples for Windows with single-thread (like the @ref qv "QV cooperative kernel") are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://state-machine.com/doc/AN_QP_and_Win32.pdf"><strong>QP and Win32 (Windows)</strong></a>.
+</p>
+
+@htmlonly
+<div class="image">
+<a target="_blank" href="https://state-machine.com/doc/AN_QP_and_Win32.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: QP and Win32 (Windows)
+</div>
+</div>
+@endhtmlonly
+
+The standard QP/C distribution contains the Win32-QV port and @ref exa_win32-qv "Example Projects for Win32-QV".
 
 */

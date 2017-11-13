@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.0
-* Last updated on  2017-10-12
+* Last updated for version 6.0.1
+* Last updated on  2017-11-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      600
+#define QP_VERSION      601
 
 /*! The current QP version number string of the form X.Y.Z, where X is
 * a 1-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.0.0"
+#define QP_VERSION_STR  "6.0.1"
 
-/*! Tamperproof current QP release (6.0.0) and date (2017-10-13) */
-#define QP_RELEASE      0x9A117A57U
+/*! Tamperproof current QP release (6.0.1) and date (2017-11-10) */
+#define QP_RELEASE      0x9A02AD46U
 
 
 /****************************************************************************/
@@ -509,10 +509,12 @@ enum {
     Q_RET_NULL,      /*!< return value without any effect */
 
     /* transitions need to execute transition-action table in ::QMsm */
-    Q_RET_TRAN,      /*!< event handled (regular transition) */
+    Q_RET_TRAN,      /*!< regular transition */
     Q_RET_TRAN_INIT, /*!< initial transition in a state or submachine */
-    Q_RET_TRAN_HIST, /*!< event handled (transition to history) */
     Q_RET_TRAN_EP,   /*!< entry-point transition into a submachine */
+
+    /* transitions that additionally clobber me->state */
+    Q_RET_TRAN_HIST, /*!< transition to history of a given state */
     Q_RET_TRAN_XP    /*!< exit-point transition out of a submachine */
 };
 

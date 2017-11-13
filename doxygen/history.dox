@@ -1,18 +1,42 @@
 /**
 @page history Revision History
 
+@section qpc_6_0_1 Version 6.0.1, 2017-11-10
+The main focus of this release is to fix the remaining problems with transitions out of eXit-Points in sub-machines. Specifically, this release modifies the QMsm-based state machine implementation strategy (file src/qf/qep_msm.c to properly handle transitions from eXit-Points to Entry-Points and to History connectors in sub-machines. These changes are part of fixing the following bugs reported for QM:
+
+- [bug#190 "Exit-Point segment targeting History doesn't work](https://sourceforge.net/p/qpc/bugs/190/)
+
+- [bug#189 "Exit-Point segment targeting an Entry-Point to sub-machine state doesn't work"](https://sourceforge.net/p/qpc/bugs/189/)
+
+Additionally, this release fixes the following bug in transitions to "shallow history":
+- [bug#191 "Transition to shallow history in QMsm causes assertion qep_msm#810"](https://sourceforge.net/p/qpc/bugs/191/)
+
+The bug#191 is fixed by modifying the function QMsm_childStateObj_() in qep_msm.c to return the parent state in the corner case when the current state is the parent state.
+
+
+@note
+This QP/C 6.0.1 release is the minium version required in the upcoming QM 4.1.0. This is because QM 4.1.0 assumes the modified QMsm-state machine implementation strategy in order to properly handle the various transitions out of eXit-Points in sub-machine states.
+
+
+Additionally, this release changes the QXK implementation still related to the [bug#186 "QXK: Extended thread context switch causes assertion in PendSV_Handler"](https://sourceforge.net/p/qpc/bugs/186/). Specifically, the case of context switching away and back to the same thread (which can arise under specific interrupt preemption scenarios) is now handled as a simple return from PendSV. The QXK scheduler has been modified to set the "next" thread pointer to NULL when it detects switching back to the "current" thread.
+
+
+------------------------------------------------------------------------------
 @section qpc_6_0_0 Version 6.0.0, 2017-10-13
 This release fixes two bugs found in the QXK kernel:
 - [bug#185](https://sourceforge.net/p/qpc/bugs/185/) "QXK: PendSV_Handler uses inconsistent stack frames for saving and restoring AO for Cortex-M0(+)"
 - [bug#186](https://sourceforge.net/p/qpc/bugs/186/) "QXK: Extended thread context switch causes assertion in PendSV_Handler"
 
-Additionally, this release includes a workaround for a [bug indetified in the GNU-ARM toolset](https://bugs.launchpad.net/gcc-arm-embedded/+bug/1722849). This problem affected the ARMv6-M architecture (Cortex-M0/M0+/M1) and manifested itself in generation of incorrect code for the QP critical section at certain gcc optimization levels (such as -O). This bug was first discovered and filed as [bug#184](https://sourceforge.net/p/qpc/bugs/184/). The bug affected the GNU-ARM ports to all built-in kernels @ref qv "QV", @ref qk "QK", and @ref qxk "QXK".
+Additionally, this release includes a fix for the bug found in ARM Cortex-M0 port with the GNU-ARM compiler:
+- [bug#189](https://sourceforge.net/p/qpc/bugs/184/) "QS_END() leaves all interrupts disabled w/​ GNU ARM"
 
-@note
+This specific problem observed in QSpy turned out to be caused by a bug in the GNU-ARM compiler itself. This problem affected the ARMv6-M architecture (Cortex-M0/M0+/M1) and manifested itself in generation of incorrect code for the QP critical section at certain gcc optimization levels (such as -O). This bug was first discovered and filed as [bug#184](https://sourceforge.net/p/qpc/bugs/184/). The bug affected the GNU-ARM ports to all built-in kernels @ref qv "QV", @ref qk "QK", and @ref qxk "QXK".
+
+@attention
 This release no longer contains the directory `qpc/source`, which was scheduled to be phased out in QP5. In QP6 the source code is found only in the `qpc/src` directory.
 
 
------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 @section qpc_5_9_9 Version 5.9.9, 2017-09-29
 This release implements the feature request [#132 "Extend the QXK mutex to support also simple operation without the priority-ceiling protocol"](https://sourceforge.net/p/qpc/feature-requests/132/).
 

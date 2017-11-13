@@ -9,8 +9,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.8
-* Last updated on  2017-09-20
+* Last updated for version 6.0.1
+* Last updated on  2017-10-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -194,7 +194,10 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 * @param[in] me pointer (see @ref oop)
 * @param[in  e  pointer to the event to post to the queue
 *
-* @sa QActive_post_()
+* @attention
+* This function should be called only via the macro QACTIVE_POST_LIFO().
+*
+* @sa QActive_post_(), QACTIVE_POST(), QACTIVE_POST_X()
 */
 void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QEvt const *frontEvt;  /* temporary to avoid UB for volatile access */

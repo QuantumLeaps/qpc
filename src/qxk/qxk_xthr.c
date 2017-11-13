@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.8
-* Last updated on  2017-09-07
+* Last updated for version 6.0.1
+* Last updated on  2017-10-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -128,7 +128,7 @@ static void QXThread_dispatch_(QMsm * const me, QEvt const * const e) {
 /****************************************************************************/
 /**
 * @description
-* Starts execution of the extended thread and registers it with the framework.
+* Starts execution of an extended thread and registers it with the framework.
 * The extended thread becomes ready-to-run immediately and is scheduled
 * if the QXK is already running.
 *
@@ -161,7 +161,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
     * - NOT be called from an ISR;
     * - the thread priority cannot exceed #QF_MAX_ACTIVE;
     * - the stack storage must be provided;
-    * - the thread object must be instantiated (see QXThread_ctor()).
+    * - the thread must be instantiated (see QXThread_ctor()).
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
         && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
@@ -216,17 +216,21 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 *                       posting the event. The special value #QF_NO_MARGIN
 *                       means that this function will assert if posting fails.
 *
+* @returns
+* 'true' (success) if the posting succeeded (with the provided margin) and
+* 'false' (failure) when the posting fails.
+*
 * @note
 * Should be called only via the macro QXTHREAD_POST_X().
 *
 * @note
-* The #QF_NO_MARGIN value of the @p margin parameter is special and denotes
-* situation when the post() operation is assumed to succeed (event delivery
-* guarantee). An assertion fires, when the event cannot be delivered in this
-* case.
+* The #QF_NO_MARGIN value of the @p margin parameter is special and
+* denotes situation when the post() operation is assumed to succeed
+* (event delivery guarantee). An assertion fires, when the event cannot
+* be delivered in this case.
 *
 * @note
-* For compatibility with the V-table from the superclass QActive, the
+* For compatibility with the V-table from the superclass ::QActive, the
 * me-pointer is typed as pointing to QActive. However, the @p me pointer
 * here actually points to the QXThread subclass. Therefore the downcast
 * (QXThread *)me is always correct.
@@ -295,7 +299,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
                 me->eQueue.nMin = nFree;    /* update minimum so far */
             }
 
-            /* empty queue? */
+            /* queue empty? */
             if (me->eQueue.frontEvt == (QEvt const *)0) {
                 me->eQueue.frontEvt = e;    /* deliver event directly */
 
@@ -335,7 +339,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
                 QS_OBJ_(me);          /* this active object (recipient) */
                 QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
                 QS_EQC_(nFree);       /* number of free entries */
-                QS_EQC_(margin);      /* margin requested */
+                QS_EQC_((QEQueueCtr)margin); /* margin requested */
             QS_END_NOCRIT_()
 
             QF_CRIT_EXIT_();
@@ -447,11 +451,11 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET,
                              QS_priv_.locFilter[AO_OBJ], thr)
-                QS_TIME_();                   /* timestamp */
-                QS_SIG_(e->sig);              /* the signal of this event */
-                QS_OBJ_(&thr->super);         /* this active object */
+                QS_TIME_();           /* timestamp */
+                QS_SIG_(e->sig);      /* the signal of this event */
+                QS_OBJ_(&thr->super); /* this active object */
                 QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-                QS_EQC_(nFree);               /* number of free entries */
+                QS_EQC_(nFree);       /* number of free entries */
             QS_END_NOCRIT_()
         }
         else {
@@ -462,9 +466,9 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST,
                              QS_priv_.locFilter[AO_OBJ], thr)
-                QS_TIME_();                   /* timestamp */
-                QS_SIG_(e->sig);              /* the signal of this event */
-                QS_OBJ_(&thr->super);         /* this active object */
+                QS_TIME_();           /* timestamp */
+                QS_SIG_(e->sig);      /* the signal of this event */
+                QS_OBJ_(&thr->super); /* this active object */
                 QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_END_NOCRIT_()
         }

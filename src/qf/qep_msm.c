@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.1
-* Last updated on  2017-05-24
+* Last updated for version 6.0.1
+* Last updated on  2017-11-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -64,7 +64,8 @@ static QMState const l_msm_top_s = {
 
 /*! Internal QEP macro to increment the given action table @p act_ */
 /**
-* @note Incrementing a pointer violates the MISRA-C 2004 Rule 17.4(req),
+* @note
+* Incrementing a pointer violates the MISRA-C 2004 Rule 17.4(req),
 * pointer arithmetic other than array indexing. Encapsulating this violation
 * in a macro allows to selectively suppress this specific deviation.
 */
@@ -90,7 +91,8 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist);
 * @param[in,out] me       pointer (see @ref oop)
 * @param[in]     initial  the top-most initial transition for the MSM.
 *
-* @note  Must be called only ONCE before QHSM_INIT().
+* @note
+* Must be called only ONCE before QHSM_INIT().
 *
 * @note
 * QMsm inherits QHsm, so by the @ref oop convention it should call the
@@ -124,7 +126,8 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial) {
 * @param[in,out] me pointer (see @ref oop)
 * @param[in]     e  pointer to the initialization event (might be NULL)
 *
-* @note Must be called only ONCE after the QMsm_ctor().
+* @note
+* Must be called only ONCE after the QMsm_ctor().
 */
 void QMsm_init_(QMsm * const me, QEvt const * const e) {
     QState r;
@@ -180,7 +183,7 @@ void QMsm_init_(QMsm * const me, QEvt const * const e) {
 void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
     QMState const *s = me->state.obj; /* store the current state */
     QMState const *t = s;
-    QState r = (QState)Q_RET_SUPER;
+    QState r;
     QS_CRIT_STAT_
 
     /** @pre current state must be initialized */
@@ -241,14 +244,11 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
             QMTranActTable const *tatbl = me->temp.tatbl;
             union QHsmAttr tmp; /* temporary to save intermediate values */
 
-            /* was a regular state transition segment taken? */
-            if (r == (QState)Q_RET_TRAN) {
+            /* was TRAN, TRAN_INIT, or TRAN_EP taken? */
+            if (r < (QState)Q_RET_TRAN_HIST) {
                 QMsm_exitToTranSource_(me, s, t);
                 r = QMsm_execTatbl_(me, tatbl);
-            }
-            /* was an initial transition segment taken? */
-            else if (r == (QState)Q_RET_TRAN_INIT) {
-                r = QMsm_execTatbl_(me, tatbl);
+                s = me->state.obj;
             }
             /* was a transition segment to history taken? */
             else if (r == (QState)Q_RET_TRAN_HIST) {
@@ -257,41 +257,39 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
                 QMsm_exitToTranSource_(me, s, t);
                 (void)QMsm_execTatbl_(me, tatbl);
                 r = QMsm_enterHistory_(me, tmp.obj);
-            }
-            /* was a transition segment to an entry point taken? */
-            else if (r == (QState)Q_RET_TRAN_EP) {
-                r = QMsm_execTatbl_(me, tatbl);
+                s = me->state.obj;
             }
             /* was a transition segment to an exit point taken? */
             else if (r == (QState)Q_RET_TRAN_XP) {
                 tmp.act = me->state.act; /* save XP action */
                 me->state.obj = s; /* restore the original state */
                 r = (*tmp.act)(me); /* execute the XP action */
-                if (r == (QState)Q_RET_TRAN) {
+                if (r == (QState)Q_RET_TRAN) { /* XP -> TRAN ? */
                     QMsm_exitToTranSource_(me, s, t);
-                    tmp.tatbl = me->temp.tatbl; /* save XP-Segment */
                     /* take the tran-to-XP segment inside submachine */
                     (void)QMsm_execTatbl_(me, tatbl);
-                    me->state.obj = s; /* restore original state */
-#ifdef Q_SPY
-                    t = me->temp.tatbl->target; /* store for tracing */
-#endif /* Q_SPY */
-                    /* take the XP-Segment from submachine-state */
-                    r = QMsm_execTatbl_(me, tmp.tatbl);
-
-                    QS_BEGIN_(QS_QEP_TRAN_XP, QS_priv_.locFilter[SM_OBJ], me)
-                        QS_OBJ_(me); /* this state machine object */
-                        QS_FUN_(s);  /* source handler */
-                        QS_FUN_(t);  /* target handler */
-                    QS_END_()
+                    s = me->state.obj;
+                }
+                else if (r == (QState)Q_RET_TRAN_HIST) { /* XP -> HIST ? */
+                    tmp.obj = me->state.obj; /* save the history */
+                    me->state.obj = s; /* restore the original state */
+                    QMsm_exitToTranSource_(me, s, t);
+                    /* take the tran-to-XP segment inside submachine */
+                    (void)QMsm_execTatbl_(me, tatbl);
+                    s = me->state.obj;
+                    me->state.obj = tmp.obj; /* restore the history */
+                }
+                else {
+                    /* TRAN_XP must NOT be followed by any other tran type */
+                    Q_ASSERT_ID(330, r < (QState)Q_RET_TRAN);
                 }
             }
             else {
                 /* no other return value should be produced */
-                Q_ERROR_ID(330);
+                Q_ERROR_ID(340);
             }
-            s = me->state.obj;
-            t = s;
+
+            t = s; /* set target to the current state */
 
         } while (r >= (QState)Q_RET_TRAN);
 
@@ -343,11 +341,12 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
 * @param[in,out] me    pointer (see @ref oop)
 * @param[in]     tatbl pointer to the transition-action table
 *
-* @returns status of the last action from the transition-action table.
+* @returns
+* status of the last action from the transition-action table.
 *
 * @note
-* This function is for internal use inside the QEP event processor and should
-* __not__ be called directly from the applications.
+* This function is for internal use inside the QEP event processor and
+* should __not__ be called directly from the applications.
 */
 static QState QMsm_execTatbl_(QMsm * const me, QMTranActTable const *tatbl) {
     QActionHandler const *a;
@@ -404,13 +403,9 @@ static QState QMsm_execTatbl_(QMsm * const me, QMTranActTable const *tatbl) {
 #endif /* Q_SPY */
     }
 
-    if (r >= (QState)Q_RET_TRAN_INIT) {
-        me->state.obj = me->temp.tatbl->target; /* the tran. target */
-    }
-    else {
-        me->state.obj = tatbl->target; /* the tran. target */
-    }
-
+    me->state.obj = (r >= (QState)Q_RET_TRAN)
+        ? me->temp.tatbl->target
+        : tatbl->target;
     return r;
 }
 
@@ -460,8 +455,9 @@ static void QMsm_exitToTranSource_(QMsm * const me, QMState const *s,
 * @param[in,out] me   pointer (see @ref oop)
 * @param[in]     hist pointer to the history substate
 *
-* @returns #Q_RET_INIT, if an initial transition has been executed
-* in the last entered state or #Q_RET_NULL if no such transition was taken.
+* @returns
+* #Q_RET_INIT, if an initial transition has been executed in the last entered
+* state or #Q_RET_NULL if no such transition was taken.
 */
 static QState QMsm_enterHistory_(QMsm * const me, QMState const *const hist) {
     QMState const *s = hist;
@@ -517,14 +513,15 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const *const hist) {
 * @description
 * Tests if a state machine derived from QMsm is-in a given state.
 *
-* @note For a MSM, to "be-in" a state means also to "be-in" a superstate of
+* @note
+* For a MSM, to "be-in" a state means also to "be-in" a superstate of
 * of the state.
 *
 * @param[in] me    pointer (see @ref oop)
 * @param[in] state pointer to the QMState object that corresponds to the
 *                  tested state.
-*
-* @returns 'true' if the MSM "is in" the @p state and 'false' otherwise
+* @returns
+* 'true' if the MSM "is in" the @p state and 'false' otherwise
 */
 bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
     bool inState = false; /* assume that this MSM is not in 'state' */
@@ -550,8 +547,10 @@ bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
 * @param[in] me     pointer (see @ref oop)
 * @param[in] parent pointer to the state-handler object
 *
-* @returns the child of a given @c parent state, which is an ancestor of
-* the currently active state
+* @returns
+* the child of a given @c parent state, which is an ancestor of
+* the currently active state. For the corner case when the currently active
+* state is the given @c parent state, function returns the @c parent state.
 *
 * @sa QMsm_childStateObj()
 */
@@ -559,15 +558,15 @@ QMState const *QMsm_childStateObj_(QMsm const * const me,
                                    QMState const * const parent)
 {
     QMState const *child = me->state.obj;
-    bool isConfirmed = false; /* start with the child not confirmed */
+    bool isFound = false; /* start with the child not found */
     QMState const *s;
 
-    for (s = me->state.obj->superstate;
+    for (s = me->state.obj;
          s != (QMState const *)0;
          s = s->superstate)
     {
         if (s == parent) {
-            isConfirmed = true; /* child is confirmed */
+            isFound = true; /* child is found */
             break;
         }
         else {
@@ -575,8 +574,8 @@ QMState const *QMsm_childStateObj_(QMsm const * const me,
         }
     }
 
-    /** @post the child must be confirmed */
-    Q_ENSURE_ID(810, isConfirmed != false);
+    /** @post the child must be found */
+    Q_ENSURE_ID(810, isFound != false);
 
     return child; /* return the child */
 }
