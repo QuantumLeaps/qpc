@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.7
-* Last updated on  2017-08-16
+* Last updated for version 6.0.2
+* Last updated on  2017-11-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -150,11 +150,11 @@ typedef struct QActive {
 #endif
 
     /*! QF priority (1..#QF_MAX_ACTIVE) of this active object. */
-    uint_fast8_t prio;
+    uint8_t prio;
 
 #ifdef qxk_h  /* QXK kernel used? */
     /*! QF start priority (1..#QF_MAX_ACTIVE) of this active object. */
-    uint_fast8_t startPrio;
+    uint8_t startPrio;
 #endif
 
 } QActive;

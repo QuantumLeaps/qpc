@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 6.0.2
+* Last updated on  2017-12-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -50,11 +50,10 @@
 #define QS_FUN_PTR_SIZE  4
 
 /*****************************************************************************
-* NOTE: QS might be used with or without other QP components, in which
-* case the separate definitions of the macros QF_CRIT_STAT_TYPE,
-* QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this port QS is configured
-* to be used with the other QP component, by simply including "qf_port.h"
-* *before* "qs.h".
+* NOTE: QS might be used with or without other QP components, in which case
+* the separate definitions of the macros QF_CRIT_STAT_TYPE, QF_CRIT_ENTRY,
+* and QF_CRIT_EXIT are needed. In this port QS is configured to be used with
+* the other QP component, by simply including "qf_port.h" *before* "qs.h".
 */
 #include "qf_port.h" /* use QS with QF */
 #include "qs.h"      /* QS platform-independent public interface */

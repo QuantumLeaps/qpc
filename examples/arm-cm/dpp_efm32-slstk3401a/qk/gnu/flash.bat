@@ -21,7 +21,7 @@ if NOT exist "%JLINK%\JLink.exe" (
 )
 
 if [%1] EQU [] (
-    @echo binary image missing
+    @echo binary file missing
     @goto end
 )
 if NOT exist "%1" (

@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.3
-* Last updated on  2017-06-17
+* Last updated for version 6.0.2
+* Last updated on  2017-12-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -185,7 +185,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     (void)stkSize;
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
-    me->prio = prio;   /* set the current priority of the AO */
+    me->prio = (uint8_t)prio; /* set the current priority of the AO */
     QF_add_(me); /* make QF aware of this active object */
 
     QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */

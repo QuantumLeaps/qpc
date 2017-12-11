@@ -1,5 +1,5 @@
 /*****************************************************************************
-* Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), GNU-ARM assembler
+* Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), LLVM-ARM assembler
 * Last Updated for Version: 6.0.2
 * Date of the Last Update:  2017-12-08
 *

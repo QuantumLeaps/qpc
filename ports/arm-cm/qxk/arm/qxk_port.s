@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), ARM-Keil assembler
-; Last Updated for Version: 6.0.1
-; Date of the Last Update:  2017-10-17
+; Last Updated for Version: 6.0.2
+; Date of the Last Update:  2017-12-08
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -37,6 +37,10 @@
     EXPORT  PendSV_Handler    ; CMSIS-compliant PendSV exception name
     EXPORT  NMI_Handler       ; CMSIS-compliant NMI exception name
 
+  IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
+    EXPORT  QF_qlog2          ; Hand-optimized quick LOG2 in assembly
+  ENDIF                       ; Cortex-M0/M0+/M1
+
     IMPORT  QXK_attr_         ; QXK attribute structure
     IMPORT  QXK_activate_     ; external reference
     IMPORT  QXK_threadRet_    ; return from a thread function
@@ -47,11 +51,11 @@ QF_BASEPRI  EQU (0xFF:SHR:2)
     ; NOTE: keep in synch with the QXK_Attr struct in "qxk.h" !!!
 QXK_CURR        EQU 0
 QXK_NEXT        EQU 4
-QXK_TOP_PRIO    EQU 8
+QXK_ACT_PRIO    EQU 8
 
     ; NOTE: keep in synch with the QMActive struct in "qf.h/qxk.h" !!!
-QMACTIVE_OSOBJ  EQU 40
-QMACTIVE_PRIO   EQU 48
+QMACTIVE_OSOBJ  EQU 28
+QMACTIVE_PRIO   EQU 36
 
 
     AREA    |.text|, CODE, READONLY
@@ -277,7 +281,7 @@ PendSV_save_ao
 PendSV_restore_ao
     MOVS    r0,#0
     STR     r0,[r3,#QXK_CURR] ; QXK_attr_.curr := 0
-    STR     r0,[r3,#QXK_NEXT] ; QXK_attr_.next := 0
+    ; don't clear QXK_attr_.next, as it might be needed for AO activation
 
   IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
     MOV     r0,sp             ; r0 := top of stack
@@ -307,12 +311,17 @@ PendSV_restore_ao
   ENDIF                       ; M3/M4/M7
 
     MOV     r0,r12            ; r0 := QXK_attr_.next
-    LDR     r0,[r0,#QMACTIVE_PRIO] ; r0 := QXK_attr_.next->prio
-    LDR     r1,[r3,#QXK_TOP_PRIO]  ; r1 := QXK_attr_.topPrio
+    MOVS    r1,#QMACTIVE_PRIO ; r1 := offset of .next into QActive
+    LDRB    r0,[r0,r1]        ; r0 := QXK_attr_.next->prio
+    LDRB    r1,[r3,#QXK_ACT_PRIO]  ; r1 := QXK_attr_.actPrio
     CMP     r1,r0
     BCC     PendSV_activate   ; if (next->prio > topPrio) activate the next AO
 
-    ; otherwise re-enable interrupts and return from PendSV
+    ; otherwise no activation needed...
+    MOVS    r0,#0
+    STR     r0,[r3,#QXK_NEXT] ; QXK_attr_.next := 0 (clear the next)
+
+    ; re-enable interrupts and return from PendSV
 PendSV_return
   IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
     CPSIE   i                 ; enable interrupts (clear PRIMASK)
@@ -592,6 +601,50 @@ QXK_stackInit_fill
 
     BX      lr                ; return to the caller
     ENDFUNC
+
+
+  IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
+;*****************************************************************************
+; Hand-optimized quick LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M)
+; This function returns (log2(x) + 1). For the corner case of x==0, the
+; function returns 0 immediately.
+; C prototype:
+; uint_fast8_t QF_qlog2(uint32_t x);
+;*****************************************************************************
+QF_qlog2  FUNCTION
+    CMP     r0,#0
+    BEQ.N   QF_qlog2_4
+    MOVS    r1,#0
+    LSRS    r2,r0,#16
+    BEQ.N   QF_qlog2_1
+    MOVS    r1,#16
+    MOVS    r0,r2
+
+QF_qlog2_1
+    LSRS    r2,r0,#8
+    BEQ.N   QF_qlog2_2
+    ADDS    r1,r1,#8
+    MOVS    r0,r2
+
+QF_qlog2_2
+    LSRS    r2,r0,#4
+    BEQ.N   QF_qlog2_3
+    ADDS    r1,r1,#4
+    MOVS    r0,r2
+
+QF_qlog2_3
+    LDR     r2,=QF_qlog2_LUT
+    LDRB    r0,[r2,r0]
+    ADDS    r0,r1,r0
+
+QF_qlog2_4
+    BX      lr                ; return to the caller
+
+QF_qlog2_LUT
+    DCB     0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4
+    ENDFUNC
+
+  ENDIF                       ; M0/M0+/M1
 
     ALIGN                     ; make sure the END is properly aligned
 

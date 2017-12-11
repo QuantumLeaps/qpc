@@ -1,17 +1,13 @@
-/**
-* @file
-* @brief QEP/C port, generic C99 compiler
-* @ingroup ports
-* @cond
-******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+/****************************************************************************
+* Product: Dummy heap management to reduce the codesize, GNU toolset
+* Last Updated for Version: 6.0.2
+* Date of the Last Update:  2017-12-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,17 +28,15 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
-******************************************************************************
-* @endcond
-*/
-#ifndef qep_port_h
-#define qep_port_h
+* https://state-machine.com
+* mailto:info@state-machine.com
+****************************************************************************/
 
-#include <stdint.h>  /* Exact-width types. WG14/N843 C99 Standard */
-#include <stdbool.h> /* Boolean type.      WG14/N843 C99 Standard */
+void assert_failed(char const *module, int loc); /* prototype */
+char *_sbrk(int incr); /* prototype */
 
-#include "qep.h"     /* QEP platform-independent public interface */
-
-#endif /* qep_port_h */
+char *_sbrk(int incr) {
+    (void)incr; /* avoid compiler warning about unused parameter */
+    assert_failed("_sbrk", 0);
+    return (char *)0;
+}

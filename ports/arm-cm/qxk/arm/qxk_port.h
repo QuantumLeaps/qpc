@@ -3,8 +3,8 @@
 * @brief QXK/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-03-17
+* Last Updated for Version: 6.0.2
+* Date of the Last Update:  2017-12-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,28 +48,17 @@ static __inline uint32_t QXK_get_IPSR(void) {
     return __regIPSR;
 }
 
-#if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+/* trigger the PendSV exception to pefrom the context switch */
+#define QXK_CONTEXT_SWITCH_() \
+    (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28))
 
-    #define QXK_CONTEXT_SWITCH_() \
-        (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28))
-
-#else /* Cortex-M3/M4/M7 */
-
-    #define QXK_CONTEXT_SWITCH_() do { \
-        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
-        __asm("dsb"); \
-        __asm("isb"); \
-    } while (0)
-
-#endif
-
-/* QXK interrupt entry and exit */
+/* QXK ISR entry and exit */
 #define QXK_ISR_ENTRY() ((void)0)
 
 #define QXK_ISR_EXIT()  do { \
     QF_INT_DISABLE(); \
     if (QXK_sched_() != (uint_fast8_t)0) { \
-        QXK_CONTEXT_SWITCH_(); \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
     } \
     QF_INT_ENABLE(); \
 } while (0)

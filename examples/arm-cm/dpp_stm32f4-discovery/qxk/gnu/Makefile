@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: DPP on STM32F4-Discovery, QXK, GNU-ARM gnutoolchains.com/arm-eabi
-# Last Updated for Version: 5.9.1
-# Date of the Last Update:  2017-06-01
+# Last Updated for Version: 6.0.2
+# Date of the Last Update:  2017-11-30
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -158,10 +158,10 @@ FLOAT_ABI := -mfloat-abi=softfp
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
-# see http://gnutoolchains.com/arm-eabi/
+# see https://developer.arm.com/open-source/gnu-toolchain/gnu-rm
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM := $(QTOOLS)/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gcc-arm-none-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -169,11 +169,11 @@ ifeq ("$(wildcard $(GNU_ARM))","")
 $(error GNU_ARM toolset not found. Please adjust the Makefile)
 endif
 
-CC    := $(GNU_ARM)/bin/arm-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-eabi-g++
-AS    := $(GNU_ARM)/bin/arm-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
-BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
+CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
+CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
+AS    := $(GNU_ARM)/bin/arm-none-eabi-as
+LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
+BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
 ##############################################################################
 # Typically, you should not need to change anything below this line
@@ -250,7 +250,7 @@ endif # ......................................................................
 
 
 LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib \
+	-mthumb -nostdlib -specs=nano.specs \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
 

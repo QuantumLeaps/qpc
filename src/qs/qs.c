@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.0
-* Last updated on  2017-05-16
+* Last updated for version 6.0.2
+* Last updated on  2017-12-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -96,7 +96,7 @@ void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
     QS_priv_.used     = (QSCtr)0;
     QS_priv_.seq      = (uint8_t)0;
     QS_priv_.chksum   = (uint8_t)0;
-    QS_priv_.critNest = (uint_fast8_t)0;
+    QS_priv_.critNest = (uint8_t)0;
 
     /* produce an empty record to "flush" the QS trace buffer */
     QS_beginRec((uint_fast8_t)QS_EMPTY);

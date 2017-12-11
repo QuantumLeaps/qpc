@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.1
-* Last updated on  2017-10-17
+* Last updated for version 6.0.2
+* Last updated on  2017-12-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -181,8 +181,8 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
     */
     QXK_stackInit_(me, Q_XTHREAD_CAST(me->super.temp.act), stkSto, stkSize);
 
-    me->prio = prio;
-    me->startPrio = prio;
+    me->prio      = (uint8_t)prio;
+    me->startPrio = (uint8_t)prio;
 
     /* the new thread is not blocked on any object */
     me->super.temp.obj = (QMState const *)0;
@@ -191,7 +191,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 
     QF_CRIT_ENTRY_();
     /* extended-thread becomes ready immediately */
-    QPSet_insert(&QXK_attr_.readySet, me->prio);
+    QPSet_insert(&QXK_attr_.readySet, (uint_fast8_t)me->prio);
 
     /* see if this thread needs to be scheduled in case QXK is running */
     (void)QXK_sched_();
@@ -306,7 +306,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
                 /* is this thread blocked on the queue? */
                 if (me->super.temp.obj == (QMState const *)&me->eQueue) {
                     (void)QXThread_teDisarm_((QXThread *)me);
-                    QPSet_insert(&QXK_attr_.readySet, me->prio);
+                    QPSet_insert(&QXK_attr_.readySet, (uint_fast8_t)me->prio);
                     if (!QXK_ISR_CONTEXT_()) {
                         (void)QXK_sched_();
                     }
@@ -420,7 +420,7 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
         thr->super.super.temp.obj = (QMState const *)&thr->super.eQueue;
 
         QXThread_teArm_(thr, (QSignal)QXK_QUEUE_SIG, nTicks);
-        QPSet_remove(&QXK_attr_.readySet, thr->super.prio);
+        QPSet_remove(&QXK_attr_.readySet, (uint_fast8_t)thr->super.prio);
         (void)QXK_sched_();
         QF_CRIT_EXIT_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here */
@@ -493,7 +493,7 @@ void QXThread_block_(QXThread const * const me) {
     /** @pre the thread holding the lock cannot block! */
     Q_REQUIRE_ID(600, (QXK_attr_.lockHolder != me->super.prio));
 
-    QPSet_remove(&QXK_attr_.readySet, me->super.prio);
+    QPSet_remove(&QXK_attr_.readySet, (uint_fast8_t)me->super.prio);
     (void)QXK_sched_();
 }
 
@@ -506,7 +506,7 @@ void QXThread_block_(QXThread const * const me) {
 * must be called from within a critical section
 */
 void QXThread_unblock_(QXThread const * const me) {
-    QPSet_insert(&QXK_attr_.readySet, me->super.prio);
+    QPSet_insert(&QXK_attr_.readySet, (uint_fast8_t)me->super.prio);
     if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
         && (QF_active_[0] != (QActive *)0))  /* kernel started? */
     {
@@ -650,11 +650,26 @@ bool QXThread_delayCancel(QXThread * const me) {
 * cleanup after the thread.
 */
 void QXK_threadRet_(void) {
+    QXThread *thr;
     uint_fast8_t p;
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    p = QXK_attr_.curr->prio;
+    thr = (QXThread *)QXK_attr_.curr;
+
+    /** @pre this function must:
+    * - NOT be called from an ISR;
+    * - be called from an extended thread;
+    * - the thread must NOT be holding a scheduler lock and;
+    * - the thread must NOT be already blocked on any object.
+    */
+    Q_REQUIRE_ID(900, (!QXK_ISR_CONTEXT_()) /* can't be in the ISR context */
+        && (thr != (QXThread *)0) /* current thread must be extended */
+        && (QXK_attr_.lockHolder != thr->super.prio) /* not holding a lock */
+        && (thr->super.super.temp.obj == (QMState *)0)); /* not blocked */
+
+    p = (uint_fast8_t)thr->super.startPrio;
+
     /* remove this thread from the QF */
     QF_active_[p] = (QActive *)0;
     QPSet_remove(&QXK_attr_.readySet, p);

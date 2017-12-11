@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.0
-* Last updated on  2017-03-13
+* Last updated for version 6.0.2
+* Last updated on  2017-12-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -221,7 +221,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     (void)stkSize; /* unused parameter */
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
-    me->prio = prio;   /* set the current priority of the AO */
+    me->prio = (uint8_t)prio; /* set the current priority of the AO */
     QF_add_(me); /* make QF aware of this active object */
 
     QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
@@ -244,7 +244,8 @@ void QActive_stop(QActive * const me) {
 
     QF_remove_(me); /* remove this active object from the QF */
 
+     /* make sure the removed AO is NOT ready */
     QF_CRIT_ENTRY_();
-    QPSet_remove(&QV_readySet_, me->prio); /* make sure it is not ready */
+    QPSet_remove(&QV_readySet_, (uint_fast8_t)me->prio);
     QF_CRIT_EXIT_();
 }

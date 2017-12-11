@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.9
-* Last updated on  2017-09-27
+* Last updated for version 6.0.2
+* Last updated on  2017-12-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -138,8 +138,8 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
         /* remember the blocking object */
         curr->super.super.temp.obj = (QMState const *)me;
         QXThread_teArm_(curr, (QSignal)QXK_SEMA_SIG, nTicks);
-        QPSet_insert(&me->waitSet,        curr->super.prio);
-        QPSet_remove(&QXK_attr_.readySet, curr->super.prio);
+        QPSet_insert(&me->waitSet,        (uint_fast8_t)curr->super.prio);
+        QPSet_remove(&QXK_attr_.readySet, (uint_fast8_t)curr->super.prio);
         (void)QXK_sched_(); /* schedule the next thread */
         QF_CRIT_EXIT_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here */

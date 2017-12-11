@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for Blinky on EK-TM4C123GXL, QV kernel, GNU-ARM
+# Product: Makefile for QP/C, DPP on NUCLEO-L053R8, QXK kernel, LLVM-ARM
 # Last Updated for Version: 6.0.2
-# Date of the Last Update:  2017-11-30
+# Date of the Last Update:  2017-12-02
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -51,7 +51,7 @@
 #-----------------------------------------------------------------------------
 # project name
 #
-PROJECT     := blinky-qv
+PROJECT     := dpp-qxk
 
 #-----------------------------------------------------------------------------
 # project directories
@@ -63,18 +63,18 @@ QPC := ../../../../..
 endif
 
 # QP port used in this project
-QP_PORT_DIR := $(QPC)/ports/arm-cm/qv/gnu
+QP_PORT_DIR := $(QPC)/ports/arm-cm/qxk/llvm
 
 # list of all source directories used by this project
 VPATH = \
 	.. \
 	../.. \
 	$(QPC)/src/qf \
-	$(QPC)/src/qv \
+	$(QPC)/src/qxk \
 	$(QPC)/src/qs \
 	$(QP_PORT_DIR) \
-	$(QPC)/3rd_party/ek-tm4c123gxl \
-	$(QPC)/3rd_party/ek-tm4c123gxl/gnu
+	$(QPC)/3rd_party/nucleo-l053r8 \
+	$(QPC)/3rd_party/nucleo-l053r8/llvm
 
 # list of all include directories needed by this project
 INCLUDES  = \
@@ -83,7 +83,7 @@ INCLUDES  = \
 	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPC)/3rd_party/CMSIS/Include \
-	-I$(QPC)/3rd_party/ek-tm4c123gxl
+	-I$(QPC)/3rd_party/nucleo-l053r8
 
 #-----------------------------------------------------------------------------
 # files
@@ -94,14 +94,16 @@ ASM_SRCS :=
 
 # C source files
 C_SRCS := \
-	blinky.c \
 	bsp.c \
 	main.c \
-	system_TM4C123GH6PM.c \
-	startup_TM4C123GH6PM.c
+	philo.c \
+	table.c \
+	test.c \
+	system_stm32l0xx.c \
+	startup_stm32l053xx.c
 
 # C++ source files
-CPP_SRCS :=	
+CPP_SRCS :=
 
 OUTPUT    := $(PROJECT)
 LD_SCRIPT := $(PROJECT).ld
@@ -119,10 +121,13 @@ QP_SRCS := \
 	qf_qeq.c \
 	qf_qmact.c \
 	qf_time.c \
-	qv.c \
-	qv_port.c
+	qxk.c \
+	qxk_xthr.c \
+	qxk_sema.c \
+	qxk_mutex.c
 
-QP_ASMS :=
+QP_ASMS := \
+	qxk_port.s
 
 QS_SRCS := \
 	qs.c \
@@ -133,37 +138,37 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DTARGET_IS_TM4C123_RB1
+DEFINES   :=
 
-# ARM CPU, ARCH, FPU, and Float-ABI types...
+# ARM CPU, TARGET, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
 # ARM_ARCH:  [6 | 7] (NOTE: must match ARM_CPU!)
 # ARM_FPU:   [ | vfp]
 # FLOAT_ABI: [ | soft | softfp | hard]
 #
-ARM_CPU   := -mcpu=cortex-m4
-ARM_ARCH  := 7   # NOTE: must match the ARM_CPU!
-ARM_FPU   := -mfpu=vfp
-FLOAT_ABI := -mfloat-abi=softfp
+ARM_CPU    := -mcpu=cortex-m0plus
+ARM_TARGET := -target armv6m-none-eabi
+ARM_ARCH   := 6   # NOTE: must match the ARM_CPU!
+ARM_FPU    :=
+FLOAT_ABI  := -mfloat-abi=soft
 
 #-----------------------------------------------------------------------------
-# GNU-ARM toolset (NOTE: You need to adjust to your machine)
-# see https://developer.arm.com/open-source/gnu-toolchain/gnu-rm
+# LLVM-ARM toolset (NOTE: You need to adjust to your machine)
 #
-ifeq ($(GNU_ARM),)
-GNU_ARM := $(QTOOLS)/gcc-arm-none-eabi
+ifeq ($(LLVM_ARM),)
+LLVM_ARM := C:/tools/Snapdragon-llvm-3.9.9-windows64
 endif
 
-# make sure that the GNU-ARM toolset exists...
-ifeq ("$(wildcard $(GNU_ARM))","")
-$(error GNU_ARM toolset not found. Please adjust the Makefile)
+# make sure that the LLVM-ARM toolset exists...
+ifeq ("$(wildcard $(LLVM_ARM))","")
+$(error LLVM_ARM toolset not found. Please adjust the Makefile)
 endif
 
-CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
-AS    := $(GNU_ARM)/bin/arm-none-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
-BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
+CC    := $(LLVM_ARM)/bin/clang
+CPP   := $(LLVM_ARM)/bin/clang++
+AS    := $(LLVM_ARM)/bin/llvm-mc
+LINK  := $(LLVM_ARM)/bin/clang
+BIN   := $(LLVM_ARM)/bin/arm-eabi-objcopy
 
 ##############################################################################
 # Typically, you should not need to change anything below this line
@@ -202,9 +207,10 @@ CFLAGS = $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
 	-O1 $(INCLUDES) $(DEFINES) -DNDEBUG
 
-CPPFLAGS = $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O1 $(INCLUDES) $(DEFINES) -DNDEBUG
+CFLAGS = $(ARM_CPU) $(ARM_TARGET) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+	-fuse-baremetal-sysroot -fshort-enums -fno-common \
+	-ffunction-sections -fdata-sections \
+	-O2 $(INCLUDES) $(DEFINES)
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
@@ -214,11 +220,13 @@ C_SRCS += $(QS_SRCS)
 
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
-CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+CFLAGS = -g $(ARM_CPU) $(ARM_TARGET) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+	-fuse-baremetal-sysroot -fshort-enums -fno-common \
 	-ffunction-sections -fdata-sections \
 	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
-CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+CPPFLAGS = -g $(ARM_CPU) $(ARM_TARGET) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+	-std=c++11 -fuse-baremetal-sysroot -fshort-enums -fno-common \
 	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
 	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
@@ -228,19 +236,21 @@ BIN_DIR := dbg
 
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
-CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+CFLAGS = -g $(ARM_CPU) $(ARM_TARGET) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+	-fuse-baremetal-sysroot -fshort-enums -fno-common \
 	-ffunction-sections -fdata-sections \
 	-O $(INCLUDES) $(DEFINES)
 
-CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+CPPFLAGS = -g $(ARM_CPU) $(ARM_TARGET) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+	-std=c++11 -fuse-baremetal-sysroot -fshort-enums -fno-common \
 	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
 	-O $(INCLUDES) $(DEFINES)
 
 endif # ......................................................................
 
-
-LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib -specs=nano.specs \
+LINKFLAGS = $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
+	-static -fuse-ld=qcld -fuse-baremetal-sysroot -fno-use-baremetal-crt \
+	-Wl,-T,$(LD_SCRIPT) \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
 

@@ -5,8 +5,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.7
-* Last updated on  2017-08-18
+* Last updated for version 6.0.2
+* Last updated on  2017-11-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -59,14 +59,14 @@
 /****************************************************************************/
 /*! attributes of the QK kernel */
 typedef struct {
-    uint_fast8_t actPrio;    /*!< prio of the active AO */
-    uint_fast8_t nextPrio;   /*!< prio of the next AO to execute */
-    uint_fast8_t lockPrio;   /*!< lock prio (0 == no-lock) */
-    uint_fast8_t lockHolder; /*!< prio of the AO holding the lock */
+    uint8_t volatile actPrio;    /*!< prio of the active AO */
+    uint8_t volatile nextPrio;   /*!< prio of the next AO to execute */
+    uint8_t volatile lockPrio;   /*!< lock prio (0 == no-lock) */
+    uint8_t volatile lockHolder; /*!< prio of the AO holding the lock */
 #ifndef QK_ISR_CONTEXT_
-    uint_fast8_t volatile intNest;    /*!< ISR nesting level */
+    uint8_t volatile intNest;    /*!< ISR nesting level */
 #endif /* QK_ISR_CONTEXT_ */
-    QPSet readySet; /*!< QK ready-set of AOs */
+    QPSet readySet;              /*!< QK ready-set of AOs */
 } QK_Attr;
 
 /*! global attributes of the QK kernel */
@@ -121,7 +121,7 @@ void QK_schedUnlock(QSchedStatus stat);
         /*! @returns true if the code executes in the ISR context and false
         * otherwise
         */
-        #define QK_ISR_CONTEXT_() (QK_attr_.intNest != (uint_fast8_t)0)
+        #define QK_ISR_CONTEXT_() (QK_attr_.intNest != (uint8_t)0)
     #endif /* QK_ISR_CONTEXT_ */
 
     /* QK-specific scheduler locking */
@@ -151,7 +151,7 @@ void QK_schedUnlock(QSchedStatus stat);
         (Q_ASSERT_ID(110, (me_)->eQueue.frontEvt != (QEvt *)0))
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
-        QPSet_insert(&QK_attr_.readySet, (me_)->prio); \
+        QPSet_insert(&QK_attr_.readySet, (uint_fast8_t)(me_)->prio); \
         if (!QK_ISR_CONTEXT_()) { \
             if (QK_sched_() != (uint_fast8_t)0) { \
                 QK_activate_(); \

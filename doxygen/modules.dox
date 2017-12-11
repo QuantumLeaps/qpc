@@ -69,7 +69,9 @@ Sometimes it is not practical to break up long RTC steps, and consequently the t
 @brief
 Preemptive Dual-Mode (Run-to-Completion/Blocking) RTOS Kernel
 
-QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that executes active objects like the @ref qk "QK kernel", but can also execute traditional __blocking__ threads (extended threads). In this respect, QXK behaves exactly as a conventional __RTOS__ (Real-Time Operating System). QXK has been designed specifically for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
+QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that executes active objects like the @ref qk "QK kernel" (@ref qxk_basic "basic threads"), but can also execute traditional __blocking__ threads (@ref qxk_extended "extended threads"). In this respect, QXK behaves exactly like a __conventional RTOS__ (Real-Time Operating System).
+
+QXK has been designed specifically for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software. To this end, QXK is not only more efficient than running QP on top of a @ref ports_rtos "traditional 3rd-party RTOS" (because non-blocking @ref qxk_basic "basic threads" take far less stack space and CPU cycles for context switch than the much heavier @ref qxk_extended "extended threads"). But the biggest advantage of QXK is that it __protects__ the application-level code from inadvertent mixing of blocking calls inside the event-driven active objects. Specifically, QXK "knows" the type of the thread context (extended/basic) and asserts internally if a blocking call (e.g., semaphore-wait or a time-delay) is attempted in a basic thread (active object). This is something that a QP port to a @ref ports_rtos "conventional 3rd-party RTOS" cannot do, because such an RTOS runs all code (including active objects) in the context of havyweight extended threads.
 
 Currently, the QXK kernel has been ported to the following CPUs:
 
@@ -92,12 +94,17 @@ Example illustrates: 6 active objects plus two extended threads, QXK blocking de
 @section qxk_basic Basic Threads
 QXK supports **basic**-threads (non-blocking, run-to-completion activations). The basic-threads all nest on the same stack (Main Stack Pointer in ARM Cortex-M), so the stack usage is reduced. The additional advantage of basic-threads is that switching from basic-thread to another basic-thread requires only @ref QXK_activate_() "activation" of the basic-thread, which is much simpler and faster than full context-switch required for @ref qxk_extended "extended"-threads that QXK also supports (see below).
 
-@sa ::QActive
+@remarks
+QXK adopts the "basic/exteded thread" terms from the <a class="extern" target="_blank"  href="https://www.autosar.org">OSEK/AUTOSAR Operating System</a> specification. Other real-time kernels might use different terminology for similar concepts. For example, the <a class="extern" target="_blank" href="http://www.quasarsoft.com/">Q-Kernel</a> uses the term "fibers", while <a class="extern" target="_blank"  href="http://www.ti.com/tool/TI-RTOS">TI-RTOS</a> uses the term "software interrupts" for concepts closely related to "basic threads".
 
 
 ------------------------------------------------------------------------------
 @section qxk_extended Extended Threads
-QXK supports **extended**-threads (blocking, typically structrued as endless loops). The extended-threads use private per-thread stacks, as in conventional RTOS kernels. Any switching from basic- to extended-thread or extended- to extended-thread requires full context switch.
+QXK supports **extended**-threads (blocking, typically structrued as endless loops). The extended-threads use private per-thread stacks, as in conventional RTOS kernels. Any switching from basic-to-extended thread or extended-to-extended thread requires full context switch.
+
+@remarks
+QXK is a unique dual-mode kernel on the market that supports interleaving the priorities of basic threads and extended threads. Other dual-mode kernels typically limit the priorities of basic threads to be always higher (more urgent) than any of the extended threads.
+
 
 @sa ::QXThread
 

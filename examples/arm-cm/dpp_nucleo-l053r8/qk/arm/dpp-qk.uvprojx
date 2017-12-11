@@ -10,7 +10,7 @@
       <TargetName>dpp-dbg</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
+      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -519,11 +519,6 @@
               <FileName>qk.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
-            </File>
-            <File>
-              <FileName>qk_pkg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1166,11 +1161,6 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
             </File>
-            <File>
-              <FileName>qk_pkg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1811,11 +1801,6 @@
               <FileName>qk.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qk\qk.c</FilePath>
-            </File>
-            <File>
-              <FileName>qk_pkg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\src\qk_pkg.h</FilePath>
             </File>
           </Files>
         </Group>

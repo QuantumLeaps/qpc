@@ -492,16 +492,6 @@ void QS_onCommand(uint8_t cmdId,
     }
 }
 
-/*??? */
-void bug_test(void) {
-    uint32_t i;
-    for(i = 0; i < 10; i++) {
-        QS_BEGIN(123, 0);
-        QS_U32(8, 0);
-        QS_END();
-    }
-}
-
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 

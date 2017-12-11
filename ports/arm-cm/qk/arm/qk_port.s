@@ -1,7 +1,7 @@
 ;*****************************************************************************
 ; Product: QK port to ARM Cortex-M (M0,M0+,M3,M4,M7), ARM-KEIL assembler
-; Last Updated for Version: 5.9.6
-; Date of the Last Update:  2017-07-28
+; Last Updated for Version: 6.0.2
+; Date of the Last Update:  2017-12-07
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -35,6 +35,10 @@
     EXPORT  QK_init
     EXPORT  PendSV_Handler    ; CMSIS-compliant PendSV exception name
     EXPORT  NMI_Handler       ; CMSIS-compliant NMI exception name
+
+  IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
+    EXPORT  QF_qlog2          ; Hand-optimized quick LOG2 in assembly
+  ENDIF                       ; Cortex-M0/M0+/M1
 
     IMPORT  QK_activate_      ; external reference
     IMPORT  QK_attr_          ; QK attribute structure
@@ -258,6 +262,48 @@ NMI_Handler FUNCTION
   ENDIF                       ; VFP available  ENDIF
   ENDIF                       ; M3/M4/M7
     ENDFUNC
+
+
+  IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
+;*****************************************************************************
+; Hand-optimized quick LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M)
+; This function returns (log2(x) + 1)
+; C prototype: uint_fast8_t QF_qlog2(uint32_t x);
+;*****************************************************************************
+QF_qlog2  FUNCTION
+    CMP     r0,#0
+    BEQ.N   QF_qlog2_4
+    MOVS    r1,#0
+    LSRS    r2,r0,#16
+    BEQ.N   QF_qlog2_1
+    MOVS    r1,#16
+    MOVS    r0,r2
+
+QF_qlog2_1
+    LSRS    r2,r0,#8
+    BEQ.N   QF_qlog2_2
+    ADDS    r1,r1,#8
+    MOVS    r0,r2
+
+QF_qlog2_2
+    LSRS    r2,r0,#4
+    BEQ.N   QF_qlog2_3
+    ADDS    r1,r1,#4
+    MOVS    r0,r2
+
+QF_qlog2_3
+    LDR     r2,=QF_qlog2_LUT
+    LDRB    r0,[r2,r0]
+    ADDS    r0,r1,r0
+
+QF_qlog2_4
+    BX      lr                ; return to the caller
+
+QF_qlog2_LUT
+    DCB     0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4
+    ENDFUNC
+
+  ENDIF                       ; M0/M0+/M1
 
     ALIGN                     ; make sure the END is properly aligned
 

@@ -4,8 +4,8 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.7
-* Last updated on  2017-08-16
+* Last updated for version 6.0.2
+* Last updated on  2017-12-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -1075,7 +1075,7 @@ typedef struct {
     uint8_t  seq;         /*!< the record sequence number */
     uint8_t  chksum;      /*!< the checksum of the current record */
 
-    uint_fast8_t critNest; /*!< critical section nesting level */
+    uint8_t  critNest;    /*!< critical section nesting level */
 } QSPriv;
 
 extern QSPriv QS_priv_;

@@ -1079,7 +1079,7 @@ static void QS_rxReportAck_(enum QSpyRxRecords recId) {
 /****************************************************************************/
 static void QS_rxReportError_(uint8_t code) {
     QS_beginRec((uint_fast8_t)QS_RX_STATUS);
-        QS_U8_((uint8_t)(0x80U | code)); /* error code */
+        QS_U8_((uint8_t)((uint8_t)0x80 | code)); /* error code */
     QS_endRec();
     QS_REC_DONE();
 }
@@ -1114,7 +1114,7 @@ static void QS_rxPoke_(void) {
 
     l_rx.var.poke.data = (uint32_t)0;
     l_rx.var.poke.idx  = (uint8_t)0;
-    l_rx.var.poke.offs += l_rx.var.poke.size;
+    l_rx.var.poke.offs += (uint16_t)l_rx.var.poke.size;
 }
 
 /*==========================================================================*/
@@ -1142,7 +1142,7 @@ uint32_t QS_getTestProbe_(void (* const api)(void)) {
             --l_testData.tpNum;
             /* move all remaining entries in the buffer up by one */
             for (; i < l_testData.tpNum; ++i) {
-                l_testData.tpBuf[i] = l_testData.tpBuf[i + 1];
+                l_testData.tpBuf[i] = l_testData.tpBuf[i + (uint8_t)1];
             }
             /* i == l_testData.tpNum, which terminates the for loop */
             QS_beginRec((uint_fast8_t)QS_TEST_PROBE_GET);

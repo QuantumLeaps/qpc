@@ -1,11 +1,10 @@
 /**
 * @file
-* @brief QS/C port to a 32-bit CPU and a generic C compiler.
-* @ingroup qs
+* @brief QXK/C port to ARM Cortex-M, LLVM-ARM compiler
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last Updated for Version: 6.0.02
+* Date of the Last Update:  2017-12-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -37,26 +36,38 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qs_port_h
-#define qs_port_h
+#ifndef qxk_port_h
+#define qxk_port_h
 
-/* QS time-stamp size in bytes */
-#define QS_TIME_SIZE     4
+/* determination if the code executes in the ISR context */
+#define QXK_ISR_CONTEXT_() (QXK_get_IPSR() != (uint32_t)0)
 
-/* object pointer size in bytes */
-#define QS_OBJ_PTR_SIZE  4
+__attribute__((always_inline))
+static inline uint32_t QXK_get_IPSR(void) {
+    uint32_t regIPSR;
+    __asm volatile ("mrs %0,ipsr" : "=r" (regIPSR));
+    return regIPSR;
+}
 
-/* function pointer size in bytes */
-#define QS_FUN_PTR_SIZE  4
+/* trigger the PendSV exception to pefrom the context switch */
+#define QXK_CONTEXT_SWITCH_() \
+    (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28))
 
-/*****************************************************************************
-* NOTE: QS might be used with or without other QP components, in which
-* case the separate definitions of the macros QF_CRIT_STAT_TYPE,
-* QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this port QS is configured
-* to be used with the other QP component, by simply including "qf_port.h"
-* *before* "qs.h".
-*/
-#include "qf_port.h" /* use QS with QF */
-#include "qs.h"      /* QS platform-independent public interface */
+/* QXK ISR entry and exit */
+#define QXK_ISR_ENTRY() ((void)0)
 
-#endif /* qs_port_h */
+#define QXK_ISR_EXIT()  do { \
+    QF_INT_DISABLE(); \
+    if (QXK_sched_() != (uint_fast8_t)0) { \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
+    } \
+    QF_INT_ENABLE(); \
+} while (0)
+
+/* initialization of the QXK kernel */
+#define QXK_INIT() QXK_init()
+void QXK_init(void);
+
+#include "qxk.h" /* QXK platform-independent public interface */
+
+#endif /* qxk_port_h */

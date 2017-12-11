@@ -38,7 +38,40 @@
 */
 #include "qf_port.h"
 
-#if (__CORE__ != __ARM6M__)  /* NOT Cortex-M0/M0+/M1 ? */
+#if (__CORE__ == __ARM6M__)  /* Cortex-M0/M0+/M1 ? */
+
+/* hand-optimized quick LOG2 in assembly */
+uint_fast8_t QF_qlog2(uint32_t x) {
+    static uint8_t const log2LUT[16] = {
+        (uint8_t)0, (uint8_t)1, (uint8_t)2, (uint8_t)2,
+        (uint8_t)3, (uint8_t)3, (uint8_t)3, (uint8_t)3,
+        (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4,
+        (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4
+    };
+    uint_fast8_t n;
+    __asm (
+        "MOVS    %[n],#0\n"
+        "LSRS    r2,r0,#16\n"
+        "BEQ.N   QF_qlog2_1\n"
+        "MOVS    %[n],#16\n"
+        "MOVS    r0,r2\n"
+    "QF_qlog2_1:\n"
+        "LSRS    r2,r0,#8\n"
+        "BEQ.N   QF_qlog2_2\n"
+        "ADDS    %[n],%[n],#8\n"
+        "MOVS    r0,r2\n"
+    "QF_qlog2_2:\n"
+        "LSRS    r2,r0,#4\n"
+        "BEQ.N   QF_qlog2_3\n"
+        "ADDS    %[n],%[n],#4\n"
+        "MOVS    r0,r2\n"
+    "QF_qlog2_3:"
+        : [n]"=r"(n)
+    );
+    return n + log2LUT[x];
+}
+
+#else /* NOT Cortex-M0/M0+/M1 ? */
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)

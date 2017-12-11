@@ -5,8 +5,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.7
-* Last updated on  2017-08-18
+* Last updated for version 6.0.2
+* Last updated on  2017-12-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -81,15 +81,15 @@ struct QActive; /* forward declaration */
 /****************************************************************************/
 /*! attributes of the QXK kernel */
 typedef struct {
-    struct QActive *curr;    /*!< pointer to the current thread (0==basic) */
-    struct QActive *next;    /*!< pointer to the next thread to execute */
-    uint_fast8_t actPrio;    /*!< prio of the active AO */
-    uint_fast8_t lockPrio;   /*!< lock prio (0 == no-lock) */
-    uint_fast8_t lockHolder; /*!< prio of the lock holder */
+    struct QActive * volatile curr; /*!< current thread pointer (NULL=basic) */
+    struct QActive * volatile next; /*!< next thread pointer to execute */
+    uint8_t volatile actPrio;       /*!< prio of the active AO */
+    uint8_t volatile lockPrio;      /*!< lock prio (0 == no-lock) */
+    uint8_t volatile lockHolder;    /*!< prio of the lock holder */
 #ifndef QXK_ISR_CONTEXT_
-    uint_fast8_t intNest;    /*!< ISR nesting level */
+    uint8_t volatile intNest;       /*!< ISR nesting level */
 #endif /* QXK_ISR_CONTEXT_ */
-    QPSet readySet;          /*!< ready-set of basuc- and extended-threads */
+    QPSet readySet;  /*!< ready-set of basic and extended threads */
 } QXK_Attr;
 
 /*! global attributes of the QXK kernel */
@@ -177,7 +177,7 @@ void QXK_schedUnlock(QSchedStatus stat);
         (Q_ASSERT_ID(110, (me_)->eQueue.frontEvt != (QEvt *)0))
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
-        QPSet_insert(&QXK_attr_.readySet, (me_)->prio); \
+        QPSet_insert(&QXK_attr_.readySet, (uint_fast8_t)(me_)->prio); \
         if (!QXK_ISR_CONTEXT_()) { \
             if (QXK_sched_() != (uint_fast8_t)0) { \
                 QXK_activate_(); \

@@ -3,8 +3,8 @@
 * @brief QF/C port to Cortex-M, preemptive QK kernel, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-05-04
+* Last Updated for Version: 6.0.2
+* Date of the Last Update:  2017-12-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -52,28 +52,16 @@
     #define QF_INT_DISABLE()    __disable_irq()
     #define QF_INT_ENABLE()     __enable_irq()
 
-    /* QF critical section entry/exit (save and restore interrupt status) */
-    #define QF_CRIT_STAT_TYPE   unsigned
-    #define QF_CRIT_ENTRY(primask_) do { \
-        (primask_) = QF_get_PRIMASK(); \
-        QF_INT_DISABLE(); \
-    } while (0)
-    #define QF_CRIT_EXIT(primask_) QF_set_PRIMASK((primask_))
+    /* QF critical section entry/exit (unconditional interrupt disabling) */
+    /*#define QF_CRIT_STAT_TYPE not defined */
+    #define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
+    #define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
 
     /* CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE5 */
     #define QF_AWARE_ISR_CMSIS_PRI 0
 
-    /* inline function for getting the PRIMASK register */
-    static __inline unsigned QF_get_PRIMASK(void) {
-        register unsigned __regPriMask __asm("primask");
-        return __regPriMask;
-    }
-
-    /* inline function for setting the PRIMASK register */
-    static __inline void QF_set_PRIMASK(unsigned primask) {
-        register unsigned __regPriMask __asm("primask");
-        __regPriMask = primask;
-    }
+    /* hand-optimized LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M) */
+    #define QF_LOG2(n_) QF_qlog2((n_))
 
 #else /* Cortex-M3/M4/M7 */
 
@@ -89,13 +77,10 @@
     } while (0)
     #define QF_INT_ENABLE()      QF_set_BASEPRI(0U)
 
-    /* QF critical section entry/exit (save and restore interrupt status) */
-    #define QF_CRIT_STAT_TYPE   unsigned
-    #define QF_CRIT_ENTRY(basepri_) do {\
-        (basepri_) = QF_get_BASEPRI(); \
-        QF_INT_DISABLE(); \
-    } while (0)
-    #define QF_CRIT_EXIT(basepri_) QF_set_BASEPRI((basepri_))
+    /* QF critical section entry/exit (unconditional interrupt disabling) */
+    /*#define QF_CRIT_STAT_TYPE not defined */
+    #define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
+    #define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
 
     /* BASEPRI threshold for "QF-aware" interrupts, see NOTE3.
     * CAUTION: keep in synch with the value defined in "qk_port.s"
@@ -125,6 +110,12 @@
 #define QF_CRIT_EXIT_NOP()      __asm("isb")
 
 #include "qep_port.h" /* QEP port */
+
+#if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+    /* hand-optimized quick LOG2 in assembly */
+    uint_fast8_t QF_qlog2(uint32_t x);
+#endif /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
+
 #include "qk_port.h"  /* QK preemptive kernel port */
 #include "qf.h"       /* QF platform-independent public interface */
 

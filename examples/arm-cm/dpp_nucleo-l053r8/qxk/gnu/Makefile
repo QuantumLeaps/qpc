@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, DPP on NUCLEO-L053R8, QXK kernel, GNU-ARM
-# Last Updated for Version: 6.0.0
-# Date of the Last Update:  2017-10-09
+# Last Updated for Version: 6.0.2
+# Date of the Last Update:  2017-11-30
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -127,7 +127,7 @@ QP_SRCS := \
 	qxk_mutex.c
 
 QP_ASMS := \
-    qxk_port.s
+	qxk_port.s
 
 QS_SRCS := \
 	qs.c \
@@ -153,10 +153,10 @@ FLOAT_ABI :=
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
-# see http://gnutoolchains.com/arm-eabi/
+# see https://developer.arm.com/open-source/gnu-toolchain/gnu-rm
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM := $(QTOOLS)/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gcc-arm-none-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -164,11 +164,11 @@ ifeq ("$(wildcard $(GNU_ARM))","")
 $(error GNU_ARM toolset not found. Please adjust the Makefile)
 endif
 
-CC    := $(GNU_ARM)/bin/arm-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-eabi-g++
-AS    := $(GNU_ARM)/bin/arm-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
-BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
+CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
+CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
+AS    := $(GNU_ARM)/bin/arm-none-eabi-as
+LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
+BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
 ##############################################################################
 # Typically, you should not need to change anything below this line
@@ -205,11 +205,11 @@ ASFLAGS = $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
-	-O2 $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O1 $(INCLUDES) $(DEFINES) -DNDEBUG
 
 CPPFLAGS = $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O2 $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O1 $(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
@@ -221,11 +221,11 @@ ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
-	-O2 $(INCLUDES) $(DEFINES) -DQ_SPY
+	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
-CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall  \
+CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O2 $(INCLUDES) $(DEFINES) -DQ_SPY
+	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
 else # default Debug configuration ..........................................
 
@@ -235,17 +235,17 @@ ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
-	-O2 $(INCLUDES) $(DEFINES)
+	-O $(INCLUDES) $(DEFINES)
 
 CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O2 $(INCLUDES) $(DEFINES)
+	-O $(INCLUDES) $(DEFINES)
 
 endif # ......................................................................
 
 
 LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib \
+	-mthumb -nostdlib -specs=nano.specs \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
 

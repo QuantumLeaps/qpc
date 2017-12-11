@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-26
+* Last updated for version 6.0.2
+* Last updated on  2017-12-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -162,14 +162,6 @@ typedef struct {
 /* Log-base-2 calculations ...*/
 #ifndef QF_LOG2
 
-    /*! Lookup table for (log2(n) + 1), where n = 0..255 */
-    /**
-    * @description
-    * This lookup delivers the 1-based number of the most significant 1-bit
-    * of a byte.
-    */
-    extern uint8_t const QF_log2Lkup[256];
-
 #if (__STDC_VERSION__ >= 199901L) /* is it C99 compiler? */
 
     /*! function that returns (log2(x_) + 1), where @p x_ is uint32_t */
@@ -180,30 +172,30 @@ typedef struct {
     * CPU supports special instructions, such as CLZ (count leading zeros).
     */
     inline uint_fast8_t QF_LOG2(uint32_t x) {
-        uint_fast8_t n;
-        uint_fast8_t i;
+        static uint8_t const log2LUT[16] = {
+            (uint8_t)0, (uint8_t)1, (uint8_t)2, (uint8_t)2,
+            (uint8_t)3, (uint8_t)3, (uint8_t)3, (uint8_t)3,
+            (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4,
+            (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4
+        };
+        uint_fast8_t n = (uint_fast8_t)0;
+        uint32_t     t = (x >> 16);
 
-        if ((x >> 16) != (uint32_t)0) {
-            if ((x >> 24) != (uint32_t)0) {
-                i = (uint_fast8_t)(x >> 24);
-                n = (uint_fast8_t)24;
-            }
-            else {
-                i = (uint_fast8_t)(x >> 16);
-                n = (uint_fast8_t)16;
-            }
+        if (t != (uint32_t)0) {
+            n += 16;
+            x = t;
         }
-        else {
-            if ((x >> 8) != (uint32_t)0) {
-                i = (uint_fast8_t)(x >> 8);
-                n = (uint_fast8_t)8;
-            }
-            else {
-                i = (uint_fast8_t)(x);
-                n = (uint_fast8_t)0;
-            }
+        t = (x >> 8);
+        if (t != (uint32_t)0) {
+            n += 8;
+            x = t;
         }
-        return (uint_fast8_t)QF_log2Lkup[i] + n;
+        t = (x >> 4);
+        if (t != (uint32_t)0) {
+            n += 4;
+            x = t;
+        }
+        return n + (uint_fast8_t)log2LUT[x];
     }
 
 #else /* older C compiler */

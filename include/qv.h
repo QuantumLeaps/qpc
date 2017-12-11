@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.1
-* Last updated on  2016-12-14
+* Last updated for version 6.0.2
+* Last updated on  2017-12-08
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -94,7 +94,7 @@ void QV_onIdle(void);
         Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0)
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-        QPSet_insert(&QV_readySet_, (me_)->prio)
+        QPSet_insert(&QV_readySet_, (uint_fast8_t)(me_)->prio)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool

@@ -1,8 +1,46 @@
 /**
 @page history Revision History
 
+@section qpc_6_0_2 Version 6.0.2, 2017-12-10
+
+Changes since version 6.0.1:
+
+- fixed [bug#193 "QXK: context switch from extended to basic thread fails"](https://sourceforge.net/p/qpc/bugs/193/)
+
+- replaced attributes of ::QActive and ::QEQueue classes from type `uint_fastX_t` to `uintX_t`. For the ARM Cortex-M port, these changes reduce the memory footprint of each ::QActive instance from 50 to 38 bytes (25% improvement).
+
+- improved the performance of the ARM Cortex-M0/M0+ ports, which do not supprt the CLZ (count leading zeros) instruction. All QP ports to Cortex-M0/M0+ (qv, qk and qxk) now contain hand-optimized assembly implementation of the LOG2 (log-base-2) function. The implementation executes only in 14 machine instructions and uses only 16-byte look-up-table (LUT). This replaces LOG2 implementation based on a 256-byte LUT.
+
+- changed the interrupt disabling policy in ARM Cortex-M ports back to "unconditional interrupt disabling", which is simpler and faster than "saving-and-restoring interrupt status".
+
+- added a port to ARM Cortex-M with the LLVM compiler (currently only for the dual-mode QXK kernel). Unlike the other ARM Cortex-M ports, the port to LLVM uses the "saving-and-restoring interrupt status" interrupt disabling policy (explicit request from a commercial customer).
+
+- removed ARM Cortex-M port and examples for the TI-ARM compiler. (Projects for the TI CCS can use the GNU-ARM toolchain and the existing GNU-ARM ports).
+
+- Added the DPP-COMP example (Dining Philosophers Problem) with the "Orthogonal Component" state pattern located in `qpc/examples/win32/dpp-comp`. This example demonstrates also a partitioned QM model into external packages for the Container (Table active object) and the Components (Philo active objects).
+
+- changed the GNU-ARM toolchain in all Makefiles for ARM Cortex-M projects to [GNU-ARM toolchain provided by ARM Ltd.](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm)
+
+@remark
+This change matches [QTools version 6.0.2](https://www.state-machine.com/qtools/history.html#qtools_6_0_2) for Windows, which now includes the [GNU-ARM toolchain provided by ARM Ltd.](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm) The change of the GNU-ARM toolchain impacts the existing Makefiles distributed in QP/C examples for GNU-ARM. Specifically, all Makefiles have been adjusted as follows:
+@code
+GNU_ARM := $(QTOOLS)/gcc-arm-none-eabi
+
+CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
+CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
+AS    := $(GNU_ARM)/bin/arm-none-eabi-as
+LINK  := $(GNU_ARM)/bin/arm-none-eabi-g++
+BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
+@endcode
+
+
+@note
+This release does not change any of the QP/C APIs.
+
+
+------------------------------------------------------------------------------
 @section qpc_6_0_1 Version 6.0.1, 2017-11-10
-The main focus of this release is to fix the remaining problems with transitions out of eXit-Points in sub-machines. Specifically, this release modifies the QMsm-based state machine implementation strategy (file src/qf/qep_msm.c to properly handle transitions from eXit-Points to Entry-Points and to History connectors in sub-machines. These changes are part of fixing the following bugs reported for QM:
+The main focus of this release is to fix the remaining problems with transitions out of eXit-Points in sub-machines. Specifically, this release modifies the QMsm-based state machine implementation strategy (file src/qf/qep_msm.c to properly handle transitions from eXit-Points to Entry-Points and from eXit-Points to History connectors in sub-machines. These changes are part of fixing the following bugs reported for QM:
 
 - [bug#190 "Exit-Point segment targeting History doesn't work](https://sourceforge.net/p/qpc/bugs/190/)
 
@@ -15,10 +53,10 @@ The bug#191 is fixed by modifying the function QMsm_childStateObj_() in qep_msm.
 
 
 @note
-This QP/C 6.0.1 release is the minium version required in the upcoming QM 4.1.0. This is because QM 4.1.0 assumes the modified QMsm-state machine implementation strategy in order to properly handle the various transitions out of eXit-Points in sub-machine states.
+This QP/C 6.0.1 release is the minium version required in QM 4.1.0. This is because QM 4.1.0 assumes the modified QMsm-state machine implementation strategy in order to properly handle the various transitions out of eXit-Points in sub-machine states.
 
 
-Additionally, this release changes the QXK implementation still related to the [bug#186 "QXK: Extended thread context switch causes assertion in PendSV_Handler"](https://sourceforge.net/p/qpc/bugs/186/). Specifically, the case of context switching away and back to the same thread (which can arise under specific interrupt preemption scenarios) is now handled as a simple return from PendSV. The QXK scheduler has been modified to set the "next" thread pointer to NULL when it detects switching back to the "current" thread.
+Additionally, this release changes the QXK implementation related to the [bug#186 "QXK: Extended thread context switch causes assertion in PendSV_Handler"](https://sourceforge.net/p/qpc/bugs/186/). Specifically, the case of context switching away and back to the same thread (which can arise under specific interrupt preemption scenarios) is now handled as a simple return from PendSV. The QXK scheduler has been modified to set the "next" thread pointer to NULL when it detects switching back to the "current" thread.
 
 
 ------------------------------------------------------------------------------

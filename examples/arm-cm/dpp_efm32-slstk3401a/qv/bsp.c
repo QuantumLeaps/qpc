@@ -415,7 +415,7 @@ uint8_t QS_onStartup(void const *arg) {
 
     /* setup the QS filters... */
     QS_FILTER_ON(QS_SM_RECORDS);
-    QS_FILTER_ON(QS_AO_RECORDS);
+    //QS_FILTER_ON(QS_AO_RECORDS);
     QS_FILTER_ON(QS_UA_RECORDS);
 
     QS_FILTER_ON(PHILO_STAT);

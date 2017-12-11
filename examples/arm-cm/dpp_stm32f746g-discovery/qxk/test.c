@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.9.7
-* Date of the Last Update:  2017-08-18
+* Last Updated for Version: 6.0.2
+* Date of the Last Update:  2017-11-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -55,16 +55,16 @@ static void Thread1_run(QXThread * const me) {
         float volatile x;
 
         /* wait on a semaphore (BLOCK with timeout) */
-        (void)QXSemaphore_wait(&l_sema, BSP_TICKS_PER_SEC, 0U);
+        (void)QXSemaphore_wait(&l_sema, BSP_TICKS_PER_SEC);
         //BSP_ledOn();
 
-        QXMutex_lock(&l_mutex, QXTHREAD_NO_TIMEOUT, 0U); /* lock the mutex */
+        QXMutex_lock(&l_mutex, QXTHREAD_NO_TIMEOUT); /* lock the mutex */
         /* some flating point code to exercise the VFP... */
         x = 1.4142135F;
         x = x * 1.4142135F;
         QXMutex_unlock(&l_mutex);
 
-        QXThread_delay(BSP_TICKS_PER_SEC/7, 0U);  /* BLOCK */
+        QXThread_delay(BSP_TICKS_PER_SEC/7);  /* BLOCK */
 
         /* publish to thread2 */
         QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), &l_test1);
@@ -100,14 +100,14 @@ static void Thread2_run(QXThread * const me) {
         x = x * 1.4142135F;
 
         /* wait on the internal event queue (BLOCK) with timeout */
-        e = QXThread_queueGet(BSP_TICKS_PER_SEC/2, 0U);
+        e = QXThread_queueGet(BSP_TICKS_PER_SEC/2);
         //BSP_ledOff();
 
         if (e != (QEvt *)0) { /* event actually delivered? */
             QF_gc(e); /* recycle the event manually! */
         }
         else {
-            QXThread_delay(BSP_TICKS_PER_SEC/2, 0U);  /* wait more (BLOCK) */
+            QXThread_delay(BSP_TICKS_PER_SEC/2);  /* wait more (BLOCK) */
             QXSemaphore_signal(&l_sema); /* signal Thread1 */
         }
     }

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, STM32746G-Discovery board, preemptive QK kernel
-* Last Updated for Version: 5.9.7
-* Date of the Last Update:  2017-08-18
+* Last Updated for Version: 6.0.2
+* Date of the Last Update:  2017-11-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -278,7 +278,7 @@ uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     QK_schedUnlock(lockStat); /* unlock the scheduler */
 
     return (rnd >> 8);
-
+}
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
     l_rnd = seed;

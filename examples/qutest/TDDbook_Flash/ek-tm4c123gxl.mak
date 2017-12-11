@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EK-TM4C123GXL, QUTEST, GNU-ARM
-# Last updated for version 5.9.6
-# Last updated on  2017-08-02
+# Last Updated for Version: 6.0.2
+# Date of the Last Update:  2017-11-30
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -110,7 +110,7 @@ C_SRCS := \
 # C++ source files
 CPP_SRCS :=
 
-OUTPUT	:= $(PROJECT)
+OUTPUT    := $(PROJECT)
 LD_SCRIPT := ../$(TARGET)/test.ld
 
 QP_SRCS := \
@@ -138,7 +138,7 @@ QS_SRCS := \
 	qs_fp.c
 
 LIB_DIRS  :=
-LIBS	  :=
+LIBS      :=
 
 # defines
 DEFINES   := -DTARGET_IS_TM4C123_RB1
@@ -156,10 +156,10 @@ FLOAT_ABI := -mfloat-abi=softfp
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
-# see http://gnutoolchains.com/arm-eabi/
+# see https://developer.arm.com/open-source/gnu-toolchain/gnu-rm
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM := $(QTOOLS)/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gcc-arm-none-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -167,11 +167,11 @@ ifeq ("$(wildcard $(GNU_ARM))","")
 $(error GNU_ARM toolset not found. Please adjust the Makefile)
 endif
 
-CC	:= $(GNU_ARM)/bin/arm-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-eabi-g++
-AS	:= $(GNU_ARM)/bin/arm-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
-BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
+CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
+CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
+AS    := $(GNU_ARM)/bin/arm-none-eabi-as
+LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
+BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
 #-----------------------------------------------------------------------------
 # LMFLASH toolset (NOTE: You need to adjust to your machine)
@@ -191,10 +191,10 @@ endif
 # Typically you should not need to change anything below this line
 
 # basic utilities (included in Qtools for Windows), see:
-#	http://sourceforge.net/projects/qpc/files/Qtools
+#    http://sourceforge.net/projects/qpc/files/Qtools
 
 MKDIR  := mkdir
-RM	 := rm
+RM     := rm
 TCLSH  := tclsh
 QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
 
@@ -232,12 +232,12 @@ CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 
 
 LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib \
+	-mthumb -nostdlib -specs=nano.specs \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
-ASM_OBJS	 := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
-C_OBJS	   := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
-CPP_OBJS	 := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))
+ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
+C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
+CPP_OBJS     := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))
 
 TARGET_BIN   := $(BIN_DIR)/$(OUTPUT).bin
 TARGET_ELF   := $(BIN_DIR)/$(OUTPUT).elf
@@ -256,13 +256,17 @@ endif
 # rules
 #
 
-.PHONY : run norun
+.PHONY : run norun flash
 
 ifeq ($(MAKECMDGOALS),norun)
 all : $(TARGET_BIN)
 norun : all
 else
 all : $(TARGET_BIN) run
+endif
+
+ifeq (, $(TESTS))
+TESTS := *.tcl
 endif
 
 $(TARGET_BIN) : $(TARGET_ELF)
@@ -275,8 +279,11 @@ $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
+flash :
+	$(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
+
 run : $(TARGET_BIN)
-	$(TCLSH) $(QUTEST)
+	$(TCLSH) $(QUTEST) $(TESTS)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
@@ -308,17 +315,18 @@ clean :
 	$(BIN_DIR)/*.bin \
 	$(BIN_DIR)/*.elf \
 	$(BIN_DIR)/*.map
-
+	
 show :
-	@echo PROJECT    = $(PROJECT)
-	@echo TARGET_ELF = $(TARGET_ELF)
-	@echo CONF       = $(CONF)
-	@echo VPATH	      = $(VPATH)
-	@echo C_SRCS     = $(C_SRCS)
-	@echo CPP_SRCS   = $(CPP_SRCS)
-	@echo ASM_SRCS   = $(ASM_SRCS)
-	@echo C_DEPS_EXT = $(C_DEPS_EXT)
-	@echo C_OBJS_EXT = $(C_OBJS_EXT)
+	@echo PROJECT      = $(PROJECT)
+	@echo TESTS        = $(TESTS)
+	@echo TARGET_ELF   = $(TARGET_ELF)
+	@echo CONF         = $(CONF)
+	@echo VPATH        = $(VPATH)
+	@echo C_SRCS       = $(C_SRCS)
+	@echo CPP_SRCS     = $(CPP_SRCS)
+	@echo ASM_SRCS     = $(ASM_SRCS)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
+	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
 
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
 	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
