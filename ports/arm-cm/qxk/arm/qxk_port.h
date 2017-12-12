@@ -3,7 +3,7 @@
 * @brief QXK/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.2
+* Last Updated for Version: 6.0.3
 * Date of the Last Update:  2017-12-09
 *
 *                    Q u a n t u m     L e a P s

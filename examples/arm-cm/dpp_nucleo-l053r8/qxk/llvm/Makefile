@@ -1,6 +1,6 @@
 ##############################################################################
 # Product: Makefile for QP/C, DPP on NUCLEO-L053R8, QXK kernel, LLVM-ARM
-# Last Updated for Version: 6.0.2
+# Last Updated for Version: 6.0.3
 # Date of the Last Update:  2017-12-02
 #
 #                    Q u a n t u m     L e a P s

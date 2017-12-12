@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EMF32-SLSTK3401A, QUTEST, GNU-ARM
-# Last Updated for Version: 6.0.2
-# Date of the Last Update:  2017-11-30
+# Last updated for version 5.9.6
+# Last updated on  2017-08-02
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -98,17 +98,17 @@ ASM_SRCS :=
 
 # C source files
 C_SRCS := \
-	test_Flash.c \
-	Flash.c \
-	FakeMicroTime.c \
-	MockIO.c \
-	qutest_port.c \
-	startup_efm32pg1b.c \
-	system_efm32pg1b.c \
-	em_cmu.c \
-	em_emu.c \
-	em_gpio.c \
-	em_usart.c
+    test_Flash.c \
+    Flash.c \
+    FakeMicroTime.c \
+    MockIO.c \
+    qutest_port.c \
+    startup_efm32pg1b.c \
+    system_efm32pg1b.c \
+    em_cmu.c \
+    em_emu.c \
+    em_gpio.c \
+    em_usart.c
 
 # C++ source files
 CPP_SRCS :=
@@ -117,28 +117,28 @@ OUTPUT    := $(PROJECT)
 LD_SCRIPT := ../$(TARGET)/test.ld
 
 QP_SRCS := \
-	qep_hsm.c \
-	qep_msm.c \
-	qf_act.c \
-	qf_defer.c \
-	qf_dyn.c \
-	qf_mem.c \
-	qf_ps.c \
-	qf_qact.c \
-	qf_qeq.c \
-	qf_qmact.c \
-	qs.c \
-	qs_64bit.c \
-	qs_rx.c \
-	qs_fp.c \
-	qutest.c
+    qep_hsm.c \
+    qep_msm.c \
+    qf_act.c \
+    qf_defer.c \
+    qf_dyn.c \
+    qf_mem.c \
+    qf_ps.c \
+    qf_qact.c \
+    qf_qeq.c \
+    qf_qmact.c \
+    qs.c \
+    qs_64bit.c \
+    qs_rx.c \
+    qs_fp.c \
+    qutest.c
 
 QP_ASMS :=
 
 QS_SRCS := \
-	qs.c \
-	qs_rx.c \
-	qs_fp.c
+    qs.c \
+    qs_rx.c \
+    qs_fp.c
 
 LIB_DIRS  :=
 LIBS      :=
@@ -159,10 +159,10 @@ FLOAT_ABI := -mfloat-abi=softfp
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
-# see https://developer.arm.com/open-source/gnu-toolchain/gnu-rm
+# see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM := $(QTOOLS)/gcc-arm-none-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -170,14 +170,14 @@ ifeq ("$(wildcard $(GNU_ARM))","")
 $(error GNU_ARM toolset not found. Please adjust the Makefile)
 endif
 
-CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
-AS    := $(GNU_ARM)/bin/arm-none-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
-BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
+CC    := $(GNU_ARM)/bin/arm-eabi-gcc
+CPP   := $(GNU_ARM)/bin/arm-eabi-g++
+AS    := $(GNU_ARM)/bin/arm-eabi-as
+LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
+BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 
 #-----------------------------------------------------------------------------
-# JLINK tool (NOTE: You need to adjust to your machine)
+# JLINK toolset (NOTE: You need to adjust to your machine)
 # see https://www.segger.com/downloads/jlink
 #
 ifeq ($(JLINK),)
@@ -226,17 +226,17 @@ C_SRCS += $(QS_SRCS)
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-	-ffunction-sections -fdata-sections \
-	-O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
+    -ffunction-sections -fdata-sections \
+    -O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
 
 CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
+    -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
+    -O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
 
 
 LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib -specs=nano.specs \
-	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
+    -mthumb -nostdlib \
+    -Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
 ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
 C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
@@ -259,17 +259,13 @@ endif
 # rules
 #
 
-.PHONY : run norun flash
+.PHONY : run norun
 
 ifeq ($(MAKECMDGOALS),norun)
 all : $(TARGET_BIN)
 norun : all
 else
 all : $(TARGET_BIN) run
-endif
-
-ifeq (, $(TESTS))
-TESTS := *.tcl
 endif
 
 $(TARGET_BIN): $(TARGET_ELF)
@@ -280,11 +276,8 @@ $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
-flash :
-	$(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
-
 run : $(TARGET_BIN)
-	$(TCLSH) $(QUTEST) $(TESTS)
+	$(TCLSH) $(QUTEST)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
@@ -316,10 +309,9 @@ clean :
 	$(BIN_DIR)/*.bin \
 	$(BIN_DIR)/*.elf \
 	$(BIN_DIR)/*.map
-	
+
 show :
 	@echo PROJECT      = $(PROJECT)
-	@echo TESTS        = $(TESTS)
 	@echo TARGET_ELF   = $(TARGET_ELF)
 	@echo CONF         = $(CONF)
 	@echo VPATH        = $(VPATH)

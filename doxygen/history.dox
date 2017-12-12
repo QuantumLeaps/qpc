@@ -1,7 +1,7 @@
 /**
 @page history Revision History
 
-@section qpc_6_0_2 Version 6.0.2, 2017-12-10
+@section qpc_6_0_3 Version 6.0.3, 2017-12-12
 
 Changes since version 6.0.1:
 
@@ -18,21 +18,6 @@ Changes since version 6.0.1:
 - removed ARM Cortex-M port and examples for the TI-ARM compiler. (Projects for the TI CCS can use the GNU-ARM toolchain and the existing GNU-ARM ports).
 
 - Added the DPP-COMP example (Dining Philosophers Problem) with the "Orthogonal Component" state pattern located in `qpc/examples/win32/dpp-comp`. This example demonstrates also a partitioned QM model into external packages for the Container (Table active object) and the Components (Philo active objects).
-
-- changed the GNU-ARM toolchain in all Makefiles for ARM Cortex-M projects to [GNU-ARM toolchain provided by ARM Ltd.](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm)
-
-@remark
-This change matches [QTools version 6.0.2](https://www.state-machine.com/qtools/history.html#qtools_6_0_2) for Windows, which now includes the [GNU-ARM toolchain provided by ARM Ltd.](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm) The change of the GNU-ARM toolchain impacts the existing Makefiles distributed in QP/C examples for GNU-ARM. Specifically, all Makefiles have been adjusted as follows:
-@code
-GNU_ARM := $(QTOOLS)/gcc-arm-none-eabi
-
-CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
-AS    := $(GNU_ARM)/bin/arm-none-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-none-eabi-g++
-BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
-@endcode
-
 
 @note
 This release does not change any of the QP/C APIs.

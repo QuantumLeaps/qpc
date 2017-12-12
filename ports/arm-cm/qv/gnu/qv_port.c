@@ -3,7 +3,7 @@
 * @brief QV/C port to ARM Cortex-M, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.2
+* Last Updated for Version: 6.0.3
 * Date of the Last Update:  2017-12-07
 *
 *                    Q u a n t u m     L e a P s

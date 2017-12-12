@@ -4,7 +4,7 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.2
+* Last updated for version 6.0.3
 * Last updated on  2017-11-08
 *
 *                    Q u a n t u m     L e a P s

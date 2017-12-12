@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.2
-* Last updated on  2017-12-10
+* Last updated for version 6.0.3
+* Last updated on  2017-12-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      602
+#define QP_VERSION      603
 
 /*! The current QP version number string of the form X.Y.Z, where X is
 * a 1-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.0.2"
+#define QP_VERSION_STR  "6.0.3"
 
-/*! Tamperproof current QP release (6.0.2) and date (2017-12-10) */
-#define QP_RELEASE      0x99F36B05U
+/*! Tamperproof current QP release (6.0.3) and date (2017-12-12) */
+#define QP_RELEASE      0x99F31CE4U
 
 
 /****************************************************************************/
