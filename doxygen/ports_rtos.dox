@@ -13,6 +13,7 @@ The QP/C framework can work with virtually any traditional real-time operating
 system (RTOS). The currently supported 3rd-party RTOS kernels are:
 
 - @subpage embos
+- @subpage freertos
 - @subpage threadx
 - @subpage ti-rtos
 - @subpage ucos-ii
@@ -41,6 +42,134 @@ Application Note: QP and embOS
 
 */
 /*##########################################################################*/
+/*! @page freertos FreeRTOS
+
+@tableofcontents
+
+@section freertos_about About the QP Port to FreeRTOS
+The <span class="img folder">ports/freertos/</span> directory contains a generic platform-independent QP/C port to <a href="https://freertos.org" target="_blank" class="extern">FreeRTOS kernel</a>. The provided QP port to FreeRTOS has been designed *generically* to rely exclusively on the existing FreeRTOS API. This means that the port should run without changes on any CPU/compiler platform supported by FreeRTOS.
+
+The QP-FreeRTOS port works as follows:
+
+- The QP port uses the [static memory allocation of FreeRTOS](https://freertos.org/Static_Vs_Dynamic_Memory_Allocation.html). This requires the FreeRTOS configuration to define the [configSUPPORT_STATIC_ALLOCATION](https://freertos.org/a00110.html#configSUPPORT_STATIC_ALLOCATION)
+
+- Each QP active object executes in a separate FreeRTOS task and requires a private stack space.
+
+- The task-level critical section used in QF and QS is based on the FreeRTOS APIs `taskENTER_CRITICAL()`/`taskEXIT_CRITICAL()`.
+
+- The ISR-level critical section used in QF and QS is based on the FreeRTOS APIs `taskENTER_CRITICAL_FROM_ISR()`/`taskEXIT_CRITICAL_FROM_ISR()`.
+
+- The QP port to FreeRTOS provides new "FromISR" APIs, which must be used in the ISRs (but cannot be used at the task-level)
+
+@attention
+The design of FreeRTOS requires the use of special "FromISR" API inside ISRs, which imposes the requirement to also provide the "FromISR" variants of the QP APIs, such as `QACTIVE_POST_FROM_ISR()`, `QF_PUBLISH_FROM_ISR()`, etc. These "FromISR" QP APIs must be used inside ISRs instead of the task-level APIs (`QACTIVE_POST()`, `QF_PUBLISH()`, etc.) and conversely, they cannot be used inside tasks and active objects. Unfortunately, FreeRTOS provides no generic way to enforce the proper API use via assertions.
+
+
+- The QP port uses the native event queue (::QEQueue) for active object event queues and internally calls the FreeRTOS API `xTaskNotifyGive()` to notify an active object when an event is posted to its event queue.
+
+- The QP port internally calls the FreeRTOS API `ulTaskNotifyTake(pdTRUE, portMAX_DELAY)` to block an active object task when it waits for posting an event.
+
+- The QP port uses the native QF memory pool (::QMPool) to implement event pools.
+
+- The QP port does not mandate any specific method to manage the QP time events, but the provided examples use the FreeRTOS "hook" `vApplicationTickHook()` to periodically invoke the QP clock tick QF_TICK_X_FROM_ISR(). (NOTE: the `vApplicationTickHook()` executes in the ISR context and therefore mandates the use of the "FromISR" APIs).
+
+
+------------------------------------------------------------------------------
+@section freertos_examples Example Code
+The QP port to FreeRTOS comes with examples located in the directory `qpc/examples/freertos/`. Currently, the examples are provided for the following boards and development toolchains:
+
+- EK-TM4C123GXL (ARM Cortex-M4F), ARM-KEIL, GNU-ARM, IAR-ARM
+- STM32F746G-Discovery (ARM Cortex-M7), ARM-KEIL, GNU-ARM, IAR-ARM
+
+
+<div class="separate"></div>
+@subsection freertos_isr Writing ISRs for QP/FreeRTOS
+The provided examples show how to write regular "kernel-aware" ISRs as well as "kernel-unaware" ISRs for QP/FreeRTOS. (See also the FreeRTOS documentation for [configMAX_SYSCALL_INTERRUPT_PRIORITY](https://www.freertos.org/a00110.html#kernel_priority).
+
+Here is an example of a regular "kernel-aware" ISR (note the use of the "FromISR" QP APIs"):
+
+@code{c}
+/* NOTE: only the "FromISR" API variants are allowed in the ISRs! */
+void GPIOPortA_IRQHandler(void) {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+    /* for testing... */
+    QACTIVE_POST_FROM_ISR(AO_Table,
+        Q_NEW_FROM_ISR(QEvt, MAX_PUB_SIG),
+        &xHigherPriorityTaskWoken,
+        &l_GPIOPortA_IRQHandler);
+
+    /* the usual end of FreeRTOS ISR... */
+    portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+}
+@endcode
+
+Here is an example of a "kernel-unaware" ISR  (See also the FreeRTOS documentation for [configMAX_SYSCALL_INTERRUPT_PRIORITY](https://www.freertos.org/a00110.html#kernel_priority):
+
+@code{c}
+/*
+* ISR for receiving bytes from the QSPY Back-End
+* NOTE: This ISR is "kernel-unaware" meaning that it does not interact with
+* the FreeRTOS or QP and is not disabled. Such ISRs don't need to call
+* portEND_SWITCHING_ISR(() at the end, but they also cannot call any
+* FreeRTOS or QP APIs.
+*/
+void UART0_IRQHandler(void) {
+    uint32_t status = UART0->RIS; /* get the raw interrupt status */
+    UART0->ICR = status;          /* clear the asserted interrupts */
+
+    while ((UART0->FR & UART_FR_RXFE) == 0) { /* while RX FIFO NOT empty */
+        uint32_t b = UART0->DR;
+        QS_RX_PUT(b);
+    }
+}
+@endcode
+
+<div class="separate"></div>
+@subsection freertos_hook Writing FreeRTOS Hooks Running in ISR Context
+FreeRTOS provides "hooks" that are user functions that execute in the ISR context (e.g., `vApplicationTickHook()`). Such ISR-level functions are closely related to ISRs and should also use exclusively only the "FromISR" APIs. Here is an example of the `vApplicationTickHook()`:
+
+@code{c}
+/* NOTE: only the "FromISR" API variants are allowed in vApplicationTickHook */
+void vApplicationTickHook(void) {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    . . .
+    /* process time events for rate 0 */
+    QF_TICK_X_FROM_ISR(0U, &xHigherPriorityTaskWoken, &l_TickHook);
+    . . .
+    /* notify FreeRTOS to perform context switch from ISR, if needed */
+    portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+}
+@endcode
+
+<div class="separate"></div>
+@subsection freertos_ao Starting Active Objects in QP/FreeRTOS
+As mentioned in the @ref freertos_about "FreeRTOS port summary", the QP port to FreeRTOS uses the [static memory allocation of FreeRTOS](https://freertos.org/Static_Vs_Dynamic_Memory_Allocation.html). This means that all memory for an active object, including the private queue buffer and the private **stack** for the the associated FreeRTOS task must be allocated by the user. Here is an example code that starts an active object:
+
+@code{c}
+int main() {
+    . . .
+    static QEvt const *tableQueueSto[N_PHILO];
+    static StackType_t tableStack[configMINIMAL_STACK_SIZE];
+    . . .
+    Table_ctor(); /* instantiate the Table active object */
+    . . .
+    QActive_setAttr(AO_Table, TASK_NAME_ATTR, "Table");
+    QACTIVE_START(AO_Table,          /* AO to start */
+        (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
+        tableQueueSto,               /* event queue storage */
+        Q_DIM(tableQueueSto),        /* queue length [events] */
+        tableStack,                  /* stack storage */
+        sizeof(tableStack),          /* stack size [bytes] */
+        (QEvt *)0);                  /* initialization event (not used) */
+    . . .
+    return QF_run(); /* run the QF application */
+}
+@endcode
+
+@next{threadx}
+*/
+/*##########################################################################*/
 /*! @page threadx ThreadX
 
 <p>The QP/C/C++ ports and examples for ThreadX are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://state-machine.com/doc/AN_RTOS-ThreadX.pdf"><strong>QP and ThreadX</strong></a>.
@@ -56,6 +185,7 @@ Application Note: QP and ThreadX
 @endhtmlonly
 
 */
+
 /*##########################################################################*/
 /*! @page ti-rtos TI-RTOS Kernel (SYS/BIOS)
 

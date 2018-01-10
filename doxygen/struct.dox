@@ -20,8 +20,6 @@ The following annotated directory tree lists the top-level directories provided 
     </li>
     <li><span class="img folder">src/</span> &mdash; Platform-independent QP/C source code (see @ref <a href="dir_68267d1309a1af8e8297ef4c3efbcdba.html"><strong>src</strong></a>)
     </li>
-    <li><span class="img folder">source/</span> &mdash; Platform-independent QP/C source code for backwards compatibility (will be phased out in the future).
-    </li>
   </ul>
 </ul>
 

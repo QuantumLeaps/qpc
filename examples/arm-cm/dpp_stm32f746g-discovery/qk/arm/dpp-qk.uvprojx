@@ -11,6 +11,7 @@
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
+      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F746NGHx</Device>
@@ -330,6 +331,7 @@
             <vShortWch>0</vShortWch>
             <v6Lto>0</v6Lto>
             <v6WtE>0</v6WtE>
+            <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>__FPU_PRESENT</Define>
@@ -347,6 +349,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>1</uSurpInc>
             <useXO>0</useXO>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>Stack_Size=1024 Heap_Size=16</Define>
@@ -588,9 +591,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qk_port.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\arm\qk_port.s</FilePath>
+              <FileName>qk_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\ports\arm-cm\qk\arm\qk_port.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -636,6 +639,7 @@
                 <vShortWch>0</vShortWch>
                 <v6Lto>0</v6Lto>
                 <v6WtE>0</v6WtE>
+                <v6Rtti>2</v6Rtti>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -653,6 +657,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
+                <uClangAs>2</uClangAs>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -692,6 +697,7 @@
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
+      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F746NGHx</Device>
@@ -1011,6 +1017,7 @@
             <vShortWch>0</vShortWch>
             <v6Lto>0</v6Lto>
             <v6WtE>0</v6WtE>
+            <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>NDEBUG __FPU_PRESENT</Define>
@@ -1028,6 +1035,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>1</uSurpInc>
             <useXO>0</useXO>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>Stack_Size=1024 Heap_Size=16</Define>
@@ -1269,9 +1277,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qk_port.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\arm\qk_port.s</FilePath>
+              <FileName>qk_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\ports\arm-cm\qk\arm\qk_port.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1317,6 +1325,7 @@
                 <vShortWch>0</vShortWch>
                 <v6Lto>0</v6Lto>
                 <v6WtE>0</v6WtE>
+                <v6Rtti>2</v6Rtti>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -1334,6 +1343,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
+                <uClangAs>2</uClangAs>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -1372,7 +1382,8 @@
       <TargetName>dbg-spy</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
+      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
+      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F746NGHx</Device>
@@ -1692,6 +1703,7 @@
             <vShortWch>0</vShortWch>
             <v6Lto>0</v6Lto>
             <v6WtE>0</v6WtE>
+            <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>Q_SPY __FPU_PRESENT</Define>
@@ -1709,6 +1721,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>1</uSurpInc>
             <useXO>0</useXO>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>Stack_Size=1024 Heap_Size=16</Define>
@@ -1950,9 +1963,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qk_port.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\arm\qk_port.s</FilePath>
+              <FileName>qk_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\ports\arm-cm\qk\arm\qk_port.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1998,6 +2011,7 @@
                 <vShortWch>0</vShortWch>
                 <v6Lto>0</v6Lto>
                 <v6WtE>0</v6WtE>
+                <v6Rtti>2</v6Rtti>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -2015,6 +2029,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
+                <uClangAs>2</uClangAs>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -2050,5 +2065,11 @@
       </Groups>
     </Target>
   </Targets>
+
+  <RTE>
+    <apis/>
+    <components/>
+    <files/>
+  </RTE>
 
 </Project>

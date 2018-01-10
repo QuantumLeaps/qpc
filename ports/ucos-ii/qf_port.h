@@ -3,8 +3,8 @@
 * @brief QF/C generic port to uC/OS-II V2.92
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.2
-* Date of the Last Update:  2017-02-02
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -57,10 +57,6 @@
 #include "qequeue.h"  /* native QF event queue for deferring events */
 #include "qf.h"       /* QF platform-independent public interface */
 
-/* set uC/OS task attributes (e.g., OS_TASK_OPT_SAVE_FP | OS_TASK_OPT_STK_CHK)
-* for OSTaskCreateExt() **before** calling QACTIVE_START().
-*/
-void QF_setUCosTaskAttr(QActive *act, uint32_t attr);
 
 /*****************************************************************************
 * interface used only inside QF, but not in applications

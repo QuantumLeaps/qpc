@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-04-13
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2005-2017 Quantum Leaps, LLC. All Rigts Reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published

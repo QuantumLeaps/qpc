@@ -4,12 +4,13 @@
 The main purpose of integrating QP/C with conventional RTOSes is to enable you to incorporate various communication stacks (TCP/IP, USB, CAN, etc.) as well as other middleware, which requires the ability to **block** the task code.
 
 - @subpage exa_embos (directory <span class="img folder">examples/embos/</span>)
+- @subpage exa_freertos (directory <span class="img folder">examples/freertos/</span>)
 - @subpage exa_threadx (directory <span class="img folder">examples/threadx/</span>)
 - @subpage exa_ti-rtos (directory <span class="img folder">examples/ti-rtos/</span>)
 - @subpage exa_ucos-ii (directory <span class="img folder">examples/ucos-ii/</span>)
 
 @note
-You do **not** need to use a traditional RTOS just to achieve preemptive multitasking with QP. The @ref comp_qk "preemptive QK kernel", available as part of the QP package, supports preemptive priority-based multitasking and is fully compatible with Rate Monotonic Scheduling to achieve guaranteed, hard real-time performance. The preemptive, run-to-completion QK kernel perfectly matches the run-to-completion execution semantics of active objects, yet it is simpler, faster, and more efficient than any traditional blocking kernel.
+You do **not** need to use a third-party RTOS just to achieve preemptive multitasking with QP/C. The framework contains a selection of built-in real-time kernels, such as the cooperative @ref qv "QV kernel", the preemptive non-blocking @ref qk "QK kernel", and the preemptive, dual-mode, blocking @ref qxk "QXK kernel". Specifically, the QXK kernel has been designed specifically for mixing event-driven active objects with traditional **blocking code**, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
 
 @next{exa_embos examples}
 */
@@ -24,12 +25,12 @@ You do **not** need to use a traditional RTOS just to achieve preemptive multita
 The QP/C examples for SEGGER embOS are as follows:
 
 - ARM Cortex-M
-    - @subpage embos_dpp_stm32f429-discovery (Cortex-M4F) <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery">STM32F4-Discovery</a>
+    - @subpage embos_dpp_stm32f429-discovery (Cortex-M4F) <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery">STM32F4-Discovery</a><br>(IAR EWARM toolset)
 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
-@next{exa_threadx examples}
+@next{embos_dpp_stm32f429-discovery}
 */
 /*##########################################################################*/
 /*! @page embos_dpp_stm32f429-discovery DPP on STM32F4-Discovery
@@ -68,6 +69,74 @@ qspy -cCOM1
 @endverbatim
 
 The actual COM port number might be different on your Windows machine. Please check the Device Manager to find the COM port number.
+
+@next{exa_freertos examples}
+*/
+
+/*##########################################################################*/
+/*! @page exa_freertos FreeRTOS
+@htmlonly
+<script src="preview.js" type="text/javascript"></script>
+@endhtmlonly
+
+The QP/C examples for FreeRTOS are as follows:
+
+- ARM Cortex-M
+    - @subpage freertos_dpp_ek-tm4c123gxl (Cortex-M4F) <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a><br>(ARM-KEIL, GNU-ARM and IAR EWARM toolchains)
+    - @subpage freertos_dpp_stm32f746g-disco (Cortex-M7) <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a><br>(ARM-KEIL, GNU-ARM and IAR EWARM toolchains)
+
+@note
+You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
+
+@next{exa_os examples}
+*/
+/*##########################################################################*/
+/*! @page freertos_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
+
+@image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
+
+@ref dpp "DPP example" for @ref freertos "FreeRTOS" on Texas Instruments TivaC123GXL MCU (Cortex-M4F) with the following toolchains:
+- ARM-Keil
+- GNU-ARM
+- IAR-ARM
+
+Demonstrated features:
+- Multiple Active Objects
+- Regular "kernel-aware" ISR with "FromISR" APIs
+  + `QF_TICK_X_FROM_ISR()`
+  + `QF_PUBLISH_FROM_ISR()`
+  + `Q_NEW_FROM_ISR()`
+  + `QACTIVE_POST_FROM_ISR()`
+- Hi-priority "kernel-unaware" ISR
+- `vApplicationTickHook()`
+- QP/Spy output over the virtual COM port (Spy build configuration)
+- QP/Spy input over the virtual COM port (bi-directional Spy) (Spy build configuration)
+
+
+@next{freertos_dpp_stm32f746g-disco examples}
+*/
+/*##########################################################################*/
+/*! @page freertos_dpp_stm32f746g-disco DPP on STM32F746G-Discovery
+
+@image html bd_STM32F746G-Disco.jpg STM32F746G-Discovery
+
+@ref dpp "DPP example" for @ref freertos "FreeRTOS" on STM32F746G-Discovery MCU (Cortex-M7) with the following toolchains:
+- ARM-Keil
+- GNU-ARM
+- IAR-ARM
+
+Demonstrated features:
+- Multiple Active Objects
+- Regular "kernel-aware" ISR with "FromISR" APIs
+  + `QF_TICK_X_FROM_ISR()`
+  + `QF_PUBLISH_FROM_ISR()`
+  + `Q_NEW_FROM_ISR()`
+  + `QACTIVE_POST_FROM_ISR()`
+- Hi-priority "kernel-unaware" ISR
+- `vApplicationTickHook()`
+- QP/Spy output over the virtual COM port (Spy build configuration)
+- QP/Spy input over the virtual COM port (bi-directional Spy) (Spy build configuration)
+
 
 @next{exa_threadx examples}
 */
@@ -136,18 +205,6 @@ The actual COM port number might be different on your Windows machine. Please ch
 <script src="preview.js" type="text/javascript"></script>
 @endhtmlonly
 
-The QP/C examples for TI-RTOS are as follows:
-
-- ARM Cortex-M
-    - @subpage ti-rtos_dpp_ek-tm4c123gxl (Cortex-M4F) <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
-
-*/
-/*##########################################################################*/
-/*! @page exa_ti-rtos TI-RTOS
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
-
 The QP/C++ examples for TI-RTOS are as follows:
 
 - ARM Cortex-M
@@ -202,21 +259,23 @@ The `main.c` for TI-RTOS is actually identical as for the built-in QV/QK/QXK ker
 
            /* start the active objects... */
            for (n = 0U; n < N_PHILO; ++n) {
-               QACTIVE_START(AO_Philo[n],           /* AO to start */
-                             (uint_fast8_t)(n + 1), /* QP priority of the AO */
-                             philoQueueSto[n],      /* event queue storage */
-                             Q_DIM(philoQueueSto[n]), /* queue length [events] */
-[1]                          (void *)0,             /* stack storage (not used) */
-[2]                          0U,                    /* size of the stack [bytes] */
-                             (QEvt *)0);            /* initialization event */
+               QACTIVE_START(
+                   AO_Philo[n],           /* AO to start */
+                   (uint_fast8_t)(n + 1), /* QP priority of the AO */
+                   philoQueueSto[n],      /* event queue storage */
+                   Q_DIM(philoQueueSto[n]), /* queue length [events] */
+[1]                (void *)0,             /* stack storage (not used) */
+[2]                0U,                    /* size of the stack [bytes] */
+                   (QEvt *)0);            /* initialization event */
            }
-           QACTIVE_START(AO_Table,                  /* AO to start */
-                         (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
-                         tableQueueSto,             /* event queue storage */
-                         Q_DIM(tableQueueSto),      /* queue length [events] */
-[3]                      (void *)0,                 /* stack storage (not used) */
-[4]                      0U,                        /* size of the stack [bytes] */
-                         (QEvt *)0);                /* initialization event */
+           QACTIVE_START(
+               AO_Table,                  /* AO to start */
+               (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
+               tableQueueSto,             /* event queue storage */
+               Q_DIM(tableQueueSto),      /* queue length [events] */
+[3]            (void *)0,                 /* stack storage (not used) */
+[4]            0U,                        /* size of the stack [bytes] */
+               (QEvt *)0);                /* initialization event */
 
            return QF_run(); /* run the QF application */
        }
@@ -340,7 +399,7 @@ DPP example for Texas Instruments TivaC123GXL MCU (Cortex-M4F) and IAR EWARM too
 
 @image html under_construction.jpg
 
-@next{exa_os examples}
+@next{ucos-ii_dpp_nucleo-l152re examples}
 */
 /*##########################################################################*/
 /*! @page ucos-ii_dpp_nucleo-l152re DPP on NUCLEO-L152RE
@@ -353,3 +412,4 @@ DPP example for Texas Instruments STM32 L152RET6 MCU (Cortex-M3) and IAR EWARM t
 
 @next{exa_os examples}
 */
+

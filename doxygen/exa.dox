@@ -260,6 +260,7 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 ------------------------------------------------------------------------------
 @section exa_ref_rtos Examples for Third-Party RTOS
 - @ref exa_embos (SEGGER)
+- @ref exa_freertos (Amazon Web Services)
 - @ref exa_threadx (Express Logic)
 - @ref exa_ti-rtos (Texas Instruments)
 - @ref exa_ucos-ii (Micrium)

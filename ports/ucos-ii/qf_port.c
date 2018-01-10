@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.8
-* Date of the Last Update:  2017-09-20
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -68,8 +68,9 @@ void QF_stop(void) {
     QF_onCleanup();  /* cleanup callback */
 }
 /*..........................................................................*/
-void QF_setUCosTaskAttr(QActive *act, uint32_t attr) {
-    act->thread = attr;
+void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
+    (void)attr2; /* unused parameter */
+    me->thread = attr1;
 }
 
 /*..........................................................................*/

@@ -352,7 +352,7 @@
             <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=0</Define>
+              <Define>Stack_Size=1024 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -551,9 +551,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qxk_port.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qxk\arm\qxk_port.s</FilePath>
+              <FileName>qxk_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\ports\arm-cm\qxk\arm\qxk_port.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -998,7 +998,7 @@
             <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=0</Define>
+              <Define>Stack_Size=1024 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -1197,9 +1197,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qxk_port.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qxk\arm\qxk_port.s</FilePath>
+              <FileName>qxk_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\ports\arm-cm\qxk\arm\qxk_port.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1644,7 +1644,7 @@
             <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=0</Define>
+              <Define>Stack_Size=1024 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -1843,9 +1843,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qxk_port.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qxk\arm\qxk_port.s</FilePath>
+              <FileName>qxk_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\ports\arm-cm\qxk\arm\qxk_port.c</FilePath>
             </File>
           </Files>
         </Group>

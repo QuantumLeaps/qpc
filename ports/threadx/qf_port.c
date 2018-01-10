@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.8
-* Last updated on  2017-09-20
+* Last updated for version 6.0.4
+* Last updated on  2018-01-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -90,7 +90,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     /* allege that the ThreadX queue is created successfully */
     Q_ALLEGE_ID(210,
         tx_queue_create(&me->eQueue,
-            "Q",
+            (CHAR *)"AO",
             TX_1_ULONG,
             (VOID *)qSto,
             (ULONG)(qLen * sizeof(ULONG)))
@@ -99,7 +99,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = prio;  /* save the QF priority */
     QF_add_(me);      /* make QF aware of this active object */
     QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
-
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* convert QF priority to the ThreadX priority */
@@ -108,13 +107,13 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     Q_ALLEGE_ID(220,
         tx_thread_create(
             &me->thread, /* ThreadX thread control block */
-            "AO",        /* thread name */
+            (CHAR *)"AO",     /* thread name */
             &thread_function, /* thread function */
-            (ULONG)me,   /* thread argument */
-            stkSto,      /* stack start */
-            stkSize,     /* stack size in bytes */
-            tx_prio,     /* ThreadX priority */
-            tx_prio,     /* preemption threshold disabled (same as priority)*/
+            (ULONG)me, /* thread parameter */
+            stkSto,    /* stack start */
+            stkSize,   /* stack size in bytes */
+            tx_prio,   /* ThreadX priority */
+            tx_prio,   /* preemption threshold disabled (same as priority) */
             TX_NO_TIME_SLICE,
             TX_AUTO_START)
         == TX_SUCCESS);
@@ -204,9 +203,9 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 
     QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO,
                      QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_();             /* timestamp */
-        QS_SIG_(e->sig);        /* the signal of this event */
-        QS_OBJ_(me);            /* this active object */
+        QS_TIME_();           /* timestamp */
+        QS_SIG_(e->sig);      /* the signal of this event */
+        QS_OBJ_(me);          /* this active object */
         QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
         /* # free entries */
         QS_EQC_((QEQueueCtr)me->eQueue.tx_queue_available_storage);
@@ -234,9 +233,9 @@ QEvt const *QActive_get_(QActive * const me) {
         == TX_SUCCESS);
 
     QS_BEGIN_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_();             /* timestamp */
-        QS_SIG_(e->sig);        /* the signal of this event */
-        QS_OBJ_(me);            /* this active object */
+        QS_TIME_();           /* timestamp */
+        QS_SIG_(e->sig);      /* the signal of this event */
+        QS_OBJ_(me);          /* this active object */
         QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
         /* # free entries */
         QS_EQC_((QEQueueCtr)me->eQueue.tx_queue_available_storage);
@@ -247,24 +246,37 @@ QEvt const *QActive_get_(QActive * const me) {
 
 /*..........................................................................*/
 void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio) {
-    QS_CRIT_STAT_
+    UINT tx_err;
+
     lockStat->lockHolder = tx_thread_identify();
 
-    /* this must be thread level, so current TX thread must be available */
+    /* this must be thread level, so current TX thread must be valid */
     Q_REQUIRE_ID(800, lockStat->lockHolder != (TX_THREAD *)0);
 
     /* change the preemption threshold of the current thread */
-    Q_ALLEGE_ID(810, tx_thread_preemption_change(lockStat->lockHolder,
+    tx_err = tx_thread_preemption_change(lockStat->lockHolder,
                      (QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - prio),
-                     &lockStat->prevThre) == TX_SUCCESS);
+                     &lockStat->prevThre);
 
-    lockStat->lockPrio = prio;
-    QS_BEGIN_(QS_SCHED_LOCK, (void *)0, (void *)0)
-        QS_TIME_(); /* timestamp */
-        QS_2U8_((uint8_t)(QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE
-                          - lockStat->prevThre),
-                (uint8_t)lockStat->lockPrio); /* new lock prio */
-    QS_END_()
+    if (tx_err == TX_SUCCESS) {
+        QS_CRIT_STAT_
+        lockStat->lockPrio = prio;
+
+        QS_BEGIN_(QS_SCHED_LOCK, (void *)0, (void *)0)
+            QS_TIME_(); /* timestamp */
+            QS_2U8_((uint8_t)(QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE
+                              - lockStat->prevThre),
+                (uint8_t)prio); /* new lock prio */
+        QS_END_()
+    }
+    else if (tx_err == TX_THRESH_ERROR) {
+        /* threshold was greater than (lower prio) than the current prio */
+        lockStat->lockPrio = (uint_fast8_t)0; /* threshold not changed */
+    }
+    else {
+        /* no other errors are tolerated */
+        Q_ERROR_ID(810);
+    }
 }
 
 /*..........................................................................*/
@@ -272,8 +284,9 @@ void QFSchedUnlock_(QFSchedLock const * const lockStat) {
     UINT old_thre;
     QS_CRIT_STAT_
 
-    /* the lock holder TX thread must be available */
-    Q_REQUIRE_ID(900, lockStat->lockHolder != (TX_THREAD *)0);
+    /* the lock holder must be valid and the scheduler must be locked */
+    Q_REQUIRE_ID(900, (lockStat->lockHolder != (TX_THREAD *)0)
+                      && (lockStat->lockPrio != (uint_fast8_t)0));
 
     QS_BEGIN_(QS_SCHED_LOCK, (void *)0, (void *)0)
         QS_TIME_(); /* timestamp */

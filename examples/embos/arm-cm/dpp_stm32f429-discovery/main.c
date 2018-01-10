@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Dining Philosophers Problem" example, embOS
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-07
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : https://state-machine.com
-* Email: info@state-machine.com
+* https://state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -76,7 +76,7 @@ int main() {
     }
 
     /* set the embOS task attributes BEFORE calling QACTIVE_START() */
-    QF_setEmbOsTaskAttr(AO_Table, QF_TASK_USES_FPU);
+    QActive_setAttr(AO_Table, QF_TASK_USES_FPU, 0);
     QACTIVE_START(AO_Table, (uint8_t)(N_PHILO + 1),
                   tableQueueSto, Q_DIM(tableQueueSto),
                   tableStack, sizeof(tableStack), (QEvt *)0);

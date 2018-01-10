@@ -53,11 +53,8 @@ static ULONG l_tableStk[256];          /* stack for the Table */
 int main() {
     Philo_ctor(); /* instantiate all Philosopher active objects */
     Table_ctor(); /* instantiate the Table active object */
-
     BSP_init();   /* initialize the Board Support Package */
-
     tx_kernel_enter();
-
     return 0; /* tx_kernel_enter() does not return */
 }
 /*..........................................................................*/

@@ -1,6 +1,23 @@
 /**
 @page history Revision History
 
+@section qpc_6_0_4 Version 6.0.4, 2018-01-10
+The main purpose of this release is the provision of the official @ref freertos "QP/C port to FreeRTOS" (version 10). The QP/C port to FreeRTOS is completely generic and should work on any CPU supported by FreeRTOS. The port comes with the following examples (see examples/freertos/):
+- @ref freertos_dpp_ek-tm4c123gxl "DPP on EK-TM4C123GXL (ARM Cortex-M4F)" with ARM-KEIL, GNU-ARM and IAR-ARM toolchains.
+- @ref freertos_dpp_stm32f746g-disco "DPP on STM32F746G-Discovery (ARM Cortex-M7)" with ARM-KEIL, GNU-ARM and IAR-ARM toolchains.
+
+This release also replaces assembly with C implementation in the ARM-KEIL ports or the QK and QXK kernels to Cortex-M to take advantage of the `__asm` functions. (NOTE: this change has impact on the existing QP/C applications that use the ARM-KEIL toolchain and the QK or QXK kernels.)
+
+Additionally, this release fixes some problems with the native examples for STM32F4 and STM32F7 boards.
+
+Additionally, this release adds a generic function QActive_setAttr() to set thread attributes in various QP ports to 3rd-party RTOSes. This function is then used in the @ref embos "embOS port" and the @ref ucos-ii "uC/OS-II port".
+
+Finally, this release fixes the following bug in the @ref threadx "ThreadX port":
+
+- [bug#197 "Problems with scheduler locking in QP/C/C++ ports to ThreadX"](https://sourceforge.net/p/qpc/bugs/197/)
+
+
+------------------------------------------------------------------------------
 @section qpc_6_0_3 Version 6.0.3, 2017-12-12
 
 Changes since version 6.0.1:

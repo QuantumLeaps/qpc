@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, STM32746G-Discovery board, dual-mode QXK kernel
-* Last Updated for Version: 5.9.7
-* Date of the Last Update:  2017-08-18
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -107,7 +107,8 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -158,8 +159,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle) {
 
 /*..........................................................................*/
 void BSP_init(void) {
-    RCC_OscInitTypeDef RCC_OscInitStruct;
-    RCC_ClkInitTypeDef RCC_ClkInitStruct;
+    /* NOTE: SystemInit() has been already called from the startup code
+    *  but SystemCoreClock needs to be updated
+    */
+    SystemCoreClockUpdate();
 
     SCB_EnableICache(); /* Enable I-Cache */
     SCB_EnableDCache(); /* Enable D-Cache */
@@ -168,33 +171,6 @@ void BSP_init(void) {
 #if (ART_ACCLERATOR_ENABLE != 0)
     __HAL_FLASH_ART_ENABLE();
 #endif /* ART_ACCLERATOR_ENABLE */
-
-    /* Configure the system clock to 216 MHz... */
-    /* Enable HSE Oscillator and activate PLL with HSE as source */
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-    RCC_OscInitStruct.PLL.PLLM = 25;
-    RCC_OscInitStruct.PLL.PLLN = 432;
-    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-    RCC_OscInitStruct.PLL.PLLQ = 9;
-    Q_ALLEGE(HAL_RCC_OscConfig(&RCC_OscInitStruct) == HAL_OK);
-
-    /* Activate the OverDrive to reach the 216 MHz Frequency */
-    Q_ALLEGE(HAL_PWREx_EnableOverDrive() == HAL_OK);
-
-    /* Set PLL as system clock source
-    * and configure the HCLK, PCLK1 and PCLK2 clocks dividers
-    */
-    RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK
-                                 | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
-    Q_ALLEGE(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7)
-             == HAL_OK);
 
     /* configure the FPU usage by choosing one of the options... */
 #if 1
@@ -239,6 +215,14 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(COMMAND_STAT);
 }
 /*..........................................................................*/
+void BSP_ledOn(void) {
+    //BSP_LED_On(LED1); not enough LEDs
+}
+/*..........................................................................*/
+void BSP_ledOff(void) {
+    //BSP_LED_Off(LED1); not enough LEDs
+}
+/*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
     if (stat[0] == 'e') {
         BSP_LED_On(LED1);
@@ -261,7 +245,6 @@ void BSP_displayPaused(uint8_t paused) {
         //BSP_LED_Off(LED2); not enough LEDs
     }
 }
-/*..........................................................................*/
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     uint32_t rnd;

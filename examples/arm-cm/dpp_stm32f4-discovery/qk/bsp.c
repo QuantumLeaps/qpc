@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "DPP" example on STM32F4-Discovery board, preemptive QK kernel
-* Last Updated for Version: 5.9.7
-* Date of the Last Update:  2017-08-18
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -81,7 +81,7 @@ void USART2_IRQHandler(void);
 #define BTN_GPIO_CLK      RCC_AHB1Periph_GPIOA
 #define BTN_B1            GPIO_Pin_0
 
-static uint32_t l_rnd;      /* random seed */
+static uint32_t l_rnd;    /* random seed */
 
 #ifdef Q_SPY
     static QSTimeCtr QS_tickTime_;
@@ -94,6 +94,7 @@ static uint32_t l_rnd;      /* random seed */
         PHILO_STAT = QS_USER,
         COMMAND_STAT
     };
+
 #endif
 
 /* ISRs used in this project ===============================================*/
@@ -132,7 +133,7 @@ void SysTick_Handler(void) {
             static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
             QF_PUBLISH(&pauseEvt, &l_SysTick);
         }
-        else {            /* the button is released */
+        else { /* the button is released */
             static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
             QF_PUBLISH(&serveEvt, &l_SysTick);
         }
@@ -140,6 +141,7 @@ void SysTick_Handler(void) {
 
     QK_ISR_EXIT();  /* inform QK about exiting an ISR */
 }
+
 /*..........................................................................*/
 #ifdef Q_SPY
 /*
@@ -250,6 +252,14 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(COMMAND_STAT);
 }
 /*..........................................................................*/
+void BSP_ledOn(void) {
+    LED_GPIO_PORT->BSRRL = LED6_PIN;
+}
+/*..........................................................................*/
+void BSP_ledOff(void) {
+    LED_GPIO_PORT->BSRRH = LED6_PIN;
+}
+/*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
     (void)n;
 
@@ -348,7 +358,7 @@ void QK_onIdle(void) {
 #ifdef Q_SPY
     QS_rxParse();  /* parse all the received bytes */
 
-    if ((USART2->SR & USART_FLAG_TXE) != 0) {  /* is TXE empty? */
+    if ((USART2->SR & USART_FLAG_TXE) != 0) { /* TXE empty? */
         uint16_t b;
 
         QF_INT_DISABLE();
@@ -362,7 +372,7 @@ void QK_onIdle(void) {
 #elif defined NDEBUG
     /* Put the CPU and peripherals to the low-power mode.
     * you might need to customize the clock management for your application,
-    * see the datasheet for your particular Cortex-M3 MCU.
+    * see the datasheet for your particular Cortex-M MCU.
     */
     /* !!!CAUTION!!!
     * The WFI instruction stops the CPU clock, which unfortunately disables
@@ -371,10 +381,10 @@ void QK_onIdle(void) {
     *
     * NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
     * reset the board, then connect with ST-Link Utilities and erase the part.
-    * The trick with BOOT(0) is it gets the part to run the System Loader
+    * The trick with BOOT(0) is that it gets the part to run the System Loader
     * instead of your broken code. When done disconnect BOOT0, and start over.
     */
-    //__WFI();  /* Wait-For-Interrupt */
+    //__WFI(); /* Wait-For-Interrupt */
 #endif
 }
 
@@ -468,10 +478,12 @@ void QS_onFlush(void) {
     QF_INT_ENABLE();
 }
 /*..........................................................................*/
+/*! callback function to reset the target (to be implemented in the BSP) */
 void QS_onReset(void) {
     NVIC_SystemReset();
 }
 /*..........................................................................*/
+/*! callback function to execute a user command (to be implemented in BSP) */
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
@@ -517,10 +529,7 @@ void QS_onCommand(uint8_t cmdId,
 * triggering a "QF-aware" ISR, which can post/publish events.
 *
 * NOTE01:
-* The QV_onIdle() callback is called with interrupts disabled, because the
-* determination of the idle condition might change by any interrupt posting
-* an event. QV_onIdle() must internally enable interrupts, ideally
-* atomically with putting the CPU to the power-saving mode.
+* The QK_onIdle() callback is called with interrupts enabled.
 *
 * NOTE02:
 * One of the LEDs is used to visualize the idle loop activity. The brightness

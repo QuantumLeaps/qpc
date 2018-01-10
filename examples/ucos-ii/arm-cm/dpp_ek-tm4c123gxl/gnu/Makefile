@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for DPP on EK-TM4C123GXL, uC/OS-II kernel, GNU-ARM
-# Last Updated for Version: 5.9.2
-# Date of the Last Update:  2017-06-06
+# Last Updated for Version: 6.0.4
+# Date of the Last Update:  2018-01-04
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -68,7 +68,6 @@ QP_PORT_DIR := $(QPC)/ports/ucos-ii
 # list of all source directories used by this project
 VPATH = \
 	.. \
-	../.. \
 	$(QPC)/src/qf \
 	$(QPC)/src/qs \
 	$(QP_PORT_DIR) \
@@ -80,7 +79,6 @@ VPATH = \
 # list of all include directories needed by this project
 INCLUDES  = \
 	-I.. \
-	-I../.. \
 	-I$(QPC)/include \
 	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
@@ -94,7 +92,7 @@ INCLUDES  = \
 #
 
 # assembler source files
-ASM_SRCS :=	\
+ASM_SRCS := \
 	os_cpu_a.s
 
 # C source files
@@ -125,7 +123,7 @@ QP_SRCS := \
 	qf_time.c \
 	qf_port.c
 
-RTOS_SRC = \
+RTOS_SRCS := \
 	os_core.c \
 	os_flag.c \
 	os_mbox.c \
@@ -194,7 +192,7 @@ RM    := rm
 
 # combine all the soruces...
 C_SRCS += $(QP_SRCS)
-C_SRCS += $(RTOS_SRC)
+C_SRCS += $(RTOS_SRCS)
 
 # add the pre-defined symbol for ARM architecture
 DEFINES += -D__ARM_ARCH=$(ARM_ARCH)

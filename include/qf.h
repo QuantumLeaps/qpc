@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.3
-* Last updated on  2017-11-08
+* Last updated for version 6.0.4
+* Last updated on  2018-01-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -347,6 +347,9 @@ uint_fast16_t QActive_flushDeferred(QActive const * const me,
 
 /*! Get an event from the event queue of an active object. */
 QEvt const *QActive_get_(QActive *const me);
+
+/*! Generic setting of additional attributes (useful in QP ports) */
+void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2);
 
 
 /****************************************************************************/

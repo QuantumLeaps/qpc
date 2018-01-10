@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-04-13
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2005-2017 Quantum Leaps, LLC. All Rigts Reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -79,7 +79,7 @@ int main() {
                       Q_DIM(philoQueueSto[n]), /* queue length [events] */
                       (void *)0,             /* stack storage (not used) */
                       0U,                    /* size of the stack [bytes] */
-                     (QEvt *)0);             /* initialization event */
+                      (QEvt *)0);            /* initialization event */
     }
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */

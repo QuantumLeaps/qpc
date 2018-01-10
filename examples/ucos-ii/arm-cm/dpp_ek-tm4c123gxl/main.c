@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, uC/OS-II
-* Last Updated for Version: 5.6.0
-* Date of the Last Update:  2015-12-07
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -76,7 +76,7 @@ int main() {
     */
     for (n = 0U; n < N_PHILO; ++n) {
         /* NOTE: provide uC/OS-II task attributes for the AO's task */
-        QF_setUCosTaskAttr(AO_Philo[n], OS_TASK_OPT_STK_CHK);
+        QActive_setAttr(AO_Philo[n], OS_TASK_OPT_STK_CHK, 0);
         QACTIVE_START(AO_Philo[n],
                       (uint_fast8_t)(n + 1), /* QP priority */
                       philoQueueSto[n],      /* storage for the AO's queue */
@@ -87,7 +87,7 @@ int main() {
     }
 
     /* NOTE: provide uC/OS-II task attributes for the AO's task */
-    QF_setUCosTaskAttr(AO_Table, OS_TASK_OPT_SAVE_FP | OS_TASK_OPT_STK_CHK);
+    QActive_setAttr(AO_Table, OS_TASK_OPT_SAVE_FP | OS_TASK_OPT_STK_CHK, 0);
     QACTIVE_START(AO_Table,
                   (uint_fast8_t)(N_PHILO + 1), /* QP priority */
                   tableQueueSto,  /* storage for the AO's queue */

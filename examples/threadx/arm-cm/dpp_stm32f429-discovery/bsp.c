@@ -202,26 +202,26 @@ void QF_onStartup(void) {
     * or from active object(s).
     */
     Q_ALLEGE(tx_timer_create(&l_tick_timer, /* ThreadX timer object */
-                 "QF",     /* name of the timer */
-                 (VOID (*)(ULONG))&QF_tickX_, /* expiration function */
-                 0U,       /* expiration function input (tick rate) */
-                 1U,       /* initial ticks */
-                 1U,       /* reschedule ticks */
-                 TX_AUTO_ACTIVATE) /* automatically activate timer */
+        (CHAR *)"QF_TICK", /* name of the timer */
+        (VOID (*)(ULONG))&QF_tickX_, /* expiration function */
+        0U,       /* expiration function input (tick rate) */
+        1U,       /* initial ticks */
+        1U,       /* reschedule ticks */
+        TX_AUTO_ACTIVATE) /* automatically activate timer */
              == TX_SUCCESS);
 
 #ifdef Q_SPY
     /* start a ThreadX timer to perform QS output. See NOTE1... */
     Q_ALLEGE(tx_thread_create(&l_qs_output_thread, /* thread control block */
-                 "QS",                  /* thread name */
-                 &qs_thread_function,   /* thread function */
-                 (ULONG)0,              /* thread input (unsued) */
-                 qs_thread_stkSto,      /* stack start */
-                 sizeof(qs_thread_stkSto), /* stack size in bytes */
-                 TX_MAX_PRIORITIES - 1, /* ThreadX prio (lowest possible) */
-                 TX_MAX_PRIORITIES - 1, /* preemption threshold disabled */
-                 TX_NO_TIME_SLICE,
-                 TX_AUTO_START)
+        (CHAR *)"QS_TX",       /* thread name */
+        &qs_thread_function,   /* thread function */
+        0UL,                   /* thread input (unsued) */
+        qs_thread_stkSto,      /* stack start */
+        sizeof(qs_thread_stkSto), /* stack size in bytes */
+        TX_MAX_PRIORITIES - 1, /* ThreadX prio (lowest possible) */
+        TX_MAX_PRIORITIES - 1, /* preemption threshold disabled */
+        TX_NO_TIME_SLICE,
+        TX_AUTO_START)
              == TX_SUCCESS);
 #endif /* Q_SPY */
 }
@@ -257,7 +257,7 @@ static void qs_thread_function(ULONG thread_input) { /* see NOTE1 */
         __NOP();
         LED_GPIO_PORT->BSRRH = LED6_PIN; /* turn LED off */
 
-        if ((USART2->SR & 0x80U) != 0U) {  /* is TXE empty? */
+        if ((USART2->SR & 0x80U) != 0U) { /* is TXE empty? */
             uint16_t b;
             QF_CRIT_STAT_TYPE intStat;
 

@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0 / embOS v4.34.1
-* Date of the Last Update:  2017-05-04
+* Last Updated for Version: 6.0.4 / embOS v4.34.1
+* Date of the Last Update:  2018-01-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -66,8 +66,6 @@
 #include "qmpool.h"    /* this QP port uses the native QF memory pool */
 #include "qf.h"        /* QF platform-independent public interface */
 
-/* set attributes (e.g., QF_TASK_USES_FPU) before calling QACTIVE_START() */
-void QF_setEmbOsTaskAttr(QActive *act, uint32_t attr);
 
 /*****************************************************************************
 * interface used only inside QF, but not in applications

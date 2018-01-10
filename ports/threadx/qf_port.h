@@ -3,8 +3,8 @@
 * @brief QF/C, port to ThreadX
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-28
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -67,7 +67,7 @@
 */
 #ifdef QP_IMPL
 
-    /* ThreadX-specific scheduler locking (implemented in qf_port.c) */
+    /*! ThreadX-specific scheduler locking (implemented in qf_port.c) */
     typedef struct {
         uint_fast8_t lockPrio;   /*!< lock prio [QF numbering scheme] */
         UINT prevThre;           /*!< previoius preemption threshold */
@@ -96,7 +96,7 @@
     /* TreadX block pool operations... */
     #define QF_EPOOL_TYPE_              TX_BLOCK_POOL
     #define QF_EPOOL_INIT_(pool_, poolSto_, poolSize_, evtSize_) \
-        Q_ALLEGE(tx_block_pool_create(&(pool_), "P", (evtSize_), \
+        Q_ALLEGE(tx_block_pool_create(&(pool_), (CHAR *)"QP", (evtSize_), \
                  (poolSto_), (poolSize_)) == TX_SUCCESS)
 
     #define QF_EPOOL_EVENT_SIZE_(pool_) \

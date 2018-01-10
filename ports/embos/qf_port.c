@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.8
-* Date of the Last Update:  2017-09-20
+* Last Updated for Version: 6.0.4 / embOS v4.34.1
+* Date of the Last Update:  2018-01-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -79,10 +79,6 @@ int_t QF_run(void) {
 void QF_stop(void) {
     QF_onCleanup();  /* cleanup callback */
 }
-/*..........................................................................*/
-void QF_setEmbOsTaskAttr(QActive *act, uint32_t attr) {
-    act->osObject = attr;
-}
 
 /*..........................................................................*/
 static void thread_function(void *pVoid) { /* embOS signature */
@@ -136,6 +132,11 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 /*..........................................................................*/
 void QActive_stop(QActive * const me) {
     me->osObject = (uint32_t)0; /* stop the thread loop */
+}
+/*..........................................................................*/
+void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
+    (void)attr2; /* unused parameter */
+    me->osObject = attr1;
 }
 /*..........................................................................*/
 #ifndef Q_SPY

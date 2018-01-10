@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 6.0.3
-* Date of the Last Update:  2017-11-30
+* Last Updated for Version: 5.9.9
+* Date of the Last Update:  2017-09-27
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -35,11 +35,23 @@
 #include "dpp.h"
 #include "bsp.h"
 
-/* local "naked" thread object .............................................*/
+/* local "extended" thread object ..........................................*/
 static QXThread l_test1;
 static QXThread l_test2;
 static QXMutex l_mutex;
 static QXSemaphore l_sema;
+
+/* Thread-Local Storage for the "extended" threads .........................*/
+typedef struct {
+    uint32_t foo;
+    uint8_t bar[10];
+} TLS_test;
+static TLS_test l_tls1;
+static TLS_test l_tls2;
+
+static void lib_fun(uint32_t x) {
+    QXK_TLS(TLS_test *)->foo = x;
+}
 
 /* global pointer to the test thread .......................................*/
 QXThread * const XT_Test1 = &l_test1;
@@ -48,26 +60,37 @@ QXThread * const XT_Test2 = &l_test2;
 /*..........................................................................*/
 static void Thread1_run(QXThread * const me) {
 
-    QXMutex_init(&l_mutex, 3U);
+    me->super.thread = &l_tls1; /* initialize the TLS for Thread1 */
 
     (void)me;
     for (;;) {
-        float volatile x;
-
-        /* wait on a semaphore (BLOCK with timeout) */
-        (void)QXSemaphore_wait(&l_sema, BSP_TICKS_PER_SEC);
-        //BSP_ledOn();
-
         QXMutex_lock(&l_mutex, QXTHREAD_NO_TIMEOUT); /* lock the mutex */
-        /* some flating point code to exercise the VFP... */
-        x = 1.4142135F;
-        x = x * 1.4142135F;
+        BSP_ledOn();
+
+        if (QXMutex_tryLock(&l_mutex)) { /* exercise the mutex */
+            float volatile x;
+
+            /* some flating point code to exercise the VFP... */
+            x = 1.4142135F;
+            x = x * 1.4142135F;
+
+            (void)QXSemaphore_signal(&l_sema); /* signal Thread2 */
+
+            QXThread_delay(10U);  /* BLOCK while holding a mutex */
+
+            QXMutex_unlock(&l_mutex);
+        }
+
         QXMutex_unlock(&l_mutex);
+        BSP_ledOff();
 
         QXThread_delay(BSP_TICKS_PER_SEC/7);  /* BLOCK */
 
         /* publish to thread2 */
-        QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), &l_test1);
+        //QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), &l_test1);
+
+        /* test TLS */
+        lib_fun(1U);
     }
 }
 
@@ -79,9 +102,6 @@ void Test1_ctor(void) {
 /*..........................................................................*/
 static void Thread2_run(QXThread * const me) {
 
-    /* subscribe to the test signal */
-    QActive_subscribe(&me->super, TEST_SIG);
-
     /* initialize the semaphore before using it
     * NOTE: the semaphore is initialized in the highest-priority thread
     * that uses it. Alternatively, the semaphore can be initialized
@@ -91,25 +111,29 @@ static void Thread2_run(QXThread * const me) {
                      0U,  /* count==0 (signaling semaphore) */
                      1U); /* max_count==1 (binary semaphore) */
 
+    /* initialize the mutex before using it
+    * NOTE: Here the mutex is initialized in the highest-priority thread
+    * that uses it. Alternatively, the mutex can be initialized
+    * before any thread runs.
+    */
+    //QXMutex_init(&l_mutex, 0U); /* priority-ceiling NOT used */
+    QXMutex_init(&l_mutex, N_PHILO + 6U); /*priority-ceiling protocol used*/
+
+    me->super.thread = &l_tls2; /* initialize the TLS for Thread2 */
+
+    /* subscribe to the test signal */
+    QActive_subscribe(&me->super, TEST_SIG);
+
     for (;;) {
-        QEvt const *e;
+        /* wait on a semaphore (BLOCK indefinitely) */
+        QXSemaphore_wait(&l_sema, QXTHREAD_NO_TIMEOUT);
 
-        /* some flating point code to exercise the VFP... */
-        float volatile x;
-        x = 1.4142135F;
-        x = x * 1.4142135F;
+        QXMutex_lock(&l_mutex, QXTHREAD_NO_TIMEOUT); /* lock the mutex */
+        QXThread_delay(1U);  /* wait more (BLOCK) */
+        QXMutex_unlock(&l_mutex);
 
-        /* wait on the internal event queue (BLOCK) with timeout */
-        e = QXThread_queueGet(BSP_TICKS_PER_SEC/2);
-        //BSP_ledOff();
-
-        if (e != (QEvt *)0) { /* event actually delivered? */
-            QF_gc(e); /* recycle the event manually! */
-        }
-        else {
-            QXThread_delay(BSP_TICKS_PER_SEC/2);  /* wait more (BLOCK) */
-            QXSemaphore_signal(&l_sema); /* signal Thread1 */
-        }
+        /* test TLS */
+        lib_fun(2U);
     }
 }
 

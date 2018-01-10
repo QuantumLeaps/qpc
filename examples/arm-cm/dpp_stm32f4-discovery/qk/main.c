@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-03-13
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -51,7 +51,20 @@ int main() {
     QTicker_ctor(&l_ticker0, 0U); /* ticker AO for tick rate 0 */
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
-    BSP_init();   /* initialize the Board Support Package */
+
+    /* initialize publish-subscribe... */
+    QF_psInit(subscrSto, Q_DIM(subscrSto));
+
+    /* initialize event pools... */
+    QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
+
+    /* initialize the Board Support Package
+    * NOTE: BSP_init() is called *after* initializing publish-subscribe and
+    * event pools, to make the system ready to accept SysTick interrupts.
+    * Unfortunately, the STM32Cube code that must be called from BSP,
+    * configures and starts SysTick.
+    */
+    BSP_init();
 
     /* object dictionaries... */
     QS_OBJ_DICTIONARY(smlPoolSto);
@@ -61,12 +74,6 @@ int main() {
     QS_OBJ_DICTIONARY(philoQueueSto[2]);
     QS_OBJ_DICTIONARY(philoQueueSto[3]);
     QS_OBJ_DICTIONARY(philoQueueSto[4]);
-
-    /* initialize publish-subscribe... */
-    QF_psInit(subscrSto, Q_DIM(subscrSto));
-
-    /* initialize event pools... */
-    QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     QACTIVE_START(the_Ticker0, 1U, 0, 0, 0, 0, 0);
 

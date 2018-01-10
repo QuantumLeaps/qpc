@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "DPP" example on STM32F4-Discovery board, cooperative QV kernel
-* Last Updated for Version: 5.9.1
-* Date of the Last Update:  2017-06-01
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -94,6 +94,7 @@ static uint32_t l_rnd;    /* random seed */
         PHILO_STAT = QS_USER,
         COMMAND_STAT
     };
+
 #endif
 
 /* ISRs used in this project ===============================================*/
@@ -130,12 +131,13 @@ void SysTick_Handler(void) {
             static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
             QF_PUBLISH(&pauseEvt, &l_SysTick);
         }
-        else {            /* the button is released */
+        else { /* the button is released */
             static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
             QF_PUBLISH(&serveEvt, &l_SysTick);
         }
     }
 }
+
 /*..........................................................................*/
 #ifdef Q_SPY
 /*
@@ -153,6 +155,7 @@ void USART2_IRQHandler(void) {
 #else
 void USART2_IRQHandler(void) {}
 #endif
+
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
@@ -356,7 +359,7 @@ void QV_onIdle(void) { /* CATION: called with interrupts DISABLED, NOTE01 */
 #elif defined NDEBUG
     /* Put the CPU and peripherals to the low-power mode.
     * you might need to customize the clock management for your application,
-    * see the datasheet for your particular Cortex-M3 MCU.
+    * see the datasheet for your particular Cortex-M MCU.
     */
     /* !!!CAUTION!!!
     * The WFI instruction stops the CPU clock, which unfortunately disables
@@ -465,10 +468,12 @@ void QS_onFlush(void) {
     QF_INT_ENABLE();
 }
 /*..........................................................................*/
+/*! callback function to reset the target (to be implemented in the BSP) */
 void QS_onReset(void) {
     NVIC_SystemReset();
 }
 /*..........................................................................*/
+/*! callback function to execute a user command (to be implemented in BSP) */
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
@@ -514,7 +519,10 @@ void QS_onCommand(uint8_t cmdId,
 * triggering a "QF-aware" ISR, which can post/publish events.
 *
 * NOTE01:
-* The QK_onIdle() callback is called with interrupts enabled.
+* The QV_onIdle() callback is called with interrupts disabled, because the
+* determination of the idle condition might change by any interrupt posting
+* an event. QV_onIdle() must internally enable interrupts, ideally
+* atomically with putting the CPU to the power-saving mode.
 *
 * NOTE02:
 * One of the LEDs is used to visualize the idle loop activity. The brightness

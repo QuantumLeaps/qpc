@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, preemptive QXK kernel
-* Last Updated for Version: 5.9.9
-* Date of the Last Update:  2017-09-27
+* Last Updated for Version: 6.0.4
+* Date of the Last Update:  2018-01-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -41,50 +41,50 @@
 #include "gpio.h"                /* GPIO driver (TI) */
 /* add other drivers if necessary... */
 
-Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE  /* define the name of this file for assertions */
 
 /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
 * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
 */
-enum KernelUnawareISRs { /* see NOTE00 */
+enum KernelUnawareISRs { /* see NOTE1 */
     UART0_PRIO,
     /* ... */
-    MAX_KERNEL_UNAWARE_CMSIS_PRI  /* keep always last */
+    MAX_KERNEL_UNAWARE_CMSIS_PRI /* keep always last */
 };
 /* "kernel-unaware" interrupts can't overlap "kernel-aware" interrupts */
 Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
 
 enum KernelAwareISRs {
-    GPIOA_PRIO = QF_AWARE_ISR_CMSIS_PRI, /* see NOTE00 */
-    SYSTICK_PRIO,
+    SYSTICK_PRIO = QF_AWARE_ISR_CMSIS_PRI, /* see NOTE00 */
+    GPIOA_PRIO,
     /* ... */
     MAX_KERNEL_AWARE_CMSIS_PRI /* keep always last */
 };
 /* "kernel-aware" interrupts should not overlap the PendSV priority */
 Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
-/* ISRs defined in this BSP ------------------------------------------------*/
+/* prototypes of ISRs defined in this BSP ----------------------------------*/
 void SysTick_Handler(void);
 void GPIOPortA_IRQHandler(void);
 void UART0_IRQHandler(void);
 
 /* Local-scope objects -----------------------------------------------------*/
 #define LED_RED     (1U << 1)
-#define LED_BLUE    (1U << 2)
 #define LED_GREEN   (1U << 3)
+#define LED_BLUE    (1U << 2)
 
 #define BTN_SW1     (1U << 4)
 #define BTN_SW2     (1U << 0)
 
-static uint32_t l_rnd;      /* random seed */
+static uint32_t l_rnd; /* random seed */
 
 #ifdef Q_SPY
 
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
 
-    /* QS source IDs */
+    /* QS identifiers for non-QP sources of events */
     static uint8_t const l_SysTick_Handler = (uint8_t)0;
     static uint8_t const l_GPIOPortA_IRQHandler = (uint8_t)0;
 
@@ -180,7 +180,7 @@ void UART0_IRQHandler(void) {}
 
 /*..........................................................................*/
 void BSP_init(void) {
-    /* NOTE: SystemInit() already called from the startup code
+    /* NOTE: SystemInit() has been already called from the startup code
     *  but SystemCoreClock needs to be updated
     */
     SystemCoreClockUpdate();
@@ -191,20 +191,21 @@ void BSP_init(void) {
     SYSCTL->RCGCGPIO |= (1U << 5); /* enable Run mode for GPIOF */
 
     /* configure the LEDs and push buttons */
-    GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE);/* set direction: output */
+    GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE); /* set as output */
     GPIOF->DEN |= (LED_RED | LED_GREEN | LED_BLUE); /* digital enable */
     GPIOF->DATA_Bits[LED_RED]   = 0U; /* turn the LED off */
     GPIOF->DATA_Bits[LED_GREEN] = 0U; /* turn the LED off */
     GPIOF->DATA_Bits[LED_BLUE]  = 0U; /* turn the LED off */
 
-    /* configure the Buttons */
+    /* configure the User Switches */
     GPIOF->DIR &= ~(BTN_SW1 | BTN_SW2); /*  set direction: input */
     ROM_GPIOPadConfigSet(GPIOF_BASE, (BTN_SW1 | BTN_SW2),
                          GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
 
     BSP_randomSeed(1234U);
 
-    if (QS_INIT((void *)0) == 0) { /* initialize the QS software tracing */
+    /* initialize the QS software tracing... */
+    if (QS_INIT((void *)0) == 0U) {
         Q_ERROR();
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
@@ -215,8 +216,10 @@ void BSP_init(void) {
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
-    GPIOF->DATA_Bits[LED_GREEN]   = ((stat[0] == 'h') ? 0xFFU   : 0U);
-    //GPIOF->DATA_Bits[LED_RED]     = ((stat[0] == 'e') ? 0xFFU : 0U);
+    GPIOF->DATA_Bits[LED_GREEN] =
+         ((stat[0] == 'e')   /* Is Philo[n] eating? */
+         ? 0xFFU             /* turn the LED1 on  */
+         : 0U);              /* turn the LED1 off */
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
         QS_U8(1, n);  /* Philosopher number */
@@ -282,7 +285,7 @@ void BSP_terminate(int16_t result) {
     (void)result;
 }
 
-/*..........................................................................*/
+/* QF callbacks ============================================================*/
 void QF_onStartup(void) {
     /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
@@ -359,6 +362,9 @@ void Q_onAssert(char const *module, int loc) {
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
+    /* light up all LEDs */
+    GPIOF->DATA_Bits[LED_GREEN | LED_RED | LED_BLUE] = 0xFFU;
+    /* for debugging, hang on in an endless loop... */
     for (;;) {
     }
 #endif
@@ -436,9 +442,7 @@ QSTimeCtr QS_onGetTime(void) {  /* NOTE: invoked with interrupts DISABLED */
 void QS_onFlush(void) {
     uint16_t fifo = UART_TXFIFO_DEPTH; /* Tx FIFO depth */
     uint8_t const *block;
-    QF_INT_DISABLE();
     while ((block = QS_getBlock(&fifo)) != (uint8_t *)0) {
-        QF_INT_ENABLE();
         /* busy-wait as long as TX FIFO has data to transmit */
         while ((UART0->FR & UART_FR_TXFE) == 0) {
         }
@@ -447,9 +451,7 @@ void QS_onFlush(void) {
             UART0->DR = *block++; /* put into the TX FIFO */
         }
         fifo = UART_TXFIFO_DEPTH; /* re-load the Tx FIFO depth */
-        QF_INT_DISABLE();
     }
-    QF_INT_ENABLE();
 }
 /*..........................................................................*/
 /*! callback function to reset the target (to be implemented in the BSP) */
@@ -485,7 +487,7 @@ void QS_onCommand(uint8_t cmdId,
 /*--------------------------------------------------------------------------*/
 
 /*****************************************************************************
-* NOTE00:
+* NOTE1:
 * The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
 * ISR priority that is disabled by the QF framework. The value is suitable
 * for the NVIC_SetPriority() CMSIS function.
@@ -503,7 +505,7 @@ void QS_onCommand(uint8_t cmdId,
 * by which a "QF-unaware" ISR can communicate with the QF framework is by
 * triggering a "QF-aware" ISR, which can post/publish events.
 *
-* NOTE01:
+* NOTE2:
 * The User LED is used to visualize the idle loop activity. The brightness
 * of the LED is proportional to the frequency of invcations of the idle loop.
 * Please note that the LED is toggled with interrupts locked, so no interrupt

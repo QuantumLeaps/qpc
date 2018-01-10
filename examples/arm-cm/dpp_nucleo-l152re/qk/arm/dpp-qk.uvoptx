@@ -1009,12 +1009,12 @@
     <File>
       <GroupNumber>4</GroupNumber>
       <FileNumber>33</FileNumber>
-      <FileType>2</FileType>
+      <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\ports\arm-cm\qk\arm\qk_port.s</PathWithFileName>
-      <FilenameWithoutPath>qk_port.s</FilenameWithoutPath>
+      <PathWithFileName>..\..\..\..\..\ports\arm-cm\qk\arm\qk_port.c</PathWithFileName>
+      <FilenameWithoutPath>qk_port.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
