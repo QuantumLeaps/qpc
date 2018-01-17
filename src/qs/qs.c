@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.3
-* Last updated on  2017-12-08
+* Last updated for version 6.0.4
+* Last updated on  2018-01-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -37,6 +37,7 @@
 ******************************************************************************
 * @endcond
 */
+#define QP_IMPL           /* this is QP implementation */
 #include "qs_port.h"      /* QS port */
 #include "qs_pkg.h"       /* QS package-scope interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */

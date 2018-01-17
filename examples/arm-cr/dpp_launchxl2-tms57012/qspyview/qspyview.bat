@@ -1,1 +1,1 @@
-wish C:\qp\qtools\qspy\qspyview\qspyview.tcl dpp.tcl
+wish C:\qp\qtools\qspy\tcl\qspyview.tcl dpp.tcl

@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.1
-* Last updated on  2017-10-25
+* Last updated for version 6.0.4
+* Last updated on  2018-01-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -37,6 +37,7 @@
 ******************************************************************************
 * @endcond
 */
+#define QP_IMPL           /* this is QP implementation */
 #include "qep_port.h"     /* QEP port */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */

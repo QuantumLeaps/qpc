@@ -121,3 +121,4 @@ void QV_init(void) {
 }
 
 #endif /* NOT Cortex-M0/M0+/M1 */
+

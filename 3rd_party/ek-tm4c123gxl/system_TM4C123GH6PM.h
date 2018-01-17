@@ -25,11 +25,11 @@
 #ifndef SYSTEM_TM4C123_H
 #define SYSTEM_TM4C123_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
 
 extern uint32_t SystemCoreClock;     /*!< System Clock Frequency (Core Clock)  */
 

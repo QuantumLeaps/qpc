@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.0
-* Last updated on  2016-09-08
+* Last updated for version 6.0.4
+* Last updated on  2018-01-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -37,7 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#include "qs_port.h" /* QS port */
+#define QP_IMPL           /* this is QP implementation */
+#include "qs_port.h"      /* QS port */
 #include "qs_pkg.h"
 
 /****************************************************************************/

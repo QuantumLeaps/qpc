@@ -4,7 +4,7 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-06
+* Date of the Last Update:  2018-01-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -139,48 +139,46 @@ void QXK_init(void) {
 void QXK_stackInit_(void *act, QActionHandler thread,
                     void *stkSto, uint_fast16_t stkSize)
 {
-      extern void QXK_threadRet_(void); /* extended thread return */
+    extern void QXK_threadRet_(void); /* extended thread return */
 
-      /* round down the stack top to the 8-byte boundary
-      * NOTE: ARM Cortex-M stack grows down from hi -> low memory
-      */
-      uint32_t *stk =
-          (uint32_t *)((((uint32_t)stkSto + stkSize) >> 3) << 3);
-      uint32_t *stk_limit;
+    /* round down the stack top to the 8-byte boundary
+    * NOTE: ARM Cortex-M stack grows down from hi -> low memory
+    */
+    uint32_t *sp =
+        (uint32_t *)((((uint32_t)stkSto + stkSize) >> 3) << 3);
+    uint32_t *sp_limit;
 
-      --stk; /* point stack top to the first FREE location */
+    /* synthesize the ARM Cortex-M exception stack frame...*/
+    *(--sp) = (1U << 24);    /* xPSR  (just the THUMB bit) */
+    *(--sp) = (uint32_t)thread;          /* PC (the thread routine) */
+    *(--sp) = (uint32_t)&QXK_threadRet_; /* LR (return from thread) */
+    *(--sp) = 0x0000000CU;   /* R12 */
+    *(--sp) = 0x00000003U;   /* R3  */
+    *(--sp) = 0x00000002U;   /* R2  */
+    *(--sp) = 0x00000001U;   /* R1  */
+    *(--sp) = (uint32_t)act; /* R0 (argument to the thread routine */
+    *(--sp) = 0x0000000BU;   /* R11 */
+    *(--sp) = 0x0000000AU;   /* R10 */
+    *(--sp) = 0x00000009U;   /* R9  */
+    *(--sp) = 0x00000008U;   /* R8  */
+    *(--sp) = 0x00000007U;   /* R7  */
+    *(--sp) = 0x00000006U;   /* R6  */
+    *(--sp) = 0x00000005U;   /* R5  */
+    *(--sp) = 0x00000004U;   /* R4  */
 
-      /* synthesize the ARM Cortex-M exception stack frame...*/
-      *(stk--) = (1U << 24);   /* xPSR  (just the THUMB bit) */
-      *(stk--) = (uint32_t)thread;          /* PC (the thread routine) */
-      *(stk--) = (uint32_t)&QXK_threadRet_; /* LR (return from thread) */
-      *(stk--) = 0x0000000CU;  /* R12 */
-      *(stk--) = 0x00000003U;  /* R3  */
-      *(stk--) = 0x00000002U;  /* R2  */
-      *(stk--) = 0x00000001U;  /* R1  */
-      *(stk--) = (uint32_t)act; /* R0 (argument to the thread routine */
-      *(stk--) = 0x0000000BU;  /* R11 */
-      *(stk--) = 0x0000000AU;  /* R10 */
-      *(stk--) = 0x00000009U;  /* R9  */
-      *(stk--) = 0x00000008U;  /* R8  */
-      *(stk--) = 0x00000007U;  /* R7  */
-      *(stk--) = 0x00000006U;  /* R6  */
-      *(stk--) = 0x00000005U;  /* R5  */
-      *(stk--) = 0x00000004U;  /* R4  */
+#if (__TARGET_FPU_VFP != 0)  /* if VFP available... */
+    *(--sp) = 0xFFFFFFFDU;   /* exception return with VFP state */
+    *(--sp) = 0xAAAAAAAAU;   /* stack "aligner" */
+#endif                       /* VFP available */
 
-#if (__TARGET_FPU_VFP != 0)   /* if VFP available... */
-      *(stk--) = 0xFFFFFFFDU; /* exception return with VFP state */
-      *(stk--) = 0xAAAAAAAAU; /* stack "aligner" */
-#endif                        /* VFP available */
+    /* save the top of the stack in the thread's attibute */
+    ((QActive *)act)->osObject = sp;
 
-      /* save the top of the stack in the thread's attibute */
-      ((QActive *)act)->osObject = stk + 1U;
-
-      /* pre-fill the unused part of the stack with 0xDEADBEEF */
-      stk_limit = (uint32_t *)(((((uint32_t)stkSto - 1U) >> 3) + 1U) << 3);
-      for (; stk >= stk_limit; --stk) {
-          *stk = 0xDEADBEEFU;
-      }
+    /* pre-fill the unused part of the stack with 0xDEADBEEF */
+    sp_limit = (uint32_t *)(((((uint32_t)stkSto - 1U) >> 3) + 1U) << 3);
+    for (; sp >= sp_limit; --sp) {
+        *sp = 0xDEADBEEFU;
+    }
 }
 
 /* NOTE: keep in synch with the QXK_Attr struct in "qxk.h" !!! */

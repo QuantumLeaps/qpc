@@ -57,7 +57,6 @@
 extern "C" {
 #endif
 
-
 /* -------------------------  Interrupt Number Definition  ------------------------ */
 
 typedef enum {
@@ -305,6 +304,10 @@ void PWM1Fault_IRQHandler(void);
 #define TARGET_IS_BLIZZARD_RA1         1            /*!< Class of device (for TI library)                                      */
 /** @} */ /* End of group Configuration_of_CMSIS */
 
+#ifdef __cplusplus
+}
+#endif
+
 #include "core_cm4.h"                               /*!< Cortex-M4 processor and core peripherals                              */
 #include "system_TM4C123GH6PM.h"                    /*!< TM4C123GH6PM System                                                   */
 
@@ -312,7 +315,9 @@ void PWM1Fault_IRQHandler(void);
 /* ================================================================================ */
 /* ================       Device Specific Peripheral Section       ================ */
 /* ================================================================================ */
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @addtogroup Device_Peripheral_Registers
   * @{

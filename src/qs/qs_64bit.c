@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-04-13
+* Last updated for version 6.0.4
+* Last updated on  2018-01-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-
-#include "qs_port.h" /* QS port */
+#define QP_IMPL           /* this is QP implementation */
+#include "qs_port.h"      /* QS port */
 
 #if (QS_OBJ_PTR_SIZE == 8) || (QS_FUN_PTR_SIZE == 8)
 

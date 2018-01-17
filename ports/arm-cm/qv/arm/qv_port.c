@@ -118,3 +118,4 @@ void QV_init(void) {
 }
 
 #endif /* NOT Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+
