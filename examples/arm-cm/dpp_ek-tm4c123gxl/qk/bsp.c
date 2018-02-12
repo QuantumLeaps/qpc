@@ -403,6 +403,7 @@ uint8_t QS_onStartup(void const *arg) {
 
     /* setup the QS filters... */
     QS_FILTER_ON(QS_ALL_RECORDS);
+    QS_FILTER_OFF(QS_QF_TICK);
 
     return (uint8_t)1; /* return success */
 }

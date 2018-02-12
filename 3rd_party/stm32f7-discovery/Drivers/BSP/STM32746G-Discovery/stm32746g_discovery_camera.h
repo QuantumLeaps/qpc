@@ -34,7 +34,7 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */ 
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32746G_DISCOVERY_CAMERA_H
@@ -42,7 +42,7 @@
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 /* Includes ------------------------------------------------------------------*/
 /* Include Camera component Driver */
@@ -56,19 +56,19 @@
 /** @addtogroup STM32746G_DISCOVERY
   * @{
   */
-    
+
 /** @addtogroup STM32746G_DISCOVERY_CAMERA
   * @{
-  */ 
-   
+  */
+
 /** @defgroup STM32746G_DISCOVERY_CAMERA_Exported_Types STM32746G_DISCOVERY_CAMERA Exported Types
   * @{
   */
-  
-/** 
-  * @brief  Camera State structures definition  
-  */  
-typedef enum 
+
+/**
+  * @brief  Camera State structures definition
+  */
+typedef enum
 {
   CAMERA_OK            = 0x00,
   CAMERA_ERROR         = 0x01,
@@ -81,16 +81,16 @@ typedef enum
 #define RESOLUTION_R160x120      CAMERA_R160x120      /* QQVGA Resolution     */
 #define RESOLUTION_R320x240      CAMERA_R320x240      /* QVGA Resolution      */
 #define RESOLUTION_R480x272      CAMERA_R480x272      /* 480x272 Resolution   */
-#define RESOLUTION_R640x480      CAMERA_R640x480      /* VGA Resolution       */  
+#define RESOLUTION_R640x480      CAMERA_R640x480      /* VGA Resolution       */
 /**
   * @}
-  */ 
- 
+  */
+
 /** @defgroup STM32746G_DISCOVERY_CAMERA_Exported_Constants STM32746G_DISCOVERY_CAMERA Exported Constants
   * @{
   */
 #define BSP_CAMERA_IRQHandler      DCMI_IRQHandler
-#define BSP_CAMERA_DMA_IRQHandler  DMA2_Stream1_IRQHandler  
+#define BSP_CAMERA_DMA_IRQHandler  DMA2_Stream1_IRQHandler
 
 /**
   * @}
@@ -98,14 +98,14 @@ typedef enum
 
 /** @addtogroup STM32746G_DISCOVERY_CAMERA_Exported_Functions
   * @{
-  */    
-uint8_t BSP_CAMERA_Init(uint32_t Resolution);  
+  */
+uint8_t BSP_CAMERA_Init(uint32_t Resolution);
 uint8_t BSP_CAMERA_DeInit(void);
 void    BSP_CAMERA_ContinuousStart(uint8_t *buff);
 void    BSP_CAMERA_SnapshotStart(uint8_t *buff);
 void    BSP_CAMERA_Suspend(void);
 void    BSP_CAMERA_Resume(void);
-uint8_t BSP_CAMERA_Stop(void); 
+uint8_t BSP_CAMERA_Stop(void);
 void    BSP_CAMERA_PwrUp(void);
 void    BSP_CAMERA_PwrDown(void);
 void    BSP_CAMERA_LineEventCallback(void);
@@ -117,7 +117,7 @@ void    BSP_CAMERA_ErrorCallback(void);
 void    BSP_CAMERA_ContrastBrightnessConfig(uint32_t contrast_level, uint32_t brightness_level);
 void    BSP_CAMERA_BlackWhiteConfig(uint32_t Mode);
 void    BSP_CAMERA_ColorEffectConfig(uint32_t Effect);
-   
+
 /* These functions can be modified in case the current settings (e.g. DMA stream)
    need to be changed for specific application needs */
 void BSP_CAMERA_MspInit(DCMI_HandleTypeDef *hdcmi, void *Params);
@@ -126,11 +126,11 @@ void BSP_CAMERA_MspDeInit(DCMI_HandleTypeDef *hdcmi, void *Params);
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}

@@ -42,7 +42,7 @@
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 /* Includes ------------------------------------------------------------------*/
 /* Include audio component Driver */
@@ -51,12 +51,12 @@
 
 /** @addtogroup BSP
   * @{
-  */ 
+  */
 
 /** @addtogroup STM32746G_DISCOVERY
   * @{
   */
-    
+
 /** @defgroup STM32746G_DISCOVERY_AUDIO STM32746G_DISCOVERY_AUDIO
   * @{
   */
@@ -66,27 +66,27 @@
   */
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_AUDIO_Exported_Constants STM32746G_DISCOVERY_AUDIO Exported Constants
   * @{
   */
- 
+
 /*------------------------------------------------------------------------------
                           USER SAI defines parameters
  -----------------------------------------------------------------------------*/
-/*  CODEC_AudioFrame_SLOT_TDMMode 
+/*  CODEC_AudioFrame_SLOT_TDMMode
    In W8994 codec the Audio frame contains 4 slots : TDM Mode
    TDM format :
-   +------------------|------------------|--------------------|-------------------+ 
+   +------------------|------------------|--------------------|-------------------+
    | CODEC_SLOT0 Left | CODEC_SLOT1 Left | CODEC_SLOT0 Right  | CODEC_SLOT1 Right |
    +------------------------------------------------------------------------------+
   */
 /* To have 2 separate audio stream in Both headphone and speaker the 4 slot must be activated */
 #define CODEC_AUDIOFRAME_SLOT_0123           SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_1 | SAI_SLOTACTIVE_2 | SAI_SLOTACTIVE_3
-/* To have an audio stream in headphone only SAI Slot 0 and Slot 2 must be activated */ 
+/* To have an audio stream in headphone only SAI Slot 0 and Slot 2 must be activated */
 #define CODEC_AUDIOFRAME_SLOT_02             SAI_SLOTACTIVE_0 | SAI_SLOTACTIVE_2
-/* To have an audio stream in speaker only SAI Slot 1 and Slot 3 must be activated */ 
+/* To have an audio stream in speaker only SAI Slot 1 and Slot 3 must be activated */
 #define CODEC_AUDIOFRAME_SLOT_13             SAI_SLOTACTIVE_1 | SAI_SLOTACTIVE_3
 
 /* SAI OUT peripheral configuration defines */
@@ -115,7 +115,7 @@
 #define AUDIO_OUT_SAIx_DMAx_PERIPH_DATA_SIZE     DMA_PDATAALIGN_HALFWORD
 #define AUDIO_OUT_SAIx_DMAx_MEM_DATA_SIZE        DMA_MDATAALIGN_HALFWORD
 #define DMA_MAX_SZE                              ((uint16_t)0xFFFF)
-   
+
 #define AUDIO_OUT_SAIx_DMAx_IRQHandler           DMA2_Stream4_IRQHandler
 
 /* Select the interrupt preemption priority for the DMA interrupt */
@@ -159,7 +159,7 @@
 
 #define AUDIODATA_SIZE                      ((uint16_t)2)   /* 16-bits audio data size */
 
-/* Audio status definition */     
+/* Audio status definition */
 #define AUDIO_OK                            ((uint8_t)0)
 #define AUDIO_ERROR                         ((uint8_t)1)
 #define AUDIO_TIMEOUT                       ((uint8_t)2)
@@ -176,7 +176,7 @@
 
 /* Delay for the Codec to be correctly reset */
 #define CODEC_RESET_DELAY                   ((uint8_t)5)
-   
+
 
 /*------------------------------------------------------------------------------
                             OUTPUT DEVICES definition
@@ -184,11 +184,11 @@
 /* Alias on existing output devices to adapt for 2 headphones output */
 #define OUTPUT_DEVICE_HEADPHONE1 OUTPUT_DEVICE_HEADPHONE
 #define OUTPUT_DEVICE_HEADPHONE2 OUTPUT_DEVICE_SPEAKER /* Headphone2 is connected to Speaker output of the wm8994 */
-   
+
 /**
   * @}
   */
- 
+
 /** @defgroup STM32746G_DISCOVERY_AUDIO_Exported_Variables STM32746G_DISCOVERY_AUDIO Exported Variables
   * @{
   */
@@ -196,14 +196,14 @@ extern __IO uint16_t AudioInVolume;
  /**
   * @}
   */
-   
+
 /** @defgroup STM32746G_DISCOVERY_AUDIO_Exported_Macros STM32746G_DISCOVERY_AUDIO Exported Macros
   * @{
   */
 #define DMA_MAX(x)           (((x) <= DMA_MAX_SZE)? (x):DMA_MAX_SZE)
 /**
   * @}
-  */ 
+  */
 
 /** @addtogroup STM32746G_DISCOVERY_AUDIO_OUT_Exported_Functions
   * @{
@@ -240,7 +240,7 @@ void  BSP_AUDIO_OUT_MspDeInit(SAI_HandleTypeDef *hsai, void *Params);
 
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_AUDIO_IN_Exported_Functions STM32746G_DISCOVERY_AUDIO_IN Exported Functions
   * @{
@@ -272,11 +272,11 @@ void  BSP_AUDIO_IN_MspDeInit(SAI_HandleTypeDef *hsai, void *Params);
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}

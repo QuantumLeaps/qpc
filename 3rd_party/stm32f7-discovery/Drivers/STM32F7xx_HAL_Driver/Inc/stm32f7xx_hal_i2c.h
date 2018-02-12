@@ -44,7 +44,7 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal_def.h"  
+#include "stm32f7xx_hal_def.h"
 
 /** @addtogroup STM32F7xx_HAL_Driver
   * @{
@@ -52,7 +52,7 @@
 
 /** @addtogroup I2C
   * @{
-  */ 
+  */
 
 /* Exported types ------------------------------------------------------------*/
 /** @defgroup I2C_Exported_Types I2C Exported Types
@@ -60,13 +60,13 @@
   */
 
 /** @defgroup I2C_Configuration_Structure_definition I2C Configuration Structure definition
-  * @brief  I2C Configuration Structure definition  
+  * @brief  I2C Configuration Structure definition
   * @{
   */
 typedef struct
 {
   uint32_t Timing;              /*!< Specifies the I2C_TIMINGR_register value.
-                                  This parameter calculated by referring to I2C initialization 
+                                  This parameter calculated by referring to I2C initialization
                                          section in Reference manual */
 
   uint32_t OwnAddress1;         /*!< Specifies the first device own address.
@@ -92,7 +92,7 @@ typedef struct
 
 }I2C_InitTypeDef;
 
-/** 
+/**
   * @}
   */
 
@@ -122,7 +122,7 @@ typedef struct
   *             0  : Ready (no Tx operation ongoing)\n
   *             1  : Busy (Tx operation ongoing)
   * @{
-  */ 
+  */
 typedef enum
 {
   HAL_I2C_STATE_RESET             = 0x00U,   /*!< Peripheral is not yet Initialized         */
@@ -172,7 +172,7 @@ typedef enum
 
 }HAL_I2C_ModeTypeDef;
 
-/** 
+/**
   * @}
   */
 
@@ -313,7 +313,7 @@ typedef struct __I2C_HandleTypeDef
 /**
   * @}
   */
-  
+
 /** @defgroup I2C_XFERDIRECTION I2C Transfer Direction Master Point of View
   * @{
   */
@@ -431,7 +431,7 @@ typedef struct __I2C_HandleTypeDef
   * @retval None
   */
 #define __HAL_I2C_DISABLE_IT(__HANDLE__, __INTERRUPT__)         ((__HANDLE__)->Instance->CR1 &= (~(__INTERRUPT__)))
- 
+
 /** @brief  Check whether the specified I2C interrupt source is enabled or not.
   * @param  __HANDLE__ specifies the I2C Handle.
   * @param  __INTERRUPT__ specifies the I2C interrupt source to check.
@@ -506,7 +506,7 @@ typedef struct __I2C_HandleTypeDef
 #define __HAL_I2C_DISABLE(__HANDLE__)                           (CLEAR_BIT((__HANDLE__)->Instance->CR1, I2C_CR1_PE))
 
 /** @brief  Generate a Non-Acknowledge I2C peripheral in Slave mode.
-  * @param  __HANDLE__: specifies the I2C Handle. 
+  * @param  __HANDLE__: specifies the I2C Handle.
   * @retval None
   */
 #define __HAL_I2C_GENERATE_NACK(__HANDLE__)                     (SET_BIT((__HANDLE__)->Instance->CR2, I2C_CR2_NACK))
@@ -604,11 +604,11 @@ uint32_t             HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /* Private constants ---------------------------------------------------------*/
 /** @defgroup I2C_Private_Constants I2C Private Constants
@@ -617,7 +617,7 @@ uint32_t             HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
 
 /**
   * @}
-  */ 
+  */
 
 /* Private macros ------------------------------------------------------------*/
 /** @defgroup I2C_Private_Macro I2C Private Macros
@@ -681,7 +681,7 @@ uint32_t             HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
                                                           (uint32_t)((((uint32_t)(__ADDRESS__) & (I2C_CR2_SADD)) | (I2C_CR2_ADD10) | (I2C_CR2_START)) & (~I2C_CR2_RD_WRN)))
 /**
   * @}
-  */ 
+  */
 
 /* Private Functions ---------------------------------------------------------*/
 /** @defgroup I2C_Private_Functions I2C Private Functions
@@ -690,15 +690,15 @@ uint32_t             HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
 /* Private functions are defined in stm32f7xx_hal_i2c.c file */
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 #ifdef __cplusplus
 }

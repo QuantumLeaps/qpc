@@ -484,7 +484,7 @@ uint32_t LL_DMA2D_GetOutputBlueColor(DMA2D_TypeDef *DMA2Dx, uint32_t ColorMode)
   {
     color = (uint32_t)(READ_BIT(DMA2Dx->OCOLR, 0xFU));
   }
-  
+
   return color;
 }
 
@@ -528,7 +528,7 @@ uint32_t LL_DMA2D_GetOutputGreenColor(DMA2D_TypeDef *DMA2Dx, uint32_t ColorMode)
   {
     color = (uint32_t)(READ_BIT(DMA2Dx->OCOLR, 0xF0U) >> 4U);
   }
-  
+
   return color;
 }
 
@@ -572,7 +572,7 @@ uint32_t LL_DMA2D_GetOutputRedColor(DMA2D_TypeDef *DMA2Dx, uint32_t ColorMode)
   {
     color = (uint32_t)(READ_BIT(DMA2Dx->OCOLR, 0xF00U) >> 8U);
   }
-  
+
   return color;
 }
 
@@ -612,7 +612,7 @@ uint32_t LL_DMA2D_GetOutputAlphaColor(DMA2D_TypeDef *DMA2Dx, uint32_t ColorMode)
   {
     color = (uint32_t)(READ_BIT(DMA2Dx->OCOLR, 0xF000U) >> 12U);
   }
-  
+
   return color;
 }
 

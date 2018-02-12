@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for EK-TM4C123GXL, QUTEST, GNU-ARM
-# Last updated for version 5.9.6
-# Last updated on  2017-08-02
+# Last Updated for Version: 6.1.0
+# Date of the Last Update:  2018-02-07
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://state-machine.com
+# https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 #
@@ -205,16 +205,6 @@ QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
 # combine all the soruces...
 C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
-
-# add the pre-defined symbol for ARM architecture
-DEFINES += -D__ARM_ARCH=$(ARM_ARCH)
-ASM_CPU += -defsym=__ARM_ARCH=$(ARM_ARCH)
-
-# add the pre-defined symbol __FPU_PRESENT if needed...
-ifneq (,$(ARM_FPU))
-DEFINES += -D__FPU_PRESENT
-ASM_FPU += -defsym=__FPU_PRESENT=1
-endif
 
 BIN_DIR := $(TARGET)
 

@@ -80,6 +80,8 @@
  * @{
  */
 
+#ifdef Q_SPY
+
 /**
  * @brief UART MSP Initialization
  *        This function configures the hardware resources used in this example:
@@ -135,15 +137,16 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
     USARTx_RELEASE_RESET();
 
     /*##-2- Disable peripherals and GPIO Clocks #################################*/
-    /* Configure USART6 Tx as alternate function  */
+    /* Configure USART Tx as alternate function  */
     HAL_GPIO_DeInit(USARTx_TX_GPIO_PORT, USARTx_TX_PIN);
-    /* Configure USART6 Rx as alternate function  */
+    /* Configure USART Rx as alternate function  */
     HAL_GPIO_DeInit(USARTx_RX_GPIO_PORT, USARTx_RX_PIN);
 
     /*##-3- Disable the NVIC for UART ##########################################*/
     HAL_NVIC_DisableIRQ(USARTx_IRQn);
 }
 
+#endif /* Q_SPY */
 /**
  * @}
  */

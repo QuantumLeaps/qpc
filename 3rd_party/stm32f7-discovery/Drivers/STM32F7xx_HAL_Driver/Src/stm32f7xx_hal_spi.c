@@ -421,7 +421,7 @@ HAL_StatusTypeDef HAL_SPI_DeInit(SPI_HandleTypeDef *hspi)
   *               the configuration information for SPI module.
   * @retval None
   */
-__weak void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
+__WEAK void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
@@ -437,7 +437,7 @@ __weak void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
   *               the configuration information for SPI module.
   * @retval None
   */
-__weak void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
+__WEAK void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
@@ -2015,7 +2015,7 @@ HAL_StatusTypeDef HAL_SPI_Abort_IT(SPI_HandleTypeDef *hspi)
   {
     hspi->RxISR = SPI_AbortRx_ISR;
   }
-  
+
   while (hspi->State != HAL_SPI_STATE_ABORT)
   {
     if ((HAL_GetTick() - tickstart) >=  HAL_MAX_DELAY)
@@ -2334,7 +2334,7 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
   *               the configuration information for SPI module.
   * @retval None
   */
-__weak void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
+__WEAK void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
@@ -2350,7 +2350,7 @@ __weak void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
   *               the configuration information for SPI module.
   * @retval None
   */
-__weak void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
+__WEAK void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
@@ -2366,7 +2366,7 @@ __weak void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
   *               the configuration information for SPI module.
   * @retval None
   */
-__weak void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
+__WEAK void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
@@ -2382,7 +2382,7 @@ __weak void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
   *               the configuration information for SPI module.
   * @retval None
   */
-__weak void HAL_SPI_TxHalfCpltCallback(SPI_HandleTypeDef *hspi)
+__WEAK void HAL_SPI_TxHalfCpltCallback(SPI_HandleTypeDef *hspi)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
@@ -2398,7 +2398,7 @@ __weak void HAL_SPI_TxHalfCpltCallback(SPI_HandleTypeDef *hspi)
   *               the configuration information for SPI module.
   * @retval None
   */
-__weak void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi)
+__WEAK void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
@@ -2414,7 +2414,7 @@ __weak void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi)
   *               the configuration information for SPI module.
   * @retval None
   */
-__weak void HAL_SPI_TxRxHalfCpltCallback(SPI_HandleTypeDef *hspi)
+__WEAK void HAL_SPI_TxRxHalfCpltCallback(SPI_HandleTypeDef *hspi)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
@@ -2430,7 +2430,7 @@ __weak void HAL_SPI_TxRxHalfCpltCallback(SPI_HandleTypeDef *hspi)
   *               the configuration information for SPI module.
   * @retval None
   */
-__weak void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
+__WEAK void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
@@ -2448,7 +2448,7 @@ __weak void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
   * @param  hspi SPI handle.
   * @retval None
   */
-__weak void HAL_SPI_AbortCpltCallback(SPI_HandleTypeDef *hspi)
+__WEAK void HAL_SPI_AbortCpltCallback(SPI_HandleTypeDef *hspi)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);

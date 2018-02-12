@@ -8,7 +8,7 @@
 	<isElfFormat value="true"/>
 	<rts value="libc.a"/>
 	<createSlaveProjects value=""/>
-	<templateProperties value="id=com_ti_rtsc_tirtostivac_example_107.projectspec.dpp,type=rtsc,products=com.ti.rtsc.TIRTOStivac,xdcToolsVersion=3_32_00_06_core,target=ti.targets.arm.elf.M4F,platform=ti.platforms.tiva:TM4C123GH6PM,buildProfile=release,isHybrid=true,configuroOptions= --compileOptions &quot;${COMPILER_FLAGS} &quot;,"/>
+	<templateProperties value="id=com_ti_rtsc_tirtostivac_example_107.projectspec.dpp-ti-rtos,type=rtsc,products=com.ti.rtsc.TIRTOStivac,xdcToolsVersion=3_32_00_06_core,target=ti.targets.arm.elf.M4F,platform=ti.platforms.tiva:TM4C123GH6PM,buildProfile=release,isHybrid=true,configuroOptions= --compileOptions &quot;${COMPILER_FLAGS} &quot;,"/>
 	<origin value="C:\ti\tirtos_tivac_2_16_01_14\resources\ek_tm4C123GXLEvaluationKit\kernelExamples\tiKernelExamples\com_ti_rtsc_tirtostivac_example_107.projectspec"/>
 	<filesToOpen value=""/>
 	<isTargetManual value="true"/>

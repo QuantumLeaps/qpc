@@ -1,8 +1,8 @@
 About this Example
 ==================
-This example can be built from the command prompt with the provided
-Makefile. The example can also be imported as a Makefile-based
-project into Eclipse-based IDEs.
+This example can be built in two different ways:
+- from the command prompt with the provided Makefile.
+- from the TI Code Composer Studio with the provided CCS project.
 
 
 The Makefile

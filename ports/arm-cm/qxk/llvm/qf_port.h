@@ -3,14 +3,14 @@
 * @brief QF/C port to Cortex-M, dual-mode QXK kernel, LLVM-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.3
-* Date of the Last Update:  2017-12-09
+* Last Updated for Version: 6.1.0
+* Date of the Last Update:  2018-02-01
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -52,12 +52,10 @@
     #define QF_INT_DISABLE()    __asm volatile ("cpsid i")
     #define QF_INT_ENABLE()     __asm volatile ("cpsie i")
 
-    /* QF critical section (save and restore interrupt status), see NOTE6 */
+    /* QF critical section (save and restore interrupt status) */
     #define QF_CRIT_STAT_TYPE   uint32_t
-    #define QF_CRIT_ENTRY(primask_) do { \
-        __asm volatile ("mrs %0,PRIMASK" : "=r" (primask_) ::); \
-        __asm volatile ("cpsid i"  ::: "memory"); \
-    } while (false)
+    #define QF_CRIT_ENTRY(primask_) \
+        __asm volatile ("mrs %0,PRIMASK\n cpsid i" : "=r" (primask_) ::)
     #define QF_CRIT_EXIT(primask_) \
         __asm volatile ("msr PRIMASK,%0" :: "r" (primask_) : )
 
@@ -75,7 +73,7 @@
 
     /* Cortex-M3/M4/M7 interrupt disabling policy, see NOTE3,4 */
     #define QF_INT_DISABLE() __asm volatile (\
-        "cpsid i\n\t" "msr BASEPRI,%0\n\t" "cpsie i" :: "r" (QF_BASEPRI) : )
+        "cpsid i\n" "msr BASEPRI,%0\n" "cpsie i" :: "r" (QF_BASEPRI) : )
     #define QF_INT_ENABLE()  __asm volatile (\
         "msr BASEPRI,%0" :: "r" (0) : )
 
@@ -102,7 +100,7 @@
 
 #endif
 
-#define QF_CRIT_EXIT_NOP()      __builtin_arm_isb(0U)
+#define QF_CRIT_EXIT_NOP()      __asm volatile ("isb")
 
 #include "qep_port.h" /* QEP port */
 
@@ -157,15 +155,6 @@
 * 837070). The workaround recommended by ARM is to surround MSR BASEPRI with
 * the CPSID i/CPSIE i pair, which is implemented in the QF_INT_DISABLE()
 * macro. This workaround works also for Cortex-M3/M4 cores.
-*
-* NOTE6:
-* The critical section for Cortex-M0(+)/M1 (ARMv6-M architecture) is
-* specifically defined to avoid the GNU-ARM bug 1722849 (see
-* https://bugs.launchpad.net/gcc-arm-embedded/+bug/1722849 ). Specifically,
-* the in-line assembly for disabling of interrupts with "cpsid i" has an
-* artificial dependency on the (primask_) argument. This ensures that
-* the GNU-ARM compiler will evaluate the preceeding "mrs %0,PRIMASK"
-* __before__ evaluating "cpsid i".
 */
 
 #endif /* qf_port_h */

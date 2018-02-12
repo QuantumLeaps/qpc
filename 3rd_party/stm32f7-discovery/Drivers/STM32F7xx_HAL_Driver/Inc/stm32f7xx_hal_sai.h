@@ -396,7 +396,7 @@ typedef struct __SAI_HandleTypeDef
 /**
   * @}
   */
-  
+
 
 /** @defgroup SAI_Block_FS_Definition SAI Block FS Definition
   * @{
@@ -424,7 +424,7 @@ typedef struct __SAI_HandleTypeDef
 /**
   * @}
   */
-  
+
 
   /** @defgroup SAI_Block_Slot_Size SAI Block Slot Size
   * @{

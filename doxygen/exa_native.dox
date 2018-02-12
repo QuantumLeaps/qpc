@@ -47,7 +47,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 */
 /*##########################################################################*/
-/*! @page exa_qk QK Kernel (Preemptive, Priority-Based, Non-Blocking)
+/*! @page exa_qk QK Kernel (Preemptive, Run-To-Completion/Non-Blocking)
 
 @htmlonly
 <script src="preview.js" type="text/javascript"></script>
@@ -65,6 +65,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
 - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
+- @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a>
 - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
@@ -73,7 +74,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 */
 /*##########################################################################*/
-/*! @page exa_qxk QXK Kernel (Preemptive, Priority-Based, Blocking)
+/*! @page exa_qxk QXK Kernel (Preemptive, Run-To-Completion/Blocking)
 
 @htmlonly
 <script src="preview.js" type="text/javascript"></script>
@@ -85,6 +86,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
+- @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a>
 */
 /*##########################################################################*/
 /*! @page exa_arm-cm ARM Cortex-M (Cortex-M0/M0+/M3/M4/M7)
@@ -104,6 +106,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @subpage arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
 - @subpage arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
 - @subpage arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Disco"></a>
+- @subpage arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a>
 - @subpage arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 */
 /*##########################################################################*/
@@ -165,19 +168,19 @@ The Blinky example is located in the directory <span class="img folder">qpc/exam
   | +-arm-cm/        - QP/C examples for ARM Cortex-M
   | | +-blinky_ek-tm4c123gxl/ - Blinky example on the EK-TM4C123GLX board
   | | | +-qk/        - QK version
-  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | +-arm/     - ARM-KEIL toolchain
   | | | | | +-blinky-qk.uvprojx - uVision project
-  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | +-gnu/     - GNU-ARM toolchain
   | | | | | +-Makefile          - Makefile for building the project
-  | | | | +-iar/     - IAR-ARM toolset
+  | | | | +-iar/     - IAR-ARM toolchain
   | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
   | | | | +-bsp.c    - BSP for the QK kernel
   | | | +-qv/        - QV version
-  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | +-arm/     - ARM-KEIL toolchain
   | | | | | +-blinky-qk.uvprojx - uVision project
-  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | +-gnu/     - GNU-ARM toolchain
   | | | | | +-Makefile          - Makefile for building the project with GNU-ARM
-  | | | | +-iar/     - IAR-ARM toolset
+  | | | | +-iar/     - IAR-ARM toolchain
   | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
   | | | | +-bsp.c    - BSP for the QV kernel
   | | | +-win32/     - Windows emulation (multithreaded)
@@ -192,13 +195,13 @@ The Blinky example is located in the directory <span class="img folder">qpc/exam
 ------------------------------------------------------------------------------
 @section arm-cm_blinky_ek-tm4c123gxl_feat Features Demonstrated
 - cooperative QV kernel
-  + with ARM-KEIL toolset
-  + with GNU-ARM toolset
-  + with IAR-ARM toolset
+  + with ARM-KEIL toolchain
+  + with GNU-ARM toolchain
+  + with IAR-ARM toolchain
 - preemptive run-to-completion QK kernel
-  + with ARM-KEIL toolset
-  + with GNU-ARM toolset
-  + with IAR-ARM toolset
+  + with ARM-KEIL toolchain
+  + with GNU-ARM toolchain
+  + with IAR-ARM toolchain
 - Windows emulation (console multithreaded)
 - Windows emulation (console, single threaded: win32-qv)
 
@@ -236,19 +239,19 @@ The Blinky example is located in the directory <span class="img folder">qpc/exam
   | +-arm-cm/        - QP/C examples for ARM Cortex-M
   | | +-blinky_efm32-slstk3401a/ - Blinky example on the EFM32-SLSTK3401A board
   | | | +-qk/        - QK version
-  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | +-arm/     - ARM-KEIL toolchain
   | | | | | +-blinky-qk.uvprojx - uVision project
-  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | +-gnu/     - GNU-ARM toolchain
   | | | | | +-Makefile          - Makefile for building the project
-  | | | | +-iar/     - IAR-ARM toolset
+  | | | | +-iar/     - IAR-ARM toolchain
   | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
   | | | | +-bsp.c    - BSP for the QK kernel
   | | | +-qv/        - QV version
-  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | +-arm/     - ARM-KEIL toolchain
   | | | | | +-blinky-qk.uvprojx - uVision project
-  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | +-gnu/     - GNU-ARM toolchain
   | | | | | +-Makefile          - Makefile for building the project with GNU-ARM
-  | | | | +-iar/     - IAR-ARM toolset
+  | | | | +-iar/     - IAR-ARM toolchain
   | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
   | | | | +-bsp.c    - BSP for the QV kernel
   | | | +-win32/     - Windows emulation (multithreaded)
@@ -263,13 +266,13 @@ The Blinky example is located in the directory <span class="img folder">qpc/exam
 ------------------------------------------------------------------------------
 @section arm-cm_blinky_efm32-slstk3401a_feat Features Demonstrated
 - cooperative QV kernel
-  + with ARM-KEIL toolset
-  + with GNU-ARM toolset
-  + with IAR-ARM toolset
+  + with ARM-KEIL toolchain
+  + with GNU-ARM toolchain
+  + with IAR-ARM toolchain
 - preemptive run-to-completion QK kernel
-  + with ARM-KEIL toolset
-  + with GNU-ARM toolset
-  + with IAR-ARM toolset
+  + with ARM-KEIL toolchain
+  + with GNU-ARM toolchain
+  + with IAR-ARM toolchain
 - Windows emulation (console multithreaded)
 - Windows emulation (console, single threaded: win32-qv)
 
@@ -308,35 +311,35 @@ The DPP example is located in the directory <span class="img folder">qpc/example
   | | | | +-lin.bat  - batch file for running the PC-Lint
   | | | | +-options.lnt - PC-Lint options file for the DPP application code
   | | | +-qk/        - QK version
-  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | +-arm/     - ARM-KEIL toolchain
   | | | | | +-dpp-qk.uvprojx - uVision project
-  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | +-gnu/     - GNU-ARM toolchain
   | | | | | +-Makefile          - Makefile for building the project
-  | | | | +-iar/     - IAR-ARM toolset
+  | | | | +-iar/     - IAR-ARM toolchain
   | | | | | +-dpp-qk.eww     - IAR EW-ARM workspace
-  | | | | +-ti/      - TI-ARM toolset (CCS)
+  | | | | +-ti/      - TI-ARM toolchain (CCS)
   | | | | | +-.ccsproject  - CCS project
   | | | | | +-.cproject    - C Eclipse project
   | | | | | +-.project     - Eclipse project
   | | | | +-bsp.c    - BSP for the QK kernel
   | | | | +-main.c   - main() for the QK kernel
   | | | +-qv/        - QV version
-  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | +-arm/     - ARM-KEIL toolchain
   | | | | | +-dpp-qk.uvprojx - uVision project
-  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | +-gnu/     - GNU-ARM toolchain
   | | | | | +-Makefile          - Makefile for building the project with GNU-ARM
-  | | | | +-iar/     - IAR-ARM toolset
+  | | | | +-iar/     - IAR-ARM toolchain
   | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
   | | | | +-bsp.c    - BSP for the QV kernel
   | | | | +-main.c   - main() for the QV kernel
   | | | +-qxk/       - QXK version
-  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | +-arm/     - ARM-KEIL toolchain
   | | | | | +-dpp-qk.uvprojx - uVision project
-  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | +-gnu/     - GNU-ARM toolchain
   | | | | | +-Makefile          - Makefile for building the project
-  | | | | +-iar/     - IAR-ARM toolset
+  | | | | +-iar/     - IAR-ARM toolchain
   | | | | | +-dpp-qk.eww     - IAR EW-ARM workspace
-  | | | | +-ti/      - TI-ARM toolset (CCS)
+  | | | | +-ti/      - TI-ARM toolchain (CCS)
   | | | | | +-.ccsproject  - CCS project
   | | | | | +-.cproject    - C Eclipse project
   | | | | | +-.project     - Eclipse project
@@ -352,20 +355,20 @@ The DPP example is located in the directory <span class="img folder">qpc/example
 ------------------------------------------------------------------------------
 @section arm-cm_dpp_ek-tm4c123gxl_feat Features Demonstrated
 - cooperative QV kernel
-  + with ARM-KEIL toolset
-  + with GNU-ARM toolset
-  + with IAR-ARM toolset
-  + with TI-ARM toolset (CCS)
+  + with ARM-KEIL toolchain
+  + with GNU-ARM toolchain
+  + with IAR-ARM toolchain
+  + with TI-ARM toolchain (CCS)
 - preemptive run-to-completion QK kernel
-  + with ARM-KEIL toolset
-  + with GNU-ARM toolset
-  + with IAR-ARM toolset
-  + with TI-ARM toolset (CCS)
+  + with ARM-KEIL toolchain
+  + with GNU-ARM toolchain
+  + with IAR-ARM toolchain
+  + with TI-ARM toolchain (CCS)
 - preemptive dual-mode QXK kernel
-  + with ARM-KEIL toolset
-  + with GNU-ARM toolset
-  + with IAR-ARM toolset
-  + with TI-ARM toolset (CCS)
+  + with ARM-KEIL toolchain
+  + with GNU-ARM toolchain
+  + with IAR-ARM toolchain
+  + with TI-ARM toolchain (CCS)
 - QP/Spy software tracing (output)
 - QP/Spy software tracing (input QS-RX)
 - Unit Testing with QUTest
@@ -409,29 +412,29 @@ The DPP example is located in the directory <span class="img folder">qpc/example
   | | | | +-lin.bat  - batch file for running the PC-Lint
   | | | | +-options.lnt - PC-Lint options file for the DPP application code
   | | | +-qk/        - QK version
-  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | +-arm/     - ARM-KEIL toolchain
   | | | | | +-dpp-qk.uvprojx - uVision project
-  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | +-gnu/     - GNU-ARM toolchain
   | | | | | +-Makefile          - Makefile for building the project
-  | | | | +-iar/     - IAR-ARM toolset
+  | | | | +-iar/     - IAR-ARM toolchain
   | | | | | +-dpp-qk.eww     - IAR EW-ARM workspace
   | | | | +-bsp.c    - BSP for the QK kernel
   | | | | +-main.c   - main() for the QK kernel
   | | | +-qv/        - QV version
-  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | +-arm/     - ARM-KEIL toolchain
   | | | | | +-dpp-qk.uvprojx - uVision project
-  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | +-gnu/     - GNU-ARM toolchain
   | | | | | +-Makefile          - Makefile for building the project with GNU-ARM
-  | | | | +-iar/     - IAR-ARM toolset
+  | | | | +-iar/     - IAR-ARM toolchain
   | | | | | +-blinky-qk.eww     - IAR EW-ARM workspace
   | | | | +-bsp.c    - BSP for the QV kernel
   | | | | +-main.c   - main() for the QV kernel
   | | | +-qxk/       - QXK version
-  | | | | +-arm/     - ARM-KEIL toolset
+  | | | | +-arm/     - ARM-KEIL toolchain
   | | | | | +-dpp-qk.uvprojx - uVision project
-  | | | | +-gnu/     - GNU-ARM toolset
+  | | | | +-gnu/     - GNU-ARM toolchain
   | | | | | +-Makefile          - Makefile for building the project
-  | | | | +-iar/     - IAR-ARM toolset
+  | | | | +-iar/     - IAR-ARM toolchain
   | | | | | +-dpp-qk.eww     - IAR EW-ARM workspace
   | | | | +-bsp.c    - BSP for the QXK kernel
   | | | | +-main.c   - main() for the QXK kernel
@@ -445,17 +448,17 @@ The DPP example is located in the directory <span class="img folder">qpc/example
 ------------------------------------------------------------------------------
 @section arm-cm_dpp_efm32-slstk3401a_feat Features Demonstrated
 - cooperative QV kernel
-  + with ARM-KEIL toolset
-  + with GNU-ARM toolset
-  + with IAR-ARM toolset
+  + with ARM-KEIL toolchain
+  + with GNU-ARM toolchain
+  + with IAR-ARM toolchain
 - preemptive run-to-completion QK kernel
-  + with ARM-KEIL toolset
-  + with GNU-ARM toolset
-  + with IAR-ARM toolset
+  + with ARM-KEIL toolchain
+  + with GNU-ARM toolchain
+  + with IAR-ARM toolchain
 - preemptive dual-mode QXK kernel
-  + with ARM-KEIL toolset
-  + with GNU-ARM toolset
-  + with IAR-ARM toolset
+  + with ARM-KEIL toolchain
+  + with GNU-ARM toolchain
+  + with IAR-ARM toolchain
 - QP/Spy software tracing (output)
 - QP/Spy software tracing (input QS-RX)
 - Unit Testing with QUTest
@@ -478,7 +481,7 @@ The application also demonstrates <a href="https://state-machine.com/qtools/qpsp
 
 @image html bd_mbed-LPC1768.jpg mbed-LPC1768 board
 
-Dining Philosophers Problem (DPP) example for  NXP LPC1768 MCU (Cortex-M3) with GNU-ARM toolset.
+Dining Philosophers Problem (DPP) example for  NXP LPC1768 MCU (Cortex-M3) with GNU-ARM toolchain.
 
 @image html mbed-LPC1768_button.jpg Adding External Button to mbed-LPC1768
 @n
@@ -490,7 +493,7 @@ Dining Philosophers Problem (DPP) example for  NXP LPC1768 MCU (Cortex-M3) with 
 
 @image html bd_nucleo-l053r8.jpg NUCLEO-L053R8 board
 
-Dining Philosophers Problem (DPP) example for STM32-L053R8T6 MCU (Cortex-M0+) with ARM-Keil, GNU-ARM, and IAR-ARM toolsets.
+Dining Philosophers Problem (DPP) example for STM32-L053R8T6 MCU (Cortex-M0+) with ARM-Keil, GNU-ARM, and IAR-ARM toolchains.
 
 @image html under_construction.jpg
 */
@@ -499,7 +502,7 @@ Dining Philosophers Problem (DPP) example for STM32-L053R8T6 MCU (Cortex-M0+) wi
 
 @image html bd_nucleo-l152re.jpg NUCLEO-L152RE board
 
-Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) with ARM-Keil, GNU-ARM, and IAR-ARM toolsets.
+Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) with ARM-Keil, GNU-ARM, and IAR-ARM toolchains.
 
 @image html under_construction.jpg
 */
@@ -508,16 +511,47 @@ Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) wit
 
 @image html bd_STM32F746G-Disco.jpg STM32F746G-Discovery
 
-Dining Philosophers Problem (DPP) example for STM32F746G-Discovery MCU (Cortex-M7) with ARM-Keil, GNU-ARM, and IAR-ARM toolsets.
+@ref dpp "Dining Philosophers Problem (DPP)" example for STM32F746G-Discovery (Cortex-M7).
 
-@image html under_construction.jpg
+Demonstrated built-in kernels:
+- cooperative @ref qv with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- preemptive, run-to-completion @ref qk with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- dual-mode (run-to-completion/blocking) @ref qxk with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+
+
+Features:
+- multiple active objects, including 5 instances of the same AO class (Philo)
+- extended threads (the QXK version)
+- [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html) using the virtual COM-port
+- bi-directional [QP/Spy](https://www.state-machine.com/qtools/qs.html#qs_rx) (sending commands to the target)
+
+*/
+/*##########################################################################*/
+/*! @page arm-cm_dpp_nucleo-h743zi DPP on NUCLEO-H743ZI
+
+@image html bd_NUCLEO-H743ZI.jpg NUCLEO-H743ZI
+
+@ref dpp "Dining Philosophers Problem (DPP)" example for NUCLEO-H743ZI MCU (Cortex-M7).
+
+Demonstrated built-in kernels:
+- cooperative @ref qv with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- preemptive, run-to-completion @ref qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- dual-mode (run-to-completion/blocking) @ref qxk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+
+
+Features:
+- multiple active objects, including 5 instances of the same AO class (Philo)
+- extended threads (the QXK version)
+- [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html) using the virtual COM-port
+- bi-directional [QP/Spy](https://www.state-machine.com/qtools/qs.html#qs_rx) (sending commands to the target)
+
 */
 /*##########################################################################*/
 /*! @page arm-cm_game_efm32-slstk3401a "Fly 'n' Shoot" Game on EFM32-SLSTK3401A
 
 @image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
 
-"Fly 'n' Shoot" game example for Silicon Labs Pearl Gecko MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolsets.
+"Fly 'n' Shoot" game example for Silicon Labs Pearl Gecko MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolchains.
 
 @image html game_win32.png Game emulation running in Windows GUI
 @n
@@ -530,7 +564,7 @@ Dining Philosophers Problem (DPP) example for STM32F746G-Discovery MCU (Cortex-M
 
 @image html bd_LAUNCHXL2-TMS57012.jpg LAUNCHXL2-TMS57012
 
-@ref blinky "Blinky" example for LAUNCHXL2-TMS57012 MCU (Cortex-R, Hercules) with IAR-ARM and TI toolsets.
+@ref blinky "Blinky" example for LAUNCHXL2-TMS57012 MCU (Cortex-R, Hercules) with IAR-ARM and TI toolchains.
 
 @image html under_construction.jpg
 */
@@ -539,7 +573,7 @@ Dining Philosophers Problem (DPP) example for STM32F746G-Discovery MCU (Cortex-M
 
 @image html bd_LAUNCHXL2-TMS57012.jpg LAUNCHXL2-TMS57012
 
-Dining Philosophers Problem (DPP) example for LAUNCHXL2-TMS57012 MCU (Cortex-R, Hercules) with IAR-ARM and TI toolsets.
+Dining Philosophers Problem (DPP) example for LAUNCHXL2-TMS57012 MCU (Cortex-R, Hercules) with IAR-ARM and TI toolchains.
 
 @image html under_construction.jpg
 */
@@ -560,7 +594,7 @@ The native (bare-metal) QP/C examples for the "classic" ARM7/ARM9 are as follows
 
 @image html bd_AT91SAM7S-EK.jpg AT91SAM7S-EK board
 
-Dining Philosophers Problem (DPP) example for Atmel AT91SAM7S MCU (ARM7) with GNU-ARM toolset.
+Dining Philosophers Problem (DPP) example for Atmel AT91SAM7S MCU (ARM7) with GNU-ARM toolchain.
 
 @image html under_construction.jpg
 */
@@ -582,7 +616,7 @@ The native (bare-metal) QP/C examples for MSP430 are as follows:
 
 @image html bd_MSP-EXP430G2.jpg MSP-EXP430G2 board
 
-Simple Blinky example for MSP-EXP430G2 with CCS-430 and IAR-430 toolsets.
+Simple Blinky example for MSP-EXP430G2 with CCS-430 and IAR-430 toolchains.
 
 @image html under_construction.jpg
 */
@@ -591,7 +625,7 @@ Simple Blinky example for MSP-EXP430G2 with CCS-430 and IAR-430 toolsets.
 
 @image html bd_MSP-EXP430F5529LP.jpg MSP-EXP430F5529LP board
 
-Simple Blinky example for MSP-EXP430F5529LP with CCS-430 and IAR-430 toolsets.
+Simple Blinky example for MSP-EXP430F5529LP with CCS-430 and IAR-430 toolchains.
 
 @image html under_construction.jpg
 */
@@ -600,7 +634,7 @@ Simple Blinky example for MSP-EXP430F5529LP with CCS-430 and IAR-430 toolsets.
 
 @image html bd_MSP-EXP430G2.jpg MSP-EXP430G2 board
 
-DPP example for MSP-EXP430G2 with CCS-430 and IAR-430 toolsets.
+DPP example for MSP-EXP430G2 with CCS-430 and IAR-430 toolchains.
 
 @section msp430_dpp_msp-exp430g2_qs QS Output
 This example demonstrates the QS software tracing output in the Spy build configuration. QS uses the hardware UART of the MSP-EXP430G2 board connected to the Virtual COM Port on the debugger. This means that you don't need any additional wiring to receive the QS output on your development workstation.

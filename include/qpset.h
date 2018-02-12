@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.3
-* Last updated on  2017-12-05
+* Last updated for version 6.1.0
+* Last updated on  2018-02-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -162,7 +162,8 @@ typedef struct {
 /* Log-base-2 calculations ...*/
 #ifndef QF_LOG2
 
-#if (__STDC_VERSION__ >= 199901L) /* is it C99 compiler? */
+/* is this compiler C99 or newer? */
+#if (defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 
     /*! function that returns (log2(x_) + 1), where @p x_ is uint32_t */
     /**
@@ -171,7 +172,7 @@ typedef struct {
     * 32-bit number. This function can be replaced in the QP ports, if the
     * CPU supports special instructions, such as CLZ (count leading zeros).
     */
-    inline uint_fast8_t QF_LOG2(uint32_t x) {
+    static inline uint_fast8_t QF_LOG2(uint32_t x) {
         static uint8_t const log2LUT[16] = {
             (uint8_t)0, (uint8_t)1, (uint8_t)2, (uint8_t)2,
             (uint8_t)3, (uint8_t)3, (uint8_t)3, (uint8_t)3,
@@ -199,6 +200,8 @@ typedef struct {
     }
 
 #else /* older C compiler */
+
+    /* out-of-line definition */
     uint_fast8_t QF_LOG2(uint32_t x);
 
 #endif /* __STDC_VERSION__ */

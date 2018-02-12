@@ -363,7 +363,7 @@ HAL_StatusTypeDef HAL_SMBUS_DeInit(SMBUS_HandleTypeDef *hsmbus)
   *                the configuration information for the specified SMBUS.
   * @retval None
   */
-__weak void HAL_SMBUS_MspInit(SMBUS_HandleTypeDef *hsmbus)
+__WEAK void HAL_SMBUS_MspInit(SMBUS_HandleTypeDef *hsmbus)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsmbus);
@@ -379,7 +379,7 @@ __weak void HAL_SMBUS_MspInit(SMBUS_HandleTypeDef *hsmbus)
   *                the configuration information for the specified SMBUS.
   * @retval None
   */
-__weak void HAL_SMBUS_MspDeInit(SMBUS_HandleTypeDef *hsmbus)
+__WEAK void HAL_SMBUS_MspDeInit(SMBUS_HandleTypeDef *hsmbus)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsmbus);
@@ -1194,7 +1194,7 @@ void HAL_SMBUS_ER_IRQHandler(SMBUS_HandleTypeDef *hsmbus)
   *                the configuration information for the specified SMBUS.
   * @retval None
   */
-__weak void HAL_SMBUS_MasterTxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
+__WEAK void HAL_SMBUS_MasterTxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsmbus);
@@ -1210,7 +1210,7 @@ __weak void HAL_SMBUS_MasterTxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
   *                the configuration information for the specified SMBUS.
   * @retval None
   */
-__weak void HAL_SMBUS_MasterRxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
+__WEAK void HAL_SMBUS_MasterRxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsmbus);
@@ -1225,7 +1225,7 @@ __weak void HAL_SMBUS_MasterRxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
   *                the configuration information for the specified SMBUS.
   * @retval None
   */
-__weak void HAL_SMBUS_SlaveTxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
+__WEAK void HAL_SMBUS_SlaveTxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsmbus);
@@ -1241,7 +1241,7 @@ __weak void HAL_SMBUS_SlaveTxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
   *                the configuration information for the specified SMBUS.
   * @retval None
   */
-__weak void HAL_SMBUS_SlaveRxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
+__WEAK void HAL_SMBUS_SlaveRxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsmbus);
@@ -1259,7 +1259,7 @@ __weak void HAL_SMBUS_SlaveRxCpltCallback(SMBUS_HandleTypeDef *hsmbus)
   * @param  AddrMatchCode: Address Match Code
   * @retval None
   */
-__weak void HAL_SMBUS_AddrCallback(SMBUS_HandleTypeDef *hsmbus, uint8_t TransferDirection, uint16_t AddrMatchCode)
+__WEAK void HAL_SMBUS_AddrCallback(SMBUS_HandleTypeDef *hsmbus, uint8_t TransferDirection, uint16_t AddrMatchCode)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsmbus);
@@ -1277,7 +1277,7 @@ __weak void HAL_SMBUS_AddrCallback(SMBUS_HandleTypeDef *hsmbus, uint8_t Transfer
   *                the configuration information for the specified SMBUS.
   * @retval None
   */
-__weak void HAL_SMBUS_ListenCpltCallback(SMBUS_HandleTypeDef *hsmbus)
+__WEAK void HAL_SMBUS_ListenCpltCallback(SMBUS_HandleTypeDef *hsmbus)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsmbus);
@@ -1293,7 +1293,7 @@ __weak void HAL_SMBUS_ListenCpltCallback(SMBUS_HandleTypeDef *hsmbus)
   *                the configuration information for the specified SMBUS.
   * @retval None
   */
-__weak void HAL_SMBUS_ErrorCallback(SMBUS_HandleTypeDef *hsmbus)
+__WEAK void HAL_SMBUS_ErrorCallback(SMBUS_HandleTypeDef *hsmbus)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsmbus);

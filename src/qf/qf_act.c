@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.3
-* Last updated on  2017-12-05
+* Last updated for version 6.1.0
+* Last updated on  2018-02-12
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -168,13 +168,14 @@ void QF_bzero(void * const start, uint_fast16_t len) {
 /* log-base-2 implementation ************************************************/
 #ifndef QF_LOG2
 
-#if (__STDC_VERSION__ >= 199901L) /* is it C99 compiler? */
+/* is this compiler C99 or newer? */
+#if (defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 
-    extern inline uint_fast8_t QF_LOG2(uint32_t x);
+    /* inline definition provided in "qpset.h" header file */
 
-#else
+#else /* older C compiler */
 
-    /* out-of line definition of the function QF_LOG2() */
+    /* out-of-line definition of the function QF_LOG2() */
     uint_fast8_t QF_LOG2(uint32_t x) {
         static uint8_t const log2LUT[16] = {
             (uint8_t)0, (uint8_t)1, (uint8_t)2, (uint8_t)2,

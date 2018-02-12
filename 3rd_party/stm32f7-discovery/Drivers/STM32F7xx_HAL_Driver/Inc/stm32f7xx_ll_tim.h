@@ -144,13 +144,13 @@ static const uint8_t SHIFT_TAB_OISx[] =
 #if defined(DFSDM1_Channel0)
 #define TIMx_AF1_BKDFBKE        TIM1_AF1_BKDFBKE     /*!< BRK DFSDM1_BREAK[0] enable */
 #endif /* DFSDM1_Channel0 */
-#define TIMx_AF1_BKINP	      TIM1_AF1_BKINP       /*!< BRK BKIN input polarity */
+#define TIMx_AF1_BKINP          TIM1_AF1_BKINP       /*!< BRK BKIN input polarity */
 /* Generic bit definitions for TIMx_AF2 register */
 #define TIMx_AF2_BK2INE         TIM1_AF2_BK2INE      /*!< BRK B2KINE input enable */
 #if defined(DFSDM1_Channel0)
 #define TIMx_AF2_BK2DFBKE       TIM1_AF2_BK2DFBKE    /*!< BRK DFSDM_BREAK[0] enable */
 #endif /* DFSDM1_Channel0 */
-#define TIMx_AF2_BK2INP	      TIM1_AF2_BK2INP      /*!< BRK BK2IN input polarity */
+#define TIMx_AF2_BK2INP          TIM1_AF2_BK2INP      /*!< BRK BK2IN input polarity */
 #endif /* TIM_BREAK_INPUT_SUPPORT */
 
 /* Remap mask definitions */
@@ -424,8 +424,8 @@ typedef struct
                                     This feature can be modified afterwards using unitary function @ref LL_TIM_OC_SetCompareCH2().*/
 } LL_TIM_HALLSENSOR_InitTypeDef;
 
-/** 
-  * @brief  BDTR (Break and Dead Time) structure definition 
+/**
+  * @brief  BDTR (Break and Dead Time) structure definition
   */
 typedef struct
 {
@@ -433,31 +433,31 @@ typedef struct
                                       This parameter can be a value of @ref TIM_LL_EC_OSSR
 
                                       This feature can be modified afterwards using unitary function @ref LL_TIM_SetOffStates()
-  
+
                                       @note This bit-field cannot be modified as long as LOCK level 2 has been programmed. */
 
   uint32_t OSSIState;            /*!< Specifies the Off-State used in Idle state.
                                       This parameter can be a value of @ref TIM_LL_EC_OSSI
 
                                       This feature can be modified afterwards using unitary function @ref LL_TIM_SetOffStates()
-  
+
                                       @note This bit-field cannot be modified as long as LOCK level 2 has been programmed. */
 
   uint32_t LockLevel;            /*!< Specifies the LOCK level parameters.
                                       This parameter can be a value of @ref TIM_LL_EC_LOCKLEVEL
-  
+
                                       @note The LOCK bits can be written only once after the reset. Once the TIMx_BDTR register
-                                            has been written, their content is frozen until the next reset.*/ 
+                                            has been written, their content is frozen until the next reset.*/
 
   uint8_t DeadTime;              /*!< Specifies the delay time between the switching-off and the
                                       switching-on of the outputs.
                                       This parameter can be a number between Min_Data = 0x00 and Max_Data = 0xFF.
 
                                       This feature can be modified afterwards using unitary function @ref LL_TIM_OC_SetDeadTime()
-  
+
                                       @note This bit-field can not be modified as long as LOCK level 1, 2 or 3 has been programmed. */
 
-  uint16_t BreakState;           /*!< Specifies whether the TIM Break input is enabled or not. 
+  uint16_t BreakState;           /*!< Specifies whether the TIM Break input is enabled or not.
                                       This parameter can be a value of @ref TIM_LL_EC_BREAK_ENABLE
 
                                       This feature can be modified afterwards using unitary functions @ref LL_TIM_EnableBRK() or @ref LL_TIM_DisableBRK()
@@ -468,17 +468,17 @@ typedef struct
                                       This parameter can be a value of @ref TIM_LL_EC_BREAK_POLARITY
 
                                       This feature can be modified afterwards using unitary function @ref LL_TIM_ConfigBRK()
-  
+
                                       @note This bit-field can not be modified as long as LOCK level 1 has been programmed. */
 
   uint32_t BreakFilter;          /*!< Specifies the TIM Break Filter.
                                       This parameter can be a value of @ref TIM_LL_EC_BREAK_FILTER
 
                                       This feature can be modified afterwards using unitary function @ref LL_TIM_ConfigBRK()
-  
+
                                       @note This bit-field can not be modified as long as LOCK level 1 has been programmed. */
 
-  uint32_t Break2State;          /*!< Specifies whether the TIM Break2 input is enabled or not. 
+  uint32_t Break2State;          /*!< Specifies whether the TIM Break2 input is enabled or not.
                                       This parameter can be a value of @ref TIM_LL_EC_BREAK2_ENABLE
 
                                       This feature can be modified afterwards using unitary functions @ref LL_TIM_EnableBRK2() or @ref LL_TIM_DisableBRK2()
@@ -489,21 +489,21 @@ typedef struct
                                       This parameter can be a value of @ref TIM_LL_EC_BREAK2_POLARITY
 
                                       This feature can be modified afterwards using unitary function @ref LL_TIM_ConfigBRK2()
-  
+
                                       @note This bit-field can not be modified as long as LOCK level 1 has been programmed. */
 
   uint32_t Break2Filter;          /*!< Specifies the TIM Break2 Filter.
                                       This parameter can be a value of @ref TIM_LL_EC_BREAK2_FILTER
 
                                       This feature can be modified afterwards using unitary function @ref LL_TIM_ConfigBRK2()
-  
+
                                       @note This bit-field can not be modified as long as LOCK level 1 has been programmed. */
 
-  uint32_t AutomaticOutput;      /*!< Specifies whether the TIM Automatic Output feature is enabled or not. 
+  uint32_t AutomaticOutput;      /*!< Specifies whether the TIM Automatic Output feature is enabled or not.
                                       This parameter can be a value of @ref TIM_LL_EC_AUTOMATICOUTPUT_ENABLE
 
                                       This feature can be modified afterwards using unitary functions @ref LL_TIM_EnableAutomaticOutput() or @ref LL_TIM_DisableAutomaticOutput()
-  
+
                                       @note This bit-field can not be modified as long as LOCK level 1 has been programmed. */
 } LL_TIM_BDTR_InitTypeDef;
 
@@ -567,7 +567,7 @@ typedef struct
 #define LL_TIM_AUTOMATICOUTPUT_ENABLE          TIM_BDTR_AOE            /*!< MOE can be set by software or automatically at the next update event */
 /**
   * @}
-  */ 
+  */
 #endif /* USE_FULL_LL_DRIVER */
 
 /** @defgroup TIM_LL_EC_IT IT Defines
@@ -1125,7 +1125,7 @@ typedef struct
 /**
   * @}
   */
-  
+
 /**
   * @}
   */

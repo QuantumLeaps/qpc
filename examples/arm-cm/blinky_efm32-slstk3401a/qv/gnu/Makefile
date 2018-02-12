@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for Blinky on EMF32-SLSTK3401A, QV kernel, GNU-ARM
-# Last Updated for Version: 5.9.2
-# Date of the Last Update:  2017-06-03
+# Last Updated for Version: 6.1.0
+# Date of the Last Update:  2018-02-07
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://state-machine.com
+# https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
@@ -184,16 +184,6 @@ RM    := rm
 # combine all the soruces...
 C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
-
-# add the pre-defined symbol for ARM architecture
-DEFINES += -D__ARM_ARCH=$(ARM_ARCH)
-ASM_CPU += -defsym=__ARM_ARCH=$(ARM_ARCH)
-
-# add the pre-defined symbol __FPU_PRESENT if needed...
-ifneq (,$(ARM_FPU))
-DEFINES += -D__FPU_PRESENT
-ASM_FPU += -defsym=__FPU_PRESENT=1
-endif
 
 ifeq (rel, $(CONF)) # Release configuration ..................................
 

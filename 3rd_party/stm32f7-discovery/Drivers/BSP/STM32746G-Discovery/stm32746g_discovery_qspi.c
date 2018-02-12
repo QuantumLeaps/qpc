@@ -9,29 +9,29 @@
   @verbatim
   ==============================================================================
                      ##### How to use this driver #####
-  ==============================================================================  
-  [..] 
+  ==============================================================================
+  [..]
    (#) This driver is used to drive the N25Q128A QSPI external
        memory mounted on STM32746G-Discovery board.
-       
+
    (#) This driver need a specific component driver (N25Q128A) to be included with.
 
    (#) Initialization steps:
-       (++) Initialize the QPSI external memory using the BSP_QSPI_Init() function. This 
+       (++) Initialize the QPSI external memory using the BSP_QSPI_Init() function. This
             function includes the MSP layer hardware resources initialization and the
             QSPI interface with the external memory.
-  
+
    (#) QSPI memory operations
        (++) QSPI memory can be accessed with read/write operations once it is
             initialized.
             Read/write operation can be performed with AHB access using the functions
-            BSP_QSPI_Read()/BSP_QSPI_Write(). 
-       (++) The function BSP_QSPI_GetInfo() returns the configuration of the QSPI memory. 
+            BSP_QSPI_Read()/BSP_QSPI_Write().
+       (++) The function BSP_QSPI_GetInfo() returns the configuration of the QSPI memory.
             (see the QSPI memory data sheet)
        (++) Perform erase block operation using the function BSP_QSPI_Erase_Block() and by
-            specifying the block address. You can perform an erase operation of the whole 
-            chip by calling the function BSP_QSPI_Erase_Chip(). 
-       (++) The function BSP_QSPI_GetStatus() returns the current status of the QSPI memory. 
+            specifying the block address. You can perform an erase operation of the whole
+            chip by calling the function BSP_QSPI_Erase_Chip().
+       (++) The function BSP_QSPI_GetStatus() returns the current status of the QSPI memory.
             (see the QSPI memory data sheet)
   @endverbatim
   ******************************************************************************
@@ -62,7 +62,7 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */ 
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32746g_discovery_qspi.h"
@@ -73,31 +73,31 @@
 
 /** @addtogroup STM32746G_DISCOVERY
   * @{
-  */ 
-  
+  */
+
 /** @defgroup STM32746G_DISCOVERY_QSPI STM32746G-Discovery QSPI
   * @{
-  */ 
+  */
 
 
 /* Private variables ---------------------------------------------------------*/
 
 /** @defgroup STM32746G_DISCOVERY_QSPI_Private_Variables STM32746G_DISCOVERY QSPI Private Variables
   * @{
-  */       
+  */
 QSPI_HandleTypeDef QSPIHandle;
 
 /**
   * @}
-  */ 
+  */
 
 
 
 /* Private functions ---------------------------------------------------------*/
-    
+
 /** @defgroup STM32746G_DISCOVERY_QSPI_Private_Functions STM32746G_DISCOVERY QSPI Private Functions
   * @{
-  */ 
+  */
 static uint8_t QSPI_ResetMemory          (QSPI_HandleTypeDef *hqspi);
 static uint8_t QSPI_DummyCyclesCfg       (QSPI_HandleTypeDef *hqspi);
 static uint8_t QSPI_WriteEnable          (QSPI_HandleTypeDef *hqspi);
@@ -106,17 +106,17 @@ static uint8_t QSPI_AutoPollingMemReady  (QSPI_HandleTypeDef *hqspi, uint32_t Ti
 /**
   * @}
   */
-    
+
 /** @defgroup STM32746G_DISCOVERY_QSPI_Exported_Functions STM32746G_DISCOVERY QSPI Exported Functions
   * @{
-  */ 
+  */
 
 /**
   * @brief  Initializes the QSPI interface.
   * @retval QSPI memory status
   */
 uint8_t BSP_QSPI_Init(void)
-{ 
+{
   QSPIHandle.Instance = QUADSPI;
 
   /* Call the DeInit function to reset the driver */
@@ -124,10 +124,10 @@ uint8_t BSP_QSPI_Init(void)
   {
     return QSPI_ERROR;
   }
-        
+
   /* System level initialization */
   BSP_QSPI_MspInit(&QSPIHandle, NULL);
-  
+
   /* QSPI initialization */
   QSPIHandle.Init.ClockPrescaler     = 1; /* QSPI freq = 216 MHz/(1+1) = 108 Mhz */
   QSPIHandle.Init.FifoThreshold      = 4;
@@ -148,13 +148,13 @@ uint8_t BSP_QSPI_Init(void)
   {
     return QSPI_NOT_SUPPORTED;
   }
- 
+
   /* Configuration of the dummy cycles on QSPI memory side */
   if (QSPI_DummyCyclesCfg(&QSPIHandle) != QSPI_OK)
   {
     return QSPI_NOT_SUPPORTED;
   }
-  
+
   return QSPI_OK;
 }
 
@@ -163,7 +163,7 @@ uint8_t BSP_QSPI_Init(void)
   * @retval QSPI memory status
   */
 uint8_t BSP_QSPI_DeInit(void)
-{ 
+{
   QSPIHandle.Instance = QUADSPI;
 
   /* Call the DeInit function to reset the driver */
@@ -171,10 +171,10 @@ uint8_t BSP_QSPI_DeInit(void)
   {
     return QSPI_ERROR;
   }
-        
+
   /* System level De-initialization */
   BSP_QSPI_MspDeInit(&QSPIHandle, NULL);
-  
+
   return QSPI_OK;
 }
 
@@ -182,7 +182,7 @@ uint8_t BSP_QSPI_DeInit(void)
   * @brief  Reads an amount of data from the QSPI memory.
   * @param  pData: Pointer to data to be read
   * @param  ReadAddr: Read start address
-  * @param  Size: Size of data to read    
+  * @param  Size: Size of data to read
   * @retval QSPI memory status
   */
 uint8_t BSP_QSPI_Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size)
@@ -202,22 +202,22 @@ uint8_t BSP_QSPI_Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size)
   s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
   s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
   s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
-  
+
   /* Configure the command */
   if (HAL_QSPI_Command(&QSPIHandle, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
-  
+
   /* Set S# timing for Read command */
   MODIFY_REG(QSPIHandle.Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_3_CYCLE);
-  
+
   /* Reception of the data */
   if (HAL_QSPI_Receive(&QSPIHandle, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
-  
+
   /* Restore S# timing for nonRead commands */
   MODIFY_REG(QSPIHandle.Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_6_CYCLE);
 
@@ -228,7 +228,7 @@ uint8_t BSP_QSPI_Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size)
   * @brief  Writes an amount of data to the QSPI memory.
   * @param  pData: Pointer to data to be written
   * @param  WriteAddr: Write start address
-  * @param  Size: Size of data to write    
+  * @param  Size: Size of data to write
   * @retval QSPI memory status
   */
 uint8_t BSP_QSPI_Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size)
@@ -260,7 +260,7 @@ uint8_t BSP_QSPI_Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size)
   s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
   s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
   s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
-  
+
   /* Perform the write page by page */
   do
   {
@@ -272,37 +272,37 @@ uint8_t BSP_QSPI_Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size)
     {
       return QSPI_ERROR;
     }
-    
+
     /* Configure the command */
     if (HAL_QSPI_Command(&QSPIHandle, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     {
       return QSPI_ERROR;
     }
-    
+
     /* Transmission of the data */
     if (HAL_QSPI_Transmit(&QSPIHandle, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
     {
       return QSPI_ERROR;
     }
-    
-    /* Configure automatic polling mode to wait for end of program */  
+
+    /* Configure automatic polling mode to wait for end of program */
     if (QSPI_AutoPollingMemReady(&QSPIHandle, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
     {
       return QSPI_ERROR;
     }
-    
+
     /* Update the address and size variables for next page programming */
     current_addr += current_size;
     pData += current_size;
     current_size = ((current_addr + N25Q128A_PAGE_SIZE) > end_addr) ? (end_addr - current_addr) : N25Q128A_PAGE_SIZE;
   } while (current_addr < end_addr);
-  
+
   return QSPI_OK;
 }
 
 /**
-  * @brief  Erases the specified block of the QSPI memory. 
-  * @param  BlockAddress: Block address to erase  
+  * @brief  Erases the specified block of the QSPI memory.
+  * @param  BlockAddress: Block address to erase
   * @retval QSPI memory status
   */
 uint8_t BSP_QSPI_Erase_Block(uint32_t BlockAddress)
@@ -333,8 +333,8 @@ uint8_t BSP_QSPI_Erase_Block(uint32_t BlockAddress)
   {
     return QSPI_ERROR;
   }
-  
-  /* Configure automatic polling mode to wait for end of erase */  
+
+  /* Configure automatic polling mode to wait for end of erase */
   if (QSPI_AutoPollingMemReady(&QSPIHandle, N25Q128A_SUBSECTOR_ERASE_MAX_TIME) != QSPI_OK)
   {
     return QSPI_ERROR;
@@ -373,8 +373,8 @@ uint8_t BSP_QSPI_Erase_Chip(void)
   {
     return QSPI_ERROR;
   }
-  
-  /* Configure automatic polling mode to wait for end of erase */  
+
+  /* Configure automatic polling mode to wait for end of erase */
   if (QSPI_AutoPollingMemReady(&QSPIHandle, N25Q128A_BULK_ERASE_MAX_TIME) != QSPI_OK)
   {
     return QSPI_ERROR;
@@ -415,7 +415,7 @@ uint8_t BSP_QSPI_GetStatus(void)
   {
     return QSPI_ERROR;
   }
-  
+
   /* Check the value of the register */
   if ((reg & (N25Q128A_FSR_PRERR | N25Q128A_FSR_VPPERR | N25Q128A_FSR_PGERR | N25Q128A_FSR_ERERR)) != 0)
   {
@@ -437,7 +437,7 @@ uint8_t BSP_QSPI_GetStatus(void)
 
 /**
   * @brief  Return the configuration of the QSPI memory.
-  * @param  pInfo: pointer on the configuration structure  
+  * @param  pInfo: pointer on the configuration structure
   * @retval QSPI memory status
   */
 uint8_t BSP_QSPI_GetInfo(QSPI_Info* pInfo)
@@ -448,7 +448,7 @@ uint8_t BSP_QSPI_GetInfo(QSPI_Info* pInfo)
   pInfo->EraseSectorsNumber = (N25Q128A_FLASH_SIZE/N25Q128A_SUBSECTOR_SIZE);
   pInfo->ProgPageSize       = N25Q128A_PAGE_SIZE;
   pInfo->ProgPagesNumber    = (N25Q128A_FLASH_SIZE/N25Q128A_PAGE_SIZE);
-  
+
   return QSPI_OK;
 }
 
@@ -472,11 +472,11 @@ uint8_t BSP_QSPI_EnableMemoryMappedMode(void)
   s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
   s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
   s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
-  
+
   /* Configure the memory mapped mode */
   s_mem_mapped_cfg.TimeOutActivation = QSPI_TIMEOUT_COUNTER_DISABLE;
   s_mem_mapped_cfg.TimeOutPeriod     = 0;
-  
+
   if (HAL_QSPI_MemoryMapped(&QSPIHandle, &s_command, &s_mem_mapped_cfg) != HAL_OK)
   {
     return QSPI_ERROR;
@@ -491,7 +491,7 @@ uint8_t BSP_QSPI_EnableMemoryMappedMode(void)
 
 /** @addtogroup STM32746G_DISCOVERY_QSPI_Private_Functions
   * @{
-  */ 
+  */
 
 /**
   * @brief QSPI MSP Initialization
@@ -623,7 +623,7 @@ static uint8_t QSPI_ResetMemory(QSPI_HandleTypeDef *hqspi)
     return QSPI_ERROR;
   }
 
-  /* Configure automatic polling mode to wait the memory is ready */  
+  /* Configure automatic polling mode to wait the memory is ready */
   if (QSPI_AutoPollingMemReady(hqspi, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
   {
     return QSPI_ERROR;
@@ -672,10 +672,10 @@ static uint8_t QSPI_DummyCyclesCfg(QSPI_HandleTypeDef *hqspi)
     return QSPI_ERROR;
   }
 
-  /* Update volatile configuration register (with new dummy cycles) */  
+  /* Update volatile configuration register (with new dummy cycles) */
   s_command.Instruction = WRITE_VOL_CFG_REG_CMD;
   MODIFY_REG(reg, N25Q128A_VCR_NB_DUMMY, (N25Q128A_DUMMY_CYCLES_READ_QUAD << POSITION_VAL(N25Q128A_VCR_NB_DUMMY)));
-      
+
   /* Configure the write volatile configuration register command */
   if (HAL_QSPI_Command(hqspi, &s_command, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
@@ -687,7 +687,7 @@ static uint8_t QSPI_DummyCyclesCfg(QSPI_HandleTypeDef *hqspi)
   {
     return QSPI_ERROR;
   }
-  
+
   return QSPI_OK;
 }
 
@@ -716,8 +716,8 @@ static uint8_t QSPI_WriteEnable(QSPI_HandleTypeDef *hqspi)
   {
     return QSPI_ERROR;
   }
-  
-  /* Configure automatic polling mode to wait for write enabling */  
+
+  /* Configure automatic polling mode to wait for write enabling */
   s_config.Match           = N25Q128A_SR_WREN;
   s_config.Mask            = N25Q128A_SR_WREN;
   s_config.MatchMode       = QSPI_MATCH_MODE_AND;
@@ -747,7 +747,7 @@ static uint8_t QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Time
   QSPI_CommandTypeDef     s_command;
   QSPI_AutoPollingTypeDef s_config;
 
-  /* Configure automatic polling mode to wait for memory ready */  
+  /* Configure automatic polling mode to wait for memory ready */
   s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
   s_command.Instruction       = READ_STATUS_REG_CMD;
   s_command.AddressMode       = QSPI_ADDRESS_NONE;
@@ -774,19 +774,19 @@ static uint8_t QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Time
 }
 /**
   * @}
-  */  
-  
+  */
+
 /**
   * @}
-  */ 
-  
+  */
+
 /**
   * @}
-  */ 
-  
+  */
+
 /**
   * @}
-  */ 
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

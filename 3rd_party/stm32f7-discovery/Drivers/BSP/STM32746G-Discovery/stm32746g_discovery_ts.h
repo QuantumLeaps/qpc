@@ -34,7 +34,7 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */ 
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32746G_DISCOVERY_TS_H
@@ -42,21 +42,21 @@
 
 #ifdef __cplusplus
  extern "C" {
-#endif   
-   
+#endif
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32746g_discovery.h"
 /* Include touch screen FT5336 component Driver */
 #include "../Components/ft5336/ft5336.h"
-   
+
 /** @addtogroup BSP
   * @{
-  */ 
+  */
 
 /** @addtogroup STM32746G_DISCOVERY
   * @{
   */
-    
+
 /** @addtogroup STM32746G_DISCOVERY_TS
   * @{
   */
@@ -105,13 +105,13 @@ typedef struct
 
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_TS_Exported_Constants STM32746G_DISCOVERY_TS Exported Constants
   * @{
   */
 
-typedef enum 
+typedef enum
 {
   TS_OK                = 0x00, /*!< Touch Ok */
   TS_ERROR             = 0x01, /*!< Touch Error */
@@ -153,11 +153,11 @@ typedef enum
 } TS_TouchEventTypeDef;
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_TS_Imported_Variables STM32746G_DISCOVERY_TS Imported Variables
   * @{
-  */ 
+  */
 /**
  *  @brief Table for touchscreen event information display on LCD :
  *  table indexed on enum @ref TS_TouchEventTypeDef information
@@ -171,7 +171,7 @@ extern char * ts_event_string_tab[TOUCH_EVENT_NB_MAX];
 extern char * ts_gesture_id_string_tab[GEST_ID_NB_MAX];
 /**
   * @}
-  */ 
+  */
 
 /** @addtogroup STM32746G_DISCOVERY_TS_Exported_Functions
   * @{
@@ -190,7 +190,7 @@ void    BSP_TS_ITClear(void);
 uint8_t BSP_TS_ResetTouchData(TS_StateTypeDef *TS_State);
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
@@ -198,7 +198,7 @@ uint8_t BSP_TS_ResetTouchData(TS_StateTypeDef *TS_State);
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}

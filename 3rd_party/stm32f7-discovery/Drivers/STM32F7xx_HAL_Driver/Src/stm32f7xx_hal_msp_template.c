@@ -5,9 +5,9 @@
   * @version V1.2.0
   * @date    30-December-2016
   * @brief   HAL MSP module.
-  *          This file template is located in the HAL folder and should be copied 
+  *          This file template is located in the HAL folder and should be copied
   *          to the user folder.
-  *         
+  *
   @verbatim
  ===============================================================================
                      ##### How to use this driver #####
@@ -43,7 +43,7 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */ 
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f7xx_hal.h"
@@ -74,11 +74,11 @@
   */
 void HAL_MspInit(void)
 {
- 
+
 }
 
 /**
-  * @brief  DeInitializes the Global MSP.  
+  * @brief  DeInitializes the Global MSP.
   * @retval None
   */
 void HAL_MspDeInit(void)
@@ -92,11 +92,11 @@ void HAL_MspDeInit(void)
   */
 void HAL_PPP_MspInit(void)
 {
- 
+
 }
 
 /**
-  * @brief  DeInitializes the PPP MSP.  
+  * @brief  DeInitializes the PPP MSP.
   * @retval None
   */
 void HAL_PPP_MspDeInit(void)

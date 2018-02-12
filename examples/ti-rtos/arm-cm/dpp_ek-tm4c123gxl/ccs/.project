@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>dpp</name>
+	<name>dpp-ti-rtos</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -32,14 +32,14 @@
 			<locationURI>PARENT-1-PROJECT_LOC/EK_TM4C123GXL.c</locationURI>
 		</link>
 		<link>
+			<name>EK_TM4C123GXL.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/EK_TM4C123GXL.h</locationURI>
+		</link>
+		<link>
 			<name>QP</name>
 			<type>2</type>
 			<locationURI>PARENT-5-PROJECT_LOC/src/qf</locationURI>
-		</link>
-		<link>
-			<name>QP_include</name>
-			<type>2</type>
-			<locationURI>PARENT-5-PROJECT_LOC/include</locationURI>
 		</link>
 		<link>
 			<name>QP_port</name>
@@ -77,4 +77,14 @@
 			<locationURI>PARENT-1-PROJECT_LOC/table.c</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-4-PROJECT_LOC%7D/examples/ti-rtos/arm-cm/dpp_ek-tm4c123gxl</value>
+		</variable>
+		<variable>
+			<name>copy_PARENT1</name>
+			<value>$%7BPARENT-4-PROJECT_LOC%7D</value>
+		</variable>
+	</variableList>
 </projectDescription>

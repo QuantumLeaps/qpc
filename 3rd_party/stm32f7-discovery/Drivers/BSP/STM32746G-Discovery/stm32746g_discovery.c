@@ -4,7 +4,7 @@
   * @author  MCD Application Team
   * @version V2.0.0
   * @date    30-December-2016
-  * @brief   This file provides a set of firmware functions to manage LEDs, 
+  * @brief   This file provides a set of firmware functions to manage LEDs,
   *          push-buttons and COM ports available on STM32746G-Discovery
   *          board(MB1191) from STMicroelectronics.
   ******************************************************************************
@@ -35,14 +35,14 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */ 
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32746g_discovery.h"
 
 /** @addtogroup BSP
   * @{
-  */ 
+  */
 
 /** @addtogroup STM32746G_DISCOVERY
   * @{
@@ -164,7 +164,7 @@ HAL_StatusTypeDef   EEPROM_IO_IsDeviceReady(uint16_t DevAddress, uint32_t Trials
 
 /** @defgroup STM32746G_DISCOVERY_LOW_LEVEL_Exported_Functions STM32746G_DISCOVERY_LOW_LEVELSTM32746G_DISCOVERY_LOW_LEVEL Exported Functions
   * @{
-  */ 
+  */
 
   /**
   * @brief  This method returns the STM32746G DISCOVERY BSP Driver revision
@@ -177,7 +177,7 @@ uint32_t BSP_GetVersion(void)
 
 /**
   * @brief  Configures LED on GPIO.
-  * @param  Led: LED to be configured. 
+  * @param  Led: LED to be configured.
   *          This parameter can be one of the following values:
   *            @arg  LED1
   * @retval None
@@ -198,9 +198,9 @@ void BSP_LED_Init(Led_TypeDef Led)
     gpio_init_structure.Mode = GPIO_MODE_OUTPUT_PP;
     gpio_init_structure.Pull = GPIO_PULLUP;
     gpio_init_structure.Speed = GPIO_SPEED_HIGH;
-  
+
     HAL_GPIO_Init(gpio_led, &gpio_init_structure);
-    
+
     /* By default, turn off LED */
     HAL_GPIO_WritePin(gpio_led, GPIO_PIN[Led], GPIO_PIN_RESET);
   }
@@ -208,7 +208,7 @@ void BSP_LED_Init(Led_TypeDef Led)
 
 /**
   * @brief  DeInit LEDs.
-  * @param  Led: LED to be configured. 
+  * @param  Led: LED to be configured.
   *          This parameter can be one of the following values:
   *            @arg  LED1
   * @note Led DeInit does not disable the GPIO clock
@@ -232,7 +232,7 @@ void BSP_LED_DeInit(Led_TypeDef Led)
 
 /**
   * @brief  Turns selected LED On.
-  * @param  Led: LED to be set on 
+  * @param  Led: LED to be set on
   *          This parameter can be one of the following values:
   *            @arg  LED1
   * @retval None
@@ -241,7 +241,7 @@ void BSP_LED_On(Led_TypeDef Led)
 {
   GPIO_TypeDef*     gpio_led;
 
-  if (Led == LED1)	/* Switch On LED connected to GPIO */
+  if (Led == LED1)    /* Switch On LED connected to GPIO */
   {
     gpio_led = LED1_GPIO_PORT;
     HAL_GPIO_WritePin(gpio_led, GPIO_PIN[Led], GPIO_PIN_SET);
@@ -249,7 +249,7 @@ void BSP_LED_On(Led_TypeDef Led)
 }
 
 /**
-  * @brief  Turns selected LED Off. 
+  * @brief  Turns selected LED Off.
   * @param  Led: LED to be set off
   *          This parameter can be one of the following values:
   *            @arg  LED1
@@ -277,7 +277,7 @@ void BSP_LED_Toggle(Led_TypeDef Led)
 {
   GPIO_TypeDef*     gpio_led;
 
-  if (Led == LED1)	/* Toggle LED connected to GPIO */
+  if (Led == LED1)    /* Toggle LED connected to GPIO */
   {
     gpio_led = LED1_GPIO_PORT;
     HAL_GPIO_TogglePin(gpio_led, GPIO_PIN[Led]);
@@ -288,13 +288,13 @@ void BSP_LED_Toggle(Led_TypeDef Led)
   * @brief  Configures button GPIO and EXTI Line.
   * @param  Button: Button to be configured
   *          This parameter can be one of the following values:
-  *            @arg  BUTTON_WAKEUP: Wakeup Push Button 
-  *            @arg  BUTTON_TAMPER: Tamper Push Button  
+  *            @arg  BUTTON_WAKEUP: Wakeup Push Button
+  *            @arg  BUTTON_TAMPER: Tamper Push Button
   *            @arg  BUTTON_KEY: Key Push Button
   * @param  ButtonMode: Button mode
   *          This parameter can be one of the following values:
   *            @arg  BUTTON_MODE_GPIO: Button will be used as simple IO
-  *            @arg  BUTTON_MODE_EXTI: Button will be connected to EXTI line 
+  *            @arg  BUTTON_MODE_EXTI: Button will be connected to EXTI line
   *                                    with interrupt generation capability
   * @note On STM32746G-Discovery board, the three buttons (Wakeup, Tamper and key buttons)
   *       are mapped on the same push button named "User"
@@ -304,10 +304,10 @@ void BSP_LED_Toggle(Led_TypeDef Led)
 void BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef ButtonMode)
 {
   GPIO_InitTypeDef gpio_init_structure;
-  
+
   /* Enable the BUTTON clock */
   BUTTONx_GPIO_CLK_ENABLE(Button);
-  
+
   if(ButtonMode == BUTTON_MODE_GPIO)
   {
     /* Configure Button pin as input */
@@ -317,25 +317,25 @@ void BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef ButtonMode)
     gpio_init_structure.Speed = GPIO_SPEED_FAST;
     HAL_GPIO_Init(BUTTON_PORT[Button], &gpio_init_structure);
   }
-  
+
   if(ButtonMode == BUTTON_MODE_EXTI)
   {
     /* Configure Button pin as input with External interrupt */
     gpio_init_structure.Pin = BUTTON_PIN[Button];
     gpio_init_structure.Pull = GPIO_NOPULL;
     gpio_init_structure.Speed = GPIO_SPEED_FAST;
-    
+
     if(Button != BUTTON_WAKEUP)
     {
-      gpio_init_structure.Mode = GPIO_MODE_IT_FALLING; 
+      gpio_init_structure.Mode = GPIO_MODE_IT_FALLING;
     }
     else
     {
       gpio_init_structure.Mode = GPIO_MODE_IT_RISING;
     }
-    
+
     HAL_GPIO_Init(BUTTON_PORT[Button], &gpio_init_structure);
-    
+
     /* Enable and set Button EXTI Interrupt to the lowest priority */
     HAL_NVIC_SetPriority((IRQn_Type)(BUTTON_IRQn[Button]), 0x0F, 0x00);
     HAL_NVIC_EnableIRQ((IRQn_Type)(BUTTON_IRQn[Button]));
@@ -346,10 +346,10 @@ void BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef ButtonMode)
   * @brief  Push Button DeInit.
   * @param  Button: Button to be configured
   *          This parameter can be one of the following values:
-  *            @arg  BUTTON_WAKEUP: Wakeup Push Button 
-  *            @arg  BUTTON_TAMPER: Tamper Push Button  
+  *            @arg  BUTTON_WAKEUP: Wakeup Push Button
+  *            @arg  BUTTON_TAMPER: Tamper Push Button
   *            @arg  BUTTON_KEY: Key Push Button
-  * @note On STM32746G-Discovery board, the three buttons (Wakeup, Tamper and key buttons) 
+  * @note On STM32746G-Discovery board, the three buttons (Wakeup, Tamper and key buttons)
   *       are mapped on the same push button named "User"
   *       on the board serigraphy.
   * @note PB DeInit does not disable the GPIO clock
@@ -369,10 +369,10 @@ void BSP_PB_DeInit(Button_TypeDef Button)
   * @brief  Returns the selected button state.
   * @param  Button: Button to be checked
   *          This parameter can be one of the following values:
-  *            @arg  BUTTON_WAKEUP: Wakeup Push Button 
-  *            @arg  BUTTON_TAMPER: Tamper Push Button 
+  *            @arg  BUTTON_WAKEUP: Wakeup Push Button
+  *            @arg  BUTTON_TAMPER: Tamper Push Button
   *            @arg  BUTTON_KEY: Key Push Button
-  * @note On STM32746G-Discovery board, the three buttons (Wakeup, Tamper and key buttons) 
+  * @note On STM32746G-Discovery board, the three buttons (Wakeup, Tamper and key buttons)
   *       are mapped on the same push button named "User"
   *       on the board serigraphy.
   * @retval The Button GPIO pin value
@@ -386,8 +386,8 @@ uint32_t BSP_PB_GetState(Button_TypeDef Button)
   * @brief  Configures COM port.
   * @param  COM: COM port to be configured.
   *          This parameter can be one of the following values:
-  *            @arg  COM1 
-  *            @arg  COM2 
+  *            @arg  COM1
+  *            @arg  COM2
   * @param  huart: Pointer to a UART_HandleTypeDef structure that contains the
   *                configuration information for the specified USART peripheral.
   * @retval None
@@ -426,8 +426,8 @@ void BSP_COM_Init(COM_TypeDef COM, UART_HandleTypeDef *huart)
   * @brief  DeInit COM port.
   * @param  COM: COM port to be configured.
   *          This parameter can be one of the following values:
-  *            @arg  COM1 
-  *            @arg  COM2 
+  *            @arg  COM1
+  *            @arg  COM2
   * @param  huart: Pointer to a UART_HandleTypeDef structure that contains the
   *                configuration information for the specified USART peripheral.
   * @retval None
@@ -441,10 +441,10 @@ void BSP_COM_DeInit(COM_TypeDef COM, UART_HandleTypeDef *huart)
   /* Enable USART clock */
   DISCOVERY_COMx_CLK_DISABLE(COM);
 
-  /* DeInit GPIO pins can be done in the application 
+  /* DeInit GPIO pins can be done in the application
      (by surcharging this __weak function) */
 
-  /* GPIO pins clock, DMA clock can be shut down in the application 
+  /* GPIO pins clock, DMA clock can be shut down in the application
      by surcharging this __weak function */
 }
 
@@ -461,7 +461,7 @@ void BSP_COM_DeInit(COM_TypeDef COM, UART_HandleTypeDef *huart)
 static void I2Cx_MspInit(I2C_HandleTypeDef *i2c_handler)
 {
   GPIO_InitTypeDef  gpio_init_structure;
-  
+
   if (i2c_handler == (I2C_HandleTypeDef*)(&hI2cAudioHandler))
   {
     /* AUDIO and LCD I2C MSP init */
@@ -577,8 +577,8 @@ static void I2Cx_Init(I2C_HandleTypeDef *i2c_handler)
   * @brief  Reads multiple data.
   * @param  i2c_handler : I2C handler
   * @param  Addr: I2C address
-  * @param  Reg: Reg address 
-  * @param  MemAddress: Memory address 
+  * @param  Reg: Reg address
+  * @param  MemAddress: Memory address
   * @param  Buffer: Pointer to data buffer
   * @param  Length: Length of the data
   * @retval Number of read data
@@ -600,16 +600,16 @@ static HAL_StatusTypeDef I2Cx_ReadMultiple(I2C_HandleTypeDef *i2c_handler,
     /* I2C error occurred */
     I2Cx_Error(i2c_handler, Addr);
   }
-  return status;    
+  return status;
 }
 
 /**
   * @brief  Writes a value in a register of the device through BUS in using DMA mode.
   * @param  i2c_handler : I2C handler
-  * @param  Addr: Device address on BUS Bus.  
+  * @param  Addr: Device address on BUS Bus.
   * @param  Reg: The target register address to write
-  * @param  MemAddress: Memory address 
-  * @param  Buffer: The target register value to be written 
+  * @param  MemAddress: Memory address
+  * @param  Buffer: The target register value to be written
   * @param  Length: buffer size to be written
   * @retval HAL status
   */
@@ -621,9 +621,9 @@ static HAL_StatusTypeDef I2Cx_WriteMultiple(I2C_HandleTypeDef *i2c_handler,
                                             uint16_t Length)
 {
   HAL_StatusTypeDef status = HAL_OK;
-  
+
   status = HAL_I2C_Mem_Write(i2c_handler, Addr, (uint16_t)Reg, MemAddress, Buffer, Length, 1000);
-  
+
   /* Check the communication status */
   if(status != HAL_OK)
   {
@@ -634,7 +634,7 @@ static HAL_StatusTypeDef I2Cx_WriteMultiple(I2C_HandleTypeDef *i2c_handler,
 }
 
 /**
-  * @brief  Checks if target device is ready for communication. 
+  * @brief  Checks if target device is ready for communication.
   * @note   This function is used with Memory devices
   * @param  i2c_handler : I2C handler
   * @param  DevAddress: Target device address
@@ -642,7 +642,7 @@ static HAL_StatusTypeDef I2Cx_WriteMultiple(I2C_HandleTypeDef *i2c_handler,
   * @retval HAL status
   */
 static HAL_StatusTypeDef I2Cx_IsDeviceReady(I2C_HandleTypeDef *i2c_handler, uint16_t DevAddress, uint32_t Trials)
-{ 
+{
   return (HAL_I2C_IsDeviceReady(i2c_handler, DevAddress, Trials, 1000));
 }
 
@@ -656,7 +656,7 @@ static void I2Cx_Error(I2C_HandleTypeDef *i2c_handler, uint8_t Addr)
 {
   /* De-initialize the I2C communication bus */
   HAL_I2C_DeInit(i2c_handler);
-  
+
   /* Re-Initialize the I2C communication bus */
   I2Cx_Init(i2c_handler);
 }
@@ -671,7 +671,7 @@ static void I2Cx_Error(I2C_HandleTypeDef *i2c_handler, uint8_t Addr)
   * @brief  Initializes Audio low level.
   * @retval None
   */
-void AUDIO_IO_Init(void) 
+void AUDIO_IO_Init(void)
 {
   I2Cx_Init(&hI2cAudioHandler);
 }
@@ -687,44 +687,44 @@ void AUDIO_IO_DeInit(void)
 /**
   * @brief  Writes a single data.
   * @param  Addr: I2C address
-  * @param  Reg: Reg address 
+  * @param  Reg: Reg address
   * @param  Value: Data to be written
   * @retval None
   */
 void AUDIO_IO_Write(uint8_t Addr, uint16_t Reg, uint16_t Value)
 {
   uint16_t tmp = Value;
-  
+
   Value = ((uint16_t)(tmp >> 8) & 0x00FF);
-  
+
   Value |= ((uint16_t)(tmp << 8)& 0xFF00);
-  
+
   I2Cx_WriteMultiple(&hI2cAudioHandler, Addr, Reg, I2C_MEMADD_SIZE_16BIT,(uint8_t*)&Value, 2);
 }
 
 /**
   * @brief  Reads a single data.
   * @param  Addr: I2C address
-  * @param  Reg: Reg address 
+  * @param  Reg: Reg address
   * @retval Data to be read
   */
 uint16_t AUDIO_IO_Read(uint8_t Addr, uint16_t Reg)
 {
   uint16_t read_value = 0, tmp = 0;
-  
+
   I2Cx_ReadMultiple(&hI2cAudioHandler, Addr, Reg, I2C_MEMADD_SIZE_16BIT, (uint8_t*)&read_value, 2);
-  
+
   tmp = ((uint16_t)(read_value >> 8) & 0x00FF);
-  
+
   tmp |= ((uint16_t)(read_value << 8)& 0xFF00);
-  
+
   read_value = tmp;
-  
+
   return read_value;
 }
 
 /**
-  * @brief  AUDIO Codec delay 
+  * @brief  AUDIO Codec delay
   * @param  Delay: Delay in ms
   * @retval None
   */
@@ -739,7 +739,7 @@ void AUDIO_IO_Delay(uint32_t Delay)
   * @brief  Initializes Camera low level.
   * @retval None
   */
-void CAMERA_IO_Init(void) 
+void CAMERA_IO_Init(void)
 {
   I2Cx_Init(&hI2cExtHandler);
 }
@@ -747,7 +747,7 @@ void CAMERA_IO_Init(void)
 /**
   * @brief  Camera writes single data.
   * @param  Addr: I2C address
-  * @param  Reg: Register address 
+  * @param  Reg: Register address
   * @param  Value: Data to be written
   * @retval None
   */
@@ -759,7 +759,7 @@ void CAMERA_IO_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
 /**
   * @brief  Camera reads single data.
   * @param  Addr: I2C address
-  * @param  Reg: Register address 
+  * @param  Reg: Register address
   * @retval Read data
   */
 uint8_t CAMERA_IO_Read(uint8_t Addr, uint8_t Reg)
@@ -772,7 +772,7 @@ uint8_t CAMERA_IO_Read(uint8_t Addr, uint8_t Reg)
 }
 
 /**
-  * @brief  Camera delay 
+  * @brief  Camera delay
   * @param  Delay: Delay in ms
   * @retval None
   */
@@ -819,14 +819,14 @@ HAL_StatusTypeDef EEPROM_IO_ReadData(uint16_t DevAddress, uint16_t MemAddress, u
 }
 
 /**
-  * @brief  Checks if target device is ready for communication. 
+  * @brief  Checks if target device is ready for communication.
   * @note   This function is used with Memory devices
   * @param  DevAddress: Target device address
   * @param  Trials: Number of trials
   * @retval HAL status
   */
 HAL_StatusTypeDef EEPROM_IO_IsDeviceReady(uint16_t DevAddress, uint32_t Trials)
-{ 
+{
   return (I2Cx_IsDeviceReady(&hI2cExtHandler, DevAddress, Trials));
 }
 
@@ -884,7 +884,7 @@ void TS_IO_Delay(uint32_t Delay)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
@@ -892,6 +892,6 @@ void TS_IO_Delay(uint32_t Delay)
 
 /**
   * @}
-  */    
-    
+  */
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

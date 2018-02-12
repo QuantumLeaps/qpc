@@ -34,7 +34,7 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */  
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32746G_DISCOVERY_LCD_H
@@ -42,7 +42,7 @@
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 /* Includes ------------------------------------------------------------------*/
 /* Include LCD component Driver */
@@ -51,10 +51,10 @@
 
 /* Include SDRAM Driver */
 #include "stm32746g_discovery_sdram.h"
- 
+
 #include "stm32746g_discovery.h"
 #include "../../../Utilities/Fonts/fonts.h"
-  
+
 /** @addtogroup BSP
   * @{
   */
@@ -62,30 +62,30 @@
 /** @addtogroup STM32746G_DISCOVERY
   * @{
   */
-    
+
 /** @addtogroup STM32746G_DISCOVERY_LCD
   * @{
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_LCD_Exported_Types STM32746G_DISCOVERY_LCD Exported Types
   * @{
-  */  
-typedef struct 
-{ 
-  uint32_t TextColor; 
-  uint32_t BackColor;  
+  */
+typedef struct
+{
+  uint32_t TextColor;
+  uint32_t BackColor;
   sFONT    *pFont;
-}LCD_DrawPropTypeDef;   
-   
-typedef struct 
+}LCD_DrawPropTypeDef;
+
+typedef struct
 {
   int16_t X;
   int16_t Y;
-}Point, * pPoint; 
-   
-/** 
-  * @brief  Line mode structures definition  
-  */ 
+}Point, * pPoint;
+
+/**
+  * @brief  Line mode structures definition
+  */
 typedef enum
 {
   CENTER_MODE             = 0x01,    /* Center mode */
@@ -95,31 +95,31 @@ typedef enum
 
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_LCD_Exported_Constants STM32746G_DISCOVERY_LCD Exported Constants
   * @{
-  */ 
+  */
 #define MAX_LAYER_NUMBER       ((uint32_t)2)
 
 #define LCD_LayerCfgTypeDef    LTDC_LayerCfgTypeDef
 
-#define LTDC_ACTIVE_LAYER	     ((uint32_t)1) /* Layer 1 */
-/** 
-  * @brief  LCD status structure definition  
-  */     
+#define LTDC_ACTIVE_LAYER         ((uint32_t)1) /* Layer 1 */
+/**
+  * @brief  LCD status structure definition
+  */
 #define LCD_OK                 ((uint8_t)0x00)
 #define LCD_ERROR              ((uint8_t)0x01)
 #define LCD_TIMEOUT            ((uint8_t)0x02)
 
-/** 
-  * @brief  LCD FB_StartAddress  
+/**
+  * @brief  LCD FB_StartAddress
   */
 #define LCD_FB_START_ADDRESS       ((uint32_t)0xC0000000)
 
-/** 
-  * @brief  LCD color  
-  */ 
+/**
+  * @brief  LCD color
+  */
 #define LCD_COLOR_BLUE          ((uint32_t)0xFF0000FF)
 #define LCD_COLOR_GREEN         ((uint32_t)0xFF00FF00)
 #define LCD_COLOR_RED           ((uint32_t)0xFFFF0000)
@@ -147,16 +147,16 @@ typedef enum
 #define LCD_COLOR_ORANGE        ((uint32_t)0xFFFFA500)
 #define LCD_COLOR_TRANSPARENT   ((uint32_t)0xFF000000)
 
-/** 
-  * @brief LCD default font 
-  */ 
-#define LCD_DEFAULT_FONT        Font24     
+/**
+  * @brief LCD default font
+  */
+#define LCD_DEFAULT_FONT        Font24
 
-/** 
-  * @brief  LCD Reload Types  
+/**
+  * @brief  LCD Reload Types
   */
 #define LCD_RELOAD_IMMEDIATE               ((uint32_t)LTDC_SRCR_IMR)
-#define LCD_RELOAD_VERTICAL_BLANKING       ((uint32_t)LTDC_SRCR_VBR) 
+#define LCD_RELOAD_VERTICAL_BLANKING       ((uint32_t)LTDC_SRCR_VBR)
 
 
 /**
@@ -176,7 +176,7 @@ typedef enum
 
 /**
   * @}
-  */ 
+  */
 
 /** @addtogroup STM32746G_DISCOVERY_LCD_Exported_Functions
   * @{
@@ -246,19 +246,19 @@ void     BSP_LCD_ClockConfig(LTDC_HandleTypeDef *hltdc, void *Params);
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
-  
+  */
+
 /**
   * @}
   */
- 
+
 /**
   * @}
-  */ 
+  */
 
 #ifdef __cplusplus
 }

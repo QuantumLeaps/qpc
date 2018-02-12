@@ -9,10 +9,10 @@
 //
 // Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
 //
-// This program is open source software: you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as published
-// by the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// This program is open source software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
 // Alternatively, this program may be distributed and modified under the
 // terms of Quantum Leaps commercial licenses, which expressly supersede
@@ -37,7 +37,7 @@
 -i./include                    // C standard library files
 -i.                            // this project's includes
 
--si4                           // sizeof(int) 
+-si4                           // sizeof(int)
 -ss2                           // sizeof(short)
 -spD4                          // sizeof(void *)
 -spP4                          // sizeof(function pointer)

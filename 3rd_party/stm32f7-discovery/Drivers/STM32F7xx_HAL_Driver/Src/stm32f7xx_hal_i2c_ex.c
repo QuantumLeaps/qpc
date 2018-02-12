@@ -5,7 +5,7 @@
   * @version V1.2.0
   * @date    30-December-2016
   * @brief   I2C Extended HAL module driver.
-  *          This file provides firmware functions to manage the following 
+  *          This file provides firmware functions to manage the following
   *          functionalities of I2C Extended peripheral:
   *           + Extended features functions
   *
@@ -93,7 +93,7 @@
                       ##### Extended features functions #####
  ===============================================================================
     [..] This section provides functions allowing to:
-      (+) Configure Noise Filters 
+      (+) Configure Noise Filters
       (+) Configure Fast Mode Plus
 
 @endverbatim

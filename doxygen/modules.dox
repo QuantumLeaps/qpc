@@ -52,7 +52,7 @@ Given the simplicity, portability, and low-resource consumption, the QV schedule
 /*! @defgroup qk QK
 
 @brief
-Preemptive Non-Blocking Kernel
+Preemptive Run-To-Completion (Non-Blocking) Kernel
 
 <p>The preemptive, non-blocking QK kernel is specifically designed to execute non-blocking active objects (see also [[PSiCC2](https://www.state-machine.com/psicc2/), Chapter 10]). QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using **single stack**. Active objects process their events in run-to-completion (RTC) fashion and remove themselves from the call stack, the same way as nested interrupts remove themselves from the stack upon completion. At the same time high-priority active objects can **preempt** lower-priority active objects, just like interrupts can preempt each other under a prioritized interrupt controller. <span class="highlight">QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis RMA) and can be used in hard real-time systems</span>.
 </p>

@@ -34,8 +34,8 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */ 
-  
+  */
+
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32746G_DISCOVERY_H
 #define __STM32746G_DISCOVERY_H
@@ -46,7 +46,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f7xx_hal.h"
-   
+
 /** @addtogroup BSP
   * @{
   */
@@ -54,49 +54,49 @@
 /** @addtogroup STM32746G_DISCOVERY
   * @{
   */
-      
+
 /** @addtogroup STM32746G_DISCOVERY_LOW_LEVEL
   * @{
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_LOW_LEVEL_Exported_Types STM32746G_DISCOVERY_LOW_LEVEL Exported Types
   * @{
   */
-typedef enum 
+typedef enum
 {
 LED1 = 0,
 LED_GREEN = LED1,
 }Led_TypeDef;
 
-typedef enum 
-{  
+typedef enum
+{
   BUTTON_WAKEUP = 0,
   BUTTON_TAMPER = 1,
   BUTTON_KEY = 2
 }Button_TypeDef;
 
-typedef enum 
-{  
+typedef enum
+{
   BUTTON_MODE_GPIO = 0,
   BUTTON_MODE_EXTI = 1
 }ButtonMode_TypeDef;
 
-typedef enum 
+typedef enum
 {
   COM1 = 0,
   COM2 = 1
 }COM_TypeDef;
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_LOW_LEVEL_Exported_Constants STM32746G_DISCOVERY_LOW_LEVEL Exported Constants
   * @{
-  */ 
+  */
 
-/** 
+/**
   * @brief  Define for STM32746G_DISCOVERY board
-  */ 
+  */
 #if !defined (USE_STM32746G_DISCO)
  #define USE_STM32746G_DISCO
 #endif
@@ -118,8 +118,8 @@ typedef enum
 
 /** @addtogroup STM32746G_DISCOVERY_LOW_LEVEL_BUTTON
   * @{
-  */ 
-#define BUTTONn                             ((uint8_t)3) 
+  */
+#define BUTTONn                             ((uint8_t)3)
 
 /**
   * @brief Wakeup push-button
@@ -128,7 +128,7 @@ typedef enum
 #define WAKEUP_BUTTON_GPIO_PORT             GPIOI
 #define WAKEUP_BUTTON_GPIO_CLK_ENABLE()     __HAL_RCC_GPIOI_CLK_ENABLE()
 #define WAKEUP_BUTTON_GPIO_CLK_DISABLE()    __HAL_RCC_GPIOI_CLK_DISABLE()
-#define WAKEUP_BUTTON_EXTI_IRQn             EXTI15_10_IRQn 
+#define WAKEUP_BUTTON_EXTI_IRQn             EXTI15_10_IRQn
 
 /**
   * @brief Tamper push-button
@@ -150,7 +150,7 @@ typedef enum
 
 #define BUTTONx_GPIO_CLK_ENABLE(__INDEX__)    do { if((__INDEX__) == 0) WAKEUP_BUTTON_GPIO_CLK_ENABLE(); else\
                                                    if((__INDEX__) == 1) TAMPER_BUTTON_GPIO_CLK_ENABLE(); else\
-												                        KEY_BUTTON_GPIO_CLK_ENABLE(); } while(0)											   
+                                                                        KEY_BUTTON_GPIO_CLK_ENABLE(); } while(0)
 
 #define BUTTONx_GPIO_CLK_DISABLE(__INDEX__)    (((__INDEX__) == 0) ? WAKEUP_BUTTON_GPIO_CLK_DISABLE() :\
                                                 ((__INDEX__) == 1) ? TAMPER_BUTTON_GPIO_CLK_DISABLE() : KEY_BUTTON_GPIO_CLK_DISABLE())
@@ -184,7 +184,7 @@ typedef enum
 
 /**
   * @}
-  */ 
+  */
 
 /** @addtogroup STM32746G_DISCOVERY_LOW_LEVEL_COM
   * @{
@@ -193,7 +193,7 @@ typedef enum
 
 /**
  * @brief Definition for COM port1, connected to USART1
- */ 
+ */
 #define DISCOVERY_COM1                          USART1
 #define DISCOVERY_COM1_CLK_ENABLE()             __HAL_RCC_USART1_CLK_ENABLE()
 #define DISCOVERY_COM1_CLK_DISABLE()            __HAL_RCC_USART1_CLK_DISABLE()
@@ -230,15 +230,15 @@ typedef enum
 #define EEPROM_I2C_ADDRESS_A02           ((uint16_t)0xA6)
 #define TS_I2C_ADDRESS                   ((uint16_t)0x70)
 
-/* I2C clock speed configuration (in Hz) 
-   WARNING: 
-   Make sure that this define is not already declared in other files (ie. 
+/* I2C clock speed configuration (in Hz)
+   WARNING:
+   Make sure that this define is not already declared in other files (ie.
    stm32746g_discovery.h file). It can be used in parallel by other modules. */
 #ifndef I2C_SPEED
  #define I2C_SPEED                       ((uint32_t)100000)
 #endif /* I2C_SPEED */
 
-/* User can use this section to tailor I2Cx/I2Cx instance used and associated 
+/* User can use this section to tailor I2Cx/I2Cx instance used and associated
    resources */
 /* Definition for AUDIO and LCD I2Cx resources */
 #define DISCOVERY_AUDIO_I2Cx                             I2C3
@@ -282,24 +282,24 @@ typedef enum
 /* I2C TIMING is calculated from APB1 source clock = 50 MHz */
 /* Due to the big MOFSET capacity for adapting the camera level the rising time is very large (>1us) */
 /* 0x40912732 takes in account the big rising and aims a clock of 100khz */
-#ifndef DISCOVERY_I2Cx_TIMING  
-#define DISCOVERY_I2Cx_TIMING                      ((uint32_t)0x40912732)  
+#ifndef DISCOVERY_I2Cx_TIMING
+#define DISCOVERY_I2Cx_TIMING                      ((uint32_t)0x40912732)
 #endif /* DISCOVERY_I2Cx_TIMING */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
-  
+  */
+
 /** @defgroup STM32746G_DISCOVERY_LOW_LEVEL_Exported_Macros STM32746G_DISCOVERY_LOW_LEVEL Exported Macros
   * @{
-  */  
+  */
 /**
   * @}
-  */ 
+  */
 
 /** @addtogroup STM32746G_DISCOVERY_LOW_LEVEL_Exported_Functions
   * @{
@@ -322,11 +322,11 @@ void      BSP_COM_DeInit(COM_TypeDef COM, UART_HandleTypeDef *huart);
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}

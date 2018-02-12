@@ -3,8 +3,8 @@
 * @brief QXK/C port to ARM Cortex-M, LLVM-ARM compiler
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.02
-* Date of the Last Update:  2017-12-09
+* Last Updated for Version: 6.1.0
+* Date of the Last Update:  2018-01-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------

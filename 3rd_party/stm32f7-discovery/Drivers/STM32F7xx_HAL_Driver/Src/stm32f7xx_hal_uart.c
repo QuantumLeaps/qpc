@@ -622,7 +622,7 @@ HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
   * @param huart: uart handle
   * @retval None
   */
-__weak void HAL_UART_MspInit(UART_HandleTypeDef *huart)
+__WEAK void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(huart);
@@ -637,7 +637,7 @@ __weak void HAL_UART_MspInit(UART_HandleTypeDef *huart)
   * @param huart: uart handle
   * @retval None
   */
-__weak void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
+__WEAK void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(huart);
@@ -1237,7 +1237,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
 
       huart->ErrorCode |= HAL_UART_ERROR_NE;
     }
-    
+
     /* UART Over-Run interrupt occurred -----------------------------------------*/
     if(((isrflags & USART_ISR_ORE) != RESET) &&
        (((cr1its & USART_CR1_RXNEIE) != RESET) || ((cr3its & USART_CR3_EIE) != RESET)))
@@ -1422,7 +1422,7 @@ static void UART_DMAReceiveCplt(DMA_HandleTypeDef *hdma)
     in the UART CR3 register */
     CLEAR_BIT(huart->Instance->CR3, USART_CR3_DMAR);
 
-	/* At end of Rx process, restore huart->RxState to Ready */
+    /* At end of Rx process, restore huart->RxState to Ready */
     huart->RxState = HAL_UART_STATE_READY;
   }
   HAL_UART_RxCpltCallback(huart);
@@ -1487,7 +1487,7 @@ static void UART_DMAAbortOnError(DMA_HandleTypeDef *hdma)
   * @param huart: uart handle
   * @retval None
   */
- __weak void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+ __WEAK void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(huart);
@@ -1502,7 +1502,7 @@ static void UART_DMAAbortOnError(DMA_HandleTypeDef *hdma)
   * @param  huart: UART handle
   * @retval None
   */
- __weak void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
+ __WEAK void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(huart);
@@ -1517,7 +1517,7 @@ static void UART_DMAAbortOnError(DMA_HandleTypeDef *hdma)
   * @param huart: uart handle
   * @retval None
   */
-__weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+__WEAK void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(huart);
@@ -1532,7 +1532,7 @@ __weak void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   * @param  huart: UART handle
   * @retval None
   */
-__weak void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
+__WEAK void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(huart);
@@ -1547,7 +1547,7 @@ __weak void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
   * @param huart: uart handle
   * @retval None
   */
- __weak void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+ __WEAK void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(huart);
@@ -1733,7 +1733,7 @@ static void UART_EndRxTransfer(UART_HandleTypeDef *huart)
      (+) HAL_HalfDuplex_EnableTransmitter() API disables receiver and enables transmitter
      (+) HAL_HalfDuplex_EnableReceiver() API disables transmitter and enables receiver
      (+) HAL_LIN_SendBreak() API transmits the break characters
-	 (+) HAL_MultiProcessorEx_AddressLength_Set() API optionally sets the UART node address
+     (+) HAL_MultiProcessorEx_AddressLength_Set() API optionally sets the UART node address
          detection length to more than 4 bits for multiprocessor address mark wake up.
 @endverbatim
   * @{

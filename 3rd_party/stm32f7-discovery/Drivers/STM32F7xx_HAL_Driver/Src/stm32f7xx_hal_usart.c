@@ -270,7 +270,7 @@ HAL_StatusTypeDef HAL_USART_DeInit(USART_HandleTypeDef *husart)
   * @param husart: USART handle
   * @retval None
   */
- __weak void HAL_USART_MspInit(USART_HandleTypeDef *husart)
+ __WEAK void HAL_USART_MspInit(USART_HandleTypeDef *husart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(husart);
@@ -285,7 +285,7 @@ HAL_StatusTypeDef HAL_USART_DeInit(USART_HandleTypeDef *husart)
   * @param husart: USART handle
   * @retval None
   */
- __weak void HAL_USART_MspDeInit(USART_HandleTypeDef *husart)
+ __WEAK void HAL_USART_MspDeInit(USART_HandleTypeDef *husart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(husart);
@@ -453,7 +453,7 @@ HAL_StatusTypeDef HAL_USART_Receive(USART_HandleTypeDef *husart, uint8_t *pRxDat
     husart->ErrorCode = HAL_USART_ERROR_NONE;
     husart->State = HAL_USART_STATE_BUSY_RX;
 
-	/* Init tickstart for timeout managment*/
+    /* Init tickstart for timeout managment*/
     tickstart = HAL_GetTick();
 
     husart->RxXferSize = Size;
@@ -536,7 +536,7 @@ HAL_StatusTypeDef HAL_USART_TransmitReceive(USART_HandleTypeDef *husart, uint8_t
     husart->ErrorCode = HAL_USART_ERROR_NONE;
     husart->State = HAL_USART_STATE_BUSY_RX;
 
-	/* Init tickstart for timeout managment*/
+    /* Init tickstart for timeout managment*/
     tickstart = HAL_GetTick();
 
     husart->RxXferSize = Size;
@@ -865,7 +865,7 @@ HAL_StatusTypeDef HAL_USART_Receive_DMA(USART_HandleTypeDef *husart, uint8_t *pR
     /* Set the DMA abort callback */
     husart->hdmatx->XferAbortCallback = NULL;
 
-	/* Set the USART Tx DMA transfer complete callback as NULL because the communication closing
+    /* Set the USART Tx DMA transfer complete callback as NULL because the communication closing
     is performed in DMA reception complete callback  */
     husart->hdmatx->XferHalfCpltCallback = NULL;
     husart->hdmatx->XferCpltCallback = NULL;
@@ -1284,7 +1284,7 @@ void HAL_USART_IRQHandler(USART_HandleTypeDef *husart)
   * @param husart: USART handle
   * @retval None
   */
-__weak void HAL_USART_TxCpltCallback(USART_HandleTypeDef *husart)
+__WEAK void HAL_USART_TxCpltCallback(USART_HandleTypeDef *husart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(husart);
@@ -1299,7 +1299,7 @@ __weak void HAL_USART_TxCpltCallback(USART_HandleTypeDef *husart)
   * @param  husart: USART handle
   * @retval None
   */
- __weak void HAL_USART_TxHalfCpltCallback(USART_HandleTypeDef *husart)
+ __WEAK void HAL_USART_TxHalfCpltCallback(USART_HandleTypeDef *husart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(husart);
@@ -1314,7 +1314,7 @@ __weak void HAL_USART_TxCpltCallback(USART_HandleTypeDef *husart)
   * @param  husart: USART handle
   * @retval None
   */
-__weak void HAL_USART_RxCpltCallback(USART_HandleTypeDef *husart)
+__WEAK void HAL_USART_RxCpltCallback(USART_HandleTypeDef *husart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(husart);
@@ -1329,7 +1329,7 @@ __weak void HAL_USART_RxCpltCallback(USART_HandleTypeDef *husart)
   * @param husart: usart handle
   * @retval None
   */
-__weak void HAL_USART_RxHalfCpltCallback(USART_HandleTypeDef *husart)
+__WEAK void HAL_USART_RxHalfCpltCallback(USART_HandleTypeDef *husart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(husart);
@@ -1344,7 +1344,7 @@ __weak void HAL_USART_RxHalfCpltCallback(USART_HandleTypeDef *husart)
   * @param husart: USART handle
   * @retval None
   */
-__weak void HAL_USART_TxRxCpltCallback(USART_HandleTypeDef *husart)
+__WEAK void HAL_USART_TxRxCpltCallback(USART_HandleTypeDef *husart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(husart);
@@ -1359,7 +1359,7 @@ __weak void HAL_USART_TxRxCpltCallback(USART_HandleTypeDef *husart)
   * @param husart: USART handle
   * @retval None
   */
-__weak void HAL_USART_ErrorCallback(USART_HandleTypeDef *husart)
+__WEAK void HAL_USART_ErrorCallback(USART_HandleTypeDef *husart)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(husart);

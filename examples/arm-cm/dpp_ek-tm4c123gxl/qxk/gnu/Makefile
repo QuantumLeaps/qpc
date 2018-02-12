@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for DPP on EK-TM4C123GXL, QXK kernel, GNU-ARM
-# Last Updated for Version: 5.9.1
-# Date of the Last Update:  2017-05-25
+# Last Updated for Version: 6.1.0
+# Date of the Last Update:  2018-02-07
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://state-machine.com
+# https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
@@ -103,7 +103,7 @@ C_SRCS := \
 	startup_TM4C123GH6PM.c
 
 # C++ source files
-CPP_SRCS :=	
+CPP_SRCS :=
 
 OUTPUT    := $(PROJECT)
 LD_SCRIPT := $(PROJECT).ld
@@ -124,10 +124,10 @@ QP_SRCS := \
 	qxk.c \
 	qxk_xthr.c \
 	qxk_sema.c \
-	qxk_mutex.c
+	qxk_mutex.c \
+	qxk_port.c
 
-QP_ASMS := \
-    qxk_port.s
+QP_ASMS :=
 
 QS_SRCS := \
 	qs.c \
@@ -186,16 +186,6 @@ RM    := rm
 # combine all the soruces...
 C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
-
-# add the pre-defined symbol for ARM architecture
-DEFINES += -D__ARM_ARCH=$(ARM_ARCH)
-ASM_CPU += -defsym=__ARM_ARCH=$(ARM_ARCH)
-
-# add the pre-defined symbol __FPU_PRESENT if needed...
-ifneq (,$(ARM_FPU))
-DEFINES += -D__FPU_PRESENT
-ASM_FPU += -defsym=__FPU_PRESENT=1
-endif
 
 ifeq (rel, $(CONF)) # Release configuration ..................................
 
@@ -277,7 +267,7 @@ $(TARGET_BIN): $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 $(BIN_DIR)/%.d : %.c

@@ -99,7 +99,7 @@ typedef struct
                                      This parameter can be a value of @ref SMBUS_peripheral_mode */
 
   uint32_t SMBusTimeout;           /*!< Specifies the content of the 32 Bits SMBUS_TIMEOUT_register value.
-  																		(Enable bits and different timeout values)
+                                                                          (Enable bits and different timeout values)
                                      This parameter calculated by referring to SMBUS initialization
                                          section in Reference manual */
 } SMBUS_InitTypeDef;
@@ -429,17 +429,17 @@ typedef struct
   * @param  __HANDLE__ specifies the SMBUS Handle.
   * @param  __FLAG__ specifies the flag to check.
   *        This parameter can be one of the following values:
-  *            @arg @ref SMBUS_FLAG_TXE	    Transmit data register empty
+  *            @arg @ref SMBUS_FLAG_TXE        Transmit data register empty
   *            @arg @ref SMBUS_FLAG_TXIS    Transmit interrupt status
   *            @arg @ref SMBUS_FLAG_RXNE    Receive data register not empty
   *            @arg @ref SMBUS_FLAG_ADDR    Address matched (slave mode)
-  *            @arg @ref SMBUS_FLAG_AF 	    NACK received flag
+  *            @arg @ref SMBUS_FLAG_AF         NACK received flag
   *            @arg @ref SMBUS_FLAG_STOPF   STOP detection flag
-  *            @arg @ref SMBUS_FLAG_TC	    Transfer complete (master mode)
-  *            @arg @ref SMBUS_FLAG_TCR	    Transfer complete reload
+  *            @arg @ref SMBUS_FLAG_TC        Transfer complete (master mode)
+  *            @arg @ref SMBUS_FLAG_TCR        Transfer complete reload
   *            @arg @ref SMBUS_FLAG_BERR    Bus error
   *            @arg @ref SMBUS_FLAG_ARLO    Arbitration lost
-  *            @arg @ref SMBUS_FLAG_OVR	    Overrun/Underrun
+  *            @arg @ref SMBUS_FLAG_OVR        Overrun/Underrun
   *            @arg @ref SMBUS_FLAG_PECERR  PEC error in reception
   *            @arg @ref SMBUS_FLAG_TIMEOUT Timeout or Tlow detection flag
   *            @arg @ref SMBUS_FLAG_ALERT   SMBus alert
@@ -456,11 +456,11 @@ typedef struct
   * @param  __FLAG__ specifies the flag to clear.
   *          This parameter can be any combination of the following values:
   *            @arg @ref SMBUS_FLAG_ADDR    Address matched (slave mode)
-  *            @arg @ref SMBUS_FLAG_AF 	    NACK received flag
+  *            @arg @ref SMBUS_FLAG_AF         NACK received flag
   *            @arg @ref SMBUS_FLAG_STOPF   STOP detection flag
   *            @arg @ref SMBUS_FLAG_BERR    Bus error
   *            @arg @ref SMBUS_FLAG_ARLO    Arbitration lost
-  *            @arg @ref SMBUS_FLAG_OVR	    Overrun/Underrun
+  *            @arg @ref SMBUS_FLAG_OVR        Overrun/Underrun
   *            @arg @ref SMBUS_FLAG_PECERR  PEC error in reception
   *            @arg @ref SMBUS_FLAG_TIMEOUT Timeout or Tlow detection flag
   *            @arg @ref SMBUS_FLAG_ALERT   SMBus alert

@@ -1,6 +1,19 @@
 /**
 @page history Revision History
 
+@section qpc_6_1_0 Version 6.1.0, 2018-02-04
+The main purpose of this release is adding the support for the [<strong>ARM Compiler 6 (ARM-Clang)</strong>](https://developer.arm.com/products/software-development-tools/compilers/arm-compiler), which is a C/C++ toolchain for ARM processors based on the modern [Clang frontend](https://clang.llvm.org/) and the [LLVM framework](https://llvm.org/). This release adds the ARM-Clang ports and examples for all built-in kernels (QV, QK, and QXK) for the ARM Cortex-M CPU cores.
+
+This release also adds support for the STM32H7 high-performance Cortex-M7 with the **double-precision FPU** (FPv5-DP-D16-M). Specifically, this release provides examples for the [NUCLEO-H743ZI board](http://www.st.com/en/evaluation-tools/nucleo-h743zi.html) (Cortex-M7 with FPv5-DP-D16-M). The @ref arm-cm_dpp_nucleo-h743zi "examples for NUCLEO-H743ZI board" include all built-in kernels with ARM-CLANG, ARM-KEIL, GNU-ARM, and IAR-ARM. Additionally the NUCLEO-H743ZI examples also include the QP FreeRTOS with ARM-KEIL, GNU-ARM, and IAR-ARM.
+
+Also, this release changes the ARM Cortex-M ports for the GNU-ARM toolchain in that it replaces the assembly modules with the equivalent C implementation. This change enables using wider range of GNU-ARM toolchain distributions, such as GNU-ARM Linaro, which had trouble with the assembly modules, but compiles correctly the C modules. All related GNU-ARM example projects have been modifed to use the new C-ports.
+
+Also, this release updates the existing projects for the Code Composer Studio (CCS) to CCSv7. All existing CCS projects for the EK-TM4C123GXL (TivaC LauchPad) and LaunchXL2-TMS57012 (Hercules) boards have been upgraded and tested.
+
+Also, all examples for MSP430 with CCS have been updated to CCSv7 and re-tested on the supported boards.
+
+
+------------------------------------------------------------------------------
 @section qpc_6_0_4 Version 6.0.4, 2018-01-10
 The main purpose of this release is the provision of the official @ref freertos "QP/C port to FreeRTOS" (version 10). The QP/C port to FreeRTOS is completely generic and should work on any CPU supported by FreeRTOS. The port comes with the following examples (see examples/freertos/):
 - @ref freertos_dpp_ek-tm4c123gxl "DPP on EK-TM4C123GXL (ARM Cortex-M4F)" with ARM-KEIL, GNU-ARM and IAR-ARM toolchains.

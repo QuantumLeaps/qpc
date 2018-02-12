@@ -10,13 +10,13 @@
     -----------------------
        + This driver supports STM32F7xx devices on STM32746G-Discovery (MB1191) board.
        + Call the function BSP_AUDIO_OUT_Init(
-                                        OutputDevice: physical output mode (OUTPUT_DEVICE_SPEAKER, 
+                                        OutputDevice: physical output mode (OUTPUT_DEVICE_SPEAKER,
                                                       OUTPUT_DEVICE_HEADPHONE or OUTPUT_DEVICE_BOTH)
                                         Volume      : Initial volume to be set (0 is min (mute), 100 is max (100%)
                                         AudioFreq   : Audio frequency in Hz (8000, 16000, 22500, 32000...)
                                                       this parameter is relative to the audio file/stream type.
                                        )
-          This function configures all the hardware required for the audio application (codec, I2C, SAI, 
+          This function configures all the hardware required for the audio application (codec, I2C, SAI,
           GPIOs, DMA and interrupt if needed). This function returns AUDIO_OK if configuration is OK.
           If the returned value is different from AUDIO_OK or the function is stuck then the communication with
           the codec or the MFX has failed (try to un-plug the power or reset device in this case).
@@ -31,20 +31,20 @@
                                       Size   : size of the buffer to be sent in Bytes
                                      )
           to start playing (for the first time) from the audio file/stream.
-       + Call the function BSP_AUDIO_OUT_Pause() to pause playing   
+       + Call the function BSP_AUDIO_OUT_Pause() to pause playing
        + Call the function BSP_AUDIO_OUT_Resume() to resume playing.
            Note. After calling BSP_AUDIO_OUT_Pause() function for pause, only BSP_AUDIO_OUT_Resume() should be called
               for resume (it is not allowed to call BSP_AUDIO_OUT_Play() in this case).
            Note. This function should be called only when the audio file is played or paused (not stopped).
        + For each mode, you may need to implement the relative callback functions into your code.
-          The Callback functions are named AUDIO_OUT_XXX_CallBack() and only their prototypes are declared in 
+          The Callback functions are named AUDIO_OUT_XXX_CallBack() and only their prototypes are declared in
           the stm32746g_discovery_audio.h file. (refer to the example for more details on the callbacks implementations)
-       + To Stop playing, to modify the volume level, the frequency, the audio frame slot, 
-          the device output mode the mute or the stop, use the functions: BSP_AUDIO_OUT_SetVolume(), 
+       + To Stop playing, to modify the volume level, the frequency, the audio frame slot,
+          the device output mode the mute or the stop, use the functions: BSP_AUDIO_OUT_SetVolume(),
           AUDIO_OUT_SetFrequency(), BSP_AUDIO_OUT_SetAudioFrameSlot(), BSP_AUDIO_OUT_SetOutputMode(),
           BSP_AUDIO_OUT_SetMute() and BSP_AUDIO_OUT_Stop().
        + The driver API and the callback functions are at the end of the stm32746g_discovery_audio.h file.
-     
+
     Driver architecture:
     --------------------
        + This driver provides the High Audio Layer: consists of the function API exported in the stm32746g_discovery_audio.h file
@@ -52,16 +52,16 @@
        + This driver provide also the Media Access Layer (MAL): which consists of functions allowing to access the media containing/
          providing the audio file/stream. These functions are also included as local functions into
          the stm32746g_discovery_audio_codec.c file (SAIx_Out_Init() and SAIx_Out_DeInit(), SAIx_In_Init() and SAIx_In_DeInit())
-    
+
     Known Limitations:
     ------------------
-       1- If the TDM Format used to play in parallel 2 audio Stream (the first Stream is configured in codec SLOT0 and second 
+       1- If the TDM Format used to play in parallel 2 audio Stream (the first Stream is configured in codec SLOT0 and second
           Stream in SLOT1) the Pause/Resume, volume and mute feature will control the both streams.
-       2- Parsing of audio file is not implemented (in order to determine audio file properties: Mono/Stereo, Data size, 
+       2- Parsing of audio file is not implemented (in order to determine audio file properties: Mono/Stereo, Data size,
           File size, Audio Frequency, Audio Data header size ...). The configuration is fixed for the given audio file.
        3- Supports only Stereo audio streaming.
        4- Supports only 16-bits audio data size.
-  @endverbatim  
+  @endverbatim
   ******************************************************************************
   * @attention
   *
@@ -101,35 +101,35 @@
 
 /** @addtogroup STM32746G_DISCOVERY
   * @{
-  */ 
-  
+  */
+
 /** @defgroup STM32746G_DISCOVERY_AUDIO STM32746G_DISCOVERY AUDIO
   * @brief This file includes the low layer driver for wm8994 Audio Codec
   *        available on STM32746G-Discovery board(MB1191).
   * @{
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_AUDIO_Private_Types STM32746G_DISCOVERY AUDIO Private Types
   * @{
-  */ 
+  */
 /**
   * @}
-  */ 
-  
+  */
+
 /** @defgroup STM32746G_DISCOVERY_AUDIO_Private_Defines STM32746G_DISCOVERY AUDIO Private Defines
   * @{
   */
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_AUDIO_Private_Macros STM32746G_DISCOVERY AUDIO Private Macros
   * @{
   */
 /**
   * @}
-  */ 
-  
+  */
+
 /** @defgroup STM32746G_DISCOVERY_AUDIO_Private_Variables STM32746G_DISCOVERY AUDIO Private Variables
   * @{
   */
@@ -139,10 +139,10 @@ SAI_HandleTypeDef         haudio_in_sai={0};
 TIM_HandleTypeDef         haudio_tim;
 
 uint16_t __IO AudioInVolume = DEFAULT_AUDIO_IN_VOLUME;
-    
+
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_AUDIO_Private_Function_Prototypes STM32746G_DISCOVERY AUDIO Private Function Prototypes
   * @{
@@ -153,11 +153,11 @@ static void SAIx_In_Init(uint32_t SaiOutMode, uint32_t SlotActive, uint32_t Audi
 static void SAIx_In_DeInit(void);
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup STM32746G_DISCOVERY_AUDIO_OUT_Exported_Functions STM32746G_DISCOVERY AUDIO Out Exported Functions
   * @{
-  */ 
+  */
 
 /**
   * @brief  Configures the audio peripherals.
@@ -165,11 +165,11 @@ static void SAIx_In_DeInit(void);
   *                       or OUTPUT_DEVICE_BOTH.
   * @param  Volume: Initial volume level (from 0 (Mute) to 100 (Max))
   * @param  AudioFreq: Audio frequency used to play the audio stream.
-  * @note   The I2S PLL input clock must be done in the user application.  
+  * @note   The I2S PLL input clock must be done in the user application.
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_OUT_Init(uint16_t OutputDevice, uint8_t Volume, uint32_t AudioFreq)
-{ 
+{
   uint8_t ret = AUDIO_ERROR;
   uint32_t deviceid = 0x00;
 
@@ -178,7 +178,7 @@ uint8_t BSP_AUDIO_OUT_Init(uint16_t OutputDevice, uint8_t Volume, uint32_t Audio
 
   /* PLL clock is set depending on the AudioFreq (44.1khz vs 48khz groups) */
   BSP_AUDIO_OUT_ClockConfig(&haudio_out_sai, AudioFreq, NULL);
- 
+
   /* SAI data transfer preparation:
   Prepare the Media to be used for the audio transfer from memory to SAI peripheral */
   haudio_out_sai.Instance = AUDIO_OUT_SAIx;
@@ -191,13 +191,13 @@ uint8_t BSP_AUDIO_OUT_Init(uint16_t OutputDevice, uint8_t Volume, uint32_t Audio
 
   /* wm8994 codec initialization */
   deviceid = wm8994_drv.ReadID(AUDIO_I2C_ADDRESS);
-  
+
   if((deviceid) == WM8994_ID)
-  {  
+  {
     /* Reset the Codec Registers */
     wm8994_drv.Reset(AUDIO_I2C_ADDRESS);
     /* Initialize the audio driver structure */
-    audio_drv = &wm8994_drv; 
+    audio_drv = &wm8994_drv;
     ret = AUDIO_OK;
   }
   else
@@ -210,13 +210,13 @@ uint8_t BSP_AUDIO_OUT_Init(uint16_t OutputDevice, uint8_t Volume, uint32_t Audio
     /* Initialize the codec internal registers */
     audio_drv->Init(AUDIO_I2C_ADDRESS, OutputDevice, Volume, AudioFreq);
   }
- 
+
   return ret;
 }
 
 /**
-  * @brief  Starts playing audio stream from a data buffer for a determined size. 
-  * @param  pBuffer: Pointer to the buffer 
+  * @brief  Starts playing audio stream from a data buffer for a determined size.
+  * @param  pBuffer: Pointer to the buffer
   * @param  Size: Number of audio data in BYTES unit.
   *         In memory, first element is for left channel, second element is for right channel
   * @retval AUDIO_OK if correct communication, else wrong communication
@@ -225,21 +225,21 @@ uint8_t BSP_AUDIO_OUT_Play(uint16_t* pBuffer, uint32_t Size)
 {
   /* Call the audio Codec Play function */
   if(audio_drv->Play(AUDIO_I2C_ADDRESS, pBuffer, Size) != 0)
-  {  
+  {
     return AUDIO_ERROR;
   }
   else
   {
-    /* Update the Media layer and enable it for play */  
+    /* Update the Media layer and enable it for play */
     HAL_SAI_Transmit_DMA(&haudio_out_sai, (uint8_t*) pBuffer, DMA_MAX(Size / AUDIODATA_SIZE));
-    
+
     return AUDIO_OK;
   }
 }
 
 /**
   * @brief  Sends n-Bytes on the SAI interface.
-  * @param  pData: pointer on data address 
+  * @param  pData: pointer on data address
   * @param  Size: number of data to be written
   * @retval None
   */
@@ -252,12 +252,12 @@ void BSP_AUDIO_OUT_ChangeBuffer(uint16_t *pData, uint16_t Size)
   * @brief  This function Pauses the audio file stream. In case
   *         of using DMA, the DMA Pause feature is used.
   * @note When calling BSP_AUDIO_OUT_Pause() function for pause, only
-  *          BSP_AUDIO_OUT_Resume() function should be called for resume (use of BSP_AUDIO_OUT_Play() 
+  *          BSP_AUDIO_OUT_Resume() function should be called for resume (use of BSP_AUDIO_OUT_Play()
   *          function for resume could lead to unexpected behaviour).
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_OUT_Pause(void)
-{    
+{
   /* Call the Audio Codec Pause/Resume function */
   if(audio_drv->Pause(AUDIO_I2C_ADDRESS) != 0)
   {
@@ -267,21 +267,21 @@ uint8_t BSP_AUDIO_OUT_Pause(void)
   {
     /* Call the Media layer pause function */
     HAL_SAI_DMAPause(&haudio_out_sai);
-    
+
     /* Return AUDIO_OK when all operations are correctly done */
     return AUDIO_OK;
   }
 }
 
 /**
-  * @brief  This function  Resumes the audio file stream.  
+  * @brief  This function  Resumes the audio file stream.
   * @note When calling BSP_AUDIO_OUT_Pause() function for pause, only
-  *          BSP_AUDIO_OUT_Resume() function should be called for resume (use of BSP_AUDIO_OUT_Play() 
+  *          BSP_AUDIO_OUT_Resume() function should be called for resume (use of BSP_AUDIO_OUT_Play()
   *          function for resume could lead to unexpected behaviour).
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_OUT_Resume(void)
-{    
+{
   /* Call the Audio Codec Pause/Resume function */
   if(audio_drv->Resume(AUDIO_I2C_ADDRESS) != 0)
   {
@@ -291,26 +291,26 @@ uint8_t BSP_AUDIO_OUT_Resume(void)
   {
     /* Call the Media layer pause/resume function */
     HAL_SAI_DMAResume(&haudio_out_sai);
-    
+
     /* Return AUDIO_OK when all operations are correctly done */
     return AUDIO_OK;
   }
 }
 
 /**
-  * @brief  Stops audio playing and Power down the Audio Codec. 
-  * @param  Option: could be one of the following parameters 
-  *           - CODEC_PDWN_SW: for software power off (by writing registers). 
+  * @brief  Stops audio playing and Power down the Audio Codec.
+  * @param  Option: could be one of the following parameters
+  *           - CODEC_PDWN_SW: for software power off (by writing registers).
   *                            Then no need to reconfigure the Codec after power on.
-  *           - CODEC_PDWN_HW: completely shut down the codec (physically). 
-  *                            Then need to reconfigure the Codec after power on.  
+  *           - CODEC_PDWN_HW: completely shut down the codec (physically).
+  *                            Then need to reconfigure the Codec after power on.
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_OUT_Stop(uint32_t Option)
 {
   /* Call the Media layer stop function */
   HAL_SAI_DMAStop(&haudio_out_sai);
-  
+
   /* Call Audio Codec Stop function */
   if(audio_drv->Stop(AUDIO_I2C_ADDRESS, Option) != 0)
   {
@@ -319,7 +319,7 @@ uint8_t BSP_AUDIO_OUT_Stop(uint32_t Option)
   else
   {
     if(Option == CODEC_PDWN_HW)
-    { 
+    {
       /* Wait at least 100us */
       HAL_Delay(1);
     }
@@ -329,8 +329,8 @@ uint8_t BSP_AUDIO_OUT_Stop(uint32_t Option)
 }
 
 /**
-  * @brief  Controls the current audio volume level. 
-  * @param  Volume: Volume level to be set in percentage from 0% to 100% (0 for 
+  * @brief  Controls the current audio volume level.
+  * @param  Volume: Volume level to be set in percentage from 0% to 100% (0 for
   *         Mute and 100 for Max volume level).
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
@@ -349,13 +349,13 @@ uint8_t BSP_AUDIO_OUT_SetVolume(uint8_t Volume)
 }
 
 /**
-  * @brief  Enables or disables the MUTE mode by software 
-  * @param  Cmd: Could be AUDIO_MUTE_ON to mute sound or AUDIO_MUTE_OFF to 
+  * @brief  Enables or disables the MUTE mode by software
+  * @param  Cmd: Could be AUDIO_MUTE_ON to mute sound or AUDIO_MUTE_OFF to
   *         unmute the codec and restore previous volume level.
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_OUT_SetMute(uint32_t Cmd)
-{ 
+{
   /* Call the Codec Mute function */
   if(audio_drv->SetMute(AUDIO_I2C_ADDRESS, Cmd) != 0)
   {
@@ -369,7 +369,7 @@ uint8_t BSP_AUDIO_OUT_SetMute(uint32_t Cmd)
 }
 
 /**
-  * @brief  Switch dynamically (while audio file is played) the output target 
+  * @brief  Switch dynamically (while audio file is played) the output target
   *         (speaker or headphone).
   * @param  Output: The audio output target: OUTPUT_DEVICE_SPEAKER,
   *         OUTPUT_DEVICE_HEADPHONE or OUTPUT_DEVICE_BOTH
@@ -397,17 +397,17 @@ uint8_t BSP_AUDIO_OUT_SetOutputMode(uint8_t Output)
   * @retval None
   */
 void BSP_AUDIO_OUT_SetFrequency(uint32_t AudioFreq)
-{ 
-  /* PLL clock is set depending by the AudioFreq (44.1khz vs 48khz groups) */ 
+{
+  /* PLL clock is set depending by the AudioFreq (44.1khz vs 48khz groups) */
   BSP_AUDIO_OUT_ClockConfig(&haudio_out_sai, AudioFreq, NULL);
 
   /* Disable SAI peripheral to allow access to SAI internal registers */
   __HAL_SAI_DISABLE(&haudio_out_sai);
-  
+
   /* Update the SAI audio frequency configuration */
   haudio_out_sai.Init.AudioFrequency = AudioFreq;
   HAL_SAI_Init(&haudio_out_sai);
-  
+
   /* Enable SAI peripheral to generate MCLK */
   __HAL_SAI_ENABLE(&haudio_out_sai);
 }
@@ -424,14 +424,14 @@ void BSP_AUDIO_OUT_SetFrequency(uint32_t AudioFreq)
   * @retval None
   */
 void BSP_AUDIO_OUT_SetAudioFrameSlot(uint32_t AudioFrameSlot)
-{ 
+{
   /* Disable SAI peripheral to allow access to SAI internal registers */
   __HAL_SAI_DISABLE(&haudio_out_sai);
-  
+
   /* Update the SAI audio frame slot configuration */
   haudio_out_sai.SlotInit.SlotActive = AudioFrameSlot;
   HAL_SAI_Init(&haudio_out_sai);
-  
+
   /* Enable SAI peripheral to generate MCLK */
   __HAL_SAI_ENABLE(&haudio_out_sai);
 }
@@ -454,7 +454,7 @@ void BSP_AUDIO_OUT_DeInit(void)
   */
 void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
 {
-  /* Manage the remaining file size and new address offset: This function 
+  /* Manage the remaining file size and new address offset: This function
      should be coded by user (its prototype is already declared in stm32746g_discovery_audio.h) */
   BSP_AUDIO_OUT_TransferComplete_CallBack();
 }
@@ -466,7 +466,7 @@ void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
   */
 void HAL_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai)
 {
-  /* Manage the remaining file size and new address offset: This function 
+  /* Manage the remaining file size and new address offset: This function
      should be coded by user (its prototype is already declared in stm32746g_discovery_audio.h) */
   BSP_AUDIO_OUT_HalfTransfer_CallBack();
 }
@@ -509,7 +509,7 @@ __weak void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
   * @retval None
   */
 __weak void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
-{ 
+{
 }
 
 /**
@@ -527,13 +527,13 @@ __weak void BSP_AUDIO_OUT_Error_CallBack(void)
   * @retval None
   */
 __weak void BSP_AUDIO_OUT_MspInit(SAI_HandleTypeDef *hsai, void *Params)
-{ 
+{
   static DMA_HandleTypeDef hdma_sai_tx;
-  GPIO_InitTypeDef  gpio_init_structure;  
+  GPIO_InitTypeDef  gpio_init_structure;
 
   /* Enable SAI clock */
   AUDIO_OUT_SAIx_CLK_ENABLE();
-  
+
   /* Enable GPIO clock */
   AUDIO_OUT_SAIx_MCLK_ENABLE();
   AUDIO_OUT_SAIx_SCK_SD_ENABLE();
@@ -569,10 +569,10 @@ __weak void BSP_AUDIO_OUT_MspInit(SAI_HandleTypeDef *hsai, void *Params)
 
   /* Enable the DMA clock */
   AUDIO_OUT_SAIx_DMAx_CLK_ENABLE();
-    
+
   if(hsai->Instance == AUDIO_OUT_SAIx)
   {
-    /* Configure the hdma_saiTx handle parameters */   
+    /* Configure the hdma_saiTx handle parameters */
     hdma_sai_tx.Init.Channel             = AUDIO_OUT_SAIx_DMAx_CHANNEL;
     hdma_sai_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
     hdma_sai_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
@@ -581,26 +581,26 @@ __weak void BSP_AUDIO_OUT_MspInit(SAI_HandleTypeDef *hsai, void *Params)
     hdma_sai_tx.Init.MemDataAlignment    = AUDIO_OUT_SAIx_DMAx_MEM_DATA_SIZE;
     hdma_sai_tx.Init.Mode                = DMA_CIRCULAR;
     hdma_sai_tx.Init.Priority            = DMA_PRIORITY_HIGH;
-    hdma_sai_tx.Init.FIFOMode            = DMA_FIFOMODE_ENABLE;         
+    hdma_sai_tx.Init.FIFOMode            = DMA_FIFOMODE_ENABLE;
     hdma_sai_tx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
     hdma_sai_tx.Init.MemBurst            = DMA_MBURST_SINGLE;
-    hdma_sai_tx.Init.PeriphBurst         = DMA_PBURST_SINGLE; 
-    
+    hdma_sai_tx.Init.PeriphBurst         = DMA_PBURST_SINGLE;
+
     hdma_sai_tx.Instance = AUDIO_OUT_SAIx_DMAx_STREAM;
-    
+
     /* Associate the DMA handle */
     __HAL_LINKDMA(hsai, hdmatx, hdma_sai_tx);
-    
+
     /* Deinitialize the Stream for new transfer */
     HAL_DMA_DeInit(&hdma_sai_tx);
-    
+
     /* Configure the DMA Stream */
-    HAL_DMA_Init(&hdma_sai_tx);      
+    HAL_DMA_Init(&hdma_sai_tx);
   }
-  
+
   /* SAI DMA IRQ Channel configuration */
   HAL_NVIC_SetPriority(AUDIO_OUT_SAIx_DMAx_IRQ, AUDIO_OUT_IRQ_PREPRIO, 0);
-  HAL_NVIC_EnableIRQ(AUDIO_OUT_SAIx_DMAx_IRQ); 
+  HAL_NVIC_EnableIRQ(AUDIO_OUT_SAIx_DMAx_IRQ);
 }
 
 /**
@@ -623,7 +623,7 @@ __weak void BSP_AUDIO_OUT_MspDeInit(SAI_HandleTypeDef *hsai, void *Params)
     }
 
     /* Disable SAI peripheral */
-    __HAL_SAI_DISABLE(hsai);  
+    __HAL_SAI_DISABLE(hsai);
 
     /* Deactives CODEC_SAI pins FS, SCK, MCK and SD by putting them in input mode */
     gpio_init_structure.Pin = AUDIO_OUT_SAIx_FS_PIN;
@@ -637,7 +637,7 @@ __weak void BSP_AUDIO_OUT_MspDeInit(SAI_HandleTypeDef *hsai, void *Params)
 
     gpio_init_structure.Pin = AUDIO_OUT_SAIx_MCLK_PIN;
     HAL_GPIO_DeInit(AUDIO_OUT_SAIx_MCLK_GPIO_PORT, gpio_init_structure.Pin);
-  
+
     /* Disable SAI clock */
     AUDIO_OUT_SAIx_CLK_DISABLE();
 
@@ -649,17 +649,17 @@ __weak void BSP_AUDIO_OUT_MspDeInit(SAI_HandleTypeDef *hsai, void *Params)
   * @brief  Clock Config.
   * @param  hsai: might be required to set audio peripheral predivider if any.
   * @param  AudioFreq: Audio frequency used to play the audio stream.
-  * @param  Params  
+  * @param  Params
   * @note   This API is called by BSP_AUDIO_OUT_Init() and BSP_AUDIO_OUT_SetFrequency()
-  *         Being __weak it can be overwritten by the application     
+  *         Being __weak it can be overwritten by the application
   * @retval None
   */
 __weak void BSP_AUDIO_OUT_ClockConfig(SAI_HandleTypeDef *hsai, uint32_t AudioFreq, void *Params)
-{ 
+{
   RCC_PeriphCLKInitTypeDef rcc_ex_clk_init_struct;
 
   HAL_RCCEx_GetPeriphCLKConfig(&rcc_ex_clk_init_struct);
-  
+
   /* Set the PLL configuration according to the audio frequency */
   if((AudioFreq == AUDIO_FREQUENCY_11K) || (AudioFreq == AUDIO_FREQUENCY_22K) || (AudioFreq == AUDIO_FREQUENCY_44K))
   {
@@ -672,9 +672,9 @@ __weak void BSP_AUDIO_OUT_ClockConfig(SAI_HandleTypeDef *hsai, uint32_t AudioFre
     rcc_ex_clk_init_struct.PLLI2S.PLLI2SN = 429;
     rcc_ex_clk_init_struct.PLLI2S.PLLI2SQ = 2;
     rcc_ex_clk_init_struct.PLLI2SDivQ = 19;
-    
+
     HAL_RCCEx_PeriphCLKConfig(&rcc_ex_clk_init_struct);
-    
+
   }
   else /* AUDIO_FREQUENCY_8K, AUDIO_FREQUENCY_16K, AUDIO_FREQUENCY_48K), AUDIO_FREQUENCY_96K */
   {
@@ -687,7 +687,7 @@ __weak void BSP_AUDIO_OUT_ClockConfig(SAI_HandleTypeDef *hsai, uint32_t AudioFre
     rcc_ex_clk_init_struct.PLLI2S.PLLI2SN = 344;
     rcc_ex_clk_init_struct.PLLI2S.PLLI2SQ = 7;
     rcc_ex_clk_init_struct.PLLI2SDivQ = 1;
-    
+
     HAL_RCCEx_PeriphCLKConfig(&rcc_ex_clk_init_struct);
   }
 }
@@ -699,20 +699,20 @@ __weak void BSP_AUDIO_OUT_ClockConfig(SAI_HandleTypeDef *hsai, uint32_t AudioFre
 /**
   * @brief  Initializes the output Audio Codec audio interface (SAI).
   * @param  AudioFreq: Audio frequency to be configured for the SAI peripheral.
-  * @note   The default SlotActive configuration is set to CODEC_AUDIOFRAME_SLOT_0123 
-  *         and user can update this configuration using 
+  * @note   The default SlotActive configuration is set to CODEC_AUDIOFRAME_SLOT_0123
+  *         and user can update this configuration using
   * @retval None
   */
 static void SAIx_Out_Init(uint32_t AudioFreq)
 {
   /* Initialize the haudio_out_sai Instance parameter */
   haudio_out_sai.Instance = AUDIO_OUT_SAIx;
-  
+
   /* Disable SAI peripheral to allow access to SAI internal registers */
   __HAL_SAI_DISABLE(&haudio_out_sai);
-  
-  /* Configure SAI_Block_x 
-  LSBFirst: Disabled 
+
+  /* Configure SAI_Block_x
+  LSBFirst: Disabled
   DataSize: 16 */
   haudio_out_sai.Init.AudioFrequency = AudioFreq;
   haudio_out_sai.Init.AudioMode = SAI_MODEMASTER_TX;
@@ -724,31 +724,31 @@ static void SAIx_Out_Init(uint32_t AudioFreq)
   haudio_out_sai.Init.Synchro = SAI_ASYNCHRONOUS;
   haudio_out_sai.Init.OutputDrive = SAI_OUTPUTDRIVE_ENABLED;
   haudio_out_sai.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_1QF;
-  
-  /* Configure SAI_Block_x Frame 
+
+  /* Configure SAI_Block_x Frame
   Frame Length: 64
   Frame active Length: 32
   FS Definition: Start frame + Channel Side identification
   FS Polarity: FS active Low
-  FS Offset: FS asserted one bit before the first bit of slot 0 */ 
-  haudio_out_sai.FrameInit.FrameLength = 64; 
+  FS Offset: FS asserted one bit before the first bit of slot 0 */
+  haudio_out_sai.FrameInit.FrameLength = 64;
   haudio_out_sai.FrameInit.ActiveFrameLength = 32;
   haudio_out_sai.FrameInit.FSDefinition = SAI_FS_CHANNEL_IDENTIFICATION;
   haudio_out_sai.FrameInit.FSPolarity = SAI_FS_ACTIVE_LOW;
   haudio_out_sai.FrameInit.FSOffset = SAI_FS_BEFOREFIRSTBIT;
-  
-  /* Configure SAI Block_x Slot 
+
+  /* Configure SAI Block_x Slot
   Slot First Bit Offset: 0
   Slot Size  : 16
   Slot Number: 4
   Slot Active: All slot actives */
   haudio_out_sai.SlotInit.FirstBitOffset = 0;
   haudio_out_sai.SlotInit.SlotSize = SAI_SLOTSIZE_DATASIZE;
-  haudio_out_sai.SlotInit.SlotNumber = 4; 
+  haudio_out_sai.SlotInit.SlotNumber = 4;
   haudio_out_sai.SlotInit.SlotActive = CODEC_AUDIOFRAME_SLOT_0123;
 
   HAL_SAI_Init(&haudio_out_sai);
-  
+
   /* Enable SAI peripheral to generate MCLK */
   __HAL_SAI_ENABLE(&haudio_out_sai);
 }
@@ -776,7 +776,7 @@ static void SAIx_Out_DeInit(void)
 
 /** @defgroup STM32746G_DISCOVERY_AUDIO_Out_Private_Functions STM32746G_DISCOVERY_AUDIO Out Private Functions
   * @{
-  */ 
+  */
 
 /**
   * @brief  Initializes wave recording.
@@ -787,7 +787,7 @@ static void SAIx_Out_DeInit(void)
   */
 uint8_t BSP_AUDIO_IN_Init(uint32_t AudioFreq, uint32_t BitRes, uint32_t ChnlNbr)
 {
-  return BSP_AUDIO_IN_InitEx(INPUT_DEVICE_DIGITAL_MICROPHONE_2, AudioFreq, BitRes, ChnlNbr); 
+  return BSP_AUDIO_IN_InitEx(INPUT_DEVICE_DIGITAL_MICROPHONE_2, AudioFreq, BitRes, ChnlNbr);
 }
 
 /**
@@ -955,7 +955,7 @@ uint8_t BSP_AUDIO_IN_OUT_Init(uint16_t InputDevice, uint16_t OutputDevice, uint3
 
 /**
   * @brief  Starts audio recording.
-  * @param  pbuf: Main buffer pointer for the recorded data storing  
+  * @param  pbuf: Main buffer pointer for the recorded data storing
   * @param  size: size of the recorded buffer in number of elements (typically number of half-words)
   *               Be careful that it is not the same unit than BSP_AUDIO_OUT_Play function
   * @retval AUDIO_OK if correct communication, else wrong communication
@@ -963,13 +963,13 @@ uint8_t BSP_AUDIO_IN_OUT_Init(uint16_t InputDevice, uint16_t OutputDevice, uint3
 uint8_t  BSP_AUDIO_IN_Record(uint16_t* pbuf, uint32_t size)
 {
   uint32_t ret = AUDIO_ERROR;
-  
+
   /* Start the process receive DMA */
   HAL_SAI_Receive_DMA(&haudio_in_sai, (uint8_t*)pbuf, size);
-  
+
   /* Return AUDIO_OK when all operations are correctly done */
   ret = AUDIO_OK;
-  
+
   return ret;
 }
 
@@ -986,7 +986,7 @@ uint8_t BSP_AUDIO_IN_Stop(uint32_t Option)
 {
   /* Call the Media layer stop function */
   HAL_SAI_DMAStop(&haudio_in_sai);
-  
+
   /* Call Audio Codec Stop function */
   if(audio_drv->Stop(AUDIO_I2C_ADDRESS, Option) != 0)
   {
@@ -1009,7 +1009,7 @@ uint8_t BSP_AUDIO_IN_Stop(uint32_t Option)
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_IN_Pause(void)
-{    
+{
   /* Call the Media layer pause function */
   HAL_SAI_DMAPause(&haudio_in_sai);
   /* Return AUDIO_OK when all operations are correctly done */
@@ -1021,7 +1021,7 @@ uint8_t BSP_AUDIO_IN_Pause(void)
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_IN_Resume(void)
-{    
+{
   /* Call the Media layer pause/resume function */
   HAL_SAI_DMAResume(&haudio_in_sai);
   /* Return AUDIO_OK when all operations are correctly done */
@@ -1029,7 +1029,7 @@ uint8_t BSP_AUDIO_IN_Resume(void)
 }
 
 /**
-  * @brief  Controls the audio in volume level. 
+  * @brief  Controls the audio in volume level.
   * @param  Volume: Volume level in range 0(Mute)..80(+0dB)..100(+17.625dB)
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
@@ -1078,7 +1078,7 @@ void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai)
   */
 void HAL_SAI_RxHalfCpltCallback(SAI_HandleTypeDef *hsai)
 {
-  /* Manage the remaining file size and new address offset: This function 
+  /* Manage the remaining file size and new address offset: This function
      should be coded by user (its prototype is already declared in stm32746g_discovery_audio.h) */
   BSP_AUDIO_IN_HalfTransfer_CallBack();
 }
@@ -1099,7 +1099,7 @@ __weak void BSP_AUDIO_IN_TransferComplete_CallBack(void)
   * @retval None
   */
 __weak void BSP_AUDIO_IN_HalfTransfer_CallBack(void)
-{ 
+{
   /* This function should be implemented by the user application.
      It is called into this driver when the current buffer is filled
      to prepare the next buffer pointer and its size. */
@@ -1110,7 +1110,7 @@ __weak void BSP_AUDIO_IN_HalfTransfer_CallBack(void)
   * @retval None
   */
 __weak void BSP_AUDIO_IN_Error_CallBack(void)
-{   
+{
   /* This function is called when an Interrupt due to transfer error on or peripheral
      error occurs. */
 }
@@ -1124,11 +1124,11 @@ __weak void BSP_AUDIO_IN_Error_CallBack(void)
 __weak void BSP_AUDIO_IN_MspInit(SAI_HandleTypeDef *hsai, void *Params)
 {
   static DMA_HandleTypeDef hdma_sai_rx;
-  GPIO_InitTypeDef  gpio_init_structure;  
+  GPIO_InitTypeDef  gpio_init_structure;
 
   /* Enable SAI clock */
   AUDIO_IN_SAIx_CLK_ENABLE();
-  
+
   /* Enable SD GPIO clock */
   AUDIO_IN_SAIx_SD_ENABLE();
   /* CODEC_SAI pin configuration: SD pin */
@@ -1150,7 +1150,7 @@ __weak void BSP_AUDIO_IN_MspInit(SAI_HandleTypeDef *hsai, void *Params)
 
   /* Enable the DMA clock */
   AUDIO_IN_SAIx_DMAx_CLK_ENABLE();
-    
+
   if(hsai->Instance == AUDIO_IN_SAIx)
   {
     /* Configure the hdma_sai_rx handle parameters */
@@ -1166,19 +1166,19 @@ __weak void BSP_AUDIO_IN_MspInit(SAI_HandleTypeDef *hsai, void *Params)
     hdma_sai_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
     hdma_sai_rx.Init.MemBurst            = DMA_MBURST_SINGLE;
     hdma_sai_rx.Init.PeriphBurst         = DMA_MBURST_SINGLE;
-    
+
     hdma_sai_rx.Instance = AUDIO_IN_SAIx_DMAx_STREAM;
-    
+
     /* Associate the DMA handle */
     __HAL_LINKDMA(hsai, hdmarx, hdma_sai_rx);
-    
+
     /* Deinitialize the Stream for new transfer */
     HAL_DMA_DeInit(&hdma_sai_rx);
-    
+
     /* Configure the DMA Stream */
     HAL_DMA_Init(&hdma_sai_rx);
   }
-  
+
   /* SAI DMA IRQ Channel configuration */
   HAL_NVIC_SetPriority(AUDIO_IN_SAIx_DMAx_IRQ, AUDIO_IN_IRQ_PREPRIO, 0);
   HAL_NVIC_EnableIRQ(AUDIO_IN_SAIx_DMAx_IRQ);
@@ -1286,10 +1286,10 @@ static void SAIx_In_Init(uint32_t SaiOutMode, uint32_t SlotActive, uint32_t Audi
   /* Initialize SAI2 block B in SLAVE RX synchronous from SAI2 block A */
   /* Initialize the haudio_in_sai Instance parameter */
   haudio_in_sai.Instance = AUDIO_IN_SAIx;
-  
+
   /* Disable SAI peripheral to allow access to SAI internal registers */
   __HAL_SAI_DISABLE(&haudio_in_sai);
-  
+
   /* Configure SAI_Block_x
   LSBFirst: Disabled
   DataSize: 16 */
@@ -1303,7 +1303,7 @@ static void SAIx_In_Init(uint32_t SaiOutMode, uint32_t SlotActive, uint32_t Audi
   haudio_in_sai.Init.Synchro = SAI_SYNCHRONOUS;
   haudio_in_sai.Init.OutputDrive = SAI_OUTPUTDRIVE_DISABLED;
   haudio_in_sai.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_1QF;
-  
+
   /* Configure SAI_Block_x Frame
   Frame Length: 64
   Frame active Length: 32
@@ -1315,7 +1315,7 @@ static void SAIx_In_Init(uint32_t SaiOutMode, uint32_t SlotActive, uint32_t Audi
   haudio_in_sai.FrameInit.FSDefinition = SAI_FS_CHANNEL_IDENTIFICATION;
   haudio_in_sai.FrameInit.FSPolarity = SAI_FS_ACTIVE_LOW;
   haudio_in_sai.FrameInit.FSOffset = SAI_FS_BEFOREFIRSTBIT;
-  
+
   /* Configure SAI Block_x Slot
   Slot First Bit Offset: 0
   Slot Size  : 16
@@ -1355,10 +1355,6 @@ static void SAIx_In_DeInit(void)
 
 /**
   * @}
-  */ 
-  
-/**
-  * @}
   */
 
 /**
@@ -1367,6 +1363,10 @@ static void SAIx_In_DeInit(void)
 
 /**
   * @}
-  */ 
+  */
+
+/**
+  * @}
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

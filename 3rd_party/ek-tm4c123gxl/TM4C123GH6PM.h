@@ -3,9 +3,10 @@
 * - defined TARGET_IS_BLIZZARD_RA1 for compatibility with the TI library
 * - in GPIOA_Type struct replaced first __I RESERVED0[255] with
 *   __IO uint32_t DATA_Bits[255] to access the individual GPIOA bits.
+* - added options for the ARMCC v6 compiler (CLANG)
 *
-* Quantum Leaps on 2015-03-07
-* www.state-machine.com
+* Quantum Leaps on 2018-01-31
+* https://www.state-machine.com
 *****************************************************************************/
 
 /****************************************************************************************************//**
@@ -328,6 +329,8 @@ extern "C" {
 #if defined(__CC_ARM)
   #pragma push
   #pragma anon_unions
+#elif defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+  /* anonymous unions are enabled by default */
 #elif defined(__ICCARM__)
   #pragma language=extended
 #elif defined(__GNUC__)
@@ -1669,6 +1672,8 @@ typedef struct {                                    /*!< UDMA Structure         
 /* --------------------  End of section using anonymous unions  ------------------- */
 #if defined(__CC_ARM)
   #pragma pop
+#elif defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+  /* anonymous unions are enabled by default */
 #elif defined(__ICCARM__)
   /* leave anonymous unions enabled */
 #elif defined(__GNUC__)

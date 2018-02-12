@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, STM32746G-Discovery board, dual-mode QXK kernel
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-09
+* Last Updated for Version: 6.1.0
+* Date of the Last Update:  2018-01-29
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -69,7 +69,7 @@ void SysTick_Handler(void);
 void USART1_IRQHandler(void);
 
 /* Local-scope objects -----------------------------------------------------*/
-static uint32_t l_rnd;      /* random seed */
+static uint32_t l_rnd; /* random seed */
 
 #ifdef Q_SPY
 
@@ -78,11 +78,12 @@ static uint32_t l_rnd;      /* random seed */
 
     /* QS source IDs */
     static uint8_t const l_SysTick_Handler = (uint8_t)0;
-    static uint8_t const l_GPIO_EVEN_IRQHandler = (uint8_t)0;
+    static uint8_t const l_EXTI0_IRQHandler = (uint8_t)0;
     static UART_HandleTypeDef l_uartHandle;
 
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,
+        PAUSED_STAT,
         COMMAND_STAT
     };
 
@@ -206,12 +207,14 @@ void BSP_init(void) {
     //...
     BSP_randomSeed(1234U);
 
-    if (QS_INIT((void *)0) == 0) { /* initialize the QS software tracing */
+    /* initialize the QS software tracing... */
+    if (QS_INIT((void *)0) == 0) {
         Q_ERROR();
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
-    QS_OBJ_DICTIONARY(&l_GPIO_EVEN_IRQHandler);
+    QS_OBJ_DICTIONARY(&l_EXTI0_IRQHandler);
     QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(PAUSED_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
 }
 /*..........................................................................*/
@@ -289,13 +292,11 @@ void QF_onStartup(void) {
     */
     NVIC_SetPriority(USART1_IRQn,  USART1_PRIO);
     NVIC_SetPriority(SysTick_IRQn, SYSTICK_PRIO);
-    //NVIC_SetPriority(GPIO_EVEN_IRQn, GPIO_EVEN_PRIO);
     /* ... */
 
     /* enable IRQs... */
-    //NVIC_EnableIRQ(GPIO_EVEN_IRQn);
 #ifdef Q_SPY
-    NVIC_EnableIRQ(USART1_IRQn); /* UART1 interrupt used for QS-RX */
+    NVIC_EnableIRQ(USART1_IRQn); /* UART interrupt used for QS-RX */
 #endif
 }
 /*..........................................................................*/
@@ -352,7 +353,7 @@ void Q_onAssert(char const *module, int loc) {
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
-    /* light up both LEDs */
+    /* light up LED */
     BSP_LED_On(LED1);
     /* for debugging, hang on in an endless loop... */
     for (;;) {

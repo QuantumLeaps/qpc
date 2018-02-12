@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, STM32746G-Discovery board, FreeRTOS kernel
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-10
+* Last Updated for Version: 6.1.0
+* Date of the Last Update:  2018-01-31
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -361,7 +361,7 @@ void QF_onStartup(void) {
     /* enable IRQs... */
     NVIC_EnableIRQ(EXTI0_IRQn);
 #ifdef Q_SPY
-    NVIC_EnableIRQ(USART1_IRQn); /* UART1 interrupt used for QS-RX */
+    NVIC_EnableIRQ(USART1_IRQn); /* UART interrupt used for QS-RX */
 #endif
 }
 /*..........................................................................*/

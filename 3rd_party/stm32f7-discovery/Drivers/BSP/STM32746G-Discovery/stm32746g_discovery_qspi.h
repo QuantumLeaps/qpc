@@ -34,23 +34,23 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */ 
+  */
 
 /** @addtogroup BSP
   * @{
-  */ 
+  */
 
 /** @addtogroup STM32746G_DISCOVERY
   * @{
   */
-    
+
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32746G_DISCOVERY_QSPI_H
 #define __STM32746G_DISCOVERY_QSPI_H
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f7xx_hal.h"
@@ -58,10 +58,10 @@
 
 /** @addtogroup STM32746G_DISCOVERY_QSPI
   * @{
-  */    
+  */
 
-  
-/* Exported constants --------------------------------------------------------*/ 
+
+/* Exported constants --------------------------------------------------------*/
 /** @defgroup STM32746G_DISCOVERY_QSPI_Exported_Constants STM32746G_DISCOVERY_QSPI Exported Constants
   * @{
   */
@@ -105,8 +105,8 @@
 #define QSPI_FLASH_SIZE            23     /* Address bus width to access whole memory space */
 #define QSPI_PAGE_SIZE             256
 
-/* This alias is added as the name of Memory mapped fucntion changed */   
-#define BSP_QSPI_MemoryMappedMode  BSP_QSPI_EnableMemoryMappedMode   
+/* This alias is added as the name of Memory mapped fucntion changed */
+#define BSP_QSPI_MemoryMappedMode  BSP_QSPI_EnableMemoryMappedMode
 /**
   * @}
   */
@@ -128,11 +128,11 @@ typedef struct {
   * @}
   */
 
-  
+
 /* Exported functions --------------------------------------------------------*/
 /** @addtogroup STM32746G_DISCOVERY_QSPI_Exported_Functions
   * @{
-  */  
+  */
 uint8_t BSP_QSPI_Init       (void);
 uint8_t BSP_QSPI_DeInit     (void);
 uint8_t BSP_QSPI_Read       (uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
@@ -150,11 +150,11 @@ void BSP_QSPI_MspDeInit(QSPI_HandleTypeDef *hqspi, void *Params);
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 #ifdef __cplusplus
 }
@@ -163,10 +163,10 @@ void BSP_QSPI_MspDeInit(QSPI_HandleTypeDef *hqspi, void *Params);
 #endif /* __STM32746G_DISCOVERY_QSPI_H */
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
