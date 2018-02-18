@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-L053R8 board, preemptive QK kernel
-* Last Updated for Version: 5.9.9
-* Date of the Last Update:  2017-10-09
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-02-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -47,6 +47,7 @@ Q_DEFINE_THIS_FILE
 enum KernelAwareISRs {
     GPIOPORTA_PRIO = QF_AWARE_ISR_CMSIS_PRI, /* see NOTE00 */
     SYSTICK_PRIO,
+    EXTI0_1_PRIO,
     /* ... */
     MAX_KERNEL_AWARE_CMSIS_PRI /* keep always last */
 };
@@ -54,6 +55,7 @@ enum KernelAwareISRs {
 Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
 void SysTick_Handler(void);
+void EXTI0_1_IRQHandler(void);
 
 /* Local-scope defines -----------------------------------------------------*/
 /* LED pins available on the board (just one user LED LD2--Green on PA.5) */
@@ -73,7 +75,8 @@ static uint32_t l_rnd;  /* random seed */
     static uint8_t const l_SysTick_Handler = 0U;
 
     enum AppRecords { /* application-specific trace records */
-        PHILO_STAT = QS_USER
+        PHILO_STAT = QS_USER,
+        ON_CONTEXT_SW
     };
 
 #endif
@@ -97,8 +100,8 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
     }
 #endif
 
-    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
-    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
+    QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* get state of the user button */
     /* Perform the debouncing of buttons. The algorithm for debouncing
@@ -124,6 +127,15 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
 
     QK_ISR_EXIT();             /* inform QK about exiting an ISR */
 }
+/*..........................................................................*/
+/* interrupt handler for testing preemptions in QXK */
+void EXTI0_1_IRQHandler(void) {
+    static QEvt const testEvt = { TEST_SIG, 0U, 0U };
+    QK_ISR_ENTRY(); /* inform QK about entering an ISR */
+    QACTIVE_POST(AO_Table, &testEvt, (void *)0);
+    QK_ISR_EXIT();  /* inform QK about exiting an ISR */
+}
+
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
@@ -159,6 +171,8 @@ void BSP_init(void) {
         Q_ERROR();
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
+    QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(ON_CONTEXT_SW);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -228,13 +242,29 @@ void QF_onStartup(void) {
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
     NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
+    NVIC_SetPriority(EXTI0_1_IRQn,   EXTI0_1_PRIO);
     /* ... */
 
     /* enable IRQs... */
+    NVIC_EnableIRQ(EXTI0_1_IRQn);
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
 }
+/*..........................................................................*/
+#ifdef QK_ON_CONTEXT_SW
+/* NOTE: the context-switch callback is called with interrupts DISABLED */
+void QK_onContextSw(QActive *prev, QActive *next) {
+    (void)prev;
+    if (next != (QActive *)0) {
+        //_impure_ptr = next->thread; /* switch to next TLS */
+    }
+    QS_BEGIN_NOCRIT(ON_CONTEXT_SW, (void *)1) /* no critical section! */
+        QS_OBJ(prev);
+        QS_OBJ(next);
+    QS_END_NOCRIT()
+}
+#endif /* QK_ON_CONTEXT_SW */
 /*..........................................................................*/
 void QK_onIdle(void) { /* called with interrupts enabled */
 
@@ -301,6 +331,7 @@ void Q_onAssert(char const *module, int loc) {
 #define __USART_BRR(__PCLK, __BAUD) \
     ((__DIVMANT(__PCLK, __BAUD) << 4)|(__DIVFRAQ(__PCLK, __BAUD) & 0x0F))
 
+/*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[2*1024]; /* buffer for Quantum Spy */
 
@@ -330,17 +361,8 @@ uint8_t QS_onStartup(void const *arg) {
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
+    QS_FILTER_ON(QS_SM_RECORDS);
+    QS_FILTER_ON(QS_UA_RECORDS);
 
     return (uint8_t)1; /* return success */
 }
@@ -370,6 +392,7 @@ void QS_onFlush(void) {
     }
     QF_INT_ENABLE();
 }
+
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 

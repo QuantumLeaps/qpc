@@ -493,18 +493,36 @@ Dining Philosophers Problem (DPP) example for  NXP LPC1768 MCU (Cortex-M3) with 
 
 @image html bd_nucleo-l053r8.jpg NUCLEO-L053R8 board
 
-Dining Philosophers Problem (DPP) example for STM32-L053R8T6 MCU (Cortex-M0+) with ARM-Keil, GNU-ARM, and IAR-ARM toolchains.
+@ref dpp "Dining Philosophers Problem (DPP)" example for NUCLEO-L053R8 MCU (Cortex-M0+).
 
-@image html under_construction.jpg
+Demonstrated built-in kernels:
+- cooperative @ref qv with ARM-Clang, ARM-Keil, GNU-ARM (Makefile and Atollic TRUEstudio), and IAR-ARM toolchains
+- preemptive, run-to-completion @ref qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- dual-mode (run-to-completion/blocking) @ref qxk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+
+
+Features:
+- multiple active objects, including 5 instances of the same AO class (Philo)
+- extended threads (the QXK version)
+- [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html) using the virtual COM-port
+
 */
 /*##########################################################################*/
 /*! @page arm-cm_dpp_nucleo-l152re DPP on NUCLEO-L152RE
 
 @image html bd_nucleo-l152re.jpg NUCLEO-L152RE board
 
-Dining Philosophers Problem (DPP) example for STM32-L152RET6 MCU (Cortex-M3) with ARM-Keil, GNU-ARM, and IAR-ARM toolchains.
+@ref dpp "Dining Philosophers Problem (DPP)" example for NUCLEO-L152RE MCU (Cortex-M3).
 
-@image html under_construction.jpg
+Demonstrated built-in kernels:
+- cooperative @ref qv with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- preemptive, run-to-completion @ref qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+
+
+Features:
+- multiple active objects, including 5 instances of the same AO class (Philo)
+- [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html) using the virtual COM-port
+
 */
 /*##########################################################################*/
 /*! @page arm-cm_dpp_stm32f746g-disco DPP on STM32F746G-Discovery
@@ -534,7 +552,7 @@ Features:
 @ref dpp "Dining Philosophers Problem (DPP)" example for NUCLEO-H743ZI MCU (Cortex-M7).
 
 Demonstrated built-in kernels:
-- cooperative @ref qv with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- cooperative @ref qv with ARM-Clang, ARM-Keil, GNU-ARM (Makefile and Atollic TRUEstudio), and IAR-ARM toolchains
 - preemptive, run-to-completion @ref qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
 - dual-mode (run-to-completion/blocking) @ref qxk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
 

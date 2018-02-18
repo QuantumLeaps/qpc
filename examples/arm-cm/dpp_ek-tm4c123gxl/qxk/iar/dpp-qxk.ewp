@@ -3169,7 +3169,7 @@
             <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar\qxk_port.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar\qxk_port.s</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar\qxk_port.c</name>
         </file>
     </group>
     <group>

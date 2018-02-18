@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for QP/C, DPP on NUCLEO-L053R8, QXK kernel, LLVM-ARM
-# Last Updated for Version: 6.1.0
-# Date of the Last Update:  2018-02-07
+# Product: Makefile for QP/C, DPP on NUCLEO-L053R8, QXK kernel, ARM-LLVM
+# Last Updated for Version: 6.1.1
+# Date of the Last Update:  2018-02-17
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -63,7 +63,7 @@ QPC := ../../../../..
 endif
 
 # QP port used in this project
-QP_PORT_DIR := $(QPC)/ports/arm-cm/qxk/llvm
+QP_PORT_DIR := $(QPC)/ports/arm-cm/qxk/armclang
 
 # list of all source directories used by this project
 VPATH = \
@@ -153,22 +153,22 @@ ARM_FPU    :=
 FLOAT_ABI  := -mfloat-abi=soft
 
 #-----------------------------------------------------------------------------
-# LLVM-ARM toolset (NOTE: You need to adjust to your machine)
+# ARM_LLVM toolset (NOTE: You need to adjust to your machine)
 #
-ifeq ($(LLVM_ARM),)
-LLVM_ARM := C:/tools/Snapdragon-llvm-3.9.9-windows64
+ifeq ($(ARM_LLVM),)
+ARM_LLVM := C:/tools/Snapdragon-llvm-3.9.9-windows64
 endif
 
-# make sure that the LLVM-ARM toolset exists...
-ifeq ("$(wildcard $(LLVM_ARM))","")
-$(error LLVM_ARM toolset not found. Please adjust the Makefile)
+# make sure that the ARM_LLVM toolset exists...
+ifeq ("$(wildcard $(ARM_LLVM))","")
+$(error ARM_LLVM toolset not found. Please adjust the Makefile)
 endif
 
-CC    := $(LLVM_ARM)/bin/clang
-CPP   := $(LLVM_ARM)/bin/clang++
-AS    := $(LLVM_ARM)/bin/llvm-mc
-LINK  := $(LLVM_ARM)/bin/clang
-BIN   := $(LLVM_ARM)/bin/arm-eabi-objcopy
+CC    := $(ARM_LLVM)/bin/clang
+CPP   := $(ARM_LLVM)/bin/clang++
+AS    := $(ARM_LLVM)/bin/llvm-mc
+LINK  := $(ARM_LLVM)/bin/clang
+BIN   := $(ARM_LLVM)/bin/arm-eabi-objcopy
 
 ##############################################################################
 # Typically, you should not need to change anything below this line

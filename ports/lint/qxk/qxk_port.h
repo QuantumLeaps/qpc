@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-14
+* Last updated for version 6.1.1
+* Last updated on  2018-02-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -46,6 +46,9 @@
 * (used internally in QXK only)
 */
 #define QXK_ISR_CONTEXT_() (getSR() != (uint32_t)0)
+
+/*! activate the context-switch callback */
+#define QXK_ON_CONTEXT_SW 1
 
 /*! trigger context switch (used internally in QXK only) */
 #define QXK_CONTEXT_SWITCH_() (trigSWI())

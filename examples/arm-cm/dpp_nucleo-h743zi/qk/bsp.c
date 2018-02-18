@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-H743ZI board, preemptive QK kernel
-* Last Updated for Version: 6.1.0
-* Date of the Last Update:  2018-02-02
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-02-15
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -83,7 +83,8 @@ static uint32_t l_rnd; /* random seed */
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,
         PAUSED_STAT,
-        COMMAND_STAT
+        COMMAND_STAT,
+        CONTEXT_SW
     };
 
 #endif
@@ -217,6 +218,7 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(PHILO_STAT);
     QS_USR_DICTIONARY(PAUSED_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
+    QS_USR_DICTIONARY(CONTEXT_SW);
 }
 /*..........................................................................*/
 void BSP_ledOn(void) {
@@ -303,6 +305,20 @@ void QF_onStartup(void) {
 /*..........................................................................*/
 void QF_onCleanup(void) {
 }
+/*..........................................................................*/
+#ifdef QK_ON_CONTEXT_SW
+/* NOTE: the context-switch callback is called with interrupts DISABLED */
+void QK_onContextSw(QActive *prev, QActive *next) {
+    (void)prev;
+    if (next != (QActive *)0) {
+        //_impure_ptr = next->thread; /* switch to next TLS */
+    }
+    QS_BEGIN_NOCRIT(CONTEXT_SW, (void *)1) /* no critical section! */
+        QS_OBJ(prev);
+        QS_OBJ(next);
+    QS_END_NOCRIT()
+}
+#endif /* QK_ON_CONTEXT_SW */
 /*..........................................................................*/
 void QK_onIdle(void) {
     /* toggle the User LED on and then off, see NOTE01 */

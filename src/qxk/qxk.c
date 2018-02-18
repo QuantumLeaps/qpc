@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.3
-* Last updated on  2017-12-10
+* Last updated for version 6.1.1
+* Last updated on  2018-02-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -58,6 +58,7 @@ Q_DEFINE_THIS_MODULE("qxk")
 QXK_Attr QXK_attr_; /* global attributes of the QXK kernel */
 
 /* Local-scope objects ******************************************************/
+static QActive l_idleThread;
 
 /****************************************************************************/
 /**
@@ -71,8 +72,6 @@ QXK_Attr QXK_attr_; /* global attributes of the QXK kernel */
 * uninitialized data (as is required by the C Standard).
 */
 void QF_init(void) {
-    static QActive s_idleThread;
-
     QF_maxPool_      = (uint_fast8_t)0;
     QF_subscrList_   = (QSubscrList *)0;
     QF_maxPubSignal_ = (enum_t)0;
@@ -81,14 +80,15 @@ void QF_init(void) {
     QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
     QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
     QF_bzero(&QXK_attr_,          (uint_fast16_t)sizeof(QXK_attr_));
-    QF_bzero(&s_idleThread,       (uint_fast16_t)sizeof(s_idleThread));
+    QF_bzero(&l_idleThread,       (uint_fast16_t)sizeof(l_idleThread));
 
     /* setup the QXK scheduler as initially locked and not running */
     QXK_attr_.lockPrio = (uint8_t)(QF_MAX_ACTIVE + 1);
 
     /* setup the QXK idle loop... */
-    QF_active_[0] = &s_idleThread;       /* register idle thread with QF */
-    QXK_attr_.actPrio = s_idleThread.prio; /* set the base priority */
+    QF_active_[0] = &l_idleThread; /* register idle thread with QF */
+    QXK_attr_.idleThread = &l_idleThread; /* save the idle thread ptr */
+    QXK_attr_.actPrio = l_idleThread.prio; /* set the base priority */
 
 #ifdef QXK_INIT
     QXK_INIT(); /* port-specific initialization of the QXK kernel */
@@ -452,10 +452,10 @@ void QXK_activate_(void) {
     QActive *a = QXK_attr_.next; /* next AO (basic-thread) to run */
     uint_fast8_t p;
 
-    /* QS tracing or thread-local storage? */
-#ifdef Q_SPY
+    /* QXK Context switch callback defined or QS tracing enabled? */
+#if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
     uint_fast8_t pprev = pin;
-#endif /* Q_SPY */
+#endif /* QXK_ON_CONTEXT_SW || Q_SPY */
 
     /* QXK_attr_.next must be valid */
     Q_REQUIRE_ID(700, a != (QActive *)0);
@@ -476,11 +476,20 @@ void QXK_activate_(void) {
                     (uint8_t)pprev); /* previous priority */
         QS_END_NOCRIT_()
 
-#ifdef Q_SPY
-        if (p != pprev) {  /* changing priorities? */
+#if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
+        if (p != pprev) {  /* changing threads? */
+
+#ifdef QXK_ON_CONTEXT_SW
+            /* context-switch callback */
+            QXK_onContextSw(((pprev != (uint_fast8_t)0)
+                             ? QF_active_[pprev]
+                             : (QActive *)0),
+                             a);
+#endif /* QXK_ON_CONTEXT_SW */
+
             pprev = p;     /* update previous priority */
         }
-#endif /* Q_SPY */
+#endif /* QXK_ON_CONTEXT_SW || Q_SPY */
 
         QF_INT_ENABLE(); /* unconditionally enable interrupts */
 
@@ -542,7 +551,7 @@ void QXK_activate_(void) {
 
     QXK_attr_.actPrio = (uint8_t)pin; /* restore the base prio */
 
-#ifdef Q_SPY
+#if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
     if (pin != (uint_fast8_t)0) { /* resuming an active object? */
         a = QF_active_[pin]; /* the pointer to the preempted AO */
 
@@ -553,12 +562,20 @@ void QXK_activate_(void) {
         QS_END_NOCRIT_()
     }
     else {  /* resuming priority==0 --> idle */
+        a = (QActive *)0;
+
         QS_BEGIN_NOCRIT_(QS_SCHED_IDLE, (void *)0, (void *)0)
             QS_TIME_();              /* timestamp */
             QS_U8_((uint8_t)pprev);  /* previous priority */
         QS_END_NOCRIT_()
     }
-#endif /* Q_SPY */
+
+#ifdef QXK_ON_CONTEXT_SW
+    /* context-switch callback */
+    QXK_onContextSw(QF_active_[pprev], a);
+#endif /* QXK_ON_CONTEXT_SW */
+
+#endif /* QK_ON_CONTEXT_SW || Q_SPY */
 }
 
 /****************************************************************************/

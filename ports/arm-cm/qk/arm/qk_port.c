@@ -1,10 +1,10 @@
 /**
 * @file
-* @brief QK port to ARM Cortex-M, ARM-KEIL toolset
+* @brief QK/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-06
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-02-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,48 +31,12 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
 #include "qf_port.h"
-
-#if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
-
-/* hand-optimized LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M) */
-__asm uint_fast8_t QF_qlog2(uint32_t x) {
-    MOVS    r1,#0
-    LSRS    r2,r0,#16
-    BEQ.N   QF_qlog2_1
-    MOVS    r1,#16
-    MOVS    r0,r2
-
-QF_qlog2_1
-    LSRS    r2,r0,#8
-    BEQ.N   QF_qlog2_2
-    ADDS    r1,r1,#8
-    MOVS    r0,r2
-
-QF_qlog2_2
-    LSRS    r2,r0,#4
-    BEQ.N   QF_qlog2_3
-    ADDS    r1,r1,#4
-    MOVS    r0,r2
-
-QF_qlog2_3
-    LDR     r2,=QF_qlog2_LUT
-    LDRB    r0,[r2,r0]
-    ADDS    r0,r1,r0
-    BX      lr
-
-QF_qlog2_LUT
-    DCB     0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4
-
-    ALIGN /* align the code to 4-byte boundary */
-}
-
-#endif /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
@@ -271,3 +235,41 @@ __asm void NMI_Handler(void) {
 
     ALIGN                     /* align the code to 4-byte boundary */
 }
+
+/*****************************************************************************
+* hand-optimized LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M)
+*****************************************************************************/
+#if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
+
+__asm uint_fast8_t QF_qlog2(uint32_t x) {
+    MOVS    r1,#0
+    LSRS    r2,r0,#16
+    BEQ.N   QF_qlog2_1
+    MOVS    r1,#16
+    MOVS    r0,r2
+
+QF_qlog2_1
+    LSRS    r2,r0,#8
+    BEQ.N   QF_qlog2_2
+    ADDS    r1,r1,#8
+    MOVS    r0,r2
+
+QF_qlog2_2
+    LSRS    r2,r0,#4
+    BEQ.N   QF_qlog2_3
+    ADDS    r1,r1,#4
+    MOVS    r0,r2
+
+QF_qlog2_3
+    LDR     r2,=QF_qlog2_LUT
+    LDRB    r0,[r2,r0]
+    ADDS    r0,r1,r0
+    BX      lr
+
+QF_qlog2_LUT
+    DCB     0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4
+
+    ALIGN /* align the code to 4-byte boundary */
+}
+
+#endif /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */

@@ -1,8 +1,8 @@
 About this Example
 ==================
-This example can be built from the command prompt with the provided
-Makefile. The example can also be imported as a Makefile-based
-project into Eclipse-based IDEs.
+This example can be built in two different ways:
+- from the command prompt with the provided Makefile.
+- from the Atollic TRUEStudio-ST32 with the provided project.
 
 
 The Makefile
@@ -32,9 +32,16 @@ As described in the comment for this symbol, the GNU-ARM toolset is taken
 from: http://gnutoolchains.com/arm-eabi
 
 It is highly recommened to use the same GNU-ARM distribution, especially
-for ARM Cortex-M4/M7 projects, due to the support for the hardware FPU
+for ARM Cortex-M projects, due to the support for the hardware FPU
 (float-abi=hard).
 ***
+
+
+The TRUEStudio Project
+======================
+The project file for the Atollic TRUEStudio-STM32 is provided and can be
+directly imported into the TRUEStudio Eclipse-based IDE. All three build
+configurations are supported (Debug, Release and Spy).
 
 
 Adjusting Stack and Heap Sizes
@@ -46,7 +53,7 @@ script for QP applications.
 
 Startup Code
 ============
-The startup code for the STM32H743xx MCU used in this project is
+The startup code for the STM32H7xx MCU used in this project is
 located in the "3rd_party" folder in the following location:
 
 3rd_party\nucleo-h743zi\gnu\startup_stm32h743xx.c
@@ -69,3 +76,19 @@ because stack might be corrupted by the time this function is called.
 Also, assert_failed() is intended to handle catastrophic errors and
 should NOT return.
 ***
+
+  
+Adjusting the CPU Clock Speed
+=============================
+The current setting is to run at 2MHz from the MSI (internal oscillator),
+but the CPU clock speed can be modified by editing the file
+system_stm32l1xx.c. Ther file system_stm32l0xx.c.pll provides an example
+of clock setting using the PLL driven from the MSE.
+
+***
+NOTE:
+The NUCLEO boards have a wide range of possible clock selections, depending
+on the solder bridge configuration. Please see Chapter 5.7 "OSC clock" in
+the STM32 NUCLEO Boards User Manual (ST document UM1724) for more information. 
+***
+

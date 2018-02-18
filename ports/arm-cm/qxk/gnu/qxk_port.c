@@ -3,8 +3,8 @@
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.1.0
-* Date of the Last Update:  2018-02-12
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-02-15
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,61 +31,19 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
-#define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
-#include "qf_pkg.h"       /* QF package-scope interface */
-#include "qassert.h"      /* QP embedded systems-friendly assertions */
-#ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
-#else
-    #include "qs_dummy.h" /* disable the QS software tracing */
-#endif /* Q_SPY */
-#include <stddef.h>
 
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 ? */
-
-/*
-* Hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction)
-*
-* NOTE:
-* The inline GNU assembler does not accept mnemonics MOVS, LSRS and ADDS,
-* but for Cortex-M0/M0+/M1 the mnemonics MOV, LSR and ADD always set the
-* condition flags in the PSR.
-*/
-__attribute__ ((naked))
-uint_fast8_t QF_qlog2(uint32_t x) {
-__asm volatile (
-    "  MOV     r1,#0            \n"
-    "  LSR     r2,r0,#16        \n"
-    "  BEQ     QF_qlog2_1       \n"
-    "  MOV     r1,#16           \n"
-    "  MOV     r0,r2            \n"
-    "QF_qlog2_1:                \n"
-    "  LSR     r2,r0,#8         \n"
-    "  BEQ     QF_qlog2_2       \n"
-    "  ADD     r1, r1,#8        \n"
-    "  MOV     r0, r2           \n"
-    "QF_qlog2_2:                \n"
-    "  LSR     r2,r0,#4         \n"
-    "  BEQ     QF_qlog2_3       \n"
-    "  ADD     r1,r1,#4         \n"
-    "  MOV     r0,r2            \n"
-    "QF_qlog2_3:                \n"
-    "  LDR     r2,=QF_qlog2_LUT \n"
-    "  LDRB    r0,[r2,r0]       \n"
-    "  ADD     r0,r1, r0        \n"
-    "  BX      lr               \n"
-    "QF_qlog2_LUT:              \n"
-    "  .byte 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4"
-    );
-}
-
-#endif /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+/* prototypes --------------------------------------------------------------*/
+void QXK_stackInit_(void *act, QActionHandler thread,
+                    void *stkSto, uint_fast16_t stkSize);
+void PendSV_Handler(void);
+void NMI_Handler(void);
+void Thread_ret(void);
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
@@ -198,12 +156,14 @@ void QXK_stackInit_(void *act, QActionHandler thread,
 #define QXK_CURR       0
 #define QXK_NEXT       4
 #define QXK_ACT_PRIO   8
+#define QXK_IDLE_THR   12
 
 /* NOTE: keep in synch with the QXK_Attr struct in "qxk.h" !!! */
 /*Q_ASSERT_COMPILE(QXK_CURR == offsetof(QXK_Attr, curr));*/
 /*Q_ASSERT_COMPILE(QXK_NEXT == offsetof(QXK_Attr, next));*/
 /*Q_ASSERT_COMPILE(QXK_ACT_PRIO == offsetof(QXK_Attr, actPrio));*/
 
+/* NOTE: keep in synch with the QMActive struct in "qf.h/qxk.h" !!! */
 #define QMACTIVE_OSOBJ 28
 #define QMACTIVE_PRIO  36
 
@@ -253,7 +213,7 @@ __asm volatile (
     "  LSL     r1,r1,#27        \n" /* r0 := (1 << 27) (UNPENDSVSET bit) */
 
     /*<<<<<<<<<<<<<<<<<<<<<<< CRITICAL SECTION BEGIN <<<<<<<<<<<<<<<<<<<<<<<<*/
-#if (__ARM_ARCH == 6)               /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+#if (__ARM_ARCH == 6)               /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     "  CPSID   i                \n" /* disable interrupts (set PRIMASK) */
 #else
     "  MOV     r0,#" STRINGIFY(QF_BASEPRI) "\n"
@@ -361,11 +321,11 @@ __asm volatile (
     "  STR     r0,[r3,#" STRINGIFY(QXK_CURR) "]\n" /* QXK_attr_.curr := 0 */
     /* don't clear QXK_attr_.next, as it might be needed for AO activation */
 
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+#if (__ARM_ARCH == 6)               /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     "  MOV     r0,sp            \n" /* r0 := top of stack */
-    "  MOV     r1,r0            \n"
-    "  ADD     r1,r1,#(4*4)     \n" /* point r1 to the 4 high registers r7-r11 */
-    "  LDMIA   r1!,{r4-r7}      \n" /* pop the 4 high registers into low registers */
+    "  MOV     r2,r0            \n"
+    "  ADD     r2,r2,#(4*4)     \n" /* point r2 to the 4 high registers r7-r11 */
+    "  LDMIA   r2!,{r4-r7}      \n" /* pop the 4 high registers into low registers */
     "  MOV     r8,r4            \n" /* move low registers into high registers */
     "  MOV     r9,r5            \n"
     "  MOV     r10,r6           \n"
@@ -373,9 +333,9 @@ __asm volatile (
     "  LDMIA   r0!,{r4-r7}      \n" /* pop the low registers */
     "  ADD     sp,sp,#(8*4)     \n" /* remove 8 registers from the stack */
 
-    "  MOV     r1,#6            \n"
-    "  MVN     r1,r1            \n" /* r2 := ~6 == 0xFFFFFFF9 */
-    "  MOV     lr,r1            \n" /* make sure MSP is used */
+    "  MOV     r2,#6            \n"
+    "  MVN     r2,r2            \n" /* r2 := ~6 == 0xFFFFFFF9 */
+    "  MOV     lr,r2            \n" /* make sure MSP is used */
 #else                               /* M3/M4/M7 */
 #if (__ARM_FP != 0)                 /* if VFP available... */
     "  POP     {r0,lr}          \n" /* restore alighner and EXC_RETURN into lr */
@@ -389,15 +349,30 @@ __asm volatile (
 #endif                              /* M3/M4/M7 */
 
     "  MOV     r0,r12           \n" /* r0 := QXK_attr_.next */
-    "  MOV     r1,#" STRINGIFY(QMACTIVE_PRIO) "\n" /* r1 := offset of .next into QActive */
-    "  LDRB    r0,[r0,r1]       \n" /* r0 := QXK_attr_.next->prio */
-    "  LDRB    r1,[r3,#" STRINGIFY(QXK_ACT_PRIO) "]\n" /* r1 := QXK_attr_.actPrio */
-    "  CMP     r1,r0            \n"
+    "  MOV     r2,#" STRINGIFY(QMACTIVE_PRIO) "\n" /* r2 := offset of .next into QActive */
+    "  LDRB    r0,[r0,r2]       \n" /* r0 := QXK_attr_.next->prio */
+    "  LDRB    r2,[r3,#" STRINGIFY(QXK_ACT_PRIO) "]\n" /* r2 := QXK_attr_.actPrio */
+    "  CMP     r2,r0            \n"
     "  BCC     PendSV_activate  \n" /* if (next->prio > topPrio) activate the next AO */
 
     /* otherwise no activation needed... */
     "  MOV     r0,#0            \n"
     "  STR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" /* QXK_attr_.next := 0 (clear the next) */
+
+#ifdef QXK_ON_CONTEXT_SW
+    "  MOV     r0,r1            \n" /* r0 := QXK_attr_.curr */
+    "  MOV     r1,r12           \n" /* r1 := QXK_attr_.next */
+    "  LDR     r2,[r3,#" STRINGIFY(QXK_IDLE_THR) "]\n" /* r2 := idle thr ptr */
+    "  CMP     r1,r2            \n"
+    "  BNE     PendSV_onContextSw1 \n" /* if (next != idle) call onContextSw */
+    "  MOVS    r1,#0            \n" /* otherwise, next := NULL */
+    "PendSV_onContextSw1:        \n"
+    "  LDR     r2,=QXK_onContextSw \n"
+    "  PUSH    {r1,lr}          \n" /* save the aligner + exception lr */
+    "  BLX     r2               \n" /* call QXK_onContextSw() */
+    "  POP     {r1,r2}          \n" /* restore the aligner + lr into r2 */
+    "  MOV     lr,r2            \n" /* restore the exception lr */
+#endif /* QXK_ON_CONTEXT_SW */
 
     /* re-enable interrupts and return from PendSV */
     "PendSV_return:             \n"
@@ -462,12 +437,29 @@ __asm volatile (
     * r12 -> QXK_attr_.next
     */
     "PendSV_restore_ex:         \n"
+#ifdef QXK_ON_CONTEXT_SW
+    "  MOV     r0,r1            \n" /* r0 := QXK_attr_.curr */
+    "  MOV     r1,r12           \n" /* r1 := QXK_attr_.next */
+    "  LDR     r2,[r3,#" STRINGIFY(QXK_IDLE_THR) "]\n" /* r2 := idle thr ptr */
+    "  CMP     r0,r2            \n"
+    "  BNE     PendSV_onContextSw2 \n" /* if (curr != idle) call onContextSw */
+    "  MOV     r0,#0            \n" /* otherwise, curr := NULL */
+    "PendSV_onContextSw2:        \n"
+    "  LDR     r3,=QXK_onContextSw \n"
+    "  BLX     r3               \n" /* call QXK_onContextSw() */
+
+    /* restore the AAPCS-clobbered registers after a functin call...  */
+    "  LDR     r3,=QXK_attr_    \n"
+    "  LDR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" /* r0 := QXK_attr_.next */
+    "  LDR     r2,[r0,#" STRINGIFY(QMACTIVE_OSOBJ) "]\n" /* r2 := QXK_attr_.curr->osObject */
+#endif /* QXK_ON_CONTEXT_SW */
+
     "  STR     r0,[r3,#" STRINGIFY(QXK_CURR) "]\n" /* QXK_attr_.curr := r0 (QXK_attr_.next) */
     "  MOV     r0,#0            \n"
     "  STR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" /* QXK_attr_.next := 0 */
 
     /* exit the critical section */
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+#if (__ARM_ARCH == 6)               /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     "  CPSIE   i                \n" /* enable interrupts (clear PRIMASK) */
 
     "  MOV     r0,r2            \n" /* r2 := top of stack */
@@ -572,3 +564,45 @@ __asm volatile (
 #endif                              /* M3/M4/M7 */
     );
 }
+
+/****************************************************************************/
+#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+
+/*
+* Hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction)
+*
+* NOTE:
+* The inline GNU assembler does not accept mnemonics MOVS, LSRS and ADDS,
+* but for Cortex-M0/M0+/M1 the mnemonics MOV, LSR and ADD always set the
+* condition flags in the PSR.
+*/
+__attribute__ ((naked))
+uint_fast8_t QF_qlog2(uint32_t x) {
+__asm volatile (
+    "  MOV     r1,#0            \n"
+    "  LSR     r2,r0,#16        \n"
+    "  BEQ     QF_qlog2_1       \n"
+    "  MOV     r1,#16           \n"
+    "  MOV     r0,r2            \n"
+    "QF_qlog2_1:                \n"
+    "  LSR     r2,r0,#8         \n"
+    "  BEQ     QF_qlog2_2       \n"
+    "  ADD     r1, r1,#8        \n"
+    "  MOV     r0, r2           \n"
+    "QF_qlog2_2:                \n"
+    "  LSR     r2,r0,#4         \n"
+    "  BEQ     QF_qlog2_3       \n"
+    "  ADD     r1,r1,#4         \n"
+    "  MOV     r0,r2            \n"
+    "QF_qlog2_3:                \n"
+    "  LDR     r2,=QF_qlog2_LUT \n"
+    "  LDRB    r0,[r2,r0]       \n"
+    "  ADD     r0,r1, r0        \n"
+    "  BX      lr               \n"
+    "QF_qlog2_LUT:              \n"
+    "  .byte 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4"
+    );
+}
+
+#endif /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+

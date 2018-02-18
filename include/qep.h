@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.1.0
-* Last updated on  2018-02-04
+* Last updated for version 6.1.1
+* Last updated on  2018-02-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      610
+#define QP_VERSION      611
 
 /*! The current QP version number string of the form X.Y.Z, where X is
 * a 1-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.1.0"
+#define QP_VERSION_STR  "6.1.1"
 
-/*! Tamperproof current QP release (6.1.0) and date (2018-02-04) */
-#define QP_RELEASE      0x94970ADDU
+/*! Tamperproof current QP release (6.1.1) and date (2018-02-18) */
+#define QP_RELEASE      0x9494E7FCU
 
 
 /****************************************************************************/

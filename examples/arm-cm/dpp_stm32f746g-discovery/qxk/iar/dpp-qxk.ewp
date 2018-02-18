@@ -3180,7 +3180,7 @@
     <group>
         <name>QP_port</name>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar\qxk_port.s</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar\qxk_port.c</name>
         </file>
     </group>
     <group>

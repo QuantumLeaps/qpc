@@ -5,8 +5,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.3
-* Last updated on  2017-12-08
+* Last updated for version 6.1.1
+* Last updated on  2018-02-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -33,7 +33,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -46,25 +46,24 @@
 #include "qpset.h"    /* QXK kernel uses the native QP priority set */
 
 /****************************************************************************/
-/* QF configuration for QXK */
+/* QF configuration for QXK -- data members of the QActive class... */
 
-/*! This macro defines the type of the event queue used for the
-* active objects. */
+/*! Kernel-dependent type of the event queue used for QXK threads */
 /**
 * @description
 * QXK uses the native QF event queue QEQueue.
 */
 #define QF_EQUEUE_TYPE      QEQueue
 
-/*! Private OS-object attribute of active objects in QXK */
+/*! Kernel-dependent OS-attribute of threads in QXK */
 /**
 * @description
-* QXK uses this member to store the private stack poiner for the thread.
-* (The private stack pointer is NULL for AO-threads).
+* QXK uses this member to store the private stack poiner for extended threads.
+* (The private stack pointer is NULL for basic-threads).
 */
 #define QF_OS_OBJECT_TYPE   void*
 
-/*! Private thread attribute of active objects in QXK */
+/*! Kernel-dependent type of the thread attribute in QXK */
 /**
 * @description
 * QXK uses this member to store the private Thread-Local Storage pointer.
@@ -73,7 +72,6 @@
 
 /*! Access Thread-Local Storage (TLS) and cast it on the given @p type_ */
 #define QXK_TLS(type_) ((type_)QXK_current()->thread)
-
 
 /****************************************************************************/
 struct QActive; /* forward declaration */
@@ -86,9 +84,8 @@ typedef struct {
     uint8_t volatile actPrio;       /*!< prio of the active AO */
     uint8_t volatile lockPrio;      /*!< lock prio (0 == no-lock) */
     uint8_t volatile lockHolder;    /*!< prio of the lock holder */
-#ifndef QXK_ISR_CONTEXT_
     uint8_t volatile intNest;       /*!< ISR nesting level */
-#endif /* QXK_ISR_CONTEXT_ */
+    struct QActive * idleThread;    /*!< pointer to the idle thread */
     QPSet readySet;  /*!< ready-set of basic and extended threads */
 } QXK_Attr;
 
@@ -96,16 +93,42 @@ typedef struct {
 extern QXK_Attr QXK_attr_;
 
 /****************************************************************************/
+#ifdef QXK_ON_CONTEXT_SW
+
+    /*! QXK context switch callback (customized in BSPs for QXK) */
+    /**
+    * @description
+    * This callback function provides a mechanism to perform additional
+    * custom operations when QXK switches context from one thread to
+    * another.
+    *
+    * @param[in] prev   pointer to the previous thread (active object)
+    *                   (prev==0 means that @p prev was the QXK idle thread)
+    * @param[in] next   pointer to the next thread (active object)
+    *                   (next==0) means that @p next is the QXK idle thread)
+    * @attention
+    * QXK_onContextSw() is invoked with interrupts **disabled** and must also
+    * return with interrupts **disabled**.
+    *
+    * @note
+    * This callback is enabled by defining the macro #QXK_ON_CONTEXT_SW.
+    *
+    * @include qxk_oncontextsw.c
+    */
+    void QXK_onContextSw(struct QActive *prev, struct QActive *next);
+
+#endif /* QXK_ON_CONTEXT_SW */
+
 /*! QXK idle callback (customized in BSPs for QXK) */
 /**
-* QXK_onIdle() is called continuously by the QXK idle loop. This callback
+* @description
+* QXK_onIdle() is called continuously by the QXK idle thread. This callback
 * gives the application an opportunity to enter a power-saving CPU mode,
 * or perform some other idle processing.
 *
-* @note QXK_onIdle() is invoked with interrupts enabled and must also
-* return with interrupts enabled.
-*
-* @sa QK_onIdle()
+* @note
+* QXK_onIdle() is invoked with interrupts enabled and must also return with
+* interrupts enabled.
 */
 void QXK_onIdle(void);
 

@@ -100,6 +100,14 @@
 */
 #define QF_EPOOL_TYPE_            QMPool
 
+/*! This macro enables calling the QK context-switch callback
+* QK_onContextSw() */
+#define QK_ON_CONTEXT_SW
+
+/*! This macro enables calling the QXK context-switch callback
+* QXK_onContextSw() */
+#define QXK_ON_CONTEXT_SW
+
 /*! Platform-dependent macro defining the event pool initialization */
 /**
 * \note This is a specific implementation for the QK-port of QF.

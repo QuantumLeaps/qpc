@@ -3,8 +3,8 @@
 * @brief QV/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.6
-* Date of the Last Update:  2017-07-28
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-02-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,14 +31,14 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
 #include "qf_port.h"
 
-#if (__CORE__ == __ARM6M__)  /* Cortex-M0/M0+/M1 ? */
+#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
 
 /* hand-optimized quick LOG2 in assembly */
 uint_fast8_t QF_qlog2(uint32_t x) {

@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.7
-* Last updated on  2017-08-18
+* Last updated for version 6.1.1
+* Last updated on  2018-02-17
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -375,10 +375,10 @@ void QK_activate_(void) {
     uint_fast8_t p   = (uint_fast8_t)QK_attr_.nextPrio; /* next prio to run */
     QActive *a;
 
-    /* QS tracing or thread-local storage? */
-#ifdef Q_SPY
+    /* QK Context switch callback defined or QS tracing enabled? */
+#if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
     uint_fast8_t pprev = pin;
-#endif /* Q_SPY */
+#endif /* QK_ON_CONTEXT_SW || Q_SPY */
 
     /* QK_attr_.nextPrio must be non-zero upon entry to QK_activate_() */
     Q_REQUIRE_ID(500, p != (uint_fast8_t)0);
@@ -397,11 +397,19 @@ void QK_activate_(void) {
                     (uint8_t)pprev); /* previous priority */
         QS_END_NOCRIT_()
 
-#ifdef Q_SPY
-        if (p != pprev) {  /* changing priorities? */
+#if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
+        if (p != pprev) {  /* changing threads? */
+
+#ifdef QK_ON_CONTEXT_SW
+            /* context-switch callback*/
+            QK_onContextSw(((pprev != (uint_fast8_t)0)
+                            ? QF_active_[pprev]
+                            : (QActive *)0), a);
+#endif /* QK_ON_CONTEXT_SW */
+
             pprev = p;     /* update previous priority */
         }
-#endif /* Q_SPY */
+#endif /* QK_ON_CONTEXT_SW || Q_SPY */
 
         QF_INT_ENABLE(); /* unconditionally enable interrupts */
 
@@ -438,7 +446,7 @@ void QK_activate_(void) {
 
     QK_attr_.actPrio = (uint8_t)pin; /* restore the active priority */
 
-#ifdef Q_SPY
+#if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
     if (pin != (uint_fast8_t)0) { /* resuming an active object? */
         a = QF_active_[pin]; /* the pointer to the preempted AO */
 
@@ -449,10 +457,17 @@ void QK_activate_(void) {
         QS_END_NOCRIT_()
     }
     else {  /* resuming priority==0 --> idle */
+        a = (QActive *)0; /* QK idle loop */
+
         QS_BEGIN_NOCRIT_(QS_SCHED_IDLE, (void *)0, (void *)0)
             QS_TIME_();              /* timestamp */
             QS_U8_((uint8_t)pprev);  /* previous priority */
         QS_END_NOCRIT_()
     }
-#endif /* Q_SPY */
+
+#ifdef QK_ON_CONTEXT_SW
+    QK_onContextSw(QF_active_[pprev], a); /* context-switch callback */
+#endif /* QK_ON_CONTEXT_SW */
+
+#endif /* QK_ON_CONTEXT_SW || Q_SPY */
 }

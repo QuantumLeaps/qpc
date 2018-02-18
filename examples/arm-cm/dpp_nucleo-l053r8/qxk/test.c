@@ -60,6 +60,8 @@ QXThread * const XT_Test2 = &l_test2;
 /*..........................................................................*/
 static void Thread1_run(QXThread * const me) {
 
+    QS_OBJ_DICTIONARY(&l_test1);
+
     me->super.thread = &l_tls1; /* initialize the TLS for Thread1 */
 
     (void)me;
@@ -101,6 +103,8 @@ void Test1_ctor(void) {
 
 /*..........................................................................*/
 static void Thread2_run(QXThread * const me) {
+
+    QS_OBJ_DICTIONARY(&l_test2);
 
     /* initialize the semaphore before using it
     * NOTE: the semaphore is initialized in the highest-priority thread

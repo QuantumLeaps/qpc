@@ -1,6 +1,15 @@
 /**
 @page history Revision History
 
+@section qpc_6_1_1 Version 6.1.1, 2018-02-18
+The main purpose of this release is adding the context-switch callbacks to the preemptive @ref qk "QK" and @ref qxk "QXK" kernels. The QK_onContextSw() and QXK_onContextSw() callback functions provide a mechanism to perform additional custom operations when QK/QXK switches context from one thread to another. To avoid extra overhead when this functionality is not needed and for backwards-compatiblity with the existing applications, the callbacks are enabled only when the macros #QK_ON_CONTEXT_SW (for QK) and QXK_ON_CONTEXT_SW (for QXK) are defined. These macros can be defined either directly in command-line for the compiler, or in the QK/QXK port files (qk_port.c for QK and qxk_port.c for QXK). Examples for the context-switch callbacks have been provided for  for the @ref arm-cm_dpp_nucleo-l053r8 "NUCLEO-L053R8" (Cortex-M0+) and the @ref arm-cm_dpp_nucleo-h743zi "NUCLEO-H743ZI" (Cortex-M7).
+
+Also, this release changes the ARM Cortex-M ports for the IAR-ARM toolchain in that it replaces the assembly modules with the equivalent C implementation. This change enables using the configuration macros #QK_ON_CONTEXT_SW (for QK) and QXK_ON_CONTEXT_SW (for QXK) in the ports. All existing example projects for IAR-ARM have been updated to use the `q(x)k_port.c` files instead of `q(x)k_port.s` files.
+
+Also, this release adds new project files for the Atollic TRUEstudio for STM32. The TRUEstudio projects (Eclipse) have been added for the @ref arm-cm_dpp_nucleo-l053r8 "NUCLEO-L053R8" (Cortex-M0+) and the @ref arm-cm_dpp_nucleo-h743zi "NUCLEO-H743ZI" (Cortex-M7).
+
+
+------------------------------------------------------------------------------
 @section qpc_6_1_0 Version 6.1.0, 2018-02-04
 The main purpose of this release is adding the support for the [<strong>ARM Compiler 6 (ARM-Clang)</strong>](https://developer.arm.com/products/software-development-tools/compilers/arm-compiler), which is a C/C++ toolchain for ARM processors based on the modern [Clang frontend](https://clang.llvm.org/) and the [LLVM framework](https://llvm.org/). This release adds the ARM-Clang ports and examples for all built-in kernels (QV, QK, and QXK) for the ARM Cortex-M CPU cores.
 

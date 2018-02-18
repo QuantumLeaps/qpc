@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example extened for QXK
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-09
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-02-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -83,6 +83,7 @@ int main() {
     QS_OBJ_DICTIONARY(philoQueueSto[2]);
     QS_OBJ_DICTIONARY(philoQueueSto[3]);
     QS_OBJ_DICTIONARY(philoQueueSto[4]);
+    QS_OBJ_DICTIONARY(&l_ticker0);
 
     /* start the extended thread */
     QXTHREAD_START(XT_Test1,                 /* Thread to start */

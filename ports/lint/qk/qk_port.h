@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 5.7.2
-* Last updated on  2016-09-26
+* Last updated for version 6.1.1
+* Last updated on  2018-02-15
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -41,6 +41,9 @@
 #define qk_port_h
 
 /****************************************************************************/
+
+/*! enable the context-switch callback */
+#define QK_ON_CONTEXT_SW 1
 
 /*! determination if the code executes in the ISR context */
 #define QK_ISR_CONTEXT_() (get_IPSR() != (uint32_t)0)

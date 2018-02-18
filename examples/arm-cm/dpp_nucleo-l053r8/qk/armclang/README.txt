@@ -29,7 +29,7 @@ numberical value of the heap size.
 
 Startup Code
 ============
-The startup code for the STM32L1xx MCU used in this project is
+The startup code for the STM32L0xx MCU used in this project is
 located in the "3rd_party" folder in the following location:
 
 3rd_party\nucleo-l053r8\arm\startup_stm32l053xx.s

@@ -1,10 +1,10 @@
 /**
 * @file
-* @brief QXK port to ARM Cortex-M, ARM-KEIL toolset
+* @brief QXK/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-16
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-02-15
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,52 +31,24 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
 #include "qf_port.h"
 
-#if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
-
-/* hand-optimized LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M) */
-__asm uint_fast8_t QF_qlog2(uint32_t x) {
-    MOVS    r1,#0
-    LSRS    r2,r0,#16
-    BEQ.N   QF_qlog2_1
-    MOVS    r1,#16
-    MOVS    r0,r2
-
-QF_qlog2_1
-    LSRS    r2,r0,#8
-    BEQ.N   QF_qlog2_2
-    ADDS    r1,r1,#8
-    MOVS    r0,r2
-
-QF_qlog2_2
-    LSRS    r2,r0,#4
-    BEQ.N   QF_qlog2_3
-    ADDS    r1,r1,#4
-    MOVS    r0,r2
-
-QF_qlog2_3
-    LDR     r2,=QF_qlog2_LUT
-    LDRB    r0,[r2,r0]
-    ADDS    r0,r1,r0
-    BX      lr
-
-    ALIGN
-
-QF_qlog2_LUT
-    DCB     0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4
-}
-
-#endif /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+/* prototypes --------------------------------------------------------------*/
+void QXK_stackInit_(void *act, QActionHandler thread,
+                    void *stkSto, uint_fast16_t stkSize);
+void PendSV_Handler(void);
+void NMI_Handler(void);
+void Thread_ret(void);
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
 #define NVIC_IP      ((uint32_t volatile *)0xE000E400)
+#define NVIC_ICSR    0xE000ED04
 
 /*
 * Initialize the exception priorities and IRQ priorities to safe values.
@@ -185,10 +157,20 @@ void QXK_stackInit_(void *act, QActionHandler thread,
 #define QXK_CURR       0
 #define QXK_NEXT       4
 #define QXK_ACT_PRIO   8
+#define QXK_IDLE_THR   12
+
+/* NOTE: keep in synch with the QXK_Attr struct in "qxk.h" !!! */
+/*Q_ASSERT_COMPILE(QXK_CURR == offsetof(QXK_Attr, curr));*/
+/*Q_ASSERT_COMPILE(QXK_NEXT == offsetof(QXK_Attr, next));*/
+/*Q_ASSERT_COMPILE(QXK_ACT_PRIO == offsetof(QXK_Attr, actPrio));*/
 
 /* NOTE: keep in synch with the QMActive struct in "qf.h/qxk.h" !!! */
 #define QMACTIVE_OSOBJ 28
 #define QMACTIVE_PRIO  36
+
+/* NOTE: keep in synch with the QActive struct in "qf.h/qxk.h" !!! */
+/*Q_ASSERT_COMPILE(QMACTIVE_OSOBJ == offsetof(QActive, osObject));*/
+/*Q_ASSERT_COMPILE(QMACTIVE_PRIO == offsetof(QActive, prio));*/
 
 /*****************************************************************************
 * The PendSV_Handler exception handler is used for handling context switch
@@ -215,6 +197,9 @@ void QXK_stackInit_(void *act, QActionHandler thread,
 __asm void PendSV_Handler(void) {
     IMPORT  QXK_attr_         /* extern variable */
     IMPORT  QXK_activate_     /* extern function */
+#ifdef QXK_ON_CONTEXT_SW
+    IMPORT  QXK_onContextSw   /* extern function */
+#endif      /* QXK_ON_CONTEXT_SW */
 
     PRESERVE8                 /* preserve the 8-byte stack alignment */
 
@@ -244,7 +229,7 @@ __asm void PendSV_Handler(void) {
 
     /* Check QXK_attr_.next, which contains the pointer to the next thread
     * to run, which is set in QXK_ISR_EXIT(). This pointer must not be NULL.
-        */
+    */
     LDR     r0,[r3,#QXK_NEXT] /* r1 := QXK_attr_.next */
     CMP     r0,#0             /* is (QXK_attr_.next == 0)? */
     BEQ     PendSV_return     /* branch if (QXK_attr_.next == 0) */
@@ -337,9 +322,9 @@ PendSV_restore_ao
 
 #if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     MOV     r0,sp             /* r0 := top of stack */
-    MOV     r1,r0
-    ADDS    r1,r1,#(4*4)      /* point r1 to the 4 high registers r7-r11 */
-    LDMIA   r1!,{r4-r7}       /* pop the 4 high registers into low registers */
+    MOV     r2,r0
+    ADDS    r2,r2,#(4*4)      /* point r1 to the 4 high registers r7-r11 */
+    LDMIA   r2!,{r4-r7}       /* pop the 4 high registers into low registers */
     MOV     r8,r4             /* move low registers into high registers */
     MOV     r9,r5
     MOV     r10,r6
@@ -347,9 +332,9 @@ PendSV_restore_ao
     LDMIA   r0!,{r4-r7}       /* pop the low registers */
     ADD     sp,sp,#(8*4)      /* remove 8 registers from the stack */
 
-    MOVS    r1,#6
-    MVNS    r1,r1             /* r2 := ~6 == 0xFFFFFFF9 */
-    MOV     lr,r1             /* make sure MSP is used */
+    MOVS    r2,#6
+    MVNS    r2,r2             /* r2 := ~6 == 0xFFFFFFF9 */
+    MOV     lr,r2             /* make sure MSP is used */
 #else                         /* M3/M4/M7 */
 #if (__TARGET_FPU_VFP != 0)   /* if VFP available... */
     POP     {r0,lr}           /* restore alighner and EXC_RETURN into lr */
@@ -363,15 +348,29 @@ PendSV_restore_ao
 #endif                        /* M3/M4/M7 */
 
     MOV     r0,r12            /* r0 := QXK_attr_.next */
-    MOVS    r1,#QMACTIVE_PRIO /* r1 := offset of .next into QActive */
-    LDRB    r0,[r0,r1]        /* r0 := QXK_attr_.next->prio */
-    LDRB    r1,[r3,#QXK_ACT_PRIO]  /* r1 := QXK_attr_.actPrio */
-    CMP     r1,r0
+    MOVS    r2,#QMACTIVE_PRIO /* r2 := offset of .prio into QActive */
+    LDRB    r0,[r0,r2]        /* r0 := QXK_attr_.next->prio */
+    LDRB    r2,[r3,#QXK_ACT_PRIO]  /* r2 := QXK_attr_.actPrio */
+    CMP     r2,r0
     BCC     PendSV_activate   /* if (next->prio > topPrio) activate the next AO */
 
     /* otherwise no activation needed... */
     MOVS    r0,#0
     STR     r0,[r3,#QXK_NEXT] /* QXK_attr_.next := 0 (clear the next) */
+
+#ifdef QXK_ON_CONTEXT_SW
+    MOVS    r0,r1             /* r0 := QXK_attr_.curr */
+    MOV     r1,r12            /* r1 := QXK_attr_.next */
+    LDR     r2,[r3,#QXK_IDLE_THR] /* r2 := idle thr ptr */
+    CMP     r1,r2
+    BNE     PendSV_onContextSw1 /* if (next != idle) call onContextSw */
+    MOVS    r1,#0             /* otherwise, next := NULL */
+PendSV_onContextSw1
+    PUSH    {r1,lr}           /* save the aligner + exception lr */
+    BL      QXK_onContextSw   /* call QXK_onContextSw() */
+    POP     {r1,r2}           /* restore the aligner + lr into r2 */
+    MOV     lr,r2             /* restore the exception lr */
+#endif /* QXK_ON_CONTEXT_SW */
 
     /* re-enable interrupts and return from PendSV */
 PendSV_return
@@ -436,6 +435,22 @@ PendSV_save_ex
     * r12 -> QXK_attr_.next
     */
 PendSV_restore_ex
+#ifdef QXK_ON_CONTEXT_SW
+    MOVS    r0,r1             /* r0 := QXK_attr_.curr */
+    MOV     r1,r12            /* r1 := QXK_attr_.next */
+    LDR     r2,[r3,#QXK_IDLE_THR] /* r2 := idle thr ptr */
+    CMP     r0,r2
+    BNE     PendSV_onContextSw2 /* if (curr != idle) call onContextSw */
+    MOVS    r0,#0             /* otherwise, curr := NULL */
+PendSV_onContextSw2
+    BL      QXK_onContextSw   /* call QXK_onContextSw() */
+
+    /* restore the AAPCS-clobbered registers after a functin call...  */
+    LDR     r3,=QXK_attr_
+    LDR     r0,[r3,#QXK_NEXT] /* r0 := QXK_attr_.next */
+    LDR     r2,[r0,#QMACTIVE_OSOBJ] /* r2 := QXK_attr_.curr->osObject */
+#endif /* QXK_ON_CONTEXT_SW */
+
     STR     r0,[r3,#QXK_CURR] /* QXK_attr_.curr := r0 (QXK_attr_.next) */
     MOVS    r0,#0
     STR     r0,[r3,#QXK_NEXT] /* QXK_attr_.next := 0 */
@@ -540,7 +555,7 @@ __asm void NMI_Handler(void) {
     MOVS    r0,#0
     MSR     BASEPRI,r0        /* enable interrupts (clear BASEPRI) */
 #if (__TARGET_FPU_VFP != 0)   /* if VFP available... */
-    POP     {r0,pc}           /* pop stack "aligner" and EXC_RETURN to PC */
+    POP     {r0,pc}           /* pop stack aligner and EXC_RETURN to PC */
 #else                         /* no VFP */
     BX      lr                /* return to the preempted task */
 #endif                        /* no VFP */
@@ -548,3 +563,40 @@ __asm void NMI_Handler(void) {
 
     ALIGN                     /* align the code to 4-byte boundary */
 }
+
+#if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
+
+/* hand-optimized LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M) */
+__asm uint_fast8_t QF_qlog2(uint32_t x) {
+    MOVS    r1,#0
+    LSRS    r2,r0,#16
+    BEQ.N   QF_qlog2_1
+    MOVS    r1,#16
+    MOVS    r0,r2
+
+QF_qlog2_1
+    LSRS    r2,r0,#8
+    BEQ.N   QF_qlog2_2
+    ADDS    r1,r1,#8
+    MOVS    r0,r2
+
+QF_qlog2_2
+    LSRS    r2,r0,#4
+    BEQ.N   QF_qlog2_3
+    ADDS    r1,r1,#4
+    MOVS    r0,r2
+
+QF_qlog2_3
+    LDR     r2,=QF_qlog2_LUT
+    LDRB    r0,[r2,r0]
+    ADDS    r0,r1,r0
+    BX      lr
+
+    ALIGN
+
+QF_qlog2_LUT
+    DCB     0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4
+}
+
+#endif /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+

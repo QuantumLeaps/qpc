@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-L053R8 board, preemptive QXK kernel
-* Last Updated for Version: 6.0.0
-* Date of the Last Update:  2017-10-12
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-02-15
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -75,7 +75,8 @@ static uint32_t l_rnd;  /* random seed */
     static uint8_t const l_SysTick_Handler = 0U;
 
     enum AppRecords { /* application-specific trace records */
-        PHILO_STAT = QS_USER
+        PHILO_STAT = QS_USER,
+        ON_CONTEXT_SW
     };
 
 #endif
@@ -99,8 +100,8 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
     }
 #endif
 
-    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
-    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
+    QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* get state of the user button */
     /* Perform the debouncing of buttons. The algorithm for debouncing
@@ -170,6 +171,8 @@ void BSP_init(void) {
         Q_ERROR();
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
+    QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(ON_CONTEXT_SW);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -248,6 +251,20 @@ void QF_onStartup(void) {
 /*..........................................................................*/
 void QF_onCleanup(void) {
 }
+/*..........................................................................*/
+#ifdef QXK_ON_CONTEXT_SW
+/* NOTE: the context-switch callback is called with interrupts DISABLED */
+void QXK_onContextSw(QActive *prev, QActive *next) {
+    (void)prev;
+    if (next != (QActive *)0) {
+        //_impure_ptr = next->thread; /* switch to next TLS */
+    }
+    QS_BEGIN_NOCRIT(ON_CONTEXT_SW, (void *)1) /* no critical section! */
+        QS_OBJ(prev);
+        QS_OBJ(next);
+    QS_END_NOCRIT()
+}
+#endif /* QXK_ON_CONTEXT_SW */
 /*..........................................................................*/
 void QXK_onIdle(void) { /* called with interrupts enabled */
 
@@ -344,17 +361,8 @@ uint8_t QS_onStartup(void const *arg) {
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
+    QS_FILTER_ON(QS_SM_RECORDS);
+    QS_FILTER_ON(QS_UA_RECORDS);
 
     return (uint8_t)1; /* return success */
 }
@@ -384,17 +392,6 @@ void QS_onFlush(void) {
     }
     QF_INT_ENABLE();
 }
-
-/*???
-void bug_test(void) {
-    uint32_t i;
-    for(i = 0; i < 10; i++) {
-        QS_BEGIN(123, 0);
-        QS_U32(8, 0);
-        QS_END();
-    }
-}
-*/
 
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/

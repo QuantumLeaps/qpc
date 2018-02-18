@@ -219,6 +219,7 @@
                 </option>
                 <option>
                     <name>CCDefines</name>
+                    <state>QXK_ON_CONTEXT_SW</state>
                     <state>STM32H743xx</state>
                     <state>USE_HAL_DRIVER</state>
                     <state>USE_STM32H7XX_NUCLEO_144</state>
@@ -2287,6 +2288,7 @@
                 <option>
                     <name>CCDefines</name>
                     <state>Q_SPY</state>
+                    <state>QXK_ON_CONTEXT_SW</state>
                     <state>STM32H743xx</state>
                     <state>USE_HAL_DRIVER</state>
                     <state>USE_STM32H7XX_NUCLEO_144</state>
@@ -3225,10 +3227,10 @@
             <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar\qs_port.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar\qxk_port.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar\qxk_port.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar\qxk_port.s</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar\qxk_port.h</name>
         </file>
     </group>
     <group>

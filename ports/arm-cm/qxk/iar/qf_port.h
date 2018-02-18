@@ -3,14 +3,14 @@
 * @brief QF/C port to Cortex-M, preemptive dual-mode QXK kernel, IAR-ARM
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.3
-* Date of the Last Update:  2017-12-07
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-02-15
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -46,8 +46,7 @@
 #define QF_MAX_TICK_RATE        2
 
 /* QF interrupt disable/enable and log2()... */
-#if (__CORE__ == __ARM6M__)  /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
-
+#if (__ARM_ARCH == 6)   /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     /* Cortex-M0/M0+/M1(v6-M, v6S-M) interrupt disabling policy, see NOTE2 */
     #define QF_INT_DISABLE()    __disable_interrupt()
     #define QF_INT_ENABLE()     __enable_interrupt()
@@ -100,7 +99,7 @@
 #include <intrinsics.h> /* IAR intrinsic functions */
 #include "qep_port.h"   /* QEP port */
 
-#if (__CORE__ == __ARM6M__)  /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+#if (__ARM_ARCH == 6)   /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     /* hand-optimized quick LOG2 in assembly */
     uint_fast8_t QF_qlog2(uint32_t x);
 #endif /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
