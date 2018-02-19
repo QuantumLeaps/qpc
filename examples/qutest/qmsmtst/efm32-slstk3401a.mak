@@ -176,7 +176,7 @@ LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 
 #-----------------------------------------------------------------------------
-# JLINK toolset (NOTE: You need to adjust to your machine)
+# JLINK tool (NOTE: You need to adjust to your machine)
 # see https://www.segger.com/downloads/jlink
 #
 ifeq ($(JLINK),)
@@ -248,7 +248,7 @@ endif
 # rules
 #
 
-.PHONY : run norun
+.PHONY : run norun flash
 
 ifeq ($(MAKECMDGOALS),norun)
 all : $(TARGET_BIN)
@@ -268,6 +268,9 @@ $(TARGET_BIN): $(TARGET_ELF)
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
+
+flash :
+	$(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
 
 run : $(TARGET_BIN)
 	$(TCLSH) $(QUTEST) $(TESTS)
@@ -302,7 +305,7 @@ clean :
 	$(BIN_DIR)/*.bin \
 	$(BIN_DIR)/*.elf \
 	$(BIN_DIR)/*.map
-	
+
 show :
 	@echo PROJECT      = $(PROJECT)
 	@echo TESTS        = $(TESTS)

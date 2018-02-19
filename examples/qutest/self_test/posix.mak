@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST self-test; QP/C on POSIX host
-# Last updated for version 5.9.0
-# Last updated on  2017-04-16
+# Last updated for version 6.1.1
+# Last updated on  2018-02-18
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,21 +28,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://state-machine.com
+# https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 #
 # examples of invoking this Makefile:
-# make -fposix.mak        # make and run the tests in the current directory
-# make -fposix.mak TESTS=philo*.tcl  # make and run the selected tests
-# make -fposix.mak norun   # only make but not run the tests
-# make -fposix.mak clean   # cleanup the build
+# make -f posix.mak        # make and run the tests in the current directory
+# make -f posix.mak TESTS=philo*.tcl  # make and run the selected tests
+# make -f posix.mak norun   # only make but not run the tests
+# make -f posix.mak clean   # cleanup the build
 #
 
 #-----------------------------------------------------------------------------
 # project name
 #
-PROJECT     := test_qutest
+PROJECT := test_qutest
 
 #-----------------------------------------------------------------------------
 # project directories
@@ -82,7 +82,7 @@ C_SRCS := \
 	test_qutest.c
 
 # C++ source files...
-CPP_SRCS  :=
+CPP_SRCS :=
 
 LIB_DIRS  :=
 LIBS      :=
@@ -119,8 +119,8 @@ BIN_DIR := posix
 CFLAGS = -g -O -Wall -Wstrict-prototypes -W $(INCLUDES) $(DEFINES) \
 	-DQ_SPY -DQ_UTEST -DQ_HOST
 
-CPPFLAGS = -c -fno-rtti -fno-exceptions \
-	-O -Wall -W $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
+CPPFLAGS = -g -O -Wall -W -fno-rtti -fno-exceptions $(INCLUDES) $(DEFINES) \
+	-DQ_SPY -DQ_UTEST -DQ_HOST
 
 LINKFLAGS := -Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
 
@@ -148,7 +148,7 @@ endif
 # rules
 #
 
-.PHONY : run
+.PHONY : run norun
 
 ifeq ($(MAKECMDGOALS),norun)
 all : $(TARGET_EXE)
@@ -157,12 +157,16 @@ else
 all : $(TARGET_EXE) run
 endif
 
+ifeq (, $(TESTS))
+TESTS := *.tcl
+endif
+
 $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_EXE)
-	$(TCLSH) $(QUTEST) $(TARGET_EXE)
+	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE)
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
@@ -193,6 +197,7 @@ clean :
 
 show :
 	@echo PROJECT      = $(PROJECT)
+	@echo TESTS        = $(TESTS)
 	@echo TARGET_EXE   = $(TARGET_EXE)
 	@echo CONF         = $(CONF)
 	@echo VPATH        = $(VPATH)

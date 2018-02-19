@@ -34,6 +34,7 @@
 #
 # examples of invoking this Makefile:
 # make -fefm32-slstk3401a.mak  # make and run the tests in the current directory
+# make -fefm32-slstk3401a.mak TESTS=philo*.tcl  # make and run the selected tests
 # make -fefm32-slstk3401a.mak norun  # only make but not run the tests
 # make -fefm32-slstk3401a.mak clean  # cleanup the build
 #
@@ -98,17 +99,17 @@ ASM_SRCS :=
 
 # C source files
 C_SRCS := \
-    test_Flash.c \
-    Flash.c \
-    FakeMicroTime.c \
-    MockIO.c \
-    qutest_port.c \
-    startup_efm32pg1b.c \
-    system_efm32pg1b.c \
-    em_cmu.c \
-    em_emu.c \
-    em_gpio.c \
-    em_usart.c
+	test_Flash.c \
+	Flash.c \
+	FakeMicroTime.c \
+	MockIO.c \
+	qutest_port.c \
+	startup_efm32pg1b.c \
+	system_efm32pg1b.c \
+	em_cmu.c \
+	em_emu.c \
+	em_gpio.c \
+	em_usart.c
 
 # C++ source files
 CPP_SRCS :=
@@ -117,28 +118,28 @@ OUTPUT    := $(PROJECT)
 LD_SCRIPT := ../$(TARGET)/test.ld
 
 QP_SRCS := \
-    qep_hsm.c \
-    qep_msm.c \
-    qf_act.c \
-    qf_defer.c \
-    qf_dyn.c \
-    qf_mem.c \
-    qf_ps.c \
-    qf_qact.c \
-    qf_qeq.c \
-    qf_qmact.c \
-    qs.c \
-    qs_64bit.c \
-    qs_rx.c \
-    qs_fp.c \
-    qutest.c
+	qep_hsm.c \
+	qep_msm.c \
+	qf_act.c \
+	qf_defer.c \
+	qf_dyn.c \
+	qf_mem.c \
+	qf_ps.c \
+	qf_qact.c \
+	qf_qeq.c \
+	qf_qmact.c \
+	qs.c \
+	qs_64bit.c \
+	qs_rx.c \
+	qs_fp.c \
+	qutest.c
 
 QP_ASMS :=
 
 QS_SRCS := \
-    qs.c \
-    qs_rx.c \
-    qs_fp.c
+	qs.c \
+	qs_rx.c \
+	qs_fp.c
 
 LIB_DIRS  :=
 LIBS      :=
@@ -177,7 +178,7 @@ LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 
 #-----------------------------------------------------------------------------
-# JLINK toolset (NOTE: You need to adjust to your machine)
+# JLINK tool (NOTE: You need to adjust to your machine)
 # see https://www.segger.com/downloads/jlink
 #
 ifeq ($(JLINK),)
@@ -216,17 +217,17 @@ C_SRCS += $(QS_SRCS)
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-    -ffunction-sections -fdata-sections \
-    -O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
+	-ffunction-sections -fdata-sections \
+	-O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
 
 CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
-    -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-    -O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
+	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
+	-O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
 
 
 LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-    -mthumb -nostdlib \
-    -Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
+	-mthumb -nostdlib \
+	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
 ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
 C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
@@ -249,13 +250,17 @@ endif
 # rules
 #
 
-.PHONY : run norun
+.PHONY : run norun flash
 
 ifeq ($(MAKECMDGOALS),norun)
 all : $(TARGET_BIN)
 norun : all
 else
 all : $(TARGET_BIN) run
+endif
+
+ifeq (, $(TESTS))
+TESTS := *.tcl
 endif
 
 $(TARGET_BIN): $(TARGET_ELF)
@@ -266,8 +271,11 @@ $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
+flash :
+	$(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
+
 run : $(TARGET_BIN)
-	$(TCLSH) $(QUTEST)
+	$(TCLSH) $(QUTEST) $(TESTS)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
@@ -302,6 +310,7 @@ clean :
 
 show :
 	@echo PROJECT      = $(PROJECT)
+	@echo TESTS        = $(TESTS)
 	@echo TARGET_ELF   = $(TARGET_ELF)
 	@echo CONF         = $(CONF)
 	@echo VPATH        = $(VPATH)

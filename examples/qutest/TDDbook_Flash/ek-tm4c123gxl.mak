@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EK-TM4C123GXL, QUTEST, GNU-ARM
-# Last Updated for Version: 6.1.0
-# Date of the Last Update:  2018-02-07
+# Last Updated for Version: 6.1.1
+# Date of the Last Update:  2018-02-18
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -34,6 +34,7 @@
 #
 # examples of invoking this Makefile:
 # make -fek-tm4c123gxl.mak  # make and run the tests in the current directory
+# make -fek-tm4c123gxl.mak TESTS=philo*.tcl  # make and run the selected tests
 # make -fek-tm4c123gxl.mak norun  # only make but not run the tests
 # make -fek-tm4c123gxl.mak clean  # cleanup the build
 #
@@ -110,7 +111,7 @@ C_SRCS := \
 # C++ source files
 CPP_SRCS :=
 
-OUTPUT	:= $(PROJECT)
+OUTPUT    := $(PROJECT)
 LD_SCRIPT := ../$(TARGET)/test.ld
 
 QP_SRCS := \
@@ -138,7 +139,7 @@ QS_SRCS := \
 	qs_fp.c
 
 LIB_DIRS  :=
-LIBS	  :=
+LIBS      :=
 
 # defines
 DEFINES   := -DTARGET_IS_TM4C123_RB1
@@ -167,9 +168,9 @@ ifeq ("$(wildcard $(GNU_ARM))","")
 $(error GNU_ARM toolset not found. Please adjust the Makefile)
 endif
 
-CC	:= $(GNU_ARM)/bin/arm-eabi-gcc
+CC    := $(GNU_ARM)/bin/arm-eabi-gcc
 CPP   := $(GNU_ARM)/bin/arm-eabi-g++
-AS	:= $(GNU_ARM)/bin/arm-eabi-as
+AS    := $(GNU_ARM)/bin/arm-eabi-as
 LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 
@@ -191,10 +192,10 @@ endif
 # Typically you should not need to change anything below this line
 
 # basic utilities (included in Qtools for Windows), see:
-#	http://sourceforge.net/projects/qpc/files/Qtools
+#    http://sourceforge.net/projects/qpc/files/Qtools
 
 MKDIR  := mkdir
-RM	 := rm
+RM     := rm
 TCLSH  := tclsh
 QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
 
@@ -225,9 +226,9 @@ LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
 	-mthumb -nostdlib \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
-ASM_OBJS	 := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
-C_OBJS	   := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
-CPP_OBJS	 := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))
+ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
+C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
+CPP_OBJS     := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))
 
 TARGET_BIN   := $(BIN_DIR)/$(OUTPUT).bin
 TARGET_ELF   := $(BIN_DIR)/$(OUTPUT).elf
@@ -246,13 +247,17 @@ endif
 # rules
 #
 
-.PHONY : run norun
+.PHONY : run norun flash
 
 ifeq ($(MAKECMDGOALS),norun)
 all : $(TARGET_BIN)
 norun : all
 else
 all : $(TARGET_BIN) run
+endif
+
+ifeq (, $(TESTS))
+TESTS := *.tcl
 endif
 
 $(TARGET_BIN) : $(TARGET_ELF)
@@ -265,8 +270,12 @@ $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
+flash :
+	$(LMFLASH) -q ek-tm4c123gxl $(TARGET_BIN)
+	echo Press RESET button on the EK-TM4C123GXL board
+
 run : $(TARGET_BIN)
-	$(TCLSH) $(QUTEST)
+	$(TCLSH) $(QUTEST) $(TESTS)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
@@ -300,15 +309,16 @@ clean :
 	$(BIN_DIR)/*.map
 
 show :
-	@echo PROJECT    = $(PROJECT)
-	@echo TARGET_ELF = $(TARGET_ELF)
-	@echo CONF       = $(CONF)
-	@echo VPATH	      = $(VPATH)
-	@echo C_SRCS     = $(C_SRCS)
-	@echo CPP_SRCS   = $(CPP_SRCS)
-	@echo ASM_SRCS   = $(ASM_SRCS)
-	@echo C_DEPS_EXT = $(C_DEPS_EXT)
-	@echo C_OBJS_EXT = $(C_OBJS_EXT)
+	@echo PROJECT      = $(PROJECT)
+	@echo TESTS        = $(TESTS)
+	@echo TARGET_ELF   = $(TARGET_ELF)
+	@echo CONF         = $(CONF)
+	@echo VPATH        = $(VPATH)
+	@echo C_SRCS       = $(C_SRCS)
+	@echo CPP_SRCS     = $(CPP_SRCS)
+	@echo ASM_SRCS     = $(ASM_SRCS)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
+	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
 
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
 	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)

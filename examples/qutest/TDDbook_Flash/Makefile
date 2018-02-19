@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST self-test; QP/C on Win32 host
-# Last updated for version 5.9.0
-# Last updated on  2017-05-14
+# Last updated for version 6.1.1
+# Last updated on  2018-02-18
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,15 +28,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://state-machine.com
+# https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 #
 # examples of invoking this Makefile:
-# make                  # make and run the tests in the current directory
-# make TESTS=philo*.tcl # make and run the selected tests
-# make norun            # only make but not run the tests
-# make clean            # cleanup the build
+# make         # make and run the tests in the current directory
+# make TESTS=philo*.tcl  # make and run the selected tests in the current directory
+# make norun   # only make but not run the tests
+# make clean   # cleanup the build
 #
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
@@ -90,7 +90,7 @@ C_SRCS := \
 	test_Flash.c
 
 # C++ source files...
-CPP_SRCS :=
+CPP_SRCS  :=
 
 LIB_DIRS  :=
 LIBS      :=
@@ -136,8 +136,8 @@ BIN_DIR := mingw
 CFLAGS = -g -O -Wall -Wstrict-prototypes -W $(INCLUDES) $(DEFINES) \
 	-DQ_SPY -DQ_UTEST -DQ_HOST
 
-CPPFLAGS = -c -fno-rtti -fno-exceptions \
-	-O -Wall -W $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
+CPPFLAGS = -g -O -Wall -W -fno-rtti -fno-exceptions $(INCLUDES) $(DEFINES) \
+	-DQ_SPY -DQ_UTEST -DQ_HOST
 
 LINKFLAGS := -Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
 

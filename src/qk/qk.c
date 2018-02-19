@@ -1,6 +1,6 @@
 /**
 * @file
-* @brief QK preemptive kernel core functions
+* @brief QK preemptive kernel implementation
 * @ingroup qk
 * @cond
 ******************************************************************************
@@ -120,7 +120,8 @@ static void initial_events(void) {
 * QF_run() is typically called from your startup code after you initialize
 * the QF and start at least one active object with QActive_start().
 *
-* @returns In QK, the QF_run() function does not return.
+* @returns
+* In QK, the QF_run() does not return.
 */
 int_t QF_run(void) {
     QF_INT_DISABLE();

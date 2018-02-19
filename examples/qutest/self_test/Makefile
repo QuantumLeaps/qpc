@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST self-test; QP/C on Win32 host
-# Last updated for version 5.9.1
-# Last updated on  2017-05-26
+# Last updated for version 6.1.1
+# Last updated on  2018-02-18
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,7 +28,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://state-machine.com
+# https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 #
@@ -87,7 +87,7 @@ C_SRCS := \
 	test_qutest.c
 
 # C++ source files...
-CPP_SRCS :=
+CPP_SRCS  :=
 
 LIB_DIRS  :=
 LIBS      :=

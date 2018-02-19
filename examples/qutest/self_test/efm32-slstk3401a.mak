@@ -300,7 +300,7 @@ clean :
 	$(BIN_DIR)/*.bin \
 	$(BIN_DIR)/*.elf \
 	$(BIN_DIR)/*.map
-	
+
 show :
 	@echo PROJECT      = $(PROJECT)
 	@echo TESTS        = $(TESTS)
