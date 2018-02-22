@@ -316,7 +316,9 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
             else {
                 /* insert event into the ring buffer (FIFO) */
                 QF_PTR_AT_(me->eQueue.ring, me->eQueue.head) = e;
-                if (me->eQueue.head == (QEQueueCtr)0) { /*need to wrap head?*/
+
+                /* need to wrap the head counter? */
+                if (me->eQueue.head == (QEQueueCtr)0) {
                     me->eQueue.head = me->eQueue.end;   /* wrap around */
                 }
                 --me->eQueue.head; /* advance the head (counter clockwise) */
@@ -333,12 +335,12 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                              QS_priv_.locFilter[AO_OBJ], me)
-                QS_TIME_();           /* timestamp */
-                QS_OBJ_(sender);      /* the sender object */
-                QS_SIG_(e->sig);      /* the signal of the event */
-                QS_OBJ_(me);          /* this active object (recipient) */
+                QS_TIME_();        /* timestamp */
+                QS_OBJ_(sender);   /* the sender object */
+                QS_SIG_(e->sig);   /* the signal of the event */
+                QS_OBJ_(me);       /* this active object (recipient) */
                 QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-                QS_EQC_(nFree);       /* number of free entries */
+                QS_EQC_(nFree);    /* number of free entries */
                 QS_EQC_((QEQueueCtr)margin); /* margin requested */
             QS_END_NOCRIT_()
 
@@ -381,9 +383,10 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e) {
 * receive QP events directly into its own built-in event queue from an ISR,
 * basic thread (AO), or another extended thread.
 *
-* If QXThread_queueGet() is called when no events are present in the thread's
-* event queue, the operation blocks the current extended thread until either
-* an event is received, or a user-specified timeout expires.
+* If QXThread_queueGet() is called when no events are present in the
+* thread's private event queue, the operation blocks the current extended
+* thread until either an event is received, or a user-specified timeout
+* expires.
 *
 * @param[in]  nTicks    number of clock ticks (at the associated rate)
 *                       to wait for the event to arrive. The value of
@@ -451,11 +454,11 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET,
                              QS_priv_.locFilter[AO_OBJ], thr)
-                QS_TIME_();           /* timestamp */
-                QS_SIG_(e->sig);      /* the signal of this event */
+                QS_TIME_();      /* timestamp */
+                QS_SIG_(e->sig); /* the signal of this event */
                 QS_OBJ_(&thr->super); /* this active object */
                 QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-                QS_EQC_(nFree);       /* number of free entries */
+                QS_EQC_(nFree);  /* number of free entries */
             QS_END_NOCRIT_()
         }
         else {
@@ -466,8 +469,8 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST,
                              QS_priv_.locFilter[AO_OBJ], thr)
-                QS_TIME_();           /* timestamp */
-                QS_SIG_(e->sig);      /* the signal of this event */
+                QS_TIME_();      /* timestamp */
+                QS_SIG_(e->sig); /* the signal of this event */
                 QS_OBJ_(&thr->super); /* this active object */
                 QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_END_NOCRIT_()
@@ -580,7 +583,7 @@ bool QXThread_teDisarm_(QXThread * const me) {
 }
 
 /****************************************************************************/
-/*! delay (timed block) the current extended thread (static, no me-pointer) */
+/*! delay (timed blocking of) the current thread (static, no me-ptr) */
 bool QXThread_delay(uint_fast16_t const nTicks) {
     QXThread *thr;
     QF_CRIT_STAT_

@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.3
-* Last updated on  2017-12-08
+* Last updated for version 6.1.1
+* Last updated on  2018-02-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -98,7 +98,7 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
 * resumes the highest-priority extended thread waiting for the semaphore.
 *
 * @param[in,out] me     pointer (see @ref oop)
-* @param[in]  nTicks    number of clock ticks (at the associated rate)
+* @param[in]     nTicks number of clock ticks (at the associated rate)
 *                       to wait for the semaphore. The value of
 *                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
 *                       occur and the semaphore will wait indefinitely.
@@ -147,7 +147,7 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
         QF_CRIT_ENTRY_();
         /* the blocking object must be this semaphore */
         Q_ASSERT_ID(210, curr->super.super.temp.obj == (QMState *)me);
-        curr->super.super.temp.obj = (QMState const *)0; /* clear */
+        curr->super.super.temp.obj = (QMState *)0; /* clear */
     }
     QF_CRIT_EXIT_();
 
@@ -229,8 +229,14 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
         QPSet_remove(&me->waitSet,        p);
         thr = (QXThread *)QF_active_[p];
 
+        /* the thread must be registered in QF;
+        * the thread must be extended;
+        * must be blocked on this semaphore; and
+        * the semaphore count must be zero (semaphore not signaled)
+        */
         Q_ASSERT_ID(410, (thr != (QXThread *)0) /* must be registered */
             && (thr->super.osObject != (struct QActive *)0) /* extended thr.*/
+            && (thr->super.super.temp.obj == (QMState const *)me)
             && (me->count == (uint16_t)0)); /* sema counter must be 0 */
 
         /* disarm the internal time event */
