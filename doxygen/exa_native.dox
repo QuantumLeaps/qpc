@@ -38,6 +38,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
 - @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
 - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
 - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
@@ -64,6 +65,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
 - @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
 - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
 - @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a>
 - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
@@ -85,6 +87,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 
 - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+- @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
 - @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a>
 */
@@ -105,6 +108,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @subpage arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
 - @subpage arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
 - @subpage arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
+- @subpage arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @subpage arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Disco"></a>
 - @subpage arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a>
 - @subpage arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
@@ -524,6 +528,59 @@ Features:
 - [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html) using the virtual COM-port
 
 */
+
+/*##########################################################################*/
+/*! @page arm-cm_dpp_stm32f4-discovery DPP on STM32F4-Discovery
+
+The @ref dpp "DPP example" for STM32F4-Discovery board is located directory <span class="img folder">examples/arm-cm/dpp_stm32f4-discovery</span>.
+
+@image html bd_STM32F4-Discovery.jpg STM32F4-Discovery board
+
+Demonstrated built-in kernels:
+- cooperative @ref qv with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- preemptive, run-to-completion @ref qk with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- dual-mode (run-to-completion/blocking) @ref qxk with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+
+
+Features:
+- multiple active objects, including 5 instances of the same AO class (Philo)
+- extended threads (the QXK version)
+- [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html) using the virtual COM-port
+- bi-directional [QP/Spy](https://www.state-machine.com/qtools/qs.html#qs_rx) (sending commands to the target)
+
+
+After you load the DPP example into the STM32F4-Discovery board, the application should start blinking the 4 on-board LEDs. You can press the User button (blue) to PAUSE the philosophers for as long as the button is depressed. The philosophers resume dining when you release the User button. (In the PAUSED state the Table active object stops granting permissions to eat, so eventually all philosophers end in the "hungry" state.)
+
+
+------------------------------------------------------------------------------
+@subsection arm-cm_dpp_stm32f4-discovery_qs QS Software Tracing
+
+The DPP example for embOS on STM32F4-Discovery board provides the "Spy" build configuration, which outputs the QS (Quantum Spy) software tracing data through USART2. To get the data out of the board, you need to connect the TTL/RS232 converter as follows:
+
+<center>
+STM32F4-Discovery  | TTL/RS232 Converter
+-------------------|:------------------------
+PA2                | TX
+PA3                | RX (currently not used)
+VDD                | VCC
+GND                | GND
+</center>
+
+@image html bd_STM32F4-Discovery_RS232.jpg STM32F4-Discovery board connected to RS232 level shifter
+
+The output is generated at 115200 baud rate.
+
+Here is an example invocation of the QSPY host application to receive the QS data from STM32F4-Discovery:
+
+@verbatim
+qspy -cCOM1
+@endverbatim
+
+The actual COM port number might be different on your Windows machine. Please check the Device Manager to find the COM port number.
+
+@next{arm-cm_dpp_stm32f746g-disco}
+*/
+
 /*##########################################################################*/
 /*! @page arm-cm_dpp_stm32f746g-disco DPP on STM32F746G-Discovery
 

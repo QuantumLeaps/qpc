@@ -8,6 +8,8 @@ Also, this release changes the ARM Cortex-M ports for the IAR-ARM toolchain in t
 
 Also, this release adds new project files for the Atollic TRUEstudio for STM32. The TRUEstudio projects (Eclipse) have been added for the @ref arm-cm_dpp_nucleo-l053r8 "NUCLEO-L053R8" (Cortex-M0+) and the @ref arm-cm_dpp_nucleo-h743zi "NUCLEO-H743ZI" (Cortex-M7).
 
+Finally, this relese updates the CMSIS to version 5.3.0 (see `qpc/3rd_party/CMSIS`
+
 
 ------------------------------------------------------------------------------
 @section qpc_6_1_0 Version 6.1.0, 2018-02-04

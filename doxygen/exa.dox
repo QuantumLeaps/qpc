@@ -274,6 +274,7 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a> &nbsp; (Cortex-M0+)
 - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a> &nbsp; (Cortex-M3)
 - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
+- @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
 
 
@@ -287,6 +288,7 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a> &nbsp; (Cortex-M0+)
 - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a> &nbsp; (Cortex-M3)
 - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
+- @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
 - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a> &nbsp; (Cortex-M3)
 - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a> &nbsp; (ARM7TDMI)
@@ -378,8 +380,8 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
     - <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8">NUCLEO-L053R8</a>
     - <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE">NUCLEO-L152RE</a>
     - <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965">EK-LM3S6965</a>
-    - <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery">STM32F4-Discovery</a>
     - <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI">NUCLEO-H743ZI</a>
+    - <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery">STM32F4-Discovery</a>
     - <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery">STM32F746G-Discovery</a>
     - <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE">NUCLEO-L152RE</a>
 
@@ -409,6 +411,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
     - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
     - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
     - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
+    - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - ARM Cortex-M7 (with hardware single-precision FPU)
     - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
 - ARM Cortex-M7 (with hardware double-precision FPU)
@@ -438,6 +441,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - ST Microelectronics
     - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
     - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
+    - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
     - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
 - Texas Instruments
     - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
