@@ -4,13 +4,13 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-02-15
+* Date of the Last Update:  2018-03-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -80,7 +80,7 @@ void QXK_init(void) {
     /* SCB_SYSPRI2: SVCall */
     SCB_SYSPRI[2] |= (QF_BASEPRI << 24);
 
-    /* SCB_SYSPRI3:  SysTick, Debug */
+    /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
     SCB_SYSPRI[3] |= (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI;
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
@@ -566,7 +566,9 @@ __asm void NMI_Handler(void) {
 
 #if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
 
-/* hand-optimized LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M) */
+/*****************************************************************************
+* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction)
+*****************************************************************************/
 __asm uint_fast8_t QF_qlog2(uint32_t x) {
     MOVS    r1,#0
     LSRS    r2,r0,#16

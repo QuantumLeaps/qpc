@@ -3,14 +3,14 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.2
-* Date of the Last Update:  2017-01-26
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-03-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -45,7 +45,7 @@
 #define QF_THREAD_TYPE       void*
 
 /* The maximum number of active objects in the application */
-#define QF_MAX_ACTIVE        63
+#define QF_MAX_ACTIVE        64
 
 /* The number of system clock tick rates */
 #define QF_MAX_TICK_RATE     2

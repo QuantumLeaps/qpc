@@ -3,8 +3,8 @@
 * @brief QF/C port to Cortex-M, preemptive QK kernel, ARM-CLANG toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.1.0
-* Date of the Last Update:  2018-01-31
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-03-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -69,21 +69,19 @@
     #define QF_PRIMASK_DISABLE() __asm volatile ("cpsid i")
     #define QF_PRIMASK_ENABLE()  __asm volatile ("cpsie i")
 
-    /* Cortex-M3/M4/M7 interrupt disabling policy, see NOTE3,4 */
+    /* Cortex-M3/M4/M7 interrupt disabling policy, see NOTE3 and NOTE4 */
     #define QF_INT_DISABLE() __asm volatile (\
-        "cpsid i\n\t" "msr BASEPRI,%0\n\t" "cpsie i" :: "r" (QF_BASEPRI) : )
+        "cpsid i\n" "msr BASEPRI,%0\n" "cpsie i" :: "r" (QF_BASEPRI) : )
     #define QF_INT_ENABLE()  __asm volatile (\
         "msr BASEPRI,%0" :: "r" (0) : )
 
     /* QF critical section entry/exit (unconditional interrupt disabling) */
     /*#define QF_CRIT_STAT_TYPE not defined */
     #define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
-    #define QF_CRIT_EXIT(dummy) QF_INT_ENABLE()
+    #define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
 
-    /* BASEPRI threshold for "QF-aware" interrupts, see NOTE3.
-    * CAUTION: keep in synch with the value defined in "qk_port.s"
-    */
-    #define QF_BASEPRI          (0xFFU >> 2)
+    /* BASEPRI threshold for "QF-aware" interrupts, see NOTE3 */
+    #define QF_BASEPRI           0x3F
 
     /* CMSIS threshold for "QF-aware" interrupts, see NOTE5 */
     #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
@@ -150,3 +148,4 @@
 */
 
 #endif /* qf_port_h */
+

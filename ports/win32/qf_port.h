@@ -3,14 +3,14 @@
 * @brief QF/C port to Win32 API
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.2
-* Date of the Last Update:  2017-01-26
+* Last Updated for Version: 6.1.1
+* Date of the Last Update:  2018-03-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -69,8 +69,8 @@
 /* QF_LOG2 not defined -- use the internal LOG2() implementation */
 
 #include "qep_port.h"  /* QEP port */
-#include "qequeue.h"   /* Win32 needs event-queue */
-#include "qmpool.h"    /* Win32 needs memory-pool */
+#include "qequeue.h"   /* Win32 needs the native event-queue */
+#include "qmpool.h"    /* Win32 needs the native memory-pool */
 #include "qf.h"        /* QF platform-independent public interface */
 
 void QF_enterCriticalSection_(void);

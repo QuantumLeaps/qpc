@@ -4,13 +4,13 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-02-15
+* Date of the Last Update:  2018-03-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -36,7 +36,7 @@
 ******************************************************************************
 * @endcond
 */
-#include "qf_port.h"      /* QF port */
+#include "qf_port.h"
 
 /* prototypes --------------------------------------------------------------*/
 void QXK_stackInit_(void *act, QActionHandler thread,
@@ -80,7 +80,7 @@ void QXK_init(void) {
     /* SCB_SYSPRI2: SVCall */
     SCB_SYSPRI[2] |= (QF_BASEPRI << 24);
 
-    /* SCB_SYSPRI3:  SysTick, Debug */
+    /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
     SCB_SYSPRI[3] |= (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI;
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
@@ -153,6 +153,7 @@ void QXK_stackInit_(void *act, QActionHandler thread,
     }
 }
 
+/* NOTE: keep in synch with the QXK_Attr struct in "qxk.h" !!! */
 #define QXK_CURR       0
 #define QXK_NEXT       4
 #define QXK_ACT_PRIO   8
@@ -319,7 +320,7 @@ __asm (
 #if (__ARM_ARCH == 6)               /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     "  MOV     r0,sp            \n" /* r0 := top of stack */
     "  MOV     r2,r0            \n"
-    "  ADDS    r2,r2,#(4*4)     \n" /* point r1 to the 4 high registers r7-r11 */
+    "  ADDS    r2,r2,#(4*4)     \n" /* point r2 to the 4 high registers r7-r11 */
     "  LDMIA   r2!,{r4-r7}      \n" /* pop the 4 high registers into low registers */
     "  MOV     r8,r4            \n" /* move low registers into high registers */
     "  MOV     r9,r5            \n"
@@ -441,6 +442,7 @@ __asm (
     "PendSV_onContextSw2:       \n"
     "  LDR     r3,=QXK_onContextSw \n"
     "  BLX     r3               \n" /* call QXK_onContextSw() */
+
     /* restore the AAPCS-clobbered registers after a functin call...  */
     "  LDR     r3,=QXK_attr_    \n"
     "  LDR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" /* r0 := QXK_attr_.next */
@@ -558,10 +560,11 @@ __asm (
     );
 }
 
-/****************************************************************************/
 #if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
 
-/* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction) */
+/*****************************************************************************
+* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction)
+*****************************************************************************/
 uint_fast8_t QF_qlog2(uint32_t x) {
     static uint8_t const log2LUT[16] = {
         (uint8_t)0, (uint8_t)1, (uint8_t)2, (uint8_t)2,

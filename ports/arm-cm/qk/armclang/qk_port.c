@@ -4,13 +4,13 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-02-17
+* Date of the Last Update:  2018-03-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -37,6 +37,11 @@
 * @endcond
 */
 #include "qf_port.h"
+
+/* prototypes --------------------------------------------------------------*/
+void PendSV_Handler(void);
+void NMI_Handler(void);
+void Thread_ret(void);
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
@@ -65,7 +70,7 @@
 */
 void QK_init(void) {
 
-#if (__ARM_ARCH != 6) /* NOT Cortex-M0/M0+/M1 ? */
+#if (__ARM_ARCH != 6) /* NOT Cortex-M0/M0+/M1(v6-M, v6S-M) */
 
     uint32_t n;
 
@@ -77,7 +82,7 @@ void QK_init(void) {
     /* SCB_SYSPRI2: SVCall */
     SCB_SYSPRI[2] |= (QF_BASEPRI << 24);
 
-    /* SCB_SYSPRI3:  SysTick, Debug */
+    /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
     SCB_SYSPRI[3] |= (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI;
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
@@ -96,24 +101,24 @@ void QK_init(void) {
 
 /*****************************************************************************
 * The PendSV_Handler exception handler is used for handling context switch
-* and asynchronous preemption in QXK. The use of the PendSV exception is
+* and asynchronous preemption in QK. The use of the PendSV exception is
 * the recommended and most efficient method for performing context switches
 * with ARM Cortex-M.
 *
 * The PendSV exception should have the lowest priority in the whole system
-* (0xFF, see QXK_init). All other exceptions and interrupts should have higher
+* (0xFF, see QK_init). All other exceptions and interrupts should have higher
 * priority. For example, for NVIC with 2 priority bits all interrupts and
 * exceptions must have numerical value of priority lower than 0xC0. In this
 * case the interrupt priority levels available to your applications are (in
 * the order from the lowest urgency to the highest urgency): 0x80, 0x40, 0x00.
 *
-* Also, *all* "kernel aware" ISRs in the QXK application must call the
-* QXK_ISR_EXIT() macro, which triggers PendSV when it detects a need for
+* Also, *all* "kernel aware" ISRs in the QK application must call the
+* QK_ISR_EXIT() macro, which triggers PendSV when it detects a need for
 * a context switch or asynchronous preemption.
 *
 * Due to tail-chaining and its lowest priority, the PendSV exception will be
 * entered immediately after the exit from the *last* nested interrupt (or
-* exception). In QXK, this is exactly the time when the QXK activator needs to
+* exception). In QK, this is exactly the time when the QK activator needs to
 * handle the asynchronous preemption.
 *****************************************************************************/
 __attribute__ ((naked))
@@ -169,7 +174,7 @@ __asm volatile (
 }
 
 /*****************************************************************************
-* Thread_ret is a helper function executed when the QXK activator returns.
+* Thread_ret is a helper function executed when the QK activator returns.
 *
 * NOTE: Thread_ret does not execute in the PendSV context!
 * NOTE: Thread_ret executes entirely with interrupts DISABLED.
@@ -237,11 +242,11 @@ __asm volatile (
     );
 }
 
+#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+
 /*****************************************************************************
 * hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction)
 *****************************************************************************/
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 ? */
-
 __attribute__ ((naked))
 uint_fast8_t QF_qlog2(uint32_t x) {
 __asm volatile (
@@ -270,5 +275,5 @@ __asm volatile (
     );
 }
 
-#endif /* NOT Cortex-M0/M0+/M1 */
+#endif /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
 

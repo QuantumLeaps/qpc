@@ -4,13 +4,13 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-02-17
+* Date of the Last Update:  2018-03-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -37,6 +37,11 @@
 * @endcond
 */
 #include "qf_port.h"
+
+/* prototypes --------------------------------------------------------------*/
+void PendSV_Handler(void);
+void NMI_Handler(void);
+void Thread_ret(void);
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
@@ -73,7 +78,7 @@ void QK_init(void) {
     /* SCB_SYSPRI2: SVCall */
     SCB_SYSPRI[2] |= (QF_BASEPRI << 24);
 
-    /* SCB_SYSPRI3:  SysTick, Debug */
+    /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
     SCB_SYSPRI[3] |= (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI;
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
@@ -92,24 +97,24 @@ void QK_init(void) {
 
 /*****************************************************************************
 * The PendSV_Handler exception handler is used for handling context switch
-* and asynchronous preemption in QXK. The use of the PendSV exception is
+* and asynchronous preemption in QK. The use of the PendSV exception is
 * the recommended and most efficient method for performing context switches
 * with ARM Cortex-M.
 *
 * The PendSV exception should have the lowest priority in the whole system
-* (0xFF, see QXK_init). All other exceptions and interrupts should have higher
+* (0xFF, see QK_init). All other exceptions and interrupts should have higher
 * priority. For example, for NVIC with 2 priority bits all interrupts and
 * exceptions must have numerical value of priority lower than 0xC0. In this
 * case the interrupt priority levels available to your applications are (in
 * the order from the lowest urgency to the highest urgency): 0x80, 0x40, 0x00.
 *
-* Also, *all* "kernel aware" ISRs in the QXK application must call the
-* QXK_ISR_EXIT() macro, which triggers PendSV when it detects a need for
+* Also, *all* "kernel aware" ISRs in the QK application must call the
+* QK_ISR_EXIT() macro, which triggers PendSV when it detects a need for
 * a context switch or asynchronous preemption.
 *
 * Due to tail-chaining and its lowest priority, the PendSV exception will be
 * entered immediately after the exit from the *last* nested interrupt (or
-* exception). In QXK, this is exactly the time when the QXK activator needs to
+* exception). In QK, this is exactly the time when the QK activator needs to
 * handle the asynchronous preemption.
 *****************************************************************************/
 __asm void PendSV_Handler(void) {
@@ -130,8 +135,8 @@ __asm void PendSV_Handler(void) {
     PUSH    {r0,lr}           /* ... push lr (EXC_RETURN) plus stack-aligner */
 #endif                        /* VFP available */
     MOVS    r0,#QF_BASEPRI
-    CPSID   i                 /* selectively disable interrutps with BASEPRI */
-    MSR     BASEPRI,r0        /* apply the workaround the Cortex-M7 erraturm */
+    CPSID   i                 /* disable interrutps with BASEPRI */
+    MSR     BASEPRI,r0        /* apply the Cortex-M7 erraturm */
     CPSIE   i                 /* 837070, see ARM-EPM-064408. */
 #endif                        /* M3/M4/M7 */
 
@@ -156,7 +161,7 @@ __asm void PendSV_Handler(void) {
     LDR     r1,=Thread_ret    /* return address after the call   (new lr) */
 
     SUB     sp,sp,#8*4        /* reserve space for exception stack frame */
-    ADD     r0,sp,#5*4        /* r0 := 5 registers below the top of stack */
+    ADD     r0,sp,#5*4        /* r0 := 5 registers below the SP */
     STM     r0!,{r1-r3}       /* save xpsr,pc,lr */
 
     MOVS    r0,#6
@@ -167,13 +172,13 @@ __asm void PendSV_Handler(void) {
 }
 
 /*****************************************************************************
-* Thread_ret is a helper function executed when the QXK activator returns.
+* Thread_ret is a helper function executed when the QK activator returns.
 *
 * NOTE: Thread_ret does not execute in the PendSV context!
 * NOTE: Thread_ret executes entirely with interrupts DISABLED.
 *****************************************************************************/
 __asm void Thread_ret(void) {
-    /* After the QXK activator returns, we need to resume the preempted
+    /* After the QK activator returns, we need to resume the preempted
     * thread. However, this must be accomplished by a return-from-exception,
     * while we are still in the thread context. The switch to the exception
     * contex is accomplished by triggering the NMI exception.
@@ -273,3 +278,4 @@ QF_qlog2_LUT
 }
 
 #endif /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+
