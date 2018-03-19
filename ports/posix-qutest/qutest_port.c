@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-05-17
+* Last Updated for Version: 6.2.0
+* Date of the Last Update:  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,21 +32,21 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
+#ifndef Q_SPY
+    #error "Q_SPY must be defined for QTEST application"
+#endif /* Q_SPY */
+
 #define QP_IMPL       /* this is QP implementation */
 #include "qf_port.h"  /* QF port */
 #include "qassert.h"  /* QP embedded systems-friendly assertions */
 #include "qs_port.h"  /* include QS port */
 
-Q_DEFINE_THIS_MODULE("qs_port")
-
-#ifndef Q_SPY
-    #error "Q_SPY must be defined for QTEST application"
-#endif /* Q_SPY */
+Q_DEFINE_THIS_MODULE("qutest_port")
 
 #include <stdio.h>    /* for printf() and _snprintf_s() */
 #include <stdlib.h>
@@ -58,17 +58,17 @@ Q_DEFINE_THIS_MODULE("qs_port")
 #include <netdb.h>
 #include <errno.h>
 #include <time.h>
-#include <termios.h>
 #include <unistd.h>
+#include <signal.h>
 
-#define QS_TX_SIZE    (4*1024)
-#define QS_RX_SIZE    1024
-#define QS_IMEOUT_MS  100
+#define QS_TX_SIZE     (4*1024)
+#define QS_RX_SIZE     1024
+#define QS_IMEOUT_MS   100
 #define INVALID_SOCKET -1
 
 /* local variables .........................................................*/
+static void sigIntHandler(int dummy);
 static int l_sock = INVALID_SOCKET;
-static struct termios l_termios_saved; /* saved terminal attributes */
 
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
@@ -85,7 +85,7 @@ uint8_t QS_onStartup(void const *arg) {
     struct sockaddr_in sa_remote;
     struct hostent *host;
 
-    struct termios t;
+    struct sigaction sig_act;
 
     QS_initBuf(qsBuf, sizeof(qsBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
@@ -105,9 +105,12 @@ uint8_t QS_onStartup(void const *arg) {
         port_remote = (uint16_t)strtoul(src + 1, NULL, 10);
     }
 
+    //printf("<TARGET> Connecting to QSPY on Host=%s:%d...\n",
+    //       hostName, port_remote);
+
     l_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); /* TCP socket */
     if (l_sock == INVALID_SOCKET){
-        printf("<TARGET> ERROR   cannot create client socket, errno=%d\n",
+        printf("<TARGET> ERROR   cannot create client socket,errno=%d\n",
                errno);
         goto error;
     }
@@ -126,21 +129,15 @@ uint8_t QS_onStartup(void const *arg) {
     sa_local.sin_family = AF_INET;
     sa_local.sin_port = htons(port_local);
     host = gethostbyname(""); /* local host */
-    //sa_local.sin_addr.s_addr = inet_addr(
-    //    inet_ntoa(*(struct in_addr *)*host->h_addr_list));
-    //if (bind(l_sock, &sa_local, sizeof(sa_local)) == -1) {
-    //    printf("<TARGET> Cannot bind to the local port Err=0x%08X\n",
-    //           WSAGetLastError());
-    //    /* no error */
-    //}
 
     /* remote hostName:port (QSPY server socket) */
     host = gethostbyname(hostName);
     if (host == NULL) {
-        printf("<TARGET> ERROR   cannot be resolve host name, errno=%d\n",
-               errno);
+        printf("<TARGET> ERROR   cannot resolve host Name=%s,errno=%d\n",
+               hostName, errno);
         goto error;
     }
+
     memset(&sa_remote, 0, sizeof(sa_remote));
     sa_remote.sin_family = AF_INET;
     memcpy(&sa_remote.sin_addr, host->h_addr, host->h_length);
@@ -150,28 +147,20 @@ uint8_t QS_onStartup(void const *arg) {
     if (connect(l_sock, (struct sockaddr *)&sa_remote, sizeof(sa_remote))
         == -1)
     {
-        printf("<TARGET> ERROR   cannot be connected to QSPY, errno=%d\n",
-               errno);
+        printf("<TARGET> ERROR   cannot connect to QSPY at "
+               "Host=%s:%d,errno=%d\n",
+               hostName, port_remote, errno);
         goto error;
     }
 
-    printf("<TARGET> Connected to QSPY via TCP/IP\n"); //???
+    //printf("<TARGET> Connected to QSPY at Host=%s:%d\n",
+    //       hostName, port_remote);
+    QS_onFlush();
 
-    /* modify the terminal attributes... */
-    /* get the original terminal settings */
-    if (tcgetattr(0, &l_termios_saved) == -1) {
-        printf("    <CONS> ERROR    getting terminal attributes\n");
-        goto error;
-    }
+    /* install the SIGINT (Ctrl-C) signal handler */
+    sig_act.sa_handler = &sigIntHandler;
+    sigaction(SIGINT, &sig_act, NULL);
 
-    t = l_termios_saved;
-    t.c_lflag &= ~(ICANON | ECHO); /* disable canonical mode and echo */
-    if (tcsetattr(0, TCSANOW, &t) == -1) {
-        printf("    <CONS> ERROR    setting terminal attributes");
-        goto error;
-    }
-
-    //printf("<TARGET> Connected to QSPY via TCP/IP\n");
     return (uint8_t)1;  /* success */
 
 error:
@@ -183,16 +172,13 @@ void QS_onCleanup(void) {
         close(l_sock);
         l_sock = INVALID_SOCKET;
     }
-    /* restore the saved terminal settings */
-    tcsetattr(0, TCSANOW, &l_termios_saved);
-    //printf("<TARGET> Disconnected from QSPY via TCP/IP\n");
+    //printf("<TARGET> Disconnected from QSPY\n");
 }
 /*..........................................................................*/
 void QS_onReset(void) {
     QS_onCleanup();
     exit(0);
 }
-
 /*..........................................................................*/
 void QS_onTestLoop() {
     fd_set readSet;
@@ -207,48 +193,32 @@ void QS_onTestLoop() {
         uint16_t nBytes;
         uint8_t const *block;
 
-        FD_SET(0,      &readSet);   /* console/terminal */
-        FD_SET(l_sock, &readSet);   /* the socket */
+        FD_SET(l_sock, &readSet);
 
         /* selective, timed blocking on the TCP/IP socket... */
         timeout.tv_usec = (long)(QS_IMEOUT_MS * 1000);
         nrec = select(l_sock + 1, &readSet,
                       (fd_set *)0, (fd_set *)0, &timeout);
         if (nrec < 0) {
-            printf("    <CONS> ERROR    select() errno=%d\n", errno);
+            printf("<TARGET> ERROR socket select,errno=%d\n", errno);
             QS_onCleanup();
             exit(-2);
         }
-        else if (nrec > 0) {
-            if (FD_ISSET(l_sock, &readSet)) { /* socket ready to read? */
-                uint8_t buf[QS_RX_SIZE];
-                int status = recv(l_sock, (char *)buf, (int)sizeof(buf), 0);
-                while (status > 0) { /* any data received? */
-                    uint8_t *pb;
-                    int i = (int)QS_rxGetNfree();
-                    if (i > status) {
-                        i = status;
-                    }
-                    status -= i;
-                    /* reorder the received bytes into QS-RX buffer */
-                    for (pb = &buf[0]; i > 0; --i, ++pb) {
-                        QS_RX_PUT(*pb);
-                    }
-                    QS_rxParse(); /* parse all n-bytes of data */
+        else if (FD_ISSET(l_sock, &readSet)) { /* socket ready to read? */
+            uint8_t buf[QS_RX_SIZE];
+            int status = recv(l_sock, (char *)buf, (int)sizeof(buf), 0);
+            while (status > 0) { /* any data received? */
+                uint8_t *pb;
+                int i = (int)QS_rxGetNfree();
+                if (i > status) {
+                    i = status;
                 }
-            }
-            if (FD_ISSET(0, &readSet)) { /* console/terminal redy to read? */
-                char ch;
-                read(0, &ch, 1);
-                switch (ch) {
-                    case 'x':      /* 'x' pressed? */
-                    case 'X':      /* 'X' pressed? */
-                    case '\033': { /* ESC pressed? */
-                        QS_onCleanup();
-                        exit(0);
-                        break;
-                    }
+                status -= i;
+                /* reorder the received bytes into QS-RX buffer */
+                for (pb = &buf[0]; i > 0; --i, ++pb) {
+                    QS_RX_PUT(*pb);
                 }
+                QS_rxParse(); /* parse all n-bytes of data */
             }
         }
 
@@ -268,10 +238,21 @@ void QS_onTestLoop() {
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t nBytes = (uint16_t)QS_TX_SIZE;
-    uint8_t const *block;
-    while ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
-        send(l_sock, (char const *)block, nBytes, 0);
-        nBytes = (uint16_t)QS_TX_SIZE;
+    if (l_sock != INVALID_SOCKET) {  /* socket initialized? */
+        uint16_t nBytes = QS_TX_SIZE;
+        uint8_t const *data;
+        while ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+            send(l_sock, (char const *)data, nBytes, 0);
+            nBytes = QS_TX_SIZE;
+        }
     }
 }
+
+/*..........................................................................*/
+static void sigIntHandler(int dummy) {
+    (void)dummy; /* unused parameter */
+    QS_onCleanup();
+    printf("\n<TARGET> disconnecting from QSPY\n");
+    exit(-1);
+}
+

@@ -1,1 +1,4 @@
-wish C:\qp\qtools\qspy\tcl\qspyview.tcl dpp.tcl
+if "%QTOOLS%"=="" (
+    set QTOOLS=C:\qp\qtools
+)
+wish %QTOOLS%\qspy\tcl\qspyview.tcl dpp.tcl

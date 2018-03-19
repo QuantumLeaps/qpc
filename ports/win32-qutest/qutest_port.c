@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-05-17
+* Last Updated for Version: 6.2.0
+* Date of the Last Update:  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,21 +32,21 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
+#ifndef Q_SPY
+    #error "Q_SPY must be defined for QTEST application"
+#endif /* Q_SPY */
+
 #define QP_IMPL       /* this is QP implementation */
 #include "qf_port.h"  /* QF port */
 #include "qassert.h"  /* QP embedded systems-friendly assertions */
 #include "qs_port.h"  /* include QS port */
 
 Q_DEFINE_THIS_MODULE("qutest_port")
-
-#ifndef Q_SPY
-    #error "Q_SPY must be defined for QTEST application"
-#endif /* Q_SPY */
 
 #include <stdio.h>    /* for printf() and _snprintf_s() */
 #include <stdlib.h>
@@ -66,7 +66,7 @@ uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[QS_TX_SIZE];   /* buffer for QS-TX channel */
     static uint8_t qsRxBuf[QS_RX_SIZE]; /* buffer for QS-RX channel */
     static WSADATA wsaData;
-    char hostName[64];
+    char hostName[128];
     char const *src;
     char *dst;
 
@@ -83,7 +83,7 @@ uint8_t QS_onStartup(void const *arg) {
 
     /* initialize Windows sockets */
     if (WSAStartup(MAKEWORD(2,0), &wsaData) == SOCKET_ERROR) {
-        printf("<TARGET> Windows Sockets cannot be initialized\n");
+        printf("<TARGET> ERROR   Windows Sockets cannot be initialized\n");
         goto error;
     }
 
@@ -104,7 +104,7 @@ uint8_t QS_onStartup(void const *arg) {
 
     l_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); /* TCP socket */
     if (l_sock == INVALID_SOCKET){
-        printf("<TARGET> Socket cannot be created Err=0x%08X\n",
+        printf("<TARGET> ERROR   cannot create client socket,WSAErr=%d\n",
                WSAGetLastError());
         goto error;
     }
@@ -131,7 +131,7 @@ uint8_t QS_onStartup(void const *arg) {
     sa_local.sin_addr.s_addr = inet_addr(
         inet_ntoa(*(struct in_addr *)*host->h_addr_list));
     //if (bind(l_sock, &sa_local, sizeof(sa_local)) == -1) {
-    //    printf("<TARGET> Cannot bind to the local port Err=0x%08X\n",
+    //    printf("<TARGET> WARNINIG Cannot bind to the local port, WSAErr=%d\n",
     //           WSAGetLastError());
     //    /* no error */
     //}
@@ -139,7 +139,7 @@ uint8_t QS_onStartup(void const *arg) {
     /* remote hostName:port (QSPY server socket) */
     host = gethostbyname(hostName);
     if (host == NULL) {
-        printf("<TARGET> QSpy host name %s cannot be resolved Err=0x%08X\n",
+        printf("<TARGET> ERROR   cannot resolve host Name=%s,WSAErr=%d\n",
                hostName, WSAGetLastError());
         goto error;
     }
@@ -153,7 +153,7 @@ uint8_t QS_onStartup(void const *arg) {
     if (connect(l_sock, (struct sockaddr *)&sa_remote, sizeof(sa_remote))
         == SOCKET_ERROR)
     {
-        printf("<TARGET> Cannot connect to the QSPY server Err=0x%08X\n",
+        printf("<TARGET> ERROR   socket configuration failed,WSAErr=%d\n",
                WSAGetLastError());
         QS_EXIT();
         goto error;
@@ -161,15 +161,16 @@ uint8_t QS_onStartup(void const *arg) {
 
     /* Set the socket to non-blocking mode. */
     if (ioctlsocket(l_sock, FIONBIO, &ioctl_opt) == SOCKET_ERROR) {
-        printf("<TARGET> Socket configuration failed Err=0x%08X\n",
+        printf("<TARGET> ERROR   Socket configuration failed WASErr=%d\n",
                WSAGetLastError());
         QS_EXIT();
         goto error;
     }
 
+    //printf("<TARGET> Connected to QSPY at Host=%s:%d\n",
+    //       hostName, port_remote);
     QS_onFlush();
 
-    //printf("<TARGET> Connected to QSPY via TCP/IP\n");
     return (uint8_t)1;  /* success */
 
 error:
@@ -182,7 +183,7 @@ void QS_onCleanup(void) {
         l_sock = INVALID_SOCKET;
     }
     WSACleanup();
-    //printf("<TARGET> Disconnected from QSPY via TCP/IP\n");
+    //printf("<TARGET> Disconnected from QSPY\n");
 }
 /*..........................................................................*/
 void QS_onReset(void) {
@@ -202,18 +203,18 @@ void QS_onTestLoop() {
         int status;
         uint16_t nBytes;
         uint8_t const *block;
-        int ch = 0;
+        int ch;
 
         FD_SET(l_sock, &readSet);
 
         /* selective, timed blocking on the TCP/IP socket... */
         status = select(0, &readSet, (fd_set *)0, (fd_set *)0, &timeout);
         if (status == SOCKET_ERROR) {
-            printf("<TARGET> ERROR socket select Err=%d", WSAGetLastError());
+            printf("<TARGET> ERROR socket select,WSAErr=%d", WSAGetLastError());
             QS_onCleanup();
             exit(-2);
         }
-        else if (FD_ISSET(l_sock, &readSet)) {
+        else if (FD_ISSET(l_sock, &readSet)) { /* socket ready to read? */
             uint8_t buf[QS_RX_SIZE];
             int status = recv(l_sock, (char *)buf, (int)sizeof(buf), 0);
             while (status > 0) { /* any data received? */
@@ -239,6 +240,7 @@ void QS_onTestLoop() {
         if (block != (uint8_t *)0) {
             send(l_sock, (char const *)block, nBytes, 0);
         }
+        ch = 0;
         while (_kbhit()) { /* any key pressed? */
             ch = _getch();
         }
@@ -247,7 +249,7 @@ void QS_onTestLoop() {
             case 'X':      /* 'X' pressed? */
             case '\033': { /* ESC pressed? */
                 QS_onCleanup();
-                exit(0);
+                exit(1);
                 break;
             }
         }
@@ -268,3 +270,4 @@ void QS_onFlush(void) {
         }
     }
 }
+

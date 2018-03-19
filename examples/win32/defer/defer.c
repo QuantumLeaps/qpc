@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: Deferred Event state pattern example
-* Last updated for version 5.4.3
-* Last updated on  2015-06-11
+* Last Updated for Version: 6.2.0
+* Date of the Last Update:  2018-03-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* https://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "bsp.h"
@@ -84,25 +84,26 @@ void TServer_ctor(TServer * const me) { /* the default ctor */
 /* HSM definition ----------------------------------------------------------*/
 QState TServer_initial(TServer * const me, QEvt const * const e) {
     (void)e; /* unused parameter */
-    me->activeRequest= (RequestEvt const *)0; /* no active request yet */
+    me->activeRequest = (RequestEvt const *)0; /* no active request yet */
+
+    QS_FUN_DICTIONARY(&QHsm_top);
+    QS_FUN_DICTIONARY(&TServer_idle);
+    QS_FUN_DICTIONARY(&TServer_busy);
+    QS_FUN_DICTIONARY(&TServer_receiving);
+    QS_FUN_DICTIONARY(&TServer_authorizing);
+    QS_FUN_DICTIONARY(&TServer_final);
+
+    QS_OBJ_DICTIONARY(&l_tserver);
+    QS_OBJ_DICTIONARY(&l_tserver.requestQueue);
+    QS_OBJ_DICTIONARY(&l_tserver.receivedEvt);
+    QS_OBJ_DICTIONARY(&l_tserver.authorizedEvt);
+
+    QS_SIG_DICTIONARY(NEW_REQUEST_SIG, (void *)0);
+    QS_SIG_DICTIONARY(RECEIVED_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(AUTHORIZED_SIG,  (void *)0);
+    QS_SIG_DICTIONARY(TERMINATE_SIG,   (void *)0);
+
     return Q_TRAN(&TServer_idle);
-}
-/*..........................................................................*/
-QState TServer_final(TServer * const me, QEvt const * const e) {
-    QState status;
-    switch (e->sig) {
-        case Q_ENTRY_SIG: {
-            printf("final-ENTRY;\n");
-            QF_stop(); /* terminate the application */
-            status = Q_HANDLED();
-            break;
-        }
-        default: {
-            status = Q_SUPER(&QHsm_top);
-            break;
-        }
-    }
-    return status;
 }
 /*..........................................................................*/
 QState TServer_idle(TServer * const me, QEvt const * const e) {
@@ -165,7 +166,7 @@ QState TServer_busy(TServer * const me, QEvt const * const e) {
             /* defer the new request event... */
             if (QActive_defer(&me->super, &me->requestQueue, e)) {
                 printf("Request #%d deferred;\n",
-                       (int)((RequestEvt const *)e)->ref_num);
+                       (int)Q_EVT_CAST(RequestEvt)->ref_num);
             }
             else {
                 /* notify the request sender that his request was denied... */
@@ -246,7 +247,23 @@ QState TServer_authorizing(TServer * const me, QEvt const * const e) {
     }
     return status;
 }
-
+/*..........................................................................*/
+QState TServer_final(TServer * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            printf("final-ENTRY;\n");
+            QF_stop(); /* terminate the application */
+            status = Q_HANDLED();
+            break;
+        }
+        default: {
+            status = Q_SUPER(&QHsm_top);
+            break;
+        }
+    }
+    return status;
+}
 // test harness ============================================================*/
 
 // Local-scope objects -------------------------------------------------------

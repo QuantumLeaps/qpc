@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # Product: QSpyView -- Customization example for DPP application
-# Last updated for version 5.9.2
-# Last updated on  2017-06-11
+# Last updated for version 6.2.0
+# Last updated on  2018-03-14
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,7 +28,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://state-machine.com
+# https://www.state-machine.com
 # mailto:info@state-machine.com
 #-----------------------------------------------------------------------------
 
@@ -99,9 +99,9 @@ proc ::qspy::rec70  {} { ;# QS_USER
     variable thePkt
     variable theFmt
     binary scan $thePkt xx$theFmt(tstamp)xcxa* \
-           tstamp philoNum stat
+           ts philoNum stat
 
-    dispTxt [format "%010u Philo %1d is %s" $tstamp $philoNum $stat]
+    dispTxt [format "%010u Philo %1d is %s" $ts $philoNum $stat]
 
     global thePhiloId
     set img [string index $stat 0]
@@ -111,9 +111,9 @@ proc ::qspy::rec70  {} { ;# QS_USER
 proc ::qspy::rec71  {} { ;# QS_USER + 1
     variable thePkt
     variable theFmt
-    binary scan $thePkt xx$theFmt(tstamp)xcxi \
-           tstamp cmdId param
-    dispTxt [format "%010u cmd=%d param=%d" $tstamp $cmdId $param]
+    binary scan $thePkt xc$theFmt(tstamp)xc \
+           cmdId ts par
+    dispTxt [format "%010u cmd=%d param=%d" $ts $cmdId $par]
 }
 
 proc ::qspy::rec72  {} { ;# QS_USER + 2

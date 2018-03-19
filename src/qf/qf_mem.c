@@ -4,14 +4,14 @@
 * @brief ::QMPool implementatin (Memory Pool)
 * @cond
 ******************************************************************************
-* Last updated for version 5.5.0
-* Last updated on  2015-08-20
+* Last updated for version 6.2.0
+* Last updated on  2018-03-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* https://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -68,15 +68,18 @@ Q_DEFINE_THIS_MODULE("qf_mem")
 * @p blockSize so that it can fit an integer number of pointers.
 * This is done to achieve proper alignment of the blocks within the pool.
 *
-* @note Due to the rounding of block size the actual capacity of the pool
-* might be less than (@p poolSize / @p blockSize). You can check the capacity
+* @note
+* Due to the rounding of block size the actual capacity of the pool might
+* be less than (@p poolSize / @p blockSize). You can check the capacity
 * of the pool by calling the QF_getPoolMin() function.
 *
-* @note This function is **not** protected by a critical section, because
+* @note
+* This function is **not** protected by a critical section, because
 * it is intended to be called only during the initialization of the system,
 * when interrupts are not allowed yet.
 *
-* @note Many QF ports use memory pools to implement the event pools.
+* @note
+* Many QF ports use memory pools to implement the event pools.
 *
 * @usage
 * The following example illustrates how to invoke QMPool_init():
@@ -87,7 +90,6 @@ void QMPool_init(QMPool * const me, void * const poolSto,
 {
     QFreeBlock *fb;
     uint_fast16_t nblocks;
-    QS_CRIT_STAT_
 
     /** @pre The memory block must be valid
     * and the poolSize must fit at least one free block
@@ -130,11 +132,6 @@ void QMPool_init(QMPool * const me, void * const poolSto,
     me->nMin  = me->nTot;        /* the minimum number of free blocks */
     me->start = poolSto;         /* the original start this pool buffer */
     me->end   = fb;              /* the last block in this pool */
-
-    QS_BEGIN_(QS_QF_MPOOL_INIT, QS_priv_.locFilter[MP_OBJ], me->start)
-        QS_OBJ_(me->start);      /* the memory managed by this pool */
-        QS_MPC_(me->nTot);       /* the total number of blocks */
-    QS_END_()
 }
 
 /****************************************************************************/
@@ -149,9 +146,11 @@ void QMPool_init(QMPool * const me, void * const poolSto,
 * The recycled block must be allocated from the **same** memory pool
 * to which it is returned.
 *
-* @note This function can be called from any task level or ISR level.
+* @note
+* This function can be called from any task level or ISR level.
 *
-* @sa QMPool_get()
+* @sa
+* QMPool_get()
 *
 * @usage
 * The following example illustrates how to use QMPool_put():
@@ -190,9 +189,11 @@ void QMPool_put(QMPool * const me, void *b) {
 * @param[in]     margin  the minimum number of unused blocks still available
 *                        in the pool after the allocation.
 *
-* @note This function can be called from any task level or ISR level.
+* @note
+* This function can be called from any task level or ISR level.
 *
-* @note The memory pool @p me must be initialized before any events can
+* @note
+* The memory pool @p me must be initialized before any events can
 * be requested from it. Also, the QMPool_get() function uses internally a
 * QF critical section, so you should be careful not to call it from within
 * a critical section when nesting of critical section is not supported.
@@ -255,7 +256,6 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
             QS_MPC_(me->nFree); /* # of free blocks in the pool */
             QS_MPC_(me->nMin);  /* min # free blocks ever in the pool */
         QS_END_NOCRIT_()
-
     }
     /* don't have enough free blocks at this point */
     else {
@@ -271,7 +271,7 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
     }
     QF_CRIT_EXIT_();
 
-    return fb;  /* return the pointer to memory block or NULL to the caller */
+    return fb;  /* return the block or NULL pointer to the caller */
 }
 
 /****************************************************************************/
@@ -284,7 +284,8 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
 *                    QF_maxPool_ is the number of event pools initialized
 *                    with the function QF_poolInit().
 *
-* @returns the minimum number of unused blocks in the given event pool.
+* @returns
+* the minimum number of unused blocks in the given event pool.
 */
 uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId) {
     uint_fast16_t min;
@@ -300,3 +301,4 @@ uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId) {
 
     return min;
 }
+

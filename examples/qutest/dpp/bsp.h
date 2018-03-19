@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.8.1
-* Date of the Last Update:  2016-12-12
+* Last Updated for Version: 6.2.0
+* Date of the Last Update:  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #ifndef bsp_h
@@ -36,13 +36,13 @@
 
 #define BSP_TICKS_PER_SEC    100U
 
-void BSP_init(void);
+void BSP_init(int argc, char **argv);
 void BSP_displayPaused(uint8_t paused);
 void BSP_displayPhilStat(uint8_t n, char_t const *stat);
 void BSP_terminate(int16_t result);
 
-void BSP_randomSeed(uint32_t seed);   /* random seed */
-uint32_t BSP_random(void);            /* pseudo-random generator */
+void BSP_randomSeed(uint32_t seed); /* random seed */
+uint32_t BSP_random(void); /* pseudo-random generator */
 
 /* for testing... */
 void BSP_wait4PB1(void);

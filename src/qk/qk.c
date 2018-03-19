@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 6.1.1
-* Last updated on  2018-02-17
+* Last updated for version 6.2.0
+* Last updated on  2018-03-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -472,3 +472,4 @@ void QK_activate_(void) {
 
 #endif /* QK_ON_CONTEXT_SW || Q_SPY */
 }
+

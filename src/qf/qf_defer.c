@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.1
-* Last updated on  2017-10-29
+* Last updated for version 6.2.0
+* Last updated on  2018-03-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -77,9 +77,20 @@ Q_DEFINE_THIS_MODULE("qf_defer")
 bool QActive_defer(QActive const * const me, QEQueue * const eq,
                    QEvt const * const e)
 {
-    (void)me; /* avoid compiler warning about 'me' not used */
+    bool status = QEQueue_post(eq, e, (uint_fast16_t)0);
+    QS_CRIT_STAT_
 
-    return QEQueue_post(eq, e, (uint_fast16_t)0);
+    (void)me; /* unused parameter */
+
+    QS_BEGIN_(QS_QF_ACTIVE_DEFER, QS_priv_.locFilter[AO_OBJ], me)
+        QS_TIME_();      /* time stamp */
+        QS_OBJ_(me);     /* this active object */
+        QS_OBJ_(eq);     /* the deferred queue */
+        QS_SIG_(e->sig); /* the signal of the event */
+        QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+    QS_END_()
+
+    return status;
 }
 
 /****************************************************************************/
@@ -124,7 +135,7 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
             * did NOT decrement the reference counter) and once in the
             * AO's event queue.
             */
-            Q_ASSERT_ID(210, e->refCtr_ > (uint8_t)1);
+            Q_ASSERT_ID(210, e->refCtr_ >= (uint8_t)2);
 
             /* we need to decrement the reference counter once, to account
             * for removing the event from the deferred event queue.
@@ -132,10 +143,26 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
             QF_EVT_REF_CTR_DEC_(e); /* decrement the reference counter */
         }
 
+        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_RECALL, QS_priv_.locFilter[AO_OBJ], me)
+            QS_TIME_();      /* time stamp */
+            QS_OBJ_(me);     /* this active object */
+            QS_OBJ_(eq);     /* the deferred queue */
+            QS_SIG_(e->sig); /* the signal of the event */
+            QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+        QS_END_NOCRIT_()
+
         QF_CRIT_EXIT_();
         recalled = true;
     }
     else {
+        QS_CRIT_STAT_
+
+        QS_BEGIN_(QS_QF_ACTIVE_RECALL_ATTEMPT, QS_priv_.locFilter[AO_OBJ], me)
+            QS_TIME_();      /* time stamp */
+            QS_OBJ_(me);     /* this active object */
+            QS_OBJ_(eq);     /* the deferred queue */
+        QS_END_()
+
         recalled = false;
     }
     return recalled;
@@ -171,3 +198,4 @@ uint_fast16_t QActive_flushDeferred(QActive const * const me,
     }
     return n;
 }
+

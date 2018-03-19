@@ -9,14 +9,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.1
-* Last updated on  2017-10-29
+* Last updated for version 6.2.0
+* Last updated on  2018-03-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -37,7 +37,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -97,12 +97,18 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     QEQueueCtr nFree; /* temporary to avoid UB for volatile access */
     bool status;
     QF_CRIT_STAT_
+    QS_TEST_PROBE_DEF(&QActive_post_)
 
     /** @pre event pointer must be valid */
     Q_REQUIRE_ID(100, e != (QEvt const *)0);
 
     QF_CRIT_ENTRY_();
     nFree = me->eQueue.nFree; /* get volatile into the temporary */
+
+    /* test-probe#1 for faking queue overflow */
+    QS_TEST_PROBE_ID(1,
+        nFree = (QEQueueCtr)0;
+    )
 
     if (margin == QF_NO_MARGIN) {
         if (nFree > (QEQueueCtr)0) {
@@ -122,6 +128,11 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
     if (status) { /* can post the event? */
 
+        /* is it a pool event? */
+        if (e->poolId_ != (uint8_t)0) {
+            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        }
+
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
                          QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_();               /* timestamp */
@@ -133,11 +144,20 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_EQC_(me->eQueue.nMin); /* min number of free entries */
         QS_END_NOCRIT_()
 
-        /* is it a pool event? */
-        if (e->poolId_ != (uint8_t)0) {
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
-        }
-
+#ifdef Q_UTEST
+    /* in QUTest the event is posted under the following conditions:
+    * 1. the test-probe#2 is provided; OR
+    * 2. the 'sender' is 'me' (self-posting); OR
+    * 3. the AO-local-filter is set and is 'me'; OR
+    * 4. the AO-local-filter is not set AND the 'sender' is QS_RX
+    */
+    if ((qs_tp_ == (uint32_t)2)
+        || (sender == me)
+        || (QS_priv_.locFilter[AO_OBJ] == me)
+        || ((QS_priv_.locFilter[AO_OBJ] == (void *)0)
+            && (sender == &QS_rxPriv_)))
+    {
+#endif
         --nFree; /* one free entry just used up */
         me->eQueue.nFree = nFree;       /* update the volatile */
         if (me->eQueue.nMin > nFree) {
@@ -158,6 +178,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             }
             --me->eQueue.head; /* advance the head (counter clockwise) */
         }
+#ifdef Q_UTEST
+    }
+#endif
         QF_CRIT_EXIT_();
     }
     else {
@@ -203,12 +226,23 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QEvt const *frontEvt;  /* temporary to avoid UB for volatile access */
     QEQueueCtr nFree;      /* temporary to avoid UB for volatile access */
     QF_CRIT_STAT_
+    QS_TEST_PROBE_DEF(&QActive_postLIFO_)
 
     QF_CRIT_ENTRY_();
     nFree = me->eQueue.nFree; /* get volatile into the temporary */
 
+    /* test-probe#1 for faking queue overflow */
+    QS_TEST_PROBE_ID(1,
+        nFree = (QEQueueCtr)0;
+    )
+
     /* the queue must be able to accept the event (cannot overflow) */
     Q_ASSERT_ID(210, nFree != (QEQueueCtr)0);
+
+    /* is it a dynamic event? */
+    if (e->poolId_ != (uint8_t)0) {
+        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+    }
 
     QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();                  /* timestamp */
@@ -218,11 +252,6 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QS_EQC_(nFree);              /* number of free entries */
         QS_EQC_(me->eQueue.nMin);    /* min number of free entries */
     QS_END_NOCRIT_()
-
-    /* is it a pool event? */
-    if (e->poolId_ != (uint8_t)0) {
-        QF_EVT_REF_CTR_INC_(e);      /* increment the reference counter */
-    }
 
     --nFree; /* one free entry just used up */
     me->eQueue.nFree = nFree; /* update the volatile */
@@ -353,9 +382,21 @@ uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
     return min;
 }
 
+/****************************************************************************/
+static void QTicker_init_(QHsm * const me, QEvt const * const e);
+static void QTicker_dispatch_(QHsm * const me, QEvt const * const e);
 
-/****************************************************************************/
-/****************************************************************************/
+#ifdef Q_SPY
+    /*! virtual function to asynchronously post (FIFO) an event to an AO */
+    static bool QTicker_post_(QActive * const me, QEvt const * const e,
+                   uint_fast16_t const margin, void const * const sender);
+#else
+    static bool QTicker_post_(QActive * const me, QEvt const * const e,
+                   uint_fast16_t const margin);
+#endif
+
+static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
+
 /*! Perform downcast to QTicker pointer. */
 /**
 * @description
@@ -365,18 +406,6 @@ uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
 * and this macro helps to encapsulate this deviation.
 */
 #define QTICKER_CAST(me_)  ((QTicker *)(me_))
-
-static void QTicker_init_(QHsm * const me, QEvt const * const e);
-static void QTicker_dispatch_(QHsm * const me, QEvt const * const e);
-#ifdef Q_SPY
-    /*! virtual function to asynchronously post (FIFO) an event to an AO */
-    static bool QTicker_post_(QActive * const me, QEvt const * const e,
-                   uint_fast16_t const margin, void const * const sender);
-#else
-    static bool QTicker_post_(QActive * const me, QEvt const * const e,
-                   uint_fast16_t const margin);
-#endif
-static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
 
 /*..........................................................................*/
 /*! "constructor" of QTicker */
@@ -463,3 +492,4 @@ static void QTicker_postLIFO_(QActive * const me, QEvt const * const e) {
     (void)e;
     Q_ERROR_ID(900);
 }
+

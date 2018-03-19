@@ -1,6 +1,6 @@
 /*
  * lwIP Ethernet CMSIS-compliant driver for Stellaris MCUs
- * Copyright (c) 2013-2015 Quantum Leaps, LLC, www.state-machine.com
+ * Copyright (c) 2013-2018 Quantum Leaps, LLC, www.state-machine.com
  */
 
 /*
@@ -41,7 +41,7 @@
  * interface driver for lwIP.
  */
 
-#include "qp_port.h"
+#include "qpc.h"
 
 #include "lwip/opt.h"
 #include "lwip/init.h"

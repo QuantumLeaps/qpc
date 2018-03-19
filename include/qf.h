@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.4
-* Last updated on  2018-01-10
+* Last updated for version 6.2.0
+* Last updated on  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -666,12 +666,15 @@ uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId);
 * the given event queue. */
 uint_fast16_t QF_getQueueMin(uint_fast8_t const prio);
 
-/*! Internal QF implementation of the dynamic event allocator */
+/*! Internal QF implementation of creating new dynamic event. */
 QEvt *QF_newX_(uint_fast16_t const evtSize,
                uint_fast16_t const margin, enum_t const sig);
 
-/*! Internal QF implementation of the event reference creator. */
-QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef);
+/*! Internal QF implementation of creating new event reference. */
+QEvt const *QF_newRef_(QEvt const * const e, void const * const evtRef);
+
+/*! Internal QF implementation of deleting event reference. */
+void QF_deleteRef_(void const * const evtRef);
 
 #ifdef Q_EVT_CTOR /* Shall the ctor for the ::QEvt class be provided? */
 
@@ -767,7 +770,7 @@ QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef);
 * @sa Q_DELETE_REF()
 */
 #define Q_NEW_REF(evtRef_, evtT_)  \
-    ((evtRef_) = (evtT_ const *)QF_newRef_(e, &(evtRef_)->super))
+    ((evtRef_) = (evtT_ const *)QF_newRef_(e, (evtRef_)))
 
 /*! Delete the event reference */
 /**
@@ -785,7 +788,7 @@ QEvt const *QF_newRef_(QEvt const * const e, QEvt const * const evtRef);
 * @sa Q_NEW_REF()
 */
 #define Q_DELETE_REF(evtRef_) do { \
-    QF_gc(&(evtRef_)->super); \
+    QF_deleteRef_((evtRef_)); \
     (evtRef_) = (void *)0; \
 } while (0)
 
@@ -838,5 +841,4 @@ void QTicker_ctor(QTicker * const me, uint8_t tickRate);
 #define QF_getVersion() (QP_versionStr)
 
 #endif /* qf_h */
-
 

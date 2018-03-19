@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.1.0
-* Last updated on  2018-02-12
+* Last updated for version 6.2.0
+* Last updated on  2018-03-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -77,18 +77,10 @@ void QF_add_(QActive * const a) {
     */
     Q_REQUIRE_ID(100, ((uint_fast8_t)0 < p)
                        && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
-              && (QF_active_[p] == (QActive *)0));
+                       && (QF_active_[p] == (QActive *)0));
 
     QF_CRIT_ENTRY_();
-
     QF_active_[p] = a; /* register the active object at this priority */
-
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_ADD, QS_priv_.locFilter[AO_OBJ], a)
-        QS_TIME_();  /* timestamp */
-        QS_OBJ_(a);  /* the active object */
-        QS_U8_((uint8_t)p); /* the priority of the active object */
-    QS_END_NOCRIT_()
-
     QF_CRIT_EXIT_();
 }
 
@@ -101,7 +93,8 @@ void QF_add_(QActive * const a) {
 *
 * @param[in]  a  pointer to the active object to remove from the framework.
 *
-* @note The active object that is removed from the framework can no longer
+* @note
+* The active object that is removed from the framework can no longer
 * participate in the publish-subscribe event exchange.
 *
 * @sa QF_add_()
@@ -122,13 +115,6 @@ void QF_remove_(QActive * const a) {
 
     QF_active_[p] = (QActive *)0; /* free-up the priority level */
     a->super.state.fun = Q_STATE_CAST(0); /* invalidate the state */
-
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_REMOVE, QS_priv_.locFilter[AO_OBJ], a)
-        QS_TIME_(); /* timestamp */
-        QS_OBJ_(a); /* the active object */
-        QS_U8_((uint8_t)p); /* the priority of the active object */
-    QS_END_NOCRIT_()
-
     QF_CRIT_EXIT_();
 }
 
@@ -206,3 +192,4 @@ void QF_bzero(void * const start, uint_fast16_t len) {
 #endif /* __STDC_VERSION__ */
 
 #endif /* QF_LOG2 */
+

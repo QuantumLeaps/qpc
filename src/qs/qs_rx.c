@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.4
-* Last updated on  2018-01-16
+* Last updated for version 6.2.0
+* Last updated on  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -211,8 +211,6 @@ static void QS_rxReportError_(uint8_t code);
 static void QS_rxReportDone_(enum QSpyRxRecords recId);
 static void QS_rxPoke_(void);
 
-static uint8_t const l_QS_RX = (uint8_t)0; /* QS source ID */
-
 /*! Internal QS-RX macro to access the QS ring buffer */
 /**
 * @description
@@ -268,7 +266,7 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
     l_rx.chksum = (uint8_t)0;
 
     QS_beginRec((uint_fast8_t)QS_OBJ_DICT);
-        QS_OBJ_(&l_QS_RX);
+        QS_OBJ_(&QS_rxPriv_);
         QS_STR_("QS_RX");
     QS_endRec();
     /* no QS_REC_DONE(), because QS is not running yet */
@@ -813,7 +811,10 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
         }
         case WAIT4_TICK_FRAME: {
             QS_rxReportAck_(QS_RX_TICK);
-            QF_tickX_((uint_fast8_t)l_rx.var.tick.rate, &l_QS_RX);
+            QF_tickX_((uint_fast8_t)l_rx.var.tick.rate, &QS_rxPriv_);
+#ifdef Q_UTEST
+            QS_processTestEvts_(); /* process all events produced */
+#endif
             QS_rxReportDone_(QS_RX_TICK);
             break;
         }
@@ -942,14 +943,14 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             i = (uint8_t)0; /* use 'i' as status, 0 == success,no-recycle */
 
             if (l_rx.var.evt.prio == (uint8_t)0) { /* publish */
-                QF_PUBLISH(l_rx.var.evt.e, &l_QS_RX);
+                QF_PUBLISH(l_rx.var.evt.e, &QS_rxPriv_);
                 QS_rxReportDone_(QS_RX_EVENT);
             }
             else if (l_rx.var.evt.prio < (uint8_t)QF_MAX_ACTIVE) {
                 if (QACTIVE_POST_X(QF_active_[l_rx.var.evt.prio],
                                l_rx.var.evt.e,
                                (uint_fast16_t)1, /* margin */
-                               &l_QS_RX) == false)
+                               &QS_rxPriv_) == false)
                 {
                     /* failed QACTIVE_POST() recycles the event */
                     i = (uint8_t)0x80; /* failure status, no recycle */
@@ -958,6 +959,12 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             else if (l_rx.var.evt.prio == (uint8_t)255) { /* special value */
                 /* dispatch to the current SM object */
                 if (QS_rxPriv_.currObj[SM_OBJ] != (void *)0) {
+                    /* increment the ref-ctr to simulate the situation
+                    * when the event is just retreived from a queue.
+                    * This is expected for the following QF_gc() call.
+                    */
+                    ++l_rx.var.evt.e->refCtr_;
+
                     QHSM_DISPATCH((QHsm *)QS_rxPriv_.currObj[SM_OBJ],
                                   l_rx.var.evt.e);
                     i = (uint8_t)0x01;  /* success status, recycle needed */
@@ -969,6 +976,12 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             else if (l_rx.var.evt.prio == (uint8_t)254) { /* special value */
                 /* init the current SM object" */
                 if (QS_rxPriv_.currObj[SM_OBJ] != (void *)0) {
+                    /* increment the ref-ctr to simulate the situation
+                    * when the event is just retreived from a queue.
+                    * This is expected for the following QF_gc() call.
+                    */
+                    ++l_rx.var.evt.e->refCtr_;
+
                     QHSM_INIT((QHsm *)QS_rxPriv_.currObj[SM_OBJ],
                               l_rx.var.evt.e);
                     i = (uint8_t)0x01;  /* success status, recycle needed */
@@ -983,7 +996,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
                     if (QACTIVE_POST_X((QActive *)QS_rxPriv_.currObj[AO_OBJ],
                                    l_rx.var.evt.e,
                                    (uint_fast16_t)1, /* margin */
-                                   &l_QS_RX) == false)
+                                   &QS_rxPriv_) == false)
                     {
                         /* failed QACTIVE_POST() recycles the event */
                         i = (uint8_t)0x80;  /* failure status, no recycle */
@@ -1000,10 +1013,14 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             if ((i & (uint8_t)0x01) != (uint8_t)0) { /* recycle needed? */
                 QF_gc(l_rx.var.evt.e);
             }
+
             if ((i & (uint8_t)0x80) != (uint8_t)0) { /* failure? */
                 QS_rxReportError_((uint8_t)QS_RX_EVENT);
             }
             else {
+#ifdef Q_UTEST
+                QS_processTestEvts_(); /* process all events produced */
+#endif
                 QS_rxReportDone_(QS_RX_EVENT);
             }
             break;
@@ -1163,3 +1180,4 @@ QSTimeCtr QS_onGetTime(void) {
 }
 
 #endif /* Q_UTEST */
+

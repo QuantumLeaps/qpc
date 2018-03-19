@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.8.0
-* Last updated on  2016-11-29
+* Last updated for version 6.2.0
+* Last updated on  2018-03-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -72,8 +72,9 @@ enum_t QF_maxPubSignal_;
 * priority of an active object. The size of the ::QSubscrList bit mask
 * depends on the value of the #QF_MAX_ACTIVE macro.
 *
-* @note The publish-subscribe facilities are optional, meaning that you
-* might choose not to use publish-subscribe. In that case calling QF_psInit()
+* @note
+* The publish-subscribe facilities are optional, meaning that you might
+* choose not to use publish-subscribe. In that case calling QF_psInit()
 * and using up memory for the subscriber-lists is unnecessary.
 *
 * @sa ::QSubscrList
@@ -200,7 +201,8 @@ void QF_publish_(QEvt const * const e, void const * const sender)
 * to three signals in the initial transition:
 * @include qf_subscribe.c
 *
-* @sa QF_publish_(), QActive_unsubscribe(), and QActive_unsubscribeAll()
+* @sa
+* QF_publish_(), QActive_unsubscribe(), and QActive_unsubscribeAll()
 */
 void QActive_subscribe(QActive const * const me, enum_t const sig) {
     uint_fast8_t p = (uint_fast8_t)me->prio;
@@ -236,16 +238,19 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
 * @param[in] me  pointer (see @ref oop)
 * @param[in] sig event signal to unsubscribe
 *
-* @note Due to the latency of event queues, an active object should NOT
+* @note
+* Due to the latency of event queues, an active object should NOT
 * assume that a given signal @p sig will never be dispatched to the
 * state machine of the active object after un-subscribing from that signal.
 * The event might be already in the queue, or just about to be posted
 * and the un-subscribe operation will not flush such events.
 *
-* @note Un-subscribing from a signal that has never been subscribed in the
+* @note
+* Un-subscribing from a signal that has never been subscribed in the
 * first place is considered an error and QF will raise an assertion.
 *
-* @sa QF_publish_(), QActive_subscribe(), and QActive_unsubscribeAll()
+* @sa
+* QF_publish_(), QActive_subscribe(), and QActive_unsubscribeAll()
 */
 void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
     uint_fast8_t p = (uint_fast8_t)me->prio;
@@ -283,7 +288,8 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
 *
 * @param[in] me  pointer (see @ref oop)
 *
-* @note Due to the latency of event queues, an active object should NOT
+* @note
+* Due to the latency of event queues, an active object should NOT
 * assume that no events will ever be dispatched to the state machine of
 * the active object after un-subscribing from all events.
 * The events might be already in the queue, or just about to be posted
@@ -292,7 +298,8 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
 * time events, can be still delivered to the event queue of the active
 * object.
 *
-* @sa QF_publish_(), QActive_subscribe(), and QActive_unsubscribe()
+* @sa
+* QF_publish_(), QActive_subscribe(), and QActive_unsubscribe()
 */
 void QActive_unsubscribeAll(QActive const * const me) {
     uint_fast8_t p = (uint_fast8_t)me->prio;
@@ -320,3 +327,4 @@ void QActive_unsubscribeAll(QActive const * const me) {
         QF_CRIT_EXIT_();
     }
 }
+

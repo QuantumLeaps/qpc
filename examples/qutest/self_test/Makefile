@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QUTEST self-test; QP/C on Win32 host
-# Last updated for version 6.1.1
-# Last updated on  2018-02-18
+# Last updated for version 6.2.0
+# Last updated on  2018-03-16
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -34,7 +34,7 @@
 #
 # examples of invoking this Makefile:
 # make         # make and run the tests in the current directory
-# make TESTS=philo*.tcl  # make and run the selected tests in the current directory
+# make TESTS=test*.tcl  # make and run the selected tests in the curr. dir.
 # make norun   # only make but not run the tests
 # make clean   # cleanup the build
 #
@@ -70,12 +70,10 @@ QP_PORT_DIR := $(QPC)/ports/win32-qutest
 # list of all source directories used by this project
 VPATH = \
 	. \
-	..
 
 # list of all include directories needed by this project
 INCLUDES  = \
 	-I. \
-	-I.. \
 	-I$(QPC)/include
 
 #-----------------------------------------------------------------------------
@@ -87,14 +85,14 @@ C_SRCS := \
 	test_qutest.c
 
 # C++ source files...
-CPP_SRCS  :=
+CPP_SRCS :=
 
 LIB_DIRS  :=
 LIBS      :=
 
 # defines...
 # QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
-DEFINES   :=
+DEFINES   := -DQP_API_VERSION=9999
 
 #-----------------------------------------------------------------------------
 # MinGW toolset (NOTE: assumed to be on your PATH)
@@ -211,12 +209,12 @@ clean :
 
 show :
 	@echo PROJECT      = $(PROJECT)
-	@echo TESTS        = $(TESTS)
 	@echo TARGET_EXE   = $(TARGET_EXE)
 	@echo CONF         = $(CONF)
 	@echo VPATH        = $(VPATH)
 	@echo C_SRCS       = $(C_SRCS)
 	@echo CPP_SRCS     = $(CPP_SRCS)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
 	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
@@ -225,3 +223,5 @@ show :
 	@echo LIBS         = $(LIBS)
 	@echo DEFINES      = $(DEFINES)
 	@echo QUTEST       = $(QUTEST)
+	@echo TESTS        = $(TESTS)
+

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EK-TM4C123GXL, QUTEST, GNU-ARM
-# Last Updated for Version: 6.1.1
-# Date of the Last Update:  2018-02-18
+# Last Updated for Version: 6.2.0
+# Date of the Last Update:  2018-03-19
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -79,6 +79,7 @@ VPATH = \
 
 # list of all include directories needed by this project
 INCLUDES  = \
+	-I. \
 	-I../$(TARGET) \
 	-I$(QPC)/include \
 	-I$(QPC)/src \
@@ -96,7 +97,6 @@ ASM_SRCS :=
 # C source files
 C_SRCS := \
 	test_qutest.c \
-	qutest_port.c \
 	system_TM4C123GH6PM.c \
 	startup_TM4C123GH6PM.c
 
@@ -110,6 +110,7 @@ QP_SRCS := \
 	qep_hsm.c \
 	qep_msm.c \
 	qf_act.c \
+	qf_actq.c \
 	qf_defer.c \
 	qf_dyn.c \
 	qf_mem.c \
@@ -121,14 +122,10 @@ QP_SRCS := \
 	qs_64bit.c \
 	qs_rx.c \
 	qs_fp.c \
-	qutest.c
+	qutest.c \
+	qutest_port.c
 
 QP_ASMS :=
-
-QS_SRCS := \
-	qs.c \
-	qs_rx.c \
-	qs_fp.c
 
 LIB_DIRS  :=
 LIBS      :=
@@ -200,8 +197,6 @@ C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
 
 BIN_DIR := $(TARGET)
-
-C_SRCS += $(QS_SRCS)
 
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 

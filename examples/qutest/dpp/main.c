@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-05-16
+* Last Updated for Version: 6.2.0
+* Date of the Last Update:  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -36,7 +36,7 @@
 #include "bsp.h"
 
 /*..........................................................................*/
-int main() {
+int main(int argc, char *argv[]) {
     static QEvt const *tableQueueSto[N_PHILO];
     static QEvt const *philoQueueSto[N_PHILO][N_PHILO];
     static QSubscrList subscrSto[MAX_PUB_SIG];
@@ -47,16 +47,12 @@ int main() {
     Table_ctor(); /* instantiate the Table active object */
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
-    BSP_init();   /* initialize the Board Support Package */
+    BSP_init(argc, argv); /* initialize the Board Support Package */
 
     /* object dictionaries... */
     QS_OBJ_DICTIONARY(smlPoolSto);
-    QS_OBJ_DICTIONARY(AO_Table);
-    QS_OBJ_DICTIONARY(AO_Philo[0]);
-    QS_OBJ_DICTIONARY(AO_Philo[1]);
-    QS_OBJ_DICTIONARY(AO_Philo[2]);
-    QS_OBJ_DICTIONARY(AO_Philo[3]);
-    QS_OBJ_DICTIONARY(AO_Philo[4]);
+
+    /* pause execution of the test and wait for the test script to continue */
     QS_TEST_PAUSE();
 
     /* initialize publish-subscribe... */

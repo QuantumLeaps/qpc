@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.4
-* Last updated on  2018-01-16
+* Last updated for version 6.6.0
+* Last updated on  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -128,3 +128,4 @@ void QS_f64(uint8_t format, float64_t d) {
     QS_priv_.head   = head;   /* save the head */
     QS_priv_.chksum = chksum; /* save the checksum */
 }
+

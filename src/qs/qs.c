@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.4
-* Last updated on  2018-01-16
+* Last updated for version 6.2.0
+* Last updated on  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -139,28 +139,27 @@ void QS_filterOn(uint_fast8_t rec) {
     }
     else if (rec == (uint_fast8_t)QS_AO_RECORDS) {
         QS_priv_.glbFilter[1] |= (uint8_t)0xFCU;
-        QS_priv_.glbFilter[2] |= (uint8_t)0x03U;
+        QS_priv_.glbFilter[2] |= (uint8_t)0x07U;
         QS_priv_.glbFilter[5] |= (uint8_t)0x20U;
     }
     else if (rec == (uint_fast8_t)QS_EQ_RECORDS) {
-        QS_priv_.glbFilter[2] |= (uint8_t)0x7CU;
+        QS_priv_.glbFilter[2] |= (uint8_t)0x78U;
         QS_priv_.glbFilter[5] |= (uint8_t)0x40U;
     }
     else if (rec == (uint_fast8_t)QS_MP_RECORDS) {
-        QS_priv_.glbFilter[2] |= (uint8_t)0x80U;
         QS_priv_.glbFilter[3] |= (uint8_t)0x03U;
         QS_priv_.glbFilter[5] |= (uint8_t)0x80U;
     }
     else if (rec == (uint_fast8_t)QS_QF_RECORDS) {
         QS_priv_.glbFilter[3] |= (uint8_t)0xFCU;
-        QS_priv_.glbFilter[4] |= (uint8_t)0x80U;
+        QS_priv_.glbFilter[4] |= (uint8_t)0xC0U;
         QS_priv_.glbFilter[5] |= (uint8_t)0x1FU;
     }
     else if (rec == (uint_fast8_t)QS_TE_RECORDS) {
         QS_priv_.glbFilter[4] |= (uint8_t)0x7FU;
     }
     else if (rec == (uint_fast8_t)QS_SC_RECORDS) {
-        QS_priv_.glbFilter[6] |= (uint8_t)0x7CU;
+        QS_priv_.glbFilter[6] |= (uint8_t)0x7FU;
     }
     else if (rec == (uint_fast8_t)QS_U0_RECORDS) {
         QS_priv_.glbFilter[8] |= (uint8_t)0xC0U;
@@ -231,28 +230,27 @@ void QS_filterOff(uint_fast8_t rec) {
     }
     else if (rec == (uint_fast8_t)QS_AO_RECORDS) {
         QS_priv_.glbFilter[1] &= (uint8_t)(~0xFCU);
-        QS_priv_.glbFilter[2] &= (uint8_t)(~0x03U);
+        QS_priv_.glbFilter[2] &= (uint8_t)(~0x07U);
         QS_priv_.glbFilter[5] &= (uint8_t)(~0x20U);
     }
     else if (rec == (uint_fast8_t)QS_EQ_RECORDS) {
-        QS_priv_.glbFilter[2] &= (uint8_t)(~0x7CU);
+        QS_priv_.glbFilter[2] &= (uint8_t)(~0x78U);
         QS_priv_.glbFilter[5] &= (uint8_t)(~0x40U);
     }
     else if (rec == (uint_fast8_t)QS_MP_RECORDS) {
-        QS_priv_.glbFilter[2] &= (uint8_t)(~0x80U);
         QS_priv_.glbFilter[3] &= (uint8_t)(~0x03U);
         QS_priv_.glbFilter[5] &= (uint8_t)(~0x80U);
     }
     else if (rec == (uint_fast8_t)QS_QF_RECORDS) {
         QS_priv_.glbFilter[3] &= (uint8_t)(~0xFCU);
-        QS_priv_.glbFilter[4] &= (uint8_t)(~0x80U);
+        QS_priv_.glbFilter[4] &= (uint8_t)(~0xC0U);
         QS_priv_.glbFilter[5] &= (uint8_t)(~0x1FU);
     }
     else if (rec == (uint_fast8_t)QS_TE_RECORDS) {
         QS_priv_.glbFilter[4] &= (uint8_t)(~0x7FU);
     }
     else if (rec == (uint_fast8_t)QS_SC_RECORDS) {
-        QS_priv_.glbFilter[6] &= (uint8_t)(~0x7CU);
+        QS_priv_.glbFilter[6] &= (uint8_t)(~0x7FU);
     }
     else if (rec == (uint_fast8_t)QS_U0_RECORDS) {
         QS_priv_.glbFilter[8] &= (uint8_t)(~0xC0U);
@@ -871,3 +869,4 @@ void QS_str(char_t const *s) {
     QS_priv_.chksum = chksum;  /* save the checksum */
     QS_priv_.used   = used;    /* save # of used buffer space */
 }
+

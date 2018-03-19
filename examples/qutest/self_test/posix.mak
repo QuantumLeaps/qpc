@@ -1,13 +1,13 @@
 ##############################################################################
-# Product: Makefile for QUTEST self-test; QP/C on POSIX host
-# Last updated for version 6.1.1
-# Last updated on  2018-02-18
+# Product: Makefile for QUTEST self-test; QP/C on POSIX *Target*
+# Last updated for version 6.2.0
+# Last updated on  2018-03-09
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -34,7 +34,7 @@
 #
 # examples of invoking this Makefile:
 # make -f posix.mak        # make and run the tests in the current directory
-# make -f posix.mak TESTS=philo*.tcl  # make and run the selected tests
+# make -f posix.mak HOST=192.168.1.65:6601 # make and run the executable
 # make -f posix.mak norun   # only make but not run the tests
 # make -f posix.mak clean   # cleanup the build
 #
@@ -53,25 +53,22 @@ ifeq ($(QPC),)
 QPC := ../../..
 endif
 
-# make sure that QTOOLS exists...
-ifeq ("$(wildcard $(QTOOLS))","")
-$(error QTOOLS not found. Please install Qtools and define QTOOLS env. variable)
-endif
-
-
 # QP port used in this project
 QP_PORT_DIR := $(QPC)/ports/posix-qutest
 
 # list of all source directories used by this project
 VPATH = \
 	. \
-	..
+	$(QPC)/src/qf \
+	$(QPC)/src/qs \
+	$(QP_PORT_DIR)
 
 # list of all include directories needed by this project
 INCLUDES  = \
 	-I. \
-	-I.. \
-	-I$(QPC)/include
+	-I$(QPC)/include \
+	-I$(QPC)/src \
+	-I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
 # files
@@ -84,12 +81,31 @@ C_SRCS := \
 # C++ source files...
 CPP_SRCS :=
 
+QP_SRCS := \
+	qep_hsm.c \
+	qep_msm.c \
+	qf_act.c \
+	qf_actq.c \
+	qf_defer.c \
+	qf_dyn.c \
+	qf_mem.c \
+	qf_ps.c \
+	qf_qact.c \
+	qf_qeq.c \
+	qf_qmact.c \
+	qs.c \
+	qs_64bit.c \
+	qs_rx.c \
+	qs_fp.c \
+	qutest.c \
+	qutest_port.c
+
 LIB_DIRS  :=
 LIBS      :=
 
 # defines...
 # QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
-DEFINES   :=
+DEFINES   := -DQP_API_VERSION=9999
 
 #-----------------------------------------------------------------------------
 # GNU toolset
@@ -103,9 +119,6 @@ LINK  := gcc    # for C programs
 
 MKDIR  := mkdir -p
 RM     := rm -f
-TCLSH  := tclsh
-QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
-
 
 #============================================================================
 # Typically you should not need to change anything below this line
@@ -113,6 +126,9 @@ QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
 #-----------------------------------------------------------------------------
 # build options
 #
+
+# combine all the soruces...
+C_SRCS += $(QP_SRCS)
 
 BIN_DIR := posix
 
@@ -128,7 +144,6 @@ LINKFLAGS := -Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
 # combine all the soruces...
 INCLUDES  += -I$(QP_PORT_DIR)
 LIB_DIRS  += -L$(QP_PORT_DIR)/$(BIN_DIR)
-LIBS      += -lqp
 
 C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))
 CPP_OBJS     := $(patsubst %.cpp,%.o, $(CPP_SRCS))
@@ -148,25 +163,39 @@ endif
 # rules
 #
 
-.PHONY : run norun
+.PHONY : clean show test run norun
 
 ifeq ($(MAKECMDGOALS),norun)
+
 all : $(TARGET_EXE)
 norun : all
-else
-all : $(TARGET_EXE) run
-endif
 
-ifeq (, $(TESTS))
-TESTS := *.tcl
+else ifeq ($(MAKECMDGOALS),test)
+
+ifeq ("$(wildcard $(QTOOLS))","")
+$(error QTOOLS not found. Please install Qtools and define QTOOLS env. variable)
+endif
+TCLSH  := tclsh
+QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
+
+else
+
+all : $(TARGET_EXE) run
+
 endif
 
 $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
+# run the test fixture on a POSIX target in a loop, so that it is re-started
+# after every test. The loop is terminated by pressing Ctrl-C on the keyboard.
+#
 run : $(TARGET_EXE)
-	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE)
+	set -e; while true; do \
+		echo "restarting $(TARGET_EXE)"; \
+		$(TARGET_EXE) $(HOST); \
+	done
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
@@ -180,14 +209,17 @@ $(BIN_DIR)/%.o : %.cpp
 $(BIN_DIR)/%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY : clean show norun
-
 # include dependency files only if our goal depends on their existence
-ifneq ($(MAKECMDGOALS),clean)
-  ifneq ($(MAKECMDGOALS),show)
+ifneq ($(MAKECMDGOALS),test)
+  ifneq ($(MAKECMDGOALS),clean)
+    ifneq ($(MAKECMDGOALS),show)
 -include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
+    endif
   endif
 endif
+
+test :
+	$(TCLSH) $(QUTEST) $(TESTS)
 
 clean :
 	-$(RM) $(BIN_DIR)/*.o \
@@ -197,12 +229,12 @@ clean :
 
 show :
 	@echo PROJECT      = $(PROJECT)
-	@echo TESTS        = $(TESTS)
 	@echo TARGET_EXE   = $(TARGET_EXE)
 	@echo CONF         = $(CONF)
 	@echo VPATH        = $(VPATH)
 	@echo C_SRCS       = $(C_SRCS)
 	@echo CPP_SRCS     = $(CPP_SRCS)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
 	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
@@ -210,4 +242,4 @@ show :
 	@echo LIB_DIRS     = $(LIB_DIRS)
 	@echo LIBS         = $(LIBS)
 	@echo DEFINES      = $(DEFINES)
-	@echo QUTEST       = $(QUTEST)
+	@echo HOST         = $(HOST)

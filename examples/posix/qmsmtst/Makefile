@@ -1,13 +1,13 @@
 ##############################################################################
-# Product: Makefile for QP/C, Blinky console, POSIX, GNU compiler
-# Last updated for version 5.6.5
-# Last updated on  2016-06-07
+# Product: Makefile for QP/C, QMsmTst console, POSIX target, GNU compiler
+# Last updated for version 6.2.0
+# Last updated on  2018-03-16
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -28,9 +28,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://state-machine.com
+# https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
+#
 # examples of invoking this Makefile:
 # building configurations: Debug (default), Release, and Spy
 # make
@@ -45,7 +46,7 @@
 #-----------------------------------------------------------------------------
 # project name
 #
-PROJECT     := qmsmtst
+PROJECT := qmsmtst
 
 #-----------------------------------------------------------------------------
 # project directories
@@ -61,14 +62,17 @@ QP_PORT_DIR := $(QPC)/ports/posix
 
 # list of all source directories used by this project
 VPATH = \
-	.
+	. \
+	$(QPC)/src/qf \
+	$(QPC)/src/qs \
+	$(QP_PORT_DIR)
 
 # list of all include directories needed by this project
 INCLUDES  = \
 	-I. \
-	-I$(QPC)/include
-
-
+	-I$(QPC)/include \
+	-I$(QPC)/src \
+	-I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
 # files
@@ -80,7 +84,28 @@ C_SRCS := \
 	qmsmtst.c
 
 # C++ source files...
-CPP_SRCS :=	
+CPP_SRCS :=
+
+QP_SRCS := \
+	qep_hsm.c \
+	qep_msm.c \
+	qf_act.c \
+	qf_actq.c \
+	qf_defer.c \
+	qf_dyn.c \
+	qf_mem.c \
+	qf_ps.c \
+	qf_qact.c \
+	qf_qeq.c \
+	qf_qmact.c \
+	qf_time.c \
+	qf_port.c
+
+QS_SRCS := \
+	qs.c \
+	qs_64bit.c \
+	qs_rx.c \
+	qs_fp.c
 
 LIB_DIRS  :=
 LIBS      :=
@@ -88,7 +113,6 @@ LIBS      :=
 # defines...
 # QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
 DEFINES   := -DQP_API_VERSION=9999
-
 
 #-----------------------------------------------------------------------------
 # GNU toolset
@@ -104,6 +128,8 @@ RM    := rm -f
 #-----------------------------------------------------------------------------
 # build options for various configurations
 #
+# combine all the soruces...
+C_SRCS += $(QP_SRCS)
 
 ifeq (rel, $(CONF)) # Release configuration ..................................
 
@@ -112,26 +138,19 @@ BIN_DIR := rel
 CFLAGS = -ffunction-sections -fdata-sections \
 	-Os -Wall -W $(INCLUDES) $(DEFINES) -pthread -DNDEBUG
 
-CPPFLAGS = -ffunction-sections -fdata-sections \
+CPPFLAGS =  -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
 	-Os -Wall -W $(INCLUDES) $(DEFINES) -pthread -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
-# make sure that QTOOLS exists...
-ifeq ("$(wildcard $(QTOOLS))","")
-$(error QTOOLS not found. Please install Qtools and define QTOOLS env. variable)
-endif
-
-INCLUDES +=	-I$(QTOOLS)/qspy/include
-VPATH    += $(QTOOLS)/qspy/source
-C_SRCS   += qspy.c
-
 BIN_DIR := spy
+
+C_SRCS += $(QS_SRCS)
 
 CFLAGS = -g -ffunction-sections -fdata-sections \
 	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread -DQ_SPY
 
-CPPFLAGS = -g -ffunction-sections -fdata-sections \
+CPPFLAGS = -g -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
 	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread -DQ_SPY
 
 else  # default Debug configuration ..........................................
@@ -141,7 +160,7 @@ BIN_DIR := dbg
 CFLAGS = -g -ffunction-sections -fdata-sections \
 	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread
 
-CPPFLAGS = -g -ffunction-sections -fdata-sections \
+CPPFLAGS = -g -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
 	-O -Wall -W $(INCLUDES) $(DEFINES) -pthread
 
 endif  # .....................................................................
@@ -149,21 +168,20 @@ endif  # .....................................................................
 LINKFLAGS := -Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
 
 #-----------------------------------------------------------------------------
-
 # combine all the soruces...
 INCLUDES  += -I$(QP_PORT_DIR)
 LIB_DIRS  += -L$(QP_PORT_DIR)/$(BIN_DIR)
-LIBS      += -lpthread -lqp
+LIBS      += -lpthread
 
-C_OBJS       := $(patsubst %.c,   %.o, $(C_SRCS))
-CPP_OBJS     := $(patsubst %.cpp, %.o, $(CPP_SRCS))
+C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))
+CPP_OBJS     := $(patsubst %.cpp,%.o, $(CPP_SRCS))
 
 TARGET_BIN   := $(BIN_DIR)/$(PROJECT).bin
 TARGET_EXE   := $(BIN_DIR)/$(PROJECT)
 C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
-C_DEPS_EXT   := $(patsubst %.o, %.d, $(C_OBJS_EXT))
+C_DEPS_EXT   := $(patsubst %.o,%.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
-CPP_DEPS_EXT := $(patsubst %.o, %.d, $(CPP_OBJS_EXT))
+CPP_DEPS_EXT := $(patsubst %.o,%.d, $(CPP_OBJS_EXT))
 
 # create $(BIN_DIR) if it does not exist
 ifeq ("$(wildcard $(BIN_DIR))","")
@@ -180,7 +198,7 @@ all: $(TARGET_EXE)
 $(TARGET_BIN): $(TARGET_EXE)
 	$(BIN) -O binary $< $@
 
-$(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT) $(RC_OBJS_EXT)
+$(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
@@ -219,3 +237,4 @@ show:
 	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
 	@echo LIB_DIRS = $(LIB_DIRS)
 	@echo LIBS     = $(LIBS)
+

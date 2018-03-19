@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.4
-* Last updated on  2018-01-16
+* Last updated for version 6.2.0
+* Last updated on  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -92,3 +92,4 @@ void QS_u64(uint8_t format, uint64_t d) {
 }
 
 #endif /* (QS_OBJ_PTR_SIZE == 8) || (QS_FUN_PTR_SIZE == 8) */
+

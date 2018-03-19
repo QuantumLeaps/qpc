@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.6
-* Last updated on  2017-08-01
+* Last updated for version 6.2.0
+* Last updated on  2018-03-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -63,15 +63,14 @@ Q_DEFINE_THIS_MODULE("qf_qeq")
 * @note The actual capacity of the queue is qLen + 1, because of the extra
 * location forntEvt.
 *
-* @note This function is also used to initialize the event queues of active
+* @note
+* This function is also used to initialize the event queues of active
 * objects in the built-int QV and QK kernels, as well as other
 * QP ports to OSes/RTOSes that do provide a suitable message queue.
 */
 void QEQueue_init(QEQueue * const me, QEvt const *qSto[],
                   uint_fast16_t const qLen)
 {
-    QS_CRIT_STAT_
-
     me->frontEvt = (QEvt const *)0; /* no events in the queue */
     me->ring     = &qSto[0];        /* the beginning of the ring buffer */
     me->end      = (QEQueueCtr)qLen;
@@ -81,11 +80,6 @@ void QEQueue_init(QEQueue * const me, QEvt const *qSto[],
     }
     me->nFree    = (QEQueueCtr)(qLen + (uint_fast16_t)1); /*+1 for frontEvt */
     me->nMin     = me->nFree;
-
-    QS_BEGIN_(QS_QF_EQUEUE_INIT, QS_priv_.locFilter[EQ_OBJ], me)
-        QS_OBJ_(me);          /* this QEQueue object */
-        QS_EQC_(me->end);     /* the length of the queue */
-    QS_END_()
 }
 
 /**
@@ -134,6 +128,10 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
     if (((margin == QF_NO_MARGIN) && (nFree > (QEQueueCtr)0))
         || (nFree > (QEQueueCtr)margin))
     {
+        /* is it a dynamic event? */
+        if (e->poolId_ != (uint8_t)0) {
+            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        }
 
         QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_FIFO,
                          QS_priv_.locFilter[EQ_OBJ], me)
@@ -144,11 +142,6 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
             QS_EQC_(nFree);                  /* number of free entries */
             QS_EQC_(me->nMin);               /* min number of free entries */
         QS_END_NOCRIT_()
-
-        /* is it a pool event? */
-        if (e->poolId_ != (uint8_t)0) {
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
-        }
 
         --nFree; /* one free entry just used up */
         me->nFree = nFree; /* update the volatile */
@@ -208,12 +201,15 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
 * The LIFO policy should be used only with great __caution__, because
 * it alters the order of events in the queue.
 *
-* @note This function can be called from any task context or ISR context.
+* @note
+* This function can be called from any task context or ISR context.
 *
-* @note this function is used for the "raw" thread-safe queues and __not__
+* @note
+* this function is used for the "raw" thread-safe queues and __not__
 * for the queues of active objects.
 *
-* @sa QEQueue_post(), QEQueue_get(), QActive_defer()
+* @sa
+* QEQueue_post(), QEQueue_get(), QActive_defer()
 */
 void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
     QEvt const *frontEvt; /* temporary to avoid UB for volatile access */
@@ -226,6 +222,11 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
     /** @pre the queue must be able to accept the event (cannot overflow) */
     Q_REQUIRE_ID(300, nFree != (QEQueueCtr)0);
 
+    /* is it a dynamic event? */
+    if (e->poolId_ != (uint8_t)0) {
+        QF_EVT_REF_CTR_INC_(e);  /* increment the reference counter */
+    }
+
     QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_LIFO, QS_priv_.locFilter[EQ_OBJ], me)
         QS_TIME_();              /* timestamp */
         QS_SIG_(e->sig);         /* the signal of this event */
@@ -234,11 +235,6 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
         QS_EQC_(nFree);          /* number of free entries */
         QS_EQC_(me->nMin);       /* min number of free entries */
     QS_END_NOCRIT_()
-
-    /* is it a pool event? */
-    if (e->poolId_ != (uint8_t)0) {
-        QF_EVT_REF_CTR_INC_(e);  /* increment the reference counter */
-    }
 
     --nFree;  /* one free entry just used up */
     me->nFree = nFree; /* update the volatile */
@@ -268,13 +264,16 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
 *
 * @param[in,out] me     pointer (see @ref oop)
 *
-* @returns pointer to event at the front of the queue, if the queue is
+* @returns
+* pointer to event at the front of the queue, if the queue is
 * not empty and NULL if the queue is empty.
 *
-* @note this function is used for the "raw" thread-safe queues and __not__
+* @note
+* this function is used for the "raw" thread-safe queues and __not__
 * for the queues of active objects.
 *
-* @sa QEQueue_post(), QEQueue_postLIFO(), QActive_recall()
+* @sa
+* QEQueue_post(), QEQueue_postLIFO(), QActive_recall()
 */
 QEvt const *QEQueue_get(QEQueue * const me) {
     QEvt const *e;
@@ -323,3 +322,4 @@ QEvt const *QEQueue_get(QEQueue * const me) {
     QF_CRIT_EXIT_();
     return e;
 }
+

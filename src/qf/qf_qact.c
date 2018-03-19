@@ -12,14 +12,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 5.4.0
-* Last updated on  2015-03-26
+* Last updated for version 6.2.0
+* Last updated on  2018-03-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) 2002-2018 Quantum Leaps, www.state-machine.com.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -40,8 +40,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* https://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -79,3 +79,4 @@ void QActive_ctor(QActive * const me, QStateHandler initial) {
     QHsm_ctor(&me->super, initial); /* explicitly call superclass' ctor */
     me->super.vptr = &vtbl.super; /* hook the vptr to QActive virtual table */
 }
+

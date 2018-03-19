@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, POSIX
-* Last updated for version 5.8.0
-* Last updated on  2016-11-30
+* Last updated for version 6.2.0
+* Last updated on  2018-03-10
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -56,20 +56,31 @@ static uint32_t l_rnd;        /* random seed */
 #endif
 
 /* BSP functions ===========================================================*/
-void BSP_init() {
+void BSP_init(int argc, char **argv) {
+
+#ifndef Q_SPY
+    (void)argc; /* unused parameter */
+    (void)argv; /* unused parameter */
+#endif
 
     printf("Dining Philosophers Problem example"
            "\nQP %s\n"
-           "Press 'p' to pause\n"
-           "Press 's' to serve\n"
+           "Press p to pause\n"
+           "Press s to serve\n"
            "Press ESC to quit...\n",
            QP_versionStr);
 
     BSP_randomSeed(1234U);
 
-    Q_ALLEGE(QS_INIT((void *)0));
+    Q_ALLEGE(QS_INIT(argc > 1 ? argv[1] : (void *)0));
     QS_OBJ_DICTIONARY(&l_clock_tick); /* must be called *after* QF_init() */
     QS_USR_DICTIONARY(PHILO_STAT);
+
+    /* setup the QS filters... */
+    QS_FILTER_ON(QS_SM_RECORDS); // state machine records
+    QS_FILTER_ON(QS_UA_RECORDS); // all usedr records
+    //QS_FILTER_ON(QS_MUTEX_LOCK);
+    //QS_FILTER_ON(QS_MUTEX_UNLOCK);
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {
@@ -122,7 +133,7 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
-    struct timeval timeout = { 0 };  /* timeout for select() */
+    struct timeval timeout = { 0, 0 };  /* timeout for select() */
     fd_set con; /* FD set representing the console */
 
     QF_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
@@ -149,59 +160,272 @@ void Q_onAssert(char const *module, int loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
-    (void)module;
-    (void)loc;
+    printf("Assertion failed in %s:%d", module, loc);
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
-    fprintf(stderr, "Assertion failed in %s, loc %d", module, loc);
     exit(-1);
 }
 
-/* QS callbacks ============================================================*/
-#ifdef Q_SPY  /* Spy build configuration? */
+//============================================================================
+#ifdef Q_SPY
 
-#include "qspy.h"
+/*
+* NOTE:
+* The QS target-resident component is implemented in two different ways:
+* 1. Output to the TCP/IP socket, which requires a separate QSPY host
+*    application running; or
+* 2. Direct linking with the QSPY host application to perform direct output
+*    to the console from the running application. (This option requires
+*    the QSPY source code, which is part of the QTools collection).
+*
+* The two options are selected by the following QS_IMPL_OPTION macro.
+* Please set the value of this macro to either 1 or 2:
+*/
+#define QS_IMPL_OPTION 1
 
+/*--------------------------------------------------------------------------*/
+#if (QS_IMPL_OPTION == 1)
+
+/*
+* 1. Output to the TCP/IP socket, which requires a separate QSPY host
+*    application running. This option does not link to the QSPY code.
+*/
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <errno.h>
+#include <time.h>
+
+#define QS_TX_SIZE    (4*1024)
+#define QS_RX_SIZE    1024
+#define QS_IMEOUT_MS  100
+#define INVALID_SOCKET -1
+
+/* local variables .........................................................*/
+static void *idleThread(void *par); // the expected P-Thread signature
+static int l_sock = INVALID_SOCKET;
 static uint8_t l_running;
 
 /*..........................................................................*/
-static void *idleThread(void *par) { /* the expected P-Thread signature */
-    (void)par;
+uint8_t QS_onStartup(void const *arg) {
+    static uint8_t qsBuf[QS_TX_SIZE];   // buffer for QS-TX channel
+    static uint8_t qsRxBuf[QS_RX_SIZE]; // buffer for QS-RX channel
+    char hostName[64];
+    char const *src;
+    char *dst;
 
-    l_running = (uint8_t)1;
-    while (l_running) {
-        uint16_t nBytes = 256U;
-        uint8_t const *block;
-        struct timeval timeout =  { 0, 10000 }; /* timeout for select() */
+    uint16_t port_local  = 51234; /* default local port */
+    uint16_t port_remote = 6601;  /* default QSPY server port */
+    int sockopt_bool;
+    struct sockaddr_in sa_local;
+    struct sockaddr_in sa_remote;
+    struct hostent *host;
 
-        QF_CRIT_ENTRY(dummy);
-        block = QS_getBlock(&nBytes);
-        QF_CRIT_EXIT(dummy);
+    QS_initBuf(qsBuf, sizeof(qsBuf));
+    QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
 
-        if (block != (uint8_t *)0) {
-            QSPY_parse(block, nBytes);
-        }
-        select(0, 0, 0, 0, &timeout);   /* sleep for a while */
+    src = (arg != (void const *)0)
+          ? (char const *)arg
+          : "localhost";
+    dst = hostName;
+    while ((*src != '\0')
+           && (*src != ':')
+           && (dst < &hostName[sizeof(hostName)]))
+    {
+        *dst++ = *src++;
     }
-    return (void *)0;  /* return success */
+    *dst = '\0';
+    if (*src == ':') {
+        port_remote = (uint16_t)strtoul(src + 1, NULL, 10);
+    }
+
+    printf("<TARGET> Connecting to QSPY on Host=%s:%d...\n",
+           hostName, port_remote);
+
+    l_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); /* TCP socket */
+    if (l_sock == INVALID_SOCKET){
+        printf("<TARGET> ERROR   cannot create client socket, errno=%d\n",
+               errno);
+        goto error;
+    }
+
+    /* configure the socket */
+    sockopt_bool = 1;
+    setsockopt(l_sock, SOL_SOCKET, SO_REUSEADDR,
+               &sockopt_bool, sizeof(sockopt_bool));
+
+    sockopt_bool = 0;
+    setsockopt(l_sock, SOL_SOCKET, SO_LINGER,
+               &sockopt_bool, sizeof(sockopt_bool));
+
+    /* local address:port */
+    memset(&sa_local, 0, sizeof(sa_local));
+    sa_local.sin_family = AF_INET;
+    sa_local.sin_port = htons(port_local);
+    host = gethostbyname(""); /* local host */
+    //sa_local.sin_addr.s_addr = inet_addr(
+    //    inet_ntoa(*(struct in_addr *)*host->h_addr_list));
+    //if (bind(l_sock, &sa_local, sizeof(sa_local)) == -1) {
+    //    printf("<TARGET> Cannot bind to the local port Err=0x%08X\n",
+    //           WSAGetLastError());
+    //    /* no error */
+    //}
+
+    /* remote hostName:port (QSPY server socket) */
+    host = gethostbyname(hostName);
+    if (host == NULL) {
+        printf("<TARGET> ERROR   cannot resolve host Name=%s:%d,errno=%d\n",
+               hostName, port_remote, errno);
+        goto error;
+    }
+    memset(&sa_remote, 0, sizeof(sa_remote));
+    sa_remote.sin_family = AF_INET;
+    memcpy(&sa_remote.sin_addr, host->h_addr, host->h_length);
+    sa_remote.sin_port = htons(port_remote);
+
+    /* try to connect to the QSPY server */
+    if (connect(l_sock, (struct sockaddr *)&sa_remote, sizeof(sa_remote))
+        == -1)
+    {
+        printf("<TARGET> ERROR   cannot connect to QSPY on Host="
+               "%s:%d,errno=%d\n", hostName, port_remote, errno);
+        goto error;
+    }
+
+    printf("<TARGET> Connected  to QSPY on Host=%s:%d\n",
+           hostName, port_remote);
+
+    pthread_attr_t attr;
+    struct sched_param param;
+    pthread_t idle;
+
+    // SCHED_FIFO corresponds to real-time preemptive priority-based
+    // scheduler.
+    // NOTE: This scheduling policy requires the superuser priviledges
+
+    pthread_attr_init(&attr);
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+    param.sched_priority = sched_get_priority_min(SCHED_FIFO);
+
+    pthread_attr_setschedparam(&attr, &param);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
+    if (pthread_create(&idle, &attr, &idleThread, 0) != 0) {
+        // Creating the p-thread with the SCHED_FIFO policy failed.
+        // Most probably this application has no superuser privileges,
+        // so we just fall back to the default SCHED_OTHER policy
+        // and priority 0.
+        pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
+        param.sched_priority = 0;
+        pthread_attr_setschedparam(&attr, &param);
+        if (pthread_create(&idle, &attr, &idleThread, 0) == 0) {
+            return false;
+        }
+    }
+    pthread_attr_destroy(&attr);
+
+    return (uint8_t)1;  // success
+
+error:
+    return (uint8_t)0; // failure
 }
 /*..........................................................................*/
-uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsBuf[4*1024];  // 4K buffer for Quantum Spy
+void QS_onCleanup(void) {
+    l_running = (uint8_t)0;
+    if (l_sock != INVALID_SOCKET) {
+        close(l_sock);
+        l_sock = INVALID_SOCKET;
+    }
+    //printf("<TARGET> Disconnected from QSPY via TCP/IP\n");
+}
+/*..........................................................................*/
+void QS_onFlush(void) {
+    if (l_sock != INVALID_SOCKET) {  // socket initialized?
+        uint16_t nBytes = QS_TX_SIZE;
+        uint8_t const *data;
+        while ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+            send(l_sock, (char const *)data, nBytes, 0);
+            nBytes = QS_TX_SIZE;
+        }
+    }
+}
+/*..........................................................................*/
+static void *idleThread(void *par) { // the expected P-Thread signature
+    fd_set readSet;
+    FD_ZERO(&readSet);
 
-    (void)arg;
-    QS_initBuf(qsBuf, sizeof(qsBuf));
+    (void)par; /* unused parameter */
+    l_running = (uint8_t)1;
+    while (l_running) {
+        static struct timeval timeout = {
+            (long)0, (long)(QS_IMEOUT_MS * 1000)
+        };
+        int nrec;
+        uint16_t nBytes;
+        uint8_t const *block;
 
-    printf("QSPY_config(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d)\n",
-           (int)QP_VERSION,         // version
-           (int)QS_OBJ_PTR_SIZE,    // objPtrSize
-           (int)QS_FUN_PTR_SIZE,    // funPtrSize
-           (int)QS_TIME_SIZE,       // tstampSize
-           (int)Q_SIGNAL_SIZE,      // sigSize,
-           (int)QF_EVENT_SIZ_SIZE,  // evtSize
-           (int)QF_EQUEUE_CTR_SIZE, // queueCtrSize
-           (int)QF_MPOOL_CTR_SIZE,  // poolCtrSize
-           (int)QF_MPOOL_SIZ_SIZE,  // poolBlkSize
-           (int)QF_TIMEEVT_CTR_SIZE);
+        FD_SET(l_sock, &readSet);   /* the socket */
+
+        /* selective, timed blocking on the TCP/IP socket... */
+        timeout.tv_usec = (long)(QS_IMEOUT_MS * 1000);
+        nrec = select(l_sock + 1, &readSet,
+                      (fd_set *)0, (fd_set *)0, &timeout);
+        if (nrec < 0) {
+            printf("    <CONS> ERROR    select() errno=%d\n", errno);
+            QS_onCleanup();
+            exit(-2);
+        }
+        else if (nrec > 0) {
+            if (FD_ISSET(l_sock, &readSet)) { /* socket ready to read? */
+                uint8_t buf[QS_RX_SIZE];
+                int status = recv(l_sock, (char *)buf, (int)sizeof(buf), 0);
+                while (status > 0) { /* any data received? */
+                    uint8_t *pb;
+                    int i = (int)QS_rxGetNfree();
+                    if (i > status) {
+                        i = status;
+                    }
+                    status -= i;
+                    /* reorder the received bytes into QS-RX buffer */
+                    for (pb = &buf[0]; i > 0; --i, ++pb) {
+                        QS_RX_PUT(*pb);
+                    }
+                    QS_rxParse(); /* parse all n-bytes of data */
+                }
+            }
+        }
+
+        nBytes = QS_TX_SIZE;
+        //QF_CRIT_ENTRY(dummy);
+        block = QS_getBlock(&nBytes);
+        //QF_CRIT_EXIT(dummy);
+
+        if (block != (uint8_t *)0) {
+            send(l_sock, (char const *)block, nBytes, 0);
+        }
+    }
+
+    return 0; // return success
+}
+
+/*--------------------------------------------------------------------------*/
+#elif (QS_IMPL_OPTION == 2)
+
+/*
+* 2. Direct linking with the QSPY host application to perform direct output
+*    to the console from the running application. (This option requires
+*    the QSPY source code, which is part of the QTools collection).
+*/
+#include "qspy.h"
+
+/*..........................................................................*/
+static void *idleThread(void *par); // the expected P-Thread signature
+static uint8_t l_running;
+
+/*..........................................................................*/
+bool QS_onStartup(void const */*arg*/) {
+    static uint8_t qsBuf[4*1024]; // 4K buffer for Quantum Spy
+    initBuf(qsBuf, sizeof(qsBuf));
 
     QSPY_config(QP_VERSION,         // version
                 QS_OBJ_PTR_SIZE,    // objPtrSize
@@ -217,54 +441,36 @@ uint8_t QS_onStartup(void const *arg) {
                 (void *)0,
                 (QSPY_CustParseFun)0); // customized parser function
 
-    /* set up the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
+    pthread_attr_t attr;
+    struct sched_param param;
+    pthread_t idle;
 
-    QS_FILTER_ON(QS_QF_ACTIVE_POST_FIFO);
-    QS_FILTER_ON(QS_QF_ACTIVE_POST_LIFO);
-    QS_FILTER_ON(QS_QF_PUBLISH);
+    // SCHED_FIFO corresponds to real-time preemptive priority-based
+    // scheduler.
+    // NOTE: This scheduling policy requires the superuser priviledges
 
-    QS_FILTER_ON(PHILO_STAT);
+    pthread_attr_init(&attr);
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+    param.sched_priority = sched_get_priority_min(SCHED_FIFO);
 
-    {
-        pthread_attr_t attr;
-        struct sched_param param;
-        pthread_t idle;
+    pthread_attr_setschedparam(&attr, &param);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-        /* SCHED_FIFO corresponds to real-time preemptive priority-based
-        * scheduler.
-        * NOTE: This scheduling policy requires the superuser priviledges
-        */
-        pthread_attr_init(&attr);
-        pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
-        param.sched_priority = sched_get_priority_min(SCHED_FIFO);
-
+    if (pthread_create(&idle, &attr, &idleThread, 0) != 0) {
+        // Creating the p-thread with the SCHED_FIFO policy failed.
+        // Most probably this application has no superuser privileges,
+        // so we just fall back to the default SCHED_OTHER policy
+        // and priority 0.
+        pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
+        param.sched_priority = 0;
         pthread_attr_setschedparam(&attr, &param);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-
-        if (pthread_create(&idle, &attr, &idleThread, 0) != 0) {
-               /* Creating the p-thread with the SCHED_FIFO policy failed.
-               * Most probably this application has no superuser privileges,
-               * so we just fall back to the default SCHED_OTHER policy
-               * and priority 0.
-               */
-            pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
-            param.sched_priority = 0;
-            pthread_attr_setschedparam(&attr, &param);
-            Q_ALLEGE(pthread_create(&idle, &attr, &idleThread, 0) == 0);
+        if (pthread_create(&idle, &attr, &idleThread, 0) == 0) {
+            return false;
         }
-        pthread_attr_destroy(&attr);
     }
+    pthread_attr_destroy(&attr);
 
-    return (uint8_t)1;
+    return true;
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {
@@ -273,39 +479,71 @@ void QS_onCleanup(void) {
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    for (;;) {
-        uint16_t nBytes = 1024;
-        uint8_t const *block;
-
-        QF_CRIT_ENTRY(dummy);
-        block = QS_getBlock(&nBytes);
-        QF_CRIT_EXIT(dummy);
-
-        if (block != (uint8_t const *)0) {
-            QSPY_parse(block, nBytes);
-            nBytes = 1024;
-        }
-        else {
-            break;
-        }
+    uint16_t nBytes = 1024U;
+    uint8_t const *block;
+    while ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+        QSPY_parse(block, nBytes);
+        nBytes = 1024U;
     }
-}
-/*..........................................................................*/
-QSTimeCtr QS_onGetTime(void) {
-    return (QSTimeCtr)clock();  // see NOTE01
 }
 /*..........................................................................*/
 void QSPY_onPrintLn(void) {
     fputs(QSPY_line, stdout);
     fputc('\n', stdout);
 }
+/*..........................................................................*/
+static void *idleThread(void *par) { // the expected P-Thread signature
+    (void)par;
 
-/*****************************************************************************
-* NOTE01:
-* clock() is the most portable facility, but might not provide the desired
-* granularity. Other, less-portable alternatives are clock_gettime(), rdtsc(),
-* or gettimeofday().
-*/
+    l_running = (uint8_t)1;
+    while (l_running) {
+        uint16_t nBytes = 256U;
+        uint8_t const *block;
+        struct timeval timeout = { 0, 10000 }; // timeout for select()
 
-#endif /* Q_SPY */
+        QF_CRIT_ENTRY(dummy);
+        block = QS_getBlock(&nBytes);
+        QF_CRIT_EXIT(dummy);
+
+        if (block != (uint8_t *)0) {
+            QSPY_parse(block, nBytes);
+        }
+        select(0, 0, 0, 0, &timeout);   // sleep for a while
+    }
+    return 0; // return success
+}
+
+#else
+#error Incorrect value of the QS_IMPL_OPTION macro
+#endif // QS_IMPL_OPTION
+
+//............................................................................
+QSTimeCtr QS_onGetTime(void) {
+    return (QSTimeCtr)clock(); // see NOTE01
+}
+//............................................................................
+void QS_onReset(void) {
+    QS_onCleanup();
+    exit(0);
+}
+//............................................................................
+//! callback function to execute a user command (to be implemented in BSP)
+void QS_onCommand(uint8_t cmdId, uint32_t param1,
+                   uint32_t param2, uint32_t param3)
+{
+    (void)cmdId;  // unused parameter
+    (void)param1; // unused parameter
+    (void)param2; // unused parameter
+    (void)param3; // unused parameter
+    //TBD
+}
+
+//****************************************************************************
+// NOTE01:
+// clock() is the most portable facility, but might not provide the desired
+// granularity. Other, less-portable alternatives are clock_gettime(),
+// rdtsc(), or gettimeofday().
+//
+
+#endif // Q_SPY
 /*--------------------------------------------------------------------------*/

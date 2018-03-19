@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: main task for emWin/uC/GUI, Win32 simulation
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Nov 08, 2013
+* Last Updated for Version: 6.2.0
+* Date of the Last Update:  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,11 +28,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          https://state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* https://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
-#include "qp_port.h"
+#include "qpc.h"
 #include "bsp.h"
 #include "dpp.h"
                                                             /* GUI includes */

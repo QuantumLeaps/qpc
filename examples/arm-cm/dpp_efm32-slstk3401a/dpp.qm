@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.0.0" links="0">
+<model version="4.1.2" links="0">
  <documentation>Dining Philosopher Problem example
 NOTE: Requries QP5.</documentation>
  <framework name="qpc"/>
@@ -98,7 +98,8 @@ Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
      <entry>QTimeEvt_armX(&amp;me-&gt;timeEvt, EAT_TIME, 0U);</entry>
      <exit>TableEvt *pe = Q_NEW(TableEvt, DONE_SIG);
 pe-&gt;philoNum = PHILO_ID(me);
-QF_PUBLISH(&amp;pe-&gt;super, me);</exit>
+QF_PUBLISH(&amp;pe-&gt;super, me);
+QTimeEvt_disarm(&amp;me-&gt;timeEvt);</exit>
      <tran trig="TIMEOUT" target="../../1">
       <tran_glyph conn="2,51,3,1,22,-41,-5">
        <action box="0,-2,6,2"/>

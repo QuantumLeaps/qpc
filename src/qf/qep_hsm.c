@@ -4,14 +4,14 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.4
-* Last updated on  2018-01-16
+* Last updated for version 6.2.0
+* Last updated on  2018-03-18
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -464,7 +464,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
 
                             /* entry path must not overflow */
                             Q_ASSERT_ID(510,
-                                      ip < (int_fast8_t)QHSM_MAX_NEST_DEPTH_);
+                                ip < (int_fast8_t)QHSM_MAX_NEST_DEPTH_);
                             --ip; /* do not enter the source */
                             r = (QState)Q_RET_HANDLED; /* terminate loop */
                         }
@@ -479,7 +479,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
 
                         /* entry path must not overflow */
                         Q_ASSERT_ID(520,
-                                    ip < (int_fast8_t)QHSM_MAX_NEST_DEPTH_);
+                            ip < (int_fast8_t)QHSM_MAX_NEST_DEPTH_);
 
                         QEP_EXIT_(s); /* exit the source */
 
@@ -556,7 +556,8 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
 * @param[in] me    pointer (see @ref oop)
 * @param[in] state pointer to the state-handler function to be tested
 *
-* @returns 'true' if the HSM "is in" the @p state and 'false' otherwise
+* @returns
+*'true' if the HSM "is in" the @p state and 'false' otherwise
 */
 bool QHsm_isIn(QHsm * const me, QStateHandler const state) {
     bool inState = false; /* assume that this HSM is not in 'state' */
@@ -630,3 +631,4 @@ QStateHandler QHsm_childState_(QHsm * const me,
 
     return child; /* return the child */
 }
+

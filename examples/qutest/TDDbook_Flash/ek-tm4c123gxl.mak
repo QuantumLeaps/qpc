@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EK-TM4C123GXL, QUTEST, GNU-ARM
-# Last Updated for Version: 6.1.1
-# Date of the Last Update:  2018-02-18
+# Last Updated for Version: 6.1.2
+# Date of the Last Update:  2018-03-12
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -118,6 +118,7 @@ QP_SRCS := \
 	qep_hsm.c \
 	qep_msm.c \
 	qf_act.c \
+	qf_actq.c \
 	qf_defer.c \
 	qf_dyn.c \
 	qf_mem.c \

@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: DPP example, EFM32-SLSTK3401A board, preemptive QK kernel
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-4-13
+* Product: DPP example, BSP for QUTest
+* Last Updated for Version: 6.2.0
+* Date of the Last Update:  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -46,8 +46,8 @@ enum {
 };
 
 /*..........................................................................*/
-void BSP_init(void) {
-    Q_ALLEGE(QS_INIT((void *)0));
+void BSP_init(int argc, char **argv) {
+    Q_ALLEGE(QS_INIT(argc <= 1 ? (void *)0 : argv[1]) != (uint8_t)0);
 
     QS_FUN_DICTIONARY(&BSP_displayPaused);
     QS_FUN_DICTIONARY(&BSP_random);

@@ -5,14 +5,14 @@
 * QXMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 6.1.1
-* Last updated on  2018-02-22
+* Last updated for version 6.2.0
+* Last updated on  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -446,3 +446,4 @@ void QXMutex_unlock(QXMutex * const me) {
     }
     QF_CRIT_EXIT_();
 }
+
