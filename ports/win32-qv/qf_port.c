@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-03-06
+* Last updated for version 6.2.0
+* Last updated on  2018-04-05
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -178,15 +178,14 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
 {
-    Q_REQUIRE_ID(700, ((uint_fast8_t)0 < prio) /* priority must be in range */
+    Q_REQUIRE_ID(600, ((uint_fast8_t)0 < prio) /* priority must be in range */
                  && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
                  && (stkSto == (void *)0));    /* statck storage must NOT...
                                                * ... be provided */
 
+    QEQueue_init(&me->eQueue, qSto, qLen);
     me->prio = prio; /* set QF priority of this AO before adding it to QF */
     QF_add_(me);     /* make QF aware of this active object */
-
-    QEQueue_init(&me->eQueue, qSto, qLen);
 
     QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */

@@ -1,6 +1,6 @@
 /**
 * @file
-* @brief QF/C port to POSIX/P-threads, GNU-C compiler
+* @brief QF/C port to POSIX API with cooperative QV scheduler (posix-qv)
 * @ingroup ports
 * @cond
 ******************************************************************************
@@ -54,12 +54,15 @@ Q_DEFINE_THIS_MODULE("qf_port")
 
 /* Global objects ==========================================================*/
 pthread_mutex_t QF_pThreadMutex_;
+QPSet  QV_readySet_;        /* QV-ready set of active objects */
+pthread_cond_t QV_condVar_; /* Cond.var. to signal events */
 
 /* Local objects ===========================================================*/
-static pthread_mutex_t l_startupMutex;
 static bool l_isRunning;
 static struct timespec l_tick;
 enum { NANOSLEEP_NSEC_PER_SEC = 1000000000 }; /* see NOTE05 */
+
+static void *ticker_thread(void *arg);
 
 /* QF functions ============================================================*/
 void QF_init(void) {
@@ -71,14 +74,6 @@ void QF_init(void) {
 
     /* init the global mutex with the default non-recursive initializer */
     pthread_mutex_init(&QF_pThreadMutex_, NULL);
-
-    /* init the startup mutex with the default non-recursive initializer */
-    pthread_mutex_init(&l_startupMutex, NULL);
-
-    /* lock the startup mutex to block any active objects started before
-    * calling QF_run()
-    */
-    pthread_mutex_lock(&l_startupMutex);
 
     /* clear the internal QF variables, so that the framework can (re)start
     * correctly even if the startup code is not called to clear the
@@ -107,49 +102,114 @@ int_t QF_run(void) {
         /* setting priority failed, probably due to insufficient privieges */
     }
 
-    /* unlock the startup mutex to unblock any active objects started before
-    * calling QF_run()
-    */
-    pthread_mutex_unlock(&l_startupMutex);
+    l_isRunning = true; /* QF is running */
 
-    l_isRunning = true;
-    while (l_isRunning) { /* the clock tick loop... */
-        QF_onClockTick(); /* clock tick callback (must call QF_TICK_X()) */
+    /* system clock tick configured? */
+    if ((l_tick.tv_sec != 0) || (l_tick.tv_nsec != 0)) {
+        pthread_attr_t attr;
+        struct sched_param param;
+        pthread_t idle;
 
-        nanosleep(&l_tick, NULL); /* sleep for the number of ticks, NOTE05 */
+        /* SCHED_FIFO corresponds to real-time preemptive priority-based
+        * scheduler.
+        * NOTE: This scheduling policy requires the superuser priviledges
+        */
+        pthread_attr_init(&attr);
+        pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+        param.sched_priority = sched_get_priority_min(SCHED_FIFO);
+
+        pthread_attr_setschedparam(&attr, &param);
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
+        if (pthread_create(&idle, &attr, &ticker_thread, 0) != 0) {
+            /* Creating the p-thread with the SCHED_FIFO policy failed.
+            * Most probably this application has no superuser privileges,
+            * so we just fall back to the default SCHED_OTHER policy
+            * and priority 0.
+            */
+            pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
+            param.sched_priority = 0;
+            pthread_attr_setschedparam(&attr, &param);
+            if (pthread_create(&idle, &attr, &ticker_thread, 0) == 0) {
+                return false;
+            }
+        }
+        pthread_attr_destroy(&attr);
     }
-    QF_onCleanup(); /* invoke cleanup callback */
-    pthread_mutex_destroy(&l_startupMutex);
-    pthread_mutex_destroy(&QF_pThreadMutex_);
+
+    /* the combined event-loop and background-loop of the QV kernel */
+    QF_INT_DISABLE();
+    while (l_isRunning) {
+        QEvt const *e;
+        QActive *a;
+        uint_fast8_t p;
+
+        /* find the maximum priority AO ready to run */
+        if (QPSet_notEmpty(&QV_readySet_)) {
+
+            QPSet_findMax(&QV_readySet_, p);
+            a = QF_active_[p];
+            QF_INT_ENABLE();
+
+            /* the active object 'a' must still be registered in QF
+            * (e.g., it must not be stopped)
+            */
+            Q_ASSERT_ID(320, a != (QActive *)0);
+
+            /* perform the run-to-completion (RTS) step...
+            * 1. retrieve the event from the AO's event queue, which by this
+            *    time must be non-empty and The "Vanialla" kernel asserts it.
+            * 2. dispatch the event to the AO's state machine.
+            * 3. determine if event is garbage and collect it if so
+            */
+            e = QActive_get_(a);
+            QHSM_DISPATCH(&a->super, e);
+            QF_gc(e);
+
+            QF_INT_DISABLE();
+
+            if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
+                QPSet_remove(&QV_readySet_, p);
+            }
+        }
+        else {
+            // the QV kernel in embedded systems calls here the QV_onIdle()
+            // callback. However, the POSIX-QV port does not do busy-waiting
+            // for events. Instead, the POSIX-QV port efficiently waits until
+            // QP events become available.
+            //
+            while (QPSet_isEmpty(&QV_readySet_)) {
+                pthread_cond_wait(&QV_condVar_, &QF_pThreadMutex_);
+            }
+        }
+    }
+    QF_INT_ENABLE();
+    QF_onCleanup();  /* cleanup callback */
+    QS_EXIT();       /* cleanup the QSPY connection */
+
+    pthread_cond_destroy(&QV_condVar_);       // cleanup the condition variable
+    pthread_mutex_destroy(&QF_pThreadMutex_); // cleanup the global mutex
 
     return (int_t)0; /* return success */
 }
 /*..........................................................................*/
 void QF_setTickRate(uint32_t ticksPerSec) {
-    Q_REQUIRE_ID(300, ticksPerSec != (uint32_t)0);
-    l_tick.tv_nsec = NANOSLEEP_NSEC_PER_SEC / ticksPerSec;
+    if (ticksPerSec != (uint32_t)0) {
+        l_tick.tv_nsec = NANOSLEEP_NSEC_PER_SEC / ticksPerSec;
+    }
+    else {
+        l_tick.tv_nsec = 0; /* means NO system clock tick */
+    }
 }
 /*..........................................................................*/
 void QF_stop(void) {
-    l_isRunning = false; /* stop the loop in QF_run() */
-}
-/*..........................................................................*/
-static void *thread_routine(void *arg) { /* the expected POSIX signature */
-    QActive *act = (QActive *)arg;
+    uint_fast8_t p;
+    l_isRunning = false; /* terminate the main event-loop thread */
 
-    /* block this thread until the startup mutex is unlocked from QF_run() */
-    pthread_mutex_lock(&l_startupMutex);
-    pthread_mutex_unlock(&l_startupMutex);
-
-    /* loop until m_thread is cleared in QActive_stop() */
-    do {
-        QEvt const *e = QActive_get_(act); /* wait for the event */
-        QHSM_DISPATCH(&act->super, e);     /* dispatch to the HSM */
-        QF_gc(e);    /* check if the event is garbage, and collect it if so */
-    } while (act->thread != (uint8_t)0);
-    QF_remove_(act); /* remove this object from the framework */
-    pthread_cond_destroy(&act->osObject); /* cleanup the condition variable */
-    return (void *)0; /* return success */
+    /* unblock the event-loop so it can terminate */
+    p = (uint_fast8_t)1;
+    QPSet_insert(&QV_readySet_, p);
+    pthread_cond_signal(&QV_condVar_);
 }
 /*..........................................................................*/
 void QActive_start_(QActive * const me, uint_fast8_t prio,
@@ -157,57 +217,34 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
 {
-    pthread_t thread;
-    pthread_attr_t attr;
-    struct sched_param param;
-
-    /* p-threads allocate stack internally */
-    Q_REQUIRE_ID(600, stkSto == (void *)0);
+    Q_REQUIRE_ID(600, ((uint_fast8_t)0 < prio) /* priority...*/
+        && (prio <= (uint_fast8_t)QF_MAX_ACTIVE) /*... in range */
+        && (stkSto == (void *)0));    /* statck storage must NOT...
+                                       * ... be provided */
 
     QEQueue_init(&me->eQueue, qSto, qLen);
-    pthread_cond_init(&me->osObject, 0);
-
     me->prio = (uint8_t)prio;
     QF_add_(me); /* make QF aware of this active object */
 
     QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
 
-    /* SCHED_FIFO corresponds to real-time preemptive priority-based scheduler
-    * NOTE: This scheduling policy requires the superuser privileges
-    */
-    pthread_attr_init(&attr);
-    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
-
-    /* see NOTE04 */
-    param.sched_priority = prio
-                           + (sched_get_priority_max(SCHED_FIFO)
-                              - QF_MAX_ACTIVE - 3);
-
-    pthread_attr_setschedparam(&attr, &param);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-
-    if (stkSize == 0U) {
-        /* set the allowed minimum */
-        stkSize = (uint_fast16_t)PTHREAD_STACK_MIN;
-    }
-    pthread_attr_setstacksize(&attr, (size_t)stkSize);
-
-    if (pthread_create(&thread, &attr, &thread_routine, me) != 0) {
-        /* Creating the p-thread with the SCHED_FIFO policy failed. Most
-        * probably this application has no superuser privileges, so we just
-        * fall back to the default SCHED_OTHER policy and priority 0.
-        */
-        pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
-        param.sched_priority = 0;
-        pthread_attr_setschedparam(&attr, &param);
-        Q_ALLEGE(pthread_create(&thread, &attr, &thread_routine, me)== 0);
-    }
-    pthread_attr_destroy(&attr);
-    me->thread = (uint8_t)1;
+    (void)stkSize; /* avoid the "unused parameter" compiler warning */
 }
 /*..........................................................................*/
 void QActive_stop(QActive * const me) {
-    me->thread = (uint8_t)0; /* stop the QActive thread loop */
+    QActive_unsubscribeAll(me);
+    QF_remove_(me);
+}
+
+//****************************************************************************
+static void *ticker_thread(void *arg) { /* for pthread_create() */
+    (void)arg; /* unused parameter */
+    while (l_isRunning) { /* the clock tick loop... */
+        QF_onClockTick(); /* clock tick callback (must call QF_TICK_X()) */
+
+        nanosleep(&l_tick, NULL); /* sleep for the number of ticks, NOTE05 */
+    }
+    return (void *)0; /* return success */
 }
 
 /*****************************************************************************

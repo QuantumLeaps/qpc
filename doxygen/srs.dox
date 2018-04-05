@@ -98,7 +98,7 @@ In contrast, event-driven active objects don't need to block, because in event-d
 
 <div class="separate"></div>
 @subsection srs_hsm Hierarchical State Machines
-As suggested in the UML specification and similar as in <span title="&quot;Real-Time Object-Oriented Modeling&quot; Wikipedia"><a class="extern" target="_blank" href="https://en.wikipedia.org/wiki/Real-Time_Object-Oriented_Modeling">ROOM</a></span>, the behavior of each Active Object can be specified by means of a <span class="label label-primary">hierarchical state machine</span> (<span title="&quot;UML state machine&quot;, Wikipedia"><a class="extern" target="_blank" href="http://en.wikipedia.org/wiki/UML_state_machine">UML statechart</a></span>), which is a very effective and elegant technique of decomposing event-driven behavior.
+As suggested in the UML specification and similar as in <span title="&quot;Real-Time Object-Oriented Modeling&quot; Wikipedia"><a class="extern" target="_blank" href="https://en.wikipedia.org/wiki/Real-Time_Object-Oriented_Modeling">ROOM</a></span>, the behavior of each Active Object can be specified by means of a <span class="label label-primary">hierarchical state machine</span> (<span title="&quot;UML state machine&quot;, Wikipedia"><a class="extern" target="_blank" href="http://en.wikipedia.org/wiki/UML_state_machine">UML statechart</a></span>), which is a very effective and elegant technique of describing event-driven behavior.
 
 
 ------------------------------------------------------------------------------
