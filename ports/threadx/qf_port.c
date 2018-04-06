@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.4
-* Last updated on  2018-01-09
+* Last updated for version 6.2.0
+* Last updated on  2018-04-06
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -75,9 +75,18 @@ static void thread_function(ULONG thread_input) { /* ThreadX signature */
     QActive_unsubscribeAll(act); /* unsubscribe from all events */
     QF_remove_(act); /* remove this active object from QF */
 
-    /* cleanup of the queue and thread must succeed */
+    /* cleanup of the queue must succeed */
     Q_ALLEGE_ID(110, tx_queue_delete(&act->eQueue) == TX_SUCCESS);
-    Q_ALLEGE_ID(120, tx_thread_delete(&act->thread) == TX_SUCCESS);
+
+    /* NOTE:
+    * The internal resources allocated for the task by the ThreadX RTOS
+    * cannot be reclaimed at this point, because ThreadX prohibits calling
+    * tx_thread_delete() from the task itself. Therefore, the burden of
+    * cleaning up after the task is left to the application to call
+    * tx_thread_delete(&act->thread) before the application can reuse
+    * the stack allocated to this thread or create a new thread
+    * to replace this one.
+    */
 }
 /*..........................................................................*/
 void QActive_start_(QActive * const me, uint_fast8_t prio,
@@ -120,6 +129,9 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 }
 /*..........................................................................*/
 void QActive_stop(QActive * const me) {
+    /* active object must stop itself and cannot be stopped by any other AO */
+    Q_REQUIRE_ID(300, &me->thread == tx_thread_identify());
+
     me->osObject = (uint8_t)0;  /* stop the thread loop */
 }
 /*..........................................................................*/
@@ -158,10 +170,10 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
                          QS_priv_.locFilter[AO_OBJ], me)
-            QS_TIME_();             /* timestamp */
-            QS_OBJ_(sender);        /* the sender object */
-            QS_SIG_(e->sig);        /* the signal of the event */
-            QS_OBJ_(me);            /* this active object (recipient) */
+            QS_TIME_();       /* timestamp */
+            QS_OBJ_(sender);  /* the sender object */
+            QS_SIG_(e->sig);  /* the signal of the event */
+            QS_OBJ_(me);      /* this active object (recipient) */
             QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_EQC_((QEQueueCtr)nFree); /* # free entries available */
             QS_EQC_((QEQueueCtr)0); /* min # free entries (unknown) */
@@ -182,10 +194,10 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)
-            QS_TIME_();             /* timestamp */
-            QS_OBJ_(sender);        /* the sender object */
-            QS_SIG_(e->sig);        /* the signal of the event */
-            QS_OBJ_(me);            /* this active object (recipient) */
+            QS_TIME_();       /* timestamp */
+            QS_OBJ_(sender);  /* the sender object */
+            QS_SIG_(e->sig);  /* the signal of the event */
+            QS_OBJ_(me);      /* this active object (recipient) */
             QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_EQC_((QEQueueCtr)nFree); /* # free entries available */
             QS_EQC_((QEQueueCtr)0); /* min # free entries (unknown) */
@@ -203,9 +215,9 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 
     QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO,
                      QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_();           /* timestamp */
-        QS_SIG_(e->sig);      /* the signal of this event */
-        QS_OBJ_(me);          /* this active object */
+        QS_TIME_();       /* timestamp */
+        QS_SIG_(e->sig);  /* the signal of this event */
+        QS_OBJ_(me);      /* this active object */
         QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
         /* # free entries */
         QS_EQC_((QEQueueCtr)me->eQueue.tx_queue_available_storage);
@@ -233,9 +245,9 @@ QEvt const *QActive_get_(QActive * const me) {
         == TX_SUCCESS);
 
     QS_BEGIN_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_();           /* timestamp */
-        QS_SIG_(e->sig);      /* the signal of this event */
-        QS_OBJ_(me);          /* this active object */
+        QS_TIME_();       /* timestamp */
+        QS_SIG_(e->sig);  /* the signal of this event */
+        QS_OBJ_(me);      /* this active object */
         QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
         /* # free entries */
         QS_EQC_((QEQueueCtr)me->eQueue.tx_queue_available_storage);

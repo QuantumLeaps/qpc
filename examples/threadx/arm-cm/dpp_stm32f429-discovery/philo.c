@@ -119,6 +119,12 @@ static QState Philo_thinking(Philo * const me, QEvt const * const e) {
             status_ = Q_HANDLED();
             break;
         }
+        /*${AOs::Philo::SM::thinking} */
+        case Q_EXIT_SIG: {
+            QTimeEvt_disarm(&me->timeEvt);
+            status_ = Q_HANDLED();
+            break;
+        }
         /*${AOs::Philo::SM::thinking::TIMEOUT} */
         case TIMEOUT_SIG: {
             status_ = Q_TRAN(&Philo_hungry);
@@ -191,6 +197,7 @@ static QState Philo_eating(Philo * const me, QEvt const * const e) {
             TableEvt *pe = Q_NEW(TableEvt, DONE_SIG);
             pe->philoNum = PHILO_ID(me);
             QF_PUBLISH(&pe->super, me);
+            QTimeEvt_disarm(&me->timeEvt);
             status_ = Q_HANDLED();
             break;
         }
