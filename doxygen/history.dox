@@ -16,6 +16,8 @@ Also, this release adds new QUTest exampes, which illustrate:
 - event deferral (`qpc/examples/qutest/defer/`)
 - dispatching/posting events with parameters (`qpc/examples/qutest/evt_par/`).
 
+Additionally, this release updates the QP/C ports to win32-qv and posix-qv to allow a "tickless" mode, where the "tickerThread" is not created. This mode is set by configuring the system clock tick rate to 0 (QF_setTickRate(0)).
+
 Finally, this release phases out the `qp_port.h` header file. If any of your projects still includes this file, please replace it with the qpc.h heder file.
 
 

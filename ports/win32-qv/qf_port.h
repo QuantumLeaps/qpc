@@ -3,8 +3,8 @@
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-03-06
+* Last Updated for Version: 6.2.0
+* Date of the Last Update:  2018-04-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -75,10 +75,12 @@
 
 void QF_enterCriticalSection_(void);
 void QF_leaveCriticalSection_(void);
+
+/* set clock tick rate (NOTE ticksPerSec==0 disables the "ticker thread" */
 void QF_setTickRate(uint32_t ticksPerSec); /* set clock tick rate */
 
-/* application-level clock tick callback */
-void QF_onClockTick(void);
+/* clock tick callback (NOTE not called when "ticker thread" is not running) */
+void QF_onClockTick(void); /* clock tick callback (provided in the app) */
 
 /* special adaptations for QWIN GUI applications */
 #ifdef QWIN_GUI
