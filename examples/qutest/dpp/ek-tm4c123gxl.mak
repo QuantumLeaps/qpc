@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EK-TM4C123GXL, QUTEST, GNU-ARM
 # Last Updated for Version: 6.2.0
-# Date of the Last Update:  2018-03-19
+# Date of the Last Update:  2018-04-13
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -35,13 +35,14 @@
 # examples of invoking this Makefile:
 # make -fek-tm4c123gxl.mak  # make and run the tests in the current directory
 # make -fek-tm4c123gxl.mak TESTS=philo*.tcl  # make and run the selected tests
+# make -fek-tm4c123gxl.mak HOST=localhost:7705 # connect to host:port
 # make -fek-tm4c123gxl.mak norun  # only make but not run the tests
 # make -fek-tm4c123gxl.mak clean  # cleanup the build
 #
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    http://sourceforge.net/projects/qpc/files/Qtools/
+#    http://sourceforge.net/projects/qpc/files/QTools/
 #
 
 #-----------------------------------------------------------------------------
@@ -266,7 +267,7 @@ flash :
 	echo Press RESET button on the EK-TM4C123GXL board
 
 run : $(TARGET_BIN)
-	$(TCLSH) $(QUTEST) $(TESTS)
+	$(TCLSH) $(QUTEST) $(TESTS) "" $(HOST)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
@@ -319,3 +320,5 @@ show :
 	@echo LIBS         = $(LIBS)
 	@echo DEFINES      = $(DEFINES)
 	@echo QUTEST       = $(QUTEST)
+	@echo HOST         = $(HOST)
+

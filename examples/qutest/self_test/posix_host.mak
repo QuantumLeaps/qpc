@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST self-test; QP/C on POSIX *Host*
 # Last updated for version 6.2.0
-# Last updated on  2018-03-16
+# Last updated on  2018-04-13
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -35,6 +35,7 @@
 # examples of invoking this Makefile:
 # make -f posix_host.mak        # make and run the tests in the current directory
 # make -f posix_host.mak TESTS=philo*.tcl  # make and run the selected tests
+# make -f posix_host.mak HOST=localhost:7705 # connect to host:port
 # make -f posix_host.mak norun   # only make but not run the tests
 # make -f posix_host.mak clean   # cleanup the build
 #
@@ -111,7 +112,7 @@ LIBS      :=
 
 # defines...
 # QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
-DEFINES   :=
+DEFINES   := -DQP_API_VERSION=9999
 
 #-----------------------------------------------------------------------------
 # GNU toolset
@@ -190,7 +191,7 @@ $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_EXE)
-	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE)
+	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
@@ -237,3 +238,4 @@ show :
 	@echo QTOOLS       = $(QTOOLS)
 	@echo QUTEST       = $(QUTEST)
 	@echo TESTS        = $(TESTS)
+	@echo HOST         = $(HOST)

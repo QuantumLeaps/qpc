@@ -194,7 +194,7 @@ $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 run : $(TARGET_EXE)
 	set -e; while true; do \
 		echo "restarting $(TARGET_EXE)"; \
-		$(TARGET_EXE) $(HOST); \
+		$(TARGET_EXE) "" $(HOST); \
 	done
 
 $(BIN_DIR)/%.d : %.cpp

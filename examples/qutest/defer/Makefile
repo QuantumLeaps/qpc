@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QUTEST self-test; QP/C on Win32 host
 # Last updated for version 6.2.0
-# Last updated on  2018-03-10
+# Last updated on  2018-04-13
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -31,22 +31,24 @@
 # https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
+#
 # examples of invoking this Makefile:
 # make         # make and run the tests in the current directory
 # make TESTS=test*.tcl  # make and run the selected tests in the curr. dir.
+# make HOST=localhost:7705 # connect to host:port
 # make norun   # only make but not run the tests
 # make clean   # cleanup the build
 #
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    http://sourceforge.net/projects/qpc/files/Qtools/
+#    http://sourceforge.net/projects/qpc/files/QTools/
 #
 
 #-----------------------------------------------------------------------------
 # project name
 #
-PROJECT     := test_defer
+PROJECT := test_defer
 
 #-----------------------------------------------------------------------------
 # project directories
@@ -178,7 +180,7 @@ $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_EXE)
-	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE)
+	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
@@ -209,12 +211,12 @@ clean :
 
 show :
 	@echo PROJECT      = $(PROJECT)
-	@echo TESTS        = $(TESTS)
 	@echo TARGET_EXE   = $(TARGET_EXE)
 	@echo CONF         = $(CONF)
 	@echo VPATH        = $(VPATH)
 	@echo C_SRCS       = $(C_SRCS)
 	@echo CPP_SRCS     = $(CPP_SRCS)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
 	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
@@ -222,5 +224,8 @@ show :
 	@echo LIB_DIRS     = $(LIB_DIRS)
 	@echo LIBS         = $(LIBS)
 	@echo DEFINES      = $(DEFINES)
+	@echo QTOOLS       = $(QTOOLS)
 	@echo QUTEST       = $(QUTEST)
+	@echo TESTS        = $(TESTS)
+	@echo HOST         = $(HOST)
 

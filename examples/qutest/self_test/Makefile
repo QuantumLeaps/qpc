@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST self-test; QP/C on Win32 host
 # Last updated for version 6.2.0
-# Last updated on  2018-03-16
+# Last updated on  2018-04-13
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -35,13 +35,14 @@
 # examples of invoking this Makefile:
 # make         # make and run the tests in the current directory
 # make TESTS=test*.tcl  # make and run the selected tests in the curr. dir.
+# make HOST=localhost:7705 # connect to host:port
 # make norun   # only make but not run the tests
 # make clean   # cleanup the build
 #
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    http://sourceforge.net/projects/qpc/files/Qtools/
+#    http://sourceforge.net/projects/qpc/files/QTools/
 #
 
 #-----------------------------------------------------------------------------
@@ -85,7 +86,7 @@ C_SRCS := \
 	test_qutest.c
 
 # C++ source files...
-CPP_SRCS :=
+CPP_SRCS  :=
 
 LIB_DIRS  :=
 LIBS      :=
@@ -178,7 +179,7 @@ $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_EXE)
-	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE)
+	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
@@ -222,6 +223,8 @@ show :
 	@echo LIB_DIRS     = $(LIB_DIRS)
 	@echo LIBS         = $(LIBS)
 	@echo DEFINES      = $(DEFINES)
+	@echo QTOOLS       = $(QTOOLS)
 	@echo QUTEST       = $(QUTEST)
 	@echo TESTS        = $(TESTS)
+	@echo HOST         = $(HOST)
 

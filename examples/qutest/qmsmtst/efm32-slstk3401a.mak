@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EMF32-SLSTK3401A, QUTEST, GNU-ARM
-# Last Updated for Version: 6.1.2
-# Date of the Last Update:  2018-03-12
+# Last Updated for Version: 6.2.0
+# Date of the Last Update:  2018-04-13
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -35,6 +35,7 @@
 # examples of invoking this Makefile:
 # make -fefm32-slstk3401a.mak  # make and run the tests in the current directory
 # make -fefm32-slstk3401a.mak TESTS=philo*.tcl  # make and run the selected tests
+# make -fefm32-slstk3401a.mak HOST=localhost:7705 # connect to host:port
 # make -fefm32-slstk3401a.mak norun  # only make but not run the tests
 # make -fefm32-slstk3401a.mak clean  # cleanup the build
 #
@@ -264,7 +265,7 @@ flash :
 	$(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
 
 run : $(TARGET_BIN)
-	$(TCLSH) $(QUTEST) $(TESTS)
+	$(TCLSH) $(QUTEST) $(TESTS) "" $(HOST)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
@@ -317,3 +318,5 @@ show :
 	@echo LIBS         = $(LIBS)
 	@echo DEFINES      = $(DEFINES)
 	@echo QUTEST       = $(QUTEST)
+	@echo HOST         = $(HOST)
+
