@@ -4,7 +4,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.2.0
-* Last updated on  2018-03-16
+* Last updated on  2018-04-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -51,6 +51,7 @@
 
 #ifdef Q_NASSERT /* Q_NASSERT defined--assertion checking disabled */
 
+    /* provide dummy (empty) definitions that don't generate any code... */
     #define Q_DEFINE_THIS_FILE
     #define Q_DEFINE_THIS_MODULE(name_)
     #define Q_ASSERT(test_)             ((void)0)
@@ -67,6 +68,30 @@
     #define Q_INVARIANT_ID(id_, test_)  ((void)0)
 
 #else  /* Q_NASSERT not defined--assertion checking enabled */
+
+#ifndef qep_h /* QEP not included (i.e., is quassert.h used outside QP? */
+
+    /* provide typedefs so that qassert.h could be used "standalone"... */
+
+    /*! typedef for character strings. */
+    /**
+    * @description
+    * This typedef specifies character type for exclusive use in character
+    * strings. Use of this type, rather than plain 'char', is in compliance
+    * with the MISRA-C 2004 Rules 6.1(req), 6.3(adv).
+    */
+    typedef char char_t;
+
+    /*! typedef for assertions-ids and line numbers in assertions. */
+    /**
+    * @description
+    * This typedef specifies integer type for exclusive use in assertions.
+    * Use of this type, rather than plain 'int', is in compliance
+    * with the MISRA-C 2004 Rules 6.1(req), 6.3(adv).
+    */
+    typedef int int_t;
+
+#endif
 
     /*! Define the file name (with `__FILE__`) for assertions in this file. */
     /**
