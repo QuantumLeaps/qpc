@@ -185,6 +185,13 @@
     <ClCompile Include="qwin_gui.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\qassert.h" />
+    <ClInclude Include="..\..\include\qep.h" />
+    <ClInclude Include="..\..\include\qequeue.h" />
+    <ClInclude Include="..\..\include\qf.h" />
+    <ClInclude Include="..\..\include\qmpool.h" />
+    <ClInclude Include="..\..\include\qpset.h" />
+    <ClInclude Include="..\..\include\qs.h" />
     <ClInclude Include="qep_port.h" />
     <ClInclude Include="qf_port.h" />
     <ClInclude Include="qwin_gui.h" />

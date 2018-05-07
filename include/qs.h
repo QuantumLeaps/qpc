@@ -4,8 +4,8 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-13
+* Last updated for version 6.3.0
+* Last updated on  2018-04-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -1073,12 +1073,13 @@ typedef uint_fast16_t QSCtr;  /*!< QS ring buffer counter and offset type */
 
 /*! Kinds of objects used in QS. */
 enum QSpyObjKind {
-    SM_OBJ,  /*!< state machine object for QEP */
-    AO_OBJ,  /*!< active object */
-    MP_OBJ,  /*!< event pool object */
-    EQ_OBJ,  /*!< raw queue object */
-    TE_OBJ,  /*!< time event object */
-    AP_OBJ,  /*!< generic Application-specific object */
+    SM_OBJ,    /*!< state machine object */
+    AO_OBJ,    /*!< active object */
+    MP_OBJ,    /*!< event pool object */
+    EQ_OBJ,    /*!< raw queue object */
+    TE_OBJ,    /*!< time event object */
+    AP_OBJ,    /*!< generic Application-specific object */
+    SM_AO_OBJ, /*!< state machine or active object */
     MAX_OBJ
 };
 

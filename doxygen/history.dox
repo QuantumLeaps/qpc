@@ -1,7 +1,19 @@
 /**
 @page history Revision History
 
-@section qpc_6_2_2 Version 6.2.0, 2018-03-16
+@section qpc_6_3_0 Version 6.3.0, 2018-05-10
+The main purpose of this release is fixing the sub-machine support in the QP/Spy build configuration. Specifically, this release fixes the following bug:
+
+- [bug#213 "QP/C/C++ applications with submachines occasionally crash in Spy build configuration"](https://sourceforge.net/p/qpc/bugs/213/)
+
+@attention
+This release matches [QM 4.2.0](https://www.state-machine.com/qm/history.html#qm_4_2_0).
+
+Additionally, the release contains some re-factoring of the QS-RX input channel.
+
+
+------------------------------------------------------------------------------
+@section qpc_6_2_0 Version 6.2.0, 2018-03-16
 The main purpose of this release is extednding the functionality of the [QUTest unit testing](https://www.state-machine.com/qtools/qutest.html) for QP/C applications. Specifically, this release adds support for testing of **self-posting** of events in active objects, which is an essential element in the [Reminder](https://www.state-machine.com/doc/Pattern_Reminder.pdf) and [Deferred Event](https://www.state-machine.com/doc/Pattern_DeferredEvent.pdf) design patterns. To implement this new feature, the QS-RX (QS receive channel) has been extened by a small scheduler that processes all secondary events gnenerated by dispatching, posting, or publishing events (only active when the #Q_UTEST macro is defined). Also, the implementation of the target resident QUTest components (files `src/qs/qutest.c` and `src/qf/qf_actq.c`) have been modified to allow posting of events during unit testing.
 
 Additionally, the release adds standard QS trace records (the `qs.h` header file) for event deferring and recalling (::QS_QF_ACTIVE_DEFER and ::QS_QF_ACTIVE_RECALL) as well as recall-attempt (::QS_QF_ACTIVE_RECALL_ATTEMPT). Also standard QS trace records have been added for creating/deleting new event references (::QS_QF_NEW_REF and ::QS_QF_DELETE_REF, respectively). To make room for these new records, the following rarely-used records have been removed: QS_QF_ACTIVE_ADD, QS_QF_ACTIVE_REMOVE, QS_QF_EQUEUE_INIT, and QS_QF_MPOOL_INIT. The global filter settings in the QS_filterOn() and QS_filterOff() functions have been updated to the re-organized QS trace records.

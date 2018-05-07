@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-16
+* Last updated for version 6.3.0
+* Last updated on  2018-04-30
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -632,7 +632,7 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_OBJ_KIND: {
-            if (b <= (uint8_t)6) {
+            if (b <= (uint8_t)SM_AO_OBJ) {
                 l_rx.var.obj.kind = b;
                 l_rx.var.obj.addr = (QSObj)0;
                 l_rx.var.obj.idx  = (uint8_t)0;
@@ -906,7 +906,8 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
                 }
                 QS_rxReportAck_((enum QSpyRxRecords)l_rx.var.obj.recId);
             }
-            else if (l_rx.var.obj.kind == (uint8_t)6) {  /* both SM and AO */
+            /* both SM and AO */
+            else if (l_rx.var.obj.kind == (uint8_t)SM_AO_OBJ) {
                 if (l_rx.var.obj.recId == (uint8_t)QS_RX_LOC_FILTER) {
                     QS_priv_.locFilter[SM_OBJ] = (void *)l_rx.var.obj.addr;
                     QS_priv_.locFilter[AO_OBJ] = (void *)l_rx.var.obj.addr;

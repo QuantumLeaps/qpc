@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-18
+* Last updated for version 6.3.0
+* Last updated on  2018-05-03
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -238,7 +238,7 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
 
         /* the transition source state must not be NULL */
         Q_ASSERT_ID(320, ts != (QMState const *)0);
-#endif /* Q_SPY*/
+#endif /* Q_SPY */
 
         do {
             /* save the transition-action table before it gets clobbered */
@@ -246,7 +246,7 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
             union QHsmAttr tmp; /* temporary to save intermediate values */
 
             /* was TRAN, TRAN_INIT, or TRAN_EP taken? */
-            if (r < (QState)Q_RET_TRAN_HIST) {
+            if (r <= (QState)Q_RET_TRAN_EP) {
                 QMsm_exitToTranSource_(me, s, t);
                 r = QMsm_execTatbl_(me, tatbl);
                 s = me->state.obj;
@@ -266,17 +266,29 @@ void QMsm_dispatch_(QMsm * const me, QEvt const * const e) {
                 me->state.obj = s; /* restore the original state */
                 r = (*tmp.act)(me); /* execute the XP action */
                 if (r == (QState)Q_RET_TRAN) { /* XP -> TRAN ? */
+#ifdef Q_SPY
+                    tmp.tatbl = me->temp.tatbl; /* save me->temp */
+#endif /* Q_SPY */
                     QMsm_exitToTranSource_(me, s, t);
                     /* take the tran-to-XP segment inside submachine */
                     (void)QMsm_execTatbl_(me, tatbl);
                     s = me->state.obj;
+#ifdef Q_SPY
+                    me->temp.tatbl = tmp.tatbl; /* restore me->temp */
+#endif /* Q_SPY */
                 }
                 else if (r == (QState)Q_RET_TRAN_HIST) { /* XP -> HIST ? */
                     tmp.obj = me->state.obj; /* save the history */
                     me->state.obj = s; /* restore the original state */
-                    QMsm_exitToTranSource_(me, s, t);
+#ifdef Q_SPY
+                    s = me->temp.obj; /* save me->temp */
+#endif /* Q_SPY */
+                    QMsm_exitToTranSource_(me, me->state.obj, t);
                     /* take the tran-to-XP segment inside submachine */
                     (void)QMsm_execTatbl_(me, tatbl);
+#ifdef Q_SPY
+                    me->temp.obj = s; /* restore me->temp */
+#endif /* Q_SPY */
                     s = me->state.obj;
                     me->state.obj = tmp.obj; /* restore the history */
                 }

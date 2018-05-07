@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QMsmTst Example, Win32
-* Last updated for version 5.8.0
-* Last updated on  2016-11-29
+* Last updated for version 6.3.0
+* Last updated on  2018-05-07
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -168,6 +168,9 @@ void QS_onCleanup(void) {
 /*..........................................................................*/
 QSTimeCtr QS_onGetTime(void) {
     return (QSTimeCtr)clock();
+}
+/*..........................................................................*/
+void QS_onFlush(void) {
 }
 #endif
 
