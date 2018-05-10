@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.3.0
-* Last updated on  2018-05-03
+* Last updated on  2018-05-09
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -188,9 +188,6 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 * deviation.
 */
 #define Q_EVT_CAST(class_) ((class_ const *)e)
-
-/*! Helper macro to calculate static dimension of a 1-dim @p array_ */
-#define Q_DIM(array_) (sizeof(array_) / sizeof((array_)[0]))
 
 /*! Perform cast from unsigned integer @p uint_ to pointer
 * of type @p type_. */

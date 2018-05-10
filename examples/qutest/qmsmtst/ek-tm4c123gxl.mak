@@ -48,7 +48,7 @@
 #-----------------------------------------------------------------------------
 # project name, binary output directory
 #
-PROJECT := test_Flash
+PROJECT := test_qmsm
 TARGET  := ek-tm4c123gxl
 
 #-----------------------------------------------------------------------------
@@ -97,14 +97,10 @@ ASM_SRCS :=
 
 # C source files
 C_SRCS := \
-	test_Flash.c \
-	Flash.c \
-	FakeMicroTime.c \
-	MockIO.c \
-	qutest_port.c \
-	startup_TM4C123GH6PM.c \
-	system_TM4C123GH6PM.c
-
+	qmsmtst.c \
+	test_qmsm.c \
+	system_TM4C123GH6PM.c \
+	startup_TM4C123GH6PM.c
 
 # C++ source files
 CPP_SRCS :=
@@ -128,14 +124,10 @@ QP_SRCS := \
 	qs_64bit.c \
 	qs_rx.c \
 	qs_fp.c \
-	qutest.c
+	qutest.c \
+	qutest_port.c
 
 QP_ASMS :=
-
-QS_SRCS := \
-	qs.c \
-	qs_rx.c \
-	qs_fp.c
 
 LIB_DIRS  :=
 LIBS      :=
@@ -203,8 +195,6 @@ C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
 
 BIN_DIR := $(TARGET)
-
-C_SRCS += $(QS_SRCS)
 
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 

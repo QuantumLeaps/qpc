@@ -1,34 +1,33 @@
 ::============================================================================
-:: Batch file to load the DPP program to the flash of EK-TM4C123GXL
-:: (equivalent to EK-LM4F120XL)
+:: Batch file to program the flash of EK-TM4C123GXL
 :: 
-:: NOTE: requires the LMFlash programmer from Texas Instruments, see:
-:: http://www.ti.com/tool/LMFLASHPROGRAMMER
+:: NOTE: requires the LMFlash programmer (included in QTools for Windows)
 :: 
 @echo off
 setlocal
 
-@echo Load the program to the flash of EK-TM4C123GXL
-@echo usage: flash
-@echo usage: flash rel
-@echo usage: flash spy
+@echo Load a given binary file to the flash of EK-TM4C123GXL
+@echo usage:   flash binary-file
+@echo example: flash dbg\blinky-qk.bin
 
 ::----------------------------------------------------------------------------
-:: NOTE: Adjust the following symbol to the location of the
-:: LMFlash utility on your machine 
+:: NOTE: The following symbol LMFLASH assumes that LMFlash.exe can
+:: be found on the PATH. You might need to adjust this symbol to the
+:: location of the LMFlash utility on your machine
 ::
-set LMFLASH=%QTOOLS%\..\LM_Flash_Programmer\LMFlash.exe
+set LMFLASH=LMFlash.exe
 
-:: set the build directory depending on the first parameter %1
-set BUILD_DIR=dbg
-if [%1] NEQ [] set BUILD_DIR=%1
-@echo on
+if ["%~1"]==[""] (
+    @echo The binary file missing
+    @goto end
+)
+if not exist %~s1 (
+    @echo The binary file '%1' does not exist
+    @goto end
+)
 
-%LMFLASH% -q ek-tm4c123gxl %BUILD_DIR%\dpp-qk.bin
+%LMFLASH% -q ek-tm4c123gxl -e -v -r %1
 
-@echo.
-@echo.
-@echo Reset the target to start running your program!
+:end
 
-@echo off
 endlocal

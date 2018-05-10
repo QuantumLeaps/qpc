@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EK-TM4C123GXL, QUTEST, GNU-ARM
-# Last Updated for Version: 6.2.0
-# Date of the Last Update:  2018-04-13
+# Last Updated for Version: 6.3.0
+# Date of the Last Update:  2018-05-10
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -42,7 +42,7 @@
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    http://sourceforge.net/projects/qpc/files/Qtools/
+#    http://sourceforge.net/projects/qpc/files/QTools/
 #
 
 #-----------------------------------------------------------------------------
@@ -165,16 +165,12 @@ LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 
 #-----------------------------------------------------------------------------
-# LMFLASH toolset (NOTE: You need to adjust to your machine)
-# see http://www.ti.com/tool/lmflashprogrammer
+# NOTE: The following symbol LMFLASH assumes that LMFlash.exe can
+# be found on the PATH. You might need to adjust this symbol to the
+# location of the LMFlash utility on your machine
 #
 ifeq ($(LMFLASH),)
-LMFLASH := $(QTOOLS)/../LM_Flash_Programmer/LMFlash.exe
-endif
-
-# make sure that the LMFLASH tool exists...
-ifeq ("$(wildcard $(LMFLASH))","")
-$(error LMFLASH tool not found. Please adjust the Makefile)
+LMFLASH := LMFlash.exe
 endif
 
 
@@ -250,9 +246,7 @@ endif
 
 $(TARGET_BIN) : $(TARGET_ELF)
 	$(BIN) -O binary $< $@
-	$(LMFLASH) -q ek-tm4c123gxl $(TARGET_BIN)
-	echo Press RESET button on the EK-TM4C123GXL board
-	@pause
+	$(LMFLASH) -q ek-tm4c123gxl $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
@@ -260,9 +254,9 @@ $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 
 flash :
 	$(LMFLASH) -q ek-tm4c123gxl $(TARGET_BIN)
-	echo Press RESET button on the EK-TM4C123GXL board
 
 run : $(TARGET_BIN)
+	$(LMFLASH) -q ek-tm4c123gxl -c $(TARGET_BIN)
 	$(TCLSH) $(QUTEST) $(TESTS) "" $(HOST)
 
 $(BIN_DIR)/%.d : %.c

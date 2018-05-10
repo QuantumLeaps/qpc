@@ -14,7 +14,7 @@ setlocal
 
 ::----------------------------------------------------------------------------
 :: NOTE: Adjust the following symbol to the location of the
-:: LMFlash utility on your machine 
+:: STLINK utility on your machine 
 ::
 set STLINK="C:\tools\ST\ST-LINK\ST-LINK Utility\ST-LINK_CLI.exe"
 
