@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
 * Last Updated for Version: 6.2.0
-* Date of the Last Update:  2018-03-16
+* Date of the Last Update:  2018-05-21
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -43,8 +43,6 @@ int main(int argc, char *argv[]) {
     static QF_MPOOL_EL(TableEvt) smlPoolSto[2*N_PHILO]; /* small pool */
     uint8_t n;
 
-    Philo_ctor(); /* instantiate all Philosopher active objects */
-    Table_ctor(); /* instantiate the Table active object */
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init(argc, argv); /* initialize the Board Support Package */
@@ -62,6 +60,7 @@ int main(int argc, char *argv[]) {
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     /* start the active objects... */
+    Philo_ctor(); /* instantiate all Philosopher active objects */
     for (n = 0U; n < N_PHILO; ++n) {
         QACTIVE_START(AO_Philo[n],           /* AO to start */
                       (uint_fast8_t)(n + 1), /* QP priority of the AO */
@@ -71,6 +70,8 @@ int main(int argc, char *argv[]) {
                       0U,                    /* size of the stack [bytes] */
                      (QEvt *)0);             /* initialization event */
     }
+
+    Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */

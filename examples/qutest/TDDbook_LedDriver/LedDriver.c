@@ -28,8 +28,6 @@
 /*-    www.renaissancesoftware.net james@renaissancesoftware.net       -*/
 /*- ------------------------------------------------------------------ -*/
 
-typedef int  int_t;  /* needed in "qassert.h" (MISRA compliance) */
-typedef char char_t; /* needed in "qassert.h" (MISRA compliance) */
 #include "qassert.h" /* for QP assertions */
 
 //#include "RuntimeError.h"

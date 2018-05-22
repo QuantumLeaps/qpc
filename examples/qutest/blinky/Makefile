@@ -1,13 +1,13 @@
 ##############################################################################
-# Product: Makefile for QP/C, QHsmTst console, Win32, MinGW
-# Last Updated for Version: 6.3.0
-# Date of the Last Update:  2018-05-07
+# Product: Makefile for QUTEST; QP/C on Win32 host
+# Last updated for version 6.3.1
+# Last updated on  2018-05-21
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
 #                    innovating embedded systems
 #
-# Copyright (C) Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -31,27 +31,24 @@
 # https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
-# examples of invoking this Makefile:
-# building configurations: Debug (default), Release, and Spy
-# make
-# make CONF=rel
-# make CONF=spy
 #
-# cleaning configurations: Debug (default), Release, and Spy
-# make clean
-# make CONF=rel clean
-# make CONF=spy clean
+# examples of invoking this Makefile:
+# make         # make and run the tests in the current directory
+# make TESTS=test*.tcl  # make and run the selected tests in the curr. dir.
+# make HOST=localhost:7705 # connect to host:port
+# make norun   # only make but not run the tests
+# make clean   # cleanup the build
 #
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    http://sourceforge.net/projects/qpc/files/Qtools/
+#    http://sourceforge.net/projects/qpc/files/QTools/
 #
 
 #-----------------------------------------------------------------------------
 # project name
 #
-PROJECT     := qhsmtst
+PROJECT := test_blinky
 
 #-----------------------------------------------------------------------------
 # project directories
@@ -62,8 +59,14 @@ ifeq ($(QPC),)
 QPC := ../../..
 endif
 
+# location of the QTOOLS directory (if not provided in an environemnt var.)
+ifeq ($(QTOOLS),)
+QTOOLS := c:/qp/qtools
+endif
+
+
 # QP port used in this project
-QP_PORT_DIR := $(QPC)/ports/win32
+QP_PORT_DIR := $(QPC)/ports/win32-qutest
 
 # list of all source directories used by this project
 VPATH = \
@@ -74,25 +77,18 @@ INCLUDES  = \
 	-I. \
 	-I$(QPC)/include
 
-# list of resource include directories needed by this project
-RCINCLUDES = \
-	-IRes
-
-
 #-----------------------------------------------------------------------------
 # files
 #
 
 # C source files...
 C_SRCS := \
-	main.c \
-	qhsmtst.c
+	bsp.c \
+	blinky.c \
+	test_blinky.c
 
 # C++ source files...
-CPP_SRCS :=	
-
-# Resource files...
-RC_SRCS :=
+CPP_SRCS :=
 
 LIB_DIRS  :=
 LIBS      :=
@@ -116,76 +112,47 @@ CC    := gcc
 CPP   := g++
 LINK  := gcc    # for C programs
 #LINK  := g++   # for C++ programs
-RC    := windres
 
 # basic utilities (included in Qtools for Windows), see:
 #    http://sourceforge.net/projects/qpc/files/Qtools
 
-MKDIR := mkdir
-RM    := rm
+MKDIR  := mkdir
+RM     := rm
+TCLSH  := tclsh
+QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
+
+
+#============================================================================
+# Typically you should not need to change anything below this line
 
 #-----------------------------------------------------------------------------
-# build options for various configurations
+# build options
 #
 
-ifeq (rel, $(CONF)) # Release configuration ..................................
+BIN_DIR := mingw
 
-BIN_DIR := rel
+CFLAGS = -g -O -Wall -Wstrict-prototypes -W $(INCLUDES) $(DEFINES) \
+	-DQ_SPY -DQ_UTEST -DQ_HOST
 
-CFLAGS = -ffunction-sections -fdata-sections \
-	-Os -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
-
-CPPFLAGS = -ffunction-sections -fdata-sections \
-	-Os -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
-
-else ifeq (spy, $(CONF))  # Spy configuration ................................
-
-BIN_DIR := spy
-
-CFLAGS = -g -ffunction-sections -fdata-sections \
-	-O -Wall -W $(INCLUDES) $(DEFINES) -DQ_SPY
-
-CPPFLAGS = -g -ffunction-sections -fdata-sections \
-	-O -Wall -W $(INCLUDES) $(DEFINES) -DQ_SPY
-
-else  # default Debug configuration ..........................................
-
-BIN_DIR := dbg
-
-CFLAGS = -g -ffunction-sections -fdata-sections \
-	-O -Wall -W $(INCLUDES) $(DEFINES)
-
-CPPFLAGS = -g -ffunction-sections -fdata-sections \
-	-O -Wall -W $(INCLUDES) $(DEFINES)
-
-endif  # .....................................................................
+CPPFLAGS = -g -O -Wall -W -fno-rtti -fno-exceptions $(INCLUDES) $(DEFINES) \
+	-DQ_SPY -DQ_UTEST -DQ_HOST
 
 LINKFLAGS := -Wl,-Map,$(BIN_DIR)/$(PROJECT).map,--cref,--gc-sections
 
-# is it a GUI application (any GUI resources provided?) ...
-ifneq (,$(RC_SRCS))
-LINKFLAGS += -mwindows
-DEFINES += -DQWIN_GUI
-endif
-
 #-----------------------------------------------------------------------------
-
 # combine all the soruces...
 INCLUDES  += -I$(QP_PORT_DIR)
 LIB_DIRS  += -L$(QP_PORT_DIR)/$(BIN_DIR)
-LIBS      += -lqp
+LIBS      += -lqp -lwsock32
 
-C_OBJS       := $(patsubst %.c,   %.o, $(C_SRCS))
-CPP_OBJS     := $(patsubst %.cpp, %.o, $(CPP_SRCS))
-RC_OBJS      := $(patsubst %.rc,  %.o, $(RC_SRCS))
+C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))
+CPP_OBJS     := $(patsubst %.cpp,%.o, $(CPP_SRCS))
 
-TARGET_BIN   := $(BIN_DIR)/$(PROJECT).bin
 TARGET_EXE   := $(BIN_DIR)/$(PROJECT).exe
 C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
-C_DEPS_EXT   := $(patsubst %.o, %.d, $(C_OBJS_EXT))
+C_DEPS_EXT   := $(patsubst %.o,%.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
-CPP_DEPS_EXT := $(patsubst %.o, %.d, $(CPP_OBJS_EXT))
-RC_OBJS_EXT  := $(addprefix $(BIN_DIR)/, $(RC_OBJS))
+CPP_DEPS_EXT := $(patsubst %.o,%.d, $(CPP_OBJS_EXT))
 
 # create $(BIN_DIR) if it does not exist
 ifeq ("$(wildcard $(BIN_DIR))","")
@@ -196,15 +163,25 @@ endif
 # rules
 #
 
-all: $(TARGET_EXE)
-#all: $(TARGET_BIN)
+.PHONY : run norun
 
-$(TARGET_BIN): $(TARGET_EXE)
-	$(BIN) -O binary $< $@
+ifeq ($(MAKECMDGOALS),norun)
+all : $(TARGET_EXE)
+norun : all
+else
+all : $(TARGET_EXE) run
+endif
 
-$(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT) $(RC_OBJS_EXT)
+ifeq (, $(TESTS))
+TESTS := *.tcl
+endif
+
+$(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
+
+run : $(TARGET_EXE)
+	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
@@ -218,8 +195,7 @@ $(BIN_DIR)/%.o : %.cpp
 $(BIN_DIR)/%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BIN_DIR)/%.o : %.rc
-	$(RC) $(RCINCLUDES) -i $< -o $@
+.PHONY : clean show norun
 
 # include dependency files only if our goal depends on their existence
 ifneq ($(MAKECMDGOALS),clean)
@@ -228,23 +204,29 @@ ifneq ($(MAKECMDGOALS),clean)
   endif
 endif
 
-.PHONY : clean
-clean:
+clean :
 	-$(RM) $(BIN_DIR)/*.o \
 	$(BIN_DIR)/*.d \
-	$(BIN_DIR)/*.exe \
-	$(BIN_DIR)/*.map
-	
-show:
-	@echo PROJECT  = $(PROJECT)
-	@echo CONF     = $(CONF)
-	@echo VPATH    = $(VPATH)
-	@echo C_SRCS   = $(C_SRCS)
-	@echo CPP_SRCS = $(CPP_SRCS)
+	$(BIN_DIR)/*.map \
+	$(TARGET_EXE)
+
+show :
+	@echo PROJECT      = $(PROJECT)
+	@echo TARGET_EXE   = $(TARGET_EXE)
+	@echo CONF         = $(CONF)
+	@echo VPATH        = $(VPATH)
+	@echo C_SRCS       = $(C_SRCS)
+	@echo CPP_SRCS     = $(CPP_SRCS)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
 	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
 	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
 	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
-	@echo RC_OBJS_EXT  = $(RC_OBJS_EXT)
-	@echo LIB_DIRS = $(LIB_DIRS)
-	@echo LIBS     = $(LIBS)
+	@echo LIB_DIRS     = $(LIB_DIRS)
+	@echo LIBS         = $(LIBS)
+	@echo DEFINES      = $(DEFINES)
+	@echo QTOOLS       = $(QTOOLS)
+	@echo QUTEST       = $(QUTEST)
+	@echo TESTS        = $(TESTS)
+	@echo HOST         = $(HOST)
+

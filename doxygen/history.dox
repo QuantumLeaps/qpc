@@ -1,6 +1,11 @@
 /**
 @page history Revision History
 
+@section qpc_6_3_1 Version 6.3.1, 2018-05-24
+This release migrates the [QUTest](https://www.state-machine.com/qtools/qutest.html) examples to [QM 4.2.1](https://www.state-machine.com/qm/history.html#qm_4_2_1), which now can generate QS_FUN_DICTIONARY() records automatically. This release also adds a generic, simple blinky example for QUTest located in `examples/qutest/blinky`. Also, this release fixes a bug in the example `qutest/TDDbook_LedDriver` so that the code compiles cleanly with the updated header file "qassert.h".
+
+
+------------------------------------------------------------------------------
 @section qpc_6_3_0 Version 6.3.0, 2018-05-10
 The main purpose of this release is fixing the sub-machine support in the QP/Spy build configuration. Specifically, this release fixes the following bug:
 

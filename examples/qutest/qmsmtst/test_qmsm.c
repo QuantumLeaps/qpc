@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Purpose: Fixture for QUTEST
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-05-15
+* Last Updated for Version: 6.3.1
+* Date of the Last Update:  2018-05-21
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -41,21 +41,22 @@ enum {
 };
 
 /*--------------------------------------------------------------------------*/
-int main() {
+int main(int argc, char *argv[]) {
     static QF_MPOOL_EL(QEvt) smlPoolSto[10]; /* small pool */
 
-    QMsmTst_ctor();   /* instantiate the QMsmTst object */
+    QF_init();    /* initialize the framework */
 
-    QF_init();    /* initialize the framework and the underlying RT kernel */
+    /* initialize the QS software tracing */
+    Q_ALLEGE(QS_INIT(argc > 1 ? argv[1] : (void *)0));
 
     /* initialize event pools... */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
-    Q_ALLEGE(QS_INIT((void *)0)); /* initialize the QS software tracing */
-
     /* dictionaries... */
     QS_OBJ_DICTIONARY(the_msm);
     QS_USR_DICTIONARY(BSP_DISPLAY);
+
+    QMsmTst_ctor(); /* instantiate the QHsmTst object */
 
     return QF_run();
 }

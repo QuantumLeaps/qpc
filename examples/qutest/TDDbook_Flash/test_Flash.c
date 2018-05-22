@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Purpose: example 'FlashDriver' QUTEST fixture (Chapter 10 from TDDfEC)
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-05-15
+* Last Updated for Version: 6.3.1
+* Date of the Last Update:  2018-05-21
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"           /* for QUTEST */
@@ -46,9 +46,12 @@ enum {
 void MockIO_Init(void);
 
 /*--------------------------------------------------------------------------*/
-int main() {
-    QF_init();  /* initialize the framework and the underlying RT kernel */
-    Q_ALLEGE(QS_INIT((void *)0)); /* initialize QS tracing system */
+int main(int argc, char *argv[]) {
+
+    QF_init();  /* initialize the framework */
+
+    /* initialize the QS software tracing */
+    Q_ALLEGE(QS_INIT(argc > 1 ? argv[1] : (void *)0));
 
     /* filter setup */
     QS_FILTER_ON(QS_UA_RECORDS); /* UA==user-all */

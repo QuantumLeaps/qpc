@@ -1,5 +1,5 @@
 /*****************************************************************************
-* Purpose: Fixture for QUTEST self-test
+* Purpose: Fixture for QUTEST
 * Last Updated for Version: 6.3.1
 * Date of the Last Update:  2018-05-21
 *
@@ -31,90 +31,78 @@
 * https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
-#include "qpc.h" /* for QUTEST */
+#include "qpc.h"
+#include "blinky.h"
 
 Q_DEFINE_THIS_FILE
 
-/*--------------------------------------------------------------------------*/
-static uint8_t buffer[100];
-static uint32_t myFun(void);
-
-enum {
-    ON_TEST_SETUP = QS_USER,
-    ON_TEST_TEARDOWN,
-    COMMAND_X,
-    MY_RECORD,
-};
-
-/*--------------------------------------------------------------------------*/
+/*..........................................................................*/
 int main(int argc, char *argv[]) {
+    static QF_MPOOL_EL(QEvt) smlPoolSto[10]; /* storage for small pool*/
+    static QEvt const *blinkyQSto[10]; /* event queue storage for Blinky */
+
+    (void)argc;  /* unused parameter */
+    (void)argv;  /* unused parameter */
 
     QF_init();  /* initialize the framework */
 
     /* initialize the QS software tracing */
     Q_ALLEGE(QS_INIT(argc > 1 ? argv[1] : (void *)0));
 
-    /* global filter */
-    QS_FILTER_ON(QS_ALL_RECORDS); /* enable all QS records */
+    BSP_init(); /* initialize the BSP */
 
     /* dictionaries... */
-    QS_OBJ_DICTIONARY(buffer);
-    QS_FUN_DICTIONARY(&myFun);
+    QS_OBJ_DICTIONARY(smlPoolSto);
+    QS_OBJ_DICTIONARY(blinkyQSto);
 
-    QS_USR_DICTIONARY(ON_TEST_SETUP);
-    QS_USR_DICTIONARY(ON_TEST_TEARDOWN);
-    QS_USR_DICTIONARY(COMMAND_X);
-    QS_USR_DICTIONARY(MY_RECORD);
+    QS_SIG_DICTIONARY(TIMEOUT_SIG, (void *)0);
 
-    return QF_run(); /* run the tests */
+    /* pause execution of the test and wait for the test script to continue */
+    QS_TEST_PAUSE();
+
+    /* publish-subscribe not used, no call to QF_psInit() */
+
+    /* initialize event pools... */
+    QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
+
+    /* start the active objects... */
+    Blinky_ctor();
+    QACTIVE_START(AO_Blinky,
+                  1U,
+                  blinkyQSto, Q_DIM(blinkyQSto),
+                  (void *)0, 0U, (QEvt *)0);
+
+    return QF_run();
 }
 
 /*--------------------------------------------------------------------------*/
 void QS_onTestSetup(void) {
-    QS_BEGIN(ON_TEST_SETUP, (void *)0)
-    QS_END()
 }
 /*..........................................................................*/
 void QS_onTestTeardown(void) {
-    QS_BEGIN(ON_TEST_TEARDOWN, (void *)0)
-    QS_END()
 }
-
 /*..........................................................................*/
-/*! callback function to execute user commands */
-void QS_onCommand(uint8_t cmdId,   uint32_t param1,
-                  uint32_t param2, uint32_t param3)
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
 {
     (void)param1;
     (void)param2;
     (void)param3;
 
     switch (cmdId) {
-        case COMMAND_X: {
-            uint32_t x = myFun();
-            QS_BEGIN(COMMAND_X, (void *)0) /* application-specific record */
-                QS_U32(0, x);
-                /* ... */
-            QS_END()
-            break;
-        }
-        default:
-            break;
+       case 0U: {
+           break;
+       }
+       default:
+           break;
     }
 }
 
 /*..........................................................................*/
-/*! callback function to "massage" the injected QP events (not used here) */
+/* host callback function to "massage" the event, if necessary */
 void QS_onTestEvt(QEvt *e) {
     (void)e;
+#ifdef Q_HOST  /* is this test compiled for a desktop Host computer? */
+#else /* this test is compiled for an embedded Target system */
+#endif
 }
-
-/*--------------------------------------------------------------------------*/
-static uint32_t myFun(void) {
-    QS_TEST_PROBE_DEF(&myFun)
-    QS_TEST_PROBE(
-        return qs_tp_;
-    )
-    return 0;
-}
-
