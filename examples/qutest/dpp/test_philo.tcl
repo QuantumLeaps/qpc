@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # Product: QSPY -- test-script example for qutest.tcl
-# Last updated for version 6.2.0
-# Last updated on  2018-03-19
+# Last updated for version 6.3.1
+# Last updated on  2018-05-24
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -36,7 +36,7 @@
 proc on_reset {} {
     expect_pause
     continue
-    glb_filter SM AO
+    glb_filter SM AO UA
     current_obj SM_AO l_philo<2>
 }
 
@@ -59,6 +59,7 @@ expect "%timestamp AO-Post  Sdr=QS_RX,Obj=l_philo<2>,Evt<Sig=EAT_SIG,*"
 expect "%timestamp Trg-Done QS_RX_EVENT"
 expect "%timestamp AO-GetL  Obj=l_philo<2>,Evt<Sig=EAT_SIG,*"
 expect "%timestamp Disp===> Obj=l_philo<2>,Sig=EAT_SIG,State=Philo_hungry"
+expect "%timestamp BSP_CALL BSP_random 123"
 expect "===RTC===> St-Entry Obj=l_philo<2>,State=Philo_eating"
 expect "%timestamp ===>Tran Obj=l_philo<2>,Sig=EAT_SIG,State=Philo_hungry->Philo_eating"
 expect "%timestamp Trg-Done QS_RX_EVENT"

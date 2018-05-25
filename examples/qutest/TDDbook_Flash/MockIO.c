@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Purpose: example Mock for IO (Chapter 10 from TDDfEC)
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-04-15
+* Last Updated for Version: 6.3.1
+* Date of the Last Update:  2018-05-25
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,22 +28,20 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h" /* for QUTEST */
 #include "IO.h"  /* mocked interface */
 
 enum {
-    IO_READ  = QS_USER1,
-    IO_WRITE,
+    IO_CALL = QS_USER1,
 };
 
 /*..........................................................................*/
 void MockIO_Init(void) {
     /* dictionaries... */
-    QS_USR_DICTIONARY(IO_READ);
-    QS_USR_DICTIONARY(IO_WRITE);
+    QS_USR_DICTIONARY(IO_CALL);
 
     QS_FUN_DICTIONARY(&IO_Read);
     QS_FUN_DICTIONARY(&IO_Write);
@@ -55,7 +53,8 @@ ioData IO_Read(ioAddress offset) {
     QS_TEST_PROBE(
         ret = (ioData)qs_tp_;
     )
-    QS_BEGIN(IO_READ, (void *)0) /* user-specific record */
+    QS_BEGIN(IO_CALL, (void *)0) /* user-specific record */
+        QS_FUN(&IO_Read);
         QS_I16(0, ret);
         QS_U32(0, offset);
     QS_END()
@@ -63,7 +62,8 @@ ioData IO_Read(ioAddress offset) {
 }
 /*..........................................................................*/
 void IO_Write(ioAddress offset, ioData data) {
-    QS_BEGIN(IO_WRITE, (void *)0) /* user-specific record */
+    QS_BEGIN(IO_CALL, (void *)0) /* user-specific record */
+        QS_FUN(&IO_Write);
         QS_U32(0, offset);
         QS_I16(0, data);
     QS_END()

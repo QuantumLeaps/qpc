@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # Product: QSPY -- test-script example for qutest.tcl
-# Last updated for version 6.2.0
-# Last updated on  2018-03-19
+# Last updated for version 6.3.1
+# Last updated on  2018-05-25
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -36,7 +36,7 @@
 proc on_reset {} {
     expect_pause
     continue
-    glb_filter SM AO
+    glb_filter SM AO UA
     loc_filter AO l_table
     current_obj SM_AO l_table
 }
@@ -45,6 +45,7 @@ proc on_reset {} {
 test "PAUSE->Table"
 dispatch PAUSE_SIG
 expect "%timestamp Disp===> Obj=l_table,Sig=PAUSE_SIG,State=Table_serving"
+expect "%timestamp BSP_CALL BSP_displayPaused 1"
 expect "===RTC===> St-Entry Obj=l_table,State=Table_paused"
 expect "%timestamp ===>Tran Obj=l_table,Sig=PAUSE_SIG,State=Table_serving->Table_paused"
 expect "%timestamp Trg-Done QS_RX_EVENT"

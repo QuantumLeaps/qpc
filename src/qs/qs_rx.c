@@ -885,7 +885,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             l_rx.var.gFlt.data[7] |= (uint8_t)0xFC;
             l_rx.var.gFlt.data[8] |= (uint8_t)0x3F;
 
-            /* never disable the last 3 records on (0x7D, 0x7E, 0x7F) */
+            /* never enable the last 3 records (0x7D, 0x7E, 0x7F) */
             l_rx.var.gFlt.data[15] &= (uint8_t)0xE0;
 
             for (i=(uint8_t)0; i < (uint8_t)sizeof(QS_priv_.glbFilter); ++i) {

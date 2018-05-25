@@ -46,12 +46,12 @@ test "Write success ready immediately"
 probe IO_Read $ReadyBit
 probe IO_Read $data
 command FLASH_WRITE $address $data
-expect "%timestamp IO_WRITE $CommandRegister $ProgramCommand"
-expect "%timestamp IO_WRITE $address $data"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
+expect "%timestamp IO_CALL IO_Write $address $data"
 expect "%timestamp TstProbe Fun=IO_Read,Data=128"
-expect "%timestamp IO_READ $ReadyBit $StatusRegister"
+expect "%timestamp IO_CALL IO_Read $ReadyBit $StatusRegister"
 expect "%timestamp TstProbe Fun=IO_Read,Data=$data"
-expect "%timestamp IO_READ [expr $data] $address"
+expect "%timestamp IO_CALL IO_Read [expr $data] $address"
 expect "%timestamp FLASH_WRITE $FLASH_SUCCESS"
 expect "%timestamp Trg-Done QS_RX_COMMAND"
 
@@ -63,18 +63,18 @@ probe IO_Read 0
 probe IO_Read $ReadyBit
 probe IO_Read $data
 command FLASH_WRITE $address $data
-expect "%timestamp IO_WRITE $CommandRegister $ProgramCommand"
-expect "%timestamp IO_WRITE $address $data"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
+expect "%timestamp IO_CALL IO_Write $address $data"
 expect "%timestamp TstProbe Fun=IO_Read,Data=0"
-expect "%timestamp IO_READ 0 $StatusRegister"
+expect "%timestamp IO_CALL IO_Read 0 $StatusRegister"
 expect "%timestamp TstProbe Fun=IO_Read,Data=0"
-expect "%timestamp IO_READ 0 $StatusRegister"
+expect "%timestamp IO_CALL IO_Read 0 $StatusRegister"
 expect "%timestamp TstProbe Fun=IO_Read,Data=0"
-expect "%timestamp IO_READ 0 $StatusRegister"
+expect "%timestamp IO_CALL IO_Read 0 $StatusRegister"
 expect "%timestamp TstProbe Fun=IO_Read,Data=128"
-expect "%timestamp IO_READ $ReadyBit $StatusRegister"
+expect "%timestamp IO_CALL IO_Read $ReadyBit $StatusRegister"
 expect "%timestamp TstProbe Fun=IO_Read,Data=$data"
-expect "%timestamp IO_READ [expr $data] $address"
+expect "%timestamp IO_CALL IO_Read [expr $data] $address"
 expect "%timestamp FLASH_WRITE $FLASH_SUCCESS"
 expect "%timestamp Trg-Done QS_RX_COMMAND"
 
@@ -82,11 +82,11 @@ expect "%timestamp Trg-Done QS_RX_COMMAND"
 test "Write fails Vpp Error" -noreset
 probe IO_Read [expr $ReadyBit | $VppErrorBit]
 command FLASH_WRITE $address $data
-expect "%timestamp IO_WRITE $CommandRegister $ProgramCommand"
-expect "%timestamp IO_WRITE $address $data"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
+expect "%timestamp IO_CALL IO_Write $address $data"
 expect "%timestamp TstProbe Fun=IO_Read,Data=[expr $ReadyBit | $VppErrorBit]"
-expect "%timestamp IO_READ [expr $ReadyBit | $VppErrorBit] $StatusRegister"
-expect "%timestamp IO_WRITE $CommandRegister $Reset"
+expect "%timestamp IO_CALL IO_Read [expr $ReadyBit | $VppErrorBit] $StatusRegister"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $Reset"
 expect "%timestamp FLASH_WRITE $FLASH_VPP_ERROR"
 expect "%timestamp Trg-Done QS_RX_COMMAND"
 
@@ -94,11 +94,11 @@ expect "%timestamp Trg-Done QS_RX_COMMAND"
 test "Write fails Program Error" -noreset
 probe IO_Read [expr $ReadyBit | $ProgramErrorBit]
 command FLASH_WRITE $address $data
-expect "%timestamp IO_WRITE $CommandRegister $ProgramCommand"
-expect "%timestamp IO_WRITE $address $data"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
+expect "%timestamp IO_CALL IO_Write $address $data"
 expect "%timestamp TstProbe Fun=IO_Read,Data=[expr $ReadyBit | $ProgramErrorBit]"
-expect "%timestamp IO_READ [expr $ReadyBit | $ProgramErrorBit] $StatusRegister"
-expect "%timestamp IO_WRITE $CommandRegister $Reset"
+expect "%timestamp IO_CALL IO_Read [expr $ReadyBit | $ProgramErrorBit] $StatusRegister"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $Reset"
 expect "%timestamp FLASH_WRITE $FLASH_PROGRAM_ERROR"
 expect "%timestamp Trg-Done QS_RX_COMMAND"
 
@@ -106,11 +106,11 @@ expect "%timestamp Trg-Done QS_RX_COMMAND"
 test "Write fails Protected-Block Error" -noreset
 probe IO_Read [expr $ReadyBit | $BlockProtectionErrorBit]
 command FLASH_WRITE $address $data
-expect "%timestamp IO_WRITE $CommandRegister $ProgramCommand"
-expect "%timestamp IO_WRITE $address $data"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
+expect "%timestamp IO_CALL IO_Write $address $data"
 expect "%timestamp TstProbe Fun=IO_Read,Data=[expr $ReadyBit | $BlockProtectionErrorBit]"
-expect "%timestamp IO_READ [expr $ReadyBit | $BlockProtectionErrorBit] $StatusRegister"
-expect "%timestamp IO_WRITE $CommandRegister $Reset"
+expect "%timestamp IO_CALL IO_Read [expr $ReadyBit | $BlockProtectionErrorBit] $StatusRegister"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $Reset"
 expect "%timestamp FLASH_WRITE $FLASH_PROTECTED_BLOCK_ERROR"
 expect "%timestamp Trg-Done QS_RX_COMMAND"
 
@@ -118,11 +118,11 @@ expect "%timestamp Trg-Done QS_RX_COMMAND"
 test "Write fails Unknown Program Error" -noreset
 probe IO_Read [expr $ReadyBit | $EraseSuspendBit | $EraseErrorBit | $ProgramSuspendBit | $ReservedBit]
 command FLASH_WRITE $address $data
-expect "%timestamp IO_WRITE $CommandRegister $ProgramCommand"
-expect "%timestamp IO_WRITE $address $data"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
+expect "%timestamp IO_CALL IO_Write $address $data"
 expect "%timestamp TstProbe Fun=IO_Read,Data=[expr $ReadyBit | $EraseSuspendBit | $EraseErrorBit | $ProgramSuspendBit | $ReservedBit]"
-expect "%timestamp IO_READ [expr $ReadyBit | $EraseSuspendBit | $EraseErrorBit | $ProgramSuspendBit | $ReservedBit] $StatusRegister"
-expect "%timestamp IO_WRITE $CommandRegister $Reset"
+expect "%timestamp IO_CALL IO_Read [expr $ReadyBit | $EraseSuspendBit | $EraseErrorBit | $ProgramSuspendBit | $ReservedBit] $StatusRegister"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $Reset"
 expect "%timestamp FLASH_WRITE $FLASH_UNKNOWN_PROGRAM_ERROR"
 expect "%timestamp Trg-Done QS_RX_COMMAND"
 
@@ -131,12 +131,12 @@ test "Write fails Read-Back Error" -noreset
 probe IO_Read $ReadyBit
 probe IO_Read [expr $data - 1]
 command FLASH_WRITE $address $data
-expect "%timestamp IO_WRITE $CommandRegister $ProgramCommand"
-expect "%timestamp IO_WRITE $address $data"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
+expect "%timestamp IO_CALL IO_Write $address $data"
 expect "%timestamp TstProbe Fun=IO_Read,Data=[expr $ReadyBit]"
-expect "%timestamp IO_READ $ReadyBit $StatusRegister"
+expect "%timestamp IO_CALL IO_Read $ReadyBit $StatusRegister"
 expect "%timestamp TstProbe Fun=IO_Read,Data=[expr $data - 1]"
-expect "%timestamp IO_READ [expr $data - 1] $address"
+expect "%timestamp IO_CALL IO_Read [expr $data - 1] $address"
 expect "%timestamp FLASH_WRITE $FLASH_READ_BACK_ERROR"
 expect "%timestamp Trg-Done QS_RX_COMMAND"
 
@@ -146,14 +146,14 @@ probe IO_Read [expr ~$ReadyBit]
 probe IO_Read $ReadyBit
 probe IO_Read $data
 command FLASH_WRITE $address $data
-expect "%timestamp IO_WRITE $CommandRegister $ProgramCommand"
-expect "%timestamp IO_WRITE $address $data"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
+expect "%timestamp IO_CALL IO_Write $address $data"
 expect "%timestamp TstProbe Fun=IO_Read,Data=[expr ~$ReadyBit]"
-expect "%timestamp IO_READ [expr ~$ReadyBit] $StatusRegister"
+expect "%timestamp IO_CALL IO_Read [expr ~$ReadyBit] $StatusRegister"
 expect "%timestamp TstProbe Fun=IO_Read,Data=$ReadyBit"
-expect "%timestamp IO_READ $ReadyBit $StatusRegister"
+expect "%timestamp IO_CALL IO_Read $ReadyBit $StatusRegister"
 expect "%timestamp TstProbe Fun=IO_Read,Data=$data"
-expect "%timestamp IO_READ $data $address"
+expect "%timestamp IO_CALL IO_Read $data $address"
 expect "%timestamp FLASH_WRITE $FLASH_SUCCESS"
 expect "%timestamp Trg-Done QS_RX_COMMAND"
 
@@ -166,11 +166,11 @@ for {set i 0} {$i < 10} {incr i} {
     probe IO_Read [expr ~$ReadyBit]
 }
 command FLASH_WRITE $address $data
-expect "%timestamp IO_WRITE $CommandRegister $ProgramCommand"
-expect "%timestamp IO_WRITE $address $data"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
+expect "%timestamp IO_CALL IO_Write $address $data"
 for {set i 0} {$i < 10} {incr i} {
     expect "%timestamp TstProbe Fun=IO_Read,Data=[expr ~$ReadyBit]"
-    expect "%timestamp IO_READ [expr ~$ReadyBit] $StatusRegister"
+    expect "%timestamp IO_CALL IO_Read [expr ~$ReadyBit] $StatusRegister"
 }
 expect "%timestamp FLASH_WRITE $FLASH_TIMEOUT_ERROR"
 expect "%timestamp Trg-Done QS_RX_COMMAND"
@@ -184,11 +184,11 @@ for {set i 0} {$i < 10} {incr i} {
     probe IO_Read [expr ~$ReadyBit]
 }
 command FLASH_WRITE $address $data
-expect "%timestamp IO_WRITE $CommandRegister $ProgramCommand"
-expect "%timestamp IO_WRITE $address $data"
+expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
+expect "%timestamp IO_CALL IO_Write $address $data"
 for {set i 0} {$i < 10} {incr i} {
     expect "%timestamp TstProbe Fun=IO_Read,Data=[expr ~$ReadyBit]"
-    expect "%timestamp IO_READ [expr ~$ReadyBit] $StatusRegister"
+    expect "%timestamp IO_CALL IO_Read [expr ~$ReadyBit] $StatusRegister"
 }
 expect "%timestamp FLASH_WRITE $FLASH_TIMEOUT_ERROR"
 expect "%timestamp Trg-Done QS_RX_COMMAND"

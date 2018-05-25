@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, BSP for QUTest
-* Last Updated for Version: 6.2.0
-* Date of the Last Update:  2018-03-16
+* Last Updated for Version: 6.3.1
+* Date of the Last Update:  2018-05-24
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,9 +40,7 @@ Q_DEFINE_THIS_MODULE("bsp")
 static uint32_t l_rnd;      /* random seed */
 
 enum {
-    BSP_DISPLAY_PHIL_STAT = QS_USER,
-    BSP_DISPLAY_PAUSED,
-    BSP_RANDOM,
+    BSP_CALL = QS_USER,
 };
 
 /*..........................................................................*/
@@ -50,11 +48,13 @@ void BSP_init(int argc, char **argv) {
     Q_ALLEGE(QS_INIT(argc <= 1 ? (void *)0 : argv[1]) != (uint8_t)0);
 
     QS_FUN_DICTIONARY(&BSP_displayPaused);
+    QS_FUN_DICTIONARY(&BSP_displayPhilStat);
     QS_FUN_DICTIONARY(&BSP_random);
+    QS_FUN_DICTIONARY(&BSP_randomSeed);
 
-    QS_USR_DICTIONARY(BSP_DISPLAY_PHIL_STAT);
-    QS_USR_DICTIONARY(BSP_DISPLAY_PAUSED);
-    QS_USR_DICTIONARY(BSP_RANDOM);
+    QS_USR_DICTIONARY(BSP_CALL);
+
+    BSP_randomSeed(1234U);
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
@@ -63,15 +63,15 @@ void BSP_displayPaused(uint8_t paused) {
     QS_TEST_PROBE(
         Q_ASSERT_ID(100, 0);
     )
-    QS_BEGIN(BSP_DISPLAY_PAUSED, (void *)0) /* application-specific record */
+    QS_BEGIN(BSP_CALL, (void *)0) /* application-specific record */
+        QS_FUN(&BSP_displayPaused);
         QS_U8(0, paused);
     QS_END()
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char_t const *stat) {
-    (void)n;
-    (void)stat;
-    QS_BEGIN(BSP_DISPLAY_PHIL_STAT, (void *)0) /* application-specific record */
+    QS_BEGIN(BSP_CALL, (void *)0) /* application-specific record */
+        QS_FUN(&BSP_displayPhilStat);
         QS_U8(0, n);
         QS_STR(stat);
     QS_END()
@@ -84,12 +84,22 @@ uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     QS_TEST_PROBE(
         rnd = qs_tp_;
     )
-    QS_BEGIN(BSP_RANDOM, (void *)0) /* application-specific record */
+    QS_BEGIN(BSP_CALL, (void *)0) /* application-specific record */
+        QS_FUN(&BSP_random);
         QS_U32(0, rnd);
     QS_END()
     return rnd;
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
+    QS_TEST_PROBE_DEF(&BSP_randomSeed)
+
+    QS_TEST_PROBE(
+        seed = qs_tp_;
+    )
     l_rnd = seed;
+    QS_BEGIN(BSP_CALL, (void *)0) /* application-specific record */
+        QS_FUN(&BSP_randomSeed);
+        QS_U32(0, seed);
+    QS_END()
 }
