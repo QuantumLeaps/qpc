@@ -4,8 +4,8 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.0
-* Last updated on  2018-05-10
+* Last updated for version 6.3.1
+* Last updated on  2018-05-24
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -885,17 +885,12 @@ enum {
 #elif (QS_FUN_PTR_SIZE == 8)
     #define QS_FUN(fun_)        (QS_u64(QS_FUN_T, (uint64_t)(fun_)))
 #else
-
     /*! Output formatted function pointer to the QS record */
     #define QS_FUN(fun_)        (QS_u32(QS_FUN_T, (uint32_t)(fun_)))
 #endif
 
 
 #if (Q_SIGNAL_SIZE == 1)
-
-    /*! Output formatted event signal (of type ::QSignal) and
-    * the state machine object to the user QS record
-    */
     #define QS_SIG(sig_, obj_) \
         QS_u8(QS_SIG_T, (sig_)); \
         QS_OBJ_(obj_)
@@ -906,6 +901,13 @@ enum {
 #elif (Q_SIGNAL_SIZE == 4)
     #define QS_SIG(sig_, obj_) \
         QS_u32(QS_SIG_T, (sig_)); \
+        QS_OBJ_(obj_)
+#else
+    /*! Output formatted event signal (of type ::QSignal) and
+    * the state machine object to the user QS record
+    */
+    #define QS_SIG(sig_, obj_) \
+        QS_u16(QS_SIG_T, (sig_)); \
         QS_OBJ_(obj_)
 #endif
 
@@ -1234,3 +1236,4 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
 #endif /* Q_UTEST */
 
 #endif /* qs_h  */
+
