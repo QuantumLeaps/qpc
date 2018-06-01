@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for DPP on EK-TM4C123GXL, uC/OS-II kernel, GNU-ARM
-# Last Updated for Version: 6.1.0
-# Date of the Last Update:  2018-02-07
+# Last Updated for Version: 6.3.1
+# Date of the Last Update:  2018-05-31
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -145,7 +145,7 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DTARGET_IS_TM4C123_RB1
+DEFINES   := -DTARGET_IS_TM4C123_RB1 -D__FPU_PRESENT
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
@@ -157,6 +157,7 @@ ARM_CPU   := -mcpu=cortex-m4
 ARM_ARCH  := 7   # NOTE: must match the ARM_CPU!
 ARM_FPU   := -mfpu=vfp
 FLOAT_ABI := -mfloat-abi=softfp
+ASM_FPU   := -defsym=__FPU_PRESENT=1
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
@@ -181,7 +182,7 @@ BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 # Typically, you should not need to change anything below this line
 
 # basic utilities (included in Qtools for Windows), see:
-#    http://sourceforge.net/projects/qpc/files/Qtools
+#    http://sourceforge.net/projects/qpc/files/QTools
 
 MKDIR := mkdir
 RM    := rm

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GLX board, uC/OS-II RTOS
-* Last Updated for Version: 5.5.0
-* Date of the Last Update:  2015-08-20
+* Last Updated for Version: 6.3.1
+* Date of the Last Update:  2018-05-20
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -78,7 +78,7 @@ static uint32_t l_rnd;  /* random seed */
 void GPIOPortA_IRQHandler(void);
 void GPIOPortA_IRQHandler(void) {
 #if OS_CRITICAL_METHOD == 3u  /* Allocate storage for CPU status register */
-    OS_CPU_SR  cpu_sr = 0u;
+    OS_CPU_SR cpu_sr;
 #endif
 
     OS_ENTER_CRITICAL();
@@ -98,7 +98,7 @@ void App_TaskDelHook    (OS_TCB *ptcb) { (void)ptcb; }
 /*..........................................................................*/
 void App_TaskIdleHook(void) {
 #if OS_CRITICAL_METHOD == 3u  /* Allocate storage for CPU status register */
-    OS_CPU_SR cpu_sr = 0u;
+    OS_CPU_SR cpu_sr;
 #endif
 
     /* toggle LED2 on and then off, see NOTE01 */
@@ -204,6 +204,7 @@ void BSP_init(void) {
     }
     QS_OBJ_DICTIONARY(&l_tickHook);
     QS_OBJ_DICTIONARY(&l_GPIOPortA_IRQHandler);
+    QS_USR_DICTIONARY(PHILO_STAT);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -221,8 +222,8 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
          : 0U);              /* turn the LED1 off */
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
-        QS_U8(1, n);                  /* Philosopher number */
-        QS_STR(stat);                 /* Philosopher status */
+        QS_U8(1, n);  /* Philosopher number */
+        QS_STR(stat); /* Philosopher status */
     QS_END()
 }
 /*..........................................................................*/
@@ -249,9 +250,6 @@ void BSP_terminate(int16_t result) {
 
 /* QF callbacks ============================================================*/
 void QF_onStartup(void) {
-    QF_CRIT_STAT_TYPE cpu_sr;
-    QF_CRIT_ENTRY(cpu_sr); /* DISABLED interrupts */
-
     /* initialize the system clock tick... */
     OS_CPU_SysTickInit(SystemCoreClock / OS_TICKS_PER_SEC);
 
@@ -261,9 +259,6 @@ void QF_onStartup(void) {
 
     /* enable IRQs in the NVIC... */
     NVIC_EnableIRQ(GPIOA_IRQn);
-
-    /* NOTE: do not exit the critical section and leave interrupts DISABLED */
-    (void)cpu_sr; /* avoid compiler warning about unused variable */
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
@@ -276,6 +271,15 @@ void Q_onAssert(char const *module, int loc) {
     (void)module;
     (void)loc;
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+
+#ifndef NDEBUG
+    /* light all both LEDs */
+    GPIOF->DATA_Bits[LED_RED | LED_GREEN | LED_BLUE] = 0xFFU;
+    /* for debugging, hang on in an endless loop until SW1 is pressed... */
+    while (GPIOF->DATA_Bits[BTN_SW1] != 0) {
+    }
+#endif
+
     NVIC_SystemReset();
 }
 
@@ -294,41 +298,28 @@ uint8_t QS_onStartup(void const *arg) {
     /* configure UART0 pins for UART operation */
     tmp = (1U << 0) | (1U << 1);
     GPIOA->DIR   &= ~tmp;
+    GPIOA->AFSEL |= tmp;
+    GPIOA->DR2R  |= tmp;   /* set 2mA drive, DR4R and DR8R are cleared */
     GPIOA->SLR   &= ~tmp;
     GPIOA->ODR   &= ~tmp;
     GPIOA->PUR   &= ~tmp;
     GPIOA->PDR   &= ~tmp;
-    GPIOA->AMSEL &= ~tmp;  /* disable analog function on the pins */
-    GPIOA->AFSEL |= tmp;   /* enable ALT function on the pins */
-    GPIOA->DEN   |= tmp;   /* enable digital I/O on the pins */
-    GPIOA->PCTL  &= ~0x00U;
-    GPIOA->PCTL  |= 0x11U;
+    GPIOA->DEN   |= tmp;
 
     /* configure the UART for the desired baud rate, 8-N-1 operation */
     tmp = (((SystemCoreClock * 8U) / UART_BAUD_RATE) + 1U) / 2U;
     UART0->IBRD   = tmp / 64U;
     UART0->FBRD   = tmp % 64U;
-    UART0->LCRH   = (0x3U << 5); /* configure 8-N-1 operation */
-    UART0->LCRH  |= (0x1U << 4); /* enable FIFOs */
-    UART0->CTL    = (1U << 0)    /* UART enable */
-                    | (1U << 8)  /* UART TX enable */
-                    | (1U << 9); /* UART RX enable */
+    UART0->LCRH   = 0x60U; /* configure 8-N-1 operation */
+    UART0->LCRH  |= 0x10U;
+    UART0->CTL   |= (1U << 0) | (1U << 8) | (1U << 9);
 
     QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
+    QS_FILTER_ON(QS_SM_RECORDS);
+    QS_FILTER_ON(QS_UA_RECORDS);
 
     return (uint8_t)1; /* return success */
 }

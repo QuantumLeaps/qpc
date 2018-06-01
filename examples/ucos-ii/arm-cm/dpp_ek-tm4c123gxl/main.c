@@ -87,7 +87,7 @@ int main() {
     }
 
     /* NOTE: provide uC/OS-II task attributes for the AO's task */
-    QActive_setAttr(AO_Table, OS_TASK_OPT_SAVE_FP | OS_TASK_OPT_STK_CHK, 0);
+    QActive_setAttr(AO_Table, OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK, 0);
     QACTIVE_START(AO_Table,
                   (uint_fast8_t)(N_PHILO + 1), /* QP priority */
                   tableQueueSto,  /* storage for the AO's queue */
