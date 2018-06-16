@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-04-05
+* Last updated for version 6.3.2
+* Last updated on  2018-06-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -59,6 +59,7 @@ pthread_mutex_t QF_pThreadMutex_;
 static pthread_mutex_t l_startupMutex;
 static bool l_isRunning;
 static struct timespec l_tick;
+static int_t l_tickPrio;
 enum { NANOSLEEP_NSEC_PER_SEC = 1000000000 }; /* see NOTE05 */
 
 /* QF functions ============================================================*/
@@ -90,6 +91,7 @@ void QF_init(void) {
 
     l_tick.tv_sec = 0;
     l_tick.tv_nsec = NANOSLEEP_NSEC_PER_SEC/100L; /* default clock tick */
+    l_tickPrio = sched_get_priority_min(SCHED_FIFO); /* default tick prio */
 }
 /****************************************************************************/
 
@@ -98,8 +100,8 @@ int_t QF_run(void) {
 
     QF_onStartup();  /* invoke startup callback */
 
-    /* try to maximize the priority of the ticker thread, see NOTE01 */
-    sparam.sched_priority = sched_get_priority_max(SCHED_FIFO);
+    /* try to set the priority of the ticker thread, see NOTE01 */
+    sparam.sched_priority = l_tickPrio;
     if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &sparam) == 0) {
         /* success, this application has sufficient privileges */
     }
@@ -125,9 +127,10 @@ int_t QF_run(void) {
     return (int_t)0; /* return success */
 }
 /*..........................................................................*/
-void QF_setTickRate(uint32_t ticksPerSec) {
+void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio) {
     Q_REQUIRE_ID(300, ticksPerSec != (uint32_t)0);
     l_tick.tv_nsec = NANOSLEEP_NSEC_PER_SEC / ticksPerSec;
+    l_tickPrio = tickPrio;
 }
 /*..........................................................................*/
 void QF_stop(void) {

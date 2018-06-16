@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 6.2.0
-* Date of the Last Update:  2018-05-21
+* Last Updated for Version: 6.3.2
+* Date of the Last Update:  2018-06-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -48,6 +48,12 @@ int main(int argc, char *argv[]) {
     BSP_init(argc, argv); /* initialize the Board Support Package */
 
     /* object dictionaries... */
+    QS_OBJ_DICTIONARY(AO_Table);
+    QS_OBJ_DICTIONARY(AO_Philo[0]);
+    QS_OBJ_DICTIONARY(AO_Philo[1]);
+    QS_OBJ_DICTIONARY(AO_Philo[2]);
+    QS_OBJ_DICTIONARY(AO_Philo[3]);
+    QS_OBJ_DICTIONARY(AO_Philo[4]);
     QS_OBJ_DICTIONARY(smlPoolSto);
 
     /* pause execution of the test and wait for the test script to continue */

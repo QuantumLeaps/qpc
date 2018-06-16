@@ -3,8 +3,8 @@
 /// @cond
 ///===========================================================================
 /// Product: QP/C
-/// Last Updated for Version: 5.9.7
-/// Date of the Last Update:  2017-08-20
+/// Last Updated for Version: 6.3.2
+/// Date of the Last Update:  2018-06-16
 ///
 ///                    Q u a n t u m     L e a P s
 ///                    ---------------------------
@@ -31,8 +31,8 @@
 /// along with this program. If not, see <http://www.gnu.org/licenses/>.
 ///
 /// Contact information:
-/// https://state-machine.com
-/// info@state-machine.com
+/// https://www.state-machine.com
+/// mailto:info@state-machine.com
 ///============================================================================
 /// @endcond
 
@@ -105,6 +105,9 @@ qpc.lnt           // QP/C options
  QF_PTR_AT_,
  QF_CRIT_ENTRY_,
  QF_CRIT_EXIT_,
+ Q_ASSERT_CRIT_,
+ Q_REQUIRE_CRIT_,
+ Q_ERROR_CRIT_,
  QF_SCHED_LOCK_,
  QF_SCHED_UNLOCK_,
  QF_ISR_CONTEXT_,
@@ -115,6 +118,8 @@ qpc.lnt           // QP/C options
 -esym(960,            // MISRA04-19.4(req) Disallowed macro definition
  QF_CRIT_ENTRY_,
  QF_CRIT_EXIT_,
+ Q_ASSERT_CRIT_,
+ Q_REQUIRE_CRIT_,
  QF_SCHED_STAT_,
  QF_SCHED_LOCK_,
  QF_SCHED_UNLOCK_,
@@ -137,7 +142,9 @@ qpc.lnt           // QP/C options
  QACTIVE_EQUEUE_SIGNAL_,
  QACTIVE_EQUEUE_ONEMPTY_,
  QF_SCHED_LOCK_,
- QF_SCHED_UNLOCK_)
+ QF_SCHED_UNLOCK_,
+ Q_ASSERT_CRIT_,
+ Q_ERROR_CRIT_)
 -esym(960, 8.8)       // MISRA04-8.8(req) Seems to be checked incorrectly...
 
 // QV

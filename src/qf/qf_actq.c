@@ -9,8 +9,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-14
+* Last updated for version 6.3.2
+* Last updated on  2018-06-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -116,14 +116,14 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         }
         else {
             status = false; /* cannot post */
-            Q_ERROR_ID(110); /* must be able to post the event */
+            Q_ERROR_CRIT_(110); /* must be able to post the event */
         }
     }
     else if (nFree > (QEQueueCtr)margin) {
         status = true; /* can post */
     }
     else {
-        status = false; /* cannot post */
+        status = false; /* cannot post, but don't assert */
     }
 
     if (status) { /* can post the event? */
@@ -183,7 +183,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 #endif
         QF_CRIT_EXIT_();
     }
-    else {
+    else { /* cannot post the event */
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)
@@ -237,7 +237,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     )
 
     /* the queue must be able to accept the event (cannot overflow) */
-    Q_ASSERT_ID(210, nFree != (QEQueueCtr)0);
+    Q_ASSERT_CRIT_(210, nFree != (QEQueueCtr)0);
 
     /* is it a dynamic event? */
     if (e->poolId_ != (uint8_t)0) {
@@ -305,8 +305,8 @@ QEvt const *QActive_get_(QActive * const me) {
     QEQueueCtr nFree;
     QEvt const *e;
     QF_CRIT_STAT_
-    QF_CRIT_ENTRY_();
 
+    QF_CRIT_ENTRY_();
     QACTIVE_EQUEUE_WAIT_(me);  /* wait for event to arrive directly */
 
     e = me->eQueue.frontEvt; /* always remove event from the front location */
@@ -335,7 +335,7 @@ QEvt const *QActive_get_(QActive * const me) {
         me->eQueue.frontEvt = (QEvt const *)0; /* queue becomes empty */
 
         /* all entries in the queue must be free (+1 for fronEvt) */
-        Q_ASSERT_ID(310, nFree == (me->eQueue.end + (QEQueueCtr)1));
+        Q_ASSERT_CRIT_(310, nFree == (me->eQueue.end + (QEQueueCtr)1));
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST,
                          QS_priv_.locFilter[AO_OBJ], me)

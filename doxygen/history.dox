@@ -1,6 +1,18 @@
 /**
 @page history Revision History
 
+@section qpc_6_3_2 Version 6.3.2, 2018-06-16
+The main purpose of this release is to implement consistent calling of assertion macros in QP/C, captured as a bug:
+
+- [bug#215 "QP is internally inconsistent in calling assertion macros"](https://sourceforge.net/p/qpc/bugs/215/).
+
+Also, this release improves the QUTest DPP example (directory `qpc/examples/qutest/dpp`) by demonstrating the proper use of QS_TEST_PAUSE() and the corresponding test scripts. This example now matches the [QUTest documentation of this feature](https://www.state-machine.com/qtools/qutest_rtc.html#qutest_pause).
+
+Finally, this release modifies the QP/C ports to POSIX and POSIX-QV by allowing to configure the p-thread priority of the ticker thread. This is achieved by adding a `tickPrio` parameter to the `QF_setTickRate()` function. (**NOTE** this modification will require changing existing QP applications for POSIX or POSIX-QV that call `QF_setTickRate()`.      
+
+
+
+------------------------------------------------------------------------------
 @section qpc_6_3_1 Version 6.3.1, 2018-05-24
 This release migrates the [QUTest](https://www.state-machine.com/qtools/qutest.html) examples to [QM 4.2.1](https://www.state-machine.com/qm/history.html#qm_4_2_1), which now can generate QS_FUN_DICTIONARY() records automatically. This release also adds a generic, simple blinky example for QUTest located in `examples/qutest/blinky`. Also, this release fixes a bug in the example `qutest/TDDbook_LedDriver` so that the code compiles cleanly with the updated header file "qassert.h".
 

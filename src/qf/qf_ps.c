@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-18
+* Last updated for version 6.3.2
+* Last updated on  2018-06-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -307,7 +307,7 @@ void QActive_unsubscribeAll(QActive const * const me) {
 
     Q_REQUIRE_ID(500, ((uint_fast8_t)0 < p)
                         && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
-                       && (QF_active_[p] == me));
+                        && (QF_active_[p] == me));
 
     for (sig = (enum_t)Q_USER_SIG; sig < QF_maxPubSignal_; ++sig) {
         QF_CRIT_STAT_
@@ -325,6 +325,9 @@ void QActive_unsubscribeAll(QActive const * const me) {
             QS_END_NOCRIT_()
         }
         QF_CRIT_EXIT_();
+
+        /* prevent merging critical sections */
+        QF_CRIT_EXIT_NOP();
     }
 }
 

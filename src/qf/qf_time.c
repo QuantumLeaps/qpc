@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on 2018-03-18
+* Last updated for version 6.3.2
+* Last updated on 2018-06-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -99,7 +99,7 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
             if (QF_timeEvtHead_[tickRate].act != (void *)0) {
 
                 /* sanity check */
-                Q_ASSERT_ID(110, prev != (QTimeEvt *)0);
+                Q_ASSERT_CRIT_(110, prev != (QTimeEvt *)0);
                 prev->next = (QTimeEvt *)QF_timeEvtHead_[tickRate].act;
                 QF_timeEvtHead_[tickRate].act = (void *)0;
                 t = prev->next;  /* switch to the new list */
@@ -201,9 +201,6 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
 */
 bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate) {
     bool inactive;
-
-    /** @pre the tick rate must be in range */
-    Q_REQUIRE_ID(200, tickRate < (uint_fast8_t)QF_MAX_TICK_RATE);
 
     if (QF_timeEvtHead_[tickRate].next != (QTimeEvt *)0) {
         inactive = false;

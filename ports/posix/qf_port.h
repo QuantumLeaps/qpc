@@ -3,8 +3,8 @@
 * @brief QF/C port to POSIX threads (pthreads)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.8.2
-* Date of the Last Update:  2016-12-22
+* Last Updated for Version: 6.3.2
+* Date of the Last Update:  2018-06-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -72,7 +72,7 @@
 #include "qmpool.h"    /* POSIX needs memory-pool */
 #include "qf.h"        /* QF platform-independent public interface */
 
-void QF_setTickRate(uint32_t ticksPerSec); /* set clock tick rate */
+void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio);
 void QF_onClockTick(void); /* clock tick callback (provided in the app) */
 
 extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */

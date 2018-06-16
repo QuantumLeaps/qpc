@@ -18,12 +18,6 @@ NOTE: Requries QP5.</documentation>
 if (registered == (uint8_t)0) {
     registered = (uint8_t)1;
 
-    QS_OBJ_DICTIONARY(&amp;l_philo[0]);
-    QS_OBJ_DICTIONARY(&amp;l_philo[1]);
-    QS_OBJ_DICTIONARY(&amp;l_philo[2]);
-    QS_OBJ_DICTIONARY(&amp;l_philo[3]);
-    QS_OBJ_DICTIONARY(&amp;l_philo[4]);
-
     QS_OBJ_DICTIONARY(&amp;l_philo[0].timeEvt);
     QS_OBJ_DICTIONARY(&amp;l_philo[1].timeEvt);
     QS_OBJ_DICTIONARY(&amp;l_philo[2].timeEvt);
@@ -123,8 +117,6 @@ Q_ASSERT_ID(30, Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
     <initial target="../1/1">
      <action>uint8_t n;
 (void)e; /* suppress the compiler warning about unused parameter */
-
-QS_OBJ_DICTIONARY(&amp;l_table);
 
 QS_SIG_DICTIONARY(DONE_SIG,      (void *)0); /* global signals */
 QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);

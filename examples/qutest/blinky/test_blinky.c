@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Purpose: Fixture for QUTEST
-* Last Updated for Version: 6.3.1
-* Date of the Last Update:  2018-05-21
+* Last Updated for Version: 6.3.2
+* Date of the Last Update:  2018-06-13
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,9 +40,6 @@ Q_DEFINE_THIS_FILE
 int main(int argc, char *argv[]) {
     static QF_MPOOL_EL(QEvt) smlPoolSto[10]; /* storage for small pool*/
     static QEvt const *blinkyQSto[10]; /* event queue storage for Blinky */
-
-    (void)argc;  /* unused parameter */
-    (void)argv;  /* unused parameter */
 
     QF_init();  /* initialize the framework */
 

@@ -33,16 +33,24 @@ Cooperative Kernel
 @description
 QV is a simple **cooperative** kernel (previously called "Vanilla" kernel). This kernel executes active objects one at a time, with priority-based scheduling performed before processing of each event. Due to naturally short duration of event processing in state machines, the simple QV kernel is often adequate for many real-time systems.
 
+@note
+The QV scheduler is described in Section 6.3.7 of the book ["Practical UML Statecharts in C/C++, 2nd Ed" (PSiCC2)](https://www.state-machine.com/psicc2/).
+
 
 ------------------------------------------------------------------------------
 @section qv_overview QV Overview
-The QV scheduler is engaged after every RTC step of any @termref{active object} to choose the next active object to execute. The QV scheduler always chooses the highest-priority active object that has any events in its event queue. The QV scheduler then extracts the next event from this queue and dispatches it to the state machine associated with the active object. The state machine runs to completion, after which the QV scheduler runs and the cycle repeats.
+The QV scheduler is engaged after every RTC step of any active object to choose the next active object to execute. The QV scheduler always chooses the highest-priority active object that has any events in its event queue. The QV scheduler then extracts the next event from this queue and dispatches it to the state machine associated with the active object. The state machine runs to completion, after which the QV scheduler runs and the cycle repeats.
+
+![QV scheduler operation](qv.gif)
 
 Please note that because the state machines always return to the QV scheduler after each RTC step, a single stack can be used to process all state machines (memory-friendly architecture).
 
-The QV scheduler can also very easily detect when all event queues are empty, at which point it can call the idle callback to let the application put the CPU and peripherals to a low-power sleep mode (power-friendly architecture).
+The QV scheduler can also very easily detect when all event queues are empty, at which point it can call the idle callback to let the application put the CPU and peripherals to a **low-power sleep mode** (power-friendly architecture).
 
-Given the simplicity, portability, and low-resource consumption, the QV scheduler is very attractive. It allows you to partition the problem into active objects and execute these active objects orderly. The task-level response of this scheduler is the longest RTC step in the whole system, but because event-driven active objects don’t block, the RTC steps tend to be very short (typically just a few microseconds). Also, often you can break up longer RTC steps into shorter pieces, by posting an event to self and returning (“Reminder” state pattern). The self-posted event then triggers the continuation of longer processing.
+Given the simplicity, portability, and low-resource consumption, the QV scheduler is very attractive. It allows you to partition the problem into active objects and execute these active objects orderly. The thread-level response of this scheduler is the longest RTC step in the whole system, but because event-driven active objects don’t block, the RTC steps tend to be very short (typically just a few microseconds). Also, often you can break up longer RTC steps into shorter pieces, by posting an event to self and returning (“Reminder” state pattern). The self-posted event then triggers the continuation of longer processing.
+
+@remarks
+Sometimes it is not practical to break up long RTC steps, and consequently the thread-level response of the simple @ref "QV kernel" might be too slow. In this cases you need to use a *preemptive* kernel. The big advantage of preemptive kernel is that it effectively decouples high-priority thread from low-priority threads in the time domain. The timeliness of execution of high-priority thread is almost independent on the low-priority threads. But of course there is no such thing as a free lunch. Preemptive kernels open the whole new class of problems related to race conditions. So you need to be very careful about sharing any resources.
 
 
 @next{qk}
@@ -58,7 +66,7 @@ Preemptive Run-To-Completion (Non-Blocking) Kernel
 </p>
 
 @note
-The non-blocking, run-to-completion, preemptive threads are known in the literature as "basic tasks" (OSEK/AUTOSAR terminology), sometimes also called "fibers" (e.g., Q-Kernel) or "software interrupts" (e.g., TI-RTOS).
+The non-blocking, run-to-completion, preemptive threads are known in the literature as "basic threads" (OSEK/AUTOSAR terminology), sometimes also called "fibers" (e.g., Q-Kernel) or "software interrupts" (e.g., TI-RTOS).
 
 
 ------------------------------------------------------------------------------

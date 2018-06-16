@@ -3,8 +3,8 @@
 * @brief QF/C port to POSIX API with cooperative QV scheduler (posix-qv)
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-04-05
+* Last updated for version 6.3.2
+* Last updated on  2018-06-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -74,8 +74,10 @@
 #include "qmpool.h"    /* POSIX-QV needs memory-pool */
 #include "qf.h"        /* QF platform-independent public interface */
 
-/* set clock tick rate (NOTE ticksPerSec==0 disables the "ticker thread" */
-void QF_setTickRate(uint32_t ticksPerSec); /* set clock tick rate */
+/* set clock tick rate and p-thread priority
+* (NOTE ticksPerSec==0 disables the "ticker thread"
+*/
+void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio);
 
 /* clock tick callback (NOTE not called when "ticker thread" is not running) */
 void QF_onClockTick(void); /* clock tick callback (provided in the app) */

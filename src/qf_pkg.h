@@ -86,6 +86,31 @@
     #define QF_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_)
 #endif
 
+/****************************************************************************/
+/* Assertions inside the crticial section */
+#ifdef Q_NASSERT /* Q_NASSERT defined--assertion checking disabled */
+
+    #define Q_ASSERT_CRIT_(id_, test_)  ((void)0)
+    #define Q_REQUIRE_CRIT_(id_, test_) ((void)0)
+    #define Q_ERROR_CRIT_(id_)          ((void)0)
+
+#else  /* Q_NASSERT not defined--assertion checking enabled */
+
+    #define Q_ASSERT_CRIT_(id_, test_) do {\
+        if ((test_)) {} else { \
+            QF_CRIT_EXIT_(); \
+            Q_onAssert(&Q_this_module_[0], (int_t)(id_)); \
+        } \
+    } while (0)
+
+    #define Q_REQUIRE_CRIT_(id_, test_) Q_ASSERT_CRIT_((id_), (test_))
+
+    #define Q_ERROR_CRIT_(id_) do { \
+        QF_CRIT_EXIT_(); \
+        Q_onAssert(&Q_this_module_[0], (int_t)(id_)); \
+    } while (0)
+
+#endif /* Q_NASSERT */
 
 /* package-scope objects ****************************************************/
 

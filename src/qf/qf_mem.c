@@ -220,7 +220,7 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
         fb = (QFreeBlock *)me->free_head; /* get a free block */
 
         /* the pool has some free blocks, so a free block must be available */
-        Q_ASSERT_ID(310, fb != (QFreeBlock *)0);
+        Q_ASSERT_CRIT_(310, fb != (QFreeBlock *)0);
 
         fb_next = fb->next; /* put volatile to a temporary to avoid UB */
 
@@ -228,7 +228,7 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
         --me->nFree; /* one less free block */
         if (me->nFree == (QMPoolCtr)0) {
             /* pool is becoming empty, so the next free block must be NULL */
-            Q_ASSERT_ID(320, fb_next == (QFreeBlock *)0);
+            Q_ASSERT_CRIT_(320, fb_next == (QFreeBlock *)0);
 
             me->nMin = (QMPoolCtr)0; /* remember that the pool got empty */
         }
@@ -239,7 +239,7 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
             * when the client code writes past the memory block, thus
             * corrupting the next block.
             */
-            Q_ASSERT_ID(330, QF_PTR_RANGE_(fb_next, me->start, me->end));
+            Q_ASSERT_CRIT_(330, QF_PTR_RANGE_(fb_next, me->start, me->end));
 
             /* is the number of free blocks the new minimum so far? */
             if (me->nMin > me->nFree) {

@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-14
+* Last updated for version 6.3.2
+* Last updated on  2018-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -135,7 +135,7 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
             * did NOT decrement the reference counter) and once in the
             * AO's event queue.
             */
-            Q_ASSERT_ID(210, e->refCtr_ >= (uint8_t)2);
+            Q_ASSERT_CRIT_(210, e->refCtr_ >= (uint8_t)2);
 
             /* we need to decrement the reference counter once, to account
             * for removing the event from the deferred event queue.

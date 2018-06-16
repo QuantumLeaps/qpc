@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-13
+* Last updated for version 6.3.2
+* Last updated on  2018-06-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -112,7 +112,6 @@ void QF_remove_(QActive * const a) {
               && (QF_active_[p] == a));
 
     QF_CRIT_ENTRY_();
-
     QF_active_[p] = (QActive *)0; /* free-up the priority level */
     a->super.state.fun = Q_STATE_CAST(0); /* invalidate the state */
     QF_CRIT_EXIT_();

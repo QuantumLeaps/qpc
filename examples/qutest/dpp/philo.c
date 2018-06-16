@@ -87,12 +87,6 @@ static QState Philo_initial(Philo * const me, QEvt const * const e) {
     if (registered == (uint8_t)0) {
         registered = (uint8_t)1;
 
-        QS_OBJ_DICTIONARY(&l_philo[0]);
-        QS_OBJ_DICTIONARY(&l_philo[1]);
-        QS_OBJ_DICTIONARY(&l_philo[2]);
-        QS_OBJ_DICTIONARY(&l_philo[3]);
-        QS_OBJ_DICTIONARY(&l_philo[4]);
-
         QS_OBJ_DICTIONARY(&l_philo[0].timeEvt);
         QS_OBJ_DICTIONARY(&l_philo[1].timeEvt);
         QS_OBJ_DICTIONARY(&l_philo[2].timeEvt);
