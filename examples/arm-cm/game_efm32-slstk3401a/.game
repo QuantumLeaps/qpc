@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <session version="4.3.0">
+ <item name="license">GPL</item>
  <group name="locked"/>
  <group name="settings">
   <item name="tabs">1</item>
@@ -7,7 +8,13 @@
   <item name="grid">3</item>
   <item name="backups">0</item>
  </group>
- <group name="windows"/>
+ <group name="windows">
+  <item id=".::missile.c">0,0,474,431,*</item>
+  <item id=".::game.h">0,131,596,300</item>
+  <item id=".::ship.c">0,0,596,300</item>
+  <item id=".::tunnel.c">-122,131,596,300</item>
+  <item id=".::mine1.c">-122,0,596,300</item>
+ </group>
  <group name="search">
   <item name="options">2032128</item>
   <item name="replace">0</item>

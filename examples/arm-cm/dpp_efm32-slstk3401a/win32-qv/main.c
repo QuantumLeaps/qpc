@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example for Windows
-* Last Updated for Version: 5.7.5
-* Date of the Last Update:  2016-11-08
+* Last Updated for Version: 6.3.3
+* Date of the Last Update:  2018-06-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : https://state-machine.com
-* Email: info@state-machine.com
+* https://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -51,6 +51,15 @@ int main() {
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init();   /* initialize the Board Support Package */
+
+    /* object dictionaries... */
+    QS_OBJ_DICTIONARY(AO_Table);
+    QS_OBJ_DICTIONARY(AO_Philo[0]);
+    QS_OBJ_DICTIONARY(AO_Philo[1]);
+    QS_OBJ_DICTIONARY(AO_Philo[2]);
+    QS_OBJ_DICTIONARY(AO_Philo[3]);
+    QS_OBJ_DICTIONARY(AO_Philo[4]);
+    QS_OBJ_DICTIONARY(smlPoolSto);
 
     /* object dictionaries... */
     QS_OBJ_DICTIONARY(smlPoolSto);

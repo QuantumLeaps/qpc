@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example for Windows
-* Last updated for version 5.7.5
-* Last updated on  2016-11-08
+* Last updated for version 6.3.
+* Last updated on  2018-06-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* https://www.state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "bsp.h"
@@ -64,16 +64,21 @@ int main() {
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
     QF_poolInit(medPoolSto, sizeof(medPoolSto), sizeof(medPoolSto[0]));
 
-    /* send object dictionaries for event queues... */
+    /* object dictionaries for AOs... */
+    QS_OBJ_DICTIONARY(AO_Missile);
+    QS_OBJ_DICTIONARY(AO_Ship);
+    QS_OBJ_DICTIONARY(AO_Tunnel);
+
+    /* object dictionaries for event queues... */
     QS_OBJ_DICTIONARY(missileQueueSto);
     QS_OBJ_DICTIONARY(shipQueueSto);
     QS_OBJ_DICTIONARY(tunnelQueueSto);
 
-    /* send object dictionaries for event pools... */
+    /* object dictionaries for event pools... */
     QS_OBJ_DICTIONARY(smlPoolSto);
     QS_OBJ_DICTIONARY(medPoolSto);
 
-    /* send signal dictionaries for globally published events... */
+    /* signal dictionaries for globally published events... */
     QS_SIG_DICTIONARY(TIME_TICK_SIG,      (void *)0);
     QS_SIG_DICTIONARY(PLAYER_TRIGGER_SIG, (void *)0);
     QS_SIG_DICTIONARY(PLAYER_QUIT_SIG,    (void *)0);

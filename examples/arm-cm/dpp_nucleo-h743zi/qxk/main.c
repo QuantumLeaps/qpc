@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example extened for QXK
-* Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-02-16
+* Last Updated for Version: 6.3.3
+* Date of the Last Update:  2018-06-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -74,6 +74,15 @@ int main() {
     * configures and starts SysTick.
     */
     BSP_init();
+
+    /* object dictionaries... */
+    QS_OBJ_DICTIONARY(AO_Table);
+    QS_OBJ_DICTIONARY(AO_Philo[0]);
+    QS_OBJ_DICTIONARY(AO_Philo[1]);
+    QS_OBJ_DICTIONARY(AO_Philo[2]);
+    QS_OBJ_DICTIONARY(AO_Philo[3]);
+    QS_OBJ_DICTIONARY(AO_Philo[4]);
+    QS_OBJ_DICTIONARY(smlPoolSto);
 
     /* object dictionaries... */
     QS_OBJ_DICTIONARY(smlPoolSto);

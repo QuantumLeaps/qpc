@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-07
+* Last Updated for Version: 6.3.3
+* Date of the Last Update:  2018-06-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,8 +28,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : https://state-machine.com
-* Email: info@state-machine.com
+* https://state-machine.com
+* mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -48,6 +48,15 @@ int main() {
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init();   /* initialize the Board Support Package */
+
+    /* object dictionaries... */
+    QS_OBJ_DICTIONARY(AO_Table);
+    QS_OBJ_DICTIONARY(AO_Philo[0]);
+    QS_OBJ_DICTIONARY(AO_Philo[1]);
+    QS_OBJ_DICTIONARY(AO_Philo[2]);
+    QS_OBJ_DICTIONARY(AO_Philo[3]);
+    QS_OBJ_DICTIONARY(AO_Philo[4]);
+    QS_OBJ_DICTIONARY(smlPoolSto);
 
     /* object dictionaries... */
     QS_OBJ_DICTIONARY(smlPoolSto);
@@ -72,7 +81,7 @@ int main() {
                       Q_DIM(philoQueueSto[n]), /* queue length [events] */
                       (void *)0,             /* stack storage (not used) */
                       0U,                    /* size of the stack [bytes] */
-                     (QEvt *)0);             /* initialization event */
+                      (QEvt *)0);            /* initialization event */
     }
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */

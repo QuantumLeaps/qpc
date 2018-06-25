@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example extened for QXK
-* Last Updated for Version: 5.9.5
-* Date of the Last Update:  2017-07-19
+* Last Updated for Version: 6.3.3
+* Date of the Last Update:  2018-06-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -61,6 +61,15 @@ int main() {
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init();   /* initialize the Board Support Package */
+
+    /* object dictionaries... */
+    QS_OBJ_DICTIONARY(AO_Table);
+    QS_OBJ_DICTIONARY(AO_Philo[0]);
+    QS_OBJ_DICTIONARY(AO_Philo[1]);
+    QS_OBJ_DICTIONARY(AO_Philo[2]);
+    QS_OBJ_DICTIONARY(AO_Philo[3]);
+    QS_OBJ_DICTIONARY(AO_Philo[4]);
+    QS_OBJ_DICTIONARY(smlPoolSto);
 
     /* object dictionaries... */
     QS_OBJ_DICTIONARY(smlPoolSto);

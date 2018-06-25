@@ -1,15 +1,28 @@
 /**
 @page history Revision History
 
-@section qpc_6_3_2 Version 6.3.2, 2018-06-16
-The main purpose of this release is to implement consistent calling of assertion macros in QP/C, captured as a bug:
+@section qpc_6_3_3 Version 6.3.3, 2018-06-22
+This release fixes the following bugs:
+
+- [bug#216 "Generated code for QP version check violates MISRA-C Rule 10.1"](https://sourceforge.net/p/qpc/bugs/216/).
+
+- [bug#217 "GNU-ARM -fstack-protector incompatible with the QP ports to GNU-ARM"](https://sourceforge.net/p/qpc/bugs/217/).
+
+Also, this release demonstrates the new features of QM 4.3.0 in several example models (qpc/examples/ directory).
+
+Finally, this release updates `3rd_party/CMSIS/Include` to the latest version from GitHub.
+
+
+------------------------------------------------------------------------------
+@section qpc_6_3_2 Version 6.3.2, 2018-06-20
+This release fixes the following bugs:
 
 - [bug#215 "QP is internally inconsistent in calling assertion macros"](https://sourceforge.net/p/qpc/bugs/215/).
 
+
 Also, this release improves the QUTest DPP example (directory `qpc/examples/qutest/dpp`) by demonstrating the proper use of QS_TEST_PAUSE() and the corresponding test scripts. This example now matches the [QUTest documentation of this feature](https://www.state-machine.com/qtools/qutest_rtc.html#qutest_pause).
 
-Finally, this release modifies the QP/C ports to POSIX and POSIX-QV by allowing to configure the p-thread priority of the ticker thread. This is achieved by adding a `tickPrio` parameter to the `QF_setTickRate()` function. (**NOTE** this modification will require changing existing QP applications for POSIX or POSIX-QV that call `QF_setTickRate()`.      
-
+Finally, this release modifies the QP/C ports to POSIX and POSIX-QV by allowing to configure the p-thread priority of the ticker thread. This is achieved by adding a `tickPrio` parameter to the `QF_setTickRate()` function. (**NOTE** this modification will require changing existing QP applications for POSIX or POSIX-QV that call `QF_setTickRate()`.
 
 
 ------------------------------------------------------------------------------

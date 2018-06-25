@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.9.3
-* Date of the Last Update:  2017-06-30
+* Last Updated for Version: 6.3.3
+* Date of the Last Update:  2018-06-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -54,7 +54,15 @@ int main() {
     BSP_init();   /* initialize the Board Support Package */
 
     /* object dictionaries... */
-    QS_OBJ_DICTIONARY(&l_ticker0);
+    QS_OBJ_DICTIONARY(AO_Table);
+    QS_OBJ_DICTIONARY(AO_Philo[0]);
+    QS_OBJ_DICTIONARY(AO_Philo[1]);
+    QS_OBJ_DICTIONARY(AO_Philo[2]);
+    QS_OBJ_DICTIONARY(AO_Philo[3]);
+    QS_OBJ_DICTIONARY(AO_Philo[4]);
+    QS_OBJ_DICTIONARY(smlPoolSto);
+
+    /* object dictionaries... */
     QS_OBJ_DICTIONARY(smlPoolSto);
     QS_OBJ_DICTIONARY(tableQueueSto);
     QS_OBJ_DICTIONARY(philoQueueSto[0]);

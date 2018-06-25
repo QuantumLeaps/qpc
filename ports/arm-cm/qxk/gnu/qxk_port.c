@@ -3,8 +3,8 @@
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-03-06
+* Last Updated for Version: 6.3.2
+* Date of the Last Update:  2018-06-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -203,7 +203,7 @@ void QXK_stackInit_(void *act, QActionHandler thread,
 * but for Cortex-M0/M0+/M1 the mnemonics MOV, LSR and ADD always set the
 * condition flags in the PSR.
 *****************************************************************************/
-__attribute__ ((naked))
+__attribute__ ((naked, optimize("-fno-stack-protector")))
 void PendSV_Handler(void) {
 __asm volatile (
 
@@ -503,7 +503,7 @@ __asm volatile (
 * NOTE: Thread_ret does not execute in the PendSV context!
 * NOTE: Thread_ret executes entirely with interrupts DISABLED.
 *****************************************************************************/
-__attribute__ ((naked))
+__attribute__ ((naked, optimize("-fno-stack-protector")))
 void Thread_ret(void) {
 __asm volatile (
 
@@ -545,7 +545,7 @@ __asm volatile (
 * NOTE: The NMI exception is entered with interrupts DISABLED, so it needs
 * to re-enable interrupts before it returns to the preempted task.
 *****************************************************************************/
-__attribute__ ((naked))
+__attribute__ ((naked, optimize("-fno-stack-protector")))
 void NMI_Handler(void) {
 __asm volatile (
 
@@ -566,17 +566,18 @@ __asm volatile (
     );
 }
 
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
-
 /*****************************************************************************
 * hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction)
-*
+*****************************************************************************/
+#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 ? */
+
+/*
 * NOTE:
 * The inline GNU assembler does not accept mnemonics MOVS, LSRS and ADDS,
 * but for Cortex-M0/M0+/M1 the mnemonics MOV, LSR and ADD always set the
 * condition flags in the PSR.
-*****************************************************************************/
-__attribute__ ((naked))
+*/
+__attribute__ ((naked, optimize("-fno-stack-protector")))
 uint_fast8_t QF_qlog2(uint32_t x) {
 __asm volatile (
     "  MOV     r1,#0            \n"
