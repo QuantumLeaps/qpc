@@ -365,7 +365,8 @@ $declare${AOs::AO_Table}
     extern QXThread * const XT_Test2;
 #endif /* qxk_h */
 
-#endif /* dpp_h */</text>
+#endif /* dpp_h */
+</text>
   </file>
   <file name="philo.c">
    <text>#include &quot;qpc.h&quot;

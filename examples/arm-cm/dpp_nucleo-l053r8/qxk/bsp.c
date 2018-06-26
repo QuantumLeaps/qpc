@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-L053R8 board, preemptive QXK kernel
-* Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-02-15
+* Last Updated for Version: 6.3.3
+* Date of the Last Update:  2018-06-23
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -289,7 +289,7 @@ void QXK_onIdle(void) { /* called with interrupts enabled */
 #elif defined NDEBUG
     /* Put the CPU and peripherals to the low-power mode.
     * you might need to customize the clock management for your application,
-    * see the datasheet for your particular Cortex-M3 MCU.
+    * see the datasheet for your particular Cortex-M MCU.
     */
     /* !!!CAUTION!!!
     * The WFI instruction stops the CPU clock, which unfortunately disables
