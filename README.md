@@ -12,7 +12,7 @@ View QP/C Revision History at: https://state-machine.com/qpc/history.html
 ---------------------------------------------------------------------------
 # About QP/C
 QP/C (Quantum Platform in C) is a lightweight, open source software
-framework/RTOS for building reactvie real-time embedded applications
+framework/RTOS for building reactive real-time embedded applications
 as systems of cooperating, event-driven active objects (actors). The
 QP/C framework is a member of a larger [QP] family consisting of
 QP/C, QP/C++, and QP-nano frameworks, which are all strictly quality
