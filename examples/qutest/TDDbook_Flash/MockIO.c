@@ -55,7 +55,7 @@ ioData IO_Read(ioAddress offset) {
     )
     QS_BEGIN(IO_CALL, (void *)0) /* user-specific record */
         QS_FUN(&IO_Read);
-        QS_I16(0, ret);
+        QS_U16(0, ret);
         QS_U32(0, offset);
     QS_END()
     return ret;
@@ -65,6 +65,6 @@ void IO_Write(ioAddress offset, ioData data) {
     QS_BEGIN(IO_CALL, (void *)0) /* user-specific record */
         QS_FUN(&IO_Write);
         QS_U32(0, offset);
-        QS_I16(0, data);
+        QS_U16(0, data);
     QS_END()
 }

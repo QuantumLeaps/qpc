@@ -29,7 +29,7 @@
 		<link>
 			<name>QK</name>
 			<type>2</type>
-			<location>C:/qp_lab/qpc/src/qk</location>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qk</locationURI>
 		</link>
 		<link>
 			<name>QP</name>
@@ -39,7 +39,7 @@
 		<link>
 			<name>QS</name>
 			<type>2</type>
-			<location>C:/qp_lab/qpc/src/qs</location>
+			<location>PARENT-5-PROJECT_LOC/src/qs</location>
 		</link>
 		<link>
 			<name>blinky.c</name>

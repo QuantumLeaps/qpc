@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for QUTEST DPP-test; QP/C on POSIX *Host*
-# Last updated for version 6.2.0
-# Last updated on  2018-04-13
+# Product: Makefile for QUTEST; QP/C on POSIX *Host*
+# Last updated for version 6.3.3
+# Last updated on  2018-07-10
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -35,6 +35,7 @@
 # examples of invoking this Makefile:
 # make -f posix_host.mak        # make and run the tests in the current directory
 # make -f posix_host.mak TESTS=philo*.tcl  # make and run the selected tests
+# make -f posix_host.mak SCRIPT=py # make and run the Python tests
 # make -f posix_host.mak HOST=localhost:7705 # connect to host:port
 # make -f posix_host.mak norun   # only make but not run the tests
 # make -f posix_host.mak clean   # cleanup the build
@@ -115,7 +116,6 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines...
-# QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
 DEFINES   :=
 
 #-----------------------------------------------------------------------------
@@ -130,9 +130,14 @@ LINK  := gcc    # for C programs
 
 MKDIR  := mkdir -p
 RM     := rm -f
+
+ifeq ($(SCRIPT),py)
+PYTHON := python -m
+QUTEST := qspypy.qutest
+else
 TCLSH  := tclsh
 QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
-
+endif
 
 #============================================================================
 # Typically you should not need to change anything below this line
@@ -187,15 +192,24 @@ all : $(TARGET_EXE) run
 endif
 
 ifeq (, $(TESTS))
+ifeq ($(SCRIPT),py)
+TESTS := *.py
+else
 TESTS := *.tcl
+endif
 endif
 
 $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
+ifeq ($(SCRIPT),py)
+run : $(TARGET_EXE)
+	$(PYTHON) $(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+else
 run : $(TARGET_EXE)
 	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+endif
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
@@ -243,3 +257,4 @@ show :
 	@echo QUTEST       = $(QUTEST)
 	@echo TESTS        = $(TESTS)
 	@echo HOST         = $(HOST)
+

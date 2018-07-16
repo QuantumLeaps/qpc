@@ -79,7 +79,7 @@ void QS_onCommand(uint8_t cmdId,
             int ret = sprintf(&output[8],
                              format, param1, string, param2, param3);
             QS_BEGIN(SPRINTF_CALL, (void *)0) /* user-specific record */
-                QS_U8(3, (uint8_t)ret);  /* return value */
+                QS_U8(0, (uint8_t)ret);  /* return value */
                 QS_STR(&output[8]);      /* produced string */
             QS_END()
             break;

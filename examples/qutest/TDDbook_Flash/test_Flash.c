@@ -91,7 +91,7 @@ void QS_onCommand(uint8_t cmdId,
         case FLASH_WRITE: {
             int ret = Flash_Write((ioAddress)param1, (ioData)param2);
             QS_BEGIN(FLASH_WRITE, (void *)0) /* user-specific record */
-               QS_I32(0, ret);
+               QS_U32(0, ret);
             QS_END()
             break;
         }

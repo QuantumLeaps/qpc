@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for QUTEST DPP-test; QP/C on POSIX *Target*
-# Last updated for version 6.2.0
-# Last updated on  2018-03-09
+# Product: Makefile for QUTEST; QP/C on POSIX *Target*
+# Last updated for version 6.3.3
+# Last updated on  2018-07-10
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -179,8 +179,6 @@ else ifeq ($(MAKECMDGOALS),test)
 ifeq ("$(wildcard $(QTOOLS))","")
 $(error QTOOLS not found. Please install Qtools and define QTOOLS env. variable)
 endif
-TCLSH  := tclsh
-QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
 
 else
 
@@ -198,7 +196,7 @@ $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 run : $(TARGET_EXE)
 	set -e; while true; do \
 		echo "restarting $(TARGET_EXE)"; \
-		$(TARGET_EXE) $(HOST); \
+		$(TARGET_EXE) "" $(HOST); \
 	done
 
 $(BIN_DIR)/%.d : %.cpp
@@ -221,9 +219,6 @@ ifneq ($(MAKECMDGOALS),test)
     endif
   endif
 endif
-
-test :
-	$(TCLSH) $(QUTEST) $(TESTS)
 
 clean :
 	-$(RM) $(BIN_DIR)/*.o \

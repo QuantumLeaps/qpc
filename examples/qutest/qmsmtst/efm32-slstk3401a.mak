@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EMF32-SLSTK3401A, QUTEST, GNU-ARM
-# Last Updated for Version: 6.2.0
-# Date of the Last Update:  2018-04-13
+# Last Updated for Version: 6.3.3
+# Date of the Last Update:  2018-07-10
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -35,6 +35,7 @@
 # examples of invoking this Makefile:
 # make -fefm32-slstk3401a.mak  # make and run the tests in the current directory
 # make -fefm32-slstk3401a.mak TESTS=philo*.tcl  # make and run the selected tests
+# make -fefm32-slstk3401a.mak SCRIPT=py # make and run the Python tests
 # make -fefm32-slstk3401a.mak HOST=localhost:7705 # connect to host:port
 # make -fefm32-slstk3401a.mak norun  # only make but not run the tests
 # make -fefm32-slstk3401a.mak clean  # cleanup the build
@@ -42,7 +43,7 @@
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    http://sourceforge.net/projects/qpc/files/Qtools/
+#    http://sourceforge.net/projects/qpc/files/QTools/
 #
 
 #-----------------------------------------------------------------------------
@@ -170,18 +171,11 @@ LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 
 #-----------------------------------------------------------------------------
-# JLINK tool (NOTE: You need to adjust to your machine)
-# see https://www.segger.com/downloads/jlink
+# FLASH tool (NOTE: Requires the JLINK utility)
+# see ../efm32-slstk3401a/flash.bat
 #
-ifeq ($(JLINK),)
-JLINK := $(QTOOLS)/../JLink/JLink.exe
-endif
 
-# make sure that the JLINK tool exists...
-ifeq ("$(wildcard $(JLINK))","")
-$(error JLINK tool not found. Please adjust the Makefile)
-endif
-
+FLASH := ..\efm32-slstk3401a\flash.bat
 
 ##############################################################################
 # Typically you should not need to change anything below this line
@@ -191,8 +185,14 @@ endif
 
 MKDIR  := mkdir
 RM     := rm
+
+ifeq ($(SCRIPT),py)
+PYTHON := python -m
+QUTEST := qspypy.qutest
+else
 TCLSH  := tclsh
 QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
+endif
 
 #-----------------------------------------------------------------------------
 # build options
@@ -250,22 +250,33 @@ all : $(TARGET_BIN) run
 endif
 
 ifeq (, $(TESTS))
+ifeq ($(SCRIPT),py)
+TESTS := *.py
+else
 TESTS := *.tcl
 endif
+endif
 
-$(TARGET_BIN): $(TARGET_ELF)
+$(TARGET_BIN) : $(TARGET_ELF)
 	$(BIN) -O binary $< $@
-	$(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
+	$(FLASH) $(TARGET_BIN)
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 flash :
-	$(JLINK) -device EFM32PG1B200F256GM48 $(TARGET).jlink
+	$(FLASH) $(TARGET_BIN)
 
+ifeq ($(SCRIPT),py)
 run : $(TARGET_BIN)
+	$(FLASH) $(TARGET_BIN)
+	$(PYTHON) $(QUTEST) $(TESTS) "" $(HOST)
+else
+run : $(TARGET_BIN)
+	$(FLASH) $(TARGET_BIN)
 	$(TCLSH) $(QUTEST) $(TESTS) "" $(HOST)
+endif
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@

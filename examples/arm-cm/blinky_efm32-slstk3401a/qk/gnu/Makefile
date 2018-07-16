@@ -45,7 +45,7 @@
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    http://sourceforge.net/projects/qpc/files/Qtools/
+#    http://sourceforge.net/projects/qpc/files/QTools/
 #
 
 #-----------------------------------------------------------------------------

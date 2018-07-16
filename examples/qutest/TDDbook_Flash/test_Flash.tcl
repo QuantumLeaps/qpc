@@ -1,10 +1,11 @@
 # QUTEST test script corresponding to the test_Flash.c test fixture.
+# see https://www.state-machine.com/qtools/qutest.html
+#
 # This example corresponds to FlashTest.cpp test from Chapter 10 "The Mock
 # Object" of the book: "Test-Driven Development for Embedded Systems" by
 # James W. Grenning
 
 # preamble...
-
 proc on_setup {} {
     command FAKE_MICROTIME_INIT 0 1
     expect "%timestamp FAKE_MICROTIME_INIT"
@@ -12,7 +13,7 @@ proc on_setup {} {
 }
 
 set address [expr 0x1000]
-set data    [expr (0xBEEF << 16) >> 16] ;# sign-extend
+set data    [expr 0xBEEF]
 
 # constants from "Flash.h"
 set FLASH_SUCCESS                0
@@ -149,7 +150,7 @@ command FLASH_WRITE $address $data
 expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
 expect "%timestamp IO_CALL IO_Write $address $data"
 expect "%timestamp TstProbe Fun=IO_Read,Data=[expr ~$ReadyBit]"
-expect "%timestamp IO_CALL IO_Read [expr ~$ReadyBit] $StatusRegister"
+expect "%timestamp IO_CALL IO_Read [expr ~$ReadyBit & 0xFFFF] $StatusRegister"
 expect "%timestamp TstProbe Fun=IO_Read,Data=$ReadyBit"
 expect "%timestamp IO_CALL IO_Read $ReadyBit $StatusRegister"
 expect "%timestamp TstProbe Fun=IO_Read,Data=$data"
@@ -170,7 +171,7 @@ expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
 expect "%timestamp IO_CALL IO_Write $address $data"
 for {set i 0} {$i < 10} {incr i} {
     expect "%timestamp TstProbe Fun=IO_Read,Data=[expr ~$ReadyBit]"
-    expect "%timestamp IO_CALL IO_Read [expr ~$ReadyBit] $StatusRegister"
+    expect "%timestamp IO_CALL IO_Read [expr ~$ReadyBit & 0xFFFF] $StatusRegister"
 }
 expect "%timestamp FLASH_WRITE $FLASH_TIMEOUT_ERROR"
 expect "%timestamp Trg-Done QS_RX_COMMAND"
@@ -188,7 +189,7 @@ expect "%timestamp IO_CALL IO_Write $CommandRegister $ProgramCommand"
 expect "%timestamp IO_CALL IO_Write $address $data"
 for {set i 0} {$i < 10} {incr i} {
     expect "%timestamp TstProbe Fun=IO_Read,Data=[expr ~$ReadyBit]"
-    expect "%timestamp IO_CALL IO_Read [expr ~$ReadyBit] $StatusRegister"
+    expect "%timestamp IO_CALL IO_Read [expr ~$ReadyBit & 0xFFFF] $StatusRegister"
 }
 expect "%timestamp FLASH_WRITE $FLASH_TIMEOUT_ERROR"
 expect "%timestamp Trg-Done QS_RX_COMMAND"

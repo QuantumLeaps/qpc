@@ -1,4 +1,6 @@
 # QUTEST test script corresponding to the test_Sprintf.c test fixture.
+# see https://www.state-machine.com/qtools/qutest.html
+#
 # This example corresponds to SprintfTest.c from Chapter 2 "Test-Driving
 # Tools and Conventions" of the book: "Test-Driven Development for Embedded
 # Systems" by James W. Grenning
@@ -11,7 +13,7 @@ glb_filter UA
 current_obj AP format
 poke 0 1 "Hello World!\0"
 command 0
-expect "0000000001 SPRINTF_CALL  12 Hello World!"
+expect "0000000001 SPRINTF_CALL 12 Hello World!"
 expect "0000000002 Trg-Done QS_RX_COMMAND"
 
 #----------
@@ -19,7 +21,7 @@ test "Insert decimal" -noreset
 current_obj AP format
 poke 0 1 "dec=%d\0"
 command 0 1234
-expect "0000000001 SPRINTF_CALL   8 dec=1234"
+expect "0000000001 SPRINTF_CALL 8 dec=1234"
 expect "0000000002 Trg-Done QS_RX_COMMAND"
 
 #----------
@@ -31,7 +33,7 @@ poke 0 1 "Hello\0"
 current_obj AP output
 fill 0 1 100 0xAA
 command 0 4321
-expect "0000000001 SPRINTF_CALL  19 dec=4321, str=Hello"
+expect "0000000001 SPRINTF_CALL 19 dec=4321, str=Hello"
 expect "0000000002 Trg-Done QS_RX_COMMAND"
 
 #----------

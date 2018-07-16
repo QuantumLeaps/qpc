@@ -1,4 +1,5 @@
-# QUTEST test of QMsmTst functional
+# test-script for QUTest unit testing harness
+# see https://www.state-machine.com/qtools/qutest.html
 
 # preamble...
 proc on_reset {} {

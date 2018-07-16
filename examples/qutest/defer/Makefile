@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for QUTEST self-test; QP/C on Win32 host
-# Last updated for version 6.2.0
-# Last updated on  2018-04-13
+# Product: Makefile for QUTEST; QP/C on Win32 host
+# Last updated for version 6.3.3
+# Last updated on  2018-07-10
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -35,6 +35,7 @@
 # examples of invoking this Makefile:
 # make         # make and run the tests in the current directory
 # make TESTS=test*.tcl  # make and run the selected tests in the curr. dir.
+# make SCRIPT=py # make and run the Python tests
 # make HOST=localhost:7705 # connect to host:port
 # make norun   # only make but not run the tests
 # make clean   # cleanup the build
@@ -70,7 +71,7 @@ QP_PORT_DIR := $(QPC)/ports/win32-qutest
 
 # list of all source directories used by this project
 VPATH = \
-	. \
+	.
 
 # list of all include directories needed by this project
 INCLUDES  = \
@@ -87,7 +88,7 @@ C_SRCS := \
 	test_defer.c
 
 # C++ source files...
-CPP_SRCS :=
+CPP_SRCS  :=
 
 LIB_DIRS  :=
 LIBS      :=
@@ -117,9 +118,14 @@ LINK  := gcc    # for C programs
 
 MKDIR  := mkdir
 RM     := rm
+
+ifeq ($(SCRIPT),py)
+PYTHON := python -m
+QUTEST := qspypy.qutest
+else
 TCLSH  := tclsh
 QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
-
+endif
 
 #============================================================================
 # Typically you should not need to change anything below this line
@@ -172,15 +178,24 @@ all : $(TARGET_EXE) run
 endif
 
 ifeq (, $(TESTS))
+ifeq ($(SCRIPT),py)
+TESTS := *.py
+else
 TESTS := *.tcl
+endif
 endif
 
 $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
+ifeq ($(SCRIPT),py)
+run : $(TARGET_EXE)
+	$(PYTHON) $(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+else
 run : $(TARGET_EXE)
 	$(TCLSH) $(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+endif
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@

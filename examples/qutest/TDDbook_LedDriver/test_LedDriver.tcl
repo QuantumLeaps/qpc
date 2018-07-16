@@ -1,4 +1,6 @@
 # QUTEST test script corresponding to the test_LedDriver.c test fixture.
+# see https://www.state-machine.com/qtools/qutest.html
+#
 # This example corresponds to LedDriver.c from Chapters 3 & 4 "Starting
 # a C Module" & "Testing Your Way to Done" of the book: "Test-Driven
 # Development for Embedded Systems" by James W. Grenning

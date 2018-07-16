@@ -1,6 +1,14 @@
 /**
 @page history Revision History
 
+@section qpc_6_3_3a Version 6.3.3a, 2018-07-16
+This release adds Python test scripts to the QUTest examples (folder `qpc/examples/qutest`). Specifically, the makefiles have been augmented to accept symbol `SCRIPT=py`, in which case the Python test scripts (`*.py`) are used instead of the default Tcl test scripts (`*.tcl`).
+
+@remark
+This release does not change any QP/C APIs, QP/C implementation, ports, or other examples.
+
+
+------------------------------------------------------------------------------
 @section qpc_6_3_3 Version 6.3.3, 2018-06-22
 This release fixes the following bugs:
 

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for EK-TM4C123GXL, QUTEST, GNU-ARM
-# Last Updated for Version: 6.3.0
-# Date of the Last Update:  2018-05-10
+# Last Updated for Version: 6.3.3
+# Date of the Last Update:  2018-07-10
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -35,6 +35,7 @@
 # examples of invoking this Makefile:
 # make -fek-tm4c123gxl.mak  # make and run the tests in the current directory
 # make -fek-tm4c123gxl.mak TESTS=philo*.tcl  # make and run the selected tests
+# make -fek-tm4c123gxl.mak SCRIPT=py # make and run the Python tests
 # make -fek-tm4c123gxl.mak HOST=localhost:7705 # connect to host:port
 # make -fek-tm4c123gxl.mak norun  # only make but not run the tests
 # make -fek-tm4c123gxl.mak clean  # cleanup the build
@@ -132,11 +133,6 @@ QP_SRCS := \
 
 QP_ASMS :=
 
-QS_SRCS := \
-	qs.c \
-	qs_rx.c \
-	qs_fp.c
-
 LIB_DIRS  :=
 LIBS      :=
 
@@ -191,8 +187,14 @@ endif
 
 MKDIR  := mkdir
 RM     := rm
+
+ifeq ($(SCRIPT),py)
+PYTHON := python -m
+QUTEST := qspypy.qutest
+else
 TCLSH  := tclsh
 QUTEST := $(QTOOLS)/qspy/tcl/qutest.tcl
+endif
 
 #-----------------------------------------------------------------------------
 # build options
@@ -203,8 +205,6 @@ C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
 
 BIN_DIR := $(TARGET)
-
-C_SRCS += $(QS_SRCS)
 
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
@@ -252,7 +252,11 @@ all : $(TARGET_BIN) run
 endif
 
 ifeq (, $(TESTS))
+ifeq ($(SCRIPT),py)
+TESTS := *.py
+else
 TESTS := *.tcl
+endif
 endif
 
 $(TARGET_BIN) : $(TARGET_ELF)
@@ -266,9 +270,15 @@ $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 flash :
 	$(LMFLASH) -q ek-tm4c123gxl $(TARGET_BIN)
 
+ifeq ($(SCRIPT),py)
+run : $(TARGET_BIN)
+	$(LMFLASH) -q ek-tm4c123gxl -c $(TARGET_BIN)
+	$(PYTHON) $(QUTEST) $(TESTS) "" $(HOST)
+else
 run : $(TARGET_BIN)
 	$(LMFLASH) -q ek-tm4c123gxl -c $(TARGET_BIN)
 	$(TCLSH) $(QUTEST) $(TESTS) "" $(HOST)
+endif
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
