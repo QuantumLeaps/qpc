@@ -7,5 +7,4 @@ Specifically the files are as follows:
 
 blinky.qm - the QM model for the Blinky active object
 blinky.c  - the generated code for the Blinky application
-make.bat  - the batch file for building Blinky on Windows
-Makefile  - the makefile to build Blinky on Linux
+Makefile  - Makefile for building Blinky on Linux

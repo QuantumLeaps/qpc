@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "6.3.3"
+PROJECT_NUMBER         = "6.3.4"
 PROJECT_BRIEF          =
 PROJECT_LOGO           = images/header_logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -148,6 +148,9 @@ FILE_PATTERNS          = \
 RECURSIVE              = YES
 EXCLUDE                = \
     ../include/qs_dummy.h \
+    ../src/qk \
+    ../src/qxk \
+    ../src/qs/qutest.c \
     ../ports/lint/MISRA_Exemplar_Suite_test
 
 EXCLUDE_SYMLINKS       = NO

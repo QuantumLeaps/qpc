@@ -1,6 +1,11 @@
 /**
 @page history Revision History
 
+@section qpc_6_3_4 Version 6.3.4, 2018-08-10
+This release adds new API QTimeEvt_wasDisarmed() for checking the status of a ::QTimeEvt object after it has been disarmed. Specifically, the status of the last call to QTimeEvt_disarm() is kept inside the time event object and can be subsequently checked with the QTimeEvt_wasDisarmed() API. This new function is designed to be used directly as a guard condition on the timeout event, as described in the [PSiCC2 book](/psicc2), Section 7.7.3 "Arming and Disarming a Time Event" on page 359. The QTimeEvt_wasDisarmed() has a side effect of setting the "was disabled" status, so the guard evaluates to 'true' the next time it is checked.
+
+
+------------------------------------------------------------------------------
 @section qpc_6_3_3a Version 6.3.3a, 2018-07-16
 This release adds Python test scripts to the QUTest examples (folder `qpc/examples/qutest`). Specifically, the makefiles have been augmented to accept symbol `SCRIPT=py`, in which case the Python test scripts (`*.py`) are used instead of the default Tcl test scripts (`*.tcl`).
 
