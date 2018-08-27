@@ -1,6 +1,6 @@
 /*
- * FreeRTOS Kernel V10.0.1
- * Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ * FreeRTOS Kernel V10.1.0
+ * Copyright (C) 2018 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -43,10 +43,10 @@ extern "C" {
  * MACROS AND DEFINITIONS
  *----------------------------------------------------------*/
 
-#define tskKERNEL_VERSION_NUMBER "V10.0.1"
+#define tskKERNEL_VERSION_NUMBER "V10.1.0"
 #define tskKERNEL_VERSION_MAJOR 10
-#define tskKERNEL_VERSION_MINOR 0
-#define tskKERNEL_VERSION_BUILD 1
+#define tskKERNEL_VERSION_MINOR 1
+#define tskKERNEL_VERSION_BUILD 0
 
 /**
  * task. h
@@ -58,7 +58,8 @@ extern "C" {
  * \defgroup TaskHandle_t TaskHandle_t
  * \ingroup Tasks
  */
-typedef void * TaskHandle_t;
+struct TaskControlBlock_t;
+typedef struct TaskControlBlock_t* TaskHandle_t;
 
 /*
  * Defines the prototype to which the application task hook function must
@@ -74,7 +75,7 @@ typedef enum
     eBlocked,        /* The task being queried is in the Blocked state. */
     eSuspended,        /* The task being queried is in the Suspended state, or is in the Blocked state with an infinite time out. */
     eDeleted,        /* The task being queried has been deleted, but its TCB has not yet been freed. */
-    eInvalid            /* Used as an 'invalid state' value. */
+    eInvalid        /* Used as an 'invalid state' value. */
 } eTaskState;
 
 /* Actions that can be performed when vTaskNotify() is called. */
@@ -135,7 +136,7 @@ typedef struct xTASK_STATUS
     UBaseType_t uxBasePriority;        /* The priority to which the task will return if the task's current priority has been inherited to avoid unbounded priority inversion when obtaining a mutex.  Only valid if configUSE_MUTEXES is defined as 1 in FreeRTOSConfig.h. */
     uint32_t ulRunTimeCounter;        /* The total run time allocated to the task so far, as defined by the run time stats clock.  See http://www.freertos.org/rtos-run-time-stats.html.  Only valid when configGENERATE_RUN_TIME_STATS is defined as 1 in FreeRTOSConfig.h. */
     StackType_t *pxStackBase;        /* Points to the lowest address of the task's stack area. */
-    uint16_t usStackHighWaterMark;    /* The minimum amount of stack space that has remained for the task since the task was created.  The closer this value is to zero the closer the task has come to overflowing its stack. */
+    configSTACK_DEPTH_TYPE usStackHighWaterMark;    /* The minimum amount of stack space that has remained for the task since the task was created.  The closer this value is to zero the closer the task has come to overflowing its stack. */
 } TaskStatus_t;
 
 /* Possible return values for eTaskConfirmSleepModeStatus(). */
@@ -834,7 +835,7 @@ BaseType_t xTaskAbortDelay( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
 
 /**
  * task. h
- * <pre>UBaseType_t uxTaskPriorityGet( TaskHandle_t xTask );</pre>
+ * <pre>UBaseType_t uxTaskPriorityGet( const TaskHandle_t xTask );</pre>
  *
  * INCLUDE_uxTaskPriorityGet must be defined as 1 for this function to be available.
  * See the configuration section for more information.
@@ -877,15 +878,15 @@ BaseType_t xTaskAbortDelay( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
  * \defgroup uxTaskPriorityGet uxTaskPriorityGet
  * \ingroup TaskCtrl
  */
-UBaseType_t uxTaskPriorityGet( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+UBaseType_t uxTaskPriorityGet( const TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
 
 /**
  * task. h
- * <pre>UBaseType_t uxTaskPriorityGetFromISR( TaskHandle_t xTask );</pre>
+ * <pre>UBaseType_t uxTaskPriorityGetFromISR( const TaskHandle_t xTask );</pre>
  *
  * A version of uxTaskPriorityGet() that can be used from an ISR.
  */
-UBaseType_t uxTaskPriorityGetFromISR( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+UBaseType_t uxTaskPriorityGetFromISR( const TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
 
 /**
  * task. h
@@ -2320,7 +2321,7 @@ eSleepModeStatus eTaskConfirmSleepModeStatus( void ) PRIVILEGED_FUNCTION;
  * For internal use only.  Increment the mutex held count when a mutex is
  * taken and return the handle of the task that has taken the mutex.
  */
-void *pvTaskIncrementMutexHeldCount( void ) PRIVILEGED_FUNCTION;
+TaskHandle_t pvTaskIncrementMutexHeldCount( void ) PRIVILEGED_FUNCTION;
 
 /*
  * For internal use only.  Same as vTaskSetTimeOutState(), but without a critial

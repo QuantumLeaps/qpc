@@ -48,15 +48,15 @@
 #define portDOUBLE        double
 #define portLONG        long
 #define portSHORT        short
-#define portSTACK_TYPE    uint32_t
+#define portSTACK_TYPE    size_t
 #define portBASE_TYPE    long
 
 typedef portSTACK_TYPE StackType_t;
-typedef long BaseType_t;
-typedef unsigned long UBaseType_t;
+typedef portBASE_TYPE BaseType_t;
+typedef uint64_t UBaseType_t;
 
-typedef uint32_t TickType_t;
-#define portMAX_DELAY ( TickType_t ) 0xffffffffUL
+typedef uint64_t TickType_t;
+#define portMAX_DELAY ( ( TickType_t ) 0xffffffffffffffff )
 
 /* 32-bit tick type on a 32-bit architecture, so reads of the tick count do
 not need to be guarded with a critical section. */
@@ -67,7 +67,8 @@ not need to be guarded with a critical section. */
 /* Hardware specifics. */
 #define portSTACK_GROWTH            ( -1 )
 #define portTICK_PERIOD_MS            ( ( TickType_t ) 1000 / configTICK_RATE_HZ )
-#define portBYTE_ALIGNMENT            8
+#define portBYTE_ALIGNMENT            16
+#define portPOINTER_SIZE_TYPE         uint64_t
 
 /*-----------------------------------------------------------*/
 
@@ -76,53 +77,47 @@ not need to be guarded with a critical section. */
 /* Called at the end of an ISR that can cause a context switch. */
 #define portEND_SWITCHING_ISR( xSwitchRequired )\
 {                                                \
-extern volatile uint32_t ulPortYieldRequired;    \
+extern uint64_t ullPortYieldRequired;            \
                                                 \
     if( xSwitchRequired != pdFALSE )            \
     {                                            \
-        ulPortYieldRequired = pdTRUE;            \
+        ullPortYieldRequired = pdTRUE;            \
     }                                            \
 }
 
 #define portYIELD_FROM_ISR( x ) portEND_SWITCHING_ISR( x )
-#define portYIELD() __asm volatile ( "SWI 0        \n"                \
-                                     "ISB          " ::: "memory" );
-
-
+#if defined( GUEST )
+    #define portYIELD() __asm volatile ( "SVC 0" ::: "memory" )
+#else
+    #define portYIELD() __asm volatile ( "SMC 0" ::: "memory" )
+#endif
 /*-----------------------------------------------------------
  * Critical section control
  *----------------------------------------------------------*/
 
 extern void vPortEnterCritical( void );
 extern void vPortExitCritical( void );
-extern uint32_t ulPortSetInterruptMask( void );
-extern void vPortClearInterruptMask( uint32_t ulNewMaskValue );
+extern UBaseType_t uxPortSetInterruptMask( void );
+extern void vPortClearInterruptMask( UBaseType_t uxNewMaskValue );
 extern void vPortInstallFreeRTOSVectorTable( void );
 
-/* The I bit within the CPSR. */
-#define portINTERRUPT_ENABLE_BIT    ( 1 << 7 )
+#define portDISABLE_INTERRUPTS()                                    \
+    __asm volatile ( "MSR DAIFSET, #2" ::: "memory" );                \
+    __asm volatile ( "DSB SY" );                                    \
+    __asm volatile ( "ISB SY" );
 
-/* In the absence of a priority mask register, these functions and macros
-globally enable and disable interrupts. */
+#define portENABLE_INTERRUPTS()                                        \
+    __asm volatile ( "MSR DAIFCLR, #2" ::: "memory" );                \
+    __asm volatile ( "DSB SY" );                                    \
+    __asm volatile ( "ISB SY" );
+
+
+/* These macros do not globally disable/enable interrupts.  They do mask off
+interrupts that have a priority below configMAX_API_CALL_INTERRUPT_PRIORITY. */
 #define portENTER_CRITICAL()        vPortEnterCritical();
 #define portEXIT_CRITICAL()            vPortExitCritical();
-#define portENABLE_INTERRUPTS()        __asm volatile ( "CPSIE i     \n"    ::: "memory" );
-#define portDISABLE_INTERRUPTS()    __asm volatile ( "CPSID i     \n"        \
-                                                     "DSB        \n"        \
-                                                     "ISB          " ::: "memory" );
-
-__attribute__( ( always_inline ) ) static __inline uint32_t portINLINE_SET_INTERRUPT_MASK_FROM_ISR( void )
-{
-volatile uint32_t ulCPSR;
-
-    __asm volatile ( "MRS %0, CPSR" : "=r" (ulCPSR) :: "memory" );
-    ulCPSR &= portINTERRUPT_ENABLE_BIT;
-    portDISABLE_INTERRUPTS();
-    return ulCPSR;
-}
-
-#define portSET_INTERRUPT_MASK_FROM_ISR() portINLINE_SET_INTERRUPT_MASK_FROM_ISR()
-#define portCLEAR_INTERRUPT_MASK_FROM_ISR(x)    if( x == 0 ) portENABLE_INTERRUPTS()
+#define portSET_INTERRUPT_MASK_FROM_ISR()        uxPortSetInterruptMask()
+#define portCLEAR_INTERRUPT_MASK_FROM_ISR(x)    vPortClearInterruptMask(x)
 
 /*-----------------------------------------------------------*/
 
@@ -157,9 +152,14 @@ void vPortTaskUsesFPU( void );
 
     /*-----------------------------------------------------------*/
 
-    #define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities ) uxTopPriority = ( 31UL - ( uint32_t ) __builtin_clz( uxReadyPriorities ) )
+    #define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities ) uxTopPriority = ( 31 - __builtin_clz( uxReadyPriorities ) )
 
 #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
+
+#ifdef configASSERT
+    void vPortValidateInterruptPriority( void );
+    #define portASSERT_IF_INTERRUPT_PRIORITY_INVALID()     vPortValidateInterruptPriority()
+#endif /* configASSERT */
 
 #define portNOP() __asm volatile( "NOP" )
 #define portINLINE __inline
@@ -168,6 +168,42 @@ void vPortTaskUsesFPU( void );
     } /* extern C */
 #endif
 
+
+/* The number of bits to shift for an interrupt priority is dependent on the
+number of bits implemented by the interrupt controller. */
+#if configUNIQUE_INTERRUPT_PRIORITIES == 16
+    #define portPRIORITY_SHIFT 4
+    #define portMAX_BINARY_POINT_VALUE    3
+#elif configUNIQUE_INTERRUPT_PRIORITIES == 32
+    #define portPRIORITY_SHIFT 3
+    #define portMAX_BINARY_POINT_VALUE    2
+#elif configUNIQUE_INTERRUPT_PRIORITIES == 64
+    #define portPRIORITY_SHIFT 2
+    #define portMAX_BINARY_POINT_VALUE    1
+#elif configUNIQUE_INTERRUPT_PRIORITIES == 128
+    #define portPRIORITY_SHIFT 1
+    #define portMAX_BINARY_POINT_VALUE    0
+#elif configUNIQUE_INTERRUPT_PRIORITIES == 256
+    #define portPRIORITY_SHIFT 0
+    #define portMAX_BINARY_POINT_VALUE    0
+#else
+    #error Invalid configUNIQUE_INTERRUPT_PRIORITIES setting.  configUNIQUE_INTERRUPT_PRIORITIES must be set to the number of unique priorities implemented by the target hardware
+#endif
+
+/* Interrupt controller access addresses. */
+#define portICCPMR_PRIORITY_MASK_OFFSET                          ( 0x04 )
+#define portICCIAR_INTERRUPT_ACKNOWLEDGE_OFFSET                 ( 0x0C )
+#define portICCEOIR_END_OF_INTERRUPT_OFFSET                     ( 0x10 )
+#define portICCBPR_BINARY_POINT_OFFSET                            ( 0x08 )
+#define portICCRPR_RUNNING_PRIORITY_OFFSET                        ( 0x14 )
+
+#define portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS         ( configINTERRUPT_CONTROLLER_BASE_ADDRESS + configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET )
+#define portICCPMR_PRIORITY_MASK_REGISTER                     ( *( ( volatile uint32_t * ) ( portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCPMR_PRIORITY_MASK_OFFSET ) ) )
+#define portICCIAR_INTERRUPT_ACKNOWLEDGE_REGISTER_ADDRESS     ( portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCIAR_INTERRUPT_ACKNOWLEDGE_OFFSET )
+#define portICCEOIR_END_OF_INTERRUPT_REGISTER_ADDRESS         ( portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCEOIR_END_OF_INTERRUPT_OFFSET )
+#define portICCPMR_PRIORITY_MASK_REGISTER_ADDRESS             ( portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCPMR_PRIORITY_MASK_OFFSET )
+#define portICCBPR_BINARY_POINT_REGISTER                     ( *( ( const volatile uint32_t * ) ( portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCBPR_BINARY_POINT_OFFSET ) ) )
+#define portICCRPR_RUNNING_PRIORITY_REGISTER                 ( *( ( const volatile uint32_t * ) ( portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCRPR_RUNNING_PRIORITY_OFFSET ) ) )
 
 #endif /* PORTMACRO_H */
 

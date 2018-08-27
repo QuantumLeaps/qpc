@@ -1,6 +1,6 @@
 /*
- * FreeRTOS Kernel V10.0.1
- * Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ * FreeRTOS Kernel V10.1.0
+ * Copyright (C) 2018 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -61,7 +61,8 @@ extern "C" {
  * then be used as a parameter to xStreamBufferSend(), xStreamBufferReceive(),
  * etc.
  */
-typedef void * StreamBufferHandle_t;
+struct StreamBufferDef_t;
+typedef struct StreamBufferDef_t * StreamBufferHandle_t;
 
 
 /**
@@ -838,6 +839,8 @@ StreamBufferHandle_t xStreamBufferGenericCreateStatic( size_t xBufferSizeBytes,
                                                        BaseType_t xIsMessageBuffer,
                                                        uint8_t * const pucStreamBufferStorageArea,
                                                        StaticStreamBuffer_t * const pxStaticStreamBuffer ) PRIVILEGED_FUNCTION;
+
+size_t xStreamBufferNextMessageLengthBytes( StreamBufferHandle_t xStreamBuffer ) PRIVILEGED_FUNCTION;
 
 #if( configUSE_TRACE_FACILITY == 1 )
     void vStreamBufferSetStreamBufferNumber( StreamBufferHandle_t xStreamBuffer, UBaseType_t uxStreamBufferNumber ) PRIVILEGED_FUNCTION;
