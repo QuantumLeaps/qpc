@@ -1,14 +1,15 @@
 /**
 * @file
 * @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
+* @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.2.0
-* Date of the Last Update:  2018-04-09
+* Last Updated for Version: 6.3.4
+* Date of the Last Update:  2018-09-04
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -89,8 +90,14 @@ void QF_onClockTick(void); /* clock tick callback (provided in the app) */
     int_t main_gui(); /* prototype of the GUI application entry point */
 #endif
 
-/* portable "safe" facilities from <stdio.h> and <string.h> ... */
-#ifdef _MSC_VER /* Microsoft C/C++ compiler? */
+/* portable "safe" facilities from <stdio.h> and <string.h> */
+#ifdef _MSC_VER /* Microsoft Visual C++ */
+
+#if (_MSC_VER < 1900) /* before Visual Studio 2015 */
+
+#define snprintf _snprintf
+
+#endif
 
 #define SNPRINTF_S(buf_, len_, format_, ...) \
     _snprintf_s(buf_, len_, _TRUNCATE, format_, ##__VA_ARGS__)
@@ -125,10 +132,7 @@ void QF_onClockTick(void); /* clock tick callback (provided in the app) */
 #define SSCANF_S(buf_, format_, ...) \
     sscanf(buf_, format_, ##__VA_ARGS__)
 
-#define SSCANF_S(buf_, format_, ...) \
-    sscanf(buf_, format_, ##__VA_ARGS__)
-
-#endif /* _MSC_VER */
+#endif
 
 /****************************************************************************/
 /* interface used only inside QF implementation, but not in applications */
