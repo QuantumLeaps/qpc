@@ -392,7 +392,7 @@ The examples demonstrates the QUTest unit tests for the application.
 
 ------------------------------------------------------------------------------
 @section arm-cm_dpp_ek-tm4c123gxl_spy QP/Spy Software Tracing
-The application also demonstrates <a href="https://state-machine.com/qtools/qpspy.html" target="_blank" class="extern">QP/Spy</a> software tracing output and input. To exercise this feature, you need to build and upload the Spy build configuration into the board.
+The application also demonstrates <a href="https://www.state-machine.com/qtools/qpspy.html" target="_blank" class="extern">QP/Spy</a> software tracing output and input. To exercise this feature, you need to build and upload the Spy build configuration into the board.
 
 */
 /*##########################################################################*/
@@ -477,7 +477,7 @@ Once programmed into the board, the example rapidly toggles the LED1 from the id
 
 ------------------------------------------------------------------------------
 @section arm-cm_dpp_efm32-slstk3401a_spy QP/Spy Software Tracing
-The application also demonstrates <a href="https://state-machine.com/qtools/qpspy.html" target="_blank" class="extern">QP/Spy</a> software tracing output and input. To exercise this feature, you need to build and upload the Spy build configuration into the board.
+The application also demonstrates <a href="https://www.state-machine.com/qtools/qpspy.html" target="_blank" class="extern">QP/Spy</a> software tracing output and input. To exercise this feature, you need to build and upload the Spy build configuration into the board.
 
 */
 /*##########################################################################*/

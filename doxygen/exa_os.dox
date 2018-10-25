@@ -1,66 +1,136 @@
-/*! @page exa_os Examples for Third-Party OS
+/*! @page exa_os Examples for Workstations (Windows/POSIX)
 
-- @subpage exa_posix "POSIX"
-- @subpage exa_win32
-- @subpage exa_win32-qv
+@tableofcontents
 
-@next{exa_posix}
-*/
-/*##########################################################################*/
-/*! @page exa_posix POSIX (Linux, VxWorks, QNX, INTEGRITY, etc.)
-
-<p>The <span class="img folder">examples/posix</span> folder contains the following examples:
+<p>The examples in the <span class="img folder">qpc/examples/workstation</span> directory are designed for workstations (running Windows, Linux, or MacOS). Currently, the following examples are provided:
 </p>
 
-- <span class="img folder">blinky</span> Simple "Blinky" (command-line)
-- <span class="img folder">dpp</span> DPP (command-line)
-- <span class="img folder">qmsmtst</span> Test State Machine based on QP::QMsm with QM model
-- <span class="img folder">qhsmtst</span> Test State Machine based on QP::QHsm with QM model
+- <span class="img folder">blinky</span> &mdash; Simple "Blinky" active object (command-line)
+- <span class="img folder">calc</span> &mdash; Calculator example from Chapter 2 of [PSiCC2](https://www.state-machine.com/psicc2)
+- <span class="img folder">calc1</span> &mdash; Improved Calculator example from Chapter 2 of [PSiCC2](https://www.state-machine.com/psicc2)
+- <span class="img folder">calc1_sub</span> &mdash; Calculator example with sub-machines
+- <span class="img folder">comp</span> &mdash; Orthogonal Component design pattern
+- <span class="img folder">defer</span> &mdash; Deferred Event design pattern
+- <span class="img folder">dpp</span> &mdash; DPP application from Chapter 9 of [PSiCC2](https://www.state-machine.com/psicc2) (**Spy**)
+- <span class="img folder">dpp_comp</span> &mdash; DPP with Orthogonal-Component pattern (**Spy**)
+- <span class="img folder">dpp-gui</span> &mdash; DPP (with GUI on Windows) (**Spy**)
+- <span class="img folder">game-gui</span> &mdash; "Fly 'n' Shoot" game from Chapter 1 of [PSiCC2](https://www.state-machine.com/psicc2) (**Spy**)
+- <span class="img folder">history_qhsm</span> &mdash; Transition-to-History (with ::QHsm class)
+- <span class="img folder">history_qmsm</span> &mdash; Transition-to-History (with ::QMsm class)
+- <span class="img folder">qhsmtst</span> &mdash; Test State Machine based on ::QHsm from Chapter 2 of [PSiCC2](https://www.state-machine.com/psicc2) (**Spy**)
+- <span class="img folder">qmsmtst</span> &mdash; Test State Machine based on ::QMsm (**Spy**)
+- <span class="img folder">reminder</span> &mdash; Reminder design pattern from Chapter 5 of PSiCC2
+- <span class="img folder">reminder2</span> &mdash; Reminder design pattern different version
 
-@next{exa_win32}
-*/
+@remark
+The examples marked with (**Spy**) provide the @ref exa_os-spy "Spy Configuration".
 
-/*##########################################################################*/
-/*! @page exa_win32 Win32 API (Windows)
 
-<p>The <span class="img folder">examples/win32</span> folder contains all examples described in the book <a class="extern" target="_blank" href="https://www.state-machine.com/psicc2" >Practical UML Statecharts in C/C++, 2nd Edition</a>. These examples include:
-</p>
+------------------------------------------------------------------------------
+@section exa_win_posix Windows and POSIX Workstations
+All examples in the <span class="img folder">qpc/examples/workstation</span> directory work both on Windows as well as on POSIX (Linux, MacOS). On each of these operating systems you use the same cross-platform `Makefile` co-located with each example. The provided cross-platform `Makefiles` assume the **GNU GCC toolchain**. The `Makefile` discovers the host operating system and chooses the appropriate QP port version:
 
-- <span class="img folder">blinky</span> Simple "Blinky" for Windows (command line)
-- <span class="img folder">calc</span> Calculator example from Chapter 2 of PSiCC2
-- <span class="img folder">comp</span> Orthogonal Component design pattern
-- <span class="img folder">comp_qm</span> Orthogonal Component with QM model design pattern
-- <span class="img folder">defer</span> Deferred Event design pattern
-- <span class="img folder">dpp</span> DPP (command-line)
-- <span class="img folder">dpp-gui</span> DPP (with GUI on Windows)
-- <span class="img folder">game-gui</span> "Fly 'n' Shoot" game from Chapter 1 of PSiCC2
-- <span class="img folder">history_qhsm</span> Transition-to-History (with ::QHsm class)
-- <span class="img folder">history_qmsm</span> Transition-to-History (with ::QMsm class)
-- <span class="img folder">qmsmtst</span> Test State Machine based on ::QMsm with QM model
-- <span class="img folder">qhsmtst</span> Test State Machine based on ::QHsm with QM model
-- <span class="img folder">reminder</span> Reminder design pattern from Chapter 5 of PSiCC2
-- <span class="img folder">reminder</span> Reminder design pattern different version
-
-@sa
-- @ref exa_win32-qv
-- @ref win32
-
-@next{exa_win32-qv}
-*/
-
-/*##########################################################################*/
-/*! @page exa_win32-qv Win32-QV (Windows)
-
-<p>The <span class="img folder">examples/win32-qv</span> folder contains examples for Win32 API with the cooperative QV kernel. In the Win32-QV port all active objects share only one Win32 thread and are scheduled exactly as in the \ref comp_qv "cooperative QV kernel". The following examples are provided:
-</p>
-
-- <span class="img folder">dpp</span> DPP (command-line)
-- <span class="img folder">game-gui</span> "Fly 'n' Shoot" game from Chapter 1 of PSiCC2
+- On Windows &mdash; @ref win32 "win32" or @ref win32-qv "win32-qv"; and
+- On POSIX &mdash; @ref posix "posix" or @ref posix-qv "posix-qv" (Linux, MacOS, etc.)
 
 @note
-All examples for @ref exa_win32 will also work with the @ref win32-qv "Win32-QV port" without any modifications to the source code, because @ref win32-qv "Win32-QV port" is designed as a drop-in replacement for the standard @ref win32 "Win32 port". To build the examples with @ref win32-qv "Win32-QV port" you merely need to include <span class="img folder">ports/win32-qv</span> instead of <span class="img folder">ports/win32</span> and you need to link the @ref win32-qv "Win32-QV" QP library.
+On Windows, the **make** utility and the GNU GCC toolchain (**MinGW**) are provided in the [<b>QTools collection</b>](https://www.state-machine.com/qtools), which is available for a separate download. The code can be also built with other tools as well, such as the Microsoft Visual Studio 2013 and newer.
 
-@sa
-- @ref exa_win32
-- @ref win32-qv
+
+@n
+![Blinky example on Windows (QP linked from a library)](blinky_win.png)
+@n
+![Blinky example on Linux (QP built from sources)](blinky_posix.png)
+
+
+------------------------------------------------------------------------------
+@section exa_os-qv Single-Threaded and Multi-Threaded QP/C Ports
+Each of the examples can be linked to either the single-threaded QP/C ports (@ref win32-qv or @ref posix-qv) or multi-threaded ports (@ref win32 or @ref posix). The choice is made in the `Makefiles`, by editing the line, which defines the `QP_PORT_DIR` symbol. For instance, the following lines select the @ref win32-qv port and leave the @ref win32 port commented-out:
+
+@code
+QP_PORT_DIR := $(QPC)/ports/win32-qv
+#QP_PORT_DIR := $(QPC)/ports/win32
+@endcode
+
+To reverse the selection, you need to move the comment `#` character.
+
+@remarks
+The single-threaded QP/C ports (@ref win32-qv "win32-qv" and @ref posix-qv "posix-qv") are recommended for **emulating** software intended for deeply-embedded targets ("dual-targeting" the embedded software development).@n
+
+
+@attention
+Examples in the <span class="img folder">workstation</span> directory can also be used on the **embedded versions** of the desktop operating systems, such as **Embedded Linux** and **Windows Embedded**. For the embedded applications, the **multi-threaded** @ref ports_os "QP ports" ( @ref posix "posix" and @ref win32 "win32", respectively) are recommended.
+
+
+------------------------------------------------------------------------------
+@section exa_os_conf Debug, Release, and Spy Build Configurations
+The `Makefiles` for the examples generally support the following three build configurations.
+
+
+<div class="separate"></div>
+@subsection exa_os-dbg Debug Configuration
+This is the default build configuration, with full debugging information and minimal optimization. To build this configuration, type:
+
+@code
+make
+@endcode
+
+To clean this build, type
+
+@code
+make clean
+@endcode
+
+The object files and the executable is located in the <span class="img folder">build</span> sub-directory.
+
+
+<div class="separate"></div>
+@subsection exa_os-rel Release Configuration
+This configuration is built with no debugging information and high optimization. Single-stepping and debugging might be difficult due
+to the lack of debugging information and optimized code. To build this configuration, type:
+
+@code
+make CONF=rel
+@endcode
+
+To clean this build, type
+
+@code
+make CONF=rel clean
+@endcode
+
+The object files and the executable is located in the <span class="img folder">build_rel</span> directory.
+
+
+<div class="separate"></div>
+@subsection exa_os-spy Spy Configuration
+This configuration is built with the QP's Q-SPY trace functionality. The QP/Spy output is performed by a TCP/IP socket and requires launching the QSPY host application with the -t option. To build this configuration, type:
+
+@code
+make CONF=spy
+@endcode
+
+To clean this build, type
+
+@code
+make CONF=spy clean
+@endcode
+
+The object files and the executable are located in the <span class="img folder">build_spy</span> sub-directory.
+
+@note
+The Spy build configuration requires launching the [QSPY host utility](https://www.state-machine.com/qtools/qspy.html) with the `-t` command-line option **before** running the example. This is so that the example code can output the QS software tracing to the TCP/IP socket of QSPY.
+
+
+@remark
+Only specific examples support the Spy build configuration. The examples that don't support it, will report an error or will fail the linking stage.
+
+
+@n
+![DPP with QSPY example on Windows (QSPY running in a separate command-prompt)](dpp_win.png)
+@n
+![DPP with QSPY example on Linux (QSPY running in a separate terminal)](dpp_posix.png)
+
+
+@next{exa_mware}
 */

@@ -66,15 +66,6 @@ int main() {
     */
     BSP_init();
 
-    /* object dictionaries... */
-    QS_OBJ_DICTIONARY(smlPoolSto);
-    QS_OBJ_DICTIONARY(tableQueueSto);
-    QS_OBJ_DICTIONARY(philoQueueSto[0]);
-    QS_OBJ_DICTIONARY(philoQueueSto[1]);
-    QS_OBJ_DICTIONARY(philoQueueSto[2]);
-    QS_OBJ_DICTIONARY(philoQueueSto[3]);
-    QS_OBJ_DICTIONARY(philoQueueSto[4]);
-
     QACTIVE_START(the_Ticker0, 1U, 0, 0, 0, 0, 0);
 
     /* start the active objects... */

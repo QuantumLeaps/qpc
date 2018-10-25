@@ -1,16 +1,16 @@
 /**
 * @file
-* @brief QF/C port to POSIX API with cooperative QV scheduler (posix-qv)
+* @brief QF/C port to POSIX API (single-threaded, like the QV kernel)
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.2
-* Last updated on  2018-06-16
+* Last Updated for Version: 6.3.6
+* Date of the Last Update:  2018-10-15
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -41,8 +41,8 @@
 
 /* POSIX event queue and thread types */
 #define QF_EQUEUE_TYPE       QEQueue
-/*#define QF_OS_OBJECT_TYPE  // not provided */
-/*#define QF_THREAD_TYPE     // not provided */
+/*#define QF_OS_OBJECT_TYPE  // not used */
+/*#define QF_THREAD_TYPE     // not used */
 
 /* The maximum number of active objects in the application */
 #define QF_MAX_ACTIVE        64
@@ -82,7 +82,14 @@ void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio);
 /* clock tick callback (NOTE not called when "ticker thread" is not running) */
 void QF_onClockTick(void); /* clock tick callback (provided in the app) */
 
-extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
+/* abstractions for console access... */
+void QF_consoleSetup(void);
+void QF_consoleCleanup(void);
+int QF_consoleGetKey(void);
+int QF_consoleWaitForKey(void);
+
+/* mutex for QF critical section */
+extern pthread_mutex_t QF_pThreadMutex_;
 
 /****************************************************************************/
 /* interface used only inside QF implementation, but not in applications */

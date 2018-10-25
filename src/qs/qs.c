@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-16
+* Last updated for version 6.3.6
+* Last updated on  2018-10-03
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -180,6 +180,7 @@ void QS_filterOn(uint_fast8_t rec) {
     else if (rec == (uint_fast8_t)QS_U4_RECORDS) {
         QS_priv_.glbFilter[13] |= (uint8_t)0xC0U;
         QS_priv_.glbFilter[14] |= (uint8_t)0xFFU;
+        QS_priv_.glbFilter[15] |= (uint8_t)0x1FU;
     }
     else if (rec == (uint_fast8_t)QS_UA_RECORDS) {
         QS_priv_.glbFilter[8]  |= (uint8_t)0xC0U;
@@ -187,7 +188,9 @@ void QS_filterOn(uint_fast8_t rec) {
         QS_priv_.glbFilter[10] |= (uint8_t)0xFFU;
         QS_priv_.glbFilter[11] |= (uint8_t)0xFFU;
         QS_priv_.glbFilter[12] |= (uint8_t)0xFFU;
+        QS_priv_.glbFilter[13] |= (uint8_t)0xFFU;
         QS_priv_.glbFilter[14] |= (uint8_t)0xFFU;
+        QS_priv_.glbFilter[15] |= (uint8_t)0x1FU;
     }
     else {
         /* record numbers can't exceed QS_ESC, so they don't need escaping */
@@ -271,6 +274,7 @@ void QS_filterOff(uint_fast8_t rec) {
     else if (rec == (uint_fast8_t)QS_U4_RECORDS) {
         QS_priv_.glbFilter[13] &= (uint8_t)(~0xC0U);
         QS_priv_.glbFilter[14] = (uint8_t)0;
+        QS_priv_.glbFilter[15] &= (uint8_t)(~0x1FU);
     }
     else if (rec == (uint_fast8_t)QS_UA_RECORDS) {
         QS_priv_.glbFilter[8]  &= (uint8_t)(~0xC0U);
@@ -278,7 +282,9 @@ void QS_filterOff(uint_fast8_t rec) {
         QS_priv_.glbFilter[10] = (uint8_t)0;
         QS_priv_.glbFilter[11] = (uint8_t)0;
         QS_priv_.glbFilter[12] = (uint8_t)0;
+        QS_priv_.glbFilter[13] = (uint8_t)0;
         QS_priv_.glbFilter[14] = (uint8_t)0;
+        QS_priv_.glbFilter[15] &= (uint8_t)(~0x1FU);
     }
     else {
         /* record IDs can't exceed QS_ESC, so they don't need escaping */

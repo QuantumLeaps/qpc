@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="4.3.1" links="0">
+ <documentation>Blinky model</documentation>
+ <framework name="qpc"/>
+ <package name="AOs" stereotype="0x02">
+  <class name="Blinky" superclass="qpc::QActive">
+   <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
+   <statechart properties="QS_FUN_DICT">
+    <initial target="../1">
+     <action>(void)e; /* unused parameter */
+QTimeEvt_armX(&amp;me-&gt;timeEvt,
+BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
+     <initial_glyph conn="2,3,5,1,20,4,-4">
+      <action box="0,-2,6,2"/>
+     </initial_glyph>
+    </initial>
+    <state name="off">
+     <entry>BSP_ledOff();</entry>
+     <tran trig="TIMEOUT" target="../../2">
+      <tran_glyph conn="2,13,3,1,18,6,-2">
+       <action box="0,-2,8,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="2,5,16,10">
+      <entry box="1,2,12,4"/>
+     </state_glyph>
+    </state>
+    <state name="on">
+     <entry>BSP_ledOn();</entry>
+     <tran trig="TIMEOUT" target="../../1">
+      <tran_glyph conn="2,25,3,1,20,-15,-4">
+       <action box="0,-2,8,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="2,17,16,10">
+      <entry box="1,2,12,4"/>
+     </state_glyph>
+    </state>
+    <state_diagram size="30,29"/>
+   </statechart>
+  </class>
+ </package>
+ <directory name=".">
+  <file name="blinky.c">
+   <text>#include &quot;qpc.h&quot;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt; /* for exit() */
+
+enum { BSP_TICKS_PER_SEC = 100 };
+
+void BSP_ledOff(void) {
+    printf(&quot;LED OFF\n&quot;);
+}
+void BSP_ledOn(void) {
+    printf(&quot;LED ON\n&quot;);
+}
+void Q_onAssert(char const * const module, int loc) {
+    fprintf(stderr, &quot;Assertion failed in %s:%d&quot;, module, loc);
+    exit(-1);
+}
+void QF_onStartup(void) {}
+void QF_onCleanup(void) {}
+void QF_onClockTick(void) {
+    QF_TICK_X(0U, (void *)0);  /* perform the QF clock tick processing */
+}
+
+enum BlinkySignals {
+    TIMEOUT_SIG = Q_USER_SIG,
+    MAX_SIG
+};
+
+//*============== ask QM to declare the Blinky class ================*/
+$declare${AOs::Blinky}
+
+static Blinky l_blinky;
+QActive * const AO_Blinky = &amp;l_blinky.super;
+
+static void Blinky_ctor(void) {
+    Blinky *me = (Blinky *)AO_Blinky;
+    QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Blinky_initial));
+    QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, TIMEOUT_SIG, 0U);
+}
+
+int main() {
+    /* statically allocate event queue buffer for the Blinky AO */
+    static QEvt const *blinky_queueSto[10];
+
+    QF_init(); /* initialize the framework */
+
+    Blinky_ctor(); /* explicitly call the &quot;constructor&quot; */
+    QACTIVE_START(AO_Blinky,
+                  1U, /* priority */
+                  blinky_queueSto, Q_DIM(blinky_queueSto),
+                  (void *)0, 0U, /* no stack */
+                  (QEvt *)0);    /* no initialization event */
+    return QF_run(); /* run the QF application */
+}
+
+/*================ ask QM to define the Blinky class ================*/
+$define${AOs::Blinky}
+
+</text>
+  </file>
+ </directory>
+</model>

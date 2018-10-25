@@ -1,5 +1,5 @@
 /*
- * FreeRTOS Kernel V10.1.0
+ * FreeRTOS Kernel V10.1.1
  * Copyright (C) 2018 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -221,7 +221,7 @@ size_t xStreamBufferSend( StreamBufferHandle_t xStreamBuffer,
                           const void *pvTxData,
                           size_t xDataLengthBytes,
                           TickType_t xTicksToWait );
-<pre>
+</pre>
  *
  * Sends bytes to a stream buffer.  The bytes are copied into the stream buffer.
  *
@@ -318,7 +318,7 @@ size_t xStreamBufferSendFromISR( StreamBufferHandle_t xStreamBuffer,
                                  const void *pvTxData,
                                  size_t xDataLengthBytes,
                                  BaseType_t *pxHigherPriorityTaskWoken );
-<pre>
+</pre>
  *
  * Interrupt safe version of the API function that sends a stream of bytes to
  * the stream buffer.

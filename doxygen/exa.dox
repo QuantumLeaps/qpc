@@ -6,7 +6,6 @@
 
 @tableofcontents
 
-
 @section exa_gen General Comments
 The QP/C distribution contains many @subpage exa_ref "example projects" to demonstrate various QP/C features. Each example project is described on its own dedicated page that you can find using several criteria (see @ref exa_ref). The example projects have the following main goals:
 
@@ -14,15 +13,15 @@ The QP/C distribution contains many @subpage exa_ref "example projects" to demon
 
 - <strong>to provide you with a starting point for your own projects</strong> &mdash; the examples are complete working projects, with correctly pre-configured tools, such as compiler options, linker script, debugger setup, etc.
 
+- <strong>to provide you with unit testing support</strong> &mdash; the [QUTest](/qtools/qutest.html) examples illustrate unit testing techniques both for the development worksations and for embedded targets.
+
 @note
 It is highly recommended that you create your own projects by **copying and modifying** existing example projects rather than starting your QP/C projects from scratch.
 
 
 <div class="separate"></div>
 @subsection exa_code Example Code Structure
-Starting with QP/C release 5.4.0, **all** examples are bundled into the QP/C download, as opposed to being distributed as separate QP Development Kits (QDKs). The main benefit is of this approach is that it greatly reduces chances of mistakes in combining the mainline QP/C code with various QDKs. The downside is that the QP/C distribution becomes quite large and that examples can't be added or updated independently from the QP/C baseline code.
-
-All examples are located in sub-directories of the <span class="img folder">examples</span> <a href="files.html">top-level folder</a>, with the hierarchical organization outlined below:
+QP/C examples are located in sub-directories of the <span class="img folder">examples</span> <a href="files.html">top-level folder</a>, with the hierarchical organization outlined below:
 
 <ul class="tag">
   <li><span class="img folder">examples/</span>
@@ -33,63 +32,60 @@ All examples are located in sub-directories of the <span class="img folder">exam
     <ul class="tag">
       <li><span class="img folder">dpp_ek-tm4c123gxl/</span> &mdash; DPP example for EK-TM4C123GXL board
       </li>
-        <li><span class="img folder">qk/</span> &mdash; Version for the @ref comp_qk "preemptive QK kernel"
+      <li><span class="img folder">qk/</span> &mdash; Version for the @ref comp_qk "preemptive QK kernel"
+      </li>
+      <ul class="tag">
+        <li><span class="img folder">arm/</span> &mdash; build with ARM-KEIL (Compiler Version 5) toolchain
+        </li>
+        <li><span class="img folder">armclang/</span> &mdash; build with ARM-Clang (Compiler Version 6) toolchain
         </li>
         <ul class="tag">
-          <li><span class="img folder">arm/</span> &mdash; build with ARM-KEIL (Compiler Version 5) toolchain
+          <li><span class="img folder">dbg/</span> &mdash; Debug @ref exa_sec_conf "build configuration"
           </li>
-          <li><span class="img folder">arm-clang/</span> &mdash; build with ARM-Clang (Compiler Version 6) toolchain
+          <li><span class="img folder">rel/</span> &mdash; Release build configuration
           </li>
-          <ul class="tag">
-            <li><span class="img folder">dbg/</span> &mdash; Debug @ref exa_sec_conf "build configuration"
-            </li>
-            <li><span class="img folder">rel/</span> &mdash; Release build configuration
-            </li>
-            <li><span class="img folder">spy/</span> &mdash; Spy build configuration
-            </li>
-          </ul>
-          <li><span class="img folder">gnu/</span> &mdash; build with GNU toolchain
-          </li>
-          <li><span class="img folder">iar/</span> &mdash; build with IAR toolchain
-          </li>
-          <li><span class="img folder">ti/</span> &mdash; build with TI/CCS toolchain
+          <li><span class="img folder">spy/</span> &mdash; Spy build configuration
           </li>
         </ul>
-        <li><span class="img folder">qv/</span> &mdash;  Version for the @ref comp_qv "cooperative QV kernel"
+        <li><span class="img folder">gnu/</span> &mdash; build with GNU toolchain
         </li>
-        <li><span class="img folder">qxk/</span> &mdash; Version for the @ref comp_qxk "blocking QXK kernel"
+        <li><span class="img folder">iar/</span> &mdash; build with IAR toolchain
+        </li>
+        <li><span class="img file_c">...</span> &mdash; source code independent on the toolchain
         </li>
       </ul>
-      <li><span class="img file_c">...</span> &mdash; source code independent on the toolchain
+      <li><span class="img folder">qv/</span> &mdash;  Version for the @ref comp_qv "cooperative QV kernel"
+      </li>
+      <li><span class="img folder">qxk/</span> &mdash; Version for the @ref comp_qxk "blocking QXK kernel"
       </li>
     </ul>
+    <li><span class="img folder">.../</span> &mdash; Native examples for other CPU architectures...
+    </li>
 
-    <li><span class="img folder">ucos-ii/</span> &mdash; Examples for uCOS-II (3rd-party RTOS) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <span class="tag">B</span>
+    <li><span class="img folder">threadx/</span> &mdash; Examples for ThreadX (3rd-party RTOS) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <span class="tag">B</span>
     </li>
     <ul class="tag">
       <li><span class="img folder">arm-cm/</span> &mdash; Examples for ARM-Cortex-M
       </li>
       <ul class="tag">
-        <li><span class="img folder">dpp_ek-tm4c123gxl/</span> &mdash; DPP example for EK-TM4C123GXL board
-        </li>
-        <ul class="tag">
-          <li><span class="img folder">arm/</span> &mdash; build with ARM-KEIL (Compiler Version 5) toolchain
-          </li>
-          <li><span class="img folder">arm-clang/</span> &mdash; build with ARM-Clang (Compiler Version 6) toolchain
-          </li>
-          <ul class="tag">
-            <li><span class="img folder">dbg/</span> &mdash; Debug build configuration
-            </li>
-            <li><span class="img folder">rel/</span> &mdash; Release build configuration
-            </li>
-            <li><span class="img folder">spy/</span> &mdash; Spy build configuration
-            </li>
-          </ul>
-          <li><span class="img folder">iar/</span> &mdash; build with IAR toolchain
-          </li>
-        </ul>
-      </ul>
-    </ul>
+         <li><span class="img folder">dpp_ek-tm4c123gxl/</span> &mdash; DPP example for EK-TM4C123GXL board
+         </li>
+         <ul class="tag">
+           <li><span class="img folder">iar/</span> &mdash; build with IAR toolchain
+           </li>
+           <ul class="tag">
+             <li><span class="img folder">dbg/</span> &mdash; Debug build configuration
+             </li>
+             <li><span class="img folder">rel/</span> &mdash; Release build configuration
+             </li>
+             <li><span class="img folder">spy/</span> &mdash; Spy build configuration
+             </li>
+           </ul>
+         </ul>
+       </ul>
+     </ul>
+    <li><span class="img folder">.../</span> &mdash; Native examples for other 3rd-party RTOSes...
+    </li>
 
     <li><span class="img folder">lwip/</span> &mdash; Examples for lwIP (3rd-party TCP/IP) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <span class="tag">C</span>
     </li>
@@ -127,10 +123,78 @@ All examples are located in sub-directories of the <span class="img folder">exam
         </ul>
       </ul>
     </ul>
+    <li><span class="img folder">.../</span> &mdash; Examples for other 3rd-party middleware...
+    </li>
+
+    <li><span class="img folder">qutest/</span> &mdash; Examples for QUTest unit testing harness &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="tag">D</span>
+    </li>
+    <ul class="tag">
+      <li><span class="img folder">blinky/</span> &mdash; The simple Blinky example
+      </li>
+      <ul class="tag">
+        <li><span class="img folder">src/</span> &mdash; source code under test
+        </li>
+        <ul class="tag">
+          <li><span class="img file_c">blinky.c</span> &mdash; Blinky implementation
+          </li>
+          <li><span class="img file_h">blinky.h</span> &mdash; Blinky header
+          </li>
+        </ul>
+      </ul>
+      <ul class="tag">
+        <li><span class="img folder">test/</span> &mdash; code for unit testing
+        </li>
+        <ul class="tag">
+          <li><span class="img file_mak">Makefile</span> &mdash; cross-platform makefile
+          </li>
+          <li><span class="img file_c">test_blinky.c</span> &mdash; test fixture for Blinky
+          </li>
+          <li><span class="img file_tcl">test_blinky.tcl</span> &mdash; test script for Blinky (Tcl)
+          </li>
+          <li><span class="img file_py">test_blinky.py</span> &mdash; test script for Blinky (Python)
+          </li>
+        </ul>
+      </ul>
+      <li><span class="img folder">.../</span> &mdash; Other QUTest examples...
+      </li>
+    </ul>
+
+    <li><span class="img folder">workstation/</span> &mdash; Examples for workstations (Windows, Linux, MacOS) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="tag">E</span>
+    </li>
+    <ul class="tag">
+      <li><span class="img folder">blinky/</span> &mdash; The simple Blinky example
+      </li>
+      <ul class="tag">
+        <li><span class="img folder">build/</span> &mdash; Debug build configuration
+        </li>
+        <li><span class="img folder">build_rel/</span> &mdash; Release build configuration
+        </li>
+        <li><span class="img folder">build_spy/</span> &mdash; Spy build configuration
+        </li>
+        <li><span class="img file_c"> blinky.c</span> &mdash; blinky source code
+        </li>
+        <li><span class="img file_qm"> blinky.qm</span> &mdash; QM model file for Blinky
+        </li>
+        <li><span class="img file_mak"> Makefile</span> &mdash; cross-platform Makefile (Windows, Linux, MacOS)
+        </li>
+      </ul>
+      <li><span class="img folder">calc/</span> &mdash; The Calculator example
+      </li>
+      <li><span class="img folder">comp/</span> &mdash; The Orthogonal-Component example
+      </li>
+      <li><span class="img folder">defer/</span> &mdash; The Deferred-Event example
+      </li>
+      <li><span class="img folder">dpp/</span> &mdash; The Dining-Philosophers Problem example
+      </li>
+      <li><span class="img folder">.../</span> &mdash; other examples for workstations...
+      </li>
+    </ul>
+
   </ul>
+</ul>
 
 <ul class="tag">
-  <li><span class="tag">A</span> @subpage exa_native "Native examples" are located in sub-directories named after the CPU architecture, such as <span class="img folder">arm-cm</span> for ARM Cortex-M. Under that directory, the sub-directories <span class="img folder">blinky_ek-tm4c123gxl</span> contain the specific example on the specified board, such as "Blinky" on the EK-TM4C123GXL board here. In the specific example folder, you find sub-folders for the @ref comp_qk "QK" and @ref comp_qv "QV" kernels, respectively.
+  <li><span class="tag">A</span> @subpage exa_native "Native examples" are located in sub-directories named after the CPU architecture, such as <span class="img folder">arm-cm</span> for ARM Cortex-M. Under that directory, the sub-directories <span class="img folder">blinky_ek-tm4c123gxl</span> contain the specific example on the specified board, such as "Blinky" on the EK-TM4C123GXL board here. In the specific example folder, you find sub-folders for the @ref comp_qv "QV", @ref comp_qk "QK" and @ref comp_qxk "QXK" kernels, respectively.
   </li>
 
   <li><span class="tag">B</span> @subpage exa_rtos "Examples for 3rd-party RTOS"/@subpage exa_os "OS" are located in sub-directories named after the RTOS/OS, such as <span class="img folder">ucos-ii</span> for uCOS-II RTOS. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
@@ -138,10 +202,16 @@ All examples are located in sub-directories of the <span class="img folder">exam
 
   <li><span class="tag">C</span> @subpage exa_mware "Examples for 3rd-party Middleware" are located in sub-directories named after the middleware, such as <span class="img folder">lwIP</span> for the lwIP TCP/IP stack. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
   </li>
+
+  <li><span class="tag">D</span> @subpage exa_qutest "Examples for QUTest" illustrate unit testing of embedded event-driven code. <span class="highlight"><b>NOTE:</b> Examples in this directory can run on all types of workstations (Windows, Linux, MacOS), as well as embedded targets.</span>
+  </li>
+
+  <li><span class="tag">E</span> @subpage exa_os "Examples for Workstations" provide console-based examples described in the [PSiCC2](/psicc2) book, which you can try directly on your workstation without any embedded hardware. <span class="highlight"><b>NOTE:</b> Examples in this directory can also be used on the <b>embedded</b> versions of the desktop operating systems, such as embedded-Linux and Windows-embedded.</span>
+  </li>
 </ul>
 
 @note
-Because the QP distribution contains *all* examples, the number of sub-directories and files in the <span class="img folder">examples</span> folder may seem daunting. However, knowing the structure of the <span class="img folder">examples</span> folder, you can simply **delete** the sub-directories that are not interesting to you.
+Because the QP distribution contains *all* examples, the number of sub-directories and files in the <span class="img folder">examples</span> folder may seem daunting. However, knowing the structure of the <span class="img folder">examples</span> folder, you can simply ignore or even delete the sub-directories that are not interesting to you.
 
 
 <div class="separate"></div>
@@ -155,7 +225,7 @@ To demonstrate QP/C features on an embedded board, you need to create an applica
 With the exception of the game application, all other example applications can be implemented on a board with just a couple of LEDs. The @ref game application is a bit more involved and requires a small graphic display on the board.
 
 Beyond these basic applications for demonstrating and testing the various @ref ports "QP/C ports", the QP/C distribution contains all examples described in the book <a class="extern" target="_blank" href="https://www.state-machine.com/psicc2" >Practical UML Statecharts in C/C++, 2nd Edition</a>.
-@sa @ref exa_win32
+@sa @ref exa_os
 
 
 <div class="separate"></div>
@@ -207,12 +277,19 @@ The Third-Party software components included in the <span class="img folder">3rd
 sub-folders.
 
 
-------------------------------------------------------------------------------
-@section exa_own Creating your Own QP/C Projects
+<div class="separate"></div>
+@subsection exa_own Creating your Own QP/C Projects
 
 Perhaps the most important fact of life to remember is that in embedded systems nothing works until everything works. This means that you should always start with a <strong>working system</strong> and gradually evolve it, changing one thing at a time and making sure that it keeps working every step of the way.
 
 Keeping this in mind, the provided QP/C application examples, such as the super-simple Blinky, or a bit more advanced @ref dpp or @ref game, allow you to get started with a working project rather than starting from scratch. You should also always try one of the provided example projects on the same evaluation board that it was designed for, before making any changes.
+
+@note
+The evaluation boards used in the examples are all very **inexpensive** and available from major electronic distributors (e.g., [Arrow](https://www.arrow.com/), [DigiKey](https://www.digikey.com/), [Mouser](https://www.mouser.com/), [Avnet](https://www.avnet.com)), as well as directly from the silicon vendors (e.g., a TI board is also available from TI.com).
+
+@remark
+Even before you acquire a specific evaluation board, you can always at least **build** a project that interests you on your workstation.
+
 
 Only after convincing yourself that the example project works "as is", you can think about creating your own projects. At this point, the easiest and recommended way is to copy the existing working example project folder (such as the Blinky example) and rename it.
 
@@ -222,8 +299,8 @@ After copying the project folder, you still need to change the name of the proje
 By copying and re-naming an existing, working project, as opposed to creating a new one from scratch, you inherit the correct compiler and linker options an other project settings, which will help you get started much faster.
 
 
-------------------------------------------------------------------------------
-@section exa_doc Next Steps and Further Reading About QP and QM
+<div class="separate"></div>
+@subsection exa_doc Next Steps and Further Reading About QP and QM
 
 To work with QP/C effectively, you need to learn a bit more about active objects and state machines. Below is a list of links to enable you to further your knowledge:
 
@@ -231,7 +308,7 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 2. Free Support Forum for QP/QM (https://sourceforge.net/p/qpc/discussion/668726 )
 3. QP Code Downloads summary (https://www.state-machine.com/downloads )
 4. QP Application Notes (https://www.state-machine.com/doc/an )
-5. "State Space" Blog (http://embeddedgurus.com/state-space/ )
+5. "State Space" Blog (https://embeddedgurus.com/state-space/ )
 
 @next{exa_ref}
 */
@@ -257,13 +334,6 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 @section exa_ref_tool Native Examples (by Development Toolchain)
 @n
 
-@subsection exa_ref_arm-clang ARM-Clang Toolchain (ARM Compiler 6)
-- @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a> &nbsp; (Cortex-M0+)
-- @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
-- @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
-- @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a> &nbsp; (Cortex-M7)
-
-
 <div class="separate"></div>
 @subsection exa_ref_arm-keil ARM-Keil Toolchain (ARM Compiler 5)
 - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a> &nbsp; (Cortex-M4)
@@ -276,6 +346,13 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
 - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
+
+
+@subsection exa_ref_arm-clang ARM-Clang Toolchain (ARM Compiler 6)
+- @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a> &nbsp; (Cortex-M0+)
+- @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
+- @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
+- @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a> &nbsp; (Cortex-M7)
 
 
 <div class="separate"></div>
@@ -317,13 +394,6 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 
 
 <div class="separate"></div>
-@subsection exa_ref_ti-arm TI ARM with CCS IDE
-- @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a> &nbsp; (Cortex-M4)
-- @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a> &nbsp; (Cortex-R4)
-- @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a> &nbsp; (Cortex-R4)
-
-
-<div class="separate"></div>
 @subsection exa_ref_ccs-430 CCS for MSP430
 - @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 - @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
@@ -354,10 +424,13 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 
 
 ------------------------------------------------------------------------------
-@section exa_ref_os Examples for Third-Party OS
-- @ref exa_posix
-- @ref exa_win32
-- @ref exa_win32-qv
+@section exa_ref_os Examples for Workstations (Windows, Linux, MacOS)
+The examples in the "workstation" directory are designed for workstations (running Windows, Linux, or MacOS), but they can also be used for projects intended for the **embedded** versions of the "big" operating systems (e.g., embedded-Linux or Windows-embedded). These examples are based on the following QP ports:
+
+- @ref exa_os "POSIX-QV" &mdash; single-threaded examples for POSIX-QV (Linux, MacOS)
+- @ref exa_os "POSIX" &mdash; multi-threaded examples for POSIX (Linux, MacOS, QNX, etc.)
+- @ref exa_os "Windows-QV" &mdash; single-threaded examples for Windows
+- @ref exa_os "Windows" &mdash;  multi-threaded examples for Windows
 
 
 ------------------------------------------------------------------------------

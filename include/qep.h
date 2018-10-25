@@ -4,12 +4,12 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.4
-* Last updated on  2018-08-08
+* Last updated for version 6.3.6
+* Last updated on  2018-10-03
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      634U
+#define QP_VERSION      636U
 
 /*! The current QP version number string of the form X.Y.Z, where X is
 * a 1-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.3.4"
+#define QP_VERSION_STR  "6.3.6"
 
-/*! Tamperproof current QP release (6.3.4) and date (2018-08-09) */
-#define QP_RELEASE      0x943AB9F5U
+/*! Tamperproof current QP release (6.3.6) and date (2018-10-20) */
+#define QP_RELEASE      0x941A87C3U
 
 
 /****************************************************************************/

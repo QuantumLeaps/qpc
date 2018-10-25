@@ -76,13 +76,6 @@ int main() {
     BSP_init();
 
     /* object dictionaries... */
-    QS_OBJ_DICTIONARY(smlPoolSto);
-    QS_OBJ_DICTIONARY(tableQueueSto);
-    QS_OBJ_DICTIONARY(philoQueueSto[0]);
-    QS_OBJ_DICTIONARY(philoQueueSto[1]);
-    QS_OBJ_DICTIONARY(philoQueueSto[2]);
-    QS_OBJ_DICTIONARY(philoQueueSto[3]);
-    QS_OBJ_DICTIONARY(philoQueueSto[4]);
     QS_OBJ_DICTIONARY(&l_ticker0);
 
     /* start the extended thread */

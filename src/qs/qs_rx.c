@@ -4,12 +4,12 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.0
-* Last updated on  2018-04-30
+* Last updated for version 6.3.6
+* Last updated on  2018-10-04
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -131,6 +131,7 @@ typedef struct {
     uint8_t  idx;
 } EvtVar;
 
+/* extended-state variables for the current state */
 static struct {
     union Variant {
         CmdVar   cmd;
@@ -142,7 +143,7 @@ static struct {
         ObjVar   obj;
         EvtVar   evt;
         TPVar    tp;
-    } var;   /* extended-state variables for the current state */
+    } var;
     uint8_t state;
     uint8_t esc;
     uint8_t seq;
@@ -180,6 +181,8 @@ enum {
     WAIT4_OBJ_KIND,
     WAIT4_OBJ_ADDR,
     WAIT4_OBJ_FRAME,
+    WAIT4_QUERY_KIND,
+    WAIT4_QUERY_FRAME,
     WAIT4_EVT_PRIO,
     WAIT4_EVT_SIG,
     WAIT4_EVT_LEN,
@@ -413,6 +416,10 @@ static void QS_rxParseData_(uint8_t b) {
                 case QS_RX_CURR_OBJ:
                     l_rx.var.obj.recId = (uint8_t)QS_RX_CURR_OBJ;
                     QS_RX_TRAN_(WAIT4_OBJ_KIND);
+                    break;
+                case QS_RX_QUERY_CURR:
+                    l_rx.var.obj.recId = (uint8_t)QS_RX_QUERY_CURR;
+                    QS_RX_TRAN_(WAIT4_QUERY_KIND);
                     break;
                 case QS_RX_EVENT:
                     QS_RX_TRAN_(WAIT4_EVT_PRIO);
@@ -656,6 +663,21 @@ static void QS_rxParseData_(uint8_t b) {
             /* keep ignoring the data until a frame is collected */
             break;
         }
+        case WAIT4_QUERY_KIND: {
+            if (b < (uint8_t)MAX_OBJ) {
+                l_rx.var.obj.kind = b;
+                QS_RX_TRAN_(WAIT4_QUERY_FRAME);
+            }
+            else {
+                QS_rxReportError_(l_rx.var.obj.recId);
+                QS_RX_TRAN_(ERROR_STATE);
+            }
+            break;
+        }
+        case WAIT4_QUERY_FRAME: {
+            /* keep ignoring the data until a frame is collected */
+            break;
+        }
         case WAIT4_AO_FILTER_PRIO: {
             l_rx.var.aFlt.prio = b;
             QS_RX_TRAN_(WAIT4_AO_FILTER_FRAME);
@@ -811,9 +833,11 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
         }
         case WAIT4_TICK_FRAME: {
             QS_rxReportAck_(QS_RX_TICK);
-            QF_tickX_((uint_fast8_t)l_rx.var.tick.rate, &QS_rxPriv_);
 #ifdef Q_UTEST
+            QS_tickX_((uint_fast8_t)l_rx.var.tick.rate, &QS_rxPriv_);
             QS_processTestEvts_(); /* process all events produced */
+#else
+            QF_tickX_((uint_fast8_t)l_rx.var.tick.rate, &QS_rxPriv_);
 #endif
             QS_rxReportDone_(QS_RX_TICK);
             break;
@@ -886,7 +910,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             l_rx.var.gFlt.data[8] |= (uint8_t)0x3F;
 
             /* never enable the last 3 records (0x7D, 0x7E, 0x7F) */
-            l_rx.var.gFlt.data[15] &= (uint8_t)0xE0;
+            l_rx.var.gFlt.data[15] &= (uint8_t)0x1F;
 
             for (i=(uint8_t)0; i < (uint8_t)sizeof(QS_priv_.glbFilter); ++i) {
                 QS_priv_.glbFilter[i] = l_rx.var.gFlt.data[i];
@@ -895,19 +919,18 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             break;
         }
         case WAIT4_OBJ_FRAME: {
-            if (l_rx.var.obj.kind < (uint8_t)MAX_OBJ) {
+            i = l_rx.var.obj.kind;
+            if (i < (uint8_t)MAX_OBJ) {
                 if (l_rx.var.obj.recId == (uint8_t)QS_RX_LOC_FILTER) {
-                    QS_priv_.locFilter[l_rx.var.obj.kind]
-                         = (void *)l_rx.var.obj.addr;
+                    QS_priv_.locFilter[i] = (void *)l_rx.var.obj.addr;
                 }
-                else {
-                    QS_rxPriv_.currObj[l_rx.var.obj.kind]
-                         = (void *)l_rx.var.obj.addr;
+                else { /* set the current object */
+                    QS_rxPriv_.currObj[i] = (void *)l_rx.var.obj.addr;
                 }
                 QS_rxReportAck_((enum QSpyRxRecords)l_rx.var.obj.recId);
             }
             /* both SM and AO */
-            else if (l_rx.var.obj.kind == (uint8_t)SM_AO_OBJ) {
+            else if (i == (uint8_t)SM_AO_OBJ) {
                 if (l_rx.var.obj.recId == (uint8_t)QS_RX_LOC_FILTER) {
                     QS_priv_.locFilter[SM_OBJ] = (void *)l_rx.var.obj.addr;
                     QS_priv_.locFilter[AO_OBJ] = (void *)l_rx.var.obj.addr;
@@ -920,6 +943,52 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             }
             else {
                 QS_rxReportError_(l_rx.var.obj.recId);
+            }
+            break;
+        }
+        case WAIT4_QUERY_FRAME: {
+            i = l_rx.var.obj.kind;
+            ptr = (uint8_t *)QS_rxPriv_.currObj[i];
+            if (ptr != (void *)0) {
+                QS_beginRec((uint_fast8_t)QS_QUERY_DATA);
+                    QS_TIME_(); /* timestamp */
+                    QS_U8_(i);  /* object kind */
+                    QS_OBJ_(ptr);
+                    switch (i) {
+                        case SM_OBJ:
+                            QS_FUN_(((QHsm *)ptr)->state.fun);
+                            break;
+
+#ifdef Q_UTEST
+                        case AO_OBJ:
+                            QS_EQC_(((QActive *)ptr)->eQueue.nFree);
+                            QS_EQC_(((QActive *)ptr)->eQueue.nMin);
+                            break;
+                        case MP_OBJ:
+                            QS_MPC_(((QMPool *)ptr)->nFree);
+                            QS_MPC_(((QMPool *)ptr)->nMin);
+                            break;
+                        case EQ_OBJ:
+                            QS_EQC_(((QEQueue *)ptr)->nFree);
+                            QS_EQC_(((QEQueue *)ptr)->nMin);
+                            break;
+                        case TE_OBJ:
+                            QS_OBJ_(((QTimeEvt *)ptr)->act);
+                            QS_TEC_(((QTimeEvt *)ptr)->ctr);
+                            QS_TEC_(((QTimeEvt *)ptr)->interval);
+                            QS_SIG_(((QTimeEvt *)ptr)->super.sig);
+                            QS_U8_ (((QTimeEvt *)ptr)->super.refCtr_);
+                            break;
+#endif /* Q_UTEST */
+
+                        default:
+                            break;
+                    }
+                QS_endRec();
+                QS_REC_DONE();
+            }
+            else {
+                QS_rxReportError_((uint8_t)QS_RX_QUERY_CURR);
             }
             break;
         }

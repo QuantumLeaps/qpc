@@ -1,11 +1,11 @@
 /**
 * @file
-* @brief QF/C port to Win32 API
+* @brief QF/C port to Win32 API (multi-threaded)
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.4
-* Date of the Last Update:  2018-09-04
+* Last Updated for Version: 6.3.6
+* Date of the Last Update:  2018-10-15
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -74,6 +74,7 @@
 #include "qmpool.h"    /* Win32 needs the native memory-pool */
 #include "qf.h"        /* QF platform-independent public interface */
 
+/* internal functions for critical section management */
 void QF_enterCriticalSection_(void);
 void QF_leaveCriticalSection_(void);
 
@@ -82,25 +83,31 @@ void QF_leaveCriticalSection_(void);
 */
 void QF_setWin32Prio(QActive *act, int_t win32Prio);
 
-void QF_setTickRate(uint32_t ticksPerSec); /* set clock tick rate */
+/* set clock tick rate */
+void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio);
 
 /* application-level clock tick callback */
 void QF_onClockTick(void);
 
-/* special adaptations for QWIN GUI applications */
+/* special adaptations for QWIN GUI applications... */
 #ifdef QWIN_GUI
     /* replace main() with main_gui() as the entry point to a GUI app. */
     #define main() main_gui()
     int_t main_gui(); /* prototype of the GUI application entry point */
 #endif
 
-/* portable "safe" facilities from <stdio.h> and <string.h> */
-#ifdef _MSC_VER /* Microsoft Visual C++ */
+/* abstractions for console access... */
+void QF_consoleSetup(void);
+void QF_consoleCleanup(void);
+int QF_consoleGetKey(void);
+int QF_consoleWaitForKey(void);
+
+/****************************************************************************/
+/* Microsoft C++: portable "safe" facilities from <stdio.h> and <string.h> */
+#ifdef _MSC_VER
 
 #if (_MSC_VER < 1900) /* before Visual Studio 2015 */
-
 #define snprintf _snprintf
-
 #endif
 
 #define SNPRINTF_S(buf_, len_, format_, ...) \
@@ -136,7 +143,7 @@ void QF_onClockTick(void);
 #define SSCANF_S(buf_, format_, ...) \
     sscanf(buf_, format_, ##__VA_ARGS__)
 
-#endif
+#endif /* _MSC_VER */
 
 /****************************************************************************/
 /* interface used only inside QF implementation, but not in applications */

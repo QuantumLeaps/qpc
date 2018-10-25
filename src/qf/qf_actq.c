@@ -9,12 +9,12 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.2
-* Last updated on  2018-06-16
+* Last updated for version 6.3.6
+* Last updated on  2018-10-03
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -126,11 +126,17 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         status = false; /* cannot post, but don't assert */
     }
 
+    /* is it a dynamic event? */
+    if (e->poolId_ != (uint8_t)0) {
+        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+    }
+
     if (status) { /* can post the event? */
 
-        /* is it a pool event? */
-        if (e->poolId_ != (uint8_t)0) {
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        --nFree; /* one free entry just used up */
+        me->eQueue.nFree = nFree; /* update the volatile */
+        if (me->eQueue.nMin > nFree) {
+            me->eQueue.nMin = nFree; /* increase minimum so far */
         }
 
         QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
@@ -145,24 +151,18 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QS_END_NOCRIT_()
 
 #ifdef Q_UTEST
-    /* in QUTest the event is posted under the following conditions:
-    * 1. the test-probe#2 is provided; OR
-    * 2. the 'sender' is 'me' (self-posting); OR
-    * 3. the AO-local-filter is set and is 'me'; OR
-    * 4. the AO-local-filter is not set AND the 'sender' is QS_RX
-    */
-    if ((qs_tp_ == (uint32_t)2)
-        || (sender == me)
-        || (QS_priv_.locFilter[AO_OBJ] == me)
-        || ((QS_priv_.locFilter[AO_OBJ] == (void *)0)
-            && (sender == &QS_rxPriv_)))
-    {
-#endif
-        --nFree; /* one free entry just used up */
-        me->eQueue.nFree = nFree;       /* update the volatile */
-        if (me->eQueue.nMin > nFree) {
-            me->eQueue.nMin = nFree;    /* update minimum so far */
+        /* callback to examine the posted event under the the same conditions
+        * as producing the QS_QF_ACTIVE_POST_FIFO trace record, which are:
+        * 1. the local AO-filter is not set (zero) OR
+        * 2. the local AO-filter is set to this AO ('me')
+        */
+        if ((QS_priv_.locFilter[AO_OBJ] == (QActive *)0)
+            || (QS_priv_.locFilter[AO_OBJ] == me))
+        {
+            /* callback to examine the posted event */
+            QS_onTestPost(sender, me, e, status);
         }
+#endif
 
         /* empty queue? */
         if (me->eQueue.frontEvt == (QEvt const *)0) {
@@ -173,14 +173,13 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         else {
             /* insert event into the ring buffer (FIFO) */
             QF_PTR_AT_(me->eQueue.ring, me->eQueue.head) = e;
+
             if (me->eQueue.head == (QEQueueCtr)0) { /* need to wrap head? */
                 me->eQueue.head = me->eQueue.end;   /* wrap around */
             }
             --me->eQueue.head; /* advance the head (counter clockwise) */
         }
-#ifdef Q_UTEST
-    }
-#endif
+
         QF_CRIT_EXIT_();
     }
     else { /* cannot post the event */
@@ -193,8 +192,21 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_OBJ_(me);          /* this active object (recipient) */
             QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_EQC_(nFree);       /* number of free entries */
-            QS_EQC_(margin);      /* margin requested */
+            QS_EQC_((QEQueueCtr)margin); /* margin requested */
         QS_END_NOCRIT_()
+
+#ifdef Q_UTEST
+        /* callback to examine the posted event under the the same conditions
+        * as producing the QS_QF_ACTIVE_POST_FIFO trace record, which are:
+        * 1. the local AO-filter is not set (zero) OR
+        * 2. the local AO-filter is set to this AO ('me')
+        */
+        if ((QS_priv_.locFilter[AO_OBJ] == (QActive *)0)
+            || (QS_priv_.locFilter[AO_OBJ] == me))
+        {
+            QS_onTestPost(sender, me, e, status);
+        }
+#endif
 
         QF_CRIT_EXIT_();
 
@@ -244,6 +256,12 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
+    --nFree; /* one free entry just used up */
+    me->eQueue.nFree = nFree; /* update the volatile */
+    if (me->eQueue.nMin > nFree) {
+        me->eQueue.nMin = nFree; /* update minimum so far */
+    }
+
     QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_();                  /* timestamp */
         QS_SIG_(e->sig);             /* the signal of this event */
@@ -253,11 +271,18 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QS_EQC_(me->eQueue.nMin);    /* min number of free entries */
     QS_END_NOCRIT_()
 
-    --nFree; /* one free entry just used up */
-    me->eQueue.nFree = nFree; /* update the volatile */
-    if (me->eQueue.nMin > nFree) {
-        me->eQueue.nMin = nFree; /* update minimum so far */
-    }
+#ifdef Q_UTEST
+        /* callback to examine the posted event under the the same conditions
+        * as producing the QS_QF_ACTIVE_POST_FIFO trace record, which are:
+        * 1. the local AO-filter is not set (zero) OR
+        * 2. the local AO-filter is set to this AO ('me')
+        */
+        if ((QS_priv_.locFilter[AO_OBJ] == (QActive *)0)
+            || (QS_priv_.locFilter[AO_OBJ] == me))
+        {
+            QS_onTestPost((QActive *)0, me, e, true);
+        }
+#endif
 
     frontEvt = me->eQueue.frontEvt; /* read volatile into the temporary */
     me->eQueue.frontEvt = e; /* deliver the event directly to the front */

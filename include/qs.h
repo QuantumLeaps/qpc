@@ -4,12 +4,12 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.1
-* Last updated on  2018-05-24
+* Last updated for version 6.3.6
+* Last updated on  2018-10-14
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -158,7 +158,7 @@ enum QSpyRecords {
     QS_TARGET_INFO,       /*!< reports the Target information */
     QS_TARGET_DONE,       /*!< reports completion of a user callback */
     QS_RX_STATUS,         /*!< reports QS data receive status */
-    QS_MSC_RESERVED1,
+    QS_QUERY_DATA,        /*!< reports the data from "current object" query */
     QS_PEEK_DATA,         /*!< reports the data from the PEEK query */
     QS_ASSERT_FAIL,       /*!< assertion failed in the code */
 
@@ -189,7 +189,8 @@ enum QSpyUserRecords {
     QS_USER0 = QS_USER,       /*!< offset for User Group 0 */
     QS_USER1 = QS_USER0 + 10, /*!< offset for User Group 1 */
     QS_USER2 = QS_USER1 + 10, /*!< offset for User Group 2 */
-    QS_USER3 = QS_USER2 + 10  /*!< offset for User Group 3 */
+    QS_USER3 = QS_USER2 + 10, /*!< offset for User Group 3 */
+    QS_USER4 = QS_USER3 + 10  /*!< offset for User Group 4 */
 };
 
 #ifndef QS_TIME_SIZE
@@ -731,6 +732,9 @@ QSTimeCtr QS_onGetTime(void);
 /*! Internal QS macro to output an unformatted uint32_t data element */
 #define QS_U32_(data_)          (QS_u32_((uint32_t)(data_)))
 
+/*! Internal QS macro to output a zero-terminated ASCII string element */
+#define QS_STR_(msg_)           (QS_str_((msg_)))
+
 
 #if (Q_SIGNAL_SIZE == 1)
     /*! Internal macro to output an unformatted event signal data element */
@@ -780,11 +784,8 @@ QSTimeCtr QS_onGetTime(void);
     #define QS_FUN_(fun_)       (QS_u32_((uint32_t)(fun_)))
 #endif
 
-
-/*! Internal QS macro to output a zero-terminated ASCII string element */
-#define QS_STR_(msg_)           (QS_str_((msg_)))
-
-/* Macros for use in the client code .......................................*/
+/****************************************************************************/
+/* Macros for use in the client code */
 
 /*! Enumerates data formats recognized by QS */
 /**
@@ -1069,6 +1070,7 @@ enum {
 /*! get the current QS version number string of the form "X.Y.Z" */
 #define QS_getVersion() (QP_versionStr)
 
+
 /****************************************************************************/
 /* QS private data (the transmit channel) */
 typedef uint_fast16_t QSCtr;  /*!< QS ring buffer counter and offset type */
@@ -1130,7 +1132,7 @@ enum QSpyRxRecords {
     QS_RX_AO_FILTER,      /*!< set local AO filter in the Target */
     QS_RX_CURR_OBJ,       /*!< set the "current-object" in the Target */
     QS_RX_TEST_CONTINUE,  /*!< continue a test after QS_TEST_PAUSE() */
-    QS_RX_RESERVED1,      /*!< reserved for future use */
+    QS_RX_QUERY_CURR,     /*!< query the "current object" in the Target */
     QS_RX_EVENT           /*!< inject an event to the Target */
 };
 
@@ -1140,7 +1142,9 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize);
 /*! Parse all bytes present in the QS RX data buffer */
 void QS_rxParse(void);
 
-/*! Private QS-RX data to keep track of the lock-free buffer */
+/*! Private QS-RX data to keep track of the current objects and
+* the lock-free RX buffer
+*/
 typedef struct {
     void     *currObj[MAX_OBJ]; /*!< current objects */
     uint8_t  *buf;        /*!< pointer to the start of the ring buffer */
@@ -1181,6 +1185,18 @@ void QS_onReset(void);
 void QS_onCommand(uint8_t cmdId,   uint32_t param1,
                   uint32_t param2, uint32_t param3);
 
+/*! macro to handle the QS output from the application
+* NOTE: if this macro is used, the application must define QS_output().
+*/
+#define QS_OUTPUT()   (QS_output())
+
+/*! macro to handle the QS-RX input to the application
+* NOTE: if this macro is used, the application must define QS_rx_input().
+*/
+#define QS_RX_INPUT() (QS_rx_input())
+
+/****************************************************************************/
+/* Facilities for use in QUTest only */
 #ifdef Q_UTEST
     /*! callback to setup a unit test inside the Target */
     void QS_onTestSetup(void);
@@ -1191,11 +1207,18 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
     /*! callback to run the test loop */
     void QS_onTestLoop(void);
 
-    /*! callback to "massage" the test event, if neccessary */
+    /*! callback to "massage" the test event before dispatching/posting it */
     void QS_onTestEvt(QEvt *e);
+
+    /*! callback to examine an event that is about to be posted */
+    void QS_onTestPost(void const *sender, QActive *recipient,
+                       QEvt const *e, bool status);
 
     /*! QS internal function to process posted events during test */
     void QS_processTestEvts_(void);
+
+    /*! internal function to process armed time events during test */
+    void QS_tickX_(uint_fast8_t const tickRate, void const * const sender);
 
     /*! QS internal function to get the Test-Probe for a given API */
     uint32_t QS_getTestProbe_(void (* const api)(void));
@@ -1219,20 +1242,32 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
         QS_onTestLoop(); \
     } while (0)
 
-#ifdef QP_IMPL
-    #define QACTIVE_EQUEUE_WAIT_(me_) \
-        Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0)
+    enum QUTestUserRecords {
+        QUTEST_ON_POST = 124
+    };
 
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-        QPSet_insert(&QS_rxPriv_.readySet, (uint_fast8_t)(me_)->prio)
-#endif /* QP_IMPL */
+    /************************************************************************/
+    /*! QActiveDummy Object class */
+    /**
+    * @description
+    * QActiveDummy is a test double for the role of collaborating active
+    * objects in QUTest unit testing.
+    */
+    typedef struct {
+        QActive super; /* inherit QActive */
+    } QActiveDummy;
 
-#else
+    /*! Constructor of the QActiveDummy Active Object class */
+    void QActiveDummy_ctor(QActiveDummy * const me);
+
+#else /* Q_UTEST not defined */
+
     /* dummy definitions when not building for QUTEST */
     #define QS_TEST_PROBE_DEF(fun_)
     #define QS_TEST_PROBE(code_)
     #define QS_TEST_PROBE_ID(id_, code_)
     #define QS_TEST_PAUSE()  ((void)0)
+
 #endif /* Q_UTEST */
 
 #endif /* qs_h  */

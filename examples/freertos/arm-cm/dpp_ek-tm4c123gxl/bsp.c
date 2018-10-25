@@ -100,7 +100,23 @@ static uint32_t l_rnd; // random seed
 #endif
 
 /* ISRs used in this project ===============================================*/
-/* NOTE: only the "FromISR" API variants are allowed in the ISRs! */
+
+/* NOTE: this ISR is for testing of the various preemption scenarios
+*  by triggering the GPIOPortA interrupt from the debugger. You achieve
+*  this by writing 0 to the  SWTRIG register at 0xE000,EF00.
+*
+*  Code Composer Studio: From the CCS debugger you need open the register
+*  window and select NVIC registers from the drop-down list. You scroll to
+*  the NVIC_SW_TRIG register, which denotes the Software Trigger Interrupt
+*  Register in the NVIC. To trigger the GPIOA interrupt you need to write
+*  0x00 to the NVIC_SW_TRIG by clicking on this field, entering the value,
+*  and pressing the Enter key.
+*
+*  IAR EWARM: From the C-Spy debugger you need to open Registers view and
+*  select the "Other Systems Register" group. From there, you need to write
+*  0 to the STIR write-only register and press enter.
+*/
+/* NOTE: only the "FromISR" FreeRTOS API variants are allowed in the ISRs! */
 void GPIOPortA_IRQHandler(void); /* prototype */
 void GPIOPortA_IRQHandler(void) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;

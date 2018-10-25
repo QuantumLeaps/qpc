@@ -1,11 +1,11 @@
 /**
 * @file
-* @brief QF/C port to Win32 with cooperative QV kernel (win32-qv)
+* @brief QF/C port to Win32 API (single-threaded, like the QV kernel)
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.4
-* Date of the Last Update:  2018-09-04
+* Last Updated for Version: 6.3.6
+* Date of the Last Update:  2018-10-15
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -77,26 +77,31 @@
 void QF_enterCriticalSection_(void);
 void QF_leaveCriticalSection_(void);
 
-/* set clock tick rate (NOTE ticksPerSec==0 disables the "ticker thread" */
-void QF_setTickRate(uint32_t ticksPerSec); /* set clock tick rate */
+/* set clock tick rate (NOTE ticksPerSec==0 disables the "ticker thread") */
+void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio);
 
 /* clock tick callback (NOTE not called when "ticker thread" is not running) */
 void QF_onClockTick(void); /* clock tick callback (provided in the app) */
 
-/* special adaptations for QWIN GUI applications */
+/* special adaptations for QWIN GUI applications... */
 #ifdef QWIN_GUI
     /* replace main() with main_gui() as the entry point to a GUI app. */
     #define main() main_gui()
     int_t main_gui(); /* prototype of the GUI application entry point */
 #endif
 
-/* portable "safe" facilities from <stdio.h> and <string.h> */
-#ifdef _MSC_VER /* Microsoft Visual C++ */
+/* abstractions for console access... */
+void QF_consoleSetup(void);
+void QF_consoleCleanup(void);
+int QF_consoleGetKey(void);
+int QF_consoleWaitForKey(void);
+
+/****************************************************************************/
+/* Microsoft C++: portable "safe" facilities from <stdio.h> and <string.h> */
+#ifdef _MSC_VER
 
 #if (_MSC_VER < 1900) /* before Visual Studio 2015 */
-
 #define snprintf _snprintf
-
 #endif
 
 #define SNPRINTF_S(buf_, len_, format_, ...) \
@@ -132,7 +137,7 @@ void QF_onClockTick(void); /* clock tick callback (provided in the app) */
 #define SSCANF_S(buf_, format_, ...) \
     sscanf(buf_, format_, ##__VA_ARGS__)
 
-#endif
+#endif /* _MSC_VER */
 
 /****************************************************************************/
 /* interface used only inside QF implementation, but not in applications */
@@ -148,7 +153,7 @@ void QF_onClockTick(void); /* clock tick callback (provided in the app) */
         Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0)
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
         QPSet_insert(&QV_readySet_, (me_)->prio); \
-            (void)SetEvent(QV_win32Event_)
+        (void)SetEvent(QV_win32Event_)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_  QMPool
@@ -161,7 +166,6 @@ void QF_onClockTick(void); /* clock tick callback (provided in the app) */
 
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h> /* Win32 API */
-    #include <stdlib.h>  /* for malloc() */
 
     extern QPSet   QV_readySet_;   /* QV-ready set of active objects */
     extern HANDLE  QV_win32Event_; /* Win32 event to signal events */

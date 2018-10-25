@@ -4,12 +4,12 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.2
-* Last updated on  2018-06-16
+* Last updated for version 6.3.6
+* Last updated on  2018-10-03
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -133,6 +133,12 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
             QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
         }
 
+        --nFree; /* one free entry just used up */
+        me->nFree = nFree; /* update the volatile */
+        if (me->nMin > nFree) {
+            me->nMin = nFree; /* update minimum so far */
+        }
+
         QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_FIFO,
                          QS_priv_.locFilter[EQ_OBJ], me)
             QS_TIME_();                      /* timestamp */
@@ -142,12 +148,6 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
             QS_EQC_(nFree);                  /* number of free entries */
             QS_EQC_(me->nMin);               /* min number of free entries */
         QS_END_NOCRIT_()
-
-        --nFree; /* one free entry just used up */
-        me->nFree = nFree; /* update the volatile */
-        if (me->nMin > nFree) {
-            me->nMin = nFree; /* update minimum so far */
-        }
 
         /* was the queue empty? */
         if (me->frontEvt == (QEvt const *)0) {
@@ -227,6 +227,12 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
         QF_EVT_REF_CTR_INC_(e);  /* increment the reference counter */
     }
 
+    --nFree;  /* one free entry just used up */
+    me->nFree = nFree; /* update the volatile */
+    if (me->nMin > nFree) {
+        me->nMin = nFree; /* update minimum so far */
+    }
+
     QS_BEGIN_NOCRIT_(QS_QF_EQUEUE_POST_LIFO, QS_priv_.locFilter[EQ_OBJ], me)
         QS_TIME_();              /* timestamp */
         QS_SIG_(e->sig);         /* the signal of this event */
@@ -235,12 +241,6 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
         QS_EQC_(nFree);          /* number of free entries */
         QS_EQC_(me->nMin);       /* min number of free entries */
     QS_END_NOCRIT_()
-
-    --nFree;  /* one free entry just used up */
-    me->nFree = nFree; /* update the volatile */
-    if (me->nMin > nFree) {
-        me->nMin = nFree; /* update minimum so far */
-    }
 
     frontEvt = me->frontEvt; /* read volatile into the temporary */
     me->frontEvt = e; /* deliver event directly to the front of the queue */
@@ -253,6 +253,7 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
         }
         QF_PTR_AT_(me->ring, me->tail) = frontEvt; /* save old front evt */
     }
+
     QF_CRIT_EXIT_();
 }
 

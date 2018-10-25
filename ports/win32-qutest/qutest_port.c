@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.2.0
-* Date of the Last Update:  2018-03-16
+* Last Updated for Version: 6.3.6
+* Date of the Last Update:  2018-10-03
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -46,9 +46,9 @@
 #include "qassert.h"  /* QP embedded systems-friendly assertions */
 #include "qs_port.h"  /* include QS port */
 
-Q_DEFINE_THIS_MODULE("qutest_port")
+//Q_DEFINE_THIS_MODULE("qutest_port")
 
-#include <stdio.h>    /* for printf() and _snprintf_s() */
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <conio.h>
@@ -83,7 +83,8 @@ uint8_t QS_onStartup(void const *arg) {
 
     /* initialize Windows sockets */
     if (WSAStartup(MAKEWORD(2,0), &wsaData) == SOCKET_ERROR) {
-        printf("<TARGET> ERROR   Windows Sockets cannot be initialized\n");
+        fprintf(stderr,
+            "<TARGET> ERROR Windows Sockets cannot be initialized\n");
         goto error;
     }
 
@@ -104,8 +105,9 @@ uint8_t QS_onStartup(void const *arg) {
 
     l_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); /* TCP socket */
     if (l_sock == INVALID_SOCKET){
-        printf("<TARGET> ERROR   cannot create client socket,WSAErr=%d\n",
-               WSAGetLastError());
+        fprintf(stderr,
+            "<TARGET> ERROR cannot create client socket,WSAErr=%d\n",
+            WSAGetLastError());
         goto error;
     }
 
@@ -131,16 +133,18 @@ uint8_t QS_onStartup(void const *arg) {
     sa_local.sin_addr.s_addr = inet_addr(
         inet_ntoa(*(struct in_addr *)*host->h_addr_list));
     //if (bind(l_sock, &sa_local, sizeof(sa_local)) == -1) {
-    //    printf("<TARGET> WARNINIG Cannot bind to the local port, WSAErr=%d\n",
-    //           WSAGetLastError());
+    //    fprintf(stderr,
+    //         "<TARGET> WARNINIG Cannot bind to the local port, WSAErr=%d\n",
+    //         WSAGetLastError());
     //    /* no error */
     //}
 
     /* remote hostName:port (QSPY server socket) */
     host = gethostbyname(hostName);
     if (host == NULL) {
-        printf("<TARGET> ERROR   cannot resolve host Name=%s,WSAErr=%d\n",
-               hostName, WSAGetLastError());
+        fprintf(stderr,
+            "<TARGET> ERROR cannot resolve host Name=%s,WSAErr=%d\n",
+            hostName, WSAGetLastError());
         goto error;
     }
 
@@ -153,16 +157,18 @@ uint8_t QS_onStartup(void const *arg) {
     if (connect(l_sock, (struct sockaddr *)&sa_remote, sizeof(sa_remote))
         == SOCKET_ERROR)
     {
-        printf("<TARGET> ERROR   socket configuration failed,WSAErr=%d\n",
-               WSAGetLastError());
+        fprintf(stderr,
+            "<TARGET> ERROR socket configuration failed,WSAErr=%d\n",
+            WSAGetLastError());
         QS_EXIT();
         goto error;
     }
 
     /* Set the socket to non-blocking mode. */
     if (ioctlsocket(l_sock, FIONBIO, &ioctl_opt) == SOCKET_ERROR) {
-        printf("<TARGET> ERROR   Socket configuration failed WASErr=%d\n",
-               WSAGetLastError());
+        fprintf(stderr,
+            "<TARGET> ERROR Socket configuration failed WASErr=%d\n",
+            WSAGetLastError());
         QS_EXIT();
         goto error;
     }
@@ -210,7 +216,9 @@ void QS_onTestLoop() {
         /* selective, timed blocking on the TCP/IP socket... */
         status = select(0, &readSet, (fd_set *)0, (fd_set *)0, &timeout);
         if (status == SOCKET_ERROR) {
-            printf("<TARGET> ERROR socket select,WSAErr=%d", WSAGetLastError());
+            fprintf(stderr,
+                "<TARGET> ERROR socket select,WSAErr=%d",
+                WSAGetLastError());
             QS_onCleanup();
             exit(-2);
         }

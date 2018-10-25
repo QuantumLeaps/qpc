@@ -61,23 +61,10 @@ int main() {
     /* init publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
 
-    /* initialize the event pools... */
-    QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
-    QF_poolInit(medPoolSto, sizeof(medPoolSto), sizeof(medPoolSto[0]));
-
     /* object dictionaries for AOs... */
     QS_OBJ_DICTIONARY(AO_Missile);
     QS_OBJ_DICTIONARY(AO_Ship);
     QS_OBJ_DICTIONARY(AO_Tunnel);
-
-    /* object dictionaries for event queues... */
-    QS_OBJ_DICTIONARY(missileQueueSto);
-    QS_OBJ_DICTIONARY(shipQueueSto);
-    QS_OBJ_DICTIONARY(tunnelQueueSto);
-
-    /* object dictionaries for event pools... */
-    QS_OBJ_DICTIONARY(smlPoolSto);
-    QS_OBJ_DICTIONARY(medPoolSto);
 
     /* signal dictionaries for globally published events... */
     QS_SIG_DICTIONARY(TIME_TICK_SIG,      (void *)0);

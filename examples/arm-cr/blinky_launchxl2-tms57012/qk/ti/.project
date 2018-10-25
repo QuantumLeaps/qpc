@@ -39,7 +39,7 @@
 		<link>
 			<name>QS</name>
 			<type>2</type>
-			<location>PARENT-5-PROJECT_LOC/src/qs</location>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qs</locationURI>
 		</link>
 		<link>
 			<name>blinky.c</name>

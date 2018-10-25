@@ -4,12 +4,12 @@
 * @brief ::QMPool implementatin (Memory Pool)
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-13
+* Last updated for version 6.3.6
+* Last updated on  2018-10-03
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -170,9 +170,9 @@ void QMPool_put(QMPool * const me, void *b) {
     me->free_head = b;      /* set as new head of the free list */
     ++me->nFree;            /* one more free block in this pool */
 
-    QS_BEGIN_NOCRIT_(QS_QF_MPOOL_PUT, QS_priv_.locFilter[MP_OBJ], me->start)
+    QS_BEGIN_NOCRIT_(QS_QF_MPOOL_PUT, QS_priv_.locFilter[MP_OBJ], me)
         QS_TIME_();         /* timestamp */
-        QS_OBJ_(me->start); /* the memory managed by this pool */
+        QS_OBJ_(me);        /* this memory pool */
         QS_MPC_(me->nFree); /* the number of free blocks in the pool */
     QS_END_NOCRIT_()
 
@@ -250,9 +250,9 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
         me->free_head = fb_next; /* set the head to the next free block */
 
         QS_BEGIN_NOCRIT_(QS_QF_MPOOL_GET,
-                         QS_priv_.locFilter[MP_OBJ], me->start)
+                         QS_priv_.locFilter[MP_OBJ], me)
             QS_TIME_();         /* timestamp */
-            QS_OBJ_(me->start); /* the memory managed by this pool */
+            QS_OBJ_(me);        /* this memory pool */
             QS_MPC_(me->nFree); /* # of free blocks in the pool */
             QS_MPC_(me->nMin);  /* min # free blocks ever in the pool */
         QS_END_NOCRIT_()
@@ -262,9 +262,9 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
         fb = (QFreeBlock *)0;
 
         QS_BEGIN_NOCRIT_(QS_QF_MPOOL_GET_ATTEMPT,
-                         QS_priv_.locFilter[MP_OBJ], me->start)
+                         QS_priv_.locFilter[MP_OBJ], me)
             QS_TIME_();         /* timestamp */
-            QS_OBJ_(me->start); /* the memory managed by this pool */
+            QS_OBJ_(me);        /* this memory pool */
             QS_MPC_(me->nFree); /* the number of free blocks in the pool */
             QS_MPC_(margin);    /* the requested margin */
         QS_END_NOCRIT_()

@@ -1,17 +1,17 @@
 /**
 * @file
-* @brief QS/C QUTEST port for POSIX
-* @ingroup qf
+* @brief QS/C QUTEST to POSIX
+* @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.2.0
-* Date of the Last Update:  2018-03-16
+* Last Updated for Version: 6.3.6
+* Date of the Last Update:  2018-10-20
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,7 +48,6 @@
 
 Q_DEFINE_THIS_MODULE("qutest_port")
 
-#include <stdio.h>    /* for printf() and _snprintf_s() */
 #include <stdlib.h>
 #include <string.h>
 #include <sys/select.h>
@@ -59,7 +58,9 @@ Q_DEFINE_THIS_MODULE("qutest_port")
 #include <errno.h>
 #include <time.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <signal.h>
+#include <stdio.h>
 
 #define QS_TX_SIZE     (4*1024)
 #define QS_RX_SIZE     1024
@@ -86,6 +87,7 @@ uint8_t QS_onStartup(void const *arg) {
     struct hostent *host;
 
     struct sigaction sig_act;
+    int flags;
 
     QS_initBuf(qsBuf, sizeof(qsBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
@@ -110,8 +112,9 @@ uint8_t QS_onStartup(void const *arg) {
 
     l_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); /* TCP socket */
     if (l_sock == INVALID_SOCKET){
-        printf("<TARGET> ERROR   cannot create client socket,errno=%d\n",
-               errno);
+        fprintf(stderr,
+            "<TARGET> ERROR cannot create client socket,errno=%d\n",
+            errno);
         goto error;
     }
 
@@ -133,8 +136,9 @@ uint8_t QS_onStartup(void const *arg) {
     /* remote hostName:port (QSPY server socket) */
     host = gethostbyname(hostName);
     if (host == NULL) {
-        printf("<TARGET> ERROR   cannot resolve host Name=%s,errno=%d\n",
-               hostName, errno);
+        fprintf(stderr,
+            "<TARGET> ERROR cannot resolve host Name=%s,errno=%d\n",
+            hostName, errno);
         goto error;
     }
 
@@ -147,9 +151,27 @@ uint8_t QS_onStartup(void const *arg) {
     if (connect(l_sock, (struct sockaddr *)&sa_remote, sizeof(sa_remote))
         == -1)
     {
-        printf("<TARGET> ERROR   cannot connect to QSPY at "
-               "Host=%s:%d,errno=%d\n",
-               hostName, port_remote, errno);
+        fprintf(stderr,
+            "<TARGET> ERROR cannot connect to QSPY at "
+            "Host=%s:%d,errno=%d\n",
+            hostName, port_remote, errno);
+        goto error;
+    }
+
+    /* Set the socket to non-blocking mode */
+    flags = fcntl(l_sock, F_GETFL, 0);
+    if (flags == -1) {
+        fprintf(stderr,
+            "<TARGET> ERROR Socket configuration failed errno=%d\n",
+            errno);
+        QS_EXIT();
+        goto error;
+    }
+    if (fcntl(l_sock, F_SETFL, flags | O_NONBLOCK) != 0) {
+        fprintf(stderr,
+            "<TARGET> ERROR Socket configuration failed errno=%d\n",
+            errno);
+        QS_EXIT();
         goto error;
     }
 
@@ -200,7 +222,8 @@ void QS_onTestLoop() {
         nrec = select(l_sock + 1, &readSet,
                       (fd_set *)0, (fd_set *)0, &timeout);
         if (nrec < 0) {
-            printf("<TARGET> ERROR socket select,errno=%d\n", errno);
+            fprintf(stderr, "<TARGET> ERROR socket select,errno=%d\n",
+                    errno);
             QS_onCleanup();
             exit(-2);
         }
@@ -252,7 +275,7 @@ void QS_onFlush(void) {
 static void sigIntHandler(int dummy) {
     (void)dummy; /* unused parameter */
     QS_onCleanup();
-    printf("\n<TARGET> disconnecting from QSPY\n");
+    //printf("\n<TARGET> disconnecting from QSPY\n");
     exit(-1);
 }
 

@@ -4,12 +4,12 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-03-06
+* Last Updated for Version: 6.3.6
+* Date of the Last Update:  2018-10-15
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -48,14 +48,15 @@
 #endif /* Q_SPY */
 
 #include <limits.h>       /* limits of dynamic range for integers */
+#include <conio.h>        /* console input/output */
 
 Q_DEFINE_THIS_MODULE("qf_port")
-
 
 /* Local objects ===========================================================*/
 static CRITICAL_SECTION l_win32CritSect;
 static CRITICAL_SECTION l_startupCritSect;
 static DWORD l_tickMsec = 10U; /* clock tick in msec (argument for Sleep()) */
+static int_t l_tickPrio = 50;  /* default priority of the "ticker" thread */
 static bool  l_isRunning;      /* flag indicating when QF is running */
 
 static DWORD WINAPI ao_thread(LPVOID arg);
@@ -95,6 +96,8 @@ void QF_stop(void) {
 }
 /****************************************************************************/
 int_t QF_run(void) {
+    int threadPrio = THREAD_PRIORITY_NORMAL;
+
 
     QF_onStartup(); /* application-specific startup callback */
 
@@ -105,21 +108,33 @@ int_t QF_run(void) {
 
     l_isRunning = true; /* QF is running */
 
-    /* set the ticker thread priority below normal to prevent
-    * flooding other threads with time events when the machine
-    * is very busy.
+    /* set the ticker (this thread) priority according to selection made in
+    * QF_setTickRate()
     */
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+    if (l_tickPrio < 33) {
+        threadPrio = THREAD_PRIORITY_BELOW_NORMAL;
+    }
+    else if (l_tickPrio > 66) {
+        threadPrio = THREAD_PRIORITY_ABOVE_NORMAL;
+    }
+    SetThreadPriority(GetCurrentThread(), threadPrio);
 
     while (l_isRunning) {
         Sleep(l_tickMsec); /* wait for the tick interval */
         QF_onClockTick();  /* clock tick callback (must call QF_TICKX()) */
     }
+
     QF_onCleanup();  /* cleanup callback */
     QS_EXIT();       /* cleanup the QSPY connection */
     //DeleteCriticalSection(&l_startupCritSect);
     //DeleteCriticalSection(&l_win32CritSect);
     return (int_t)0; /* return success */
+}
+/****************************************************************************/
+void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio) {
+    Q_REQUIRE_ID(600, ticksPerSec != (uint32_t)0);
+    l_tickMsec = 1000UL / ticksPerSec;
+    l_tickPrio = tickPrio;
 }
 /****************************************************************************/
 void QF_setWin32Prio(QActive *act, int_t win32Prio) {
@@ -129,11 +144,6 @@ void QF_setWin32Prio(QActive *act, int_t win32Prio) {
     else {
         SetThreadPriority(act->thread, win32Prio);
     }
-}
-/****************************************************************************/
-void QF_setTickRate(uint32_t ticksPerSec) {
-    Q_REQUIRE_ID(600, ticksPerSec != (uint32_t)0);
-    l_tickMsec = 1000UL / ticksPerSec;
 }
 
 /* QActive functions =======================================================*/
@@ -185,6 +195,25 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 void QActive_stop(QActive * const me) {
     me->thread = (HANDLE)0; /* stop the AO event loop in thread_function() */
 }
+
+/****************************************************************************/
+void QF_consoleSetup(void) {
+}
+/*..........................................................................*/
+void QF_consoleCleanup(void) {
+}
+/*..........................................................................*/
+int QF_consoleGetKey(void) {
+    if (_kbhit()) { /* any key pressed? */
+        return _getch();
+    }
+    return 0;
+}
+/*..........................................................................*/
+int QF_consoleWaitForKey(void) {
+    return _getch();
+}
+
 /****************************************************************************/
 static DWORD WINAPI ao_thread(LPVOID arg) { /* for CreateThread() */
     QActive *act = (QActive *)arg;
@@ -207,3 +236,4 @@ static DWORD WINAPI ao_thread(LPVOID arg) { /* for CreateThread() */
     free((void *)act->eQueue.ring); /* free the fudged queue storage */
     return (DWORD)0; /* return success */
 }
+

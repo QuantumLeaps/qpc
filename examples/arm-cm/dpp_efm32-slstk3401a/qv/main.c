@@ -60,16 +60,6 @@ int main() {
     QS_OBJ_DICTIONARY(AO_Philo[2]);
     QS_OBJ_DICTIONARY(AO_Philo[3]);
     QS_OBJ_DICTIONARY(AO_Philo[4]);
-    QS_OBJ_DICTIONARY(smlPoolSto);
-
-    /* object dictionaries... */
-    QS_OBJ_DICTIONARY(smlPoolSto);
-    QS_OBJ_DICTIONARY(tableQueueSto);
-    QS_OBJ_DICTIONARY(philoQueueSto[0]);
-    QS_OBJ_DICTIONARY(philoQueueSto[1]);
-    QS_OBJ_DICTIONARY(philoQueueSto[2]);
-    QS_OBJ_DICTIONARY(philoQueueSto[3]);
-    QS_OBJ_DICTIONARY(philoQueueSto[4]);
 
     /* initialize publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));

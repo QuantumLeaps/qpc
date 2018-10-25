@@ -4,12 +4,12 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-16
+* Last updated for version 6.3.6
+* Last updated on  2018-10-03
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -122,6 +122,15 @@ void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
     /* perform the platform-dependent initialization of the pool */
     QF_EPOOL_INIT_(QF_pool_[QF_maxPool_], poolSto, poolSize, evtSize);
     ++QF_maxPool_; /* one more pool */
+
+#ifdef Q_SPY
+    /* generate the object-dictionary entry for the initialized pool */
+    {
+        char_t obj_name[9] = "EvtPool?";
+        obj_name[7] = (char_t)((int8_t)'0' + (int8_t)QF_maxPool_);
+        QS_obj_dict(&QF_pool_[QF_maxPool_ - (uint_fast8_t)1], obj_name);
+    }
+#endif /* Q_SPY*/
 }
 
 /****************************************************************************/

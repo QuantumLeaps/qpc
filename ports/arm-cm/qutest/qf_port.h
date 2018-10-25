@@ -3,12 +3,12 @@
 * @brief QF/C port to Cortex-M, QUTEST unit test harness, generic C99 compiler
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.2.0
-* Date of the Last Update:  2018-03-12
+* Last Updated for Version: 6.3.6
+* Date of the Last Update:  2018-10-04
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -78,6 +78,12 @@ extern uint8_t volatile QF_intNest;
     #define QF_SCHED_LOCK_(dummy) ((void)0)
     #define QF_SCHED_UNLOCK_()    ((void)0)
 
+    /* native event queue operations */
+    #define QACTIVE_EQUEUE_WAIT_(me_) \
+        Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0)
+    #define QACTIVE_EQUEUE_SIGNAL_(me_) \
+        QPSet_insert(&QS_rxPriv_.readySet, (uint_fast8_t)(me_)->prio)
+
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_  QMPool
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
@@ -87,13 +93,8 @@ extern uint8_t volatile QF_intNest;
     #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
     #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), e_))
 
-#endif /* QP_IMPL */
+    #include "qf_pkg.h" /* internal QF interface */
 
-/*****************************************************************************
-* NOTE1:
-* The maximum number of active objects QF_MAX_ACTIVE can be increased
-* up to 64, if necessary. Here it is set to a lower level to save some RAM.
-*
-*/
+#endif /* QP_IMPL */
 
 #endif /* qf_port_h */

@@ -1,5 +1,5 @@
 /*
- * FreeRTOS Kernel V10.1.0
+ * FreeRTOS Kernel V10.1.1
  * Copyright (C) 2018 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -94,7 +94,7 @@ zero. */
  * Items are queued by copy, not reference.  See the following link for the
  * rationale: https://www.freertos.org/Embedded-RTOS-Queues.html
  */
-typedef struct QueueDef_t
+typedef struct QueueDefinition /* The old naming convention is used to prevent breaking kernel aware debuggers. */
 {
     int8_t *pcHead;                    /*< Points to the beginning of the queue storage area. */
     int8_t *pcWriteTo;                /*< Points to the free next place in the storage area. */
@@ -120,7 +120,7 @@ typedef struct QueueDef_t
     #endif
 
     #if ( configUSE_QUEUE_SETS == 1 )
-        struct QueueDef_t *pxQueueSetContainer;
+        struct QueueDefinition *pxQueueSetContainer;
     #endif
 
     #if ( configUSE_TRACE_FACILITY == 1 )

@@ -72,6 +72,9 @@
     <ClCompile Include="..\..\src\qs\qutest.c">
       <Filter>QS</Filter>
     </ClCompile>
+    <ClCompile Include="qs_port.c">
+      <Filter>QP_port</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qep_port.h">

@@ -30,21 +30,49 @@ The output is generated at 115200 baud rate.
 Here is an example invocation of the QSPY host application to receive
 the QS data from EFM32-SLSTK3401A:
 
-qspy -cCOM1
+qspy -u -c COM1             (Windows)
 
-The actual COM port number might be different on your Windows machine.
+qspy -u -c /dev/ttyS1       (POSIX)
+
+The actual serial-port number might be different on your workstation.
 Please check the Device Manager to find the COM port number.
 
 
-Win32 Emulations
-================
-The sub-directorie win32 and win32-qv provide the emulations of the example
-on Windows GUI (with regular Win32 threads and with cooperative QV scheduler,
-respectively. These sub-directories contain the Makefiles for the MinGW
-toolset and Visual Studio solution files (game-gui.sln) for Visual C++.
+Win32-GUI Emulation
+===================
+The sub-directory "win32-gui" provides the emulation of the example
+on Windows GUI, either single-threaded (win32-qv) or multithreded (win32).
+This sub-directory contains the Makefile for the GNU-GCC toolset (MinGW)
+and Visual Studio solution file (dpp-gui.sln) for Visual C++.
 
-The Win32 emulations use exactly the same code as the embedded board and
-differ only in the Board Support Package (bsp.c). This example demonstrates
-the "dual targeting" development approach, where most of the embedded code
-is developed on the desktop machine (Windows), but is intended for a deeply
+The Win32-GUI emulation is based on the QWin™ GUI Prototyping Toolkit, see:
+
+https://www.state-machine.com/qtools/qwin.html
+
+The emulation uses exactly the same code as the embedded board and differs
+only in the Board Support Package (bsp.c). This example demonstrates the
+"dual targeting" development approach, where most of the embedded code is
+developed on the workstation (Windows), but is intended for a deeply
 embedded target (EFM32-SLSTK3401A here).
+
+
+QS Software Tracing Instrumentation
+-----------------------------------
+The "win32-gui" emulation also supports the "Spy" build configuration,
+in which case it attempts to connect to the QSPY host application via
+a TCP/IP socket. This requires launching the QSPY host application with
+the command-line parameter -t
+
+qspy -u -t
+
+
+QSpyView Visualization
+======================
+The sub-directory "qspyview" provides the QSpyView Visualization
+example for the DPP application, see:
+
+https://www.state-machine.com/qtools/qspyview.html
+
+This QSpyView Visualization works with all versions of the software
+running in the Spy build configuration, including the code for the
+EFM32-SLSTK3401A board and the Win32-GUI emulation.

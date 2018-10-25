@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "6.3.4"
+PROJECT_NUMBER         = "6.3.6"
 PROJECT_BRIEF          =
 PROJECT_LOGO           = images/header_logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -123,6 +123,7 @@ INPUT                  = \
     exa_apps.dox \
     exa_native.dox \
     exa_rtos.dox \
+    exa_qutest.dox \
     exa_os.dox \
     exa_mware.dox \
     ports.dox \
@@ -154,7 +155,6 @@ EXCLUDE                = \
     ../include/qs_dummy.h \
     ../src/qk \
     ../src/qxk \
-    ../src/qs/qutest.c \
     ../ports/lint/MISRA_Exemplar_Suite_test
 
 EXCLUDE_SYMLINKS       = NO

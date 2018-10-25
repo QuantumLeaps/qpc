@@ -1,13 +1,13 @@
 ##############################################################################
-# Product: Makefile for QP/C port to Win32 API, MinGW toolset
-# Last Updated for Version: 5.9.1
-# Date of the Last Update:  2017-05-25
+# Product: Makefile for QP/C port to Win32-QV, MinGW toolset
+# Last updated for version 6.3.6
+# Last updated on  2018-10-13
 #
-#                    Q u a n t u m     L e a P s
-#                    ---------------------------
-#                    innovating embedded systems
+#                    Q u a n t u m  L e a P s
+#                    ------------------------
+#                    Modern Embedded Software
 #
-# Copyright (C) 2005-2017 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://state-machine.com
+# https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
@@ -101,7 +101,8 @@ C_QS_SRCS := \
 	qs.c \
 	qs_rx.c \
 	qs_fp.c \
-	qs_64bit.c
+	qs_64bit.c \
+	qs_port.c
 
 # C++ source files
 CPP_SRCS :=

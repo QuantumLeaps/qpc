@@ -1,11 +1,11 @@
 ##############################################################################
 # Product: Makefile for QUTEST, QP/C, Win32, MinGW toolset
-# Last Updated for Version: 6.2.0
-# Date of the Last Update:  2018-03-12
+# Last Updated for Version: 6.3.6
+# Date of the Last Update:  2018-10-20
 #
-#                    Q u a n t u m     L e a P s
-#                    ---------------------------
-#                    innovating embedded systems
+#                    Q u a n t u m  L e a P s
+#                    ------------------------
+#                    Modern Embedded Software
 #
 # Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 #
@@ -88,6 +88,7 @@ C_SRCS := \
 	qf_qact.c \
 	qf_qeq.c \
 	qf_qmact.c \
+	qf_time.c \
 	qs.c \
 	qs_64bit.c \
 	qs_rx.c \

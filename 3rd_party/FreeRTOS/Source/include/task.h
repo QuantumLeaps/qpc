@@ -1,5 +1,5 @@
 /*
- * FreeRTOS Kernel V10.1.0
+ * FreeRTOS Kernel V10.1.1
  * Copyright (C) 2018 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -43,10 +43,10 @@ extern "C" {
  * MACROS AND DEFINITIONS
  *----------------------------------------------------------*/
 
-#define tskKERNEL_VERSION_NUMBER "V10.1.0"
+#define tskKERNEL_VERSION_NUMBER "V10.1.1"
 #define tskKERNEL_VERSION_MAJOR 10
 #define tskKERNEL_VERSION_MINOR 1
-#define tskKERNEL_VERSION_BUILD 0
+#define tskKERNEL_VERSION_BUILD 1
 
 /**
  * task. h
@@ -58,8 +58,8 @@ extern "C" {
  * \defgroup TaskHandle_t TaskHandle_t
  * \ingroup Tasks
  */
-struct TaskControlBlock_t;
-typedef struct TaskControlBlock_t* TaskHandle_t;
+struct tskTaskControlBlock; /* The old naming convention is used to prevent breaking kernel aware debuggers. */
+typedef struct tskTaskControlBlock* TaskHandle_t;
 
 /*
  * Defines the prototype to which the application task hook function must

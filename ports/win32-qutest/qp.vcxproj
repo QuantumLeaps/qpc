@@ -80,6 +80,7 @@
     <ClCompile Include="..\..\src\qf\qf_qact.c" />
     <ClCompile Include="..\..\src\qf\qf_qeq.c" />
     <ClCompile Include="..\..\src\qf\qf_qmact.c" />
+    <ClCompile Include="..\..\src\qf\qf_time.c" />
     <ClCompile Include="..\..\src\qs\qs.c" />
     <ClCompile Include="..\..\src\qs\qs_64bit.c" />
     <ClCompile Include="..\..\src\qs\qs_fp.c" />

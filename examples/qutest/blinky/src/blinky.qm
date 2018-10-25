@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="4.3.1" links="0">
+ <documentation>Blinky model</documentation>
+ <framework name="qpc"/>
+ <package name="AOs" stereotype="0x02">
+  <class name="Blinky" superclass="qpc::QActive">
+   <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
+   <statechart properties="QS_FUN_DICT">
+    <initial target="../1">
+     <action>QS_OBJ_DICTIONARY(&amp;l_blinky);
+QS_OBJ_DICTIONARY(&amp;l_blinky.timeEvt);
+
+QTimeEvt_armX(&amp;me-&gt;timeEvt,
+    BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
+     <initial_glyph conn="2,3,5,1,20,4,-4">
+      <action box="0,-2,6,2"/>
+     </initial_glyph>
+    </initial>
+    <state name="off">
+     <entry>BSP_ledOff();</entry>
+     <tran trig="TIMEOUT" target="../../2">
+      <tran_glyph conn="2,13,3,1,18,6,-2">
+       <action box="0,-2,8,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="2,5,16,10">
+      <entry box="1,2,12,4"/>
+     </state_glyph>
+    </state>
+    <state name="on">
+     <entry>BSP_ledOn();</entry>
+     <tran trig="TIMEOUT" target="../../1">
+      <tran_glyph conn="2,25,3,1,20,-15,-4">
+       <action box="0,-2,8,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="2,17,16,10">
+      <entry box="1,2,12,4"/>
+     </state_glyph>
+    </state>
+    <state_diagram size="30,29"/>
+   </statechart>
+  </class>
+  <attribute name="AO_Blinky" type="QActive * const" visibility="0x00" properties="0x00">
+   <documentation>/* opaque pointer to the Blinky AO */</documentation>
+   <code>= &amp;l_blinky.super;</code>
+  </attribute>
+  <operation name="Blinky_ctor" type="void" visibility="0x00" properties="0x00">
+   <code>Blinky *me = &amp;l_blinky;
+QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Blinky_initial));
+QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, TIMEOUT_SIG, 0U);</code>
+  </operation>
+ </package>
+ <directory name=".">
+  <file name="blinky.h">
+   <text>#ifndef blinky_h
+#define blinky_h
+
+enum BlinkySignals {
+    DUMMY_SIG = Q_USER_SIG,
+    MAX_PUB_SIG,          /* the last published signal */
+
+    TIMEOUT_SIG,
+    MAX_SIG               /* the last signal */
+};
+
+$declare${AOs::Blinky_ctor}
+
+$declare${AOs::AO_Blinky}
+
+#endif /* blinky_h */
+</text>
+  </file>
+  <file name="blinky.c">
+   <text>#include &quot;qpc.h&quot;
+#include &quot;blinky.h&quot;
+#include &quot;bsp.h&quot;
+
+//Q_DEFINE_THIS_MODULE(&quot;blinky&quot;)
+
+/*************** ask QM to declare the Blinky class ******************/
+$declare${AOs::Blinky}
+
+static Blinky l_blinky;
+
+$define${AOs::AO_Blinky}
+
+/*************** ask QM to define the Blinky class  ******************/
+$define${AOs::Blinky_ctor}
+
+$define${AOs::Blinky}
+</text>
+  </file>
+ </directory>
+</model>

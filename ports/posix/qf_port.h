@@ -1,16 +1,16 @@
 /**
 * @file
-* @brief QF/C port to POSIX threads (pthreads)
+* @brief QF/C port to POSIX API (multi-threaded)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.2
-* Date of the Last Update:  2018-06-16
+* Last Updated for Version: 6.3.6
+* Date of the Last Update:  2018-10-15
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -72,8 +72,17 @@
 #include "qmpool.h"    /* POSIX needs memory-pool */
 #include "qf.h"        /* QF platform-independent public interface */
 
+/* set clock tick rate and p-thread priority */
 void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio);
+
+/* clock tick callback (NOTE not called when "ticker thread" is not running) */
 void QF_onClockTick(void); /* clock tick callback (provided in the app) */
+
+/* abstractions for console access... */
+void QF_consoleSetup(void);
+void QF_consoleCleanup(void);
+int QF_consoleGetKey(void);
+int QF_consoleWaitForKey(void);
 
 extern pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
 

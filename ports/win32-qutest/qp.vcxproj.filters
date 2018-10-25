@@ -60,6 +60,9 @@
     <ClCompile Include="..\..\src\qs\qutest.c">
       <Filter>QP_spy</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_time.c">
+      <Filter>QP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qep_port.h">

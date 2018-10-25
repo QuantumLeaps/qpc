@@ -1,6 +1,34 @@
 /**
 @page history Revision History
 
+@section qpc_6_3_6 Version 6.3.6, 2018-10-20
+This release brings important changes and improvements to the unit-testing support for [QUTest](https://www.state-machine.com/qtools/qutest.html). Specifically, a new "dummy" active object class ::QActiveDummy for testing has been added. Instances of this "dummy" AO can be now used as test-doubles for active objects that are recipients of events directly posted by the active object under test (AOUT). This, in turn, eliminates the need to alter the existing event-posting implementation, so that more of the actual QP code can be used in the QP test-stub (qutest.c).
+
+@note
+The QUTest projects that are built QP from sources need to include the qf_time.c file.
+
+
+As a consequence of the changes in the [QUTest](https://www.state-machine.com/qtools/qutest.html) support, the @ref exa_qutest "QUTest examples" have been re-designed and improved. Here, the most important changes include the new code organization, which reflects the customary separation of the code-under-test (CUT) from the code for testing. Also, the tests based on the ["TDD book" by James Grenning](https://www.amazon.com/Driven-Development-Embedded-Pragmatic-Programmers/dp/193435662X) have been replaced with fully functional tests based on the [Unity testing framework](http://www.throwtheswitch.org/unity/). This is to directly compare the traditional approach (Unity) with QUTest.
+
+The next change related to unit testing is adding ::QS_RX_QUERY_CURR facility to QS-RX (software tracing input channel) and the reply ::QS_QUERY_DATA to the QS output channel. These two extensions allow you to query the status of the "current object" inside the target. The most important example is querying the current state-machine object (::SM_OBJ), which returns the **current state**.
+
+@note
+The new "query" facilities in QP/C match the latest additions to the [QSPY host application](https://www.state-machine.com/qtools/qspy.html).
+
+Also this release adds [QS dictionary](https://www.state-machine.com/qtools/qs.html#qs_dict) generation for all registered event pools. The generated object dictionaries are `EvtPool1` for pool-1, `EvtPool2` for pool-2, etc.
+
+@note
+Applications no longer need to generate QS object dictionaries for the event pool storage buffers, such as `smlPoolSto[]`, etc.
+
+
+Another big change in this release is re-designing of the @ref exa_os "examples for workstations" (previously `win32`, `win32-qv`, `posix` and `posix-qv`). All these types of examples have been consolidated in the @ref exa_os "exampes/workstation" folder, where the provided `Makefiles` have been extended to be cross-platform so that they work on Windows, Linux, and MacOS without changes.
+
+To facilitate the creation of truly portable, cross-platform examples, the existing @ref ports_os "QP ports to Windows/POSIX" have been augmented with abstractions for portable console access. Also, the [QS software tracing](https://www.state-machine.com/qtools/qs.html) support via TCP/IP has been now added to the ports themselves. This means that applications no longer need to repeat the code for QS callbacks in the BSP implementation.
+
+Finally, this release fixes a bug in the @ref posix-qv "POSIX-QV port", where the internal condition variable `QV_condVar_` has not been initialized.
+
+
+------------------------------------------------------------------------------
 @section qpc_6_3_4 Version 6.3.4, 2018-08-10
 This release adds new API QTimeEvt_wasDisarmed() for checking the status of a ::QTimeEvt object after it has been disarmed. Specifically, the status of the last call to QTimeEvt_disarm() is kept inside the time event object and can be subsequently checked with the QTimeEvt_wasDisarmed() API. This new function is designed to be used directly as a guard condition on the timeout event, as described in the [PSiCC2 book](/psicc2), Section 7.7.3 "Arming and Disarming a Time Event" on page 359. The QTimeEvt_wasDisarmed() has a side effect of setting the "was disabled" status, so the guard evaluates to 'true' the next time it is checked.
 
@@ -365,7 +393,7 @@ structure provided in the `qpc/src` directory.
 ------------------------------------------------------------------------------
 @section qpc_5_9_0 Version 5.9.0, 2017-05-19
 The main purpose of this milestone QP/C release is to provide support for the powerful **Unit Testing Framework** called
-<a href="https://state-machine.com/qtools/qutest.html" target="_blank" class="extern"><strong>QUTest&trade;</strong> (pronounced *cutest*)</a>.
+<a href="https://www.state-machine.com/qtools/qutest.html" target="_blank" class="extern"><strong>QUTest&trade;</strong> (pronounced *cutest*)</a>.
 QUTest&trade; is the fundamental tooling for Test-Driven Development (TDD) of QP/C applications, which is a highly recommended best-practice. This release introduces changes in the QS-RX (receive) channel and adds several new callbacks.
 
 @note The signature of the QS_onCommand() has changed and the function now takes 3 arbitrary 32-bit parameters instead of one. This introduces backwards-incompatibility with previous code that used QS_onCommand().
@@ -878,7 +906,7 @@ This release changes the basic philosophy of distributing the QP frameworks by *
 
 Additionally, this release changes the basic philosophy of building your embedded applications with the QP/C framework. Starting with this release, all @ref exa "examples" for embedded boards include the QP/C framework as **source code** within the projects, instead of statically linking with a QP/C library. (**NOTE:** It is still possible to use QP/C as a library, but you need to build such libraries yourself, as they are no longer provided in the QP/C distribution.)
 
-The move to building QP/C from sources ensures the consistent toolset version and compiler options applied to the application code as well as the QP/C framework code. (**NOTE:** The QP/C examples for "big operating systems", like @ref exa_win32 "Windows" or @ref exa_posix "Linux", still use QP/C as a pre-compiled library that is statically linked with the application code.)
+The move to building QP/C from sources ensures the consistent toolset version and compiler options applied to the application code as well as the QP/C framework code. (**NOTE:** The QP/C examples for "big operating systems", like @ref exa_os "Windows/POSIX", still use QP/C as a pre-compiled library that is statically linked with the application code.)
 
 @note
 Even though the QP/C source has been re-packaged in this release, there are no API changes to the code, so it remains **backwards compatible** with the existing applications. (Except the build process, which builds QP/C from sources rather than linking to the QP/C library.)
@@ -2369,4 +2397,4 @@ P-Thread mutex.
 updated to the latest QP API changes.
 - all examples that use QF now contain the QS software tracing support.
 
-*/
+*/can be now used as test-doubles

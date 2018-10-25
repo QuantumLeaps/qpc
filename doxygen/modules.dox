@@ -21,7 +21,7 @@ QF is a portable, event-driven, real-time framework for execution of active obje
 @brief
 Software Tracing Instrumentation
 
-QS is software tracing system that enables developers to monitor live QP applications with minimal target system resources and without stopping or significantly slowing down the code. QS is an ideal tool for testing, troubleshooting, and optimizing QP applications. QS can even be used to support acceptance testing in product manufacturing. Please see <a href="https://state-machine.com/qtools/qs.html"><b>QS Manual</b></a> inside the <a href="https://state-machine.com/qtools" target="_blank" class="extern">QTools collection</a> for more information.
+QS is software tracing system that enables developers to monitor live QP applications with minimal target system resources and without stopping or significantly slowing down the code. QS is an ideal tool for testing, troubleshooting, and optimizing QP applications. QS can even be used to support acceptance testing in product manufacturing. Please see <a href="https://www.state-machine.com/qtools/qs.html"><b>QS Manual</b></a> inside the <a href="https://www.state-machine.com/qtools" target="_blank" class="extern">QTools collection</a> for more information.
 */
 
 /*##########################################################################*/
