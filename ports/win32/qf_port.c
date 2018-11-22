@@ -233,7 +233,6 @@ static DWORD WINAPI ao_thread(LPVOID arg) { /* for CreateThread() */
     QActive_unsubscribeAll(act); /* make sure that no events are subscribed */
     QF_remove_(act);  /* remove this object from the framework */
     CloseHandle(act->osObject); /* cleanup the OS event */
-    free((void *)act->eQueue.ring); /* free the fudged queue storage */
     return (DWORD)0; /* return success */
 }
 

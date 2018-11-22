@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 6.3.6
-# Last updated on  2018-10-14
+# Last updated for version 6.3.7
+# Last updated on  2018-11-06
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -103,7 +103,7 @@ ifeq ($(OS),Windows_NT)
 QP_PORT_DIR := $(QPC)/ports/win32-qv
 #QP_PORT_DIR := $(QPC)/ports/win32
 LIB_DIRS += -L$(QP_PORT_DIR)/$(CONF)
-LIBS     += -lqp -lwsock32
+LIBS     += -lqp -lws2_32
 
 else
 

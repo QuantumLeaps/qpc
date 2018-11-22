@@ -4,12 +4,12 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.4
-* Last updated on  2018-08-09
+* Last updated for version 6.3.7
+* Last updated on  2018-11-07
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -216,18 +216,7 @@ typedef struct {
     ((*((QActiveVtbl const *)((me_)->super.vptr))->start)( \
         (me_), (prio_), (qSto_), (qLen_), (stkSto_), (stkLen_), (param_)))
 
-/*! Implementation of the active object start operation */
-void QActive_start_(QActive * const me, uint_fast8_t prio,
-                    QEvt const *qSto[], uint_fast16_t qLen,
-                    void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie);
-
 #ifdef Q_SPY
-    /*! Implementation of the active object post (FIFO) operation */
-    bool QActive_post_(QActive * const me, QEvt const * const e,
-                       uint_fast16_t const margin,
-                       void const * const sender);
-
     /*! Polymorphically posts an event to an active object (FIFO)
     * with delivery guarantee. */
     /**
@@ -296,9 +285,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
          (e_), (margin_), (sender_)))
 #else
 
-    bool QActive_post_(QActive * const me, QEvt const * const e,
-                       uint_fast16_t const margin);
-
     #define QACTIVE_POST(me_, e_, sender_) \
         ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
                   (e_), QF_NO_MARGIN))
@@ -309,9 +295,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
 #endif
 
-/*! Implementation of the active object post LIFO operation */
-void QActive_postLIFO_(QActive * const me, QEvt const * const e);
-
 /*! Polymorphically posts an event to an active object using the
 * Last-In-First-Out (LIFO) policy. */
 /**
@@ -320,7 +303,6 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e);
 */
 #define QACTIVE_POST_LIFO(me_, e_) \
     ((*((QActiveVtbl const *)((me_)->super.vptr))->postLIFO)((me_), (e_)))
-
 
 /* protected functions for ::QActive ...*/
 
@@ -348,9 +330,6 @@ bool QActive_recall(QActive * const me, QEQueue * const eq);
 /*! Flush the specified deferred queue @p eq. */
 uint_fast16_t QActive_flushDeferred(QActive const * const me,
                                     QEQueue * const eq);
-
-/*! Get an event from the event queue of an active object. */
-QEvt const *QActive_get_(QActive *const me);
 
 /*! Generic setting of additional attributes (useful in QP ports) */
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2);

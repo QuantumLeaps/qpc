@@ -4,12 +4,12 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.4
-* Last updated on 2018-08-09
+* Last updated for version 6.3.7
+* Last updated on  2018-11-07
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -51,17 +51,6 @@ Q_DEFINE_THIS_MODULE("qf_time")
 
 /* Package-scope objects ****************************************************/
 QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
-
-/* The following flags and bitmasks are for the fields of the @c refCtr_
-* attribute of the QTimeEvt struct (inherited from QEvt). This attribute
-* is NOT used for reference counting in time events, because the @c poolId_
-* attribute is zero ("static events").
-*/
-enum {
-    TE_IS_LINKED    = (uint8_t)(1U << 7), /* flag  */
-    TE_WAS_DISARMED = (uint8_t)(1U << 6), /* flag */
-    TE_TICK_RATE    = (uint8_t)0x0F       /* bitmask */
-};
 
 /****************************************************************************/
 /**

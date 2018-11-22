@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.6
-* Date of the Last Update:  2018-10-15
+* Last Updated for Version: 6.3.7
+* Date of the Last Update:  2018-11-09
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -53,8 +53,8 @@
 Q_DEFINE_THIS_MODULE("qf_port")
 
 /* Global objects ==========================================================*/
-QPSet  QV_readySet_;      /* QV-ready set of active objects */
-HANDLE QV_win32Event_;    /* Win32 event to signal events */
+QPSet  QV_readySet_;   /* QV-ready set of active objects */
+HANDLE QV_win32Event_; /* Win32 event to signal events */
 
 /* Local objects ===========================================================*/
 static CRITICAL_SECTION l_win32CritSect;
@@ -95,6 +95,8 @@ void QF_stop(void) {
 }
 /****************************************************************************/
 int_t QF_run(void) {
+    QF_CRIT_STAT_
+
     QF_onStartup(); /* application-specific startup callback */
 
     l_isRunning = true; /* QF is running */
@@ -107,7 +109,7 @@ int_t QF_run(void) {
     }
 
     /* the combined event-loop and background-loop of the QV kernel */
-    QF_INT_DISABLE();
+    QF_CRIT_ENTRY_();
     while (l_isRunning) {
         /* find the maximum priority AO ready to run */
         if (QPSet_notEmpty(&QV_readySet_)) {
@@ -117,7 +119,7 @@ int_t QF_run(void) {
 
             QPSet_findMax(&QV_readySet_, p);
             a = QF_active_[p];
-            QF_INT_ENABLE();
+            QF_CRIT_EXIT_();
 
             /* the active object 'a' must still be registered in QF
             * (e.g., it must not be stopped)
@@ -134,7 +136,7 @@ int_t QF_run(void) {
             QHSM_DISPATCH(&a->super, e);
             QF_gc(e);
 
-            QF_INT_DISABLE();
+            QF_CRIT_ENTRY_();
 
             if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
                 QPSet_remove(&QV_readySet_, p);
@@ -146,14 +148,14 @@ int_t QF_run(void) {
             * for events. Instead, the Win32-QV port efficiently waits until
             * QP events become available.
             */
-            QF_INT_ENABLE();
+            QF_CRIT_EXIT_();
 
             (void)WaitForSingleObject(QV_win32Event_, (DWORD)INFINITE);
 
-            QF_INT_DISABLE();
+            QF_CRIT_ENTRY_();
         }
     }
-    QF_INT_ENABLE();
+    QF_CRIT_EXIT_();
     QF_onCleanup();  /* cleanup callback */
     QS_EXIT();       /* cleanup the QSPY connection */
 
@@ -242,3 +244,4 @@ static DWORD WINAPI ticker_thread(LPVOID arg) { /* for CreateThread() */
 
     return (DWORD)0; /* return success */
 }
+

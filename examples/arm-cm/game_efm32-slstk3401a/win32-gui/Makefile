@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, Win32-GUI, GNU GCC
-# Last updated for version 6.3.6
-# Last updated on  2018-10-15
+# Last updated for version 6.3.7
+# Last updated on  2018-11-06
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -177,32 +177,32 @@ ifeq (rel, $(CONF)) # Release configuration ..................................
 BIN_DIR := build_rel
 
 CFLAGS = -c -ffunction-sections -fdata-sections \
-	-O1 -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O1 -Wall -Wextra $(INCLUDES) $(DEFINES) -DNDEBUG
 
 CPPFLAGS = -c -ffunction-sections -fdata-sections \
-	-O1 -Wall -W $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O1 -Wall -Wextra $(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
 BIN_DIR := build_spy
 
-LIBS    += -lwsock32
+LIBS    += -lws2_32
 
 CFLAGS = -c -g -ffunction-sections -fdata-sections \
-	-O -Wall -W $(INCLUDES) $(DEFINES) -DQ_SPY
+	-O -Wall -Wextra $(INCLUDES) $(DEFINES) -DQ_SPY
 
 CPPFLAGS =-c  -g -ffunction-sections -fdata-sections \
-	-O -Wall -W $(INCLUDES) $(DEFINES) -DQ_SPY
+	-O -Wall -Wextra $(INCLUDES) $(DEFINES) -DQ_SPY
 
 else  # default Debug configuration ..........................................
 
 BIN_DIR := build
 
 CFLAGS = -c -g -ffunction-sections -fdata-sections \
-	-O -Wall -W $(INCLUDES) $(DEFINES)
+	-O -Wall -Wextra $(INCLUDES) $(DEFINES)
 
 CPPFLAGS = -c -g -ffunction-sections -fdata-sections \
-	-O -Wall -W $(INCLUDES) $(DEFINES)
+	-O -Wall -Wextra $(INCLUDES) $(DEFINES)
 
 endif  # .....................................................................
 

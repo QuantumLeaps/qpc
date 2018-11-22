@@ -58,7 +58,7 @@ Q_DEFINE_THIS_FILE
 #define BTN_B1            GPIO_Pin_0
 
 static unsigned  l_rnd; /* random seed */
-static TX_TIMER l_tick_timer; /* ThreadX timer to call QF_tickX_() */
+static TX_TIMER l_tick_timer; /* ThreadX timer to call QF_TICK_X() */
 
 #ifdef Q_SPY
     QSTimeCtr QS_tickTime_;
@@ -193,12 +193,12 @@ void QF_onStartup(void) {
     /*
     * NOTE:
     * This application uses the ThreadX timer to periodically call
-    * the QF_tickX_(0) function. Here, only the clock tick rate of 0
-    * is used, but other timers can be used to call QF_tickX_() for
+    * the QF_TICK_X(0) function. Here, only the clock tick rate of 0
+    * is used, but other timers can be used to call QF_TICK_X() for
     * other clock tick rates, if needed.
     *
     * The choice of a ThreadX timer is not the only option. Applications
-    * might choose to call QF_tickX_() directly from timer interrupts
+    * might choose to call QF_TICK_X() directly from timer interrupts
     * or from active object(s).
     */
     Q_ALLEGE(tx_timer_create(&l_tick_timer, /* ThreadX timer object */

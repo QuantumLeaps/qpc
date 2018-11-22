@@ -107,7 +107,7 @@ void BSP_randomSeed(uint32_t seed) {
 /*..........................................................................*/
 void QF_onStartup(void) {
     QF_consoleSetup();
-    QF_setTickRate(BSP_TICKS_PER_SEC, 30); /* desired tick rate/ticker-prio */
+    QF_setTickRate(BSP_TICKS_PER_SEC, 50); /* desired tick rate/ticker-prio */
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
@@ -170,6 +170,7 @@ void Q_onAssert(char const * const module, int_t loc) {
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
     fprintf(stderr, "Assertion failed in %s:%d", module, loc);
     QF_onCleanup();
+    QS_EXIT();
     exit(-1);
 }
 

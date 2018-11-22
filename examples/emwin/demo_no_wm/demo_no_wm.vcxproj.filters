@@ -46,6 +46,9 @@
     <ClCompile Include="Config\SIMConf.c">
       <Filter>emWin</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\include\qstamp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bsp.h">

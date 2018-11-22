@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.6
-* Date of the Last Update:  2018-10-15
+* Last Updated for Version: 6.3.7
+* Date of the Last Update:  2018-11-09
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -61,7 +61,7 @@
 Q_DEFINE_THIS_MODULE("qf_port")
 
 /* Global objects ==========================================================*/
-pthread_mutex_t QF_pThreadMutex_;
+pthread_mutex_t QF_pThreadMutex_; /* mutex for QF critical section */
 
 /* Local objects ===========================================================*/
 static pthread_mutex_t l_startupMutex;
@@ -108,6 +108,15 @@ void QF_init(void) {
     /* install the SIGINT (Ctrl-C) signal handler */
     sig_act.sa_handler = &sigIntHandler;
     sigaction(SIGINT, &sig_act, NULL);
+}
+
+/****************************************************************************/
+void QF_enterCriticalSection_(void) {
+    pthread_mutex_lock(&QF_pThreadMutex_);
+}
+/****************************************************************************/
+void QF_leaveCriticalSection_(void) {
+    pthread_mutex_unlock(&QF_pThreadMutex_);
 }
 
 /****************************************************************************/

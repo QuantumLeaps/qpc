@@ -1,13 +1,12 @@
 /*****************************************************************************
-* Product: DPP example, ThreadX demo
-* Last updated for version 5.6.2
-* Last updated on  2016-03-10
+* Last updated for version 6.3.7
+* Last updated on  2018-11-07
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,7 +27,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -82,11 +81,11 @@ void tx_application_define(void *first_unused_memory) {
     */
 
     for (n = 0; n < N_PHILO; ++n) { /* start the active objects... */
-        QActive_start(AO_Philo[n], (uint8_t)(n + 1),
+        QACTIVE_START(AO_Philo[n], (uint8_t)(n + 1),
                       l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
                       l_philoStk[n], sizeof(l_philoStk[n]), (QEvt *)0);
     }
-    QActive_start(AO_Table, (uint8_t)(N_PHILO + 1),
+    QACTIVE_START(AO_Table, (uint8_t)(N_PHILO + 1),
                   l_tableQueueSto, Q_DIM(l_tableQueueSto),
                   l_tableStk, sizeof(l_tableStk), (QEvt *)0);
 

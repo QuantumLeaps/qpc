@@ -1,8 +1,8 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 6.3.6
-:: Date of the Last Update:  2018-10-03
+:: Last Updated for Version: 6.3.7
+:: Date of the Last Update:  2018-11-18
 ::
 ::                    Q u a n t u m  L e a P s
 ::                    ------------------------
@@ -38,7 +38,7 @@ echo usage:
 echo make
 echo make -CHM
 
-set VERSION=6.3.6
+set VERSION=6.3.7
 
 :: Generate Resource Standard Metrics for QP/C ............................... 
 set DOXHOME="C:\tools\doxygen\bin"

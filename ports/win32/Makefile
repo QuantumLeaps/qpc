@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C port to Win32, MinGW toolset
-# Last updated for version 6.3.6
-# Last updated on  2018-10-13
+# Last updated for version 6.3.7
+# Last updated on  2018-11-06
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -49,12 +49,12 @@
 #
 
 #-----------------------------------------------------------------------------
-# project name
+# project name:
 #
-PROJECT     := qp
+PROJECT := qp
 
 #-----------------------------------------------------------------------------
-# project directories
+# project directories:
 #
 
 # location of the QP/C framework
@@ -107,7 +107,7 @@ C_QS_SRCS := \
 # C++ source files
 CPP_SRCS :=
 
-# defines
+# defines:
 DEFINES  := -DQWIN_GUI
 
 #-----------------------------------------------------------------------------
@@ -143,10 +143,10 @@ BIN_DIR := rel
 
 # gcc options
 CFLAGS = -c -ffunction-sections -fdata-sections \
-	-Os $(INCLUDES) $(DEFINES) -Wall -W
+	-Os $(INCLUDES) $(DEFINES) -Wall -Wextra
 
 CPPFLAGS = -c -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
-	-Os $(INCLUDES) $(DEFINES) -Wall -W
+	-Os $(INCLUDES) $(DEFINES) -Wall -Wextra
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
@@ -154,10 +154,10 @@ BIN_DIR = spy
 
 # gcc options
 CFLAGS = -c -g -ffunction-sections -fdata-sections \
-	-O $(INCLUDES) $(DEFINES) -Wall -W -DQ_SPY
+	-O $(INCLUDES) $(DEFINES) -Wall -Wextra -DQ_SPY
 
 CPPFLAGS = -c -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
-	-O $(INCLUDES) $(DEFINES) -Wall -W -DQ_SPY
+	-O $(INCLUDES) $(DEFINES) -Wall -Wextra -DQ_SPY
 
 # add the QS sources...
 C_SRCS += $(C_QS_SRCS)
@@ -168,10 +168,10 @@ BIN_DIR = dbg
 
 # gcc options
 CFLAGS = -c -g -ffunction-sections -fdata-sections \
-	-O $(INCLUDES) $(DEFINES) -Wall -W
+	-O $(INCLUDES) $(DEFINES) -Wall -Wextra
 
 CPPFLAGS = -c -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
-	-O $(INCLUDES) $(DEFINES) -Wall -W
+	-O $(INCLUDES) $(DEFINES) -Wall -Wextra
 
 endif
 

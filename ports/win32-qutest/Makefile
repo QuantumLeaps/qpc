@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QUTEST, QP/C, Win32, MinGW toolset
-# Last Updated for Version: 6.3.6
-# Date of the Last Update:  2018-10-20
+# Last updated for version 6.3.7
+# Last updated on  2018-11-06
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -44,12 +44,12 @@
 #
 
 #-----------------------------------------------------------------------------
-# project name
+# project name:
 #
-PROJECT     := qp
+PROJECT := qp
 
 #-----------------------------------------------------------------------------
-# project directories
+# project directories:
 #
 
 # location of the QP/C framework
@@ -99,7 +99,7 @@ C_SRCS := \
 # C++ source files
 CPP_SRCS :=
 
-# defines
+# defines:
 DEFINES  :=
 
 #-----------------------------------------------------------------------------
@@ -124,18 +124,17 @@ MKDIR := mkdir
 RM    := rm
 
 #-----------------------------------------------------------------------------
-# build options
+# build options for various configurations
 #
+LIBFLAGS := rs
 
 BIN_DIR = mingw
 
-CFLAGS = -c -g -O -Wall -Wstrict-prototypes -W $(INCLUDES) $(DEFINES) \
-	-DQ_SPY -DQ_UTEST -DQ_HOST
+CFLAGS = -c -g -ffunction-sections -fdata-sections \
+	-O $(INCLUDES) $(DEFINES) -Wall -Wextra -DQ_SPY -DQ_UTEST -DQ_HOST
 
-CPPFLAGS = -c -g -O -Wall -W -fno-rtti -fno-exceptions $(INCLUDES) $(DEFINES) \
-	-DQ_SPY -DQ_UTEST -DQ_HOST
-
-LIBFLAGS := rs
+CPPFLAGS = -c -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
+	-O $(INCLUDES) $(DEFINES) -Wall -Wextra -DQ_SPY -DQ_UTEST -DQ_HOST
 
 C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
 CPP_OBJS     := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))

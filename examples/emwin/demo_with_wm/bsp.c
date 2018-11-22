@@ -57,27 +57,27 @@ Q_DEFINE_THIS_FILE
 /*..........................................................................*/
 static void simHardKey(int keyIndex, int keyState) {
     static const QEvent keyEvt[] = {
-        { KEY_UP_REL_SIG,       0 },                 /* hardkey UP released */
-        { KEY_UP_PRESS_SIG,     0 },                  /* hardkey UP pressed */
-        { KEY_RIGHT_REL_SIG,    0 },              /* hardkey RIGHT released */
-        { KEY_RIGHT_PRESS_SIG,  0 },               /* hardkey RIGHT pressed */
-        { KEY_CENTER_REL_SIG,   0 },             /* hardkey CENTER released */
-        { KEY_CENTER_PRESS_SIG, 0 },              /* hardkey CENTER pressed */
-        { KEY_LEFT_REL_SIG,     0 },               /* hardkey LEFT released */
-        { KEY_LEFT_PRESS_SIG,   0 },                /* hardkey LEFT pressed */
-        { KEY_DOWN_REL_SIG,     0 },               /* hardkey DOWN released */
-        { KEY_DOWN_PRESS_SIG,   0 },                /* hardkey DOWN pressed */
-        { KEY_POWER_REL_SIG,    0 },              /* hardkey POWER released */
-        { KEY_POWER_PRESS_SIG,  0 }                /* hardkey POWER pressed */
+        { KEY_UP_REL_SIG,       0 }, /* hardkey UP released */
+        { KEY_UP_PRESS_SIG,     0 }, /* hardkey UP pressed */
+        { KEY_RIGHT_REL_SIG,    0 }, /* hardkey RIGHT released */
+        { KEY_RIGHT_PRESS_SIG,  0 }, /* hardkey RIGHT pressed */
+        { KEY_CENTER_REL_SIG,   0 }, /* hardkey CENTER released */
+        { KEY_CENTER_PRESS_SIG, 0 }, /* hardkey CENTER pressed */
+        { KEY_LEFT_REL_SIG,     0 }, /* hardkey LEFT released */
+        { KEY_LEFT_PRESS_SIG,   0 }, /* hardkey LEFT pressed */
+        { KEY_DOWN_REL_SIG,     0 }, /* hardkey DOWN released */
+        { KEY_DOWN_PRESS_SIG,   0 }, /* hardkey DOWN pressed */
+        { KEY_POWER_REL_SIG,    0 }, /* hardkey POWER released */
+        { KEY_POWER_PRESS_SIG,  0 }  /* hardkey POWER pressed */
     };
-                                                /* do not overrun the array */
+    /* do not overrun the array */
     Q_REQUIRE((keyIndex * 2) + keyState < Q_DIM(keyEvt));
 
          /* post the hardkey event to the Table active object (GUI manager) */
     QACTIVE_POST(AO_Table, &keyEvt[(keyIndex * 2) + keyState], &l_simHardKey);
 
-    if ((keyIndex == 5) && (keyState == 0)) {    /* hardkey POWER released? */
-        QF_stop();                              /* terminate the simulation */
+    if ((keyIndex == 5) && (keyState == 0)) { /* hardkey POWER released? */
+        QF_stop(); /* terminate the simulation */
     }
 }
 /*..........................................................................*/
@@ -89,25 +89,6 @@ void GUI_MOUSE_StoreState(const GUI_PID_STATE *pState) {
     QACTIVE_POST(AO_Table, (QEvent *)pe, &l_MOUSE_StoreState);
 }
 /*..........................................................................*/
-#ifdef Q_SPY
-static DWORD WINAPI idleThread(LPVOID par) {/* signature for CreateThread() */
-    (void)par;
-    l_running = (uint8_t)1;
-    while (l_running) {
-        uint16_t nBytes = 1024;
-        uint8_t const *block;
-        QF_CRIT_ENTRY(dummy);
-        block = QS_getBlock(&nBytes);
-        QF_CRIT_EXIT(dummy);
-        if (block != (uint8_t *)0) {
-            send(l_sock, (char const *)block, nBytes, 0);
-        }
-        Sleep(10);                                      /* wait for a while */
-    }
-    return 0;                                             /* return success */
-}
-#endif
-/*..........................................................................*/
 void BSP_init(void) {
     int n = SIM_HARDKEY_GetNum();/*initialize hardkeys for emWin simulation */
     for (n = n - 1; n >= 0; --n) {
@@ -116,9 +97,8 @@ void BSP_init(void) {
 
 #ifdef Q_SPY
     {
-        HANDLE hIdle;
         char const *hostAndPort = SIM_GetCmdLine();
-        if (hostAndPort != NULL) {                       /* port specified? */
+        if (hostAndPort == NULL) { /* port unspecified? */
             hostAndPort = "localhost:6601";
         }
         if (!QS_INIT(hostAndPort)) {
@@ -126,25 +106,22 @@ void BSP_init(void) {
                        "QS Socket Failure", MB_TASKMODAL | MB_OK);
             return;
         }
-        hIdle = CreateThread(NULL, 1024, &idleThread, (void *)0, 0, NULL);
-        Q_ASSERT(hIdle != (HANDLE)0);             /* thread must be created */
-        SetThreadPriority(hIdle, THREAD_PRIORITY_IDLE);
     }
 #endif
 }
 /*..........................................................................*/
 void QF_onStartup(void) {
-    QF_setTickRate(BSP_TICKS_PER_SEC, 30); /* set the desired tick rate */
+    QF_setTickRate(BSP_TICKS_PER_SEC, 50); /* set the desired tick rate */
+
+    QS_RX_INPUT(); /* handle the QS-RX input */
+    QS_OUTPUT();   /* handle the QS output */
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
-#if Q_SPY
-    l_running = (uint8_t)0;
-#endif
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
-    QF_TICK(&l_clock_tick);         /* perform the QF clock tick processing */
+    QF_TICK(&l_clock_tick); /* perform the QF clock tick processing */
 }
 
 /*..........................................................................*/
@@ -158,97 +135,26 @@ void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
 }
 
 /*--------------------------------------------------------------------------*/
-#ifdef Q_SPY                                         /* define QS callbacks */
+#ifdef Q_SPY /* define QS callbacks */
 
-uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsBuf[1024];                /* 1K buffer for Quantum Spy */
-    static WSADATA wsaData;
-    char host[64];
-    char const *src;
-    char *dst;
-    USHORT port = 6601;                                     /* default port */
-    ULONG ioctl_opt = 1;
-    struct sockaddr_in servAddr;
-    struct hostent *server;
-
-    QS_initBuf(qsBuf, sizeof(qsBuf));
-
-    /* initialize Windows sockets */
-    if (WSAStartup(MAKEWORD(2,0), &wsaData) == SOCKET_ERROR) {
-        return (uint8_t)0;
-    }
-
-    src = (char const *)arg;
-    dst = host;
-    while ((*src != '\0') && (*src != ':') && (dst < &host[sizeof(host)])) {
-        *dst++ = *src++;
-    }
-    *dst = '\0';
-    if (*src == ':') {
-        port = (USHORT)strtoul(src + 1, NULL, 10);
-    }
-
-
-    l_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);       /* TCP socket */
-    if (l_sock == INVALID_SOCKET){
-        return (uint8_t)0;
-    }
-
-    server = gethostbyname(host);
-    if (server == NULL) {
-        return (uint8_t)0;
-    }
-    memset(&servAddr, 0, sizeof(servAddr));
-    servAddr.sin_family = AF_INET;
-    memcpy(&servAddr.sin_addr, server->h_addr, server->h_length);
-    servAddr.sin_port = htons(port);
-    if (connect(l_sock, (struct sockaddr *)&servAddr, sizeof(servAddr))
-        == SOCKET_ERROR)
-    {
-        QS_EXIT();
-        return (uint8_t)0;
-    }
-
-    /* Set the socket to non-blocking mode. */
-    if (ioctlsocket(l_sock, FIONBIO, &ioctl_opt) == SOCKET_ERROR) {
-        QS_EXIT();
-        return (uint8_t)0;
-    }
-
-    /* only after successful opeing of the socket turn on QS global filters */
-    QS_FILTER_ON(QS_ALL_RECORDS);
-    QS_FILTER_OFF(QS_QF_CRIT_ENTRY);
-    QS_FILTER_OFF(QS_QF_CRIT_EXIT);
-    QS_FILTER_OFF(QS_QF_ISR_ENTRY);
-    QS_FILTER_OFF(QS_QF_ISR_EXIT);
-    QS_FILTER_OFF(QS_QF_TICK);
-    QS_FILTER_OFF(QS_QK_SCHEDULE);
-
-    return (uint8_t)1;                                           /* success */
-}
 /*..........................................................................*/
-void QS_onCleanup(void) {
-    if (l_sock != INVALID_SOCKET) {
-        closesocket(l_sock);
+/*! callback function to execute user commands */
+void QS_onCommand(uint8_t cmdId,
+    uint32_t param1, uint32_t param2, uint32_t param3)
+{
+    switch (cmdId) {
+    case 0U: {
+        break;
     }
-    WSACleanup();
-}
-/*..........................................................................*/
-void QS_onFlush(void) {
-    uint16_t nBytes = 1000;
-    uint8_t const *block;
-    QF_CRIT_ENTRY(dummy);
-    while ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
-        QF_CRIT_EXIT(dummy);
-        send(l_sock, (char const *)block, nBytes, 0);
-        nBytes = 1000;
-        QF_CRIT_ENTRY(dummy);
+    default:
+        break;
     }
-    QF_CRIT_EXIT(dummy);
+
+    /* unused parameters */
+    (void)param1;
+    (void)param2;
+    (void)param3;
 }
-/*..........................................................................*/
-QSTimeCtr QS_onGetTime(void) {
-    return (QSTimeCtr)clock();
-}
-#endif                                                             /* Q_SPY */
+
+#endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/

@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for the Unity test harness on Win32 host with MinGW
-# Last updated for version 6.3.6
-# Last updated on  2018-10-14
+# Product: Makefile for the Unity test harness, for Windows, Linux, MacOS
+# Last updated for version 6.3.7
+# Last updated on  2018-11-14
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -133,9 +133,9 @@ endif
 
 BIN_DIR := build
 
-CFLAGS = -g -O -Wall -Wstrict-prototypes -W $(INCLUDES) $(DEFINES)
+CFLAGS = -c -g -O -Wall -Wextra $(INCLUDES) $(DEFINES)
 
-CPPFLAGS = -g -O -Wall -W -fno-rtti -fno-exceptions $(INCLUDES) $(DEFINES)
+CPPFLAGS = -c -g -O -Wall -Wextra -fno-rtti -fno-exceptions $(INCLUDES) $(DEFINES)
 
 LINKFLAGS :=
 
@@ -188,10 +188,10 @@ $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
 $(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CPP) $(CPPFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 .PHONY : clean show norun
 

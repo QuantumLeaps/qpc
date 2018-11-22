@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.3
-* Last updated on  2017-12-08
+* Last updated for version 6.3.7
+* Last updated on  2018-11-09
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -118,22 +118,26 @@ void QXThread_ctor(QXThread * const me, QXThreadHandler handler,
 * @param[in,out] me_   pointer (see @ref oop)
 * @param[in]     e_    pointer to the event to post
 * @param[in]     margin_ the minimum free slots in the queue, which
-*                      must still be available after posting the event
+*                must still be available after posting the event.
+*                The special value #QF_NO_MARGIN causes asserting failure
+*                in case event allocation fails.
 * @param[in]     sender_ pointer to the sender object.
 *
-* @returns 'true' if the posting succeeded, and 'false' if the posting
-* failed due to insufficient margin of free slots available in the queue.
+* @returns
+* 'true' if the posting succeeded, and 'false' if the posting failed due
+* to insufficient margin of free slots available in the queue.
 *
-* @note The @p sender_ parameter is actually only used when QS tracing
-* is enabled (macro #Q_SPY is defined). When QS software tracing is
-* disabled, the QACTIVE_POST() macro does not pass the @p sender_
-* argument, so the overhead of passing this extra argument is entirely
-* avoided.
+* @note
+* The @p sender_ parameter is actually only used when QS tracing is enabled
+* (macro #Q_SPY is defined). When QS software tracing is disabled, the
+* QXTHREAD_POST_X() macro does not pass the @p sender_ argument, so the
+* overhead of passing this extra argument is entirely avoided.
 *
-* @note the pointer to the sender object is not necessarily a pointer
-* to an active object. In fact, if QACTIVE_POST() is called from an
-* interrupt or other context, you can create a unique object just to
-* unambiguously identify the sender of the event.
+* @note
+* The pointer to the sender object is not necessarily a pointer to an
+* active object. In fact, if QXTHREAD_POST_X() is called from an interrupt
+* or other context, you can create a unique object just to unambiguously
+* identify the sender of the event.
 *
 * @usage
 * @include qf_postx.c

@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.6
-* Date of the Last Update:  2018-10-15
+* Last Updated for Version: 6.3.7
+* Date of the Last Update:  2018-11-09
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -61,11 +61,11 @@
 Q_DEFINE_THIS_MODULE("qf_port")
 
 /* Global objects ==========================================================*/
-pthread_mutex_t QF_pThreadMutex_;
 QPSet  QV_readySet_;        /* QV-ready set of active objects */
 pthread_cond_t QV_condVar_; /* Cond.var. to signal events */
 
 /* Local objects ===========================================================*/
+static pthread_mutex_t l_pThreadMutex; /* POSIX mutex for critical sections */
 static bool l_isRunning;
 static struct termios l_tsav; /* structure with saved terminal attributes */
 static struct timespec l_tick;
@@ -85,7 +85,7 @@ void QF_init(void) {
     /*mlockall(MCL_CURRENT | MCL_FUTURE);  uncomment when supported */
 
     /* init the global mutex with the default non-recursive initializer */
-    pthread_mutex_init(&QF_pThreadMutex_, NULL);
+    pthread_mutex_init(&l_pThreadMutex, NULL);
 
     /* init the global condition variable with the default initializer */
     pthread_cond_init(&QV_condVar_, NULL);
@@ -108,8 +108,18 @@ void QF_init(void) {
 }
 
 /****************************************************************************/
+void QF_enterCriticalSection_(void) {
+    pthread_mutex_lock(&l_pThreadMutex);
+}
+/****************************************************************************/
+void QF_leaveCriticalSection_(void) {
+    pthread_mutex_unlock(&l_pThreadMutex);
+}
+
+/****************************************************************************/
 int_t QF_run(void) {
     struct sched_param sparam;
+    QF_CRIT_STAT_
 
     QF_onStartup();  /* invoke startup callback */
 
@@ -158,7 +168,7 @@ int_t QF_run(void) {
     }
 
     /* the combined event-loop and background-loop of the QV kernel */
-    QF_INT_DISABLE();
+    QF_CRIT_ENTRY_();
     while (l_isRunning) {
         QEvt const *e;
         QActive *a;
@@ -169,7 +179,7 @@ int_t QF_run(void) {
 
             QPSet_findMax(&QV_readySet_, p);
             a = QF_active_[p];
-            QF_INT_ENABLE();
+            QF_CRIT_EXIT_();
 
             /* the active object 'a' must still be registered in QF
             * (e.g., it must not be stopped)
@@ -186,7 +196,7 @@ int_t QF_run(void) {
             QHSM_DISPATCH(&a->super, e);
             QF_gc(e);
 
-            QF_INT_DISABLE();
+            QF_CRIT_ENTRY_();
 
             if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
                 QPSet_remove(&QV_readySet_, p);
@@ -199,16 +209,16 @@ int_t QF_run(void) {
             * QP events become available.
             */
             while (QPSet_isEmpty(&QV_readySet_)) {
-                pthread_cond_wait(&QV_condVar_, &QF_pThreadMutex_);
+                pthread_cond_wait(&QV_condVar_, &l_pThreadMutex);
             }
         }
     }
-    QF_INT_ENABLE();
+    QF_CRIT_EXIT_();
     QF_onCleanup();  /* cleanup callback */
     QS_EXIT();       /* cleanup the QSPY connection */
 
-    pthread_cond_destroy(&QV_condVar_);       // cleanup the condition variable
-    pthread_mutex_destroy(&QF_pThreadMutex_); // cleanup the global mutex
+    pthread_cond_destroy(&QV_condVar_);     // cleanup the condition variable
+    pthread_mutex_destroy(&l_pThreadMutex); // cleanup the global mutex
 
     return (int_t)0; /* return success */
 }

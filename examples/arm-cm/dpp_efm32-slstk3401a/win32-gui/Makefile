@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, Win32-GUI, GNU GCC
-# Last updated for version 6.3.6
-# Last updated on  2018-10-15
+# Last updated for version 6.3.7
+# Last updated on  2018-11-06
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -183,7 +183,7 @@ else ifeq (spy, $(CONF))  # Spy configuration ................................
 
 BIN_DIR := build_spy
 
-LIBS    += -lwsock32
+LIBS    += -lws2_32
 
 CFLAGS = -c -g -ffunction-sections -fdata-sections \
 	-O -Wall -W $(INCLUDES) $(DEFINES) -DQ_SPY

@@ -26,7 +26,7 @@ qpc/examples/qutest/unity_basic/ - this example
 | +-LedBar.h
 | +-LedBar.c
 |
-+-test_qutest/       - testing with QUTest
++-test/              - testing with QUTest
 | +-conftest.py      - configuration file for Python
 | +-Makefile         - makefile for building and running the tests (host)
 | +-make_ef32        - makefile for building and running the tests EFM32 target
@@ -80,7 +80,7 @@ by typing:
 qspy -u -t
 
 Open *another* terminal / command-prompt and change directory to
-test_qutest (qpc/examples/qutest/unity_mock/test_qutest).
+test (qpc/examples/qutest/unity_mock/test).
 Type:
 
 make

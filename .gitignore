@@ -41,6 +41,9 @@ test_ports/
 dbg/
 rel/
 spy/
+build/
+build_rel/
+build_spy/
 settings/
 .settings/
 targetConfigs/

@@ -1,11 +1,25 @@
 /**
 @page history Revision History
 
+@section qpc_6_3_7 Version 6.3.7, 2018-11-20
+The main goal of this release is to provide Python test scripts that match the newly re-designed Python support for the [QUTest unit testing harness](https://www.state-machine.com/qtools/qutest.html) (see QTools **6.3.7**). Specifically, the Python tests scripts (*.py files) in the `qpc/examples/qutest` directory) have been all upgraded to the new syntax and format. Also, all the makefiles in that directory have been modified to execute Python test scripts by default, and Tcl test scripts only when the argument `SCRIPTS=tcl` is specified.
+
+@note
+The new scripting interface [qutest.py](https://www.state-machine.com/qtools/qutest_script.html) is now the primary supported QUTest scripting interface. The older interfaces, such as TCL ("qutest.tcl") and "qspypy" are considered *obsolete* and are **not recommended** for writing new test scripts.
+
+The second change in this release is updating the QP ports to Win32 and POSIX to eliminate the obsolete function `gethostbyname()` and replacing it with `getaddrinfo()`. This change has ripple effects on Windows, because it requires linking with "ws2_32" library, instead of "wsock2". All affected `Makefiles` in the `qpc\examples\` directory have been updated to link the newer "ws2_32" library.
+
+Also, in this release, the prototypes of the internal functions `QActive_start_()`, `QActive_get_()`, `QActive_post_()` and `QActive_postLIFO_()` have been removed from the public QF interface (in qf.h) and moved to the QF-implementation. This is to prevent calling these internal functions directly in the application-level code. The only allowed use of these functions is through the macros QACTIVE_START(), QACTIVE_POST(), QACTIVE_POST_X() and QACTIVE_POST_LIFO().
+
+Finally, this release updates the internal implementation of QXK function `QXThread_post_()` for software tracing and testing with QUTest.
+
+
+------------------------------------------------------------------------------
 @section qpc_6_3_6 Version 6.3.6, 2018-10-20
 This release brings important changes and improvements to the unit-testing support for [QUTest](https://www.state-machine.com/qtools/qutest.html). Specifically, a new "dummy" active object class ::QActiveDummy for testing has been added. Instances of this "dummy" AO can be now used as test-doubles for active objects that are recipients of events directly posted by the active object under test (AOUT). This, in turn, eliminates the need to alter the existing event-posting implementation, so that more of the actual QP code can be used in the QP test-stub (qutest.c).
 
 @note
-The QUTest projects that are built QP from sources need to include the qf_time.c file.
+The QUTest projects that build QP from sources need to include the qf_time.c file.
 
 
 As a consequence of the changes in the [QUTest](https://www.state-machine.com/qtools/qutest.html) support, the @ref exa_qutest "QUTest examples" have been re-designed and improved. Here, the most important changes include the new code organization, which reflects the customary separation of the code-under-test (CUT) from the code for testing. Also, the tests based on the ["TDD book" by James Grenning](https://www.amazon.com/Driven-Development-Embedded-Pragmatic-Programmers/dp/193435662X) have been replaced with fully functional tests based on the [Unity testing framework](http://www.throwtheswitch.org/unity/). This is to directly compare the traditional approach (Unity) with QUTest.

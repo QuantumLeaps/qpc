@@ -3,14 +3,14 @@
 /// @cond
 ///===========================================================================
 /// Product: QP/C
-/// Last Updated for Version: 5.9.7
-/// Date of the Last Update:  2017-08-20
+/// Last Updated for Version: 6.3.7
+/// Date of the Last Update:  2018-11-07
 ///
-///                    Q u a n t u m     L e a P s
-///                    ---------------------------
-///                    innovating embedded systems
+///                    Q u a n t u m  L e a P s
+///                    ------------------------
+///                    Modern Embedded Software
 ///
-/// Copyright (C) Quantum Leaps. All rights reserved.
+/// Copyright (C) 2005-2018 Quantum Leaps. All rights reserved.
 ///
 /// This program is free software: you can redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
 /// along with this program. If not, see <http://www.gnu.org/licenses/>.
 ///
 /// Contact information:
-/// https://state-machine.com
-/// info@state-machine.com
+/// https://www.state-machine.com
+/// mailto:info@state-machine.com
 ///============================================================================
 /// @endcond
 
@@ -393,7 +393,9 @@
  QS_MEM,
  QS_SIG,
  QS_PTR_AT_,
- QS_RX_PUT)
+ QS_RX_PUT,
+ QS_OUTPUT,
+ QS_RX_INPUT)
 -estring(961,         // MISRA04-19.7(adv) function-like macro
  QS_CRIT_ENTRY_,
  QS_CRIT_EXIT_,
