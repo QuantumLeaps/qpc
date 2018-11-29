@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last Updated for Version: 6.3.7
-* Date of the Last Update:  2018-11-09
+* Date of the Last Update:  2018-11-29
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -69,6 +69,7 @@
 
 /* local variables .........................................................*/
 static int l_sock = INVALID_SOCKET;
+static struct timespec const c_10ms = { 0, 10000000L };
 
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
@@ -195,18 +196,39 @@ void QS_onFlush(void) {
     uint16_t nBytes;
     uint8_t const *data;
 
-    if (l_sock == INVALID_SOCKET) { /* socket initialized? */
+    if (l_sock == INVALID_SOCKET) { /* socket NOT initialized? */
+        fprintf(stderr, "<TARGET> ERROR   invalid TCP socket\n");
         return;
     }
 
     nBytes = QS_TX_CHUNK;
     while ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
-        int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
-        /* the driver buffers the output, so it should accept all the bytes */
-        if (nSent < (int)nBytes) {
-            fprintf(stderr, "<TARGET> ERROR   sending data over TCP,"
-                   "errno=%d\n", errno);
+        for (;;) { /* for-ever until break or return */
+            int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
+            if (nSent == SOCKET_ERROR) { /* sending failed? */
+                if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) {
+                    /* sleep for 10ms and then loop back
+                    * to send() the SAME data again
+                    */
+                    nanosleep(&c_10ms, NULL);
+                }
+                else { /* some other socket error... */
+                    fprintf(stderr, "<TARGET> ERROR   sending data over TCP,"
+                           "errno=%d\n", errno);
+                    return;
+                }
+            }
+            else if (nSent < (int)nBytes) { /* sent fewer than requested? */
+                nanosleep(&c_10ms, NULL); /* sleep for 10ms */
+                /* adjust the data and loop back to send() the rest */
+                data   += nSent;
+                nBytes -= (uint16_t)nSent;
+            }
+            else {
+                break;
+            }
         }
+        /* set nBytes for the next call to QS_getBlock() */
         nBytes = QS_TX_CHUNK;
     }
 }
@@ -226,19 +248,38 @@ void QS_output(void) {
     uint16_t nBytes;
     uint8_t const *data;
 
-    if (l_sock == INVALID_SOCKET) { /* socket initialized? */
+    if (l_sock == INVALID_SOCKET) { /* socket NOT initialized? */
+        fprintf(stderr, "<TARGET> ERROR   invalid TCP socket\n");
         return;
     }
 
     nBytes = QS_TX_CHUNK;
     if ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
-        int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
-        /* the driver buffers the output, so it should accept all the bytes */
-        if (nSent < (int)nBytes) {
-            fprintf(stderr, "<TARGET> ERROR   sending data over TCP,"
-               "errno=%d\n", errno);
+        for (;;) { /* for-ever until break or return */
+            int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
+            if (nSent == SOCKET_ERROR) { /* sending failed? */
+                if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) {
+                    /* sleep for 10ms and then loop back
+                    * to send() the SAME data again
+                    */
+                    nanosleep(&c_10ms, NULL);
+                }
+                else { /* some other socket error... */
+                    fprintf(stderr, "<TARGET> ERROR   sending data over TCP,"
+                           "errno=%d\n", errno);
+                    return;
+                }
+            }
+            else if (nSent < (int)nBytes) { /* sent fewer than requested? */
+                nanosleep(&c_10ms, NULL); /* sleep for 10ms */
+                /* adjust the data and loop back to send() the rest */
+                data   += nSent;
+                nBytes -= (uint16_t)nSent;
+            }
+            else {
+                break;
+            }
         }
-        nBytes = QS_TX_CHUNK;
     }
 }
 /*..........................................................................*/
