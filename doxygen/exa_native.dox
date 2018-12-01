@@ -43,9 +43,8 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
-- @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
-- @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+- @ref msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 */
 /*##########################################################################*/
 /*! @page exa_qk QK Kernel (Preemptive, Run-To-Completion/Non-Blocking)
@@ -71,9 +70,8 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
-- @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
-- @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+- @ref msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 */
 /*##########################################################################*/
 /*! @page exa_qxk QXK Kernel (Preemptive, Run-To-Completion/Blocking)
@@ -148,9 +146,9 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
-- @subpage msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+
 - @subpage msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
-- @subpage msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+- @subpage msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 */
 
 /*##########################################################################*/
@@ -166,7 +164,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 
 The Blinky example is located in the directory <span class="img folder">qpc/examples/arm-cm/blinky_ek-tm4c123gxl</span>, which is organized as follows:
 
-@code{.x}
+@code
  qpc/                - QP/C installation directory
   +-examples/        - QP/C examples directory (application)
   | +-arm-cm/        - QP/C examples for ARM Cortex-M
@@ -654,17 +652,6 @@ Dining Philosophers Problem (DPP) example for LAUNCHXL2-TMS57012 MCU (Cortex-R, 
 */
 
 /*##########################################################################*/
-/*! @page exa_arm7-9 ARM7 / ARM9
-
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
-
-The native (bare-metal) QP/C examples for the "classic" ARM7/ARM9 are as follows:
-
-- @subpage arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
-*/
-/*##########################################################################*/
 /*! @page arm7-9_dpp_at91sam7s-ek DPP on AT91SAM7S-EK
 
 @image html bd_AT91SAM7S-EK.jpg AT91SAM7S-EK board
@@ -674,60 +661,35 @@ Dining Philosophers Problem (DPP) example for Atmel AT91SAM7S MCU (ARM7) with GN
 @image html under_construction.jpg
 */
 /*##########################################################################*/
-/*! @page exa_msp430 MSP430
-
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
-
-The native (bare-metal) QP/C examples for MSP430 are as follows:
-
-- @subpage msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
-- @subpage msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
-- @subpage msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
-*/
-/*##########################################################################*/
-/*! @page msp430_blinky_msp-exp430g2 Blinky on MSP-EXP430G2
-
-@image html bd_MSP-EXP430G2.jpg MSP-EXP430G2 board
-
-Simple Blinky example for MSP-EXP430G2 with CCS-430 and IAR-430 toolchains.
-
-@image html under_construction.jpg
-*/
-/*##########################################################################*/
 /*! @page msp430_blinky_msp-exp430f5529lp Blinky on MSP-EXP430F5529LP
 
 @image html bd_MSP-EXP430F5529LP.jpg MSP-EXP430F5529LP board
 
-Simple Blinky example for MSP-EXP430F5529LP with CCS-430 and IAR-430 toolchains.
+Simple Blinky example for MSP-EXP430F5529LP with CCS-430 and IAR-430 toolchains. The application blinks the LED1 (P1.0) once per second. The LED2 is rapidly toggled from the idle callback, which results in a "glow" with intensity proportional to the frequency of calling the idle callback.
 
-@image html under_construction.jpg
+@note
+The simple Blinky application does NOT support the Spy build configuration. Please see the @ref  msp430_dpp_msp-exp430f5529lp "DPP example" for QS output.
+
+
 */
 /*##########################################################################*/
-/*! @page msp430_dpp_msp-exp430g2 DPP on MSP-EXP430G2
+/*! @page msp430_dpp_msp-exp430f5529lp DPP on MSP-EXP430F5529LP
 
-@image html bd_MSP-EXP430G2.jpg MSP-EXP430G2 board
+@image html bd_MSP-EXP430F5529LP.jpg MSP-EXP430F5529LP board
 
-DPP example for MSP-EXP430G2 with CCS-430 and IAR-430 toolchains.
+DPP example for MSP-EXP430F5529LP with CCS-430 and IAR-430 toolchains. The application blinks the LED1 (P1.0) when a Philosopher gets a permission to "eat". The LED2 is rapidly toggled from the idle callback, which results in a "glow" with intensity proportional to the frequency of calling the idle callback.
 
-@section msp430_dpp_msp-exp430g2_qs QS Output
-This example demonstrates the QS software tracing output in the Spy build configuration. QS uses the hardware UART of the MSP-EXP430G2 board connected to the Virtual COM Port on the debugger. This means that you don't need any additional wiring to receive the QS output on your development workstation.
+@section msp430_dpp_msp-exp430f5529lp_qs QS Output
+This example demonstrates the QS software tracing output in the Spy build configuration. QS uses the hardware UART1 of the MSP-EXP430F5529LP board connected to the Virtual COM Port on the debugger. This means that you don't need any additional wiring to receive the QS output on your development workstation.
 
 The QS trace date requires the following setting of the QSPY host utility
 
 @verbatim
-qspy -cCOM_PORT -b9600 -O2 -F2 -E1 -P1 -B1
+qspy -cCOM_PORT -O2 -F2 -E1 -P1 -B1
 @endverbatim
 
-where `COM_PORT` denotes the Virtual COM port, which you can find out in the Device Manager (see the screen shot below):
+where `COM_PORT` denotes the Virtual COM port, which you can find out in the Device Manager.
 
-@image html com_msp-exp430g2.png Virtual COM port of the MSP-EXP430G2 board
-
-@note
-To receive the QS data over the Virtual COM Port, you need to make sure that the jumper J3 on the MSP-EXP430G2 board is configured for the "Hardware UART" (the first two jumpers should be in the horizontal setting, as shown in the picture of the MSP-EXP430G2 board on top of this page.
-
-@image html under_construction.jpg
 */
 
 } // namespace QP

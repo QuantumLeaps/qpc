@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Blinky" on MSP-EXP430F5529LP, preemptive QK kernel
-* Last updated for version 5.6.5
-* Last updated on  2016-06-05
+* Last updated for version 6.3.7
+* Last updated on  2018-11-30
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -72,6 +72,10 @@ Q_DEFINE_THIS_FILE
     QF_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
 
     QK_ISR_EXIT();     /* inform QK about exiting the ISR */
+
+#ifdef NDEBUG
+    __low_power_mode_off_on_exit(); /* turn the low-power mode OFF, NOTE1 */
+#endif
 }
 
 
@@ -105,7 +109,7 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QK_onIdle(void) {
-    /* toggle LED2 on and then off, see NOTE1 */
+    /* toggle LED2 on and then off, see NOTE2 */
     QF_INT_DISABLE();
     P4OUT |=  LED2;        /* turn LED2 on */
     P4OUT &= ~LED2;        /* turn LED2 off */
@@ -116,7 +120,7 @@ void QK_onIdle(void) {
     * you might need to customize the clock management for your application,
     * see the datasheet for your particular MSP430 MCU.
     */
-    __low_power_mode_1(); /* Enter LPM1; also ENABLES interrupts */
+    __low_power_mode_1(); /* enter LPM1; also ENABLES interrupts, see NOTE1
 #endif
 }
 
@@ -129,16 +133,17 @@ void Q_onAssert(char const *module, int loc) {
     (void)loc;
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
 
-    QF_INT_DISABLE(); /* disable all interrupts */
-
-    /* cause the reset of the CPU... */
-    WDTCTL = WDTPW | WDTHOLD;
-    __asm("    push &0xFFFE");
-    /* return from function does the reset */
+    /* write invalid password to WDT: cause a password-validation RESET */
+    WDTCTL = 0xDEAD;
 }
 
 /*****************************************************************************
 * NOTE1:
+* With the preemptive QK kernel for MSP430, the idle callback QK::onIdle()
+* will execute only ONCE, if the low-power mode is not explicitly turned OFF
+* in the interrupt. This might or might not be what you want.
+*
+* NOTE2:
 * One of the LEDs is used to visualize the idle loop activity. The brightness
 * of the LED is proportional to the frequency of invcations of the idle loop.
 * Please note that the LED is toggled with interrupts locked, so no interrupt

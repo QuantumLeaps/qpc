@@ -395,15 +395,14 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 
 <div class="separate"></div>
 @subsection exa_ref_ccs-430 CCS for MSP430
-- @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
-- @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+- @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
+- @ref msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 
 
 <div class="separate"></div>
 @subsection exa_ref_iar-430 IAR EW430
-- @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
 - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
-- @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+- @ref msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 
 
 ------------------------------------------------------------------------------
@@ -496,9 +495,8 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
     - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 
 - MSP430
-    - @ref msp430_blinky_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
     - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
-    - @ref msp430_dpp_msp-exp430g2 <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2"></a>
+    - @ref msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 
 
 ------------------------------------------------------------------------------
