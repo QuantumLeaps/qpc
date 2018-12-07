@@ -36,8 +36,7 @@ lint*.txt
 JLink*.*
 
 eclipse/
-test/
-test_ports/
+test_priv/
 dbg/
 rel/
 spy/
