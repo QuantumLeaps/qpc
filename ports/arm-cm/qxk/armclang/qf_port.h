@@ -3,12 +3,12 @@
 * @brief QF/C port to Cortex-M, dual-mode QXK kernel, ARM-CLANG toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.1.1
-* Date of the Last Update:  2018-03-05
+* Last Updated for Version: 6.3.7
+* Date of the Last Update:  2018-12-12
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 *
@@ -52,10 +52,12 @@
     #define QF_INT_DISABLE()    __asm volatile ("cpsid i")
     #define QF_INT_ENABLE()     __asm volatile ("cpsie i")
 
-    /* QF critical section entry/exit (unconditional interrupt disabling) */
-    /*#define QF_CRIT_STAT_TYPE not defined */
-    #define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
-    #define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
+    /* QF critical section (save and restore interrupt status), see NOTE2 */
+    #define QF_CRIT_STAT_TYPE   uint32_t
+    #define QF_CRIT_ENTRY(primask_) \
+        __asm volatile ("mrs %0,PRIMASK\n" "cpsid i" : "=r" (primask_) ::)
+    #define QF_CRIT_EXIT(primask_) \
+        __asm volatile ("msr PRIMASK,%0" :: "r" (primask_) : )
 
     /* CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE4 */
     #define QF_AWARE_ISR_CMSIS_PRI 0
@@ -75,10 +77,15 @@
     #define QF_INT_ENABLE()  __asm volatile (\
         "msr BASEPRI,%0" :: "r" (0) : )
 
-    /* QF critical section entry/exit (unconditional interrupt disabling) */
-    /*#define QF_CRIT_STAT_TYPE not defined */
-    #define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
-    #define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
+    /* QF critical section (save and restore interrupt status), see NOTE5 */
+    #define QF_CRIT_STAT_TYPE   uint32_t
+    #define QF_CRIT_ENTRY(basepri_) do { \
+        __asm volatile ("mrs %0,BASEPRI" : "=r" (basepri_) :: ); \
+        __asm volatile ("cpsid i\n msr BASEPRI,%0\n cpsie i" \
+                        :: "r" (QF_BASEPRI) : ); \
+    } while (0)
+    #define QF_CRIT_EXIT(basepri_) \
+        __asm volatile ("msr BASEPRI,%0" :: "r" (basepri_) : )
 
     /* BASEPRI threshold for "QF-aware" interrupts, see NOTE3 */
     #define QF_BASEPRI           0x3F
