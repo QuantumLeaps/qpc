@@ -1,5 +1,5 @@
 /*****************************************************************************
-* Product: "Dining Philosophers Problem" example, ThreadX kernel
+* Product: DPP example, EK-TM4C123GXL board, ThreadX kernel
 * Last Updated for Version: 6.3.7
 * Date of the Last Update:  2018-12-17
 *
@@ -35,27 +35,25 @@
 #include "dpp.h"
 #include "bsp.h"
 
-#include "stm32f4xx.h"  /* CMSIS-compliant header file for the MCU used */
-#include "stm32f4xx_exti.h"
-#include "stm32f4xx_gpio.h"
-#include "stm32f4xx_rcc.h"
-#include "stm32f4xx_usart.h"
+#include "TM4C123GH6PM.h"  /* the device specific header (TI) */
+#include "rom.h"           /* the built-in ROM functions (TI) */
+#include "sysctl.h"        /* system control driver (TI) */
+#include "gpio.h"          /* GPIO driver (TI) */
 /* add other drivers if necessary... */
 
 Q_DEFINE_THIS_FILE
 
-/* Local-scope defines -----------------------------------------------------*/
-#define LED_GPIO_PORT     GPIOD
-#define LED_GPIO_CLK      RCC_AHB1Periph_GPIOD
 
-#define LED4_PIN          GPIO_Pin_12
-#define LED3_PIN          GPIO_Pin_13
-#define LED5_PIN          GPIO_Pin_14
-#define LED6_PIN          GPIO_Pin_15
+/* ISRs defined in this BSP ------------------------------------------------*/
+void UART0_IRQHandler(void);
 
-#define BTN_GPIO_PORT     GPIOA
-#define BTN_GPIO_CLK      RCC_AHB1Periph_GPIOA
-#define BTN_B1            GPIO_Pin_0
+/* Local-scope objects -----------------------------------------------------*/
+#define LED_RED     (1U << 1)
+#define LED_BLUE    (1U << 2)
+#define LED_GREEN   (1U << 3)
+
+#define BTN_SW1     (1U << 4)
+#define BTN_SW2     (1U << 0)
 
 static uint32_t l_rnd; /* random seed */
 static TX_TIMER l_tick_timer; /* ThreadX timer to call QF_TICK_X() */
@@ -64,8 +62,14 @@ static TX_TIMER l_tick_timer; /* ThreadX timer to call QF_TICK_X() */
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
 
+    #define UART_BAUD_RATE      115200U
+    #define UART_FR_TXFE        (1U << 7)
+    #define UART_FR_RXFE        (1U << 4)
+    #define UART_TXFIFO_DEPTH   16U
+
     enum AppRecords { /* application-specific trace records */
-        PHILO_STAT = QS_USER
+        PHILO_STAT = QS_USER,
+        COMMAND_STAT
     };
 
     /* ThreadX thread and thread function for QS output, see NOTE1 */
@@ -76,10 +80,28 @@ static TX_TIMER l_tick_timer; /* ThreadX timer to call QF_TICK_X() */
 
 /* ISRs used in the application ==========================================*/
 
-/* BSP functions ===========================================================*/
-void BSP_init(void) {
-    GPIO_InitTypeDef GPIO_struct;
+#ifdef Q_SPY
+/*
+* ISR for receiving bytes from the QSPY Back-End
+* NOTE: This ISR is "QF-unaware" meaning that it does not interact with
+* the QF/QK and is not disabled. Such ISRs don't need to call QK_ISR_ENTRY/
+* QK_ISR_EXIT and they cannot post or publish events.
+*/
+void UART0_IRQHandler(void) {
+    uint32_t status = UART0->RIS; /* get the raw interrupt status */
+    UART0->ICR = status;          /* clear the asserted interrupts */
 
+    while ((UART0->FR & UART_FR_RXFE) == 0) { /* while RX FIFO NOT empty */
+        uint32_t b = UART0->DR;
+        QS_RX_PUT(b);
+    }
+}
+#else
+void UART0_IRQHandler(void) {}
+#endif
+
+/*..........................................................................*/
+void BSP_init(void) {
     /* NOTE: SystemInit() already called from the startup code
     *  but SystemCoreClock needs to be updated
     */
@@ -90,41 +112,20 @@ void BSP_init(void) {
     */
     FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
 
-    /* Initialize thr port for the LEDs */
-    RCC_AHB1PeriphClockCmd(LED_GPIO_CLK , ENABLE);
+    /* enable clock for to the peripherals used by this application... */
+    SYSCTL->RCGCGPIO |= (1U << 5); /* enable Run mode for GPIOF */
 
-    /* GPIO Configuration for the LEDs... */
-    GPIO_struct.GPIO_Mode  = GPIO_Mode_OUT;
-    GPIO_struct.GPIO_OType = GPIO_OType_PP;
-    GPIO_struct.GPIO_PuPd  = GPIO_PuPd_UP;
-    GPIO_struct.GPIO_Speed = GPIO_Speed_50MHz;
+    /* configure the LEDs and push buttons */
+    GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE);/* set direction: output */
+    GPIOF->DEN |= (LED_RED | LED_GREEN | LED_BLUE); /* digital enable */
+    GPIOF->DATA_Bits[LED_RED]   = 0U; /* turn the LED off */
+    GPIOF->DATA_Bits[LED_GREEN] = 0U; /* turn the LED off */
+    GPIOF->DATA_Bits[LED_BLUE]  = 0U; /* turn the LED off */
 
-    GPIO_struct.GPIO_Pin = LED3_PIN;
-    GPIO_Init(LED_GPIO_PORT, &GPIO_struct);
-    LED_GPIO_PORT->BSRRH = LED3_PIN; /* turn LED off */
-
-    GPIO_struct.GPIO_Pin = LED4_PIN;
-    GPIO_Init(LED_GPIO_PORT, &GPIO_struct);
-    LED_GPIO_PORT->BSRRH = LED4_PIN; /* turn LED off */
-
-    GPIO_struct.GPIO_Pin = LED5_PIN;
-    GPIO_Init(LED_GPIO_PORT, &GPIO_struct);
-    LED_GPIO_PORT->BSRRH = LED5_PIN; /* turn LED off */
-
-    GPIO_struct.GPIO_Pin = LED6_PIN;
-    GPIO_Init(LED_GPIO_PORT, &GPIO_struct);
-    LED_GPIO_PORT->BSRRH = LED6_PIN; /* turn LED off */
-
-    /* Initialize thr port for Button */
-    RCC_AHB1PeriphClockCmd(BTN_GPIO_CLK , ENABLE);
-
-    /* GPIO Configuration for the Button... */
-    GPIO_struct.GPIO_Pin   = BTN_B1;
-    GPIO_struct.GPIO_Mode  = GPIO_Mode_IN;
-    GPIO_struct.GPIO_OType = GPIO_OType_PP;
-    GPIO_struct.GPIO_PuPd  = GPIO_PuPd_DOWN;
-    GPIO_struct.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(BTN_GPIO_PORT, &GPIO_struct);
+    /* configure the Buttons */
+    GPIOF->DIR &= ~(BTN_SW1 | BTN_SW2); /*  set direction: input */
+    ROM_GPIOPadConfigSet(GPIOF_BASE, (BTN_SW1 | BTN_SW2),
+                         GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
 
     /* seed the random number generator */
     BSP_randomSeed(1234U);
@@ -133,27 +134,12 @@ void BSP_init(void) {
         Q_ERROR();
     }
     QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(COMMAND_STAT);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
-    /* exercise the FPU with some floating point computations */
-    float volatile x;
-    x = 3.1415926F;
-    x = x + 2.7182818F;
-
-    if (stat[0] == 'h') {
-        LED_GPIO_PORT->BSRRL = LED3_PIN; /* turn LED on  */
-    }
-    else {
-        LED_GPIO_PORT->BSRRH = LED3_PIN; /* turn LED off  */
-    }
-    if (stat[0] == 'e') {
-        LED_GPIO_PORT->BSRRL = LED5_PIN; /* turn LED on  */
-    }
-    else {
-        LED_GPIO_PORT->BSRRH = LED5_PIN; /* turn LED on  */
-    }
-    (void)n; /* unused parameter (in all but Spy build configuration) */
+    GPIOF->DATA_Bits[LED_RED]   = ((stat[0] == 'h') ? LED_RED   : 0U);
+    GPIOF->DATA_Bits[LED_GREEN] = ((stat[0] == 'e') ? LED_GREEN : 0U);
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
         QS_U8(1, n);  /* Philosopher number */
@@ -162,21 +148,23 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    if (paused) {
-        LED_GPIO_PORT->BSRRL = LED4_PIN; /* turn LED on  */
-    }
-    else {
-        LED_GPIO_PORT->BSRRH = LED4_PIN; /* turn LED on  */
-    }
+    GPIOF->DATA_Bits[LED_RED] = ((paused != 0U) ? LED_RED : 0U);
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
+    uint32_t rnd;
+
+    /* Some flating point code is to exercise the VFP... */
+    float volatile x = 3.1415926F;
+    x = x + 2.7182818F;
+
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
-    l_rnd = l_rnd * (3U*7U*11U*13U*23U);
+    rnd = l_rnd * (3U*7U*11U*13U*23U);
+    l_rnd = rnd; /* set for the next time */
 
-    return l_rnd >> 8;
+    return (rnd >> 8);
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
@@ -211,6 +199,8 @@ void QF_onStartup(void) {
              == TX_SUCCESS);
 
 #ifdef Q_SPY
+    NVIC_EnableIRQ(UART0_IRQn);  /* UART0 interrupt used for QS-RX */
+
     /* start a ThreadX timer to perform QS output. See NOTE1... */
     Q_ALLEGE(tx_thread_create(&l_qs_output_thread, /* thread control block */
         (CHAR *)"QS_TX",       /* thread name */
@@ -237,6 +227,15 @@ void Q_onAssert(char const *module, int loc) {
     (void)module;
     (void)loc;
     QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+
+#ifndef NDEBUG
+    /* for debugging, hang on in an endless loop toggling the RED LED... */
+    while (GPIOF->DATA_Bits[BTN_SW1] != 0) {
+        GPIOF->DATA = LED_RED;
+        GPIOF->DATA = 0U;
+    }
+#endif
+
     NVIC_SystemReset();
 }
 
@@ -249,24 +248,19 @@ static void qs_thread_function(ULONG thread_input) { /* see NOTE1 */
 
     for (;;) {
 
-        /* turn the LED6 on an off to visualize the QS activity */
-        LED_GPIO_PORT->BSRRL = LED6_PIN; /* turn LED on  */
-        __NOP(); /* wait a little to actually see the LED glow */
-        __NOP();
-        __NOP();
-        __NOP();
-        LED_GPIO_PORT->BSRRH = LED6_PIN; /* turn LED off */
+        QS_rxParse();  /* parse all the received bytes */
 
-        if ((USART2->SR & 0x80U) != 0U) { /* is TXE empty? */
-            uint16_t b;
+        if ((UART0->FR & UART_FR_TXFE) != 0U) {  /* TX done? */
+            uint16_t fifo = UART_TXFIFO_DEPTH;   /* max bytes we can accept */
+            uint8_t const *block;
             QF_CRIT_STAT_TYPE intStat;
 
             QF_CRIT_ENTRY(intStat);
-            b = QS_getByte();
+            block = QS_getBlock(&fifo);  /* try to get next block to transmit */
             QF_CRIT_EXIT(intStat);
 
-            if (b != QS_EOD) {  /* not End-Of-Data? */
-                USART2->DR  = (b & 0xFFU);  /* put into the DR register */
+            while (fifo-- != 0) {        /* any bytes in the block? */
+                UART0->DR = *block++;    /* put into the FIFO */
             }
         }
 
@@ -276,40 +270,44 @@ static void qs_thread_function(ULONG thread_input) { /* see NOTE1 */
 
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsBuf[2*1024]; /* buffer for Quantum Spy */
-    GPIO_InitTypeDef GPIO_struct;
-    USART_InitTypeDef USART_struct;
+    static uint8_t qsTxBuf[2*1024]; /* buffer for QS transmit channel */
+    static uint8_t qsRxBuf[100];    /* buffer for QS receive channel */
+    uint32_t tmp;
 
-    (void)arg; /* avoid the "unused parameter" compiler warning */
-    QS_initBuf(qsBuf, sizeof(qsBuf));
+    QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
+    QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
 
-    /* enable peripheral clock for USART2 */
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+    /* enable clock for UART0 and GPIOA (used by UART0 pins) */
+    SYSCTL->RCGCUART |= (1U << 0); /* enable Run mode for UART0 */
+    SYSCTL->RCGCGPIO |= (1U << 0); /* enable Run mode for GPIOA */
 
-    /* GPIOA clock enable */
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+    /* configure UART0 pins for UART operation */
+    tmp = (1U << 0) | (1U << 1);
+    GPIOA->DIR   &= ~tmp;
+    GPIOA->SLR   &= ~tmp;
+    GPIOA->ODR   &= ~tmp;
+    GPIOA->PUR   &= ~tmp;
+    GPIOA->PDR   &= ~tmp;
+    GPIOA->AMSEL &= ~tmp;  /* disable analog function on the pins */
+    GPIOA->AFSEL |= tmp;   /* enable ALT function on the pins */
+    GPIOA->DEN   |= tmp;   /* enable digital I/O on the pins */
+    GPIOA->PCTL  &= ~0x00U;
+    GPIOA->PCTL  |= 0x11U;
 
-    /* GPIOA Configuration:  USART2 TX on PA2 */
-    GPIO_struct.GPIO_Pin = GPIO_Pin_2;
-    GPIO_struct.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_struct.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_struct.GPIO_OType = GPIO_OType_PP;
-    GPIO_struct.GPIO_PuPd = GPIO_PuPd_UP ;
-    GPIO_Init(GPIOA, &GPIO_struct);
+    /* configure the UART for the desired baud rate, 8-N-1 operation */
+    tmp = (((SystemCoreClock * 8U) / UART_BAUD_RATE) + 1U) / 2U;
+    UART0->IBRD   = tmp / 64U;
+    UART0->FBRD   = tmp % 64U;
+    UART0->LCRH   = (0x3U << 5); /* configure 8-N-1 operation */
+    UART0->LCRH  |= (0x1U << 4); /* enable FIFOs */
+    UART0->CTL    = (1U << 0)    /* UART enable */
+                    | (1U << 8)  /* UART TX enable */
+                    | (1U << 9); /* UART RX enable */
 
-    /* Connect USART2 pins to AF2 */
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2); /* TX = PA2 */
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2); /* RX = PA3 */
-
-    USART_struct.USART_BaudRate = 115200;
-    USART_struct.USART_WordLength = USART_WordLength_8b;
-    USART_struct.USART_StopBits = USART_StopBits_1;
-    USART_struct.USART_Parity = USART_Parity_No;
-    USART_struct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_struct.USART_Mode = USART_Mode_Tx;
-    USART_Init(USART2, &USART_struct);
-
-    USART_Cmd(USART2, ENABLE); // enable USART2
+    /* configure UART interrupts (for the RX channel) */
+    UART0->IM   |= (1U << 4) | (1U << 6); /* enable RX and RX-TO interrupt */
+    UART0->IFLS |= (0x2U << 2);    /* interrupt on RX FIFO half-full */
+    /* NOTE: do not enable the UART0 interrupt yet. Wait till QF_onStartup() */
 
     QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
@@ -334,18 +332,53 @@ QSTimeCtr QS_onGetTime(void) {  /* NOTE: invoked with interrupts DISABLED */
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t b;
+    uint16_t fifo = UART_TXFIFO_DEPTH; /* Tx FIFO depth */
+    uint8_t const *block;
     QF_CRIT_STAT_TYPE intStat;
 
     QF_CRIT_ENTRY(intStat);
-    while ((b = QS_getByte()) != QS_EOD) { /* while not End-Of-Data... */
+    while ((block = QS_getBlock(&fifo)) != (uint8_t *)0) {
         QF_CRIT_EXIT(intStat);
-        while ((USART2->SR & USART_FLAG_TXE) == 0) { /* while TXE not empty */
+        /* busy-wait as long as TX FIFO has data to transmit */
+        while ((UART0->FR & UART_FR_TXFE) == 0) {
         }
-        USART2->DR = (b & 0xFFU); /* put into the DR register */
+
+        while (fifo-- != 0) {    /* any bytes in the block? */
+            UART0->DR = *block++; /* put into the TX FIFO */
+        }
+        fifo = UART_TXFIFO_DEPTH; /* re-load the Tx FIFO depth */
         QF_CRIT_ENTRY(intStat);
     }
     QF_CRIT_EXIT(intStat);
+}
+/*..........................................................................*/
+/*! callback function to reset the target (to be implemented in the BSP) */
+void QS_onReset(void) {
+    NVIC_SystemReset();
+}
+/*..........................................................................*/
+/*! callback function to execute a user command (to be implemented in BSP) */
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
+{
+    void assert_failed(char const *module, int loc);
+    (void)cmdId;
+    (void)param1;
+    (void)param2;
+    (void)param3;
+    QS_BEGIN(COMMAND_STAT, (void *)1) /* application-specific record begin */
+        QS_U8(2, cmdId);
+        QS_U32(8, param1);
+        QS_U32(8, param2);
+        QS_U32(8, param3);
+    QS_END()
+
+    if (cmdId == 10U) {
+        Q_ERROR();
+    }
+    else if (cmdId == 11U) {
+        assert_failed("QS_onCommand", 123);
+    }
 }
 
 #endif /* Q_SPY */

@@ -62,7 +62,7 @@
                 </option>
                 <option>
                     <name>OGProductVersion</name>
-                    <state>4.41A</state>
+                    <state>5.11.0.50579</state>
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
@@ -78,7 +78,7 @@
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
-                    <state>STM32F407VG	ST STM32F407VG</state>
+                    <state>TM4C123GH6PM	TexasInstruments TM4C123GH6PM</state>
                 </option>
                 <option>
                     <name>GenLowLevelInterface</name>
@@ -90,11 +90,11 @@
                 </option>
                 <option>
                     <name>OGBufferedTerminalOutput</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>GenStdoutInterface</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>GeneralMisraRules98</name>
@@ -121,7 +121,7 @@
                 </option>
                 <option>
                     <name>OGUseCmsis</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>OGUseCmsisDspLib</name>
@@ -138,7 +138,7 @@
                 </option>
                 <option>
                     <name>GFPUDeviceSlave</name>
-                    <state>STM32F407VG	ST STM32F407VG</state>
+                    <state>TM4C123GH6PM	TexasInstruments TM4C123GH6PM</state>
                 </option>
                 <option>
                     <name>FPU2</name>
@@ -239,7 +239,7 @@
                 </option>
                 <option>
                     <name>CCListCMnemonics</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>CCListCMessages</name>
@@ -348,10 +348,9 @@
                     <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\threadx</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\stm32f4xx_iar</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\tm4c123xx_iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\inc</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ek-tm4c123gxl</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -372,7 +371,7 @@
                 <option>
                     <name>CCOptStrategy</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>2</state>
                 </option>
                 <option>
                     <name>CCOptLevelSlave</name>
@@ -414,7 +413,7 @@
                 </option>
                 <option>
                     <name>IccStaticDestr</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>IccCppInlineSemantics</name>
@@ -435,7 +434,7 @@
                 <option>
                     <name>CCOptStrategySlave</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>2</state>
                 </option>
                 <option>
                     <name>CCGuardCalls</name>
@@ -521,11 +520,11 @@
                 </option>
                 <option>
                     <name>ADefines</name>
-                    <state></state>
+                    <state>ewarm</state>
                 </option>
                 <option>
                     <name>AList</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>AListHeader</name>
@@ -774,11 +773,11 @@
                 </option>
                 <option>
                     <name>IlinkEnableRemarks</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>IlinkSuppressDiags</name>
-                    <state>Lp012</state>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkTreatAsRem</name>
@@ -1062,11 +1061,11 @@
                 </option>
                 <option>
                     <name>Input description</name>
-                    <state>Full formatting.</state>
+                    <state>No specifier n, no float nor long long, no scan set, no assignment suppressing.</state>
                 </option>
                 <option>
                     <name>Output description</name>
-                    <state>Full formatting.</state>
+                    <state>No specifier a, A, no specifier n, no float nor long long, no flags.</state>
                 </option>
                 <option>
                     <name>GOutputBinary</name>
@@ -1092,7 +1091,7 @@
                 </option>
                 <option>
                     <name>OGProductVersion</name>
-                    <state>4.41A</state>
+                    <state>5.11.0.50579</state>
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
@@ -1108,7 +1107,7 @@
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
-                    <state>STM32F407VG	ST STM32F407VG</state>
+                    <state>TM4C123GH6PM	TexasInstruments TM4C123GH6PM</state>
                 </option>
                 <option>
                     <name>GenLowLevelInterface</name>
@@ -1120,11 +1119,11 @@
                 </option>
                 <option>
                     <name>OGBufferedTerminalOutput</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>GenStdoutInterface</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>GeneralMisraRules98</name>
@@ -1147,11 +1146,11 @@
                 <option>
                     <name>GBECoreSlave</name>
                     <version>26</version>
-                    <state>39</state>
+                    <state>40</state>
                 </option>
                 <option>
                     <name>OGUseCmsis</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>OGUseCmsisDspLib</name>
@@ -1168,7 +1167,7 @@
                 </option>
                 <option>
                     <name>GFPUDeviceSlave</name>
-                    <state>STM32F407VG	ST STM32F407VG</state>
+                    <state>TM4C123GH6PM	TexasInstruments TM4C123GH6PM</state>
                 </option>
                 <option>
                     <name>FPU2</name>
@@ -1203,7 +1202,7 @@
                 <option>
                     <name>OGPrintfVariant</name>
                     <version>0</version>
-                    <state>1</state>
+                    <state>4</state>
                 </option>
                 <option>
                     <name>OGPrintfMultibyteSupport</name>
@@ -1212,7 +1211,7 @@
                 <option>
                     <name>OGScanfVariant</name>
                     <version>0</version>
-                    <state>1</state>
+                    <state>3</state>
                 </option>
                 <option>
                     <name>OGScanfMultibyteSupport</name>
@@ -1265,11 +1264,11 @@
                 </option>
                 <option>
                     <name>CCListCFile</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>CCListCMnemonics</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>CCListCMessages</name>
@@ -1378,10 +1377,9 @@
                     <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\threadx</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\stm32f4xx_iar</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\tm4c123xx_iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\inc</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ek-tm4c123gxl</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1402,7 +1400,7 @@
                 <option>
                     <name>CCOptStrategy</name>
                     <version>0</version>
-                    <state>2</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>CCOptLevelSlave</name>
@@ -1444,7 +1442,7 @@
                 </option>
                 <option>
                     <name>IccStaticDestr</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>IccCppInlineSemantics</name>
@@ -1465,7 +1463,7 @@
                 <option>
                     <name>CCOptStrategySlave</name>
                     <version>0</version>
-                    <state>2</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>CCGuardCalls</name>
@@ -1543,7 +1541,7 @@
                 </option>
                 <option>
                     <name>ADebug</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>AltRegisterNames</name>
@@ -1551,11 +1549,11 @@
                 </option>
                 <option>
                     <name>ADefines</name>
-                    <state></state>
+                    <state>ewarm</state>
                 </option>
                 <option>
                     <name>AList</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>AListHeader</name>
@@ -1804,11 +1802,11 @@
                 </option>
                 <option>
                     <name>IlinkEnableRemarks</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>IlinkSuppressDiags</name>
-                    <state>Lp012</state>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkTreatAsRem</name>
@@ -2092,7 +2090,7 @@
                 </option>
                 <option>
                     <name>Input description</name>
-                    <state>No specifier n, no float nor long long, no scan set, no assignment suppressing, without multibyte support.</state>
+                    <state>No specifier n, no float nor long long, no scan set, no assignment suppressing.</state>
                 </option>
                 <option>
                     <name>Output description</name>
@@ -2122,7 +2120,7 @@
                 </option>
                 <option>
                     <name>OGProductVersion</name>
-                    <state>4.41A</state>
+                    <state>5.11.0.50579</state>
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
@@ -2138,7 +2136,7 @@
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
-                    <state>STM32F407VG	ST STM32F407VG</state>
+                    <state>TM4C123GH6PM	TexasInstruments TM4C123GH6PM</state>
                 </option>
                 <option>
                     <name>GenLowLevelInterface</name>
@@ -2150,11 +2148,11 @@
                 </option>
                 <option>
                     <name>OGBufferedTerminalOutput</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>GenStdoutInterface</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>GeneralMisraRules98</name>
@@ -2181,7 +2179,7 @@
                 </option>
                 <option>
                     <name>OGUseCmsis</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>OGUseCmsisDspLib</name>
@@ -2198,7 +2196,7 @@
                 </option>
                 <option>
                     <name>GFPUDeviceSlave</name>
-                    <state>STM32F407VG	ST STM32F407VG</state>
+                    <state>TM4C123GH6PM	TexasInstruments TM4C123GH6PM</state>
                 </option>
                 <option>
                     <name>FPU2</name>
@@ -2295,11 +2293,11 @@
                 </option>
                 <option>
                     <name>CCListCFile</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>CCListCMnemonics</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>CCListCMessages</name>
@@ -2408,10 +2406,9 @@
                     <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\threadx</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\stm32f4xx_iar</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\tm4c123xx_iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\inc</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ek-tm4c123gxl</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2432,7 +2429,7 @@
                 <option>
                     <name>CCOptStrategy</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>CCOptLevelSlave</name>
@@ -2474,7 +2471,7 @@
                 </option>
                 <option>
                     <name>IccStaticDestr</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>IccCppInlineSemantics</name>
@@ -2495,7 +2492,7 @@
                 <option>
                     <name>CCOptStrategySlave</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>CCGuardCalls</name>
@@ -2581,11 +2578,11 @@
                 </option>
                 <option>
                     <name>ADefines</name>
-                    <state></state>
+                    <state>ewarm</state>
                 </option>
                 <option>
                     <name>AList</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>AListHeader</name>
@@ -2834,11 +2831,11 @@
                 </option>
                 <option>
                     <name>IlinkEnableRemarks</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>IlinkSuppressDiags</name>
-                    <state>Lp012</state>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkTreatAsRem</name>
@@ -3116,6 +3113,21 @@
         </file>
     </group>
     <group>
+        <name>ek-tm4c123gxl</name>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ek-tm4c123gxl\iar\startup_TM4C123GH6PM.s</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ek-tm4c123gxl\system_TM4C123GH6PM.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ek-tm4c123gxl\system_TM4C123GH6PM.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ek-tm4c123gxl\TM4C123GH6PM.h</name>
+        </file>
+    </group>
+    <group>
         <name>QP</name>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qep_hsm.c</name>
@@ -3176,58 +3188,28 @@
             <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_64bit.c</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_fp.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\src\qs_pkg.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_pkg.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_rx.c</name>
         </file>
     </group>
     <group>
-        <name>stm32f4-discovery</name>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\iar\startup_stm32f4xx.s</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\stm32f4xx.h</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\src\stm32f4xx_exti.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\src\stm32f4xx_gpio.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\src\stm32f4xx_rcc.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\src\stm32f4xx_usart.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\system_stm32f4xx.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\stm32f4-discovery\system_stm32f4xx.h</name>
-        </file>
-    </group>
-    <group>
         <name>ThreadX</name>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\stm32f4xx_iar\readme_threadx.txt</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\tm4c123xx_iar\readme_threadx.txt</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\stm32f4xx_iar\tx.a</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\tm4c123xx_iar\tx.a</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\tx_api.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\stm32f4xx_iar\tx_port.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\tm4c123xx_iar\tx_port.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\threadx\tx_trace.h</name>

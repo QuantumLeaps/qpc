@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*                                                                        */
-/*            Copyright (c) 1996-2011 by Express Logic Inc.               */
+/*            Copyright (c) 1996-2017 by Express Logic Inc.               */
 /*                                                                        */
 /*  This software is copyrighted by and is the sole property of Express   */
 /*  Logic, Inc.  All rights, title, ownership, or other interests         */
@@ -38,7 +38,7 @@
 /*  PORT SPECIFIC C INFORMATION                            RELEASE        */
 /*                                                                        */
 /*    tx_port.h                                         Cortex-M4/IAR     */
-/*                                                           5.1          */
+/*                                                           5.6          */
 /*                                                                        */
 /*  AUTHOR                                                                */
 /*                                                                        */
@@ -66,19 +66,38 @@
 /*                                            support, and updated        */
 /*                                            version string, resulting   */
 /*                                            in version 5.1              */
+/*  04-15-2012     William E. Lamie         Modified comment(s), added    */
+/*                                            FPU enable/disable function */
+/*                                            prototypes, and updated     */
+/*                                            version string, resulting   */
+/*                                            in version 5.2              */
+/*  01-01-2014     William E. Lamie         Modified comment(s), added    */
+/*                                            FPU enable/disable struct   */
+/*                                            member, and updated         */
+/*                                            version string, resulting   */
+/*                                            in version 5.3              */
+/*  04-15-2014     William E. Lamie         Modified comment(s), and      */
+/*                                            updated version string,     */
+/*                                            resulting in version 5.4    */
+/*  09-01-2014     William E. Lamie         Modified comment(s), and      */
+/*                                            updated version string,     */
+/*                                            resulting in version 5.5    */
+/*  06-01-2017     William E. Lamie         Modified comment(s), added    */
+/*                                            support for new thread-safe */
+/*                                            IAR libraries, removed      */
+/*                                            unneeded VFP enable flag,   */
+/*                                            added logic to remove the   */
+/*                                            need for context            */
+/*                                            save/restore calls in ISRs, */
+/*                                            modified code for MISRA     */
+/*                                            compliance, and updated     */
+/*                                            version string, resulting   */
+/*                                            in version 5.6              */
 /*                                                                        */
 /**************************************************************************/
 
 #ifndef TX_PORT_H
 #define TX_PORT_H
-
-
-/* Define default parameters for the Cortex-M4 build for smaller footprint.  */
-
-#define TX_TIMER_PROCESS_IN_ISR
-#define TX_DISABLE_PREEMPTION_THRESHOLD
-#define TX_DISABLE_NOTIFY_CALLBACKS
-#define TX_DISABLE_ERROR_CHECKING
 
 
 /* Determine if the optional ThreadX user define file should be used.  */
@@ -114,6 +133,8 @@ typedef unsigned long                           ULONG;
 typedef short                                   SHORT;
 typedef unsigned short                          USHORT;
 
+/*enable execution profile*/
+#define TX_ENABLE_EXECUTION_CHANGE_NOTIFY
 
 /* Define the priority levels for ThreadX.  Legal values range
    from 32 to 1024 and MUST be evenly divisible by 32.  */
@@ -158,9 +179,15 @@ typedef unsigned short                          USHORT;
 
 */
 
+#ifndef TX_MISRA_ENABLE
 #ifndef TX_TRACE_TIME_SOURCE
 #define TX_TRACE_TIME_SOURCE                    *((ULONG *) 0xE0001004)
 #endif
+#else
+ULONG   _tx_misra_time_stamp_get(VOID);
+#define TX_TRACE_TIME_SOURCE                    _tx_misra_time_stamp_get()
+#endif
+
 #ifndef TX_TRACE_TIME_MASK
 #define TX_TRACE_TIME_MASK                      0xFFFFFFFFUL
 #endif
@@ -169,14 +196,18 @@ typedef unsigned short                          USHORT;
 /* Define the port specific options for the _tx_build_options variable. This variable indicates
    how the ThreadX library was built.  */
 
-#define TX_PORT_SPECIFIC_BUILD_OPTIONS          0
+#define TX_PORT_SPECIFIC_BUILD_OPTIONS          (0)
 
 
 /* Define the in-line initialization constant so that modules with in-line
    initialization capabilities can prevent their initialization from being
    a function call.  */
 
+#ifdef TX_MISRA_ENABLE
+#define TX_DISABLE_INLINE
+#else
 #define TX_INLINE_INITIALIZATION
+#endif
 
 
 /* Determine whether or not stack checking is enabled. By default, ThreadX stack checking is
@@ -185,8 +216,10 @@ typedef unsigned short                          USHORT;
    define is negated, thereby forcing the stack fill which is necessary for the stack checking
    logic.  */
 
+#ifndef TX_MISRA_ENABLE
 #ifdef TX_ENABLE_STACK_CHECKING
 #undef TX_DISABLE_STACK_FILLING
+#endif
 #endif
 
 
@@ -196,11 +229,16 @@ typedef unsigned short                          USHORT;
 
 #define TX_THREAD_EXTENSION_0
 #define TX_THREAD_EXTENSION_1
-#define TX_THREAD_EXTENSION_2
 #ifdef  TX_ENABLE_IAR_LIBRARY_SUPPORT
-#define TX_THREAD_EXTENSION_3           VOID    *tx_thread_iar_tls_pointer;
+#define TX_THREAD_EXTENSION_2           VOID    *tx_thread_iar_tls_pointer;
 #else
+#define TX_THREAD_EXTENSION_2
+#endif
+#ifndef TX_ENABLE_EXECUTION_CHANGE_NOTIFY
 #define TX_THREAD_EXTENSION_3
+#else
+#define TX_THREAD_EXTENSION_3           unsigned long long  tx_thread_execution_time_total; \
+                                        unsigned long long  tx_thread_execution_time_last_start;
 #endif
 
 
@@ -228,10 +266,21 @@ typedef unsigned short                          USHORT;
 
 
 #ifdef  TX_ENABLE_IAR_LIBRARY_SUPPORT
+#if (__VER__ < 8000000)
 #define TX_THREAD_CREATE_EXTENSION(thread_ptr)                      thread_ptr -> tx_thread_iar_tls_pointer =  __iar_dlib_perthread_allocate();
 #define TX_THREAD_DELETE_EXTENSION(thread_ptr)                      __iar_dlib_perthread_deallocate(thread_ptr -> tx_thread_iar_tls_pointer); \
                                                                     thread_ptr -> tx_thread_iar_tls_pointer =  TX_NULL;
 #define TX_PORT_SPECIFIC_PRE_SCHEDULER_INITIALIZATION               __iar_dlib_perthread_access(0);
+#else
+void    *_tx_iar_create_per_thread_tls_area(void);
+void    _tx_iar_destroy_per_thread_tls_area(void *tls_ptr);
+void    __iar_Initlocks(void);
+
+#define TX_THREAD_CREATE_EXTENSION(thread_ptr)                      thread_ptr -> tx_thread_iar_tls_pointer =  _tx_iar_create_per_thread_tls_area();
+#define TX_THREAD_DELETE_EXTENSION(thread_ptr)                      do {_tx_iar_destroy_per_thread_tls_area(thread_ptr -> tx_thread_iar_tls_pointer); \
+                                                                        thread_ptr -> tx_thread_iar_tls_pointer =  TX_NULL; } while(0);
+#define TX_PORT_SPECIFIC_PRE_SCHEDULER_INITIALIZATION               do {__iar_Initlocks();} while(0);
+#endif
 #else
 #define TX_THREAD_CREATE_EXTENSION(thread_ptr)
 #define TX_THREAD_DELETE_EXTENSION(thread_ptr)
@@ -262,13 +311,44 @@ typedef unsigned short                          USHORT;
 #define TX_TIMER_DELETE_EXTENSION(timer_ptr)
 
 
+/* Define the get system state macro.   */
+
+#ifndef TX_THREAD_GET_SYSTEM_STATE
+#ifndef TX_MISRA_ENABLE
+#define TX_THREAD_GET_SYSTEM_STATE()        (_tx_thread_system_state | __get_IPSR())
+#else
+ULONG   _tx_misra_ipsr_get(VOID);
+#define TX_THREAD_GET_SYSTEM_STATE()        (_tx_thread_system_state | _tx_misra_ipsr_get())
+#endif
+#endif
+
+
+/* Define the check for whether or not to call the _tx_thread_system_return function.  A non-zero value
+   indicates that _tx_thread_system_return should not be called. This overrides the definition in tx_thread.h
+   for Cortex-M since so we don't waste time checking the _tx_thread_system_state variable that is always
+   zero after initialization for Cortex-M ports. */
+
+#ifndef TX_THREAD_SYSTEM_RETURN_CHECK
+#define TX_THREAD_SYSTEM_RETURN_CHECK(c)    (c) = ((ULONG) _tx_thread_preempt_disable);
+#endif
+
+
+/* Define the macro to ensure _tx_thread_preempt_disable is set early in initialization in order to
+   prevent early scheduling on Cortex-M parts.  */
+
+#define TX_PORT_SPECIFIC_POST_INITIALIZATION    _tx_thread_preempt_disable++;
+
+
 /* Determine if the ARM architecture has the CLZ instruction. This is available on
    architectures v5 and above. If available, redefine the macro for calculating the
    lowest bit set.  */
 
+#ifndef TX_DISABLE_INLINE
+
 #define TX_LOWEST_SET_BIT_CALCULATE(m, b)       m = m & ((ULONG) (-((LONG) m))); \
                                                 b = (UINT) __CLZ(m); \
                                                 b = 31 - b;
+#endif
 
 
 /* Define ThreadX interrupt lockout and restore macros for protection on
@@ -278,21 +358,16 @@ typedef unsigned short                          USHORT;
    is used to define a local function save area for the disable and restore
    macros.  */
 
-/* The embedded assembler blocks are design so as to be inlinable by the
-   armlink linker inlining. This requires them to consist of either a
-   single 32-bit instruction, or either one or two 16-bit instructions
-   followed by a "BX lr". Note that to reduce the critical region size, the
-   16-bit "CPSID i" instruction is preceeded by a 16-bit NOP */
-
 #ifdef TX_DISABLE_INLINE
 
-unsigned int                                    _tx_thread_interrupt_control(unsigned int new_posture);
+UINT                                            _tx_thread_interrupt_disable(VOID);
+VOID                                            _tx_thread_interrupt_restore(UINT previous_posture);
 
-#define TX_INTERRUPT_SAVE_AREA                  register int interrupt_save;
+#define TX_INTERRUPT_SAVE_AREA                  register UINT interrupt_save;
 
-#define TX_DISABLE                              interrupt_save = _tx_thread_interrupt_control(TX_INT_DISABLE);
+#define TX_DISABLE                              interrupt_save = _tx_thread_interrupt_disable();
 
-#define TX_RESTORE                              _tx_thread_interrupt_control(interrupt_save);
+#define TX_RESTORE                              _tx_thread_interrupt_restore(interrupt_save);
 
 #else
 
@@ -300,11 +375,27 @@ unsigned int                                    _tx_thread_interrupt_control(uns
 #define TX_DISABLE                              {interrupt_save = __get_interrupt_state();__disable_interrupt();};
 #define TX_RESTORE                              {__set_interrupt_state(interrupt_save);};
 
+#define _tx_thread_system_return                _tx_thread_system_return_inline
+
+static void _tx_thread_system_return_inline(void)
+{
+__istate_t interrupt_save;
+
+    /* Set PendSV to invoke ThreadX scheduler.  */
+    *((ULONG *) 0xE000ED04) = ((ULONG) 0x10000000);
+    if (__get_IPSR() == 0)
+    {
+        interrupt_save = __get_interrupt_state();
+        __enable_interrupt();
+        __set_interrupt_state(interrupt_save);
+    }
+}
+
 #endif
 
 
 /* Define FPU extension for the Cortex-M4.  Each is assumed to be called in the context of the executing
-   thread.  */
+   thread. These are no longer needed, but are preserved for backward compatibility only.  */
 
 void    tx_thread_fpu_enable(void);
 void    tx_thread_fpu_disable(void);
@@ -324,10 +415,17 @@ void    tx_thread_fpu_disable(void);
 
 #ifdef TX_THREAD_INIT
 CHAR                            _tx_version_id[] =
-                                    "Copyright (c) 1996-2012 Express Logic Inc. * ThreadX Cortex-M4/IAR Version G5.5.5.1 SN: Evaluation_Only_Version_012012 *";
+                                    "Copyright (c) 1996-2017 Express Logic Inc. * ThreadX Cortex-M4/IAR Version G5.8.5.6 SN: X-WARE_PLATFORM_STM32F4_DISCOVERY_EVALUATION_VERSION_08-01-2017 *";
+#else
+#ifdef TX_MISRA_ENABLE
+extern  CHAR                    _tx_version_id[100];
 #else
 extern  CHAR                    _tx_version_id[];
 #endif
+#endif
 
 
 #endif
+
+
+
