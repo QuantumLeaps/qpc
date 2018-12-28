@@ -193,11 +193,11 @@ BIN_DIR := rel
 
 ASFLAGS = $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
-CFLAGS = $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+CFLAGS = -c $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
 	-O1 $(INCLUDES) $(DEFINES) -DNDEBUG
 
-CFLAGS = $(ARM_CPU) $(ARM_TARGET) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+CFLAGS = -c $(ARM_CPU) $(ARM_TARGET) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-fuse-baremetal-sysroot -fshort-enums -fno-common \
 	-ffunction-sections -fdata-sections \
 	-O2 $(INCLUDES) $(DEFINES)

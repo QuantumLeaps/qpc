@@ -1,11 +1,11 @@
 ##############################################################################
-# Product: Makefile for DPP on EK-TM4C123GXL, QV kernel, GNU-ARM
-# Last Updated for Version: 6.1.0
-# Date of the Last Update:  2018-02-07
+# Product: Makefile for QP/C on EK-TM4C123GXL, QV kernel, GNU-ARM
+# Last Updated for Version: 6.3.8
+# Date of the Last Update:  2018-12-26
 #
-#                    Q u a n t u m     L e a P s
-#                    ---------------------------
-#                    innovating embedded systems
+#                    Q u a n t u m  L e a P s
+#                    ------------------------
+#                    Modern Embedded Software
 #
 # Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
 #
@@ -45,7 +45,7 @@
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    http://sourceforge.net/projects/qpc/files/Qtools/
+#    https://sourceforge.net/projects/qpc/files/QTools/
 #
 
 #-----------------------------------------------------------------------------
@@ -102,7 +102,7 @@ C_SRCS := \
 	startup_TM4C123GH6PM.c
 
 # C++ source files
-CPP_SRCS :=	
+CPP_SRCS :=
 
 OUTPUT    := $(PROJECT)
 LD_SCRIPT := $(PROJECT).ld
@@ -149,10 +149,10 @@ FLOAT_ABI := -mfloat-abi=softfp
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
-# see http://gnutoolchains.com/arm-eabi/
+# see https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM := $(QTOOLS)/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-none-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -160,11 +160,12 @@ ifeq ("$(wildcard $(GNU_ARM))","")
 $(error GNU_ARM toolset not found. Please adjust the Makefile)
 endif
 
-CC    := $(GNU_ARM)/bin/arm-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-eabi-g++
-AS    := $(GNU_ARM)/bin/arm-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
-BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
+CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
+CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
+AS    := $(GNU_ARM)/bin/arm-none-eabi-as
+LINK  := $(GNU_ARM)/bin/arm-none-eabi-g++
+BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
+
 
 ##############################################################################
 # Typically, you should not need to change anything below this line
@@ -176,7 +177,7 @@ MKDIR := mkdir
 RM    := rm
 
 #-----------------------------------------------------------------------------
-# build options for various configurations for ARM Cortex-M4F
+# build options for various configurations for ARM Cortex-M
 #
 
 # combine all the soruces...
@@ -230,8 +231,8 @@ CPPFLAGS = -c -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 endif # ......................................................................
 
 
-LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib \
+LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
+	-specs=nosys.specs \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
 
@@ -263,7 +264,7 @@ $(TARGET_BIN): $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 $(BIN_DIR)/%.d : %.c

@@ -1,6 +1,14 @@
 /**
 @page history Revision History
 
+@section qpc_6_3_8 Version 6.3.8, 2018-12-31
+The main purpose of this release is the update the `Makefiles` that use the [GNU-ARM Embedded Toolchain](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm) to match the recent update in [QTools for Windows 6.3.8](https://sourceforge.net/projects/qpc/files/QTools/). Specifically, all `Makefiles` in the `examples` directory have been updated to use the GNU-ARM toolchain located in `qtools\gnu_arm-none-eabi` and use the tools prefix **arm-none-eabi-**.
+
+@note
+The `Makefiles` that use the GNU-ARM included in this release require [QTools for Windows version 6.3.8 or newer](https://sourceforge.net/projects/qpc/files/QTools/) and will **NOT** work with the older QTools collection.
+
+
+------------------------------------------------------------------------------
 @section qpc_6_3_7 Version 6.3.7, 2018-11-20
 The main goal of this release is to provide Python test scripts that match the newly re-designed Python support for the [QUTest unit testing harness](https://www.state-machine.com/qtools/qutest.html) (see QTools **6.3.7**). Specifically, the Python tests scripts (*.py files) in the `qpc/examples/qutest` directory) have been all upgraded to the new syntax and format. Also, all the makefiles in that directory have been modified to execute Python test scripts by default, and Tcl test scripts only when the argument `SCRIPTS=tcl` is specified.
 

@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "6.3.7"
+PROJECT_NUMBER         = "6.3.8"
 PROJECT_BRIEF          =
 PROJECT_LOGO           = images/header_logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -123,8 +123,8 @@ INPUT                  = \
     exa_apps.dox \
     exa_native.dox \
     exa_rtos.dox \
-    exa_qutest.dox \
     exa_os.dox \
+    exa_qutest.dox \
     exa_mware.dox \
     ports.dox \
     ports_native.dox \

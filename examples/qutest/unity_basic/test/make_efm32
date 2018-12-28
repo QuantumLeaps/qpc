@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for EMF32, QUTEST, GNU-ARM
-# Last updated for version 6.3.7
-# Last updated on  2018-11-12
+# Product: Makefile for QP/C on EMF32, QUTEST, GNU-ARM
+# Last Updated for Version: 6.3.8
+# Date of the Last Update:  2018-12-26
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -110,7 +110,7 @@ C_SRCS := \
 	em_usart.c
 
 # C++ source files
-CPP_SRCS :=
+CPP_SRCS := 
 
 OUTPUT    := $(PROJECT)
 LD_SCRIPT := $(TARGET_DIR)/test.ld
@@ -156,10 +156,10 @@ FLOAT_ABI := -mfloat-abi=softfp
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
-# see http://gnutoolchains.com/arm-eabi/
+# see https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM := $(QTOOLS)/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-none-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -167,11 +167,11 @@ ifeq ("$(wildcard $(GNU_ARM))","")
 $(error GNU_ARM toolset not found. Please adjust the Makefile)
 endif
 
-CC    := $(GNU_ARM)/bin/arm-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-eabi-g++
-AS    := $(GNU_ARM)/bin/arm-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-eabi-gcc
-BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
+CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
+CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
+AS    := $(GNU_ARM)/bin/arm-none-eabi-as
+LINK  := $(GNU_ARM)/bin/arm-none-eabi-g++
+BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
 #-----------------------------------------------------------------------------
 # FLASH tool (NOTE: Requires the JLINK utility)
@@ -186,8 +186,8 @@ FLASH := $(TARGET_DIR)\flash.bat
 # basic utilities (included in QTools for Windows), see:
 #    http://sourceforge.net/projects/qpc/files/Qtools
 
-MKDIR  := mkdir
-RM     := rm
+MKDIR := mkdir
+RM    := rm
 
 ifeq ($(SCRIPT),tcl)
 QUTEST := tclsh $(QTOOLS)/qspy/tcl/qutest.tcl
@@ -216,8 +216,8 @@ CPPFLAGS = -c -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-O $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST
 
 
-LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) \
-	-mthumb -nostdlib \
+LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
+	-specs=nosys.specs \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
 ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
@@ -263,7 +263,7 @@ $(TARGET_BIN) : $(TARGET_ELF)
 	$(FLASH) $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) -c $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 flash :
@@ -283,10 +283,10 @@ $(BIN_DIR)/%.o : %.s
 	$(AS) $(ASFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CPP) $(CPPFLAGS) $< -o $@
 
 .PHONY : clean show
 

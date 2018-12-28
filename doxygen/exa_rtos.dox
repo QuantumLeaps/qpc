@@ -144,16 +144,36 @@ Demonstrated features:
 /*##########################################################################*/
 /*! @page exa_threadx ThreadX
 
+@htmlonly
+<script src="preview.js" type="text/javascript"></script>
+@endhtmlonly
+
 The QP/C examples for ThreadX (Express Logic) are as follows:
 
-- @subpage threadx_dpp_stm32f429-discovery <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery">STM32F4-Discovery</a><br>(IAR EWARM toolset)
+- @subpage threadx_dpp_ek-tm4c123gxl (Cortex-M4F) <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a><br>(IAR EWARM toolchain)
+- @subpage threadx_dpp_stm32f429-discovery <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery"></a><br>(IAR EWARM toolchain)
 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
 @next{exa_ti-rtos examples}
 */
+/*##########################################################################*/
+/*! @page threadx_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
 
+@image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
+
+@ref dpp "DPP example" for ThreadX on Texas Instruments TivaC123GXL MCU (Cortex-M4F) with the following toolchain:
+- IAR-ARM
+
+Demonstrated features:
+- Multiple Active Objects
+- QP/Spy output over the virtual COM port (Spy build configuration)
+- QP/Spy input over the virtual COM port (bi-directional Spy) (Spy build configuration)
+
+
+@next{threadx_dpp_stm32f429-discovery examples}
+*/
 /*##########################################################################*/
 /*! @page threadx_dpp_stm32f429-discovery DPP on STM32F4-Discovery
 
@@ -162,10 +182,6 @@ The @ref dpp "DPP example" for ThreadX on STM32F4-Discovery board is located dir
 @image html bd_STM32F4-Discovery.jpg STM32F4-Discovery board
 
 The sub-directory <span class="img folder">iar</span> contains the workspace and project file that you can open in IAR EWARM IDE.
-
-@attention
-Due to the limitations of the ThreadX library for Windows, the DPP example can only instantiate one `Philo[0]` active object.
-
 
 After you load the DPP example into the STM32F4-Discovery board, the application should start blinking the 4 on-board LEDs. You can press the User button (blue) to PAUSE the philosophers for as long as the button is depressed. The philosophers resume dining when you release the User button. (In the PAUSED state the Table active object stops granting permissions to eat, so eventually all philosophers end in the "hungry" state.)
 
