@@ -5,14 +5,14 @@
 * QXMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-16
+* Last updated for version 6.3.8
+* Last updated on  2019-01-14
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -187,6 +187,7 @@ bool QXMutex_lock(QXMutex * const me,
         ++me->lockNest;
     }
     else { /* the mutex is alredy locked by a different thread */
+        uint_fast8_t p = (uint_fast8_t)curr->super.prio;
 
         /* the ceiling holder priority must be valid */
         Q_ASSERT_ID(230, me->holderPrio != (uint8_t)0);
@@ -195,24 +196,27 @@ bool QXMutex_lock(QXMutex * const me,
             /* the prio slot must be claimed by the thr. holding the mutex */
             Q_ASSERT_ID(240, QF_active_[me->ceiling] != (QActive *)0);
         }
-        /* remove this curr prio from the ready set (block)
-        * and insert to the waiting set on this mutex */
-        QPSet_remove(&QXK_attr_.readySet, (uint_fast8_t)curr->super.prio);
-        QPSet_insert(&me->waitSet,        (uint_fast8_t)curr->super.prio);
 
-        /* store the blocking object (this mutex) */
+        /* remember the blocking object (this mutex) */
         curr->super.super.temp.obj = (QMState *)me;
         QXThread_teArm_(curr, (QSignal)QXK_SEMA_SIG, nTicks);
 
-        /* schedule the next thread if multitasking started */
-        (void)QXK_sched_();
+        QPSet_insert(&me->waitSet,        p); /* add to wait-set */
+        QPSet_remove(&QXK_attr_.readySet, p); /* remove from ready-set */
+
+        (void)QXK_sched_(); /* schedule the next thread */
         QF_CRIT_EXIT_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here */
 
         QF_CRIT_ENTRY_();
-        /* the blocking object of the current thread must be this mutex */
-        Q_ASSERT_ID(240, curr->super.super.temp.obj == (QMState *)me);
+        /* after unblocking:
+        * - the thread must be waiting on this mutex
+        * - the blocking object must be this mutex
+        */
+        Q_ASSERT_ID(240, QPSet_hasElement(&me->waitSet, p)
+            && (curr->super.super.temp.obj == (QMState *)me));
 
+        QPSet_remove(&me->waitSet, p); /* remove the unblocked thread */
         curr->super.super.temp.obj = (QMState *)0; /* clear blocking obj. */
     }
     QF_CRIT_EXIT_();
@@ -388,12 +392,12 @@ void QXMutex_unlock(QXMutex * const me) {
             thr = (QXThread *)QF_active_[p];
 
             /* the waiting thread must:
-            * (1) the ceiling must not be used; or if used
-            *     the thread must have priority below the ceiling
-            * (2) be extended
-            * (3) not be redy to run
-            * (4) have still the start priority
-            * (5) be blocked on this mutex
+            * - the ceiling must not be used; or if used
+            *   - the thread must have priority below the ceiling
+            * - be extended
+            * - NOT be redy to run
+            * - have still the start priority
+            * - be blocked on this mutex
             */
             Q_ASSERT_ID(410,
                 ((me->ceiling == (uint8_t)0) /* below ceiling */
@@ -405,9 +409,6 @@ void QXMutex_unlock(QXMutex * const me) {
 
             /* disarm the internal time event */
             (void)QXThread_teDisarm_(thr);
-
-            /* this thread is no longer waiting for the mutex */
-            QPSet_remove(&me->waitSet, p);
 
             if (me->ceiling != (uint8_t)0) {
                 /* switch the priority of this thread to the mutex ceiling */

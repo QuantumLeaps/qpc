@@ -10,14 +10,14 @@
       <TargetName>blinky-dbg</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>EFM32PG1B200F256GM48</Device>
           <Vendor>Silicon Labs</Vendor>
-          <PackID>Keil.EFM32PG1B_DFP.1.0.0</PackID>
-          <PackURL>http://www.keil.com/pack/</PackURL>
+          <PackID>SiliconLabs.EFM32PG1B_DFP.5.5.0</PackID>
+          <PackURL>https://www.silabs.com/documents/public/cmsis-packs/</PackURL>
           <Cpu>IRAM(0x20000000,0x00008000) IROM(0x00000000,0x00020000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -184,6 +184,7 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
+            <RvdsMve>0</RvdsMve>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -324,6 +325,7 @@
             <uThumb>0</uThumb>
             <uSurpInc>1</uSurpInc>
             <uC99>1</uC99>
+            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>0</v6Lang>
             <v6LangP>0</v6LangP>
@@ -567,6 +569,7 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
+                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -637,8 +640,8 @@
         <TargetCommonOption>
           <Device>EFM32PG1B200F256GM48</Device>
           <Vendor>Silicon Labs</Vendor>
-          <PackID>Keil.EFM32PG1B_DFP.1.0.0</PackID>
-          <PackURL>http://www.keil.com/pack/</PackURL>
+          <PackID>SiliconLabs.EFM32PG1B_DFP.5.5.0</PackID>
+          <PackURL>https://www.silabs.com/documents/public/cmsis-packs/</PackURL>
           <Cpu>IRAM(0x20000000,0x00008000) IROM(0x00000000,0x00020000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -805,6 +808,7 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
+            <RvdsMve>0</RvdsMve>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -945,6 +949,7 @@
             <uThumb>0</uThumb>
             <uSurpInc>1</uSurpInc>
             <uC99>1</uC99>
+            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>0</v6Lang>
             <v6LangP>0</v6LangP>
@@ -1188,6 +1193,7 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
+                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -1258,8 +1264,8 @@
         <TargetCommonOption>
           <Device>EFM32PG1B200F256GM48</Device>
           <Vendor>Silicon Labs</Vendor>
-          <PackID>Keil.EFM32PG1B_DFP.1.0.0</PackID>
-          <PackURL>http://www.keil.com/pack/</PackURL>
+          <PackID>SiliconLabs.EFM32PG1B_DFP.5.5.0</PackID>
+          <PackURL>https://www.silabs.com/documents/public/cmsis-packs/</PackURL>
           <Cpu>IRAM(0x20000000,0x00008000) IROM(0x00000000,0x00020000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -1426,6 +1432,7 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
+            <RvdsMve>0</RvdsMve>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -1566,6 +1573,7 @@
             <uThumb>0</uThumb>
             <uSurpInc>1</uSurpInc>
             <uC99>1</uC99>
+            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>0</v6Lang>
             <v6LangP>0</v6LangP>

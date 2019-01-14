@@ -3,14 +3,14 @@
 /// @cond
 ///===========================================================================
 /// Product: QP/C
-/// Last Updated for Version: 6.3.7
-/// Date of the Last Update:  2018-11-07
+/// Last Updated for Version: 6.4.0
+/// Date of the Last Update:  2019-01-09
 ///
 ///                    Q u a n t u m  L e a P s
 ///                    ------------------------
 ///                    Modern Embedded Software
 ///
-/// Copyright (C) 2005-2018 Quantum Leaps. All rights reserved.
+/// Copyright (C) 2005-2019 Quantum Leaps. All rights reserved.
 ///
 /// This program is free software: you can redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
  Q_ENSURE_ID,
  Q_INVARIANT,
  Q_INVARIANT_ID,
+ Q_ASSERT_STATIC,
  Q_ASSERT_COMPILE,
  Q_DEFINE_THIS_MODULE)
 -esym(960,            // MISRA04-19.4(req) Disallowed macro definition
@@ -80,6 +81,7 @@
  Q_INVARIANT,
  Q_INVARIANT_ID,
  Q_DEFINE_THIS_FILE,
+ Q_ASSERT_STATIC,
  Q_ASSERT_COMPILE)
 -esym(960,            // MISRA04-19.10(req) unparenthesized macro par
  Q_DEFINE_THIS_MODULE)

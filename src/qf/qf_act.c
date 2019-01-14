@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.2
-* Last updated on  2018-06-16
+* Last updated for version 6.3.8
+* Last updated on  2019-01-10
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -153,15 +153,7 @@ void QF_bzero(void * const start, uint_fast16_t len) {
 /* log-base-2 implementation ************************************************/
 #ifndef QF_LOG2
 
-/* is this compiler C99 or newer? */
-#if (defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
-
-    /* inline definition provided in "qpset.h" header file */
-
-#else /* older C compiler */
-
-    /* out-of-line definition of the function QF_LOG2() */
-    uint_fast8_t QF_LOG2(uint32_t x) {
+    uint_fast8_t QF_LOG2(QPSetBits x) {
         static uint8_t const log2LUT[16] = {
             (uint8_t)0, (uint8_t)1, (uint8_t)2, (uint8_t)2,
             (uint8_t)3, (uint8_t)3, (uint8_t)3, (uint8_t)3,
@@ -169,26 +161,29 @@ void QF_bzero(void * const start, uint_fast16_t len) {
             (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4
         };
         uint_fast8_t n = (uint_fast8_t)0;
-        uint32_t     t = (x >> 16);
+        QPSetBits    t;
 
-        if (t != (uint32_t)0) {
+#if (QF_MAX_ACTIVE > 16)
+        t = (QPSetBits)(x >> 16);
+        if (t != (QPSetBits)0) {
             n += (uint_fast8_t)16;
             x = t;
         }
+#endif
+#if (QF_MAX_ACTIVE > 8)
         t = (x >> 8);
-        if (t != (uint32_t)0) {
+        if (t != (QPSetBits)0) {
             n += (uint_fast8_t)8;
             x = t;
         }
+#endif
         t = (x >> 4);
-        if (t != (uint32_t)0) {
+        if (t != (QPSetBits)0) {
             n += (uint_fast8_t)4;
             x = t;
         }
         return n + (uint_fast8_t)log2LUT[x];
     }
-
-#endif /* __STDC_VERSION__ */
 
 #endif /* QF_LOG2 */
 

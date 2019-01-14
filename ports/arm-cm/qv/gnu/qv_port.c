@@ -3,14 +3,14 @@
 * @brief QV/C port to ARM Cortex-M, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.2
-* Date of the Last Update:  2018-06-22
+* Last updated for version 6.3.8
+* Last updated on  2019-01-10
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -52,16 +52,20 @@ __attribute__ ((naked, optimize("-fno-stack-protector")))
 uint_fast8_t QF_qlog2(uint32_t x) {
 __asm volatile (
     "  MOV     r1,#0            \n"
+#if (QF_MAX_ACTIVE > 16)
     "  LSR     r2,r0,#16        \n"
     "  BEQ     QF_qlog2_1       \n"
     "  MOV     r1,#16           \n"
     "  MOV     r0,r2            \n"
     "QF_qlog2_1:                \n"
+#endif
+#if (QF_MAX_ACTIVE > 8)
     "  LSR     r2,r0,#8         \n"
     "  BEQ     QF_qlog2_2       \n"
     "  ADD     r1, r1,#8        \n"
     "  MOV     r0, r2           \n"
     "QF_qlog2_2:                \n"
+#endif
     "  LSR     r2,r0,#4         \n"
     "  BEQ     QF_qlog2_3       \n"
     "  ADD     r1,r1,#4         \n"
@@ -69,8 +73,9 @@ __asm volatile (
     "QF_qlog2_3:                \n"
     "  LDR     r2,=QF_qlog2_LUT \n"
     "  LDRB    r0,[r2,r0]       \n"
-    "  ADD     r0,r1, r0        \n"
+    "  ADD     r0,r1,r0         \n"
     "  BX      lr               \n"
+    "  .align                   \n"
     "QF_qlog2_LUT:              \n"
     "  .byte 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4"
     );

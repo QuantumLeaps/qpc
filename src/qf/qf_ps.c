@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.2
-* Last updated on  2018-06-16
+* Last updated for version 6.3.8
+* Last updated on  2019-01-10
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -312,10 +312,8 @@ void QActive_unsubscribeAll(QActive const * const me) {
     for (sig = (enum_t)Q_USER_SIG; sig < QF_maxPubSignal_; ++sig) {
         QF_CRIT_STAT_
         QF_CRIT_ENTRY_();
-        if (QPSet_hasElement(&QF_PTR_AT_(QF_subscrList_, sig),
-                             (uint_fast8_t)p))
-        {
-            QPSet_remove(&QF_PTR_AT_(QF_subscrList_, sig), (uint_fast8_t)p);
+        if (QPSet_hasElement(&QF_PTR_AT_(QF_subscrList_, sig), p)) {
+            QPSet_remove(&QF_PTR_AT_(QF_subscrList_, sig), p);
 
             QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_UNSUBSCRIBE,
                              QS_priv_.locFilter[AO_OBJ], me)

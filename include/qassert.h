@@ -3,14 +3,14 @@
 * @brief Customizable and memory-efficient assertions for embedded systems
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.0
-* Last updated on  2018-05-09
+* Last updated for version 6.3.8
+* Last updated on  2019-01-09
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -318,7 +318,7 @@ void Q_onAssert(char_t const * const module, int_t location);
 */
 #define Q_INVARIANT_ID(id_, test_) Q_ASSERT_ID((id_), (test_))
 
-/*! Compile-time assertion. */
+/*! Static (compile-time) assertion. */
 /**
 * @description
 * This type of assertion deliberately causes a compile-time error when
@@ -328,8 +328,10 @@ void Q_onAssert(char_t const * const module, int_t location);
 *
 * @param[in] test_ Compile-time Boolean expression
 */
-#define Q_ASSERT_COMPILE(test_) \
-    extern int_t Q_assert_compile[(test_) ? 1 : -1]
+#define Q_ASSERT_STATIC(test_) \
+    extern int_t Q_assert_static[(test_) ? 1 : -1]
+
+#define Q_ASSERT_COMPILE(test_) Q_ASSERT_STATIC(test_)
 
 /*! Helper macro to calculate static dimension of a 1-dim @p array_ */
 #define Q_DIM(array_) (sizeof(array_) / sizeof((array_)[0]))
