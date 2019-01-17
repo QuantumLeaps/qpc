@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.7
-* Last updated on  2018-11-09
+* Last updated for version 6.3.8
+* Last updated on  2019-01-14
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -64,13 +64,13 @@
 * - ::QActive
 *
 * @usage
-* The following example illustrates how to instantiate an extended thread
-* in your application.
-* @include qf_qxthread.c
+* The following example illustrates how to instantiate and use an extended
+* thread in your application.
+* @include qxk_thread.c
 */
 typedef struct {
-    QActive super;    /* inherit QActive */
-    QTimeEvt timeEvt; /* time event to handle timeouts */
+    QActive super;    /*!< inherited ::QActive */
+    QTimeEvt timeEvt; /*!< time event to handle blocking timeouts */
 } QXThread;
 
 /*! Virtual Table for the ::QXThread class (inherited from ::QActiveVtbl) */
@@ -183,14 +183,14 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks);
 * - QXSemaphore_tryWait()
 *
 * @usage
-* The following example illustrates how to instantiate the semaphore
+* The following example illustrates how to instantiate and use the semaphore
 * in your application.
-* @include qf_qxsema.c
+* @include qxk_sema.c
 */
 typedef struct {
     QPSet waitSet; /*!< set of extended-threads waiting on this semaphore */
-    uint16_t volatile count;
-    uint16_t max_count;
+    uint16_t volatile count; /*!< semaphore up-down counter */
+    uint16_t max_count; /*!< maximum value of the semaphore counter */
 } QXSemaphore;
 
 /*! initialize the counting semaphore */
@@ -245,15 +245,15 @@ bool QXSemaphore_signal(QXSemaphore * const me);
 * - QXMutex_unlock()
 *
 * @usage
-* The following example illustrates how to instantiate the mutex in your
-* application.
-* @include qf_qxmux.c
+* The following example illustrates how to instantiate and use the mutex
+* in your application.
+* @include qxk_mutex.c
 */
 typedef struct {
     QPSet waitSet; /*!< set of extended-threads waiting on this mutex */
-    uint8_t volatile lockNest;
-    uint8_t volatile holderPrio;
-    uint8_t ceiling;
+    uint8_t volatile lockNest; /*!< lock-nesting up-down counter */
+    uint8_t volatile holderPrio; /*!< priority of the lock holder thread */
+    uint8_t ceiling; /*!< prioirty ceiling of this mutex */
 } QXMutex;
 
 /*! initialize the QXK priority-ceiling mutex ::QXMutex */

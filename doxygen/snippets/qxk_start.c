@@ -17,7 +17,7 @@ int main() {
     /* initialize event pools... */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
-    /* start the active objects... */
+    /* start the active objects (basic-threads)... */
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 2), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */
@@ -27,7 +27,7 @@ int main() {
                   (QEvt *)0);                /* initialization event */
     . . .
 
-    /* start the "naked" thread */
+    /* start the extended-threads... */
     QXTHREAD_START(XT_Test,                  /* Thread to start */
                   (uint_fast8_t)10U,         /* QP priority of the thread */
                   testQueueSto,              /* message queue storage */
