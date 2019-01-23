@@ -4,7 +4,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.3.8
-* Last updated on  2019-01-09
+* Last updated on  2019-01-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -60,12 +60,6 @@
     #define Q_ALLEGE_ID(id_, test_)     ((void)(test_))
     #define Q_ERROR()                   ((void)0)
     #define Q_ERROR_ID(id_)             ((void)0)
-    #define Q_REQUIRE(test_)            ((void)0)
-    #define Q_REQUIRE_ID(id_, test_)    ((void)0)
-    #define Q_ENSURE(test_)             ((void)0)
-    #define Q_ENSURE_ID(id_, test_)     ((void)0)
-    #define Q_INVARIANT(test_)          ((void)0)
-    #define Q_INVARIANT_ID(id_, test_)  ((void)0)
 
 #else  /* Q_NASSERT not defined--assertion checking enabled */
 

@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.7
-* Last updated on  2018-11-07
+* Last updated for version 6.3.8
+* Last updated on  2019-01-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -309,6 +309,9 @@ void QTimeEvt_armX(QTimeEvt * const me,
                  && (nTicks != (QTimeEvtCtr)0)
                  && (tickRate < (uint_fast8_t)QF_MAX_TICK_RATE)
                  && (me->super.sig >= (QSignal)Q_USER_SIG));
+#ifdef Q_NASSERT
+    (void)ctr; /* avoid compiler warning about unused variable */
+#endif
 
     QF_CRIT_ENTRY_();
     me->ctr = nTicks;
