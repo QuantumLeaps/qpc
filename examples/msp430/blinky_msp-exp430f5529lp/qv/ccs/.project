@@ -38,7 +38,7 @@
 		<link>
 			<name>QP_port</name>
 			<type>2</type>
-			<locationURI>PARENT-5-PROJECT_LOC/ports/msp430/qv/ccs</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/ports/msp430/qv</locationURI>
 		</link>
 		<link>
 			<name>QS</name>

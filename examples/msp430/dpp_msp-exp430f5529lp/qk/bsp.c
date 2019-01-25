@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP on MSP-EXP430F5529LP, preemptive QK kernel
-* Last updated for version 6.3.7
-* Last updated on  2018-11-30
+* Last updated for version 6.3.8
+* Last updated on  2019-01-24
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -197,7 +197,7 @@ void QK_onIdle(void) {
     * you might need to customize the clock management for your application,
     * see the datasheet for your particular MSP430 MCU.
     */
-    __low_power_mode_1(); /* enter LPM1; also ENABLES interrupts, see NOTE1
+    __low_power_mode_1(); /* enter LPM1; also ENABLES interrupts, see NOTE1 */
 #endif
 }
 
@@ -247,11 +247,11 @@ uint8_t QS_onStartup(void const *arg) {
     P4SEL |= (RXD | TXD);  /* select the UART function for the pins */
     UCA1CTL1 |= UCSWRST;   /* reset USCI state machine */
     UCA1CTL1 |= UCSSEL_2;  /* choose the SMCLK clock */
-#if 0
-    UCA0BR0 = 6; /* 1MHz 9600 (see User's Guide) */
-    UCA0BR1 = 0; /* 1MHz 9600 */
-    UCA0MCTL = UCBRS_0 | UCBRF_13 | UCOS16; /* modulationUCBRSx=0, UCBRFx=0, oversampling */
-#else
+#if 1 /* 9600 baud rate */
+    UCA1BR0 = 6; /* 1MHz 9600 (see User's Guide) */
+    UCA1BR1 = 0; /* 1MHz 9600 */
+    UCA1MCTL = UCBRS_0 | UCBRF_13 | UCOS16; /* modulationUCBRSx=0, UCBRFx=0, oversampling */
+#else /* 115200 baud rate */
     UCA1BR0 = 9;           /* 1MHz 115200 (see User's Guide) */
     UCA1BR1 = 0;           /* 1MHz 115200 */
     UCA1MCTL |= UCBRS_1 | UCBRF_0; /* modulation UCBRSx=1, UCBRFx=0 */

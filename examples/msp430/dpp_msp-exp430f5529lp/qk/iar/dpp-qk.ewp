@@ -394,7 +394,7 @@
           <state>$PROJ_DIR$\..\..</state>
           <state>$PROJ_DIR$\..\..\..\..\..\include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\src</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1524,7 +1524,7 @@
           <state>$PROJ_DIR$\..\..</state>
           <state>$PROJ_DIR$\..\..\..\..\..\include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\src</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -2318,7 +2318,7 @@
         </option>
         <option>
           <name>RTLibraryPath</name>
-          <state>$TOOLKIT_DIR$\lib\dlib\dl430fn.r43</state>
+          <state>$TOOLKIT_DIR$\lib\dlib\dl430xlsfn.r43</state>
         </option>
         <option>
           <name>Input variant</name>
@@ -2361,11 +2361,11 @@
         </option>
         <option>
           <name>GStackSize2</name>
-          <state>80</state>
+          <state>160</state>
         </option>
         <option>
           <name>GHeapSize2</name>
-          <state>80</state>
+          <state>160</state>
         </option>
         <option>
           <name>RadioDataModelType</name>
@@ -2650,7 +2650,7 @@
           <state>$PROJ_DIR$\..\..</state>
           <state>$PROJ_DIR$\..\..\..\..\..\include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\src</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -3357,7 +3357,11 @@
         <debug>1</debug>
         <option>
           <name>CUTest</name>
-          <state>###Uninitialized###</state>
+          <state>-I$TOOLKIT_DIR$\inc</state>
+          <state>-@$TOOLKIT_DIR$\bin\iar.cmd</state>
+          <state>-@$PROJ_DIR$\source.txt</state>
+          <state>-@$PROJ_DIR$\include.txt</state>
+          <state>--preinclude=$PROJ_DIR$\IAR_ULPAdvisor_Defs.h</state>
         </option>
         <option>
           <name>ULPRules</name>
@@ -3370,7 +3374,7 @@
         </option>
         <option>
           <name>OutputFile</name>
-          <state></state>
+          <state>$PROJ_FNAME$.ulp</state>
         </option>
         <option>
           <name>ULPStatus</name>
@@ -3459,16 +3463,16 @@
   <group>
     <name>QP_port</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qep_port.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qep_port.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qf_port.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qf_port.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qk_port.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qk_port.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qs_port.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qs_port.h</name>
     </file>
   </group>
   <group>

@@ -1,17 +1,17 @@
 /**
 * @file
-* @brief QF/C port to MSP430, preemptive QK kernel, CCS-430 compiler
+* @brief QF/C port to MSP430, preemptive QK kernel
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-04-08
+* Last Updated for Version: 6.3.8
+* Date of the Last Update:  2019-01-23
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,8 +32,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
-* Email: info@state-machine.com
+* https://www.state-machine.com
+* mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
@@ -41,28 +41,28 @@
 #define qf_port_h
 
 /* The maximum number of active objects in the application, see NOTE01 */
-#define QF_MAX_ACTIVE               8
+#define QF_MAX_ACTIVE        8
 
-#define QF_EVENT_SIZ_SIZE           1
-#define QF_EQUEUE_CTR_SIZE          1
-#define QF_MPOOL_SIZ_SIZE           1
-#define QF_MPOOL_CTR_SIZE           1
-#define QF_TIMEEVT_CTR_SIZE         2
+#define QF_EVENT_SIZ_SIZE    1
+#define QF_EQUEUE_CTR_SIZE   1
+#define QF_MPOOL_SIZ_SIZE    1
+#define QF_MPOOL_CTR_SIZE    1
+#define QF_TIMEEVT_CTR_SIZE  2
 
 /* QF interrupt disable/enable... */
-#define QF_INT_DISABLE()            __disable_interrupt()
-#define QF_INT_ENABLE()             __enable_interrupt()
+#define QF_INT_DISABLE()     __disable_interrupt()
+#define QF_INT_ENABLE()      __enable_interrupt()
 
 /* QF critical section entry/exit... */
-#define QF_CRIT_STAT_TYPE           unsigned short
+#define QF_CRIT_STAT_TYPE    unsigned short
 #define QF_CRIT_ENTRY(stat_) do { \
     (stat_) =  __get_interrupt_state(); \
     __disable_interrupt(); \
 } while (0)
-#define QF_CRIT_EXIT(stat_)         __set_interrupt_state(stat_)
+#define QF_CRIT_EXIT(stat_)  __set_interrupt_state(stat_)
 
 
-#include <intrinsics.h> /* CCS intrinsic functions */
+#include <intrinsics.h> /* intrinsic functions */
 
 #include "qep_port.h"   /* QEP port */
 #include "qk_port.h"    /* QK preemptive kernel port */
@@ -71,7 +71,7 @@
 /*****************************************************************************
 * NOTE01:
 * The maximum number of active objects QF_MAX_ACTIVE can be increased
-* up to 63, if necessary. Here it is set to a lower level to save some RAM.
+* up to 64, if necessary. Here it is set to a lower level to save some RAM.
 */
 
-#endif  /* qf_port_h */
+#endif /* qf_port_h */

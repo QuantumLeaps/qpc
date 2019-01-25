@@ -394,7 +394,7 @@
           <state>$PROJ_DIR$\..\..</state>
           <state>$PROJ_DIR$\..\..\..\..\..\include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\src</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1524,7 +1524,7 @@
           <state>$PROJ_DIR$\..\..</state>
           <state>$PROJ_DIR$\..\..\..\..\..\include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\src</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -2650,7 +2650,7 @@
           <state>$PROJ_DIR$\..\..</state>
           <state>$PROJ_DIR$\..\..\..\..\..\include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\src</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -3456,16 +3456,16 @@
   <group>
     <name>QP_port</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qep_port.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qep_port.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qf_port.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qf_port.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qk_port.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qk_port.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\iar\qs_port.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qs_port.h</name>
     </file>
   </group>
   <group>

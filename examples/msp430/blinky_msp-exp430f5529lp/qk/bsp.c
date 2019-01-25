@@ -120,7 +120,7 @@ void QK_onIdle(void) {
     * you might need to customize the clock management for your application,
     * see the datasheet for your particular MSP430 MCU.
     */
-    __low_power_mode_1(); /* enter LPM1; also ENABLES interrupts, see NOTE1
+    __low_power_mode_1(); /* enter LPM1; also ENABLES interrupts, see NOTE1 */
 #endif
 }
 

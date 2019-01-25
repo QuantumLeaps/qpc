@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP on MSP-EXP430F5529LP, cooperative QV kernel
-* Last updated for version 6.3.7
-* Last updated on  2018-11-30
+* Last updated for version 6.3.8
+* Last updated on  2019-01-24
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -92,6 +92,7 @@ static uint32_t l_rnd;
 
     QF_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
 }
+
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
@@ -188,11 +189,12 @@ void QV_onIdle(void) { /* NOTE: called with interrutps DISABLED, see NOTE1 */
     * you might need to customize the clock management for your application,
     * see the datasheet for your particular MSP430 MCU.
     */
-    __low_power_mode_1(); /* Enter LPM1; also ENABLES interrupts */
+    __low_power_mode_1(); /* enter LPM1; also ENABLES interrupts */
 #else
     QF_INT_ENABLE(); /* just enable interrupts */
 #endif
 }
+
 /*..........................................................................*/
 void Q_onAssert(char const *module, int loc) {
     /*
@@ -238,10 +240,11 @@ uint8_t QS_onStartup(void const *arg) {
     P4SEL |= (RXD | TXD);  /* select the UART function for the pins */
     UCA1CTL1 |= UCSWRST;   /* reset USCI state machine */
     UCA1CTL1 |= UCSSEL_2;  /* choose the SMCLK clock */
-#if 0
-    UCA0BR0 = 6; /* 1MHz 9600 (see User's Guide) */
-    UCA0BR1 = 0; /* 1MHz 9600 */
-    UCA0MCTL = UCBRS_0 | UCBRF_13 | UCOS16; /* modulationUCBRSx=0, UCBRFx=0, oversampling */
+#if 1
+    UCA1BR0 = 6; /* 1MHz 9600 (see User's Guide) */
+    UCA1BR1 = 0; /* 1MHz 9600 */
+    /* modulation UCBRSx=0, UCBRFx=0, oversampling */
+    UCA1MCTL = UCBRS_0 | UCBRF_13 | UCOS16;
 #else
     UCA1BR0 = 9;           /* 1MHz 115200 (see User's Guide) */
     UCA1BR1 = 0;           /* 1MHz 115200 */
@@ -320,7 +323,7 @@ void QS_onCommand(uint8_t cmdId,
 * NOTE2:
 * One of the LEDs is used to visualize the idle loop activity. The brightness
 * of the LED is proportional to the frequency of invocations of the idle loop.
-* Please note that the LED is toggled with interrupts locked, so no interrupt
-* execution time contributes to the brightness of the User LED.
+* Please note that the LED is toggled with interrupts disabled, so no
+* interrupt execution time contributes to the brightness of the User LED.
 */
 

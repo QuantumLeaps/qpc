@@ -1,16 +1,16 @@
 /**
 * @file
-* @brief QK/C port port to MSP430, IAR-430 compiler
+* @brief QV/C port port to MSP430
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.7.2
-* Date of the Last Update:  2016-09-26
+* Last Updated for Version: 6.3.8
+* Date of the Last Update:  2019-01-23
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -31,30 +31,15 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef qv_port_h
+#define qv_port_h
 
-/* QK interrupt entry and exit... */
-#define QK_ISR_ENTRY()    (++QK_attr_.intNest)
+#include "qv.h"  /* QV platform-independent public interface */
 
-#define QK_ISR_EXIT()     do { \
-    --QK_attr_.intNest; \
-    if (QK_attr_.intNest == (uint_fast8_t)0) { \
-        if (QK_sched_() != (uint_fast8_t)0) { \
-            QK_activate_(); \
-        } \
-    } \
-    else { \
-        Q_ERROR(); \
-    } \
-} while (0)
-
-#include "qk.h"  /* QK platform-independent public interface */
-
-#endif /* qk_port_h */
+#endif /* qv_port_h */
 
