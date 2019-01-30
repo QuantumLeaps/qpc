@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, ThreadX
-* Last updated for version 5.6.2
-* Last updated on  2016-03-10
+* Last Updated for Version: 6.3.8
+* Date of the Last Update:  2019-01-30
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,13 +28,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #ifndef bsp_h
 #define bsp_h
 
-#define BSP_TICKS_PER_SEC   100U
+#define BSP_TICKS_PER_SEC   TX_TIMER_TICKS_PER_SECOND
 
 void BSP_init(void);
 void BSP_displayPaused(uint8_t paused);
