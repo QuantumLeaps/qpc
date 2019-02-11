@@ -4,14 +4,14 @@
 * @ingroup qep qf qv qk qxk qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-18
+* Last updated for version 6.4.0
+* Last updated on  2019-02-07
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -77,11 +77,10 @@ extern char_t const Q_APP_BUILD_TIME[9];
 /*! Specifies the backwards compatibility with the QP/C API version. */
 /**
 * @description
-* For example, QP_API_VERSION=450 will cause generating the compatibility
-* layer with QP/C version 4.5.0 and newer, but not older than 4.5.0.
-* QP_API_VERSION=0 causes generation of the compatibility layer "from the
-* begining of time", which is the maximum backwards compatibilty. This is
-* the default.@n
+* For example, QP_API_VERSION=540 will cause generating the compatibility
+* layer with QP/C version 5.4.0 and newer, but not older than 5.4.0.
+* QP_API_VERSION=0 causes generation of the maximum currently supported
+* backwards compatibilty. This is the default.@n
 * @n
 * Conversely, QP_API_VERSION=9999 means that no compatibility layer should
 * be generated. This setting is useful for checking if an application
@@ -90,6 +89,8 @@ extern char_t const Q_APP_BUILD_TIME[9];
 #define QP_API_VERSION 0
 
 #endif /* #ifndef QP_API_VERSION */
+
+/* QP API compatibility layer... */
 
 /****************************************************************************/
 #if (QP_API_VERSION < 580)
@@ -128,7 +129,6 @@ typedef QHsm        QFsm;
 #define QF_onIdle   QV_onIdle
 
 /****************************************************************************/
-/* QP API compatibility layer */
 #if (QP_API_VERSION < 500)
 
 /*! @deprecated macro for odd 8-bit CPUs. */

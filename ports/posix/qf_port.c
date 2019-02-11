@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.7
-* Date of the Last Update:  2018-11-09
+* Last updated for version 6.4.0
+* Last updated on  2019-02-10
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -37,6 +37,10 @@
 ******************************************************************************
 * @endcond
 */
+
+/* expose features from the 2008 POSIX standard (IEEE Standard 1003.1-2008) */
+#define _POSIX_C_SOURCE 200809L
+
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
 #include "qf_pkg.h"
@@ -199,14 +203,12 @@ static void *thread_routine(void *arg) { /* the expected POSIX signature */
     pthread_mutex_lock(&l_startupMutex);
     pthread_mutex_unlock(&l_startupMutex);
 
-    /* loop until m_thread is cleared in QActive_stop() */
-    do {
+    /* event-loop */
+    for (;;) { /* for-ever */
         QEvt const *e = QActive_get_(act); /* wait for the event */
         QHSM_DISPATCH(&act->super, e);     /* dispatch to the HSM */
-        QF_gc(e);    /* check if the event is garbage, and collect it if so */
-    } while (act->thread != (uint8_t)0);
-    QF_remove_(act); /* remove this object from the framework */
-    pthread_cond_destroy(&act->osObject); /* cleanup the condition variable */
+        QF_gc(e); /* check if the event is garbage, and collect it if so */
+    }
     return (void *)0; /* return success */
 }
 
@@ -265,11 +267,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     }
     pthread_attr_destroy(&attr);
     me->thread = (uint8_t)1;
-}
-/*..........................................................................*/
-void QActive_stop(QActive * const me) {
-    QActive_unsubscribeAll(me);
-    me->thread = (uint8_t)0; /* stop the QActive thread loop */
 }
 
 /****************************************************************************/

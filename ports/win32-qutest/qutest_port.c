@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.7
-* Date of the Last Update:  2018-11-29
+* Last updated for version 6.4.0
+* Last updated on  2019-02-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -69,7 +69,7 @@
 #define QS_TX_SIZE     (8*1024)
 #define QS_RX_SIZE     (2*1024)
 #define QS_TX_CHUNK    QS_TX_SIZE
-#define QS_IMEOUT_MS   100
+#define QS_IMEOUT_MS   10
 
 /* local variables .........................................................*/
 static SOCKET l_sock = INVALID_SOCKET;

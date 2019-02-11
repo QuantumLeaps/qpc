@@ -1,3 +1,7 @@
+#include "qpc.h"
+
+Q_DEFINE_THIS_FILE
+
 int main(void) {
     static QEvt const *l_tableQueueSto[N_PHILO];
     static QEvt const *l_philoQueueSto[N_PHILO][N_PHILO];

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-09
+* Last updated for version 6.4.0
+* Last updated on  2019-02-08
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,12 +28,14 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
 #include "bsp.h"
+
+Q_DEFINE_THIS_FILE
 
 static QTicker l_ticker0;
 QActive *the_Ticker0 = &l_ticker0;

@@ -1,6 +1,8 @@
 #include "qpc.h"   /* QP/C public interface */
 #include "calc.h"  /* Calc derived from QHsm */
 
+Q_DEFINE_THIS_FILE
+
 static Calc l_calc;  /* an instance of Calc SM */
 
 int main() {

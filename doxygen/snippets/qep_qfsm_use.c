@@ -1,7 +1,9 @@
 #include "qpc.h"   /* QP/C public interface */
-#include "bomb.h"  /* Bomb derived from QFsm */
+#include "bomb.h"  /* Bomb derived from QHsm */
 
-static Bomb l_bomb;  /* an instance of Bomb FSM */
+Q_DEFINE_THIS_FILE
+
+static Bomb l_bomb;  /* an instance of Bomb HSM */
 
 int main() {
     Bomb_ctor(&l_bomb); /* Bomb "constructor" invokes QFsm_ctor() */

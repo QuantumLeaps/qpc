@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-Q_DEFINE_THIS_FILE
+//Q_DEFINE_THIS_FILE
 
 /*$declare${SMs::ToastOven} ################################################*/
 /*${SMs::ToastOven} ........................................................*/

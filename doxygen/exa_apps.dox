@@ -33,6 +33,8 @@ Additionally, the QP/C distribution contains several application examples descri
 
 @image html blinky_ek-tm4c123gxl.gif Blinky on EK-TM4C123GLX (TivaC LaunchPad)
 
+
+
 The ultra-simple Blinky application, which  consists of just one active object named `Blinky`, is intentionally kept small and illustrates only the most basic QP features, such as:
 
 - defining a simple Blinky active object (AO) @ref oop "class";
@@ -46,7 +48,7 @@ The ultra-simple Blinky application, which  consists of just one active object n
 @section blinky_sm State Machine
 The very simple state machine of the Blinky AO is shown in the figure below:
 
-@image html SM_blinky.png "State Machine of the Blinky AO"
+@image html SM_of_Blinky.svg "State Machine of the Blinky AO"
 
 <ul class="tag">
   <li><span class="tag">1</span> The top-most initial transition in this state machine arms a QP time event (QTimeEvt_armX()) to deliver the `TIMEOUT` signal every half second, so that the LED can stay on for one half second and off for the other half.

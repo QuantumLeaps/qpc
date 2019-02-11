@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-14
+* Last updated for version 6.4.0
+* Last updated on  2019-02-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -93,15 +93,17 @@ typedef QActiveVtbl QXThreadVtbl;
 * @param[in]     qLen_    length of the message queue [events] (possibly 0)
 * @param[in]     stkSto_  pointer to the stack storage (required)
 * @param[in]     stkSize_ stack size [bytes]
-* @param[in]     param_   pointer to the additional port-specific parameter(s)
+* @param[in]     par_     pointer to the additional port-specific parameter(s)
 *                         (might be NULL).
 * @usage
 * @include qxk_start.c
 */
-#define QXTHREAD_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, param_) \
-    ((*((QActiveVtbl const *)((me_)->super.super.vptr))->start)( \
-        &(me_)->super, (prio_), (QEvt const **)(qSto_), (qLen_), \
-        (stkSto_), (stkLen_), (param_)))
+#define QXTHREAD_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, par_) do {\
+    Q_ASSERT((me_)->super.super.vptr);                                       \
+    ((*((QActiveVtbl const *)((me_)->super.super.vptr))->start)(             \
+        &(me_)->super, (prio_), (QEvt const **)(qSto_), (qLen_),             \
+        (stkSto_), (stkLen_), (par_)));                                      \
+} while (0)
 
 /*! Thread handler pointer-to-function */
 typedef void (*QXThreadHandler)(QXThread * const me);

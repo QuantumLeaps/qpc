@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.6
-* Date of the Last Update:  2018-10-15
+* Last updated for version 6.4.0
+* Last updated on  2019-02-07
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -191,10 +191,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
         SetThreadPriority(me->thread, win32Prio);
     }
 }
-/****************************************************************************/
-void QActive_stop(QActive * const me) {
-    me->thread = (HANDLE)0; /* stop the AO event loop in thread_function() */
-}
 
 /****************************************************************************/
 void QF_consoleSetup(void) {
@@ -223,16 +219,12 @@ static DWORD WINAPI ao_thread(LPVOID arg) { /* for CreateThread() */
     EnterCriticalSection(&l_startupCritSect);
     LeaveCriticalSection(&l_startupCritSect);
 
-    /* Active Object's event loop. QActive_stop() stops the loop */
-    do {
+    /* event-loop */
+    for (;;) { /* for-ever */
         QEvt const *e = QActive_get_(act); /* wait for event */
         QHSM_DISPATCH(&act->super, e);     /* dispatch to the AO's SM */
         QF_gc(e); /* check if the event is garbage, and collect it if so */
-    } while (act->thread != (HANDLE)0);
-
-    QActive_unsubscribeAll(act); /* make sure that no events are subscribed */
-    QF_remove_(act);  /* remove this object from the framework */
-    CloseHandle(act->osObject); /* cleanup the OS event */
+    }
     return (DWORD)0; /* return success */
 }
 

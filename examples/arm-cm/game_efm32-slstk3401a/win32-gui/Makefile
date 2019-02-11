@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP/C, Win32-GUI, GNU GCC
-# Last updated for version 6.3.7
-# Last updated on  2018-11-06
+# Last updated for version 6.4.0
+# Last updated on  2019-01-09
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -31,6 +31,7 @@
 # https://www.state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
+#
 # examples of invoking this Makefile:
 # building configurations: Debug (default), Release, and Spy
 # make
@@ -49,7 +50,7 @@
 #
 
 #-----------------------------------------------------------------------------
-# project name
+# project name:
 #
 PROJECT := game-gui
 
@@ -175,12 +176,13 @@ endif
 ifeq (rel, $(CONF)) # Release configuration ..................................
 
 BIN_DIR := build_rel
+# gcc options:
+CFLAGS  = -c -O3 -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+	$(INCLUDES) $(DEFINES) -DNDEBUG
 
-CFLAGS = -c -ffunction-sections -fdata-sections \
-	-O1 -Wall -Wextra $(INCLUDES) $(DEFINES) -DNDEBUG
-
-CPPFLAGS = -c -ffunction-sections -fdata-sections \
-	-O1 -Wall -Wextra $(INCLUDES) $(DEFINES) -DNDEBUG
+CPPFLAGS = -c -O3 -fno-pie -std=c++11 -pedantic -Wall -Wextra \
+	-fno-rtti -fno-exceptions \
+	$(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
@@ -188,25 +190,29 @@ BIN_DIR := build_spy
 
 LIBS    += -lws2_32
 
-CFLAGS = -c -g -ffunction-sections -fdata-sections \
-	-O -Wall -Wextra $(INCLUDES) $(DEFINES) -DQ_SPY
+# gcc options:
+CFLAGS  = -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+	$(INCLUDES) $(DEFINES) -DQ_SPY
 
-CPPFLAGS =-c  -g -ffunction-sections -fdata-sections \
-	-O -Wall -Wextra $(INCLUDES) $(DEFINES) -DQ_SPY
+CPPFLAGS = -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
+	-fno-rtti -fno-exceptions \
+	$(INCLUDES) $(DEFINES) -DQ_SPY
 
-else  # default Debug configuration ..........................................
+else # default Debug configuration .........................................
 
 BIN_DIR := build
 
-CFLAGS = -c -g -ffunction-sections -fdata-sections \
-	-O -Wall -Wextra $(INCLUDES) $(DEFINES)
+# gcc options:
+CFLAGS  = -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+	$(INCLUDES) $(DEFINES)
 
-CPPFLAGS = -c -g -ffunction-sections -fdata-sections \
-	-O -Wall -Wextra $(INCLUDES) $(DEFINES)
+CPPFLAGS = -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
+	-fno-rtti -fno-exceptions \
+	$(INCLUDES) $(DEFINES)
 
 endif  # .....................................................................
 
-LINKFLAGS :=
+LINKFLAGS := -fno-pie
 
 # is it a GUI application (any GUI resources provided?) ...
 ifneq (,$(RC_SRCS))
@@ -241,17 +247,17 @@ $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT) $(RC_OBJS_EXT)
 	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
-$(BIN_DIR)/%.d : %.cpp
-	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
-
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
-$(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) $< -o $@
+$(BIN_DIR)/%.d : %.cpp
+	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
 
 $(BIN_DIR)/%.o : %.c
 	$(CC) $(CFLAGS) $< -o $@
+
+$(BIN_DIR)/%.o : %.cpp
+	$(CPP) $(CPPFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.rc
 	$(RC) $(RCINCLUDES) -i $< -o $@

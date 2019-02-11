@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example
-* Last updated for version 6.3.3
-* Last updated on  2018-06-23
+* Last updated for version 6.4.0
+* Last updated on  2019-02-08
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -34,6 +34,8 @@
 #include "qpc.h"
 #include "bsp.h"
 #include "game.h"
+
+Q_DEFINE_THIS_FILE
 
 static QTicker l_ticker0; /* ticker active object for tick rate 0 */
 QActive *the_Ticker0 = &l_ticker0;

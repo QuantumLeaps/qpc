@@ -1,3 +1,7 @@
+#include "qpc.h"
+
+Q_DEFINE_THIS_FILE
+
 int main() {
     . . .
     /* stack for the QXK's idle thread */

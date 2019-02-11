@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.7
-* Date of the Last Update:  2018-11-09
+* Last updated for version 6.4.0
+* Last updated on  2019-02-10
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -37,6 +37,10 @@
 ******************************************************************************
 * @endcond
 */
+
+/* expose features from the 2008 POSIX standard (IEEE Standard 1003.1-2008) */
+#define _POSIX_C_SOURCE 200809L
+
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
 #include "qf_pkg.h"
@@ -217,8 +221,8 @@ int_t QF_run(void) {
     QF_onCleanup();  /* cleanup callback */
     QS_EXIT();       /* cleanup the QSPY connection */
 
-    pthread_cond_destroy(&QV_condVar_);     // cleanup the condition variable
-    pthread_mutex_destroy(&l_pThreadMutex); // cleanup the global mutex
+    pthread_cond_destroy(&QV_condVar_); /* cleanup the condition variable */
+    pthread_mutex_destroy(&l_pThreadMutex); /* cleanup the global mutex */
 
     return (int_t)0; /* return success */
 }
@@ -290,11 +294,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
 
     (void)stkSize; /* avoid the "unused parameter" compiler warning */
-}
-/*..........................................................................*/
-void QActive_stop(QActive * const me) {
-    QActive_unsubscribeAll(me);
-    QF_remove_(me);
 }
 
 //****************************************************************************

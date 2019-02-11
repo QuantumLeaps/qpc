@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.7
-* Date of the Last Update:  2018-11-09
+* Last updated for version 6.4.0
+* Last updated on  2019-02-07
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -212,11 +212,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QS_FLUSH();      /* flush the QS trace buffer to the host */
 
     (void)stkSize;   /* unused parameter */
-}
-/****************************************************************************/
-void QActive_stop(QActive * const me) {
-    QActive_unsubscribeAll(me);
-    QF_remove_(me);
 }
 
 /****************************************************************************/

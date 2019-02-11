@@ -4,14 +4,14 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-18
+* Last updated for version 6.4.0
+* Last updated on  2019-02-07
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -189,33 +189,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     /* See if this AO needs to be scheduled in case QK is already running */
     QF_CRIT_ENTRY_();
     if (QK_sched_() != (uint_fast8_t)0) { /* activation needed? */
-        QK_activate_();
-    }
-    QF_CRIT_EXIT_();
-}
-
-/****************************************************************************/
-/**
-* @description
-* This function must be called from within the AO that needs to stop.
-* In other words, an AO should stop itself rather than being stopped by
-* someone else. This policy works best, because only the AO itself "knows"
-* when it has reached the appropriate state for the shutdown.
-*
-* @note By the time the AO calls QActive_stop(), it should have unsubscribed
-* from all events and no more events should be directly-posted to it.
-*/
-void QActive_stop(QActive * const me) {
-    QF_CRIT_STAT_
-
-    /** @pre QActive_stop() must be called from the AO that wants to stop. */
-    Q_REQUIRE_ID(400, (me == QF_active_[QK_attr_.actPrio]));
-
-    QF_remove_(me); /* remove this active object from the QF */
-
-    QF_CRIT_ENTRY_();
-    QPSet_remove(&QK_attr_.readySet, (uint_fast8_t)me->prio);
-    if (QK_sched_() != (uint_fast8_t)0) {
         QK_activate_();
     }
     QF_CRIT_EXIT_();

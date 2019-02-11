@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: Deferred Event state pattern example
-* Last Updated for Version: 6.3.6
-* Date of the Last Update:  2018-10-14
+* Last updated for version 6.4.0
+* Last updated on  2019-02-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -36,7 +36,7 @@
 
 #include <stdio.h> /* this example uses printf() to report status */
 
-//Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE
 
 /*..........................................................................*/
 enum TServerSignals {

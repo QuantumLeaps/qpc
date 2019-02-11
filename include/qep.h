@@ -4,14 +4,14 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2018-12-27
+* Last updated for version 6.4.0
+* Last updated on  2019-02-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      638U
+#define QP_VERSION      640U
 
 /*! The current QP version number string of the form X.Y.Z, where X is
 * a 1-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.3.8"
+#define QP_VERSION_STR  "6.4.0"
 
-/*! Tamperproof current QP release (6.3.8) and date (2018-12-31) */
-#define QP_RELEASE      0x93FA5591U
+/*! Tamperproof current QP release (6.4.0) and date (2019-02-10) */
+#define QP_RELEASE      0x8EA03F5FU
 
 
 /****************************************************************************/
@@ -305,7 +305,10 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial);
 * events to it:
 * @include qep_qhsm_use.c
 */
-#define QHSM_INIT(me_, e_) ((*(me_)->vptr->init)((me_), (e_)))
+#define QHSM_INIT(me_, e_) do {        \
+    Q_ASSERT((me_)->vptr);             \
+    (*(me_)->vptr->init)((me_), (e_)); \
+} while (0)
 
 /*! Implementation of the top-most initial transition in ::QHsm subclass */
 void QHsm_init_(QHsm * const me, QEvt const * const e);
@@ -544,22 +547,22 @@ enum {
 /*! Macro to call in a QM state-handler when it executes a regular
 * transition. Applicable only to ::QMsm subclasses.
 */
-#define QM_TRAN(tatbl_) \
+#define QM_TRAN(tatbl_)                                                 \
     ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_), \
         (QState)Q_RET_TRAN)
 
 /*! Macro to call in a QM state-handler when it executes an initial
 * transition. Applicable only to ::QMsm subclasses.
 */
-#define QM_TRAN_INIT(tatbl_) \
+#define QM_TRAN_INIT(tatbl_)                                            \
     ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_), \
         (QState)Q_RET_TRAN_INIT)
 
 /*! Macro to call in a QM state-handler when it executes a transition
 * to history. Applicable only to ::QMsm subclasses.
 */
-#define QM_TRAN_HIST(history_, tatbl_) \
-    ((((Q_HSM_UPCAST(me))->state.obj = (history_)), \
+#define QM_TRAN_HIST(history_, tatbl_)                                      \
+    ((((Q_HSM_UPCAST(me))->state.obj = (history_)),                         \
       ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_))), \
        (QState)Q_RET_TRAN_HIST)
 
@@ -573,8 +576,8 @@ enum {
 /*! Macro to call in a QM state-handler when it executes a transition
 * to exit point. Applicable only to ::QMsm subclasses.
 */
-#define QM_TRAN_XP(xp_, tatbl_) \
-    ((((Q_HSM_UPCAST(me))->state.act = (xp_)), \
+#define QM_TRAN_XP(xp_, tatbl_)                                              \
+    ((((Q_HSM_UPCAST(me))->state.act = (xp_)),                               \
         ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_))),\
         (QState)Q_RET_TRAN_XP)
 

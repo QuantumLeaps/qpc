@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C port to Win32, MinGW toolset
-# Last Updated for Version: 6.3.8
-# Date of the Last Update:  2019-01-09
+# Last updated for version 6.4.0
+# Last updated on  2019-01-09
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -142,13 +142,12 @@ ifeq (rel, $(CONF))  # Release configuration .................................
 BIN_DIR := rel
 
 # gcc options:
-CFLAGS := -c -ffunction-sections -fdata-sections \
-	-std=c99 -pedantic  -Wall -Wextra \
-	-Os $(INCLUDES) $(DEFINES)
+CFLAGS  := -c -g -O3 -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+	$(INCLUDES) $(DEFINES)
 
-CPPFLAGS := -c -ffunction-sections -fdata-sections \
-	-std=c++11 -pedantic -fno-rtti -fno-exceptions  -Wall -Wextra \
-	-Os $(INCLUDES) $(DEFINES)
+CPPFLAGS := -c -g -O3 -fno-pie -std=c++11 -pedantic -Wall -Wextra \
+	-fno-rtti -fno-exceptions \
+	$(INCLUDES) $(DEFINES)
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
@@ -158,36 +157,36 @@ BIN_DIR := spy
 C_SRCS += $(C_QS_SRCS)
 
 # gcc options:
-CFLAGS := -c -ffunction-sections -fdata-sections \
-	-std=c99 -pedantic  -Wall -Wextra \
-	-O $(INCLUDES) $(DEFINES) -DQ_SPY
+CFLAGS  := -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+	$(INCLUDES) $(DEFINES) -DQ_SPY
 
-CPPFLAGS := -c -ffunction-sections -fdata-sections \
-	-std=c++11 -pedantic -fno-rtti -fno-exceptions  -Wall -Wextra \
-	-O $(INCLUDES) $(DEFINES) -DQ_SPY
+CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
+	-fno-rtti -fno-exceptions \
+	$(INCLUDES) $(DEFINES) -DQ_SPY
 
 else # default Debug configuration .........................................
 
 BIN_DIR := dbg
 
 # gcc options:
-CFLAGS := -c -ffunction-sections -fdata-sections \
-	-std=c99 -pedantic  -Wall -Wextra \
-	-O $(INCLUDES) $(DEFINES)
+CFLAGS  := -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+	$(INCLUDES) $(DEFINES)
 
-CPPFLAGS := -c -ffunction-sections -fdata-sections \
-	-std=c++11 -pedantic -fno-rtti -fno-exceptions  -Wall -Wextra \
-	-O $(INCLUDES) $(DEFINES)
+CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
+	-fno-rtti -fno-exceptions \
+	$(INCLUDES) $(DEFINES)
 
 endif
 
-
+#-----------------------------------------------------------------------------
 C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
 CPP_OBJS     := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))
 
 TARGET_LIB   := $(BIN_DIR)/lib$(PROJECT).a
 C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
+C_DEPS_EXT   := $(patsubst %.o,%.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
+CPP_DEPS_EXT := $(patsubst %.o,%.d, $(CPP_OBJS_EXT))
 
 # create $(BIN_DIR) if it does not exist
 ifeq ("$(wildcard $(BIN_DIR))","")

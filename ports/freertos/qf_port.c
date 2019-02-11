@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-10
+* Last updated for version 6.4.0
+* Last updated on  2019-02-07
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -109,10 +109,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     Q_ENSURE_ID(210, thr != (TaskHandle_t)0); /* must be created */
 }
 /*..........................................................................*/
-void QActive_stop(QActive * const me) {
-    me->prio = (uint8_t)0; /* stop the thread loop */
-}
-/*..........................................................................*/
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     /* this function must be called before QACTIVE_START(),
     * which implies that me->thread.pxDummy1 must not be used yet;
@@ -130,14 +126,12 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 static void task_function(void *pvParameters) { /* FreeRTOS task signature */
     QActive *act = (QActive *)pvParameters;
 
-    while (act->prio != (uint8_t)0) {
+    /* event-loop */
+    for (;;) { /* for-ever */
         QEvt const *e = QActive_get_(act);
         QHSM_DISPATCH(&act->super, e);
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
-
-    QF_remove_(act); /* remove this object from QF */
-    vTaskDelete((TaskHandle_t)0); /* delete this FreeRTOS task */
 }
 
 /*==========================================================================*/

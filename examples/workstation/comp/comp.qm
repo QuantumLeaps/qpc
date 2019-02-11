@@ -285,7 +285,7 @@ $declare(Components::AlarmClock_ctor);
 
 #include &lt;stdio.h&gt;
 
-//Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE
 
 /* Active object class -----------------------------------------------------*/
 $declare${Components::AlarmClock}

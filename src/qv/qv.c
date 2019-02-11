@@ -5,14 +5,14 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-16
+* Last updated for version 6.4.0
+* Last updated on  2019-02-07
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -226,27 +226,5 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     QS_FLUSH();                /* flush the trace buffer to the host */
-}
-
-/****************************************************************************/
-/**
-* @description
-* This function must be called from within the AO that needs to stop.
-* In other words, an AO should stop itself rather than being stopped by
-* someone else. This policy works best, because only the AO itself "knows"
-* when it has reached the appropriate state for the shutdown.
-*
-* @note By the time the AO calls QActive_stop(), it should have unsubscribed
-* from all events and no more events should be directly-posted to it.
-*/
-void QActive_stop(QActive * const me) {
-    QF_CRIT_STAT_
-
-    QF_remove_(me); /* remove this active object from the QF */
-
-     /* make sure the removed AO is NOT ready */
-    QF_CRIT_ENTRY_();
-    QPSet_remove(&QV_readySet_, (uint_fast8_t)me->prio);
-    QF_CRIT_EXIT_();
 }
 

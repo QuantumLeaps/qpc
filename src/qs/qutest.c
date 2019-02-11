@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.7
-* Last updated on  2018-11-08
+* Last updated for version 6.4.0
+* Last updated on  2019-02-07
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -98,10 +98,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
     //QS_FLUSH();                /* flush the trace buffer to the host */
-}
-/*..........................................................................*/
-void QActive_stop(QActive * const me) {
-    QF_remove_(me); /* remove this active object from the framework */
 }
 
 /****************************************************************************/

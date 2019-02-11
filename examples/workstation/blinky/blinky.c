@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <stdlib.h> /* for exit() */
 
+Q_DEFINE_THIS_FILE
+
 enum { BSP_TICKS_PER_SEC = 100 };
 
 void BSP_ledOff(void) {

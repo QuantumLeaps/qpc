@@ -1,3 +1,7 @@
+#include "qpc.h"
+
+Q_DEFINE_THIS_FILE
+
 QXThread blinky;  /* QXK extended-thread object */
 
 uint32_t stack_blinky[80]; /* stack for the thread */

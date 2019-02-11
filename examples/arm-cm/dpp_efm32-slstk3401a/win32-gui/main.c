@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example for Windows
-* Last Updated for Version: 6.3.3
-* Date of the Last Update:  2018-06-22
+* Last updated for version 6.4.0
+* Last updated on  2019-02-08
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -34,6 +34,8 @@
 #include "qpc.h"
 #include "dpp.h"
 #include "bsp.h"
+
+Q_DEFINE_THIS_FILE
 
 /* "fudge factor" for Windows, see NOTE1 */
 enum { WIN_FUDGE_FACTOR = 10 };

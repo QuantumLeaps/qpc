@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.7
-* Last updated on  2018-11-07
+* Last updated for version 6.4.0
+* Last updated on  2019-02-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -207,14 +207,16 @@ typedef struct {
 * @param[in]     stkSto_  pointer to the stack storage (used only when
 *                         per-AO stack is needed)
 * @param[in]     stkSize_ stack size (in bytes)
-* @param[in]     param_   pointer to the additional port-specific parameter(s)
+* @param[in]     par_     pointer to the additional port-specific parameter(s)
 *                         (might be NULL).
 * @usage
 * @include qf_start.c
 */
-#define QACTIVE_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, param_) \
-    ((*((QActiveVtbl const *)((me_)->super.vptr))->start)( \
-        (me_), (prio_), (qSto_), (qLen_), (stkSto_), (stkLen_), (param_)))
+#define QACTIVE_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, par_) do { \
+    Q_ASSERT((me_)->super.vptr);                                             \
+    (*((QActiveVtbl const *)((me_)->super.vptr))->start)(                    \
+        (me_), (prio_), (qSto_), (qLen_), (stkSto_), (stkLen_), (par_));     \
+} while (0)
 
 #ifdef Q_SPY
     /*! Polymorphically posts an event to an active object (FIFO)
@@ -242,7 +244,7 @@ typedef struct {
     *
     * @sa #QACTIVE_POST_X, QActive_post_().
     */
-    #define QACTIVE_POST(me_, e_, sender_) \
+    #define QACTIVE_POST(me_, e_, sender_)                                \
         ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
                   (e_), QF_NO_MARGIN, (sender_)))
 
@@ -280,16 +282,16 @@ typedef struct {
     * @usage
     * @include qf_postx.c
     */
-    #define QACTIVE_POST_X(me_, e_, margin_, sender_) \
+    #define QACTIVE_POST_X(me_, e_, margin_, sender_)               \
         ((*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
          (e_), (margin_), (sender_)))
 #else
 
-    #define QACTIVE_POST(me_, e_, sender_) \
+    #define QACTIVE_POST(me_, e_, sender_)                                \
         ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
                   (e_), QF_NO_MARGIN))
 
-    #define QACTIVE_POST_X(me_, e_, margin_, sender_) \
+    #define QACTIVE_POST_X(me_, e_, margin_, sender_)               \
         ((*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
                   (e_), (margin_)))
 
@@ -305,10 +307,6 @@ typedef struct {
     ((*((QActiveVtbl const *)((me_)->super.vptr))->postLIFO)((me_), (e_)))
 
 /* protected functions for ::QActive ...*/
-
-/*! Stops execution of an active object and removes it from the
-* framework's supervision. */
-void QActive_stop(QActive * const me);
 
 /*! Subscribes for delivery of signal @p sig to the active object @p me. */
 void QActive_subscribe(QActive const * const me, enum_t const sig);
@@ -664,15 +662,15 @@ void QF_deleteRef_(void const * const evtRef);
 
 #ifdef Q_EVT_CTOR /* Shall the ctor for the ::QEvt class be provided? */
 
-    #define Q_NEW(evtT_, sig_, ...) \
+    #define Q_NEW(evtT_, sig_, ...)                                   \
         (evtT_##_ctor((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
                       QF_NO_MARGIN, (enum_t)0), (sig_), ##__VA_ARGS__))
 
-    #define Q_NEW_X(e_, evtT_, margin_, sig_, ...) do { \
+    #define Q_NEW_X(e_, evtT_, margin_, sig_, ...) do {        \
         (e_) = (evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
-                                 (margin_), (enum_t)0); \
-        if ((e_) != (evtT_ *)0) { \
-            evtT_##_ctor((e_), (sig_), ##__VA_ARGS__); \
+                                 (margin_), (enum_t)0);        \
+        if ((e_) != (evtT_ *)0) {                              \
+            evtT_##_ctor((e_), (sig_), ##__VA_ARGS__);         \
         } \
      } while (0)
 
@@ -700,7 +698,7 @@ void QF_deleteRef_(void const * const evtRef);
     * The following example illustrates dynamic allocation of an event:
     * @include qf_post.c
     */
-    #define Q_NEW(evtT_, sig_) \
+    #define Q_NEW(evtT_, sig_)                           \
         ((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
                            QF_NO_MARGIN, (sig_)))
 

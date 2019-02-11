@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QUTEST-QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 6.3.7
-# Last updated on  2018-11-10
+# Last updated for version 6.4.0
+# Last updated on  2019-01-09
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -88,8 +88,7 @@ LIB_DIRS :=
 LIBS     :=
 
 # defines...
-# QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
-DEFINES   := -DQP_API_VERSION=9999
+DEFINES  :=
 
 #-----------------------------------------------------------------------------
 # add QP/C framework (depends on the OS this Makefile runs on):
@@ -171,13 +170,14 @@ endif
 
 BIN_DIR := build
 
-CFLAGS = -c -g -O -Wall -Wstrict-prototypes -W $(INCLUDES) $(DEFINES) \
-	-DQ_SPY -DQ_UTEST -DQ_HOST
+CFLAGS  := -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
-CPPFLAGS = -c -g -O -Wall -W -fno-rtti -fno-exceptions $(INCLUDES) $(DEFINES) \
-	-DQ_SPY -DQ_UTEST -DQ_HOST
+CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
+	-fno-rtti -fno-exceptions \
+	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
-LINKFLAGS :=
+LINKFLAGS := -fno-pie
 
 #-----------------------------------------------------------------------------
 C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))
@@ -228,11 +228,11 @@ $(BIN_DIR)/%.d : %.cpp
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
-$(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) $< -o $@
-
 $(BIN_DIR)/%.o : %.c
 	$(CC) $(CFLAGS) $< -o $@
+
+$(BIN_DIR)/%.o : %.cpp
+	$(CPP) $(CPPFLAGS) $< -o $@
 
 # include dependency files only if our goal depends on their existence
 ifneq ($(MAKECMDGOALS),clean)
@@ -262,5 +262,6 @@ show :
 	@echo DEFINES      = $(DEFINES)
 	@echo QTOOLS       = $(QTOOLS)
 	@echo QUTEST       = $(QUTEST)
+	@echo HOST         = $(HOST)
 	@echo TESTS        = $(TESTS)
 

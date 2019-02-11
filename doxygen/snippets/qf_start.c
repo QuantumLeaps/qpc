@@ -1,3 +1,7 @@
+#include "qpc.h"
+
+Q_DEFINE_THIS_FILE
+
 int main() {
     static Philo l_philo[N]; /* N Philo active objects */
     static QEvt const *l_philQueueSto[N][N]; /* storage for event queues */

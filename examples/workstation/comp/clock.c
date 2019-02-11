@@ -23,7 +23,7 @@
 
 #include <stdio.h>
 
-//Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE
 
 /* Active object class -----------------------------------------------------*/
 /*$declare${Components::AlarmClock} ########################################*/

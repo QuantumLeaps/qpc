@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.4 / embOS v4.34.1
-* Date of the Last Update:  2018-01-10
+* Last updated for version 6.4.0
+* Last updated on  2019-02-07
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -91,16 +91,12 @@ static void thread_function(void *pVoid) { /* embOS signature */
     }
 #endif  /* __TARGET_FPU_VFP */
 
-    act->osObject = (uint32_t)1; /* enable the event-loop, see NOTE2 */
-    while (act->osObject != (uint32_t)0) {  /* event-loop */
+    /* event-loop */
+    for (;;) {  /* for-ever */
         QEvt const *e = QActive_get_(act);
         QHSM_DISPATCH(&act->super, e);
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
-
-    QF_remove_(act); /* remove this object from QF */
-    OS_DeleteMB(&act->eQueue);
-    OS_TerminateTask(&act->thread);
 }
 /*..........................................................................*/
 void QActive_start_(QActive * const me, uint_fast8_t prio,
@@ -128,10 +124,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     (OS_UINT)stkSize,
                     (OS_UINT)0,    /* no AOs at the same prio */
                     (void *)me);
-}
-/*..........................................................................*/
-void QActive_stop(QActive * const me) {
-    me->osObject = (uint32_t)0; /* stop the thread loop */
 }
 /*..........................................................................*/
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
@@ -267,10 +259,6 @@ QEvt const *QActive_get_(QActive * const me) {
 * QF_setEmbOsTaskAttr() function. The task attributes must be set *before*
 * calling QACTIVE_START(). The task attributes are saved in QActive.osObject
 * member.
-*
-* NOTE2:
-* The member QActive.osObject is reused as the loop control variable,
-* because the task attributes are alredy applied.
 *
 * NOTE3:
 * The event posting to embOS mailbox occurs inside a critical section,

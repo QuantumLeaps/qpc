@@ -55,9 +55,9 @@ QActive *QF_active_[QF_MAX_ACTIVE + 1]; /* to be used by QF ports only */
 /****************************************************************************/
 /**
 * @description
-* This function removes a given active object from the active objects
+* This function adds a given active object to the active objects
 * managed by the QF framework. It should not be called by the application
-* directly, only through the function QActive_stop().
+* directly, only by the QP ports.
 *
 * @param[in]  a  pointer to the active object to add to the framework.
 *
@@ -88,8 +88,8 @@ void QF_add_(QActive * const a) {
 /**
 * @description
 * This function removes a given active object from the active objects managed
-* by the QF framework. It should not be called by the application directly,
-* only through the function QActive_stop().
+* by the QF framework. It should not be called by the application
+* directly, only by the QP ports.
 *
 * @param[in]  a  pointer to the active object to remove from the framework.
 *

@@ -36,7 +36,7 @@ BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
       <entry box="1,2,12,4"/>
      </state_glyph>
     </state>
-    <state_diagram size="30,29"/>
+    <state_diagram size="22,29"/>
    </statechart>
   </class>
  </package>
@@ -45,6 +45,8 @@ BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
    <text>#include &quot;qpc.h&quot;
 #include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt; /* for exit() */
+
+Q_DEFINE_THIS_FILE
 
 enum { BSP_TICKS_PER_SEC = 100 };
 
