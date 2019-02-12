@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.4.0
-* Last updated on  2019-02-07
+* Last updated on  2019-02-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -138,12 +138,11 @@ void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio) {
 }
 /****************************************************************************/
 void QF_setWin32Prio(QActive *act, int_t win32Prio) {
-    if (act->thread == (HANDLE)0) {  /* thread not created yet? */
-        act->osObject = (void *)win32Prio; /* store the priority for later */
-    }
-    else {
-        SetThreadPriority(act->thread, win32Prio);
-    }
+    HANDLE win32thread = (HANDLE)act->thread;
+
+    /* thread must be already created, see QActive_start_() */
+    Q_REQUIRE_ID(700, win32thread != (HANDLE)0);
+    SetThreadPriority(win32thread, win32Prio);
 }
 
 /* QActive functions =======================================================*/
@@ -152,22 +151,14 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void *stkSto, uint_fast16_t stkSize,
                     QEvt const *ie)
 {
-    int win32Prio;
-
-    Q_REQUIRE_ID(700, ((uint_fast8_t)0 < prio) /* priority must be in range */
+    Q_REQUIRE_ID(800, ((uint_fast8_t)0 < prio) /* priority must be in range */
                  && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
                  && (stkSto == (void *)0));    /* statck storage must NOT...
                                                * ... be provided */
-
     me->prio = prio; /* set QF priority of this AO before adding it to QF */
     QF_add_(me);     /* make QF aware of this active object */
 
     QEQueue_init(&me->eQueue, qSto, qLen);
-
-    /* save osObject as integer, in case it contains the Win32 priority */
-    win32Prio = (me->osObject != (void *)0)
-                ? (int)me->osObject
-                : THREAD_PRIORITY_NORMAL;
 
     /* create the Win32 "event" to throttle the AO's event queue */
     me->osObject = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -184,12 +175,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     * The thread is created with THREAD_PRIORITY_NORMAL
     */
     me->thread = CreateThread(NULL, stkSize, &ao_thread, me, 0, NULL);
-    Q_ASSERT_ID(730, me->thread != (HANDLE)0); /* must succeed */
-
-    /* was the thread priority provided? */
-    if (win32Prio != 0) {
-        SetThreadPriority(me->thread, win32Prio);
-    }
+    Q_ENSURE_ID(830, me->thread != (HANDLE)0); /* must succeed */
 }
 
 /****************************************************************************/

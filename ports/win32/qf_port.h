@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.7
-* Date of the Last Update:  2018-11-17
+* Last Updated for Version: 6.4.0
+* Date of the Last Update:  2019-02-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -74,8 +74,9 @@
 void QF_enterCriticalSection_(void);
 void QF_leaveCriticalSection_(void);
 
-/* set Win32 thread priority;
-* can be called either before or after QACTIVE_START().
+/* set Win32 thread priority for an active object;
+* see: Microsoft documentation for SetThreadPriority()
+* NOTE: must be called *after* QACTIVE_START()
 */
 void QF_setWin32Prio(QActive *act, int_t win32Prio);
 
@@ -103,6 +104,7 @@ int QF_consoleWaitForKey(void);
 #ifdef _MSC_VER
 
 #if (_MSC_VER < 1900) /* before Visual Studio 2015 */
+
 #define snprintf _snprintf
 #endif
 
@@ -115,7 +117,7 @@ int QF_consoleWaitForKey(void);
 #define FOPEN_S(fp_, fName_, mode_) \
     if (fopen_s(&fp_, fName_, mode_) != 0) { \
         fp_ = (FILE *)0; \
-    } else (void)0
+    } else ((void)0)
 
 #define CTIME_S(buf_, len_, time_) \
     ctime_s((char *)buf_, len_, time_)
