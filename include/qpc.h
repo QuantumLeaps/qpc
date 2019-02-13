@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.4.0
-* Last updated on  2019-02-07
+* Last updated on  2019-02-13
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -157,7 +157,7 @@ typedef QHsm        QFsm;
 /*! @deprecated interface defined for backwards compatibility;
 * instead use: QEQueue_post()  */
 #define QEQueue_postFIFO(me_, e_) \
-    ((void)QEQueue_post((me_), (e_), (uint16_t)0))
+    ((void)QEQueue_post((me_), (e_), QF_NO_MARGIN))
 
 /*! @deprecated name of the QActive start operation;
 * instead use: QACTIVE_START() */
