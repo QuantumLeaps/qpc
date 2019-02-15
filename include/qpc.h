@@ -161,8 +161,6 @@ typedef QHsm        QFsm;
 
 /*! @deprecated name of the QActive start operation;
 * instead use: QACTIVE_START() */
-#define QActive_start QActive_start_
-
 
 #ifdef Q_SPY
 
