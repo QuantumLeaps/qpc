@@ -3,8 +3,7 @@
 @image html qp_banner.jpg
 
 @section ab_about What is it?
-<a class="extern" target="_blank" href="https://www.state-machine.com/products/"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight, open source <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Framework"><strong>active object (actor) framework</strong></a> for building modern,
-<a href="https://en.wikipedia.org/wiki/Reactive_programming" target="_blank" class="extern">reactive</a>, real-time embedded applications as systems of asynchronous event-driven <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Active"><strong>active objects</strong></a> (<a href="http://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; framework is a member of a larger family consisting of QP/C, <a href="https://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a>, and <a href="https://www.state-machine.com/qpn" target="_blank" class="extern">QP-nano</a> frameworks, which are all strictly quality controlled, thoroughly documented, and available under @ref licensing "dual licensing model".
+<a class="extern" target="_blank" href="https://www.state-machine.com/products/"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#RTEF"><strong>Real-Time Embedded Framework (RTEF)</strong></a> for building modern, responsive, real-time embedded applications as systems of asynchronous event-driven <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Active"><strong>active objects</strong></a> (<a href="https://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; RTEF is a member of a larger family consisting of QP/C, <a href="https://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a>, and <a href="https://www.state-machine.com/qpn" target="_blank" class="extern">QP-nano</a> frameworks, which are all strictly quality controlled, thoroughly documented, and available under @ref licensing "dual licensing model".
 
 The behavior of active objects is specified in QP/C by means of <a href="https://www.state-machine.com/doc/concepts#HSM" target="_blank" class="extern"><strong>hierarchical state machines</strong></a> (UML statecharts). The framework supports manual coding of UML state machines in C as well as automatic code generation by means of the free <a href="https://www.state-machine.com/qm"><strong>QM&trade; modeling tool</strong></a>.
 
@@ -21,7 +20,7 @@ To use QP/C&trade; effectively, you need to understand the <a href="https://www.
 
 @section ab_goals What does it do?
 The main goals of the QP/C&trade; framework are:
-- to provide a reusable event-driven **architecture** based on <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Framework">active objects (actors)</a>, which is inherently **safer**, more extensible, and easier to understand than the usual _shared-state concurrency_ based on a traditional Real-Time Operating System (RTOS).
+- to provide a reusable event-driven **architecture** based on <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Active">active objects (actors)</a>, which is inherently **safer**, more extensible, and easier to understand than the usual _shared-state concurrency_ based on a traditional Real-Time Operating System (RTOS).
 - to provide a simple-to-use coding techniques for <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#HSM">hierarchical state machines</a>, with which to implement the behavior of active objects.
 - to provide efficient and thread-safe asynchronous mechanisms for active objects to communicate, such as direct event passing and publish-subscribe.
 - to provide event-driven timing services (time events).
@@ -34,7 +33,7 @@ The main goals of the QP/C&trade; framework are:
 ------------------------------------------------------------------------------
 @section ab_special What's special about it?
 
-The QP/C&trade; framework is a unique offering on the embedded software market. It provides a modern, reusable **architecture** of embedded applications, which combines object-orientation with the particular model of concurrency, known as <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Active"><strong>active objects</strong></a> (actors). This architecture is generally **safer**, more responsive and easier to understand than "free threading" with a traditional Real-Time Operating System (RTOS). It also provides higher level of abstraction and the right abstractions to effectively apply modeling and code generation to deeply embedded systems.
+The QP/C&trade; Real-Time Embedded Framework (RTEF) is a unique offering on the embedded software market. It provides a modern, reusable **architecture** of embedded applications, which combines object-orientation with the particular model of concurrency, known as <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Active"><strong>active objects</strong></a> (actors). This architecture is generally **safer**, more responsive and easier to understand than "free threading" with a traditional Real-Time Operating System (RTOS). It also provides sufficiently high level of abstraction and the right abstractions to effectively apply modeling and code generation to deeply embedded systems.
 
 
 <div class="separate"></div>
@@ -80,7 +79,7 @@ QP/C can also work with many traditional @ref exa_rtos "RTOSes" and @ref exa_rto
 
 <div class="separate"></div>
 @subsection popular Popularity &amp; Maturity
-With over 15 years of continuous development and <a class="extern" target="_blank" href="https://sourceforge.net/projects/qpc/files/stats/timeline?dates=2016-01-01+to+2016-12-31">60,000 downloads a year</a>, the QP&trade; framework family is the most mature and popular such solution on the embedded software market.
+With over 15 years of continuous development and <a class="extern" target="_blank" href="https://sourceforge.net/projects/qpc/files/stats/timeline?dates=2016-01-01+to+2016-12-31">60,000 downloads a year</a>, the QP&trade; RTEF family is the most mature and popular such solution on the embedded software market.
 
 The QP&trade; frameworks are used in <a href="https://www.state-machine.com/about/customers" target="_blank" class="extern">millions of products worldwide</a> in aerospace, medical devices, consumer electronics, wired and wireless telecommunications, industrial automation, transportation, robotics, and many more.
 
@@ -120,17 +119,19 @@ Training and consulting services are also available from Quantum Leaps. Please r
 
 
 ------------------------------------------------------------------------------
-@section ab_help How to get help?
+@section contact Contact Information
 
-- <a class="extern" target="_blank" class="extern" href="https://sourceforge.net/p/qpc/discussion/668726">Free Support Forum</a>
-- <a class="extern" target="_blank" class="extern" href="https://sourceforge.net/p/qpc/bugs/">Bug Reports</a>
-- <a class="extern" target="_blank" class="extern" href="https://sourceforge.net/p/qpc/feature-requests/">Feature Requests</a>
-- <a class="extern" target="_blank" href="https://www.state-machine.com">Quantum Leaps website</a>
-- <a class="extern" target="_blank" href="mailto:info@state-machine.com?subject=QP/C">info@state-machine.com</a>@n
+- Quantum Leaps Web site:   <a class="extern" target="_blank" href="https://www.state-machine.com">state-machine.com</a>
+
+- Quantum Leaps licensing:  <a class="extern" target="_blank" href="https://www.state-machine.com">state-machine.com/licensing</a>
+
+- QP/QM on SourceForge.net: <a class="extern" target="_blank" href="https://sourceforge.net/projects/qpc">sourceforge.net/projects/qpc</a>
+
+- QP/QM on GitHub: <a class="extern" target="_blank" href="https://github.com/QuantumLeaps">github.com/QuantumLeaps</a>
+
+- e-mail: <a class="extern" target="_blank" href="mailto:info@state-machine.com">info@state-machine.com</a>
 
 @image html logo_ql_TM.jpg
-
-Copyright &copy; 2005-2019 Quantum Leaps, LLC. All Rights Reserved.@n
 
 @next{gs}
 */

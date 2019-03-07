@@ -110,7 +110,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = \
+INPUT = \
     main.dox \
     gs.dox \
     struct.dox \
@@ -122,6 +122,7 @@ INPUT                  = \
     exa.dox \
     exa_apps.dox \
     exa_native.dox \
+    ../../doxygen/exa_low-power.dox \
     exa_rtos.dox \
     exa_os.dox \
     exa_qutest.dox \
@@ -170,7 +171,7 @@ EXAMPLE_PATH           = \
 
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
-IMAGE_PATH             = images
+IMAGE_PATH             = images ../../doxygen/images
 INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO

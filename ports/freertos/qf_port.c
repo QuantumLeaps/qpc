@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.4.0
-* Last updated on  2019-02-07
+* Last updated on  2019-02-26
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -53,6 +53,10 @@ Q_DEFINE_THIS_MODULE("qf_port")
     #error "This QP/C port to FreeRTOS requires configSUPPORT_STATIC_ALLOCATION "
 #endif
 
+#if ( configMAX_PRIORITIES < QF_MAX_ACTIVE )
+    #error "FreeRTOS configMAX_PRIORITIES must not be less than QF_MAX_ACTIVE"
+#endif
+
 /* Local objects -----------------------------------------------------------*/
 static void task_function(void *pvParameters); /* FreeRTOS task signature */
 
@@ -83,7 +87,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                              ? (char_t const *)me->thread.pxDummy1
                              : (char_t const *)"AO";
 
-    Q_REQUIRE_ID(200, (prio < configMAX_PRIORITIES) /* not exceeding max */
+    Q_REQUIRE_ID(200, ((int_fast8_t)0 < prio)
+        && (prio <= (uint_fast8_t)QF_MAX_ACTIVE) /* in range */
         && (qSto != (QEvt const **)0)    /* queue storage must be provided */
         && (qLen > (uint_fast16_t)0)     /* queue size must be provided */
         && (stkSto != (void *)0)         /* stack storage must be provided */

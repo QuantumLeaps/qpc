@@ -1,9 +1,9 @@
 About this Example
 ==================
 This directory contains the simple "Blinky" QP example application for
-the EK-TM4C123GXL board (TivaC LauchPad) with the preemptive QK kernel.
-This directory contains portable code that should compile with any C
-compiler for ARM Cortex-M.
+the EK-TM4C123GXL board (TivaC LauchPad) with the coopertative QV kernel
+and the preemptive QK kernel. This directory contains portable code that
+should compile with any C compiler for ARM Cortex-M.
 
 The sub-directories contain code and project files, which are specific
 to the particular ARM toolchains, such as ARM (MDK-ARM), GNU, and IAR.

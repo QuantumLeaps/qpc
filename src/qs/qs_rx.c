@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.7
-* Last updated on  2018-11-16
+* Last updated for version 6.4.0
+* Last updated on  2019-02-25
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -725,7 +725,7 @@ static void QS_rxParseData_(uint8_t b) {
                     l_rx.var.evt.e = QF_newX_(
                         ((uint_fast16_t)l_rx.var.evt.len
                          + (uint_fast16_t)sizeof(QEvt)),
-                        (uint_fast16_t)1, /* margin */
+                        (uint_fast16_t)0, /* margin */
                         (enum_t)l_rx.var.evt.sig);
                     if (l_rx.var.evt.e != (QEvt *)0) { /* evt allocated? */
                         l_rx.var.evt.p = (uint8_t *)l_rx.var.evt.e;
@@ -1028,7 +1028,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             else if (l_rx.var.evt.prio < (uint8_t)QF_MAX_ACTIVE) {
                 if (QACTIVE_POST_X(QF_active_[l_rx.var.evt.prio],
                                l_rx.var.evt.e,
-                               (uint_fast16_t)1, /* margin */
+                               (uint_fast16_t)0, /* margin */
                                &QS_rxPriv_) == false)
                 {
                     /* failed QACTIVE_POST() recycles the event */
@@ -1075,7 +1075,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
                     if (QACTIVE_POST_X(
                             (QActive *)QS_rxPriv_.currObj[AO_OBJ],
                             l_rx.var.evt.e,
-                            (uint_fast16_t)1, /* margin */
+                            (uint_fast16_t)0, /* margin */
                             &QS_rxPriv_) == false)
                     {
                         /* failed QACTIVE_POST() recycles the event */

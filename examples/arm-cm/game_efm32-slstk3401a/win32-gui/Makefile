@@ -212,7 +212,7 @@ CPPFLAGS = -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
 
 endif  # .....................................................................
 
-LINKFLAGS := -fno-pie
+LINKFLAGS := -no-pie
 
 # is it a GUI application (any GUI resources provided?) ...
 ifneq (,$(RC_SRCS))

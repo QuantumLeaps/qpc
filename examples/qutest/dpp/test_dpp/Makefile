@@ -181,7 +181,7 @@ CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
 	-fno-rtti -fno-exceptions \
 	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
-LINKFLAGS := -fno-pie
+LINKFLAGS := -no-pie
 
 #-----------------------------------------------------------------------------
 C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))

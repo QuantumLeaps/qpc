@@ -221,7 +221,7 @@ CPPFLAGS = -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
 
 endif  # .....................................................................
 
-LINKFLAGS := -fno-pie
+LINKFLAGS := -no-pie
 
 #-----------------------------------------------------------------------------
 C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))

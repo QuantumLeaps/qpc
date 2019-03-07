@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.3.1" links="0">
+<model version="4.4.0" links="0">
  <documentation>Calc is the model of the Calculator described in Chapter 4 of PSiCC2. This version demonstrates the use of sub-machines and sub-machine states.</documentation>
  <framework name="qpc" license="../../../QPC-EVAL.qlc"/>
  <package name="Events" stereotype="0x01">
@@ -12,6 +12,9 @@
    <documentation>Calculator state machine</documentation>
    <attribute name="op1" type="double" visibility="0x02" properties="0x00"/>
    <attribute name="oper" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <attribute name="instance" type="Calc" visibility="0x00" properties="0x01">
+    <documentation>the only instance of the Calc HSM (singleton)</documentation>
+   </attribute>
    <statechart>
     <initial target="../1">
      <action>BSP_clear();
@@ -406,9 +409,13 @@ BSP_negate();</entry>
     <state_diagram size="96,100"/>
    </statechart>
   </class>
+  <attribute name="the_calc" type="QHsm * const" visibility="0x00" properties="0x00">
+   <documentation>opaque pointer to the Calc HSM</documentation>
+   <code>= &amp;Calc_instance.super;</code>
+  </attribute>
   <operation name="Calc_ctor" type="void" visibility="0x00" properties="0x00">
    <documentation>constructor</documentation>
-   <code>Calc *me = &amp;l_calc;
+   <code>Calc *me = &amp;Calc_instance;
 QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Calc_initial));</code>
   </operation>
  </package>
@@ -428,10 +435,9 @@ enum CalcSignals {
     OFF_SIG
 };
 
-$declare(Events::CalcEvt)
-$declare(SMs::Calc_ctor)
-
-extern QMsm * const the_calc;  /* &quot;opaque&quot; pointer to calculator MSM */
+$declare${Events::CalcEvt}
+$declare${SMs::Calc_ctor}
+$declare${SMs::the_calc}
 
 #endif /* calc1_sub_h */</text>
   </file>
@@ -440,15 +446,11 @@ extern QMsm * const the_calc;  /* &quot;opaque&quot; pointer to calculator MSM *
 #include &quot;bsp.h&quot;       /* board support package */
 #include &quot;calc1_sub.h&quot; /* application */
 
-$declare(SMs::Calc)
+$declare${SMs::Calc}
 
-static Calc l_calc;    /* the only instance of the Calc class */
-
-/* global-scope definitions ---------------------------------------*/
-QMsm * const the_calc = &amp;l_calc.super;  /* &quot;opaque&quot; pointer to MSM */
-
-$define(SMs::Calc_ctor)
-$define(SMs::Calc)</text>
+$define${SMs::the_calc}
+$define${SMs::Calc_ctor}
+$define${SMs::Calc}</text>
   </file>
  </directory>
 </model>

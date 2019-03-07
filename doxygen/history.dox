@@ -8,7 +8,7 @@ This release brings the following changes:
 - added assertions to QHSM_INIT(), QACTIVE_START() and QXTHREAD_START() to make sure the the virtual-pinter (vptr) is initialized
 
 @note
-These additional assertions require Q_DEFINE_THIS_FILE() or Q_DEFINE_THIS_MODULE() at the top of the .c file that calls QHSM_INIT(), QACTIVE_START() or QXTHREAD_START().
+These additional assertions require #Q_DEFINE_THIS_FILE or #Q_DEFINE_THIS_MODULE at the top of the .c file that calls QHSM_INIT(), QACTIVE_START() or QXTHREAD_START().
 
 - modified examples for ThreadX to define BSP_TICKS_PER_SEC as TX_TIMER_TICKS_PER_SECOND instead of a hardcoded value
 - modified examples for uC/OS-II to define BSP_TICKS_PER_SEC as OS_TICKS_PER_SEC instead of a hardcoded value

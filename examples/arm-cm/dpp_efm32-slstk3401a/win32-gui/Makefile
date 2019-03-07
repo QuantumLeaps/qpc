@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, Win32-GUI, GNU GCC
 # Last updated for version 6.4.0
-# Last updated on  2019-01-09
+# Last updated on  2019-03-06
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -209,7 +209,7 @@ CPPFLAGS = -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
 
 endif  # .....................................................................
 
-LINKFLAGS := -fno-pie
+LINKFLAGS := -no-pie
 
 # is it a GUI application (any GUI resources provided?) ...
 ifneq (,$(RC_SRCS))
