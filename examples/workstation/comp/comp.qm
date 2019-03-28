@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.3.1" links="0">
+<model version="4.5.0" links="0">
  <documentation>Dining Philosopher Problem example
 
 NOTE: Requries QP6.</documentation>
@@ -19,7 +19,7 @@ NOTE: Requries QP6.</documentation>
    <operation name="ctor" type="void" visibility="0x00" properties="0x00">
     <code>QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Alarm_initial));</code>
    </operation>
-   <statechart>
+   <statechart properties="0x01">
     <initial target="../1">
      <action>me-&gt;alarm_time = 12U*60U;
 (void)e; /* avoid compiler warning about unused parameter */</action>
@@ -107,7 +107,7 @@ QACTIVE_POST(APP_alarmClock, Q_NEW(QEvt, ALARM_SIG), me);</action>
    <attribute name="current_time" type="uint32_t" visibility="0x02" properties="0x00"/>
    <attribute name="alarm" type="Alarm" visibility="0x02" properties="0x00"/>
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x00" properties="0x00"/>
-   <statechart>
+   <statechart properties="0x01">
     <initial target="../1">
      <action>(void)e; /* avoid compiler warning about unused parameter */
 me-&gt;current_time = 0U;
@@ -218,7 +218,7 @@ QHSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
    </statechart>
   </class>
   <attribute name="APP_alarmClock" type="QActive * const" visibility="0x00" properties="0x00">
-   <documentation>Opaque pointer to the single instance of the AlarmClock AO</documentation>
+   <documentation>Opaque pointer to the single inst of the AlarmClock AO</documentation>
    <code>= &amp;l_alarmClock.super;</code>
   </attribute>
   <operation name="AlarmClock_ctor" type="void" visibility="0x00" properties="0x00">
@@ -236,11 +236,12 @@ QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, TICK_SIG, 0U);</code>
    <text>#ifndef alarm_h
 #define alarm_h
 
-$declare(Components::Alarm)
+$declare${Components::Alarm}
 
-$declare(Components::Alarm::ctor)
+$declare${Components::Alarm::ctor}
 
-#endif /* alarm_h */</text>
+#endif /* alarm_h */
+</text>
   </file>
   <file name="alarm.c">
    <text>#include &quot;qpc.h&quot;
@@ -251,7 +252,8 @@ $declare(Components::Alarm::ctor)
 //Q_DEFINE_THIS_FILE
 
 /* Alarm component --------------------*/
-$define(Components::Alarm)</text>
+$define${Components::Alarm}
+</text>
   </file>
   <file name="clock.h">
    <text>#ifndef clock_h
@@ -269,13 +271,14 @@ enum AlarmClockSignals {
     TERMINATE_SIG   /* terminate the application */
 };
 
-$declare(Events::SetEvt)
-$declare(Events::TimeEvt)
+$declare${Events::SetEvt}
+$declare${Events::TimeEvt}
 
-$declare(Components::APP_alarmClock)
-$declare(Components::AlarmClock_ctor);
+$declare${Components::APP_alarmClock}
+$declare${Components::AlarmClock_ctor}
 
-#endif /* clock_h */</text>
+#endif /* clock_h */
+</text>
   </file>
   <file name="clock.c">
    <text>#include &quot;qpc.h&quot;
@@ -291,7 +294,7 @@ Q_DEFINE_THIS_FILE
 $declare${Components::AlarmClock}
 
 /* Local objects -----------------------------------------------------------*/
-static AlarmClock l_alarmClock; /* the single instance of the AO */
+static AlarmClock l_alarmClock; /* the single inst of the AO */
 
 /* Global-scope objects ----------------------------------------------------*/
 $define${Components::APP_alarmClock}

@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.5.0
+* Last updated on  2019-03-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -308,6 +308,12 @@ typedef struct {
 
 /* protected functions for ::QActive ...*/
 
+#ifdef QF_ACTIVE_STOP
+    /*! Stops execution of an active object and removes it from the
+    * framework's supervision. */
+    void QActive_stop(QActive * const me);
+#endif
+
 /*! Subscribes for delivery of signal @p sig to the active object @p me. */
 void QActive_subscribe(QActive const * const me, enum_t const sig);
 
@@ -316,7 +322,6 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig);
 
 /*! Un-subscribes from the delivery of all signals to the AO @p me. */
 void QActive_unsubscribeAll(QActive const * const me);
-
 
 /*! Defer an event @p e to a given event queue @p eq. */
 bool QActive_defer(QActive const * const me,
@@ -482,7 +487,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me);
 bool QTimeEvt_wasDisarmed(QTimeEvt * const me);
 
 /*! Get the current value of the down-counter of a time event. */
-QTimeEvtCtr QTimeEvt_ctr(QTimeEvt const * const me);
+QTimeEvtCtr QTimeEvt_currCtr(QTimeEvt const * const me);
 
 
 /****************************************************************************/

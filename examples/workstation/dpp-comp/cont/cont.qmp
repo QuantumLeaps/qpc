@@ -22,21 +22,30 @@ me-&gt;comp = comp;</code>
   </operation>
  </class>
  <class name="Table" superclass="qpc::QActive">
+  <attribute name="inst" type="Table" visibility="0x00" properties="0x01">
+   <documentation>The only static instance of the Table class (Singleton pattern)</documentation>
+  </attribute>
   <attribute name="philo[N_PHILO]" type="Philo" visibility="0x02" properties="0x00">
    <documentation>Embedded component state machine objects</documentation>
   </attribute>
   <attribute name="fork[N_PHILO]" type="uint8_t" visibility="0x02" properties="0x00"/>
   <attribute name="isHungry[N_PHILO]" type="uint8_t" visibility="0x02" properties="0x00"/>
-  <statechart>
+  <statechart properties="0x03">
    <initial target="../1/3">
     <action>uint8_t n;
-(void)e; /* suppress the compiler warning about unused parameter */
+(void)e; /* unused parameter */
 
-QS_OBJ_DICTIONARY(&amp;l_table);
-QS_FUN_DICTIONARY(&amp;Table_initial);
-QS_FUN_DICTIONARY(&amp;Table_active);
-QS_FUN_DICTIONARY(&amp;Table_serving);
-QS_FUN_DICTIONARY(&amp;Table_paused);
+QS_OBJ_DICTIONARY(&amp;Table_inst);
+QS_OBJ_DICTIONARY(&amp;me-&gt;philo[0]);
+QS_OBJ_DICTIONARY(&amp;me-&gt;philo[0].timeEvt);
+QS_OBJ_DICTIONARY(&amp;me-&gt;philo[1]);
+QS_OBJ_DICTIONARY(&amp;me-&gt;philo[1].timeEvt);
+QS_OBJ_DICTIONARY(&amp;me-&gt;philo[2]);
+QS_OBJ_DICTIONARY(&amp;me-&gt;philo[2].timeEvt);
+QS_OBJ_DICTIONARY(&amp;me-&gt;philo[3]);
+QS_OBJ_DICTIONARY(&amp;me-&gt;philo[3].timeEvt);
+QS_OBJ_DICTIONARY(&amp;me-&gt;philo[4]);
+QS_OBJ_DICTIONARY(&amp;me-&gt;philo[4].timeEvt);
 
 QS_SIG_DICTIONARY(DONE_SIG,      (void *)0); /* global signals */
 QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
@@ -251,10 +260,12 @@ me-&gt;fork[n] = FREE;</action>
    <state_diagram size="50,78"/>
   </statechart>
  </class>
- <attribute name="AO_Table" type="QActive * const" visibility="0x00" properties="0x00"/>
+ <attribute name="AO_Table" type="QActive * const" visibility="0x00" properties="0x00">
+  <code>= &amp;Table_inst.super; /* opaque pointer */</code>
+ </attribute>
  <operation name="Table_ctor" type="void" visibility="0x00" properties="0x00">
   <code>uint8_t n;
-Table *me = &amp;l_table;
+Table *me = &amp;Table_inst;
 
 QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Table_initial));
 
@@ -306,22 +317,15 @@ $declare(Cont::AO_Table)
 
 Q_DEFINE_THIS_FILE
 
-/* Active object class -----------------------------------------------------*/
-$declare(Cont::Table)
+$declare${Cont::Table}
 
 #define RIGHT(n_) ((uint8_t)(((n_) + (N_PHILO - 1U)) % N_PHILO))
 #define LEFT(n_)  ((uint8_t)(((n_) + 1U) % N_PHILO))
 #define FREE      ((uint8_t)0)
 #define USED      ((uint8_t)1)
 
-/* Local objects -----------------------------------------------------------*/
-static Table l_table; /* the single instance of the Table active object */
-
-/* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_Table = &amp;l_table.super; /* &quot;opaque&quot; AO pointer */
-
-//............................................................................
 $define(Cont::CompTimeEvt)
+$define${Cont::AO_Table}
 $define(Cont::Table_ctor)
 $define(Cont::Table)</text>
   </file>

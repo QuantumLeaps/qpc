@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-23
+* Last updated for version 6.5.0
+* Last updated on  2019-03-09
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -532,7 +532,7 @@ bool QTimeEvt_wasDisarmed(QTimeEvt * const me) {
 * @note
 * The function is thread-safe.
 */
-QTimeEvtCtr QTimeEvt_ctr(QTimeEvt const * const me) {
+QTimeEvtCtr QTimeEvt_currCtr(QTimeEvt const * const me) {
     QTimeEvtCtr ret;
     QF_CRIT_STAT_
 

@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-10
+* Last updated for version 6.5.0
+* Last updated on  2019-03-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -55,7 +55,7 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_MAX_ACTIVE               14
+#define QF_MAX_ACTIVE               32
 
 /*! The maximum number of event pools in the application. */
 /**

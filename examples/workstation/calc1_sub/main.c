@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: calc1_sub Example
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.5.0
+* Last updated on  2019-03-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -64,7 +64,7 @@ int main() {
     for (;;) { /* event loop */
         CalcEvt e; /* Calculator event */
 
-        BSP_display(); /* show the display */
+        BSP_show_display(); /* show the display */
 
         printf(": ");
         fflush(stdout);

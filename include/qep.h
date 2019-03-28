@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.5.0
+* Last updated on  2019-03-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -41,20 +41,20 @@
 #define qep_h
 
 /****************************************************************************/
-/*! The current QP version as a decimal constant XYZ, where X is a 1-digit
+/*! The current QP version as a decimal constant XXYZ, where XX is a 2-digit
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      640U
+#define QP_VERSION      650U
 
-/*! The current QP version number string of the form X.Y.Z, where X is
-* a 1-digit major version number, Y is a 1-digit minor version number,
+/*! The current QP version number string of the form XX.Y.Z, where XX is
+* a 2-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.4.0"
+#define QP_VERSION_STR  "6.5.0"
 
-/*! Tamperproof current QP release (6.4.0) and date (2019-02-10) */
-#define QP_RELEASE      0x8EA03F5FU
+/*! Tamperproof current QP release (6.5.0) and date (2019-03-31) */
+#define QP_RELEASE      0x8E8DC8C5U
 
 
 /****************************************************************************/
@@ -95,7 +95,7 @@ typedef double float64_t;
 
 
 /*! the current QP version number string in ROM, based on QP_VERSION_STR */
-extern char_t const QP_versionStr[6];
+extern char_t const QP_versionStr[7];
 
 /*! get the current QEP version number string of the form "X.Y.Z" */
 #define QEP_getVersion() (QP_versionStr)
@@ -485,6 +485,11 @@ bool QMsm_isInState(QMsm const * const me, QMState const * const state);
 */
 #define Q_UNHANDLED()    ((QState)Q_RET_UNHANDLED)
 
+/*! Macro to provide strictly-typed zero-action to terminate action lists
+*! in the transition-action-tables
+*/
+#define Q_ACTION_NULL    ((QActionHandler)0)
+
 
 /****************************************************************************/
 /*! All possible values returned from state/action handlers */
@@ -539,7 +544,7 @@ enum {
 #endif /* Q_SPY */
 
 /*! Macro to call in a QM submachine exit-handler.
-* Applicable only to ::QMsm subclasses.
+* Applicable only to subclasses of ::QMsm.
 */
 #define QM_SM_EXIT(state_) \
     ((Q_HSM_UPCAST(me))->temp.obj = (state_), (QState)Q_RET_EXIT)
@@ -603,6 +608,11 @@ enum {
 */
 #define QM_SUPER_SUB(host_) \
     ((Q_HSM_UPCAST(me))->temp.obj = (host_), (QState)Q_RET_SUPER_SUB)
+
+/*! Macro to provide strictly-typed zero-state to use for submachines.
+*! Applicable to suclasses of QP::QMsm.
+*/
+#define QM_STATE_NULL    ((QMState const *)0)
 
 /*! QEP reserved signals */
 enum {

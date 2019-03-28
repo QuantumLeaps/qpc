@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.4
-* Last updated on  2017-07-06
+* Last updated for version 6.5.0
+* Last updated on  2019-03-19
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -55,7 +55,7 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_MAX_ACTIVE               48
+#define QF_MAX_ACTIVE               32
 
 /*! The maximum number of event pools in the application. */
 /**

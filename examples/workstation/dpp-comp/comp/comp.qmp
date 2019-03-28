@@ -6,7 +6,7 @@
    <code>QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Philo_initial));
 CompTimeEvt_ctor(&amp;me-&gt;timeEvt, AO_Table, &amp;me-&gt;super, TIMEOUT_SIG, 0U);</code>
   </operation>
-  <statechart>
+  <statechart properties="0x01">
    <initial target="../1">
     <action>static uint8_t registered = (uint8_t)0; /* starts off with 0, per C-standard */
 (void)e; /* suppress the compiler warning about unused parameter */

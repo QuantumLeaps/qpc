@@ -1,6 +1,17 @@
 /**
 @page history Revision History
 
+@section qpc_6_5_0 Version 6.5.0, 2019-03-30
+This QP/C release matches the [QM release 4.5.0](https://www.state-machine.com/qm/history.html#qm_4_5_0), which introduced new implementation for QP/C++. Even though this has no impact on the QP/C state machine implementation with QM, this release is needed for compatibility checking between QP and QM.
+
+For commonality with the new QP/C++ implementation, this release adds macros #Q_ACTION_NULL and #QM_STATE_NULL, which are used in the code generated from QM 4.5.0. Also, this release comes with several models for **QM 4.5.0**.
+
+Additionally, this release changes the API QTimeEvt_ctr() to QTimeEvt_currCtr(). This is to avoid name shadowing with the `ctr` variables, which is not compliant with MISRA.
+
+Additionally, the examples for `calc1` and `calc1_sub` (with QM 4.5.0 models) have been extended to properly handle the operator precedence (multiplication and division have higher precedence than addition and subtraction).
+
+
+------------------------------------------------------------------------------
 @section qpc_6_4_0 Version 6.4.0, 2019-02-10
 This release brings the following changes:
 

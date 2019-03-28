@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.0.0" links="0">
- <documentation>Calc is the model of the Calculator described in Chapter 4 of PSiCC2</documentation>
+<model version="4.5.0" links="0">
+ <documentation>Improved model of the Calculator described in Chapter 4 of PSiCC2. Improvements include:
+
+- placing the &quot;negated1&quot; state inside &quot;operand1&quot; superstate
+- placing the &quot;negated2&quot; state inside &quot;operand2&quot; superstate
+- adding handling of operator precedence '*','/' before '+','-'</documentation>
  <framework name="qpc"/>
  <package name="Events" stereotype="0x01">
   <class name="CalcEvt" superclass="qpc::QEvt">
@@ -10,13 +14,110 @@
  <package name="SMs" stereotype="0x02">
   <class name="Calc" superclass="qpc::QHsm">
    <documentation>Calculator state machine</documentation>
-   <attribute name="operand1" type="double" visibility="0x02" properties="0x00"/>
-   <attribute name="operator" type="uint8_t" visibility="0x02" properties="0x00"/>
-   <statechart>
+   <attribute name="inst" type="Calc" visibility="0x00" properties="0x01">
+    <documentation>The only inst of the Calc object (Singleton pattern).</documentation>
+   </attribute>
+   <attribute name="op1" type="double" visibility="0x02" properties="0x00"/>
+   <attribute name="op2" type="double" visibility="0x02" properties="0x00"/>
+   <attribute name="oper1" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <attribute name="oper2" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <operation name="eval" type="bool" visibility="0x02" properties="0x00">
+    <documentation>/* guard function to evaluate the current expression
+* taking into account the precedence of operands.
+* return: true if evaluation successfull
+* false when error encountered
+*/</documentation>
+    <parameter name="op" type="double"/>
+    <parameter name="oper" type="uint8_t"/>
+    <code>double result;
+if ((oper == KEY_NULL) || (oper == KEY_PLUS) || (oper == KEY_MINUS)) {
+    switch (me-&gt;oper2) {
+        case KEY_MULT: {
+            me-&gt;op2 *= op;
+            break;
+        }
+        case KEY_DIVIDE: {
+            if ((-1e-30 &lt; op) &amp;&amp; (op &lt; 1e-30)) {
+                BSP_display_error(&quot; Error 0 &quot;); /* divide by zero */
+                return false;
+            }
+            me-&gt;op2 /= op;
+            break;
+         }
+         default: { /* no op2 yet */
+            me-&gt;op2 = op;
+            me-&gt;oper2 = oper;
+            break;
+         }
+    }
+    switch (me-&gt;oper1) {
+        case KEY_PLUS: {
+            me-&gt;op1 += me-&gt;op2;
+            break;
+        }
+        case KEY_MINUS: {
+            me-&gt;op1 -= me-&gt;op2;
+            break;
+        }
+        case KEY_MULT: {
+            me-&gt;op1 *= me-&gt;op2;
+            break;
+        }
+        case KEY_DIVIDE: {
+            if ((-1e-30 &lt; me-&gt;op2) &amp;&amp; (me-&gt;op2 &lt; 1e-30)) {
+                BSP_display_error(&quot; Error 0 &quot;); /* divide by zero */
+                return false;
+            }
+            me-&gt;op1 /= me-&gt;op2;
+            break;
+        }
+        default: {
+            Q_ERROR();
+            break;
+        }
+    }
+    me-&gt;oper1 = oper;
+    me-&gt;oper2 = KEY_NULL;
+    result = me-&gt;op1;
+}
+else { /* (oper == KEY_MULT) || (oper == KEY_DIV) */
+    switch (me-&gt;oper2) {
+        case KEY_MULT: {
+            me-&gt;op2 *= op;
+            break;
+        }
+        case KEY_DIVIDE: {
+            if ((-1e-30 &lt; op) &amp;&amp; (op &lt; 1e-30)) {
+                BSP_display_error(&quot; Error 0 &quot;); /* divide by zero */
+                return false;
+            }
+            me-&gt;op2 /= op;
+            break;
+        }
+        default: { /* oper2 not provided yet */
+            me-&gt;op2 = op;
+            break;
+        }
+    }
+    me-&gt;oper2 = oper;
+    result = me-&gt;op2;
+}
+
+if ((result &lt; -99999999.0) || (99999999.0 &lt; result)) {
+    BSP_display_error(&quot; Error 1 &quot;); /* out of range */
+    return false;
+}
+if ((-0.0000001 &lt; result) &amp;&amp; (result &lt; 0.0000001)) {
+    result = 0.0;
+}
+BSP_display(result);
+
+return true;</code>
+   </operation>
+   <statechart properties="0x01">
     <initial target="../1">
-     <action>BSP_clear();
-(void)e; /* unused parameter */</action>
-     <initial_glyph conn="2,2,5,1,92,4,-2">
+     <action>(void)e; /* unused parameter */</action>
+     <initial_glyph conn="2,2,5,1,94,4,-2">
       <action box="1,-2,13,4"/>
      </initial_glyph>
     </initial>
@@ -24,49 +125,53 @@
      <entry>BSP_message(&quot;on-ENTRY;&quot;);</entry>
      <exit>BSP_message(&quot;on-EXIT;&quot;);</exit>
      <initial target="../4">
-      <action>BSP_message(&quot;on-INIT;&quot;);</action>
-      <initial_glyph conn="15,9,5,1,45,9,-2">
+      <action>BSP_message(&quot;on-INIT;&quot;);
+BSP_clear();</action>
+      <initial_glyph conn="49,10,5,1,13,8,-2">
        <action box="1,0,5,2"/>
       </initial_glyph>
      </initial>
      <tran trig="C" target="..">
-      <action>BSP_clear();</action>
-      <tran_glyph conn="2,12,3,1,90">
-       <action box="0,-2,4,2"/>
+      <tran_glyph conn="2,12,3,1,92">
+       <action box="0,-2,12,4"/>
       </tran_glyph>
      </tran>
      <tran trig="OFF" target="../../2">
-      <tran_glyph conn="2,14,3,1,92,104,-75">
+      <tran_glyph conn="2,14,3,1,94,104,-77">
        <action box="0,0,5,2"/>
       </tran_glyph>
      </tran>
      <state name="error">
+      <documentation>/* Error state after evaluation of an expression.
+This state can be exited only throgh the inherited C (Clear) event.
+*/</documentation>
       <entry>BSP_message(&quot;error-ENTRY;&quot;);</entry>
       <exit>BSP_message(&quot;error-EXIT;&quot;);</exit>
-      <state_glyph node="11,68,9,8">
+      <state_glyph node="12,68,10,8">
        <entry box="1,2,5,2"/>
        <exit box="1,4,5,2"/>
       </state_glyph>
      </state>
      <state name="ready">
-      <entry>BSP_message(&quot;ready-ENTRY;&quot;);</entry>
+      <entry>BSP_message(&quot;ready-ENTRY;&quot;);
+me-&gt;oper2 = KEY_NULL;</entry>
       <exit>BSP_message(&quot;ready-EXIT;&quot;);</exit>
       <initial target="../6">
        <action>BSP_message(&quot;ready-INIT;&quot;);</action>
-       <initial_glyph conn="18,20,5,0,20,2">
+       <initial_glyph conn="20,20,5,0,20,2">
         <action box="0,-2,6,2"/>
        </initial_glyph>
       </initial>
       <tran trig="DIGIT_0" target="../../5/3">
        <action>BSP_clear();</action>
-       <tran_glyph conn="18,34,2,0,11">
+       <tran_glyph conn="20,34,2,0,11">
         <action box="1,0,6,2"/>
        </tran_glyph>
       </tran>
       <tran trig="DIGIT_1_9" target="../../5/4">
        <action>BSP_clear();
 BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-       <tran_glyph conn="32,34,2,0,11">
+       <tran_glyph conn="34,34,2,0,11">
         <action box="1,0,9,2"/>
        </tran_glyph>
       </tran>
@@ -74,21 +179,21 @@ BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
        <action>BSP_clear();
 BSP_insert((int)'0');
 BSP_insert((int)'.');</action>
-       <tran_glyph conn="52,34,2,0,11">
+       <tran_glyph conn="54,34,2,0,11">
         <action box="0,0,6,2"/>
        </tran_glyph>
       </tran>
       <tran trig="OPER" target="../../6">
-       <action>me-&gt;operand1 = BSP_get_value();
-me-&gt;operator = Q_EVT_CAST(CalcEvt)-&gt;key_code;</action>
-       <tran_glyph conn="58,24,1,1,32,48,-32">
+       <action>me-&gt;op1 = BSP_get_value();
+me-&gt;oper1 = Q_EVT_CAST(CalcEvt)-&gt;key_code;</action>
+       <tran_glyph conn="60,24,1,1,32,48,-32">
         <action box="0,-2,6,2"/>
        </tran_glyph>
       </tran>
       <state name="result">
        <entry>BSP_message(&quot;result-ENTRY;&quot;);</entry>
        <exit>BSP_message(&quot;result-EXIT;&quot;);</exit>
-       <state_glyph node="14,22,10,10">
+       <state_glyph node="16,22,10,10">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
@@ -99,26 +204,26 @@ me-&gt;operator = Q_EVT_CAST(CalcEvt)-&gt;key_code;</action>
        <tran trig="OPER">
         <choice target="../../../../5/6">
          <guard brief="e-&gt;key == '-'">Q_EVT_CAST(CalcEvt)-&gt;key_code == KEY_MINUS</guard>
-         <choice_glyph conn="40,30,5,0,34,15">
+         <choice_glyph conn="42,30,5,0,34,15">
           <action box="1,0,11,2"/>
          </choice_glyph>
         </choice>
         <choice>
          <guard>else</guard>
-         <choice_glyph conn="40,30,4,-1,-4,4">
+         <choice_glyph conn="42,30,4,-1,-4,4">
           <action box="1,-3,6,2"/>
          </choice_glyph>
         </choice>
-        <tran_glyph conn="30,30,3,-1,10">
+        <tran_glyph conn="32,30,3,-1,10">
          <action box="0,-2,6,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="30,22,16,10">
+       <state_glyph node="32,22,16,10">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
       </state>
-      <state_glyph node="8,16,50,18">
+      <state_glyph node="10,16,50,18">
        <entry box="1,2,5,2"/>
        <exit box="1,4,5,2"/>
       </state_glyph>
@@ -126,21 +231,21 @@ me-&gt;operator = Q_EVT_CAST(CalcEvt)-&gt;key_code;</action>
      <state name="operand1">
       <entry>BSP_message(&quot;operand1-ENTRY;&quot;);</entry>
       <exit>BSP_message(&quot;operand1-EXIT;&quot;);</exit>
-      <tran trig="CE" target="../../4/6">
+      <tran trig="CE" target="../../4">
        <action>BSP_clear();</action>
-       <tran_glyph conn="26,38,0,3,-14,4">
+       <tran_glyph conn="84,38,0,1,-10,-24">
         <action box="0,-2,6,2"/>
        </tran_glyph>
       </tran>
       <tran trig="OPER" target="../../6">
-       <action>me-&gt;operand1 = BSP_get_value();
-me-&gt;operator = Q_EVT_CAST(CalcEvt)-&gt;key_code;</action>
-       <tran_glyph conn="60,64,2,1,6,-2">
+       <action>me-&gt;op1 = BSP_get_value();
+me-&gt;oper1 = Q_EVT_CAST(CalcEvt)-&gt;key_code;</action>
+       <tran_glyph conn="62,64,2,1,6,-2">
         <action box="1,0,6,2"/>
        </tran_glyph>
       </tran>
       <tran trig="EQUALS" target="../../4/5">
-       <tran_glyph conn="10,38,0,3,-12,4">
+       <tran_glyph conn="12,38,0,3,-12,4">
         <action box="0,-2,6,2"/>
        </tran_glyph>
       </tran>
@@ -149,24 +254,24 @@ me-&gt;operator = Q_EVT_CAST(CalcEvt)-&gt;key_code;</action>
        <exit>BSP_message(&quot;zero1-EXIT;&quot;);</exit>
        <tran trig="DIGIT_0">
         <action>;</action>
-        <tran_glyph conn="12,56,3,-1,10">
+        <tran_glyph conn="14,56,3,-1,10">
          <action box="0,-2,7,2"/>
         </tran_glyph>
        </tran>
        <tran trig="DIGIT_1_9" target="../../4">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="12,53,3,3,16,-6,2">
+        <tran_glyph conn="14,53,3,3,16,-6,2">
          <action box="0,-2,9,2"/>
         </tran_glyph>
        </tran>
        <tran trig="POINT" target="../../5">
         <action>BSP_insert((int)'0');
 BSP_insert((int)'.');</action>
-        <tran_glyph conn="14,58,2,2,2,40,-2">
+        <tran_glyph conn="16,58,2,2,2,40,-2">
          <action box="1,0,6,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="12,45,14,13">
+       <state_glyph node="14,45,14,13">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
@@ -176,17 +281,17 @@ BSP_insert((int)'.');</action>
        <exit>BSP_message(&quot;int1-EXIT;&quot;);</exit>
        <tran trig="POINT" target="../../5">
         <action>BSP_insert((int)'.');</action>
-        <tran_glyph conn="30,53,3,3,16,-6,2">
+        <tran_glyph conn="32,53,3,3,16,-6,2">
          <action box="0,-2,6,2"/>
         </tran_glyph>
        </tran>
        <tran trig="DIGIT_0, DIGIT_1_9">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="30,56,3,-1,10">
+        <tran_glyph conn="32,56,3,-1,10">
          <action box="0,-2,14,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="30,45,14,13">
+       <state_glyph node="32,45,14,13">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
@@ -196,17 +301,17 @@ BSP_insert((int)'.');</action>
        <exit>BSP_message(&quot;frac1-EXIT;&quot;);</exit>
        <tran trig="POINT">
         <action>;</action>
-        <tran_glyph conn="48,56,3,-1,10">
+        <tran_glyph conn="50,56,3,-1,10">
          <action box="0,-2,6,2"/>
         </tran_glyph>
        </tran>
        <tran trig="DIGIT_0, DIGIT_1_9">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="48,53,3,-1,10">
+        <tran_glyph conn="50,53,3,-1,10">
          <action box="0,-2,15,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="48,45,14,13">
+       <state_glyph node="50,45,14,13">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
@@ -217,46 +322,46 @@ BSP_negate();</entry>
        <exit>BSP_message(&quot;negated1-EXIT;&quot;);</exit>
        <tran trig="DIGIT_0" target="../../3">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="66,57,2,2,4,-44,-3">
+        <tran_glyph conn="68,57,2,2,4,-44,-3">
          <action box="0,0,6,2"/>
         </tran_glyph>
        </tran>
        <tran trig="DIGIT_1_9" target="../../4">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="73,57,2,2,5,-35,-4">
+        <tran_glyph conn="75,57,2,2,5,-35,-4">
          <action box="0,0,9,2"/>
         </tran_glyph>
        </tran>
        <tran trig="POINT" target="../../5">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="81,57,2,2,6,-25,-5">
+        <tran_glyph conn="83,57,2,2,6,-25,-5">
          <action box="1,0,6,2"/>
         </tran_glyph>
        </tran>
        <tran trig="OPER">
         <choice>
          <guard>else</guard>
-         <choice_glyph conn="74,53,4,-1,-4,8">
+         <choice_glyph conn="76,53,4,-1,-4,8">
           <action box="1,-4,6,2"/>
          </choice_glyph>
         </choice>
         <choice>
          <guard brief="e-&gt;key == '-'">Q_EVT_CAST(CalcEvt)-&gt;key_code == KEY_MINUS</guard>
          <action>;</action>
-         <choice_glyph conn="74,53,5,-1,8">
+         <choice_glyph conn="76,53,5,-1,8">
           <action box="1,0,11,2"/>
          </choice_glyph>
         </choice>
-        <tran_glyph conn="64,53,3,-1,10">
+        <tran_glyph conn="66,53,3,-1,10">
          <action box="0,-2,6,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="64,45,22,12">
+       <state_glyph node="66,45,22,12">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
       </state>
-      <state_glyph node="8,38,80,26">
+      <state_glyph node="10,38,80,26">
        <entry box="1,2,5,2"/>
        <exit box="1,4,5,2"/>
       </state_glyph>
@@ -266,14 +371,14 @@ BSP_negate();</entry>
       <exit>BSP_message(&quot;opEntered-EXIT;&quot;);</exit>
       <tran trig="DIGIT_0" target="../../7/3">
        <action>BSP_clear();</action>
-       <tran_glyph conn="27,82,2,0,2,-5,9">
+       <tran_glyph conn="30,82,2,0,8,-6,3">
         <action box="1,0,6,2"/>
        </tran_glyph>
       </tran>
       <tran trig="DIGIT_1_9" target="../../7/4">
        <action>BSP_clear();
 BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-       <tran_glyph conn="34,82,2,0,11">
+       <tran_glyph conn="40,82,2,0,11">
         <action box="1,0,9,2"/>
        </tran_glyph>
       </tran>
@@ -281,28 +386,28 @@ BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
        <action>BSP_clear();
 BSP_insert((int)'0');
 BSP_insert((int)'.');</action>
-       <tran_glyph conn="52,82,2,0,11">
+       <tran_glyph conn="54,82,2,0,11">
         <action box="0,0,6,2"/>
        </tran_glyph>
       </tran>
       <tran trig="OPER">
        <choice target="../../../7/6">
         <guard brief="e-&gt;key == '-'">Q_EVT_CAST(CalcEvt)-&gt;key_code == KEY_MINUS</guard>
-        <choice_glyph conn="34,78,5,0,40,15">
+        <choice_glyph conn="36,78,5,0,40,15">
          <action box="1,0,11,2"/>
         </choice_glyph>
        </choice>
        <choice>
         <guard>else</guard>
-        <choice_glyph conn="34,78,4,-1,-4,4">
+        <choice_glyph conn="36,78,4,-1,-4,4">
          <action box="1,-3,6,2"/>
         </choice_glyph>
        </choice>
-       <tran_glyph conn="26,78,3,-1,8">
+       <tran_glyph conn="28,78,3,-1,8">
         <action box="0,-2,6,2"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="26,68,32,14">
+      <state_glyph node="28,68,32,14">
        <entry box="1,2,5,2"/>
        <exit box="1,4,5,2"/>
       </state_glyph>
@@ -312,41 +417,41 @@ BSP_insert((int)'.');</action>
       <exit>BSP_message(&quot;operand2-EXIT;&quot;);</exit>
       <tran trig="CE" target="../../6">
        <action>BSP_clear();</action>
-       <tran_glyph conn="16,86,0,3,-5,8,-5,2">
+       <tran_glyph conn="82,86,0,1,-10,-22">
         <action box="0,-4,6,2"/>
        </tran_glyph>
       </tran>
       <tran trig="EQUALS">
        <choice target="../../../3">
-        <guard>else</guard>
-        <choice_glyph conn="4,70,5,3,7">
-         <action box="1,0,6,2"/>
+        <guard brief="else"/>
+        <choice_glyph conn="4,70,5,3,8">
+         <action box="1,0,7,2"/>
         </choice_glyph>
        </choice>
        <choice target="../../../4/5">
-        <guard brief="BSP_eval()">BSP_eval(me-&gt;operand1, me-&gt;operator, BSP_get_value())</guard>
-        <choice_glyph conn="4,70,4,3,-46,10">
-         <action box="0,-4,10,2"/>
+        <guard>Calc_eval(me, BSP_get_value(), KEY_NULL)</guard>
+        <choice_glyph conn="4,70,4,3,-46,12">
+         <action box="-3,-5,14,2"/>
         </choice_glyph>
        </choice>
-       <tran_glyph conn="8,102,3,-1,-4,-32">
-        <action box="-4,-2,6,2"/>
+       <tran_glyph conn="10,108,3,-1,-6,-38">
+        <action box="-5,-2,10,2"/>
        </tran_glyph>
       </tran>
       <tran trig="OPER">
-       <choice target="../../../3">
-        <guard>else</guard>
-        <choice_glyph conn="6,79,4,3,-5,5">
-         <action box="0,-4,6,2"/>
-        </choice_glyph>
-       </choice>
        <choice target="../../../6">
-        <guard brief="BSP_eval()">BSP_eval(me-&gt;operand1, me-&gt;operator, BSP_get_value())</guard>
-        <choice_glyph conn="6,79,5,3,16,-5,4">
-         <action box="1,1,10,2"/>
+        <guard>Calc_eval(me, BSP_get_value(), Q_EVT_CAST(CalcEvt)-&gt;key_code)</guard>
+        <choice_glyph conn="6,80,5,3,18,-6,4">
+         <action box="1,0,18,2"/>
         </choice_glyph>
        </choice>
-       <tran_glyph conn="8,98,3,-1,-2,-19">
+       <choice target="../../../3">
+        <guard brief="else"/>
+        <choice_glyph conn="6,80,4,3,-6,6">
+         <action box="0,-6,10,2"/>
+        </choice_glyph>
+       </choice>
+       <tran_glyph conn="10,104,3,-1,-4,-24">
         <action box="-4,-2,6,2"/>
        </tran_glyph>
       </tran>
@@ -355,24 +460,24 @@ BSP_insert((int)'.');</action>
        <exit>BSP_message(&quot;zero2-EXIT;&quot;);</exit>
        <tran trig="DIGIT_0">
         <action>;</action>
-        <tran_glyph conn="12,104,3,-1,10">
+        <tran_glyph conn="14,104,3,-1,10">
          <action box="0,-2,7,2"/>
         </tran_glyph>
        </tran>
        <tran trig="DIGIT_1_9" target="../../4">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="12,101,3,3,16,-6,2">
+        <tran_glyph conn="14,101,3,3,16,-6,2">
          <action box="0,-2,9,2"/>
         </tran_glyph>
        </tran>
        <tran trig="POINT" target="../../5">
         <action>BSP_insert((int)'0');
 BSP_insert((int)'.');</action>
-        <tran_glyph conn="14,106,2,2,2,40,-2">
+        <tran_glyph conn="16,106,2,2,2,40,-2">
          <action box="1,0,6,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="12,93,14,13">
+       <state_glyph node="14,93,14,13">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
@@ -382,17 +487,17 @@ BSP_insert((int)'.');</action>
        <exit>BSP_message(&quot;int2-EXIT;&quot;);</exit>
        <tran trig="POINT" target="../../5">
         <action>BSP_insert((int)'.');</action>
-        <tran_glyph conn="30,101,3,3,16,-6,2">
+        <tran_glyph conn="32,101,3,3,16,-6,2">
          <action box="0,-2,6,2"/>
         </tran_glyph>
        </tran>
        <tran trig="DIGIT_0, DIGIT_1_9">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="30,104,3,-1,10">
+        <tran_glyph conn="32,104,3,-1,10">
          <action box="0,-2,14,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="30,93,14,13">
+       <state_glyph node="32,93,14,13">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
@@ -402,17 +507,17 @@ BSP_insert((int)'.');</action>
        <exit>BSP_message(&quot;frac2-EXIT;&quot;);</exit>
        <tran trig="POINT">
         <action>;</action>
-        <tran_glyph conn="48,104,3,-1,10">
+        <tran_glyph conn="50,104,3,-1,10">
          <action box="0,-2,6,2"/>
         </tran_glyph>
        </tran>
        <tran trig="DIGIT_0, DIGIT_1_9">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="48,101,3,-1,10">
+        <tran_glyph conn="50,101,3,-1,10">
          <action box="0,-2,15,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="48,93,14,13">
+       <state_glyph node="50,93,14,13">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
@@ -423,51 +528,51 @@ BSP_negate();</entry>
        <exit>BSP_message(&quot;negated2-EXIT;&quot;);</exit>
        <tran trig="DIGIT_0" target="../../3">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="66,105,2,2,4,-44,-3">
+        <tran_glyph conn="68,105,2,2,4,-44,-3">
          <action box="0,0,6,2"/>
         </tran_glyph>
        </tran>
        <tran trig="DIGIT_1_9" target="../../4">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="73,105,2,2,5,-37,-4">
+        <tran_glyph conn="75,105,2,2,5,-37,-4">
          <action box="0,0,9,2"/>
         </tran_glyph>
        </tran>
        <tran trig="POINT" target="../../5">
         <action>BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
-        <tran_glyph conn="81,105,2,2,6,-25,-5">
+        <tran_glyph conn="83,105,2,2,6,-25,-5">
          <action box="1,0,6,2"/>
         </tran_glyph>
        </tran>
        <tran trig="OPER">
         <choice>
          <guard>else</guard>
-         <choice_glyph conn="74,102,4,-1,-4,8">
+         <choice_glyph conn="76,102,4,-1,-4,8">
           <action box="1,-4,6,2"/>
          </choice_glyph>
         </choice>
         <choice>
          <guard brief="e-&gt;key == '-'">Q_EVT_CAST(CalcEvt)-&gt;key_code == KEY_MINUS</guard>
          <action>;</action>
-         <choice_glyph conn="74,102,5,-1,8">
+         <choice_glyph conn="76,102,5,-1,8">
           <action box="1,0,11,2"/>
          </choice_glyph>
         </choice>
-        <tran_glyph conn="64,102,3,-1,10">
+        <tran_glyph conn="66,102,3,-1,10">
          <action box="0,-2,6,2"/>
         </tran_glyph>
        </tran>
-       <state_glyph node="64,93,22,12">
+       <state_glyph node="66,93,22,12">
         <entry box="1,2,5,2"/>
         <exit box="1,4,5,2"/>
        </state_glyph>
       </state>
-      <state_glyph node="8,86,80,26">
+      <state_glyph node="10,86,80,26">
        <entry box="1,2,5,2"/>
        <exit box="1,4,5,2"/>
       </state_glyph>
      </state>
-     <state_glyph node="2,4,90,110">
+     <state_glyph node="2,4,92,110">
       <entry box="1,2,5,2"/>
       <exit box="1,4,5,2"/>
      </state_glyph>
@@ -479,12 +584,16 @@ BSP_exit();</entry>
       <entry box="1,2,5,2"/>
      </state_glyph>
     </state>
-    <state_diagram size="96,124"/>
+    <state_diagram size="98,124"/>
    </statechart>
   </class>
+  <attribute name="the_calc" type="QHsm * const" visibility="0x00" properties="0x00">
+   <documentation>Global opaque pointer to the Calc inst</documentation>
+   <code>= &amp;Calc_inst.super;</code>
+  </attribute>
   <operation name="Calc_ctor" type="void" visibility="0x00" properties="0x00">
    <documentation>constructor</documentation>
-   <code>Calc *me = &amp;l_calc;
+   <code>Calc *me = &amp;Calc_inst;
 QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Calc_initial));</code>
   </operation>
  </package>
@@ -504,10 +613,10 @@ enum CalcSignals {
     OFF_SIG
 };
 
-$declare(Events::CalcEvt)
-$declare(SMs::Calc_ctor)
+$declare${Events::CalcEvt}
+$declare${SMs::Calc_ctor}
 
-extern QMsm * const the_calc;  /* &quot;opaque&quot; pointer to calculator MSM */
+extern QHsm * const the_calc;  /* &quot;opaque&quot; pointer to calculator HSM */
 
 #endif /* calc1_h */</text>
   </file>
@@ -516,15 +625,19 @@ extern QMsm * const the_calc;  /* &quot;opaque&quot; pointer to calculator MSM *
 #include &quot;bsp.h&quot;   /* board support package */
 #include &quot;calc1.h&quot; /* application */
 
-$declare(SMs::Calc)
+Q_DEFINE_THIS_FILE
 
-static Calc l_calc;    /* the only instance of the Calc class */
+#define KEY_NULL    '\0'
+#define KEY_PLUS    '+'
+#define KEY_MINUS   '-'
+#define KEY_MULT    '*'
+#define KEY_DIVIDE  '/'
 
-/* global-scope definitions ---------------------------------------*/
-QMsm * const the_calc = &amp;l_calc.super;  /* &quot;opaque&quot; pointer to MSM */
+$declare${SMs::Calc}
 
-$define(SMs::Calc_ctor)
-$define(SMs::Calc)</text>
+$define${SMs::the_calc}
+$define${SMs::Calc_ctor}
+$define${SMs::Calc}</text>
   </file>
  </directory>
 </model>

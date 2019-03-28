@@ -2,6 +2,11 @@
 
 @image html qp_banner.jpg
 
+@section ab_new What's new?
+To check what's new in QP/C, please see @ref history "QP/C Revision History".
+
+
+------------------------------------------------------------------------------
 @section ab_about What is it?
 <a class="extern" target="_blank" href="https://www.state-machine.com/products/"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#RTEF"><strong>Real-Time Embedded Framework (RTEF)</strong></a> for building modern, responsive, real-time embedded applications as systems of asynchronous event-driven <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Active"><strong>active objects</strong></a> (<a href="https://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; RTEF is a member of a larger family consisting of QP/C, <a href="https://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a>, and <a href="https://www.state-machine.com/qpn" target="_blank" class="extern">QP-nano</a> frameworks, which are all strictly quality controlled, thoroughly documented, and available under @ref licensing "dual licensing model".
 
