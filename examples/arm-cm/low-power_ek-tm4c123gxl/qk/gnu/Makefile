@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on EK-TM4C123GXL, QK kernel, GNU-ARM
-# Last Updated for Version: 6.4.0
-# Date of the Last Update:  2019-02-23
+# Last Updated for Version: 6.5.0
+# Date of the Last Update:  2019-04-15
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -238,7 +238,7 @@ endif # ......................................................................
 
 
 LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
-	-specs=nosys.specs \
+	-specs=nosys.specs -specs=nano.specs \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
 
