@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.5.0
+* Last updated on  2019-04-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -62,6 +62,10 @@ int main() {
 
     /* init publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
+
+    /* initialize the event pools... */
+    QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
+    QF_poolInit(medPoolSto, sizeof(medPoolSto), sizeof(medPoolSto[0]));
 
     /* object dictionaries for AOs... */
     QS_OBJ_DICTIONARY(AO_Missile);

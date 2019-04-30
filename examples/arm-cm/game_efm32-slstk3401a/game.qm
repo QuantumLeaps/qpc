@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.3.1" links="0">
+<model version="4.5.0" links="0">
  <documentation>&quot;Fly 'n' Shoot&quot; game model from Chapters 1 &amp; 9 of PSiCC2
 
 NOTE: Requries QP6.</documentation>
@@ -128,7 +128,7 @@ for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
     }
 }</code>
    </operation>
-   <statechart properties="QS_FUN_DICT">
+   <statechart properties="0x03">
     <initial target="../1/2">
      <action>uint8_t n;
 for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
@@ -470,9 +470,10 @@ QF_stop(); /* stop QF and cleanup */</entry>
    </attribute>
    <attribute name="exp_ctr" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="score" type="uint16_t" visibility="0x02" properties="0x00"/>
-   <statechart properties="QS_FUN_DICT">
+   <statechart properties="0x03">
     <initial target="../1">
      <action>(void)e; /* avoid the compiler warning 'usused parameter' */
+
 QActive_subscribe(&amp;me-&gt;super, TIME_TICK_SIG);
 QActive_subscribe(&amp;me-&gt;super, PLAYER_TRIGGER_SIG);
 
@@ -507,7 +508,8 @@ sev = Q_NEW(ScoreEvt, SCORE_SIG);
 sev-&gt;score = me-&gt;score;
 QACTIVE_POST(AO_Tunnel, (QEvt *)sev, me);
 
-/* lauch the ship from the initial hight */
+/* lauch the ship from the initial position */
+me-&gt;x = GAME_SHIP_X;
 me-&gt;y = (GAME_SHIP_Y &lt;&lt; 2);</entry>
       <tran trig="TIME_TICK">
        <action>ObjectImageEvt *oie;
@@ -615,7 +617,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)gameOver, me);</action>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="exp_ctr" type="uint8_t" visibility="0x02" properties="0x00"/>
-   <statechart properties="QS_FUN_DICT">
+   <statechart properties="0x03">
     <initial target="../1">
      <action>(void)e;
 QActive_subscribe(&amp;me-&gt;super, TIME_TICK_SIG);
@@ -719,7 +721,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="exp_ctr" type="uint8_t" visibility="0x00" properties="0x00"/>
-   <statechart>
+   <statechart properties="0x01">
     <initial target="../1">
      <action>static uint8_t dict_sent;
 
@@ -883,7 +885,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
    <attribute name="exp_ctr" type="uint8_t" visibility="0x00" properties="0x00"/>
-   <statechart>
+   <statechart properties="0x01">
     <initial target="../1">
      <action>static  uint8_t dict_sent;
 
