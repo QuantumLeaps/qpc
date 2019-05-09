@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "DPP" example on STM32F4-Discovery board, cooperative QV kernel
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-09
+* Last Updated for Version: 6.5.0
+* Date of the Last Update:  2019-05-09
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
+* https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
 #include "qpc.h"
@@ -43,26 +43,6 @@
 /* add other drivers if necessary... */
 
 Q_DEFINE_THIS_FILE
-
-/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-* Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-* DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-*/
-enum KernelUnawareISRs { /* see NOTE00 */
-    USART2_PRIO,
-    /* ... */
-    MAX_KERNEL_UNAWARE_CMSIS_PRI  /* keep always last */
-};
-/* "kernel-unaware" interrupts can't overlap "kernel-aware" interrupts */
-Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
-
-enum KernelAwareISRs {
-    SYSTICK_PRIO = QF_AWARE_ISR_CMSIS_PRI, /* see NOTE00 */
-    /* ... */
-    MAX_KERNEL_AWARE_CMSIS_PRI /* keep always last */
-};
-/* "kernel-aware" interrupts should not overlap the PendSV priority */
-Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
@@ -114,7 +94,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK_X(0U, &l_SysTick);
+    QF_TICK_X(0U, &l_SysTick); /* process time events for tick rate 0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -159,6 +139,8 @@ void USART2_IRQHandler(void) {}
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
+    GPIO_InitTypeDef GPIO_struct;
+
     /* NOTE: SystemInit() already called from the startup code
     *  but SystemCoreClock needs to be updated
     */
@@ -188,18 +170,6 @@ void BSP_init(void) {
     */
     FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
 #endif
-
-    GPIO_InitTypeDef GPIO_struct;
-
-    /* NOTE: SystemInit() already called from the startup code
-    *  but SystemCoreClock needs to be updated
-    */
-    SystemCoreClockUpdate();
-
-    /* Explictily Disable the automatic FPU state preservation as well as
-    * the FPU lazy stacking
-    */
-    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
 
     /* Initialize thr port for the LEDs */
     RCC_AHB1PeriphClockCmd(LED_GPIO_CLK , ENABLE);
@@ -248,6 +218,14 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(COMMAND_STAT);
 }
 /*..........................................................................*/
+void BSP_ledOn(void) {
+    LED_GPIO_PORT->BSRRL = LED6_PIN;
+}
+/*..........................................................................*/
+void BSP_ledOff(void) {
+    LED_GPIO_PORT->BSRRH = LED6_PIN;
+}
+/*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
     (void)n;
 
@@ -255,13 +233,13 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
         LED_GPIO_PORT->BSRRL = LED3_PIN; /* turn LED on  */
     }
     else {
-        LED_GPIO_PORT->BSRRH = LED3_PIN; /* turn LED off  */
+        LED_GPIO_PORT->BSRRH = LED3_PIN; /* turn LED off */
     }
     if (stat[0] == 'e') {
         LED_GPIO_PORT->BSRRL = LED5_PIN; /* turn LED on  */
     }
     else {
-        LED_GPIO_PORT->BSRRH = LED5_PIN; /* turn LED on  */
+        LED_GPIO_PORT->BSRRH = LED5_PIN; /* turn LED off */
     }
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
@@ -275,17 +253,14 @@ void BSP_displayPaused(uint8_t paused) {
         LED_GPIO_PORT->BSRRL = LED4_PIN; /* turn LED on  */
     }
     else {
-        LED_GPIO_PORT->BSRRH = LED4_PIN; /* turn LED on  */
+        LED_GPIO_PORT->BSRRH = LED4_PIN; /* turn LED off */
     }
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     uint32_t rnd;
 
-    /* exercise the FPU with some floating point computations */
-    /* NOTE: this code can be only called from a task that created with
-    * the option OS_TASK_OPT_SAVE_FP.
-    */
+    /* Some flating point code is to exercise the FPU... */
     float volatile x = 3.1415926F;
     x = x + 2.7182818F;
 
@@ -311,17 +286,19 @@ void QF_onStartup(void) {
     /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
-    /* assing all priority bits for preemption-prio. and none to sub-prio. */
+    /* assign all priority bits for preemption-prio. and none to sub-prio. */
     NVIC_SetPriorityGrouping(0U);
 
-    /* set priorities of ALL ISRs used in the system, see NOTE00
-    *
-    * !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
+    /* !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    * Assign a priority to EVERY ISR explicitly, see NOTE00.
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(USART2_IRQn,    USART2_PRIO);
-    NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
+    /* kernel UNAWARE interrupts, see NOTE00 */
+    NVIC_SetPriority(USART2_IRQn,    0U);
+    /* ... */
+
+    /* kernel AWARE interrupts, see NOTE00 */
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI);
     /* ... */
 
     /* enable IRQs... */
@@ -345,7 +322,7 @@ void QV_onIdle(void) { /* CATION: called with interrupts DISABLED, NOTE01 */
     QF_INT_ENABLE();
     QS_rxParse();  /* parse all the received bytes */
 
-    if ((USART2->SR & USART_FLAG_TXE) != 0) {  /* is TXE empty? */
+    if ((USART2->SR & USART_FLAG_TXE) != 0) { /* TXE empty? */
         uint16_t b;
 
         QF_INT_DISABLE();
@@ -368,7 +345,7 @@ void QV_onIdle(void) { /* CATION: called with interrupts DISABLED, NOTE01 */
     *
     * NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
     * reset the board, then connect with ST-Link Utilities and erase the part.
-    * The trick with BOOT(0) is it gets the part to run the System Loader
+    * The trick with BOOT(0) is that it gets the part to run the System Loader
     * instead of your broken code. When done disconnect BOOT0, and start over.
     */
     //QV_CPU_SLEEP();  /* atomically go to sleep and enable interrupts */

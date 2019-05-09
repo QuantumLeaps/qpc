@@ -49,7 +49,7 @@ set RSM_INPUT=..\include\*.h ..\src\*.h ..\src\qf\*.c ..\src\qv\*.c  ..\src\qk\*
 
 echo /** @page metrics Code Metrics > %RSM_OUTPUT%
 echo.>> %RSM_OUTPUT%
-echo @code >> %RSM_OUTPUT%
+echo @code{c} >> %RSM_OUTPUT%
 echo                    Standard Code Metrics for QP/C %VERSION% >> %RSM_OUTPUT%
 
 %RCMHOME%\rsm.exe -fd -xNOCOMMAND -xNOCONFIG -u"File cfg rsm_qpc.cfg" %RSM_INPUT% >> %RSM_OUTPUT%

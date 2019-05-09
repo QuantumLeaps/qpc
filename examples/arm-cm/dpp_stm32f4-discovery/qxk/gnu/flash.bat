@@ -8,9 +8,7 @@
 setlocal
 
 @echo Load the program to the flash of STM32 board
-@echo usage: flash
-@echo usage: flash rel
-@echo usage: flash spy
+@echo usage: flash dbg\dpp.bin
 
 ::----------------------------------------------------------------------------
 :: NOTE: Adjust the following symbol to the location of the
@@ -18,16 +16,8 @@ setlocal
 ::
 set STLINK="C:\tools\ST\ST-LINK\ST-LINK Utility\ST-LINK_CLI.exe"
 
-:: set the build directory depending on the first parameter %1
-set BUILD_DIR=dbg
-if [%1] NEQ [] set BUILD_DIR=%1
 @echo on
-
-%STLINK% -P %BUILD_DIR%\dpp-qxk.bin 0x08000000
-
-@echo.
-@echo.
-@echo Reset the target to start running your program!
+%STLINK% -P %1 0x08000000
 
 @echo off
 endlocal
