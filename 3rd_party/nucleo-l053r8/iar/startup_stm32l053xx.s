@@ -1,8 +1,8 @@
 ;/***************************************************************************/
 ; * @file     startup_startup_stm32l053xx.s for IAR ARM assembler
 ; * @brief    CMSIS Cortex-M0+ Core Device Startup File for STM32L053xx.s
-; * @version  CMSIS 4.3.0
-; * @date     20 August 2015
+; * @version  CMSIS 5.5.1
+; * @date     13 May 2019
 ; *
 ; * @description
 ; * Created from the CMSIS template for the specified device
@@ -132,34 +132,48 @@ Reset_Handler
 ;.............................................................................
         PUBWEAK NMI_Handler
 NMI_Handler
-        MOVS    r0,#0
-        MOVS    r1,#2       ; NMI exception number
+        LDR     r0,=str_NMI
+        MOVS    r1,#1
         B       assert_failed
+str_NMI
+        DCB     "NMI"
+        ALIGNROM 2
 ;.............................................................................
         PUBWEAK HardFault_Handler
 HardFault_Handler
-        MOVS    r0,#0
-        MOVS    r1,#3       ; HardFault exception number
+        LDR     r0,=str_HardFault
+        MOVS    r1,#1
         B       assert_failed
+str_HardFault
+        DCB     "HardFault"
+        ALIGNROM 2
 ;.............................................................................
         PUBWEAK MemManage_Handler
 MemManage_Handler
-        MOVS    r0,#0
-        MOVS    r1,#4       ; MemManage exception number
+        LDR     r0,=str_MemManage
+        MOVS    r1,#1
         B       assert_failed
+str_MemManage
+        DCB     "MemManage"
+        ALIGNROM 2
 ;.............................................................................
         PUBWEAK BusFault_Handler
 BusFault_Handler
-        MOVS    r0,#0
-        MOVS    r1,#5       ; BusFault exception number
+        LDR     r0,=str_BusFault
+        MOVS    r1,#1
         B       assert_failed
+str_BusFault
+        DCB     "BusFault"
+        ALIGNROM 2
 ;.............................................................................
         PUBWEAK UsageFault_Handler
 UsageFault_Handler
-        MOVS    r0,#0
-        MOVS    r1,#6       ; UsageFault exception number
+        LDR     r0,=str_UsageFault
+        MOVS    r1,#1
         B       assert_failed
-
+str_UsageFault
+        DCB     "UsageFault"
+        ALIGNROM 2
 
 ;******************************************************************************
 ;
@@ -168,28 +182,39 @@ UsageFault_Handler
 
         PUBWEAK SVC_Handler
 SVC_Handler
-        MOVS    r0,#0
-        MOVS    r1,#11      ; SVCall exception number
+        LDR     r0,=str_SVC
+        MOVS    r1,#1
         B       assert_failed
+str_SVC
+        DCB     "SVC"
+        ALIGNROM 2
 ;.............................................................................
         PUBWEAK DebugMon_Handler
 DebugMon_Handler
-        MOVS    r0,#0
-        MOVS    r1,#12      ; DebugMon exception number
+        LDR     r0,=str_DebugMon
+        MOVS    r1,#1
         B       assert_failed
+str_DebugMon
+        DCB     "DebugMon"
+        ALIGNROM 2
 ;.............................................................................
         PUBWEAK PendSV_Handler
 PendSV_Handler
-        MOVS    r0,#0
-        MOVS    r1,#14      ; PendSV exception number
+        LDR     r0,=str_PendSV
+        MOVS    r1,#1
         B       assert_failed
+str_PendSV
+        DCB     "PendSV"
+        ALIGNROM 2
 ;.............................................................................
         PUBWEAK SysTick_Handler
 SysTick_Handler
-        MOVS    r0,#0
-        MOVS    r1,#15      ; SysTick exception number
+        LDR     r0,=str_SysTick
+        MOVS    r1,#1
         B       assert_failed
-
+str_SysTick
+        DCB     "SysTick"
+        ALIGNROM 2
 
 ;******************************************************************************
 ;
@@ -251,13 +276,14 @@ USART2_IRQHandler
 RNG_LPUART1_IRQHandler
 LCD_IRQHandler
 USB_IRQHandler
-
-        MOVS    r0,#0
-        MOVS    r1,#0xFF
+        LDR     r0,=str_Undefined
+        MOVS    r1,#1
         B       assert_failed
+str_Undefined
+        DCB     "Undefined"
+        ALIGNROM 2
 
-;******************************************************************************
-;
+;*****************************************************************************
 ; The function assert_failed defines the error/assertion handling policy
 ; for the application. After making sure that the stack is OK, this function
 ; calls Q_onAssert, which should NOT return (typically reset the CPU).
@@ -267,7 +293,7 @@ USB_IRQHandler
 ; The C proptotype of the assert_failed() and Q_onAssert() functions are:
 ; void assert_failed(char const *file, int line);
 ; void Q_onAssert   (char const *file, int line);
-;******************************************************************************
+;*****************************************************************************
         PUBLIC  assert_failed
         EXTERN  Q_onAssert
 assert_failed
@@ -279,3 +305,4 @@ assert_failed
 
 
         END                      ; end of module
+
