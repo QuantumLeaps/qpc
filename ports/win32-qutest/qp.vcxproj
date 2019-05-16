@@ -73,6 +73,7 @@
     <ClCompile Include="..\..\src\qf\qep_hsm.c" />
     <ClCompile Include="..\..\src\qf\qep_msm.c" />
     <ClCompile Include="..\..\src\qf\qf_act.c" />
+    <ClCompile Include="..\..\src\qf\qf_actq.c" />
     <ClCompile Include="..\..\src\qf\qf_defer.c" />
     <ClCompile Include="..\..\src\qf\qf_dyn.c" />
     <ClCompile Include="..\..\src\qf\qf_mem.c" />
