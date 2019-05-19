@@ -34,6 +34,7 @@
 #include "qpc.h"
 #include "bsp.h"
 #include "dpp.h"
+
 /* GUI includes */
 
 Q_DEFINE_THIS_FILE
@@ -77,11 +78,11 @@ void MainTask(void) {
     QF_poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
 
     for (n = 0; n < N_PHILO; ++n) { /* start the active objects... */
-        QActive_start(AO_Philo[n], (uint8_t)(n + 1),
+        QACTIVE_START(AO_Philo[n], (uint8_t)(n + 1),
                       l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
                       (void *)0, 1024, (QEvent *)0); /* 1K of stack */
     }
-    QActive_start(AO_Table, (uint8_t)(N_PHILO + 1),
+    QACTIVE_START(AO_Table, (uint8_t)(N_PHILO + 1),
                   l_tableQueueSto, Q_DIM(l_tableQueueSto),
                   (void *)0, 1024, (QEvent *)0); /* 1K of stack */
 
