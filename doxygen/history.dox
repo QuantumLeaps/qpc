@@ -1,6 +1,16 @@
 /**
 @page history Revision History
 
+@section qpc_6_5_1 Version 6.5.1, 2019-05-24
+This release fixes the following bugs in the QP/C code supporting @ref qutest "QUTest unit testing":
+
+- [bug#241 "QUTest produces superfluous “Trg-Done QS_RX_EVENT” after publish"](https://sourceforge.net/p/qpc/bugs/241/).
+- [bug#242 "QUTest fails to process events posted/​published from user commands"](https://sourceforge.net/p/qpc/bugs/242/).
+
+Also, this release extends the `Makefiles` in the `qpc\examples\qutest` directory to provide the `debug` target. Also, this release extends the `qpc\examples\qutest\blinky` example with projects to build/debug this example with Visual C++ (on the host) and with ARM-KEIL on embedded target (EK-TM4C123).
+
+
+------------------------------------------------------------------------------
 @section qpc_6_5_0 Version 6.5.0, 2019-03-30
 This QP/C release matches the [QM release 4.5.0](https://www.state-machine.com/qm/history.html#qm_4_5_0), which introduced new implementation for QP/C++. Even though this has no impact on the QP/C state machine implementation with QM, this release is needed for compatibility checking between QP and QM.
 

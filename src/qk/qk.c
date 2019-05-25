@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-07
+* Last updated for version 6.5.0
+* Last updated on  2019-05-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -118,7 +118,7 @@ static void initial_events(void) {
 /**
 * @description
 * QF_run() is typically called from your startup code after you initialize
-* the QF and start at least one active object with QActive_start().
+* the QF and start at least one active object with QACTIVE_START().
 *
 * @returns
 * In QK, the QF_run() does not return.

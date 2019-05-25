@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QUTEST-QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 6.3.7
-# Last updated on  2018-11-12
+# Last updated for version 6.5.1
+# Last updated on  2019-05-24
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -39,6 +39,7 @@
 # make HOST=localhost:7705 # connect to host:port
 # make norun   # only make but not run the tests
 # make clean   # cleanup the build
+# make debug   # only run tests in DEBUG mode
 #
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
@@ -90,8 +91,7 @@ LIB_DIRS :=
 LIBS     :=
 
 # defines...
-# QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
-DEFINES   := -DQP_API_VERSION=9999
+DEFINES  :=
 
 #-----------------------------------------------------------------------------
 # add QP/C framework (depends on the OS this Makefile runs on):
@@ -173,13 +173,14 @@ endif
 
 BIN_DIR := build
 
-CFLAGS = -c -g -O -Wall -Wstrict-prototypes -W $(INCLUDES) $(DEFINES) \
-	-DQ_SPY -DQ_UTEST -DQ_HOST
+CFLAGS  := -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
-CPPFLAGS = -c -g -O -Wall -W -fno-rtti -fno-exceptions $(INCLUDES) $(DEFINES) \
-	-DQ_SPY -DQ_UTEST -DQ_HOST
+CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
+	-fno-rtti -fno-exceptions \
+	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
-LINKFLAGS :=
+LINKFLAGS := -no-pie
 
 #-----------------------------------------------------------------------------
 C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))
@@ -191,16 +192,12 @@ C_DEPS_EXT   := $(patsubst %.o,%.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
 CPP_DEPS_EXT := $(patsubst %.o,%.d, $(CPP_OBJS_EXT))
 
-# create $(BIN_DIR) if it does not exist
-ifeq ("$(wildcard $(BIN_DIR))","")
-$(shell $(MKDIR) $(BIN_DIR))
-endif
 
 #-----------------------------------------------------------------------------
 # rules
 #
 
-.PHONY : norun clean show
+.PHONY : norun debug clean show
 
 ifeq ($(MAKECMDGOALS),norun)
 all : $(TARGET_EXE)
@@ -230,18 +227,26 @@ $(BIN_DIR)/%.d : %.cpp
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
-$(BIN_DIR)/%.o : %.cpp
-	$(CPP) $(CPPFLAGS) $< -o $@
-
 $(BIN_DIR)/%.o : %.c
 	$(CC) $(CFLAGS) $< -o $@
 
-# include dependency files only if our goal depends on their existence
+$(BIN_DIR)/%.o : %.cpp
+	$(CPP) $(CPPFLAGS) $< -o $@
+
+# create BIN_DIR and include dependencies only if needed
 ifneq ($(MAKECMDGOALS),clean)
   ifneq ($(MAKECMDGOALS),show)
+     ifneq ($(MAKECMDGOALS),debug)
+ifeq ("$(wildcard $(BIN_DIR))","")
+$(shell $(MKDIR) $(BIN_DIR))
+endif
 -include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
+     endif
   endif
 endif
+
+debug :
+	$(QUTEST) $(TESTS) DEBUG $(HOST)
 
 clean :
 	-$(RM) $(BIN_DIR)/*.o \
@@ -264,5 +269,6 @@ show :
 	@echo DEFINES      = $(DEFINES)
 	@echo QTOOLS       = $(QTOOLS)
 	@echo QUTEST       = $(QUTEST)
+	@echo HOST         = $(HOST)
 	@echo TESTS        = $(TESTS)
 

@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-25
+* Last updated for version 6.5.1
+* Last updated on  2019-05-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -764,7 +764,6 @@ static void QS_rxParseData_(uint8_t b) {
         }
 
 #ifdef Q_UTEST
-
         case WAIT4_TEST_SETUP_FRAME: {
             /* keep ignoring the data until a frame is collected */
             break;
@@ -780,7 +779,7 @@ static void QS_rxParseData_(uint8_t b) {
         case WAIT4_TEST_PROBE_DATA: {
             l_rx.var.tp.data |= ((uint32_t)b << l_rx.var.tp.idx);
             l_rx.var.tp.idx += (uint8_t)8;
-            if (l_rx.var.tp.idx == (uint8_t)(8*sizeof(uint32_t))) {
+            if (l_rx.var.tp.idx == (uint8_t)(8U*sizeof(uint32_t))) {
                 l_rx.var.tp.addr = (uint32_t)0;
                 l_rx.var.tp.idx  = (uint8_t)0;
                 QS_RX_TRAN_(WAIT4_TEST_PROBE_ADDR);
@@ -836,6 +835,9 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             QS_rxReportAck_(QS_RX_COMMAND);
             QS_onCommand(l_rx.var.cmd.cmdId, l_rx.var.cmd.param1,
                          l_rx.var.cmd.param2, l_rx.var.cmd.param3);
+#ifdef Q_UTEST
+            QS_processTestEvts_(); /* process all events produced */
+#endif
             QS_rxReportDone_(QS_RX_COMMAND);
             break;
         }
@@ -1023,7 +1025,6 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
 
             if (l_rx.var.evt.prio == (uint8_t)0) { /* publish */
                 QF_PUBLISH(l_rx.var.evt.e, &QS_rxPriv_);
-                QS_rxReportDone_(QS_RX_EVENT);
             }
             else if (l_rx.var.evt.prio < (uint8_t)QF_MAX_ACTIVE) {
                 if (QACTIVE_POST_X(QF_active_[l_rx.var.evt.prio],
