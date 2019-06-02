@@ -445,28 +445,99 @@ The boards chosen for the examples are generally inexpensive and self-contained 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
-- ARM Cortex-M Boards:
-    - <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL">EK-TM4C123GXL</a> &nbsp; (TivaC LaunchPad)
-    - <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A">EFM32-SLSTK3401A</a>
-    - <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768">mbed-LPC1768</a>
-    - <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8">NUCLEO-L053R8</a>
-    - <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE">NUCLEO-L152RE</a>
-    - <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965">EK-LM3S6965</a>
-    - <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI">NUCLEO-H743ZI</a>
-    - <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery">STM32F4-Discovery</a>
-    - <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery">STM32F746G-Discovery</a>
-    - <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE">NUCLEO-L152RE</a>
+
+<div class="separate"></div>
+@subsection exa_ref_arm-cm ARM Cortex-M Boards
+
+@anchor EK-TM4C123GXL
+![EK-TM4C123GXL (TivaC LaunchPad)](bd_EK-TM4C123GXL.jpg)
+
+- @ref arm-cm_blinky_ek-tm4c123gxl (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref arm-cm_dpp_ek-tm4c123gxl (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref freertos_dpp_ek-tm4c123gxl  (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref freertos_dpp_nucleo-h743zi  (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref threadx_dpp_ek-tm4c123gxl  (ThreadX kernel; IAR-EWARM toolchain)
+- @ref ti-rtos_dpp_ek-tm4c123gxl  (TI-RTOS kernel; CCS-GNU-ARM, IAR-EWARM toolchains)
+- @ref ucos-ii_dpp_ek-tm4c123gxl  (uC/OS-II kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 
 
-- ARM Cortex-R Boards:
-    - <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012">LAUNCHXL2-TMS57012</a>
+<div class="separate"></div>
+@anchor EFM32-SLSTK3401A
+![EFM32-SLSTK3401A](bd_EFM32-SLSTK3401A.jpg)
+- @ref arm-cm_blinky_efm32-slstk3401a (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref arm-cm_dpp_efm32-slstk3401a (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref arm-cm_game_efm32-slstk3401a (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains; <a href="https://www.state-machine.com/qtools/qwin.html"><b>QWin-GUI emulation</b></a>)
 
-- ARM7 Boards:
-    - <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK">AT91SAM7S-EK</a>
 
-- MSP430 Boards:
-    - <a class="preview board" href="bd_MSP-EXP430G2.jpg" title="MSP-EXP430G2">MSP-EXP430G2</a> &nbsp; (MSP430 LaunchPad)
-    - <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP">MSP-EXP430F5529LP</a> &nbsp; (MSP430X LaunchPad)
+<div class="separate"></div>
+@anchor mbed-LPC1768
+![mbed-LPC1768](bd_mbed-LPC1768.jpg)
+- @ref arm-cm_dpp_mbed-lpc1768 (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+
+
+<div class="separate"></div>
+@anchor NUCLEO-L053R8
+![NUCLEO-L053R8](bd_nucleo-l053r8.jpg)
+- @ref arm-cm_dpp_nucleo-l053r8 (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+
+
+<div class="separate"></div>
+@anchor NUCLEO-L152RE
+![NUCLEO-L152RE](bd_nucleo-l152re.jpg)
+- @ref arm-cm_dpp_nucleo-l152re (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref ucos-ii_dpp_nucleo-l152re (uC/OS-II kernel; ARM-KEIL, IAR-EWARM toolchains)
+
+
+<div class="separate"></div>
+@anchor exa_EK-LM3S6965
+![EK-LM3S6965](bd_EK-LM3S6965.jpg)
+- @ref lwip_ek-lm3s6965 (**LwIP TCP/IP**; QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+
+
+<div class="separate"></div>
+@anchor NUCLEO-H743ZI
+![NUCLEO-H743ZI](bd_NUCLEO-H743ZI.jpg)
+- @ref arm-cm_dpp_nucleo-h743zi (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref freertos_dpp_nucleo-h743zi (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+
+
+<div class="separate"></div>
+@anchor STM32F4-Discovery
+![STM32F4-Discovery](bd_STM32F4-Discovery.jpg)
+- @ref arm-cm_dpp_stm32f4-discovery (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref embos_dpp_stm32f429-discovery (embOS kernel; IAR-EWARM toolchain)
+- @ref threadx_dpp_stm32f429-discovery (ThreadX kernel; IAR-EWARM toolchain)
+
+
+<div class="separate"></div>
+@anchor STM32F746G-Discovery
+![STM32F746G-Discovery](bd_STM32F746G-Disco.jpg)
+- @ref arm-cm_dpp_stm32f746g-disco (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref freertos_dpp_stm32f746g-disco (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+
+
+------------------------------------------------------------------------------
+@subsection exa_ref_arm-cr ARM Cortex-R Boards:
+@anchor LAUNCHXL2-TMS57012
+![LAUNCHXL2-TMS57012](bd_LAUNCHXL2-TMS57012.jpg)
+- @ref arm-cr_blinky_launchxl2-tms57012 (QV, QK kernels; CCS-TI-ARM, IAR-EWARM toolchains)
+- @ref arm-cr_dpp_launchxl2-tms57012 (QV, QK kernels; CCS-TI-ARM, IAR-EWARM toolchains)
+
+
+------------------------------------------------------------------------------
+@subsection exa_ref_arm7-9 ARM7 Boards:
+@anchor AT91SAM7S-EK
+![AT91SAM7S-EK](bd_AT91SAM7S-EK.jpg)
+- @ref arm7-9_dpp_at91sam7s-ek (QV, QK kernels; IAR-EWARM toolchains)
+
+
+------------------------------------------------------------------------------
+@subsection exa_ref_msp430 MSP430 Boards:
+@anchor MSP-EXP430F5529LP
+![MSP-EXP430F5529LP](bd_MSP-EXP430F5529LP.jpg)
+- @ref msp430_blinky_msp-exp430f5529lp (QV, QK kernels; CCS=430, IAR-EW430 toolchains)
+- @ref msp430_dpp_msp-exp430f5529lp (QV, QK kernels; CCS=430, IAR-EW430 toolchains)
+
 
 
 ------------------------------------------------------------------------------

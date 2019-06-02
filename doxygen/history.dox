@@ -1003,7 +1003,7 @@ Changes in detail:
 
 6. Added the native @ref avr "port" and @ref exa_avr "examples" to the AVR (AVRmega) with GNU-AVR and IAR-AVR toolsets. The @ref exa_avr "examples" are provided for the Arduino-UNO board.
 
-7. Added the native @ref msp430 "port" and @ref exa_msp430 "examples" to MSP430 with TI CCS-430 and IAR-430 toolsets. The @ref exa_msp430 "examples" are provided for the MSP430 LauchPad boards (the MSP-EXP430G2 and MSP-EXP430F5529LP for the "classic" MSP430 and "extened" MSP430X, respectively).
+7. Added the native @ref msp430 "port" and @ref exa_msp430 "examples" to MSP430 with TI CCS-430 and IAR-430 toolsets. The @ref exa_msp430 "examples" are provided for the MSP430 LauchPad board (MSP-EXP430F5529LP for the "classic" MSP430 and "extened" MSP430X, respectively).
 
 8. Added port to @ref cmsis-rtx "CMSIS-RTOS RTX". Examples are available for TI EK-TM4C123GLX, STM32 NUCLEO-L053R8, and NUCLEO-L152RE boards with ARM-KEIL, GNU-ARM, and IAR-ARM toolsets.
 

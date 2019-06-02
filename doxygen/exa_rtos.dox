@@ -113,6 +113,33 @@ Demonstrated features:
 - QP/Spy input over the virtual COM port (bi-directional Spy) (Spy build configuration)
 
 
+@next{freertos_dpp_nucleo-h743zi examples}
+*/
+/*##########################################################################*/
+/*! @page freertos_dpp_nucleo-h743zi DPP on NUCLEO-H743Z
+
+@image html bd_NUCLEO-H743ZI.jpg NUCLEO-H743ZI
+
+@ref dpp "Dining Philosophers Problem (DPP)" example for NUCLEO-H743ZI MCU (Cortex-M7).
+
+@ref dpp "DPP example" for @ref freertos "FreeRTOS" on STTexas Instruments TivaC123GXL MCU (Cortex-M4F) with the following toolchains:
+- ARM-Keil
+- GNU-ARM
+- IAR-ARM
+
+Demonstrated features:
+- Multiple Active Objects
+- Regular "kernel-aware" ISR with "FromISR" APIs
+  + `QF_TICK_X_FROM_ISR()`
+  + `QF_PUBLISH_FROM_ISR()`
+  + `Q_NEW_FROM_ISR()`
+  + `QACTIVE_POST_FROM_ISR()`
+- Hi-priority "kernel-unaware" ISR
+- `vApplicationTickHook()`
+- QP/Spy output over the virtual COM port (Spy build configuration)
+- QP/Spy input over the virtual COM port (bi-directional Spy) (Spy build configuration)
+
+
 @next{freertos_dpp_stm32f746g-disco examples}
 */
 /*##########################################################################*/
