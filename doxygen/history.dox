@@ -7,7 +7,9 @@ This release fixes the following bugs in the QP/C code supporting @ref qutest "Q
 - [bug#241 "QUTest produces superfluous “Trg-Done QS_RX_EVENT” after publish"](https://sourceforge.net/p/qpc/bugs/241/).
 - [bug#242 "QUTest fails to process events posted/​published from user commands"](https://sourceforge.net/p/qpc/bugs/242/).
 
-Also, this release extends the `Makefiles` in the `qpc\examples\qutest` directory to provide the `debug` target. Also, this release extends the `qpc\examples\qutest\blinky` example with projects to build/debug this example with Visual C++ (on the host) and with ARM-KEIL on embedded target (EK-TM4C123).
+Also, this release extends the `Makefiles` in the `qpc\examples\qutest` directory to provide the `debug` target. Specificall, the `qpc\examples\qutest\blinky` example has been extended with projects to build/debug this example with Visual C++ (on the host) and with ARM-KEIL on embedded target (EK-TM4C123).
+
+Finally, this release adds ports and examples for PIC24/dsPIC 16-bit MCUs with MPLAB-X and XC16 compiler toolchain.
 
 
 ------------------------------------------------------------------------------
