@@ -73,7 +73,7 @@ if "%1"=="-CHM" (
     
     echo Cleanup...
     rmdir /S /Q  tmp
-    echo CHM file generated in ..\..\doxygen\qpc\
+    echo CHM file generated in ..\..\uploads\qpc\
 
 ) else (
     echo Cleanup...

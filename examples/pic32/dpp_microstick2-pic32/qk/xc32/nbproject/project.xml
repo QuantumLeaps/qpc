@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>com.microchip.mplab.nbide.embedded.makeproject</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/make-project/1">
+            <name>dpp-microstick2-pic32-qk</name>
+            <creation-uuid>e9bbb168-4146-4fa4-b2f4-357b75b20ee3</creation-uuid>
+            <make-project-type>0</make-project-type>
+            <c-extensions>c</c-extensions>
+            <cpp-extensions/>
+            <header-extensions>h</header-extensions>
+            <sourceEncoding>ISO-8859-1</sourceEncoding>
+            <asminc-extensions/>
+            <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>../..</sourceRootElem>
+                <sourceRootElem>../../../../../src/qf</sourceRootElem>
+                <sourceRootElem>../../../../../src/qv</sourceRootElem>
+                <sourceRootElem>../../../../../include</sourceRootElem>
+                <sourceRootElem>../../../../../src/qs</sourceRootElem>
+                <sourceRootElem>../../../../../src/qk</sourceRootElem>
+                <sourceRootElem>../../../../../ports/pic32/qk/xc32</sourceRootElem>
+            </sourceRootList>
+            <confList>
+                <confElem>
+                    <name>dbg</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>rel</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>spy</name>
+                    <type>2</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
+        </data>
+    </configuration>
+</project>

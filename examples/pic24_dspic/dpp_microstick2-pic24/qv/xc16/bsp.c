@@ -109,7 +109,7 @@ void BSP_terminate(int16_t result) {
     (void)result;
 }
 /*..........................................................................*/
-void BSP_displayPhilStat(uint8_t n, char const Q_ROM *stat) {
+void BSP_displayPhilStat(uint8_t n, char const *stat) {
     (void)n;
     (void)stat;
     LED_TOGGLE();
@@ -124,7 +124,7 @@ void BSP_displayPaused(uint8_t paused) {
     (void)paused;
 }
 /*..........................................................................*/
-uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
+uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
