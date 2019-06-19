@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.7
-* Date of the Last Update:  2018-11-29
+* Last Updated for Version: 6.5.1
+* Date of the Last Update:  2019-06-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -187,6 +187,7 @@ void QS_onReset(void) {
 void QS_onFlush(void) {
     uint16_t nBytes;
     uint8_t const *data;
+    QS_CRIT_STAT_
 
     if (l_sock == INVALID_SOCKET) { /* socket NOT initialized? */
         fprintf(stderr, "<TARGET> ERROR   invalid TCP socket\n");
@@ -194,7 +195,9 @@ void QS_onFlush(void) {
     }
 
     nBytes = QS_TX_CHUNK;
+    QS_CRIT_ENTRY_();
     while ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+        QS_CRIT_EXIT_();
         for (;;) { /* for-ever until break or return */
             int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
             if (nSent == SOCKET_ERROR) { /* sending failed? */
@@ -223,7 +226,9 @@ void QS_onFlush(void) {
         }
         /* set nBytes for the next call to QS_getBlock() */
         nBytes = QS_TX_CHUNK;
+        QS_CRIT_ENTRY_();
     }
+    QS_CRIT_EXIT_();
 }
 /*..........................................................................*/
 QSTimeCtr QS_onGetTime(void) {
@@ -236,6 +241,7 @@ QSTimeCtr QS_onGetTime(void) {
 void QS_output(void) {
     uint16_t nBytes;
     uint8_t const *data;
+    QS_CRIT_STAT_
 
     if (l_sock == INVALID_SOCKET) { /* socket NOT initialized? */
         fprintf(stderr, "<TARGET> ERROR   invalid TCP socket\n");
@@ -243,7 +249,9 @@ void QS_output(void) {
     }
 
     nBytes = QS_TX_CHUNK;
+    QS_CRIT_ENTRY_();
     if ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+        QS_CRIT_EXIT_();
         for (;;) { /* for-ever until break or return */
             int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
             if (nSent == SOCKET_ERROR) { /* sending failed? */
@@ -270,6 +278,9 @@ void QS_output(void) {
                 break;
             }
         }
+    }
+    else {
+        QS_CRIT_EXIT_();
     }
 }
 /*..........................................................................*/
