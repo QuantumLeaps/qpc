@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.5.1
-* Last updated on  2019-05-31
+* Last Updated for Version: 6.5.1
+* Date of the Last Update:  2019-06-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -38,7 +38,7 @@
 * @endcond
 */
 #ifndef Q_SPY
-    #error "Q_SPY must be defined for QTEST application"
+    #error "Q_SPY must be defined to compile qutest_port.c"
 #endif /* Q_SPY */
 
 #define QP_IMPL       /* this is QP implementation */
@@ -69,7 +69,7 @@
 #define QS_TX_SIZE     (8*1024)
 #define QS_RX_SIZE     (2*1024)
 #define QS_TX_CHUNK    QS_TX_SIZE
-#define QS_IMEOUT_MS   10
+#define QS_TIMEOUT_MS  10
 
 /* local variables .........................................................*/
 static SOCKET l_sock = INVALID_SOCKET;
@@ -79,7 +79,7 @@ uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[QS_TX_SIZE];   /* buffer for QS-TX channel */
     static uint8_t qsRxBuf[QS_RX_SIZE]; /* buffer for QS-RX channel */
     char hostName[128];
-    char const *serviceName = "6601";  /* default QSPY server port */
+    char const *serviceName = "6601";   /* default QSPY server port */
     char const *src;
     char *dst;
     int status;
@@ -95,8 +95,8 @@ uint8_t QS_onStartup(void const *arg) {
     QS_initBuf(qsBuf, sizeof(qsBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
 
-    /* initialize Windows sockets */
-    if (WSAStartup(MAKEWORD(2,2), &wsaData) != NO_ERROR) {
+    /* initialize Windows sockets version 2.2 */
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != NO_ERROR) {
         fprintf(stderr,
             "<TARGET> ERROR Windows Sockets cannot be initialized\n");
         goto error;
@@ -115,7 +115,7 @@ uint8_t QS_onStartup(void const *arg) {
     }
     *dst = '\0'; /* zero-terminate hostName */
 
-    /* extract port_remote from 'arg' (hostName:port_remote)... */
+    /* extract serviceName from 'arg' (hostName:serviceName)... */
     if (*src == ':') {
         serviceName = src + 1;
     }
@@ -213,10 +213,10 @@ void QS_onFlush(void) {
             if (nSent == SOCKET_ERROR) { /* sending failed? */
                 int err = WSAGetLastError();
                 if (err == WSAEWOULDBLOCK) {
-                    /* sleep for 10ms and then loop back
+                    /* sleep for the timeout and then loop back
                     * to send() the SAME data again
                     */
-                    Sleep(10);
+                    Sleep(QS_TIMEOUT_MS);
                 }
                 else { /* some other socket error... */
                     fprintf(stderr, "<TARGET> ERROR   sending data over TCP,"
@@ -225,7 +225,7 @@ void QS_onFlush(void) {
                 }
             }
             else if (nSent < (int)nBytes) { /* sent fewer than requested? */
-                Sleep(10); /* sleep for 10ms */
+                Sleep(QS_TIMEOUT_MS); /* sleep for the timeout */
                 /* adjust the data and loop back to send() the rest */
                 data   += nSent;
                 nBytes -= (uint16_t)nSent;
@@ -246,7 +246,7 @@ void QS_onTestLoop() {
     QS_rxPriv_.inTestLoop = true;
     while (QS_rxPriv_.inTestLoop) {
         struct timeval timeout = {
-            (long)0, (long)(QS_IMEOUT_MS * 1000)
+            (long)0, (long)(QS_TIMEOUT_MS * 1000)
         };
         int status;
         int ch;

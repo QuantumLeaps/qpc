@@ -66,13 +66,14 @@
 #define QS_TX_SIZE     (8*1024)
 #define QS_RX_SIZE     (2*1024)
 #define QS_TX_CHUNK    QS_TX_SIZE
+#define QS_TIMEOUT_MS  10
 
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR   -1
 
 /* local variables .........................................................*/
 static int l_sock = INVALID_SOCKET;
-static struct timespec const c_10ms = { 0, 10000000L };
+static struct timespec const c_timeout = { 0, QS_TIMEOUT_MS*1000000L };
 
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
@@ -213,10 +214,10 @@ void QS_onFlush(void) {
             int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
             if (nSent == SOCKET_ERROR) { /* sending failed? */
                 if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) {
-                    /* sleep for 10ms and then loop back
+                    /* sleep for the timeout and then loop back
                     * to send() the SAME data again
                     */
-                    nanosleep(&c_10ms, NULL);
+                    nanosleep(&c_timeout, NULL);
                 }
                 else { /* some other socket error... */
                     fprintf(stderr, "<TARGET> ERROR   sending data over TCP,"
@@ -225,7 +226,7 @@ void QS_onFlush(void) {
                 }
             }
             else if (nSent < (int)nBytes) { /* sent fewer than requested? */
-                nanosleep(&c_10ms, NULL); /* sleep for 10ms */
+                nanosleep(&c_timeout, NULL); /* sleep for the timeout */
                 /* adjust the data and loop back to send() the rest */
                 data   += nSent;
                 nBytes -= (uint16_t)nSent;
@@ -270,10 +271,10 @@ void QS_output(void) {
             int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
             if (nSent == SOCKET_ERROR) { /* sending failed? */
                 if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) {
-                    /* sleep for 10ms and then loop back
+                    /* sleep for the timeout and then loop back
                     * to send() the SAME data again
                     */
-                    nanosleep(&c_10ms, NULL);
+                    nanosleep(&c_timeout, NULL);
                 }
                 else { /* some other socket error... */
                     fprintf(stderr, "<TARGET> ERROR   sending data over TCP,"
@@ -282,7 +283,7 @@ void QS_output(void) {
                 }
             }
             else if (nSent < (int)nBytes) { /* sent fewer than requested? */
-                nanosleep(&c_10ms, NULL); /* sleep for 10ms */
+                nanosleep(&c_timeout, NULL); /* sleep for the timeout */
                 /* adjust the data and loop back to send() the rest */
                 data   += nSent;
                 nBytes -= (uint16_t)nSent;
