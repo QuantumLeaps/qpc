@@ -139,6 +139,7 @@ INPUT = \
     ../include \
     ../src \
     ../ports/lint \
+    ../../doxygen/help.dox \
     ../../doxygen/glossary.dox
 
 INPUT_ENCODING         = UTF-8
