@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qs_port_h
-#define qs_port_h
+#ifndef QS_PORT_H
+#define QS_PORT_H
 
 #define QS_TIME_SIZE        4
 
@@ -63,5 +63,5 @@ void QS_rx_input(void);  /* handle the QS-RX input */
 #include "qf_port.h" /* use QS with QF */
 #include "qs.h"      /* QS platform-independent public interface */
 
-#endif /* qs_port_h  */
+#endif /* QS_PORT_H  */
 

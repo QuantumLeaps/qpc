@@ -36,8 +36,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* The maximum number of active objects in the application, see NOTE1 */
 #define QF_MAX_ACTIVE           32
@@ -104,4 +104,4 @@ void QF_unused(void);
 * QP services. Specifically FIQ cannot post or publish events.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

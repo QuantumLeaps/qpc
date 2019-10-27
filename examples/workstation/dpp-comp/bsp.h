@@ -32,8 +32,8 @@
 *                          https://state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 #define BSP_TICKS_PER_SEC    50U
 
@@ -45,4 +45,4 @@ void BSP_terminate(int16_t result);
 void BSP_randomSeed(uint32_t seed);                          /* random seed */
 uint32_t BSP_random(void);                       /* pseudo-random generator */
 
-#endif                                                             /* bsp_h */
+#endif                                                             /* BSP_H */

@@ -1,5 +1,5 @@
-#ifndef my_app_h
-#define my_app_h
+#ifndef MY_APP_H
+#define MY_APP_H
 
 enum MySignals {
     MY_EVT0_SIG = Q_USER_SIG,
@@ -36,4 +36,4 @@ typedef struct {
 void MyAO_ctor(void);
 extern QActive * const AO_MyAO;
 
-#endif /* my_app_h */
+#endif /* MY_APP_H */

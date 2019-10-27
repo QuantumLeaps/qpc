@@ -4,14 +4,14 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.6
-* Last updated on  2018-10-14
+* Last updated for version 6.6.0
+* Last updated on  2019-08-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,16 +29,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qs_h
-#define qs_h
+#ifndef QS_H
+#define QS_H
 
 #ifndef Q_SPY
     #error "Q_SPY must be defined to include qs.h"
@@ -162,7 +162,39 @@ enum QSpyRecords {
     QS_PEEK_DATA,         /*!< reports the data from the PEEK query */
     QS_ASSERT_FAIL,       /*!< assertion failed in the code */
 
-    /* [70] Application-specific (User) QS records */
+    /* [70] Reserved QS records */
+    QS_RESERVED_70,
+    QS_RESERVED_71,
+    QS_RESERVED_72,
+    QS_RESERVED_73,
+    QS_RESERVED_74,
+    QS_RESERVED_75,
+    QS_RESERVED_76,
+    QS_RESERVED_77,
+    QS_RESERVED_78,
+    QS_RESERVED_79,
+    QS_RESERVED_80,
+    QS_RESERVED_81,
+    QS_RESERVED_82,
+    QS_RESERVED_83,
+    QS_RESERVED_84,
+    QS_RESERVED_85,
+    QS_RESERVED_86,
+    QS_RESERVED_87,
+    QS_RESERVED_88,
+    QS_RESERVED_89,
+    QS_RESERVED_90,
+    QS_RESERVED_91,
+    QS_RESERVED_92,
+    QS_RESERVED_93,
+    QS_RESERVED_94,
+    QS_RESERVED_95,
+    QS_RESERVED_96,
+    QS_RESERVED_97,
+    QS_RESERVED_98,
+    QS_RESERVED_99,
+
+    /* [100] Application-specific (User) QS records */
     QS_USER               /*!< the first record available to QS users */
 };
 
@@ -176,21 +208,21 @@ enum QSpyRecordGroups {
     QS_TE_RECORDS,        /*!< Time Events QS records */
     QS_QF_RECORDS,        /*!< QF QS records */
     QS_SC_RECORDS,        /*!< Scheduler QS records */
-    QS_U0_RECORDS,        /*!< User Group 70-79 records */
-    QS_U1_RECORDS,        /*!< User Group 80-89 records */
-    QS_U2_RECORDS,        /*!< User Group 90-99 records */
-    QS_U3_RECORDS,        /*!< User Group 100-109 records */
-    QS_U4_RECORDS,        /*!< User Group 110-124 records */
+    QS_U0_RECORDS,        /*!< User Group 100-104 records */
+    QS_U1_RECORDS,        /*!< User Group 105-109 records */
+    QS_U2_RECORDS,        /*!< User Group 110-114 records */
+    QS_U3_RECORDS,        /*!< User Group 115-119 records */
+    QS_U4_RECORDS,        /*!< User Group 120-124 records */
     QS_UA_RECORDS         /*!< All User records */
 };
 
 /*! QS user record group offsets */
 enum QSpyUserRecords {
-    QS_USER0 = QS_USER,       /*!< offset for User Group 0 */
-    QS_USER1 = QS_USER0 + 10, /*!< offset for User Group 1 */
-    QS_USER2 = QS_USER1 + 10, /*!< offset for User Group 2 */
-    QS_USER3 = QS_USER2 + 10, /*!< offset for User Group 3 */
-    QS_USER4 = QS_USER3 + 10  /*!< offset for User Group 4 */
+    QS_USER0 = QS_USER,      /*!< offset for User Group 0 */
+    QS_USER1 = QS_USER0 + 5, /*!< offset for User Group 1 */
+    QS_USER2 = QS_USER1 + 5, /*!< offset for User Group 2 */
+    QS_USER3 = QS_USER2 + 5, /*!< offset for User Group 3 */
+    QS_USER4 = QS_USER3 + 5  /*!< offset for User Group 4 */
 };
 
 #ifndef QS_TIME_SIZE
@@ -562,14 +594,14 @@ QSTimeCtr QS_onGetTime(void);
 /* Macros to generate user QS records */
 
 /*! Begin a QS user record without entering critical section. */
-#define QS_BEGIN_NOCRIT(rec_, obj_) \
-    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
+#define QS_BEGIN_NOCRIT(rec_, obj_)                               \
+    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3]  \
           & (uint_fast8_t)(1U << ((uint8_t)(rec_) & (uint8_t)7))) \
-            != (uint_fast8_t)0) \
-        && ((QS_priv_.locFilter[AP_OBJ] == (void *)0) \
-           || (QS_priv_.locFilter[AP_OBJ] == (obj_)))) \
-    { \
-        QS_beginRec((uint_fast8_t)(rec_)); \
+            != (uint_fast8_t)0)                                   \
+        && ((QS_priv_.locFilter[AP_OBJ] == (void *)0)             \
+           || (QS_priv_.locFilter[AP_OBJ] == (obj_))))            \
+    {                                                             \
+        QS_beginRec((uint_fast8_t)(rec_));                        \
         QS_TIME_(); {
 
 /*! End a QS user record without exiting critical section. */
@@ -651,16 +683,16 @@ QSTimeCtr QS_onGetTime(void);
 * @include qs_user.c
 * @note Must always be used in pair with #QS_END
 */
-#define QS_BEGIN(rec_, obj_) \
-    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
+#define QS_BEGIN(rec_, obj_)                                                 \
+    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3]             \
         & (uint_fast8_t)((uint_fast8_t)1 << ((uint8_t)(rec_) & (uint8_t)7))) \
-            != (uint_fast8_t)0) \
-        && ((QS_priv_.locFilter[AP_OBJ] == (void *)0) \
-            || (QS_priv_.locFilter[AP_OBJ] == (obj_)))) \
-    { \
-        QS_CRIT_STAT_ \
-        QS_CRIT_ENTRY_(); \
-        QS_beginRec((uint_fast8_t)(rec_)); \
+            != (uint_fast8_t)0)                                              \
+        && ((QS_priv_.locFilter[AP_OBJ] == (void *)0)                        \
+            || (QS_priv_.locFilter[AP_OBJ] == (obj_))))                      \
+    {                                                                        \
+        QS_CRIT_STAT_                                                        \
+        QS_CRIT_ENTRY_();                                                    \
+        QS_beginRec((uint_fast8_t)(rec_));                                   \
         QS_TIME_(); {
 
 /*! End a QS record with exiting critical section. */
@@ -677,14 +709,14 @@ QSTimeCtr QS_onGetTime(void);
 * @note This macro is intended to use only inside QP components and NOT
 * at the application level. @sa #QS_BEGIN
 */
-#define QS_BEGIN_(rec_, objFilter_, obj_) \
-    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
+#define QS_BEGIN_(rec_, objFilter_, obj_)                                    \
+    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3]             \
         & (uint_fast8_t)((uint_fast8_t)1 << ((uint8_t)(rec_) & (uint8_t)7))) \
-            != (uint_fast8_t)0) \
-        && (((objFilter_) == (void *)0) \
-            || ((objFilter_) == (obj_)))) \
-    { \
-        QS_CRIT_ENTRY_(); \
+            != (uint_fast8_t)0)                                              \
+        && (((objFilter_) == (void *)0)                                      \
+            || ((objFilter_) == (obj_))))                                    \
+    {                                                                        \
+        QS_CRIT_ENTRY_();                                                    \
         QS_beginRec((uint_fast8_t)(rec_));
 
 /*!  Internal QS macro to end a QS record with exiting critical section. */
@@ -692,8 +724,8 @@ QSTimeCtr QS_onGetTime(void);
 * @note This macro is intended to use only inside QP components and NOT
 * at the application level. @sa #QS_END
 */
-#define QS_END_() \
-        QS_endRec(); \
+#define QS_END_()        \
+        QS_endRec();     \
         QS_CRIT_EXIT_(); \
     }
 
@@ -702,13 +734,13 @@ QSTimeCtr QS_onGetTime(void);
 * @note This macro is intended to use only inside QP components and NOT
 * at the application level. @sa #QS_BEGIN_NOCRIT
 */
-#define QS_BEGIN_NOCRIT_(rec_, objFilter_, obj_) \
-    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
+#define QS_BEGIN_NOCRIT_(rec_, objFilter_, obj_)                             \
+    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3]             \
         & (uint_fast8_t)((uint_fast8_t)1 << ((uint8_t)(rec_) & (uint8_t)7))) \
-             != (uint_fast8_t)0) \
-        && (((objFilter_) == (void *)0) \
-            || ((objFilter_) == (obj_)))) \
-    { \
+             != (uint_fast8_t)0)                                             \
+        && (((objFilter_) == (void *)0)                                      \
+            || ((objFilter_) == (obj_))))                                    \
+    {                                                                        \
         QS_beginRec((uint_fast8_t)(rec_));
 
 /*! Internal QS macro to end a QS record without exiting critical section. */
@@ -717,7 +749,7 @@ QSTimeCtr QS_onGetTime(void);
 * at the application level. @sa #QS_END_NOCRIT
 */
 #define QS_END_NOCRIT_() \
-        QS_endRec(); \
+        QS_endRec();     \
     }
 
 /*! Internal QS macro to output an unformatted uint8_t data element */
@@ -892,24 +924,31 @@ enum {
 
 
 #if (Q_SIGNAL_SIZE == 1)
-    #define QS_SIG(sig_, obj_) \
+
+    #define QS_SIG(sig_, obj_)   \
         QS_u8(QS_SIG_T, (sig_)); \
         QS_OBJ_(obj_)
+
 #elif (Q_SIGNAL_SIZE == 2)
-    #define QS_SIG(sig_, obj_) \
+
+    #define QS_SIG(sig_, obj_)    \
         QS_u16(QS_SIG_T, (sig_)); \
         QS_OBJ_(obj_)
+
 #elif (Q_SIGNAL_SIZE == 4)
-    #define QS_SIG(sig_, obj_) \
+
+    #define QS_SIG(sig_, obj_)    \
         QS_u32(QS_SIG_T, (sig_)); \
         QS_OBJ_(obj_)
+
 #else
     /*! Output formatted event signal (of type ::QSignal) and
     * the state machine object to the user QS record
     */
-    #define QS_SIG(sig_, obj_) \
+    #define QS_SIG(sig_, obj_)    \
         QS_u16(QS_SIG_T, (sig_)); \
         QS_OBJ_(obj_)
+
 #endif
 
 /****************************************************************************/
@@ -956,8 +995,8 @@ enum {
 * available.
 * @include qs_sigLog0.txt
 */
-#define QS_SIG_DICTIONARY(sig_, obj_) do { \
-    static char_t const sig_name_[] = #sig_; \
+#define QS_SIG_DICTIONARY(sig_, obj_) do {      \
+    static char_t const sig_name_[] = #sig_;    \
     QS_sig_dict((sig_), (obj_), &sig_name_[0]); \
 } while (0)
 
@@ -975,9 +1014,9 @@ enum {
 * for the Table active object:
 * @include qs_objDic.c
 */
-#define QS_OBJ_DICTIONARY(obj_) do { \
+#define QS_OBJ_DICTIONARY(obj_) do {         \
     static char_t const obj_name_[] = #obj_; \
-    QS_obj_dict((obj_), &obj_name_[0]); \
+    QS_obj_dict((obj_), &obj_name_[0]);      \
 } while (0)
 
 /*! Output function dictionary record */
@@ -993,8 +1032,8 @@ enum {
 * The example from #QS_SIG_DICTIONARY shows the definition of a function
 * dictionary.
 */
-#define QS_FUN_DICTIONARY(fun_) do { \
-    static char_t const fun_name_[] = #fun_; \
+#define QS_FUN_DICTIONARY(fun_) do {                    \
+    static char_t const fun_name_[] = #fun_;            \
     QS_fun_dict((void (*)(void))(fun_), &fun_name_[0]); \
 } while (0)
 
@@ -1004,9 +1043,9 @@ enum {
 * A user QS-record dictionary record associates the numerical value of a
 * user record with the human-readable identifier.
 */
-#define QS_USR_DICTIONARY(rec_) do { \
+#define QS_USR_DICTIONARY(rec_) do {         \
     static char_t const usr_name_[] = #rec_; \
-    QS_usr_dict((rec_), &usr_name_[0]); \
+    QS_usr_dict((rec_), &usr_name_[0]);      \
 } while (0)
 
 /*! Output the assertion failure trace record */
@@ -1014,16 +1053,16 @@ enum {
 * @description
 * This trace record is intended to use from the Q_onAssert() callback.
 */
-#define QS_ASSERTION(module_, loc_, delay_) do { \
-    uint32_t volatile delay_ctr_; \
-    QS_BEGIN_NOCRIT_(QS_ASSERT_FAIL, (void *)0, (void *)0) \
-        QS_TIME_(); \
-        QS_U16_((uint16_t)(loc_)); \
-        QS_STR_(((module_) != (char_t *)0) ? (module_) : "?"); \
-    QS_END_NOCRIT_() \
-    QS_onFlush(); \
+#define QS_ASSERTION(module_, loc_, delay_) do {                           \
+    uint32_t volatile delay_ctr_;                                          \
+    QS_BEGIN_NOCRIT_(QS_ASSERT_FAIL, (void *)0, (void *)0)                 \
+        QS_TIME_();                                                        \
+        QS_U16_((uint16_t)(loc_));                                         \
+        QS_STR_(((module_) != (char_t *)0) ? (module_) : "?");             \
+    QS_END_NOCRIT_()                                                       \
+    QS_onFlush();                                                          \
     for (delay_ctr_ = (delay_); delay_ctr_ > (uint32_t)0; --delay_ctr_) {} \
-    QS_onCleanup(); \
+    QS_onCleanup();                                                        \
 } while (0)
 
 /*! Flush the QS trace data to the host */
@@ -1037,31 +1076,31 @@ enum {
 #define QS_FLUSH()   (QS_onFlush())
 
 /*! Output the critical section entry */
-#define QF_QS_CRIT_ENTRY() \
+#define QF_QS_CRIT_ENTRY()                                   \
     QS_BEGIN_NOCRIT_(QS_QF_CRIT_ENTRY, (void *)0, (void *)0) \
-        QS_TIME_(); \
-        QS_U8_(++QS_priv_.critNest); \
+        QS_TIME_();                                          \
+        QS_U8_(++QS_priv_.critNest);                         \
     QS_END_NOCRIT_()
 
 /*! Output the critical section exit */
-#define QF_QS_CRIT_EXIT() \
-    QS_BEGIN_NOCRIT_(QS_QF_CRIT_EXIT, (void *)0, (void *)0) \
-        QS_TIME_(); \
-        QS_U8_(QS_priv_.critNest--); \
+#define QF_QS_CRIT_EXIT()                                    \
+    QS_BEGIN_NOCRIT_(QS_QF_CRIT_EXIT, (void *)0, (void *)0)  \
+        QS_TIME_();                                          \
+        QS_U8_(QS_priv_.critNest--);                         \
     QS_END_NOCRIT_()
 
 /*! Output the interrupt entry record */
-#define QF_QS_ISR_ENTRY(isrnest_, prio_) \
-    QS_BEGIN_NOCRIT_(QS_QF_ISR_ENTRY, (void *)0, (void *)0) \
-        QS_TIME_(); \
-        QS_2U8_(isrnest_, prio_); \
+#define QF_QS_ISR_ENTRY(isrnest_, prio_)                     \
+    QS_BEGIN_NOCRIT_(QS_QF_ISR_ENTRY, (void *)0, (void *)0)  \
+        QS_TIME_();                                          \
+        QS_2U8_(isrnest_, prio_);                            \
     QS_END_NOCRIT_()
 
 /*! Output the interrupt exit record */
-#define QF_QS_ISR_EXIT(isrnest_, prio_) \
-    QS_BEGIN_NOCRIT_(QS_QF_ISR_EXIT, (void *)0, (void *)0) \
-        QS_TIME_(); \
-        QS_2U8_(isrnest_, prio_); \
+#define QF_QS_ISR_EXIT(isrnest_, prio_)                      \
+    QS_BEGIN_NOCRIT_(QS_QF_ISR_EXIT, (void *)0, (void *)0)   \
+        QS_TIME_();                                          \
+        QS_2U8_(isrnest_, prio_);                            \
     QS_END_NOCRIT_()
 
 /*! Execute an action that is only necessary for QS output */
@@ -1160,19 +1199,19 @@ typedef struct {
 extern QSrxPriv QS_rxPriv_;
 
 /*! put one byte into the QS RX lock-free buffer */
-#define QS_RX_PUT(b_) do { \
-    if (QS_rxPriv_.head != (QSCtr)0) { \
-        if ((QS_rxPriv_.head - QS_rxPriv_.tail) != (QSCtr)1) { \
+#define QS_RX_PUT(b_) do {                                               \
+    if (QS_rxPriv_.head != (QSCtr)0) {                                   \
+        if ((QS_rxPriv_.head - QS_rxPriv_.tail) != (QSCtr)1) {           \
             QS_PTR_AT_(QS_rxPriv_.buf, QS_rxPriv_.head) = (uint8_t)(b_); \
-            --QS_rxPriv_.head; \
-        } \
-    } \
-    else { \
-        if (QS_rxPriv_.tail != QS_rxPriv_.end) { \
-            QS_PTR_AT_(QS_rxPriv_.buf, 0) = (uint8_t)(b_); \
-            QS_rxPriv_.head = QS_rxPriv_.end; \
-        } \
-    } \
+            --QS_rxPriv_.head;                                           \
+        }                                                                \
+    }                                                                    \
+    else {                                                               \
+        if (QS_rxPriv_.tail != QS_rxPriv_.end) {                         \
+            QS_PTR_AT_(QS_rxPriv_.buf, 0) = (uint8_t)(b_);               \
+            QS_rxPriv_.head = QS_rxPriv_.end;                            \
+        }                                                                \
+    }                                                                    \
 } while (0)
 
 /*! Obtain the number of free bytes in the QS RX data buffer */
@@ -1236,10 +1275,10 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
         if (qs_tp_ == (uint32_t)(id_)) { code_ }
 
     /*! QS macro to pause test execution and enter the test event loop */
-    #define QS_TEST_PAUSE() do { \
+    #define QS_TEST_PAUSE() do {                   \
         QS_beginRec((uint_fast8_t)QS_TEST_PAUSED); \
-        QS_endRec(); \
-        QS_onTestLoop(); \
+        QS_endRec();                               \
+        QS_onTestLoop();                           \
     } while (0)
 
     enum QUTestUserRecords {
@@ -1270,5 +1309,5 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
 
 #endif /* Q_UTEST */
 
-#endif /* qs_h  */
+#endif /* QS_H  */
 

@@ -31,8 +31,8 @@
 * https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 #define BSP_TICKS_PER_SEC    100U
 
@@ -51,4 +51,4 @@ void BSP_ledOff(void);
 
 extern QActive *the_Ticker0;
 
-#endif /* bsp_h */
+#endif /* BSP_H */

@@ -16,8 +16,8 @@
 * for more details.
 */
 /*$endhead${.::dpp.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-#ifndef dpp_h
-#define dpp_h
+#ifndef DPP_H
+#define DPP_H
 
 enum DPPSignals {
     EAT_SIG = Q_USER_SIG, /* published by Table to let a philosopher eat */
@@ -62,4 +62,4 @@ extern QMActive * const AO_Philo[N_PHILO];
 extern QMActive * const AO_Table;
 /*$enddecl${AOs::AO_Table} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
-#endif /* dpp_h */
+#endif /* DPP_H */

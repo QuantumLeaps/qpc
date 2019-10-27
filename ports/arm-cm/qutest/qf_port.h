@@ -36,8 +36,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* QUTEST event queue and thread types */
 #define QF_EQUEUE_TYPE QEQueue
@@ -97,4 +97,4 @@ extern uint8_t volatile QF_intNest;
 
 #endif /* QP_IMPL */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

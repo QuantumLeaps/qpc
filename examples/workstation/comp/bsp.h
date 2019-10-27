@@ -31,8 +31,8 @@
 * Web:   https://state-machine.com
 * Email: info@state-machine.com
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 void BSP_init(int argc, char *argv[]);
 void BSP_onKeyboardInput(uint8_t key); /* process the keyboard scan code */
@@ -43,4 +43,4 @@ void BSP_showMsg(char_t const *str);
 void BSP_showTime12H(char_t const *str, uint32_t time, uint32_t base);
 void BSP_showTime24H(char_t const *str, uint32_t time, uint32_t base);
 
-#endif /* bsp_h */
+#endif /* BSP_H */

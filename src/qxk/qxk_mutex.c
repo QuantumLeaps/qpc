@@ -5,8 +5,8 @@
 * QXMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-16
+* Last updated for version 6.6.0
+* Last updated on  2019-07-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -30,11 +30,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -49,9 +49,9 @@
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef qxk_h
+#ifndef QXK_H
     #error "Source file included in a project NOT based on the QXK kernel"
-#endif /* qxk_h */
+#endif /* QXK_H */
 
 Q_DEFINE_THIS_MODULE("qxk_mutex")
 

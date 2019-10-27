@@ -4,14 +4,14 @@
 * @brief Internal (package scope) QS/C interface.
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 6.6.0
+* Last updated on  2019-07-30
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,36 +29,36 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qs_pkg_h
-#define qs_pkg_h
+#ifndef QS_PKG_H
+#define QS_PKG_H
 
 /****************************************************************************/
 /*! Internal QS macro to insert an un-escaped byte into the QS buffer */
-#define QS_INSERT_BYTE(b_) \
-    QS_PTR_AT_(buf, head) = (b_); \
-    ++head; \
-    if (head == end) { \
-        head = (QSCtr)0; \
+#define QS_INSERT_BYTE(b_)                           \
+    QS_PTR_AT_(buf, head) = (b_);                    \
+    ++head;                                          \
+    if (head == end) {                               \
+        head = (QSCtr)0;                             \
     }
 
 /*! Internal QS macro to insert an escaped byte into the QS buffer */
-#define QS_INSERT_ESC_BYTE(b_) \
-    chksum = (uint8_t)(chksum + (b_)); \
-    if (((b_) != QS_FRAME) && ((b_) != QS_ESC)) { \
-        QS_INSERT_BYTE(b_) \
-    } \
-    else { \
-        QS_INSERT_BYTE(QS_ESC) \
+#define QS_INSERT_ESC_BYTE(b_)                       \
+    chksum = (uint8_t)(chksum + (b_));               \
+    if (((b_) != QS_FRAME) && ((b_) != QS_ESC)) {    \
+        QS_INSERT_BYTE(b_)                           \
+    }                                                \
+    else {                                           \
+        QS_INSERT_BYTE(QS_ESC)                       \
         QS_INSERT_BYTE((uint8_t)((b_) ^ QS_ESC_XOR)) \
-        ++QS_priv_.used; \
+        ++QS_priv_.used;                             \
     }
 
 /*! Internal QS macro to increment the given pointer parameter @p ptr_ */
@@ -89,5 +89,5 @@
 /*! send the Target info (object sizes, build time-stamp, QP version) */
 void QS_target_info_(uint8_t isReset);
 
-#endif  /* qs_pkg_h */
+#endif  /* QS_PKG_H */
 

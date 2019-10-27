@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-16
+* Last updated for version 6.6.0
+* Last updated on  2019-07-30
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, www.state-machine.com.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,16 +29,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qmpool_h
-#define qmpool_h
+#ifndef QMPOOL_H
+#define QMPOOL_H
 
 /****************************************************************************/
 #ifndef QF_MPOOL_SIZ_SIZE
@@ -165,5 +165,5 @@ void QMPool_put(QMPool * const me, void *b);
 #define QF_MPOOL_EL(evType_) \
     struct { void *sto_[((sizeof(evType_) - 1U)/sizeof(void*)) + 1U]; }
 
-#endif /* qmpool_h */
+#endif /* QMPOOL_H */
 

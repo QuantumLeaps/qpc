@@ -36,8 +36,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* POSIX event queue and thread types */
 #define QF_EQUEUE_TYPE       QEQueue
@@ -152,5 +152,5 @@ int QF_consoleWaitForKey(void);
 * inheritance protocol.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */
 

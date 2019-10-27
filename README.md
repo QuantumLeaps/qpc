@@ -39,7 +39,7 @@ within an active object thread itself.
 
 This architecture is generally **safer**, more responsive and easier to
 understand and maintain than the shared-state concurrency of a conventional
-RTOS. It also provides higher level of abstraction and the right
+RTOS. It also provides higher level of abstraction and the *correct*
 abstractions to effectively apply **modeling** and **code generation** to
 deeply embedded real-time systems.
 

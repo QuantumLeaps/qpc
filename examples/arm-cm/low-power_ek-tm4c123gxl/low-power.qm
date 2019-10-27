@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.4.0" links="0">
+<model version="4.5.1" links="0">
  <documentation>Blinky Low-Power example</documentation>
  <framework name="qpc"/>
  <package name="AOs" stereotype="0x02">
@@ -11,7 +11,7 @@
    <attribute name="count" type="uint8_t" visibility="0x02" properties="0x00">
     <documentation>blink counter</documentation>
    </attribute>
-   <statechart properties="QS_FUN_DICT">
+   <statechart properties="0x03">
     <initial target="../1">
      <action>(void)e; /* unused parameter */
 QActive_subscribe(&amp;me-&gt;super, BTN_PRESSED_SIG);</action>
@@ -87,7 +87,7 @@ QTimeEvt_armX(&amp;me-&gt;timeEvt0, 2U, 2U);</entry>
    <attribute name="count" type="uint8_t" visibility="0x02" properties="0x00">
     <documentation>blink counter</documentation>
    </attribute>
-   <statechart properties="QS_FUN_DICT">
+   <statechart properties="0x03">
     <initial target="../1">
      <action>(void)e; /* unused parameter */
 QActive_subscribe(&amp;me-&gt;super, BTN_PRESSED_SIG);</action>
@@ -174,8 +174,8 @@ QTimeEvt_ctorX(&amp;me-&gt;timeEvt1, &amp;me-&gt;super, TIMEOUT1_SIG, 1U);</code
  </package>
  <directory name=".">
   <file name="low_power.h">
-   <text>#ifndef low_power_h
-#define low_power_h
+   <text>#ifndef LOW_POWER_H
+#define LOW_POWER_H
 
 enum BlinkySignals {
     BTN_PRESSED_SIG = Q_USER_SIG, /* button SW1 was pressed */
@@ -189,7 +189,7 @@ enum BlinkySignals {
 $declare${AOs::AO_Blinky0}
 $declare${AOs::Blinky0_ctor}
 
-#ifdef qxk_h /* QXK kernel? */
+#ifdef QXK_H /* QXK kernel? */
 
 void XBlinky1_ctor(void);
 extern QXThread XT_Blinky1;
@@ -202,7 +202,7 @@ $declare${AOs::Blinky1_ctor}
 
 #endif
 
-#endif /* low_power_h */
+#endif /* LOW_POWER_H */
 </text>
   </file>
   <file name="blinky0.c">

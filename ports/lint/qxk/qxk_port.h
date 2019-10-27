@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qxk_port_h
-#define qxk_port_h
+#ifndef QXK_PORT_H
+#define QXK_PORT_H
 
 /****************************************************************************/
 
@@ -93,5 +93,5 @@
 uint32_t getSR(void);
 void trigSWI(void);
 
-#endif /* qxk_port_h */
+#endif /* QXK_PORT_H */
 

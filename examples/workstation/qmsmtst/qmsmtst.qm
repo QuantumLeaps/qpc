@@ -245,8 +245,8 @@ QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;QMsmTst_initial));</code>
  </package>
  <directory name=".">
   <file name="qmsmtst.h">
-   <text>#ifndef qmsmtst_h
-#define qmsmtst_h
+   <text>#ifndef QMSMTST_H
+#define QMSMTST_H
 
 enum QMsmTstSignals {
     A_SIG = Q_USER_SIG,
@@ -271,7 +271,7 @@ $declare(SMs::QMsmTst_ctor)
 void BSP_display(char const *msg);
 void BSP_exit(void);
 
-#endif /* qmsmtst_h */</text>
+#endif /* QMSMTST_H */</text>
   </file>
   <file name="qmsmtst.c">
    <text>#include &quot;qpc.h&quot;

@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "6.5.1"
+PROJECT_NUMBER         = "6.6.0"
 PROJECT_BRIEF          =
 PROJECT_LOGO           = images/header_logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -203,12 +203,12 @@ IGNORE_PREFIX          =
 # Configuration options related to the HTML output
 #---------------------------------------------------------------------------
 GENERATE_HTML          = YES
-HTML_OUTPUT            = ../../doxygen/qpc
+HTML_OUTPUT            = C:\qp\uploads\qpc\qpc
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = ../../doxygen/header.html
-HTML_FOOTER            = ../../doxygen/footer.html
+HTML_HEADER            = ..\..\doxygen\header.html
+HTML_FOOTER            = ..\..\doxygen\footer.html
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  = ../../doxygen/ql.css
+HTML_EXTRA_STYLESHEET  = ..\..\doxygen\ql.css
 HTML_EXTRA_FILES       =
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
@@ -222,7 +222,7 @@ DOCSET_BUNDLE_ID       = com.state-machine.doc
 DOCSET_PUBLISHER_ID    = com.state-machine.doc
 DOCSET_PUBLISHER_NAME  = Quantum Leaps
 GENERATE_HTMLHELP      = NO
-CHM_FILE               = ../../../doxygen/qpc.chm
+CHM_FILE               = C:\qp\uploads\qpc\qpc.chm
 HHC_LOCATION           =
 GENERATE_CHI           = NO
 CHM_INDEX_ENCODING     =

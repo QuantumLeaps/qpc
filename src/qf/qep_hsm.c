@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.5.0
-* Last updated on  2019-03-09
+* Last updated for version 6.6.0
+* Last updated on  2019-10-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -80,23 +80,23 @@ static QEvt const QEP_reservedEvt_[] = {
     ((*(state_))(me, &QEP_reservedEvt_[(sig_)]))
 
 /*! helper macro to trigger exit action in an HSM */
-#define QEP_EXIT_(state_) do { \
-    if (QEP_TRIG_((state_), Q_EXIT_SIG) == (QState)Q_RET_HANDLED) { \
+#define QEP_EXIT_(state_) do {                                       \
+    if (QEP_TRIG_((state_), Q_EXIT_SIG) == (QState)Q_RET_HANDLED) {  \
         QS_BEGIN_(QS_QEP_STATE_EXIT, QS_priv_.locFilter[SM_OBJ], me) \
-            QS_OBJ_(me); \
-            QS_FUN_(state_); \
-        QS_END_() \
-    } \
+            QS_OBJ_(me);                                             \
+            QS_FUN_(state_);                                         \
+        QS_END_()                                                    \
+    }                                                                \
 } while (0)
 
 /*! helper macro to trigger entry action in an HSM */
-#define QEP_ENTER_(state_) do { \
-    if (QEP_TRIG_((state_), Q_ENTRY_SIG) == (QState)Q_RET_HANDLED) { \
+#define QEP_ENTER_(state_) do {                                       \
+    if (QEP_TRIG_((state_), Q_ENTRY_SIG) == (QState)Q_RET_HANDLED) {  \
         QS_BEGIN_(QS_QEP_STATE_ENTRY, QS_priv_.locFilter[SM_OBJ], me) \
-            QS_OBJ_(me); \
-            QS_FUN_(state_); \
-        QS_END_() \
-    } \
+            QS_OBJ_(me);                                              \
+            QS_FUN_(state_);                                          \
+        QS_END_()                                                     \
+    }                                                                 \
 } while (0)
 
 /*! helper function to execute a transition chain in HSM */
@@ -125,11 +125,11 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
 * @include qep_qhsm_ctor.c
 */
 void QHsm_ctor(QHsm * const me, QStateHandler initial) {
-    static struct QHsmVtbl const vtbl = { /* QHsm virtual table */
+    static struct QHsmVtable const vtable = { /* QHsm virtual table */
         &QHsm_init_,
         &QHsm_dispatch_
     };
-    me->vptr      = &vtbl;
+    me->vptr      = &vtable;
     me->state.fun = Q_STATE_CAST(&QHsm_top);
     me->temp.fun  = initial;
 }
@@ -139,12 +139,12 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial) {
 * @description
 * Executes the top-most initial transition in a HSM.
 *
-* @param[in,out] me pointer (see @ref oop)
-* @param[in]     e  pointer to the initialization event (might be NULL)
+* @param[in,out] me  pointer (see @ref oop)
+* @param[in]     par pointer to an extra parameter (might be NULL)
 *
 * @note Must be called only ONCE after the QHsm_ctor().
 */
-void QHsm_init_(QHsm * const me, QEvt const * const e) {
+void QHsm_init_(QHsm * const me, void const *par) {
     QStateHandler t = me->state.fun;
     QState r;
     QS_CRIT_STAT_
@@ -153,11 +153,11 @@ void QHsm_init_(QHsm * const me, QEvt const * const e) {
     * transition must be initialized, and the initial transition must not
     * be taken yet.
     */
-    Q_REQUIRE_ID(200, (me->vptr != (QMsmVtbl const *)0)
+    Q_REQUIRE_ID(200, (me->vptr != (QMsmVtable const *)0)
                       && (me->temp.fun != Q_STATE_CAST(0))
                       && (t == Q_STATE_CAST(&QHsm_top)));
 
-    r = (*me->temp.fun)(me, e); /* execute the top-most initial transition */
+    r = (*me->temp.fun)(me, par); /* execute the top-most initial tran. */
 
     /* the top-most initial transition must be taken */
     Q_ASSERT_ID(210, r == (QState)Q_RET_TRAN);

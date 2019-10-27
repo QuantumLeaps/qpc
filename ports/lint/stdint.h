@@ -14,8 +14,8 @@
 * exact-width types and 6 fast minimum-width types actually used in QP.
 * The actual definition of the integer types is platform dependent.
 */
-#ifndef stdint_h
-#define stdint_h
+#ifndef STDINT_H
+#define STDINT_H
 
 /*lint -save */
 /*lint -e1960    MISRA-C++:2008 Rule 17-0-2, Re-use of C++ identifier */
@@ -82,5 +82,5 @@ typedef unsigned long uint_fast32_t; /*!< fast at-least 32-bit unsigned int */
 
 /*lint -restore */
 
-#endif /* stdint_h */
+#endif /* STDINT_H */
 

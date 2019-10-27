@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.7
-* Last updated on  2018-11-07
+* Last updated for version 6.6.0
+* Last updated on  2019-10-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -48,19 +48,19 @@
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef qxk_h
+#ifndef QXK_H
     #error "Source file included in a project NOT based on the QXK kernel"
-#endif /* qxk_h */
+#endif /* QXK_H */
 
 Q_DEFINE_THIS_MODULE("qxk_xthr")
 
 /****************************************************************************/
-static void QXThread_init_(QMsm * const me, QEvt const * const e);
+static void QXThread_init_(QMsm * const me, void const *par);
 static void QXThread_dispatch_(QMsm * const me, QEvt const * const e);
 static void QXThread_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie);
+                    void const *par);
 #ifndef Q_SPY
 static bool QXThread_post_(QActive * const me, QEvt const * const e,
                     uint_fast16_t const margin);
@@ -94,7 +94,7 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e);
 void QXThread_ctor(QXThread * const me,
                    QXThreadHandler handler, uint_fast8_t tickRate)
 {
-    static QXThreadVtbl const vtbl = { /* QXThread virtual table */
+    static QXThreadVtable const vtable = { /* QXThread virtual table */
         { &QXThread_init_,       /* not used in QXThread */
           &QXThread_dispatch_ }, /* not used in QXThread */
         &QXThread_start_,
@@ -103,7 +103,7 @@ void QXThread_ctor(QXThread * const me,
     };
 
     QActive_ctor(&me->super, Q_STATE_CAST(handler)); /* superclass' ctor */
-    me->super.super.vptr = &vtbl.super; /* set the vptr to QXThread v-table */
+    me->super.super.vptr = &vtable.super; /* hook to QXThread vtable */
     me->super.super.state.act = Q_ACTION_CAST(0); /*mark as extended thread */
 
     /* construct the time event member added in the QXThread class */
@@ -113,9 +113,9 @@ void QXThread_ctor(QXThread * const me,
 
 /****************************************************************************/
 /* QXThread virtual function implementations... */
-static void QXThread_init_(QMsm * const me, QEvt const * const e) {
+static void QXThread_init_(QMsm * const me, void const *par) {
     (void)me;
-    (void)e;
+    (void)par;
     Q_ERROR_ID(110);
 }
 
@@ -142,7 +142,7 @@ static void QXThread_dispatch_(QMsm * const me, QEvt const * const e) {
 *                        or zero if queue not used
 * @param[in]     stkSto  pointer to the stack storage (must be provided)
 * @param[in]     stkSize stack size [in bytes] (must not be zero)
-* @param[in]     ie      pointer to the initial event (not used).
+* @param[in]     par     pointer to an extra parameter (might be NULL).
 *
 * @note
 * Should be called via the macro QXTHREAD_START().
@@ -154,7 +154,7 @@ static void QXThread_dispatch_(QMsm * const me, QEvt const * const e) {
 static void QXThread_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     QF_CRIT_STAT_
 
@@ -170,7 +170,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
         && (stkSize != (uint_fast16_t)0)
         && (me->super.state.act == (QActionHandler)0));
 
-    (void)ie; /* parameter not referenced */
+    (void)par; /* parameter not referenced */
 
     /* is storage for the queue buffer provided? */
     if (qSto != (QEvt const **)0) {

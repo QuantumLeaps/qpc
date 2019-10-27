@@ -31,8 +31,8 @@
 * https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 #define BSP_TICKS_PER_SEC   TX_TIMER_TICKS_PER_SECOND
 
@@ -44,4 +44,4 @@ void BSP_terminate(int16_t result);
 void BSP_randomSeed(uint32_t seed); /* random seed */
 uint32_t BSP_random(void);          /* pseudo-random generator */
 
-#endif /* bsp_h */
+#endif /* BSP_H */

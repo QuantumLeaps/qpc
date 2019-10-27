@@ -1,14 +1,14 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 6.5.1
-:: Date of the Last Update:  2019-05-23
+:: Last Updated for Version: 6.6.0
+:: Date of the Last Update:  2019-08-30
 ::
 ::                    Q u a n t u m  L e a P s
 ::                    ------------------------
 ::                    Modern Embedded Software
 ::
-:: Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) Quantum Leaps, LLC. All rights reserved.
 ::
 :: This program is open source software: you can redistribute it and/or
 :: modify it under the terms of the GNU General Public License as published
@@ -29,8 +29,8 @@
 :: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: https://www.state-machine.com
-:: mailto:info@state-machine.com
+:: <www.state-machine.com>
+:: <info@state-machine.com>
 :: ==========================================================================
 setlocal
 
@@ -38,7 +38,7 @@ echo usage:
 echo make
 echo make -CHM
 
-set VERSION=6.5.1
+set VERSION=6.6.0
 
 :: Generate Resource Standard Metrics for QP/C ............................... 
 set DOXHOME="C:\tools\doxygen\bin"
@@ -68,21 +68,23 @@ if "%1"=="-CHM" (
     xcopy img tmp\img\
     echo img\img.htm >> tmp\index.hhp
 
-    echo Generate CHM...
+    echo Generating CHM...
     "C:\tools\HTML Help Workshop\hhc.exe" tmp\index.hhp
     
+    echo.
     echo Cleanup...
     rmdir /S /Q  tmp
-    echo CHM file generated in ..\..\uploads\qpc\
+    echo CHM file generated in C:\qp\uploads\qpc\
 
 ) else (
+    echo.
     echo Cleanup...
-    rmdir /S /Q  ..\..\doxygen\qpc
+    rmdir /S /Q  C:\qp\uploads\qpc\qpc
     
     echo Adding custom images...
-    xcopy preview.js ..\..\doxygen\qpc\
-    xcopy img ..\..\doxygen\qpc\img\
-    copy images\favicon.ico ..\..\doxygen\qpc
+    xcopy preview.js C:\qp\uploads\qpc\qpc\
+    xcopy img C:\qp\uploads\qpc\qpc\img\
+    copy images\favicon.ico C:\qp\uploads\qpc\qpc
 
     echo Generating HTML...
     %DOXHOME%\doxygen.exe Doxyfile

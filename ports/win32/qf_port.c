@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-12
+* Last updated for version 6.6.0
+* Last updated on  2019-09-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -149,7 +149,7 @@ void QF_setWin32Prio(QActive *act, int_t win32Prio) {
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     Q_REQUIRE_ID(800, ((uint_fast8_t)0 < prio) /* priority must be in range */
                  && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
@@ -163,8 +163,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     /* create the Win32 "event" to throttle the AO's event queue */
     me->osObject = CreateEvent(NULL, FALSE, FALSE, NULL);
 
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
-    QS_FLUSH(); /* flush the QS trace buffer to the host */
+    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* stack size not provided? */
     if (stkSize == 0U) {

@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 6.5.0
-* Last updated on  2019-05-19
+* Last updated for version 6.6.0
+* Last updated on  2019-09-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -48,9 +48,9 @@
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef qk_h
+#ifndef QK_H
     #error "Source file included in a project NOT based on the QK kernel"
-#endif /* qk_h */
+#endif /* QK_H */
 
 Q_DEFINE_THIS_MODULE("qk")
 
@@ -152,7 +152,7 @@ int_t QF_run(void) {
 * @param[in]     qLen    length of the event queue [events]
 * @param[in]     stkSto  pointer to the stack storage (must be NULL in QK)
 * @param[in]     stkSize stack size [bytes]
-* @param[in]     ie      pointer to the initial event (might be NULL).
+* @param[in]     par     pointer to an extra parameter (might be NULL).
 *
 * @note This function should be called via the macro QACTIVE_START().
 *
@@ -163,7 +163,7 @@ int_t QF_run(void) {
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     QF_CRIT_STAT_
 
@@ -183,8 +183,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = (uint8_t)prio; /* set the QF priority of the AO */
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. (virtual) */
-    QS_FLUSH();                /* flush the trace buffer to the host */
+    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* See if this AO needs to be scheduled in case QK is already running */
     QF_CRIT_ENTRY_();

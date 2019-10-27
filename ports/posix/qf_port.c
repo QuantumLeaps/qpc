@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-10
+* Last updated for version 6.6.0
+* Last updated on  2019-09-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -216,7 +216,7 @@ static void *thread_routine(void *arg) { /* the expected POSIX signature */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     pthread_t thread;
     pthread_attr_t attr;
@@ -231,7 +231,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = (uint8_t)prio;
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* SCHED_FIFO corresponds to real-time preemptive priority-based scheduler
     * NOTE: This scheduling policy requires the superuser privileges

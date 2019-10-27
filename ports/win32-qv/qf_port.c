@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-07
+* Last updated for version 6.6.0
+* Last updated on  2019-09-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -197,7 +197,7 @@ int QF_consoleWaitForKey(void) {
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     Q_REQUIRE_ID(600, ((uint_fast8_t)0 < prio) /* priority must be in range */
         && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
@@ -208,8 +208,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = prio; /* set QF priority of this AO before adding it to QF */
     QF_add_(me);     /* make QF aware of this AO */
 
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
-    QS_FLUSH();      /* flush the QS trace buffer to the host */
+    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    QS_FLUSH(); /* flush the trace buffer to the host */
 
     (void)stkSize;   /* unused parameter */
 }

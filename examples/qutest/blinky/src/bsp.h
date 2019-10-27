@@ -31,8 +31,8 @@
 * https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 #define BSP_TICKS_PER_SEC    100U
 
@@ -49,4 +49,4 @@ void BSP_wait4SW1(void);
 void BSP_ledOn(void);
 void BSP_ledOff(void);
 
-#endif /* bsp_h */
+#endif /* BSP_H */

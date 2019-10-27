@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.5.0
-* Last updated on  2019-03-21
+* Last updated for version 6.6.0
+* Last updated on  2019-10-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -29,18 +29,18 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_h
-#define qf_h
+#ifndef QF_H
+#define QF_H
 
-#ifndef qpset_h
+#ifndef QPSET_H
 #include "qpset.h"
 #endif
 
@@ -156,7 +156,7 @@ typedef struct QActive {
     /*! QF priority (1..#QF_MAX_ACTIVE) of this active object. */
     uint8_t prio;
 
-#ifdef qxk_h  /* QXK kernel used? */
+#ifdef QXK_H  /* QXK kernel used? */
     /*! QF start priority (1..#QF_MAX_ACTIVE) of this active object. */
     uint8_t startPrio;
 #endif
@@ -168,14 +168,14 @@ void QActive_ctor(QActive * const me, QStateHandler initial);
 
 /*! Virtual table for the ::QActive class */
 typedef struct {
-    struct QHsmVtbl super; /*!< inherits ::QHsmVtbl */
+    struct QHsmVtable super; /*!< inherits ::QHsmVtable */
 
     /*! virtual function to start the active object (thread) */
     /** @sa QACTIVE_START() */
     void (*start)(QActive * const me, uint_fast8_t prio,
                   QEvt const *qSto[], uint_fast16_t qLen,
                   void *stkSto, uint_fast16_t stkSize,
-                  QEvt const *ie);
+                  void const *par);
 
 #ifdef Q_SPY
     /*! virtual function to asynchronously post (FIFO) an event to an AO */
@@ -191,7 +191,7 @@ typedef struct {
     /** @sa QACTIVE_POST_LIFO() */
     void (*postLIFO)(QActive * const me, QEvt const * const e);
 
-} QActiveVtbl;
+} QActiveVtable;
 
 
 /*! Polymorphically start an active object. */
@@ -214,7 +214,7 @@ typedef struct {
 */
 #define QACTIVE_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, par_) do { \
     Q_ASSERT((me_)->super.vptr);                                             \
-    (*((QActiveVtbl const *)((me_)->super.vptr))->start)(                    \
+    (*((QActiveVtable const *)((me_)->super.vptr))->start)(                  \
         (me_), (prio_), (qSto_), (qLen_), (stkSto_), (stkLen_), (par_));     \
 } while (0)
 
@@ -244,8 +244,8 @@ typedef struct {
     *
     * @sa #QACTIVE_POST_X, QActive_post_().
     */
-    #define QACTIVE_POST(me_, e_, sender_)                                \
-        ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+    #define QACTIVE_POST(me_, e_, sender_)                                  \
+        ((void)(*((QActiveVtable const *)((me_)->super.vptr))->post)((me_), \
                   (e_), QF_NO_MARGIN, (sender_)))
 
     /*! Polymorphically posts an event to an active object (FIFO)
@@ -282,17 +282,17 @@ typedef struct {
     * @usage
     * @include qf_postx.c
     */
-    #define QACTIVE_POST_X(me_, e_, margin_, sender_)               \
-        ((*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+    #define QACTIVE_POST_X(me_, e_, margin_, sender_)                 \
+        ((*((QActiveVtable const *)((me_)->super.vptr))->post)((me_), \
          (e_), (margin_), (sender_)))
 #else
 
-    #define QACTIVE_POST(me_, e_, sender_)                                \
-        ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+    #define QACTIVE_POST(me_, e_, sender_)                                  \
+        ((void)(*((QActiveVtable const *)((me_)->super.vptr))->post)((me_), \
                   (e_), QF_NO_MARGIN))
 
-    #define QACTIVE_POST_X(me_, e_, margin_, sender_)               \
-        ((*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+    #define QACTIVE_POST_X(me_, e_, margin_, sender_)                 \
+        ((*((QActiveVtable const *)((me_)->super.vptr))->post)((me_), \
                   (e_), (margin_)))
 
 #endif
@@ -304,7 +304,7 @@ typedef struct {
 * @param[in]     e_    pointer to the event to post
 */
 #define QACTIVE_POST_LIFO(me_, e_) \
-    ((*((QActiveVtbl const *)((me_)->super.vptr))->postLIFO)((me_), (e_)))
+    ((*((QActiveVtable const *)((me_)->super.vptr))->postLIFO)((me_), (e_)))
 
 /* protected functions for ::QActive ...*/
 
@@ -368,13 +368,13 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2);
 */
 typedef QActive QMActive;
 
-/*! Virtual Table for the ::QMActive class (inherited from ::QActiveVtbl */
+/*! Virtual Table for the ::QMActive class (inherited from ::QActiveVtable */
 /**
 * @note
 * ::QMActive inherits ::QActive exactly, without adding any new virtual
-* functions and therefore, ::QMActiveVtbl is typedef'ed as ::QActiveVtbl.
+* functions and therefore, ::QMActiveVtable is typedef'ed as ::QActiveVtable.
 */
-typedef QActiveVtbl QMActiveVtbl;
+typedef QActiveVtable QMActiveVtable;
 
 /*! protected "constructor" of an ::QMActive active object. */
 void QMActive_ctor(QMActive * const me, QStateHandler initial);
@@ -676,7 +676,7 @@ void QF_deleteRef_(void const * const evtRef);
                                  (margin_), (enum_t)0);        \
         if ((e_) != (evtT_ *)0) {                              \
             evtT_##_ctor((e_), (sig_), ##__VA_ARGS__);         \
-        } \
+        }                                                      \
      } while (0)
 
 #else
@@ -777,8 +777,8 @@ void QF_deleteRef_(void const * const evtRef);
 * @sa Q_NEW_REF()
 */
 #define Q_DELETE_REF(evtRef_) do { \
-    QF_deleteRef_((evtRef_)); \
-    (evtRef_) = (void *)0; \
+    QF_deleteRef_((evtRef_));      \
+    (evtRef_) = (void *)0;         \
 } while (0)
 
 /*! Recycle a dynamic event. */
@@ -829,5 +829,5 @@ void QTicker_ctor(QTicker * const me, uint8_t tickRate);
 /*! get the current QF version number string of the form "X.Y.Z" */
 #define QF_getVersion() (QP_versionStr)
 
-#endif /* qf_h */
+#endif /* QF_H */
 

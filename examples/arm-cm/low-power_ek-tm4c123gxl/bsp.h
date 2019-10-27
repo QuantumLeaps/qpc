@@ -31,8 +31,8 @@
 * https://www.state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 /* The following ticks-per-second constants determine the speed of the app.
 * The default (#if 1) is the SLOW speed for humans to see the blinking.
@@ -57,4 +57,4 @@ void BSP_led1_off(void);
 void BSP_tickRate0_on(void);
 void BSP_tickRate1_on(void);
 
-#endif /* bsp_h */
+#endif /* BSP_H */

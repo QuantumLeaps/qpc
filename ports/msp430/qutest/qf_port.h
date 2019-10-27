@@ -1,10 +1,10 @@
 /**
 * @file
-* @brief QF/C port to Cortex-M, QUTEST unit test harness, generic C99 compiler
+* @brief QF/C port to MSP430, QUTEST, generic C99 compiler
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.8
-* Date of the Last Update:  2019-01-23
+* Last updated for version 6.6.0
+* Last updated on  2019-10-14
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -28,16 +28,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* QUTEST event queue and thread types */
 #define QF_EQUEUE_TYPE QEQueue
@@ -100,4 +100,4 @@ extern uint8_t volatile QF_intNest;
 * up to 64, if necessary. Here it is set to a lower level to save some RAM.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

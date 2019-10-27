@@ -32,8 +32,8 @@
 *                          https://state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#ifndef lwip_h
-#define lwip_h
+#ifndef LWIP_H
+#define LWIP_H
 
                /* protection against including lwIP in unauthorized modules */
 #ifndef LWIP_ALLOWED
@@ -71,4 +71,4 @@ struct pbuf *pbuf_new(u8_t *data, u16_t len);
 }
 #endif
 
-#endif                                                            /* lwip_h */
+#endif /* LWIP_H */

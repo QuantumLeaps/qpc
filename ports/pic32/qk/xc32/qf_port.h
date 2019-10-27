@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* The maximum number of system clock tick rates */
 #define QF_MAX_TICK_RATE        2
@@ -88,5 +88,5 @@
 * interrupt will not occur.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */
 

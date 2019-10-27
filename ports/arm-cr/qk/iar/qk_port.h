@@ -36,8 +36,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef QK_PORT_H
+#define QK_PORT_H
 
 /* QK-specific Interrupt Request handler BEGIN */
 #ifdef __ARMVFP__
@@ -105,4 +105,4 @@
 
 #include "qk.h" /* QK platform-independent public interface */
 
-#endif /* qk_port_h */
+#endif /* QK_PORT_H */

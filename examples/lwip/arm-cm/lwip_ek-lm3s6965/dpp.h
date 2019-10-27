@@ -32,8 +32,8 @@
 *                          https://state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#ifndef dpp_h
-#define dpp_h
+#ifndef DPP_H
+#define DPP_H
 
 enum DPPSignals {
    EAT_SIG = Q_USER_SIG,     /* published by Table to let a philosopher eat */
@@ -76,4 +76,4 @@ extern QActive * const AO_Philo[N_PHILO]; /* "opaque" pointers to Philo  AO */
 extern QActive * const AO_Table;          /* "opaque" pointer to Table   AO */
 extern QActive * const AO_LwIPMgr;        /* "opaque" pointer to LwIPMgr AO */
 
-#endif                                                             /* dpp_h */
+#endif  /* DPP_H */

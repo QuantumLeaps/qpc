@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-07
+* Last updated for version 6.6.0
+* Last updated on  2019-10-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -82,7 +82,7 @@ int_t QF_run(void) {
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     /* priority must be in range */
     Q_REQUIRE_ID(200, ((uint_fast8_t)0 < prio)
@@ -96,18 +96,18 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
-    //QS_FLUSH();                /* flush the trace buffer to the host */
+    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    //QS_FLUSH(); /* flush the trace buffer to the host */
 }
 
 /****************************************************************************/
-static void QActiveDummy_init_(QHsm * const me, QEvt const * const e);
+static void QActiveDummy_init_(QHsm * const me, void const *par);
 static void QActiveDummy_dispatch_(QHsm * const me, QEvt const * const e);
 
 static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie);
+                    void const *par);
 static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender);
 static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e);
@@ -115,7 +115,7 @@ static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e);
 /*..........................................................................*/
 /*! "constructor" of QActiveDummy */
 void QActiveDummy_ctor(QActiveDummy * const me) {
-    static QActiveVtbl const vtbl = {  /* QActiveVtbl virtual table */
+    static QActiveVtable const vtable = {  /* QActive virtual table */
         { &QActiveDummy_init_,
           &QActiveDummy_dispatch_ },
         &QActiveDummy_start_,
@@ -123,13 +123,13 @@ void QActiveDummy_ctor(QActiveDummy * const me) {
         &QActiveDummy_postLIFO_
     };
     QActive_ctor(&me->super, Q_STATE_CAST(0)); /* superclass' ctor */
-    me->super.super.vptr = &vtbl.super; /* hook the vptr */
+    me->super.super.vptr = &vtable.super; /* hook the vptr */
 }
 /*..........................................................................*/
 static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     /* priority must be in range
     * queue must NOT be provided
@@ -142,24 +142,24 @@ static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
         && (qLen == (uint_fast16_t)0)
         && (stkSto == (void *)0)
         && (stkSize == (uint_fast16_t)0)
-        && (ie == (QEvt const *)0));
+        && (par == (void const *)0));
 
     me->prio = (uint8_t)prio; /* set the current priority of the AO */
 
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
-    //QS_FLUSH();                /* flush the trace buffer to the host */
+    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    //QS_FLUSH(); /* flush the trace buffer to the host */
 }
 /*..........................................................................*/
-static void QActiveDummy_init_(QHsm * const me, QEvt const * const e) {
+static void QActiveDummy_init_(QHsm * const me, void const *par) {
     QS_CRIT_STAT_
     QS_BEGIN_(QS_QEP_STATE_INIT, QS_priv_.locFilter[SM_OBJ], me)
         QS_OBJ_(me);        /* this state machine object */
         QS_FUN_(me->state.fun); /* the source state */
         QS_FUN_(me->temp.fun);  /* the target of the initial transition */
     QS_END_()
-    (void)e; /* unused parameter */
+    (void)par; /* unused parameter */
 }
 /*..........................................................................*/
 static void QActiveDummy_dispatch_(QHsm * const me, QEvt const * const e) {

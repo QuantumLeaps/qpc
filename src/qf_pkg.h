@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.7
-* Last updated on  2018-11-07
+* Last updated for version 6.6.0
+* Last updated on  2019-10-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,16 +29,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_pkg_h
-#define qf_pkg_h
+#ifndef QF_PKG_H
+#define QF_PKG_H
 
 /****************************************************************************/
 /* QF-specific critical section */
@@ -96,30 +96,30 @@
 
 #else  /* Q_NASSERT not defined--assertion checking enabled */
 
-    #define Q_ASSERT_CRIT_(id_, test_) do {\
-        if ((test_)) {} else { \
-            QF_CRIT_EXIT_(); \
+    #define Q_ASSERT_CRIT_(id_, test_) do {               \
+        if ((test_)) {} else {                            \
+            QF_CRIT_EXIT_();                              \
             Q_onAssert(&Q_this_module_[0], (int_t)(id_)); \
-        } \
+        }                                                 \
     } while (0)
 
     #define Q_REQUIRE_CRIT_(id_, test_) Q_ASSERT_CRIT_((id_), (test_))
 
-    #define Q_ERROR_CRIT_(id_) do { \
-        QF_CRIT_EXIT_(); \
-        Q_onAssert(&Q_this_module_[0], (int_t)(id_)); \
+    #define Q_ERROR_CRIT_(id_) do {                       \
+        QF_CRIT_EXIT_();                                  \
+        Q_onAssert(&Q_this_module_[0], (int_t)(id_));     \
     } while (0)
 
 #endif /* Q_NASSERT */
 
 /****************************************************************************/
-/* internal implementation (should be used via vtbl only) */
+/* internal implementation (should be used via vtable only) */
 
 /*! Implementation of the active object start operation */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie);
+                    void const *par);
 
 /*! Get an event from the event queue of an active object. */
 QEvt const *QActive_get_(QActive *const me);
@@ -264,4 +264,4 @@ typedef struct QFreeBlock {
 
 #endif /* Q_SPY */
 
-#endif /* qf_pkg_h */
+#endif /* QF_PKG_H */

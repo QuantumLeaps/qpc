@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST-QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 6.5.1
-# Last updated on  2019-05-24
+# Last updated for version 6.6.0
+# Last updated on  2019-10-14
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -35,7 +35,6 @@
 # examples of invoking this Makefile:
 # make         # make and run the Python tests in the current directory
 # make TESTS=test*.py  # make and run the selected tests in the curr. dir.
-# make SCRIPT=tcl # make and run the Tcl tests
 # make HOST=localhost:7705 # connect to host:port
 # make norun   # only make but not run the tests
 # make clean   # cleanup the build
@@ -43,8 +42,8 @@
 #
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
-# is included in the Qtools collection for Windows, see:
-#    http://sourceforge.net/projects/qpc/files/QTools/
+# is included in the QTools collection for Windows, see:
+#    https://github.com/QuantumLeaps/qtools
 #
 
 #-----------------------------------------------------------------------------
@@ -57,11 +56,11 @@ PROJECT := test_table
 #
 
 # list of all source directories used by this project
-VPATH = . \
+VPATH := . \
 	../src
 
 # list of all include directories needed by this project
-INCLUDES  = -I. \
+INCLUDES := -I. \
 	-I../src
 
 # location of the QP/C framework (if not provided in an env. variable)
@@ -145,11 +144,11 @@ CPP   := g++
 LINK  := gcc    # for C programs
 #LINK  := g++   # for C++ programs
 
-ifeq ($(SCRIPT),tcl)
-QUTEST := tclsh $(QTOOLS)/qspy/tcl/qutest.tcl
-else # default
+#-----------------------------------------------------------------------------
+# QUTest test script utilities (requires QTOOLS):
+#
 QUTEST := python $(QTOOLS)/qspy/py/qutest.py
-endif
+TESTS  := *.py
 
 #-----------------------------------------------------------------------------
 # basic utilities (depends on the OS this Makefile runs on):
@@ -206,14 +205,6 @@ else
 all : $(TARGET_EXE) run
 endif
 
-ifeq (, $(TESTS))
-ifeq ($(SCRIPT),tcl)
-TESTS := *.tcl
-else
-TESTS := *.py
-endif
-endif
-
 $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
@@ -268,7 +259,7 @@ show :
 	@echo LIBS         = $(LIBS)
 	@echo DEFINES      = $(DEFINES)
 	@echo QTOOLS       = $(QTOOLS)
-	@echo QUTEST       = $(QUTEST)
 	@echo HOST         = $(HOST)
+	@echo QUTEST       = $(QUTEST)
 	@echo TESTS        = $(TESTS)
 

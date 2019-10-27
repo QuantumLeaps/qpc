@@ -25,8 +25,8 @@
 * Quantum Leaps Web site:  http://www.quantum-leaps.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 #define BSP_TICKS_PER_SEC    100
 
@@ -38,4 +38,4 @@ void ISR_Nmi(void);
 void ISR_Fault(void);
 void ISR_DefaultHandler(void);
 
-#endif                                                             /* bsp_h */
+#endif                                                             /* BSP_H */

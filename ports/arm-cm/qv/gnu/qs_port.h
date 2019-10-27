@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qs_port_h
-#define qs_port_h
+#ifndef QS_PORT_H
+#define QS_PORT_H
 
 /* QS time-stamp size in bytes */
 #define QS_TIME_SIZE     4
@@ -58,4 +58,4 @@
 #include "qf_port.h" /* use QS with QF */
 #include "qs.h"      /* QS platform-independent public interface */
 
-#endif /* qs_port_h */
+#endif /* QS_PORT_H */

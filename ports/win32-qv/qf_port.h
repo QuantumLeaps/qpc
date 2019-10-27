@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* Win32 event queue and thread types */
 #define QF_EQUEUE_TYPE       QEQueue
@@ -217,4 +217,4 @@ int QF_consoleWaitForKey(void);
 * threaded Win32-QV port, because event multicasting is already atomic.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

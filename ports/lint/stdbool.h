@@ -6,8 +6,8 @@
 * This header is part of the ANSI C99 standard library to define the
 * standard Boolean type as well as the 'true' and 'false' constansts.
 */
-#ifndef stdbool_h
-#define stdbool_h
+#ifndef STDBOOL_H
+#define STDBOOL_H
 
 /*lint -save -e960 MISRA-C:2004 19.4, Disallowed definition of 'bool' */
 
@@ -23,5 +23,5 @@ typedef int   bool;     /*!< standard Boolean data type */
 
 /*lint -restore */
 
-#endif /* stdbool_h */
+#endif /* STDBOOL_H */
 

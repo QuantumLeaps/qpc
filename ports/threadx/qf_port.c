@@ -76,7 +76,7 @@ static void thread_function(ULONG thread_input) { /* ThreadX signature */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     UINT tx_prio; /* ThreadX priority corresponding to the QF priority prio */
 
@@ -91,7 +91,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = prio;  /* save the QF priority */
     QF_add_(me);      /* make QF aware of this active object */
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+
+    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* convert QF priority to the ThreadX priority */

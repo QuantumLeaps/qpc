@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-07
+* Last updated for version 6.6.0
+* Last updated on  2019-09-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -77,7 +77,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     INT8U p_ucos;
     INT8U err;
@@ -88,7 +88,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = prio; /* save the QF priority */
     QF_add_(me); /* make QF aware of this active object */
-    QHSM_INIT(&me->super, ie);  /* thake the top-most initial tran. */
+
+    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* map from QP to uC/OS priority */

@@ -340,8 +340,8 @@ for (n = 0U; n &lt; N_PHILO; ++n) {
  </package>
  <directory name=".">
   <file name="dpp.h">
-   <text>#ifndef dpp_h
-#define dpp_h
+   <text>#ifndef DPP_H
+#define DPP_H
 
 enum DPPSignals {
     EAT_SIG = Q_USER_SIG, /* published by Table to let a philosopher eat */
@@ -367,7 +367,8 @@ $declare(AOs::Table_ctor)
 $declare(AOs::AO_Philo[N_PHILO])
 $declare(AOs::AO_Table)
 
-#endif /* dpp_h */</text>
+#endif /* DPP_H */
+</text>
   </file>
   <file name="philo.c">
    <text>#include &quot;qpc.h&quot;

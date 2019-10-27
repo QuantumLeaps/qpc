@@ -36,8 +36,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qv_port_h
-#define qv_port_h
+#ifndef QV_PORT_H
+#define QV_PORT_H
 
 #if (__CORE__ == __ARM6M__) /* Cortex-M0/M0+/M1 ? */
 
@@ -65,4 +65,4 @@
 
 #include "qv.h" /* QV platform-independent public interface */
 
-#endif /* qv_port_h */
+#endif /* QV_PORT_H */

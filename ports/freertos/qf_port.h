@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* FreeRTOS event queue and thread types */
 #define QF_EQUEUE_TYPE        QEQueue
@@ -236,4 +236,4 @@ enum FreeRTOS_TaskAttrs {
 * ARE ALLOWED INSIDE ISRs AND CALLING THE TASK-LEVEL APIs IS AN ERROR.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

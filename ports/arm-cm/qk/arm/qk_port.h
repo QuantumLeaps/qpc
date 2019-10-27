@@ -36,8 +36,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef QK_PORT_H
+#define QK_PORT_H
 
 /* determination if the code executes in the ISR context */
 #define QK_ISR_CONTEXT_() (QK_get_IPSR() != (uint32_t)0)
@@ -65,4 +65,4 @@ void QK_init(void);
 
 #include "qk.h" /* QK platform-independent public interface */
 
-#endif /* qk_port_h */
+#endif /* QK_PORT_H */

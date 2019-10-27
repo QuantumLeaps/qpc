@@ -36,8 +36,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef QK_PORT_H
+#define QK_PORT_H
 
 /* QK interrupt entry and exit... */
 #define QK_ISR_ENTRY()    (++QK_attr_.intNest)
@@ -56,5 +56,5 @@
 
 #include "qk.h"  /* QK platform-independent public interface */
 
-#endif /* qk_port_h */
+#endif /* QK_PORT_H */
 

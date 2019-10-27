@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.6
-* Last updated on  2018-10-03
+* Last updated for version 6.6.0
+* Last updated on  2019-07-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -162,32 +162,24 @@ void QS_filterOn(uint_fast8_t rec) {
         QS_priv_.glbFilter[6] |= (uint8_t)0x7FU;
     }
     else if (rec == (uint_fast8_t)QS_U0_RECORDS) {
-        QS_priv_.glbFilter[8] |= (uint8_t)0xC0U;
-        QS_priv_.glbFilter[9] |= (uint8_t)0xFFU;
+        QS_priv_.glbFilter[12] |= (uint8_t)0xF0U;
+        QS_priv_.glbFilter[13] |= (uint8_t)0x01U;
     }
     else if (rec == (uint_fast8_t)QS_U1_RECORDS) {
-        QS_priv_.glbFilter[10] |= (uint8_t)0xFFU;
-        QS_priv_.glbFilter[11] |= (uint8_t)0x03U;
+        QS_priv_.glbFilter[13] |= (uint8_t)0x1EU;
     }
     else if (rec == (uint_fast8_t)QS_U2_RECORDS) {
-        QS_priv_.glbFilter[11] |= (uint8_t)0xFCU;
-        QS_priv_.glbFilter[12] |= (uint8_t)0x0FU;
+        QS_priv_.glbFilter[13] |= (uint8_t)0xE0U;
+        QS_priv_.glbFilter[14] |= (uint8_t)0x03U;
     }
     else if (rec == (uint_fast8_t)QS_U3_RECORDS) {
-        QS_priv_.glbFilter[12] |= (uint8_t)0xF0U;
-        QS_priv_.glbFilter[13] |= (uint8_t)0x3FU;
+        QS_priv_.glbFilter[14] |= (uint8_t)0xF8U;
     }
     else if (rec == (uint_fast8_t)QS_U4_RECORDS) {
-        QS_priv_.glbFilter[13] |= (uint8_t)0xC0U;
-        QS_priv_.glbFilter[14] |= (uint8_t)0xFFU;
         QS_priv_.glbFilter[15] |= (uint8_t)0x1FU;
     }
     else if (rec == (uint_fast8_t)QS_UA_RECORDS) {
-        QS_priv_.glbFilter[8]  |= (uint8_t)0xC0U;
-        QS_priv_.glbFilter[9]  |= (uint8_t)0xFFU;
-        QS_priv_.glbFilter[10] |= (uint8_t)0xFFU;
-        QS_priv_.glbFilter[11] |= (uint8_t)0xFFU;
-        QS_priv_.glbFilter[12] |= (uint8_t)0xFFU;
+        QS_priv_.glbFilter[12] |= (uint8_t)0xF0U;
         QS_priv_.glbFilter[13] |= (uint8_t)0xFFU;
         QS_priv_.glbFilter[14] |= (uint8_t)0xFFU;
         QS_priv_.glbFilter[15] |= (uint8_t)0x1FU;
@@ -256,34 +248,26 @@ void QS_filterOff(uint_fast8_t rec) {
         QS_priv_.glbFilter[6] &= (uint8_t)(~0x7FU);
     }
     else if (rec == (uint_fast8_t)QS_U0_RECORDS) {
-        QS_priv_.glbFilter[8] &= (uint8_t)(~0xC0U);
-        QS_priv_.glbFilter[9] = (uint8_t)0;
+        QS_priv_.glbFilter[12] &= (uint8_t)(~0xF0U);
+        QS_priv_.glbFilter[13] &= (uint8_t)(~0x01U);
     }
     else if (rec == (uint_fast8_t)QS_U1_RECORDS) {
-        QS_priv_.glbFilter[10] = (uint8_t)0;
-        QS_priv_.glbFilter[11] &= (uint8_t)(~0x03U);
+        QS_priv_.glbFilter[13] &= (uint8_t)(~0x1EU);
     }
     else if (rec == (uint_fast8_t)QS_U2_RECORDS) {
-        QS_priv_.glbFilter[11] &= (uint8_t)(~0xFCU);
-        QS_priv_.glbFilter[12] &= (uint8_t)(~0x0FU);
+        QS_priv_.glbFilter[13] &= (uint8_t)(~0xE0U);
+        QS_priv_.glbFilter[14] &= (uint8_t)(~0x03U);
     }
     else if (rec == (uint_fast8_t)QS_U3_RECORDS) {
-        QS_priv_.glbFilter[12] &= (uint8_t)(~0xF0U);
-        QS_priv_.glbFilter[13] &= (uint8_t)(~0x3FU);
+        QS_priv_.glbFilter[14] &= (uint8_t)(~0xF8U);
     }
     else if (rec == (uint_fast8_t)QS_U4_RECORDS) {
-        QS_priv_.glbFilter[13] &= (uint8_t)(~0xC0U);
-        QS_priv_.glbFilter[14] = (uint8_t)0;
-        QS_priv_.glbFilter[15] &= (uint8_t)(~0x1FU);
+        QS_priv_.glbFilter[15] &= (uint8_t)0x1FU;
     }
     else if (rec == (uint_fast8_t)QS_UA_RECORDS) {
-        QS_priv_.glbFilter[8]  &= (uint8_t)(~0xC0U);
-        QS_priv_.glbFilter[9]  = (uint8_t)0;
-        QS_priv_.glbFilter[10] = (uint8_t)0;
-        QS_priv_.glbFilter[11] = (uint8_t)0;
-        QS_priv_.glbFilter[12] = (uint8_t)0;
-        QS_priv_.glbFilter[13] = (uint8_t)0;
-        QS_priv_.glbFilter[14] = (uint8_t)0;
+        QS_priv_.glbFilter[12] &= (uint8_t)(~0xF0U);
+        QS_priv_.glbFilter[13] &= (uint8_t)(~0xFFU);
+        QS_priv_.glbFilter[14] &= (uint8_t)(~0xFFU);
         QS_priv_.glbFilter[15] &= (uint8_t)(~0x1FU);
     }
     else {

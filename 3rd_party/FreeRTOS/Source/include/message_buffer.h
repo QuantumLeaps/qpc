@@ -1,5 +1,5 @@
 /*
- * FreeRTOS Kernel V10.2.0
+ * FreeRTOS Kernel V10.2.1
  * Copyright (C) 2019 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -692,6 +692,7 @@ size_t xMessageBufferSpaceAvailable( MessageBufferHandle_t xMessageBuffer ) );
  * \ingroup MessageBufferManagement
  */
 #define xMessageBufferSpaceAvailable( xMessageBuffer ) xStreamBufferSpacesAvailable( ( StreamBufferHandle_t ) xMessageBuffer )
+#define xMessageBufferSpacesAvailable( xMessageBuffer ) xStreamBufferSpacesAvailable( ( StreamBufferHandle_t ) xMessageBuffer ) /* Corrects typo in original macro name. */
 
 /**
  * message_buffer.h
@@ -795,4 +796,4 @@ BaseType_t xMessageBufferReceiveCompletedFromISR( MessageBufferHandle_t xStreamB
 } /* extern "C" */
 #endif
 
-#endif    /* !defined( FREERTOS_MESSAGE_BUFFER_H ) */
+#endif	/* !defined( FREERTOS_MESSAGE_BUFFER_H ) */

@@ -3,8 +3,8 @@
 * @brief Customizable and memory-efficient assertions for embedded systems
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-23
+* Last updated for version 6.6.0
+* Last updated on  2019-07-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -28,16 +28,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qassert_h
-#define qassert_h
+#ifndef QASSERT_H
+#define QASSERT_H
 
 /**
 * @note
@@ -63,7 +63,7 @@
 
 #else  /* Q_NASSERT not defined--assertion checking enabled */
 
-#ifndef qep_h /* QEP not included (i.e., is quassert.h used outside QP? */
+#ifndef QP_VERSION /* is quassert.h used outside QP? */
 
     /* provide typedefs so that qassert.h could be used "standalone"... */
 
@@ -330,5 +330,5 @@ void Q_onAssert(char_t const * const module, int_t location);
 /*! Helper macro to calculate static dimension of a 1-dim @p array_ */
 #define Q_DIM(array_) (sizeof(array_) / sizeof((array_)[0]))
 
-#endif /* qassert_h */
+#endif /* QASSERT_H */
 

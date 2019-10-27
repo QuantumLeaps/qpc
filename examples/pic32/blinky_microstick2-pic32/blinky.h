@@ -31,8 +31,8 @@
 * Web  : https://state-machine.com
 * Email: info@state-machine.com
 *****************************************************************************/
-#ifndef blinky_h
-#define blinky_h
+#ifndef BLINKY_H
+#define BLINKY_H
 
 enum BlinkySignals {
     DUMMY_SIG = Q_USER_SIG,
@@ -45,4 +45,4 @@ enum BlinkySignals {
 void Blinky_ctor(void);
 extern QActive * const AO_Blinky; /* opaque pointer */
 
-#endif /* blinky_h */
+#endif /* BLINKY_H */

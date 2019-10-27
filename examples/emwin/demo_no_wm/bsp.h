@@ -32,11 +32,11 @@
 *                          https://state-machine.com
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 #define BSP_TICKS_PER_SEC   100
 
 void BSP_init(void);
 
-#endif                                                             /* bsp_h */
+#endif                                                             /* BSP_H */

@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-07
+* Last updated for version 6.6.0
+* Last updated on  2019-09-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -102,7 +102,7 @@ static void thread_function(void *pVoid) { /* embOS signature */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     /* create the embOS message box for the AO */
     OS_CreateMB(&me->eQueue,
@@ -112,7 +112,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = prio;  /* save the QF priority */
     QF_add_(me);      /* make QF aware of this active object */
-    QHSM_INIT(&me->super, ie);  /* thake the top-most initial tran. */
+    QHSM_INIT(&me->super, par); /* thake the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* create an embOS task for the AO */

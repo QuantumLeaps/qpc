@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.6.0
+* Last updated on  2019-10-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -29,16 +29,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qxthread_h
-#define qxthread_h
+#ifndef QXTHREAD_H
+#define QXTHREAD_H
 
 /****************************************************************************/
 /*! eXtended (blocking) thread of the QXK preemptive kernel */
@@ -73,13 +73,13 @@ typedef struct {
     QTimeEvt timeEvt; /*!< time event to handle blocking timeouts */
 } QXThread;
 
-/*! Virtual Table for the ::QXThread class (inherited from ::QActiveVtbl) */
+/*! Virtual Table for the ::QXThread class (inherited from ::QActiveVtable) */
 /**
 * @note
 * ::QXThread inherits ::QActive without adding any new virtual
-* functions and therefore, ::QXThreadVtbl is typedef'ed as ::QActiveVtbl.
+* functions and therefore, ::QXThreadVtable is typedef'ed as ::QActiveVtable.
 */
-typedef QActiveVtbl QXThreadVtbl;
+typedef QActiveVtable QXThreadVtable;
 
 /*! Polymorphically start an extended thread. */
 /**
@@ -100,7 +100,7 @@ typedef QActiveVtbl QXThreadVtbl;
 */
 #define QXTHREAD_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, par_) do {\
     Q_ASSERT((me_)->super.super.vptr);                                       \
-    ((*((QActiveVtbl const *)((me_)->super.super.vptr))->start)(             \
+    ((*((QActiveVtable const *)((me_)->super.super.vptr))->start)(           \
         &(me_)->super, (prio_), (QEvt const **)(qSto_), (qLen_),             \
         (stkSto_), (stkLen_), (par_)));                                      \
 } while (0)
@@ -271,5 +271,5 @@ bool QXMutex_tryLock(QXMutex * const me);
 /*! unlock the QXK priority-ceiling mutex ::QXMutex */
 void QXMutex_unlock(QXMutex * const me);
 
-#endif /* qxthread_h */
+#endif /* QXTHREAD_H */
 

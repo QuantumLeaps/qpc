@@ -4,8 +4,8 @@
 * @ingroup qep qf qv qk qxk qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-13
+* Last updated for version 6.6.0
+* Last updated on  2019-07-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -29,16 +29,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qpc_h
-#define qpc_h
+#ifndef QPC_H
+#define QPC_H
 
 /**
 * @description
@@ -116,6 +116,7 @@ extern char_t const Q_APP_BUILD_TIME[9];
 * state machine and the QM modeling tool.
 */
 typedef QHsm        QFsm;
+
 /*! @deprecated QFsm state machine constructor; instead use: QHsm_ctor() */
 #define QFsm_ctor   QHsm_ctor
 
@@ -188,28 +189,20 @@ typedef QHsm        QFsm;
 /*! @deprecated time event one-shot arm operation;
 * instead use: QTimeEvt_armX() */
 #define QTimeEvt_postIn(me_, act_, nTicks_) do { \
-    (me_)->act = (act_); \
+    (me_)->act = (act_);                         \
     QTimeEvt_armX((me_), (nTicks_), (uint8_t)0); \
 } while (0)
 
 /*! @deprecated time event periodic arm operation;
 * instead use: QTimeEvt_armX() */
 #define QTimeEvt_postEvery(me_, act_, nTicks_) do { \
-    (me_)->act = (act_); \
-    QTimeEvt_armX((me_), (nTicks_), (nTicks_)); \
+    (me_)->act = (act_);                            \
+    QTimeEvt_armX((me_), (nTicks_), (nTicks_));     \
 } while (0)
 
 /*! @deprecated macro for generating QS-Reset trace record. */
 #define QS_RESET() ((void)0)
 
-
-/****************************************************************************/
-#if (QP_API_VERSION < 450)
-
-/*! @deprecated typedef for backwards compatibility; instead use ::QEvt */
-typedef QEvt QEvent;
-
-#endif /* QP_API_VERSION < 450 */
 #endif /* QP_API_VERSION < 500 */
 #endif /* QP_API_VERSION < 540 */
 #endif /* QP_API_VERSION < 580 */
@@ -218,5 +211,5 @@ typedef QEvt QEvent;
 }
 #endif
 
-#endif /* qpc_h */
+#endif /* QPC_H */
 

@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* embOS message mailbox and thread types */
 #define QF_EQUEUE_TYPE      OS_MAILBOX
@@ -114,4 +114,4 @@
 * scheduler only up to the specified lock priority is not supported.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

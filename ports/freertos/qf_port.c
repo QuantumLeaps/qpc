@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-26
+* Last updated for version 6.6.0
+* Last updated on  2019-09-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -79,7 +79,7 @@ void QF_stop(void) {
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    void const *par)
 {
     TaskHandle_t thr;
     /* task name provided by the user in QF_setTaskName() or default name */
@@ -99,7 +99,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = prio;  /* save the QF priority */
     QF_add_(me);      /* make QF aware of this active object */
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
+    QHSM_INIT(&me->super, par); /* take the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 
     /* statically create the FreeRTOS task for the AO */

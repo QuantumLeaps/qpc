@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef QK_PORT_H
+#define QK_PORT_H
 
 /****************************************************************************/
 
@@ -91,5 +91,5 @@
 
 uint32_t get_IPSR(void);
 
-#endif /* qk_port_h */
+#endif /* QK_PORT_H */
 

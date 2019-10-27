@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /*! The maximum number of active objects in the application. */
 /**
@@ -260,5 +260,5 @@ void critExit(QF_CRIT_STAT_TYPE stat);
 #include "qf.h"         /* QF platform-independent public interface */
 #include "qxthread.h"   /* QXK extended thread */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */
 

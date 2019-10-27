@@ -36,8 +36,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* TI-RTOS-specific event queue and thread types, see NOTE1 */
 #define QF_EQUEUE_TYPE       QEQueue
@@ -86,7 +86,7 @@
 
 #endif /* ifdef QP_IMPL */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */
 
 /*****************************************************************************
 *

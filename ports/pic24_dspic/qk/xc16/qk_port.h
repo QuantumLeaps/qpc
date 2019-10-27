@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef QK_PORT_H
+#define QK_PORT_H
 
 /* QK interrupt entry and exit */
 #define QK_ISR(psv_) \
@@ -80,5 +80,5 @@ void  __attribute__((__interrupt__(__preprologue__( \
 /* set of active interrupt priority levels (IPLs) */
 extern uint8_t volatile QK_IPL_set_;
 
-#endif /* qk_port_h */
+#endif /* QK_PORT_H */
 

@@ -1,5 +1,5 @@
 /*
- * FreeRTOS Kernel V10.2.0
+ * FreeRTOS Kernel V10.2.1
  * Copyright (C) 2019 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -306,9 +306,9 @@ const TickType_t x100ms = pdMS_TO_TICKS( 100 );
  * \ingroup StreamBufferManagement
  */
 size_t xStreamBufferSend( StreamBufferHandle_t xStreamBuffer,
-                          const void *pvTxData,
-                          size_t xDataLengthBytes,
-                          TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+						  const void *pvTxData,
+						  size_t xDataLengthBytes,
+						  TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
 
 /**
  * stream_buffer.h
@@ -407,9 +407,9 @@ BaseType_t xHigherPriorityTaskWoken = pdFALSE; // Initialised to pdFALSE.
  * \ingroup StreamBufferManagement
  */
 size_t xStreamBufferSendFromISR( StreamBufferHandle_t xStreamBuffer,
-                                 const void *pvTxData,
-                                 size_t xDataLengthBytes,
-                                 BaseType_t * const pxHigherPriorityTaskWoken ) PRIVILEGED_FUNCTION;
+								 const void *pvTxData,
+								 size_t xDataLengthBytes,
+								 BaseType_t * const pxHigherPriorityTaskWoken ) PRIVILEGED_FUNCTION;
 
 /**
  * stream_buffer.h
@@ -496,9 +496,9 @@ const TickType_t xBlockTime = pdMS_TO_TICKS( 20 );
  * \ingroup StreamBufferManagement
  */
 size_t xStreamBufferReceive( StreamBufferHandle_t xStreamBuffer,
-                             void *pvRxData,
-                             size_t xBufferLengthBytes,
-                             TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+							 void *pvRxData,
+							 size_t xBufferLengthBytes,
+							 TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
 
 /**
  * stream_buffer.h
@@ -582,9 +582,9 @@ BaseType_t xHigherPriorityTaskWoken = pdFALSE;  // Initialised to pdFALSE.
  * \ingroup StreamBufferManagement
  */
 size_t xStreamBufferReceiveFromISR( StreamBufferHandle_t xStreamBuffer,
-                                    void *pvRxData,
-                                    size_t xBufferLengthBytes,
-                                    BaseType_t * const pxHigherPriorityTaskWoken ) PRIVILEGED_FUNCTION;
+									void *pvRxData,
+									size_t xBufferLengthBytes,
+									BaseType_t * const pxHigherPriorityTaskWoken ) PRIVILEGED_FUNCTION;
 
 /**
  * stream_buffer.h
@@ -831,25 +831,25 @@ BaseType_t xStreamBufferReceiveCompletedFromISR( StreamBufferHandle_t xStreamBuf
 
 /* Functions below here are not part of the public API. */
 StreamBufferHandle_t xStreamBufferGenericCreate( size_t xBufferSizeBytes,
-                                                 size_t xTriggerLevelBytes,
-                                                 BaseType_t xIsMessageBuffer ) PRIVILEGED_FUNCTION;
+												 size_t xTriggerLevelBytes,
+												 BaseType_t xIsMessageBuffer ) PRIVILEGED_FUNCTION;
 
 StreamBufferHandle_t xStreamBufferGenericCreateStatic( size_t xBufferSizeBytes,
-                                                       size_t xTriggerLevelBytes,
-                                                       BaseType_t xIsMessageBuffer,
-                                                       uint8_t * const pucStreamBufferStorageArea,
-                                                       StaticStreamBuffer_t * const pxStaticStreamBuffer ) PRIVILEGED_FUNCTION;
+													   size_t xTriggerLevelBytes,
+													   BaseType_t xIsMessageBuffer,
+													   uint8_t * const pucStreamBufferStorageArea,
+													   StaticStreamBuffer_t * const pxStaticStreamBuffer ) PRIVILEGED_FUNCTION;
 
 size_t xStreamBufferNextMessageLengthBytes( StreamBufferHandle_t xStreamBuffer ) PRIVILEGED_FUNCTION;
 
 #if( configUSE_TRACE_FACILITY == 1 )
-    void vStreamBufferSetStreamBufferNumber( StreamBufferHandle_t xStreamBuffer, UBaseType_t uxStreamBufferNumber ) PRIVILEGED_FUNCTION;
-    UBaseType_t uxStreamBufferGetStreamBufferNumber( StreamBufferHandle_t xStreamBuffer ) PRIVILEGED_FUNCTION;
-    uint8_t ucStreamBufferGetStreamBufferType( StreamBufferHandle_t xStreamBuffer ) PRIVILEGED_FUNCTION;
+	void vStreamBufferSetStreamBufferNumber( StreamBufferHandle_t xStreamBuffer, UBaseType_t uxStreamBufferNumber ) PRIVILEGED_FUNCTION;
+	UBaseType_t uxStreamBufferGetStreamBufferNumber( StreamBufferHandle_t xStreamBuffer ) PRIVILEGED_FUNCTION;
+	uint8_t ucStreamBufferGetStreamBufferType( StreamBufferHandle_t xStreamBuffer ) PRIVILEGED_FUNCTION;
 #endif
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif    /* !defined( STREAM_BUFFER_H ) */
+#endif	/* !defined( STREAM_BUFFER_H ) */

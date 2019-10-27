@@ -37,8 +37,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef QK_PORT_H
+#define QK_PORT_H
 
 /* QK interrupt entry and exit */
 #define QK_ISR_ENTRY() do { \
@@ -71,5 +71,5 @@ void QK_init(void);
 * use by QK.
 */
 
-#endif /* qk_port_h */
+#endif /* QK_PORT_H */
 

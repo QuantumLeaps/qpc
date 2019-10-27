@@ -31,8 +31,8 @@
 * https://state-machine.com
 * mailto:info@state-machine.com
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 #define BSP_TICKS_PER_SEC    33U
 #define BSP_SCREEN_WIDTH     128U
@@ -62,4 +62,4 @@ uint32_t BSP_random(void);          /* pseudo-random generator */
 
 extern QActive *the_Ticker0; /* "Ticker" active object for tick rate 0 */
 
-#endif /* bsp_h */
+#endif /* BSP_H */

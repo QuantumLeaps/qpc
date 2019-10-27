@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.5.0" links="0">
+<model version="4.5.1" links="0">
  <documentation>The improved Calculator model with QMsm state machine implementation strategy and Sub-Machines.</documentation>
  <framework name="qpc" license="../../../QPC-EVAL.qlc"/>
  <package name="Events" stereotype="0x01">
@@ -516,8 +516,8 @@ QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Calc_initial));</code>
  </package>
  <directory name=".">
   <file name="calc1_sub.h">
-   <text>#ifndef calc1_sub_h
-#define calc1_sub_h
+   <text>#ifndef CALC1_SUB_H
+#define CALC1_SUB_H
 
 enum CalcSignals {
     C_SIG = Q_USER_SIG,
@@ -535,7 +535,8 @@ $declare${SMs::Calc_ctor}
 
 extern QHsm * const the_calc;  /* &quot;opaque&quot; pointer to calculator HSM */
 
-#endif /* calc1_sub_h */</text>
+#endif /* CALC1_SUB_H */
+</text>
   </file>
   <file name="calc1_sub.c">
    <text>#include &quot;qpc.h&quot;   /* QP/C */

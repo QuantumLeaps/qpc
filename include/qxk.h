@@ -5,14 +5,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.1.1
-* Last updated on  2018-02-18
+* Last updated for version 6.6.0
+* Last updated on  2019-07-30
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,16 +30,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qxk_h
-#define qxk_h
+#ifndef QXK_H
+#define QXK_H
 
 #include "qequeue.h"  /* QXK kernel uses the native QP event queue  */
 #include "qmpool.h"   /* QXK kernel uses the native QP memory pool  */
@@ -181,31 +181,31 @@ void QXK_schedUnlock(QSchedStatus stat);
     #define QF_SCHED_STAT_ QSchedStatus lockStat_;
 
     /*! Internal macro for selective scheduler locking. */
-    #define QF_SCHED_LOCK_(prio_) do { \
-        if (QXK_ISR_CONTEXT_()) { \
-            lockStat_ = (QSchedStatus)0xFF; \
-        } else { \
+    #define QF_SCHED_LOCK_(prio_) do {          \
+        if (QXK_ISR_CONTEXT_()) {               \
+            lockStat_ = (QSchedStatus)0xFF;     \
+        } else {                                \
             lockStat_ = QXK_schedLock((prio_)); \
-        } \
+        }                                       \
     } while (0)
 
     /*! Internal macro for selective scheduler unlocking. */
-    #define QF_SCHED_UNLOCK_() do { \
-        if (lockStat_ != (QSchedStatus)0xFF) { \
-            QXK_schedUnlock(lockStat_); \
-        } \
+    #define QF_SCHED_UNLOCK_() do {             \
+        if (lockStat_ != (QSchedStatus)0xFF) {  \
+            QXK_schedUnlock(lockStat_);         \
+        }                                       \
     } while (0)
 
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         (Q_ASSERT_ID(110, (me_)->eQueue.frontEvt != (QEvt *)0))
 
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
+    #define QACTIVE_EQUEUE_SIGNAL_(me_) do {                          \
         QPSet_insert(&QXK_attr_.readySet, (uint_fast8_t)(me_)->prio); \
-        if (!QXK_ISR_CONTEXT_()) { \
-            if (QXK_sched_() != (uint_fast8_t)0) { \
-                QXK_activate_(); \
-            } \
-        } \
+        if (!QXK_ISR_CONTEXT_()) {                                    \
+            if (QXK_sched_() != (uint_fast8_t)0) {                    \
+                QXK_activate_();                                      \
+            }                                                         \
+        }                                                             \
     } while (0)
 
     /* native QF event pool operations */
@@ -218,4 +218,4 @@ void QXK_schedUnlock(QSchedStatus stat);
 
 #endif /* QP_IMPL */
 
-#endif /* qxk_h */
+#endif /* QXK_H */

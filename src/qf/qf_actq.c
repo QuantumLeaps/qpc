@@ -9,14 +9,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.6
-* Last updated on  2018-10-03
+* Last updated for version 6.6.0
+* Last updated on  2019-10-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -34,11 +34,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -408,7 +408,7 @@ uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
 }
 
 /****************************************************************************/
-static void QTicker_init_(QHsm * const me, QEvt const * const e);
+static void QTicker_init_(QHsm * const me, void const *par);
 static void QTicker_dispatch_(QHsm * const me, QEvt const * const e);
 
 #ifdef Q_SPY
@@ -435,7 +435,7 @@ static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
 /*..........................................................................*/
 /*! "constructor" of QTicker */
 void QTicker_ctor(QTicker * const me, uint8_t tickRate) {
-    static QActiveVtbl const vtbl = {  /* QActiveVtbl virtual table */
+    static QActiveVtable const vtable = {  /* QActive virtual table */
         { &QTicker_init_,
           &QTicker_dispatch_ },
         &QActive_start_,
@@ -443,15 +443,15 @@ void QTicker_ctor(QTicker * const me, uint8_t tickRate) {
         &QTicker_postLIFO_
     };
     QActive_ctor(me, Q_STATE_CAST(0)); /* superclass' ctor */
-    me->super.vptr = &vtbl.super; /* hook the vptr */
+    me->super.vptr = &vtable.super; /* hook the vptr */
 
     /*  reuse eQueue.head for tick-rate */
     me->eQueue.head = (QEQueueCtr)tickRate;
 }
 /*..........................................................................*/
-static void QTicker_init_(QHsm * const me, QEvt const * const e) {
+static void QTicker_init_(QHsm * const me, void const *par) {
     (void)me;
-    (void)e;
+    (void)par;
     QTICKER_CAST(me)->eQueue.tail = (QEQueueCtr)0;
 }
 /*..........................................................................*/

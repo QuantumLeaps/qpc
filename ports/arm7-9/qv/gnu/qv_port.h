@@ -36,8 +36,8 @@
 ******************************************************************************
 * @endcond
 */
-#ifndef qv_port_h
-#define qv_port_h
+#ifndef QV_PORT_H
+#define QV_PORT_H
 
 void QV_irq(void);
 
@@ -55,5 +55,5 @@ void BSP_irq(void);
 * assembly.
 */
 
-#endif /* qv_port_h */
+#endif /* QV_PORT_H */
 

@@ -1,6 +1,25 @@
 /**
 @page history Revision History
 
+@section qpc_6_6_0 Version 6.6.0, 2019-10-31
+The main purpose of this release is the change in distribution of the QP/C framework, which is now bundled together with the other QP frameworks (QP/C++ and QP-nano) as well as QM, and the QTools collection into "QP-bundle". This "QP-bundle" provides a single, streamlined and simplified download and installation of all QP frameworks and all the accompanying tools.
+
+This release brings also the following changes:
+
+- removed "//" (double slash) from all comments for compliance with
+  the MISRA-C:2012 required Rule 3.1. (The "//" sequence was used in the URLs, such as
+  "http://...").
+- converted inclusion guards in header files to uppercase as per coding convention for macros.
+- replaced "vtbl" with "vtable" in QP/C source code
+- changed the type of the last parameter in QHsm_init_() and QHSM_INIT() from "QEvt const *"
+  to "void const *" to allow passing arbitrary data during initialization.
+- increased #QS_USER from 70 to 100 and made the freed-up records reserved
+- changed the QS_Ux_RECORDS groups to partition user trace records 100-124
+  into 5 groups of 5 records each.
+- removed Tcl test scripts from QUTest examples
+
+
+------------------------------------------------------------------------------
 @section qpc_6_5_1 Version 6.5.1, 2019-05-24
 This release fixes the following bugs in the QP/C code supporting @ref qutest "QUTest unit testing":
 
