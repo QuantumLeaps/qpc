@@ -3,14 +3,14 @@
 * @brief QXK/C port to ARM Cortex-M, IAR-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-03-17
+* Last updated for version 6.7.0
+* Last updated on  2019-11-11
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,11 +28,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -53,7 +53,7 @@
         *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
         __DSB(); \
         __ISB(); \
-    } while (0)
+    } while (false)
 
 #endif
 
@@ -66,11 +66,14 @@
         *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
     } \
     QF_INT_ENABLE(); \
-} while (0)
+} while (false)
 
 /* initialization of the QXK kernel */
 #define QXK_INIT() QXK_init()
 void QXK_init(void);
+
+/* prototype needed for IAR "Multi-file Compilation" */
+void Thread_ret(void);
 
 #include "qxk.h" /* QXK platform-independent public interface */
 

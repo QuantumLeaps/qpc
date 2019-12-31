@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example extened for QXK
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.7.0
+* Last updated on  2019-12-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -64,6 +64,15 @@ int main() {
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init();   /* initialize the Board Support Package */
 
+    /* object dictionaries... */
+    QS_OBJ_DICTIONARY(AO_Table);
+    QS_OBJ_DICTIONARY(AO_Philo[0]);
+    QS_OBJ_DICTIONARY(AO_Philo[1]);
+    QS_OBJ_DICTIONARY(AO_Philo[2]);
+    QS_OBJ_DICTIONARY(AO_Philo[3]);
+    QS_OBJ_DICTIONARY(AO_Philo[4]);
+    QS_OBJ_DICTIONARY(&l_ticker0);
+
     /* initialize publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
 
@@ -71,13 +80,13 @@ int main() {
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     /* start the extended thread */
-    QXTHREAD_START(XT_Test1,                 /* Thread to start */
-                  (uint_fast8_t)1,           /* QP priority of the thread */
-                  test1QueueSto,             /* message queue storage */
-                  Q_DIM(test1QueueSto),      /* message length [events] */
-                  test1StackSto,             /* stack storage */
-                  sizeof(test1StackSto),     /* stack size [bytes] */
-                  (QEvt *)0);                /* initialization event */
+    QXTHREAD_START(XT_Test1,             /* Thread to start */
+                  (uint_fast8_t)1,       /* QP priority of the thread */
+                  test1QueueSto,         /* message queue storage */
+                  Q_DIM(test1QueueSto),  /* message length [events] */
+                  test1StackSto,         /* stack storage */
+                  sizeof(test1StackSto), /* stack size [bytes] */
+                  (void *)0);            /* initialization param */
 
     /* NOTE: leave priority 2 free for a mutex */
 
@@ -89,7 +98,7 @@ int main() {
                       Q_DIM(philoQueueSto[n]), /* queue length [events] */
                       (void *)0,             /* stack storage (not used) */
                       0U,                    /* size of the stack [bytes] */
-                      (QEvt *)0);            /* initialization event */
+                      (void *)0);            /* initialization param */
     }
 
     /* example of prioritizing the Ticker0 active object */
@@ -100,21 +109,21 @@ int main() {
 
     QXTHREAD_START(XT_Test2,                 /* Thread to start */
                   (uint_fast8_t)(N_PHILO + 5), /* QP priority of the thread */
-                  test2QueueSto,             /* message queue storage */
-                  Q_DIM(test2QueueSto),      /* message length [events] */
-                  test2StackSto,             /* stack storage */
-                  sizeof(test2StackSto),     /* stack size [bytes] */
-                  (QEvt *)0);                /* initialization event */
+                  test2QueueSto,         /* message queue storage */
+                  Q_DIM(test2QueueSto),  /* message length [events] */
+                  test2StackSto,         /* stack storage */
+                  sizeof(test2StackSto), /* stack size [bytes] */
+                  (void *)0);            /* initialization param */
 
     /* NOTE: leave priority (N_PHILO + 6) free for mutex */
 
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 7), /* QP priority of the AO */
-                  tableQueueSto,             /* event queue storage */
-                  Q_DIM(tableQueueSto),      /* queue length [events] */
-                  (void *)0,                 /* stack storage (not used) */
-                  0U,                        /* size of the stack [bytes] */
-                  (QEvt *)0);                /* initialization event */
+                  tableQueueSto,         /* event queue storage */
+                  Q_DIM(tableQueueSto),  /* queue length [events] */
+                  (void *)0,             /* stack storage (not used) */
+                  0U,                    /* size of the stack [bytes] */
+                  (void *)0);            /* initialization param */
 
     return QF_run(); /* run the QF application */
 }

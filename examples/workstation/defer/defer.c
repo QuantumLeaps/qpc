@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "bsp.h"
@@ -85,24 +85,6 @@ void TServer_ctor(TServer * const me) { /* the default ctor */
 QState TServer_initial(TServer * const me, QEvt const * const e) {
     (void)e; /* unused parameter */
     me->activeRequest = (RequestEvt const *)0; /* no active request yet */
-
-    QS_FUN_DICTIONARY(&QHsm_top);
-    QS_FUN_DICTIONARY(&TServer_idle);
-    QS_FUN_DICTIONARY(&TServer_busy);
-    QS_FUN_DICTIONARY(&TServer_receiving);
-    QS_FUN_DICTIONARY(&TServer_authorizing);
-    QS_FUN_DICTIONARY(&TServer_final);
-
-    QS_OBJ_DICTIONARY(&l_tserver);
-    QS_OBJ_DICTIONARY(&l_tserver.requestQueue);
-    QS_OBJ_DICTIONARY(&l_tserver.receivedEvt);
-    QS_OBJ_DICTIONARY(&l_tserver.authorizedEvt);
-
-    QS_SIG_DICTIONARY(NEW_REQUEST_SIG, (void *)0);
-    QS_SIG_DICTIONARY(RECEIVED_SIG,    (void *)0);
-    QS_SIG_DICTIONARY(AUTHORIZED_SIG,  (void *)0);
-    QS_SIG_DICTIONARY(TERMINATE_SIG,   (void *)0);
-
     return Q_TRAN(&TServer_idle);
 }
 /*..........................................................................*/

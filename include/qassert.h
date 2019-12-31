@@ -31,7 +31,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond

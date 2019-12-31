@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -202,7 +202,7 @@ int_t QF_run(void) {
 
             QF_CRIT_ENTRY_();
 
-            if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
+            if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
                 QPSet_remove(&QV_readySet_, p);
             }
         }
@@ -280,7 +280,7 @@ int QF_consoleWaitForKey(void) {
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    void const *par)
+                    void const * const par)
 {
     Q_REQUIRE_ID(600, ((uint_fast8_t)0 < prio) /* priority...*/
         && (prio <= (uint_fast8_t)QF_MAX_ACTIVE) /*... in range */
@@ -297,7 +297,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     (void)stkSize; /* avoid the "unused parameter" compiler warning */
 }
 
-//****************************************************************************
+/****************************************************************************/
 static void *ticker_thread(void *arg) { /* for pthread_create() */
     (void)arg; /* unused parameter */
     while (l_isRunning) { /* the clock tick loop... */

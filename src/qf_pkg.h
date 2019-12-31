@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-10-04
+* Last updated for version 6.7.0
+* Last updated on  2019-12-28
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -101,14 +101,14 @@
             QF_CRIT_EXIT_();                              \
             Q_onAssert(&Q_this_module_[0], (int_t)(id_)); \
         }                                                 \
-    } while (0)
+    } while (false)
 
     #define Q_REQUIRE_CRIT_(id_, test_) Q_ASSERT_CRIT_((id_), (test_))
 
     #define Q_ERROR_CRIT_(id_) do {                       \
         QF_CRIT_EXIT_();                                  \
         Q_onAssert(&Q_this_module_[0], (int_t)(id_));     \
-    } while (0)
+    } while (false)
 
 #endif /* Q_NASSERT */
 
@@ -119,7 +119,7 @@
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    void const *par);
+                    void const * const par);
 
 /*! Get an event from the event queue of an active object. */
 QEvt const *QActive_get_(QActive *const me);
@@ -184,84 +184,5 @@ typedef struct QFreeBlock {
 */
 #define QF_PTR_RANGE_(x_, min_, max_)  (((min_) <= (x_)) && ((x_) <= (max_)))
 
-/****************************************************************************/
-#ifdef Q_SPY  /* QS software tracing enabled? */
-
-    #if (QF_EQUEUE_CTR_SIZE == 1)
-
-        /*! Internal QS macro to output an unformatted event queue counter
-        * data element. */
-        /**
-        * @note the counter size depends on the macro #QF_EQUEUE_CTR_SIZE.
-        */
-        #define QS_EQC_(ctr_)       QS_u8_((uint8_t)(ctr_))
-    #elif (QF_EQUEUE_CTR_SIZE == 2)
-        #define QS_EQC_(ctr_)       QS_u16_((uint16_t)(ctr_))
-    #elif (QF_EQUEUE_CTR_SIZE == 4)
-        #define QS_EQC_(ctr_)       QS_u32_((uint32_t)(ctr_))
-    #else
-        #error "QF_EQUEUE_CTR_SIZE not defined"
-    #endif
-
-
-    #if (QF_EVENT_SIZ_SIZE == 1)
-
-        /*! Internal QS macro to output an unformatted event size
-        * data element. */
-        /**
-        * @note the event size depends on the macro #QF_EVENT_SIZ_SIZE.
-        */
-        #define QS_EVS_(size_)      QS_u8_((uint8_t)(size_))
-    #elif (QF_EVENT_SIZ_SIZE == 2)
-        #define QS_EVS_(size_)      QS_u16_((uint16_t)(size_))
-    #elif (QF_EVENT_SIZ_SIZE == 4)
-        #define QS_EVS_(size_)      QS_u32_((uint32_t)(size_))
-    #endif
-
-
-    #if (QF_MPOOL_SIZ_SIZE == 1)
-
-        /*! Internal QS macro to output an unformatted memory pool
-        * block-size data element */
-        /**
-        * @note the block-size depends on the macro #QF_MPOOL_SIZ_SIZE.
-        */
-        #define QS_MPS_(size_)      QS_u8_((uint8_t)(size_))
-    #elif (QF_MPOOL_SIZ_SIZE == 2)
-        #define QS_MPS_(size_)      QS_u16_((uint16_t)(size_))
-    #elif (QF_MPOOL_SIZ_SIZE == 4)
-        #define QS_MPS_(size_)      QS_u32_((uint32_t)(size_))
-    #endif
-
-    #if (QF_MPOOL_CTR_SIZE == 1)
-
-        /*! Internal QS macro to output an unformatted memory pool
-        * block-counter data element. */
-        /**
-        * @note the counter size depends on the macro #QF_MPOOL_CTR_SIZE.
-        */
-        #define QS_MPC_(ctr_)       QS_u8_((uint8_t)(ctr_))
-    #elif (QF_MPOOL_CTR_SIZE == 2)
-        #define QS_MPC_(ctr_)       QS_u16_((uint16_t)(ctr_))
-    #elif (QF_MPOOL_CTR_SIZE == 4)
-        #define QS_MPC_(ctr_)       QS_u32_((uint16_t)(ctr_))
-    #endif
-
-
-    #if (QF_TIMEEVT_CTR_SIZE == 1)
-
-        /*! Internal QS macro to output an unformatted time event
-        * tick-counter data element */
-        /**
-        * @note the counter size depends on the macro #QF_TIMEEVT_CTR_SIZE.
-        */
-        #define QS_TEC_(ctr_)       QS_u8_((uint8_t)(ctr_))
-    #elif (QF_TIMEEVT_CTR_SIZE == 2)
-        #define QS_TEC_(ctr_)       QS_u16_((uint16_t)(ctr_))
-    #elif (QF_TIMEEVT_CTR_SIZE == 4)
-        #define QS_TEC_(ctr_)       QS_u32_((uint32_t)(ctr_))
-    #endif
-
-#endif /* Q_SPY */
-
 #endif /* QF_PKG_H */
+

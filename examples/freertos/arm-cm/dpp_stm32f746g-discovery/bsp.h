@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
 * Web  : http://www.state-machine.com
-* Email: info@state-machine.com
+* <info@state-machine.com>
 *****************************************************************************/
 #ifndef BSP_H
 #define BSP_H

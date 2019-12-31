@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "bsp.h"
@@ -103,7 +103,6 @@ void BSP_init(void) {
     if (QS_INIT((void *)0) == 0) { /* initialize the QS software tracing */
         Q_ERROR();
     }
-    QS_RESET();
     QS_OBJ_DICTIONARY(&l_T2Interrupt);
 }
 /*..........................................................................*/
@@ -111,7 +110,7 @@ void BSP_terminate(int16_t result) {
     (void)result;
 }
 /*..........................................................................*/
-void BSP_displayPhilStat(uint8_t n, char const Q_ROM *stat) {
+void BSP_displayPhilStat(uint8_t n, char const *stat) {
     (void)n;
     (void)stat;
     LED_TOGGLE();
@@ -138,9 +137,9 @@ void BSP_randomSeed(uint32_t seed) {
     l_rnd = seed;
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+void Q_onAssert(char const * const file, int loc) {
     (void)file;       /* unused parameter */
-    (void)line;       /* unused parameter */
+    (void)loc;        /* unused parameter */
     QF_INT_DISABLE(); /* make sure that interrupts are disabled */
     for (;;) {
     }

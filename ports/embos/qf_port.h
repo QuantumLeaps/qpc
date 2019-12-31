@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -78,12 +78,12 @@
         if (OS_InInterrupt() == (OS_BOOL)0) { \
             OS_EnterRegion(); \
         } \
-    } while (0)
+    } while (false)
     #define QF_SCHED_UNLOCK_() do { \
         if (OS_InInterrupt() == (OS_BOOL)0) { \
             OS_LeaveRegion(); \
         } \
-    } while (0)
+    } while (false)
 
     /* native QF event pool operations... */
     #define QF_EPOOL_TYPE_            QMPool

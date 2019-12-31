@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "6.6.0"
+PROJECT_NUMBER         = "6.7.0"
 PROJECT_BRIEF          =
 PROJECT_LOGO           = images/header_logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -138,7 +138,7 @@ INPUT = \
     modules.dox \
     ../include \
     ../src \
-    ../ports/lint \
+    ../ports/lint-plus \
     ../../doxygen/help.dox \
     ../../doxygen/glossary.dox
 
@@ -203,12 +203,12 @@ IGNORE_PREFIX          =
 # Configuration options related to the HTML output
 #---------------------------------------------------------------------------
 GENERATE_HTML          = YES
-HTML_OUTPUT            = C:\qp\uploads\qpc\qpc
+HTML_OUTPUT            = ../html
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = ..\..\doxygen\header.html
-HTML_FOOTER            = ..\..\doxygen\footer.html
+HTML_HEADER            = ../../doxygen/header.html
+HTML_FOOTER            = ../../doxygen/footer.html
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  = ..\..\doxygen\ql.css
+HTML_EXTRA_STYLESHEET  = ../../doxygen/ql.css
 HTML_EXTRA_FILES       =
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
@@ -222,7 +222,7 @@ DOCSET_BUNDLE_ID       = com.state-machine.doc
 DOCSET_PUBLISHER_ID    = com.state-machine.doc
 DOCSET_PUBLISHER_NAME  = Quantum Leaps
 GENERATE_HTMLHELP      = NO
-CHM_FILE               = C:\qp\uploads\qpc\qpc.chm
+CHM_FILE               = ../qpc.chm
 HHC_LOCATION           =
 GENERATE_CHI           = NO
 CHM_INDEX_ENCODING     =
@@ -331,7 +331,11 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = \
     Q_SPY QP_IMPL Q_UTEST \
     QK_ON_CONTEXT_SW \
-    QXK_ON_CONTEXT_SW
+    QXK_ON_CONTEXT_SW \
+    QF_MAX_ACTIVE QF_MAX_TICK_RATE QF_MAX_EPOOL \
+    QF_EVENT_SIZ_SIZE QF_EQUEUE_CTR_SIZE \
+    QF_MPOOL_SIZ_SIZE QF_MPOOL_CTR_SIZE \
+    QF_TIMEEVT_CTR_SIZE QS_TIME_SIZE
 
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
@@ -370,7 +374,7 @@ GRAPHICAL_HIERARCHY    = YES
 DIRECTORY_GRAPH        = YES
 DOT_IMAGE_FORMAT       = png
 INTERACTIVE_SVG        = NO
-DOT_PATH               = C:\tools\graphviz\bin
+DOT_PATH               = C:/tools/graphviz/bin
 DOTFILE_DIRS           =
 MSCFILE_DIRS           =
 DIAFILE_DIRS           =

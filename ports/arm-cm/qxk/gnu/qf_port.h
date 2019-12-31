@@ -28,11 +28,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -86,7 +86,7 @@
         __asm volatile ("mrs %0,BASEPRI" : "=r" (basepri_) :: ); \
         __asm volatile ("cpsid i\n msr BASEPRI,%0\n cpsie i" \
                         :: "r" (QF_BASEPRI) : ); \
-    } while (0)
+    } while (false)
     #define QF_CRIT_EXIT(basepri_) \
         __asm volatile ("msr BASEPRI,%0" :: "r" (basepri_) : )
 

@@ -28,11 +28,11 @@ qpc/examples/qutest/unity_basic/ - this example
 | +-make_tm4c123     - makefile for building and running the tests TM4C123 target
 | +-test_ProductionCode.c   - QUTest test fixture in C
 | +-test_ProductionCode.py  - QUTest test script in Python
-| +-test_ProductionCode.tcl - QUTest test script in Tcl
 |
 +-test_unity/        - testing with Unity
 | +-Makefile         - makefile for building and running the tests
-| +-TestProductionCode.c    - Unity test fixture and test runner
+| +-TestProductionCode.c        - Unity test fixture
+| +-TestProductionCode_Runner.c - Unity test runner
 |
 
 
@@ -60,7 +60,7 @@ Building the Code and Testing with QUTest
 Open terminal / command-prompt and launch the QSPY host utility
 by typing:
 
-qspy -u -t
+qspy
 
 Open *another* terminal / command-prompt and change directory to
 test (qpc/examples/qutest/unity_example1/test).
@@ -69,33 +69,14 @@ Type:
 make
 
 to build the code with the provided Makefile and run the tests
-using the Tcl test script (test_ProductionCode.tcl)
+using the Python test script (test_ProductionCode.py)
 
 *** NOTE ***
-For Windows, the Tcl interpreter (tclsh 8.4) with the UDP extension
-is included in the QTools collection, so you don't need to install
-any additional software to run the Tcl tests. For other operating
-systems (Linux/MacOS), Tcl is typically provided, but you need to
-install the UDP extension, as described at:
-https://www.state-machine.com/qtools/start.html#qtools_qspypy
+For Windows, the Python interpreter is included in the QTools collection.
 
 *** NOTE *** 
 Some of the QUTest tests fail, which is intentional to demonstrate
 various failure modes, exactly as it is in the case of Unity tests.
-
-
-If you prefer to use Python, add "SCRIPT=py" parameter to make:
-
-make SCRIPT=py
-
-this will build the code and run the tests
-using the Python test script (test_ProductionCode.py)
-
-*** NOTE *** 
-In order to run the Python tests, you need to install Python on
-your machine. Additionally, you need to enable Python support for
-QUTest unit testing, as described at:
-https://www.state-machine.com/qtools/start.html#qtools_qspypy 
 
 
 Contact Information

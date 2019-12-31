@@ -4,8 +4,8 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-09-12
+* Last updated for version 6.7.0
+* Last updated on  2019-12-28
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -54,8 +54,8 @@
 
 Q_DEFINE_THIS_MODULE("qk")
 
-/* Public-scope objects *****************************************************/
-QK_Attr QK_attr_; /* global attributes of the QK kernel */
+/* Global-scope objects *****************************************************/
+QK_PrivAttr QK_attr_; /* private attributes of the QK kernel */
 
 /****************************************************************************/
 /**
@@ -163,7 +163,7 @@ int_t QF_run(void) {
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    void const *par)
+                    void const * const par)
 {
     QF_CRIT_STAT_
 
@@ -183,7 +183,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = (uint8_t)prio; /* set the QF priority of the AO */
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    QHSM_INIT(&me->super, par); /* top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* See if this AO needs to be scheduled in case QK is already running */
@@ -231,11 +231,11 @@ QSchedStatus QK_schedLock(uint_fast8_t ceiling) {
         stat = ((QSchedStatus)QK_attr_.lockPrio << 8);
         QK_attr_.lockPrio = (uint8_t)ceiling;
 
-        QS_BEGIN_NOCRIT_(QS_SCHED_LOCK, (void *)0, (void *)0)
-            QS_TIME_(); /* timestamp */
-            QS_2U8_((uint8_t)stat,      /* the previous lock prio */
+        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_LOCK, (void *)0, (void *)0)
+            QS_TIME_PRE_(); /* timestamp */
+            QS_2U8_PRE_((uint8_t)stat,      /* the previous lock prio */
                     QK_attr_.lockPrio); /* the new lock prio */
-        QS_END_NOCRIT_()
+        QS_END_NOCRIT_PRE_()
 
         /* add the previous lock holder priority */
         stat |= (QSchedStatus)QK_attr_.lockHolder;
@@ -281,11 +281,11 @@ void QK_schedUnlock(QSchedStatus stat) {
         Q_REQUIRE_ID(700, (!QK_ISR_CONTEXT_())
                           && (lockPrio > prevPrio));
 
-        QS_BEGIN_NOCRIT_(QS_SCHED_UNLOCK, (void *)0, (void *)0)
-            QS_TIME_(); /* timestamp */
-            QS_2U8_((uint8_t)lockPrio,  /* lock prio before unlocking */
+        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_UNLOCK, (void *)0, (void *)0)
+            QS_TIME_PRE_(); /* timestamp */
+            QS_2U8_PRE_((uint8_t)lockPrio,  /* lock prio before unlocking */
                     (uint8_t)prevPrio); /* lock priority after unlocking */
-        QS_END_NOCRIT_()
+        QS_END_NOCRIT_PRE_()
 
         /* restore the previous lock priority and lock holder */
         QK_attr_.lockPrio   = (uint8_t)prevPrio;
@@ -345,17 +345,21 @@ uint_fast8_t QK_sched_(void) {
 * interrupts **disabled**.
 */
 void QK_activate_(void) {
-    uint_fast8_t pin = (uint_fast8_t)QK_attr_.actPrio;  /* save active prio */
-    uint_fast8_t p   = (uint_fast8_t)QK_attr_.nextPrio; /* next prio to run */
+    uint_fast8_t const pin = (uint_fast8_t)QK_attr_.actPrio;  /* save */
+    uint_fast8_t p = (uint_fast8_t)QK_attr_.nextPrio; /* next prio to run */
     QActive *a;
-
-    /* QK Context switch callback defined or QS tracing enabled? */
 #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
-    uint_fast8_t pprev = pin;
+    uint_fast8_t pprev;
 #endif /* QK_ON_CONTEXT_SW || Q_SPY */
 
-    /* QK_attr_.nextPrio must be non-zero upon entry to QK_activate_() */
-    Q_REQUIRE_ID(500, p != (uint_fast8_t)0);
+    /* QK_attr_.actPrio and QK_attr_.nextPrio must be in ragne */
+    Q_REQUIRE_ID(500, (pin < (uint_fast8_t)Q_DIM(QF_active_))
+                      && ((uint_fast8_t)0 < p)
+                      && (p < (uint_fast8_t)Q_DIM(QF_active_)));
+
+#if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
+    pprev = pin;
+#endif /* QK_ON_CONTEXT_SW || Q_SPY */
 
     QK_attr_.nextPrio = (uint8_t)0; /* clear for the next time */
 
@@ -365,11 +369,11 @@ void QK_activate_(void) {
         a = QF_active_[p]; /* obtain the pointer to the AO */
         QK_attr_.actPrio = (uint8_t)p; /* this becomes the active prio */
 
-        QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ], a)
-            QS_TIME_();            /* timestamp */
-            QS_2U8_((uint8_t)p,    /* priority of the scheduled AO */
-                    (uint8_t)pprev); /* previous priority */
-        QS_END_NOCRIT_()
+        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ], a)
+            QS_TIME_PRE_(); /* timestamp */
+            QS_2U8_PRE_((uint8_t)p, /* priority of the scheduled AO */
+                        (uint8_t)pprev); /* previous priority */
+        QS_END_NOCRIT_PRE_()
 
 #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
         if (p != pprev) {  /* changing threads? */
@@ -397,9 +401,10 @@ void QK_activate_(void) {
         QHSM_DISPATCH(&a->super, e);
         QF_gc(e);
 
+        /* determine the next highest-priority AO ready to run... */
         QF_INT_DISABLE(); /* unconditionally disable interrupts */
 
-        if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
+        if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
             QPSet_remove(&QK_attr_.readySet, p);
         }
 
@@ -424,19 +429,19 @@ void QK_activate_(void) {
     if (pin != (uint_fast8_t)0) { /* resuming an active object? */
         a = QF_active_[pin]; /* the pointer to the preempted AO */
 
-        QS_BEGIN_NOCRIT_(QS_SCHED_RESUME, QS_priv_.locFilter[AO_OBJ], a)
-            QS_TIME_();              /* timestamp */
-            QS_2U8_((uint8_t)pin,    /* priority of the resumed AO */
-                    (uint8_t)pprev); /* previous priority */
-        QS_END_NOCRIT_()
+        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_RESUME, QS_priv_.locFilter[AO_OBJ], a)
+            QS_TIME_PRE_();              /* timestamp */
+            QS_2U8_PRE_((uint8_t)pin,    /* priority of the resumed AO */
+                        (uint8_t)pprev); /* previous priority */
+        QS_END_NOCRIT_PRE_()
     }
     else {  /* resuming priority==0 --> idle */
         a = (QActive *)0; /* QK idle loop */
 
-        QS_BEGIN_NOCRIT_(QS_SCHED_IDLE, (void *)0, (void *)0)
-            QS_TIME_();              /* timestamp */
-            QS_U8_((uint8_t)pprev);  /* previous priority */
-        QS_END_NOCRIT_()
+        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, (void *)0, (void *)0)
+            QS_TIME_PRE_();             /* timestamp */
+            QS_U8_PRE_((uint8_t)pprev); /* previous priority */
+        QS_END_NOCRIT_PRE_()
     }
 
 #ifdef QK_ON_CONTEXT_SW

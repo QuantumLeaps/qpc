@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -40,8 +40,13 @@
 #ifndef QPSET_H
 #define QPSET_H
 
-#if (!defined QF_MAX_ACTIVE) || (QF_MAX_ACTIVE < 1) || (64 < QF_MAX_ACTIVE)
-    #error "QF_MAX_ACTIVE not defined or out of range. Valid range is 1..64"
+#ifndef QF_MAX_ACTIVE
+    /* default value when NOT defined */
+    #define QF_MAX_ACTIVE 32
+#endif
+
+#if (QF_MAX_ACTIVE < 1) || (64 < QF_MAX_ACTIVE)
+    #error "QF_MAX_ACTIVE out of range. Valid range is 1..64"
 #elif (QF_MAX_ACTIVE <= 8)
     typedef uint8_t QPSetBits;
 #elif (QF_MAX_ACTIVE <= 16)
@@ -108,7 +113,7 @@ typedef struct {
 #define QPSet_setEmpty(me_)  do { \
     (me_)->bits[0] = (uint32_t)0; \
     (me_)->bits[1] = (uint32_t)0; \
-} while (0)
+} while (false)
 
 /*! Evaluates to TRUE if the priority set @p me_ is empty */
 /* the following logic avoids UB in volatile access for MISRA compliantce */
@@ -140,7 +145,7 @@ typedef struct {
     else {                                                              \
         ((me_)->bits[1] |= ((uint32_t)1 << ((n_) - (uint_fast8_t)33))); \
     }                                                                   \
-} while (0)
+} while (false)
 
 /*! Remove element n_ from the set @p me_, n_= 1..64 */
 #define QPSet_remove(me_, n_) do {                                      \
@@ -152,7 +157,7 @@ typedef struct {
         ((me_)->bits[1] &=                                              \
             (uint32_t)(~((uint32_t)1 << ((n_) - (uint_fast8_t)33))));   \
     }                                                                   \
-} while (0)
+} while (false)
 
 /*! Find the maximum element in the set, and assign it to @p n_ */
 /** @note if the set @p me_ is empty, @p n_ is set to zero.

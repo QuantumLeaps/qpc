@@ -28,11 +28,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -69,12 +69,12 @@
         if (OSIntNesting == (INT8U)0) { \
             OSSchedLock(); \
         } \
-    } while (0)
+    } while (false)
     #define QF_SCHED_UNLOCK_() do { \
         if (OSIntNesting == (INT8U)0) { \
             OSSchedUnlock(); \
         } \
-    } while (0)
+    } while (false)
 
     /* uC/OS-II event pool operations... */
     #define QF_EPOOL_TYPE_ OS_MEM*
@@ -83,7 +83,7 @@
         (pool_) = OSMemCreate((poolSto_), (INT32U)((poolSize_)/(evtSize_)), \
                               (INT32U)(evtSize_), &err); \
         Q_ASSERT(err == OS_ERR_NONE); \
-    } while (0)
+    } while (false)
 
     #define QF_EPOOL_EVENT_SIZE_(pool_) ((pool_)->OSMemBlkSize)
     #define QF_EPOOL_GET_(pool_, e_, m_) do { \
@@ -98,7 +98,7 @@
             (e_) = (QEvt *)0; \
         } \
         QF_CRIT_EXIT_(); \
-    } while (0)
+    } while (false)
 
     #define QF_EPOOL_PUT_(pool_, e_) \
         Q_ALLEGE(OSMemPut((pool_), (void *)(e_)) == OS_ERR_NONE)

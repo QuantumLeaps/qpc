@@ -1,0 +1,412 @@
+/// @file
+/// @brief PC-Lint 9.x option file for linting QP/C applications
+/// @cond
+///===========================================================================
+/// Product: QP/C
+/// Last Updated for Version: 6.7.0
+/// Date of the Last Update:  2019-12-31
+///
+///                    Q u a n t u m  L e a P s
+///                    ------------------------
+///                    Modern Embedded Software
+///
+/// Copyright (C) 2005-2019 Quantum Leaps. All rights reserved.
+///
+/// This program is free software: you can redistribute it and/or modify
+/// it under the terms of the GNU General Public License as published by
+/// the Free Software Foundation, either version 3 of the License, or
+/// (at your option) any later version.
+///
+/// Alternatively, this program may be distributed and modified under the
+/// terms of Quantum Leaps commercial licenses, which expressly supersede
+/// the GNU General Public License and are specifically designed for
+/// licensees interested in retaining the proprietary status of their code.
+///
+/// This program is distributed in the hope that it will be useful,
+/// but WITHOUT ANY WARRANTY; without even the implied warranty of
+/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+/// GNU General Public License for more details.
+///
+/// You should have received a copy of the GNU General Public License
+/// along with this program. If not, see <www.gnu.org/licenses/>.
+///
+/// Contact information:
+/// <www.state-machine.com/licensing>
+/// <info@state-machine.com>
+///===========================================================================
+/// @endcond
+
+// M3-D4.8(a) complete definition is unnecessary in this translation unit
+-efile(9045,
+ -qep.h,
+ -qequeue.h,
+ -qmpool.h,
+ -qpset.h,
+ -qf.h,
+ -qv.h,
+ -qk.h,
+ -qxk.h,
+ -qxthread.h,
+ -qs.h)
+
+// Assertions ----------------------------------------------------------------
+
+// give Q_onAssert() the semantics of "exit"
+-function(exit,
+ Q_onAssert)
+
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ Q_ASSERT,
+ Q_ASSERT_ID,
+ Q_ALLEGE,
+ Q_ALLEGE_ID,
+ Q_ERROR,
+ Q_ERROR_ID,
+ Q_REQUIRE,
+ Q_REQUIRE_ID,
+ Q_ENSURE,
+ Q_ENSURE_ID,
+ Q_INVARIANT,
+ Q_INVARIANT_ID,
+ Q_ASSERT_STATIC,
+ Q_ASSERT_COMPILE,
+ Q_DEFINE_THIS_MODULE)
+
+// definition of macro ends in semi-colon
+-esym(823,
+ Q_DEFINE_THIS_FILE,
+ Q_DEFINE_THIS_MODULE)
+
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ Q_DIM,
+ Q_UINT2PTR_CAST)
+
+// QEP -----------------------------------------------------------------------
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ QHSM_INIT,
+ QHSM_DISPATCH,
+ Q_TRAN,
+ Q_TRAN_HIST,
+ Q_SUPER,
+ Q_HANDLED,
+ Q_UNHANDLED,
+ QM_ENTRY,
+ QM_EXIT,
+ QM_SM_EXIT,
+ QM_TRAN,
+ QM_TRAN_INIT,
+ QM_TRAN_HIST,
+ QM_TRAN_EP,
+ QM_TRAN_XP,
+ QM_SUPER,
+ QM_SUPER_SUB,
+ QM_HANDLED,
+ QM_UNHANDLED,
+ Q_HSM_UPCAST,
+ Q_EVT_CAST,
+ Q_UINT2PTR_CAST,
+ Q_STATE_CAST,
+ Q_ACTION_CAST,
+ QHsm_state,
+ QHsm_childState,
+ QMsm_stateObj,
+ QMsm_childStateObj)
+
+// M3-R13.4(a) result of assignment used in left operand to ',' operator
+-emacro(9084,
+ Q_SUPER,
+ Q_TRAN,
+ QM_TRAN,
+ QM_TRAN_INIT,
+ QM_TRAN_EP,
+ QM_TRAN_XP,
+ QM_SM_EXIT,
+ QM_SUPER_SUB)
+
+// M3-R12.3(a) comma operator used
+-emacro(9008,
+ Q_SUPER,
+ QM_SUPER_SUB,
+ Q_TRAN,
+ QM_TRAN,
+ QM_TRAN_INIT,
+ QM_TRAN_EP,
+ QM_TRAN_XP,
+ QM_SM_EXIT)
+
+// M3-R13.4(a) result of assignment operator used in left operand to ',' operator
+-emacro(9005,
+ QM_TRAN,
+ QM_TRAN_INIT,
+ QM_TRAN_EP,
+ QM_TRAN_XP)
+
+// M3-R11.3(r) cast from pointer to pointer (upcast)
+-emacro(9087,
+ Q_HSM_UPCAST)
+
+// M3-R11.3(r) cast from pointer to pointer (event downcast)
+-emacro(9087,
+ Q_EVT_CAST)
+
+// M3-R11.3(r) cast from pointer to pointer
+-emacro(9087,
+ QM_TRAN,
+ QM_TRAN_EP,
+ QM_TRAN_INIT)
+
+// suspicious pointer-to-pointer conversion (area too small)
+-emacro(826,
+ Q_EVT_CAST)
+
+// M3-R11.5(a) conversion from pointer to void to other pointer
+-emacro(9079,
+ Q_EVT_CAST)
+
+// M3-R11.1(r) conversion between pointer to function type and differing type
+-emacro(9074,
+ Q_ACTION_CAST)
+
+// M3-R19.2(a) union declared
+-esym(9018, QHsmAttr)
+
+// M3-R11.1(r) conversion between pointer to function type
+-emacro(9074,
+ Q_STATE_CAST,
+ Q_TRAN,
+ Q_TRAN_HIST,
+ Q_SUPER,
+ QM_ENTRY,
+ QM_EXIT,
+ QM_SM_EXIT,
+ QM_TRAN,
+ QM_TRAN_INIT,
+ QM_TRAN_HIST,
+ QM_TRAN_EP,
+ QM_TRAN_XP)
+
+// deprecated QEP facilities...
+-deprecate( macro, QMSM_INIT, QP/C API pre 5.8.x)
+-deprecate( macro, QMSM_DISPATCH, QP/C API pre 5.8.x)
+-deprecate( macro, Q_IGNORED, QP/C API pre 5.4.x)
+-deprecate( type, QFsm, QP/C API pre 5.4.x)
+-deprecate( function, QFsm_ctor, QP/C API pre 5.4.x)
+-deprecate( function, QF_onIdle, QP/C API pre 5.4.x)
+
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ QMSM_INIT,
+ QMSM_DISPATCH,
+ Q_IGNORED)
+
+
+// QF ------------------------------------------------------------------------
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ QF_INT_DISABLE,
+ QF_INT_ENABLE,
+ QF_CRIT_ENTRY,
+ QF_CRIT_EXIT,
+ QF_LOG2,
+ Q_NEW,
+ Q_NEW_X,
+ Q_NEW_REF,
+ Q_DELETE_REF,
+ QF_INT_DISABLE,
+ QF_INT_ENABLE,
+ QF_CRIT_ENTRY,
+ QF_CRIT_EXIT,
+ QF_CRIT_EXIT_NOP,
+ QF_TICK,
+ QF_TICK_X,
+ QF_PUBLISH,
+ QF_MPOOL_EL,
+ QF_LOG2,
+ QACTIVE_START,
+ QACTIVE_POST,
+ QACTIVE_POST_X,
+ QACTIVE_POST_LIFO,
+ QPSet_setEmpty,
+ QPSet_isEmpty,
+ QPSet_notEmpty,
+ QPSet_hasElement,
+ QPSet_insert,
+ QPSet_remove,
+ QPSet_findMax,
+ QEQueue_getNFree,
+ QEQueue_getNMin,
+ QEQueue_isEmpty,
+ QTimeEvt_ctor,
+ QTimeEvt_postIn,
+ QTimeEvt_postEvery,
+ QF_getVersion,
+ QF_QS_CRIT_EXIT,
+ QF_QS_CRIT_ENTRY,
+ QF_QS_CRIT_EXIT,
+ QF_QS_ISR_ENTRY,
+ QF_QS_ISR_EXIT,
+ QF_QS_ACTION,
+ QACTIVE_EQUEUE_WAIT_,
+ QACTIVE_EQUEUE_SIGNAL_,
+ QACTIVE_EQUEUE_ONEMPTY_,
+ QF_EPOOL_INIT_,
+ QF_EPOOL_EVENT_SIZE_,
+ QF_EPOOL_GET_,
+ QF_EPOOL_PUT_,
+ QF_PTR_INC_)
+
+// M3-R11.3(r) cast to pointer to different object type
+-emacro(9087,
+ QACTIVE_POST,
+ QACTIVE_POST_LIFO)
+
+// suspicious pointer-to-pointer conversion (area too small)
+-emacro(826,
+ QACTIVE_POST,
+ QACTIVE_POST_LIFO,
+ Q_NEW,
+ Q_NEW_X)
+
+// M3-R11.3(r) cast from pointer to pointer (event downcast)
+-emacro(9087,
+ Q_NEW,
+ Q_NEW_X)
+
+// M3-R10.3(r) cannot assign enum to different essential type 'int_t'
+-emacro(9034,
+ Q_NEW)
+
+
+// QV ------------------------------------------------------------------------
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ QV_CPU_SLEEP)
+
+// QK ------------------------------------------------------------------------
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ QK_ISR_ENTRY,
+ QK_ISR_EXIT,
+ QK_ISR_CONTEXT_)
+
+// QXK -----------------------------------------------------------------------
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ QXK_ISR_ENTRY,
+ QXK_ISR_EXIT,
+ QXK_TLS,
+ QXTHREAD_START,
+ QXTHREAD_POST_X,
+ Q_XTHREAD_CAST)
+
+// deprecated QXK facilities...
+-deprecate( macro, Q_XTHREAD_CAST, QP/C API pre 6.7.x)
+
+
+// QS ------------------------------------------------------------------------
+
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ QS_INIT,
+ QS_EXIT,
+ QS_DUMP,
+ QS_RESET,
+ QS_FILTER_ON,
+ QS_FILTER_OFF,
+ QS_FILTER_SM_OBJ,
+ QS_FILTER_AO_OBJ,
+ QS_FILTER_MP_OBJ,
+ QS_FILTER_EQ_OBJ,
+ QS_FILTER_TE_OBJ,
+ QS_FILTER_AP_OBJ,
+ QS_GET_BYTE,
+ QS_GET_BLOCK,
+ QS_BEGIN,
+ QS_END,
+ QS_BEGIN_NOCRIT,
+ QS_END_NOCRIT,
+ QS_I8,
+ QS_U8,
+ QS_I16,
+ QS_U16,
+ QS_I32,
+ QS_I64,
+ QS_U32,
+ QS_F32,
+ QS_F64,
+ QS_U64,
+ QS_U32_HEX,
+ QS_STR,
+ QS_OBJ,
+ QS_FUN,
+ QS_SIG_DICTIONARY,
+ QS_OBJ_DICTIONARY,
+ QS_FUN_DICTIONARY,
+ QS_USR_DICTIONARY,
+ QS_ASSERTION,
+ QS_FLUSH,
+ QS_MEM,
+ QS_SIG,
+ QS_PTR_AT_,
+ QS_RX_PUT,
+ QS_OUTPUT,
+ QS_RX_INPUT,
+ QS_TEST_PAUSE,
+ QS_TEST_PROBE_DEF,
+ QS_TEST_PROBE,
+ QS_TEST_PROBE_ID)
+
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ QS_BEGIN_PRE_,
+ QS_END_PRE_,
+ QS_BEGIN_NOCRIT_PRE_,
+ QS_END_NOCRIT_PRE_,
+ QS_U8_PRE_,
+ QS_2U8_PRE_,
+ QS_U16_PRE_,
+ QS_U32_PRE_,
+ QS_STR_PRE_,
+ QS_TIME_PRE_,
+ QS_SIG_PRE_,
+ QS_EVS_PRE_,
+ QS_OBJ_PRE_,
+ QS_FUN_PRE_,
+ QS_EQC_PRE_,
+ QS_MPC_PRE_,
+ QS_MPS_PRE_,
+ QS_TEC_PRE_)
+
+// M3-D4.9(a) function-like macro
+-esym(9026,
+ QS_CRIT_ENTRY_,
+ QS_CRIT_EXIT_,
+ QS_REC_DONE)
+
+// definition of macro ends in semi-colon
+-esym(823,
+ QS_TEST_PROBE_DEF)
+
+// M3-R11.1(r) conversion between pointer to function type
+-emacro(9074,
+ QS_FUN_DICTIONARY,
+ QS_TEST_PROBE_DEF)
+
+// M3-R20.10(a) stringize operator
+-esym(9024,
+ QS_OBJ_DICTIONARY,
+ QS_FUN_DICTIONARY,
+ QS_SIG_DICTIONARY,
+ QS_USR_DICTIONARY)
+
+// M3-R10.3(r) annot assign enum to different essential type
+-emacro(9034,
+ QS_SIG_DICTIONARY)
+
+// implicit conversion of enum to integral type 'int'
+-emacro(641,
+ QS_SIG_DICTIONARY)
+

@@ -28,7 +28,7 @@
 ; along with this program. If not, see <http://www.gnu.org/licenses/>.
 ;
 ; Contact information:
-; Web:   https://state-machine.com
+; Web:   <www.state-machine.com/licensing>
 ; Email: info@state-machine.com
 ;-----------------------------------------------------------------------------
 

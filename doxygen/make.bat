@@ -1,8 +1,8 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 6.6.0
-:: Date of the Last Update:  2019-08-30
+:: Last Updated for Version: 6.7.0
+:: Date of the Last Update:  2019-12-27
 ::
 ::                    Q u a n t u m  L e a P s
 ::                    ------------------------
@@ -32,62 +32,62 @@
 :: <www.state-machine.com>
 :: <info@state-machine.com>
 :: ==========================================================================
-setlocal
+@setlocal
 
-echo usage:
-echo make
-echo make -CHM
+@echo usage:
+@echo make
+@echo make -CHM
 
-set VERSION=6.6.0
+@set VERSION=6.7.0
+
+@set DOXHOME="C:\tools\doxygen\bin"
 
 :: Generate Resource Standard Metrics for QP/C ............................... 
-set DOXHOME="C:\tools\doxygen\bin"
-set RCMHOME="C:\tools\MSquared\M2 RSM"
+@set RCMHOME="C:\tools\MSquared\M2 RSM"
 
-set RSM_OUTPUT=metrics.dox
-set RSM_INPUT=..\include\*.h ..\src\*.h ..\src\qf\*.c ..\src\qv\*.c  ..\src\qk\*.c  ..\src\qxk\*.c
+@set RSM_OUTPUT=metrics.dox
+@set RSM_INPUT=..\include\*.h ..\src\*.h ..\src\qf\*.c ..\src\qv\*.c  ..\src\qk\*.c  ..\src\qxk\*.c
 
-echo /** @page metrics Code Metrics > %RSM_OUTPUT%
-echo.>> %RSM_OUTPUT%
-echo @code{c} >> %RSM_OUTPUT%
-echo                    Standard Code Metrics for QP/C %VERSION% >> %RSM_OUTPUT%
+@echo /** @page metrics Code Metrics > %RSM_OUTPUT%
+@echo.>> %RSM_OUTPUT%
+@echo @code{c} >> %RSM_OUTPUT%
+@echo                    Standard Code Metrics for QP/C %VERSION% >> %RSM_OUTPUT%
 
 %RCMHOME%\rsm.exe -fd -xNOCOMMAND -xNOCONFIG -u"File cfg rsm_qpc.cfg" %RSM_INPUT% >> %RSM_OUTPUT%
 
-echo @endcode >> %RSM_OUTPUT%
-echo */ >> %RSM_OUTPUT%
+@echo @endcode >> %RSM_OUTPUT%
+@echo */ >> %RSM_OUTPUT%
 
 :: Generate Doxygen Documentation ........................................... 
 if "%1"=="-CHM" (
-    echo Generating HTML...
-    ::( type Doxyfile & echo GENERATE_HTMLHELP=YES ) | %DOXHOME%\doxygen.exe -
+    @echo Generating HTML...
     %DOXHOME%\doxygen.exe Doxyfile-CHM
     
-    echo Adding custom images...
+    @echo Adding custom images...
     xcopy preview.js tmp\
     xcopy img tmp\img\
-    echo img\img.htm >> tmp\index.hhp
+    @echo img\img.htm >> tmp\index.hhp
 
-    echo Generating CHM...
+    @echo Generating CHM...
     "C:\tools\HTML Help Workshop\hhc.exe" tmp\index.hhp
     
-    echo.
-    echo Cleanup...
-    rmdir /S /Q  tmp
-    echo CHM file generated in C:\qp\uploads\qpc\
+    @echo.
+    @echo Cleanup...
+    @rmdir /S /Q  tmp
+    @echo CHM file generated in qpc.chm
 
 ) else (
-    echo.
-    echo Cleanup...
-    rmdir /S /Q  C:\qp\uploads\qpc\qpc
+    @echo.
+    @echo Cleanup...
+    rmdir /S /Q  C:\qp_lab\qpc\html
     
-    echo Adding custom images...
-    xcopy preview.js C:\qp\uploads\qpc\qpc\
-    xcopy img C:\qp\uploads\qpc\qpc\img\
-    copy images\favicon.ico C:\qp\uploads\qpc\qpc
+    @echo Adding custom images...
+    xcopy preview.js C:\qp_lab\qpc\html\
+    xcopy img C:\qp_lab\qpc\html\img\
+    copy images\favicon.ico C:\qp_lab\qpc\html
 
-    echo Generating HTML...
+    @echo Generating HTML...
     %DOXHOME%\doxygen.exe Doxyfile
 )
 
-endlocal
+@endlocal

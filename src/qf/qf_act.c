@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -143,10 +143,10 @@ void QF_remove_(QActive * const a) {
 */
 void QF_bzero(void * const start, uint_fast16_t len) {
     uint8_t *ptr = (uint8_t *)start;
-    while (len != (uint_fast16_t)0) {
+    uint_fast16_t n;
+    for (n = len; n > (uint_fast16_t)0; --n) {
         *ptr = (uint8_t)0;
         QF_PTR_INC_(ptr);
-        --len;
     }
 }
 

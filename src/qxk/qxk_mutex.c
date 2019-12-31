@@ -5,8 +5,8 @@
 * QXMutex_unlock() definitions.
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -33,7 +33,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -99,11 +99,11 @@ void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling) {
     me->ceiling    = (uint8_t)ceiling;
     me->lockNest   = (uint8_t)0;
     me->holderPrio = (uint8_t)0;
-    QF_bzero(&me->waitSet, (uint_fast16_t)sizeof(me->waitSet));
+    QF_bzero((void *)&me->waitSet, (uint_fast16_t)sizeof(me->waitSet));
 
     if (ceiling != (uint_fast8_t)0) {
         /* reserve the ceiling priority level for this mutex */
-        QF_active_[ceiling] = (QActive *)me;
+        QF_active_[ceiling] = QXK_PTR_CAST_(QActive*, me);
     }
     QF_CRIT_EXIT_();
 }
@@ -137,22 +137,23 @@ bool QXMutex_lock(QXMutex * const me,
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    curr = (QXThread *)QXK_attr_.curr;
+    curr = QXK_PTR_CAST_(QXThread*, QXK_attr_.curr);
 
     /** @pre this function must:
     * - NOT be called from an ISR;
     * - be called from an extended thread;
     * - the ceiling priority must not be used; or if used
     *   - the thread priority must be below the ceiling of the mutex;
-    * - the thread must NOT be holding a scheduler lock;
     * - the thread must NOT be already blocked on any object.
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
         && (curr != (QXThread *)0) /* current thread must be extended */
-        && ((me->ceiling == (uint8_t)0) /* below ceiling */
-            || (curr->super.startPrio < me->ceiling))
-        && (QXK_attr_.lockHolder != curr->super.prio) /* not holding a lock */
+        && ((me->ceiling == (uint8_t)0)
+            || (curr->super.startPrio < me->ceiling)) /* below ceiling */
+        && (me->ceiling <= (uint8_t)QF_MAX_ACTIVE) /* in range */
         && (curr->super.super.temp.obj == (QMState *)0)); /* not blocked */
+    /** @pre also: the thread must NOT be holding a scheduler lock. */
+    Q_REQUIRE_ID(201, QXK_attr_.lockHolder != curr->super.prio);
 
     /* is the mutex available? */
     if (me->lockNest == (uint8_t)0) {
@@ -160,7 +161,8 @@ bool QXMutex_lock(QXMutex * const me,
 
         if (me->ceiling != (uint8_t)0) {
             /* the priority slot must be occupied by this mutex */
-            Q_ASSERT_ID(210, QF_active_[me->ceiling] == (QActive *)me);
+            Q_ASSERT_ID(210, QF_active_[me->ceiling]
+                             == QXK_PTR_CAST_(QActive*, me));
 
             /* boost the priority of this thread to the mutex ceiling */
             curr->super.prio = me->ceiling;
@@ -174,11 +176,11 @@ bool QXMutex_lock(QXMutex * const me,
         /* make the curr thread the new mutex holder */
         me->holderPrio = (uint8_t)curr->super.startPrio;
 
-        QS_BEGIN_NOCRIT_(QS_MUTEX_LOCK, (void *)0, (void *)0)
-            QS_TIME_();  /* timestamp */
-            QS_2U8_(curr->super.startPrio, /* the start prio */
-                    me->ceiling); /* current ceiling */
-        QS_END_NOCRIT_()
+        QS_BEGIN_NOCRIT_PRE_(QS_MUTEX_LOCK, (void *)0, (void *)0)
+            QS_TIME_PRE_();  /* timestamp */
+            QS_2U8_PRE_(curr->super.startPrio, /* the start prio */
+                        me->ceiling); /* current ceiling */
+        QS_END_NOCRIT_PRE_()
     }
     /* is the mutex locked by this thread already (nested locking)? */
     else if (me->holderPrio == curr->super.startPrio) {
@@ -206,7 +208,7 @@ bool QXMutex_lock(QXMutex * const me,
         QPSet_insert(&me->waitSet,        p);
 
         /* store the blocking object (this mutex) */
-        curr->super.super.temp.obj = (QMState *)me;
+        curr->super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
         QXThread_teArm_(curr, (QSignal)QXK_SEMA_SIG, nTicks);
 
         /* schedule the next thread if multitasking started */
@@ -216,7 +218,8 @@ bool QXMutex_lock(QXMutex * const me,
 
         QF_CRIT_ENTRY_();   /* AFTER unblocking... */
         /* the blocking object must be this mutex */
-        Q_ASSERT_ID(240, curr->super.super.temp.obj == (QMState *)me);
+        Q_ASSERT_ID(240, curr->super.super.temp.obj
+                         == QXK_PTR_CAST_(QMState*, me));
 
         /* did the blocking time-out? (signal of zero means that it did) */
         if (curr->timeEvt.super.sig == (QSignal)0) {
@@ -272,13 +275,15 @@ bool QXMutex_tryLock(QXMutex * const me) {
     * - the calling thread must be valid;
     * - the ceiling must be not used; or
     *   - the thread priority must be below the ceiling of the mutex;
-    * - the thread must NOT be holding a scheduler lock;
+    * - the ceiling must be in range
     */
     Q_REQUIRE_ID(300, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
         && (curr != (QActive *)0) /* current thread must be valid */
-        && ((me->ceiling == (uint8_t)0) /* below ceiling */
-            || (curr->startPrio < me->ceiling))
-        && (curr->prio != QXK_attr_.lockHolder)); /* not holding a lock */
+        && ((me->ceiling == (uint8_t)0) /* ceiling not used */
+            || (curr->startPrio < me->ceiling)) /* below ceiling */
+        && (me->ceiling <= (uint8_t)QF_MAX_ACTIVE));
+    /** @pre also: the thread must NOT be holding a scheduler lock. */
+    Q_REQUIRE_ID(301, QXK_attr_.lockHolder != curr->prio);
 
     /* is the mutex available? */
     if (me->lockNest == (uint8_t)0) {
@@ -286,7 +291,8 @@ bool QXMutex_tryLock(QXMutex * const me) {
 
         if (me->ceiling != (uint8_t)0) {
             /* the priority slot must be set to this mutex */
-            Q_ASSERT_ID(310, QF_active_[me->ceiling] == (QActive *)me);
+            Q_ASSERT_ID(310, QF_active_[me->ceiling]
+                             == QXK_PTR_CAST_(QActive*, me));
 
             /* boost the priority of this thread to the mutex ceiling */
             curr->prio = me->ceiling;
@@ -298,11 +304,11 @@ bool QXMutex_tryLock(QXMutex * const me) {
         /* make curr thread the new mutex holder */
         me->holderPrio = curr->startPrio;
 
-        QS_BEGIN_NOCRIT_(QS_MUTEX_LOCK, (void *)0, curr)
-            QS_TIME_();  /* timestamp */
-            QS_2U8_(curr->startPrio, /* the start prio */
+        QS_BEGIN_NOCRIT_PRE_(QS_MUTEX_LOCK, (void *)0, curr)
+            QS_TIME_PRE_();  /* timestamp */
+            QS_2U8_PRE_(curr->startPrio, /* the start prio */
                     me->ceiling); /* the current ceiling */
-        QS_END_NOCRIT_()
+        QS_END_NOCRIT_PRE_()
     }
     /* is the mutex held by this thread already (nested locking)? */
     else if (me->holderPrio == curr->startPrio) {
@@ -314,8 +320,8 @@ bool QXMutex_tryLock(QXMutex * const me) {
     else { /* the mutex is alredy locked by a different thread */
         if (me->ceiling != (uint8_t)0) {
             /* the prio slot must be claimed by the mutex holder */
-            Q_ASSERT_ID(330, (me->holderPrio != (uint8_t)0)
-                && (QF_active_[me->ceiling] == QF_active_[me->holderPrio]));
+            Q_ASSERT_ID(330, QF_active_[me->ceiling]
+                             == QF_active_[me->holderPrio]);
         }
         curr = (QActive *)0; /* means that mutex is NOT available */
     }
@@ -357,17 +363,19 @@ void QXMutex_unlock(QXMutex * const me) {
     /** @pre this function must:
     * - NOT be called from an ISR;
     * - the calling thread must be valid;
-    * - the mutex must be held by this thread;
     * - the ceiling must not be used or
-    *    - the current thread must have priority equal to the mutex ceiling;
-    * - the mutex must be already locked at least once.
+    *    - the current thread must have priority equal to the mutex ceiling.
+    * - the ceiling must be in range
     */
     Q_REQUIRE_ID(400, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
         && (curr != (QActive *)0) /* current thread must be valid */
-        && (curr->startPrio == me->holderPrio)
-        && ((me->ceiling == (uint8_t)0) /* curr at ceiling prio */
-            || (curr->prio == me->ceiling))
-        && (me->lockNest > (uint8_t)0)); /* locked at least once */
+        && ((me->ceiling == (uint8_t)0) /* ceiling not used OR... */
+            || (curr->prio == me->ceiling)) /* curr at ceiling prio */
+        && (me->ceiling <= (uint8_t)QF_MAX_ACTIVE));
+    /** @pre also: the mutex must be already locked at least once. */
+    Q_REQUIRE_ID(401, me->lockNest > (uint8_t)0);
+    /** @pre also: the mutex must be held by this thread. */
+    Q_REQUIRE_ID(402, me->holderPrio == curr->startPrio);
 
     /* is this the last nesting level? */
     if (me->lockNest == (uint8_t)1) {
@@ -379,17 +387,17 @@ void QXMutex_unlock(QXMutex * const me) {
             curr->prio = curr->startPrio;
 
             /* put the mutex at the priority ceiling slot */
-            QF_active_[me->ceiling] = (QActive *)me;
+            QF_active_[me->ceiling] = QXK_PTR_CAST_(QActive*, me);
         }
 
         /* the mutex no longer held by a thread */
         me->holderPrio = (uint8_t)0;
 
-        QS_BEGIN_NOCRIT_(QS_MUTEX_UNLOCK, (void *)0, curr)
-            QS_TIME_();  /* timestamp */
-            QS_2U8_((uint8_t)curr->startPrio,  /* the start priority */
+        QS_BEGIN_NOCRIT_PRE_(QS_MUTEX_UNLOCK, (void *)0, curr)
+            QS_TIME_PRE_();  /* timestamp */
+            QS_2U8_PRE_((uint8_t)curr->startPrio,  /* the start priority */
                     me->ceiling);   /* the mutex ceiling */
-        QS_END_NOCRIT_()
+        QS_END_NOCRIT_PRE_()
 
         /* are any other threads waiting for this mutex? */
         if (QPSet_notEmpty(&me->waitSet)) {
@@ -398,7 +406,7 @@ void QXMutex_unlock(QXMutex * const me) {
 
             /* find the highest-priority thread waiting on this mutex */
             QPSet_findMax(&me->waitSet, p);
-            thr = (QXThread *)QF_active_[p];
+            thr = QXK_PTR_CAST_(QXThread*, QF_active_[p]);
 
             /* the waiting thread must:
             * - the ceiling must not be used; or if used
@@ -412,7 +420,8 @@ void QXMutex_unlock(QXMutex * const me) {
                    || (p < (uint_fast8_t)me->ceiling)) /* below ceiling */
                 && (thr != (QXThread *)0) /* registered in QF */
                 && (thr->super.prio == thr->super.startPrio)
-                && (thr->super.super.temp.obj == (QMState *)me));
+                && (thr->super.super.temp.obj
+                    == QXK_PTR_CAST_(QMState*, me)));
 
             /* disarm the internal time event */
             (void)QXThread_teDisarm_(thr);
@@ -431,18 +440,18 @@ void QXMutex_unlock(QXMutex * const me) {
             QPSet_insert(&QXK_attr_.readySet, (uint_fast8_t)thr->super.prio);
             QPSet_remove(&me->waitSet, p);
 
-            QS_BEGIN_NOCRIT_(QS_MUTEX_LOCK, (void *)0, thr)
-                QS_TIME_();  /* timestamp */
-                QS_2U8_(thr->super.startPrio, /* start priority */
+            QS_BEGIN_NOCRIT_PRE_(QS_MUTEX_LOCK, (void *)0, thr)
+                QS_TIME_PRE_();  /* timestamp */
+                QS_2U8_PRE_(thr->super.startPrio, /* start priority */
                         me->ceiling);  /* ceiling priority */
-            QS_END_NOCRIT_()
+            QS_END_NOCRIT_PRE_()
         }
         else { /* no threads are waiting for this mutex */
             me->lockNest = (uint8_t)0;
 
             if (me->ceiling != (uint8_t)0) {
                 /* put the mutex at the priority ceiling slot */
-                QF_active_[me->ceiling] = (QActive *)me;
+                QF_active_[me->ceiling] = QXK_PTR_CAST_(QActive*, me);
             }
         }
 

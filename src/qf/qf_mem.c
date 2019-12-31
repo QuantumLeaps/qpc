@@ -4,8 +4,8 @@
 * @brief ::QMPool implementatin (Memory Pool)
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -170,11 +170,11 @@ void QMPool_put(QMPool * const me, void *b) {
     me->free_head = b;      /* set as new head of the free list */
     ++me->nFree;            /* one more free block in this pool */
 
-    QS_BEGIN_NOCRIT_(QS_QF_MPOOL_PUT, QS_priv_.locFilter[MP_OBJ], me)
-        QS_TIME_();         /* timestamp */
-        QS_OBJ_(me);        /* this memory pool */
-        QS_MPC_(me->nFree); /* the number of free blocks in the pool */
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_MPOOL_PUT, QS_priv_.locFilter[MP_OBJ], me)
+        QS_TIME_PRE_();         /* timestamp */
+        QS_OBJ_PRE_(me);        /* this memory pool */
+        QS_MPC_PRE_(me->nFree); /* the number of free blocks in the pool */
+    QS_END_NOCRIT_PRE_()
 
     QF_CRIT_EXIT_();
 }
@@ -249,25 +249,25 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
 
         me->free_head = fb_next; /* set the head to the next free block */
 
-        QS_BEGIN_NOCRIT_(QS_QF_MPOOL_GET,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_MPOOL_GET,
                          QS_priv_.locFilter[MP_OBJ], me)
-            QS_TIME_();         /* timestamp */
-            QS_OBJ_(me);        /* this memory pool */
-            QS_MPC_(me->nFree); /* # of free blocks in the pool */
-            QS_MPC_(me->nMin);  /* min # free blocks ever in the pool */
-        QS_END_NOCRIT_()
+            QS_TIME_PRE_();         /* timestamp */
+            QS_OBJ_PRE_(me);        /* this memory pool */
+            QS_MPC_PRE_(me->nFree); /* # of free blocks in the pool */
+            QS_MPC_PRE_(me->nMin);  /* min # free blocks ever in the pool */
+        QS_END_NOCRIT_PRE_()
     }
     /* don't have enough free blocks at this point */
     else {
         fb = (QFreeBlock *)0;
 
-        QS_BEGIN_NOCRIT_(QS_QF_MPOOL_GET_ATTEMPT,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_MPOOL_GET_ATTEMPT,
                          QS_priv_.locFilter[MP_OBJ], me)
-            QS_TIME_();         /* timestamp */
-            QS_OBJ_(me);        /* this memory pool */
-            QS_MPC_(me->nFree); /* the number of free blocks in the pool */
-            QS_MPC_(margin);    /* the requested margin */
-        QS_END_NOCRIT_()
+            QS_TIME_PRE_();         /* timestamp */
+            QS_OBJ_PRE_(me);        /* this memory pool */
+            QS_MPC_PRE_(me->nFree); /* the number of free blocks in the pool */
+            QS_MPC_PRE_(margin);    /* the requested margin */
+        QS_END_NOCRIT_PRE_()
     }
     QF_CRIT_EXIT_();
 
@@ -292,8 +292,9 @@ uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId) {
     QF_CRIT_STAT_
 
     /** @pre the poolId must be in range */
-    Q_REQUIRE_ID(400, ((uint_fast8_t)1 <= poolId)
-                      && (poolId <= QF_maxPool_));
+    Q_REQUIRE_ID(400, ((uint_fast8_t)0 < poolId)
+                      && (poolId <= QF_maxPool_)
+                      && (poolId <= (uint_fast8_t)QF_MAX_EPOOL));
 
     QF_CRIT_ENTRY_();
     min = (uint_fast16_t)QF_pool_[poolId - (uint_fast8_t)1].nMin;

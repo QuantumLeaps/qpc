@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-09
+* Last updated for version 6.7.0
+* Last updated on  2019-12-12
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -140,7 +140,7 @@
         if ((e_) != (evtT_ *)0) { \
             evtT_##_ctor((e_), (sig_), ##__VA_ARGS__); \
         } \
-     } while (0)
+     } while (false)
 
 #else
 
@@ -149,7 +149,8 @@
                                   QF_NO_MARGIN, (sig_)))
 
     #define Q_NEW_X_FROM_ISR(e_, evtT_, margin_, sig_) ((e_) = \
-        (evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), (margin_), (sig_)))
+        (evtT_ *)QF_newXFromISR_((uint_fast16_t)sizeof(evtT_), \
+                                 (margin_), (sig_)))
 
 #endif /* Q_EVT_CTOR */
 
@@ -201,7 +202,7 @@ enum FreeRTOS_TaskAttrs {
         QF_CRIT_EXIT_(); \
         xTaskNotifyGive((TaskHandle_t)&(me_)->thread); \
         QF_CRIT_ENTRY_(); \
-    } while (0)
+    } while (false)
 
     #define QF_SCHED_STAT_
     #define QF_SCHED_LOCK_(dummy) vTaskSuspendAll()

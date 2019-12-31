@@ -28,11 +28,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -81,12 +81,12 @@
         } else { \
             QFSchedLock_(&lockStat_, (prio_)); \
         } \
-    } while (0)
+    } while (false)
     #define QF_SCHED_UNLOCK_() do { \
         if (lockStat_.lockPrio != (uint_fast8_t)0) { \
             QFSchedUnlock_(&lockStat_); \
         } \
-    } while (0)
+    } while (false)
 
     /* internal implementation of scheduler locking/unlocking */
     void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio);
@@ -113,7 +113,7 @@
             (e_) = (QEvt *)0; \
         } \
         QF_CRIT_EXIT_(); \
-    } while (0)
+    } while (false)
 
     #define QF_EPOOL_PUT_(dummy, e_) \
         Q_ALLEGE(tx_block_release((VOID *)(e_)) == TX_SUCCESS)

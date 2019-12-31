@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.5.1" links="0">
+<model version="4.6.0" links="1">
  <documentation>Simple &quot;Blinky&quot; model</documentation>
+ <!--${qpc}-->
  <framework name="qpc"/>
+ <!--${AOs}-->
  <package name="AOs" stereotype="0x02">
+  <!--${AOs::Blinky}-->
   <class name="Blinky" superclass="qpc::QActive">
+   <!--${AOs::Blinky::timeEvt}-->
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Blinky::SM}-->
    <statechart properties="0x03">
+    <!--${AOs::Blinky::SM::initial}-->
     <initial target="../1">
      <action>(void)e; /* unused parameter */
 QTimeEvt_armX(&amp;me-&gt;timeEvt,
@@ -14,8 +20,10 @@ BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
       <action box="0,-2,6,2"/>
      </initial_glyph>
     </initial>
+    <!--${AOs::Blinky::SM::off}-->
     <state name="off">
      <entry>BSP_ledOff();</entry>
+     <!--${AOs::Blinky::SM::off::TIMEOUT}-->
      <tran trig="TIMEOUT" target="../../2">
       <tran_glyph conn="2,13,3,1,18,6,-2">
        <action box="0,-2,8,2"/>
@@ -25,8 +33,10 @@ BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
       <entry box="1,2,12,4"/>
      </state_glyph>
     </state>
+    <!--${AOs::Blinky::SM::on}-->
     <state name="on">
      <entry>BSP_ledOn();</entry>
+     <!--${AOs::Blinky::SM::on::TIMEOUT}-->
      <tran trig="TIMEOUT" target="../../1">
       <tran_glyph conn="2,25,3,1,20,-15,-4">
        <action box="0,-2,8,2"/>
@@ -40,7 +50,9 @@ BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
    </statechart>
   </class>
  </package>
+ <!--${.}-->
  <directory name=".">
+  <!--${.::blinky.c}-->
   <file name="blinky.c">
    <text>#include &quot;qpc.h&quot;
 #include &lt;stdio.h&gt;

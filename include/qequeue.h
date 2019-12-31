@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -227,7 +227,7 @@ QEvt const *QEQueue_get(QEQueue * const me);
 *
 * @returns 'true' if the queue is current empty and 'false' otherwise.
 */
-#define QEQueue_isEmpty(me_) ((me_)->frontEvt == (QEvt const *)0)
+#define QEQueue_isEmpty(me_) ((me_)->frontEvt == (QEvt *)0)
 
 #endif /* QEQUEUE_H */
 

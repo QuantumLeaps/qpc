@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 6.2.0
-* Date of the Last Update:  2018-03-16
+* Last Updated for Version: 6.6.0
+* Date of the Last Update:  2019-03-16
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -42,10 +42,10 @@ typedef struct PhiloTag {
     QTimeEvt timeEvt;                   /* for timing out thining or eating */
 } Philo;
 
-static QState Philo_initial (Philo *me, QEvent const *e);
-static QState Philo_thinking(Philo *me, QEvent const *e);
-static QState Philo_hungry  (Philo *me, QEvent const *e);
-static QState Philo_eating  (Philo *me, QEvent const *e);
+static QState Philo_initial (Philo *me, QEvt const *e);
+static QState Philo_thinking(Philo *me, QEvt const *e);
+static QState Philo_hungry  (Philo *me, QEvt const *e);
+static QState Philo_eating  (Philo *me, QEvt const *e);
 
 /* Local objects -----------------------------------------------------------*/
 static Philo l_philo[N_PHILO];                    /* storage for all Philos */
@@ -75,11 +75,11 @@ void Philo_ctor(void) {                    /* instantiate all Philo objects */
     for (n = 0; n < N_PHILO; ++n) {
         me = &l_philo[n];
         QActive_ctor(&me->super, (QStateHandler)&Philo_initial);
-        QTimeEvt_ctor(&me->timeEvt, TIMEOUT_SIG);
+        QTimeEvt_ctorX(&me->timeEvt, (QActive *)me, TIMEOUT_SIG, 0U);
     }
 }
 /*..........................................................................*/
-QState Philo_initial(Philo *me, QEvent const *e) {
+QState Philo_initial(Philo *me, QEvt const *e) {
     static uint8_t registered;         /* starts off with 0, per C-standard */
     (void)e;        /* suppress the compiler warning about unused parameter */
     if (!registered) {
@@ -109,10 +109,10 @@ QState Philo_initial(Philo *me, QEvent const *e) {
     return Q_TRAN(&Philo_thinking);          /* top-most initial transition */
 }
 /*..........................................................................*/
-QState Philo_thinking(Philo *me, QEvent const *e) {
+QState Philo_thinking(Philo *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            QTimeEvt_postIn(&me->timeEvt, (QActive *)me, THINK_TIME);
+            QTimeEvt_armX(&me->timeEvt, THINK_TIME, 0U);
             return Q_HANDLED();
         }
         case TIMEOUT_SIG: {
@@ -128,12 +128,12 @@ QState Philo_thinking(Philo *me, QEvent const *e) {
     return Q_SUPER(&QHsm_top);
 }
 /*..........................................................................*/
-QState Philo_hungry(Philo *me, QEvent const *e) {
+QState Philo_hungry(Philo *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             TableEvt *pe = Q_NEW(TableEvt, HUNGRY_SIG);
             pe->philoNum = PHILO_ID(me);
-            QACTIVE_POST(AO_Table, (QEvent *)pe, me);
+            QACTIVE_POST(AO_Table, (QEvt *)pe, me);
             return Q_HANDLED();
         }
         case EAT_SIG: {
@@ -151,16 +151,16 @@ QState Philo_hungry(Philo *me, QEvent const *e) {
     return Q_SUPER(&QHsm_top);
 }
 /*..........................................................................*/
-QState Philo_eating(Philo *me, QEvent const *e) {
+QState Philo_eating(Philo *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            QTimeEvt_postIn(&me->timeEvt, (QActive *)me, EAT_TIME);
+            QTimeEvt_armX(&me->timeEvt, EAT_TIME, 0U);
             return Q_HANDLED();
         }
         case Q_EXIT_SIG: {
             TableEvt *pe = Q_NEW(TableEvt, DONE_SIG);
             pe->philoNum = PHILO_ID(me);
-            QF_PUBLISH((QEvent *)pe, me);
+            QF_PUBLISH((QEvt *)pe, me);
             return Q_HANDLED();
         }
         case TIMEOUT_SIG: {

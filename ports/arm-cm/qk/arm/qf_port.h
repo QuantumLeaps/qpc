@@ -28,11 +28,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -77,7 +77,7 @@
         QF_PRIMASK_DISABLE(); \
         QF_set_BASEPRI(QF_BASEPRI); \
         QF_PRIMASK_ENABLE(); \
-    } while (0)
+    } while (false)
     #define QF_INT_ENABLE()      QF_set_BASEPRI(0U)
 
     /* QF critical section entry/exit (unconditional interrupt disabling) */

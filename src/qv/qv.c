@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-09-12
+* Last updated for version 6.7.0
+* Last updated on  2019-12-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -33,7 +33,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -128,11 +128,11 @@ int_t QF_run(void) {
             a = QF_active_[p];
 
 #ifdef Q_SPY
-            QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ], a)
-                QS_TIME_();              /* timestamp */
-                QS_2U8_((uint8_t)p,      /* priority of the scheduled AO */
+            QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ], a)
+                QS_TIME_PRE_();              /* timestamp */
+                QS_2U8_PRE_((uint8_t)p,      /* priority of the scheduled AO */
                         (uint8_t)pprev); /* previous priority */
-            QS_END_NOCRIT_()
+            QS_END_NOCRIT_PRE_()
 
             pprev = p; /* update previous priority */
 #endif /* Q_SPY */
@@ -151,17 +151,17 @@ int_t QF_run(void) {
 
             QF_INT_DISABLE();
 
-            if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
+            if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
                 QPSet_remove(&QV_readySet_, p);
             }
         }
         else { /* no AO ready to run --> idle */
 #ifdef Q_SPY
             if (pprev != (uint_fast8_t)0) {
-                QS_BEGIN_NOCRIT_(QS_SCHED_IDLE, (void *)0, (void *)0)
-                    QS_TIME_();             /* timestamp */
-                    QS_U8_((uint8_t)pprev); /* previous priority */
-                QS_END_NOCRIT_()
+                QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, (void *)0, (void *)0)
+                    QS_TIME_PRE_();             /* timestamp */
+                    QS_U8_PRE_((uint8_t)pprev); /* previous priority */
+                QS_END_NOCRIT_PRE_()
 
                 pprev = (uint_fast8_t)0; /* update previous priority */
             }
@@ -209,7 +209,7 @@ int_t QF_run(void) {
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    void const *par)
+                    void const * const par)
 {
     /** @pre The priority must be in range and the stack storage must not
     * be provided, because the QV kernel does not need per-AO stacks.
@@ -224,7 +224,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = (uint8_t)prio; /* set the current priority of the AO */
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    QHSM_INIT(&me->super, par); /* top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 }
 

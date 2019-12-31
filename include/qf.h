@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-10-04
+* Last updated for version 6.7.0
+* Last updated on  2019-12-28
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -175,7 +175,7 @@ typedef struct {
     void (*start)(QActive * const me, uint_fast8_t prio,
                   QEvt const *qSto[], uint_fast16_t qLen,
                   void *stkSto, uint_fast16_t stkSize,
-                  void const *par);
+                  void const * const par);
 
 #ifdef Q_SPY
     /*! virtual function to asynchronously post (FIFO) an event to an AO */
@@ -216,7 +216,7 @@ typedef struct {
     Q_ASSERT((me_)->super.vptr);                                             \
     (*((QActiveVtable const *)((me_)->super.vptr))->start)(                  \
         (me_), (prio_), (qSto_), (qLen_), (stkSto_), (stkLen_), (par_));     \
-} while (0)
+} while (false)
 
 #ifdef Q_SPY
     /*! Polymorphically posts an event to an active object (FIFO)
@@ -677,7 +677,7 @@ void QF_deleteRef_(void const * const evtRef);
         if ((e_) != (evtT_ *)0) {                              \
             evtT_##_ctor((e_), (sig_), ##__VA_ARGS__);         \
         }                                                      \
-     } while (0)
+     } while (false)
 
 #else
 
@@ -779,7 +779,7 @@ void QF_deleteRef_(void const * const evtRef);
 #define Q_DELETE_REF(evtRef_) do { \
     QF_deleteRef_((evtRef_));      \
     (evtRef_) = (void *)0;         \
-} while (0)
+} while (false)
 
 /*! Recycle a dynamic event. */
 void QF_gc(QEvt const * const e);
@@ -824,10 +824,6 @@ typedef QActive QTicker;
 
 /*! Constructor of the QTicker Active Object class */
 void QTicker_ctor(QTicker * const me, uint8_t tickRate);
-
-/****************************************************************************/
-/*! get the current QF version number string of the form "X.Y.Z" */
-#define QF_getVersion() (QP_versionStr)
 
 #endif /* QF_H */
 

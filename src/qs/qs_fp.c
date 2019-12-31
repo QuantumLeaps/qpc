@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -46,7 +46,7 @@
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_f32(uint8_t format, float32_t f) {
+void QS_f32_fmt_(uint8_t format, float32_t f) {
     union F32Rep {
         float32_t f;
         uint32_t  u;
@@ -60,12 +60,11 @@ void QS_f32(uint8_t format, float32_t f) {
     fu32.f = f; /* assign the binary representation */
 
     QS_priv_.used += (QSCtr)5; /* 5 bytes about to be added */
-    QS_INSERT_ESC_BYTE(format) /* insert the format byte */
+    QS_INSERT_ESC_BYTE_(format) /* insert the format byte */
 
     /* insert 4 bytes... */
     for (i = (int_fast8_t)4; i != (int_fast8_t)0; --i) {
-        format = (uint8_t)fu32.u;
-        QS_INSERT_ESC_BYTE(format)
+        QS_INSERT_ESC_BYTE_((uint8_t)fu32.u)
         fu32.u >>= 8;
     }
 
@@ -79,7 +78,7 @@ void QS_f32(uint8_t format, float32_t f) {
 * This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_f64(uint8_t format, float64_t d) {
+void QS_f64_fmt_(uint8_t format, float64_t d) {
     union F64Rep {
         float64_t d;
         struct UInt2 {
@@ -101,7 +100,7 @@ void QS_f64(uint8_t format, float64_t d) {
     fu64.d = d; /* assign the binary representation */
 
     QS_priv_.used += (QSCtr)9; /* 9 bytes about to be added */
-    QS_INSERT_ESC_BYTE(format) /* insert the format byte */
+    QS_INSERT_ESC_BYTE_(format) /* insert the format byte */
 
     /* is this a big-endian machine? */
     if (endian.u8 == (uint8_t)0) {
@@ -113,15 +112,13 @@ void QS_f64(uint8_t format, float64_t d) {
 
     /* output 4 bytes from fu64.i.u1 ... */
     for (i = (uint32_t)4; i != (uint32_t)0; --i) {
-        format = (uint8_t)fu64.i.u1;
-        QS_INSERT_ESC_BYTE(format)
+        QS_INSERT_ESC_BYTE_((uint8_t)fu64.i.u1)
         fu64.i.u1 >>= 8;
     }
 
     /* output 4 bytes from fu64.i.u2 ... */
     for (i = (uint32_t)4; i != (uint32_t)0; --i) {
-        format = (uint8_t)fu64.i.u2;
-        QS_INSERT_ESC_BYTE(format)
+        QS_INSERT_ESC_BYTE_((uint8_t)fu64.i.u2)
         fu64.i.u2 >>= 8;
     }
 

@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -130,12 +130,12 @@ void QF_publish_(QEvt const * const e, void const * const sender)
 
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_PUBLISH, (void *)0, (void *)0)
-        QS_TIME_();          /* the timestamp */
-        QS_OBJ_(sender);     /* the sender object */
-        QS_SIG_(e->sig);     /* the signal of the event */
-        QS_2U8_(e->poolId_, e->refCtr_);/* pool Id & ref Count of the event */
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_PUBLISH, (void *)0, (void *)0)
+        QS_TIME_PRE_();          /* the timestamp */
+        QS_OBJ_PRE_(sender);     /* the sender object */
+        QS_SIG_PRE_(e->sig);     /* the signal of the event */
+        QS_2U8_PRE_(e->poolId_, e->refCtr_);/* pool Id & ref Count of the event */
+    QS_END_NOCRIT_PRE_()
 
     /* is it a dynamic event? */
     if (e->poolId_ != (uint8_t)0) {
@@ -215,11 +215,11 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
 
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_SUBSCRIBE, QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_();             /* timestamp */
-        QS_SIG_((QSignal)sig);  /* the signal of this event */
-        QS_OBJ_(me);            /* this active object */
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_SUBSCRIBE, QS_priv_.locFilter[AO_OBJ], me)
+        QS_TIME_PRE_();             /* timestamp */
+        QS_SIG_PRE_((QSignal)sig);  /* the signal of this event */
+        QS_OBJ_PRE_(me);            /* this active object */
+    QS_END_NOCRIT_PRE_()
 
     /* set the priority bit */
     QPSet_insert(&QF_PTR_AT_(QF_subscrList_, sig), p);
@@ -266,11 +266,11 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
 
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_UNSUBSCRIBE, QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_();             /* timestamp */
-        QS_SIG_((QSignal)sig);  /* the signal of this event */
-        QS_OBJ_(me);            /* this active object */
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_UNSUBSCRIBE, QS_priv_.locFilter[AO_OBJ], me)
+        QS_TIME_PRE_();             /* timestamp */
+        QS_SIG_PRE_((QSignal)sig);  /* the signal of this event */
+        QS_OBJ_PRE_(me);            /* this active object */
+    QS_END_NOCRIT_PRE_()
 
     /* clear priority bit */
     QPSet_remove(&QF_PTR_AT_(QF_subscrList_, sig), p);
@@ -315,12 +315,12 @@ void QActive_unsubscribeAll(QActive const * const me) {
         if (QPSet_hasElement(&QF_PTR_AT_(QF_subscrList_, sig), p)) {
             QPSet_remove(&QF_PTR_AT_(QF_subscrList_, sig), p);
 
-            QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_UNSUBSCRIBE,
+            QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_UNSUBSCRIBE,
                              QS_priv_.locFilter[AO_OBJ], me)
-                QS_TIME_();            /* timestamp */
-                QS_SIG_((QSignal)sig); /* the signal of this event */
-                QS_OBJ_(me);           /* this active object */
-            QS_END_NOCRIT_()
+                QS_TIME_PRE_();            /* timestamp */
+                QS_SIG_PRE_((QSignal)sig); /* the signal of this event */
+                QS_OBJ_PRE_(me);           /* this active object */
+            QS_END_NOCRIT_PRE_()
         }
         QF_CRIT_EXIT_();
 

@@ -33,7 +33,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -64,7 +64,7 @@
 
 
 /****************************************************************************/
-/*! attributes of the QK kernel */
+/*! private attributes of the QK kernel */
 typedef struct {
     uint8_t volatile actPrio;    /*!< prio of the active AO */
     uint8_t volatile nextPrio;   /*!< prio of the next AO to execute */
@@ -72,10 +72,10 @@ typedef struct {
     uint8_t volatile lockHolder; /*!< prio of the AO holding the lock */
     uint8_t volatile intNest;    /*!< ISR nesting level */
     QPSet readySet;              /*!< QK ready-set of AOs */
-} QK_Attr;
+} QK_PrivAttr;
 
-/*! global attributes of the QK kernel */
-extern QK_Attr QK_attr_;
+/*! global private attributes of the QK kernel */
+extern QK_PrivAttr QK_attr_;
 
 /****************************************************************************/
 #ifdef QK_ON_CONTEXT_SW
@@ -144,10 +144,6 @@ QSchedStatus QK_schedLock(uint_fast8_t ceiling);
 void QK_schedUnlock(QSchedStatus stat);
 
 /****************************************************************************/
-/*! get the current QK version number string of the form "X.Y.Z" */
-#define QK_getVersion() (QP_versionStr)
-
-/****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */
 #ifdef QP_IMPL
 
@@ -173,14 +169,14 @@ void QK_schedUnlock(QSchedStatus stat);
         } else {                               \
             lockStat_ = QK_schedLock((prio_)); \
         }                                      \
-    } while (0)
+    } while (false)
 
     /*! Internal macro for selective scheduler unlocking. */
     #define QF_SCHED_UNLOCK_() do {            \
         if (lockStat_ != (QSchedStatus)0xFF) { \
             QK_schedUnlock(lockStat_);         \
         }                                      \
-    } while (0)
+    } while (false)
 
     /* native event queue operations... */
     #define QACTIVE_EQUEUE_WAIT_(me_)  \
@@ -193,7 +189,7 @@ void QK_schedUnlock(QSchedStatus stat);
                 QK_activate_();                                      \
             }                                                        \
         }                                                            \
-    } while (0)
+    } while (false)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool

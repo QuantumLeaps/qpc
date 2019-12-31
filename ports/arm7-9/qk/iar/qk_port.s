@@ -28,8 +28,8 @@
 ; along with this program. If not, see <http://www.gnu.org/licenses/>.
 ;
 ; Contact information:
-; https://www.state-machine.com
-; mailto:info@state-machine.com
+; <www.state-machine.com/licensing>
+; <info@state-machine.com>
 ;-----------------------------------------------------------------------------
 
 NO_IRQ      DEFINE     0x80     ; mask to disable interrupts (FIQ and IRQ)

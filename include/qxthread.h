@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-10-04
+* Last updated for version 6.7.0
+* Last updated on  2019-12-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -54,10 +54,10 @@
 * provide the thred-handler function as the parameter.
 *
 * @sa
+* - ::QXThread
 * - QXThread_ctor()
 * - QXTHREAD_START()
 * - QXTHREAD_POST_X()
-* - Q_XTHREAD_CAST()
 * - QXThread_delay()
 * - QXThread_delayCancel()
 * - QXThread_queueGet()
@@ -68,10 +68,10 @@
 * thread in your application.
 * @include qxk_thread.c
 */
-typedef struct {
+struct QXThread {
     QActive super;    /*!< inherited ::QActive */
     QTimeEvt timeEvt; /*!< time event to handle blocking timeouts */
-} QXThread;
+};
 
 /*! Virtual Table for the ::QXThread class (inherited from ::QActiveVtable) */
 /**
@@ -103,10 +103,7 @@ typedef QActiveVtable QXThreadVtable;
     ((*((QActiveVtable const *)((me_)->super.super.vptr))->start)(           \
         &(me_)->super, (prio_), (QEvt const **)(qSto_), (qLen_),             \
         (stkSto_), (stkLen_), (par_)));                                      \
-} while (0)
-
-/*! Thread handler pointer-to-function */
-typedef void (*QXThreadHandler)(QXThread * const me);
+} while (false)
 
 /*! constructor of an extended-thread */
 void QXThread_ctor(QXThread * const me, QXThreadHandler handler,
@@ -158,15 +155,6 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks);
 
 /*! no-timeout special timeout value when blocking on queues or semaphores */
 #define QXTHREAD_NO_TIMEOUT  ((uint_fast16_t)0)
-
-/*! Perform cast to QXThreadHandler. */
-/**
-* @description
-* This macro encapsulates the cast of a specific thread handler function
-* pointer to ::QXThreadHandler, which violates MISRA-C 2004 rule 11.4(adv).
-* This macro helps to localize this deviation.
-*/
-#define Q_XTHREAD_CAST(handler_)  ((QXThreadHandler)(handler_))
 
 /****************************************************************************/
 /*! Counting Semaphore of the QXK preemptive kernel */

@@ -3,8 +3,8 @@
 * @brief QK/C port to ARM Cortex-M, IAR-ARM toolset
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-10
+* Last updated for version 6.7.0
+* Last updated on  2019-11-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -28,11 +28,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -41,7 +41,6 @@
 /* prototypes --------------------------------------------------------------*/
 void PendSV_Handler(void);
 void NMI_Handler(void);
-void Thread_ret(void);
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)

@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -48,10 +48,10 @@ typedef struct TableTag {
     uint8_t isHungry[N_PHILO];
 } Table;
 
-static QState Table_initial(Table *me, QEvent const *e);
-static QState Table_ready  (Table *me, QEvent const *e);
-static QState Table_serving(Table *me, QEvent const *e);
-static QState Table_paused (Table *me, QEvent const *e);
+static QState Table_initial(Table *me, QEvt const *e);
+static QState Table_ready  (Table *me, QEvt const *e);
+static QState Table_serving(Table *me, QEvt const *e);
+static QState Table_paused (Table *me, QEvt const *e);
 
 #define RIGHT(n_) ((uint8_t)(((n_) + (N_PHILO - 1)) % N_PHILO))
 #define LEFT(n_)  ((uint8_t)(((n_) + 1) % N_PHILO))
@@ -164,7 +164,7 @@ void Table_ctor(void) {
 }
 
 /* Table HSM ===============================================================*/
-QState Table_initial(Table *me, QEvent const *e) {
+QState Table_initial(Table *me, QEvt const *e) {
     (void)e;        /* suppress the compiler warning about unused parameter */
 
     QS_OBJ_DICTIONARY(&l_table);
@@ -185,7 +185,7 @@ QState Table_initial(Table *me, QEvent const *e) {
     return Q_TRAN(&Table_ready);
 }
 /*..........................................................................*/
-QState Table_ready(Table *me, QEvent const *e) {
+QState Table_ready(Table *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             renderDppScreen();
@@ -216,7 +216,7 @@ QState Table_ready(Table *me, QEvent const *e) {
     return Q_SUPER(&QHsm_top);
 }
 /*..........................................................................*/
-QState Table_serving(Table *me, QEvent const *e) {
+QState Table_serving(Table *me, QEvt const *e) {
     uint8_t n, m;
     TableEvt *pe;
 
@@ -231,7 +231,7 @@ QState Table_serving(Table *me, QEvent const *e) {
                     me->fork[LEFT(n)] = me->fork[n] = USED;
                     pe = Q_NEW(TableEvt, EAT_SIG);
                     pe->philoNum = n;
-                    QF_PUBLISH((QEvent *)pe, me);
+                    QF_PUBLISH((QEvt *)pe, me);
                     me->isHungry[n] = 0;
                     displyPhilStat(n, "eating  ");
                 }
@@ -247,7 +247,7 @@ QState Table_serving(Table *me, QEvent const *e) {
                 me->fork[m] = me->fork[n] = USED;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = n;
-                QF_PUBLISH((QEvent *)pe, me);
+                QF_PUBLISH((QEvt *)pe, me);
                 displyPhilStat(n, "eating  ");
             }
             else {
@@ -266,7 +266,7 @@ QState Table_serving(Table *me, QEvent const *e) {
                 me->isHungry[m] = 0;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = m;
-                QF_PUBLISH((QEvent *)pe, me);
+                QF_PUBLISH((QEvt *)pe, me);
                 displyPhilStat(m, "eating  ");
             }
             m = LEFT(n);                         /* check the left neighbor */
@@ -276,7 +276,7 @@ QState Table_serving(Table *me, QEvent const *e) {
                 me->isHungry[m] = 0;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = m;
-                QF_PUBLISH((QEvent *)pe, me);
+                QF_PUBLISH((QEvt *)pe, me);
                 displyPhilStat(m, "eating  ");
             }
             return Q_HANDLED();
@@ -289,7 +289,7 @@ QState Table_serving(Table *me, QEvent const *e) {
     return Q_SUPER(&Table_ready);
 }
 /*..........................................................................*/
-QState Table_paused(Table *me, QEvent const *e) {
+QState Table_paused(Table *me, QEvt const *e) {
     uint8_t n;
 
     switch (e->sig) {

@@ -1,6 +1,23 @@
 /**
 @page history Revision History
 
+@section qpc_6_7_0 Version 6.7.0, 2019-12-30
+The main purpose of this release is providing improved compliance with MISRA-C:2012 (including  MISRA-C:2012-Amendment-1) and also to provide support for the [<b>PC-Lint-Plus</b>](https://www.gimpel.com/) static analysis tool (see also feature request [#169](https://sourceforge.net/p/qpc/feature-requests/169/)). Specifically, the QP/C source code and some examples have been adjusted to comply with MISRA-C:2012-Amendment-1 rules, with all deviations captured in the PC-Lint-Plus configuration files. These PC-Lint-Plus configuration files have been provided in the new "port" to PC-Lint-Plus in the directory qpc/ports/lint-plus/.
+
+@note
+The support for the older PC-Lint 9.x and the older MISRA-C:2004 has been dropped to avoid confusion and conflicts with the newer MISRA-C:2012 and the newer PC-Lint-Plus.
+
+
+This release also includes the offline documentation for  **this** particular version of QP/C (in the `html/` folder). To view the offline documentation, open the file `html/index.html` in your web browser. (The online HTML documention for the **latest** version of QP/C remains located at: https://www.state-machine.com/qpc/ )
+
+The backwards-compatiblity layer for QP 4.x has been removed. Among others, the macros Q_ROM and Q_ROM_VAR are no longer defined.
+
+This release fixes the following bugs:
+- [bug#254 "Q_NEW_X_FROM_ISR for FreeRTOS port"](https://sourceforg/bugs/254/)
+- [bug#255 "IAR-ARM "Multi-file Compilation" fails for QK and QXK applications"](https://sourceforg/bugs/255/)
+
+
+------------------------------------------------------------------------------
 @section qpc_6_6_0 Version 6.6.0, 2019-10-31
 The main purpose of this release is the change in distribution of the QP/C framework, which is now bundled together with the other QP frameworks (QP/C++ and QP-nano) as well as QM, and the QTools collection into "QP-bundle". This "QP-bundle" provides a single, streamlined and simplified download and installation of all QP frameworks and all the accompanying tools.
 

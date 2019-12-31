@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -33,7 +33,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -76,9 +76,6 @@
 */
 void QV_onIdle(void);
 
-/****************************************************************************/
-/*! get the current QV version number string of the form "X.Y.Z" */
-#define QV_getVersion() (QP_versionStr)
 
 /****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */

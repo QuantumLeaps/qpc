@@ -5,8 +5,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -33,7 +33,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -87,10 +87,10 @@ typedef struct {
     uint8_t volatile intNest;       /*!< ISR nesting level */
     struct QActive * idleThread;    /*!< pointer to the idle thread */
     QPSet readySet;  /*!< ready-set of basic and extended threads */
-} QXK_Attr;
+} QXK_PrivAttr;
 
 /*! global attributes of the QXK kernel */
-extern QXK_Attr QXK_attr_;
+extern QXK_PrivAttr QXK_attr_;
 
 /****************************************************************************/
 #ifdef QXK_ON_CONTEXT_SW
@@ -158,10 +158,6 @@ QSchedStatus QXK_schedLock(uint_fast8_t ceiling);
 void QXK_schedUnlock(QSchedStatus stat);
 
 /****************************************************************************/
-/*! get the current QXK version number string of the form "X.Y.Z" */
-#define QXK_getVersion() (QP_versionStr)
-
-/****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */
 #ifdef QP_IMPL
 
@@ -187,14 +183,14 @@ void QXK_schedUnlock(QSchedStatus stat);
         } else {                                \
             lockStat_ = QXK_schedLock((prio_)); \
         }                                       \
-    } while (0)
+    } while (false)
 
     /*! Internal macro for selective scheduler unlocking. */
     #define QF_SCHED_UNLOCK_() do {             \
         if (lockStat_ != (QSchedStatus)0xFF) {  \
             QXK_schedUnlock(lockStat_);         \
         }                                       \
-    } while (0)
+    } while (false)
 
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         (Q_ASSERT_ID(110, (me_)->eQueue.frontEvt != (QEvt *)0))
@@ -206,7 +202,7 @@ void QXK_schedUnlock(QSchedStatus stat);
                 QXK_activate_();                                      \
             }                                                         \
         }                                                             \
-    } while (0)
+    } while (false)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool

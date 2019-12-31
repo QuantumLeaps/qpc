@@ -28,11 +28,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -45,7 +45,7 @@
     #define QV_CPU_SLEEP() do { \
         __asm volatile ("wfi"); \
         QF_INT_ENABLE(); \
-    } while (0)
+    } while (false)
 
 #else /* Cortex-M3/M4/M4F */
 
@@ -55,7 +55,7 @@
         QF_INT_ENABLE(); \
         __asm volatile ("wfi"); \
         QF_PRIMASK_ENABLE(); \
-    } while (0)
+    } while (false)
 
     /* initialization of the QV kernel for Cortex-M3/M4/M4F */
     #define QV_INIT() QV_init()

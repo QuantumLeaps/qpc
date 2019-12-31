@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -48,7 +48,7 @@
 /** @note This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_u64_(uint64_t d) {
+void QS_u64_raw_(uint64_t d) {
     uint8_t chksum = QS_priv_.chksum;
     uint8_t *buf   = QS_priv_.buf;
     QSCtr   head   = QS_priv_.head;
@@ -58,7 +58,7 @@ void QS_u64_(uint64_t d) {
     QS_priv_.used += (QSCtr)8; /* 8 bytes are about to be added */
     for (i = (int_fast8_t)8; i != (int_fast8_t)0; --i) {
         uint8_t b = (uint8_t)d;
-        QS_INSERT_ESC_BYTE(b)
+        QS_INSERT_ESC_BYTE_(b)
         d >>= 8;
     }
 
@@ -78,12 +78,12 @@ void QS_u64(uint8_t format, uint64_t d) {
     int_fast8_t   i;
 
     QS_priv_.used += (QSCtr)9; /* 9 bytes are about to be added */
-    QS_INSERT_ESC_BYTE(format) /* insert the format byte */
+    QS_INSERT_ESC_BYTE_(format) /* insert the format byte */
 
     /* output 8 bytes of data... */
     for (i = (int_fast8_t)8; i != (int_fast8_t)0; --i) {
         format = (uint8_t)d;
-        QS_INSERT_ESC_BYTE(format)
+        QS_INSERT_ESC_BYTE_(format)
         d >>= 8;
     }
 

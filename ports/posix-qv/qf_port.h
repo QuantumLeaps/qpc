@@ -3,14 +3,14 @@
 * @brief QF/C port to POSIX API (single-threaded, like the QV kernel)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.7
-* Date of the Last Update:  2018-11-09
+* Last Updated for Version: 6.7.0
+* Date of the Last Update:  2019-12-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,11 +28,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -40,9 +40,9 @@
 #define QF_PORT_H
 
 /* POSIX event queue and thread types */
-#define QF_EQUEUE_TYPE       QEQueue
-/*#define QF_OS_OBJECT_TYPE  // not used */
-/*#define QF_THREAD_TYPE     // not used */
+#define QF_EQUEUE_TYPE  QEQueue
+/* QF_OS_OBJECT_TYPE not used in this port */
+/* QF_THREAD_TYPE    not used in this port */
 
 /* The maximum number of active objects in the application */
 #define QF_MAX_ACTIVE        64
@@ -97,12 +97,12 @@ int QF_consoleWaitForKey(void);
 
     /* POSIX active object event queue customization... */
     #define QACTIVE_EQUEUE_WAIT_(me_) \
-        Q_ASSERT((me_)->eQueue.frontEvt != (QEvt const *)0)
+        Q_ASSERT((me_)->eQueue.frontEvt != (QEvt *)0)
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
         QPSet_insert(&QV_readySet_, (me_)->prio); \
         pthread_cond_signal(&QV_condVar_); \
-    } while (0)
+    } while (false)
 
     /* event pool operations */
     #define QF_EPOOL_TYPE_  QMPool

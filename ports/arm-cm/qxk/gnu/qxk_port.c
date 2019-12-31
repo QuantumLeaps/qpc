@@ -3,8 +3,8 @@
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-10
+* Last updated for version 6.7.0
+* Last updated on  2019-12-28
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -28,18 +28,18 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing/>
+* <info@state-machine.com/>
 ******************************************************************************
 * @endcond
 */
 #include "qf_port.h"
 
 /* prototypes --------------------------------------------------------------*/
-void QXK_stackInit_(void *act, QActionHandler thread,
+void QXK_stackInit_(void *act, QXThreadHandler thread,
                     void *stkSto, uint_fast16_t stkSize);
 void PendSV_Handler(void);
 void NMI_Handler(void);
@@ -108,7 +108,7 @@ void QXK_init(void) {
 * of this thread. In that case the kernel cannot use the thread yet, so no
 * critical section is needed.
 ****************************************************************************/
-void QXK_stackInit_(void *act, QActionHandler thread,
+void QXK_stackInit_(void *act, QXThreadHandler thread,
                     void *stkSto, uint_fast16_t stkSize)
 {
     extern void QXK_threadRet_(void); /* extended thread return */

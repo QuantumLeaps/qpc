@@ -9,8 +9,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-10-04
+* Last updated for version 6.7.0
+* Last updated on  2019-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -37,7 +37,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -100,7 +100,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     QS_TEST_PROBE_DEF(&QActive_post_)
 
     /** @pre event pointer must be valid */
-    Q_REQUIRE_ID(100, e != (QEvt const *)0);
+    Q_REQUIRE_ID(100, e != (QEvt *)0);
 
     QF_CRIT_ENTRY_();
     nFree = me->eQueue.nFree; /* get volatile into the temporary */
@@ -139,16 +139,16 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             me->eQueue.nMin = nFree; /* increase minimum so far */
         }
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO,
                          QS_priv_.locFilter[AO_OBJ], me)
-            QS_TIME_();               /* timestamp */
-            QS_OBJ_(sender);          /* the sender object */
-            QS_SIG_(e->sig);          /* the signal of the event */
-            QS_OBJ_(me);              /* this active object (recipient) */
-            QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_EQC_(nFree);           /* number of free entries */
-            QS_EQC_(me->eQueue.nMin); /* min number of free entries */
-        QS_END_NOCRIT_()
+            QS_TIME_PRE_();               /* timestamp */
+            QS_OBJ_PRE_(sender);          /* the sender object */
+            QS_SIG_PRE_(e->sig);          /* the signal of the event */
+            QS_OBJ_PRE_(me);              /* this active object (recipient) */
+            QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+            QS_EQC_PRE_(nFree);           /* number of free entries */
+            QS_EQC_PRE_(me->eQueue.nMin); /* min number of free entries */
+        QS_END_NOCRIT_PRE_()
 
 #ifdef Q_UTEST
         /* callback to examine the posted event under the the same conditions
@@ -165,7 +165,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 #endif
 
         /* empty queue? */
-        if (me->eQueue.frontEvt == (QEvt const *)0) {
+        if (me->eQueue.frontEvt == (QEvt *)0) {
             me->eQueue.frontEvt = e;    /* deliver event directly */
             QACTIVE_EQUEUE_SIGNAL_(me); /* signal the event queue */
         }
@@ -184,16 +184,16 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     }
     else { /* cannot post the event */
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)
-            QS_TIME_();           /* timestamp */
-            QS_OBJ_(sender);      /* the sender object */
-            QS_SIG_(e->sig);      /* the signal of the event */
-            QS_OBJ_(me);          /* this active object (recipient) */
-            QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_EQC_(nFree);       /* number of free entries */
-            QS_EQC_((QEQueueCtr)margin); /* margin requested */
-        QS_END_NOCRIT_()
+            QS_TIME_PRE_();           /* timestamp */
+            QS_OBJ_PRE_(sender);      /* the sender object */
+            QS_SIG_PRE_(e->sig);      /* the signal of the event */
+            QS_OBJ_PRE_(me);          /* this active object (recipient) */
+            QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+            QS_EQC_PRE_(nFree);       /* number of free entries */
+            QS_EQC_PRE_((QEQueueCtr)margin); /* margin requested */
+        QS_END_NOCRIT_PRE_()
 
 #ifdef Q_UTEST
         /* callback to examine the posted event under the the same conditions
@@ -262,14 +262,14 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         me->eQueue.nMin = nFree; /* update minimum so far */
     }
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_();                  /* timestamp */
-        QS_SIG_(e->sig);             /* the signal of this event */
-        QS_OBJ_(me);                 /* this active object */
-        QS_2U8_(e->poolId_, e->refCtr_);/* pool Id & ref Count of the event */
-        QS_EQC_(nFree);              /* number of free entries */
-        QS_EQC_(me->eQueue.nMin);    /* min number of free entries */
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
+        QS_TIME_PRE_();                  /* timestamp */
+        QS_SIG_PRE_(e->sig);             /* the signal of this event */
+        QS_OBJ_PRE_(me);                 /* this active object */
+        QS_2U8_PRE_(e->poolId_, e->refCtr_);/* pool Id & ref Count of the event */
+        QS_EQC_PRE_(nFree);              /* number of free entries */
+        QS_EQC_PRE_(me->eQueue.nMin);    /* min number of free entries */
+    QS_END_NOCRIT_PRE_()
 
 #ifdef Q_UTEST
         /* callback to examine the posted event under the the same conditions
@@ -288,7 +288,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     me->eQueue.frontEvt = e; /* deliver the event directly to the front */
 
     /* was the queue empty? */
-    if (frontEvt == (QEvt const *)0) {
+    if (frontEvt == (QEvt *)0) {
         QACTIVE_EQUEUE_SIGNAL_(me); /* signal the event queue */
     }
     /* queue was not empty, leave the event in the ring-buffer */
@@ -348,27 +348,27 @@ QEvt const *QActive_get_(QActive * const me) {
         }
         --me->eQueue.tail;
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
-            QS_TIME_();                   /* timestamp */
-            QS_SIG_(e->sig);              /* the signal of this event */
-            QS_OBJ_(me);                  /* this active object */
-            QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_EQC_(nFree);               /* number of free entries */
-        QS_END_NOCRIT_()
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
+            QS_TIME_PRE_();                   /* timestamp */
+            QS_SIG_PRE_(e->sig);              /* the signal of this event */
+            QS_OBJ_PRE_(me);                  /* this active object */
+            QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+            QS_EQC_PRE_(nFree);               /* number of free entries */
+        QS_END_NOCRIT_PRE_()
     }
     else {
-        me->eQueue.frontEvt = (QEvt const *)0; /* queue becomes empty */
+        me->eQueue.frontEvt = (QEvt *)0; /* queue becomes empty */
 
         /* all entries in the queue must be free (+1 for fronEvt) */
         Q_ASSERT_CRIT_(310, nFree == (me->eQueue.end + (QEQueueCtr)1));
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_GET_LAST,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_GET_LAST,
                          QS_priv_.locFilter[AO_OBJ], me)
-            QS_TIME_();                   /* timestamp */
-            QS_SIG_(e->sig);              /* the signal of this event */
-            QS_OBJ_(me);                  /* this active object */
-            QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-        QS_END_NOCRIT_()
+            QS_TIME_PRE_();                   /* timestamp */
+            QS_SIG_PRE_(e->sig);              /* the signal of this event */
+            QS_OBJ_PRE_(me);                  /* this active object */
+            QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+        QS_END_NOCRIT_PRE_()
     }
     QF_CRIT_EXIT_();
     return e;
@@ -430,7 +430,7 @@ static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
 * "Note 929: cast from pointer to pointer [MISRA-04 Rule 11.4, advisory]"
 * and this macro helps to encapsulate this deviation.
 */
-#define QTICKER_CAST(me_)  ((QTicker *)(me_))
+#define QTICKER_CAST_(me_)  ((QTicker *)(me_))
 
 /*..........................................................................*/
 /*! "constructor" of QTicker */
@@ -452,7 +452,7 @@ void QTicker_ctor(QTicker * const me, uint8_t tickRate) {
 static void QTicker_init_(QHsm * const me, void const *par) {
     (void)me;
     (void)par;
-    QTICKER_CAST(me)->eQueue.tail = (QEQueueCtr)0;
+    QTICKER_CAST_(me)->eQueue.tail = (QEQueueCtr)0;
 }
 /*..........................................................................*/
 static void QTicker_dispatch_(QHsm * const me, QEvt const * const e) {
@@ -462,12 +462,12 @@ static void QTicker_dispatch_(QHsm * const me, QEvt const * const e) {
     (void)e; /* unused parameter */
 
     QF_CRIT_ENTRY_();
-    n = QTICKER_CAST(me)->eQueue.tail; /* # ticks since last call */
-    QTICKER_CAST(me)->eQueue.tail = (QEQueueCtr)0; /* clear the # ticks */
+    n = QTICKER_CAST_(me)->eQueue.tail; /* # ticks since last call */
+    QTICKER_CAST_(me)->eQueue.tail = (QEQueueCtr)0; /* clear the # ticks */
     QF_CRIT_EXIT_();
 
     for (; n > (QEQueueCtr)0; --n) {
-        QF_TICK_X((uint_fast8_t)QTICKER_CAST(me)->eQueue.head, me);
+        QF_TICK_X((uint_fast8_t)QTICKER_CAST_(me)->eQueue.head, me);
     }
 }
 /*..........................................................................*/
@@ -486,7 +486,7 @@ static bool QTicker_post_(QActive * const me, QEvt const * const e,
     (void)margin; /* unused parameter */
 
     QF_CRIT_ENTRY_();
-    if (me->eQueue.frontEvt == (QEvt const *)0) {
+    if (me->eQueue.frontEvt == (QEvt *)0) {
 
         static QEvt const tickEvt = { (QSignal)0, (uint8_t)0, (uint8_t)0 };
         me->eQueue.frontEvt = &tickEvt; /* deliver event directly */
@@ -497,15 +497,15 @@ static bool QTicker_post_(QActive * const me, QEvt const * const e,
 
     ++me->eQueue.tail; /* account for one more tick event */
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_();           /* timestamp */
-        QS_OBJ_(sender);      /* the sender object */
-        QS_SIG_((QSignal)0);  /* the signal of the event */
-        QS_OBJ_(me);          /* this active object */
-        QS_2U8_((uint8_t)0, (uint8_t)0); /* pool Id & refCtr of the evt */
-        QS_EQC_((uint8_t)0);  /* number of free entries */
-        QS_EQC_((uint8_t)0);  /* min number of free entries */
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.locFilter[AO_OBJ], me)
+        QS_TIME_PRE_();           /* timestamp */
+        QS_OBJ_PRE_(sender);      /* the sender object */
+        QS_SIG_PRE_((QSignal)0);  /* the signal of the event */
+        QS_OBJ_PRE_(me);          /* this active object */
+        QS_2U8_PRE_((uint8_t)0, (uint8_t)0); /* pool Id & refCtr of the evt */
+        QS_EQC_PRE_((uint8_t)0);  /* number of free entries */
+        QS_EQC_PRE_((uint8_t)0);  /* min number of free entries */
+    QS_END_NOCRIT_PRE_()
 
     QF_CRIT_EXIT_();
 
@@ -513,8 +513,8 @@ static bool QTicker_post_(QActive * const me, QEvt const * const e,
 }
 /*..........................................................................*/
 static void QTicker_postLIFO_(QActive * const me, QEvt const * const e) {
-    (void)me;
-    (void)e;
+    (void)me; /* unused parameter */
+    (void)e;  /* unused parameter */
     Q_ERROR_ID(900);
 }
 

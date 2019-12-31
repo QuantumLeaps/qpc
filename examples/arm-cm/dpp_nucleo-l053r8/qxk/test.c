@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last Updated for Version: 5.9.9
-* Date of the Last Update:  2017-09-27
+* Last updated for version 6.7.0
+* Last updated on  2019-12-27
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -64,18 +64,11 @@ static void Thread1_run(QXThread * const me) {
 
     me->super.thread = &l_tls1; /* initialize the TLS for Thread1 */
 
-    (void)me;
     for (;;) {
         QXMutex_lock(&l_mutex, QXTHREAD_NO_TIMEOUT); /* lock the mutex */
         BSP_ledOn();
 
         if (QXMutex_tryLock(&l_mutex)) { /* exercise the mutex */
-            float volatile x;
-
-            /* some flating point code to exercise the VFP... */
-            x = 1.4142135F;
-            x = x * 1.4142135F;
-
             (void)QXSemaphore_signal(&l_sema); /* signal Thread2 */
 
             QXThread_delay(10U);  /* BLOCK while holding a mutex */
@@ -98,7 +91,7 @@ static void Thread1_run(QXThread * const me) {
 
 /*..........................................................................*/
 void Test1_ctor(void) {
-    QXThread_ctor(&l_test1, Q_XTHREAD_CAST(&Thread1_run), 0U);
+    QXThread_ctor(&l_test1, &Thread1_run, 0U);
 }
 
 /*..........................................................................*/
@@ -143,5 +136,5 @@ static void Thread2_run(QXThread * const me) {
 
 /*..........................................................................*/
 void Test2_ctor(void) {
-    QXThread_ctor(&l_test2, Q_XTHREAD_CAST(&Thread2_run), 0U);
+    QXThread_ctor(&l_test2, &Thread2_run, 0U);
 }

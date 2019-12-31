@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, EFM32-SLSTK3401A board, preemptive QXK kernel
-* Last Updated for Version: 6.0.0
-* Date of the Last Update:  2017-10-12
+* Last updated for version 6.7.0
+* Last updated on  2019-12-19
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -117,7 +117,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    /*QF_TICK_X(0U, &l_SysTick_Handler);*/ /* process time events for rate 0 */
     QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
@@ -147,9 +147,10 @@ void SysTick_Handler(void) {
 void GPIO_EVEN_IRQHandler(void) { /* for testing, NOTE03 */
     QXK_ISR_ENTRY(); /* inform QXK about entering an ISR */
 
-//    QACTIVE_POST(AO_Table, Q_NEW(QEvt, TEST_SIG), /* for testing... */
-//                 &l_GPIO_EVEN_IRQHandler);
-
+/* for testing...
+    QACTIVE_POST(AO_Table, Q_NEW(QEvt, TEST_SIG),
+                 &l_GPIO_EVEN_IRQHandler);
+*/
     QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), /* for testing... */
                &l_GPIO_EVEN_IRQHandler);
 
@@ -199,7 +200,7 @@ void BSP_init(void) {
     GPIO_PinModeSet(PB_PORT, PB0_PIN, gpioModeInputPull, 1);
     GPIO_PinModeSet(PB_PORT, PB1_PIN, gpioModeInputPull, 1);
 
-    //...
+    /*... */
     BSP_randomSeed(1234U);
 
     if (QS_INIT((void *)0) == 0) { /* initialize the QS software tracing */
@@ -228,12 +229,12 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
     if (paused != 0U) {
-        GPIO->P[LED_PORT].DOUT |=  (1U << LED0_PIN);
-
         /* for testing the extended threads... */
         static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
         QXThread_delayCancel(XT_Test2); /* make sure Test2 is not delayed */
         QACTIVE_POST_X(&XT_Test2->super, &pauseEvt, 1U, (void *)0);
+
+        GPIO->P[LED_PORT].DOUT |=  (1U << LED0_PIN);
     }
     else {
         GPIO->P[LED_PORT].DOUT &= ~(1U << LED0_PIN);
@@ -312,11 +313,12 @@ void QXK_onIdle(void) {
     float volatile x;
 
     /* toggle the User LED on and then off, see NOTE01 */
-//    QF_INT_DISABLE();
-//    GPIO->P[LED_PORT].DOUT |=  (1U << LED1_PIN);
-//    GPIO->P[LED_PORT].DOUT &= ~(1U << LED1_PIN);
-//    QF_INT_ENABLE();
-
+/*
+    QF_INT_DISABLE();
+    GPIO->P[LED_PORT].DOUT |=  (1U << LED1_PIN);
+    GPIO->P[LED_PORT].DOUT &= ~(1U << LED1_PIN);
+    QF_INT_ENABLE();
+*/
     /* Some flating point code is to exercise the VFP... */
     x = 1.73205F;
     x = x * 1.73205F;
@@ -386,6 +388,7 @@ uint8_t QS_onStartup(void const *arg) {
         0                 /* Auto CS Setup cycles */
     };
 
+    (void)arg; /* unused parameter */
     QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
 
@@ -394,8 +397,8 @@ uint8_t QS_onStartup(void const *arg) {
     CMU_ClockEnable(cmuClock_GPIO, true);
 
     /* To avoid false start, configure output as high */
-    GPIO_PinModeSet(gpioPortA, 0, gpioModePushPull, 1); // TX pin
-    GPIO_PinModeSet(gpioPortA, 1, gpioModeInput, 0);    // RX pin
+    GPIO_PinModeSet(gpioPortA, 0, gpioModePushPull, 1); /* TX pin */
+    GPIO_PinModeSet(gpioPortA, 1, gpioModeInput, 0);    /* RX pin */
 
     /* Enable DK RS232/UART switch */
     GPIO_PinModeSet(gpioPortA, 5, gpioModePushPull, 1);
@@ -430,9 +433,10 @@ uint8_t QS_onStartup(void const *arg) {
     /* setup the QS filters... */
     QS_FILTER_ON(QS_SM_RECORDS); /* state machine records */
     QS_FILTER_ON(QS_UA_RECORDS); /* all usedr records */
-    //QS_FILTER_ON(QS_MUTEX_LOCK);
-    //QS_FILTER_ON(QS_MUTEX_UNLOCK);
-
+    /*
+    QS_FILTER_ON(QS_MUTEX_LOCK);
+    QS_FILTER_ON(QS_MUTEX_UNLOCK);
+    */
     return (uint8_t)1; /* return success */
 }
 /*..........................................................................*/

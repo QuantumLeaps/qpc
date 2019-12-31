@@ -28,11 +28,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -57,7 +57,7 @@
     #define QF_CRIT_ENTRY(primask_) do { \
         (primask_) = __get_PRIMASK(); \
         QF_INT_DISABLE(); \
-    } while (0)
+    } while (false)
     #define QF_CRIT_EXIT(primask_) __set_PRIMASK((primask_))
 
     /* CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE4 */
@@ -80,7 +80,7 @@
         QF_PRIMASK_DISABLE(); \
         __set_BASEPRI(QF_BASEPRI); \
         QF_PRIMASK_ENABLE(); \
-    } while (0)
+    } while (false)
     #define QF_INT_ENABLE()      __set_BASEPRI(0U)
 
     /* QF critical section entry/exit (save and restore interrupt status) */
@@ -88,7 +88,7 @@
     #define QF_CRIT_ENTRY(basepri_) do {\
         (basepri_) = __get_BASEPRI(); \
         QF_INT_DISABLE(); \
-    } while (0)
+    } while (false)
     #define QF_CRIT_EXIT(basepri_) __set_BASEPRI((basepri_))
 
     /* BASEPRI threshold for "QF-aware" interrupts, see NOTE3 */

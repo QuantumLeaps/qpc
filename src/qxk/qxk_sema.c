@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -117,20 +117,20 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    curr = (QXThread *)QXK_attr_.curr; /* volatile into temporary */
+    curr = QXK_PTR_CAST_(QXThread*, QXK_attr_.curr); /* volatile into temp. */
 
     /** @pre this function must:
     * - NOT be called from an ISR;
     * - the semaphore must be initialized
     * - be called from an extended thread;
-    * - the thread must NOT be holding a scheduler lock;
     * - the thread must NOT be already blocked on any object.
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* can't wait inside an ISR */
         && (me->max_count > (uint16_t)0) /* sema must be initialized */
         && (curr != (QXThread *)0) /* curr must be extended */
-        && (QXK_attr_.lockHolder != curr->super.prio) /* not holding a lock */
-        && (curr->super.super.temp.obj == (QMState *)0)); /* not blocked */
+        && (curr->super.super.temp.obj == (QMState *)0)); /* NOT blocked */
+    /** @pre also: the thread must NOT be holding a scheduler lock. */
+    Q_REQUIRE_ID(201, QXK_attr_.lockHolder != curr->super.prio);
 
     if (me->count > (uint16_t)0) {
         --me->count; /* semaphore taken: decrement the count */
@@ -139,7 +139,7 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
         uint_fast8_t p = (uint_fast8_t)curr->super.prio;
 
         /* remember the blocking object (this semaphore) */
-        curr->super.super.temp.obj = (QMState *)me;
+        curr->super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
         QXThread_teArm_(curr, (QSignal)QXK_SEMA_SIG, nTicks);
 
         /* remove this curr prio from the ready set (block)
@@ -154,7 +154,8 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
 
         QF_CRIT_ENTRY_();   /* AFTER unblocking... */
         /* the blocking object must be this semaphore */
-        Q_ASSERT_ID(240, curr->super.super.temp.obj == (QMState *)me);
+        Q_ASSERT_ID(240, curr->super.super.temp.obj
+                         == QXK_PTR_CAST_(QMState*, me));
 
         /* did the blocking time-out? (signal of zero means that it did) */
         if (curr->timeEvt.super.sig == (QSignal)0) {
@@ -168,10 +169,8 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
             }
         }
         else { /* blocking did NOT time out */
-            /* the semaphore count must be positive and
-             * the thread must NOT be waiting on this semaphore */
-            Q_ASSERT_ID(250, (me->count > (uint16_t)0)
-                && (!QPSet_hasElement(&me->waitSet, p)));
+            /* the thread must NOT be waiting on this semaphore */
+            Q_ASSERT_ID(250,!QPSet_hasElement(&me->waitSet, p));
 
             --me->count; /* semaphore signaled: decrement the count */
         }
@@ -256,7 +255,7 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
 
             /* find the highest-priority thread waiting on this semaphore */
             QPSet_findMax(&me->waitSet, p);
-            thr = (QXThread *)QF_active_[p];
+            thr = QXK_PTR_CAST_(QXThread*, QF_active_[p]);
 
             /* assert that the tread:
             * - must be registered in QF;
@@ -265,7 +264,8 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
             */
             Q_ASSERT_ID(410, (thr != (QXThread *)0)
                 && (thr->super.osObject != (struct QActive *)0)
-                && (thr->super.super.temp.obj == (QMState *)me));
+                && (thr->super.super.temp.obj
+                    == QXK_PTR_CAST_(QMState*, me)));
 
             /* disarm the internal time event */
             (void)QXThread_teDisarm_(thr);

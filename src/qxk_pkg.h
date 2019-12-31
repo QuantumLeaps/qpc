@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -44,7 +44,7 @@
 void QXK_start_(void);
 
 /*! initialize the private stack of a given QXThread */
-void QXK_stackInit_(void *thr, QXThreadHandler handler,
+void QXK_stackInit_(void *thr, QActionHandler handler,
                     void *stkSto, uint_fast16_t stkSize);
 
 /*! called when a thread function returns */
@@ -70,6 +70,19 @@ void QXThread_teArm_(QXThread * const me,
 
 /*! internal function to disarm the private time event for a given thread. */
 bool QXThread_teDisarm_(QXThread * const me);
+
+/*! intertnal macro to encapsulate casting of pointers for MISRA deviations */
+/**
+* @description
+* This macro is specifically and exclusively used for casting pointers
+* that are never de-referenced, but only used for internal bookkeeping and
+* checking (via assertions) the correct operation of the QXK kernel.
+* Such pointer casting is not compliant with MISRA-2012-Rule 11.3(required)
+* as well as other messages (e.g., PC-Lint-Plus warning 826).
+* Defining this specific macro for this purpose allows to selectively
+* disable the warnings for this particular case.
+*/
+#define QXK_PTR_CAST_(type_, ptr_) ((type_)(ptr_))
 
 #include "qf_pkg.h"  /* QF package-scope interface */
 

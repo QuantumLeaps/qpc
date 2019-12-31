@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -45,7 +45,7 @@
     QF_INT_DISABLE(); \
     ++QK_attr_.intNest; \
     QF_INT_ENABLE(); \
-} while (0)
+} while (false)
 
 #define QK_ISR_EXIT() do { \
     QF_INT_DISABLE(); \
@@ -54,7 +54,7 @@
         IFS0SET = _IFS0_CS0IF_MASK; \
     } \
     QF_INT_ENABLE(); \
-} while (0)
+} while (false)
 
 /* initialization of the QK kernel */
 #define QK_INIT() QK_init()

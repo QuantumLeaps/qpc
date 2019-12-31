@@ -28,11 +28,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -64,13 +64,12 @@
 #define QF_CRIT_ENTRY(status_) do { \
     (status_) = _get_CPSR(); \
     QF_INT_DISABLE(); \
-} while (0)
-//#define QF_CRIT_EXIT(status_)  _set_CPSR((status_))
+} while (false)
 #define QF_CRIT_EXIT(status_)  do { \
     if (((status_) & (1U << 7)) == 0) { \
         QF_INT_ENABLE(); \
     } \
-} while (0)
+} while (false)
 #define QF_CRIT_EXIT_NOP()     __asm(" ISB")
 
 #include "qep_port.h"   /* QEP port */

@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-09-12
+* Last updated for version 6.7.0
+* Last updated on  2019-12-28
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -138,7 +138,7 @@ int_t QF_run(void) {
 
             QF_CRIT_ENTRY_();
 
-            if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
+            if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
                 QPSet_remove(&QV_readySet_, p);
             }
         }
@@ -159,9 +159,6 @@ int_t QF_run(void) {
     QF_onCleanup();  /* cleanup callback */
     QS_EXIT();       /* cleanup the QSPY connection */
 
-    //CloseHandle(QV_win32Event_);
-    //DeleteCriticalSection(&l_win32CritSect);
-    //free all "fudged" event pools...
     return (int_t)0; /* return success */
 }
 /****************************************************************************/
@@ -197,7 +194,7 @@ int QF_consoleWaitForKey(void) {
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const *qSto[], uint_fast16_t qLen,
                     void *stkSto, uint_fast16_t stkSize,
-                    void const *par)
+                    void const * const par)
 {
     Q_REQUIRE_ID(600, ((uint_fast8_t)0 < prio) /* priority must be in range */
         && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
@@ -218,9 +215,9 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 static DWORD WINAPI ticker_thread(LPVOID arg) { /* for CreateThread() */
     int threadPrio = THREAD_PRIORITY_NORMAL;
 
-    // set the ticker thread priority according to selection made in
-    // QF_setTickRate()
-    //
+    /* set the ticker thread priority according to selection made in
+    * QF_setTickRate()
+    */
     if (l_tickPrio < 33) {
         threadPrio = THREAD_PRIORITY_BELOW_NORMAL;
     }

@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
 * Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          https://state-machine.com
+*                          <www.state-machine.com/licensing>
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
 #ifndef DPP_H
@@ -62,12 +62,12 @@ enum DPPSignals {
 
                                                   /* number of philosophers */
 typedef struct TableEvtTag {
-    QEvent super;                                    /* derives from QEvent */
+    QEvt super;                                        /* derives from QEvt */
     uint8_t philoNum;                                 /* philosopher number */
 } TableEvt;
 
 typedef struct MouseEvtTag {                                 /* mouse event */
-    QEvent super;                                    /* derives from QEvent */
+    QEvt super;                                        /* derives from QEvt */
     int xPos;
     int yPos;
     uint8_t buttonStates;

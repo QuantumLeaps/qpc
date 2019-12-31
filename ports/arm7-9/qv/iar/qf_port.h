@@ -28,10 +28,10 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
+* Web:   www.state-machine.com/licensing
 * Email: info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -66,7 +66,7 @@
     #define QF_CRIT_ENTRY(stat_) do { \
         (stat_) = __get_CPSR(); \
         QF_INT_DISABLE(); \
-    } while (0)
+    } while (false)
     #define QF_CRIT_EXIT(stat_) __set_CPSR(stat_)
 
     #include <intrinsics.h> /* for  __get_CPSR()/__set_CPSR() */

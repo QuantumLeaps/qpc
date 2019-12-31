@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -127,8 +127,8 @@ void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
     /* generate the object-dictionary entry for the initialized pool */
     {
         char_t obj_name[9] = "EvtPool?";
-        obj_name[7] = (char_t)((int8_t)'0' + (int8_t)QF_maxPool_);
-        QS_obj_dict(&QF_pool_[QF_maxPool_ - (uint_fast8_t)1], obj_name);
+        obj_name[7] = '0' + (QF_maxPool_ & 0x7FU);
+        QS_obj_dict_pre_(&QF_pool_[QF_maxPool_ - (uint_fast8_t)1], obj_name);
     }
 #endif /* Q_SPY*/
 }
@@ -176,11 +176,11 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
     /* cannot run out of registered pools */
     Q_ASSERT_ID(310, idx < QF_maxPool_);
 
-    QS_BEGIN_(QS_QF_NEW, (void *)0, (void *)0)
-        QS_TIME_();             /* timestamp */
-        QS_EVS_(evtSize);       /* the size of the event */
-        QS_SIG_((QSignal)sig);  /* the signal of the event */
-    QS_END_()
+    QS_BEGIN_PRE_(QS_QF_NEW, (void *)0, (void *)0)
+        QS_TIME_PRE_();             /* timestamp */
+        QS_EVS_PRE_(evtSize);       /* the size of the event */
+        QS_SIG_PRE_((QSignal)sig);  /* the signal of the event */
+    QS_END_PRE_()
 
     /* get e -- platform-dependent */
     QF_EPOOL_GET_(QF_pool_[idx], e,
@@ -236,11 +236,11 @@ void QF_gc(QEvt const * const e) {
         /* isn't this the last reference? */
         if (e->refCtr_ > (uint8_t)1) {
 
-            QS_BEGIN_NOCRIT_(QS_QF_GC_ATTEMPT, (void *)0, (void *)0)
-                QS_TIME_();         /* timestamp */
-                QS_SIG_(e->sig);    /* the signal of the event */
-                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_END_NOCRIT_()
+            QS_BEGIN_NOCRIT_PRE_(QS_QF_GC_ATTEMPT, (void *)0, (void *)0)
+                QS_TIME_PRE_();         /* timestamp */
+                QS_SIG_PRE_(e->sig);    /* the signal of the event */
+                QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+            QS_END_NOCRIT_PRE_()
 
             QF_EVT_REF_CTR_DEC_(e); /* decrement the ref counter */
 
@@ -250,11 +250,11 @@ void QF_gc(QEvt const * const e) {
         else {
             uint_fast8_t idx = (uint_fast8_t)e->poolId_ - (uint_fast8_t)1;
 
-            QS_BEGIN_NOCRIT_(QS_QF_GC, (void *)0, (void *)0)
-                QS_TIME_();         /* timestamp */
-                QS_SIG_(e->sig);    /* the signal of the event */
-                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_END_NOCRIT_()
+            QS_BEGIN_NOCRIT_PRE_(QS_QF_GC, (void *)0, (void *)0)
+                QS_TIME_PRE_();         /* timestamp */
+                QS_SIG_PRE_(e->sig);    /* the signal of the event */
+                QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+            QS_END_NOCRIT_PRE_()
 
             QF_CRIT_EXIT_();
 
@@ -289,17 +289,17 @@ QEvt const *QF_newRef_(QEvt const * const e, void const * const evtRef) {
     * must not be already in use */
     Q_REQUIRE_ID(500,
         (e->poolId_ != (uint8_t)0)
-        && (evtRef == (void const *)0));
+        && (evtRef == (void *)0));
 
     QF_CRIT_ENTRY_();
 
     QF_EVT_REF_CTR_INC_(e); /* increments the ref counter */
 
-    QS_BEGIN_NOCRIT_(QS_QF_NEW_REF, (void *)0, (void *)0)
-        QS_TIME_();      /* timestamp */
-        QS_SIG_(e->sig); /* the signal of the event */
-        QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_NEW_REF, (void *)0, (void *)0)
+        QS_TIME_PRE_();      /* timestamp */
+        QS_SIG_PRE_(e->sig); /* the signal of the event */
+        QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+    QS_END_NOCRIT_PRE_()
 
     QF_CRIT_EXIT_();
 
@@ -320,11 +320,11 @@ void QF_deleteRef_(void const * const evtRef) {
     QS_CRIT_STAT_
     QEvt const * const e = (QEvt const *)evtRef;
 
-    QS_BEGIN_(QS_QF_DELETE_REF, (void *)0, (void *)0)
-        QS_TIME_();      /* timestamp */
-        QS_SIG_(e->sig); /* the signal of the event */
-        QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-    QS_END_()
+    QS_BEGIN_PRE_(QS_QF_DELETE_REF, (void *)0, (void *)0)
+        QS_TIME_PRE_();      /* timestamp */
+        QS_SIG_PRE_(e->sig); /* the signal of the event */
+        QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+    QS_END_PRE_()
 
     QF_gc(e);
 }

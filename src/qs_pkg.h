@@ -4,8 +4,8 @@
 * @brief Internal (package scope) QS/C interface.
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.7.0
+* Last updated on  2019-12-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -41,26 +41,32 @@
 #define QS_PKG_H
 
 /****************************************************************************/
+extern char_t const Q_BUILD_DATE[12];
+extern char_t const Q_BUILD_TIME[9];
+
+/****************************************************************************/
 /*! Internal QS macro to insert an un-escaped byte into the QS buffer */
-#define QS_INSERT_BYTE(b_)                           \
-    QS_PTR_AT_(buf, head) = (b_);                    \
-    ++head;                                          \
-    if (head == end) {                               \
-        head = (QSCtr)0;                             \
+#define QS_INSERT_BYTE_(b_)       \
+    QS_PTR_AT_(buf, head) = (b_); \
+    ++head;                       \
+    if (head == end) {            \
+        head = (QSCtr)0;          \
     }
 
+/****************************************************************************/
 /*! Internal QS macro to insert an escaped byte into the QS buffer */
-#define QS_INSERT_ESC_BYTE(b_)                       \
+#define QS_INSERT_ESC_BYTE_(b_)                      \
     chksum = (uint8_t)(chksum + (b_));               \
     if (((b_) != QS_FRAME) && ((b_) != QS_ESC)) {    \
-        QS_INSERT_BYTE(b_)                           \
+        QS_INSERT_BYTE_(b_)                          \
     }                                                \
     else {                                           \
-        QS_INSERT_BYTE(QS_ESC)                       \
-        QS_INSERT_BYTE((uint8_t)((b_) ^ QS_ESC_XOR)) \
+        QS_INSERT_BYTE_(QS_ESC)                      \
+        QS_INSERT_BYTE_((uint8_t)((b_) ^ QS_ESC_XOR))\
         ++QS_priv_.used;                             \
     }
 
+/****************************************************************************/
 /*! Internal QS macro to increment the given pointer parameter @p ptr_ */
 /**
 * @note Incrementing a pointer violates the MISRA-C 2004 Rule 17.4(req),
@@ -69,15 +75,19 @@
 */
 #define QS_PTR_INC_(ptr_) (++(ptr_))
 
+/****************************************************************************/
 /*! Frame character of the QS output protocol */
 #define QS_FRAME    ((uint8_t)0x7E)
 
+/****************************************************************************/
 /*! Escape character of the QS output protocol */
 #define QS_ESC      ((uint8_t)0x7D)
 
+/****************************************************************************/
 /*! The expected checksum value over an uncorrupted QS record */
 #define QS_GOOD_CHKSUM ((uint8_t)0xFF)
 
+/****************************************************************************/
 /*! Escape modifier of the QS output protocol */
 /**
 * @description
@@ -86,8 +96,10 @@
 */
 #define QS_ESC_XOR  ((uint8_t)0x20)
 
-/*! send the Target info (object sizes, build time-stamp, QP version) */
-void QS_target_info_(uint8_t isReset);
+/****************************************************************************/
+/*! send the predefined target info trace record
+ * (object sizes, build time-stamp, QP version) */
+void QS_target_info_pre_(uint8_t isReset);
 
 #endif  /* QS_PKG_H */
 
