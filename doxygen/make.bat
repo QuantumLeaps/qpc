@@ -88,6 +88,7 @@ if "%1"=="-CHM" (
 
     @echo Generating HTML...
     %DOXHOME%\doxygen.exe Doxyfile
+    @qclean C:\qp_lab\qpc\html
 )
 
 @endlocal

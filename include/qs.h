@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.7.0
-* Last updated on  2019-12-27
+* Last updated on  2019-12-31
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -32,7 +32,7 @@
 * along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 ******************************************************************************
 * @endcond
@@ -1245,8 +1245,6 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
     #define QS_EQC_PRE_(ctr_)       QS_u16_raw_((uint16_t)(ctr_))
 #elif (QF_EQUEUE_CTR_SIZE == 4)
     #define QS_EQC_PRE_(ctr_)       QS_u32_raw_((uint32_t)(ctr_))
-#else
-    #error "QF_EQUEUE_CTR_SIZE not defined"
 #endif
 
 

@@ -82,16 +82,10 @@ model of concurrency with hierarchical state machines.
 
 ---------------------------------------------------------------------------
 # Getting Started with QP/C
-The following "Getting Started with QP/C" guide provides step-by-step
-instructions on how to download, install, and get started with QP/C quickly:
-https://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf
+The [QP/C Reference Manual](https://www.state-machine.com/qpc/) provides instructions on how to download, install, and get started with QP/C quickly.
 
-The guide also contains a tutorial, in which you build a simple "Blinky"
-application.
+The [AppNote: "Getting Started with QP/C"](https://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf) contains also a tutorial, in which you build a simple "Blinky" application.
 
-> **NOTE:** QP/C can be unzipped anywhere in your file system, but the
-recommended location is `C:\qp\qpc` on Windows and `~/qp/qpc`
-on Linux/MacOS.
 
 ---------------------------------------------------------------------------
 # QP/C Licensing
