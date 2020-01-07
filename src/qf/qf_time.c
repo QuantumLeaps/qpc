@@ -114,7 +114,7 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
         if (t->ctr == (QTimeEvtCtr)0) {
             prev->next = t->next;
             /* mark time event 't' as NOT linked */
-            t->super.refCtr_ &= (uint8_t)(~(uint_t)TE_IS_LINKED);
+            t->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_IS_LINKED);
             /* do NOT advance the prev pointer */
             QF_CRIT_EXIT_(); /* exit crit. section to reduce latency */
 
@@ -137,7 +137,7 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
                 else {
                     prev->next = t->next;
                     /* mark time event 't' as NOT linked */
-                    t->super.refCtr_ &= (uint8_t)(~(uint_t)TE_IS_LINKED);
+                    t->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_IS_LINKED);
                     /* do NOT advance the prev pointer */
 
                     QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_AUTO_DISARM,
@@ -393,7 +393,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
     }
     else { /* the time event was already disarmed automatically */
         wasArmed = false;
-        me->super.refCtr_ &= (uint8_t)(~(uint_t)TE_WAS_DISARMED);
+        me->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_IS_LINKED);
 
         QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_DISARM_ATTEMPT,
                          QS_priv_.locFilter[TE_OBJ], me)

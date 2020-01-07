@@ -646,7 +646,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 
     /* create the main custom dialog window */
     hWnd = CreateCustDialog(hInst, IDD_APPLICATION, NULL,
-        &WndProc, "QP_APP");
+        &WndProc, "MY_CLASS");
     ShowWindow(hWnd, iCmdShow);  /* show the main window */
 
     /* enter the message loop... */

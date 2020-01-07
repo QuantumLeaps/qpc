@@ -215,57 +215,57 @@ void QS_filterOff_(uint_fast8_t rec) {
         QS_priv_.glbFilter[8] = (uint8_t)0x3FU;
     }
     else if (rec == (uint_fast8_t)QS_SM_RECORDS) {
-        QS_priv_.glbFilter[0] &= (uint8_t)(~0xFEU);
-        QS_priv_.glbFilter[1] &= (uint8_t)(~0x03U);
-        QS_priv_.glbFilter[6] &= (uint8_t)(~0x80U);
-        QS_priv_.glbFilter[7] &= (uint8_t)(~0x03U);
+        QS_priv_.glbFilter[0] &= (uint8_t)(~(uint8_t)0xFEU);
+        QS_priv_.glbFilter[1] &= (uint8_t)(~(uint8_t)0x03U);
+        QS_priv_.glbFilter[6] &= (uint8_t)(~(uint8_t)0x80U);
+        QS_priv_.glbFilter[7] &= (uint8_t)(~(uint8_t)0x03U);
     }
     else if (rec == (uint_fast8_t)QS_AO_RECORDS) {
-        QS_priv_.glbFilter[1] &= (uint8_t)(~0xFCU);
-        QS_priv_.glbFilter[2] &= (uint8_t)(~0x07U);
-        QS_priv_.glbFilter[5] &= (uint8_t)(~0x20U);
+        QS_priv_.glbFilter[1] &= (uint8_t)(~(uint8_t)0xFCU);
+        QS_priv_.glbFilter[2] &= (uint8_t)(~(uint8_t)0x07U);
+        QS_priv_.glbFilter[5] &= (uint8_t)(~(uint8_t)0x20U);
     }
     else if (rec == (uint_fast8_t)QS_EQ_RECORDS) {
-        QS_priv_.glbFilter[2] &= (uint8_t)(~0x78U);
-        QS_priv_.glbFilter[5] &= (uint8_t)(~0x40U);
+        QS_priv_.glbFilter[2] &= (uint8_t)(~(uint8_t)0x78U);
+        QS_priv_.glbFilter[5] &= (uint8_t)(~(uint8_t)0x40U);
     }
     else if (rec == (uint_fast8_t)QS_MP_RECORDS) {
-        QS_priv_.glbFilter[3] &= (uint8_t)(~0x03U);
-        QS_priv_.glbFilter[5] &= (uint8_t)(~0x80U);
+        QS_priv_.glbFilter[3] &= (uint8_t)(~(uint8_t)0x03U);
+        QS_priv_.glbFilter[5] &= (uint8_t)(~(uint8_t)0x80U);
     }
     else if (rec == (uint_fast8_t)QS_QF_RECORDS) {
-        QS_priv_.glbFilter[3] &= (uint8_t)(~0xFCU);
-        QS_priv_.glbFilter[4] &= (uint8_t)(~0xC0U);
-        QS_priv_.glbFilter[5] &= (uint8_t)(~0x1FU);
+        QS_priv_.glbFilter[3] &= (uint8_t)(~(uint8_t)0xFCU);
+        QS_priv_.glbFilter[4] &= (uint8_t)(~(uint8_t)0xC0U);
+        QS_priv_.glbFilter[5] &= (uint8_t)(~(uint8_t)0x1FU);
     }
     else if (rec == (uint_fast8_t)QS_TE_RECORDS) {
-        QS_priv_.glbFilter[4] &= (uint8_t)(~0x7FU);
+        QS_priv_.glbFilter[4] &= (uint8_t)(~(uint8_t)0x7FU);
     }
     else if (rec == (uint_fast8_t)QS_SC_RECORDS) {
-        QS_priv_.glbFilter[6] &= (uint8_t)(~0x7FU);
+        QS_priv_.glbFilter[6] &= (uint8_t)(~(uint8_t)0x7FU);
     }
     else if (rec == (uint_fast8_t)QS_U0_RECORDS) {
-        QS_priv_.glbFilter[12] &= (uint8_t)(~0xF0U);
-        QS_priv_.glbFilter[13] &= (uint8_t)(~0x01U);
+        QS_priv_.glbFilter[12] &= (uint8_t)(~(uint8_t)0xF0U);
+        QS_priv_.glbFilter[13] &= (uint8_t)(~(uint8_t)0x01U);
     }
     else if (rec == (uint_fast8_t)QS_U1_RECORDS) {
-        QS_priv_.glbFilter[13] &= (uint8_t)(~0x1EU);
+        QS_priv_.glbFilter[13] &= (uint8_t)(~(uint8_t)0x1EU);
     }
     else if (rec == (uint_fast8_t)QS_U2_RECORDS) {
-        QS_priv_.glbFilter[13] &= (uint8_t)(~0xE0U);
-        QS_priv_.glbFilter[14] &= (uint8_t)(~0x03U);
+        QS_priv_.glbFilter[13] &= (uint8_t)(~(uint8_t)0xE0U);
+        QS_priv_.glbFilter[14] &= (uint8_t)(~(uint8_t)0x03U);
     }
     else if (rec == (uint_fast8_t)QS_U3_RECORDS) {
-        QS_priv_.glbFilter[14] &= (uint8_t)(~0xF8U);
+        QS_priv_.glbFilter[14] &= (uint8_t)(~(uint8_t)0xF8U);
     }
     else if (rec == (uint_fast8_t)QS_U4_RECORDS) {
         QS_priv_.glbFilter[15] &= (uint8_t)0x1FU;
     }
     else if (rec == (uint_fast8_t)QS_UA_RECORDS) {
-        QS_priv_.glbFilter[12] &= (uint8_t)(~0xF0U);
+        QS_priv_.glbFilter[12] &= (uint8_t)(~(uint8_t)0xF0U);
         QS_priv_.glbFilter[13] = (uint8_t)0;
         QS_priv_.glbFilter[14] = (uint8_t)0;
-        QS_priv_.glbFilter[15] &= (uint8_t)(~0x1FU);
+        QS_priv_.glbFilter[15] &= (uint8_t)(~(uint8_t)0x1FU);
     }
     else {
         /* record IDs can't exceed QS_ESC, so they don't need escaping */

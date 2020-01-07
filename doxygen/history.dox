@@ -12,7 +12,9 @@ This release also includes the offline documentation for  **this** particular ve
 
 The backwards-compatiblity layer for QP 4.x has been removed. Among others, the macros Q_ROM and Q_ROM_VAR are no longer defined.
 
-This release fixes the following bugs:
+Also, this release updates the Windows-GUI examples with the QWIN Prototyping Toolkit to work with the latest Visual Studio 2019 and specifically with the Resource Editor now available. Specifically here, the Game-GUI example (qpc\examples\arm-cm\game_efm32-slstk3401a\win32-gui) and the DPP-GUI example (qpc\examples\arm-cm\dpp_efm32-slstk3401a\win32-gui) have been updated to build with the Visual Studio 2019.
+
+Finally, this release fixes the following bugs:
 - [bug#254 "Q_NEW_X_FROM_ISR for FreeRTOS port"](https://sourceforg/bugs/254/)
 - [bug#255 "IAR-ARM "Multi-file Compilation" fails for QK and QXK applications"](https://sourceforg/bugs/255/)
 

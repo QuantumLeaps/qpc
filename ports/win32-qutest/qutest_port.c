@@ -244,7 +244,7 @@ void QS_onTestLoop() {
             (long)0, (long)(QS_TIMEOUT_MS * 1000)
         };
         int status;
-        int ch;
+        wint_t ch;
 
         FD_SET(l_sock, &readSet);
 
@@ -259,7 +259,7 @@ void QS_onTestLoop() {
         }
         else if (FD_ISSET(l_sock, &readSet)) { /* socket ready to read? */
             uint8_t buf[QS_RX_SIZE];
-            int status = recv(l_sock, (char *)buf, (int)sizeof(buf), 0);
+            status = recv(l_sock, (char *)buf, (int)sizeof(buf), 0);
             while (status > 0) { /* any data received? */
                 uint8_t *pb;
                 int i = (int)QS_rxGetNfree();
@@ -280,7 +280,7 @@ void QS_onTestLoop() {
 
         ch = 0;
         while (_kbhit()) { /* any key pressed? */
-            ch = _getch();
+            ch = _getwch();
         }
         switch (ch) {
             case 'x':      /* 'x' pressed? */

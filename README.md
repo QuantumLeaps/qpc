@@ -82,9 +82,11 @@ model of concurrency with hierarchical state machines.
 
 ---------------------------------------------------------------------------
 # Getting Started with QP/C
-The [QP/C Reference Manual](https://www.state-machine.com/qpc/) provides instructions on how to download, install, and get started with QP/C quickly.
+The [QP/C Reference Manual](https://www.state-machine.com/qpc/) provides
+instructions on how to download, install, and get started with QP/C quickly.
 
-The [AppNote: "Getting Started with QP/C"](https://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf) contains also a tutorial, in which you build a simple "Blinky" application.
+The [AppNote: "Getting Started with QP/C"][AN] contains also a tutorial,
+in which you build a simple "Blinky" application.
 
 
 ---------------------------------------------------------------------------
@@ -119,3 +121,4 @@ The **QP/C Manual** is located online at: https://www.state-machine.com/qpc
    [Active]: <https://www.state-machine.com/doc/concepts#Active>
    [HSM]: <https://www.state-machine.com/doc/concepts#HSM>
    [Lic]: <https://www.state-machine.com/licensing>
+   [AN]: <https://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf>
