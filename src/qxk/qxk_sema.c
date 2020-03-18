@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-19
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -42,7 +42,8 @@
 #include "qxk_pkg.h"      /* QXK package-scope internal interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -79,7 +80,7 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
                       uint_fast16_t max_count)
 {
     /** @pre max_count must be greater than zero */
-    Q_REQUIRE_ID(100, max_count > (uint_fast16_t)0);
+    Q_REQUIRE_ID(100, max_count > 0U);
 
     me->count     = (uint16_t)count;
     me->max_count = (uint16_t)max_count;
@@ -126,13 +127,13 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
     * - the thread must NOT be already blocked on any object.
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* can't wait inside an ISR */
-        && (me->max_count > (uint16_t)0) /* sema must be initialized */
+        && (me->max_count > 0U) /* sema must be initialized */
         && (curr != (QXThread *)0) /* curr must be extended */
         && (curr->super.super.temp.obj == (QMState *)0)); /* NOT blocked */
     /** @pre also: the thread must NOT be holding a scheduler lock. */
     Q_REQUIRE_ID(201, QXK_attr_.lockHolder != curr->super.prio);
 
-    if (me->count > (uint16_t)0) {
+    if (me->count > 0U) {
         --me->count; /* semaphore taken: decrement the count */
     }
     else {
@@ -201,11 +202,11 @@ bool QXSemaphore_tryWait(QXSemaphore * const me) {
     QF_CRIT_STAT_
 
     /** @pre the semaphore must be initialized */
-    Q_REQUIRE_ID(300, me->max_count > (uint16_t)0);
+    Q_REQUIRE_ID(300, me->max_count > 0U);
 
     QF_CRIT_ENTRY_();
     /* is the semaphore available? */
-    if (me->count > (uint16_t)0) {
+    if (me->count > 0U) {
         --me->count;
         isAvailable = true;
     }
@@ -242,7 +243,7 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
     QF_CRIT_STAT_
 
     /** @pre the semaphore must be initialized */
-    Q_REQUIRE_ID(400, me->max_count > (uint16_t)0);
+    Q_REQUIRE_ID(400, me->max_count > 0U);
 
     QF_CRIT_ENTRY_();
     if (me->count < me->max_count) {

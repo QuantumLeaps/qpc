@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -23,9 +23,8 @@ Purpose     : Windows manager internal include
 #ifndef WM_INTERN_H            /* Make sure we only include it once */
 #define WM_INTERN_H            /* Make sure we only include it once */
 
-#include "WM.h"
 #include "GUI_Private.h"
-
+#include "WM.h"
 
 #if defined(__cplusplus)
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
@@ -128,6 +127,7 @@ extern int                    WM__ModalLayer;
 #endif
 
 #if (GUI_NUM_LAYERS > 1)
+  GUI_EXTERN U32                       WM__InvalidLayerMask;
   GUI_EXTERN unsigned                  WM__TouchedLayer;
   #define WM__TOUCHED_LAYER            WM__TouchedLayer
 #else
@@ -160,7 +160,7 @@ void    WM__ForEachDesc             (WM_HWIN hWin, WM_tfForEach * pcb, void * pD
 void    WM__GetClientRectWin        (const WM_Obj * pWin, GUI_RECT * pRect);
 void    WM__GetClientRectEx         (WM_HWIN hWin, GUI_RECT * pRect);
 WM_HWIN WM__GetFirstSibling         (WM_HWIN hWin);
-WM_HWIN WM__GetFocussedChild        (WM_HWIN hWin);
+WM_HWIN WM__GetFocusedChild         (WM_HWIN hWin);
 int     WM__GetHasFocus             (WM_HWIN hWin);
 WM_HWIN WM__GetLastSibling          (WM_HWIN hWin);
 WM_HWIN WM__GetPrevSibling          (WM_HWIN hWin);

@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -29,6 +29,14 @@ Attention : Do not modify this file ! If you do, you will not
 
 #include "GUIConf.h"
 
+#ifndef   GUI_SUPPORT_BIDI
+  #define GUI_SUPPORT_BIDI 1
+#endif
+
+#ifndef   GUI_USE_BIDI2
+  #define GUI_USE_BIDI2 1
+#endif
+
 #ifndef   LCD_MAX_LOG_COLORS
   #define LCD_MAX_LOG_COLORS 256
 #else
@@ -46,6 +54,10 @@ Attention : Do not modify this file ! If you do, you will not
   #define LCD_XMAG 1
 #endif
 
+#ifndef   GUI_SIM_SUPPORT_EMBOS
+  #define GUI_SIM_SUPPORT_EMBOS 1
+#endif
+
 /**********************************************************************
 *
 *       Defaults for config switches
@@ -57,11 +69,11 @@ Attention : Do not modify this file ! If you do, you will not
    ABGR to ARGB.
 
    It further swaps the meaning of a transparent pixel:
-   ABGR: 0x00 means opaque, 0xFF means transparent (default)
-   ARGB: 0x00 means transparent, 0xFF means opaque
+   ABGR: 0x00 means opaque, 0xFF means transparent
+   ARGB: 0x00 means transparent, 0xFF means opaque (default)
 */
 #ifndef GUI_USE_ARGB
-  #define GUI_USE_ARGB 0
+  #define GUI_USE_ARGB 1
 #endif
 
 /* Define "universal pointer". Normally, this is not needed (define will expand to nothing)
@@ -85,7 +97,11 @@ Attention : Do not modify this file ! If you do, you will not
 #endif
 
 #ifndef GUI_BIDI_MAX_CHARS_PER_LINE
-  #define GUI_BIDI_MAX_CHARS_PER_LINE 80
+  #if GUI_USE_BIDI2
+    #define GUI_BIDI_MAX_CHARS_PER_LINE 200
+  #else
+    #define GUI_BIDI_MAX_CHARS_PER_LINE  80
+  #endif
 #endif
 
 #ifndef GUI_SUPPORT_TOUCH
@@ -116,10 +132,6 @@ Attention : Do not modify this file ! If you do, you will not
   #define GUI_CURSOR_LAYER 0
 #endif
 
-#ifndef GUI_MEMCPY
-  #define GUI_MEMCPY(pDest, pSrc, NumBytes) memcpy(pDest, pSrc, NumBytes)
-#endif
-
 #ifndef GUI_SUPPORT_ROTATION
   #define GUI_SUPPORT_ROTATION 1
 #endif
@@ -148,7 +160,11 @@ Attention : Do not modify this file ! If you do, you will not
 #endif
 
 #ifndef   GUI_MEMSET
-  #define GUI_MEMSET GUI__memset
+  #define GUI_MEMSET memset
+#endif
+
+#ifndef GUI_MEMCPY
+  #define GUI_MEMCPY memcpy
 #endif
 
 /* Optional custom drawing of memory devices */

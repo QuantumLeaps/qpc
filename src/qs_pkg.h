@@ -4,14 +4,14 @@
 * @brief Internal (package scope) QS/C interface.
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-17
+* Last updated for version 6.8.0
+* Last updated on  2020-03-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -41,16 +41,184 @@
 #define QS_PKG_H
 
 /****************************************************************************/
-extern char_t const Q_BUILD_DATE[12];
-extern char_t const Q_BUILD_TIME[9];
+/*! Internal QS macro to begin a predefined QS record with
+* entering critical section. */
+/**
+* @note This macro is intended to use only inside QP components and NOT
+* at the application level. @sa #QS_BEGIN
+*/
+#define QS_BEGIN_PRE_(rec_, objFilter_, obj_)                    \
+    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
+        & (uint_fast8_t)(1U << ((uint8_t)(rec_) & 7U))) != 0U)   \
+        && (((objFilter_) == (void *)0)                          \
+            || ((objFilter_) == (obj_))))                        \
+    {                                                            \
+        QS_CRIT_ENTRY_();                                        \
+        QS_beginRec_((uint_fast8_t)(rec_));
+
+/*!  Internal QS macro to end a predefined QS record with
+* exiting critical section. */
+/**
+* @note This macro is intended to use only inside QP components and NOT
+* at the application level. @sa #QS_END
+*/
+#define QS_END_PRE_()    \
+        QS_endRec_();    \
+        QS_CRIT_EXIT_(); \
+    }
+
+/*! Internal macro to begin a predefined QS record without
+* entering critical section. */
+/**
+* @note This macro is intended to use only inside QP components and NOT
+* at the application level. @sa #QS_BEGIN_NOCRIT
+*/
+#define QS_BEGIN_NOCRIT_PRE_(rec_, objFilter_, obj_)            \
+    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3]\
+        & (uint_fast8_t)(1U << ((uint8_t)(rec_) & 7U))) != 0U)  \
+        && (((objFilter_) == (void *)0)                         \
+            || ((objFilter_) == (obj_))))                       \
+    {                                                           \
+        QS_beginRec_((uint_fast8_t)(rec_));
+
+/*! Internal QS macro to end a predefined QS record without
+* exiting critical section. */
+/**
+* @note This macro is intended to use only inside QP components and NOT
+* at the application level. @sa #QS_END_NOCRIT
+*/
+#define QS_END_NOCRIT_PRE_()    QS_endRec_(); }
+
+/*! Internal QS macro to output a predefined uint8_t data element */
+#define QS_U8_PRE_(data_)       (QS_u8_raw_((uint8_t)(data_)))
+
+/*! Internal QS macro to output 2 predefined uint8_t data elements */
+#define QS_2U8_PRE_(data1_, data2_) \
+    (QS_2u8_raw_((uint8_t)(data1_), (uint8_t)(data2_)))
+
+/*! Internal QS macro to output an predefined uint16_t data element */
+#define QS_U16_PRE_(data_)      (QS_u16_raw_((uint16_t)(data_)))
+
+/*! Internal QS macro to output a predefined uint32_t data element */
+#define QS_U32_PRE_(data_)      (QS_u32_raw_((uint32_t)(data_)))
+
+/*! Internal QS macro to output a predefined zero-terminated string element */
+#define QS_STR_PRE_(msg_)       (QS_str_raw_((msg_)))
+
+
+#if (Q_SIGNAL_SIZE == 1U)
+    /*! Internal macro to output an unformatted event signal data element */
+    /**
+    * @note the size of the pointer depends on the macro #Q_SIGNAL_SIZE.
+    */
+    #define QS_SIG_PRE_(sig_)   (QS_u8_raw_((uint8_t)sig_))
+#elif (Q_SIGNAL_SIZE == 2U)
+    #define QS_SIG_PRE_(sig_)   (QS_u16_raw_((uint16_t)sig_))
+#elif (Q_SIGNAL_SIZE == 4U)
+    #define QS_SIG_PRE_(sig_)   (QS_u32_raw_((uint32_t)sig_))
+#endif
+
+#define QS_OBJ_PRE_(obj_)       (QS_obj_raw_(obj_))
+
+#if (QS_FUN_PTR_SIZE == 1U)
+    #define QS_FUN_PRE_(fun_)   (QS_u8_raw_((uint8_t)(fun_)))
+#elif (QS_FUN_PTR_SIZE == 2U)
+    #define QS_FUN_PRE_(fun_)   (QS_u16_raw_((uint16_t)(fun_)))
+#elif (QS_FUN_PTR_SIZE == 4U)
+    #define QS_FUN_PRE_(fun_)   (QS_u32_raw_((uint32_t)(fun_)))
+#elif (QS_FUN_PTR_SIZE == 8U)
+    #define QS_FUN_PRE_(fun_)   (QS_u64_raw_((uint64_t)(fun_)))
+#else
+    /*! Internal macro to output an unformatted function pointer */
+    /** @note the size of the pointer depends on the macro #QS_FUN_PTR_SIZE.
+    * If the size is not defined the size of pointer is assumed 4-bytes.
+    */
+    #define QS_FUN_PRE_(fun_)   (QS_u32_raw_((uint32_t)(fun_)))
+#endif
+
+
+/****************************************************************************/
+#if (QF_EQUEUE_CTR_SIZE == 1U)
+
+    /*! Internal QS macro to output an unformatted event queue counter
+    * data element. */
+    /**
+    * @note the counter size depends on the macro #QF_EQUEUE_CTR_SIZE.
+    */
+    #define QS_EQC_PRE_(ctr_)       QS_u8_raw_((uint8_t)(ctr_))
+#elif (QF_EQUEUE_CTR_SIZE == 2U)
+    #define QS_EQC_PRE_(ctr_)       QS_u16_raw_((uint16_t)(ctr_))
+#elif (QF_EQUEUE_CTR_SIZE == 4U)
+    #define QS_EQC_PRE_(ctr_)       QS_u32_raw_((uint32_t)(ctr_))
+#endif
+
+
+#if (QF_EVENT_SIZ_SIZE == 1U)
+
+    /*! Internal QS macro to output an unformatted event size
+    * data element. */
+    /**
+    * @note the event size depends on the macro #QF_EVENT_SIZ_SIZE.
+    */
+    #define QS_EVS_PRE_(size_)      QS_u8_raw_((uint8_t)(size_))
+#elif (QF_EVENT_SIZ_SIZE == 2U)
+    #define QS_EVS_PRE_(size_)      QS_u16_raw_((uint16_t)(size_))
+#elif (QF_EVENT_SIZ_SIZE == 4U)
+    #define QS_EVS_PRE_(size_)      QS_u32_raw_((uint32_t)(size_))
+#endif
+
+
+#if (QF_MPOOL_SIZ_SIZE == 1U)
+
+    /*! Internal QS macro to output an unformatted memory pool
+    * block-size data element */
+    /**
+    * @note the block-size depends on the macro #QF_MPOOL_SIZ_SIZE.
+    */
+    #define QS_MPS_PRE_(size_)      QS_u8_raw_((uint8_t)(size_))
+#elif (QF_MPOOL_SIZ_SIZE == 2U)
+    #define QS_MPS_PRE_(size_)      QS_u16_raw_((uint16_t)(size_))
+#elif (QF_MPOOL_SIZ_SIZE == 4U)
+    #define QS_MPS_PRE_(size_)      QS_u32_raw_((uint32_t)(size_))
+#endif
+
+#if (QF_MPOOL_CTR_SIZE == 1U)
+
+    /*! Internal QS macro to output an unformatted memory pool
+    * block-counter data element. */
+    /**
+    * @note the counter size depends on the macro #QF_MPOOL_CTR_SIZE.
+    */
+    #define QS_MPC_PRE_(ctr_)       QS_u8_raw_((uint8_t)(ctr_))
+#elif (QF_MPOOL_CTR_SIZE == 2U)
+    #define QS_MPC_PRE_(ctr_)       QS_u16_raw_((uint16_t)(ctr_))
+#elif (QF_MPOOL_CTR_SIZE == 4U)
+    #define QS_MPC_PRE_(ctr_)       QS_u32_raw_((uint16_t)(ctr_))
+#endif
+
+
+#if (QF_TIMEEVT_CTR_SIZE == 1U)
+
+    /*! Internal QS macro to output an unformatted time event
+    * tick-counter data element */
+    /**
+    * @note the counter size depends on the macro #QF_TIMEEVT_CTR_SIZE.
+    */
+    #define QS_TEC_PRE_(ctr_)       QS_u8_raw_((uint8_t)(ctr_))
+#elif (QF_TIMEEVT_CTR_SIZE == 2U)
+    #define QS_TEC_PRE_(ctr_)       QS_u16_raw_((uint16_t)(ctr_))
+#elif (QF_TIMEEVT_CTR_SIZE == 4U)
+    #define QS_TEC_PRE_(ctr_)       QS_u32_raw_((uint32_t)(ctr_))
+#endif
+
 
 /****************************************************************************/
 /*! Internal QS macro to insert an un-escaped byte into the QS buffer */
-#define QS_INSERT_BYTE_(b_)       \
-    QS_PTR_AT_(buf, head) = (b_); \
-    ++head;                       \
-    if (head == end) {            \
-        head = (QSCtr)0;          \
+#define QS_INSERT_BYTE_(b_) \
+    buf[head] = (b_);       \
+    ++head;                 \
+    if (head == end) {      \
+        head = 0U;          \
     }
 
 /****************************************************************************/
@@ -67,25 +235,16 @@ extern char_t const Q_BUILD_TIME[9];
     }
 
 /****************************************************************************/
-/*! Internal QS macro to increment the given pointer parameter @p ptr_ */
-/**
-* @note Incrementing a pointer violates the MISRA-C 2004 Rule 17.4(req),
-* pointer arithmetic other than array indexing. Encapsulating this violation
-* in a macro allows to selectively suppress this specific deviation.
-*/
-#define QS_PTR_INC_(ptr_) (++(ptr_))
-
-/****************************************************************************/
 /*! Frame character of the QS output protocol */
-#define QS_FRAME    ((uint8_t)0x7E)
+#define QS_FRAME    (0x7EU)
 
 /****************************************************************************/
 /*! Escape character of the QS output protocol */
-#define QS_ESC      ((uint8_t)0x7D)
+#define QS_ESC      (0x7DU)
 
 /****************************************************************************/
 /*! The expected checksum value over an uncorrupted QS record */
-#define QS_GOOD_CHKSUM ((uint8_t)0xFF)
+#define QS_GOOD_CHKSUM (0xFFU)
 
 /****************************************************************************/
 /*! Escape modifier of the QS output protocol */
@@ -94,12 +253,34 @@ extern char_t const Q_BUILD_TIME[9];
 * The escaped byte is XOR-ed with the escape modifier before it is inserted
 * into the QS buffer.
 */
-#define QS_ESC_XOR  ((uint8_t)0x20)
+#define QS_ESC_XOR  (0x20U)
 
 /****************************************************************************/
 /*! send the predefined target info trace record
  * (object sizes, build time-stamp, QP version) */
 void QS_target_info_pre_(uint8_t isReset);
+
+/****************************************************************************/
+extern char_t const Q_BUILD_DATE[12];
+extern char_t const Q_BUILD_TIME[9];
+
+/****************************************************************************/
+/*! Private QS-RX attributes to keep track of the current objects and
+* the lock-free RX buffer
+*/
+typedef struct {
+    void     *currObj[MAX_OBJ]; /*!< current objects */
+    uint8_t  *buf;        /*!< pointer to the start of the ring buffer */
+    QSCtr     end;        /*!< offset of the end of the ring buffer */
+    QSCtr     head;       /*!< offset to where next byte will be inserted */
+    QSCtr     tail;       /*!< offset of where next byte will be extracted */
+#ifdef Q_UTEST
+    QPSet     readySet;   /*!< QUTEST ready-set of active objects */
+    bool      inTestLoop; /*!< QUTEST event loop is running */
+#endif
+} QSrxPrivAttr;
+
+extern QSrxPrivAttr QS_rxPriv_; /* QS-RX private attributes */
 
 #endif  /* QS_PKG_H */
 

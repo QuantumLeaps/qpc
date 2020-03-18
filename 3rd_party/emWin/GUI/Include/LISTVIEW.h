@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -24,7 +24,7 @@ Purpose     : LISTVIEW include
 #define LISTVIEW_H
 
 #include "WM.h"
-#include "DIALOG_Intern.h"      // Req. for Create indirect data structure
+#include "DIALOG_Type.h"      // Req. for Create indirect data structure
 #include "ICONVIEW.h"
 #include "HEADER.h"
 
@@ -56,6 +56,7 @@ Purpose     : LISTVIEW include
 #define LISTVIEW_CF_AUTOSCROLLBAR_H   (1 << 0)
 #define LISTVIEW_CF_AUTOSCROLLBAR_V   (1 << 1)
 #define LISTVIEW_CF_CELL_SELECT       (1 << 2)                     // Create Flag used to enable cell selection
+#define LISTVIEW_CF_MOTION            (1 << 3)
 #define LISTVIEW_SF_AUTOSCROLLBAR_H   LISTVIEW_CF_AUTOSCROLLBAR_H
 #define LISTVIEW_SF_AUTOSCROLLBAR_V   LISTVIEW_CF_AUTOSCROLLBAR_V
 
@@ -106,6 +107,7 @@ void             LISTVIEW_DeleteRowSorted     (LISTVIEW_Handle hObj, int Row);
 void             LISTVIEW_DisableRow          (LISTVIEW_Handle hObj, unsigned Row);
 void             LISTVIEW_DisableSort         (LISTVIEW_Handle hObj);
 void             LISTVIEW_EnableCellSelect    (LISTVIEW_Handle hObj, unsigned OnOff);  // Enables/disables cell selection
+void             LISTVIEW_EnableMotion        (LISTVIEW_Handle hObj, int OnOff);
 void             LISTVIEW_EnableRow           (LISTVIEW_Handle hObj, unsigned Row);
 void             LISTVIEW_EnableSort          (LISTVIEW_Handle hObj);
 GUI_COLOR        LISTVIEW_GetBkColor          (LISTVIEW_Handle hObj, unsigned Index);

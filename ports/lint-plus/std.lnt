@@ -4,14 +4,14 @@
 /// @cond
 ///===========================================================================
 /// Product: QP/C
-/// Last Updated for Version: 6.7.0
-/// Date of the Last Update:  2019-12-10
+/// Last Updated for Version: 6.8.0
+/// Date of the Last Update:  2020-01-18
 ///
 ///                    Q u a n t u m  L e a P s
 ///                    ------------------------
 ///                    Modern Embedded Software
 ///
-/// Copyright (C) 2005-2019 Quantum Leaps. All rights reserved.
+/// Copyright (C) 2005-2020 Quantum Leaps. All rights reserved.
 ///
 /// This program is free software: you can redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
@@ -44,12 +44,6 @@
 //-width(0,0)     // do not break lines
 -width(120,4)   // break lines after 99 characters with 4 characters indent
 +flm            // make sure no foreign includes change the format
-
-// language standard...
--std=c89
--d__STDC_VERSION__=199409L // C89 Standard last ammended 1994-04
-//-std=c99
-//-d__STDC_VERSION__=199901L // C99 Standard 1999-01
 
 +rw(inline, entry)
 

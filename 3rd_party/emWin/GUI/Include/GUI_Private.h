@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -83,7 +83,6 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #define GUI_180DEG (4 * GUI_45DEG)
 #define GUI_360DEG (8 * GUI_45DEG)
 
-
 /*********************************************************************
 *
 *       Locking checks
@@ -124,8 +123,6 @@ typedef struct tsUSAGE_APIList tUSAGE_APIList;
 typedef struct GUI_Usage GUI_USAGE;
 #define GUI_USAGE_h GUI_USAGE_Handle
 
-
-
 typedef GUI_USAGE_h tUSAGE_CreateCompatible(GUI_USAGE * p);
 typedef void        tUSAGE_AddPixel        (GUI_USAGE * p, int x, int y);
 typedef void        tUSAGE_AddHLine        (GUI_USAGE * p, int x0, int y0, int len);
@@ -133,7 +130,6 @@ typedef void        tUSAGE_Clear           (GUI_USAGE * p);
 typedef void        tUSAGE_Delete          (GUI_USAGE_h h);
 typedef int         tUSAGE_GetNextDirty    (GUI_USAGE * p, int * pxOff, int yOff);
 #define GUI_USAGE_LOCK_H(h) ((GUI_USAGE *)GUI_LOCK_H(h))
-
 
 void GUI_USAGE_DecUseCnt(GUI_USAGE_Handle  hUsage);
 
@@ -161,7 +157,6 @@ struct GUI_Usage {
   I16 UseCnt;
 };
 
-
 /*********************************************************************
 *
 *       GUI_MEMDEV
@@ -177,6 +172,13 @@ typedef struct {
   unsigned               BitsPerPixel;
   GUI_HMEM               hUsage;
 } GUI_MEMDEV;
+
+typedef struct {
+  GUI_USAGE Public;
+  struct {
+    int BytesPerLine;
+  } Private;
+} GUI_USAGE_BM;
 
 #define      GUI_MEMDEV_LOCK_H(h) ((GUI_MEMDEV *)GUI_LOCK_H(h))
 
@@ -211,7 +213,6 @@ extern unsigned GUI_MEMDEV__TimePerFrame;
 
 #endif
 
-
 /*********************************************************************
 *
 *       LCD_HL_ level defines
@@ -221,14 +222,13 @@ extern unsigned GUI_MEMDEV__TimePerFrame;
 #define LCD_HL_DrawHLine             GUI_pContext->pLCD_HL->pfDrawHLine
 #define LCD_HL_DrawPixel             GUI_pContext->pLCD_HL->pfDrawPixel
 
-
 /*********************************************************************
 *
 *       Helper functions
 *
 **********************************************************************
 */
-#define GUI_ZEROINIT(Obj) GUI_MEMSET(Obj, 0, sizeof(Obj))
+#define GUI_ZEROINIT(Obj) GUI__MEMSET(Obj, 0, sizeof(Obj))
 int  GUI_cos(int angle);
 int  GUI_sin(int angle);
 extern const U32 GUI_Pow10[10];
@@ -242,6 +242,7 @@ int  GUI_AA_Init_HiRes (int x0, int x1);
 void GUI_AA_Exit       (void);
 I16  GUI_AA_HiRes2Pixel(int HiRes);
 
+void GL_DrawCircleAA_HiRes(int x0, int y0, int r);
 void GL_FillCircleAA_HiRes (int x0, int y0, int r);
 void GL_FillEllipseAA_HiRes(int x0, int y0, int rx, int ry);
 
@@ -282,7 +283,6 @@ void       GUI_XBF__ClearLine    (const char * s, int Len);
 void GUI_AddHex     (U32 v, U8 Len, char ** ps);
 void GUI_AddBin     (U32 v, U8 Len, char ** ps);
 void GUI_AddDecMin  (I32 v, char ** ps);
-void GUI_AddDec     (I32 v, U8 Len, char ** ps);
 void GUI_AddDecShift(I32 v, U8 Len, U8 Shift, char ** ps);
 long GUI_AddSign    (long v, char ** ps);
 int  GUI_Long2Len   (I32 v);
@@ -301,16 +301,21 @@ int  GUI__GetOverlap       (U16 Char);
 int  GUI__GetLineDistX     (const char * s, int Len);
 int  GUI__GetFontSizeY     (void);
 int  GUI__HandleEOLine     (const char ** ps);
+void GUI__InvertRectColors (int x0, int y0, int x1, int y1);
 void GUI__DispLine         (const char * s, int Len, const GUI_RECT * pr);
 void GUI__AddSpaceHex      (U32 v, U8 Len, char ** ps);
 void GUI__CalcTextRect     (const char * pText, const GUI_RECT * pTextRectIn, GUI_RECT * pTextRectOut, int TextAlign);
+int  GUI__IsPointInRect    (GUI_RECT * pRect, int x, int y);
+
+void GUI__DrawNonExistingCharacter(LCD_DRAWMODE DrawMode);
+int  GUI__GetNonExistingCharWidth (void);
 
 void GUI__ClearTextBackground(int xDist, int yDist);
 
 int  GUI__WrapGetNumCharsDisp       (const char * pText, int xSize, GUI_WRAPMODE WrapMode);
 int  GUI__WrapGetNumCharsToNextLine (const char * pText, int xSize, GUI_WRAPMODE WrapMode);
 int  GUI__WrapGetNumBytesToNextLine (const char * pText, int xSize, GUI_WRAPMODE WrapMode);
-void GUI__memset    (U8  * p, U8 Fill, int NumBytes);
+//void GUI__memset    (U8  * p, U8 Fill, int NumBytes);
 void GUI__memset16  (U16 * p, U16 Fill, int NumWords);
 int  GUI__strlen    (const char * s);
 int  GUI__strcmp    (const char * s0, const char * s1);
@@ -336,7 +341,47 @@ U16  GUI__BIDI_GetCursorCharacter(const char * s, int Index, int MaxNumChars, in
 int  GUI__BIDI_GetWordWrap       (const char * s, int xSize, int * pxDist);
 int  GUI__BIDI_GetCharWrap       (const char * s, int xSize);
 
-const char * GUI__BIDI_Log2VisBuffered(const char * s, int * pMaxNumChars);
+const char * GUI__NOBIDI_Log2VisBuffered   (const char * s, int * pMaxNumChars, int Mode);
+int          GUI__NOBIDI_GetCursorPosX     (const char * s, int MaxNumChars, int Index);
+int          GUI__NOBIDI_GetCursorPosChar  (const char * s, int MaxNumChars, int x);
+U16          GUI__NOBIDI_GetCursorCharacter(const char * s, int Index, int MaxNumChars, int * pIsRTL);
+int          GUI__NOBIDI_GetWordWrap       (const char * s, int xSize, int * pxDist);
+int          GUI__NOBIDI_GetCharWrap       (const char * s, int xSize);
+
+#if (GUI_USE_BIDI2)
+
+#define GUI__BIDI_Log2Vis            GUI__BIDI2_Log2Vis
+#define GUI__BIDI_GetCursorPosX      GUI__BIDI2_GetCursorPosX
+#define GUI__BIDI_GetCursorPosChar   GUI__BIDI2_GetCursorPosChar
+#define GUI__BIDI_GetLogChar         GUI__BIDI2_GetLogChar
+#define GUI__BIDI_GetCharDir         GUI__BIDI2_GetCharDir
+#define GUI__BIDI_IsNSM              GUI__BIDI2_IsNSM
+#define GUI__BIDI_GetCursorCharacter GUI__BIDI2_GetCursorCharacter
+#define GUI__BIDI_GetWordWrap        GUI__BIDI2_GetWordWrap
+#define GUI__BIDI_GetCharWrap        GUI__BIDI2_GetCharWrap
+#define GUI__BIDI_SetBaseDir         GUI__BIDI2_SetBaseDir
+#define GUI__BIDI_GetBaseDir         GUI__BIDI2_GetBaseDir
+
+int  GUI__BIDI_Log2Vis           (const char * s, int NumChars, char * pBuffer, int BufferSize);
+int  GUI__BIDI_GetCursorPosX     (const char * s, int NumChars, int Index);
+int  GUI__BIDI_GetCursorPosChar  (const char * s, int NumChars, int x);
+U16  GUI__BIDI_GetLogChar        (const char * s, int NumChars, int Index);
+int  GUI__BIDI_GetCharDir        (const char * s, int NumChars, int Index);
+int  GUI__BIDI_IsNSM             (U16 Char);
+U16  GUI__BIDI_GetCursorCharacter(const char * s, int Index, int MaxNumChars, int * pIsRTL);
+int  GUI__BIDI_GetWordWrap       (const char * s, int xSize, int * pxDist);
+int  GUI__BIDI_GetCharWrap       (const char * s, int xSize);
+void GUI__BIDI_SetBaseDir        (int Dir);
+int  GUI__BIDI_GetBaseDir        (void);
+
+#else
+
+#define GUI__BIDI_SetBaseDir
+#define GUI__BIDI_GetBaseDir
+
+#endif
+
+const char * GUI__BIDI_Log2VisBuffered(const char * s, int * pMaxNumChars, int Mode);
 
 extern int GUI__BIDI_Enabled;
 
@@ -348,7 +393,7 @@ extern int (* _pfGUI__BIDI_GetCharDir      )(const char * s, int NumChars, int I
 extern int (* _pfGUI__BIDI_IsNSM           )(U16 Char);
 
 /* BiDi-related function pointers */
-extern const char * (* GUI_CharLine_pfLog2Vis)(const char * s, int * pMaxNumChars);
+extern const char * (* GUI_CharLine_pfLog2Vis)(const char * s, int * pMaxNumChars, int Mode);
 
 extern int (* GUI__GetCursorPos_pfGetPosX)     (const char * s, int MaxNumChars, int Index);
 extern int (* GUI__GetCursorPos_pfGetPosChar)  (const char * s, int MaxNumChars, int x);
@@ -372,27 +417,18 @@ U32 GUI__Read32(const U8 ** ppData);
 
 /* Virtual screen support */
 void GUI__GetOrg(int * px, int * py);
-void GUI__SetOrgHook(void(* pfHook)(int x, int y));
 
 /* Timer support */
 int              GUI_TIMER__IsActive       (void);
 GUI_TIMER_TIME   GUI_TIMER__GetPeriod      (void);
-GUI_TIMER_HANDLE GUI_TIMER__GetNextTimer   (GUI_TIMER_HANDLE hTimer, U32 * pContext);
-GUI_TIMER_HANDLE GUI_TIMER__GetFirstTimer  (U32 * pContext);
-GUI_TIMER_HANDLE GUI_TIMER__GetNextTimerLin(GUI_TIMER_HANDLE hTimer, U32 * pContext);
+GUI_TIMER_HANDLE GUI_TIMER__GetFirstTimer  (PTR_ADDR * pContext);
+GUI_TIMER_HANDLE GUI_TIMER__GetNextTimerLin(GUI_TIMER_HANDLE hTimer, PTR_ADDR * pContext);
 
 /* Get function pointers for color conversion */
 tLCDDEV_Index2Color * GUI_GetpfIndex2ColorEx(int LayerIndex);
 tLCDDEV_Color2Index * GUI_GetpfColor2IndexEx(int LayerIndex);
 
 int GUI_GetBitsPerPixelEx(int LayerIndex);
-
-LCD_PIXELINDEX * LCD_GetpPalConvTable        (const LCD_LOGPALETTE * pLogPal);
-LCD_PIXELINDEX * LCD_GetpPalConvTableUncached(const LCD_LOGPALETTE * pLogPal);
-LCD_PIXELINDEX * LCD_GetpPalConvTableBM      (const LCD_LOGPALETTE * pLogPal, const GUI_BITMAP * pBitmap, int LayerIndex);
-
-/* Setting a function for converting a color palette to an array of index values */
-void GUI_SetFuncGetpPalConvTable(LCD_PIXELINDEX * (* pFunc)(const LCD_LOGPALETTE * pLogPal, const GUI_BITMAP * pBitmap, int LayerIndex));
 
 /*********************************************************************
 *
@@ -426,7 +462,6 @@ void GUI_SetFuncGetpPalConvTable(LCD_PIXELINDEX * (* pFunc)(const LCD_LOGPALETTE
 #define GUI_STREAM_FORMAT_AM565      28  /* DO NOT CHANGE */
 #define GUI_STREAM_FORMAT_M8888I     29  /* DO NOT CHANGE */
 
-
 void GUI__ReadHeaderFromStream  (GUI_BITMAP_STREAM * pBitmapHeader, const U8 * pData);
 void GUI__CreateBitmapFromStream(const GUI_BITMAP_STREAM * pBitmapHeader, const void * pData, GUI_BITMAP * pBMP, GUI_LOGPALETTE * pPAL, const GUI_BITMAP_METHODS * pMethods);
 
@@ -445,11 +480,11 @@ void GL_DrawArc          (int x0, int y0, int rx, int ry, int a0, int a1);
 void GL_DrawBitmap       (const GUI_BITMAP * pBM, int x0, int y0);
 void GL_DrawCircle       (int x0, int y0, int r);
 void GL_DrawEllipse      (int x0, int y0, int rx, int ry, int w);
+void GL_DrawEllipseXL    (int xm, int ym, int rx, int ry, int w);
 void GL_DrawHLine        (int y0, int x0, int x1);
 void GL_DrawPolygon      (const GUI_POINT * pPoints, int NumPoints, int x0, int y0);
 void GL_DrawPoint        (int x,  int y);
 void GL_DrawLine1        (int x0, int y0, int x1, int y1);
-void GL_DrawLine1Ex      (int x0, int y0, int x1, int y1, unsigned * pPixelCnt);
 void GL_DrawLineRel      (int dx, int dy);
 void GL_DrawLineTo       (int x,  int y);
 void GL_DrawLineToEx     (int x,  int y, unsigned * pPixelCnt);
@@ -462,6 +497,26 @@ void GL_FillEllipse      (int x0, int y0, int rx, int ry);
 void GL_FillPolygon      (const GUI_POINT * pPoints, int NumPoints, int x0, int y0);
 void GL_SetDefault       (void);
 
+/*********************************************************************
+*
+*       Replacement of memcpy() and memset()
+*
+**********************************************************************
+*/
+//
+// Configurable function pointers
+//
+extern void * (* GUI__pfMemset)(void * pDest, int Fill, size_t Cnt);
+extern void * (* GUI__pfMemcpy)(void * pDest, const void * pSrc, size_t Cnt);
+
+extern int    (* GUI__pfStrcmp)(const char *, const char *);
+extern size_t (* GUI__pfStrlen)(const char *);
+extern char * (* GUI__pfStrcpy)(char *, const char *);
+//
+// Macros for typesave use of function pointers
+//
+#define GUI__MEMSET(pDest, Fill, Cnt) GUI__pfMemset((void *)(pDest), (int)(Fill), (size_t)(Cnt))
+#define GUI__MEMCPY(pDest, pSrc, Cnt) GUI__pfMemcpy((void *)(pDest), (const void *)(pSrc), (size_t)(Cnt))
 
 /*********************************************************************
 *
@@ -472,25 +527,6 @@ Dynamic linkage pointers reduces configuration hassles.
 */
 typedef int  GUI_tfTimer(void);
 typedef int  WM_tfHandlePID(void);
-
-
-/*********************************************************************
-*
-*       Cursors
-*
-**********************************************************************
-*/
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_ArrowS[45];
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_ArrowM[60];
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_ArrowL[150];
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_CrossS[33];
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_CrossM[126];
-extern GUI_CONST_STORAGE unsigned char  GUI_Pixels_CrossL[248];
-extern GUI_CONST_STORAGE unsigned char  GUI_PixelsHeaderM[5 * 17];
-
-extern GUI_CONST_STORAGE GUI_LOGPALETTE GUI_CursorPal;
-extern GUI_CONST_STORAGE GUI_LOGPALETTE GUI_CursorPalI;
-
 
 /*********************************************************************
 *
@@ -592,6 +628,8 @@ extern const LCD_SET_COLOR_API * LCD__pSetColorAPI;
 **********************************************************************
 */
 extern const GUI_FONT * GUI__pFontDefault;
+extern GUI_COLOR        GUI__ColorDefault;
+extern GUI_COLOR        GUI__BkColorDefault;
 
 extern GUI_SADDR GUI_CONTEXT * GUI_pContext;
 
@@ -613,9 +651,29 @@ extern LCD_COLOR (* GUI__pfMixColors)(LCD_COLOR Color, LCD_COLOR BkColor, U8 Int
 extern void (* GUI__pfMixColorsBulk)(U32 * pFG, U32 * pBG, U32 * pDst, unsigned OffFG, unsigned OffBG, unsigned OffDest, unsigned xSize, unsigned ySize, U8 Intens);
 
 //
+// Function pointer for mixing color and gamma values
+//
+extern LCD_COLOR (* LCD_AA_pfMixColors16)(LCD_COLOR Color, LCD_COLOR BkColor, U8 Intens);
+
+//
+// Function pointer for drawing alpha memory devices
+//
+extern GUI_DRAWMEMDEV_FUNC   * GUI__pfDrawAlphaMemdevFunc;
+extern GUI_DRAWMEMDEV_FUNC   * GUI__pfDrawM565MemdevFunc;
+
+//
+// Function pointer for drawing alpha bitmaps
+//
+extern GUI_DRAWBITMAP_FUNC * GUI__pfDrawAlphaBitmapFunc;
+extern GUI_DRAWBITMAP_FUNC * GUI__pfDrawM565BitmapFunc;
+
+extern U8 GUI__DrawStreamedBitmap;
+
+//
 // API list to be used for MultiBuffering
 //
 extern const GUI_MULTIBUF_API    GUI_MULTIBUF_APIList;
+extern const GUI_MULTIBUF_API    GUI_MULTIBUF_APIListMasked;
 extern const GUI_MULTIBUF_API_EX GUI_MULTIBUF_APIListEx;
 
 #ifdef  GL_CORE_C
@@ -624,6 +682,7 @@ extern const GUI_MULTIBUF_API_EX GUI_MULTIBUF_APIListEx;
   #define GUI_EXTERN extern
 #endif
 
+GUI_EXTERN   void (* GUI_pfExecAnimations)(void);
 GUI_EXTERN   int  (* GUI_pfUpdateSoftLayer)(void);
 
 #ifdef WIN32
@@ -638,12 +697,17 @@ GUI_EXTERN GUI_SADDR char             GUI_DecChar;
 GUI_EXTERN           GUI_tfTimer    * GUI_pfTimerExec;
 GUI_EXTERN           WM_tfHandlePID * WM_pfHandlePID;
 GUI_EXTERN   void (* GUI_pfDispCharStyle)(U16 Char);
+GUI_EXTERN   void (* GUI_pfDispCharLine)(int x0);
 
 GUI_EXTERN           int GUI__BufferSize; // Required buffer size in pixels for alpha blending and/or antialiasing
 GUI_EXTERN           int GUI_AA__ClipX0;  // x0-clipping value for AA module
 
 GUI_EXTERN           I8  GUI__aNumBuffers[GUI_NUM_LAYERS]; // Number of buffers used per layer
 GUI_EXTERN           U8  GUI__PreserveTrans;
+GUI_EXTERN           U8  GUI__IsInitialized;
+
+GUI_EXTERN           U8  GUI__NumLayersInUse;
+GUI_EXTERN           U32 GUI__LayerMask;
 
 #if GUI_SUPPORT_ROTATION
   GUI_EXTERN const tLCD_APIList * GUI_pLCD_APIList; /* Used for rotating text */

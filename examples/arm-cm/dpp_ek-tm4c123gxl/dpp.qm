@@ -382,19 +382,15 @@ $declare${AOs::Philo}
 static Philo l_philo[N_PHILO];   /* storage for all Philos */
 
 /* helper inline functions */
-inline static QTimeEvtCtr THINK_TIME(void) {
-    return (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC)
-                         + (BSP_TICKS_PER_SEC/2U));
-}
+#define THINK_TIME() \
+    ((QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) \
+     + (BSP_TICKS_PER_SEC/2U)))
 
-inline static QTimeEvtCtr EAT_TIME(void) {
-    return (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC)
-                         + BSP_TICKS_PER_SEC);
-}
+#define EAT_TIME() \
+    ((BSP_random() % BSP_TICKS_PER_SEC) + BSP_TICKS_PER_SEC)
 
-inline static uint8_t PHILO_ID(Philo const * const me) {
-    return (uint8_t)(me - l_philo);
-}
+#define PHILO_ID(me_) \
+    ((uint8_t)((me_) - l_philo))
 
 /* Global objects ----------------------------------------------------------*/
 $define${AOs::AO_Philo[N_PHILO]}
@@ -414,12 +410,9 @@ Q_DEFINE_THIS_MODULE(&quot;table&quot;)
 /* Active object class -----------------------------------------------------*/
 $declare${AOs::Table}
 
-inline static uint8_t RIGHT(uint8_t n) {
-    return (uint8_t)((n + (N_PHILO - 1U)) % N_PHILO);
-}
-inline static uint8_t LEFT(uint8_t n) {
-    return (uint8_t)((n + 1U) % N_PHILO);
-}
+#define RIGHT(n_) ((uint8_t)(((n_) + (N_PHILO - 1U)) % N_PHILO))
+#define LEFT(n_)  (((n_) + 1U) % N_PHILO)
+
 #define FREE      ((uint8_t)0)
 #define USED      ((uint8_t)1)
 

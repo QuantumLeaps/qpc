@@ -40,50 +40,50 @@
 #define QK_PORT_H
 
 /* QK-specific Interrupt Request handler BEGIN */
-#define QK_IRQ_BEGIN(name_) \
-    void name_(void); \
-    __asm(" .def " #name_ "\n" \
-    " .arm\n" \
-    " .align 4\n" \
-    " .armfunc " #name_ "\n" \
-    #name_":\n" \
-    " SUB LR, LR, #4\n" \
-    " SRSDB #31!\n" \
-    " CPS #31\n" \
-    " PUSH {R0-R3, R12}\n" \
+#define QK_IRQ_BEGIN(name_)              \
+    void name_(void);                    \
+    __asm(" .def " #name_ "\n"           \
+    " .arm\n"                            \
+    " .align 4\n"                        \
+    " .armfunc " #name_ "\n"             \
+    #name_":\n"                          \
+    " SUB LR, LR, #4\n"                  \
+    " SRSDB #31!\n"                      \
+    " CPS #31\n"                         \
+    " PUSH {R0-R3, R12}\n"               \
     " .if __TI_VFPV3D16_SUPPORT__ = 1\n" \
-    " FMRX R12, FPSCR\n" \
-    " STMFD SP!, {R12}\n" \
-    " FMRX R12, FPEXC\n" \
-    " STMFD SP!, {R12}\n" \
-    " FSTMDBD SP!, {D0-D7}\n" \
-    " .endif\n" \
-    " AND R3, SP, #4\n" \
-    " SUB SP, SP, R3\n" \
-    " PUSH {R3, LR}\n" \
-    " BLX " #name_ "_isr\n" \
-    " POP {R3, LR}\n" \
-    " ADD SP, SP, R3\n" \
+    " FMRX R12, FPSCR\n"                 \
+    " STMFD SP!, {R12}\n"                \
+    " FMRX R12, FPEXC\n"                 \
+    " STMFD SP!, {R12}\n"                \
+    " FSTMDBD SP!, {D0-D7}\n"            \
+    " .endif\n"                          \
+    " AND R3, SP, #4\n"                  \
+    " SUB SP, SP, R3\n"                  \
+    " PUSH {R3, LR}\n"                   \
+    " BLX " #name_ "_isr\n"              \
+    " POP {R3, LR}\n"                    \
+    " ADD SP, SP, R3\n"                  \
     " .if __TI_VFPV3D16_SUPPORT__ = 1\n" \
-    " FLDMIAD SP!, {D0-D7}\n" \
-    " LDMFD SP!, {R12}\n" \
-    " FMXR FPEXC, R12 \n" \
-    " LDMFD SP!, {R12} \n" \
-    " FMXR FPSCR, R12\n" \
-    " .endif\n" \
-    " POP {R0-R3, R12}\n" \
-    " RFEIA SP!\n"); \
-    void name_ ## _isr(void) { \
+    " FLDMIAD SP!, {D0-D7}\n"            \
+    " LDMFD SP!, {R12}\n"                \
+    " FMXR FPEXC, R12 \n"                \
+    " LDMFD SP!, {R12} \n"               \
+    " FMXR FPSCR, R12\n"                 \
+    " .endif\n"                          \
+    " POP {R0-R3, R12}\n"                \
+    " RFEIA SP!\n");                     \
+    void name_ ## _isr(void) {           \
     ++QK_attr_.intNest; {
 
 /* QK-specific Interrupt Request handler END */
-#define QK_IRQ_END() \
-    } --QK_attr_.intNest; \
-    if (QK_attr_.intNest == (uint_fast8_t)0) { \
-        if (QK_sched_() != (uint_fast8_t)0) { \
-            QK_activate_(); \
-        } \
-    } \
+#define QK_IRQ_END()              \
+    } --QK_attr_.intNest;         \
+    if (QK_attr_.intNest == 0U) { \
+        if (QK_sched_() != 0U) {  \
+            QK_activate_();       \
+        }                         \
+    }                             \
 }
 
 #include "qk.h" /* QK platform-independent public interface */

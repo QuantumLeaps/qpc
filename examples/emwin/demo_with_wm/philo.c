@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
 * Last Updated for Version: 6.6.0
-* Date of the Last Update:  2019-03-16
+* Date of the Last Update:  2019-11-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -71,9 +71,8 @@ QActive * const AO_Philo[N_PHILO] = {     /* "opaque" pointers to Philo AO */
 /*..........................................................................*/
 void Philo_ctor(void) {                    /* instantiate all Philo objects */
     uint8_t n;
-    Philo *me;
     for (n = 0; n < N_PHILO; ++n) {
-        me = &l_philo[n];
+        Philo *me = &l_philo[n];
         QActive_ctor(&me->super, (QStateHandler)&Philo_initial);
         QTimeEvt_ctorX(&me->timeEvt, (QActive *)me, TIMEOUT_SIG, 0U);
     }
@@ -121,7 +120,7 @@ QState Philo_thinking(Philo *me, QEvt const *e) {
         case EAT_SIG:                         /* intentionally fall-through */
         case DONE_SIG: {
                       /* EAT or DONE must be for other Philos than this one */
-            Q_ASSERT(((TableEvt const *)e)->philoNum != PHILO_ID(me));
+            Q_ASSERT(Q_EVT_CAST(TableEvt)->philoNum != PHILO_ID(me));
             return Q_HANDLED();
         }
     }

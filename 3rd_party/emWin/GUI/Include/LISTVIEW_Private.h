@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -23,7 +23,8 @@ Purpose     : Private LISTVIEW include
 #ifndef LISTVIEW_PRIVATE_H
 #define LISTVIEW_PRIVATE_H
 
-#include "WM.h"
+#include "GUI_Private.h"
+#include "WM_Intern.h"
 
 #if GUI_WINSUPPORT
 
@@ -106,6 +107,10 @@ struct LISTVIEW_Obj {
   int                          SelCol;
   int                          ShowGrid;
   int                          SortIndex;                                         // Column for sorting
+  int                          MotionPosX;
+  int                          MotionPosOldX;
+  int                          MotionPosY;
+  int                          MotionPosOldY;
   unsigned                     RowDistY;
   unsigned                     LBorder;
   unsigned                     RBorder;
@@ -162,7 +167,7 @@ unsigned             LISTVIEW__GetRowSorted         (LISTVIEW_Handle   hObj, int
 void                 LISTVIEW__InvalidateInsideArea (LISTVIEW_Handle   hObj);
 void                 LISTVIEW__InvalidateRow        (LISTVIEW_Handle   hObj, int Sel);
 void                 LISTVIEW__InvalidateRowAndBelow(LISTVIEW_Handle   hObj, int Sel);
-void                 LISTVIEW__SetSel               (LISTVIEW_Handle   hObj, int NewSel);
+void                 LISTVIEW__SetSel               (LISTVIEW_Handle   hObj, int NewSel, int CheckPos);
 void                 LISTVIEW__SetSelCol            (LISTVIEW_Handle   hObj, int NewSelCol);
 int                  LISTVIEW__UpdateScrollParas    (LISTVIEW_Handle   hObj);
 

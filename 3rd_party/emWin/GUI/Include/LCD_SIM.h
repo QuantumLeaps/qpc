@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -49,8 +49,6 @@ void  LCDSIM_Exit(void);
 int   LCDSIM_GetMouseState(LCD_tMouseState *pState);
 void  LCDSIM_SetMouseState(int x, int y, int KeyStat, int LayerIndex);
 void  LCDSIM_CheckMouseState(int LayerIndex);
-int   LCDSIM_SaveBMP   (const char * sFileName);
-int   LCDSIM_SaveBMPEx (const char * sFileName, int x0, int y0, int xSize, int ySize);
 int   LCDSIM_SaveSBMP  (const char * sFileName);
 int   LCDSIM_SaveSBMPEx(const char * sFileName, int x0, int y0, int xSize, int ySize);
 void  LCDSIM_SetRGBOrder(unsigned RGBOrder);
@@ -95,25 +93,31 @@ void LCDSIM_Invalidate(int LayerIndex);
 *
 *********************************************************************
 */
-void SIM_GUI_SetCompositeSize(int xSize, int ySize);
-void SIM_GUI_SetCompositeColor(U32 Color);
-U32  SIM_GUI_GetCompositeColor(void);
-void SIM_GUI_SetLCDPos(int xPos, int yPos);
-int  SIM_GUI_SetTransColor(int Color);
-int  SIM_GUI_SetLCDColorBlack (unsigned int Index, int Color);
-int  SIM_GUI_SetLCDColorWhite (unsigned int Index, int Color);
-void SIM_GUI_SetMag(int MagX, int MagY);
-int  SIM_GUI_GetMagX(void);
-int  SIM_GUI_GetMagY(void);
-int  SIM_GUI_GetForwardRButton(void);
-void SIM_GUI_SetForwardRButton(int OnOff);
-void SIM_GUI_SetTransMode(int LayerIndex, int TransMode);
-void SIM_GUI_SetChroma(int LayerIndex, unsigned long ChromaMin, unsigned long ChromaMax);
-void SIM_GUI_UseCustomBitmaps(void);
-void SIM_GUI_SetAccellerator(int Accellerator);
-void SIM_GUI_SetMainScreenOffset(int x, int y);
-void SIM_GUI_SetCompositeTouch(int LayerIndex);
-int  SIM_GUI_GetCompositeTouch(void);
+void         SIM_GUI_SetCompositeSize(int xSize, int ySize);
+void         SIM_GUI_SetCompositeColor(U32 Color);
+U32          SIM_GUI_GetCompositeColor(void);
+void         SIM_GUI_SetLCDPos(int xPos, int yPos);
+int          SIM_GUI_SaveBMP(const char * sFileName);
+int          SIM_GUI_SaveBMPEx(const char * sFileName, int x0, int y0, int xSize, int ySize);
+int          SIM_GUI_SaveCompositeBMP(const char * sFileName);
+int          SIM_GUI_SetTransColor(int Color);
+int          SIM_GUI_SetLCDColorBlack (unsigned int Index, int Color);
+int          SIM_GUI_SetLCDColorWhite (unsigned int Index, int Color);
+void         SIM_GUI_SetMag(int MagX, int MagY);
+int          SIM_GUI_GetMagX(void);
+int          SIM_GUI_GetMagY(void);
+int          SIM_GUI_GetForwardRButton(void);
+void         SIM_GUI_SetForwardRButton(int OnOff);
+void         SIM_GUI_SetTransMode(int LayerIndex, int TransMode);
+void         SIM_GUI_SetChroma(int LayerIndex, unsigned long ChromaMin, unsigned long ChromaMax);
+void         SIM_GUI_UseCustomBitmaps(void);
+void         SIM_GUI_SetAccellerator(int Accellerator);
+void         SIM_GUI_SetMainScreenOffset(int x, int y);
+void         SIM_GUI_SetCompositeTouch(int LayerIndex);
+int          SIM_GUI_GetCompositeTouch(void);
+const char * SIM_GUI_SetCmdLine(char * pCmdLine);
+void         SIM_GUI_SetAppName(const char * pAppName);
+void         SIM_GUI_SetStartTime(int TimeStart);
 
 /********************************************************************
 *

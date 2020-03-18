@@ -1,11 +1,11 @@
 /**
 * @file
-* @brief QEP/C port, generic C99 compiler
+* @brief QEP/C port, generic C11 compiler
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-11-22
+* Last updated for version 6.8.0
+* Last updated on  2020-01-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -39,6 +39,9 @@
 */
 #ifndef QEP_PORT_H
 #define QEP_PORT_H
+
+/*! no-return function specifier (C11 Standard) */
+#define Q_NORETURN   _Noreturn void
 
 #include <stdint.h>  /* Exact-width types. WG14/N843 C99 Standard */
 #include <stdbool.h> /* Boolean type.      WG14/N843 C99 Standard */

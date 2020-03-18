@@ -153,7 +153,7 @@ void QK_schedUnlock(QSchedStatus stat);
         /*! @returns true if the code executes in the ISR context and false
         * otherwise
         */
-        #define QK_ISR_CONTEXT_() (QK_attr_.intNest != (uint8_t)0)
+        #define QK_ISR_CONTEXT_() (QK_attr_.intNest != 0U)
     #endif /* QK_ISR_CONTEXT_ */
 
     /* QK-specific scheduler locking */
@@ -165,17 +165,17 @@ void QK_schedUnlock(QSchedStatus stat);
     /*! Internal macro for selective scheduler locking. */
     #define QF_SCHED_LOCK_(prio_) do {         \
         if (QK_ISR_CONTEXT_()) {               \
-            lockStat_ = (QSchedStatus)0xFF;    \
+            lockStat_ = 0xFFU;                 \
         } else {                               \
             lockStat_ = QK_schedLock((prio_)); \
         }                                      \
     } while (false)
 
     /*! Internal macro for selective scheduler unlocking. */
-    #define QF_SCHED_UNLOCK_() do {            \
-        if (lockStat_ != (QSchedStatus)0xFF) { \
-            QK_schedUnlock(lockStat_);         \
-        }                                      \
+    #define QF_SCHED_UNLOCK_() do {    \
+        if (lockStat_ != 0xFFU) {      \
+            QK_schedUnlock(lockStat_); \
+        }                              \
     } while (false)
 
     /* native event queue operations... */
@@ -185,7 +185,7 @@ void QK_schedUnlock(QSchedStatus stat);
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do {                         \
         QPSet_insert(&QK_attr_.readySet, (uint_fast8_t)(me_)->prio); \
         if (!QK_ISR_CONTEXT_()) {                                    \
-            if (QK_sched_() != (uint_fast8_t)0) {                    \
+            if (QK_sched_() != 0U) {                                 \
                 QK_activate_();                                      \
             }                                                        \
         }                                                            \

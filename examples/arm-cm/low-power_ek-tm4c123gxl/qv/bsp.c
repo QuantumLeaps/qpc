@@ -235,7 +235,7 @@ void QV_onIdle(void) { /* NOTE: called with interrupts DISABLED */
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */

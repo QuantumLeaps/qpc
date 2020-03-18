@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -24,6 +24,8 @@ Purpose     : Private array handling routines, should be used only
 #ifndef GUI_ARRAY_PRIVATE_H
 #define GUI_ARRAY_PRIVATE_H
 
+#include "GUI_Private.h"
+#include "WM_Intern.h"
 #include "GUI_ARRAY.h"
 
 #if GUI_WINSUPPORT
@@ -54,3 +56,4 @@ int     GUI_ARRAY__SethItem      (      GUI_ARRAY_OBJ * pThis, unsigned int Inde
 
 #endif /* GUI_ARRAY_PRIVATE_H */
 
+/*************************** End of file ****************************/

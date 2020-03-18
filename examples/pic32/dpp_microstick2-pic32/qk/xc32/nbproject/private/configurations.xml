@@ -22,7 +22,7 @@
       </runprofile>
     </conf>
     <conf name="rel" type="2">
-      <platformToolSN>:=MPLABComm-USB-Microchip:=&lt;vid>04D8:=&lt;pid>8107:=&lt;rev>0002:=&lt;man>Microchip Technology Incorporated:=&lt;prod>Microstick II SK:=&lt;sn>BUR123045184:=&lt;drv>x:=&lt;xpt>h:=end</platformToolSN>
+      <platformToolSN></platformToolSN>
       <languageToolchainDir>C:\tools\Microchip\xc32\bin</languageToolchainDir>
       <mdbdebugger version="1">
         <placeholder1>place holder 1</placeholder1>
@@ -40,7 +40,7 @@
       </runprofile>
     </conf>
     <conf name="spy" type="2">
-      <platformToolSN>:=MPLABCommUSB:=04D8:=8107:=0002:=Microchip Technology Incorporated:=Microstick II SK:=BUR123045184:=x:=en</platformToolSN>
+      <platformToolSN></platformToolSN>
       <languageToolchainDir>C:\tools\Microchip\xc32\bin</languageToolchainDir>
       <mdbdebugger version="1">
         <placeholder1>place holder 1</placeholder1>

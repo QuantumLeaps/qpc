@@ -3,14 +3,14 @@
 * @brief Customizable and memory-efficient assertions for embedded systems
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.8.0
+* Last updated on  2020-03-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -134,7 +134,7 @@
     * with the #Q_NASSERT switch.
     */
     #define Q_ASSERT(test_) ((test_) \
-        ? (void)0 : Q_onAssert(&Q_this_module_[0], (int_t)__LINE__))
+        ? (void)0 : Q_onAssert(&Q_this_module_[0], __LINE__))
 
     /*! General purpose assertion with user-specified assertion-id. */
     /**
@@ -153,7 +153,7 @@
     * disabled with the #Q_NASSERT switch.
     */
     #define Q_ASSERT_ID(id_, test_) ((test_) \
-        ? (void)0 : Q_onAssert(&Q_this_module_[0], (int_t)(id_)))
+        ? (void)0 : Q_onAssert(&Q_this_module_[0], (id_)))
 
     /*! General purpose assertion that __always__ evaluates the @p test_
     * expression. */
@@ -193,7 +193,7 @@
     * @note Does noting if assertions are disabled with the #Q_NASSERT switch.
     */
     #define Q_ERROR() \
-        Q_onAssert(&Q_this_module_[0], (int_t)__LINE__)
+        Q_onAssert(&Q_this_module_[0], __LINE__)
 
     /*! Assertion with user-specified assertion-id for a wrong path. */
     /**
@@ -209,13 +209,19 @@
     * @note Does noting if assertions are disabled with the #Q_NASSERT switch.
     */
     #define Q_ERROR_ID(id_) \
-        Q_onAssert(&Q_this_module_[0], (int_t)(id_))
+        Q_onAssert(&Q_this_module_[0], (id_))
 
 #endif /* Q_NASSERT */
 
+/****************************************************************************/
 #ifdef __cplusplus
     extern "C" {
 #endif
+
+#ifndef Q_NORETURN
+    /*! no-return function specifier */
+    #define Q_NORETURN    void
+#endif /*  Q_NORETURN */
 
 /*! Callback function invoked in case of any assertion failure. */
 /**
@@ -225,7 +231,7 @@
 *
 * @param[in] module name of the file/module in which the assertion failed
 *                   (constant, zero-terminated C string)
-* @param[in] loc    location of the assertion within the module. This could
+* @param[in] location location of the assertion within the module. This could
 *                   be a line number or a user-specified ID-number.
 *
 * @note This callback function should _not_ return, as continuation after
@@ -245,7 +251,7 @@
 * #Q_ERROR, #Q_ALLEGE as well as #Q_ASSERT_ID, #Q_REQUIRE_ID, #Q_ENSURE_ID,
 * #Q_ERROR_ID, and #Q_ALLEGE_ID.
 */
-void Q_onAssert(char_t const * const module, int_t location);
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const location);
 
 #ifdef __cplusplus
     }

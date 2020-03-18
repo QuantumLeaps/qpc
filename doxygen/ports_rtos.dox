@@ -16,14 +16,31 @@ QP/C 6.x includes a small, preemptive, priority-based, @ref qxk "dual-mode block
 The QP/C framework can work with virtually any traditional real-time operating
 system (RTOS). The currently supported 3rd-party RTOS kernels are:
 
-- @subpage freertos
 - @subpage embos
+- @subpage freertos
 - @subpage threadx
-- @subpage ti-rtos
 - @subpage ucos-ii
 - <a href="http://erika.tuxfamily.org/drupal/news/qp-framework-erika-enterprise" target="_blank" class="extern">OSEK/VDX RTOS ERIKA Enterprise</a>
 
 Combined with a conventional RTOS, QP/C takes full advantage of the multitasking capabilities of the RTOS by executing each active object in a separate RTOS task. The QP/C Platform Abstraction Layer (PAL) includes an abstract RTOS interface to enable integration between QP/C and the underlying RTOS. Specifically, the PAL allows adapting most message queue variants as event queues of active objects as well as most memory partitions as QP/C event pools.
+
+@next{embos}
+*/
+
+/*##########################################################################*/
+/*! @page embos embOS
+
+<p>The QP/C/C++ ports and examples for embOS are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_RTOS-embOS.pdf"><strong>QP and embOS</strong></a>.
+</p>
+
+@htmlonly
+<div class="image">
+<a target="_blank" href="https://www.state-machine.com/doc/AN_RTOS-embOS.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
+<div class="caption">
+Application Note: QP and embOS
+</div>
+</div>
+@endhtmlonly
 
 @next{freertos}
 */
@@ -142,37 +159,21 @@ int main() {
     Table_ctor(); /* instantiate the Table active object */
     . . .
     QActive_setAttr(AO_Table, TASK_NAME_ATTR, "Table");
-    QACTIVE_START(AO_Table,          /* AO to start */
-        (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
-        tableQueueSto,               /* event queue storage */
-        Q_DIM(tableQueueSto),        /* queue length [events] */
-        tableStack,                  /* stack storage */
-        sizeof(tableStack),          /* stack size [bytes] */
-        (QEvt *)0);                  /* initialization event (not used) */
+    QACTIVE_START(AO_Table,   /* AO to start */
+        N_PHILO + 1U,         /* QP priority of the AO */
+        tableQueueSto,        /* event queue storage */
+        Q_DIM(tableQueueSto), /* queue length [events] */
+        tableStack,           /* stack storage */
+        sizeof(tableStack),  /* stack size [bytes] */
+        (QEvt *)0);           /* initialization event (not used) */
     . . .
     return QF_run(); /* run the QF application */
 }
 @endcode
 
-@next{embos}
-*/
-/*##########################################################################*/
-/*! @page embos embOS
-
-<p>The QP/C/C++ ports and examples for embOS are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_RTOS-embOS.pdf"><strong>QP and embOS</strong></a>.
-</p>
-
-@htmlonly
-<div class="image">
-<a target="_blank" href="https://www.state-machine.com/doc/AN_RTOS-embOS.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
-<div class="caption">
-Application Note: QP and embOS
-</div>
-</div>
-@endhtmlonly
-
 @next{threadx}
 */
+
 /*##########################################################################*/
 /*! @page threadx ThreadX
 
@@ -187,254 +188,6 @@ Application Note: QP and ThreadX
 </div>
 </div>
 @endhtmlonly
-
-@next{ti-rtos}
-*/
-
-/*##########################################################################*/
-/*! @page ti-rtos TI-RTOS Kernel (SYS/BIOS)
-
-@tableofcontents
-
-@section ti-rtos_about About the QP Port to TI-RTOS
-The <span class="img folder">ports/ti-rtos/</span> directory contains a generic platform-independent QP/C port to <a href="http://processors.wiki.ti.com/index.php/Category:SYSBIOS" target="_blank" class="extern">TI-RTOS kernel (SYS/BIOS)</a>. The provided QP port to TI-RTOS has been designed *generically* to rely exclusively on the existing TI-RTOS API. This means that the port should run without changes on any CPU/compiler platform supported by TI-RTOS.
-
-@attention
-The TI-RTOS requires its own tooling (XDCTOOLS) and is too big to fit into the <span class="img folder">3rd_party/</span> directory in the QP/C distribution. Therefore, you need to **download and install** TI-RTOS on your machine before you can build any examples. Please refer to the TI Application Note "TI-RTOS for TivaC Getting Started Guide" (Literature Number: <a href="http://www.ti.com/lit/ug/spruhu5d/spruhu5d.pdf" target="_blank" class="extern">SPRUHU5D</a>) for more information.
-
-
-The QP-TI-RTOS port works as follows:
-
-- Each QP active object executes in a separate <a href="http://focus.ti.com/download/trng/multimedia/dsp/OLT110026/swis.mp4" target="_blank" class="extern">TI-RTOS Software Interrupt (Swi)</a>.
-
-- Each QP active object thread has a unique priority (the Swi priority).
-
-- The critical section used in QF and QS is based on the TI-RTOS APIs `Hwi_disable()`/`Hwi_enable()`, which selectively disable interrupts and allow for nesting of critical sections.
-
-- The QP port uses the native event queue (::QEQueue) for active object event queues.
-
-- The QP port uses the native QF memory pool (::QMPool) to implement event pools.
-
-- The QP port does not mandate any specific method to manage the QP time events, but the provided examples use the TI-RTOS clock package to periodically invoke the QP clock tick QF_TICK_X() (see @ref exa_ti-rtos ).
-
-@note
-This QP port uses the TI-RTOS Swis ("Software Interrupts") to provide the thread context to run QP active objects. The TI-RTOS Swis are a perfect match to execute the run-to-completion (RTC) event processing in active objects and require far less resources (no private stacks) than regular blocking threads.
-
-
-------------------------------------------------------------------------------
-@section ti-rtos_qf_h The qf_port.h Header File
-The <span class="img folder">ports/ti-rtos/qf_port.h</span> header file contains the customization of the QP framework for the TI-RTOS kernel. The file is shown below with the explanation sections following the source code:
-
-@code{c}
-     #ifndef qf_port_h
-     #define qf_port_h
-
-     /* TI-RTOS-specific event queue and thread types, see NOTE1 */
- [1] #define QF_EQUEUE_TYPE       QEQueue
- [2] #define QF_OS_OBJECT_TYPE    Swi_Struct
- [3] #define QF_THREAD_TYPE       Swi_Handle
-
-     /* The maximum number of active objects in the application, see NOTE2 */
- [4] #define QF_MAX_ACTIVE        32
-
-     /* TI-RTOS-specific critical section operations, NOTE3 */
- [5] #define QF_CRIT_STAT_TYPE    UInt
- [6] #define QF_CRIT_ENTRY(key_)  ((key_) = Hwi_disable())
- [7] #define QF_CRIT_EXIT(key_)   (Hwi_restore((key_)))
-
- [8] #include <ti/sysbios/hal/Hwi.h> /* TI-RTOS Hwi package */
- [9] #include <ti/sysbios/knl/Swi.h> /* TI-RTOS Swi package */
-
-     #include "qep_port.h" /* QEP port */
-     #include "qequeue.h"  /* this QF port uses the native QF event queue */
-     #include "qmpool.h"   /* this QF port uses the native QF memory pool */
-     #include "qf.h"       /* QF platform-independent public interface */
-
-
-     /*****************************************************************************
-     * interface used only inside QF, but not in applications
-     */
-     #ifdef QP_IMPL
-
-         /* TI-RTOS-specific scheduler locking, see NOTE4 */
-[10]     #define QF_SCHED_STAT_        UInt key_;
-[11]     #define QF_SCHED_LOCK_(dummy) (key_ = Swi_disable())
-[12]     #define QF_SCHED_UNLOCK_()    (Swi_restore(key_))
-
-         /* TI-RTOS-specific native event queue operations... */
-[13]     #define QACTIVE_EQUEUE_WAIT_(me_) \
-             (Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0))
-[14]     #define QACTIVE_EQUEUE_SIGNAL_(me_) Swi_post((me_)->thread)
-[15]     #define QACTIVE_EQUEUE_ONEMPTY_(dummy) ((void)0)
-
-         /* native QF event pool operations... */
-[16]     #define QF_EPOOL_TYPE_            QMPool
-[17]     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-             (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-[18]     #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-[19]     #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
-[20]     #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), (e_)))
-
-     #endif /* ifdef QP_IMPL */
-
-     #endif /* qf_port_h */
-@endcode
-
-<ul class="tag">
-  <li><span class="tag">1</span> This port uses the native ::QEQueue class for the event queues of active objects;
-  </li>
-  <li><span class="tag">2</span> This port stores the entire TI-RTOS Swi control block (`Swi_Struct`) in the QMActive::osObject attribute; <span class="highlight">The inclusion of the whole `Swi_Struct` inside ::QMActive means that this port does not need any dynamic memory allocation by TI-RTOS, so that active objects can be allocated purely **statically.**</span>
-  </li>
-  <li><span class="tag">3</span> This port stores the TI-RTOS Swi handle (`Swi_Handle`) block in the QMActive::thread attribute;
-  </li>
-  <li><span class="tag">4</span> The maximum number of active objects in the application cannot exceed the number of Swi priority levels available in TI-RTOS. On 32-bit CPUs, such as ARM Cortex-M, the maximum number of Swi priority levels is 32;
-  </li>
-  <li><span class="tag">5</span> The macro #QF_CRIT_STAT_TYPE is defined, which means that the QF critical section implementation corresponds to the "save and restore interrupt status" policy;
-  </li>
-  <li><span class="tag">6</span> Critical section entry is implemented with the TI-RTOS facility `Hwi disable()`. This facilty returns the original interrupt status (status before disabling hardware interrupts); <span class="highlight">On ARM Cortex-M3/M4, `Hwi_disable()` disables interrupts selectively by means of the BASEPRI register. This means that interrupts above the 0x20 threashold are **never** disabled (run with "zero" latency). Such interrupts are "kernel unaware" and are **not allowed** to call any TI-RTOS APIs or QP APIs;</span>
-  </li>
-  <li><span class="tag">7</span> Critical section exit is implemented with the TI-RTOS facility `Hwi enable()`. This facilty restores the interrupt status from before entering the critical section; <span class="highlight">The critical section defined by means of TI-RTOS `Hwi disable()/Hwi_enable()` **can nest**;</span>
-  </li>
-  <li><span class="tag">8-9</span> The TI-RTOS APIs for Hwi and Swi are included;
-  </li>
-  <li><span class="tag">10-12</span> These macros define scheduler locking in the QF_PUBLISH() facility to make sure that event multicasting is done atomically to all subscribers. In general, the QF framework supports selective scheduler locking only to the level of the highest-priority subscriber. However, the TI-RTOS does not support such selective scheduler locking for Swis. Instead, the TI-RTOS locks all Swis during event multicasting. <span class="highlight">This means that publishing events to a multitude of subscribers might delay the execution of the high-priority active objects (Swis), even if they are not subscribed to those published events</span>;
-  </li>
-  <li><span class="tag">13</span> The macro QACTIVE_EQUEUE_WAIT_() customizes the behavior of the built-in queue inside the QActive_get_() operation. In this port, the QActive_get_() operation is only inovked after TI-RTOS determines that the active object (Swi) needs activation. Therefore, the QACTIVE_EQUEUE_WAIT_() macro only asserts that the queue is not empty;
-  </li>
-  <li><span class="tag">14</span> The macro QACTIVE_EQUEUE_SIGNAL_() customizes the behavior of the built-in queue inside the QActive_post_() operation. In this port, every time an event is posted to the active object, the TI-RTOS API `Swi_post()` is used to activate the Swi of the active object. <span class="highlight">Note that a Swi can be posted more than once before it is actually scheduled to run (e.g., because higher-priority Swis are running). Therefore the Swi must be also posted inside the active object Swi function;</span>
-  </li>
-  <li><span class="tag">15</span> The macro QACTIVE_EQUEUE_ONEMPTY_() customizes the behavior of the built-in queue inside the QActive_get_() operation (when the queue is becoming empty). In this port, this macro is not used (expands to an empty C statement).
-  </li>
-  <li><span class="tag">16</span> This port uses the native ::QMPool memory pool to implement the event pools for dynamic events;
-  </li>
-  <li><span class="tag">17-20</span> These macros customize the behavior of the native ::QMPool memory pool to be used for event pools;
-  </li>
-</ul>
-
-
-------------------------------------------------------------------------------
-@section ti-rtos_qf_c The qf_port.c Implementation File
-The <span class="img folder">ports/ti-rtos/qf_port.c</span> file contains the implementation of the QP port to the TI-RTOS kernel. The file is shown below with the explanation sections following the source code:
-
-@code{c}
-     ~ ~ ~
-     /*..........................................................................*/
- [1] void QF_init(void) {
-     }
-     /*..........................................................................*/
- [2] int_t QF_run(void) {
- [3]     QF_onStartup();  /* configure & start interrupts */
- [4]     BIOS_start();    /* start TI-RTOT (SYS/BIOS) */
-
-         Q_ERROR_ID(100); /* BIOS_start() should never return */
-         return (int_t)0; /* this unreachable return keeps the compiler happy */
-     }
-     ~ ~ ~
-
-     /*..........................................................................*/
- [5] void QActive_start_(QActive * const me, uint_fast8_t prio,
-                         QEvt const *qSto[], uint_fast16_t qLen,
-                         void *stkSto, uint_fast16_t stkSize,
-                         QEvt const *ie)
-     {
-         Swi_Params swiParams;
-
-         /** @pre the priority must be in range and the stack storage must not
-         * be provided, because the TI-RTOS Swis do not need per-Swi stacks.
-         */
-         Q_REQUIRE_ID(400, ((uint_fast8_t)0 < prio)
-                      && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
- [6]                  && (stkSto == (void *)0));
-
-         (void)stkSize; /* avoid the "unused parameter" compiler warning */
-
- [7]     QEQueue_init(&me->eQueue, qSto, qLen);
- [8]     me->prio = prio; /* set QF priority of this AO before adding it to QF */
- [9]     QF_add_(me);     /* make QF aware of this active object */
-[10]     QMSM_INIT(&me->super, ie); /* take the top-most initial tran. */
-
-[11]     QS_FLUSH(); /* flush the QS trace buffer to the host */
-
-         /* create TI-RTOS Swi to run this active object... */
-[12]     Swi_Params_init(&swiParams);
-[13]     swiParams.arg0 = (xdc_UArg)me; /* the "me" pointer */
-[14]     swiParams.arg1 = 0;        /* not used */
-[15]     swiParams.priority = prio; /* TI-RTOS Swis can use the QP priority */
-         swiParams.trigger = 0;     /* not used */
-[16]     Swi_construct(&me->osObject, &swi_function, &swiParams, NULL);
-[17]     me->thread = Swi_handle(&me->osObject);
-
-         /* TI-RTOS Swi must be created correctly */
-[18]     Q_ENSURE_ID(490, me->thread != 0);
-     }
-
-     /*..........................................................................*/
-[19] static void swi_function(UArg arg0, UArg arg1) { /* TI-RTOS Swi signature */
-[20]     QMActive *act = (QMActive *)arg0;
-[21]     QEvt const *e = QActive_get_(act);
-[22]     QMSM_DISPATCH(&act->super, e); /* dispatch to the AO's SM */
-[23]     QF_gc(e); /* check if the event is garbage, and collect it if so */
-         (void)arg1; /* unused parameter */
-
-         /* are events still available for this AO? */
-[24]     if (act->eQueue.frontEvt != (QEvt *)0) {
-[25]         Swi_post(act->thread);
-         }
-     }
-@endcode
-
-<ul class="tag">
-  <li><span class="tag">1</span> The QF_init() function is empty in this port;
-  </li>
-  <li><span class="tag">2</span> The QF_run() function transfers the control to the QF frameworks and starts multitasking. This function does not return in the TI-RTOS kernel;
-  </li>
-  <li><span class="tag">3</span> The QF_onStartup() callback function (typically implemented in the BSP), starts interrupts and the system clock tick for QF;
-  </li>
-  <li><span class="tag">4</span> The TI-RTOS API `BIOS_start()` should not return, so this assertion fires when `BIOS_start()` ever returns;
-  </li>
-  <li><span class="tag">5</span> The QActive_start_() function starts active object execution. This function can be called before QF_run() or after QF_run(), from a running active object or TI-RTOS thread.
-  </li>
-  <li><span class="tag">6</span> In this port the active object does not need a private stack space. This assertion (precondition) makes sure that no stack memory is passed to the active object, so that the memory is wasted;
-  </li>
-  <li><span class="tag">7</span> The ::QEQueue is initialized with the provided memory for the ring buffer;
-  </li>
-  <li><span class="tag">8</span> The active object priority is set;
-  </li>
-  <li><span class="tag">9</span> The active oject is added to the QF framework to be managed;
-  </li>
-  <li><span class="tag">10</span> The top-most initial transition in the state machine of this active object is taken;
-  </li>
-  <li><span class="tag">11</span> The QS software tracing buffer is flushed so that any QS trace records produced during the startup of the active object (this code is inactive in the Debug or Release build configurations);
-  </li>
-  <li><span class="tag">12</span> The TI-RTOS Swi parameters are initialized to the default values;
-  </li>
-  <li><span class="tag">13</span> The first Swi argument (`arg0`) of the Swi routine is set to the `me` pointer of this active object;
-  </li>
-  <li><span class="tag">14</span> The second Swi argument (`arg1`) of the Swi routine is set to zero (not used);
-  </li>
-  <li><span class="tag">15</span> The Swi priority is set to the priority of the active object. <span class="highlight">The QP priority numbering is compatible with the TI-RTOS priority numbering of Swis;</span>
-  </li>
-  <li><span class="tag">16</span> The TI-RTOS function `Swi_construct()` initializes the Swi in the provided memory (`me->osObject`). This function does not allocate any dynamic memory from TI-RTOS--it just uses the provided memory;
-  </li>
-  <li><span class="tag">17</span> The active object `thread` attribute is set to the Swi handle;
-  </li>
-  <li><span class="tag">18</span> The postcondition ensures that the handle is non-zero, meaning that the Swi has been created correctly;
-  </li>
-  <li><span class="tag">19</span> The `swi_function()` is the function that all active object Swis execute when activated. This is a one-shot function that runs to completion without looping;
-  </li>
-  <li><span class="tag">20</span> Even though all active object Swis run the same function they each refer to their own attributes by means of the `arg1` parameter, which was initialized to the `me` pointer;
-  </li>
-  <li><span class="tag">21</span> The active object queue is called to get an event, which must be available at this point or the Swi won't be activated (posted);
-  </li>
-  <li><span class="tag">22</span> The event is dispatched to the active object state machine;
-  </li>
-  <li><span class="tag">23</span> The event is passed to the QF garbage collector and is recycled if no longer in use;
-  </li>
-  <li><span class="tag">24</span> If any events are still available in the event queue...;
-  </li>
-  <li><span class="tag">25</span> The Swi of the active object is posted again (`Swi_post()`) so that TI-RTOS will keep the Swi ready-to-run;
-  </li>
-</ul>
 
 @next{ucos-ii}
 */

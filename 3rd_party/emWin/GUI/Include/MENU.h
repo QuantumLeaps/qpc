@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -25,7 +25,7 @@ Purpose     : MENU include
 
 #include "WM.h"
 #include "WIDGET.h"
-#include "DIALOG_Intern.h"      // Required for Create indirect data structure
+#include "DIALOG_Type.h"      // Required for Create indirect data structure
 
 #if GUI_WINSUPPORT
 
@@ -185,26 +185,29 @@ void MENU_Callback(WM_MESSAGE * pMsg);
 *
 **********************************************************************
 */
-void      MENU_AddItem      (MENU_Handle hObj, const MENU_ITEM_DATA * pItemData);
-void      MENU_Attach       (MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int ySize, int Flags);
-void      MENU_DeleteItem   (MENU_Handle hObj, U16 ItemId);
-void      MENU_DisableItem  (MENU_Handle hObj, U16 ItemId);
-void      MENU_EnableItem   (MENU_Handle hObj, U16 ItemId);
-void      MENU_GetItem      (MENU_Handle hObj, U16 ItemId, MENU_ITEM_DATA * pItemData);
-void      MENU_GetItemText  (MENU_Handle hObj, U16 ItemId, char * pBuffer, unsigned BufferSize);
-unsigned  MENU_GetNumItems  (MENU_Handle hObj);
-WM_HWIN   MENU_GetOwner     (MENU_Handle hObj);
-int       MENU_GetUserData  (MENU_Handle hObj, void * pDest, int NumBytes);
-void      MENU_InsertItem   (MENU_Handle hObj, U16 ItemId, const MENU_ITEM_DATA * pItemData);
-void      MENU_Popup        (MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int ySize, int Flags);
-void      MENU_SetBkColor   (MENU_Handle hObj, unsigned ColorIndex, GUI_COLOR Color);
-void      MENU_SetBorderSize(MENU_Handle hObj, unsigned BorderIndex, U8 BorderSize);
-void      MENU_SetFont      (MENU_Handle hObj, const GUI_FONT * pFont);
-void      MENU_SetItem      (MENU_Handle hObj, U16 ItemId, const MENU_ITEM_DATA * pItemData);
-void      MENU_SetOwner     (MENU_Handle hObj, WM_HWIN hOwner);
-int       MENU_SetSel       (MENU_Handle hObj, int Sel);
-void      MENU_SetTextColor (MENU_Handle hObj, unsigned ColorIndex, GUI_COLOR Color);
-int       MENU_SetUserData  (MENU_Handle hObj, const void * pSrc, int NumBytes);
+void             MENU_AddItem       (MENU_Handle hObj, const MENU_ITEM_DATA * pItemData);
+void             MENU_Attach        (MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int ySize, int Flags);
+void             MENU_DeleteItem    (MENU_Handle hObj, U16 ItemId);
+void             MENU_DisableItem   (MENU_Handle hObj, U16 ItemId);
+void             MENU_EnableItem    (MENU_Handle hObj, U16 ItemId);
+GUI_COLOR        MENU_GetBkColor    (MENU_Handle hObj, unsigned ColorIndex);
+const GUI_FONT * MENU_GetFont       (MENU_Handle hObj);
+void             MENU_GetItem       (MENU_Handle hObj, U16 ItemId, MENU_ITEM_DATA * pItemData);
+void             MENU_GetItemText   (MENU_Handle hObj, U16 ItemId, char * pBuffer, unsigned BufferSize);
+unsigned         MENU_GetNumItems   (MENU_Handle hObj);
+WM_HWIN          MENU_GetOwner      (MENU_Handle hObj);
+GUI_COLOR        MENU_GetTextColor  (MENU_Handle hObj, unsigned ColorIndex);
+int              MENU_GetUserData   (MENU_Handle hObj, void * pDest, int NumBytes);
+void             MENU_InsertItem    (MENU_Handle hObj, U16 ItemId, const MENU_ITEM_DATA * pItemData);
+void             MENU_Popup         (MENU_Handle hObj, WM_HWIN hDestWin, int x, int y, int xSize, int ySize, int Flags);
+void             MENU_SetBkColor    (MENU_Handle hObj, unsigned ColorIndex, GUI_COLOR Color);
+void             MENU_SetBorderSize (MENU_Handle hObj, unsigned BorderIndex, U8 BorderSize);
+void             MENU_SetFont       (MENU_Handle hObj, const GUI_FONT * pFont);
+void             MENU_SetItem       (MENU_Handle hObj, U16 ItemId, const MENU_ITEM_DATA * pItemData);
+void             MENU_SetOwner      (MENU_Handle hObj, WM_HWIN hOwner);
+int              MENU_SetSel        (MENU_Handle hObj, int Sel);
+void             MENU_SetTextColor  (MENU_Handle hObj, unsigned ColorIndex, GUI_COLOR Color);
+int              MENU_SetUserData   (MENU_Handle hObj, const void * pSrc, int NumBytes);
 
 /*********************************************************************
 *

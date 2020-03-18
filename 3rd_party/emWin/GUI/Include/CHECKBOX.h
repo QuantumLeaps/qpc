@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -24,7 +24,7 @@ Purpose     : CHECKBOX include
 #define CHECKBOX_H
 
 #include "WM.h"
-#include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+#include "DIALOG_Type.h"      /* Req. for Create indirect data structure */
 #include "WIDGET.h"
 
 #if GUI_WINSUPPORT
@@ -111,7 +111,6 @@ int              CHECKBOX_GetDefaultAlign     (void);
 GUI_COLOR        CHECKBOX_GetDefaultBkColor   (void);
 const GUI_FONT * CHECKBOX_GetDefaultFont      (void);
 int              CHECKBOX_GetDefaultSpacing   (void);
-int              CHECKBOX_GetDefaultTextAlign (void);
 GUI_COLOR        CHECKBOX_GetDefaultTextColor (void);
 int              CHECKBOX_GetUserData         (CHECKBOX_Handle hObj, void * pDest, int NumBytes);
 void             CHECKBOX_SetDefaultAlign     (int Align);
@@ -120,8 +119,10 @@ GUI_COLOR        CHECKBOX_SetDefaultFocusColor(GUI_COLOR Color);
 void             CHECKBOX_SetDefaultFont      (const GUI_FONT * pFont);
 void             CHECKBOX_SetDefaultImage     (const GUI_BITMAP * pBitmap, unsigned int Index);
 void             CHECKBOX_SetDefaultSpacing   (int Spacing);
-void             CHECKBOX_SetDefaultTextAlign (int Align);
 void             CHECKBOX_SetDefaultTextColor (GUI_COLOR Color);
+
+#define          CHECKBOX_GetDefaultTextAlign CHECKBOX_GetDefaultAlign
+#define          CHECKBOX_SetDefaultTextAlign CHECKBOX_SetDefaultAlign
 
 /*********************************************************************
 *
@@ -129,22 +130,28 @@ void             CHECKBOX_SetDefaultTextColor (GUI_COLOR Color);
 *
 **********************************************************************
 */
-
-int       CHECKBOX_GetState     (CHECKBOX_Handle hObj);
-int       CHECKBOX_GetText      (CHECKBOX_Handle hObj, char * pBuffer, int MaxLen);
-int       CHECKBOX_IsChecked    (CHECKBOX_Handle hObj);
-void      CHECKBOX_SetBkColor   (CHECKBOX_Handle hObj, GUI_COLOR Color);
-GUI_COLOR CHECKBOX_SetBoxBkColor(CHECKBOX_Handle hObj, GUI_COLOR Color, int Index);
-GUI_COLOR CHECKBOX_SetFocusColor(CHECKBOX_Handle hObj, GUI_COLOR Color);
-void      CHECKBOX_SetFont      (CHECKBOX_Handle hObj, const GUI_FONT * pFont);
-void      CHECKBOX_SetImage     (CHECKBOX_Handle hObj, const GUI_BITMAP * pBitmap, unsigned int Index);
-void      CHECKBOX_SetNumStates (CHECKBOX_Handle hObj, unsigned NumStates);
-void      CHECKBOX_SetSpacing   (CHECKBOX_Handle hObj, unsigned Spacing);
-void      CHECKBOX_SetState     (CHECKBOX_Handle hObj, unsigned State);
-void      CHECKBOX_SetText      (CHECKBOX_Handle hObj, const char * pText);
-void      CHECKBOX_SetTextAlign (CHECKBOX_Handle hObj, int Align);
-void      CHECKBOX_SetTextColor (CHECKBOX_Handle hObj, GUI_COLOR Color);
-int       CHECKBOX_SetUserData  (CHECKBOX_Handle hObj, const void * pSrc, int NumBytes);
+GUI_COLOR          CHECKBOX_GetBkColor   (CHECKBOX_Handle hObj);
+GUI_COLOR          CHECKBOX_GetBoxBkColor(CHECKBOX_Handle hObj, int Index);
+GUI_COLOR          CHECKBOX_GetFocusColor(CHECKBOX_Handle hObj);
+const GUI_FONT   * CHECKBOX_GetFont      (CHECKBOX_Handle hObj);
+const GUI_BITMAP * CHECKBOX_GetImage     (CHECKBOX_Handle hObj, unsigned int Index);
+int                CHECKBOX_GetState     (CHECKBOX_Handle hObj);
+int                CHECKBOX_GetText      (CHECKBOX_Handle hObj, char * pBuffer, int MaxLen);
+int                CHECKBOX_GetTextAlign (CHECKBOX_Handle hObj);
+GUI_COLOR          CHECKBOX_GetTextColor (CHECKBOX_Handle hObj);
+int                CHECKBOX_IsChecked    (CHECKBOX_Handle hObj);
+void               CHECKBOX_SetBkColor   (CHECKBOX_Handle hObj, GUI_COLOR Color);
+GUI_COLOR          CHECKBOX_SetBoxBkColor(CHECKBOX_Handle hObj, GUI_COLOR Color, int Index);
+GUI_COLOR          CHECKBOX_SetFocusColor(CHECKBOX_Handle hObj, GUI_COLOR Color);
+void               CHECKBOX_SetFont      (CHECKBOX_Handle hObj, const GUI_FONT * pFont);
+void               CHECKBOX_SetImage     (CHECKBOX_Handle hObj, const GUI_BITMAP * pBitmap, unsigned int Index);
+void               CHECKBOX_SetNumStates (CHECKBOX_Handle hObj, unsigned NumStates);
+void               CHECKBOX_SetSpacing   (CHECKBOX_Handle hObj, unsigned Spacing);
+void               CHECKBOX_SetState     (CHECKBOX_Handle hObj, unsigned State);
+void               CHECKBOX_SetText      (CHECKBOX_Handle hObj, const char * pText);
+void               CHECKBOX_SetTextAlign (CHECKBOX_Handle hObj, int Align);
+void               CHECKBOX_SetTextColor (CHECKBOX_Handle hObj, GUI_COLOR Color);
+int                CHECKBOX_SetUserData  (CHECKBOX_Handle hObj, const void * pSrc, int NumBytes);
 
 /*********************************************************************
 *

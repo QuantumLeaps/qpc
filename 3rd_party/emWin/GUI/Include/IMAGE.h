@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -24,7 +24,7 @@ Purpose     : Image include
 #define IMAGE_H
 
 #include "WM.h"
-#include "DIALOG_Intern.h"
+#include "DIALOG_Type.h"
 #include "WIDGET.h"
 
 #if GUI_WINSUPPORT
@@ -71,19 +71,21 @@ void IMAGE_Callback(WM_MESSAGE * pMsg);
 *
 **********************************************************************
 */
-int  IMAGE_GetUserData(IMAGE_Handle hObj, void * pDest, int NumBytes);
-void IMAGE_SetBitmap  (IMAGE_Handle hWin, const GUI_BITMAP * pBitmap);
-void IMAGE_SetBMP     (IMAGE_Handle hObj, const void * pData, U32 FileSize);
-void IMAGE_SetBMPEx   (IMAGE_Handle hObj, GUI_GET_DATA_FUNC * pfGetData, void * pVoid);
-void IMAGE_SetDTA     (IMAGE_Handle hObj, const void * pData, U32 FileSize);
-void IMAGE_SetDTAEx   (IMAGE_Handle hObj, GUI_GET_DATA_FUNC * pfGetData, void * pVoid);
-void IMAGE_SetGIF     (IMAGE_Handle hObj, const void * pData, U32 FileSize);
-void IMAGE_SetGIFEx   (IMAGE_Handle hObj, GUI_GET_DATA_FUNC * pfGetData, void * pVoid);
-void IMAGE_SetJPEG    (IMAGE_Handle hObj, const void * pData, U32 FileSize);
-void IMAGE_SetJPEGEx  (IMAGE_Handle hObj, GUI_GET_DATA_FUNC * pfGetData, void * pVoid);
-void IMAGE_SetPNG     (IMAGE_Handle hObj, const void * pData, U32 FileSize);
-void IMAGE_SetPNGEx   (IMAGE_Handle hObj, GUI_GET_DATA_FUNC * pfGetData, void * pVoid);
-int  IMAGE_SetUserData(IMAGE_Handle hObj, const void * pSrc, int NumBytes);
+int  IMAGE_GetImageSize(IMAGE_Handle hObj, int * pxSize, int * pySize);
+int  IMAGE_GetUserData (IMAGE_Handle hObj, void * pDest, int NumBytes);
+void IMAGE_SetBitmap   (IMAGE_Handle hWin, const GUI_BITMAP * pBitmap);
+void IMAGE_SetBMP      (IMAGE_Handle hObj, const void * pData, U32 FileSize);
+void IMAGE_SetBMPEx    (IMAGE_Handle hObj, GUI_GET_DATA_FUNC * pfGetData, void * pVoid);
+void IMAGE_SetDTA      (IMAGE_Handle hObj, const void * pData, U32 FileSize);
+void IMAGE_SetDTAEx    (IMAGE_Handle hObj, GUI_GET_DATA_FUNC * pfGetData, void * pVoid);
+void IMAGE_SetGIF      (IMAGE_Handle hObj, const void * pData, U32 FileSize);
+void IMAGE_SetGIFEx    (IMAGE_Handle hObj, GUI_GET_DATA_FUNC * pfGetData, void * pVoid);
+void IMAGE_SetJPEG     (IMAGE_Handle hObj, const void * pData, U32 FileSize);
+void IMAGE_SetJPEGEx   (IMAGE_Handle hObj, GUI_GET_DATA_FUNC * pfGetData, void * pVoid);
+void IMAGE_SetPNG      (IMAGE_Handle hObj, const void * pData, U32 FileSize);
+void IMAGE_SetPNGEx    (IMAGE_Handle hObj, GUI_GET_DATA_FUNC * pfGetData, void * pVoid);
+void IMAGE_SetTiled    (IMAGE_Handle hObj, int OnOff);
+int  IMAGE_SetUserData (IMAGE_Handle hObj, const void * pSrc, int NumBytes);
 
 
 #if defined(__cplusplus)

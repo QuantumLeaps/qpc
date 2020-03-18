@@ -48,14 +48,14 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>.\dbg_arm\</OutputDirectory>
+          <OutputDirectory>.\dbg_armclang\</OutputDirectory>
           <OutputName>test_tm4c123-arm</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
-          <ListingPath>.\dbg_arm\</ListingPath>
+          <ListingPath>.\dbg_armclang\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
@@ -72,7 +72,7 @@
           <BeforeMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>cmd /c "del .\dbg_arm\qstamp.o"</UserProg1Name>
+            <UserProg1Name>cmd /c "del .\dbg_armclang\qstamp.o"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -82,7 +82,7 @@
           <AfterMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>fromelf --bin --output .\dbg_arm\test_tm4c123-arm.bin .\dbg_arm\test_tm4c123-arm.axf</UserProg1Name>
+            <UserProg1Name>fromelf --bin --output .\dbg_armclang\test_tm4c123-arm.bin .\dbg_armclang\test_tm4c123-arm.axf</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -430,7 +430,7 @@
             <File>
               <FileName>startup_TM4C123GH6PM.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\3rd_party\ek-tm4c123gxl\arm\startup_TM4C123GH6PM.s</FilePath>
+              <FilePath>..\..\..\..\3rd_party\ek-tm4c123gxl\armclang\startup_TM4C123GH6PM.s</FilePath>
             </File>
           </Files>
         </Group>

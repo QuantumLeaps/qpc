@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -23,10 +23,9 @@ Purpose     : Private HEADER include
 #ifndef HEADER_PRIVATE_H
 #define HEADER_PRIVATE_H
 
-
+#include "WM_Intern.h"
 #include "HEADER.h"
 #include "WIDGET.h"
-#include "WM.h"
 #include "GUI_ARRAY.h"
 
 #if GUI_WINSUPPORT
@@ -112,3 +111,5 @@ void HEADER__SetDrawObj(HEADER_Handle hObj, unsigned Index, GUI_DRAW_HANDLE hDra
 
 #endif // GUI_WINSUPPORT
 #endif // Avoid multiple inclusion
+
+/*************************** End of file ****************************/

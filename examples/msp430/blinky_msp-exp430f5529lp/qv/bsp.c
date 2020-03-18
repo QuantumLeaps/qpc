@@ -124,13 +124,13 @@ void QV_onIdle(void) { /* NOTE: called with interrutps DISABLED, see NOTE1 */
 #endif
 }
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
     QF_INT_DISABLE(); /* disable all interrupts */
 

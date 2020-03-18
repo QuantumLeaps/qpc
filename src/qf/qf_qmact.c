@@ -12,14 +12,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-10-04
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -77,7 +77,7 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial) {
     * correctly even if the startup code fails to clear the uninitialized
     * data (as is required by the C Standard).
     */
-    QF_bzero(me, (uint_fast16_t)sizeof(*me));
+    QF_bzero(me, sizeof(*me));
 
     /**
     * @note QMActive inherits QActive, so by the @ref oop convention

@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-17
+* Last updated for version 6.8.0
+* Last updated on  2020-01-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -40,7 +40,7 @@
 #define QP_IMPL           /* this is QP implementation */
 #include "qs_port.h"      /* QS port */
 
-#if (QS_OBJ_PTR_SIZE == 8) || (QS_FUN_PTR_SIZE == 8)
+#if (QS_OBJ_PTR_SIZE == 8U) || (QS_FUN_PTR_SIZE == 8U)
 
 #include "qs_pkg.h"
 
@@ -53,10 +53,9 @@ void QS_u64_raw_(uint64_t d) {
     uint8_t *buf   = QS_priv_.buf;
     QSCtr   head   = QS_priv_.head;
     QSCtr   end    = QS_priv_.end;
-    int_fast8_t   i;
 
-    QS_priv_.used += (QSCtr)8; /* 8 bytes are about to be added */
-    for (i = (int_fast8_t)8; i != (int_fast8_t)0; --i) {
+    QS_priv_.used += 8U; /* 8 bytes are about to be added */
+    for (int_fast8_t i = 8U; i != 0U; --i) {
         uint8_t b = (uint8_t)d;
         QS_INSERT_ESC_BYTE_(b)
         d >>= 8;
@@ -75,13 +74,12 @@ void QS_u64(uint8_t format, uint64_t d) {
     uint8_t *buf   = QS_priv_.buf;
     QSCtr   head   = QS_priv_.head;
     QSCtr   end    = QS_priv_.end;
-    int_fast8_t   i;
 
-    QS_priv_.used += (QSCtr)9; /* 9 bytes are about to be added */
+    QS_priv_.used += 9U; /* 9 bytes are about to be added */
     QS_INSERT_ESC_BYTE_(format) /* insert the format byte */
 
     /* output 8 bytes of data... */
-    for (i = (int_fast8_t)8; i != (int_fast8_t)0; --i) {
+    for (int_fast8_t i = 8U; i != 0U; --i) {
         format = (uint8_t)d;
         QS_INSERT_ESC_BYTE_(format)
         d >>= 8;
@@ -91,5 +89,5 @@ void QS_u64(uint8_t format, uint64_t d) {
     QS_priv_.chksum = chksum; /* save the checksum */
 }
 
-#endif /* (QS_OBJ_PTR_SIZE == 8) || (QS_FUN_PTR_SIZE == 8) */
+#endif /* (QS_OBJ_PTR_SIZE == 8U) || (QS_FUN_PTR_SIZE == 8U) */
 

@@ -77,8 +77,8 @@ static uint32_t l_rnd; /* random seed */
     QSTimeCtr QS_tickPeriod_;
 
     /* QS source IDs */
-    static uint8_t const l_SysTick_Handler = (uint8_t)0;
-    static uint8_t const l_EXTI0_IRQHandler = (uint8_t)0;
+    static uint8_t const l_SysTick_Handler = 0U;
+    static uint8_t const l_EXTI0_IRQHandler = 0U;
     static UART_HandleTypeDef l_uartHandle;
 
     enum AppRecords { /* application-specific trace records */
@@ -344,13 +344,13 @@ void QXK_onIdle(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
     /* light up LED */
@@ -382,7 +382,7 @@ uint8_t QS_onStartup(void const *arg) {
     l_uartHandle.Init.Mode       = UART_MODE_TX_RX;
     l_uartHandle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
     if (HAL_UART_Init(&l_uartHandle) != HAL_OK) {
-        return (uint8_t)0; /* return failure */
+        return 0U; /* return failure */
     }
 
     /* Set UART to receive 1 byte at a time via interrupt */
@@ -395,7 +395,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(QS_SM_RECORDS);
     QS_FILTER_ON(QS_UA_RECORDS);
 
-    return (uint8_t)1; /* return success */
+    return 1U; /* return success */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

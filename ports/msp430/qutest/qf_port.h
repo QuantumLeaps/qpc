@@ -3,14 +3,14 @@
 * @brief QF/C port to MSP430, QUTEST, generic C99 compiler
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-10-14
+* Last updated for version 6.8.0
+* Last updated on  2020-03-13
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,7 +45,7 @@
 /*#define QF_THREAD_TYPE */
 
 /* The maximum number of active objects in the application, see NOTE01 */
-#define QF_MAX_ACTIVE        8
+#define QF_MAX_ACTIVE        8U
 
 /* QF interrupt disable/enable */
 #define QF_INT_DISABLE()     (++QF_intNest)

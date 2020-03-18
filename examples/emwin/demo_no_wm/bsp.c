@@ -1,13 +1,13 @@
 /*****************************************************************************
-* Product: BSP for emWin/uC/GUI, Win32 simulation
-* Last updated for version 6.3.6
-* Last updated on  2018-10-03
+* Product: BSP for SEGGER emWin (version 6.10), Win32 simulation
+* Last updated for version 6.8.0
+* Last updated on  2020-01-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -25,7 +25,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
 * <www.state-machine.com/licensing>
@@ -36,23 +36,14 @@
 #include "bsp.h"
 
 #include "GUI.h"
+#include "GUI_SIM.h"
 #include "DIALOG.h"
-#include "SIM.h"
 
 #include <windows.h>
 #include <stdio.h>
 #include <time.h>
 
 Q_DEFINE_THIS_FILE
-
-/* local variables ---------------------------------------------------------*/
-#ifdef Q_SPY
-    static uint8_t l_running;
-    static uint8_t const l_clock_tick = 0U;
-    static uint8_t const l_simHardKey = 0U;
-    static uint8_t const l_MOUSE_StoreState = 0U;
-    static SOCKET  l_sock = INVALID_SOCKET;
-#endif
 
 /*..........................................................................*/
 static void simHardKey(int keyIndex, int keyState) {
@@ -82,10 +73,11 @@ static void simHardKey(int keyIndex, int keyState) {
 }
 /*..........................................................................*/
 void GUI_MOUSE_StoreState(const GUI_PID_STATE *pState) {
-    MouseEvt *pe = Q_NEW(MouseEvt, MOUSE_CHANGE_SIG);
-    pe->xPos = pState->x;
-    pe->yPos = pState->y;
-    pe->buttonStates = pState->Pressed;
+    MouseEvt* pe = Q_NEW(MouseEvt, MOUSE_CHANGE_SIG);
+    pe->x = pState->x;
+    pe->y = pState->y;
+    pe->Pressed = pState->Pressed;
+    pe->Layer   = pState->Layer;
     QACTIVE_POST(AO_Table, (QEvt *)pe, &l_MOUSE_StoreState);
 }
 /*..........................................................................*/
@@ -94,20 +86,6 @@ void BSP_init(void) {
     for (n = n - 1; n >= 0; --n) {
         SIM_HARDKEY_SetCallback(n, &simHardKey);
     }
-
-#ifdef Q_SPY
-    {
-        char const *hostAndPort = SIM_GetCmdLine();
-        if (hostAndPort == NULL) { /* port unspecified? */
-            hostAndPort = "localhost:6601";
-        }
-        if (!QS_INIT(hostAndPort)) {
-            MessageBox(NULL, "Failed to open the TCP/IP socket for QS output",
-                       "QS Socket Failure", MB_TASKMODAL | MB_OK);
-            return;
-        }
-    }
-#endif
 }
 /*..........................................................................*/
 void QF_onStartup(void) {
@@ -125,36 +103,12 @@ void QF_onClockTick(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const * const file, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const file, int_t const loc) {
     char str[256];
 
-    QF_CRIT_ENTRY(dummy);              /* make sure nothing else is running */
+    QF_CRIT_ENTRY(dummy); /* make sure nothing else is running */
     sprintf(str, "%s:%d", file, loc);
     MessageBox(NULL, str, "Assertion Failure", MB_TASKMODAL | MB_OK);
-    QF_stop();    /* terminate the QF, causes termination of the MainTask() */
+    QF_stop(); /* terminate the QF, causes termination of the MainTask() */
 }
 
-/*--------------------------------------------------------------------------*/
-#ifdef Q_SPY /* define QS callbacks */
-
-/*..........................................................................*/
-/*! callback function to execute user commands */
-void QS_onCommand(uint8_t cmdId,
-    uint32_t param1, uint32_t param2, uint32_t param3)
-{
-    switch (cmdId) {
-    case 0U: {
-        break;
-    }
-    default:
-        break;
-    }
-
-    /* unused parameters */
-    (void)param1;
-    (void)param2;
-    (void)param3;
-}
-
-#endif /* Q_SPY */
-/*--------------------------------------------------------------------------*/

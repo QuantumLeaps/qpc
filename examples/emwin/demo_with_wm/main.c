@@ -1,5 +1,5 @@
 /*****************************************************************************
-* Product: main task for emWin/uC/GUI, Win32 simulation
+* Product: main function for emWin/uC/GUI, Win32 simulation
 * Last updated for version 6.4.0
 * Last updated on  2019-02-08
 *

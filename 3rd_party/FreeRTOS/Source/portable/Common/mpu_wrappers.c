@@ -1,6 +1,6 @@
 /*
- * FreeRTOS Kernel V10.2.1
- * Copyright (C) 2019 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ * FreeRTOS Kernel V10.3.0
+ * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -365,12 +365,12 @@ BaseType_t xRunningPrivileged = xPortRaisePrivilege();
 /*-----------------------------------------------------------*/
 
 #if( ( configGENERATE_RUN_TIME_STATS == 1 ) && ( INCLUDE_xTaskGetIdleTaskHandle == 1 ) )
-	TickType_t MPU_xTaskGetIdleRunTimeCounter( void ) /* FREERTOS_SYSTEM_CALL */
+	uint32_t MPU_ulTaskGetIdleRunTimeCounter( void ) /* FREERTOS_SYSTEM_CALL */
 	{
-	TickType_t xReturn;
+	uint32_t xReturn;
 	BaseType_t xRunningPrivileged = xPortRaisePrivilege();
 
-		xReturn = xTaskGetIdleRunTimeCounter();
+		xReturn = ulTaskGetIdleRunTimeCounter();
 		vPortResetPrivilege( xRunningPrivileged );
 		return xReturn;
 	}
@@ -449,6 +449,17 @@ BaseType_t xRunningPrivileged = xPortRaisePrivilege();
 		return uxReturn;
 	}
 #endif
+/*-----------------------------------------------------------*/
+
+BaseType_t MPU_xTaskCatchUpTicks( TickType_t xTicksToCatchUp ) /* FREERTOS_SYSTEM_CALL */
+{
+BaseType_t xReturn;
+BaseType_t xRunningPrivileged = xPortRaisePrivilege();
+
+	xReturn = xTaskCatchUpTicks( xTicksToCatchUp );
+	vPortResetPrivilege( xRunningPrivileged );
+	return xReturn;
+}
 /*-----------------------------------------------------------*/
 
 #if ( INCLUDE_uxTaskGetStackHighWaterMark == 1 )
@@ -571,6 +582,19 @@ BaseType_t xRunningPrivileged = xPortRaisePrivilege();
 		xReturn = xTaskNotifyStateClear( xTask );
 		vPortResetPrivilege( xRunningPrivileged );
 		return xReturn;
+	}
+#endif
+/*-----------------------------------------------------------*/
+
+#if( configUSE_TASK_NOTIFICATIONS == 1 )
+	uint32_t MPU_ulTaskNotifyValueClear( TaskHandle_t xTask, uint32_t ulBitsToClear ) /* FREERTOS_SYSTEM_CALL */
+	{
+	uint32_t ulReturn;
+	BaseType_t xRunningPrivileged = xPortRaisePrivilege();
+
+		ulReturn = ulTaskNotifyValueClear( xTask, ulBitsToClear );
+		vPortResetPrivilege( xRunningPrivileged );
+		return ulReturn;
 	}
 #endif
 /*-----------------------------------------------------------*/
@@ -1026,6 +1050,19 @@ BaseType_t xRunningPrivileged = xPortRaisePrivilege();
 
 		vTimerSetReloadMode( xTimer, uxAutoReload );
 		vPortResetPrivilege( xRunningPrivileged );
+	}
+#endif
+/*-----------------------------------------------------------*/
+
+#if( configUSE_TIMERS == 1 )
+	UBaseType_t MPU_uxTimerGetReloadMode( TimerHandle_t xTimer )
+	{
+	BaseType_t xRunningPrivileged = xPortRaisePrivilege();
+	UBaseType_t uxReturn;
+
+		uxReturn = uxTimerGetReloadMode( xTimer );
+		vPortResetPrivilege( xRunningPrivileged );
+		return uxReturn;
 	}
 #endif
 /*-----------------------------------------------------------*/

@@ -4,14 +4,14 @@
 * @brief ::QMPool implementatin (Memory Pool)
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-16
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -42,7 +42,8 @@
 #include "qf_pkg.h"       /* QF package-scope interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -96,15 +97,14 @@ void QMPool_init(QMPool * const me, void * const poolSto,
     * and the blockSize must not be too close to the top of the dynamic range
     */
     Q_REQUIRE_ID(100, (poolSto != (void *)0)
-              && (poolSize >= (uint_fast32_t)sizeof(QFreeBlock))
-              && ((uint_fast16_t)(blockSize
-                   + (uint_fast16_t)sizeof(QFreeBlock)) > blockSize));
+              && (poolSize >= sizeof(QFreeBlock))
+              && ((blockSize + sizeof(QFreeBlock)) > blockSize));
 
     me->free_head = poolSto;
 
     /* round up the blockSize to fit an integer # free blocks, no division */
     me->blockSize = (QMPoolSize)sizeof(QFreeBlock);  /* start with just one */
-    nblocks = (uint_fast16_t)1;/* #free blocks that fit in one memory block */
+    nblocks = 1U;/* #free blocks that fit in one memory block */
     while (me->blockSize < (QMPoolSize)blockSize) {
         me->blockSize += (QMPoolSize)sizeof(QFreeBlock);
         ++nblocks;
@@ -112,11 +112,11 @@ void QMPool_init(QMPool * const me, void * const poolSto,
     blockSize = (uint_fast16_t)me->blockSize; /* round-up to nearest block */
 
     /* the pool buffer must fit at least one rounded-up block */
-    Q_ASSERT_ID(110, poolSize >= (uint_fast32_t)blockSize);
+    Q_ASSERT_ID(110, poolSize >= blockSize);
 
     /* chain all blocks together in a free-list... */
     poolSize -= (uint_fast32_t)blockSize; /* don't count the last block */
-    me->nTot  = (QMPoolCtr)1;    /* the last block already in the pool */
+    me->nTot  = 1U; /* the last block already in the pool */
     fb = (QFreeBlock *)me->free_head; /* start at the head of the free list */
 
     /* chain all blocks together in a free-list... */
@@ -226,11 +226,11 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin) {
 
         /* is the pool becoming empty? */
         --me->nFree; /* one less free block */
-        if (me->nFree == (QMPoolCtr)0) {
+        if (me->nFree == 0U) {
             /* pool is becoming empty, so the next free block must be NULL */
             Q_ASSERT_CRIT_(320, fb_next == (QFreeBlock *)0);
 
-            me->nMin = (QMPoolCtr)0; /* remember that the pool got empty */
+            me->nMin = 0U; /* remember that the pool got empty */
         }
         else {
             /* pool is not empty, so the next free block must be in range
@@ -292,12 +292,11 @@ uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId) {
     QF_CRIT_STAT_
 
     /** @pre the poolId must be in range */
-    Q_REQUIRE_ID(400, ((uint_fast8_t)0 < poolId)
-                      && (poolId <= QF_maxPool_)
-                      && (poolId <= (uint_fast8_t)QF_MAX_EPOOL));
+    Q_REQUIRE_ID(400, (0U < poolId) && (poolId <= QF_maxPool_)
+                      && (poolId <= QF_MAX_EPOOL));
 
     QF_CRIT_ENTRY_();
-    min = (uint_fast16_t)QF_pool_[poolId - (uint_fast8_t)1].nMin;
+    min = (uint_fast16_t)QF_pool_[poolId - 1U].nMin;
     QF_CRIT_EXIT_();
 
     return min;

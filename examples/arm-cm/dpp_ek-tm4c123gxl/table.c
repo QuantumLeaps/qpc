@@ -41,12 +41,9 @@ static QState Table_serving(Table * const me, QEvt const * const e);
 static QState Table_paused(Table * const me, QEvt const * const e);
 /*.$enddecl${AOs::Table} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
-inline static uint8_t RIGHT(uint8_t n) {
-    return (uint8_t)((n + (N_PHILO - 1U)) % N_PHILO);
-}
-inline static uint8_t LEFT(uint8_t n) {
-    return (uint8_t)((n + 1U) % N_PHILO);
-}
+#define RIGHT(n_) ((uint8_t)(((n_) + (N_PHILO - 1U)) % N_PHILO))
+#define LEFT(n_)  (((n_) + 1U) % N_PHILO)
+
 #define FREE      ((uint8_t)0)
 #define USED      ((uint8_t)1)
 

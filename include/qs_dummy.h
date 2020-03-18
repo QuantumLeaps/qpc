@@ -45,7 +45,7 @@
     #error "Q_SPY must NOT be defined to include qs_dummy.h"
 #endif
 
-#define QS_INIT(arg_)                   ((uint8_t)1)
+#define QS_INIT(arg_)                   ((uint8_t)1U)
 #define QS_EXIT()                       ((void)0)
 #define QS_DUMP()                       ((void)0)
 #define QS_FILTER_ON(rec_)              ((void)0)

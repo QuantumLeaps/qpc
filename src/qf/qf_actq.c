@@ -9,14 +9,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-16
+* Last updated for version 6.8.0
+* Last updated on  2020-01-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -47,7 +47,8 @@
 #include "qf_pkg.h"       /* QF package-scope interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -107,11 +108,11 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
     /* test-probe#1 for faking queue overflow */
     QS_TEST_PROBE_ID(1,
-        nFree = (QEQueueCtr)0;
+        nFree = 0U;
     )
 
     if (margin == QF_NO_MARGIN) {
-        if (nFree > (QEQueueCtr)0) {
+        if (nFree > 0U) {
             status = true; /* can post */
         }
         else {
@@ -127,7 +128,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     }
 
     /* is it a dynamic event? */
-    if (e->poolId_ != (uint8_t)0) {
+    if (e->poolId_ != 0U) {
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
@@ -174,7 +175,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             /* insert event into the ring buffer (FIFO) */
             QF_PTR_AT_(me->eQueue.ring, me->eQueue.head) = e;
 
-            if (me->eQueue.head == (QEQueueCtr)0) { /* need to wrap head? */
+            if (me->eQueue.head == 0U) { /* need to wrap head? */
                 me->eQueue.head = me->eQueue.end;   /* wrap around */
             }
             --me->eQueue.head; /* advance the head (counter clockwise) */
@@ -186,13 +187,13 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
         QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)
-            QS_TIME_PRE_();           /* timestamp */
-            QS_OBJ_PRE_(sender);      /* the sender object */
-            QS_SIG_PRE_(e->sig);      /* the signal of the event */
-            QS_OBJ_PRE_(me);          /* this active object (recipient) */
+            QS_TIME_PRE_();       /* timestamp */
+            QS_OBJ_PRE_(sender);  /* the sender object */
+            QS_SIG_PRE_(e->sig);  /* the signal of the event */
+            QS_OBJ_PRE_(me);      /* this active object (recipient) */
             QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_EQC_PRE_(nFree);       /* number of free entries */
-            QS_EQC_PRE_((QEQueueCtr)margin); /* margin requested */
+            QS_EQC_PRE_(nFree);   /* number of free entries */
+            QS_EQC_PRE_(margin);  /* margin requested */
         QS_END_NOCRIT_PRE_()
 
 #ifdef Q_UTEST
@@ -245,14 +246,14 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 
     /* test-probe#1 for faking queue overflow */
     QS_TEST_PROBE_ID(1,
-        nFree = (QEQueueCtr)0;
+        nFree = 0U;
     )
 
     /* the queue must be able to accept the event (cannot overflow) */
-    Q_ASSERT_CRIT_(210, nFree != (QEQueueCtr)0);
+    Q_ASSERT_CRIT_(210, nFree != 0U);
 
     /* is it a dynamic event? */
-    if (e->poolId_ != (uint8_t)0) {
+    if (e->poolId_ != 0U) {
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
@@ -262,7 +263,8 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         me->eQueue.nMin = nFree; /* update minimum so far */
     }
 
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO,
+                         QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_PRE_();                  /* timestamp */
         QS_SIG_PRE_(e->sig);             /* the signal of this event */
         QS_OBJ_PRE_(me);                 /* this active object */
@@ -296,7 +298,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         ++me->eQueue.tail;
         /* need to wrap the tail? */
         if (me->eQueue.tail == me->eQueue.end) {
-            me->eQueue.tail = (QEQueueCtr)0; /* wrap around */
+            me->eQueue.tail = 0U; /* wrap around */
         }
 
         QF_PTR_AT_(me->eQueue.ring, me->eQueue.tail) = frontEvt;
@@ -335,7 +337,7 @@ QEvt const *QActive_get_(QActive * const me) {
     QACTIVE_EQUEUE_WAIT_(me);  /* wait for event to arrive directly */
 
     e = me->eQueue.frontEvt; /* always remove event from the front location */
-    nFree = me->eQueue.nFree + (QEQueueCtr)1; /* get volatile into tmp */
+    nFree = me->eQueue.nFree + 1U; /* get volatile into tmp */
     me->eQueue.nFree = nFree; /* update the number of free */
 
     /* any events in the ring buffer? */
@@ -343,7 +345,7 @@ QEvt const *QActive_get_(QActive * const me) {
 
         /* remove event from the tail */
         me->eQueue.frontEvt = QF_PTR_AT_(me->eQueue.ring, me->eQueue.tail);
-        if (me->eQueue.tail == (QEQueueCtr)0) { /* need to wrap the tail? */
+        if (me->eQueue.tail == 0U) { /* need to wrap the tail? */
             me->eQueue.tail = me->eQueue.end;   /* wrap around */
         }
         --me->eQueue.tail;
@@ -360,7 +362,7 @@ QEvt const *QActive_get_(QActive * const me) {
         me->eQueue.frontEvt = (QEvt *)0; /* queue becomes empty */
 
         /* all entries in the queue must be free (+1 for fronEvt) */
-        Q_ASSERT_CRIT_(310, nFree == (me->eQueue.end + (QEQueueCtr)1));
+        Q_ASSERT_CRIT_(310, nFree == (me->eQueue.end + 1U));
 
         QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_GET_LAST,
                          QS_priv_.locFilter[AO_OBJ], me)
@@ -397,7 +399,7 @@ uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
     uint_fast16_t min;
     QF_CRIT_STAT_
 
-    Q_REQUIRE_ID(400, (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
+    Q_REQUIRE_ID(400, (prio <= QF_MAX_ACTIVE)
                       && (QF_active_[prio] != (QActive *)0));
 
     QF_CRIT_ENTRY_();
@@ -452,7 +454,7 @@ void QTicker_ctor(QTicker * const me, uint8_t tickRate) {
 static void QTicker_init_(QHsm * const me, void const *par) {
     (void)me;
     (void)par;
-    QTICKER_CAST_(me)->eQueue.tail = (QEQueueCtr)0;
+    QTICKER_CAST_(me)->eQueue.tail = 0U;
 }
 /*..........................................................................*/
 static void QTicker_dispatch_(QHsm * const me, QEvt const * const e) {
@@ -462,11 +464,11 @@ static void QTicker_dispatch_(QHsm * const me, QEvt const * const e) {
     (void)e; /* unused parameter */
 
     QF_CRIT_ENTRY_();
-    n = QTICKER_CAST_(me)->eQueue.tail; /* # ticks since last call */
-    QTICKER_CAST_(me)->eQueue.tail = (QEQueueCtr)0; /* clear the # ticks */
+    QTICKER_CAST_(me)->eQueue.tail = 0U; /* clear the # ticks */
     QF_CRIT_EXIT_();
 
-    for (; n > (QEQueueCtr)0; --n) {
+    /* # ticks since last call */
+    for (n = QTICKER_CAST_(me)->eQueue.tail; n > 0U; --n) {
         QF_TICK_X((uint_fast8_t)QTICKER_CAST_(me)->eQueue.head, me);
     }
 }
@@ -488,7 +490,7 @@ static bool QTicker_post_(QActive * const me, QEvt const * const e,
     QF_CRIT_ENTRY_();
     if (me->eQueue.frontEvt == (QEvt *)0) {
 
-        static QEvt const tickEvt = { (QSignal)0, (uint8_t)0, (uint8_t)0 };
+        static QEvt const tickEvt = { 0U, 0U, 0U };
         me->eQueue.frontEvt = &tickEvt; /* deliver event directly */
         --me->eQueue.nFree; /* one less free event */
 
@@ -497,14 +499,15 @@ static bool QTicker_post_(QActive * const me, QEvt const * const e,
 
     ++me->eQueue.tail; /* account for one more tick event */
 
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO, QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_PRE_();           /* timestamp */
-        QS_OBJ_PRE_(sender);      /* the sender object */
-        QS_SIG_PRE_((QSignal)0);  /* the signal of the event */
-        QS_OBJ_PRE_(me);          /* this active object */
-        QS_2U8_PRE_((uint8_t)0, (uint8_t)0); /* pool Id & refCtr of the evt */
-        QS_EQC_PRE_((uint8_t)0);  /* number of free entries */
-        QS_EQC_PRE_((uint8_t)0);  /* min number of free entries */
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO,
+                         QS_priv_.locFilter[AO_OBJ], me)
+        QS_TIME_PRE_();      /* timestamp */
+        QS_OBJ_PRE_(sender); /* the sender object */
+        QS_SIG_PRE_(0U);     /* the signal of the event */
+        QS_OBJ_PRE_(me);     /* this active object */
+        QS_2U8_PRE_(0U, 0U); /* pool Id & refCtr of the evt */
+        QS_EQC_PRE_(0U);     /* number of free entries */
+        QS_EQC_PRE_(0U);     /* min number of free entries */
     QS_END_NOCRIT_PRE_()
 
     QF_CRIT_EXIT_();

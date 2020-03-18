@@ -3,14 +3,14 @@
 * @brief QV/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-10
+* Last updated for version 6.8.0
+* Last updated on  2020-01-25
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -36,6 +36,8 @@
 ******************************************************************************
 * @endcond
 */
+/* This QV port is part of the interanl QP implementation */
+#define QP_IMPL 1U
 #include "qf_port.h"
 
 #if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
@@ -43,10 +45,8 @@
 /* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction) */
 uint_fast8_t QF_qlog2(uint32_t x) {
     static uint8_t const log2LUT[16] = {
-        (uint8_t)0, (uint8_t)1, (uint8_t)2, (uint8_t)2,
-        (uint8_t)3, (uint8_t)3, (uint8_t)3, (uint8_t)3,
-        (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4,
-        (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4
+        0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,
+        4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U
     };
     uint_fast8_t n;
     __asm (

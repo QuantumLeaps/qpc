@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.5.1
-* Date of the Last Update:  2019-06-18
+* Last updated for version 6.8.0
+* Last updated on  2020-01-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -29,7 +29,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
 * <www.state-machine.com/licensing>
@@ -172,10 +172,10 @@ uint8_t QS_onStartup(void const *arg) {
                &sockopt_bool, sizeof(sockopt_bool));
     QS_onFlush();
 
-    return (uint8_t)1; /* success */
+    return 1U; /* success */
 
 error:
-    return (uint8_t)0; /* failure */
+    return 0U; /* failure */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

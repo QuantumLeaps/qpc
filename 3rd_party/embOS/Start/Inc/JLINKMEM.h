@@ -1,9 +1,9 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                     SEGGER Microcontroller GmbH                    *
 *                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
+*       (c) 1995 - 2019 SEGGER Microcontroller GmbH                  *
 *                                                                    *
 *       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
@@ -21,18 +21,16 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.34.1                                           *
+*       OS version: 5.06.1                                           *
 *                                                                    *
 **********************************************************************
 
-----------------------------------------------------------------------
-File    : JLINKMEM.h
+-------------------------- END-OF-HEADER -----------------------------
 Purpose : Header file for J-Link ARM communication using memory
----------------------------END-OF-HEADER------------------------------
 */
 
 #ifndef JLINKMEM_H
-#define JLINKMEM_H             // Avoid multiple inclusion
+#define JLINKMEM_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +38,7 @@ extern "C" {
 
 void JLINKMEM_Process(void);
 void JLINKMEM_SetpfOnRx(void (* pf)(unsigned char Data));
-void JLINKMEM_SetpfOnTx(void (* pf)(void));
+void JLINKMEM_SetpfOnTx(unsigned char (* pf)(void));
 void JLINKMEM_SetpfGetNextChar(OS_INT (* pf)(void));
 void JLINKMEM_SendChar(unsigned char Data);
 
@@ -48,7 +46,6 @@ void JLINKMEM_SendChar(unsigned char Data);
 }
 #endif
 
-#endif                         // Avoid multiple inclusion
+#endif  // JLINKMEM_H
 
-/*************************** end of file ****************************/
-
+/*************************** End of file ****************************/

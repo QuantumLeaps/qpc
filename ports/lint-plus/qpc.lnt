@@ -3,14 +3,14 @@
 /// @cond
 ///===========================================================================
 /// Product: QP/C
-/// Last Updated for Version: 6.7.0
-/// Date of the Last Update:  2019-12-31
+/// Last Updated for Version: 6.8.0
+/// Date of the Last Update:  2020-03-03
 ///
 ///                    Q u a n t u m  L e a P s
 ///                    ------------------------
 ///                    Modern Embedded Software
 ///
-/// Copyright (C) 2005-2019 Quantum Leaps. All rights reserved.
+/// Copyright (C) 2005-2020 Quantum Leaps. All rights reserved.
 ///
 /// This program is free software: you can redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
@@ -80,8 +80,7 @@
 
 // M3-D4.9(a) function-like macro
 -esym(9026,
- Q_DIM,
- Q_UINT2PTR_CAST)
+ Q_DIM)
 
 // QEP -----------------------------------------------------------------------
 // M3-D4.9(a) function-like macro

@@ -40,17 +40,17 @@
 #define QK_PORT_H
 
 /* determination if the code executes in the ISR context */
-#define QK_ISR_CONTEXT_() (__get_IPSR() != (uint32_t)0)
+#define QK_ISR_CONTEXT_() (__get_IPSR() != 0U)
 
 /* QK interrupt entry and exit */
 #define QK_ISR_ENTRY() ((void)0)
 
-#define QK_ISR_EXIT()  do { \
-    QF_INT_DISABLE(); \
-    if (QK_sched_() != (uint_fast8_t)0) { \
-        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
-    } \
-    QF_INT_ENABLE(); \
+#define QK_ISR_EXIT()  do {                                   \
+    QF_INT_DISABLE();                                         \
+    if (QK_sched_() != 0U) {                                  \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28); \
+    }                                                         \
+    QF_INT_ENABLE();                                          \
 } while (false)
 
 /* initialization of the QK kernel */

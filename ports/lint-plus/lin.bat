@@ -1,14 +1,14 @@
 @echo off
 :: ===========================================================================
-:: Product: QP/C build script for PC-Lint-Plus, "Standard" C compiler
-:: Last Updated for Version: 6.7.0
-:: Date of the Last Update:  2019-12-29
+:: Product: QP/C build script for PC-Lint-Plus
+:: Last Updated for Version: 6.8.0
+:: Date of the Last Update:  2020-01-26
 ::
 ::                    Q u a n t u m  L e a P s
 ::                    ------------------------
 ::                    Modern Embedded Software
 ::
-:: Copyright (C) Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 ::
 :: This program is open source software: you can redistribute it and/or
 :: modify it under the terms of the GNU General Public License as published
@@ -32,25 +32,39 @@
 :: <www.state-machine.com/licensing>
 :: <info@state-machine.com>
 :: ===========================================================================
-setlocal
+@setlocal
 
-:: Options for calling lin.bat
+:: usage of lin.bat
+@echo Usage: lin [16bit] [-d...]
+@echo examples:
+@echo lin -dQ_SPY -dQ_UTEST : use 32bit CPU (default) and define Q_SPY and Q_UTEST
+@echo lin 16bit -dQ_SPY     : use 16bit CPU includes and define Q_SPY
+@echo.
 
 :: NOTE: adjust to for your installation directory of PC-Lint-Plus
-set PCLP_DIR=C:\tools\lint-plus
-set PCLP=%PCLP_DIR%\pclp32.exe
+@set PCLP=C:\tools\lint-plus\pclp32.exe
 
 if NOT exist "%PCLP%" (
     @echo The PC-Lint-Plus toolset not found. Please adjust lin.bat
-    goto end
+    @goto end
 )
 
 :: set the QP/C directory
-set QPC=..\..
-set LINTFLAGS=std.lnt options.lnt %1 %2 %3 %4
+@set QPC=..\..
+
+if "%1"=="16bit" (
+    set LINTFLAGS=std.lnt -i16bit options.lnt %2 %3 %4
+    @echo 16bit CPU
+) else (
+    set LINTFLAGS=std.lnt -i32bit options.lnt %1 %2 %3 %4
+    @echo 32bit CPU default
+)
+
+:: cleanup
+@del *.log
 
 :: linting -------------------------------------------------------------------
-%PCLP% -os(lint_qf.log)  %LINTFLAGS% -iqv  ..\..\src\qf\*.c 
+%PCLP% -os(lint_qf.log)  %LINTFLAGS% -iqv  ..\..\src\qf\*.c
 
 %PCLP% -os(lint_qv.log)  %LINTFLAGS% -iqv  ..\..\src\qv\*.c
 
@@ -61,4 +75,4 @@ set LINTFLAGS=std.lnt options.lnt %1 %2 %3 %4
 %PCLP% -os(lint_qs.log)  %LINTFLAGS% -iqv  ..\..\src\qs\*.c
 
 :end
-endlocal
+@endlocal

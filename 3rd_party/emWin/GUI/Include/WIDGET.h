@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -27,7 +27,8 @@ Purpose     : Widget interface
 extern "C" {     /* Make sure we have C-declarations in C++ programs */
 #endif
 
-#include "WM_Intern.h"  /* Window manager, including some internals, which speed things up */
+#include "WM.h"  /* Window manager, including some internals, which speed things up */
+#include "GUI_Debug.h"
 
 #if GUI_WINSUPPORT
 
@@ -43,6 +44,7 @@ typedef struct {
   int        ItemIndex;
   int        Col;
   int        x0, y0, x1, y1;
+  I32        Angle;
   void     * p;
 } WIDGET_ITEM_DRAW_INFO;
 
@@ -102,6 +104,8 @@ typedef struct {
 #define SPINBOX_ID   0x5350494eUL /* SPIN */
 #define KNOB_ID      0x4b4e4f42UL /* KNOB */
 #define WINDOW_ID    0x57494e44UL /* WIND */
+#define ROTARY_ID    0x524f5441UL /* ROTA */
+#define SWITCH_ID    0x53574954UL /* SWIT */
 
 #define WIDGET_LOCK(hWin)       ((WIDGET*)GUI_LOCK_H(hWin))
 
@@ -114,7 +118,11 @@ typedef struct {
   #define WIDGET_USE_PARENT_EFFECT 0
 #endif
 #ifndef   WIDGET_USE_FLEX_SKIN
-  #define WIDGET_USE_FLEX_SKIN     1
+  #if WM_SUPPORT_TRANSPARENCY
+    #define WIDGET_USE_FLEX_SKIN     1
+  #else
+    #define WIDGET_USE_FLEX_SKIN     0
+  #endif
 #endif
 #if !defined(WIDGET_USE_SCHEME_SMALL) && !defined(WIDGET_USE_SCHEME_MEDIUM) && !defined(WIDGET_USE_SCHEME_LARGE)
   #define WIDGET_USE_SCHEME_SMALL  1
@@ -141,11 +149,13 @@ typedef struct {
 
 #define WIDGET_STATE_FOCUS              (1 << 0)
 #define WIDGET_STATE_VERTICAL           (1 << 3)
-#define WIDGET_STATE_FOCUSSABLE         (1 << 4)
+#define WIDGET_STATE_FOCUSABLE          (1 << 4)
 
 #define WIDGET_STATE_USER0              (1 << 8)    /* Freely available for derived widget */
 #define WIDGET_STATE_USER1              (1 << 9)    /* Freely available for derived widget */
 #define WIDGET_STATE_USER2              (1 << 10)   /* Freely available for derived widget */
+
+#define WIDGET_STATE_FOCUSSABLE         WIDGET_STATE_FOCUSABLE
 
 /*********************************************************************
 *
@@ -182,9 +192,12 @@ typedef struct {
 #define WIDGET_ITEM_GET_RADIUS         28
 #define WIDGET_ITEM_APPLY_PROPS        29  // Not to be documented. Use this message identifier to update the
                                            // properties of attached widgets from <WIDGET>_DrawSkinFlex().
+#define WIDGET_DRAW_BACKGROUND         30
+
+#define WIDGET_ITEM_DRAW_BUTTON_U      WIDGET_ITEM_DRAW_BUTTON_R
+#define WIDGET_ITEM_DRAW_BUTTON_D      WIDGET_ITEM_DRAW_BUTTON_L
 
 #define WIDGET_DRAW_OVERLAY    WIDGET_ITEM_DRAW_OVERLAY
-#define WIDGET_DRAW_BACKGROUND WIDGET_ITEM_DRAW_BACKGROUND
 
 /*********************************************************************
 *
@@ -249,10 +262,10 @@ typedef struct {
 
 /* Declare Object */
 struct GUI_DRAW {
-  const GUI_DRAW_CONSTS* pConsts;
+  const GUI_DRAW_CONSTS * pConsts;
   union {
     const void * pData;
-    GUI_DRAW_SELF_CB* pfDraw;
+    GUI_DRAW_SELF_CB * pfDraw;
   } Data;
   I16 xOff, yOff;
 };
@@ -262,11 +275,18 @@ void GUI_DRAW__Draw    (GUI_DRAW_HANDLE hDrawObj, WM_HWIN hObj, int x, int y);
 int  GUI_DRAW__GetXSize(GUI_DRAW_HANDLE hDrawObj);
 int  GUI_DRAW__GetYSize(GUI_DRAW_HANDLE hDrawObj);
 
+void GUI_DrawStreamedEnableAuto(void);
+
 /* GUI_DRAW_ Constructurs for different objects */
-WM_HMEM GUI_DRAW_BITMAP_Create  (const GUI_BITMAP* pBitmap, int x, int y);
-WM_HMEM GUI_DRAW_BMP_Create     (const void* pBMP, int x, int y);
-WM_HMEM GUI_DRAW_STREAMED_Create(const GUI_BITMAP_STREAM * pBitmap, int x, int y);
-WM_HMEM GUI_DRAW_SELF_Create(GUI_DRAW_SELF_CB* pfDraw, int x, int y);
+WM_HMEM GUI_DRAW_BITMAP_Create     (const GUI_BITMAP * pBitmap, int x, int y);
+WM_HMEM GUI_DRAW_BMP_Create        (const void * pBMP, int x, int y);
+WM_HMEM GUI_DRAW_STREAMED_Create   (const GUI_BITMAP_STREAM * pBitmap, int x, int y);
+WM_HMEM GUI_DRAW_SELF_Create       (GUI_DRAW_SELF_CB * pfDraw, int x, int y);
+WM_HMEM GUI_DRAW_BITMAP_HQHR_Create(const GUI_BITMAP * pBitmap, int x, int y);
+
+#if (GUI_SUPPORT_MEMDEV == 1)
+  void GUI_MEMDEV_DrawBitmapObj32HQHR  (GUI_DRAW_HANDLE hDrawObj, WM_HWIN hWin, int x0HR, int y0HR);  // This function uses parameter which are only available when Widgets and WM are available
+#endif
 
 /*********************************************************************
 *
@@ -307,6 +327,12 @@ void      WIDGET__RotateRect90       (WIDGET * pWidget, GUI_RECT * pDest, const 
 void      WIDGET__SetScrollState     (WM_HWIN hWin, const WM_SCROLL_STATE * pVState, const WM_SCROLL_STATE * pState);
 void      WIDGET__FillStringInRect   (const char * pText, const GUI_RECT * pFillRect, const GUI_RECT * pTextRectMax, const GUI_RECT * pTextRectAct);
 
+//
+// Function pointers for drawing streamed bitmaps
+//
+extern void (* GUI__pfDrawStreamedBitmap)  (const void * p, int x, int y);
+extern int  (* GUI__pfDrawStreamedBitmapEx)(GUI_GET_DATA_FUNC * pfGetData, const void * p, int x, int y);
+
 /*********************************************************************
 *
 *       API routines
@@ -319,6 +345,7 @@ void  WIDGET_OrState      (WM_HWIN hObj, int State);
 int   WIDGET_HandleActive (WM_HWIN hObj, WM_MESSAGE* pMsg);
 int   WIDGET_GetState     (WM_HWIN hObj);
 int   WIDGET_SetWidth     (WM_HWIN hObj, int Width);
+void  WIDGET_SetFocusable (WM_HWIN hObj, int State);
 
 void  WIDGET_EFFECT_3D_DrawUp(void);
 
@@ -349,6 +376,8 @@ int WIDGET_EFFECT_Simple_GetNumColors(void);
 *
 **********************************************************************
 */
+#define WIDGET_EnableStreamAuto() GUI_DrawStreamedEnableAuto()
+
 #define WIDGET_SetDefaultEffect_3D()     WIDGET_SetDefaultEffect(&WIDGET_Effect_3D)
 #define WIDGET_SetDefaultEffect_3D1L()   WIDGET_SetDefaultEffect(&WIDGET_Effect_3D1L)
 #define WIDGET_SetDefaultEffect_3D2L()   WIDGET_SetDefaultEffect(&WIDGET_Effect_3D2L)
@@ -363,6 +392,4 @@ int WIDGET_EFFECT_Simple_GetNumColors(void);
 
 #endif   /* SLIDER_H */
 
-
-
-
+/*************************** End of file ****************************/

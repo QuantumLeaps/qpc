@@ -136,7 +136,7 @@ void BSP_onKeyboardInput(uint8_t key) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const * const file, int line) {
+Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
     fprintf(stderr, "Assertion failed in %s, line %d", file, line);
     exit(-1);
 }

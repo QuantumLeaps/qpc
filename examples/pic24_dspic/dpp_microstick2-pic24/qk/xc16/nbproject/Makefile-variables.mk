@@ -4,20 +4,20 @@
 # NOCDDL
 #
 CND_BASEDIR=`pwd`
-# default configuration
-CND_ARTIFACT_DIR_default=dist/default/production
-CND_ARTIFACT_NAME_default=xc16.production.hex
-CND_ARTIFACT_PATH_default=dist/default/production/xc16.production.hex
-CND_PACKAGE_DIR_default=${CND_DISTDIR}/default/package
-CND_PACKAGE_NAME_default=xc16.tar
-CND_PACKAGE_PATH_default=${CND_DISTDIR}/default/package/xc16.tar
-# release configuration
-CND_ARTIFACT_DIR_release=dist/release/production
-CND_ARTIFACT_NAME_release=xc16.production.hex
-CND_ARTIFACT_PATH_release=dist/release/production/xc16.production.hex
-CND_PACKAGE_DIR_release=${CND_DISTDIR}/release/package
-CND_PACKAGE_NAME_release=xc16.tar
-CND_PACKAGE_PATH_release=${CND_DISTDIR}/release/package/xc16.tar
+# dbg configuration
+CND_ARTIFACT_DIR_dbg=dist/dbg/production
+CND_ARTIFACT_NAME_dbg=xc16.production.hex
+CND_ARTIFACT_PATH_dbg=dist/dbg/production/xc16.production.hex
+CND_PACKAGE_DIR_dbg=${CND_DISTDIR}/dbg/package
+CND_PACKAGE_NAME_dbg=xc16.tar
+CND_PACKAGE_PATH_dbg=${CND_DISTDIR}/dbg/package/xc16.tar
+# rel configuration
+CND_ARTIFACT_DIR_rel=dist/rel/production
+CND_ARTIFACT_NAME_rel=xc16.production.hex
+CND_ARTIFACT_PATH_rel=dist/rel/production/xc16.production.hex
+CND_PACKAGE_DIR_rel=${CND_DISTDIR}/rel/package
+CND_PACKAGE_NAME_rel=xc16.tar
+CND_PACKAGE_PATH_rel=${CND_DISTDIR}/rel/package/xc16.tar
 # spy configuration
 CND_ARTIFACT_DIR_spy=dist/spy/production
 CND_ARTIFACT_NAME_spy=xc16.production.hex

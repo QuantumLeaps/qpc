@@ -72,8 +72,8 @@ static uint32_t l_rnd;      /* random seed */
 #ifdef Q_SPY
 
     /* QS source IDs */
-    static uint8_t const l_rtiCompare0 = (uint8_t)0;
-    static uint8_t const l_ssiTest = (uint8_t)0;
+    static uint8_t const l_rtiCompare0 = 0U;
+    static uint8_t const l_ssiTest = 0U;
 
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,
@@ -267,13 +267,13 @@ void QV_onIdle(void) { /* CATION: called with interrupts DISABLED, NOTE01 */
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
     systemREG1->SYSECR = 0; /* perform system reset */
 }
 /* QS callbacks ============================================================*/
@@ -305,7 +305,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(PHILO_STAT);
     QS_FILTER_ON(COMMAND_STAT);
 
-    return (uint8_t)1; /* return success */
+    return 1U; /* return success */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

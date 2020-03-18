@@ -1,9 +1,9 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                     SEGGER Microcontroller GmbH                    *
 *                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
+*       (c) 1995 - 2019 SEGGER Microcontroller GmbH                  *
 *                                                                    *
 *       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
@@ -21,7 +21,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.34.1                                           *
+*       OS version: 5.06.1                                           *
 *                                                                    *
 **********************************************************************
 
@@ -124,7 +124,7 @@ RX_BUF    Receiving buffer
 
 /* Pointer to user callbacks */
 void (* _pfOnRx) (U8 Data);
-void (* _pfOnTx) (void);
+U8 (* _pfOnTx) (void);
 OS_INT (* _pfGetNextChar) (void);
 
 static U32  _BaseAddr;
@@ -207,12 +207,12 @@ static void _Init(void) {
 static int _LockTxBuf(void) {
   int Locked = 0;
 
-  OS_DI();
+  OS_INT_Disable();
   if (!_TxBufLocked) {
     _TxBufLocked = 1;
     Locked = 1;
   }
-  OS_RestoreI();
+  OS_INT_EnableConditional();
   return Locked;
 }
 
@@ -283,10 +283,10 @@ static void _FillTxBuf(U8 Data) {
       ++Cnt;
     }
   }
-  OS_DI();
+  OS_INT_Disable();
   _RetriggerTimer();
   TX_CNT = (U8)Cnt;
-  OS_RestoreI();
+  OS_INT_EnableConditional();
 }
 
 /*********************************************************************
@@ -407,13 +407,17 @@ void JLINKMEM_SendChar(U8 Data) {
       //
       // Host not connected, drop characters
       //
-      _DropTxData();
+      OS_TASK_EnterRegion();
+      OS_COM_ClearTxActive();
+      OS_TASK_LeaveRegion();
     }
   } else {
     //
     // embOS not started, drop characters
     //
-    _DropTxData();
+    OS_TASK_EnterRegion();
+    OS_COM_ClearTxActive();
+    OS_TASK_LeaveRegion();
   }
 }
 
@@ -429,7 +433,7 @@ void JLINKMEM_SetpfOnRx(void (* pf)(U8 Data)) {
 *
 *       JLINKMEM_SetpfOnTx
 */
-void JLINKMEM_SetpfOnTx(void (* pf)(void)) {
+void JLINKMEM_SetpfOnTx(U8 (* pf)(void)) {
   _pfOnTx = pf;
 }
 

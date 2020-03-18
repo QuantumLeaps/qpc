@@ -3,14 +3,14 @@
 * @brief QXK/C port to ARM Cortex-M, IAR-ARM toolset
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-28
+* Last updated for version 6.8.0
+* Last updated on  2020-01-25
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,7 +28,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
 * <www.state-machine.com/licensing>
@@ -36,11 +36,12 @@
 ******************************************************************************
 * @endcond
 */
+/* This QXK port is part of the interanl QP implementation */
+#define QP_IMPL 1U
 #include "qf_port.h"
+#include "qxk_pkg.h"
 
 /* prototypes --------------------------------------------------------------*/
-void QXK_stackInit_(void *act, QXThreadHandler thread,
-                    void *stkSto, uint_fast16_t stkSize);
 void PendSV_Handler(void);
 void NMI_Handler(void);
 
@@ -107,8 +108,8 @@ void QXK_init(void) {
 * of this thread. In that case the kernel cannot use the thread yet, so no
 * critical section is needed.
 *****************************************************************************/
-void QXK_stackInit_(void *act, QXThreadHandler thread,
-                    void *stkSto, uint_fast16_t stkSize)
+void QXK_stackInit_(void *thr, QXThreadHandler const handler,
+                    void * const stkSto, uint_fast16_t const stkSize)
 {
     extern void QXK_threadRet_(void); /* extended thread return */
 
@@ -121,13 +122,13 @@ void QXK_stackInit_(void *act, QXThreadHandler thread,
 
     /* synthesize the ARM Cortex-M exception stack frame...*/
     *(--sp) = (1U << 24);    /* xPSR  (just the THUMB bit) */
-    *(--sp) = (uint32_t)thread;          /* PC (the thread routine) */
+    *(--sp) = (uint32_t)handler;         /* PC (the thread handler) */
     *(--sp) = (uint32_t)&QXK_threadRet_; /* LR (return from thread) */
     *(--sp) = 0x0000000CU;   /* R12 */
     *(--sp) = 0x00000003U;   /* R3  */
     *(--sp) = 0x00000002U;   /* R2  */
     *(--sp) = 0x00000001U;   /* R1  */
-    *(--sp) = (uint32_t)act; /* R0 (argument to the thread routine */
+    *(--sp) = (uint32_t)thr; /* R0 (argument to the thread routine */
     *(--sp) = 0x0000000BU;   /* R11 */
     *(--sp) = 0x0000000AU;   /* R10 */
     *(--sp) = 0x00000009U;   /* R9  */
@@ -143,7 +144,7 @@ void QXK_stackInit_(void *act, QXThreadHandler thread,
 #endif                       /* VFP available */
 
     /* save the top of the stack in the thread's attibute */
-    ((QActive *)act)->osObject = sp;
+    ((QActive *)thr)->osObject = sp;
 
     /* pre-fill the unused part of the stack with 0xDEADBEEF */
     sp_limit = (uint32_t *)(((((uint32_t)stkSto - 1U) >> 3) + 1U) << 3);
@@ -566,10 +567,8 @@ __asm (
 *****************************************************************************/
 uint_fast8_t QF_qlog2(uint32_t x) {
     static uint8_t const log2LUT[16] = {
-        (uint8_t)0, (uint8_t)1, (uint8_t)2, (uint8_t)2,
-        (uint8_t)3, (uint8_t)3, (uint8_t)3, (uint8_t)3,
-        (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4,
-        (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4
+        0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,
+        4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U
     };
     uint_fast8_t n;
     __asm (

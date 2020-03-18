@@ -66,7 +66,7 @@ void QF_onClockTick(void) {
     }
 }
 /*..........................................................................*/
-void Q_onAssert(char const * const module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     fprintf(stderr, "Assertion failed in %s:%d", module, loc);
     QF_onCleanup();
     exit(-1);

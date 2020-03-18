@@ -183,7 +183,7 @@ ifeq (rel, $(CONF)) # Release configuration ..................................
 
 BIN_DIR := build_rel
 # gcc options:
-CFLAGS  = -c -O3 -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+CFLAGS  = -c -O3 -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
 	$(INCLUDES) $(DEFINES) -DNDEBUG
 
 CPPFLAGS = -c -O3 -fno-pie -std=c++11 -pedantic -Wall -Wextra \
@@ -198,7 +198,7 @@ C_SRCS   += $(QS_SRCS)
 VPATH    += $(QPC)/src/qs
 
 # gcc options:
-CFLAGS  = -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+CFLAGS  = -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
 	$(INCLUDES) $(DEFINES) -DQ_SPY
 
 CPPFLAGS = -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
@@ -210,7 +210,7 @@ else # default Debug configuration .........................................
 BIN_DIR := build
 
 # gcc options:
-CFLAGS  = -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+CFLAGS  = -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
 	$(INCLUDES) $(DEFINES)
 
 CPPFLAGS = -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \

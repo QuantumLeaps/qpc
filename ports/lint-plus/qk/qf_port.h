@@ -4,14 +4,14 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-11-22
+* Last updated for version 6.8.0
+* Last updated on  2020-01-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -44,7 +44,7 @@
 /**
 * @description
 * This macro *must* be defined in the QF port and should be in range
-* of 1..64, inclusive. The value of this macro determines the maximum
+* of 1U..64U, inclusive. The value of this macro determines the maximum
 * priority level of an active object in the system. Not all priority
 * levels must be used, but the maximum priority cannot exceed
 * #QF_MAX_ACTIVE.
@@ -55,17 +55,17 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_MAX_ACTIVE               32
+#define QF_MAX_ACTIVE               32U
 
 /*! The maximum number of event pools in the application. */
 /**
 * @description
 * This macro should be defined in the QF ports and should be in range
-* of 1..255, inclusive. The value of this macro determines the maximum
+* of 1U..255U, inclusive. The value of this macro determines the maximum
 * event pools in the system. Not all event pools must be actually used,
 * but the maximum number of pools cannot exceed #QF_MAX_EPOOL.
 *
-* If the macro is not defined, the default value is 3. Defining the value
+* If the macro is not defined, the default value is 3U. Defining the value
 * below the maximum saves some memory, mostly for the subscriber-lists.
 * @sa ::QSubscrList.
 *
@@ -75,16 +75,16 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_MAX_EPOOL               3
+#define QF_MAX_EPOOL                3U
 
 /*! The size (in bytes) of the event-size representation in the QF.
-* Valid values: 1, 2, or 4; default 2
+* Valid values: 1U, 2U, or 4U; default 2U
 */
 /**
 * @description
 * This macro can be defined in the QF ports to configure the ::QEvtSize
 * type. If the macro is not defined, the default of 2 byte will be chosen in
-* qf.h. The valid #QF_EVENT_SIZ_SIZE values of 1, 2, or 4, correspond
+* qf.h. The valid #QF_EVENT_SIZ_SIZE values of 1U, 2U, or 4U, correspond
 * to ::QEvtSize of uint8_t, uint16_t, and uint32_t, respectively. The
 * ::QEvtSize data type determines the dynamic range of event-sizes in
 * your application.
@@ -96,16 +96,16 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_EVENT_SIZ_SIZE           2
+#define QF_EVENT_SIZ_SIZE           2U
 
 /*! The size (in bytes) of the ring-buffer counters used in the native QF
-* event queue implementation. Valid values: 1, 2, or 4; default 1
+* event queue implementation. Valid values: 1U, 2U, or 4U; default 1U
 */
 /**
 * @description
 * This macro can be defined in the QF ports to configure the ::QEQueueCtr
 * type. If the macro is not defined, the default of 1 byte will be chosen in
-* qequeue.h. The valid #QF_EQUEUE_CTR_SIZE values of 1, 2, or 4, correspond
+* qequeue.h. The valid #QF_EQUEUE_CTR_SIZE values of 1U, 2U, or 4U, correspond
 * to ::QEQueueCtr of uint8_t, uint16_t, and uint32_t, respectively. The
 * ::QEQueueCtr data type determines the dynamic range of numerical values of
 * ring-buffer counters inside event queues, or, in other words, the maximum
@@ -118,10 +118,10 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_EQUEUE_CTR_SIZE          1
+#define QF_EQUEUE_CTR_SIZE          1U
 
 /*! The size (in bytes) of the block-size representation in the native QF
-* event pool. Valid values: 1, 2, or 4; default #QF_EVENT_SIZ_SIZE.
+* event pool. Valid values: 1U, 2U, or 4U; default #QF_EVENT_SIZ_SIZE.
 */
 /**
 * @description
@@ -130,7 +130,7 @@
 * will be chosen in qmpool.h, because the memory pool is primarily used for
 * implementing event pools.
 *
-* The valid #QF_MPOOL_SIZ_SIZE values of 1, 2, or 4, correspond to
+* The valid #QF_MPOOL_SIZ_SIZE values of 1U, 2U, or 4U, correspond to
 * ::QMPoolSize of uint8_t, uint16_t, and uint32_t, respectively. The
 * ::QMPoolSize data type determines the dynamic range of block-sizes that
 * the native ::QMPool can handle.
@@ -142,19 +142,19 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_MPOOL_SIZ_SIZE           2
+#define QF_MPOOL_SIZ_SIZE           2U
 
 /*! The size (in bytes) of the block-counter representation in the
-* native QF event pool. Valid values: 1, 2, or 4; default 2.
+* native QF event pool. Valid values: 1U, 2U, or 4U; default 2U.
 */
 /**
 * @description
 * This macro can be defined in the QF ports to configure the ::QMPoolCtr
 * type. If the macro is not defined, the default of 2 bytes will be chosen
-* in qmpool.h. The valid #QF_MPOOL_CTR_SIZE values of 1, 2, or 4, correspond
-* to ::QMPoolSize of uint8_t, uint16_t, and uint32_t, respectively. The
-* ::QMPoolCtr data type determines the dynamic range of block-counters that
-* the native ::QMPool can handle, or, in other words, the maximum number
+* in qmpool.h. The valid #QF_MPOOL_CTR_SIZE values of 1U, 2U, or 4U,
+* correspond to ::QMPoolSize of uint8_t, uint16_t, and uint32_t, respectively.
+* The ::QMPoolCtr data type determines the dynamic range of block-counters
+* that the native ::QMPool can handle, or, in other words, the maximum number
 * of blocks that the native QF event pool can manage.
 * @sa ::QMPool
 *
@@ -164,10 +164,10 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_MPOOL_CTR_SIZE           2
+#define QF_MPOOL_CTR_SIZE           2U
 
 /*! The size (in bytes) of the time event-counter representation
-* in the ::QTimeEvt struct. Valid values: 1, 2, or 4; default 2.
+* in the ::QTimeEvt struct. Valid values: 1U, 2U, or 4U; default 2U.
 */
 /**
 * @description
@@ -185,7 +185,7 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_TIMEEVT_CTR_SIZE         2
+#define QF_TIMEEVT_CTR_SIZE         2U
 
 /*! Define the interrupt disabling policy.
 *

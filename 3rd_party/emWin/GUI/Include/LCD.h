@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -111,9 +111,9 @@ typedef struct {
 *
 *       LCD_L0_... color conversion
 */
-typedef LCD_COLOR      tLCDDEV_Index2Color  (unsigned Index);
-typedef unsigned int   tLCDDEV_Color2Index  (LCD_COLOR Color);
-typedef unsigned int   tLCDDEV_GetIndexMask (void);
+typedef LCD_COLOR      tLCDDEV_Index2Color  (LCD_PIXELINDEX Index);
+typedef LCD_PIXELINDEX tLCDDEV_Color2Index  (LCD_COLOR Color);
+typedef LCD_PIXELINDEX tLCDDEV_GetIndexMask (void);
 
 typedef void tLCDDEV_Index2ColorBulk(void * pIndex, LCD_COLOR * pColor, U32 NumItems, U8 SizeOfIndex);
 typedef void tLCDDEV_Color2IndexBulk(LCD_COLOR * pColor, void * pIndex, U32 NumItems, U8 SizeOfIndex);
@@ -388,10 +388,26 @@ tLCDDEV_Color2Index * LCD_GetpfColor2Index(void);
 
 int LCD_GetNumLayers(void);
 
-LCD_COLOR * LCD_GetPalette  (void);
-LCD_COLOR * LCD_GetPaletteEx(int LayerIndex);
+LCD_COLOR * LCD_GetPalette   (void);
+LCD_COLOR * LCD_GetPaletteEx (int LayerIndex);
+void      * LCD_GetVRAMAddr  (void);
+void      * LCD_GetVRAMAddrEx(int LayerIndex);
 
 void (* LCD_GetDevFunc(int LayerIndex, int Item))(void);
+
+/*********************************************************************
+*
+*       Runtime rotation of drivers
+*/
+int LCD_ROTATE_AddDriver  (const GUI_DEVICE_API * pDriver);
+int LCD_ROTATE_AddDriverEx(const GUI_DEVICE_API * pDeviceAPI, int LayerIndex);
+int LCD_ROTATE_DecSel     (void);
+int LCD_ROTATE_DecSelEx   (int LayerIndex);
+int LCD_ROTATE_IncSel     (void);
+int LCD_ROTATE_IncSelEx   (int LayerIndex);
+int LCD_ROTATE_SetCallback(void (* pCbOnConfig)(GUI_DEVICE *, int, int), int LayerIndex);
+int LCD_ROTATE_SetSel     (int Index);
+int LCD_ROTATE_SetSelEx   (int Index, int LayerIndex);
 
 /*********************************************************************
 *
@@ -405,7 +421,6 @@ void (* LCD_GetDevFunc(int LayerIndex, int Item))(void);
 #define LCD_DEVFUNC_SETSIZE       0x05 /* ...setting the layer size */
 #define LCD_DEVFUNC_SETVIS        0x06 /* ...setting the visibility of a layer */
 #define LCD_DEVFUNC_24BPP         0x07 /* ...drawing 24bpp bitmaps */
-#define LCD_DEVFUNC_NEXT_PIXEL    0x08 /* ...drawing a bitmap pixel by pixel */
 #define LCD_DEVFUNC_SET_VRAM_ADDR 0x09 /* ...setting the VRAM address */
 #define LCD_DEVFUNC_SET_VSIZE     0x0A /* ...setting the VRAM size */
 #define LCD_DEVFUNC_SET_SIZE      0x0B /* ...setting the display size */
@@ -433,6 +448,8 @@ void (* LCD_GetDevFunc(int LayerIndex, int Item))(void);
 #define LCD_DEVFUNC_READPIXEL     0x26 /* ...reading a pixel index */
 #define LCD_DEVFUNC_READMPIXELS   0x27 /* ...reading multiple pixel indices */
 #define LCD_DEVFUNC_DRAWBMP_32BPP 0x28 /* ...drawing a 32bpp bitmap */
+#define LCD_DEVFUNC_SET_BUFFERPTR 0x29 /* ...setting an array of buffer pointers */
+#define LCD_DEVFUNC_EXIT          0x30 /* ...free memory and shut down controller */
 
 /*********************************************************************
 *
@@ -448,6 +465,8 @@ void (* LCD_GetDevFunc(int LayerIndex, int Item))(void);
                                        /* Request pointer to... */
 #define LCD_DEVDATA_MEMDEV        0x01 /* ...default memory device API */
 #define LCD_DEVDATA_PHYSPAL       0x02 /* ...physical palette */
+#define LCD_DEVDATA_VRAMADDR      0x03 /* ...VRAM address */
+#define LCD_DEVDATA_NEXT_PIXEL    0x04 /* ...drawing a bitmap pixel by pixel */
 
 /*********************************************************************
 *
@@ -526,44 +545,41 @@ void LCD_X_Config(void);
 
 /*********************************************************************
 *
-*       Set layer properties
+*       Get/Set layer properties
 */
-int LCD_SetAlphaEx     (int LayerIndex, int Alpha);
-int LCD_SetPosEx       (int LayerIndex, int xPos, int yPos);
-int LCD_SetSizeEx      (int LayerIndex, int xSize, int ySize);
-int LCD_SetVisEx       (int LayerIndex, int OnOff);
-int LCD_SetVRAMAddrEx  (int LayerIndex, void * pVRAM);
-int LCD_SetVSizeEx     (int LayerIndex, int xSize, int ySize);
-int LCD_SetAlphaModeEx (int LayerIndex, int AlphaMode);
-int LCD_SetChromaModeEx(int LayerIndex, int ChromaMode);
-int LCD_SetChromaEx    (int LayerIndex, LCD_COLOR ChromaMin, LCD_COLOR ChromaMax);
+int  LCD_GetPosEx       (int LayerIndex, int * pxPos, int * pyPos);
+int  LCD_OffEx          (int LayerIndex);
+int  LCD_OnEx           (int LayerIndex);
+int  LCD_RefreshEx      (int LayerIndex);
+int  LCD_SetAlphaEx     (int LayerIndex, int Alpha);
+int  LCD_SetAlphaModeEx (int LayerIndex, int AlphaMode);
+int  LCD_SetBufferPtrEx (int LayerIndex, void ** pBufferPTR);
+int  LCD_SetChromaEx    (int LayerIndex, LCD_COLOR ChromaMin, LCD_COLOR ChromaMax);
+int  LCD_SetChromaModeEx(int LayerIndex, int ChromaMode);
+int  LCD_SetDevFunc     (int LayerIndex, int IdFunc, void (* pDriverFunc)(void));
+int  LCD_SetLUTEntryEx  (int LayerIndex, U8 Pos, LCD_COLOR Color);
+int  LCD_SetPosEx       (int LayerIndex, int xPos, int yPos);
+int  LCD_SetSizeEx      (int LayerIndex, int xSize, int ySize);
+int  LCD_SetVisEx       (int LayerIndex, int OnOff);
+int  LCD_SetVRAMAddrEx  (int LayerIndex, void * pVRAM);
+int  LCD_SetVSizeEx     (int LayerIndex, int xSize, int ySize);
 
-int LCD_SetAlpha     (int Alpha);
-int LCD_SetVRAMAddr  (void * pVRAM);
-int LCD_SetVSize     (int xSize, int ySize);
-int LCD_SetSize      (int xSize, int ySize);
-int LCD_SetVis       (int OnOff);
-int LCD_SetPos       (int xPos, int yPos);
-int LCD_SetAlphaMode (int AlphaMode);
-int LCD_SetChromaMode(int ChromaMode);
-int LCD_SetChroma    (LCD_COLOR ChromaMin, LCD_COLOR ChromaMax);
-int LCD_SetLUTEntry  (U8 Pos, LCD_COLOR Color);
-int LCD_SetDevFunc   (int LayerIndex, int IdFunc, void (* pDriverFunc)(void));
-
-/*********************************************************************
-*
-*       Get layer properties
-*/
-int LCD_GetPosEx(int LayerIndex, int * pxPos, int * pyPos);
-
-int LCD_GetPos  (int * pxPos, int * pyPos);
-
-/*********************************************************************
-*
-*       Display refresh (optional)
-*/
-int LCD_Refresh  (void);
-int LCD_RefreshEx(int LayerIndex);
+int  LCD_GetPos         (int * pxPos, int * pyPos);
+int  LCD_Off            (void);
+int  LCD_On             (void);
+int  LCD_Refresh        (void);
+int  LCD_SetAlpha       (int Alpha);
+int  LCD_SetAlphaMode   (int AlphaMode);
+int  LCD_SetBufferPtr   (void ** pBufferPTR);
+int  LCD_SetChroma      (LCD_COLOR ChromaMin, LCD_COLOR ChromaMax);
+int  LCD_SetChromaMode  (int ChromaMode);
+int  LCD_SetLUTEntry    (U8 Pos, LCD_COLOR Color);
+void LCD_SetOrg         (int xOrg, int yOrg);
+int  LCD_SetPos         (int xPos, int yPos);
+int  LCD_SetSize        (int xSize, int ySize);
+int  LCD_SetVis         (int OnOff);
+int  LCD_SetVRAMAddr    (void * pVRAM);
+int  LCD_SetVSize       (int xSize, int ySize);
 
 /*********************************************************************
 *
@@ -571,7 +587,7 @@ int LCD_RefreshEx(int LayerIndex);
 */
 typedef struct {
   int  (* pfStart)   (int x0, int y0, int x1, int y1);
-  void (* pfSetPixel)(int PixelIndex);
+  void (* pfSetPixel)(LCD_PIXELINDEX PixelIndex);
   void (* pfNextLine)(void);
   void (* pfEnd)     (void);
 } LCD_API_NEXT_PIXEL;
@@ -609,6 +625,8 @@ I32  LCD_GetDevCapEx(int LayerIndex, int Index);
 /* Initialize LCD using config-parameters */
 int LCD_Init(void);
 int LCD_InitColors(void);
+int LCD_InitEx(GUI_DEVICE * pDevice, int ClearScreen);
+int LCD_ExitEx(int LayerIndex);
 
 void LCD_SetBkColor   (LCD_COLOR Color); /* Set background color */
 void LCD_SetColor     (LCD_COLOR Color); /* Set foreground color */
@@ -616,7 +634,6 @@ void LCD_SetPixelIndex(int x, int y, int ColorIndex);
 
 /* Palette routines (Not available on all drivers) */
 void LCD_InitLUT(void);
-int  LCD_SetLUTEntryEx(int LayerIndex, U8 Pos, LCD_COLOR Color);
 void LCD_SetLUTEx(int LayerIndex, const LCD_PHYSPALETTE * pPalette);
 void LCD_SetLUT  (const LCD_PHYSPALETTE * pPalette);
 
@@ -632,6 +649,10 @@ void LCD_SetPixelAA4_NoTrans(int x, int y, U8 Intens);
 void LCD_SetPixelAA8_Trans  (int x, int y, U8 Intens);
 void LCD_SetPixelAA8_NoTrans(int x, int y, U8 Intens);
 
+void LCD_AA_EnableGamma(int OnOff);
+void LCD_AA_SetGamma   (U8 * pGamma);
+void LCD_AA_GetGamma   (U8 * pGamma);
+
 LCD_COLOR    LCD_AA_MixColors16 (LCD_COLOR Color, LCD_COLOR BkColor, U8 Intens);
 LCD_COLOR    LCD_AA_MixColors256(LCD_COLOR Color, LCD_COLOR BkColor, U8 Intens);
 LCD_COLOR    LCD_MixColors256   (LCD_COLOR Color, LCD_COLOR BkColor, unsigned Intens);
@@ -646,7 +667,9 @@ U32          LCD_AA_SetAndMask(U32 AndMask);
 #endif
 
 /* Configuration */
-int LCD_SetMaxNumColors(unsigned MaxNumColors);
+int  LCD_SetMaxNumColors(unsigned MaxNumColors);
+int  LCD_GetMaxNumColors(void);
+void LCD__SetPaletteConversionHook(void (* pfPaletteConversionHook)(const LCD_LOGPALETTE * pLogPal));
 
 /*********************************************************************
 *
@@ -702,7 +725,7 @@ int LCD_ControlCacheEx(int LayerIndex, int Cmd);
 *
 *       Color conversion
 */
-unsigned         LCD_Color2Index     (LCD_COLOR Color);
+LCD_PIXELINDEX   LCD_Color2Index     (LCD_COLOR Color);
 LCD_COLOR        LCD_Index2Color     (int Index);
 LCD_COLOR        LCD_Index2ColorEx   (int i, unsigned LayerIndex);
 

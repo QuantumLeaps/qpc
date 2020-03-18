@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -23,8 +23,9 @@ Purpose     : Private IMAGE include
 #ifndef IMAGE_PRIVATE_H
 #define IMAGE_PRIVATE_H
 
-#include "IMAGE.h"
 #include "GUI_Private.h"
+#include "WM_Intern.h"
+#include "IMAGE.h"
 
 #if GUI_WINSUPPORT
 
@@ -116,6 +117,7 @@ extern IMAGE_PROPS IMAGE__DefaultProps;
 */
 void IMAGE__SetWindowSize(IMAGE_Handle hObj);
 void IMAGE__FreeAttached (IMAGE_Handle hObj, int LeaveTimer);
+void IMAGE__SetVoid      (IMAGE_Handle hObj, const void * pData);
 
 #endif // GUI_WINSUPPORT
 #endif // IMAGE_PRIVATE_H

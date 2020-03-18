@@ -45,7 +45,7 @@ enum {
 
 /*..........................................................................*/
 void BSP_init(int argc, char **argv) {
-    Q_ALLEGE(QS_INIT(argc <= 1 ? (void *)0 : argv[1]) != (uint8_t)0);
+    Q_ALLEGE(QS_INIT(argc <= 1 ? (void *)0 : argv[1]) != 0U);
 
     QS_FUN_DICTIONARY(&BSP_displayPaused);
     QS_FUN_DICTIONARY(&BSP_displayPhilStat);

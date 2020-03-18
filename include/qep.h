@@ -4,14 +4,14 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-28
+* Last updated for version 6.8.0
+* Last updated on  2020-01-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      670U
+#define QP_VERSION      680U
 
 /*! The current QP version number string of the form XX.Y.Z, where XX is
 * a 2-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.7.0"
+#define QP_VERSION_STR  "6.8.0"
 
-/*! Encrypted current QP release (6.7.0) and date (2019-12-30) */
-#define QP_RELEASE      0x8E049B81U
+/*! Encrypted  current QP release (6.8.0) and date (2020-03-31) */
+#define QP_RELEASE      0x8897E7A7U
 
 
 /****************************************************************************/
@@ -103,18 +103,18 @@ extern char_t const QP_versionStr[7];
 #ifndef Q_SIGNAL_SIZE
 
     /*! The size (in bytes) of the signal of an event. Valid values:
-    * 1, 2, or 4; default 1 */
+    * 1U, 2U, or 4U; default 2U */
     /**
     * @description
     * This macro can be defined in the QEP port file (qep_port.h) to
     * configure the ::QSignal type. When the macro is not defined, the
     * default of 2 bytes is applied.
     */
-    #define Q_SIGNAL_SIZE 2
+    #define Q_SIGNAL_SIZE 2U
 #endif
-#if (Q_SIGNAL_SIZE == 1)
+#if (Q_SIGNAL_SIZE == 1U)
     typedef uint8_t QSignal;
-#elif (Q_SIGNAL_SIZE == 2)
+#elif (Q_SIGNAL_SIZE == 2U)
     /*! QSignal represents the signal of an event. */
     /**
     * @description
@@ -126,10 +126,10 @@ extern char_t const QP_versionStr[7];
     * about the occurrence in form of event parameters.
     */
     typedef uint16_t QSignal;
-#elif (Q_SIGNAL_SIZE == 4)
+#elif (Q_SIGNAL_SIZE == 4U)
     typedef uint32_t QSignal;
 #else
-    #error "Q_SIGNAL_SIZE defined incorrectly, expected 1, 2, or 4"
+    #error "Q_SIGNAL_SIZE defined incorrectly, expected 1U, 2U, or 4U"
 #endif
 
 
@@ -187,22 +187,22 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 */
 #define Q_EVT_CAST(class_) ((class_ const *)e)
 
-/*! Perform cast from unsigned integer @p uint_ to pointer
+/*! Perform cast from unsigned integer pointer @p uintptr_ to pointer
 * of type @p type_. */
 /**
 * @description
 * This macro encapsulates the cast to (type_ *), which QP ports or
 * application might use to access embedded hardware registers.
-* Such uses can trigger PC-Lint "Note 923: cast from int to pointer" and
-* this macro helps to encapsulate this deviation.
 */
-#define Q_UINT2PTR_CAST(type_, uint_)  ((type_ *)(uint_))
+#define Q_UINT2PTR_CAST(type_, uintptr_)  ((type_ *)(uintptr_))
 
 
 /****************************************************************************/
 /*! typedef of the return type from a state/action-handler function. */
 typedef uint_fast8_t QState;
-typedef struct QXThread QXThread; /* forward declaration */
+
+/* forward declaration */
+typedef struct QXThread QXThread;
 
 /*! Pointer to a state-handler function. */
 typedef QState (*QStateHandler)(void * const me, QEvt const * const e);
@@ -217,7 +217,7 @@ typedef void (*QXThreadHandler)(QXThread * const me);
 /**
 * @description
 * This macro encapsulates the cast of a specific state handler function
-* pointer to ::QStateHandler, which violates MISRA-C 2004 rule 11.4(advisory).
+* pointer to ::QStateHandler, which violates MISRA:C-2012 rule 11.1(req).
 * This macro helps to localize this deviation.
 *
 * @usage
@@ -229,7 +229,7 @@ typedef void (*QXThreadHandler)(QXThread * const me);
 /**
 * @description
 * This macro encapsulates the cast of a specific action handler function
-* pointer to ::QActionHandler, which violates MISRA-C 2004 rule 11.4(adv).
+* pointer to ::QActionHandler, which violates MISRA:C-2012 rule 11.1(req).
 * This macro helps to localize this deviation.
 */
 #define Q_ACTION_CAST(action_)  ((QActionHandler)(action_))

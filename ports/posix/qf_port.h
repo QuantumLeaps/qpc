@@ -3,14 +3,14 @@
 * @brief QF/C port to POSIX API (multi-threaded)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.7.0
-* Date of the Last Update:  2019-12-30
+* Last updated for version 6.8.0
+* Last updated on  2020-02-26
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,17 +45,17 @@
 #define QF_THREAD_TYPE       uint8_t
 
 /* The maximum number of active objects in the application */
-#define QF_MAX_ACTIVE        64
+#define QF_MAX_ACTIVE        64U
 
 /* The number of system clock tick rates */
-#define QF_MAX_TICK_RATE     2
+#define QF_MAX_TICK_RATE     2U
 
 /* various QF object sizes configuration for this port */
-#define QF_EVENT_SIZ_SIZE    4
-#define QF_EQUEUE_CTR_SIZE   4
-#define QF_MPOOL_SIZ_SIZE    4
-#define QF_MPOOL_CTR_SIZE    4
-#define QF_TIMEEVT_CTR_SIZE  4
+#define QF_EVENT_SIZ_SIZE    4U
+#define QF_EQUEUE_CTR_SIZE   4U
+#define QF_MPOOL_SIZ_SIZE    4U
+#define QF_MPOOL_CTR_SIZE    4U
+#define QF_TIMEEVT_CTR_SIZE  4U
 
 /* QF critical section entry/exit for POSIX, see NOTE1 */
 /* QF_CRIT_STAT_TYPE not defined */

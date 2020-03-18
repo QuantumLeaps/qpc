@@ -172,10 +172,10 @@ uint8_t QS_onStartup(void const *arg) {
                &sockopt_bool, sizeof(sockopt_bool));
     QS_onFlush();
 
-    return (uint8_t)1; /* success */
+    return 1U; /* success */
 
 error:
-    return (uint8_t)0; /* failure */
+    return 0U; /* failure */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

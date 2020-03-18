@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-19
+* Last updated for version 6.8.0
+* Last updated on  2020-01-25
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -42,7 +42,8 @@
 #include "qxk_pkg.h"      /* QXK package-scope internal interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -71,9 +72,9 @@ Q_DEFINE_THIS_MODULE("qxk_xthr")
 static void QXThread_init_(QHsm * const me, void const * const par);
 static void QXThread_dispatch_(QHsm * const me, QEvt const * const e);
 static void QXThread_start_(QActive * const me, uint_fast8_t prio,
-                    QEvt const *qSto[], uint_fast16_t qLen,
-                    void *stkSto, uint_fast16_t stkSize,
-                    void const *par);
+                    QEvt const * * const qSto, uint_fast16_t const qLen,
+                    void * const stkSto, uint_fast16_t const stkSize,
+                    void const * const par);
 #ifndef Q_SPY
 static bool QXThread_post_(QActive * const me, QEvt const * const e,
                     uint_fast16_t const margin);
@@ -167,9 +168,9 @@ static void QXThread_dispatch_(QHsm * const me, QEvt const * const e) {
 * @include qxk_xthread_start.c
 */
 static void QXThread_start_(QActive * const me, uint_fast8_t prio,
-                    QEvt const *qSto[], uint_fast16_t qLen,
-                    void *stkSto, uint_fast16_t stkSize,
-                    void const *par)
+                        QEvt const * * const qSto, uint_fast16_t const qLen,
+                        void * const stkSto, uint_fast16_t const stkSize,
+                        void const * const par)
 {
     QF_CRIT_STAT_
 
@@ -180,9 +181,9 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
     * - the thread must be instantiated (see QXThread_ctor()).
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
-        && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
+        && (prio <= QF_MAX_ACTIVE)
         && (stkSto != (void *)0) /* stack must be provided */
-        && (stkSize != (uint_fast16_t)0)
+        && (stkSize != 0U)
         && (me->super.state.act == (QActionHandler)0));
 
     (void)par; /* unused parameter */
@@ -195,7 +196,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
     /* extended thread constructor puts the thread handler in place of
     * the top-most initial transition 'me->super.temp.act'
     */
-    QXK_stackInit_(me, me->super.temp.act, stkSto, stkSize);
+    QXK_stackInit_(me, me->super.temp.thr, stkSto, stkSize);
 
     me->prio      = (uint8_t)prio;
     me->startPrio = (uint8_t)prio;
@@ -271,7 +272,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
         * so it is safe to change its signal. The signal of 0 means
         * that the time event has expired.
         */
-        QXTHREAD_CAST_(me)->timeEvt.super.sig = (QSignal)0;
+        QXTHREAD_CAST_(me)->timeEvt.super.sig = 0U;
 
         QXThread_unblock_(QXTHREAD_CAST_(me));
         QF_CRIT_EXIT_();
@@ -279,7 +280,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
         status = true;
     }
     /* is the event queue provided? */
-    else if (me->eQueue.end != (QEQueueCtr)0) {
+    else if (me->eQueue.end != 0U) {
         QEQueueCtr nFree; /* temporary to avoid UB for volatile access */
 
         /** @pre event pointer must be valid */
@@ -290,11 +291,11 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
 
         /* test-probe#1 for faking queue overflow */
         QS_TEST_PROBE_ID(1,
-            nFree = (QEQueueCtr)0;
+            nFree = 0U;
         )
 
         if (margin == QF_NO_MARGIN) {
-            if (nFree > (QEQueueCtr)0) {
+            if (nFree > 0U) {
                 status = true; /* can post */
             }
             else {
@@ -310,7 +311,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
         }
 
         /* is it a dynamic event? */
-        if (e->poolId_ != (uint8_t)0) {
+        if (e->poolId_ != 0U) {
             QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
         }
 
@@ -323,7 +324,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
             }
 
             QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO,
-                             QS_priv_.locFilter[AO_OBJ], me)
+                                 QS_priv_.locFilter[AO_OBJ], me)
                 QS_TIME_PRE_();        /* timestamp */
                 QS_OBJ_PRE_(sender);   /* the sender object */
                 QS_SIG_PRE_(e->sig);   /* the signal of the event */
@@ -354,7 +355,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
                 QF_PTR_AT_(me->eQueue.ring, me->eQueue.head) = e;
 
                 /* need to wrap the head counter? */
-                if (me->eQueue.head == (QEQueueCtr)0) {
+                if (me->eQueue.head == 0U) {
                     me->eQueue.head = me->eQueue.end;   /* wrap around */
                 }
                 --me->eQueue.head; /* advance the head (counter clockwise) */
@@ -365,14 +366,14 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
         else { /* cannot post the event */
 
             QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT,
-                             QS_priv_.locFilter[AO_OBJ], me)
+                                 QS_priv_.locFilter[AO_OBJ], me)
                 QS_TIME_PRE_();        /* timestamp */
                 QS_OBJ_PRE_(sender);   /* the sender object */
                 QS_SIG_PRE_(e->sig);   /* the signal of the event */
                 QS_OBJ_PRE_(me);       /* this active object (recipient) */
                 QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
                 QS_EQC_PRE_(nFree);    /* number of free entries */
-                QS_EQC_PRE_((QEQueueCtr)margin); /* margin requested */
+                QS_EQC_PRE_(margin);  /* margin requested */
             QS_END_NOCRIT_PRE_()
 
             QF_CRIT_EXIT_();
@@ -469,7 +470,7 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
     /* is the queue not empty? */
     if (thr->super.eQueue.frontEvt != (QEvt *)0) {
         e = thr->super.eQueue.frontEvt; /* always remove from the front */
-        nFree= thr->super.eQueue.nFree +(QEQueueCtr)1; /* volatile into tmp */
+        nFree= thr->super.eQueue.nFree + 1U; /* volatile into tmp */
         thr->super.eQueue.nFree = nFree; /* update the number of free */
 
         /* any events in the ring buffer? */
@@ -478,13 +479,13 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
             /* remove event from the tail */
             thr->super.eQueue.frontEvt =
                 QF_PTR_AT_(thr->super.eQueue.ring, thr->super.eQueue.tail);
-            if (thr->super.eQueue.tail == (QEQueueCtr)0) { /* need to wrap? */
+            if (thr->super.eQueue.tail == 0U) { /* need to wrap? */
                 thr->super.eQueue.tail = thr->super.eQueue.end;  /* wrap */
             }
             --thr->super.eQueue.tail;
 
             QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_GET,
-                             QS_priv_.locFilter[AO_OBJ], thr)
+                                 QS_priv_.locFilter[AO_OBJ], thr)
                 QS_TIME_PRE_();      /* timestamp */
                 QS_SIG_PRE_(e->sig); /* the signal of this event */
                 QS_OBJ_PRE_(&thr->super); /* this active object */
@@ -496,10 +497,10 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
             thr->super.eQueue.frontEvt = (QEvt *)0; /* empty queue */
 
             /* all entries in the queue must be free (+1 for fronEvt) */
-            Q_ASSERT_ID(520, nFree == (thr->super.eQueue.end +(QEQueueCtr)1));
+            Q_ASSERT_ID(520, nFree == (thr->super.eQueue.end + 1U));
 
             QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_GET_LAST,
-                             QS_priv_.locFilter[AO_OBJ], thr)
+                                 QS_priv_.locFilter[AO_OBJ], thr)
                 QS_TIME_PRE_();      /* timestamp */
                 QS_SIG_PRE_(e->sig); /* the signal of this event */
                 QS_OBJ_PRE_(&thr->super); /* this active object */
@@ -561,27 +562,25 @@ void QXThread_teArm_(QXThread * const me, QSignal sig,
                      uint_fast16_t const nTicks)
 {
     /** @pre the time event must be unused */
-    Q_REQUIRE_ID(700, me->timeEvt.ctr == (QTimeEvtCtr)0);
+    Q_REQUIRE_ID(700, me->timeEvt.ctr == 0U);
 
     me->timeEvt.super.sig = sig;
 
     if (nTicks != QXTHREAD_NO_TIMEOUT) {
         me->timeEvt.ctr = (QTimeEvtCtr)nTicks;
-        me->timeEvt.interval = (QTimeEvtCtr)0;
+        me->timeEvt.interval = 0U;
 
         /* is the time event unlinked?
         * NOTE: For the duration of a single clock tick of the specified tick
         * rate a time event can be disarmed and yet still linked in the list,
         * because un-linking is performed exclusively in QF_tickX().
         */
-        if ((me->timeEvt.super.refCtr_ & (uint8_t)TE_IS_LINKED)
-             == (uint8_t)0)
-        {
+        if ((me->timeEvt.super.refCtr_ & TE_IS_LINKED) == 0U) {
             uint_fast8_t tickRate = ((uint_fast8_t)me->timeEvt.super.refCtr_
-                             & (uint_fast8_t)TE_TICK_RATE);
+                                    & TE_TICK_RATE);
             Q_ASSERT_ID(710, tickRate < Q_DIM(QF_timeEvtHead_));
 
-            me->timeEvt.super.refCtr_ |= (uint8_t)TE_IS_LINKED;
+            me->timeEvt.super.refCtr_ |= TE_IS_LINKED;
 
             /* The time event is initially inserted into the separate
             * "freshly armed" list based on QF_timeEvtHead_[tickRate].act.
@@ -608,9 +607,9 @@ void QXThread_teArm_(QXThread * const me, QSignal sig,
 bool QXThread_teDisarm_(QXThread * const me) {
     bool wasArmed;
     /* is the time evt running? */
-    if (me->timeEvt.ctr != (QTimeEvtCtr)0) {
+    if (me->timeEvt.ctr != 0U) {
         wasArmed = true;
-        me->timeEvt.ctr = (QTimeEvtCtr)0;  /* schedule removal from list */
+        me->timeEvt.ctr = 0U; /* schedule removal from list */
     }
     /* the time event was already automatically disarmed */
     else {
@@ -656,7 +655,7 @@ bool QXThread_delay(uint_fast16_t const nTicks) {
     /* signal of zero means that the time event was posted without
     * being canceled.
     */
-    return (bool)(thr->timeEvt.super.sig == (QSignal)0);
+    return (bool)(thr->timeEvt.super.sig == 0U);
 }
 
 /****************************************************************************/

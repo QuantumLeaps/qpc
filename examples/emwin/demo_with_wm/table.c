@@ -1,13 +1,13 @@
 /*****************************************************************************
-* Product: DPP example with emWin/uC/GUI, WITH Window Manager
-* Last Updated for Version: 6.2.0
-* Date of the Last Update:  2018-03-16
+* Product: DPP examplefor SEGGER emWin (version 6.10), Win32 simulation
+* Last updated for version 6.8.0
+* Last updated on  2020-01-22
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -25,7 +25,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
 * <www.state-machine.com/licensing>
@@ -36,9 +36,9 @@
 #include "bsp.h"
 
 #include "GUI.h"
-#include "WM.h"                                    /* emWin Windows Manager */
+#include "GUI_SIM.h"
+#include "WM.h"      /* emWin Windows Manager */
 #include "DIALOG.h"
-#include "SIM.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -59,7 +59,7 @@ static QState Table_paused (Table *me, QEvt const *e);
 enum ForkState { FREE, USED };
 
 /* Local objects -----------------------------------------------------------*/
-static Table l_table;     /* the single instance of the Table active object */
+static Table l_table; /* the single instance of the Table active object */
 
 #ifdef Q_SPY
     enum QSUserRecords {
@@ -70,7 +70,7 @@ static Table l_table;     /* the single instance of the Table active object */
 #endif
 
 /* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_Table = (QActive *)&l_table;      /* "opaque" AO pointer */
+QActive * const AO_Table = (QActive *)&l_table; /* "opaque" AO pointer */
 
 /* GUI definition ==========================================================*/
 static WM_HWIN l_hDlg;
@@ -134,11 +134,11 @@ static void onDialogGUI(WM_MESSAGE * pMsg) {
         }
         case WM_NOTIFY_PARENT: {
             switch (pMsg->Data.v) {
-                case WM_NOTIFICATION_RELEASED: {  /* react only if released */
+                case WM_NOTIFICATION_RELEASED: { /* react only if released */
                     switch (WM_GetId(pMsg->hWinSrc)) {
                         case GUI_ID_BUTTON0: {
-                                     /* static PAUSE event for the Table AO */
-                            static QEvt const pauseEvt = { PAUSE_SIG, 0 };
+                            /* static PAUSE event for the Table AO */
+                            static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U };
                             QACTIVE_POST(AO_Table, &pauseEvt, &l_onDialogGUI);
                             break;
                         }
@@ -157,21 +157,12 @@ static void onDialogGUI(WM_MESSAGE * pMsg) {
 /*..........................................................................*/
 static void displyPhilStat(uint8_t n, char const *stat) {
     TEXT_SetText(WM_GetDialogItem(l_hDlg, GUI_ID_TEXT0 + n), stat);
-    WM_Exec();                 /* update the screen and invoke WM callbacks */
-
-    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
-        QS_U8(1, n);                                  /* Philosopher number */
-        QS_STR(stat);                                 /* Philosopher status */
-    QS_END()
+    WM_Exec(); /* update the screen and invoke WM callbacks */
 }
 /*..........................................................................*/
 static void displyTableStat(char const *stat) {
     TEXT_SetText(WM_GetDialogItem(l_hDlg, GUI_ID_TEXT5), stat);
-    WM_Exec();                 /* update the screen and invoke WM callbacks */
-
-    QS_BEGIN(TABLE_STAT, AO_Table)     /* application-specific record begin */
-        QS_STR(stat);                                 /* Philosopher status */
-    QS_END()
+    WM_Exec();  /* update the screen and invoke WM callbacks */
 }
 
 /*..........................................................................*/
@@ -189,23 +180,11 @@ void Table_ctor(void) {
 
 /* Table HSM ===============================================================*/
 QState Table_initial(Table *me, QEvt const *e) {
-    (void)e;        /* suppress the compiler warning about unused parameter */
+    (void)e; /* unused parameter */
 
-    QS_OBJ_DICTIONARY(&l_table);
-    QS_FUN_DICTIONARY(&QHsm_top);
-    QS_FUN_DICTIONARY(&Table_initial);
-    QS_FUN_DICTIONARY(&Table_serving);
-
-    QS_SIG_DICTIONARY(DONE_SIG,      0);                  /* global signals */
-    QS_SIG_DICTIONARY(EAT_SIG,       0);
-    QS_SIG_DICTIONARY(PAUSE_SIG, 0);
-
-    QS_SIG_DICTIONARY(HUNGRY_SIG,    me);          /* signal just for Table */
-
-    GUI_Init();                              /* initialize the embedded GUI */
+    GUI_Init(); /* initialize the embedded GUI */
 
     QActive_subscribe((QActive *)me, DONE_SIG);
-
     return Q_TRAN(&Table_ready);
 }
 /*..........................................................................*/
@@ -213,7 +192,8 @@ QState Table_ready(Table *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             l_cb_WM_HBKWIN = WM_SetCallback(WM_HBKWIN, &onMainWndGUI);
-                         /* create the diaglog box and return right away... */
+
+            /* create the diaglog box and return right away... */
             l_hDlg = GUI_CreateDialogBox(l_dialog, GUI_COUNTOF(l_dialog),
                                          &onDialogGUI, 0, 0, 0);
             return Q_HANDLED();
@@ -227,37 +207,35 @@ QState Table_ready(Table *me, QEvt const *e) {
             return Q_TRAN(&Table_serving);
         }
 
-        case MOUSE_CHANGE_SIG: {      /* mouse change (move or click) event */
+        case MOUSE_CHANGE_SIG: { /* mouse change (move/touch or click) event */
             GUI_PID_STATE mouse;
-            mouse.x = ((MouseEvt const *)e)->xPos;
-            mouse.y = ((MouseEvt const *)e)->yPos;
-            mouse.Pressed = ((MouseEvt const *)e)->buttonStates;
-
+            mouse.x = Q_EVT_CAST(MouseEvt)->x;
+            mouse.y = Q_EVT_CAST(MouseEvt)->y;
+            mouse.Pressed = Q_EVT_CAST(MouseEvt)->Pressed;
+            mouse.Layer   = Q_EVT_CAST(MouseEvt)->Layer;
             GUI_PID_StoreState(&mouse);/* update the state of the Mouse PID */
-
-            WM_Exec();         /* update the screen and invoke WM callbacks */
             return Q_HANDLED();
         }
 
         /* ... hardkey events ... */
-        case KEY_LEFT_REL_SIG: {                   /* hardkey LEFT released */
+        case KEY_LEFT_REL_SIG: { /* hardkey LEFT released */
             WM_MoveWindow(l_hDlg, -5, 0);
-            WM_Exec();         /* update the screen and invoke WM callbacks */
+            WM_Exec(); /* update the screen and invoke WM callbacks */
             return Q_HANDLED();
         }
-        case KEY_RIGHT_REL_SIG: {                 /* hardkey RIGHT released */
+        case KEY_RIGHT_REL_SIG: { /* hardkey RIGHT released */
             WM_MoveWindow(l_hDlg, 5, 0);
-            WM_Exec();         /* update the screen and invoke WM callbacks */
+            WM_Exec(); /* update the screen and invoke WM callbacks */
             return Q_HANDLED();
         }
-        case KEY_DOWN_REL_SIG: {                   /* hardkey DOWN released */
+        case KEY_DOWN_REL_SIG: { /* hardkey DOWN released */
             WM_MoveWindow(l_hDlg, 0, 5);
             WM_Exec();         /* update the screen and invoke WM callbacks */
             return Q_HANDLED();
         }
-        case KEY_UP_REL_SIG: {                       /* hardkey UP released */
+        case KEY_UP_REL_SIG: { /* hardkey UP released */
             WM_MoveWindow(l_hDlg, 0, -5);
-            WM_Exec();         /* update the screen and invoke WM callbacks */
+            WM_Exec(); /* update the screen and invoke WM callbacks */
             return Q_HANDLED();
         }
     }
@@ -271,7 +249,7 @@ QState Table_serving(Table *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             displyTableStat("serving");
-            for (n = 0; n < N_PHILO; ++n) {   /* give permissions to eat... */
+            for (n = 0; n < N_PHILO; ++n) {/* give permissions to eat... */
                 if (me->isHungry[n]
                     && (me->fork[LEFT(n)] == FREE)
                         && (me->fork[n] == FREE))
@@ -308,7 +286,7 @@ QState Table_serving(Table *me, QEvt const *e) {
             Q_ASSERT(n < N_PHILO);
             displyPhilStat(n, "thinking");
             me->fork[LEFT(n)] = me->fork[n] = FREE;
-            m = RIGHT(n);                       /* check the right neighbor */
+            m = RIGHT(n); /* check the right neighbor */
             if (me->isHungry[m] && me->fork[m] == FREE) {
                 me->fork[n] = me->fork[m] = USED;
                 me->isHungry[m] = 0;
@@ -317,7 +295,7 @@ QState Table_serving(Table *me, QEvt const *e) {
                 QF_PUBLISH((QEvt *)pe, me);
                 displyPhilStat(m, "eating  ");
             }
-            m = LEFT(n);                         /* check the left neighbor */
+            m = LEFT(n); /* check the left neighbor */
             n = LEFT(m);
             if (me->isHungry[m] && me->fork[n] == FREE) {
                 me->fork[m] = me->fork[n] = USED;
@@ -329,8 +307,8 @@ QState Table_serving(Table *me, QEvt const *e) {
             }
             return Q_HANDLED();
         }
-        case PAUSE_SIG:                          /* "Toggle" button pressed */
-        case KEY_CENTER_PRESS_SIG: {              /* hardkey CENTER pressed */
+        case PAUSE_SIG: /* "Toggle" button pressed */
+        case KEY_CENTER_PRESS_SIG: { /* hardkey CENTER pressed */
             return Q_TRAN(&Table_paused);
         }
     }
@@ -359,10 +337,11 @@ QState Table_paused(Table *me, QEvt const *e) {
             me->fork[LEFT(n)] = me->fork[n] = FREE;
             return Q_HANDLED();
         }
-        case PAUSE_SIG:                          /* "Toggle" button pressed */
-        case KEY_CENTER_REL_SIG: {               /* hardkey CENTER released */
+        case PAUSE_SIG: /* "Toggle" button pressed */
+        case KEY_CENTER_REL_SIG: { /* hardkey CENTER released */
             return Q_TRAN(&Table_serving);
         }
     }
     return Q_SUPER(&Table_ready);
 }
+

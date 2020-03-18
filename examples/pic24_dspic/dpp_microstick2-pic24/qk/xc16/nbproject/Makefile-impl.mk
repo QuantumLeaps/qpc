@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=xc16
 
 # Active Configuration
-DEFAULTCONF=default
+DEFAULTCONF=dbg
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=default release spy 
+ALLCONFS=dbg rel spy 
 
 
 # build
@@ -45,16 +45,16 @@ ALLCONFS=default release spy
 
 # clobber
 .clobber-impl: .clobber-pre .depcheck-impl
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=default clean
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=release clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=dbg clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=rel clean
 	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=spy clean
 
 
 
 # all
 .all-impl: .all-pre .depcheck-impl
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=default build
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=release build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=dbg build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=rel build
 	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=spy build
 
 

@@ -42,18 +42,18 @@
 
 /* QK interrupt entry and exit */
 #define QK_ISR_ENTRY() do { \
-    QF_INT_DISABLE(); \
-    ++QK_attr_.intNest; \
-    QF_INT_ENABLE(); \
+    QF_INT_DISABLE();       \
+    ++QK_attr_.intNest;     \
+    QF_INT_ENABLE();        \
 } while (false)
 
-#define QK_ISR_EXIT() do { \
-    QF_INT_DISABLE(); \
-    --QK_attr_.intNest; \
-    if (QK_sched_() != (uint_fast8_t)0) { \
+#define QK_ISR_EXIT() do {          \
+    QF_INT_DISABLE();               \
+    --QK_attr_.intNest;             \
+    if (QK_sched_() != 0U) {        \
         IFS0SET = _IFS0_CS0IF_MASK; \
-    } \
-    QF_INT_ENABLE(); \
+    }                               \
+    QF_INT_ENABLE();                \
 } while (false)
 
 /* initialization of the QK kernel */

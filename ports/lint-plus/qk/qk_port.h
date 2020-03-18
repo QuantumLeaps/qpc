@@ -46,7 +46,7 @@
 #define QK_ON_CONTEXT_SW 1
 
 /*! determination if the code executes in the ISR context */
-#define QK_ISR_CONTEXT_() (get_IPSR() != (uint32_t)0)
+#define QK_ISR_CONTEXT_() (get_IPSR() != 0U)
 
 /* QK interrupt entry and exit... */
 /*! Define the ISR entry sequence, if the compiler supports writing
@@ -75,15 +75,15 @@
 * appropriately for the CPU/compiler you're using. Also, some QK ports will
 * not define this macro, but instead will provide ISR skeleton in assembly.
 */
-#define QK_ISR_EXIT() do { \
-    QF_INT_DISABLE(); \
-    --QK_intNest_; \
-    if (QK_intNest_ == (uint_fast8_t)0) { \
-        if (QK_sched_() != (uint_fast8_t)0) { \
-            QK_activate_(); \
-        } \
-    } \
-    QF_INT_ENABLE(); \
+#define QK_ISR_EXIT() do {       \
+    QF_INT_DISABLE();            \
+    --QK_intNest_;               \
+    if (QK_intNest_ == 0U) {     \
+        if (QK_sched_() != 0U) { \
+            QK_activate_();      \
+        }                        \
+    }                            \
+    QF_INT_ENABLE();             \
 } while (false)
 
 #include "qk.h" /* QK platform-independent public interface */

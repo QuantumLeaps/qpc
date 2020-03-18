@@ -40,10 +40,10 @@
 #define QF_PORT_H
 
 /* The maximum number of active objects in the application, see NOTE1 */
-#define QF_MAX_ACTIVE           32
+#define QF_MAX_ACTIVE           32U
 
 /* The maximum number of system clock tick rates */
-#define QF_MAX_TICK_RATE        2
+#define QF_MAX_TICK_RATE        2U
 
 /* fast unconditional interrupt disabling/enabling for ARM state, NOTE2 */
 #define QF_INT_DISABLE()           __asm("MSR cpsr_c,#(0x1F | 0x80)")

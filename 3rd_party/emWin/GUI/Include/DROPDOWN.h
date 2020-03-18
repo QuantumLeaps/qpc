@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -24,7 +24,7 @@ Purpose     : Multiple choice object include
 #define DROPDOWN_H
 
 #include "WM.h"
-#include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+#include "DIALOG_Type.h"      /* Req. for Create indirect data structure */
 #include "LISTBOX.h"
 
 #if GUI_WINSUPPORT
@@ -56,7 +56,7 @@ Purpose     : Multiple choice object include
 *       Skinning property indices
 */
 #define DROPDOWN_SKINFLEX_PI_EXPANDED 0
-#define DROPDOWN_SKINFLEX_PI_FOCUSSED 1
+#define DROPDOWN_SKINFLEX_PI_FOCUSED  1
 #define DROPDOWN_SKINFLEX_PI_ENABLED  2
 #define DROPDOWN_SKINFLEX_PI_DISABLED 3
 
@@ -104,40 +104,44 @@ void DROPDOWN_Callback(WM_MESSAGE * pMsg);
 *
 **********************************************************************
 */
-void     DROPDOWN_AddKey           (DROPDOWN_Handle hObj, int Key);
-void     DROPDOWN_AddString        (DROPDOWN_Handle hObj, const char* s);
-void     DROPDOWN_Collapse         (DROPDOWN_Handle hObj);
-void     DROPDOWN_DecSel           (DROPDOWN_Handle hObj);
-void     DROPDOWN_DecSelExp        (DROPDOWN_Handle hObj);
-void     DROPDOWN_DeleteItem       (DROPDOWN_Handle hObj, unsigned int Index);
-void     DROPDOWN_Expand           (DROPDOWN_Handle hObj);
-unsigned DROPDOWN_GetItemDisabled  (DROPDOWN_Handle hObj, unsigned Index);
-unsigned DROPDOWN_GetItemSpacing   (DROPDOWN_Handle hObj);
-int      DROPDOWN_GetItemText      (DROPDOWN_Handle hObj, unsigned Index, char * pBuffer, int MaxSize);
-LISTBOX_Handle DROPDOWN_GetListbox (DROPDOWN_Handle hObj);
-int      DROPDOWN_GetNumItems      (DROPDOWN_Handle hObj);
-int      DROPDOWN_GetSel           (DROPDOWN_Handle hObj);
-int      DROPDOWN_GetSelExp        (DROPDOWN_Handle hObj);
-int      DROPDOWN_GetUserData      (DROPDOWN_Handle hObj, void * pDest, int NumBytes);
-void     DROPDOWN_IncSel           (DROPDOWN_Handle hObj);
-void     DROPDOWN_IncSelExp        (DROPDOWN_Handle hObj);
-void     DROPDOWN_InsertString     (DROPDOWN_Handle hObj, const char* s, unsigned int Index);
-void     DROPDOWN_SetAutoScroll    (DROPDOWN_Handle hObj, int OnOff);
-void     DROPDOWN_SetBkColor       (DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR color);
-void     DROPDOWN_SetColor         (DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR Color);
-void     DROPDOWN_SetFont          (DROPDOWN_Handle hObj, const GUI_FONT * pfont);
-void     DROPDOWN_SetItemDisabled  (DROPDOWN_Handle hObj, unsigned Index, int OnOff);
-void     DROPDOWN_SetItemSpacing   (DROPDOWN_Handle hObj, unsigned Value);
-int      DROPDOWN_SetListHeight    (DROPDOWN_Handle hObj, unsigned Height);
-void     DROPDOWN_SetScrollbarColor(DROPDOWN_Handle hObj, unsigned Index, GUI_COLOR Color);
-void     DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width);
-void     DROPDOWN_SetSel           (DROPDOWN_Handle hObj, int Sel);
-void     DROPDOWN_SetSelExp        (DROPDOWN_Handle hObj, int Sel);
-void     DROPDOWN_SetTextAlign     (DROPDOWN_Handle hObj, int Align);
-void     DROPDOWN_SetTextColor     (DROPDOWN_Handle hObj, unsigned int index, GUI_COLOR color);
-void     DROPDOWN_SetTextHeight    (DROPDOWN_Handle hObj, unsigned TextHeight);
-int      DROPDOWN_SetUpMode        (DROPDOWN_Handle hObj, int OnOff);
-int      DROPDOWN_SetUserData      (DROPDOWN_Handle hObj, const void * pSrc, int NumBytes);
+void             DROPDOWN_AddKey           (DROPDOWN_Handle hObj, int Key);
+void             DROPDOWN_AddString        (DROPDOWN_Handle hObj, const char* s);
+void             DROPDOWN_Collapse         (DROPDOWN_Handle hObj);
+void             DROPDOWN_DecSel           (DROPDOWN_Handle hObj);
+void             DROPDOWN_DecSelExp        (DROPDOWN_Handle hObj);
+void             DROPDOWN_DeleteItem       (DROPDOWN_Handle hObj, unsigned int Index);
+void             DROPDOWN_Expand           (DROPDOWN_Handle hObj);
+GUI_COLOR        DROPDOWN_GetBkColor       (DROPDOWN_Handle hObj, unsigned int Index);
+GUI_COLOR        DROPDOWN_GetColor         (DROPDOWN_Handle hObj, unsigned int Index);
+const GUI_FONT * DROPDOWN_GetFont          (DROPDOWN_Handle hObj);
+unsigned         DROPDOWN_GetItemDisabled  (DROPDOWN_Handle hObj, unsigned Index);
+unsigned         DROPDOWN_GetItemSpacing   (DROPDOWN_Handle hObj);
+int              DROPDOWN_GetItemText      (DROPDOWN_Handle hObj, unsigned Index, char * pBuffer, int MaxSize);
+LISTBOX_Handle   DROPDOWN_GetListbox       (DROPDOWN_Handle hObj);
+int              DROPDOWN_GetNumItems      (DROPDOWN_Handle hObj);
+int              DROPDOWN_GetSel           (DROPDOWN_Handle hObj);
+int              DROPDOWN_GetSelExp        (DROPDOWN_Handle hObj);
+GUI_COLOR        DROPDOWN_GetTextColor     (DROPDOWN_Handle hObj, unsigned int Index);
+int              DROPDOWN_GetUserData      (DROPDOWN_Handle hObj, void * pDest, int NumBytes);
+void             DROPDOWN_IncSel           (DROPDOWN_Handle hObj);
+void             DROPDOWN_IncSelExp        (DROPDOWN_Handle hObj);
+void             DROPDOWN_InsertString     (DROPDOWN_Handle hObj, const char* s, unsigned int Index);
+void             DROPDOWN_SetAutoScroll    (DROPDOWN_Handle hObj, int OnOff);
+void             DROPDOWN_SetBkColor       (DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR color);
+void             DROPDOWN_SetColor         (DROPDOWN_Handle hObj, unsigned int Index, GUI_COLOR Color);
+void             DROPDOWN_SetFont          (DROPDOWN_Handle hObj, const GUI_FONT * pfont);
+void             DROPDOWN_SetItemDisabled  (DROPDOWN_Handle hObj, unsigned Index, int OnOff);
+void             DROPDOWN_SetItemSpacing   (DROPDOWN_Handle hObj, unsigned Value);
+int              DROPDOWN_SetListHeight    (DROPDOWN_Handle hObj, unsigned Height);
+void             DROPDOWN_SetScrollbarColor(DROPDOWN_Handle hObj, unsigned Index, GUI_COLOR Color);
+void             DROPDOWN_SetScrollbarWidth(DROPDOWN_Handle hObj, unsigned Width);
+void             DROPDOWN_SetSel           (DROPDOWN_Handle hObj, int Sel);
+void             DROPDOWN_SetSelExp        (DROPDOWN_Handle hObj, int Sel);
+void             DROPDOWN_SetTextAlign     (DROPDOWN_Handle hObj, int Align);
+void             DROPDOWN_SetTextColor     (DROPDOWN_Handle hObj, unsigned int index, GUI_COLOR color);
+void             DROPDOWN_SetTextHeight    (DROPDOWN_Handle hObj, unsigned TextHeight);
+int              DROPDOWN_SetUpMode        (DROPDOWN_Handle hObj, int OnOff);
+int              DROPDOWN_SetUserData      (DROPDOWN_Handle hObj, const void * pSrc, int NumBytes);
 
 /*********************************************************************
 *

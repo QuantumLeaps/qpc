@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -53,18 +53,18 @@
 
 #ifndef QF_EQUEUE_CTR_SIZE
 
-    /*! The size (in bytes) of the ring-buffer counters used in the
-    * native QF event queue implementation. Valid values: 1, 2, or 4;
-    * default 1. */
+    /*! The size [bytes] of the ring-buffer counters used in the
+    * native QF event queue implementation. Valid values: 1U, 2U, or 4U;
+    * default 1U. */
     /**
     * @description
     * This macro can be defined in the QF port file (qf_port.h) to
     * configure the ::QEQueueCtr type. Here the macro is not defined so the
     * default of 1 byte is chosen.
     */
-    #define QF_EQUEUE_CTR_SIZE 1
+    #define QF_EQUEUE_CTR_SIZE 1U
 #endif
-#if (QF_EQUEUE_CTR_SIZE == 1)
+#if (QF_EQUEUE_CTR_SIZE == 1U)
 
     /*! The data type to store the ring-buffer counters based on
     * the macro #QF_EQUEUE_CTR_SIZE. */
@@ -74,12 +74,12 @@
     * of the ring buffer managed by the native QF event queue.
     */
     typedef uint8_t QEQueueCtr;
-#elif (QF_EQUEUE_CTR_SIZE == 2)
+#elif (QF_EQUEUE_CTR_SIZE == 2U)
     typedef uint16_t QEQueueCtr;
-#elif (QF_EQUEUE_CTR_SIZE == 4)
+#elif (QF_EQUEUE_CTR_SIZE == 4U)
     typedef uint32_t QEQueueCtr;
 #else
-    #error "QF_EQUEUE_CTR_SIZE defined incorrectly, expected 1, 2, or 4"
+    #error "QF_EQUEUE_CTR_SIZE defined incorrectly, expected 1U, 2U, or 4U"
 #endif
 
 /****************************************************************************/
@@ -171,7 +171,7 @@ typedef struct QEQueue {
 
 /*! Initialize the native QF event queue */
 void QEQueue_init(QEQueue * const me,
-                  QEvt const *qSto[], uint_fast16_t const qLen);
+                  QEvt const * * const qSto, uint_fast16_t const qLen);
 
 /*! Post an event to the "raw" thread-safe event queue (FIFO). */
 bool QEQueue_post(QEQueue * const me, QEvt const * const e,

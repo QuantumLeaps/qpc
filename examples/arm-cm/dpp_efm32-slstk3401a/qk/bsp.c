@@ -86,8 +86,8 @@ static uint32_t l_rnd;      /* random seed */
     QSTimeCtr QS_tickPeriod_;
 
     /* QS source IDs */
-    static uint8_t const l_SysTick_Handler = (uint8_t)0;
-    static uint8_t const l_GPIO_EVEN_IRQHandler = (uint8_t)0;
+    static uint8_t const l_SysTick_Handler = 0U;
+    static uint8_t const l_GPIO_EVEN_IRQHandler = 0U;
     static USART_TypeDef * const l_USART0 = ((USART_TypeDef *)(0x40010000UL));
 
     enum AppRecords { /* application-specific trace records */
@@ -347,13 +347,13 @@ void QK_onIdle(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
     /* light up both LEDs */
@@ -434,7 +434,7 @@ uint8_t QS_onStartup(void const *arg) {
     //QS_FILTER_ON(QS_AO_RECORDS); /* active object records */
     QS_FILTER_ON(QS_UA_RECORDS); /* all user records */
 
-    return (uint8_t)1; /* return success */
+    return 1U; /* return success */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

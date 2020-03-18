@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2019-07-30
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -42,7 +42,8 @@
 #include "qf_pkg.h"       /* QF package-scope interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -77,7 +78,7 @@ Q_DEFINE_THIS_MODULE("qf_defer")
 bool QActive_defer(QActive const * const me, QEQueue * const eq,
                    QEvt const * const e)
 {
-    bool status = QEQueue_post(eq, e, (uint_fast16_t)0);
+    bool status = QEQueue_post(eq, e, 0U);
     QS_CRIT_STAT_
 
     (void)me; /* unused parameter */
@@ -128,14 +129,14 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
         QF_CRIT_ENTRY_();
 
         /* is it a dynamic event? */
-        if (e->poolId_ != (uint8_t)0) {
+        if (e->poolId_ != 0U) {
 
             /* after posting to the AO's queue the event must be referenced
             * at least twice: once in the deferred event queue (eq->get()
             * did NOT decrement the reference counter) and once in the
             * AO's event queue.
             */
-            Q_ASSERT_CRIT_(210, e->refCtr_ >= (uint8_t)2);
+            Q_ASSERT_CRIT_(210, e->refCtr_ >= 2U);
 
             /* we need to decrement the reference counter once, to account
             * for removing the event from the deferred event queue.
@@ -143,7 +144,8 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
             QF_EVT_REF_CTR_DEC_(e); /* decrement the reference counter */
         }
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_RECALL, QS_priv_.locFilter[AO_OBJ], me)
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_RECALL,
+                             QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_PRE_();      /* time stamp */
             QS_OBJ_PRE_(me);     /* this active object */
             QS_OBJ_PRE_(eq);     /* the deferred queue */
@@ -157,7 +159,8 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
     else {
         QS_CRIT_STAT_
 
-        QS_BEGIN_PRE_(QS_QF_ACTIVE_RECALL_ATTEMPT, QS_priv_.locFilter[AO_OBJ], me)
+        QS_BEGIN_PRE_(QS_QF_ACTIVE_RECALL_ATTEMPT,
+                      QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_PRE_();      /* time stamp */
             QS_OBJ_PRE_(me);     /* this active object */
             QS_OBJ_PRE_(eq);     /* the deferred queue */
@@ -187,10 +190,10 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
 uint_fast16_t QActive_flushDeferred(QActive const * const me,
                                     QEQueue * const eq)
 {
-    uint_fast16_t n = (uint_fast16_t)0;
     QEvt const *e = QEQueue_get(eq);
+    uint_fast16_t n = 0U;
 
-    (void)me; /* avoid compiler warning about 'me' not used */
+    (void)me; /* unused parameter */
 
     for (; e != (QEvt *)0; e = QEQueue_get(eq)) {
         QF_gc(e); /* garbage collect */

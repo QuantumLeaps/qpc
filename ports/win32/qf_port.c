@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-28
+* Last updated for version 6.8.0
+* Last updated on  2020-01-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -42,7 +42,8 @@
 #include "qf_pkg.h"       /* QF package-scope interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS package-scope internal interface */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -78,9 +79,9 @@ void QF_init(void) {
     * correctly even if the startup code is not called to clear the
     * uninitialized data (as is required by the C Standard).
     */
-    QF_maxPool_ = (uint_fast8_t)0;
-    QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
-    QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
+    QF_maxPool_ = 0U;
+    QF_bzero(&QF_timeEvtHead_[0], sizeof(QF_timeEvtHead_));
+    QF_bzero(&QF_active_[0],      sizeof(QF_active_));
 }
 /****************************************************************************/
 void QF_enterCriticalSection_(void) {
@@ -128,11 +129,11 @@ int_t QF_run(void) {
     QS_EXIT();       /* cleanup the QSPY connection */
     //DeleteCriticalSection(&l_startupCritSect);
     //DeleteCriticalSection(&l_win32CritSect);
-    return (int_t)0; /* return success */
+    return 0; /* return success */
 }
 /****************************************************************************/
 void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio) {
-    Q_REQUIRE_ID(600, ticksPerSec != (uint32_t)0);
+    Q_REQUIRE_ID(600, ticksPerSec != 0U);
     l_tickMsec = 1000UL / ticksPerSec;
     l_tickPrio = tickPrio;
 }
@@ -147,13 +148,13 @@ void QF_setWin32Prio(QActive *act, int_t win32Prio) {
 
 /* QActive functions =======================================================*/
 void QActive_start_(QActive * const me, uint_fast8_t prio,
-                    QEvt const *qSto[], uint_fast16_t qLen,
-                    void *stkSto, uint_fast16_t stkSize,
+                    QEvt const * * const qSto, uint_fast16_t const qLen,
+                    void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    Q_REQUIRE_ID(800, ((uint_fast8_t)0 < prio) /* priority must be in range */
-                 && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
-                 && (stkSto == (void *)0));    /* statck storage must NOT...
+    Q_REQUIRE_ID(800, (0U < prio) /* priority must be in range */
+                 && (prio <= QF_MAX_ACTIVE)
+                 && (stkSto == (void *)0));   /* statck storage must NOT...
                                                * ... be provided */
     me->prio = prio; /* set QF priority of this AO before adding it to QF */
     QF_add_(me);     /* make QF aware of this active object */
@@ -166,15 +167,16 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
-    /* stack size not provided? */
-    if (stkSize == 0U) {
-        stkSize = 1024U; /* NOTE: will be rounded up to the nearest page */
-    }
-
     /* create a Win32 thread for the AO;
     * The thread is created with THREAD_PRIORITY_NORMAL
     */
-    me->thread = CreateThread(NULL, stkSize, &ao_thread, me, 0, NULL);
+    me->thread = CreateThread(
+        NULL,
+        (stkSize < 1024U ? 1024U : stkSize),
+        &ao_thread,
+        me,
+        0,
+        NULL);
     Q_ENSURE_ID(830, me->thread != (HANDLE)0); /* must succeed */
 }
 
@@ -187,13 +189,13 @@ void QF_consoleCleanup(void) {
 /*..........................................................................*/
 int QF_consoleGetKey(void) {
     if (_kbhit()) { /* any key pressed? */
-        return _getch();
+        return (int)_getwch();
     }
     return 0;
 }
 /*..........................................................................*/
 int QF_consoleWaitForKey(void) {
-    return _getch();
+    return (int)_getwch();
 }
 
 /****************************************************************************/

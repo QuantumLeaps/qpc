@@ -96,7 +96,7 @@ void BSP_ledOn(void) {
     LED_ON();
 }
 /*..........................................................................*/
-void Q_onAssert(char const * const file, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const file, int_t const loc) {
     (void)file;       /* unused parameter */
     (void)loc;        /* unused parameter */
     QF_INT_DISABLE(); /* make sure that interrupts are disabled */

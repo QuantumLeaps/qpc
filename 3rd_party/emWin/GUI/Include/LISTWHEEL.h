@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -24,7 +24,7 @@ Purpose     : LISTWHEEL widget include
 #define LISTWHEEL_H
 
 #include "WM.h"
-#include "DIALOG_Intern.h"
+#include "DIALOG_Type.h"
 #include "WIDGET.h"
 
 #if GUI_WINSUPPORT
@@ -86,6 +86,7 @@ void LISTWHEEL_Callback(WM_MESSAGE * pMsg);
 **********************************************************************
 */
 void      LISTWHEEL_AddString      (LISTWHEEL_Handle hObj, const char * s);
+GUI_COLOR LISTWHEEL_GetBkColor     (LISTWHEEL_Handle hObj, unsigned int Index);
 void *    LISTWHEEL_GetItemData    (LISTWHEEL_Handle hObj, unsigned Index); /* not to be documented */
 void      LISTWHEEL_GetItemText    (LISTWHEEL_Handle hObj, unsigned Index, char * pBuffer, int MaxSize);
 int       LISTWHEEL_GetItemFromPos (LISTWHEEL_Handle hObj, int yPos);
@@ -97,6 +98,7 @@ int       LISTWHEEL_GetRBorder     (LISTWHEEL_Handle hObj);
 int       LISTWHEEL_GetSel         (LISTWHEEL_Handle hObj);
 int       LISTWHEEL_GetSnapPosition(LISTWHEEL_Handle hObj);
 int       LISTWHEEL_GetTextAlign   (LISTWHEEL_Handle hObj);
+GUI_COLOR LISTWHEEL_GetTextColor   (LISTWHEEL_Handle hObj, unsigned int Index);
 int       LISTWHEEL_GetUserData    (LISTWHEEL_Handle hObj, void * pDest, int NumBytes);
 int       LISTWHEEL_IsMoving       (LISTWHEEL_Handle hObj);
 void      LISTWHEEL_MoveToPos      (LISTWHEEL_Handle hObj, unsigned int Index);

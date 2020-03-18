@@ -4,14 +4,14 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-16
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -41,7 +41,8 @@
 #include "qep_port.h"     /* QEP port */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -483,7 +484,7 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const *const hist) {
     QMState const *ts = me->state.obj; /* transition source */
     QMState const *epath[QMSM_MAX_ENTRY_DEPTH_];
     QState r;
-    uint_fast8_t i = (uint_fast8_t)0;  /* transition entry path index */
+    uint_fast8_t i = 0U;  /* transition entry path index */
     QS_CRIT_STAT_
 
     QS_BEGIN_PRE_(QS_QEP_TRAN_HIST, QS_priv_.locFilter[SM_OBJ], me)
@@ -493,10 +494,10 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const *const hist) {
     QS_END_PRE_()
 
     while (s != ts) {
-        if (s->entryAction != (QActionHandler)0) {
+        if (s->entryAction != Q_ACTION_CAST(0)) {
             epath[i] = s;
             ++i;
-            Q_ASSERT_ID(620, i <= (uint_fast8_t)Q_DIM(epath));
+            Q_ASSERT_ID(620, i <= Q_DIM(epath));
         }
         s = s->superstate;
         if (s == (QMState *)0) {
@@ -505,7 +506,7 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const *const hist) {
     }
 
     /* retrace the entry path in reverse (desired) order... */
-    while (i > (uint_fast8_t)0) {
+    while (i > 0U) {
         --i;
         (void)(*epath[i]->entryAction)(me); /* run entry action in epath[i] */
 
@@ -518,7 +519,7 @@ static QState QMsm_enterHistory_(QMsm * const me, QMState const *const hist) {
     me->state.obj = hist; /* set current state to the transition target */
 
     /* initial tran. present? */
-    if (hist->initAction != (QActionHandler)0) {
+    if (hist->initAction != Q_ACTION_CAST(0)) {
         r = (*hist->initAction)(me); /* execute the transition action */
     }
     else {

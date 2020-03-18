@@ -45,7 +45,7 @@
 /*! determination if the code executes in the ISR context
 * (used internally in QXK only)
 */
-#define QXK_ISR_CONTEXT_() (getSR() != (uint32_t)0)
+#define QXK_ISR_CONTEXT_() (getSR() != 0U)
 
 /*! activate the context-switch callback */
 #define QXK_ON_CONTEXT_SW 1
@@ -63,11 +63,11 @@
 * QXK ports will not define this macro, but instead will provide ISR
 * skeleton code in assembly.
 */
-#define QXK_ISR_ENTRY() do { \
-    QF_INT_DISABLE(); \
-    ++QXK_intNest_; \
+#define QXK_ISR_ENTRY() do {                      \
+    QF_INT_DISABLE();                             \
+    ++QXK_intNest_;                               \
     QF_QS_ISR_ENTRY(QXK_intNest_, QXK_currPrio_); \
-    QF_INT_ENABLE(); \
+    QF_INT_ENABLE();                              \
 } while (false)
 
 
@@ -79,13 +79,13 @@
 * appropriately for the CPU/compiler you're using. Also, some QXK ports will
 * not define this macro, but instead will provide ISR skeleton in assembly.
 */
-#define QXK_ISR_EXIT() do { \
-    QF_INT_DISABLE(); \
-    --QXK_intNest_; \
-    if (QXK_intNest_ == (uint_fast8_t)0) { \
-        QXK_sched_(); \
-    } \
-    QF_INT_ENABLE(); \
+#define QXK_ISR_EXIT() do {   \
+    QF_INT_DISABLE();         \
+    --QXK_intNest_;           \
+    if (QXK_intNest_ == 0U) { \
+        QXK_sched_();         \
+    }                         \
+    QF_INT_ENABLE();          \
 } while (false)
 
 #include "qxk.h" /* QXK platform-independent public interface */

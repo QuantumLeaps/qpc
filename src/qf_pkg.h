@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-28
+* Last updated for version 6.8.0
+* Last updated on  2020-01-27
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -117,8 +117,8 @@
 
 /*! Implementation of the active object start operation */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
-                    QEvt const *qSto[], uint_fast16_t qLen,
-                    void *stkSto, uint_fast16_t stkSize,
+                    QEvt const * * const qSto, uint_fast16_t const qLen,
+                    void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par);
 
 /*! Get an event from the event queue of an active object. */
@@ -147,11 +147,9 @@ extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
 * is NOT used for reference counting in time events, because the @c poolId_
 * attribute is zero ("static events").
 */
-enum {
-    TE_IS_LINKED    = (uint8_t)(1U << 7), /* flag  */
-    TE_WAS_DISARMED = (uint8_t)(1U << 6), /* flag */
-    TE_TICK_RATE    = (uint8_t)0x0F       /* bitmask */
-};
+#define TE_IS_LINKED      (1U << 7)
+#define TE_WAS_DISARMED   (1U << 6)
+#define TE_TICK_RATE      0x0FU
 
 extern QF_EPOOL_TYPE_ QF_pool_[QF_MAX_EPOOL]; /*!< allocate event pools */
 extern uint_fast8_t QF_maxPool_;     /*!< # of initialized event pools */
@@ -165,11 +163,14 @@ typedef struct QFreeBlock {
 
 /* internal helper macros ***************************************************/
 
+/*! helper macro to cast const away from an event pointer @p e_ */
+#define QF_EVT_CONST_CAST_(e_)  ((QEvt *)(e_))
+
 /*! increment the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_INC_(e_) (++((QEvt *)(e_))->refCtr_)
+#define QF_EVT_REF_CTR_INC_(e_) (++QF_EVT_CONST_CAST_(e_)->refCtr_)
 
 /*! decrement the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_DEC_(e_) (--((QEvt *)(e_))->refCtr_)
+#define QF_EVT_REF_CTR_DEC_(e_) (--QF_EVT_CONST_CAST_(e_)->refCtr_)
 
 /*! access element at index @p i_ from the base pointer @p base_ */
 #define QF_PTR_AT_(base_, i_)   ((base_)[(i_)])

@@ -106,11 +106,11 @@ void QF_onClockTick(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const * const module, int_t loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     char message[80];
     QF_stop(); /* stop ticking */
 
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
     SNPRINTF_S(message, Q_DIM(message) - 1,
                "Assertion failed in module %s location %d", module, loc);
     MessageBox(l_hWnd, message, "!!! ASSERTION !!!",
@@ -120,7 +120,7 @@ void Q_onAssert(char const * const module, int_t loc) {
 
 /*..........................................................................*/
 void BSP_init(void) {
-    if (QS_INIT(l_cmdLine) == (uint8_t)0) { /* QS initialization failed? */
+    if (QS_INIT(l_cmdLine) == 0U) { /* QS initialization failed? */
         MessageBox(l_hWnd,
                    "Cannot connect to QSPY via TCP/IP\n"
                    "Please make sure that 'qspy -t' is running",

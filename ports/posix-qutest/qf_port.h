@@ -45,10 +45,10 @@
 /* QF_THREAD_TYPE    not used in this port */
 
 /* The maximum number of active objects in the application */
-#define QF_MAX_ACTIVE        64
+#define QF_MAX_ACTIVE        64U
 
 /* The number of system clock tick rates */
-#define QF_MAX_TICK_RATE     2
+#define QF_MAX_TICK_RATE     2U
 
 /* QF interrupt disable/enable */
 #define QF_INT_DISABLE()     (++QF_intNest)

@@ -166,8 +166,8 @@ void QS_onCommand(uint8_t cmdId,
 /*--------------------------------------------------------------------------*/
 
 /*..........................................................................*/
-void Q_onAssert(char const * const module, int_t loc) {
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
     fprintf(stderr, "Assertion failed in %s:%d", module, loc);
     QF_onCleanup();
     exit(-1);

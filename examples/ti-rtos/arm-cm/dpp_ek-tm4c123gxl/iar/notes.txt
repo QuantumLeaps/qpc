@@ -1,2 +1,0 @@
-Software Interrupt video:
-http://focus.ti.com/download/trng/multimedia/dsp/OLT110026/swis.mp4

@@ -40,7 +40,7 @@
 #define QF_PORT_H
 
 /* The maximum number of system clock tick rates */
-#define QF_MAX_TICK_RATE        2
+#define QF_MAX_TICK_RATE        2U
 
 /* QF interrupt disable/enable and log2()... */
 #if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
@@ -66,7 +66,7 @@
 #else /* Cortex-M3/M4/M7 */
 
     /* The maximum number of active objects in the application, see NOTE1 */
-    #define QF_MAX_ACTIVE       16
+    #define QF_MAX_ACTIVE       16U
 
     /* Cortex-M3/M4/M7 alternative interrupt disabling with PRIMASK */
     #define QF_PRIMASK_DISABLE() __disable_irq()

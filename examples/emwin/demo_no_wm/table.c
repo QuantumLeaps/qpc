@@ -37,7 +37,7 @@
 
 #include "GUI.h"
 #include "DIALOG.h"
-#include "SIM.h"
+//#include "SIM.h"
 
 Q_DEFINE_THIS_FILE
 

@@ -201,7 +201,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    if (paused != (uint8_t)0) {
+    if (paused != 0U) {
         LED_ON(2);  /* turn LED on  */
     }
     else {
@@ -230,7 +230,7 @@ void QF_onStartup(void) {
     *(uint32_t volatile *)0x30 = (uint32_t)&QF_dAbort;
     *(uint32_t volatile *)0x34 = (uint32_t)&QF_reserved;
     *(uint32_t volatile *)0x38 = (uint32_t)&QV_irq;
-    *(uint32_t volatile *)0x3C = (uint32_t)0; /* unimplemented! */
+    *(uint32_t volatile *)0x3C = (uint32_t)0U; /* unimplemented! */
 
     AT91C_BASE_AIC->AIC_SVR[AT91C_ID_SYS] = (uint32_t)&ISR_tick;
     AT91C_BASE_AIC->AIC_SPU = (uint32_t)&ISR_spur; /* spurious IRQ */
@@ -280,14 +280,14 @@ void QV_onIdle(void) { /* NOTE: called with interrupts DISABLED */
 #endif
 }
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     QF_INT_DISABLE(); /* disable all interrupts */
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
     /* trip the Watchdog to reset the system */
     AT91C_BASE_WDTC->WDTC_WDCR = (0xA5U << 24) | AT91C_WDTC_WDRSTT;
@@ -347,7 +347,7 @@ uint8_t QS_onStartup(void const *arg) {
 
     QS_FILTER_ON(PHILO_STAT);
 
-    return (uint8_t)1; /* indicate successfull QS initialization */
+    return 1U; /* indicate successfull QS initialization */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {
@@ -356,7 +356,7 @@ void QS_onCleanup(void) {
 void QS_onFlush(void) {
     uint16_t nBytes = 0xFFFFU; /* get all available bytes */
     uint8_t const *block;
-    while ((AT91C_BASE_DBGU->DBGU_CSR & AT91C_US_TXBUFE) == 0) { /* busy? */
+    while ((AT91C_BASE_DBGU->DBGU_CSR & AT91C_US_TXBUFE) == 0U) { /* busy? */
     }
     if ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
         AT91C_BASE_DBGU->DBGU_TPR = (uint32_t)block;
@@ -376,7 +376,7 @@ uint32_t QS_onGetTime(void) {
     uint32_t now = pTC0->TC_CV; /* get the counter value */
                                 /* did the timer overflow 0xFFFF? */
     if ((pTC0->TC_SR & AT91C_TC_COVFS) != 0) {
-        l_timeOverflow += (uint32_t)0x10000; /* account for the overflow */
+        l_timeOverflow += 0x10000U; /* account for the overflow */
     }
     return l_timeOverflow + now;
 }

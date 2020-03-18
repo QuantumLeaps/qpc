@@ -30,7 +30,7 @@ void BSP_ledOff(void) {
 void BSP_ledOn(void) {
     printf("LED ON\n");
 }
-void Q_onAssert(char const * const module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     fprintf(stderr, "Assertion failed in %s:%d", module, loc);
     exit(-1);
 }

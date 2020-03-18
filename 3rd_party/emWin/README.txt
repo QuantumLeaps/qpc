@@ -11,6 +11,9 @@ to  download the "emWin Simulation & Trial version" from SEGGER
 (https://www.segger.com/downloads/emwin) and yo need to install
 it in this directory.
 
+NOTE: The emWin example provided in examples\emwin has been built and
+tested against emWin 6.10 (SeggerEval_WIN32_MSVC_MinGW_GUI_V610.zip).
+
 After the installation of emWin, this directory should contain the
 following sub-directories and files:
 

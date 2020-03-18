@@ -3,14 +3,14 @@
 * @brief QF/C port to Cortex-M, QUTEST unit test harness, generic C99 compiler
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.6
-* Date of the Last Update:  2018-10-04
+* Last Updated for Version: 6.8.0
+* Date of the Last Update:  2020-03-13
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,10 +45,10 @@
 /*#define QF_THREAD_TYPE */
 
 /* The maximum number of active objects in the application */
-#define QF_MAX_ACTIVE        32
+#define QF_MAX_ACTIVE        32U
 
 /* The number of system clock tick rates */
-#define QF_MAX_TICK_RATE     2
+#define QF_MAX_TICK_RATE     2U
 
 /* QF interrupt disable/enable */
 #define QF_INT_DISABLE()     (++QF_intNest)

@@ -4,14 +4,14 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-31
+* Last updated for version 6.8.0
+* Last updated on  2020-03-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -215,17 +215,17 @@ enum QSpyRecordGroups {
 
 /*! QS user record group offsets */
 enum QSpyUserRecords {
-    QS_USER0 = (int_t)QS_USER,      /*!< offset for User Group 0 */
-    QS_USER1 = (int_t)QS_USER0 + 5, /*!< offset for User Group 1 */
-    QS_USER2 = (int_t)QS_USER1 + 5, /*!< offset for User Group 2 */
-    QS_USER3 = (int_t)QS_USER2 + 5, /*!< offset for User Group 3 */
-    QS_USER4 = (int_t)QS_USER3 + 5  /*!< offset for User Group 4 */
+    QS_USER0 = (enum_t)QS_USER,      /*!< offset for User Group 0 */
+    QS_USER1 = (enum_t)QS_USER0 + 5, /*!< offset for User Group 1 */
+    QS_USER2 = (enum_t)QS_USER1 + 5, /*!< offset for User Group 2 */
+    QS_USER3 = (enum_t)QS_USER2 + 5, /*!< offset for User Group 3 */
+    QS_USER4 = (enum_t)QS_USER3 + 5  /*!< offset for User Group 4 */
 };
 
 #ifndef QS_TIME_SIZE
 
-    /*! The size (in bytes) of the QS time stamp. Valid values: 1, 2, or 4;
-    * default 4.
+    /*! The size [bytes] of the QS time stamp. Valid values: 1U, 2U, or 4U;
+    * default 4U.
     */
     /**
     * @description
@@ -233,16 +233,16 @@ enum QSpyUserRecords {
     * configure the ::QSTimeCtr type. Here the macro is not defined so the
     * default of 4 byte is chosen.
     */
-    #define QS_TIME_SIZE 4
+    #define QS_TIME_SIZE 4U
 #endif
 
-#if (QS_TIME_SIZE == 1)
+#if (QS_TIME_SIZE == 1U)
     typedef uint8_t QSTimeCtr;
     #define QS_TIME_PRE_()      (QS_u8_raw_(QS_onGetTime()))
-#elif (QS_TIME_SIZE == 2)
+#elif (QS_TIME_SIZE == 2U)
     typedef uint16_t QSTimeCtr;
     #define QS_TIME_PRE_()      (QS_u16_raw_(QS_onGetTime()))
-#elif (QS_TIME_SIZE == 4)
+#elif (QS_TIME_SIZE == 4U)
     /*! The type of the QS time stamp. This type determines the dynamic
     * range of QS time stamps
     */
@@ -305,13 +305,16 @@ void QS_f32_fmt_(uint8_t format, float32_t f);
 /*! Output 64-bit floating point data element with format information */
 void QS_f64_fmt_(uint8_t format, float64_t d);
 
+/*! Output obj pointer data element without format information */
+void QS_obj_raw_(void const * const obj);
+
 /*! Output zero-terminated ASCII string element with format information */
 void QS_str_fmt_(char_t const *str);
 
 /*! Output memory block of up to 255-bytes with format information */
 void QS_mem_fmt_(uint8_t const *blk, uint8_t size);
 
-#if (QS_OBJ_PTR_SIZE == 8) || (QS_FUN_PTR_SIZE == 8)
+#if (QS_OBJ_PTR_SIZE == 8U) || (QS_FUN_PTR_SIZE == 8U)
     /*! Output raw uint64_t data element without format information */
     void QS_u64_raw_(uint64_t d);
 
@@ -319,28 +322,12 @@ void QS_mem_fmt_(uint8_t const *blk, uint8_t size);
     void QS_u64_fmt_(uint8_t format, uint64_t d);
 #endif
 
-/*! Output predefined signal-dictionary record */
-void QS_sig_dict_pre_(enum_t const sig, void const * const obj,
-                      char_t const *name);
-
-/*! Output predefined object-dictionary record */
-void QS_obj_dict_pre_(void const * const obj,
-                      char_t const *name);
-
-/*! Output predefined function-dictionary record */
-void QS_fun_dict_pre_(void (* const fun)(void),
-                      char_t const *name);
-
-/*! Output predefined user-dictionary record */
-void QS_usr_dict_pre_(enum_t const rec,
-                      char_t const * const name);
-
 /* QS buffer access *********************************************************/
 /*! Byte-oriented interface to the QS data buffer. */
 uint16_t QS_getByte(void);
 
 /*! Constant for End-Of-Data condition returned from QS_getByte() */
-#define QS_EOD ((uint16_t)0xFFFF)
+#define QS_EOD ((uint16_t)0xFFFFU)
 
 /*! Block-oriented interface to the QS data buffer. */
 uint8_t const *QS_getBlock(uint16_t *pNbytes);
@@ -407,6 +394,7 @@ void QS_onFlush(void);
 */
 QSTimeCtr QS_onGetTime(void);
 
+
 /****************************************************************************/
 /* Macros for adding QS instrumentation to the client code */
 
@@ -427,6 +415,16 @@ QSTimeCtr QS_onGetTime(void);
 * @sa QS_onCleanup()
 */
 #define QS_EXIT()               (QS_onCleanup())
+
+/*! Flush the QS trace data to the host */
+/**
+* @description
+* This macro invokes the QS_flush() platform-dependent callback function
+* to flush the QS trace buffer to the host. The function typically
+* busy-waits until all the data in the buffer is sent to the host.
+* This is acceptable only in the initial transient.
+*/
+#define QS_FLUSH()   (QS_onFlush())
 
 /*! Global Filter ON for a given record type @p rec. */
 /**
@@ -580,30 +578,31 @@ QSTimeCtr QS_onGetTime(void);
 */
 #define QS_FILTER_AP_OBJ(obj_)  (QS_priv_.locFilter[AP_OBJ] = (obj_))
 
+
 /****************************************************************************/
-/* Macros to generate user QS records */
+/* Macros to generate application-specific (user) QS records */
 
 /*! Begin a QS user record without entering critical section. */
-#define QS_BEGIN_NOCRIT(rec_, obj_)                               \
-    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3]  \
-          & (uint_fast8_t)(1U << ((uint8_t)(rec_) & (uint8_t)7))) \
-            != (uint_fast8_t)0)                                   \
-        && ((QS_priv_.locFilter[AP_OBJ] == (void *)0)             \
-           || (QS_priv_.locFilter[AP_OBJ] == (obj_))))            \
-    {                                                             \
-        QS_beginRec_((uint_fast8_t)(rec_));                        \
+#define QS_BEGIN_NOCRIT(rec_, obj_)                              \
+    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
+          & (uint_fast8_t)(1U << ((uint8_t)(rec_) & 7U))) != 0U) \
+        && ((QS_priv_.locFilter[AP_OBJ] == (void *)0)            \
+           || (QS_priv_.locFilter[AP_OBJ] == (obj_))))           \
+    {                                                            \
+        QS_beginRec_((uint_fast8_t)(rec_));                      \
         QS_TIME_PRE_(); {
 
 /*! End a QS user record without exiting critical section. */
 #define QS_END_NOCRIT() } \
-    QS_END_NOCRIT_PRE_()
+        QS_endRec_();     \
+    }
 
 #ifndef QS_REC_DONE
     /*! macro to hook up user code when a QS record is produced */
     #define QS_REC_DONE() ((void)0)
 #endif /* QS_REC_DONE */
 
-/* QS-specific critical section *********************************************/
+/* QS-specific critical section */
 #ifdef QS_CRIT_ENTRY /* separate QS critical section defined? */
 
 #ifndef QS_CRIT_STAT_TYPE
@@ -618,52 +617,6 @@ QSTimeCtr QS_onGetTime(void);
 
 #else /* separate QS critical section not defined--use the QF definition */
 
-#ifndef QF_CRIT_STAT_TYPE
-    /*! This is an internal macro for defining the critical section
-    * status type. */
-    /**
-    * @description
-    * The purpose of this macro is to enable writing the same code for the
-    * case when critical section status type is defined and when it is not.
-    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
-    * provides the definition of the critical section status variable.
-    * Otherwise this macro is empty.
-    * @sa #QF_CRIT_STAT_TYPE
-    */
-    #define QS_CRIT_STAT_
-
-    /*! This is an internal macro for entering a critical section. */
-    /**
-    * @description
-    * The purpose of this macro is to enable writing the same code for the
-    * case when critical section status type is defined and when it is not.
-    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
-    * invokes #QF_CRIT_ENTRY passing the key variable as the parameter.
-    * Otherwise #QF_CRIT_ENTRY is invoked with a dummy parameter.
-    * @sa #QF_CRIT_ENTRY
-    */
-    #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(dummy)
-
-    /*! This is an internal macro for exiting a critical section. */
-    /**
-    * @description
-    * The purpose of this macro is to enable writing the same code for the
-    * case when critical section status type is defined and when it is not.
-    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
-    * invokes #QF_CRIT_EXIT passing the key variable as the parameter.
-    * Otherwise #QF_CRIT_EXIT is invoked with a dummy parameter.
-    * @sa #QF_CRIT_EXIT
-    */
-    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(dummy); QS_REC_DONE()
-
-#else  /* simple unconditional interrupt disabling used */
-    #define QS_CRIT_STAT_       QF_CRIT_STAT_TYPE critStat_;
-    #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(critStat_)
-    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_); QS_REC_DONE()
-#endif /* simple unconditional interrupt disabling used */
-
-#endif /* separate QS critical section not defined */
-
 /*! Begin a user QS record with entering critical section. */
 /**
 * @usage
@@ -673,145 +626,27 @@ QSTimeCtr QS_onGetTime(void);
 * @include qs_user.c
 * @note Must always be used in pair with #QS_END
 */
-#define QS_BEGIN(rec_, obj_)                                                 \
-    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3]             \
-        & (uint_fast8_t)((uint_fast8_t)1 << ((uint8_t)(rec_) & (uint8_t)7))) \
-            != (uint_fast8_t)0)                                              \
-        && ((QS_priv_.locFilter[AP_OBJ] == (void *)0)                        \
-            || (QS_priv_.locFilter[AP_OBJ] == (obj_))))                      \
-    {                                                                        \
-        QS_CRIT_STAT_                                                        \
-        QS_CRIT_ENTRY_();                                                    \
-        QS_beginRec_((uint_fast8_t)(rec_));                                   \
+#define QS_BEGIN(rec_, obj_)                                     \
+    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
+        & (uint_fast8_t)(1U << ((uint8_t)(rec_) & 7U))) != 0U)   \
+        && ((QS_priv_.locFilter[AP_OBJ] == (void *)0)            \
+            || (QS_priv_.locFilter[AP_OBJ] == (obj_))))          \
+    {                                                            \
+        QS_CRIT_STAT_                                            \
+        QS_CRIT_ENTRY_();                                        \
+        QS_beginRec_((uint_fast8_t)(rec_));                      \
         QS_TIME_PRE_(); {
 
 /*! End a QS record with exiting critical section. */
 /** @sa example for #QS_BEGIN
 * @note Must always be used in pair with #QS_BEGIN
 */
-#define QS_END() } \
-    QS_END_PRE_()
-
-/****************************************************************************/
-
-/*! Internal QS macro to begin a predefined QS record with
-* entering critical section. */
-/**
-* @note This macro is intended to use only inside QP components and NOT
-* at the application level. @sa #QS_BEGIN
-*/
-#define QS_BEGIN_PRE_(rec_, objFilter_, obj_)                                \
-    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3]             \
-        & (uint_fast8_t)((uint_fast8_t)1 << ((uint8_t)(rec_) & (uint8_t)7))) \
-            != (uint_fast8_t)0)                                              \
-        && (((objFilter_) == (void *)0)                                      \
-            || ((objFilter_) == (obj_))))                                    \
-    {                                                                        \
-        QS_CRIT_ENTRY_();                                                    \
-        QS_beginRec_((uint_fast8_t)(rec_));
-
-/*!  Internal QS macro to end a predefined QS record with
-* exiting critical section. */
-/**
-* @note This macro is intended to use only inside QP components and NOT
-* at the application level. @sa #QS_END
-*/
-#define QS_END_PRE_()    \
-        QS_endRec_();     \
+#define QS_END() }       \
+        QS_endRec_();    \
         QS_CRIT_EXIT_(); \
     }
 
-/*! Internal macro to begin a predefined QS record without
-* entering critical section. */
-/**
-* @note This macro is intended to use only inside QP components and NOT
-* at the application level. @sa #QS_BEGIN_NOCRIT
-*/
-#define QS_BEGIN_NOCRIT_PRE_(rec_, objFilter_, obj_)                         \
-    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3]             \
-        & (uint_fast8_t)((uint_fast8_t)1 << ((uint8_t)(rec_) & (uint8_t)7))) \
-             != (uint_fast8_t)0)                                             \
-        && (((objFilter_) == (void *)0)                                      \
-            || ((objFilter_) == (obj_))))                                    \
-    {                                                                        \
-        QS_beginRec_((uint_fast8_t)(rec_));
-
-/*! Internal QS macro to end a predefined QS record without
-* exiting critical section. */
-/**
-* @note This macro is intended to use only inside QP components and NOT
-* at the application level. @sa #QS_END_NOCRIT
-*/
-#define QS_END_NOCRIT_PRE_() \
-        QS_endRec_();         \
-    }
-
-/*! Internal QS macro to output a predefined uint8_t data element */
-#define QS_U8_PRE_(data_)       (QS_u8_raw_((uint8_t)(data_)))
-
-/*! Internal QS macro to output 2 predefined uint8_t data elements */
-#define QS_2U8_PRE_(data1_, data2_) (QS_2u8_raw_((data1_), (data2_)))
-
-/*! Internal QS macro to output an predefined uint16_t data element */
-#define QS_U16_PRE_(data_)      (QS_u16_raw_((uint16_t)(data_)))
-
-/*! Internal QS macro to output a predefined uint32_t data element */
-#define QS_U32_PRE_(data_)      (QS_u32_raw_((uint32_t)(data_)))
-
-/*! Internal QS macro to output a predefined zero-terminated string element */
-#define QS_STR_PRE_(msg_)       (QS_str_raw_((msg_)))
-
-
-#if (Q_SIGNAL_SIZE == 1)
-    /*! Internal macro to output an unformatted event signal data element */
-    /**
-    * @note the size of the pointer depends on the macro #Q_SIGNAL_SIZE.
-    */
-    #define QS_SIG_PRE_(sig_)   (QS_u8_raw_(sig_))
-#elif (Q_SIGNAL_SIZE == 2)
-    #define QS_SIG_PRE_(sig_)   (QS_u16_raw_(sig_))
-#elif (Q_SIGNAL_SIZE == 4)
-    #define QS_SIG_PRE_(sig_)   (QS_u32_raw_(sig_))
-#endif
-
-
-#if (QS_OBJ_PTR_SIZE == 1)
-    #define QS_OBJ_PRE_(obj_)   (QS_u8_raw_((uint8_t)(obj_)))
-#elif (QS_OBJ_PTR_SIZE == 2)
-    #define QS_OBJ_PRE_(obj_)   (QS_u16_raw_((uint16_t)(obj_)))
-#elif (QS_OBJ_PTR_SIZE == 4)
-    #define QS_OBJ_PRE_(obj_)   (QS_u32_raw_((uint32_t)(obj_)))
-#elif (QS_OBJ_PTR_SIZE == 8)
-    #define QS_OBJ_PRE_(obj_)   (QS_u64_raw_((uint64_t)(obj_)))
-#else
-    /*! Internal macro to output an unformatted object pointer data element */
-    /** @note the size of the pointer depends on the macro #QS_OBJ_PTR_SIZE.
-    * If the size is not defined the size of pointer is assumed 4-bytes.
-    */
-    #define QS_OBJ_PRE_(obj_)   (QS_u32_raw_((uint32_t)(obj_))
-#endif
-
-
-#if (QS_FUN_PTR_SIZE == 1)
-    #define QS_FUN_PRE_(fun_)   (QS_u8_raw_((uint8_t)(fun_)))
-#elif (QS_FUN_PTR_SIZE == 2)
-    #define QS_FUN_PRE_(fun_)   (QS_u16_raw_((uint16_t)(fun_)))
-#elif (QS_FUN_PTR_SIZE == 4)
-    #define QS_FUN_PRE_(fun_)   (QS_u32_raw_((uint32_t)(fun_)))
-#elif (QS_FUN_PTR_SIZE == 8)
-    #define QS_FUN_PRE_(fun_)   (QS_u64_raw_((uint64_t)(fun_)))
-#else
-    /*! Internal macro to output an unformatted function pointer */
-    /** @note the size of the pointer depends on the macro #QS_FUN_PTR_SIZE.
-    * If the size is not defined the size of pointer is assumed 4-bytes.
-    */
-    #define QS_FUN_PRE_(fun_)   (QS_u32_raw_((uint32_t)(fun_)))
-#endif
-
-/****************************************************************************/
-/* Macros for use in the client code */
-
-/*! Enumerates data formats recognized by QS */
+/*! formats for application-specific data elements */
 /**
 * @description
 * QS uses this enumeration is used only internally for the formatted user
@@ -887,13 +722,13 @@ enum {
 #define QS_MEM(mem_, size_)     (QS_mem_fmt_((mem_), (size_)))
 
 
-#if (QS_OBJ_PTR_SIZE == 1)
+#if (QS_OBJ_PTR_SIZE == 1U)
     #define QS_OBJ(obj_)        (QS_u8_fmt_(QS_OBJ_T, (uint8_t)(obj_)))
-#elif (QS_OBJ_PTR_SIZE == 2)
+#elif (QS_OBJ_PTR_SIZE == 2U)
     #define QS_OBJ(obj_)        (QS_u16_fmt_(QS_OBJ_T, (uint16_t)(obj_)))
-#elif (QS_OBJ_PTR_SIZE == 4)
+#elif (QS_OBJ_PTR_SIZE == 4U)
     #define QS_OBJ(obj_)        (QS_u32_fmt_(QS_OBJ_T, (uint32_t)(obj_)))
-#elif (QS_OBJ_PTR_SIZE == 8)
+#elif (QS_OBJ_PTR_SIZE == 8U)
     #define QS_OBJ(obj_)        (QS_u64(QS_OBJ_T, (uint64_t)(obj_)))
 #else
     /*! Output formatted object pointer to the QS record */
@@ -901,37 +736,36 @@ enum {
 #endif
 
 
-#if (QS_FUN_PTR_SIZE == 1)
+#if (QS_FUN_PTR_SIZE == 1U)
     #define QS_FUN(fun_)        (QS_u8_fmt_(QS_FUN_T, (uint8_t)(fun_)))
-#elif (QS_FUN_PTR_SIZE == 2)
+#elif (QS_FUN_PTR_SIZE == 2U)
     #define QS_FUN(fun_)        (QS_u16_fmt_(QS_FUN_T, (uint16_t)(fun_)))
-#elif (QS_FUN_PTR_SIZE == 4)
+#elif (QS_FUN_PTR_SIZE == 4U)
     #define QS_FUN(fun_)        (QS_u32_fmt_(QS_FUN_T, (uint32_t)(fun_)))
-#elif (QS_FUN_PTR_SIZE == 8)
+#elif (QS_FUN_PTR_SIZE == 8U)
     #define QS_FUN(fun_)        (QS_u64_fmt_(QS_FUN_T, (uint64_t)(fun_)))
 #else
     /*! Output formatted function pointer to the QS record */
     #define QS_FUN(fun_)        (QS_u32_fmt_(QS_FUN_T, (uint32_t)(fun_)))
 #endif
 
-
 #if (Q_SIGNAL_SIZE == 1)
 
     #define QS_SIG(sig_, obj_)   \
         QS_u8_fmt_(QS_SIG_T, (sig_)); \
-        QS_OBJ_PRE_(obj_)
+        QS_obj_raw_(obj_)
 
 #elif (Q_SIGNAL_SIZE == 2)
 
     #define QS_SIG(sig_, obj_)    \
         QS_u16_fmt_(QS_SIG_T, (sig_)); \
-        QS_OBJ_PRE_(obj_)
+        QS_obj_raw_(obj_)
 
 #elif (Q_SIGNAL_SIZE == 4)
 
     #define QS_SIG(sig_, obj_)    \
         QS_u32_fmt_(QS_SIG_T, (sig_)); \
-        QS_OBJ_PRE_(obj_)
+        QS_obj_raw_(obj_)
 
 #else
     /*! Output formatted event signal (of type ::QSignal) and
@@ -939,12 +773,63 @@ enum {
     */
     #define QS_SIG(sig_, obj_)    \
         QS_u16_fmt_(QS_SIG_T, (sig_)); \
-        QS_OBJ_PRE_(obj_)
+        QS_obj_raw_(obj_)
 
 #endif
 
+
 /****************************************************************************/
-/* Dictionary records */
+/* Facilities for QS ciritical section */
+
+#ifndef QF_CRIT_STAT_TYPE
+    /*! This is an internal macro for defining the critical section
+    * status type. */
+    /**
+    * @description
+    * The purpose of this macro is to enable writing the same code for the
+    * case when critical section status type is defined and when it is not.
+    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
+    * provides the definition of the critical section status variable.
+    * Otherwise this macro is empty.
+    * @sa #QF_CRIT_STAT_TYPE
+    */
+    #define QS_CRIT_STAT_
+
+    /*! This is an internal macro for entering a critical section. */
+    /**
+    * @description
+    * The purpose of this macro is to enable writing the same code for the
+    * case when critical section status type is defined and when it is not.
+    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
+    * invokes #QF_CRIT_ENTRY passing the key variable as the parameter.
+    * Otherwise #QF_CRIT_ENTRY is invoked with a dummy parameter.
+    * @sa #QF_CRIT_ENTRY
+    */
+    #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(dummy)
+
+    /*! This is an internal macro for exiting a critical section. */
+    /**
+    * @description
+    * The purpose of this macro is to enable writing the same code for the
+    * case when critical section status type is defined and when it is not.
+    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
+    * invokes #QF_CRIT_EXIT passing the key variable as the parameter.
+    * Otherwise #QF_CRIT_EXIT is invoked with a dummy parameter.
+    * @sa #QF_CRIT_EXIT
+    */
+    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(dummy); QS_REC_DONE()
+
+#else  /* simple unconditional interrupt disabling used */
+    #define QS_CRIT_STAT_       QF_CRIT_STAT_TYPE critStat_;
+    #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(critStat_)
+    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_); QS_REC_DONE()
+#endif /* simple unconditional interrupt disabling used */
+
+#endif /* separate QS critical section not defined */
+
+
+/****************************************************************************/
+/* Dictionary trace records */
 
 /*! Output signal dictionary record */
 /**
@@ -987,10 +872,8 @@ enum {
 * available.
 * @include qs_sigLog0.txt
 */
-#define QS_SIG_DICTIONARY(sig_, obj_) do {           \
-    static char_t const sig_name_[] = #sig_;         \
-    QS_sig_dict_pre_((sig_), (obj_), &sig_name_[0]); \
-} while (false)
+#define QS_SIG_DICTIONARY(sig_, obj_) \
+    (QS_sig_dict_pre_((sig_), (obj_), #sig_))
 
 /*! Output object dictionary record */
 /**
@@ -1006,10 +889,8 @@ enum {
 * for the Table active object:
 * @include qs_objDic.c
 */
-#define QS_OBJ_DICTIONARY(obj_) do {         \
-    static char_t const obj_name_[] = #obj_; \
-    QS_obj_dict_pre_((obj_), &obj_name_[0]); \
-} while (false)
+#define QS_OBJ_DICTIONARY(obj_) \
+    (QS_obj_dict_pre_((obj_), #obj_))
 
 /*! Output function dictionary record */
 /**
@@ -1024,10 +905,8 @@ enum {
 * The example from #QS_SIG_DICTIONARY shows the definition of a function
 * dictionary.
 */
-#define QS_FUN_DICTIONARY(fun_) do {                         \
-    static char_t const fun_name_[] = #fun_;                 \
-    QS_fun_dict_pre_((void (*)(void))(fun_), &fun_name_[0]); \
-} while (false)
+#define QS_FUN_DICTIONARY(fun_) \
+    (QS_fun_dict_pre_((void (*)(void))(fun_), #fun_))
 
 /*! Output user QS-record dictionary record */
 /**
@@ -1035,81 +914,56 @@ enum {
 * A user QS-record dictionary record associates the numerical value of a
 * user record with the human-readable identifier.
 */
-#define QS_USR_DICTIONARY(rec_) do {         \
-    static char_t const usr_name_[] = #rec_; \
-    QS_usr_dict_pre_((rec_), &usr_name_[0]); \
-} while (false)
+#define QS_USR_DICTIONARY(rec_) \
+    (QS_usr_dict_pre_((rec_), #rec_))
+
+/*! Output predefined signal-dictionary record */
+void QS_sig_dict_pre_(enum_t const sig, void const * const obj,
+                      char_t const *name);
+
+/*! Output predefined object-dictionary record */
+void QS_obj_dict_pre_(void const * const obj,
+                      char_t const *name);
+
+/*! Output predefined function-dictionary record */
+void QS_fun_dict_pre_(void (* const fun)(void),
+                      char_t const *name);
+
+/*! Output predefined user-dictionary record */
+void QS_usr_dict_pre_(enum_t const rec,
+                      char_t const * const name);
+
+
+/****************************************************************************/
+/* Miscellaneous pre-formatted trace records used in applications */
 
 /*! Output the assertion failure trace record */
 /**
 * @description
 * This trace record is intended to use from the Q_onAssert() callback.
 */
-#define QS_ASSERTION(module_, loc_, delay_) do {                           \
-    uint32_t volatile delay_ctr_;                                          \
-    QS_BEGIN_NOCRIT_PRE_(QS_ASSERT_FAIL, (void *)0, (void *)0)             \
-        QS_TIME_PRE_();                                                    \
-        QS_U16_PRE_((uint16_t)(loc_));                                     \
-        QS_STR_PRE_(((module_) != (char_t *)0) ? (module_) : "?");         \
-    QS_END_NOCRIT_PRE_()                                                   \
-    QS_onFlush();                                                          \
-    for (delay_ctr_ = (delay_); delay_ctr_ > (uint32_t)0; --delay_ctr_) {} \
-    QS_onCleanup();                                                        \
-} while (false)
-
-/*! Flush the QS trace data to the host */
-/**
-* @description
-* This macro invokes the QS_flush() platform-dependent callback function
-* to flush the QS trace buffer to the host. The function typically
-* busy-waits until all the data in the buffer is sent to the host.
-* This is acceptable only in the initial transient.
-*/
-#define QS_FLUSH()   (QS_onFlush())
+void QS_ASSERTION(char_t const * const module,
+                  int_t const loc,
+                  uint32_t delay);
 
 /*! Output the critical section entry */
-#define QF_QS_CRIT_ENTRY()                                       \
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_CRIT_ENTRY, (void *)0, (void *)0) \
-        QS_TIME_PRE_();                                          \
-        ++QS_priv_.critNest;                                     \
-        QS_U8_PRE_(QS_priv_.critNest);                           \
-    QS_END_NOCRIT_PRE_()
+void QF_QS_CRIT_ENTRY(void);
 
 /*! Output the critical section exit */
-#define QF_QS_CRIT_EXIT()                                       \
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_CRIT_EXIT, (void *)0, (void *)0) \
-        QS_TIME_PRE_();                                         \
-        QS_U8_PRE_(QS_priv_.critNest);                          \
-        --QS_priv_.critNest;                                    \
-    QS_END_NOCRIT_PRE_()
+void QF_QS_CRIT_EXIT(void);
 
 /*! Output the interrupt entry record */
-#define QF_QS_ISR_ENTRY(isrnest_, prio_)                        \
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ISR_ENTRY, (void *)0, (void *)0) \
-        QS_TIME_PRE_();                                         \
-        QS_2U8_PRE_(isrnest_, prio_);                           \
-    QS_END_NOCRIT_PRE_()
+void QF_QS_ISR_ENTRY(uint8_t const isrnest, uint8_t const prio);
 
 /*! Output the interrupt exit record */
-#define QF_QS_ISR_EXIT(isrnest_, prio_)                        \
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ISR_EXIT, (void *)0, (void *)0) \
-        QS_TIME_PRE_();                                        \
-        QS_2U8_PRE_(isrnest_, prio_);                          \
-    QS_END_NOCRIT_PRE_()
+void QF_QS_ISR_EXIT(uint8_t const isrnest, uint8_t const prio);
 
 /*! Execute an action that is only necessary for QS output */
-#define QF_QS_ACTION(act_)      (act_)
+#define QF_QS_ACTION(act_)    (act_)
 
-/*! access element at index @p i_ from the base pointer @p base_ */
-/**
-* @description
-* @note This macro encapsulates MISRA-C 2004 Rule 17.4(req) (pointer
-* arithmetic other than array indexing).
-*/
-#define QS_PTR_AT_(base_, i_) (base_[i_])
 
 /****************************************************************************/
-/* QS private data (the transmit channel) */
+/* QS private data (the TX channel) */
 typedef uint_fast16_t QSCtr;  /*!< QS ring buffer counter and offset type */
 
 /*! Kinds of objects used in QS. */
@@ -1124,13 +978,13 @@ enum QSpyObjKind {
 };
 
 enum OSpyObjCombnation {
-    SM_AO_OBJ = (int_t)MAX_OBJ /*!< combination of SM and AO */
+    SM_AO_OBJ = (enum_t)MAX_OBJ /*!< combination of SM and AO */
 };
 
 /*! Private QS attributes to keep track of the filters and the trace buffer */
 typedef struct {
-    uint8_t     glbFilter[16]; /*!< global on/off QS filter */
-    void const *locFilter[(int_t)MAX_OBJ]; /*!< local QS filters */
+    uint8_t  glbFilter[16];         /*!< global on/off QS filter */
+    void const *locFilter[MAX_OBJ]; /*!< local QS filters */
     uint8_t *buf;         /*!< pointer to the start of the ring buffer */
     QSCtr    end;         /*!< offset of the end of the ring buffer */
     QSCtr    head;        /*!< offset to where next byte will be inserted */
@@ -1148,11 +1002,7 @@ extern QSPrivAttr QS_priv_;
 /****************************************************************************/
 /* QS receive channel */
 
-/*! Quantum Spy Receive (RX) record types: */
-/**
-* @description
-* This enumeration specifies the record types for the QS receive channel.
-*/
+/*! Enumeration for the received Qs record types (RX channel). */
 enum QSpyRxRecords {
     QS_RX_INFO,           /*!< query Target info (ver, config, tstamp) */
     QS_RX_COMMAND,        /*!< execute a user-defined command in the Target */
@@ -1179,38 +1029,8 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize);
 /*! Parse all bytes present in the QS RX data buffer */
 void QS_rxParse(void);
 
-/*! Private QS-RX attributes to keep track of the current objects and
-* the lock-free RX buffer
-*/
-typedef struct {
-    void     *currObj[(int_t)MAX_OBJ]; /*!< current objects */
-    uint8_t  *buf;        /*!< pointer to the start of the ring buffer */
-    QSCtr     end;        /*!< offset of the end of the ring buffer */
-    QSCtr     head;       /*!< offset to where next byte will be inserted */
-    QSCtr     tail;       /*!< offset of where next byte will be extracted */
-#ifdef Q_UTEST
-    QPSet     readySet;   /*!< QUTEST ready-set of active objects */
-    bool      inTestLoop; /*!< QUTEST event loop is running */
-#endif
-} QSrxPrivAttr;
-
-extern QSrxPrivAttr QS_rxPriv_;
-
 /*! put one byte into the QS RX lock-free buffer */
-#define QS_RX_PUT(b_) do {                                               \
-    if (QS_rxPriv_.head != (QSCtr)0) {                                   \
-        if ((QS_rxPriv_.head - QS_rxPriv_.tail) != (QSCtr)1) {           \
-            QS_PTR_AT_(QS_rxPriv_.buf, QS_rxPriv_.head) = (uint8_t)(b_); \
-            --QS_rxPriv_.head;                                           \
-        }                                                                \
-    }                                                                    \
-    else {                                                               \
-        if (QS_rxPriv_.tail != QS_rxPriv_.end) {                         \
-            QS_PTR_AT_(QS_rxPriv_.buf, 0) = (uint8_t)(b_);               \
-            QS_rxPriv_.head = QS_rxPriv_.end;                            \
-        }                                                                \
-    }                                                                    \
-} while (false)
+void QS_RX_PUT(uint8_t const b);
 
 /*! Obtain the number of free bytes in the QS RX data buffer */
 uint16_t QS_rxGetNfree(void);
@@ -1231,81 +1051,6 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
 * NOTE: if this macro is used, the application must define QS_rx_input().
 */
 #define QS_RX_INPUT() (QS_rx_input())
-
-/****************************************************************************/
-#if (QF_EQUEUE_CTR_SIZE == 1)
-
-    /*! Internal QS macro to output an unformatted event queue counter
-    * data element. */
-    /**
-    * @note the counter size depends on the macro #QF_EQUEUE_CTR_SIZE.
-    */
-    #define QS_EQC_PRE_(ctr_)       QS_u8_raw_((uint8_t)(ctr_))
-#elif (QF_EQUEUE_CTR_SIZE == 2)
-    #define QS_EQC_PRE_(ctr_)       QS_u16_raw_((uint16_t)(ctr_))
-#elif (QF_EQUEUE_CTR_SIZE == 4)
-    #define QS_EQC_PRE_(ctr_)       QS_u32_raw_((uint32_t)(ctr_))
-#endif
-
-
-#if (QF_EVENT_SIZ_SIZE == 1)
-
-    /*! Internal QS macro to output an unformatted event size
-    * data element. */
-    /**
-    * @note the event size depends on the macro #QF_EVENT_SIZ_SIZE.
-    */
-    #define QS_EVS_PRE_(size_)      QS_u8_raw_((uint8_t)(size_))
-#elif (QF_EVENT_SIZ_SIZE == 2)
-    #define QS_EVS_PRE_(size_)      QS_u16_raw_((uint16_t)(size_))
-#elif (QF_EVENT_SIZ_SIZE == 4)
-    #define QS_EVS_PRE_(size_)      QS_u32_raw_((uint32_t)(size_))
-#endif
-
-
-#if (QF_MPOOL_SIZ_SIZE == 1)
-
-    /*! Internal QS macro to output an unformatted memory pool
-    * block-size data element */
-    /**
-    * @note the block-size depends on the macro #QF_MPOOL_SIZ_SIZE.
-    */
-    #define QS_MPS_PRE_(size_)      QS_u8_raw_((uint8_t)(size_))
-#elif (QF_MPOOL_SIZ_SIZE == 2)
-    #define QS_MPS_PRE_(size_)      QS_u16_raw_((uint16_t)(size_))
-#elif (QF_MPOOL_SIZ_SIZE == 4)
-    #define QS_MPS_PRE_(size_)      QS_u32_raw_((uint32_t)(size_))
-#endif
-
-#if (QF_MPOOL_CTR_SIZE == 1)
-
-    /*! Internal QS macro to output an unformatted memory pool
-    * block-counter data element. */
-    /**
-    * @note the counter size depends on the macro #QF_MPOOL_CTR_SIZE.
-    */
-    #define QS_MPC_PRE_(ctr_)       QS_u8_raw_((uint8_t)(ctr_))
-#elif (QF_MPOOL_CTR_SIZE == 2)
-    #define QS_MPC_PRE_(ctr_)       QS_u16_raw_((uint16_t)(ctr_))
-#elif (QF_MPOOL_CTR_SIZE == 4)
-    #define QS_MPC_PRE_(ctr_)       QS_u32_raw_((uint16_t)(ctr_))
-#endif
-
-
-#if (QF_TIMEEVT_CTR_SIZE == 1)
-
-    /*! Internal QS macro to output an unformatted time event
-    * tick-counter data element */
-    /**
-    * @note the counter size depends on the macro #QF_TIMEEVT_CTR_SIZE.
-    */
-    #define QS_TEC_PRE_(ctr_)       QS_u8_raw_((uint8_t)(ctr_))
-#elif (QF_TIMEEVT_CTR_SIZE == 2)
-    #define QS_TEC_PRE_(ctr_)       QS_u16_raw_((uint16_t)(ctr_))
-#elif (QF_TIMEEVT_CTR_SIZE == 4)
-    #define QS_TEC_PRE_(ctr_)       QS_u32_raw_((uint32_t)(ctr_))
-#endif
-
 
 /****************************************************************************/
 /* Facilities for use in QUTest only */
@@ -1341,17 +1086,17 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
 
     /*! QS macro to apply a Test-Probe */
     #define QS_TEST_PROBE(code_) \
-        if (qs_tp_ != (uint32_t)0) { code_ }
+        if (qs_tp_ != 0U) { code_ }
 
     /*! QS macro to apply a Test-Probe */
     #define QS_TEST_PROBE_ID(id_, code_) \
         if (qs_tp_ == (uint32_t)(id_)) { code_ }
 
     /*! QS macro to pause test execution and enter the test event loop */
-    #define QS_TEST_PAUSE() do {                   \
+    #define QS_TEST_PAUSE() do {                    \
         QS_beginRec_((uint_fast8_t)QS_TEST_PAUSED); \
         QS_endRec_();                               \
-        QS_onTestLoop();                           \
+        QS_onTestLoop();                            \
     } while (false)
 
     enum QUTestUserRecords {
@@ -1368,6 +1113,7 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
     typedef struct {
         QActive super; /*< inherit QActive */
     } QActiveDummy;
+
     /*! Constructor of the QActiveDummy Active Object class */
     void QActiveDummy_ctor(QActiveDummy * const me);
 

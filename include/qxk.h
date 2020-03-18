@@ -5,14 +5,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-18
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -167,7 +167,7 @@ void QXK_schedUnlock(QSchedStatus stat);
         /*! @returns true if the code executes in the ISR context and false
         * otherwise
         */
-        #define QXK_ISR_CONTEXT_() (QXK_attr_.intNest != (uint_fast8_t)0)
+        #define QXK_ISR_CONTEXT_() (QXK_attr_.intNest != 0U)
     #endif /* QXK_ISR_CONTEXT_ */
 
     /* QF-specific scheduler locking */
@@ -179,17 +179,17 @@ void QXK_schedUnlock(QSchedStatus stat);
     /*! Internal macro for selective scheduler locking. */
     #define QF_SCHED_LOCK_(prio_) do {          \
         if (QXK_ISR_CONTEXT_()) {               \
-            lockStat_ = (QSchedStatus)0xFF;     \
+            lockStat_ = 0xFFU;                  \
         } else {                                \
             lockStat_ = QXK_schedLock((prio_)); \
         }                                       \
     } while (false)
 
     /*! Internal macro for selective scheduler unlocking. */
-    #define QF_SCHED_UNLOCK_() do {             \
-        if (lockStat_ != (QSchedStatus)0xFF) {  \
-            QXK_schedUnlock(lockStat_);         \
-        }                                       \
+    #define QF_SCHED_UNLOCK_() do {     \
+        if (lockStat_ != 0xFFU) {       \
+            QXK_schedUnlock(lockStat_); \
+        }                               \
     } while (false)
 
     #define QACTIVE_EQUEUE_WAIT_(me_) \
@@ -198,7 +198,7 @@ void QXK_schedUnlock(QSchedStatus stat);
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do {                          \
         QPSet_insert(&QXK_attr_.readySet, (uint_fast8_t)(me_)->prio); \
         if (!QXK_ISR_CONTEXT_()) {                                    \
-            if (QXK_sched_() != (uint_fast8_t)0) {                    \
+            if (QXK_sched_() != 0U) {                    \
                 QXK_activate_();                                      \
             }                                                         \
         }                                                             \

@@ -146,9 +146,9 @@ void BSP_init(void) {
 
     /* initialize the LEDs... */
     for (i = 0; i < Q_DIM(l_led); ++i) {
-        AT91C_BASE_PIOA->PIO_PER = l_led[i];  /* enable pin */
-        AT91C_BASE_PIOA->PIO_OER = l_led[i];  /* configure as output pin */
-        LED_OFF(i);                           /* extinguish the LED */
+        AT91C_BASE_PIOA->PIO_PER = l_led[i]; /* enable pin */
+        AT91C_BASE_PIOA->PIO_OER = l_led[i]; /* configure as output pin */
+        LED_OFF(i);                          /* extinguish the LED */
     }
 
     /* initialize the Buttons... */
@@ -158,10 +158,10 @@ void BSP_init(void) {
     }
 
     /* configure Advanced Interrupt Controller (AIC) of AT91... */
-    AT91C_BASE_AIC->AIC_IDCR = ~0;            /* disable all interrupts */
-    AT91C_BASE_AIC->AIC_ICCR = ~0;            /* clear all interrupts */
+    AT91C_BASE_AIC->AIC_IDCR = ~0;           /* disable all interrupts */
+    AT91C_BASE_AIC->AIC_ICCR = ~0;           /* clear all interrupts */
     for (i = 0; i < 8; ++i) {
-        AT91C_BASE_AIC->AIC_EOICR = 0;        /* write AIC_EOICR 8 times */
+        AT91C_BASE_AIC->AIC_EOICR = 0;       /* write AIC_EOICR 8 times */
     }
 
     /* set the desired ticking rate for the PIT... */
@@ -201,7 +201,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    if (paused != (uint8_t)0) {
+    if (paused != 0U) {
         LED_ON(2);  /* turn LED on  */
     }
     else {
@@ -223,14 +223,14 @@ void BSP_randomSeed(uint32_t seed) {
 
 /* QF callbacks ============================================================*/
 void QF_onStartup(void) {
-                            /* hook the exception handlers from the QF port */
+    /* hook the exception handlers from the QF port */
     *(uint32_t volatile *)0x24 = (uint32_t)&QF_undef;
     *(uint32_t volatile *)0x28 = (uint32_t)&QF_swi;
     *(uint32_t volatile *)0x2C = (uint32_t)&QF_pAbort;
     *(uint32_t volatile *)0x30 = (uint32_t)&QF_dAbort;
     *(uint32_t volatile *)0x34 = (uint32_t)&QF_reserved;
     *(uint32_t volatile *)0x38 = (uint32_t)&QK_irq;
-    *(uint32_t volatile *)0x3C = (uint32_t)0; /* unimplemented! */
+    *(uint32_t volatile *)0x3C = (uint32_t)0U; /* unimplemented! */
 
     AT91C_BASE_AIC->AIC_SVR[AT91C_ID_SYS] = (uint32_t)&ISR_tick;
     AT91C_BASE_AIC->AIC_SPU = (uint32_t)&ISR_spur; /* spurious IRQ */
@@ -278,14 +278,14 @@ void QK_onIdle(void) {
 #endif
 }
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     QF_INT_DISABLE(); /* disable all interrupts */
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
     /* trip the Watchdog to reset the system */
     AT91C_BASE_WDTC->WDTC_WDCR = (0xA5U << 24) | AT91C_WDTC_WDRSTT;
@@ -345,7 +345,7 @@ uint8_t QS_onStartup(void const *arg) {
 
     QS_FILTER_ON(PHILO_STAT);
 
-    return (uint8_t)1; /* indicate successfull QS initialization */
+    return 1U; /* indicate successfull QS initialization */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {
@@ -354,7 +354,7 @@ void QS_onCleanup(void) {
 void QS_onFlush(void) {
     uint16_t nBytes = 0xFFFFU; /* get all available bytes */
     uint8_t const *block;
-    while ((AT91C_BASE_DBGU->DBGU_CSR & AT91C_US_TXBUFE) == 0) { /* busy? */
+    while ((AT91C_BASE_DBGU->DBGU_CSR & AT91C_US_TXBUFE) == 0U) { /* busy? */
     }
     if ((block = QS_getBlock(&nBytes)) != (uint8_t *)0) {
         AT91C_BASE_DBGU->DBGU_TPR = (uint32_t)block;
@@ -373,8 +373,8 @@ uint32_t QS_onGetTime(void) {
     AT91PS_TC pTC0  = AT91C_BASE_TC0;  /* TC0 used for timestamp generation */
     uint32_t now = pTC0->TC_CV; /* get the counter value */
                                 /* did the timer overflow 0xFFFF? */
-    if ((pTC0->TC_SR & AT91C_TC_COVFS) != 0) {
-        l_timeOverflow += (uint32_t)0x10000; /* account for the overflow */
+    if ((pTC0->TC_SR & AT91C_TC_COVFS) != 0U) {
+        l_timeOverflow += 0x10000U; /* account for the overflow */
     }
     return l_timeOverflow + now;
 }

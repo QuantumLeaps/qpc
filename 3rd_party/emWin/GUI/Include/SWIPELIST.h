@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -24,9 +24,8 @@ Purpose     : SWIPELIST include
 #define SWIPELIST_H
 
 #include "WM.h"
-#include "DIALOG_Intern.h"      // Req. for Create indirect data structure
+#include "DIALOG_Type.h"      // Req. for Create indirect data structure
 #include "WIDGET.h"
-#include "GUI_Debug.h"
 
 #if GUI_WINSUPPORT
 
@@ -145,8 +144,10 @@ int                SWIPELIST_GetSepSize              (SWIPELIST_Handle hObj, uns
 void               SWIPELIST_GetText                 (SWIPELIST_Handle hObj, unsigned ItemIndex, unsigned TextIndex, char * pBuffer, int MaxSize);
 int                SWIPELIST_GetTextAlign            (SWIPELIST_Handle hObj, unsigned ItemIndex);
 GUI_COLOR          SWIPELIST_GetTextColor            (SWIPELIST_Handle hObj, unsigned Index);
+int                SWIPELIST_GetThreshold            (SWIPELIST_Handle hObj);
 int                SWIPELIST_GetUserData             (SWIPELIST_Handle hObj, void * pDest, int NumBytes);
 
+int                SWIPELIST_IsSepItem               (SWIPELIST_Handle hObj, U32 ItemIndex);
 int                SWIPELIST_ItemAttachWindow        (SWIPELIST_Handle hObj, unsigned ItemIndex, WM_HWIN hWin, int x0, int y0);
 void               SWIPELIST_ItemDetachWindow        (SWIPELIST_Handle hObj, WM_HWIN hWin);
 int                SWIPELIST_OwnerDraw               (const WIDGET_ITEM_DRAW_INFO * pDrawItemInfo);
@@ -168,6 +169,7 @@ void               SWIPELIST_SetSepSize              (SWIPELIST_Handle hObj, uns
 void               SWIPELIST_SetText                 (SWIPELIST_Handle hObj, unsigned ItemIndex, unsigned TextIndex, char * sText);
 void               SWIPELIST_SetTextAlign            (SWIPELIST_Handle hObj, unsigned ItemIndex, int Align);
 void               SWIPELIST_SetTextColor            (SWIPELIST_Handle hObj, unsigned Index, GUI_COLOR Color);
+int                SWIPELIST_SetThreshold            (SWIPELIST_Handle hObj, int Threshold);
 int                SWIPELIST_SetUserData             (SWIPELIST_Handle hObj, const void * pSrc, int NumBytes);
 
 /*********************************************************************
@@ -184,6 +186,7 @@ GUI_COLOR        SWIPELIST_GetDefaultSepColor        (void);
 unsigned         SWIPELIST_GetDefaultSepSize         (void);
 GUI_COLOR        SWIPELIST_GetDefaultTextColor       (unsigned Index);
 int              SWIPELIST_GetDefaultTextAlign       (void);
+int              SWIPELIST_GetDefaultThreshold       (void);
 
 void             SWIPELIST_SetDefaultBitmapSpace     (unsigned Size);
 void             SWIPELIST_SetDefaultBkColor         (unsigned Index, GUI_COLOR Color);
@@ -193,6 +196,7 @@ void             SWIPELIST_SetDefaultSepColor        (GUI_COLOR Color);
 void             SWIPELIST_SetDefaultSepSize         (unsigned Size);
 void             SWIPELIST_SetDefaultTextColor       (unsigned Index, GUI_COLOR Color);
 void             SWIPELIST_SetDefaultTextAlign       (int Align);
+void             SWIPELIST_SetDefaultThreshold       (int Threshold);
 
 #if defined(__cplusplus)
   }

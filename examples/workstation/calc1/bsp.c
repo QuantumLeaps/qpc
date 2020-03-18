@@ -109,7 +109,7 @@ void QF_onClockTick(void) {
 
 /*..........................................................................*/
 /* this function is used by the QP embedded systems-friendly assertions */
-void Q_onAssert(char const * const file, int line) {
+Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
     printf("Assertion failed in %s, line %d", file, line);
     exit(-1);
 }

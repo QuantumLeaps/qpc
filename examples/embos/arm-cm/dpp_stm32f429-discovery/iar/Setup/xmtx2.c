@@ -1,9 +1,9 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                     SEGGER Microcontroller GmbH                    *
 *                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
+*       (c) 1995 - 2019 SEGGER Microcontroller GmbH                  *
 *                                                                    *
 *       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
@@ -21,24 +21,19 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.34.1                                           *
+*       OS version: 5.06.1                                           *
 *                                                                    *
 **********************************************************************
 
-----------------------------------------------------------------------
-File    : xmtx2.c
+-------------------------- END-OF-HEADER -----------------------------
 Purpose : xmtx file interface -- thread locking and unlocking
-          functions for file i/o, adapted to embOS
---------- END-OF-HEADER ----------------------------------------------
+          functions for file i/o
 */
 
 #include <yvals.h>
 #include "RTOS.h"
 
-
-#if _MULTI_THREAD
-
-#if _DLIB_FILE_DESCRIPTOR
+#if ((_MULTI_THREAD != 0) && (_DLIB_FILE_DESCRIPTOR != 0))
 
 /*********************************************************************
 *
@@ -52,7 +47,7 @@ Purpose : xmtx file interface -- thread locking and unlocking
 *       __iar_file_Mtxinit()
 */
 __ATTRIBUTES void __iar_file_Mtxinit(__iar_Rmtx* m) {
-  OS__iar_system_Mtxinit(m);    // Mapped to system mutex
+  OS__iar_system_Mtxinit(m);
 }
 
 /*********************************************************************
@@ -60,7 +55,7 @@ __ATTRIBUTES void __iar_file_Mtxinit(__iar_Rmtx* m) {
 *       __iar_file_Mtxdst()
 */
 __ATTRIBUTES void __iar_file_Mtxdst(__iar_Rmtx* m) {
-  OS__iar_system_Mtxdst(m);     // Mapped to system mutex
+  OS__iar_system_Mtxdst(m);
 }
 
 /*********************************************************************
@@ -68,7 +63,7 @@ __ATTRIBUTES void __iar_file_Mtxdst(__iar_Rmtx* m) {
 *       __iar_file_Mtxlock()
 */
 __ATTRIBUTES void __iar_file_Mtxlock(__iar_Rmtx* m) {
-  OS__iar_system_Mtxlock(m);    // Mapped to system mutex
+  OS__iar_system_Mtxlock(m);
 }
 
 /*********************************************************************
@@ -76,10 +71,9 @@ __ATTRIBUTES void __iar_file_Mtxlock(__iar_Rmtx* m) {
 *       __iar_file_Mtxunlock()
 */
 __ATTRIBUTES void __iar_file_Mtxunlock(__iar_Rmtx* m) {
-  OS__iar_system_Mtxunlock(m);  // Mapped to system mutex
+  OS__iar_system_Mtxunlock(m);
 }
-#endif /* _DLIB_FILE_DESCRIPTOR */
 
-#endif /* _MULTI_THREAD */
+#endif  // ((_MULTI_THREAD != 0) && (_DLIB_FILE_DESCRIPTOR != 0))
 
-/****** End Of File *************************************************/
+/*************************** End of file ****************************/

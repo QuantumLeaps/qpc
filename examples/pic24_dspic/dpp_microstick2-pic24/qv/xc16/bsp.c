@@ -135,7 +135,7 @@ void BSP_randomSeed(uint32_t seed) {
     l_rnd = seed;
 }
 /*..........................................................................*/
-void Q_onAssert(char const * const file, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const file, int_t const loc) {
     (void)file;       /* unused parameter */
     (void)loc;        /* unused parameter */
     QF_INT_DISABLE(); /* make sure that interrupts are disabled */
@@ -219,7 +219,7 @@ uint8_t QS_onStartup(void const *arg) {
     //QS_FILTER_ON(QS_AO_RECORDS);
     QS_FILTER_ON(QS_UA_RECORDS);
 
-    return (uint8_t)1; /* indicate successful QS initialization */
+    return 1U; /* indicate successful QS initialization */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

@@ -336,13 +336,13 @@ void QK_onIdle(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
     /* for debugging, hang on in an endless loop toggling the RED LED... */
@@ -412,7 +412,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(QS_ALL_RECORDS);
     QS_FILTER_OFF(QS_QF_TICK);
 
-    return (uint8_t)1; /* return success */
+    return 1U; /* return success */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

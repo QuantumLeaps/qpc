@@ -44,19 +44,15 @@ static QState Philo_eating(Philo * const me, QEvt const * const e);
 static Philo l_philo[N_PHILO];   /* storage for all Philos */
 
 /* helper inline functions */
-inline static QTimeEvtCtr THINK_TIME(void) {
-    return (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC)
-                         + (BSP_TICKS_PER_SEC/2U));
-}
+#define THINK_TIME() \
+    ((QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) \
+     + (BSP_TICKS_PER_SEC/2U)))
 
-inline static QTimeEvtCtr EAT_TIME(void) {
-    return (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC)
-                         + BSP_TICKS_PER_SEC);
-}
+#define EAT_TIME() \
+    ((BSP_random() % BSP_TICKS_PER_SEC) + BSP_TICKS_PER_SEC)
 
-inline static uint8_t PHILO_ID(Philo const * const me) {
-    return (uint8_t)(me - l_philo);
-}
+#define PHILO_ID(me_) \
+    ((uint8_t)((me_) - l_philo))
 
 /* Global objects ----------------------------------------------------------*/
 /*.$skip${QP_VERSION} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/

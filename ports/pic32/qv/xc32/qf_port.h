@@ -41,10 +41,10 @@
 #define QF_PORT_H
 
 /* The maximum number of system clock tick rates */
-#define QF_MAX_TICK_RATE        2
+#define QF_MAX_TICK_RATE        2U
 
 /* The maximum number of active objects in the application, see NOTE1 */
-#define QF_MAX_ACTIVE           32
+#define QF_MAX_ACTIVE           32U
 
 /* QF interrupt disable/enable, see NOTE02 */
 #define QF_INT_DISABLE()        __builtin_disable_interrupts()
@@ -56,7 +56,7 @@
 #define QF_CRIT_EXIT(dummy)     QF_INT_ENABLE()
 
 /* fast log-base-2 with CLZ instruction */
-#define QF_LOG2(n_) ((uint8_t)(32 - _clz(n_)))
+#define QF_LOG2(n_) ((uint8_t)(32U - _clz(n_)))
 
 #include <xc.h>         /* for _clz() */
 

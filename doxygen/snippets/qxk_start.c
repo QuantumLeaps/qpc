@@ -22,23 +22,23 @@ int main() {
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     /* start the active objects (basic-threads)... */
-    QACTIVE_START(AO_Table,                  /* AO to start */
-                  (uint_fast8_t)(N_PHILO + 2), /* QP priority of the AO */
-                  tableQueueSto,             /* event queue storage */
-                  Q_DIM(tableQueueSto),      /* queue length [events] */
-                  tableStackSto,             /* stack storage */
-                  sizeof(tableStackSto),     /* stack size [bytes] */
-                  (QEvt *)0);                /* initialization event */
+    QACTIVE_START(AO_Table,              /* AO to start */
+                  N_PHILO + 2U,          /* QP priority of the AO */
+                  tableQueueSto,         /* event queue storage */
+                  Q_DIM(tableQueueSto),  /* queue length [events] */
+                  tableStackSto,         /* stack storage */
+                  sizeof(tableStackSto), /* stack size [bytes] */
+                  (void *)0);            /* initialization param */
     . . .
 
     /* start the extended-threads... */
-    QXTHREAD_START(XT_Test,                  /* Thread to start */
-                  (uint_fast8_t)10U,         /* QP priority of the thread */
-                  testQueueSto,              /* message queue storage */
-                  Q_DIM(testQueueSto),       /* message length [events] */
-                  testStackSto,              /* stack storage */
-                  sizeof(testStackSto),      /* stack size [bytes] */
-                  (QEvt *)0);                /* initialization event */
+    QXTHREAD_START(XT_Test,              /* Thread to start */
+                  10U,                   /* QP priority of the thread */
+                  testQueueSto,          /* message queue storage */
+                  Q_DIM(testQueueSto),   /* message length [events] */
+                  testStackSto,          /* stack storage */
+                  sizeof(testStackSto),  /* stack size [bytes] */
+                  (void *)0);            /* initialization param */
 
     return QF_run(); /* run the QF application */
 }

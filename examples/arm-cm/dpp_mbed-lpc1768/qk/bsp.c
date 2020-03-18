@@ -207,7 +207,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    if (paused != (uint8_t)0) {
+    if (paused != 0U) {
         LPC_GPIO1->FIOSET = LED_3;  /* turn LED on  */
     }
     else {
@@ -289,13 +289,13 @@ void QK_onIdle(void) {
 #endif
 }
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
     NVIC_SystemReset();
 }
 
@@ -363,7 +363,7 @@ uint8_t QS_onStartup(void const *arg) {
 
     QS_FILTER_ON(PHILO_STAT);
 
-    return (uint8_t)1; /* return success */
+    return 1U; /* return success */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

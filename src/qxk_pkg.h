@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-19
+* Last updated for version 6.8.0
+* Last updated on  2020-01-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -44,8 +44,8 @@
 void QXK_start_(void);
 
 /*! initialize the private stack of a given QXThread */
-void QXK_stackInit_(void *thr, QActionHandler handler,
-                    void *stkSto, uint_fast16_t stkSize);
+void QXK_stackInit_(void *thr, QXThreadHandler const handler,
+                    void * const stkSto, uint_fast16_t const stkSize);
 
 /*! called when a thread function returns */
 void QXK_threadRet_(void);

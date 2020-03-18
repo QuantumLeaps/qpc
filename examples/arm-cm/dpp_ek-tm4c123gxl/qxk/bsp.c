@@ -85,8 +85,8 @@ static uint32_t l_rnd; /* random seed */
     QSTimeCtr QS_tickPeriod_;
 
     /* QS identifiers for non-QP sources of events */
-    static uint8_t const l_SysTick_Handler = (uint8_t)0;
-    static uint8_t const l_GPIOPortA_IRQHandler = (uint8_t)0;
+    static uint8_t const l_SysTick_Handler = 0U;
+    static uint8_t const l_GPIOPortA_IRQHandler = 0U;
 
     #define UART_BAUD_RATE      115200U
     #define UART_FR_TXFE        (1U << 7)
@@ -353,13 +353,13 @@ void QXK_onIdle(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
     /* light up all LEDs */
@@ -367,15 +367,17 @@ void Q_onAssert(char const *module, int loc) {
     /* for debugging, hang on in an endless loop... */
     for (;;) {
     }
-#endif
-
+#else
     NVIC_SystemReset();
+#endif
 }
 
 /* QS callbacks ============================================================*/
 #ifdef Q_SPY
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
+    (void)arg; /* unused parameter */
+
     static uint8_t qsTxBuf[2*1024]; /* buffer for QS transmit channel */
     static uint8_t qsRxBuf[100];    /* buffer for QS receive channel */
     uint32_t tmp;
@@ -424,7 +426,7 @@ uint8_t QS_onStartup(void const *arg) {
     //QS_FILTER_ON(QS_MUTEX_LOCK);
     //QS_FILTER_ON(QS_MUTEX_UNLOCK);
 
-    return (uint8_t)1; /* return success */
+    return 1U; /* return success */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

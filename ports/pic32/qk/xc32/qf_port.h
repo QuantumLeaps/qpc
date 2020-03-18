@@ -41,10 +41,10 @@
 #define QF_PORT_H
 
 /* The maximum number of system clock tick rates */
-#define QF_MAX_TICK_RATE        2
+#define QF_MAX_TICK_RATE        2U
 
 /* The maximum number of active objects in the application, see NOTE1 */
-#define QF_MAX_ACTIVE           32
+#define QF_MAX_ACTIVE           32U
 
 /* QF interrupt disable/enable, see NOTE02 */
 #define QF_INT_DISABLE()        __builtin_disable_interrupts()

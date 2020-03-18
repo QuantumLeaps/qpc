@@ -1,14 +1,14 @@
 @echo off
 :: ===========================================================================
-:: Product: QP/C build script for PC-Lint-Plus, "Standard" C compiler
-:: Last Updated for Version: 6.7.0
-:: Date of the Last Update:  2019-12-29
+:: Product: QP/C build script for PC-Lint-Plus
+:: Last Updated for Version: 6.8.0
+:: Date of the Last Update:  2020-01-26
 ::
 ::                    Q u a n t u m  L e a P s
 ::                    ------------------------
 ::                    Modern Embedded Software
 ::
-:: Copyright (C) Quantum Leaps, LLC. All rights reserved.
+:: Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 ::
 :: This program is open source software: you can redistribute it and/or
 :: modify it under the terms of the GNU General Public License as published
@@ -32,28 +32,42 @@
 :: <www.state-machine.com/licensing>
 :: <info@state-machine.com>
 :: ===========================================================================
-setlocal
+@setlocal
 
-:: Options for calling lin.bat
+:: usage of lin.bat
+@echo Usage: lin [16bit] [-d...] [files...]
+@echo examples:
+@echo lin ..\table.c               : use 32bit CPU (default) for linting ..\table.c
+@echo lin 16bit -dQ_SPY ..\philo.c : use 16bit CPU and define Q_SPY for linting ..\philo.c
+@echo lin ..\philo.c ..\table.c    : use 32bit CPU for linting ..\philo.c and ..\table.c
+@echo.
 
 :: NOTE: adjust to for your installation directory of PC-Lint-Plus
-set PCLP_DIR=C:\tools\lint-plus
-set PCLP=%PCLP_DIR%\pclp32.exe
+@set PCLP=C:\tools\lint-plus\pclp32.exe
 
 if NOT exist "%PCLP%" (
     @echo The PC-Lint-Plus toolset not found. Please adjust lin.bat
-    goto end
+    @goto end
 )
 
 :: set the QP/C directory
 set QPC=..\..\..\..
 set QPC_LINT=%QPC%\ports\lint-plus
 
-set LINTFLAGS=%QPC%\ports\lint-plus\std.lnt options.lnt %1 %2 %3 %4
-set PROJ_DIR=..
+if "%1"=="16bit" (
+    set LINTFLAGS=%QPC_LINT%\std.lnt -i%QPC_LINT%\16bit options.lnt %2 %3 %4 %5 %6 %7 %8
+    @echo 16bit CPU
+) else (
+    set LINTFLAGS=%QPC_LINT%\std.lnt -i%QPC_LINT%\32bit options.lnt %1 %2 %3 %4 %6 %7 %8
+    @echo 32bit CPU (default)
+)
+
+:: cleanup
+@del *.log
+
 
 :: linting -------------------------------------------------------------------
-%PCLP% -os(lint_out.log) %LINTFLAGS% %PROJ_DIR%\calc1_sub.c
+%PCLP% -os(lint_out.log) %LINTFLAGS%
 
 :end
-endlocal
+@endlocal
