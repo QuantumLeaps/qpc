@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-03-03
+* Last updated on  2020-03-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -54,6 +54,10 @@ uint8_t volatile QF_intNest;
 
 /* QF functions ============================================================*/
 void QF_init(void) {
+    /* Clear the internal QF variables, so that the framework can start
+    * correctly even if the startup code fails to clear the uninitialized
+    * data (as is required by the C Standard).
+    */
     QF_maxPool_      = 0U;
     QF_subscrList_   = (QSubscrList *)0;
     QF_maxPubSignal_ = 0;

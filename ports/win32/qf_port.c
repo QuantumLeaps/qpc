@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-01-23
+* Last updated on  2020-03-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -64,9 +64,6 @@ static DWORD WINAPI ao_thread(LPVOID arg);
 
 /* QF functions ============================================================*/
 void QF_init(void) {
-    extern uint_fast8_t QF_maxPool_;
-    extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
-
     InitializeCriticalSection(&l_win32CritSect);
 
     /* initialize and enter the startup critical section object to block
@@ -74,14 +71,6 @@ void QF_init(void) {
     */
     InitializeCriticalSection(&l_startupCritSect);
     EnterCriticalSection(&l_startupCritSect);
-
-    /* clear the internal QF variables, so that the framework can (re)start
-    * correctly even if the startup code is not called to clear the
-    * uninitialized data (as is required by the C Standard).
-    */
-    QF_maxPool_ = 0U;
-    QF_bzero(&QF_timeEvtHead_[0], sizeof(QF_timeEvtHead_));
-    QF_bzero(&QF_active_[0],      sizeof(QF_active_));
 }
 /****************************************************************************/
 void QF_enterCriticalSection_(void) {

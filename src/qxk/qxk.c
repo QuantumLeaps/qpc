@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-01-23
+* Last updated on  2020-03-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -104,6 +104,11 @@ void QF_init(void) {
 * for terminating the QF application to return back to the operating
 * system or for handling fatal errors that require shutting down
 * (and possibly re-setting) the system.
+*
+* @attention
+* After calling QF_stop() the application must terminate and cannot
+* continue. In particular, QF_stop() is **not** intended to be followed
+* by a call to QF_init() to "resurrect" the application.
 *
 * @sa QF_onCleanup()
 */

@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-03-17
+* Last updated on  2020-03-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -94,14 +94,6 @@ void QF_init(void) {
 
     /* init the global condition variable with the default initializer */
     pthread_cond_init(&QV_condVar_, NULL);
-
-    /* clear the internal QF variables, so that the framework can (re)start
-    * correctly even if the startup code is not called to clear the
-    * uninitialized data (as is required by the C Standard).
-    */
-    QF_maxPool_ = 0U;
-    QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
-    QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
 
     l_tick.tv_sec = 0;
     l_tick.tv_nsec = NANOSLEEP_NSEC_PER_SEC/100L; /* default clock tick */
