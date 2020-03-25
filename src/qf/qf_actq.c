@@ -10,7 +10,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-01-21
+* Last updated on  2020-03-25
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -447,7 +447,7 @@ void QTicker_ctor(QTicker * const me, uint8_t tickRate) {
     QActive_ctor(me, Q_STATE_CAST(0)); /* superclass' ctor */
     me->super.vptr = &vtable.super; /* hook the vptr */
 
-    /*  reuse eQueue.head for tick-rate */
+    /* reuse eQueue.head for tick-rate */
     me->eQueue.head = (QEQueueCtr)tickRate;
 }
 /*..........................................................................*/
@@ -458,17 +458,17 @@ static void QTicker_init_(QHsm * const me, void const *par) {
 }
 /*..........................................................................*/
 static void QTicker_dispatch_(QHsm * const me, QEvt const * const e) {
-    QEQueueCtr n;
+    QEQueueCtr nTicks; /* # ticks since the last call */
     QF_CRIT_STAT_
 
     (void)e; /* unused parameter */
 
     QF_CRIT_ENTRY_();
+    nTicks = QTICKER_CAST_(me)->eQueue.tail; /* save the # of ticks */
     QTICKER_CAST_(me)->eQueue.tail = 0U; /* clear the # ticks */
     QF_CRIT_EXIT_();
 
-    /* # ticks since last call */
-    for (n = QTICKER_CAST_(me)->eQueue.tail; n > 0U; --n) {
+    for (; nTicks > 0U; --nTicks) {
         QF_TICK_X((uint_fast8_t)QTICKER_CAST_(me)->eQueue.head, me);
     }
 }
