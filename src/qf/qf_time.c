@@ -394,7 +394,6 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
     }
     else { /* the time event was already disarmed automatically */
         wasArmed = false;
-        me->super.refCtr_ &= (uint8_t)(~TE_IS_LINKED & 0xFFU);
 
         QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_DISARM_ATTEMPT,
                          QS_priv_.locFilter[TE_OBJ], me)
