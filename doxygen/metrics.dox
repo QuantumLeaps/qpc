@@ -32,7 +32,7 @@
       10      2     61      1      13 QF_getQueueMin@398-410@..\src\qf\qf_actq.c
       12      1     68      2      14 QTicker_ctor@439-452@..\src\qf\qf_actq.c
        5      1     35      2       5 QTicker_init_@454-458@..\src\qf\qf_actq.c
-      11      2     82      2      15 QTicker_dispatch_@460-474@..\src\qf\qf_actq.c
+      12      2     83      2      15 QTicker_dispatch_@460-474@..\src\qf\qf_actq.c
       28      2    155      4      37 QTicker_post_@480-516@..\src\qf\qf_actq.c
        5      1     30      2       5 QTicker_postLIFO_@518-522@..\src\qf\qf_actq.c
       15      1     89      3      18 QActive_defer@78-95@..\src\qf\qf_defer.c
@@ -134,7 +134,7 @@ NLOC    Avg.NLOC  AvgCCN  Avg.token  function_cnt    file
     319      38.2     6.0      239.4         8     ..\src\qf\qep_hsm.c
     308      32.3     5.9      218.4         9     ..\src\qf\qep_msm.c
      60      13.0     3.5       83.8         4     ..\src\qf\qf_act.c
-    259      26.8     3.9      161.2         9     ..\src\qf\qf_actq.c
+    260      26.9     3.9      161.3         9     ..\src\qf\qf_actq.c
      68      20.3     2.0      109.7         3     ..\src\qf\qf_defer.c
     114      15.0     2.3       95.6         7     ..\src\qf\qf_dyn.c
     106      24.8     3.5      161.8         4     ..\src\qf\qf_mem.c
@@ -162,6 +162,6 @@ NLOC    Avg.NLOC  AvgCCN  Avg.token  function_cnt    file
 ==========================================================================================
 Total nloc   Avg.NLOC  AvgCCN  Avg.token   Fun Cnt  Warning cnt   Fun Rt   nloc Rt
 ------------------------------------------------------------------------------------------
-      3501      25.1     4.3      159.5      108            1      0.01    0.04
+      3502      25.1     4.3      159.5      108            1      0.01    0.04
 @endcode 
 */ 
