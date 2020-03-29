@@ -25,14 +25,14 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 #define BSP_TICKS_PER_SEC    33U
 #define BSP_SCREEN_WIDTH     128U
@@ -62,4 +62,4 @@ uint32_t BSP_random(void);          /* pseudo-random generator */
 
 extern QActive *the_Ticker0; /* "Ticker" active object for tick rate 0 */
 
-#endif /* bsp_h */
+#endif /* BSP_H */

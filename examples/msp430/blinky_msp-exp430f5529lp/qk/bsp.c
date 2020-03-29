@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "blinky.h"
@@ -125,13 +125,13 @@ void QK_onIdle(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
     /* write invalid password to WDT: cause a password-validation RESET */
     WDTCTL = 0xDEAD;

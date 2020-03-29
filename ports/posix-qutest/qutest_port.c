@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.5.1
-* Date of the Last Update:  2019-06-18
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -47,7 +47,8 @@
 #define QP_IMPL       /* this is QP implementation */
 #include "qf_port.h"  /* QF port */
 #include "qassert.h"  /* QP embedded systems-friendly assertions */
-#include "qs_port.h"  /* include QS port */
+#include "qs_port.h"  /* QS port */
+#include "qs_pkg.h"   /* QS package-scope interface */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -99,7 +100,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
 
     /* extract hostName from 'arg' (hostName:port_remote)... */
-    src = (arg != (void const *)0)
+    src = (arg != (void *)0)
           ? (char const *)arg
           : "localhost"; /* default QSPY host */
     dst = hostName;
@@ -115,8 +116,6 @@ uint8_t QS_onStartup(void const *arg) {
     if (*src == ':') {
         serviceName = src + 1;
     }
-    //printf("<TARGET> Connecting to QSPY on Host=%s:%s...\n",
-    //       hostName, serviceName);
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
@@ -176,19 +175,16 @@ uint8_t QS_onStartup(void const *arg) {
     sockopt_bool = 0; /* negative option */
     setsockopt(l_sock, SOL_SOCKET, SO_LINGER,
                &sockopt_bool, sizeof(sockopt_bool));
-
-    //printf("<TARGET> Connected to QSPY at Host=%s:%d\n",
-    //       hostName, port_remote);
     QS_onFlush();
 
     /* install the SIGINT (Ctrl-C) signal handler */
     sig_act.sa_handler = &sigIntHandler;
     sigaction(SIGINT, &sig_act, NULL);
 
-    return (uint8_t)1; /* success */
+    return 1U; /* success */
 
 error:
-    return (uint8_t)0; /* failure */
+    return 0U; /* failure */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

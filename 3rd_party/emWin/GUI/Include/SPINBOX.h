@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -24,9 +24,8 @@ Purpose     : SPINBOX header file
 #define SPINBOX_H
 
 #include "WM.h"
-#include "DIALOG_Intern.h" // Required for Create indirect data structure
+#include "DIALOG_Type.h" // Required for Create indirect data structure
 #include "WIDGET.h"
-#include "GUI_Debug.h"
 #include "EDIT.h"
 
 #if GUI_WINSUPPORT
@@ -69,12 +68,19 @@ Purpose     : SPINBOX header file
 
 /*********************************************************************
 *
+*       Timer indices
+*/
+#define SPINBOX_TI_TIMERSTART       0  // Timer for starting auto increment
+#define SPINBOX_TI_TIMERINC         1  // Timer for period between two increments
+
+/*********************************************************************
+*
 *       Skinning property indices
 */
 #define SPINBOX_SKIN_FLEX            SPINBOX_DrawSkinFlex
 
 #define SPINBOX_SKINFLEX_PI_PRESSED  0
-#define SPINBOX_SKINFLEX_PI_FOCUSSED 1
+#define SPINBOX_SKINFLEX_PI_FOCUSED  1
 #define SPINBOX_SKINFLEX_PI_ENABLED  2
 #define SPINBOX_SKINFLEX_PI_DISABLED 3
 #define SPINBOX_SKIN_FLEX_RADIUS     2
@@ -121,23 +127,27 @@ void           SPINBOX_Callback(WM_MESSAGE * pMsg);
 *
 *       Get / Set properties
 */
-void        SPINBOX_EnableBlink     (SPINBOX_Handle hObj, int Period, int OnOff);
-GUI_COLOR   SPINBOX_GetBkColor      (SPINBOX_Handle hObj, unsigned int Index);
-GUI_COLOR   SPINBOX_GetButtonBkColor(SPINBOX_Handle hObj, unsigned int Index);
-EDIT_Handle SPINBOX_GetEditHandle   (SPINBOX_Handle hObj);
-int         SPINBOX_GetUserData     (SPINBOX_Handle hObj, void * pDest, int NumBytes);
-I32         SPINBOX_GetValue        (SPINBOX_Handle hObj);
-void        SPINBOX_SetBkColor      (SPINBOX_Handle hObj, unsigned int Index, GUI_COLOR Color);
-void        SPINBOX_SetButtonBkColor(SPINBOX_Handle hObj, unsigned int Index, GUI_COLOR Color);
-void        SPINBOX_SetButtonSize   (SPINBOX_Handle hObj, unsigned ButtonSize);
-void        SPINBOX_SetEdge         (SPINBOX_Handle hObj, U8 Edge);
-void        SPINBOX_SetEditMode     (SPINBOX_Handle hObj, U8 EditMode);
-void        SPINBOX_SetFont         (SPINBOX_Handle hObj, const GUI_FONT * pFont);
-void        SPINBOX_SetRange        (SPINBOX_Handle hObj, I32 Min, I32 Max);
-U16         SPINBOX_SetStep         (SPINBOX_Handle hObj, U16 Step);
-void        SPINBOX_SetTextColor    (SPINBOX_Handle hObj, unsigned int Index, GUI_COLOR Color);
-int         SPINBOX_SetUserData     (SPINBOX_Handle hObj, const void * pSrc, int NumBytes);
-void        SPINBOX_SetValue        (SPINBOX_Handle hObj, I32 Value);
+void             SPINBOX_EnableBlink     (SPINBOX_Handle hObj, int Period, int OnOff);
+GUI_COLOR        SPINBOX_GetBkColor      (SPINBOX_Handle hObj, unsigned int Index);
+GUI_COLOR        SPINBOX_GetButtonBkColor(SPINBOX_Handle hObj, unsigned int Index);
+EDIT_Handle      SPINBOX_GetEditHandle   (SPINBOX_Handle hObj);
+const GUI_FONT * SPINBOX_GetFont         (SPINBOX_Handle hObj);
+GUI_COLOR        SPINBOX_GetTextColor    (SPINBOX_Handle hObj, unsigned int Index);
+U32              SPINBOX_GetTimerPeriod  (SPINBOX_Handle hObj, U32 Index);
+int              SPINBOX_GetUserData     (SPINBOX_Handle hObj, void * pDest, int NumBytes);
+I32              SPINBOX_GetValue        (SPINBOX_Handle hObj);
+void             SPINBOX_SetBkColor      (SPINBOX_Handle hObj, unsigned int Index, GUI_COLOR Color);
+void             SPINBOX_SetButtonBkColor(SPINBOX_Handle hObj, unsigned int Index, GUI_COLOR Color);
+void             SPINBOX_SetButtonSize   (SPINBOX_Handle hObj, unsigned ButtonSize);
+void             SPINBOX_SetEdge         (SPINBOX_Handle hObj, U8 Edge);
+void             SPINBOX_SetEditMode     (SPINBOX_Handle hObj, U8 EditMode);
+void             SPINBOX_SetFont         (SPINBOX_Handle hObj, const GUI_FONT * pFont);
+void             SPINBOX_SetRange        (SPINBOX_Handle hObj, I32 Min, I32 Max);
+U16              SPINBOX_SetStep         (SPINBOX_Handle hObj, U16 Step);
+void             SPINBOX_SetTextColor    (SPINBOX_Handle hObj, unsigned int Index, GUI_COLOR Color);
+void             SPINBOX_SetTimerPeriod  (SPINBOX_Handle hObj, U32 Index, U32 Period);
+int              SPINBOX_SetUserData     (SPINBOX_Handle hObj, const void * pSrc, int NumBytes);
+void             SPINBOX_SetValue        (SPINBOX_Handle hObj, I32 Value);
 
 /*********************************************************************
 *

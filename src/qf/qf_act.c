@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-10
+* Last updated for version 6.8.0
+* Last updated on  2020-01-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -42,7 +42,8 @@
 #include "qf_pkg.h"       /* QF package-scope interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -50,7 +51,7 @@
 Q_DEFINE_THIS_MODULE("qf_act")
 
 /* public objects ***********************************************************/
-QActive *QF_active_[QF_MAX_ACTIVE + 1]; /* to be used by QF ports only */
+QActive *QF_active_[QF_MAX_ACTIVE + 1U]; /* to be used by QF ports only */
 
 /****************************************************************************/
 /**
@@ -75,8 +76,8 @@ void QF_add_(QActive * const a) {
     * object must not be already in use. QF requires each active object to
     * have a __unique__ priority.
     */
-    Q_REQUIRE_ID(100, ((uint_fast8_t)0 < p)
-                       && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
+    Q_REQUIRE_ID(100, (0U < p)
+                       && (p <= QF_MAX_ACTIVE)
                        && (QF_active_[p] == (QActive *)0));
 
     QF_CRIT_ENTRY_();
@@ -107,9 +108,8 @@ void QF_remove_(QActive * const a) {
     * exceed the maximum #QF_MAX_ACTIVE. Also, the priority of the active
     * object must be already registered with the framework.
     */
-    Q_REQUIRE_ID(200, ((uint_fast8_t)0 < p)
-                       && (p <= (uint_fast8_t)QF_MAX_ACTIVE)
-              && (QF_active_[p] == a));
+    Q_REQUIRE_ID(200, (0U < p) && (p <= QF_MAX_ACTIVE)
+                       && (QF_active_[p] == a));
 
     QF_CRIT_ENTRY_();
     QF_active_[p] = (QActive *)0; /* free-up the priority level */
@@ -143,10 +143,10 @@ void QF_remove_(QActive * const a) {
 */
 void QF_bzero(void * const start, uint_fast16_t len) {
     uint8_t *ptr = (uint8_t *)start;
-    while (len != (uint_fast16_t)0) {
-        *ptr = (uint8_t)0;
+    uint_fast16_t n;
+    for (n = len; n > 0U; --n) {
+        *ptr = 0U;
         QF_PTR_INC_(ptr);
-        --len;
     }
 }
 
@@ -155,34 +155,32 @@ void QF_bzero(void * const start, uint_fast16_t len) {
 
     uint_fast8_t QF_LOG2(QPSetBits x) {
         static uint8_t const log2LUT[16] = {
-            (uint8_t)0, (uint8_t)1, (uint8_t)2, (uint8_t)2,
-            (uint8_t)3, (uint8_t)3, (uint8_t)3, (uint8_t)3,
-            (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4,
-            (uint8_t)4, (uint8_t)4, (uint8_t)4, (uint8_t)4
+            0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,
+            4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U
         };
-        uint_fast8_t n = (uint_fast8_t)0;
+        uint_fast8_t n = 0U;
         QPSetBits    t;
 
 #if (QF_MAX_ACTIVE > 16)
         t = (QPSetBits)(x >> 16);
-        if (t != (QPSetBits)0) {
-            n += (uint_fast8_t)16;
+        if (t != 0U) {
+            n += 16U;
             x = t;
         }
 #endif
 #if (QF_MAX_ACTIVE > 8)
         t = (x >> 8);
-        if (t != (QPSetBits)0) {
-            n += (uint_fast8_t)8;
+        if (t != 0U) {
+            n += 8U;
             x = t;
         }
 #endif
         t = (x >> 4);
-        if (t != (QPSetBits)0) {
-            n += (uint_fast8_t)4;
+        if (t != 0U) {
+            n += 4U;
             x = t;
         }
-        return n + (uint_fast8_t)log2LUT[x];
+        return n + log2LUT[x];
     }
 
 #endif /* QF_LOG2 */

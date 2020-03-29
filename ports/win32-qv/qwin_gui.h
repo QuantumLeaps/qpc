@@ -3,14 +3,14 @@
 * @brief QWIN GUI facilities for building realistic embedded front panels
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.6.5
-* Date of the Last Update:  2016-05-13
+* Last updated for version 6.7.0
+* Last updated on  2019-12-18
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,16 +28,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qwin_gui_h
-#define qwin_gui_h
+#ifndef QWIN_GUI_H
+#define QWIN_GUI_H
 
 #ifndef QWIN_GUI
     #error The pre-processor macro QWIN_GUI must be defined
@@ -110,7 +110,7 @@ void GraphicDisplay_redraw(GraphicDisplay * const me);
     pixelRGB[0] = (color_)[0]; \
     pixelRGB[1] = (color_)[1]; \
     pixelRGB[2] = (color_)[2]; \
-} while (0)
+} while (false)
 
 #define GraphicDisplay_clearPixel(me_, x_, y_) do { \
     BYTE *pixelRGB = &(me_)->bits[3*((x_) \
@@ -118,7 +118,7 @@ void GraphicDisplay_redraw(GraphicDisplay * const me);
     pixelRGB[0] = (me_)->bgColor[0]; \
     pixelRGB[1] = (me_)->bgColor[1]; \
     pixelRGB[2] = (me_)->bgColor[2]; \
-} while (0)
+} while (false)
 
 /* SegmentDisplay "class" for drawing segment displays, LEDs, etc...........*/
 typedef struct {
@@ -145,4 +145,4 @@ void DrawBitmap(HDC hdc, HBITMAP hBitmap, int xStart, int yStart);
 }
 #endif
 
-#endif /* qwin_gui_h */
+#endif /* QWIN_GUI_H */

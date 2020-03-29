@@ -1,11 +1,4 @@
-/*
-* This file has been adapted from the Unity unit testing harness,
-* from the directory examples/example_1/test/. The original file
-* TestProductionCode.c has been augmented with the main() function
-* to run the tests. This eliminates the need for a "test-runner".
-*
-* Quantum Leaps, state-machine.com, 2018-10-10
-*/
+
 #include "ProductionCode.h"
 #include "unity.h"
 
@@ -22,14 +15,13 @@ void setUp(void)
 
 void tearDown(void)
 {
-    /* This is run after EACH TEST */
 }
 
 void test_FindFunction_WhichIsBroken_ShouldReturnZeroIfItemIsNotInList_WhichWorksEvenInOurBrokenCode(void)
 {
   /* All of these should pass */
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(78));
-  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(1));
+  TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(2));
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(33));
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(999));
   TEST_ASSERT_EQUAL(0, FindFunction_WhichIsBroken(-1));
@@ -68,16 +60,3 @@ void test_FunctionWhichReturnsLocalVariable_ShouldReturnCurrentCounter_ButFailsB
      * you what actually happened...which in this case was a failure to setup the initial condition. */
     TEST_ASSERT_EQUAL_HEX(0x1234, FunctionWhichReturnsLocalVariable());
 }
-
-/* Let Unity run the tests and report the results ... */
-int main(void)
-{
-    UNITY_BEGIN();
-    RUN_TEST(test_FindFunction_WhichIsBroken_ShouldReturnZeroIfItemIsNotInList_WhichWorksEvenInOurBrokenCode);
-    RUN_TEST(test_FindFunction_WhichIsBroken_ShouldReturnTheIndexForItemsInList_WhichWillFailBecauseOurFunctionUnderTestIsBroken);
-    RUN_TEST(test_FunctionWhichReturnsLocalVariable_ShouldReturnTheCurrentCounterValue);
-    RUN_TEST(test_FunctionWhichReturnsLocalVariable_ShouldReturnTheCurrentCounterValueAgain);
-    RUN_TEST(test_FunctionWhichReturnsLocalVariable_ShouldReturnCurrentCounter_ButFailsBecauseThisTestIsActuallyFlawed);
-    return UNITY_END();
-}
-

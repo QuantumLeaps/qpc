@@ -44,8 +44,23 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="game-gui.rc">
-      <Filter>Res</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\BOARD.bmp" />
+    <Image Include="Res\LCD.bmp" />
+    <Image Include="Res\led_off.bmp" />
+    <Image Include="Res\led_on.bmp" />
+    <Image Include="Res\seg.bmp" />
+    <Image Include="Res\seg0.bmp" />
+    <Image Include="Res\seg1.bmp" />
+    <Image Include="Res\seg2.bmp" />
+    <Image Include="Res\seg3.bmp" />
+    <Image Include="Res\seg4.bmp" />
+    <Image Include="Res\seg5.bmp" />
+    <Image Include="Res\seg6.bmp" />
+    <Image Include="Res\seg7.bmp" />
+    <Image Include="Res\seg8.bmp" />
+    <Image Include="Res\seg9.bmp" />
   </ItemGroup>
 </Project>

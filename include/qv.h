@@ -5,14 +5,14 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 6.0.3
-* Last updated on  2017-12-08
+* Last updated for version 6.7.0
+* Last updated on  2019-12-19
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,16 +30,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qv_h
-#define qv_h
+#ifndef QV_H
+#define QV_H
 
 #include "qequeue.h"  /* QV kernel uses the native QP event queue  */
 #include "qmpool.h"   /* QV kernel uses the native QP memory pool  */
@@ -76,9 +76,6 @@
 */
 void QV_onIdle(void);
 
-/****************************************************************************/
-/*! get the current QV version number string of the form "X.Y.Z" */
-#define QV_getVersion() (QP_versionStr)
 
 /****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */
@@ -108,4 +105,4 @@ void QV_onIdle(void);
 
 #endif /* QP_IMPL */
 
-#endif /* qv_h */
+#endif /* QV_H */

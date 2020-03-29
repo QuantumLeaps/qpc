@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.6
-* Last updated on  2018-10-03
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -42,7 +42,8 @@
 #include "qf_pkg.h"       /* QF package-scope interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -113,10 +114,10 @@ void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
                  uint_fast16_t const evtSize)
 {
     /** @pre cannot exceed the number of available memory pools */
-    Q_REQUIRE_ID(200, QF_maxPool_ < (uint_fast8_t)Q_DIM(QF_pool_));
+    Q_REQUIRE_ID(200, QF_maxPool_ < Q_DIM(QF_pool_));
     /** @pre please initialize event pools in ascending order of evtSize: */
-    Q_REQUIRE_ID(201, (QF_maxPool_ == (uint_fast8_t)0)
-        || (QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - (uint_fast8_t)1])
+    Q_REQUIRE_ID(201, (QF_maxPool_ == 0U)
+        || (QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - 1U])
             < evtSize));
 
     /* perform the platform-dependent initialization of the pool */
@@ -127,8 +128,8 @@ void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
     /* generate the object-dictionary entry for the initialized pool */
     {
         char_t obj_name[9] = "EvtPool?";
-        obj_name[7] = (char_t)((int8_t)'0' + (int8_t)QF_maxPool_);
-        QS_obj_dict(&QF_pool_[QF_maxPool_ - (uint_fast8_t)1], obj_name);
+        obj_name[7] = '0' + (QF_maxPool_ & 0x7FU);
+        QS_obj_dict_pre_(&QF_pool_[QF_maxPool_ - 1U], obj_name);
     }
 #endif /* Q_SPY*/
 }
@@ -168,7 +169,7 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
     QS_CRIT_STAT_
 
     /* find the pool index that fits the requested event size ... */
-    for (idx = (uint_fast8_t)0; idx < QF_maxPool_; ++idx) {
+    for (idx = 0U; idx < QF_maxPool_; ++idx) {
         if (evtSize <= QF_EPOOL_EVENT_SIZE_(QF_pool_[idx])) {
             break;
         }
@@ -176,23 +177,23 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
     /* cannot run out of registered pools */
     Q_ASSERT_ID(310, idx < QF_maxPool_);
 
-    QS_BEGIN_(QS_QF_NEW, (void *)0, (void *)0)
-        QS_TIME_();             /* timestamp */
-        QS_EVS_(evtSize);       /* the size of the event */
-        QS_SIG_((QSignal)sig);  /* the signal of the event */
-    QS_END_()
+    QS_BEGIN_PRE_(QS_QF_NEW, (void *)0, (void *)0)
+        QS_TIME_PRE_();        /* timestamp */
+        QS_EVS_PRE_(evtSize);  /* the size of the event */
+        QS_SIG_PRE_(sig);      /* the signal of the event */
+    QS_END_PRE_()
 
     /* get e -- platform-dependent */
     QF_EPOOL_GET_(QF_pool_[idx], e,
                   ((margin != QF_NO_MARGIN)
                       ? margin
-                      : (uint_fast16_t)0));
+                      : 0U));
 
     /* was e allocated correctly? */
     if (e != (QEvt *)0) {
         e->sig = (QSignal)sig;      /* set signal for this event */
-        e->poolId_ = (uint8_t)(idx + (uint_fast8_t)1); /* store the pool ID */
-        e->refCtr_ = (uint8_t)0;    /* set the reference counter to 0 */
+        e->poolId_ = (uint8_t)(idx + 1U); /* store the pool ID */
+        e->refCtr_ = 0U;    /* set the reference counter to 0 */
     }
     /* event cannot be allocated */
     else {
@@ -229,18 +230,18 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
 void QF_gc(QEvt const * const e) {
 
     /* is it a dynamic event? */
-    if (e->poolId_ != (uint8_t)0) {
+    if (e->poolId_ != 0U) {
         QF_CRIT_STAT_
         QF_CRIT_ENTRY_();
 
         /* isn't this the last reference? */
-        if (e->refCtr_ > (uint8_t)1) {
+        if (e->refCtr_ > 1U) {
 
-            QS_BEGIN_NOCRIT_(QS_QF_GC_ATTEMPT, (void *)0, (void *)0)
-                QS_TIME_();         /* timestamp */
-                QS_SIG_(e->sig);    /* the signal of the event */
-                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_END_NOCRIT_()
+            QS_BEGIN_NOCRIT_PRE_(QS_QF_GC_ATTEMPT, (void *)0, (void *)0)
+                QS_TIME_PRE_();         /* timestamp */
+                QS_SIG_PRE_(e->sig);    /* the signal of the event */
+                QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+            QS_END_NOCRIT_PRE_()
 
             QF_EVT_REF_CTR_DEC_(e); /* decrement the ref counter */
 
@@ -248,21 +249,21 @@ void QF_gc(QEvt const * const e) {
         }
         /* this is the last reference to this event, recycle it */
         else {
-            uint_fast8_t idx = (uint_fast8_t)e->poolId_ - (uint_fast8_t)1;
+            uint_fast8_t idx = (uint_fast8_t)e->poolId_ - 1U;
 
-            QS_BEGIN_NOCRIT_(QS_QF_GC, (void *)0, (void *)0)
-                QS_TIME_();         /* timestamp */
-                QS_SIG_(e->sig);    /* the signal of the event */
-                QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_END_NOCRIT_()
+            QS_BEGIN_NOCRIT_PRE_(QS_QF_GC, (void *)0, (void *)0)
+                QS_TIME_PRE_();         /* timestamp */
+                QS_SIG_PRE_(e->sig);    /* the signal of the event */
+                QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+            QS_END_NOCRIT_PRE_()
 
             QF_CRIT_EXIT_();
 
             /* pool ID must be in range */
             Q_ASSERT_ID(410, idx < QF_maxPool_);
 
-            /* casting const away is legitimate, because it's a pool event */
-            QF_EPOOL_PUT_(QF_pool_[idx], (QEvt *)e);
+            /* cast 'const' away, which is OK, because it's a pool event */
+            QF_EPOOL_PUT_(QF_pool_[idx], QF_EVT_CONST_CAST_(e));
         }
     }
 }
@@ -288,18 +289,18 @@ QEvt const *QF_newRef_(QEvt const * const e, void const * const evtRef) {
     /*! @pre the event must be dynamic and the provided event reference
     * must not be already in use */
     Q_REQUIRE_ID(500,
-        (e->poolId_ != (uint8_t)0)
-        && (evtRef == (void const *)0));
+        (e->poolId_ != 0U)
+        && (evtRef == (void *)0));
 
     QF_CRIT_ENTRY_();
 
     QF_EVT_REF_CTR_INC_(e); /* increments the ref counter */
 
-    QS_BEGIN_NOCRIT_(QS_QF_NEW_REF, (void *)0, (void *)0)
-        QS_TIME_();      /* timestamp */
-        QS_SIG_(e->sig); /* the signal of the event */
-        QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_NEW_REF, (void *)0, (void *)0)
+        QS_TIME_PRE_();      /* timestamp */
+        QS_SIG_PRE_(e->sig); /* the signal of the event */
+        QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+    QS_END_NOCRIT_PRE_()
 
     QF_CRIT_EXIT_();
 
@@ -320,11 +321,11 @@ void QF_deleteRef_(void const * const evtRef) {
     QS_CRIT_STAT_
     QEvt const * const e = (QEvt const *)evtRef;
 
-    QS_BEGIN_(QS_QF_DELETE_REF, (void *)0, (void *)0)
-        QS_TIME_();      /* timestamp */
-        QS_SIG_(e->sig); /* the signal of the event */
-        QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-    QS_END_()
+    QS_BEGIN_PRE_(QS_QF_DELETE_REF, (void *)0, (void *)0)
+        QS_TIME_PRE_();      /* timestamp */
+        QS_SIG_PRE_(e->sig); /* the signal of the event */
+        QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+    QS_END_PRE_()
 
     QF_gc(e);
 }
@@ -335,6 +336,6 @@ void QF_deleteRef_(void const * const evtRef) {
 * Obtain the block size of any registered event pools
 */
 uint_fast16_t QF_poolGetMaxBlockSize(void) {
-    return QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - (uint_fast8_t)1]);
+    return QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - 1U]);
 }
 

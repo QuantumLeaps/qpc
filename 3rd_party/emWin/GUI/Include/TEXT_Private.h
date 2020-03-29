@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -23,8 +23,8 @@ Purpose     : TEXT include
 #ifndef TEXT_PRIVATE_H
 #define TEXT_PRIVATE_H
 
+#include "WM_Intern.h"
 #include "TEXT.h"
-#include "GUI_Private.h"
 
 #if GUI_WINSUPPORT
 
@@ -46,6 +46,7 @@ typedef struct {
   TEXT_PROPS Props;
   WM_HMEM hpText;
   I16 Align;
+  I16 xPosText, yPosText;
 } TEXT_OBJ;
 
 /*********************************************************************
@@ -77,3 +78,5 @@ extern TEXT_PROPS TEXT__DefaultProps;
 
 #endif   /* if GUI_WINSUPPORT */
 #endif   /* TEXT_PRIVATE_H */
+
+/*************************** End of file ****************************/

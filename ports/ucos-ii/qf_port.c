@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-07
+* Last updated for version 6.8.0
+* Last updated on  2020-01-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -42,7 +42,8 @@
 #include "qf_pkg.h"
 #include "qassert.h"
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS package-scope internal interface */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -61,7 +62,7 @@ int_t QF_run(void) {
     QF_onStartup();  /* configure & start interrupts, see NOTE0 */
     OSStart();       /* start uC/OS-II multitasking */
     Q_ERROR_ID(100); /* OSStart() should never return */
-    return (int_t)0; /* this unreachable return keeps the compiler happy */
+    return 0; /* this unreachable return keeps the compiler happy */
 }
 /*..........................................................................*/
 void QF_stop(void) {
@@ -75,9 +76,9 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 
 /*..........................................................................*/
 void QActive_start_(QActive * const me, uint_fast8_t prio,
-                    QEvt const *qSto[], uint_fast16_t qLen,
-                    void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    QEvt const * * const qSto, uint_fast16_t const qLen,
+                    void * const stkSto, uint_fast16_t const stkSize,
+                    void const * const par)
 {
     INT8U p_ucos;
     INT8U err;
@@ -88,7 +89,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = prio; /* save the QF priority */
     QF_add_(me); /* make QF aware of this active object */
-    QHSM_INIT(&me->super, ie);  /* thake the top-most initial tran. */
+
+    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* map from QP to uC/OS priority */
@@ -159,19 +161,19 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
     if (status) { /* can post the event? */
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_FIFO,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO,
                          QS_priv_.locFilter[AO_OBJ], me)
-            QS_TIME_();             /* timestamp */
-            QS_OBJ_(sender);        /* the sender object */
-            QS_SIG_(e->sig);        /* the signal of the event */
-            QS_OBJ_(me);            /* this active object (recipient) */
-            QS_U8_(e->poolId_);     /* the pool Id of the event */
-            QS_U8_(e->refCtr_);     /* the ref count of the event */
-            QS_EQC_((QEQueueCtr)nFree); /* # free entries */
-            QS_EQC_((QEQueueCtr)0); /* min # free entries (unknown) */
-        QS_END_NOCRIT_()
+            QS_TIME_PRE_();         /* timestamp */
+            QS_OBJ_PRE_(sender);    /* the sender object */
+            QS_SIG_PRE_(e->sig);    /* the signal of the event */
+            QS_OBJ_PRE_(me);        /* this active object (recipient) */
+            QS_U8_PRE_(e->poolId_); /* the pool Id of the event */
+            QS_U8_PRE_(e->refCtr_); /* the ref count of the event */
+            QS_EQC_PRE_(nFree);     /* # free entries */
+            QS_EQC_PRE_(0U);        /* min # free entries (unknown) */
+        QS_END_NOCRIT_PRE_()
 
-        if (e->poolId_ != (uint8_t)0) { /* is it a pool event? */
+        if (e->poolId_ != 0U) { /* is it a pool event? */
             QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
         }
 
@@ -183,16 +185,16 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     }
     else {
 
-        QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_ATTEMPT,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT,
                          QS_priv_.locFilter[AO_OBJ], me)
-            QS_TIME_();         /* timestamp */
-            QS_OBJ_(sender);    /* the sender object */
-            QS_SIG_(e->sig);    /* the signal of the event */
-            QS_OBJ_(me);        /* this active object (recipient) */
-            QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_EQC_((QEQueueCtr)nFree);  /* # free entries available */
-            QS_EQC_((QEQueueCtr)margin); /* margin requested */
-        QS_END_NOCRIT_()
+            QS_TIME_PRE_();         /* timestamp */
+            QS_OBJ_PRE_(sender);    /* the sender object */
+            QS_SIG_PRE_(e->sig);    /* the signal of the event */
+            QS_OBJ_PRE_(me);        /* this active object (recipient) */
+            QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+            QS_EQC_PRE_(nFree);     /* # free entries available */
+            QS_EQC_PRE_(margin);    /* margin requested */
+        QS_END_NOCRIT_PRE_()
 
         QF_CRIT_EXIT_();
     }
@@ -204,17 +206,17 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_STAT_
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_();             /* timestamp */
-        QS_SIG_(e->sig);        /* the signal of this event */
-        QS_OBJ_(me);            /* this active object */
-        QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-        QS_EQC_(((OS_Q *)me->eQueue)->OSQSize
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
+        QS_TIME_PRE_();             /* timestamp */
+        QS_SIG_PRE_(e->sig);        /* the signal of this event */
+        QS_OBJ_PRE_(me);            /* this active object */
+        QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+        QS_EQC_PRE_(((OS_Q *)me->eQueue)->OSQSize
                 - ((OS_Q *)me->eQueue)->OSQEntries); /* # free entries */
-        QS_EQC_((QEQueueCtr)0); /* min # free entries (unknown) */
-    QS_END_NOCRIT_()
+        QS_EQC_PRE_(0U);            /* min # free entries (unknown) */
+    QS_END_NOCRIT_PRE_()
 
-    if (e->poolId_ != (uint8_t)0) { /* is it a pool event? */
+    if (e->poolId_ != 0U) { /* is it a pool event? */
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
@@ -232,14 +234,14 @@ QEvt const *QActive_get_(QActive * const me) {
 
     Q_ASSERT_ID(910, err == OS_ERR_NONE);
 
-    QS_BEGIN_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
-        QS_TIME_();             /* timestamp */
-        QS_SIG_(e->sig);        /* the signal of this event */
-        QS_OBJ_(me);            /* this active object */
-        QS_2U8_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-        QS_EQC_(((OS_Q *)me->eQueue)->OSQSize
-                - ((OS_Q *)me->eQueue)->OSQEntries); /* # free entries */
-    QS_END_()
+    QS_BEGIN_PRE_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
+        QS_TIME_PRE_();             /* timestamp */
+        QS_SIG_PRE_(e->sig);        /* the signal of this event */
+        QS_OBJ_PRE_(me);            /* this active object */
+        QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
+        QS_EQC_PRE_(((OS_Q *)me->eQueue)->OSQSize
+                    - ((OS_Q *)me->eQueue)->OSQEntries); /* # free entries */
+    QS_END_PRE_()
 
     return e;
 }

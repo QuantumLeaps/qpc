@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-10
+* Last updated for version 6.8.0
+* Last updated on  2020-03-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -46,7 +46,8 @@
 #include "qf_pkg.h"
 #include "qassert.h"
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS package-scope internal interface */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -93,14 +94,6 @@ void QF_init(void) {
 
     /* init the global condition variable with the default initializer */
     pthread_cond_init(&QV_condVar_, NULL);
-
-    /* clear the internal QF variables, so that the framework can (re)start
-    * correctly even if the startup code is not called to clear the
-    * uninitialized data (as is required by the C Standard).
-    */
-    QF_maxPool_ = (uint_fast8_t)0;
-    QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
-    QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
 
     l_tick.tv_sec = 0;
     l_tick.tv_nsec = NANOSLEEP_NSEC_PER_SEC/100L; /* default clock tick */
@@ -202,7 +195,7 @@ int_t QF_run(void) {
 
             QF_CRIT_ENTRY_();
 
-            if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
+            if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
                 QPSet_remove(&QV_readySet_, p);
             }
         }
@@ -224,11 +217,11 @@ int_t QF_run(void) {
     pthread_cond_destroy(&QV_condVar_); /* cleanup the condition variable */
     pthread_mutex_destroy(&l_pThreadMutex); /* cleanup the global mutex */
 
-    return (int_t)0; /* return success */
+    return 0; /* return success */
 }
 /*..........................................................................*/
 void QF_setTickRate(uint32_t ticksPerSec, int_t tickPrio) {
-    if (ticksPerSec != (uint32_t)0) {
+    if (ticksPerSec != 0U) {
         l_tick.tv_nsec = NANOSLEEP_NSEC_PER_SEC / ticksPerSec;
     }
     else {
@@ -242,7 +235,7 @@ void QF_stop(void) {
     l_isRunning = false; /* terminate the main event-loop thread */
 
     /* unblock the event-loop so it can terminate */
-    p = (uint_fast8_t)1;
+    p = 1U;
     QPSet_insert(&QV_readySet_, p);
     pthread_cond_signal(&QV_condVar_);
 }
@@ -278,25 +271,25 @@ int QF_consoleWaitForKey(void) {
 
 /****************************************************************************/
 void QActive_start_(QActive * const me, uint_fast8_t prio,
-                    QEvt const *qSto[], uint_fast16_t qLen,
-                    void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                  QEvt const * * const qSto, uint_fast16_t const qLen,
+                  void * const stkSto, uint_fast16_t const stkSize,
+                  void const * const par)
 {
-    Q_REQUIRE_ID(600, ((uint_fast8_t)0 < prio) /* priority...*/
-        && (prio <= (uint_fast8_t)QF_MAX_ACTIVE) /*... in range */
-        && (stkSto == (void *)0));    /* statck storage must NOT...
-                                       * ... be provided */
+    (void)stkSize; /* unused parameter in the POSIX port */
 
+    Q_REQUIRE_ID(600, (0U < prio)  /* priority...*/
+        && (prio <= QF_MAX_ACTIVE) /*... in range */
+        && (stkSto == (void *)0)); /* statck storage must NOT...
+                                       * ... be provided */
     QEQueue_init(&me->eQueue, qSto, qLen);
     me->prio = (uint8_t)prio;
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
-
-    (void)stkSize; /* avoid the "unused parameter" compiler warning */
+    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    QS_FLUSH(); /* flush the trace buffer to the host */
 }
 
-//****************************************************************************
+/****************************************************************************/
 static void *ticker_thread(void *arg) { /* for pthread_create() */
     (void)arg; /* unused parameter */
     while (l_isRunning) { /* the clock tick loop... */

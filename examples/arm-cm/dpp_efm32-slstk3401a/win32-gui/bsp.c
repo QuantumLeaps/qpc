@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, Win32-GUI
-* Last Updated for Version: 6.3.6
-* Date of the Last Update:  2018-10-14
+* Last Updated for Version: 6.7.0
+* Date of the Last Update:  2020-01-06
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -87,7 +87,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 
     /* create the main custom dialog window */
     hWnd = CreateCustDialog(hInst, IDD_APPLICATION, NULL,
-                            &WndProc, "QP_APP");
+                            &WndProc, "MY_CLASS");
     ShowWindow(hWnd, iCmdShow);  /* show the main window */
 
     /* enter the message loop... */
@@ -222,12 +222,12 @@ void QF_onClockTick(void) {
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const * const module, int_t loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     char message[80];
     QF_stop(); /* stop ticking */
 
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
-    SNPRINTF_S(message, Q_DIM(message) - 1,
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
+    SNPRINTF_S(message, Q_DIM(message) - 1U,
                "Assertion failed in module %s location %d", module, loc);
     MessageBox(l_hWnd, message, "!!! ASSERTION !!!",
                MB_OK | MB_ICONEXCLAMATION | MB_APPLMODAL);
@@ -236,7 +236,7 @@ void Q_onAssert(char const * const module, int_t loc) {
 
 /*..........................................................................*/
 void BSP_init(void) {
-    if (QS_INIT(l_cmdLine) == (uint8_t)0) { /* QS initialization failed? */
+    if (QS_INIT(l_cmdLine) == 0U) { /* QS initialization failed? */
         MessageBox(l_hWnd,
                    "Cannot connect to QSPY via TCP/IP\n"
                    "Please make sure that 'qspy -t' is running",

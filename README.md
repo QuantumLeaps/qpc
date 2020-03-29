@@ -6,8 +6,20 @@ product, all QP frameworks can be
 in which case you don't use any open source license and you do not violate
 your policy.
 
+---------------------------------------------------------------------------
 # What's New?
 View QP/C Revision History at: https://www.state-machine.com/qpc/history.html
+
+
+---------------------------------------------------------------------------
+# Documentation
+The offline HTML documentation for **this** particular version of QP/C
+is located in the folder html/. To view the offline documentation, open
+the file html/index.html in your web browser.
+
+The online HTML documention for the **latest** version of QP/C is located
+at: https://www.state-machine.com/qpc/
+
 
 ---------------------------------------------------------------------------
 # About QP/C
@@ -39,7 +51,7 @@ within an active object thread itself.
 
 This architecture is generally **safer**, more responsive and easier to
 understand and maintain than the shared-state concurrency of a conventional
-RTOS. It also provides higher level of abstraction and the right
+RTOS. It also provides higher level of abstraction and the *correct*
 abstractions to effectively apply **modeling** and **code generation** to
 deeply embedded real-time systems.
 
@@ -70,16 +82,12 @@ model of concurrency with hierarchical state machines.
 
 ---------------------------------------------------------------------------
 # Getting Started with QP/C
-The following "Getting Started with QP/C" guide provides step-by-step
-instructions on how to download, install, and get started with QP/C quickly:
-https://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf
+The [QP/C Reference Manual](https://www.state-machine.com/qpc/) provides
+instructions on how to download, install, and get started with QP/C quickly.
 
-The guide also contains a tutorial, in which you build a simple "Blinky"
-application.
+The [AppNote: "Getting Started with QP/C"][AN] contains also a tutorial,
+in which you build a simple "Blinky" application.
 
-> **NOTE:** QP/C can be unzipped anywhere in your file system, but the
-recommended location is `C:\qp\qpc` on Windows and `~/qp/qpc`
-on Linux/MacOS.
 
 ---------------------------------------------------------------------------
 # QP/C Licensing
@@ -113,3 +121,4 @@ The **QP/C Manual** is located online at: https://www.state-machine.com/qpc
    [Active]: <https://www.state-machine.com/doc/concepts#Active>
    [HSM]: <https://www.state-machine.com/doc/concepts#HSM>
    [Lic]: <https://www.state-machine.com/licensing>
+   [AN]: <https://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf>

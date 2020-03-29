@@ -28,25 +28,25 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* The maximum number of system clock tick rates */
-#define QF_MAX_TICK_RATE        2
+#define QF_MAX_TICK_RATE        2U
 
 /* QF interrupt disable/enable and log2()... */
 #if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
 
     /* The maximum number of active objects in the application, see NOTE1 */
-    #define QF_MAX_ACTIVE       8
+    #define QF_MAX_ACTIVE       16U
 
     /* Cortex-M0/M0+/M1(v6-M, v6S-M) interrupt disabling policy, see NOTE2 */
     #define QF_INT_DISABLE()    __disable_interrupt()
@@ -66,7 +66,7 @@
 #else /* Cortex-M3/M4/M7 */
 
     /* The maximum number of active objects in the application, see NOTE1 */
-    #define QF_MAX_ACTIVE       16
+    #define QF_MAX_ACTIVE       32U
 
     /* Cortex-M3/M4/M7 alternative interrupt disabling with PRIMASK */
     #define QF_PRIMASK_DISABLE() __disable_interrupt()
@@ -77,7 +77,7 @@
         QF_PRIMASK_DISABLE(); \
         __set_BASEPRI(QF_BASEPRI); \
         QF_PRIMASK_ENABLE(); \
-    } while (0)
+    } while (false)
     #define QF_INT_ENABLE()      __set_BASEPRI(0U)
 
     /* QF critical section entry/exit (unconditional interrupt disabling) */
@@ -153,5 +153,5 @@
 * macro. This workaround works also for Cortex-M3/M4 cores.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */
 

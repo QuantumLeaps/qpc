@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-16
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, www.state-machine.com.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,25 +29,25 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qmpool_h
-#define qmpool_h
+#ifndef QMPOOL_H
+#define QMPOOL_H
 
 /****************************************************************************/
 #ifndef QF_MPOOL_SIZ_SIZE
-    /*! macro to override the default ::QMPoolSize size.
-    * Valid values 1, 2, or 4; default 2
+    /*! macro to override the default ::QMPoolSize size [bytes].
+    * Valid values 1U, 2U, or 4U; default 2U
     */
-    #define QF_MPOOL_SIZ_SIZE 2
+    #define QF_MPOOL_SIZ_SIZE 2U
 #endif
-#if (QF_MPOOL_SIZ_SIZE == 1)
+#if (QF_MPOOL_SIZ_SIZE == 1U)
 
     /*! The data type to store the block-size based on the macro
     * #QF_MPOOL_SIZ_SIZE.
@@ -58,23 +58,23 @@
     * of blocks that can be managed by the native QF event pool.
     */
     typedef uint8_t QMPoolSize;
-#elif (QF_MPOOL_SIZ_SIZE == 2)
+#elif (QF_MPOOL_SIZ_SIZE == 2U)
 
     typedef uint16_t QMPoolSize;
-#elif (QF_MPOOL_SIZ_SIZE == 4)
+#elif (QF_MPOOL_SIZ_SIZE == 4U)
     typedef uint32_t QMPoolSize;
 #else
-    #error "QF_MPOOL_SIZ_SIZE defined incorrectly, expected 1, 2, or 4"
+    #error "QF_MPOOL_SIZ_SIZE defined incorrectly, expected 1U, 2U, or 4U"
 #endif
 
 /****************************************************************************/
 #ifndef QF_MPOOL_CTR_SIZE
-    /*! macro to override the default ::QMPoolCtr size.
-    * Valid values 1, 2, or 4; default 2
+    /*! macro to override the default ::QMPoolCtr size [bytes].
+    * Valid values 1U, 2U, or 4U; default 2U
     */
-    #define QF_MPOOL_CTR_SIZE 2
+    #define QF_MPOOL_CTR_SIZE 2U
 #endif
-#if (QF_MPOOL_CTR_SIZE == 1)
+#if (QF_MPOOL_CTR_SIZE == 1U)
 
     /*! The data type to store the block-counter based on the macro
     * #QF_MPOOL_CTR_SIZE.
@@ -85,12 +85,12 @@
     * of blocks that can be stored in the pool.
     */
     typedef uint8_t QMPoolCtr;
-#elif (QF_MPOOL_CTR_SIZE == 2)
+#elif (QF_MPOOL_CTR_SIZE == 2U)
     typedef uint16_t QMPoolCtr;
-#elif (QF_MPOOL_CTR_SIZE == 4)
+#elif (QF_MPOOL_CTR_SIZE == 4U)
     typedef uint32_t QMPoolCtr;
 #else
-    #error "QF_MPOOL_CTR_SIZE defined incorrectly, expected 1, 2, or 4"
+    #error "QF_MPOOL_CTR_SIZE defined incorrectly, expected 1U, 2U, or 4U"
 #endif
 
 /****************************************************************************/
@@ -165,5 +165,5 @@ void QMPool_put(QMPool * const me, void *b);
 #define QF_MPOOL_EL(evType_) \
     struct { void *sto_[((sizeof(evType_) - 1U)/sizeof(void*)) + 1U]; }
 
-#endif /* qmpool_h */
+#endif /* QMPOOL_H */
 

@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-09
+* Last updated for version 6.8.0
+* Last updated on  2020-03-13
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,23 +29,23 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* FreeRTOS event queue and thread types */
 #define QF_EQUEUE_TYPE        QEQueue
 #define QF_THREAD_TYPE        StaticTask_t
 
 /* The maximum number of active objects in the application, see NOTE1 */
-#define QF_MAX_ACTIVE         32
+#define QF_MAX_ACTIVE         32U
 
 /* QF interrupt disabling/enabling (task level) */
 #define QF_INT_DISABLE()      taskDISABLE_INTERRUPTS()
@@ -67,16 +67,16 @@
 /* the "FromISR" versions of the QF APIs, see NOTE3 */
 #ifdef Q_SPY
     #define QACTIVE_POST_FROM_ISR(me_, e_, pxHigherPrioTaskWoken_, sender_) \
-        ((void)QActive_postFromISR_((me_), (e_), QF_NO_MARGIN, \
+        ((void)QActive_postFromISR_((me_), (e_), QF_NO_MARGIN,              \
                                     (pxHigherPrioTaskWoken_), (sender_)))
 
-    #define QACTIVE_POST_X_FROM_ISR(me_, e_, margin_, \
+    #define QACTIVE_POST_X_FROM_ISR(me_, e_, margin_,                \
                                     pxHigherPrioTaskWoken_, sender_) \
-        (QActive_postFromISR_((me_), (e_), (margin_), \
+        (QActive_postFromISR_((me_), (e_), (margin_),                \
                               (pxHigherPrioTaskWoken_), (sender_)))
 
     #define QF_PUBLISH_FROM_ISR(e_, pxHigherPrioTaskWoken_, sender_) \
-        (QF_publishFromISR_((e_), (pxHigherPrioTaskWoken_), \
+        (QF_publishFromISR_((e_), (pxHigherPrioTaskWoken_),          \
                             (void const *)(sender_)))
 
     #define QF_TICK_X_FROM_ISR(tickRate_, pxHigherPrioTaskWoken_, sender_) \
@@ -99,12 +99,12 @@
                               void const * const sender);
 #else
     #define QACTIVE_POST_FROM_ISR(me_, e_, pxHigherPrioTaskWoken_, dummy) \
-        ((void)QActive_postFromISR_((me_), (e_), QF_NO_MARGIN, \
+        ((void)QActive_postFromISR_((me_), (e_), QF_NO_MARGIN,           \
                                     (pxHigherPrioTaskWoken_)))
 
-    #define QACTIVE_POST_X_FROM_ISR(me_, e_, margin_, \
+    #define QACTIVE_POST_X_FROM_ISR(me_, e_, margin_,               \
                                     pxHigherPrioTaskWoken_,  dummy) \
-        (QActive_postFromISR_((me_), (e_), (margin_), \
+        (QActive_postFromISR_((me_), (e_), (margin_),               \
                               (pxHigherPrioTaskWoken_)))
 
     #define QF_PUBLISH_FROM_ISR(e_, pxHigherPrioTaskWoken_, dummy) \
@@ -126,30 +126,31 @@
 #endif
 
 #define QF_TICK_FROM_ISR(pxHigherPrioTaskWoken_, sender_) \
-    QF_TICK_X_FROM_ISR((uint_fast8_t)0, pxHigherPrioTaskWoken_, sender_)
+    QF_TICK_X_FROM_ISR(0U, pxHigherPrioTaskWoken_, sender_)
 
 #ifdef Q_EVT_CTOR /* Shall the ctor for the ::QEvt class be provided? */
 
-    #define Q_NEW_FROM_ISR(evtT_, sig_, ...) \
-        (evtT_##_ctor((evtT_ *)QF_newXFromISR_((uint_fast16_t)sizeof(evtT_), \
-                      QF_NO_MARGIN, (enum_t)0), (sig_), ##__VA_ARGS__))
+    #define Q_NEW_FROM_ISR(evtT_, sig_, ...)                  \
+        (evtT_##_ctor((evtT_ *)QF_newXFromISR_(sizeof(evtT_), \
+                      QF_NO_MARGIN, 0), (sig_), ##__VA_ARGS__))
 
     #define Q_NEW_X_FROM_ISR(e_, evtT_, margin_, sig_, ...) do { \
-        (e_) = (evtT_ *)QF_newXFromISR_((uint_fast16_t)sizeof(evtT_), \
-                                 (margin_), (enum_t)0); \
-        if ((e_) != (evtT_ *)0) { \
-            evtT_##_ctor((e_), (sig_), ##__VA_ARGS__); \
-        } \
-     } while (0)
+        (e_) = (evtT_ *)QF_newXFromISR_(sizeof(evtT_),           \
+                                 (margin_), 0);                  \
+        if ((e_) != (evtT_ *)0) {                                \
+            evtT_##_ctor((e_), (sig_), ##__VA_ARGS__);           \
+        }                                                        \
+     } while (false)
 
 #else
 
-    #define Q_NEW_FROM_ISR(evtT_, sig_) \
+    #define Q_NEW_FROM_ISR(evtT_, sig_)                         \
         ((evtT_ *)QF_newXFromISR_((uint_fast16_t)sizeof(evtT_), \
                                   QF_NO_MARGIN, (sig_)))
 
     #define Q_NEW_X_FROM_ISR(e_, evtT_, margin_, sig_) ((e_) = \
-        (evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), (margin_), (sig_)))
+        (evtT_ *)QF_newXFromISR_((uint_fast16_t)sizeof(evtT_), \
+                                 (margin_), (sig_)))
 
 #endif /* Q_EVT_CTOR */
 
@@ -189,19 +190,19 @@ enum FreeRTOS_TaskAttrs {
 */
 #ifdef QP_IMPL
     /* FreeRTOS blocking for event queue implementation (task level) */
-    #define QACTIVE_EQUEUE_WAIT_(me_) \
+    #define QACTIVE_EQUEUE_WAIT_(me_)                 \
         while ((me_)->eQueue.frontEvt == (QEvt *)0) { \
-            QF_CRIT_EXIT_(); \
-            ulTaskNotifyTake(pdTRUE, portMAX_DELAY); \
-            QF_CRIT_ENTRY_(); \
+            QF_CRIT_EXIT_();                          \
+            ulTaskNotifyTake(pdTRUE, portMAX_DELAY);  \
+            QF_CRIT_ENTRY_();                         \
         }
 
     /* FreeRTOS signaling (unblocking) for event queue (task level) */
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
-        QF_CRIT_EXIT_(); \
+    #define QACTIVE_EQUEUE_SIGNAL_(me_) do {           \
+        QF_CRIT_EXIT_();                               \
         xTaskNotifyGive((TaskHandle_t)&(me_)->thread); \
-        QF_CRIT_ENTRY_(); \
-    } while (0)
+        QF_CRIT_ENTRY_();                              \
+    } while (false)
 
     #define QF_SCHED_STAT_
     #define QF_SCHED_LOCK_(dummy) vTaskSuspendAll()
@@ -236,4 +237,4 @@ enum FreeRTOS_TaskAttrs {
 * ARE ALLOWED INSIDE ISRs AND CALLING THE TASK-LEVEL APIs IS AN ERROR.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

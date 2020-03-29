@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for the Unity test harness, for Windows, Linux, MacOS
-# Last updated for version 6.4.0
-# Last updated on  2019-01-09
+# Makefile for the Unity test harness v2.5.0, for Windows, Linux, MacOS
+# Last updated for version 6.7.0
+# Last updated on  2019-12-29
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -25,11 +25,11 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# along with this program. If not, see <www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://www.state-machine.com
-# mailto:info@state-machine.com
+# <www.state-machine.com/licensing>
+# <info@state-machine.com>
 ##############################################################################
 #
 # examples of invoking this Makefile:
@@ -96,9 +96,9 @@ DEFINES  :=
 
 #-----------------------------------------------------------------------------
 # add Unity to the build...
-VPATH    += $(UNITY)/src $(UNITY)/extras/fixture/src
-INCLUDES += -I$(UNITY)/src -I$(UNITY)/extras/fixture/src
-C_SRCS   += unity.c unity_fixture.c
+VPATH    += $(UNITY)/src
+INCLUDES += -I$(UNITY)/src
+C_SRCS   += unity.c
 
 #============================================================================
 # Typically you should not need to change anything below this line
@@ -138,7 +138,7 @@ endif
 
 BIN_DIR := build
 
-CFLAGS  := -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+CFLAGS  := -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
 	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
 CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \

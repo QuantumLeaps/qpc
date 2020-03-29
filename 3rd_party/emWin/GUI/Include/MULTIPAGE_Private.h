@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -23,6 +23,7 @@ Purpose     : Private MULTIPAGE include
 #ifndef MULTIPAGE_PRIVATE_H
 #define MULTIPAGE_PRIVATE_H
 
+#include "WM_Intern.h"
 #include "GUI_Debug.h"
 #include "GUI_ARRAY.h"
 #include "MULTIPAGE.h"
@@ -146,7 +147,6 @@ void MULTIPAGE__DrawTextItemH  (MULTIPAGE_Obj * pObj, const char * pText, unsign
 int  MULTIPAGE__GetPagePos     (MULTIPAGE_Handle hObj, unsigned Index);
 int  MULTIPAGE__GetPageWidth   (MULTIPAGE_Handle hObj, unsigned Index);
 void MULTIPAGE__GetTabBarRect  (MULTIPAGE_Handle hObj, GUI_RECT * pRect);
-int  MULTIPAGE__SetDrawObj     (MULTIPAGE_Handle hObj, GUI_DRAW_HANDLE hDrawObj, int Index, int State);
 void MULTIPAGE__UpdatePositions(MULTIPAGE_Handle hObj);
 
 /*********************************************************************

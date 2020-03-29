@@ -3,14 +3,14 @@
 * @brief QK/C port to ARM Cortex-M, IAR-ARM toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-03-17
+* Last updated for version 6.7.0
+* Last updated on  2019-12-13
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,35 +28,38 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef QK_PORT_H
+#define QK_PORT_H
 
 /* determination if the code executes in the ISR context */
-#define QK_ISR_CONTEXT_() (__get_IPSR() != (uint32_t)0)
+#define QK_ISR_CONTEXT_() (__get_IPSR() != 0U)
 
 /* QK interrupt entry and exit */
 #define QK_ISR_ENTRY() ((void)0)
 
-#define QK_ISR_EXIT()  do { \
-    QF_INT_DISABLE(); \
-    if (QK_sched_() != (uint_fast8_t)0) { \
-        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
-    } \
-    QF_INT_ENABLE(); \
-} while (0)
+#define QK_ISR_EXIT()  do {                                   \
+    QF_INT_DISABLE();                                         \
+    if (QK_sched_() != 0U) {                                  \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28); \
+    }                                                         \
+    QF_INT_ENABLE();                                          \
+} while (false)
 
 /* initialization of the QK kernel */
 #define QK_INIT() QK_init()
 void QK_init(void);
 
+/* prototype needed for IAR "Multi-file Compilation" */
+void Thread_ret(void);
+
 #include "qk.h" /* QK platform-independent public interface */
 
-#endif /* qk_port_h */
+#endif /* QK_PORT_H */

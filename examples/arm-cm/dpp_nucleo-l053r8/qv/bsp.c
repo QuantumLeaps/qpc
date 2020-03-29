@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -185,7 +185,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
     /* not enough LEDs to implement this feature */
-    if (paused != (uint8_t)0) {
+    if (paused != 0U) {
         //GPIOA->BSRR |= (LED_LD2);  /* turn LED[n] on  */
     }
     else {
@@ -289,13 +289,13 @@ void QV_onIdle(void) {  /* called with interrupts disabled, see NOTE01 */
 }
 
 /*..........................................................................*/
-void Q_onAssert(char const *module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
     (void)module;
     (void)loc;
-    QS_ASSERTION(module, loc, (uint32_t)10000U); /* report assertion to QS */
+    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
     BSP_wait4SW1();
@@ -347,7 +347,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_FILTER_ON(QS_SM_RECORDS);
     QS_FILTER_ON(QS_UA_RECORDS);
 
-    return (uint8_t)1; /* return success */
+    return 1U; /* return success */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

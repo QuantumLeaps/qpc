@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -50,7 +50,7 @@ typedef struct {
                          const LCD_LOGPALETTE * pLogPal,
                          int xMag,
                          int yMag);
-  GUI_COLOR (* pfIndex2Color)(unsigned Index);
+  GUI_COLOR (* pfIndex2Color)(LCD_PIXELINDEX Index);
   void      (* pfDrawHW)(int x0,
                          int y0,
                          int xsize,
@@ -105,6 +105,11 @@ typedef struct {
 typedef void * (* GUI_BITMAPSTREAM_CALLBACK)(GUI_BITMAPSTREAM_PARAM * pParam);
 
 typedef struct {
+  U16       Pos;
+  GUI_COLOR Color;
+} GUI_GRADIENT_INFO;
+
+typedef struct {
   int x,y;
   U8  Pressed;
   U8  Layer;
@@ -129,11 +134,14 @@ typedef struct {
   int NumImages;
 } GUI_GIF_INFO;
 
-typedef struct GUI_REGISTER_EXIT GUI_REGISTER_EXIT;
+#define GUI_REGISTER_INIT GUI_REGISTER_HOOK
+#define GUI_REGISTER_EXIT GUI_REGISTER_HOOK
 
-struct GUI_REGISTER_EXIT {
+typedef struct GUI_REGISTER_HOOK GUI_REGISTER_HOOK;
+
+struct GUI_REGISTER_HOOK {
   void (* pfVoid)(void);
-  GUI_REGISTER_EXIT * pNext;
+  GUI_REGISTER_HOOK * pNext;
 };
 
 typedef struct {
@@ -372,7 +380,7 @@ DECLARE_FONT(PROP_AA4_EXT);
   GUIPROP_AA2_GetFontInfo,          \
   GUIPROP_AA2_IsInFont,             \
   (GUI_GETCHARINFO *)0,             \
-  GUI_ENCODE_SJIS
+  &GUI_ENC_APIList_SJIS
 
 /* PROP_AA4: Proportional, antialiased fonts, 4bpp */
 #define GUI_FONTTYPE_PROP_AA4       \
@@ -399,7 +407,7 @@ DECLARE_FONT(PROP_AA4_EXT);
   GUIPROP_AA4_GetFontInfo,          \
   GUIPROP_AA4_IsInFont,             \
   (GUI_GETCHARINFO *)0,             \
-  GUI_ENCODE_SJIS
+  &GUI_ENC_APIList_SJIS
 
 #if defined(__cplusplus)
   }
@@ -576,7 +584,7 @@ typedef struct {
   int            LayerIndex;
   unsigned       NumPoints;
   GUI_TIMER_TIME TimeStamp;
-  GUI_HMEM       hInput;
+  PTR_ADDR       hInput;
 } GUI_MTOUCH_EVENT;
 
 //

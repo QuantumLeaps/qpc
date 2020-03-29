@@ -3,14 +3,14 @@
 * @brief QF/C, port to ThreadX
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-09
+* Last updated for version 6.8.0
+* Last updated on  2020-03-13
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,16 +28,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* ThreadX event queue and thread types */
 #define QF_EQUEUE_TYPE      TX_QUEUE
@@ -45,10 +45,10 @@
 #define QF_OS_OBJECT_TYPE   uint8_t
 
 /* QF priority offset within ThreadX priority numbering scheme, see NOTE1 */
-#define QF_TX_PRIO_OFFSET   8
+#define QF_TX_PRIO_OFFSET   8U
 
 /* The maximum number of active objects in the application, see NOTE2 */
-#define QF_MAX_ACTIVE       (31 - QF_TX_PRIO_OFFSET)
+#define QF_MAX_ACTIVE       (31U - QF_TX_PRIO_OFFSET)
 
 /* QF critical section for ThreadX, see NOTE3 */
 #define QF_CRIT_STAT_TYPE     UINT
@@ -75,18 +75,19 @@
     } QFSchedLock;
 
     #define QF_SCHED_STAT_ QFSchedLock lockStat_;
-    #define QF_SCHED_LOCK_(prio_) do { \
-        if (_tx_thread_system_state != (UINT)0) { \
-            lockStat_.lockPrio = (uint_fast8_t)0; \
-        } else { \
+    #define QF_SCHED_LOCK_(prio_) do {         \
+        if (_tx_thread_system_state != 0U) {   \
+            lockStat_.lockPrio = 0U;           \
+        } else {                               \
             QFSchedLock_(&lockStat_, (prio_)); \
-        } \
-    } while (0)
-    #define QF_SCHED_UNLOCK_() do { \
-        if (lockStat_.lockPrio != (uint_fast8_t)0) { \
+        }                                      \
+    } while (false)
+
+    #define QF_SCHED_UNLOCK_() do {     \
+        if (lockStat_.lockPrio != 0U) { \
             QFSchedUnlock_(&lockStat_); \
-        } \
-    } while (0)
+        }                               \
+    } while (false)
 
     /* internal implementation of scheduler locking/unlocking */
     void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio);
@@ -95,25 +96,25 @@
 
     /* TreadX block pool operations... */
     #define QF_EPOOL_TYPE_              TX_BLOCK_POOL
-    #define QF_EPOOL_INIT_(pool_, poolSto_, poolSize_, evtSize_) \
+    #define QF_EPOOL_INIT_(pool_, poolSto_, poolSize_, evtSize_)          \
         Q_ALLEGE(tx_block_pool_create(&(pool_), (CHAR *)"QP", (evtSize_), \
                  (poolSto_), (poolSize_)) == TX_SUCCESS)
 
     #define QF_EPOOL_EVENT_SIZE_(pool_) \
         ((uint_fast16_t)(pool_).tx_block_pool_block_size)
 
-    #define QF_EPOOL_GET_(pool_, e_, margin_) do { \
-        QF_CRIT_STAT_ \
-        QF_CRIT_ENTRY_(); \
-        if ((pool_).tx_block_pool_available > (margin_)) { \
+    #define QF_EPOOL_GET_(pool_, e_, margin_) do {                           \
+        QF_CRIT_STAT_                                                        \
+        QF_CRIT_ENTRY_();                                                    \
+        if ((pool_).tx_block_pool_available > (margin_)) {                   \
             Q_ALLEGE(tx_block_allocate(&(pool_), (VOID **)&(e_), TX_NO_WAIT) \
-                     == TX_SUCCESS); \
-        } \
-        else { \
-            (e_) = (QEvt *)0; \
-        } \
-        QF_CRIT_EXIT_(); \
-    } while (0)
+                     == TX_SUCCESS);                                         \
+        }                                                                    \
+        else {                                                               \
+            (e_) = (QEvt *)0;                                                \
+        }                                                                    \
+        QF_CRIT_EXIT_();                                                     \
+    } while (false)
 
     #define QF_EPOOL_PUT_(dummy, e_) \
         Q_ALLEGE(tx_block_release((VOID *)(e_)) == TX_SUCCESS)
@@ -146,4 +147,5 @@
 * the tx_interrupt_control() API.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */
+

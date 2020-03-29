@@ -41,8 +41,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="dpp-gui.rc">
-      <Filter>Res</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 /*****************************************************************************
-* Product: main task for emWin/uC/GUI, Win32 simulation
+* Product: main function for emWin/uC/GUI, Win32 simulation
 * Last updated for version 6.4.0
 * Last updated on  2019-02-08
 *
@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "bsp.h"
@@ -40,8 +40,8 @@
 Q_DEFINE_THIS_FILE
 
 /* Local-scope objects -----------------------------------------------------*/
-static QEvent const *l_tableQueueSto[N_PHILO];
-static QEvent const *l_philoQueueSto[N_PHILO][N_PHILO];
+static QEvt const *l_tableQueueSto[N_PHILO];
+static QEvt const *l_philoQueueSto[N_PHILO][N_PHILO];
 static QSubscrList   l_subscrSto[MAX_PUB_SIG];
 
 static union SmallEvent {
@@ -80,11 +80,11 @@ void MainTask(void) {
     for (n = 0; n < N_PHILO; ++n) { /* start the active objects... */
         QACTIVE_START(AO_Philo[n], (uint8_t)(n + 1),
                       l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
-                      (void *)0, 1024, (QEvent *)0); /* 1K of stack */
+                      (void *)0, 1024, (QEvt *)0); /* 1K of stack */
     }
     QACTIVE_START(AO_Table, (uint8_t)(N_PHILO + 1),
                   l_tableQueueSto, Q_DIM(l_tableQueueSto),
-                  (void *)0, 1024, (QEvent *)0); /* 1K of stack */
+                  (void *)0, 1024, (QEvt *)0); /* 1K of stack */
 
     QF_run(); /* run the QF application */
 }

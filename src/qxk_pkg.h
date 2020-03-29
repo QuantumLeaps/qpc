@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 5.9.7
-* Last updated on  2017-08-20
+* Last updated for version 6.8.0
+* Last updated on  2020-01-23
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,23 +29,23 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qxk_pkg_h
-#define qxk_pkg_h
+#ifndef QXK_PKG_H
+#define QXK_PKG_H
 
 /*! internal QXK function to start multitasking (typically in assembly) */
 void QXK_start_(void);
 
 /*! initialize the private stack of a given QXThread */
-void QXK_stackInit_(void *thr, QXThreadHandler handler,
-                    void *stkSto, uint_fast16_t stkSize);
+void QXK_stackInit_(void *thr, QXThreadHandler const handler,
+                    void * const stkSto, uint_fast16_t const stkSize);
 
 /*! called when a thread function returns */
 void QXK_threadRet_(void);
@@ -71,7 +71,20 @@ void QXThread_teArm_(QXThread * const me,
 /*! internal function to disarm the private time event for a given thread. */
 bool QXThread_teDisarm_(QXThread * const me);
 
+/*! intertnal macro to encapsulate casting of pointers for MISRA deviations */
+/**
+* @description
+* This macro is specifically and exclusively used for casting pointers
+* that are never de-referenced, but only used for internal bookkeeping and
+* checking (via assertions) the correct operation of the QXK kernel.
+* Such pointer casting is not compliant with MISRA-2012-Rule 11.3(required)
+* as well as other messages (e.g., PC-Lint-Plus warning 826).
+* Defining this specific macro for this purpose allows to selectively
+* disable the warnings for this particular case.
+*/
+#define QXK_PTR_CAST_(type_, ptr_) ((type_)(ptr_))
+
 #include "qf_pkg.h"  /* QF package-scope interface */
 
-#endif /* qxk_pkg_h */
+#endif /* QXK_PKG_H */
 

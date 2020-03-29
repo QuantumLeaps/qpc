@@ -28,8 +28,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://www.state-machine.com
-# mailto:info@state-machine.com
+# <www.state-machine.com/licensing>
+# <info@state-machine.com>
 ##############################################################################
 # examples of invoking this Makefile:
 # building configurations: Debug (default), Release and Spy
@@ -142,7 +142,7 @@ ifeq (rel, $(CONF))  # Release configuration .................................
 BIN_DIR := rel
 
 # gcc options:
-CFLAGS  := -c -O3 -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+CFLAGS  := -c -O3 -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
 	$(INCLUDES) $(DEFINES) -DNDEBUG
 
 CPPFLAGS := -c -O3 -fno-pie -std=c++11 -pedantic -Wall -Wextra \
@@ -157,7 +157,7 @@ BIN_DIR := spy
 C_SRCS += $(C_QS_SRCS)
 
 # gcc options:
-CFLAGS  := -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+CFLAGS  := -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
 	$(INCLUDES) $(DEFINES) -DQ_SPY
 
 CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
@@ -169,7 +169,7 @@ else # default Debug configuration .........................................
 BIN_DIR := dbg
 
 # gcc options:
-CFLAGS  := -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+CFLAGS  := -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
 	$(INCLUDES) $(DEFINES)
 
 CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \

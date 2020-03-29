@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "low_power.h"
@@ -42,7 +42,7 @@ int main() {
     static QSubscrList subscrSto[MAX_PUB_SIG];
 
     static QEvt const *l_blinky0QSto[10];  /* queue storage for Blinky0 */
-#ifdef qxk_h /* QXK kernel? */
+#ifdef QXK_H /* QXK kernel? */
     static uint32_t const *l_xblinky1Stack[64]; /* stack for XBlinky1 */
 #else
     static QEvt const *l_blinky1QSto[10]; /* queue storage for Blinky1 */
@@ -66,7 +66,7 @@ int main() {
                   0U,             /* stack size [bytes] (not used in QK) */
                   (QEvt *)0);     /* initial event (or 0) */
 
-#ifdef qxk_h /* QXK kernel? */
+#ifdef QXK_H /* QXK kernel? */
     QXSemaphore_init(&XSEM_sw1, 0U, 1U); /* signaling binary semaphore */
     XBlinky1_ctor();
     QXTHREAD_START(&XT_Blinky1,   /* extended thread pointer */

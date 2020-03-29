@@ -5,6 +5,9 @@ GUI library from SEGGER, which is also identical to the uC/GUI
 product from Micrium. The demos run on Windows as emWin GUI
 simulation supplied by SEGGER.
 
+NOTE: The emWin example provided in examples\emwin has been built and
+tested against emWin 6.10 (SeggerEval_WIN32_MSVC_MinGW_GUI_V610.zip).
+
 
 Executable Examples
 ===================

@@ -29,56 +29,56 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef QK_PORT_H
+#define QK_PORT_H
 
 /* QK interrupt entry and exit */
-#define QK_ISR(psv_) \
+#define QK_ISR(psv_)                                \
 void  __attribute__((__interrupt__(__preprologue__( \
-    "push   RCOUNT      \n" \
-    "push.d w0          \n" \
-    "mov.w  [w15-8],w0  \n" \
-    "lsr.w  w0,#13,w1   \n" \
-    "mov.w  #1,w0       \n" \
-    "sl     w0,w1,w0    \n" \
-    "ior.b  _QK_IPL_set_\n" \
-    "bra    .+6         ")) \
+    "push   RCOUNT      \n"                         \
+    "push.d w0          \n"                         \
+    "mov.w  [w15-8],w0  \n"                         \
+    "lsr.w  w0,#13,w1   \n"                         \
+    "mov.w  #1,w0       \n"                         \
+    "sl     w0,w1,w0    \n"                         \
+    "ior.b  _QK_IPL_set_\n"                         \
+    "bra    .+6         "))                         \
     , psv_))
 
-#define QK_ISR_EXIT() do { \
-    register uint16_t this_sr; \
-    __asm__ volatile ( \
-        "mov.w  SR,%0    \n" \
-        "lsr    %0,#5,w0 \n" \
-        "and.w  w0,#7,w0 \n" \
-        "mov.w  #1,w1    \n" \
-        "sl     w1,w0,w0 \n" \
-        "ior.b  #1,w0    \n" \
-        "com.b  w0,w0    \n" \
-        "disi   #0x3FFF  \n" \
+#define QK_ISR_EXIT() do {                                     \
+    register uint16_t this_sr;                                 \
+    __asm__ volatile (                                         \
+        "mov.w  SR,%0    \n"                                   \
+        "lsr    %0,#5,w0 \n"                                   \
+        "and.w  w0,#7,w0 \n"                                   \
+        "mov.w  #1,w1    \n"                                   \
+        "sl     w1,w0,w0 \n"                                   \
+        "ior.b  #1,w0    \n"                                   \
+        "com.b  w0,w0    \n"                                   \
+        "disi   #0x3FFF  \n"                                   \
         "and.b  _QK_IPL_set_" : "=r"(this_sr) : : "w0", "w1"); \
-    if (QK_IPL_set_ == 0) { \
-        if (QK_sched_() != (uint_fast8_t)0) { \
-            __asm__ volatile ("clr.b SR"); \
-            QK_activate_(); \
+    if (QK_IPL_set_ == 0) {                                    \
+        if (QK_sched_() != 0U) {                               \
+            __asm__ volatile ("clr.b SR");                     \
+            QK_activate_();                                    \
             __asm__ volatile ("mov.w %0,SR" : : "r"(this_sr)); \
-        } \
-    } \
-    __asm__ volatile ("disi #0x0000"); \
-} while (0);
+        }                                                      \
+    }                                                          \
+    __asm__ volatile ("disi #0x0000");                         \
+} while (false);
 
 #include "qk.h"  /* QK platform-independent public interface */
 
 /* set of active interrupt priority levels (IPLs) */
 extern uint8_t volatile QK_IPL_set_;
 
-#endif /* qk_port_h */
+#endif /* QK_PORT_H */
 

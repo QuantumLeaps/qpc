@@ -1,9 +1,9 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                     SEGGER Microcontroller GmbH                    *
 *                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
+*       (c) 1995 - 2019 SEGGER Microcontroller GmbH                  *
 *                                                                    *
 *       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
@@ -21,22 +21,19 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.34.1                                           *
+*       OS version: 5.06.1                                           *
 *                                                                    *
 **********************************************************************
 
-----------------------------------------------------------------------
-File    : xmtx.c
+-------------------------- END-OF-HEADER -----------------------------
 Purpose : xmtx system interface -- thread locking and unlocking
-          functions, adapted to embOS
---------- END-OF-HEADER ----------------------------------------------
+          functions, adapted to embOS, adapted to embOS
 */
 
 #include <yvals.h>
 #include "RTOS.h"
-#include "DLib_Threads.h"
 
-#if _MULTI_THREAD  // Used in multi thread supported libraries only
+#if (_MULTI_THREAD != 0)
 
 /*********************************************************************
 *
@@ -77,6 +74,6 @@ __ATTRIBUTES void __iar_system_Mtxunlock(__iar_Rmtx* m) {
   OS__iar_system_Mtxunlock(m);
 }
 
-#endif // _MULTI_THREAD
+#endif  // (_MULTI_THREAD != 0)
 
-/****** End Of File *************************************************/
+/*************************** End of file ****************************/

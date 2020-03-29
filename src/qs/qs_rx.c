@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.5.1
-* Last updated on  2019-05-22
+* Last updated for version 6.8.0
+* Last updated on  2020-01-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -45,26 +45,26 @@
 Q_DEFINE_THIS_MODULE("qs_rx")
 
 /****************************************************************************/
-QSrxPriv QS_rxPriv_;      /* QS-RX private data */
+QSrxPrivAttr QS_rxPriv_;      /* QS-RX private attributes */
 
 /****************************************************************************/
-#if (QS_OBJ_PTR_SIZE == 1)
+#if (QS_OBJ_PTR_SIZE == 1U)
     typedef uint8_t QSObj;
-#elif (QS_OBJ_PTR_SIZE == 2)
+#elif (QS_OBJ_PTR_SIZE == 2U)
     typedef uint16_t QSObj;
-#elif (QS_OBJ_PTR_SIZE == 4)
+#elif (QS_OBJ_PTR_SIZE == 4U)
     typedef uint32_t QSObj;
-#elif (QS_OBJ_PTR_SIZE == 8)
+#elif (QS_OBJ_PTR_SIZE == 8U)
     typedef uint64_t QSObj;
 #endif
 
-#if (QS_FUN_PTR_SIZE == 1)
+#if (QS_FUN_PTR_SIZE == 1U)
     typedef uint8_t QSFun;
-#elif (QS_FUN_PTR_SIZE == 2)
+#elif (QS_FUN_PTR_SIZE == 2U)
     typedef uint16_t QSFun;
-#elif (QS_FUN_PTR_SIZE == 4)
+#elif (QS_FUN_PTR_SIZE == 4U)
     typedef uint32_t QSFun;
-#elif (QS_FUN_PTR_SIZE == 8)
+#elif (QS_FUN_PTR_SIZE == 8U)
     typedef uint64_t QSFun;
 #endif
 
@@ -106,10 +106,10 @@ typedef struct {
 } GFltVar;
 
 typedef struct {
-    QSObj   addr;
-    uint8_t idx;
-    uint8_t kind; /* see qs.h, enum QSpyObjKind */
-    uint8_t recId;
+    QSObj    addr;
+    uint8_t  idx;
+    uint8_t  kind; /* see qs.h, enum QSpyObjKind */
+    uint8_t  recId;
 } ObjVar;
 
 typedef struct {
@@ -252,9 +252,9 @@ static void QS_rxPoke_(void);
 */
 void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
     QS_rxPriv_.buf  = &sto[0];
-    QS_rxPriv_.end  = (QSCtr)stoSize - (QSCtr)1;
-    QS_rxPriv_.head = (QSCtr)0;
-    QS_rxPriv_.tail = (QSCtr)0;
+    QS_rxPriv_.end  = (QSCtr)(stoSize - 1U);
+    QS_rxPriv_.head = 0U;
+    QS_rxPriv_.tail = 0U;
 
     QS_rxPriv_.currObj[SM_OBJ] = (void *)0;
     QS_rxPriv_.currObj[AO_OBJ] = (void *)0;
@@ -264,20 +264,37 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
     QS_rxPriv_.currObj[AP_OBJ] = (void *)0;
 
     QS_RX_TRAN_(WAIT4_SEQ);
-    l_rx.esc    = (uint8_t)0U;
-    l_rx.seq    = (uint8_t)0;
-    l_rx.chksum = (uint8_t)0;
+    l_rx.esc    = 0U;
+    l_rx.seq    = 0U;
+    l_rx.chksum = 0U;
 
-    QS_beginRec((uint_fast8_t)QS_OBJ_DICT);
-        QS_OBJ_(&QS_rxPriv_);
-        QS_STR_("QS_RX");
-    QS_endRec();
+    QS_beginRec_((uint_fast8_t)QS_OBJ_DICT);
+        QS_OBJ_PRE_(&QS_rxPriv_);
+        QS_STR_PRE_("QS_RX");
+    QS_endRec_();
     /* no QS_REC_DONE(), because QS is not running yet */
 
 #ifdef Q_UTEST
-    l_testData.tpNum    = (uint8_t)0;
-    l_testData.testTime = (QSTimeCtr)0;
+    l_testData.tpNum    = 0U;
+    l_testData.testTime = 0U;
 #endif /* Q_UTEST */
+}
+
+/****************************************************************************/
+/*! put one byte into the QS RX lock-free buffer */
+void QS_RX_PUT(uint8_t const b) {
+    if (QS_rxPriv_.head != 0U) {
+        if ((QS_rxPriv_.head - QS_rxPriv_.tail) != 1U) {
+            QS_rxPriv_.buf[QS_rxPriv_.head] = b;
+            --QS_rxPriv_.head;
+        }
+    }
+    else {
+        if (QS_rxPriv_.tail != QS_rxPriv_.end) {
+            QS_rxPriv_.buf[0] = b;
+            QS_rxPriv_.head = QS_rxPriv_.end;
+        }
+    }
 }
 
 /****************************************************************************/
@@ -309,7 +326,7 @@ void QS_rxParse(void) {
     while (QS_rxPriv_.head != QS_rxPriv_.tail) { /*QS-RX buffer not empty? */
         uint8_t b = *QS_RX_AT_(QS_rxPriv_.tail);
 
-        if (QS_rxPriv_.tail != (QSCtr)0) {
+        if (QS_rxPriv_.tail != 0U) {
             --QS_rxPriv_.tail;
         }
         else {
@@ -317,28 +334,28 @@ void QS_rxParse(void) {
         }
 
         if (l_rx.esc) {  /* escaped byte arrived? */
-            l_rx.esc = (uint8_t)0;
+            l_rx.esc = 0U;
             b ^= QS_ESC_XOR;
 
             l_rx.chksum += b;
             QS_rxParseData_(b);
         }
         else if (b == QS_ESC) {
-            l_rx.esc = (uint8_t)1;
+            l_rx.esc = 1U;
         }
         else if (b == QS_FRAME) {
             /* get ready for the next frame */
             b = l_rx.state; /* save the current state in b */
-            l_rx.esc = (uint8_t)0;
+            l_rx.esc = 0U;
             QS_RX_TRAN_(WAIT4_SEQ);
 
             if (l_rx.chksum == QS_GOOD_CHKSUM) {
-                l_rx.chksum = (uint8_t)0;
+                l_rx.chksum = 0U;
                 QS_rxHandleGoodFrame_(b);
             }
             else { /* bad checksum */
-                l_rx.chksum = (uint8_t)0;
-                QS_rxReportError_((uint8_t)0x41U);
+                l_rx.chksum = 0U;
+                QS_rxReportError_(0x41U);
                 QS_rxHandleBadFrame_(b);
             }
         }
@@ -355,7 +372,7 @@ static void QS_rxParseData_(uint8_t b) {
         case WAIT4_SEQ: {
             ++l_rx.seq;
             if (l_rx.seq != b) {
-                QS_rxReportError_((uint8_t)0x42U);
+                QS_rxReportError_(0x42U);
                 l_rx.seq = b; /* update the sequence */
             }
             QS_RX_TRAN_(WAIT4_REC);
@@ -377,8 +394,8 @@ static void QS_rxParseData_(uint8_t b) {
                     break;
                 case QS_RX_PEEK:
                     if (QS_rxPriv_.currObj[AP_OBJ] != (void *)0) {
-                        l_rx.var.peek.offs = (uint16_t)0;
-                        l_rx.var.peek.idx  = (uint8_t)0;
+                        l_rx.var.peek.offs = 0U;
+                        l_rx.var.peek.idx  = 0U;
                         QS_RX_TRAN_(WAIT4_PEEK_OFFS);
                     }
                     else {
@@ -388,18 +405,17 @@ static void QS_rxParseData_(uint8_t b) {
                     break;
                 case QS_RX_POKE:
                 case QS_RX_FILL:
-                    l_rx.var.poke.fill = (b == (uint8_t)QS_RX_FILL)
-                                         ? (uint8_t)1
-                                         : (uint8_t)0;
+                    l_rx.var.poke.fill =
+                            ((b == (uint8_t)QS_RX_FILL) ? 1U : 0U);
                     if (QS_rxPriv_.currObj[AP_OBJ] != (void *)0) {
-                        l_rx.var.poke.offs = (uint16_t)0;
-                        l_rx.var.poke.idx  = (uint8_t)0;
+                        l_rx.var.poke.offs = 0U;
+                        l_rx.var.poke.idx  = 0U;
                         QS_RX_TRAN_(WAIT4_POKE_OFFS);
                     }
                     else {
-                        QS_rxReportError_((l_rx.var.poke.fill != (uint8_t)0)
+                        QS_rxReportError_((l_rx.var.poke.fill != 0U)
                                            ? (uint8_t)QS_RX_FILL
-                                           : (uint8_t)QS_RX_FILL);
+                                           : (uint8_t)QS_RX_POKE);
                         QS_RX_TRAN_(ERROR_STATE);
                     }
                     break;
@@ -440,8 +456,8 @@ static void QS_rxParseData_(uint8_t b) {
                         < (uint8_t)(sizeof(l_testData.tpBuf)
                                     /sizeof(l_testData.tpBuf[0])))
                     {
-                        l_rx.var.tp.data = (uint32_t)0;
-                        l_rx.var.tp.idx  = (uint8_t)0;
+                        l_rx.var.tp.data = 0U;
+                        l_rx.var.tp.idx  = 0U;
                         QS_RX_TRAN_(WAIT4_TEST_PROBE_DATA);
                     }
                     else { /* the number of Test-Probes exceeded */
@@ -452,7 +468,7 @@ static void QS_rxParseData_(uint8_t b) {
 #endif /* Q_UTEST */
 
                 default:
-                    QS_rxReportError_((uint8_t)0x43U);
+                    QS_rxReportError_(0x43U);
                     QS_RX_TRAN_(ERROR_STATE);
                     break;
             }
@@ -464,36 +480,36 @@ static void QS_rxParseData_(uint8_t b) {
         }
         case WAIT4_CMD_ID: {
             l_rx.var.cmd.cmdId  = b;
-            l_rx.var.cmd.idx    = (uint8_t)0;
-            l_rx.var.cmd.param1 = (uint32_t)0;
-            l_rx.var.cmd.param2 = (uint32_t)0;
-            l_rx.var.cmd.param3 = (uint32_t)0;
+            l_rx.var.cmd.idx    = 0U;
+            l_rx.var.cmd.param1 = 0U;
+            l_rx.var.cmd.param2 = 0U;
+            l_rx.var.cmd.param3 = 0U;
             QS_RX_TRAN_(WAIT4_CMD_PARAM1);
             break;
         }
         case WAIT4_CMD_PARAM1: {
             l_rx.var.cmd.param1 |= ((uint32_t)b << l_rx.var.cmd.idx);
-            l_rx.var.cmd.idx    += (uint8_t)8;
-            if (l_rx.var.cmd.idx == (uint8_t)(8*4)) {
-                l_rx.var.cmd.idx = (uint8_t)0;
+            l_rx.var.cmd.idx    += 8U;
+            if (l_rx.var.cmd.idx == (8U * 4U)) {
+                l_rx.var.cmd.idx = 0U;
                 QS_RX_TRAN_(WAIT4_CMD_PARAM2);
             }
             break;
         }
         case WAIT4_CMD_PARAM2: {
             l_rx.var.cmd.param2 |= ((uint32_t)b << l_rx.var.cmd.idx);
-            l_rx.var.cmd.idx    += (uint8_t)8;
-            if (l_rx.var.cmd.idx == (uint8_t)(8*4)) {
-                l_rx.var.cmd.idx = (uint8_t)0;
+            l_rx.var.cmd.idx    += 8U;
+            if (l_rx.var.cmd.idx == (8U * 4U)) {
+                l_rx.var.cmd.idx = 0U;
                 QS_RX_TRAN_(WAIT4_CMD_PARAM3);
             }
             break;
         }
         case WAIT4_CMD_PARAM3: {
             l_rx.var.cmd.param3 |= ((uint32_t)b << l_rx.var.cmd.idx);
-            l_rx.var.cmd.idx    += (uint8_t)8;
-            if (l_rx.var.cmd.idx == (uint8_t)(8*4)) {
-                l_rx.var.cmd.idx = (uint8_t)0;
+            l_rx.var.cmd.idx    += 8U;
+            if (l_rx.var.cmd.idx == (8U * 4U)) {
+                l_rx.var.cmd.idx = 0U;
                 QS_RX_TRAN_(WAIT4_CMD_FRAME);
             }
             break;
@@ -516,9 +532,9 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_PEEK_OFFS: {
-            if (l_rx.var.peek.idx == (uint8_t)0) {
+            if (l_rx.var.peek.idx == 0U) {
                 l_rx.var.peek.offs = (uint16_t)b;
-                l_rx.var.peek.idx += (uint8_t)8;
+                l_rx.var.peek.idx += 8U;
             }
             else {
                 l_rx.var.peek.offs |= (uint16_t)((uint16_t)b << 8);
@@ -527,10 +543,7 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_PEEK_SIZE: {
-            if ((b == (uint8_t)1)
-                || (b == (uint8_t)2)
-                || (b == (uint8_t)4))
-            {
+            if ((b == 1U) || (b == 2U) || (b == 4U)) {
                 l_rx.var.peek.size = b;
                 QS_RX_TRAN_(WAIT4_PEEK_NUM);
             }
@@ -550,9 +563,9 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_POKE_OFFS: {
-            if (l_rx.var.poke.idx == (uint8_t)0) {
+            if (l_rx.var.poke.idx == 0) {
                 l_rx.var.poke.offs = (uint16_t)b;
-                l_rx.var.poke.idx  = (uint8_t)1;
+                l_rx.var.poke.idx  = 1U;
             }
             else {
                 l_rx.var.poke.offs |= (uint16_t)((uint16_t)b << 8);
@@ -561,15 +574,12 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_POKE_SIZE: {
-            if ((b == (uint8_t)1)
-                || (b == (uint8_t)2)
-                || (b == (uint8_t)4))
-            {
+            if ((b == 1U) || (b == 2U) || (b == 4U)) {
                 l_rx.var.poke.size = b;
                 QS_RX_TRAN_(WAIT4_POKE_NUM);
             }
             else {
-                QS_rxReportError_((l_rx.var.poke.fill != (uint8_t)0)
+                QS_rxReportError_((l_rx.var.poke.fill != 0U)
                                   ? (uint8_t)QS_RX_FILL
                                   : (uint8_t)QS_RX_POKE);
                 QS_RX_TRAN_(ERROR_STATE);
@@ -577,16 +587,16 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_POKE_NUM: {
-            if (b > (uint8_t)0) {
+            if (b > 0U) {
                 l_rx.var.poke.num  = b;
-                l_rx.var.poke.data = (uint32_t)0;
-                l_rx.var.poke.idx  = (uint8_t)0;
-                QS_RX_TRAN_((l_rx.var.poke.fill != (uint8_t)0)
+                l_rx.var.poke.data = 0U;
+                l_rx.var.poke.idx  = 0U;
+                QS_RX_TRAN_((l_rx.var.poke.fill != 0U)
                             ? WAIT4_FILL_DATA
                             : WAIT4_POKE_DATA);
             }
             else {
-                QS_rxReportError_((l_rx.var.poke.fill != (uint8_t)0)
+                QS_rxReportError_((l_rx.var.poke.fill != 0U)
                                   ? (uint8_t)QS_RX_FILL
                                   : (uint8_t)QS_RX_POKE);
                 QS_RX_TRAN_(ERROR_STATE);
@@ -595,7 +605,7 @@ static void QS_rxParseData_(uint8_t b) {
         }
         case WAIT4_FILL_DATA: {
             l_rx.var.poke.data |= ((uint32_t)b << l_rx.var.poke.idx);
-            l_rx.var.poke.idx += (uint8_t)8;
+            l_rx.var.poke.idx += 8U;
             if ((l_rx.var.poke.idx >> 3) == l_rx.var.poke.size) {
                 QS_RX_TRAN_(WAIT4_FILL_FRAME);
             }
@@ -603,11 +613,11 @@ static void QS_rxParseData_(uint8_t b) {
         }
         case WAIT4_POKE_DATA: {
             l_rx.var.poke.data |= ((uint32_t)b << l_rx.var.poke.idx);
-            l_rx.var.poke.idx += (uint8_t)8;
+            l_rx.var.poke.idx += 8U;
             if ((l_rx.var.poke.idx >> 3) == l_rx.var.poke.size) {
                 QS_rxPoke_();
                 --l_rx.var.poke.num;
-                if (l_rx.var.poke.num == (uint8_t)0) {
+                if (l_rx.var.poke.num == 0U) {
                     QS_RX_TRAN_(WAIT4_POKE_FRAME);
                 }
             }
@@ -622,8 +632,8 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_GLB_FILTER_LEN: {
-            if (b == (uint8_t)sizeof(l_rx.var.gFlt.data)) {
-                l_rx.var.gFlt.idx = (uint8_t)0;
+            if (b == sizeof(l_rx.var.gFlt.data)) {
+                l_rx.var.gFlt.idx = 0U;
                 QS_RX_TRAN_(WAIT4_GLB_FILTER_DATA);
             }
             else {
@@ -635,9 +645,7 @@ static void QS_rxParseData_(uint8_t b) {
         case WAIT4_GLB_FILTER_DATA: {
             l_rx.var.gFlt.data[l_rx.var.gFlt.idx] = b;
             ++l_rx.var.gFlt.idx;
-            if (l_rx.var.gFlt.idx
-                == (uint8_t)sizeof(l_rx.var.gFlt.data))
-            {
+            if (l_rx.var.gFlt.idx == sizeof(l_rx.var.gFlt.data)) {
                 QS_RX_TRAN_(WAIT4_GLB_FILTER_FRAME);
             }
             break;
@@ -649,8 +657,8 @@ static void QS_rxParseData_(uint8_t b) {
         case WAIT4_OBJ_KIND: {
             if (b <= (uint8_t)SM_AO_OBJ) {
                 l_rx.var.obj.kind = b;
-                l_rx.var.obj.addr = (QSObj)0;
-                l_rx.var.obj.idx  = (uint8_t)0;
+                l_rx.var.obj.addr = 0U;
+                l_rx.var.obj.idx  = 0U;
                 QS_RX_TRAN_(WAIT4_OBJ_ADDR);
             }
             else {
@@ -661,7 +669,7 @@ static void QS_rxParseData_(uint8_t b) {
         }
         case WAIT4_OBJ_ADDR: {
             l_rx.var.obj.addr |= ((uint32_t)b << l_rx.var.obj.idx);
-            l_rx.var.obj.idx += (uint8_t)8;
+            l_rx.var.obj.idx += 8U;
             if (l_rx.var.obj.idx == (uint8_t)(8*QS_OBJ_PTR_SIZE)) {
                 QS_RX_TRAN_(WAIT4_OBJ_FRAME);
             }
@@ -697,40 +705,39 @@ static void QS_rxParseData_(uint8_t b) {
         }
         case WAIT4_EVT_PRIO: {
             l_rx.var.evt.prio = b;
-            l_rx.var.evt.sig  = (QSignal)0;
-            l_rx.var.evt.idx  = (uint8_t)0;
+            l_rx.var.evt.sig  = 0U;
+            l_rx.var.evt.idx  = 0U;
             QS_RX_TRAN_(WAIT4_EVT_SIG);
             break;
         }
         case WAIT4_EVT_SIG: {
             l_rx.var.evt.sig |= (QSignal)((uint32_t)b << l_rx.var.evt.idx);
-            l_rx.var.evt.idx += (uint8_t)8;
-            if (l_rx.var.evt.idx == (uint8_t)(8*Q_SIGNAL_SIZE)) {
-                l_rx.var.evt.len = (uint16_t)0;
-                l_rx.var.evt.idx = (uint8_t)0;
+            l_rx.var.evt.idx += 8U;
+            if (l_rx.var.evt.idx == (uint8_t)(8U * Q_SIGNAL_SIZE)) {
+                l_rx.var.evt.len = 0U;
+                l_rx.var.evt.idx = 0U;
                 QS_RX_TRAN_(WAIT4_EVT_LEN);
             }
             break;
         }
         case WAIT4_EVT_LEN: {
             l_rx.var.evt.len |= (uint16_t)((uint32_t)b << l_rx.var.evt.idx);
-            l_rx.var.evt.idx += (uint8_t)8;
-            if (l_rx.var.evt.idx == (uint8_t)(8*2)) {
-                if ((l_rx.var.evt.len + (uint16_t)sizeof(QEvt)) <=
-                    (uint16_t)QF_poolGetMaxBlockSize())
+            l_rx.var.evt.idx += 8U;
+            if (l_rx.var.evt.idx == (8U * 2U)) {
+                if ((l_rx.var.evt.len + sizeof(QEvt)) <=
+                    QF_poolGetMaxBlockSize())
                 {
                     /* report Ack before generating any other QS records */
                     QS_rxReportAck_(QS_RX_EVENT);
 
                     l_rx.var.evt.e = QF_newX_(
-                        ((uint_fast16_t)l_rx.var.evt.len
-                         + (uint_fast16_t)sizeof(QEvt)),
-                        (uint_fast16_t)0, /* margin */
+                        ((uint_fast16_t)l_rx.var.evt.len + sizeof(QEvt)),
+                        0U, /* margin */
                         (enum_t)l_rx.var.evt.sig);
                     if (l_rx.var.evt.e != (QEvt *)0) { /* evt allocated? */
                         l_rx.var.evt.p = (uint8_t *)l_rx.var.evt.e;
                         l_rx.var.evt.p += sizeof(QEvt);
-                        if (l_rx.var.evt.len > (uint16_t)0) {
+                        if (l_rx.var.evt.len > 0U) {
                             QS_RX_TRAN_(WAIT4_EVT_PAR);
                         }
                         else {
@@ -753,7 +760,7 @@ static void QS_rxParseData_(uint8_t b) {
             *l_rx.var.evt.p = b;
             ++l_rx.var.evt.p;
             --l_rx.var.evt.len;
-            if (l_rx.var.evt.len == (uint16_t)0) {
+            if (l_rx.var.evt.len == 0U) {
                 QS_RX_TRAN_(WAIT4_EVT_FRAME);
             }
             break;
@@ -778,18 +785,18 @@ static void QS_rxParseData_(uint8_t b) {
         }
         case WAIT4_TEST_PROBE_DATA: {
             l_rx.var.tp.data |= ((uint32_t)b << l_rx.var.tp.idx);
-            l_rx.var.tp.idx += (uint8_t)8;
-            if (l_rx.var.tp.idx == (uint8_t)(8U*sizeof(uint32_t))) {
-                l_rx.var.tp.addr = (uint32_t)0;
-                l_rx.var.tp.idx  = (uint8_t)0;
+            l_rx.var.tp.idx += 8U;
+            if (l_rx.var.tp.idx == (uint8_t)(8U * sizeof(uint32_t))) {
+                l_rx.var.tp.addr = 0U;
+                l_rx.var.tp.idx  = 0U;
                 QS_RX_TRAN_(WAIT4_TEST_PROBE_ADDR);
             }
             break;
         }
         case WAIT4_TEST_PROBE_ADDR: {
             l_rx.var.tp.addr |= ((uint32_t)b << l_rx.var.tp.idx);
-            l_rx.var.tp.idx += (uint8_t)8;
-            if (l_rx.var.tp.idx == (uint8_t)(8*QS_FUN_PTR_SIZE)) {
+            l_rx.var.tp.idx += 8U;
+            if (l_rx.var.tp.idx == (uint8_t)(8U * QS_FUN_PTR_SIZE)) {
                 QS_RX_TRAN_(WAIT4_TEST_PROBE_FRAME);
             }
             break;
@@ -805,7 +812,7 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         default: {  /* unexpected or unimplemented state */
-            QS_rxReportError_((uint8_t)0x45);
+            QS_rxReportError_(0x45U);
             QS_RX_TRAN_(ERROR_STATE);
             break;
         }
@@ -820,7 +827,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
     switch (state) {
         case WAIT4_INFO_FRAME: {
             /* no need to report Ack or Done */
-            QS_target_info_((uint8_t)0); /* send only Target info */
+            QS_target_info_pre_(0U); /* send only Target info */
             break;
         }
         case WAIT4_RESET_FRAME: {
@@ -854,30 +861,30 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
         }
         case WAIT4_PEEK_FRAME: {
             /* no need to report Ack or Done */
-            QS_beginRec((uint_fast8_t)QS_PEEK_DATA);
+            QS_beginRec_((uint_fast8_t)QS_PEEK_DATA);
                 ptr = ((uint8_t *)QS_rxPriv_.currObj[AP_OBJ]
                        + l_rx.var.peek.offs);
-                QS_TIME_();                  /* timestamp */
-                QS_U16_(l_rx.var.peek.offs); /* data offset */
-                QS_U8_(l_rx.var.peek.size);  /* data size */
-                QS_U8_(l_rx.var.peek.num);   /* number of data items */
-                for (i = (uint8_t)0; i < l_rx.var.peek.num; ++i) {
+                QS_TIME_PRE_();                  /* timestamp */
+                QS_U16_PRE_(l_rx.var.peek.offs); /* data offset */
+                QS_U8_PRE_(l_rx.var.peek.size);  /* data size */
+                QS_U8_PRE_(l_rx.var.peek.num);   /* number of data items */
+                for (i = 0U; i < l_rx.var.peek.num; ++i) {
                     switch (l_rx.var.peek.size) {
                         case 1:
-                            QS_U8_(*(ptr + i));
+                            QS_U8_PRE_(*(ptr + i));
                             break;
                         case 2:
-                            QS_U16_(*((uint16_t *)ptr + i));
+                            QS_U16_PRE_(*((uint16_t *)ptr + i));
                             break;
                         case 4:
-                            QS_U32_(*((uint32_t *)ptr + i));
+                            QS_U32_PRE_(*((uint32_t *)ptr + i));
                             break;
                         default:
                             break;
                     }
                 }
-            QS_endRec();
-            QS_REC_DONE();
+            QS_endRec_();
+            QS_REC_DONE(); /* user callback (if defined) */
             break;
         }
         case WAIT4_POKE_DATA: {
@@ -894,7 +901,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             QS_rxReportAck_(QS_RX_FILL);
             ptr = ((uint8_t *)QS_rxPriv_.currObj[AP_OBJ]
                    + l_rx.var.poke.offs);
-            for (i = (uint8_t)0; i < l_rx.var.poke.num; ++i) {
+            for (i = 0U; i < l_rx.var.poke.num; ++i) {
                 switch (l_rx.var.poke.size) {
                     case 1:
                         *(ptr + i) = (uint8_t)l_rx.var.poke.data;
@@ -916,14 +923,14 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             QS_rxReportAck_(QS_RX_GLB_FILTER);
 
             /* never disable the non-maskable records */
-            l_rx.var.gFlt.data[0] |= (uint8_t)0x01;
-            l_rx.var.gFlt.data[7] |= (uint8_t)0xFC;
-            l_rx.var.gFlt.data[8] |= (uint8_t)0x3F;
+            l_rx.var.gFlt.data[0] |= 0x01U;
+            l_rx.var.gFlt.data[7] |= 0xFCU;
+            l_rx.var.gFlt.data[8] |= 0x3FU;
 
             /* never enable the last 3 records (0x7D, 0x7E, 0x7F) */
-            l_rx.var.gFlt.data[15] &= (uint8_t)0x1F;
+            l_rx.var.gFlt.data[15] &= 0x1FU;
 
-            for (i=(uint8_t)0; i < (uint8_t)sizeof(QS_priv_.glbFilter); ++i) {
+            for (i = 0U; i < sizeof(QS_priv_.glbFilter); ++i) {
                 QS_priv_.glbFilter[i] = l_rx.var.gFlt.data[i];
             }
             /* no need to report Done */
@@ -961,42 +968,42 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             i = l_rx.var.obj.kind;
             ptr = (uint8_t *)QS_rxPriv_.currObj[i];
             if (ptr != (void *)0) {
-                QS_beginRec((uint_fast8_t)QS_QUERY_DATA);
-                    QS_TIME_(); /* timestamp */
-                    QS_U8_(i);  /* object kind */
-                    QS_OBJ_(ptr);
+                QS_beginRec_((uint_fast8_t)QS_QUERY_DATA);
+                    QS_TIME_PRE_(); /* timestamp */
+                    QS_U8_PRE_(i);  /* object kind */
+                    QS_OBJ_PRE_(ptr);
                     switch (i) {
                         case SM_OBJ:
-                            QS_FUN_(((QHsm *)ptr)->state.fun);
+                            QS_FUN_PRE_(((QHsm *)ptr)->state.fun);
                             break;
 
 #ifdef Q_UTEST
                         case AO_OBJ:
-                            QS_EQC_(((QActive *)ptr)->eQueue.nFree);
-                            QS_EQC_(((QActive *)ptr)->eQueue.nMin);
+                            QS_EQC_PRE_(((QActive *)ptr)->eQueue.nFree);
+                            QS_EQC_PRE_(((QActive *)ptr)->eQueue.nMin);
                             break;
                         case MP_OBJ:
-                            QS_MPC_(((QMPool *)ptr)->nFree);
-                            QS_MPC_(((QMPool *)ptr)->nMin);
+                            QS_MPC_PRE_(((QMPool *)ptr)->nFree);
+                            QS_MPC_PRE_(((QMPool *)ptr)->nMin);
                             break;
                         case EQ_OBJ:
-                            QS_EQC_(((QEQueue *)ptr)->nFree);
-                            QS_EQC_(((QEQueue *)ptr)->nMin);
+                            QS_EQC_PRE_(((QEQueue *)ptr)->nFree);
+                            QS_EQC_PRE_(((QEQueue *)ptr)->nMin);
                             break;
                         case TE_OBJ:
-                            QS_OBJ_(((QTimeEvt *)ptr)->act);
-                            QS_TEC_(((QTimeEvt *)ptr)->ctr);
-                            QS_TEC_(((QTimeEvt *)ptr)->interval);
-                            QS_SIG_(((QTimeEvt *)ptr)->super.sig);
-                            QS_U8_ (((QTimeEvt *)ptr)->super.refCtr_);
+                            QS_OBJ_PRE_(((QTimeEvt *)ptr)->act);
+                            QS_TEC_PRE_(((QTimeEvt *)ptr)->ctr);
+                            QS_TEC_PRE_(((QTimeEvt *)ptr)->interval);
+                            QS_SIG_PRE_(((QTimeEvt *)ptr)->super.sig);
+                            QS_U8_PRE_ (((QTimeEvt *)ptr)->super.refCtr_);
                             break;
 #endif /* Q_UTEST */
 
                         default:
                             break;
                     }
-                QS_endRec();
-                QS_REC_DONE();
+                QS_endRec_();
+                QS_REC_DONE(); /* user callback (if defined) */
             }
             else {
                 QS_rxReportError_((uint8_t)QS_RX_QUERY_CURR);
@@ -1005,7 +1012,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
         }
         case WAIT4_AO_FILTER_FRAME: {
             QS_rxReportAck_(QS_RX_AO_FILTER);
-            if (l_rx.var.aFlt.prio <= (uint8_t)QF_MAX_ACTIVE) {
+            if (l_rx.var.aFlt.prio <= QF_MAX_ACTIVE) {
                 QS_rxReportAck_(QS_RX_AO_FILTER);
                 QS_priv_.locFilter[AO_OBJ] = QF_active_[l_rx.var.aFlt.prio];
                 QS_priv_.locFilter[SM_OBJ] = QF_active_[l_rx.var.aFlt.prio];
@@ -1021,22 +1028,22 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
 #ifdef Q_UTEST
             QS_onTestEvt(l_rx.var.evt.e); /* adjust the event, if needed */
 #endif /* Q_UTEST */
-            i = (uint8_t)0; /* use 'i' as status, 0 == success,no-recycle */
+            i = 0U; /* use 'i' as status, 0 == success,no-recycle */
 
-            if (l_rx.var.evt.prio == (uint8_t)0) { /* publish */
+            if (l_rx.var.evt.prio == 0U) { /* publish */
                 QF_PUBLISH(l_rx.var.evt.e, &QS_rxPriv_);
             }
-            else if (l_rx.var.evt.prio < (uint8_t)QF_MAX_ACTIVE) {
+            else if (l_rx.var.evt.prio < QF_MAX_ACTIVE) {
                 if (QACTIVE_POST_X(QF_active_[l_rx.var.evt.prio],
                                l_rx.var.evt.e,
-                               (uint_fast16_t)0, /* margin */
+                               0U, /* margin */
                                &QS_rxPriv_) == false)
                 {
                     /* failed QACTIVE_POST() recycles the event */
-                    i = (uint8_t)0x80; /* failure status, no recycle */
+                    i = 0x80U; /* failure status, no recycle */
                 }
             }
-            else if (l_rx.var.evt.prio == (uint8_t)255) { /* special prio */
+            else if (l_rx.var.evt.prio == 255U) { /* special prio */
                 /* dispatch to the current SM object */
                 if (QS_rxPriv_.currObj[SM_OBJ] != (void *)0) {
                     /* increment the ref-ctr to simulate the situation
@@ -1047,13 +1054,13 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
 
                     QHSM_DISPATCH((QHsm *)QS_rxPriv_.currObj[SM_OBJ],
                                   l_rx.var.evt.e);
-                    i = (uint8_t)0x01;  /* success status, recycle needed */
+                    i = 0x01U;  /* success status, recycle needed */
                 }
                 else {
-                    i = (uint8_t)0x81;  /* failure status, recycle needed */
+                    i = 0x81U;  /* failure status, recycle needed */
                 }
             }
-            else if (l_rx.var.evt.prio == (uint8_t)254) { /* special prio */
+            else if (l_rx.var.evt.prio == 254U) { /* special prio */
                 /* init the current SM object" */
                 if (QS_rxPriv_.currObj[SM_OBJ] != (void *)0) {
                     /* increment the ref-ctr to simulate the situation
@@ -1064,38 +1071,38 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
 
                     QHSM_INIT((QHsm *)QS_rxPriv_.currObj[SM_OBJ],
                               l_rx.var.evt.e);
-                    i = (uint8_t)0x01;  /* success status, recycle needed */
+                    i = 0x01U;  /* success status, recycle needed */
                 }
                 else {
-                    i = (uint8_t)0x81;  /* failure status, recycle needed */
+                    i = 0x81U;  /* failure status, recycle needed */
                 }
             }
-            else if (l_rx.var.evt.prio == (uint8_t)253) { /* special prio */
+            else if (l_rx.var.evt.prio == 253U) { /* special prio */
                 /* post to the current AO */
                 if (QS_rxPriv_.currObj[AO_OBJ] != (void *)0) {
                     if (QACTIVE_POST_X(
                             (QActive *)QS_rxPriv_.currObj[AO_OBJ],
                             l_rx.var.evt.e,
-                            (uint_fast16_t)0, /* margin */
+                            0U, /* margin */
                             &QS_rxPriv_) == false)
                     {
                         /* failed QACTIVE_POST() recycles the event */
-                        i = (uint8_t)0x80;  /* failure status, no recycle */
+                        i = 0x80U;  /* failure status, no recycle */
                     }
                 }
                 else {
-                    i = (uint8_t)0x81;  /* failure status, recycle needed */
+                    i = 0x81U;  /* failure status, recycle needed */
                 }
             }
             else {
-                i = (uint8_t)0x81;  /* failure status, recycle needed */
+                i = 0x81U;  /* failure status, recycle needed */
             }
 
-            if ((i & (uint8_t)0x01) != (uint8_t)0) { /* recycle needed? */
+            if ((i & 0x01U) != 0U) { /* recycle needed? */
                 QF_gc(l_rx.var.evt.e);
             }
 
-            if ((i & (uint8_t)0x80) != (uint8_t)0) { /* failure? */
+            if ((i & 0x80U) != 0U) { /* failure? */
                 QS_rxReportError_((uint8_t)QS_RX_EVENT);
             }
             else {
@@ -1110,8 +1117,8 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
 #ifdef Q_UTEST
         case WAIT4_TEST_SETUP_FRAME: {
             QS_rxReportAck_(QS_RX_TEST_SETUP);
-            l_testData.tpNum    = (uint8_t)0;   /* clear the Test-Probes */
-            l_testData.testTime = (QSTimeCtr)0; /* clear the time tick */
+            l_testData.tpNum    = 0U; /* clear the Test-Probes */
+            l_testData.testTime = 0U; /* clear the time tick */
             /* don't clear current objects */
             QS_onTestSetup(); /* application-specific test setup */
             /* no need to report Done */
@@ -1132,8 +1139,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
         case WAIT4_TEST_PROBE_FRAME: {
             QS_rxReportAck_(QS_RX_TEST_PROBE);
             Q_ASSERT_ID(815, l_testData.tpNum
-                     < (uint8_t)(sizeof(l_testData.tpBuf)
-                                 /sizeof(l_testData.tpBuf[0])));
+                < (sizeof(l_testData.tpBuf) / sizeof(l_testData.tpBuf[0])));
             l_testData.tpBuf[l_testData.tpNum] = l_rx.var.tp;
             ++l_testData.tpNum;
             /* no need to report Done */
@@ -1146,7 +1152,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             break;
         }
         default: {
-            QS_rxReportError_((uint8_t)0x47);
+            QS_rxReportError_(0x47U);
             break;
         }
     }
@@ -1154,7 +1160,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
 
 /****************************************************************************/
 static void QS_rxHandleBadFrame_(uint8_t state) {
-    QS_rxReportError_((uint8_t)0x50); /* report error for all bad frames */
+    QS_rxReportError_(0x50U); /* report error for all bad frames */
     switch (state) {
         case WAIT4_EVT_FRAME: {
             Q_ASSERT_ID(910, l_rx.var.evt.e != (QEvt *)0);
@@ -1169,27 +1175,27 @@ static void QS_rxHandleBadFrame_(uint8_t state) {
 
 /****************************************************************************/
 static void QS_rxReportAck_(enum QSpyRxRecords recId) {
-    QS_beginRec((uint_fast8_t)QS_RX_STATUS);
-        QS_U8_(recId); /* record ID */
-    QS_endRec();
-    QS_REC_DONE();
+    QS_beginRec_((uint_fast8_t)QS_RX_STATUS);
+        QS_U8_PRE_(recId); /* record ID */
+    QS_endRec_();
+    QS_REC_DONE(); /* user callback (if defined) */
 }
 
 /****************************************************************************/
 static void QS_rxReportError_(uint8_t code) {
-    QS_beginRec((uint_fast8_t)QS_RX_STATUS);
-        QS_U8_((uint8_t)((uint8_t)0x80 | code)); /* error code */
-    QS_endRec();
-    QS_REC_DONE();
+    QS_beginRec_((uint_fast8_t)QS_RX_STATUS);
+        QS_U8_PRE_(0x80U | code); /* error code */
+    QS_endRec_();
+    QS_REC_DONE(); /* user callback (if defined) */
 }
 
 /****************************************************************************/
 static void QS_rxReportDone_(enum QSpyRxRecords recId) {
-    QS_beginRec((uint_fast8_t)QS_TARGET_DONE);
-        QS_TIME_();    /* timestamp */
-        QS_U8_(recId); /* record ID */
-    QS_endRec();
-    QS_REC_DONE();
+    QS_beginRec_((uint_fast8_t)QS_TARGET_DONE);
+        QS_TIME_PRE_();    /* timestamp */
+        QS_U8_PRE_(recId); /* record ID */
+    QS_endRec_();
+    QS_REC_DONE(); /* user callback (if defined) */
 }
 
 /****************************************************************************/
@@ -1211,8 +1217,8 @@ static void QS_rxPoke_(void) {
             break;
     }
 
-    l_rx.var.poke.data = (uint32_t)0;
-    l_rx.var.poke.idx  = (uint8_t)0;
+    l_rx.var.poke.data = 0U;
+    l_rx.var.poke.idx  = 0U;
     l_rx.var.poke.offs += (uint16_t)l_rx.var.poke.size;
 }
 
@@ -1233,23 +1239,23 @@ static void QS_rxPoke_(void) {
 * a given API, the function returns zero.
 */
 uint32_t QS_getTestProbe_(void (* const api)(void)) {
-    uint32_t data = (uint32_t)0;
-    uint8_t i;
-    for (i = (uint8_t)0; i < l_testData.tpNum; ++i) {
+    uint32_t data = 0U;
+    for (uint_fast8_t i = 0U; i < l_testData.tpNum; ++i) {
         if (l_testData.tpBuf[i].addr == (QSFun)api) {
             data = l_testData.tpBuf[i].data;
-            --l_testData.tpNum;
+            QS_beginRec_((uint_fast8_t)QS_TEST_PROBE_GET);
+                QS_TIME_PRE_();    /* timestamp */
+                QS_FUN_PRE_(api);  /* the calling API */
+                QS_U32_PRE_(data); /* the Test-Probe data */
+            QS_endRec_();
+            QS_REC_DONE(); /* user callback (if defined) */
+
+            --l_testData.tpNum; /* one less Test-Probe */
             /* move all remaining entries in the buffer up by one */
-            for (; i < l_testData.tpNum; ++i) {
-                l_testData.tpBuf[i] = l_testData.tpBuf[i + (uint8_t)1];
+            for (uint_fast8_t j = i; j < l_testData.tpNum; ++j) {
+                l_testData.tpBuf[j] = l_testData.tpBuf[j + 1U];
             }
-            /* i == l_testData.tpNum, which terminates the for loop */
-            QS_beginRec((uint_fast8_t)QS_TEST_PROBE_GET);
-                QS_TIME_();    /* timestamp */
-                QS_FUN_(api);  /* the calling API */
-                QS_U32_(data); /* the Test-Probe data */
-            QS_endRec();
-            QS_REC_DONE();
+            break; /* we are done (Test-Probe retreived) */
         }
     }
     return data;

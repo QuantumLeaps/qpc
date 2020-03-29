@@ -1,9 +1,9 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                     SEGGER Microcontroller GmbH                    *
 *                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
+*       (c) 1995 - 2019 SEGGER Microcontroller GmbH                  *
 *                                                                    *
 *       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
@@ -21,35 +21,25 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.34.1                                           *
+*       OS version: 5.06.1                                           *
 *                                                                    *
 **********************************************************************
 
-----------------------------------------------------------------------
-File    : OS_Config.h
+-------------------------- END-OF-HEADER -----------------------------
 Purpose : Configuration settings for the OS build and embOSView
---------  END-OF-HEADER  ---------------------------------------------
 */
 
-#ifndef OS_CONFIG_H                     /* Avoid multiple inclusion */
+#ifndef OS_CONFIG_H
 #define OS_CONFIG_H
-
-/*********************************************************************
-*
-*       Default configuration
-*
-**********************************************************************
-*/
-
-#ifndef   DEBUG           // Should be overwritten by project settings
-  #define DEBUG     (0)   // in debug configurations
-#endif
 
 /*********************************************************************
 *
 *       Configuration for RTOS build and embOSView communication
 *
-*  One of the following builds needs to be selected for both Debug and Release configuration:
+*  In your application program, you need to let the compiler know
+*  which build of embOS you are using. This is done by adding the
+*  corresponding define to your preprocessor settings and linking the
+*  appropriate library file.
 *
 *  OS_LIBMODE_XR    Extremely small release build without Round robin
 *  OS_LIBMODE_R     Release build
@@ -58,17 +48,26 @@ Purpose : Configuration settings for the OS build and embOSView
 *  OS_LIBMODE_D     Debug build
 *  OS_LIBMODE_DP    Debug build with profiling
 *  OS_LIBMODE_DT    Debug build with trace
+*
+*  If no preprocessor setting is used, this file will select default
+*  modes for debug and release configurations of your project.
 */
 
-#if DEBUG
+#if (defined(DEBUG) && (DEBUG == 1))
   #define OS_LIBMODE_DP
 #else
   #define OS_LIBMODE_R
   #define OS_VIEW_IFSELECT  OS_VIEW_DISABLED  // embOSView communication is disabled per default in release configuration
 #endif
 
-/********************************************************************/
+/*********************************************************************
+*
+*       Additional embOS compile time configuration defines when using
+*       embOS sources in your project or rebuilding the embOS libraries
+*       can be added here, e.g.:
+*       #define OS_SUPPORT_TICKLESS  0  // Disable tickless support
+*/
 
-#endif                                  /* Avoid multiple inclusion */
+#endif  // OS_CONFIG_H
 
-/****** End Of File *************************************************/
+/*************************** End of file ****************************/

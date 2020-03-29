@@ -25,24 +25,23 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          https://state-machine.com
-* e-mail:                  info@quantum-leaps.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
-#include "SIM.h"
 #include "GUI.h"
+#include "GUI_SIM.h"
 
 void SIM_X_Init() {
     if (((LCD_GetDevCap(LCD_DEVCAP_XSIZE) * LCD_GetXMag()) == 320)
         && ((LCD_GetDevCap(LCD_DEVCAP_YSIZE) * LCD_GetYMag()) == 240)
         && (LCD_GetNumLayers() == 1))
     {
-        SIM_SetLCDPos(132, 46);    /* the position of the LCD in the bitmap */
-        SIM_SetTransColor(0xFF0000);        /* define the transparent color */
-        SIM_SetLCDColorBlack(0, 0x000000);      /* define the "black" color */
-        SIM_SetLCDColorWhite(0, 0xC0C0C0);      /* define the "white" color */
+        SIM_GUI_SetLCDPos(132, 46); /* position of the LCD in the bitmap */
+        SIM_GUI_SetTransColor(0xFF0000);       /* transparent color */
+        SIM_GUI_SetLCDColorBlack(0, 0x000000); /* "black" color */
+        SIM_GUI_SetLCDColorWhite(0, 0xC0C0C0); /* "white" color */
     }
 }

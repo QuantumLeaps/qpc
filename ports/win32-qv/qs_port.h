@@ -29,16 +29,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qs_port_h
-#define qs_port_h
+#ifndef QS_PORT_H
+#define QS_PORT_H
 
 #define QS_TIME_SIZE        4
 
@@ -63,5 +63,5 @@ void QS_rx_input(void);  /* handle the QS-RX input */
 #include "qf_port.h" /* use QS with QF */
 #include "qs.h"      /* QS platform-independent public interface */
 
-#endif /* qs_port_h  */
+#endif /* QS_PORT_H  */
 

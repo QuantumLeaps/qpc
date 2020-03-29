@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.5.1
-* Last updated on  2019-06-10
+* Last updated for version 6.8.0
+* Last updated on  2020-01-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,25 +29,25 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* The maximum number of active objects in the application, see NOTE01 */
-#define QF_MAX_ACTIVE           8
+#define QF_MAX_ACTIVE           8U
 
-#define QF_EVENT_SIZ_SIZE       1
-#define QF_EQUEUE_CTR_SIZE      1
-#define QF_MPOOL_SIZ_SIZE       1
-#define QF_MPOOL_CTR_SIZE       1
-#define QF_TIMEEVT_CTR_SIZE     2
+#define QF_EVENT_SIZ_SIZE       1U
+#define QF_EQUEUE_CTR_SIZE      1U
+#define QF_MPOOL_SIZ_SIZE       1U
+#define QF_MPOOL_CTR_SIZE       1U
+#define QF_TIMEEVT_CTR_SIZE     2U
 
 /* QF interrupt disable/enable, see NOTE02 */
 #define QF_INT_DISABLE()        __builtin_disi(0x3FFFU)
@@ -59,7 +59,7 @@
 #define QF_CRIT_EXIT(dummy)     __builtin_disi(0x0000U)
 
 /* fast log-base-2 with FBCL instruction, NOTE03 */
-#define QF_LOG2(n_) ((uint8_t)(15 + __builtin_fbcl(n_)))
+#define QF_LOG2(n_) ((uint8_t)(15U + __builtin_fbcl(n_)))
 
 #include "qep_port.h"   /* QEP port */
 #include "qv_port.h"    /* QV cooperative kernel port */
@@ -102,5 +102,5 @@
 * the negated exponent of a value. This value added to 15 gives the log-2.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */
 

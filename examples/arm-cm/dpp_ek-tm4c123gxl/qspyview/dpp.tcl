@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # Product: QSpyView -- Customization example for DPP application
-# Last updated for version 6.2.0
-# Last updated on  2018-03-14
+# Last updated for version 6.6.0
+# Last updated on  2019-11-30
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -52,7 +52,7 @@ proc onPause {} {
     global theButtonId theBtnState
     if {[string equal $theBtnState BTN_UP]} {    ;# is DWN?
          set theBtnState BTN_DWN
-         ::qspy::sendCurrObj SM_AO l_table
+         ::qspy::sendCurrObj SM_AO AO_Table
          ::qspy::sendEvent 255 PAUSE_SIG
          #::qspy::sendEvent 6 6 0
     } else {
@@ -94,8 +94,8 @@ set theBtnState BTN_UP
 
 # QS record handlers =========================================================
 
-# user record handlers [70..0x7C] --------------------------------------------
-proc ::qspy::rec70  {} { ;# QS_USER
+# user record handlers [100..124] --------------------------------------------
+proc ::qspy::rec100  {} { ;# QS_USER
     variable thePkt
     variable theFmt
     binary scan $thePkt xx$theFmt(tstamp)xcxa* \
@@ -108,7 +108,7 @@ proc ::qspy::rec70  {} { ;# QS_USER
     .canv.c itemconfigure [expr $thePhiloId + $philoNum] -image ::img::$img
 }
 #.............................................................................
-proc ::qspy::rec71  {} { ;# QS_USER + 1
+proc ::qspy::rec101  {} { ;# QS_USER + 1
     variable thePkt
     variable theFmt
     binary scan $thePkt xc$theFmt(tstamp)xc \
@@ -116,111 +116,51 @@ proc ::qspy::rec71  {} { ;# QS_USER + 1
     dispTxt [format "%010u cmd=%d param=%d" $ts $cmdId $par]
 }
 
-proc ::qspy::rec72  {} { ;# QS_USER + 2
+proc ::qspy::rec102 {} { ;# QS_USER + 2
 }
-proc ::qspy::rec73  {} { ;# QS_USER + 3
+proc ::qspy::rec103 {} { ;# QS_USER + 3
 }
-proc ::qspy::rec74  {} { ;# QS_USER + 4
+proc ::qspy::rec104 {} { ;# QS_USER + 4
 }
-proc ::qspy::rec75  {} { ;# QS_USER + 5
+proc ::qspy::rec105 {} { ;# QS_USER + 5
 }
-proc ::qspy::rec76  {} { ;# QS_USER + 6
+proc ::qspy::rec106 {} { ;# QS_USER + 6
 }
-proc ::qspy::rec77  {} { ;# QS_USER + 7
+proc ::qspy::rec107 {} { ;# QS_USER + 7
 }
-proc ::qspy::rec78  {} { ;# QS_USER + 8
+proc ::qspy::rec108 {} { ;# QS_USER + 8
 }
-proc ::qspy::rec79  {} { ;# QS_USER + 9
+proc ::qspy::rec109 {} { ;# QS_USER + 9
 }
-proc ::qspy::rec80  {} { ;# QS_USER + 10
+proc ::qspy::rec110 {} { ;# QS_USER + 10
 }
-proc ::qspy::rec81  {} { ;# QS_USER + 11
+proc ::qspy::rec111 {} { ;# QS_USER + 11
 }
-proc ::qspy::rec82  {} { ;# QS_USER + 12
+proc ::qspy::rec112 {} { ;# QS_USER + 12
 }
-proc ::qspy::rec83  {} { ;# QS_USER + 13
+proc ::qspy::rec113 {} { ;# QS_USER + 13
 }
-proc ::qspy::rec84  {} { ;# QS_USER + 14
+proc ::qspy::rec114 {} { ;# QS_USER + 14
 }
-proc ::qspy::rec85  {} { ;# QS_USER + 15
+proc ::qspy::rec115 {} { ;# QS_USER + 15
 }
-proc ::qspy::rec86  {} { ;# QS_USER + 16
+proc ::qspy::rec116 {} { ;# QS_USER + 16
 }
-proc ::qspy::rec87  {} { ;# QS_USER + 17
+proc ::qspy::rec117 {} { ;# QS_USER + 17
 }
-proc ::qspy::rec88  {} { ;# QS_USER + 18
+proc ::qspy::rec118 {} { ;# QS_USER + 18
 }
-proc ::qspy::rec89  {} { ;# QS_USER + 19
+proc ::qspy::rec119 {} { ;# QS_USER + 19
 }
-proc ::qspy::rec90  {} { ;# QS_USER + 20
+proc ::qspy::rec120 {} { ;# QS_USER + 20
 }
-proc ::qspy::rec91  {} { ;# QS_USER + 21
+proc ::qspy::rec121 {} { ;# QS_USER + 21
 }
-proc ::qspy::rec92  {} { ;# QS_USER + 22
+proc ::qspy::rec122 {} { ;# QS_USER + 22
 }
-proc ::qspy::rec93  {} { ;# QS_USER + 23
+proc ::qspy::rec123 {} { ;# QS_USER + 23
 }
-proc ::qspy::rec94  {} { ;# QS_USER + 24
-}
-proc ::qspy::rec95  {} { ;# QS_USER + 25
-}
-proc ::qspy::rec96  {} { ;# QS_USER + 26
-}
-proc ::qspy::rec97  {} { ;# QS_USER + 27
-}
-proc ::qspy::rec98  {} { ;# QS_USER + 28
-}
-proc ::qspy::rec99  {} { ;# QS_USER + 29
-}
-proc ::qspy::rec100 {} { ;# QS_USER + 30
-}
-proc ::qspy::rec101 {} { ;# QS_USER + 31
-}
-proc ::qspy::rec102 {} { ;# QS_USER + 32
-}
-proc ::qspy::rec103 {} { ;# QS_USER + 33
-}
-proc ::qspy::rec104 {} { ;# QS_USER + 34
-}
-proc ::qspy::rec105 {} { ;# QS_USER + 35
-}
-proc ::qspy::rec106 {} { ;# QS_USER + 36
-}
-proc ::qspy::rec107 {} { ;# QS_USER + 37
-}
-proc ::qspy::rec108 {} { ;# QS_USER + 38
-}
-proc ::qspy::rec109 {} { ;# QS_USER + 39
-}
-proc ::qspy::rec110 {} { ;# QS_USER + 40
-}
-proc ::qspy::rec111 {} { ;# QS_USER + 41
-}
-proc ::qspy::rec112 {} { ;# QS_USER + 42
-}
-proc ::qspy::rec113 {} { ;# QS_USER + 43
-}
-proc ::qspy::rec114 {} { ;# QS_USER + 44
-}
-proc ::qspy::rec115 {} { ;# QS_USER + 45
-}
-proc ::qspy::rec116 {} { ;# QS_USER + 46
-}
-proc ::qspy::rec117 {} { ;# QS_USER + 47
-}
-proc ::qspy::rec118 {} { ;# QS_USER + 48
-}
-proc ::qspy::rec119 {} { ;# QS_USER + 49
-}
-proc ::qspy::rec120 {} { ;# QS_USER + 50
-}
-proc ::qspy::rec121 {} { ;# QS_USER + 51
-}
-proc ::qspy::rec122 {} { ;# QS_USER + 52
-}
-proc ::qspy::rec123 {} { ;# QS_USER + 53
-}
-proc ::qspy::rec124 {} { ;# QS_USER + 54
+proc ::qspy::rec124 {} { ;# QS_USER + 24
 }
 
 

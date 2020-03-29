@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "bsp.h"
@@ -143,7 +143,7 @@ void QF_onClockTick(void) {
 
 /*..........................................................................*/
 /* this function is used by the QP embedded systems-friendly assertions */
-void Q_onAssert(char const * const file, int line) {
+Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
     printf("Assertion failed in %s, line %d", file, line);
     QF_onCleanup();
     exit(-1);

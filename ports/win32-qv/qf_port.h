@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.7
-* Date of the Last Update:  2018-11-14
+* Last updated for version 6.8.0
+* Last updated on  2020-01-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,16 +29,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* Win32 event queue and thread types */
 #define QF_EQUEUE_TYPE       QEQueue
@@ -46,17 +46,17 @@
 #define QF_THREAD_TYPE       void*
 
 /* The maximum number of active objects in the application */
-#define QF_MAX_ACTIVE        64
+#define QF_MAX_ACTIVE        64U
 
 /* The number of system clock tick rates */
-#define QF_MAX_TICK_RATE     2
+#define QF_MAX_TICK_RATE     2U
 
 /* various QF object sizes configuration for this port */
-#define QF_EVENT_SIZ_SIZE    4
-#define QF_EQUEUE_CTR_SIZE   4
-#define QF_MPOOL_SIZ_SIZE    4
-#define QF_MPOOL_CTR_SIZE    4
-#define QF_TIMEEVT_CTR_SIZE  4
+#define QF_EVENT_SIZ_SIZE    4U
+#define QF_EQUEUE_CTR_SIZE   4U
+#define QF_MPOOL_SIZ_SIZE    4U
+#define QF_MPOOL_CTR_SIZE    4U
+#define QF_TIMEEVT_CTR_SIZE  4U
 
 /* Win32 critical section, see NOTE1 */
 /* QF_CRIT_STAT_TYPE not defined */
@@ -93,47 +93,37 @@ int QF_consoleGetKey(void);
 int QF_consoleWaitForKey(void);
 
 /****************************************************************************/
-/* Microsoft C++: portable "safe" facilities from <stdio.h> and <string.h> */
+/* portable "safe" facilities from <stdio.h> and <string.h> ................*/
+#define STRCPY_S(dest_, destsiz_, src_) \
+    strcpy_s(dest_, destsiz_, src_)
+
+#define STRCAT_S(dest_, destsiz_, src_) \
+    strcat_s(dest_, destsiz_, src_)
+
+#define SNPRINTF_S(buf_, bufsiz_, format_, ...) \
+    _snprintf_s(buf_, bufsiz_, _TRUNCATE, format_, ##__VA_ARGS__)
+
+#define PRINTF_S(format_, ...) \
+    printf_s(format_, ##__VA_ARGS__)
+
+#define FPRINTF_S(fp_, format_, ...) \
+    fprintf_s(fp_, format_, ##__VA_ARGS__)
+
 #ifdef _MSC_VER
-
-#if (_MSC_VER < 1900) /* before Visual Studio 2015 */
-#define snprintf _snprintf
-#endif
-
-#define SNPRINTF_S(buf_, len_, format_, ...) \
-    _snprintf_s(buf_, len_, _TRUNCATE, format_, ##__VA_ARGS__)
-
-#define STRNCPY_S(dest_, src_, len_) \
-    strncpy_s(dest_, len_, src_, _TRUNCATE)
-
-#define FOPEN_S(fp_, fName_, mode_) \
-    if (fopen_s(&fp_, fName_, mode_) != 0) { \
-        fp_ = (FILE *)0; \
-    } else (void)0
-
-#define CTIME_S(buf_, len_, time_) \
-    ctime_s((char *)buf_, len_, time_)
-
-#define SSCANF_S(buf_, format_, ...) \
-    sscanf_s(buf_, format_, ##__VA_ARGS__)
-
-#else /* other C/C++ compilers (GNU, etc.) */
-
-#define SNPRINTF_S(buf_, len_, format_, ...) \
-    snprintf(buf_, len_, format_, ##__VA_ARGS__)
-
-#define STRNCPY_S(dest_, src_, len_) strncpy(dest_, src_, len_)
-
-#define FOPEN_S(fp_, fName_, mode_) \
-    (fp_ = fopen(fName_, mode_))
-
-#define CTIME_S(buf_, len_, time_) \
-    strncpy((char *)buf_, ctime(time_), len_)
-
-#define SSCANF_S(buf_, format_, ...) \
-    sscanf(buf_, format_, ##__VA_ARGS__)
-
+#define FREAD_S(buf_, bufsiz_, elsiz_, count_, fp_) \
+    fread_s(buf_, bufsiz_, elsiz_, count_, fp_)
+#else
+#define FREAD_S(buf_, bufsiz_, elsiz_, count_, fp_) \
+    fread(buf_, elsiz_, count_, fp_)
 #endif /* _MSC_VER */
+
+#define FOPEN_S(fp_, fName_, mode_) \
+if (fopen_s(&fp_, fName_, mode_) != 0) { \
+    fp_ = (FILE *)0; \
+} else (void)0
+
+#define LOCALTIME_S(tm_, time_) \
+    localtime_s(tm_, time_)
 
 /****************************************************************************/
 /* interface used only inside QF implementation, but not in applications */
@@ -217,4 +207,4 @@ int QF_consoleWaitForKey(void);
 * threaded Win32-QV port, because event multicasting is already atomic.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

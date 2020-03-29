@@ -25,14 +25,14 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : https://state-machine.com
-* Email: info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
-#ifndef blinky_h
-#define blinky_h
+#ifndef BLINKY_H
+#define BLINKY_H
 
 enum BlinkySignals {
     DUMMY_SIG = Q_USER_SIG,
@@ -45,4 +45,4 @@ enum BlinkySignals {
 void Blinky_ctor(void);
 extern QActive * const AO_Blinky; /* opaque pointer */
 
-#endif /* blinky_h */
+#endif /* BLINKY_H */

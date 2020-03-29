@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "bsp.h"
@@ -103,7 +103,6 @@ void BSP_init(void) {
     if (QS_INIT((void *)0) == 0) { /* initialize the QS software tracing */
         Q_ERROR();
     }
-    QS_RESET();
     QS_OBJ_DICTIONARY(&l_T2Interrupt);
 }
 /*..........................................................................*/
@@ -111,7 +110,7 @@ void BSP_terminate(int16_t result) {
     (void)result;
 }
 /*..........................................................................*/
-void BSP_displayPhilStat(uint8_t n, char const Q_ROM *stat) {
+void BSP_displayPhilStat(uint8_t n, char const *stat) {
     (void)n;
     (void)stat;
     LED_TOGGLE();
@@ -138,9 +137,9 @@ void BSP_randomSeed(uint32_t seed) {
     l_rnd = seed;
 }
 /*..........................................................................*/
-void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+Q_NORETURN Q_onAssert(char_t const * const file, int_t const loc) {
     (void)file;       /* unused parameter */
-    (void)line;       /* unused parameter */
+    (void)loc;        /* unused parameter */
     QF_INT_DISABLE(); /* make sure that interrupts are disabled */
     for (;;) {
     }
@@ -217,7 +216,7 @@ uint8_t QS_onStartup(void const *arg) {
     //QS_FILTER_ON(QS_AO_RECORDS);
     QS_FILTER_ON(QS_UA_RECORDS);
 
-    return (uint8_t)1; /* indicate successful QS initialization */
+    return 1U; /* indicate successful QS initialization */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

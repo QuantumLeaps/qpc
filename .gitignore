@@ -36,7 +36,7 @@ lint*.txt
 JLink*.*
 version-*
 
-eclipse/
+html/
 test_priv/
 dbg/
 rel/
@@ -47,6 +47,7 @@ build_spy/
 settings/
 .settings/
 targetConfigs/
+3rd_party/emWin/
 
 Debug/
 Release/
@@ -57,6 +58,5 @@ lib/
 obj/
 output/
 
-doxygen/html/
 lint/*.txt
 lint/MISRA_Exemplar_Suite_test/*.txt

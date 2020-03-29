@@ -5,14 +5,14 @@
 * @ingroup qk
 * @cond
 ******************************************************************************
-* Last updated for version 6.2.0
-* Last updated on  2018-03-16
+* Last updated for version 6.6.0
+* Last updated on  2019-07-30
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,16 +30,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_h
-#define qk_h
+#ifndef QK_H
+#define QK_H
 
 #include "qequeue.h"  /* QK kernel uses the native QP event queue  */
 #include "qmpool.h"   /* QK kernel uses the native QP memory pool  */
@@ -64,7 +64,7 @@
 
 
 /****************************************************************************/
-/*! attributes of the QK kernel */
+/*! private attributes of the QK kernel */
 typedef struct {
     uint8_t volatile actPrio;    /*!< prio of the active AO */
     uint8_t volatile nextPrio;   /*!< prio of the next AO to execute */
@@ -72,10 +72,10 @@ typedef struct {
     uint8_t volatile lockHolder; /*!< prio of the AO holding the lock */
     uint8_t volatile intNest;    /*!< ISR nesting level */
     QPSet readySet;              /*!< QK ready-set of AOs */
-} QK_Attr;
+} QK_PrivAttr;
 
-/*! global attributes of the QK kernel */
-extern QK_Attr QK_attr_;
+/*! global private attributes of the QK kernel */
+extern QK_PrivAttr QK_attr_;
 
 /****************************************************************************/
 #ifdef QK_ON_CONTEXT_SW
@@ -144,10 +144,6 @@ QSchedStatus QK_schedLock(uint_fast8_t ceiling);
 void QK_schedUnlock(QSchedStatus stat);
 
 /****************************************************************************/
-/*! get the current QK version number string of the form "X.Y.Z" */
-#define QK_getVersion() (QP_versionStr)
-
-/****************************************************************************/
 /* interface used only inside QP implementation, but not in applications */
 #ifdef QP_IMPL
 
@@ -157,7 +153,7 @@ void QK_schedUnlock(QSchedStatus stat);
         /*! @returns true if the code executes in the ISR context and false
         * otherwise
         */
-        #define QK_ISR_CONTEXT_() (QK_attr_.intNest != (uint8_t)0)
+        #define QK_ISR_CONTEXT_() (QK_attr_.intNest != 0U)
     #endif /* QK_ISR_CONTEXT_ */
 
     /* QK-specific scheduler locking */
@@ -167,33 +163,33 @@ void QK_schedUnlock(QSchedStatus stat);
     #define QF_SCHED_STAT_ QSchedStatus lockStat_;
 
     /*! Internal macro for selective scheduler locking. */
-    #define QF_SCHED_LOCK_(prio_) do { \
-        if (QK_ISR_CONTEXT_()) { \
-            lockStat_ = (QSchedStatus)0xFF; \
-        } else { \
+    #define QF_SCHED_LOCK_(prio_) do {         \
+        if (QK_ISR_CONTEXT_()) {               \
+            lockStat_ = 0xFFU;                 \
+        } else {                               \
             lockStat_ = QK_schedLock((prio_)); \
-        } \
-    } while (0)
+        }                                      \
+    } while (false)
 
     /*! Internal macro for selective scheduler unlocking. */
-    #define QF_SCHED_UNLOCK_() do { \
-        if (lockStat_ != (QSchedStatus)0xFF) { \
+    #define QF_SCHED_UNLOCK_() do {    \
+        if (lockStat_ != 0xFFU) {      \
             QK_schedUnlock(lockStat_); \
-        } \
-    } while (0)
+        }                              \
+    } while (false)
 
     /* native event queue operations... */
-    #define QACTIVE_EQUEUE_WAIT_(me_) \
+    #define QACTIVE_EQUEUE_WAIT_(me_)  \
         (Q_ASSERT_ID(110, (me_)->eQueue.frontEvt != (QEvt *)0))
 
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
+    #define QACTIVE_EQUEUE_SIGNAL_(me_) do {                         \
         QPSet_insert(&QK_attr_.readySet, (uint_fast8_t)(me_)->prio); \
-        if (!QK_ISR_CONTEXT_()) { \
-            if (QK_sched_() != (uint_fast8_t)0) { \
-                QK_activate_(); \
-            } \
-        } \
-    } while (0)
+        if (!QK_ISR_CONTEXT_()) {                                    \
+            if (QK_sched_() != 0U) {                                 \
+                QK_activate_();                                      \
+            }                                                        \
+        }                                                            \
+    } while (false)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool
@@ -205,5 +201,5 @@ void QK_schedUnlock(QSchedStatus stat);
 
 #endif /* QP_IMPL */
 
-#endif /* qk_h */
+#endif /* QK_H */
 

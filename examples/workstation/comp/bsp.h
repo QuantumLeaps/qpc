@@ -25,14 +25,14 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   https://state-machine.com
-* Email: info@state-machine.com
+* Web:   <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 void BSP_init(int argc, char *argv[]);
 void BSP_onKeyboardInput(uint8_t key); /* process the keyboard scan code */
@@ -43,4 +43,4 @@ void BSP_showMsg(char_t const *str);
 void BSP_showTime12H(char_t const *str, uint32_t time, uint32_t base);
 void BSP_showTime24H(char_t const *str, uint32_t time, uint32_t base);
 
-#endif /* bsp_h */
+#endif /* BSP_H */

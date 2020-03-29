@@ -28,16 +28,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qv_port_h
-#define qv_port_h
+#ifndef QV_PORT_H
+#define QV_PORT_H
 
 #if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 ? */
 
@@ -45,7 +45,7 @@
     #define QV_CPU_SLEEP() do { \
         __asm volatile ("wfi"); \
         QF_INT_ENABLE(); \
-    } while (0)
+    } while (false)
 
 #else /* Cortex-M3/M4/M4F */
 
@@ -55,7 +55,7 @@
         QF_INT_ENABLE(); \
         __asm volatile ("wfi"); \
         QF_PRIMASK_ENABLE(); \
-    } while (0)
+    } while (false)
 
     /* initialization of the QV kernel for Cortex-M3/M4/M4F */
     #define QV_INIT() QV_init()
@@ -65,4 +65,4 @@
 
 #include "qv.h" /* QV platform-independent public interface */
 
-#endif /* qv_port_h */
+#endif /* QV_PORT_H */

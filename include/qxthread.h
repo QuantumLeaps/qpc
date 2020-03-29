@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,16 +29,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qxthread_h
-#define qxthread_h
+#ifndef QXTHREAD_H
+#define QXTHREAD_H
 
 /****************************************************************************/
 /*! eXtended (blocking) thread of the QXK preemptive kernel */
@@ -54,10 +54,10 @@
 * provide the thred-handler function as the parameter.
 *
 * @sa
+* - ::QXThread
 * - QXThread_ctor()
 * - QXTHREAD_START()
 * - QXTHREAD_POST_X()
-* - Q_XTHREAD_CAST()
 * - QXThread_delay()
 * - QXThread_delayCancel()
 * - QXThread_queueGet()
@@ -68,18 +68,18 @@
 * thread in your application.
 * @include qxk_thread.c
 */
-typedef struct {
+struct QXThread {
     QActive super;    /*!< inherited ::QActive */
     QTimeEvt timeEvt; /*!< time event to handle blocking timeouts */
-} QXThread;
+};
 
-/*! Virtual Table for the ::QXThread class (inherited from ::QActiveVtbl) */
+/*! Virtual Table for the ::QXThread class (inherited from ::QActiveVtable) */
 /**
 * @note
 * ::QXThread inherits ::QActive without adding any new virtual
-* functions and therefore, ::QXThreadVtbl is typedef'ed as ::QActiveVtbl.
+* functions and therefore, ::QXThreadVtable is typedef'ed as ::QActiveVtable.
 */
-typedef QActiveVtbl QXThreadVtbl;
+typedef QActiveVtable QXThreadVtable;
 
 /*! Polymorphically start an extended thread. */
 /**
@@ -100,13 +100,10 @@ typedef QActiveVtbl QXThreadVtbl;
 */
 #define QXTHREAD_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, par_) do {\
     Q_ASSERT((me_)->super.super.vptr);                                       \
-    ((*((QActiveVtbl const *)((me_)->super.super.vptr))->start)(             \
+    ((*((QActiveVtable const *)((me_)->super.super.vptr))->start)(           \
         &(me_)->super, (prio_), (QEvt const **)(qSto_), (qLen_),             \
         (stkSto_), (stkLen_), (par_)));                                      \
-} while (0)
-
-/*! Thread handler pointer-to-function */
-typedef void (*QXThreadHandler)(QXThread * const me);
+} while (false)
 
 /*! constructor of an extended-thread */
 void QXThread_ctor(QXThread * const me, QXThreadHandler handler,
@@ -158,15 +155,6 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks);
 
 /*! no-timeout special timeout value when blocking on queues or semaphores */
 #define QXTHREAD_NO_TIMEOUT  ((uint_fast16_t)0)
-
-/*! Perform cast to QXThreadHandler. */
-/**
-* @description
-* This macro encapsulates the cast of a specific thread handler function
-* pointer to ::QXThreadHandler, which violates MISRA-C 2004 rule 11.4(adv).
-* This macro helps to localize this deviation.
-*/
-#define Q_XTHREAD_CAST(handler_)  ((QXThreadHandler)(handler_))
 
 /****************************************************************************/
 /*! Counting Semaphore of the QXK preemptive kernel */
@@ -271,5 +259,5 @@ bool QXMutex_tryLock(QXMutex * const me);
 /*! unlock the QXK priority-ceiling mutex ::QXMutex */
 void QXMutex_unlock(QXMutex * const me);
 
-#endif /* qxthread_h */
+#endif /* QXTHREAD_H */
 

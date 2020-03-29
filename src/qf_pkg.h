@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.7
-* Last updated on  2018-11-07
+* Last updated for version 6.8.0
+* Last updated on  2020-01-27
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,16 +29,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_pkg_h
-#define qf_pkg_h
+#ifndef QF_PKG_H
+#define QF_PKG_H
 
 /****************************************************************************/
 /* QF-specific critical section */
@@ -96,30 +96,30 @@
 
 #else  /* Q_NASSERT not defined--assertion checking enabled */
 
-    #define Q_ASSERT_CRIT_(id_, test_) do {\
-        if ((test_)) {} else { \
-            QF_CRIT_EXIT_(); \
+    #define Q_ASSERT_CRIT_(id_, test_) do {               \
+        if ((test_)) {} else {                            \
+            QF_CRIT_EXIT_();                              \
             Q_onAssert(&Q_this_module_[0], (int_t)(id_)); \
-        } \
-    } while (0)
+        }                                                 \
+    } while (false)
 
     #define Q_REQUIRE_CRIT_(id_, test_) Q_ASSERT_CRIT_((id_), (test_))
 
-    #define Q_ERROR_CRIT_(id_) do { \
-        QF_CRIT_EXIT_(); \
-        Q_onAssert(&Q_this_module_[0], (int_t)(id_)); \
-    } while (0)
+    #define Q_ERROR_CRIT_(id_) do {                       \
+        QF_CRIT_EXIT_();                                  \
+        Q_onAssert(&Q_this_module_[0], (int_t)(id_));     \
+    } while (false)
 
 #endif /* Q_NASSERT */
 
 /****************************************************************************/
-/* internal implementation (should be used via vtbl only) */
+/* internal implementation (should be used via vtable only) */
 
 /*! Implementation of the active object start operation */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
-                    QEvt const *qSto[], uint_fast16_t qLen,
-                    void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie);
+                    QEvt const * * const qSto, uint_fast16_t const qLen,
+                    void * const stkSto, uint_fast16_t const stkSize,
+                    void const * const par);
 
 /*! Get an event from the event queue of an active object. */
 QEvt const *QActive_get_(QActive *const me);
@@ -147,11 +147,9 @@ extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
 * is NOT used for reference counting in time events, because the @c poolId_
 * attribute is zero ("static events").
 */
-enum {
-    TE_IS_LINKED    = (uint8_t)(1U << 7), /* flag  */
-    TE_WAS_DISARMED = (uint8_t)(1U << 6), /* flag */
-    TE_TICK_RATE    = (uint8_t)0x0F       /* bitmask */
-};
+#define TE_IS_LINKED      (1U << 7)
+#define TE_WAS_DISARMED   (1U << 6)
+#define TE_TICK_RATE      0x0FU
 
 extern QF_EPOOL_TYPE_ QF_pool_[QF_MAX_EPOOL]; /*!< allocate event pools */
 extern uint_fast8_t QF_maxPool_;     /*!< # of initialized event pools */
@@ -165,11 +163,14 @@ typedef struct QFreeBlock {
 
 /* internal helper macros ***************************************************/
 
+/*! helper macro to cast const away from an event pointer @p e_ */
+#define QF_EVT_CONST_CAST_(e_)  ((QEvt *)(e_))
+
 /*! increment the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_INC_(e_) (++((QEvt *)(e_))->refCtr_)
+#define QF_EVT_REF_CTR_INC_(e_) (++QF_EVT_CONST_CAST_(e_)->refCtr_)
 
 /*! decrement the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_DEC_(e_) (--((QEvt *)(e_))->refCtr_)
+#define QF_EVT_REF_CTR_DEC_(e_) (--QF_EVT_CONST_CAST_(e_)->refCtr_)
 
 /*! access element at index @p i_ from the base pointer @p base_ */
 #define QF_PTR_AT_(base_, i_)   ((base_)[(i_)])
@@ -184,84 +185,5 @@ typedef struct QFreeBlock {
 */
 #define QF_PTR_RANGE_(x_, min_, max_)  (((min_) <= (x_)) && ((x_) <= (max_)))
 
-/****************************************************************************/
-#ifdef Q_SPY  /* QS software tracing enabled? */
+#endif /* QF_PKG_H */
 
-    #if (QF_EQUEUE_CTR_SIZE == 1)
-
-        /*! Internal QS macro to output an unformatted event queue counter
-        * data element. */
-        /**
-        * @note the counter size depends on the macro #QF_EQUEUE_CTR_SIZE.
-        */
-        #define QS_EQC_(ctr_)       QS_u8_((uint8_t)(ctr_))
-    #elif (QF_EQUEUE_CTR_SIZE == 2)
-        #define QS_EQC_(ctr_)       QS_u16_((uint16_t)(ctr_))
-    #elif (QF_EQUEUE_CTR_SIZE == 4)
-        #define QS_EQC_(ctr_)       QS_u32_((uint32_t)(ctr_))
-    #else
-        #error "QF_EQUEUE_CTR_SIZE not defined"
-    #endif
-
-
-    #if (QF_EVENT_SIZ_SIZE == 1)
-
-        /*! Internal QS macro to output an unformatted event size
-        * data element. */
-        /**
-        * @note the event size depends on the macro #QF_EVENT_SIZ_SIZE.
-        */
-        #define QS_EVS_(size_)      QS_u8_((uint8_t)(size_))
-    #elif (QF_EVENT_SIZ_SIZE == 2)
-        #define QS_EVS_(size_)      QS_u16_((uint16_t)(size_))
-    #elif (QF_EVENT_SIZ_SIZE == 4)
-        #define QS_EVS_(size_)      QS_u32_((uint32_t)(size_))
-    #endif
-
-
-    #if (QF_MPOOL_SIZ_SIZE == 1)
-
-        /*! Internal QS macro to output an unformatted memory pool
-        * block-size data element */
-        /**
-        * @note the block-size depends on the macro #QF_MPOOL_SIZ_SIZE.
-        */
-        #define QS_MPS_(size_)      QS_u8_((uint8_t)(size_))
-    #elif (QF_MPOOL_SIZ_SIZE == 2)
-        #define QS_MPS_(size_)      QS_u16_((uint16_t)(size_))
-    #elif (QF_MPOOL_SIZ_SIZE == 4)
-        #define QS_MPS_(size_)      QS_u32_((uint32_t)(size_))
-    #endif
-
-    #if (QF_MPOOL_CTR_SIZE == 1)
-
-        /*! Internal QS macro to output an unformatted memory pool
-        * block-counter data element. */
-        /**
-        * @note the counter size depends on the macro #QF_MPOOL_CTR_SIZE.
-        */
-        #define QS_MPC_(ctr_)       QS_u8_((uint8_t)(ctr_))
-    #elif (QF_MPOOL_CTR_SIZE == 2)
-        #define QS_MPC_(ctr_)       QS_u16_((uint16_t)(ctr_))
-    #elif (QF_MPOOL_CTR_SIZE == 4)
-        #define QS_MPC_(ctr_)       QS_u32_((uint16_t)(ctr_))
-    #endif
-
-
-    #if (QF_TIMEEVT_CTR_SIZE == 1)
-
-        /*! Internal QS macro to output an unformatted time event
-        * tick-counter data element */
-        /**
-        * @note the counter size depends on the macro #QF_TIMEEVT_CTR_SIZE.
-        */
-        #define QS_TEC_(ctr_)       QS_u8_((uint8_t)(ctr_))
-    #elif (QF_TIMEEVT_CTR_SIZE == 2)
-        #define QS_TEC_(ctr_)       QS_u16_((uint16_t)(ctr_))
-    #elif (QF_TIMEEVT_CTR_SIZE == 4)
-        #define QS_TEC_(ctr_)       QS_u32_((uint32_t)(ctr_))
-    #endif
-
-#endif /* Q_SPY */
-
-#endif /* qf_pkg_h */

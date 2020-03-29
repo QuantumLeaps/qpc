@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -98,10 +98,13 @@ typedef struct {
 */
 WM_HWIN CALENDAR_Create           (WM_HWIN hParent, int xPos, int yPos, unsigned Year, unsigned Month, unsigned Day, unsigned FirstDayOfWeek, int Id, int Flags);
 void    CALENDAR_GetDate          (WM_HWIN hWin, CALENDAR_DATE * pDate);
+int     CALENDAR_GetDaysOfMonth   (CALENDAR_DATE * pDate);
 void    CALENDAR_GetSel           (WM_HWIN hWin, CALENDAR_DATE * pDate);
+int     CALENDAR_GetWeekday       (CALENDAR_DATE * pDate);
 void    CALENDAR_SetDate          (WM_HWIN hWin, CALENDAR_DATE * pDate);
 void    CALENDAR_SetSel           (WM_HWIN hWin, CALENDAR_DATE * pDate);
 void    CALENDAR_ShowDate         (WM_HWIN hWin, CALENDAR_DATE * pDate);
+int     CALENDAR_AddKey           (WM_HWIN hWin, int Key);
 
 /*********************************************************************
 *

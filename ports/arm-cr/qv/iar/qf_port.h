@@ -28,22 +28,22 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* The maximum number of active objects in the application, see NOTE1 */
-#define QF_MAX_ACTIVE          32
+#define QF_MAX_ACTIVE          32U
 
 /* The maximum number of system clock tick rates */
-#define QF_MAX_TICK_RATE       2
+#define QF_MAX_TICK_RATE       2U
 
 /* QF interrupt disable/enable, see NOTE2 */
 #define QF_INT_DISABLE()       __disable_irq()
@@ -58,7 +58,7 @@
 #define QF_CRIT_ENTRY(status_) do { \
     (status_) = __get_CPSR(); \
     QF_INT_DISABLE(); \
-} while (0)
+} while (false)
 #define QF_CRIT_EXIT(status_)  __set_CPSR((status_))
 #define QF_CRIT_EXIT_NOP()     __ISB()
 
@@ -85,4 +85,4 @@
 * interrupts that run with interrupts (IRQ) disabled.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on EMF32, QUTEST, GNU-ARM
-# Last Updated for Version: 6.5.0
-# Date of the Last Update:  2019-04-15
+# Last Updated for Version: 6.6.0
+# Date of the Last Update:  2019-10-14
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -35,15 +35,14 @@
 # examples of invoking this Makefile:
 # make -f make_efm32  # make and run the tests in the current directory
 # make -f make_efm32 TESTS=philo*.py  # make and run the selected tests
-# make -f make_efm32 SCRIPT=tcl # make and run the Tcl tests
 # make -f make_efm32 HOST=localhost:7705 # connect to host:port
 # make -f make_efm32 norun   # only make but not run the tests
 # make -f make_efm32 clean   # cleanup the build
 #
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
-# is included in the Qtools collection for Windows, see:
-#    http://sourceforge.net/projects/qpc/files/QTools/
+# is included in the QTools collection for Windows, see:
+#    https://github.com/QuantumLeaps/qtools
 #
 
 #-----------------------------------------------------------------------------
@@ -190,11 +189,11 @@ FLASH := $(TARGET_DIR)\flash.bat
 MKDIR := mkdir
 RM    := rm
 
-ifeq ($(SCRIPT),tcl)
-QUTEST := tclsh $(QTOOLS)/qspy/tcl/qutest.tcl
-else # default
+#-----------------------------------------------------------------------------
+# QUTest test script utilities (requires QTOOLS):
+#
 QUTEST := python $(QTOOLS)/qspy/py/qutest.py
-endif
+TESTS  := *.py
 
 #-----------------------------------------------------------------------------
 # build options
@@ -251,14 +250,6 @@ else
 all : $(TARGET_BIN) run
 endif
 
-ifeq (, $(TESTS))
-ifeq ($(SCRIPT),tcl)
-TESTS := *.tcl
-else
-TESTS := *.py
-endif
-endif
-
 $(TARGET_BIN) : $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 	$(FLASH) $@
@@ -271,7 +262,7 @@ flash :
 	$(FLASH) $(TARGET_BIN)
 
 run : $(TARGET_BIN)
-	$(FLASH) $(TARGET_BIN)
+	$(FLASH) $<
 	$(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
 
 $(BIN_DIR)/%.d : %.c
@@ -323,7 +314,7 @@ show :
 	@echo LIBS         = $(LIBS)
 	@echo DEFINES      = $(DEFINES)
 	@echo QTOOLS       = $(QTOOLS)
-	@echo QUTEST       = $(QUTEST)
 	@echo HOST         = $(HOST)
+	@echo QUTEST       = $(QUTEST)
 	@echo TESTS        = $(TESTS)
 

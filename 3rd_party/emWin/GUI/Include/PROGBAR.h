@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -24,7 +24,7 @@ Purpose     : Progressbar include
 #define PROGBAR_H
 
 #include "WM.h"
-#include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+#include "DIALOG_Type.h"      /* Req. for Create indirect data structure */
 #include "WIDGET.h"
 
 #if GUI_WINSUPPORT
@@ -105,19 +105,21 @@ void PROGBAR_Callback(WM_MESSAGE * pMsg);
 *
 **********************************************************************
 */
-
-void PROGBAR_GetMinMax   (PROGBAR_Handle hObj, int * pMin, int * pMax);
-int  PROGBAR_GetUserData (PROGBAR_Handle hObj, void * pDest, int NumBytes);
-int  PROGBAR_GetValue    (PROGBAR_Handle hObj);
-void PROGBAR_SetBarColor (PROGBAR_Handle hObj, unsigned int index, GUI_COLOR color);
-void PROGBAR_SetFont     (PROGBAR_Handle hObj, const GUI_FONT * pfont);
-void PROGBAR_SetMinMax   (PROGBAR_Handle hObj, int Min, int Max);
-void PROGBAR_SetText     (PROGBAR_Handle hObj, const char* s);
-void PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align);
-void PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int index, GUI_COLOR color);
-void PROGBAR_SetTextPos  (PROGBAR_Handle hObj, int XOff, int YOff);
-void PROGBAR_SetValue    (PROGBAR_Handle hObj, int v);
-int  PROGBAR_SetUserData (PROGBAR_Handle hObj, const void * pSrc, int NumBytes);
+GUI_COLOR        PROGBAR_GetBarColor(PROGBAR_Handle hObj, unsigned int Index);
+const GUI_FONT * PROGBAR_GetFont     (PROGBAR_Handle hObj);
+void             PROGBAR_GetMinMax   (PROGBAR_Handle hObj, int * pMin, int * pMax);
+int              PROGBAR_GetUserData (PROGBAR_Handle hObj, void * pDest, int NumBytes);
+GUI_COLOR        PROGBAR_GetTextColor(PROGBAR_Handle hObj, unsigned int Index);
+int              PROGBAR_GetValue    (PROGBAR_Handle hObj);
+void             PROGBAR_SetBarColor (PROGBAR_Handle hObj, unsigned int index, GUI_COLOR color);
+void             PROGBAR_SetFont     (PROGBAR_Handle hObj, const GUI_FONT * pfont);
+void             PROGBAR_SetMinMax   (PROGBAR_Handle hObj, int Min, int Max);
+void             PROGBAR_SetText     (PROGBAR_Handle hObj, const char* s);
+void             PROGBAR_SetTextAlign(PROGBAR_Handle hObj, int Align);
+void             PROGBAR_SetTextColor(PROGBAR_Handle hObj, unsigned int index, GUI_COLOR color);
+void             PROGBAR_SetTextPos  (PROGBAR_Handle hObj, int XOff, int YOff);
+void             PROGBAR_SetValue    (PROGBAR_Handle hObj, int v);
+int              PROGBAR_SetUserData (PROGBAR_Handle hObj, const void * pSrc, int NumBytes);
 
 /*********************************************************************
 *

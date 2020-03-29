@@ -1,25 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.5.0" links="0">
+<model version="4.6.0" links="1">
  <documentation>Dining Philosopher Problem example
 
 NOTE: Requries QP6.</documentation>
+ <!--${qpc}-->
  <framework name="qpc"/>
+ <!--${Events}-->
  <package name="Events" stereotype="0x01">
+  <!--${Events::SetEvt}-->
   <class name="SetEvt" superclass="qpc::QEvt">
+   <!--${Events::SetEvt::digit}-->
    <attribute name="digit" type="uint8_t" visibility="0x00" properties="0x00"/>
   </class>
+  <!--${Events::TimeEvt}-->
   <class name="TimeEvt" superclass="qpc::QEvt">
+   <!--${Events::TimeEvt::current_time}-->
    <attribute name="current_time" type="uint32_t" visibility="0x00" properties="0x00"/>
   </class>
  </package>
+ <!--${Components}-->
  <package name="Components" stereotype="0x02">
+  <!--${Components::Alarm}-->
   <class name="Alarm" superclass="qpc::QHsm">
    <documentation>Alarm &quot;Orthogonal Component&quot;</documentation>
+   <!--${Components::Alarm::alarm_time}-->
    <attribute name="alarm_time" type="uint32_t" visibility="0x02" properties="0x00"/>
+   <!--${Components::Alarm::ctor}-->
    <operation name="ctor" type="void" visibility="0x00" properties="0x00">
     <code>QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Alarm_initial));</code>
    </operation>
+   <!--${Components::Alarm::SM}-->
    <statechart properties="0x01">
+    <!--${Components::Alarm::SM::initial}-->
     <initial target="../1">
      <action>me-&gt;alarm_time = 12U*60U;
 (void)e; /* avoid compiler warning about unused parameter */</action>
@@ -27,13 +39,16 @@ NOTE: Requries QP6.</documentation>
       <action box="0,-2,6,2"/>
      </initial_glyph>
     </initial>
+    <!--${Components::Alarm::SM::off}-->
     <state name="off">
      <entry>/* while in the off state, the alarm is kept in decimal format */
 me-&gt;alarm_time = (me-&gt;alarm_time/60)*100 + me-&gt;alarm_time%60;
 BSP_showTime24H(&quot;*** Alarm OFF &quot;, me-&gt;alarm_time, 100U);</entry>
      <exit>/* upon exit, the alarm is converted to binary format */
 me-&gt;alarm_time = (me-&gt;alarm_time/100U)*60U + me-&gt;alarm_time%100U;</exit>
+     <!--${Components::Alarm::SM::off::ALARM_ON}-->
      <tran trig="ALARM_ON">
+      <!--${Components::Alarm::SM::off::ALARM_ON::[alarminrange?]}-->
       <choice target="../../../2">
        <guard brief="alarm in range?">(me-&gt;alarm_time / 100U &lt; 24U)
 &amp;&amp; (me-&gt;alarm_time % 100U &lt; 60U)</guard>
@@ -41,6 +56,7 @@ me-&gt;alarm_time = (me-&gt;alarm_time/100U)*60U + me-&gt;alarm_time%100U;</exit
         <action box="1,0,13,2"/>
        </choice_glyph>
       </choice>
+      <!--${Components::Alarm::SM::off::ALARM_ON::[else]}-->
       <choice>
        <guard brief="else"/>
        <action>me-&gt;alarm_time = 0U;
@@ -53,6 +69,7 @@ BSP_showTime24H(&quot;*** Alarm reset&quot;, me-&gt;alarm_time, 100U);</action>
        <action box="0,-2,10,2"/>
       </tran_glyph>
      </tran>
+     <!--${Components::Alarm::SM::off::ALARM_SET}-->
      <tran trig="ALARM_SET">
       <action>/* while setting, the alarm is kept in decimal format */
 me-&gt;alarm_time = (10U * me-&gt;alarm_time
@@ -67,20 +84,25 @@ BSP_showTime24H(&quot;*** Alarm reset &quot;,  me-&gt;alarm_time, 100U);</action
       <exit box="1,4,6,2"/>
      </state_glyph>
     </state>
+    <!--${Components::Alarm::SM::on}-->
     <state name="on">
      <entry>BSP_showTime24H(&quot;*** Alarm ON &quot;,  me-&gt;alarm_time, 60U);</entry>
+     <!--${Components::Alarm::SM::on::ALARM_OFF}-->
      <tran trig="ALARM_OFF" target="../../1">
       <tran_glyph conn="2,32,3,1,38,-22,-6">
        <action box="0,-2,14,2"/>
       </tran_glyph>
      </tran>
+     <!--${Components::Alarm::SM::on::ALARM_SET}-->
      <tran trig="ALARM_SET">
       <action>BSP_showMsg(&quot;*** Cannot set Alarm when it is ON&quot;);</action>
       <tran_glyph conn="2,36,3,-1,14">
        <action box="0,-2,14,2"/>
       </tran_glyph>
      </tran>
+     <!--${Components::Alarm::SM::on::TIME}-->
      <tran trig="TIME">
+      <!--${Components::Alarm::SM::on::TIME::[Q_EVT_CAST(TimeEvt)->current_ti~}-->
       <choice>
        <guard>Q_EVT_CAST(TimeEvt)-&gt;current_time == me-&gt;alarm_time</guard>
        <action>BSP_showMsg(&quot;ALARM!!!&quot;);
@@ -102,12 +124,18 @@ QACTIVE_POST(APP_alarmClock, Q_NEW(QEvt, ALARM_SIG), me);</action>
     <state_diagram size="46,48"/>
    </statechart>
   </class>
+  <!--${Components::AlarmClock}-->
   <class name="AlarmClock" superclass="qpc::QActive">
    <documentation>Alarm clock &quot;Container&quot;</documentation>
+   <!--${Components::AlarmClock::current_time}-->
    <attribute name="current_time" type="uint32_t" visibility="0x02" properties="0x00"/>
+   <!--${Components::AlarmClock::alarm}-->
    <attribute name="alarm" type="Alarm" visibility="0x02" properties="0x00"/>
+   <!--${Components::AlarmClock::timeEvt}-->
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x00" properties="0x00"/>
+   <!--${Components::AlarmClock::SM}-->
    <statechart properties="0x01">
+    <!--${Components::AlarmClock::SM::initial}-->
     <initial target="../1">
      <action>(void)e; /* avoid compiler warning about unused parameter */
 me-&gt;current_time = 0U;
@@ -118,32 +146,38 @@ QHSM_INIT((QHsm *)&amp;me-&gt;alarm, (QEvt *)0);</action>
       <action box="0,-2,6,2"/>
      </initial_glyph>
     </initial>
+    <!--${Components::AlarmClock::SM::timekeeping}-->
     <state name="timekeeping">
      <entry>/* periodic timeout every second */
 QTimeEvt_armX(&amp;me-&gt;timeEvt, BSP_TICKS_PER_SEC,
                             BSP_TICKS_PER_SEC);</entry>
      <exit>QTimeEvt_disarm(&amp;me-&gt;timeEvt);</exit>
+     <!--${Components::AlarmClock::SM::timekeeping::initial}-->
      <initial target="../6">
       <initial_glyph conn="4,13,5,1,36,27,-4">
        <action box="0,-2,10,2"/>
       </initial_glyph>
      </initial>
+     <!--${Components::AlarmClock::SM::timekeeping::CLOCK_24H}-->
      <tran trig="CLOCK_24H" target="../6">
       <tran_glyph conn="2,16,3,1,36,22,-2">
        <action box="0,-2,10,4"/>
       </tran_glyph>
      </tran>
+     <!--${Components::AlarmClock::SM::timekeeping::CLOCK_12H}-->
      <tran trig="CLOCK_12H" target="../7">
       <tran_glyph conn="2,18,3,1,40,34,-6">
        <action box="0,-2,10,2"/>
       </tran_glyph>
      </tran>
+     <!--${Components::AlarmClock::SM::timekeeping::ALARM}-->
      <tran trig="ALARM">
       <action>BSP_showMsg(&quot;Wake up!!!&quot;);</action>
       <tran_glyph conn="2,28,3,-1,18">
        <action box="0,-2,10,2"/>
       </tran_glyph>
      </tran>
+     <!--${Components::AlarmClock::SM::timekeeping::ALARM_SET, ALARM_ON, ALARM_OFF}-->
      <tran trig="ALARM_SET, ALARM_ON, ALARM_OFF">
       <action>/* (!) synchronously dispatch to the orthogonal component */
 QHSM_DISPATCH((QHsm *)&amp;me-&gt;alarm, e);</action>
@@ -151,14 +185,17 @@ QHSM_DISPATCH((QHsm *)&amp;me-&gt;alarm, e);</action>
        <action box="0,-2,11,6"/>
       </tran_glyph>
      </tran>
+     <!--${Components::AlarmClock::SM::timekeeping::TERMINATE}-->
      <tran trig="TERMINATE" target="../../2">
       <action>BSP_showMsg(&quot;--&gt; final&quot;);</action>
       <tran_glyph conn="2,32,3,1,44,38,-13">
        <action box="0,-2,10,2"/>
       </tran_glyph>
      </tran>
+     <!--${Components::AlarmClock::SM::timekeeping::mode24h}-->
      <state name="mode24h">
       <entry>BSP_showMsg(&quot;*** 24-hour mode&quot;);</entry>
+      <!--${Components::AlarmClock::SM::timekeeping::mode24h::TICK}-->
       <tran trig="TICK">
        <action>TimeEvt pe; /* temporary synchronous event for the component */
 
@@ -180,8 +217,10 @@ QHSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
        <entry box="1,2,27,2"/>
       </state_glyph>
      </state>
+     <!--${Components::AlarmClock::SM::timekeeping::mode12h}-->
      <state name="mode12h">
       <entry>BSP_showMsg(&quot;*** 12-hour mode&quot;);</entry>
+      <!--${Components::AlarmClock::SM::timekeeping::mode12h::TICK}-->
       <tran trig="TICK">
        <action>TimeEvt pe; /* temporary synchronous event for the component */
 
@@ -208,6 +247,7 @@ QHSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
       <exit box="1,4,6,2"/>
      </state_glyph>
     </state>
+    <!--${Components::AlarmClock::SM::final}-->
     <state name="final">
      <entry brief="terminate">QF_stop(); /* terminate the application */</entry>
      <state_glyph node="2,68,31,8">
@@ -217,10 +257,12 @@ QHSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
     <state_diagram size="50,80"/>
    </statechart>
   </class>
+  <!--${Components::APP_alarmClock}-->
   <attribute name="APP_alarmClock" type="QActive * const" visibility="0x00" properties="0x00">
    <documentation>Opaque pointer to the single inst of the AlarmClock AO</documentation>
    <code>= &amp;l_alarmClock.super;</code>
   </attribute>
+  <!--${Components::AlarmClock_ctor}-->
   <operation name="AlarmClock_ctor" type="void" visibility="0x00" properties="0x00">
    <code>AlarmClock * const me = &amp;l_alarmClock;
 
@@ -231,18 +273,21 @@ Alarm_ctor(&amp;me-&gt;alarm); /* orthogonal component ctor */
 QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, TICK_SIG, 0U);</code>
   </operation>
  </package>
+ <!--${.}-->
  <directory name=".">
+  <!--${.::alarm.h}-->
   <file name="alarm.h">
-   <text>#ifndef alarm_h
-#define alarm_h
+   <text>#ifndef ALARM_H
+#define ALARM_H
 
 $declare${Components::Alarm}
 
 $declare${Components::Alarm::ctor}
 
-#endif /* alarm_h */
+#endif /* ALARM_H */
 </text>
   </file>
+  <!--${.::alarm.c}-->
   <file name="alarm.c">
    <text>#include &quot;qpc.h&quot;
 #include &quot;bsp.h&quot;
@@ -255,9 +300,10 @@ $declare${Components::Alarm::ctor}
 $define${Components::Alarm}
 </text>
   </file>
+  <!--${.::clock.h}-->
   <file name="clock.h">
-   <text>#ifndef clock_h
-#define clock_h
+   <text>#ifndef CLOCK_H
+#define CLOCK_H
 
 enum AlarmClockSignals {
     TICK_SIG = Q_USER_SIG, /* time tick event */
@@ -277,9 +323,10 @@ $declare${Events::TimeEvt}
 $declare${Components::APP_alarmClock}
 $declare${Components::AlarmClock_ctor}
 
-#endif /* clock_h */
+#endif /* CLOCK_H */
 </text>
   </file>
+  <!--${.::clock.c}-->
   <file name="clock.c">
    <text>#include &quot;qpc.h&quot;
 #include &quot;bsp.h&quot;

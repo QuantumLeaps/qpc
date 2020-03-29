@@ -22,11 +22,11 @@
             </sourceRootList>
             <confList>
                 <confElem>
-                    <name>default</name>
+                    <name>dbg</name>
                     <type>2</type>
                 </confElem>
                 <confElem>
-                    <name>release</name>
+                    <name>rel</name>
                     <type>2</type>
                 </confElem>
                 <confElem>

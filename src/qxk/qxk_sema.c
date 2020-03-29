@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-16
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -42,15 +42,16 @@
 #include "qxk_pkg.h"      /* QXK package-scope internal interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef qxk_h
+#ifndef QXK_H
     #error "Source file included in a project NOT based on the QXK kernel"
-#endif /* qxk_h */
+#endif /* QXK_H */
 
 Q_DEFINE_THIS_MODULE("qxk_sema")
 
@@ -79,7 +80,7 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
                       uint_fast16_t max_count)
 {
     /** @pre max_count must be greater than zero */
-    Q_REQUIRE_ID(100, max_count > (uint_fast16_t)0);
+    Q_REQUIRE_ID(100, max_count > 0U);
 
     me->count     = (uint16_t)count;
     me->max_count = (uint16_t)max_count;
@@ -117,29 +118,29 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
     QF_CRIT_STAT_
 
     QF_CRIT_ENTRY_();
-    curr = (QXThread *)QXK_attr_.curr; /* volatile into temporary */
+    curr = QXK_PTR_CAST_(QXThread*, QXK_attr_.curr); /* volatile into temp. */
 
     /** @pre this function must:
     * - NOT be called from an ISR;
     * - the semaphore must be initialized
     * - be called from an extended thread;
-    * - the thread must NOT be holding a scheduler lock;
     * - the thread must NOT be already blocked on any object.
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* can't wait inside an ISR */
-        && (me->max_count > (uint16_t)0) /* sema must be initialized */
+        && (me->max_count > 0U) /* sema must be initialized */
         && (curr != (QXThread *)0) /* curr must be extended */
-        && (QXK_attr_.lockHolder != curr->super.prio) /* not holding a lock */
-        && (curr->super.super.temp.obj == (QMState *)0)); /* not blocked */
+        && (curr->super.super.temp.obj == (QMState *)0)); /* NOT blocked */
+    /** @pre also: the thread must NOT be holding a scheduler lock. */
+    Q_REQUIRE_ID(201, QXK_attr_.lockHolder != curr->super.prio);
 
-    if (me->count > (uint16_t)0) {
+    if (me->count > 0U) {
         --me->count; /* semaphore taken: decrement the count */
     }
     else {
         uint_fast8_t p = (uint_fast8_t)curr->super.prio;
 
         /* remember the blocking object (this semaphore) */
-        curr->super.super.temp.obj = (QMState *)me;
+        curr->super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
         QXThread_teArm_(curr, (QSignal)QXK_SEMA_SIG, nTicks);
 
         /* remove this curr prio from the ready set (block)
@@ -154,7 +155,8 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
 
         QF_CRIT_ENTRY_();   /* AFTER unblocking... */
         /* the blocking object must be this semaphore */
-        Q_ASSERT_ID(240, curr->super.super.temp.obj == (QMState *)me);
+        Q_ASSERT_ID(240, curr->super.super.temp.obj
+                         == QXK_PTR_CAST_(QMState*, me));
 
         /* did the blocking time-out? (signal of zero means that it did) */
         if (curr->timeEvt.super.sig == (QSignal)0) {
@@ -168,10 +170,8 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
             }
         }
         else { /* blocking did NOT time out */
-            /* the semaphore count must be positive and
-             * the thread must NOT be waiting on this semaphore */
-            Q_ASSERT_ID(250, (me->count > (uint16_t)0)
-                && (!QPSet_hasElement(&me->waitSet, p)));
+            /* the thread must NOT be waiting on this semaphore */
+            Q_ASSERT_ID(250,!QPSet_hasElement(&me->waitSet, p));
 
             --me->count; /* semaphore signaled: decrement the count */
         }
@@ -202,11 +202,11 @@ bool QXSemaphore_tryWait(QXSemaphore * const me) {
     QF_CRIT_STAT_
 
     /** @pre the semaphore must be initialized */
-    Q_REQUIRE_ID(300, me->max_count > (uint16_t)0);
+    Q_REQUIRE_ID(300, me->max_count > 0U);
 
     QF_CRIT_ENTRY_();
     /* is the semaphore available? */
-    if (me->count > (uint16_t)0) {
+    if (me->count > 0U) {
         --me->count;
         isAvailable = true;
     }
@@ -243,7 +243,7 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
     QF_CRIT_STAT_
 
     /** @pre the semaphore must be initialized */
-    Q_REQUIRE_ID(400, me->max_count > (uint16_t)0);
+    Q_REQUIRE_ID(400, me->max_count > 0U);
 
     QF_CRIT_ENTRY_();
     if (me->count < me->max_count) {
@@ -256,7 +256,7 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
 
             /* find the highest-priority thread waiting on this semaphore */
             QPSet_findMax(&me->waitSet, p);
-            thr = (QXThread *)QF_active_[p];
+            thr = QXK_PTR_CAST_(QXThread*, QF_active_[p]);
 
             /* assert that the tread:
             * - must be registered in QF;
@@ -265,7 +265,8 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
             */
             Q_ASSERT_ID(410, (thr != (QXThread *)0)
                 && (thr->super.osObject != (struct QActive *)0)
-                && (thr->super.super.temp.obj == (QMState *)me));
+                && (thr->super.super.temp.obj
+                    == QXK_PTR_CAST_(QMState*, me)));
 
             /* disarm the internal time event */
             (void)QXThread_teDisarm_(thr);

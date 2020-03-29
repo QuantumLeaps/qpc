@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -23,7 +23,7 @@ Purpose     : FRAMEWIN private header file
 #ifndef FRAMEWIN_PRIVATE_H
 #define FRAMEWIN_PRIVATE_H
 
-#include "WM.h"
+#include "WM_Intern.h"
 #include "FRAMEWIN.h"
 #include "WIDGET.h"
 #include "GUI_HOOK.h"
@@ -175,7 +175,7 @@ typedef struct {
   WM_HWIN                 hText;
   GUI_RECT                rRestore;
   U16                     Flags;
-  WM_HWIN                 hFocussedChild;  // Handle to focussed child .. default none (0)
+  WM_HWIN                 hFocusedChild;   // Handle to focused child .. default none (0)
   WM_DIALOG_STATUS      * pDialogStatus;
   GUI_HOOK              * pFirstHook;
 } FRAMEWIN_Obj;
@@ -234,3 +234,5 @@ unsigned FRAMEWIN__GetBorderSize  (FRAMEWIN_Handle hObj, unsigned Index);
 
 #endif   // GUI_WINSUPPORT
 #endif   // FRAMEWIN_PRIVATE_H
+
+/*************************** End of file ****************************/

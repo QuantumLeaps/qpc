@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -24,7 +24,7 @@ Purpose     : SCROLLBAR include
 #define SCROLLBAR_H
 
 #include "WM.h"
-#include "DIALOG_Intern.h"      /* Req. for Create indirect data structure */
+#include "DIALOG_Type.h"      /* Req. for Create indirect data structure */
 #include "WIDGET.h"
 
 #if GUI_WINSUPPORT
@@ -54,7 +54,9 @@ Purpose     : SCROLLBAR include
 *       Create / Status flags
 */
 #define SCROLLBAR_CF_VERTICAL     WIDGET_CF_VERTICAL
-#define SCROLLBAR_CF_FOCUSSABLE   WIDGET_STATE_FOCUSSABLE
+#define SCROLLBAR_CF_FOCUSABLE    WIDGET_STATE_FOCUSABLE
+
+#define SCROLLBAR_CF_FOCUSSABLE   SCROLLBAR_CF_FOCUSABLE
 
 /************************************************************
 *
@@ -168,9 +170,10 @@ int       SCROLLBAR_SetThumbSizeMin(int ThumbSizeMin);
 *
 **********************************************************************
 */
-int SCROLLBAR_GetNumItems(SCROLLBAR_Handle hObj);
-int SCROLLBAR_GetPageSize(SCROLLBAR_Handle hObj);
-int SCROLLBAR_GetValue   (SCROLLBAR_Handle hObj);
+GUI_COLOR SCROLLBAR_GetColor   (SCROLLBAR_Handle hObj, int Index);
+int       SCROLLBAR_GetNumItems(SCROLLBAR_Handle hObj);
+int       SCROLLBAR_GetPageSize(SCROLLBAR_Handle hObj);
+int       SCROLLBAR_GetValue   (SCROLLBAR_Handle hObj);
 
 /*********************************************************************
 *

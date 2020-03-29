@@ -29,32 +29,32 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef QK_PORT_H
+#define QK_PORT_H
 
 /* QK interrupt entry and exit */
 #define QK_ISR_ENTRY() do { \
-    QF_INT_DISABLE(); \
-    ++QK_attr_.intNest; \
-    QF_INT_ENABLE(); \
-} while (0)
+    QF_INT_DISABLE();       \
+    ++QK_attr_.intNest;     \
+    QF_INT_ENABLE();        \
+} while (false)
 
-#define QK_ISR_EXIT() do { \
-    QF_INT_DISABLE(); \
-    --QK_attr_.intNest; \
-    if (QK_sched_() != (uint_fast8_t)0) { \
+#define QK_ISR_EXIT() do {          \
+    QF_INT_DISABLE();               \
+    --QK_attr_.intNest;             \
+    if (QK_sched_() != 0U) {        \
         IFS0SET = _IFS0_CS0IF_MASK; \
-    } \
-    QF_INT_ENABLE(); \
-} while (0)
+    }                               \
+    QF_INT_ENABLE();                \
+} while (false)
 
 /* initialization of the QK kernel */
 #define QK_INIT() QK_init()
@@ -71,5 +71,5 @@ void QK_init(void);
 * use by QK.
 */
 
-#endif /* qk_port_h */
+#endif /* QK_PORT_H */
 

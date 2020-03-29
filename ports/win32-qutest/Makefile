@@ -28,8 +28,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://www.state-machine.com
-# mailto:info@state-machine.com
+# <www.state-machine.com/licensing>
+# <info@state-machine.com>
 ##############################################################################
 # examples of invoking this Makefile:
 # make
@@ -132,7 +132,7 @@ LIBFLAGS := rs
 BIN_DIR = mingw
 
 # gcc options:
-CFLAGS  := -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
+CFLAGS  := -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
 	$(INCLUDES) $(DEFINES)
 
 CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \

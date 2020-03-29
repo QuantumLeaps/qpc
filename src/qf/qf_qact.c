@@ -12,14 +12,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.7
-* Last updated on  2018-11-07
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -37,11 +37,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -64,7 +64,7 @@
 * @sa QMsm_ctor() and QHsm_ctor()
 */
 void QActive_ctor(QActive * const me, QStateHandler initial) {
-    static QActiveVtbl const vtbl = {  /* QActive virtual table */
+    static QActiveVtable const vtable = {  /* QActive virtual table */
         { &QHsm_init_,
           &QHsm_dispatch_ },
         &QActive_start_,
@@ -75,9 +75,9 @@ void QActive_ctor(QActive * const me, QStateHandler initial) {
     * correctly even if the startup code fails to clear the uninitialized
     * data (as is required by the C Standard).
     */
-    QF_bzero(me, (uint_fast16_t)sizeof(*me));
+    QF_bzero(me, sizeof(*me));
 
     QHsm_ctor(&me->super, initial); /* explicitly call superclass' ctor */
-    me->super.vptr = &vtbl.super; /* hook the vptr to QActive virtual table */
+    me->super.vptr = &vtable.super; /* hook the vptr to QActive vtable */
 }
 

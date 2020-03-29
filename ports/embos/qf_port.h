@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.4 / embOS v4.34.1
-* Date of the Last Update:  2018-01-07
+* Last Updated for Version: 6.8.0 / embOS v4.34.1
+* Last updated on  2020-01-20
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,16 +29,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* embOS message mailbox and thread types */
 #define QF_EQUEUE_TYPE      OS_MAILBOX
@@ -46,7 +46,7 @@
 #define QF_OS_OBJECT_TYPE   uint32_t
 
 /* The maximum number of active objects in the application, see NOTE1 */
-#define QF_MAX_ACTIVE       32
+#define QF_MAX_ACTIVE       32U
 
 /* QF interrupt disable/enable */
 #define QF_INT_DISABLE()    OS_IncDI()
@@ -58,7 +58,7 @@
 #define QF_CRIT_EXIT(dummy)   QF_INT_ENABLE()
 
 /* thread options... */
-#define QF_TASK_USES_FPU    ((uint32_t)1)
+#define QF_TASK_USES_FPU    1U
 
 #include "RTOS.h"      /* embOS API */
 #include "qep_port.h"  /* QEP port */
@@ -78,12 +78,12 @@
         if (OS_InInterrupt() == (OS_BOOL)0) { \
             OS_EnterRegion(); \
         } \
-    } while (0)
+    } while (false)
     #define QF_SCHED_UNLOCK_() do { \
         if (OS_InInterrupt() == (OS_BOOL)0) { \
             OS_LeaveRegion(); \
         } \
-    } while (0)
+    } while (false)
 
     /* native QF event pool operations... */
     #define QF_EPOOL_TYPE_            QMPool
@@ -114,4 +114,4 @@
 * scheduler only up to the specified lock priority is not supported.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

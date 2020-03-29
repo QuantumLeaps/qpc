@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.6.0
-* Last updated on  2018-03-16
+* Last updated for version 6.8.0
+* Last updated on  2020-01-21
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,24 +29,24 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qs_port.h"      /* QS port */
-#include "qs_pkg.h"
+#include "qs_pkg.h"       /* QS package-scope internal interface */
 
 /****************************************************************************/
 /**
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_f32(uint8_t format, float32_t f) {
+void QS_f32_fmt_(uint8_t format, float32_t f) {
     union F32Rep {
         float32_t f;
         uint32_t  u;
@@ -55,17 +55,16 @@ void QS_f32(uint8_t format, float32_t f) {
     uint8_t *buf = QS_priv_.buf;      /* put in a temporary (register) */
     QSCtr   head = QS_priv_.head;     /* put in a temporary (register) */
     QSCtr   end  = QS_priv_.end;      /* put in a temporary (register) */
-    int_fast8_t i;
+    uint_fast8_t i;
 
     fu32.f = f; /* assign the binary representation */
 
-    QS_priv_.used += (QSCtr)5; /* 5 bytes about to be added */
-    QS_INSERT_ESC_BYTE(format) /* insert the format byte */
+    QS_priv_.used += 5U; /* 5 bytes about to be added */
+    QS_INSERT_ESC_BYTE_(format) /* insert the format byte */
 
     /* insert 4 bytes... */
-    for (i = (int_fast8_t)4; i != (int_fast8_t)0; --i) {
-        format = (uint8_t)fu32.u;
-        QS_INSERT_ESC_BYTE(format)
+    for (i = 4U; i != 0U; --i) {
+        QS_INSERT_ESC_BYTE_((uint8_t)fu32.u)
         fu32.u >>= 8;
     }
 
@@ -79,7 +78,7 @@ void QS_f32(uint8_t format, float32_t f) {
 * This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_f64(uint8_t format, float64_t d) {
+void QS_f64_fmt_(uint8_t format, float64_t d) {
     union F64Rep {
         float64_t d;
         struct UInt2 {
@@ -92,19 +91,20 @@ void QS_f64(uint8_t format, float64_t d) {
     QSCtr   head   = QS_priv_.head;
     QSCtr   end    = QS_priv_.end;
     uint32_t i;
+
     /* static constant untion to detect endianness of the machine */
     static union U32Rep {
         uint32_t u32;
         uint8_t  u8;
-    } const endian = { (uint32_t)1 };
+    } const endian = { 1U };
 
     fu64.d = d; /* assign the binary representation */
 
-    QS_priv_.used += (QSCtr)9; /* 9 bytes about to be added */
-    QS_INSERT_ESC_BYTE(format) /* insert the format byte */
+    QS_priv_.used += 9U; /* 9 bytes about to be added */
+    QS_INSERT_ESC_BYTE_(format) /* insert the format byte */
 
     /* is this a big-endian machine? */
-    if (endian.u8 == (uint8_t)0) {
+    if (endian.u8 == 0U) {
         /* swap fu64.i.u1 <-> fu64.i.u2... */
         i = fu64.i.u1;
         fu64.i.u1 = fu64.i.u2;
@@ -112,16 +112,14 @@ void QS_f64(uint8_t format, float64_t d) {
     }
 
     /* output 4 bytes from fu64.i.u1 ... */
-    for (i = (uint32_t)4; i != (uint32_t)0; --i) {
-        format = (uint8_t)fu64.i.u1;
-        QS_INSERT_ESC_BYTE(format)
+    for (i = 4U; i != 0U; --i) {
+        QS_INSERT_ESC_BYTE_((uint8_t)fu64.i.u1)
         fu64.i.u1 >>= 8;
     }
 
     /* output 4 bytes from fu64.i.u2 ... */
-    for (i = (uint32_t)4; i != (uint32_t)0; --i) {
-        format = (uint8_t)fu64.i.u2;
-        QS_INSERT_ESC_BYTE(format)
+    for (i = 4U; i != 0U; --i) {
+        QS_INSERT_ESC_BYTE_((uint8_t)fu64.i.u2)
         fu64.i.u2 >>= 8;
     }
 

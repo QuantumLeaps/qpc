@@ -5,14 +5,14 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-07
+* Last updated for version 6.8.0
+* Last updated on  2020-03-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,11 +30,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -43,15 +43,16 @@
 #include "qf_pkg.h"       /* QF package-scope internal interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef qv_h
+#ifndef QV_H
     #error "Source file included in a project NOT based on the QV kernel"
-#endif /* qv_h */
+#endif /* QV_H */
 
 Q_DEFINE_THIS_MODULE("qv")
 
@@ -70,13 +71,13 @@ QPSet QV_readySet_; /* QV ready-set of active objects */
 * uninitialized data (as is required by the C Standard).
 */
 void QF_init(void) {
-    QF_maxPool_      = (uint_fast8_t)0;
+    QF_maxPool_      = 0U;
     QF_subscrList_   = (QSubscrList *)0;
-    QF_maxPubSignal_ = (enum_t)0;
+    QF_maxPubSignal_ = 0;
 
-    QF_bzero(&QF_timeEvtHead_[0], (uint_fast16_t)sizeof(QF_timeEvtHead_));
-    QF_bzero(&QF_active_[0],      (uint_fast16_t)sizeof(QF_active_));
-    QF_bzero(&QV_readySet_,       (uint_fast16_t)sizeof(QV_readySet_));
+    QF_bzero(&QF_timeEvtHead_[0], sizeof(QF_timeEvtHead_));
+    QF_bzero(&QF_active_[0],      sizeof(QF_active_));
+    QF_bzero(&QV_readySet_,       sizeof(QV_readySet_));
 
 #ifdef QV_INIT
     QV_INIT(); /* port-specific initialization of the QV kernel */
@@ -92,6 +93,11 @@ void QF_init(void) {
 * for terminating the QF application to return back to the operating
 * system or for handling fatal errors that require shutting down
 * (and possibly re-setting) the system.
+*
+* @attention
+* After calling QF_stop() the application must terminate and cannot
+* continue. In particular, QF_stop() is **not** intended to be followed
+* by a call to QF_init() to "resurrect" the application.
 *
 * @sa QF_onCleanup()
 */
@@ -110,7 +116,7 @@ void QF_stop(void) {
 */
 int_t QF_run(void) {
 #ifdef Q_SPY
-    uint_fast8_t pprev = (uint_fast8_t)0; /* previously used priority */
+    uint_fast8_t pprev = 0U; /* previously used priority */
 #endif
 
     QF_onStartup(); /* application-specific startup callback */
@@ -128,11 +134,11 @@ int_t QF_run(void) {
             a = QF_active_[p];
 
 #ifdef Q_SPY
-            QS_BEGIN_NOCRIT_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ], a)
-                QS_TIME_();              /* timestamp */
-                QS_2U8_((uint8_t)p,      /* priority of the scheduled AO */
-                        (uint8_t)pprev); /* previous priority */
-            QS_END_NOCRIT_()
+            QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ], a)
+                QS_TIME_PRE_();     /* timestamp */
+                QS_2U8_PRE_(p,      /* priority of the scheduled AO */
+                            pprev); /* previous priority */
+            QS_END_NOCRIT_PRE_()
 
             pprev = p; /* update previous priority */
 #endif /* Q_SPY */
@@ -151,19 +157,19 @@ int_t QF_run(void) {
 
             QF_INT_DISABLE();
 
-            if (a->eQueue.frontEvt == (QEvt const *)0) { /* empty queue? */
+            if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
                 QPSet_remove(&QV_readySet_, p);
             }
         }
         else { /* no AO ready to run --> idle */
 #ifdef Q_SPY
-            if (pprev != (uint_fast8_t)0) {
-                QS_BEGIN_NOCRIT_(QS_SCHED_IDLE, (void *)0, (void *)0)
-                    QS_TIME_();             /* timestamp */
-                    QS_U8_((uint8_t)pprev); /* previous priority */
-                QS_END_NOCRIT_()
+            if (pprev != 0U) {
+                QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, (void *)0, (void *)0)
+                    QS_TIME_PRE_();    /* timestamp */
+                    QS_U8_PRE_(pprev); /* previous priority */
+                QS_END_NOCRIT_PRE_()
 
-                pprev = (uint_fast8_t)0; /* update previous priority */
+                pprev = 0U; /* update previous priority */
             }
 #endif /* Q_SPY */
 
@@ -180,7 +186,7 @@ int_t QF_run(void) {
         }
     }
 #ifdef __GNUC__  /* GNU compiler? */
-    return (int_t)0;
+    return 0;
 #endif
 }
 
@@ -198,7 +204,7 @@ int_t QF_run(void) {
 * @param[in]     qLen    length of the event queue [events]
 * @param[in]     stkSto  pointer to the stack storage (must be NULL in QV)
 * @param[in]     stkSize stack size [bytes]
-* @param[in]     ie      pointer to the initial event (might be NULL).
+* @param[in]     par     pointer to an extra parameter (might be NULL).
 *
 * @note This function should be called via the macro QACTIVE_START().
 *
@@ -207,24 +213,23 @@ int_t QF_run(void) {
 * @include qf_start.c
 */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
-                    QEvt const *qSto[], uint_fast16_t qLen,
-                    void *stkSto, uint_fast16_t stkSize,
-                    QEvt const *ie)
+                    QEvt const * * const qSto, uint_fast16_t const qLen,
+                    void * const stkSto, uint_fast16_t const stkSize,
+                    void const * const par)
 {
+    (void)stkSize; /* unused parameter */
+
     /** @pre The priority must be in range and the stack storage must not
     * be provided, because the QV kernel does not need per-AO stacks.
     */
-    Q_REQUIRE_ID(500, ((uint_fast8_t)0 < prio)
-                      && (prio <= (uint_fast8_t)QF_MAX_ACTIVE)
+    Q_REQUIRE_ID(500, (0U < prio) && (prio <= QF_MAX_ACTIVE)
                       && (stkSto == (void *)0));
-
-    (void)stkSize; /* unused parameter */
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
     me->prio = (uint8_t)prio; /* set the current priority of the AO */
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, ie); /* take the top-most initial tran. */
-    QS_FLUSH();                /* flush the trace buffer to the host */
+    QHSM_INIT(&me->super, par); /* top-most initial tran. */
+    QS_FLUSH(); /* flush the trace buffer to the host */
 }
 

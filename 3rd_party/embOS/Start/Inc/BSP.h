@@ -1,9 +1,9 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                     SEGGER Microcontroller GmbH                    *
 *                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
+*       (c) 1995 - 2019 SEGGER Microcontroller GmbH                  *
 *                                                                    *
 *       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
@@ -21,33 +21,35 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.34.1                                           *
+*       OS version: 5.06.1                                           *
 *                                                                    *
 **********************************************************************
 
-----------------------------------------------------------------------
-File    : BSP.h
+-------------------------- END-OF-HEADER -----------------------------
 Purpose : BSP (Board support package)
---------  END-OF-HEADER  ---------------------------------------------
 */
 
-#ifndef BSP_H                           /* Avoid multiple inclusion */
+#ifndef BSP_H
 #define BSP_H
 
 /*********************************************************************
 *
-*       Defines, non-configurable
+*       Defines
 *
 **********************************************************************
 */
 
-/* In order to avoid warnings for undefined parameters */
+//
+// In order to avoid warnings for undefined parameters
+//
 #ifndef BSP_USE_PARA
-  #if defined(NC30) || defined(NC308)
-    #define BSP_USE_PARA(para)
-  #else
-    #define BSP_USE_PARA(para) para=para;
-  #endif
+  #define BSP_USE_PARA(para)  (void) (para)
+#endif
+
+#if (defined(__ICCARM__) && (__CPU_MODE__ == 1))  // If IAR and THUMB mode
+  #define INTERWORK  __interwork
+#else
+  #define INTERWORK
 #endif
 
 /*********************************************************************
@@ -61,19 +63,20 @@ Purpose : BSP (Board support package)
 extern "C" {
 #endif
 
-/*********************************************************************
-*
-*       General
-*/
-void BSP_Init     (void);
-void BSP_SetLED   (int Index);
-void BSP_ClrLED   (int Index);
-void BSP_ToggleLED(int Index);
+void          BSP_Init        (void);
+void          BSP_SetLED      (int Index);
+void          BSP_ClrLED      (int Index);
+void          BSP_ToggleLED   (int Index);
+int           BSP_GetLEDState (int Index);
+int           BSP_FPGA_Init   (void);
+
+void          MemoryInit      (void);
+INTERWORK int __low_level_init(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif                                  /* avoid multiple inclusion */
+#endif  // BSP_H
 
-/****** End Of File *************************************************/
+/*************************** End of file ****************************/

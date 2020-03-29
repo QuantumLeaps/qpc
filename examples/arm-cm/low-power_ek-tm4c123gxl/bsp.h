@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Blinky Low-Power" example
-* Last updated for version: 6.4.0
-* Last updated on: 2019-02-25
+* Last updated for version: 6.6.0
+* Last updated on: 2019-12-10
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -25,14 +25,14 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 /* The following ticks-per-second constants determine the speed of the app.
 * The default (#if 1) is the SLOW speed for humans to see the blinking.
@@ -46,6 +46,10 @@
     #define BSP_TICKS1_PER_SEC   2000U
 #endif
 
+#if QF_MAX_TICK_RATE < 2
+    #error this application requires 2 clock tick rates
+#endif
+
 void BSP_init(void);
 
 void BSP_led0_on(void);
@@ -57,4 +61,4 @@ void BSP_led1_off(void);
 void BSP_tickRate0_on(void);
 void BSP_tickRate1_on(void);
 
-#endif /* bsp_h */
+#endif /* BSP_H */

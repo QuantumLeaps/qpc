@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.8
-* Date of the Last Update:  2019-01-23
+* Last updated for version 6.8.0
+* Last updated on  2020-01-19
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,25 +29,25 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* The maximum number of active objects in the application, see NOTE01 */
-#define QF_MAX_ACTIVE        8
+#define QF_MAX_ACTIVE        8U
 
-#define QF_EVENT_SIZ_SIZE    1
-#define QF_EQUEUE_CTR_SIZE   1
-#define QF_MPOOL_SIZ_SIZE    1
-#define QF_MPOOL_CTR_SIZE    1
-#define QF_TIMEEVT_CTR_SIZE  2
+#define QF_EVENT_SIZ_SIZE    1U
+#define QF_EQUEUE_CTR_SIZE   1U
+#define QF_MPOOL_SIZ_SIZE    1U
+#define QF_MPOOL_CTR_SIZE    1U
+#define QF_TIMEEVT_CTR_SIZE  2U
 
 /* QF interrupt disable/enable... */
 #define QF_INT_DISABLE()     __disable_interrupt()
@@ -58,7 +58,7 @@
 #define QF_CRIT_ENTRY(stat_) do { \
     (stat_) =  __get_interrupt_state(); \
     __disable_interrupt(); \
-} while (0)
+} while (false)
 #define QF_CRIT_EXIT(stat_)  __set_interrupt_state(stat_)
 
 
@@ -74,4 +74,4 @@
 * up to 64, if necessary. Here it is set to a lower level to save some RAM.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

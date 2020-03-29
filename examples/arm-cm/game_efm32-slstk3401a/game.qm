@@ -1,40 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.5.0" links="0">
+<model version="4.6.0" links="1">
  <documentation>&quot;Fly 'n' Shoot&quot; game model from Chapters 1 &amp; 9 of PSiCC2
 
 NOTE: Requries QP6.</documentation>
+ <!--${qpc}-->
  <framework name="qpc"/>
+ <!--${Events}-->
  <package name="Events" stereotype="0x01">
+  <!--${Events::ObjectPosEvt}-->
   <class name="ObjectPosEvt" superclass="qpc::QEvt">
+   <!--${Events::ObjectPosEvt::x}-->
    <attribute name="x" type="uint8_t" visibility="0x00" properties="0x00"/>
+   <!--${Events::ObjectPosEvt::y}-->
    <attribute name="y" type="uint8_t" visibility="0x00" properties="0x00"/>
   </class>
+  <!--${Events::ObjectImageEvt}-->
   <class name="ObjectImageEvt" superclass="qpc::QEvt">
+   <!--${Events::ObjectImageEvt::x}-->
    <attribute name="x" type="uint8_t" visibility="0x00" properties="0x00"/>
+   <!--${Events::ObjectImageEvt::y}-->
    <attribute name="y" type="int8_t" visibility="0x00" properties="0x00"/>
+   <!--${Events::ObjectImageEvt::bmp}-->
    <attribute name="bmp" type="uint8_t" visibility="0x00" properties="0x00"/>
   </class>
+  <!--${Events::MineEvt}-->
   <class name="MineEvt" superclass="qpc::QEvt">
+   <!--${Events::MineEvt::id}-->
    <attribute name="id" type="uint8_t" visibility="0x00" properties="0x00"/>
   </class>
+  <!--${Events::ScoreEvt}-->
   <class name="ScoreEvt" superclass="qpc::QEvt">
+   <!--${Events::ScoreEvt::score}-->
    <attribute name="score" type="uint16_t" visibility="0x00" properties="0x00"/>
   </class>
  </package>
+ <!--${AOs}-->
  <package name="AOs" stereotype="0x02">
+  <!--${AOs::Tunnel}-->
   <class name="Tunnel" superclass="qpc::QActive">
    <documentation>Tunnel Active Object</documentation>
+   <!--${AOs::Tunnel::blinkTimeEvt}-->
    <attribute name="blinkTimeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::screenTimeEvt}-->
    <attribute name="screenTimeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::mines[GAME_MINES_MAX]}-->
    <attribute name="mines[GAME_MINES_MAX]" type="QMsm *" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::mine1_pool[GAME_MINES_MAX]}-->
    <attribute name="mine1_pool[GAME_MINES_MAX]" type="QMsm *" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::mine2_pool[GAME_MINES_MAX]}-->
    <attribute name="mine2_pool[GAME_MINES_MAX]" type="QMsm *" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::blink_ctr}-->
    <attribute name="blink_ctr" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::last_mine_x}-->
    <attribute name="last_mine_x" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::last_mine_y}-->
    <attribute name="last_mine_y" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::wall_thickness_top}-->
    <attribute name="wall_thickness_top" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::wall_thickness_bottom}-->
    <attribute name="wall_thickness_bottom" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::wall_gap}-->
    <attribute name="wall_gap" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::advance}-->
    <operation name="advance" type="void" visibility="0x02" properties="0x00">
     <code>uint32_t rnd;
 
@@ -75,6 +102,7 @@ if ((rnd &gt; 207U)
 */
 BSP_advanceWalls(me-&gt;wall_thickness_top, me-&gt;wall_thickness_bottom);</code>
    </operation>
+   <!--${AOs::Tunnel::plantMine}-->
    <operation name="plantMine" type="void" visibility="0x02" properties="0x00">
     <code>uint32_t rnd = (BSP_random() &amp; 0xFFU);
 
@@ -118,7 +146,9 @@ if ((me-&gt;last_mine_x + GAME_MINES_DIST_MIN &lt; GAME_TUNNEL_WIDTH)
     }
 }</code>
    </operation>
+   <!--${AOs::Tunnel::dispatchToAllMines}-->
    <operation name="dispatchToAllMines" type="void" visibility="0x02" properties="0x00">
+    <!--${AOs::Tunnel::dispatchToAllMin~::e}-->
     <parameter name="e" type="QEvt const *"/>
     <code>uint8_t n;
 
@@ -128,7 +158,9 @@ for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
     }
 }</code>
    </operation>
+   <!--${AOs::Tunnel::SM}-->
    <statechart properties="0x03">
+    <!--${AOs::Tunnel::SM::initial}-->
     <initial target="../1/2">
      <action>uint8_t n;
 for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
@@ -160,7 +192,9 @@ QS_SIG_DICTIONARY(SCORE_SIG,          me);
       <action box="1,-2,11,2"/>
      </initial_glyph>
     </initial>
+    <!--${AOs::Tunnel::SM::active}-->
     <state name="active">
+     <!--${AOs::Tunnel::SM::active::MINE_DISABLED}-->
      <tran trig="MINE_DISABLED">
       <action>Q_ASSERT((Q_EVT_CAST(MineEvt)-&gt;id &lt; GAME_MINES_MAX)
          &amp;&amp; (me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] != (QMsm *)0));
@@ -169,11 +203,13 @@ me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] = (QMsm *)0;</action>
        <action box="0,-2,14,2"/>
       </tran_glyph>
      </tran>
+     <!--${AOs::Tunnel::SM::active::PLAYER_QUIT}-->
      <tran trig="PLAYER_QUIT" target="../../2">
       <tran_glyph conn="2,12,3,1,64,76,-40">
        <action box="0,-2,11,2"/>
       </tran_glyph>
      </tran>
+     <!--${AOs::Tunnel::SM::active::show_logo}-->
      <state name="show_logo">
       <entry>QTimeEvt_armX(&amp;me-&gt;blinkTimeEvt, BSP_TICKS_PER_SEC/2U,
               BSP_TICKS_PER_SEC/2U);
@@ -188,13 +224,16 @@ BSP_paintString(1U, GAME_TUNNEL_HEIGHT - 10U, &quot;Fly ship up:  BTN1&quot;);
 BSP_updateScreen();</entry>
       <exit>QTimeEvt_disarm(&amp;me-&gt;blinkTimeEvt);
 QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);</exit>
+      <!--${AOs::Tunnel::SM::active::show_logo::SCREEN_TIMEOUT}-->
       <tran trig="SCREEN_TIMEOUT" target="../../3">
        <tran_glyph conn="4,25,3,1,24,7,-2">
         <action box="0,-2,13,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::show_logo::BLINK_TIMEOUT}-->
       <tran trig="BLINK_TIMEOUT">
        <action>me-&gt;blink_ctr ^= 1U; /* toggle the blink counter */</action>
+       <!--${AOs::Tunnel::SM::active::show_logo::BLINK_TIMEOUT::[me->blink_ctr==0U]}-->
        <choice>
         <guard>me-&gt;blink_ctr == 0U</guard>
         <action>BSP_paintString(24U + 8U*6U, (GAME_TUNNEL_HEIGHT / 2U) - 8U, &quot;LeAps&quot;);
@@ -203,6 +242,7 @@ BSP_updateScreen();</action>
          <action box="1,-3,15,2"/>
         </choice_glyph>
        </choice>
+       <!--${AOs::Tunnel::SM::active::show_logo::BLINK_TIMEOUT::[else]}-->
        <choice>
         <guard>else</guard>
         <action>BSP_paintString(24U + 8U*6U, (GAME_TUNNEL_HEIGHT / 2U) - 8U, &quot;LeaPs&quot;);
@@ -220,6 +260,7 @@ BSP_updateScreen();</action>
        <exit box="1,4,5,2"/>
       </state_glyph>
      </state>
+     <!--${AOs::Tunnel::SM::active::demo}-->
      <state name="demo">
       <entry>me-&gt;last_mine_x = 0U; /* last mine at right edge of the tunnel */
 me-&gt;last_mine_y = 0U;
@@ -238,17 +279,20 @@ QTimeEvt_armX(&amp;me-&gt;screenTimeEvt, BSP_TICKS_PER_SEC*20U, 0U);
 me-&gt;blink_ctr = 0U; /* init the blink counter */</entry>
       <exit>QTimeEvt_disarm(&amp;me-&gt;blinkTimeEvt);
 QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);</exit>
+      <!--${AOs::Tunnel::SM::active::demo::BLINK_TIMEOUT}-->
       <tran trig="BLINK_TIMEOUT">
        <action>me-&gt;blink_ctr ^= 1U; /* toggle the blink cunter */</action>
        <tran_glyph conn="4,42,3,-1,14">
         <action box="0,-2,13,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::demo::SCREEN_TIMEOUT}-->
       <tran trig="SCREEN_TIMEOUT" target="../../6">
        <tran_glyph conn="4,45,3,3,28">
         <action box="0,-2,13,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::demo::TIME_TICK}-->
       <tran trig="TIME_TICK">
        <action>Tunnel_advance(me);
 if (me-&gt;blink_ctr != 0U) {
@@ -262,6 +306,7 @@ BSP_updateScreen();</action>
         <action box="0,-2,12,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::demo::PLAYER_TRIGGER}-->
       <tran trig="PLAYER_TRIGGER" target="../../4">
        <tran_glyph conn="4,48,3,1,24,7,-2">
         <action box="0,-2,13,2"/>
@@ -272,6 +317,7 @@ BSP_updateScreen();</action>
        <exit box="1,4,5,2"/>
       </state_glyph>
      </state>
+     <!--${AOs::Tunnel::SM::active::playing}-->
      <state name="playing">
       <entry>static QEvt const takeoff = { TAKE_OFF_SIG, 0U, 0U };
 me-&gt;wall_gap = GAME_WALLS_GAP_Y;
@@ -279,6 +325,7 @@ QACTIVE_POST(AO_Ship, &amp;takeoff, me); /* post the TAKEOFF sig */</entry>
       <exit>QEvt recycle;
 recycle.sig = MINE_RECYCLE_SIG;
 Tunnel_dispatchToAllMines(me, &amp;recycle); /* recycle all Mines */</exit>
+      <!--${AOs::Tunnel::SM::active::playing::TIME_TICK}-->
       <tran trig="TIME_TICK">
        <action>/* render this frame on the display */
 BSP_updateScreen();
@@ -289,6 +336,7 @@ Tunnel_dispatchToAllMines(me, e);</action>
         <action box="0,-2,9,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::playing::SHIP_IMG}-->
       <tran trig="SHIP_IMG">
        <action>uint8_t x   = Q_EVT_CAST(ObjectImageEvt)-&gt;x;
 int8_t  y   = Q_EVT_CAST(ObjectImageEvt)-&gt;y;
@@ -305,6 +353,7 @@ Tunnel_dispatchToAllMines(me, e); /* let Mines check for hits */</action>
         <action box="0,-2,9,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::playing::MISSILE_IMG}-->
       <tran trig="MISSILE_IMG">
        <action>uint8_t x   = Q_EVT_CAST(ObjectImageEvt)-&gt;x;
 int8_t  y   = Q_EVT_CAST(ObjectImageEvt)-&gt;y;
@@ -321,6 +370,7 @@ Tunnel_dispatchToAllMines(me, e); /* let Mines check for hits */</action>
         <action box="0,-2,12,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::playing::MINE_IMG}-->
       <tran trig="MINE_IMG">
        <action>BSP_paintBitmap(Q_EVT_CAST(ObjectImageEvt)-&gt;x,
                 Q_EVT_CAST(ObjectImageEvt)-&gt;y,
@@ -329,6 +379,7 @@ Tunnel_dispatchToAllMines(me, e); /* let Mines check for hits */</action>
         <action box="0,-2,9,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::playing::EXPLOSION}-->
       <tran trig="EXPLOSION">
        <action>BSP_paintBitmap(Q_EVT_CAST(ObjectImageEvt)-&gt;x,
                 Q_EVT_CAST(ObjectImageEvt)-&gt;y,
@@ -337,6 +388,7 @@ Tunnel_dispatchToAllMines(me, e); /* let Mines check for hits */</action>
         <action box="0,-2,11,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::playing::SCORE}-->
       <tran trig="SCORE">
        <action>BSP_updateScore(Q_EVT_CAST(ScoreEvt)-&gt;score);
 /* increase difficulty of the game:
@@ -351,6 +403,7 @@ if (me-&gt;wall_gap &lt; GAME_WALLS_MIN_GAP_Y) {
         <action box="0,-2,6,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::playing::GAME_OVER}-->
       <tran trig="GAME_OVER" target="../../5">
        <action>BSP_clearWalls();
 BSP_updateScore(Q_EVT_CAST(ScoreEvt)-&gt;score);
@@ -364,6 +417,7 @@ BSP_updateScreen();</action>
        <exit box="1,4,5,2"/>
       </state_glyph>
      </state>
+     <!--${AOs::Tunnel::SM::active::game_over}-->
      <state name="game_over">
       <entry>QTimeEvt_armX(&amp;me-&gt;blinkTimeEvt, BSP_TICKS_PER_SEC/2U,
               BSP_TICKS_PER_SEC/2U); /* every 1/2 sec */
@@ -376,6 +430,7 @@ BSP_updateScreen();</entry>
       <exit>QTimeEvt_disarm(&amp;me-&gt;blinkTimeEvt);
 QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);
 BSP_updateScore(0); /* update the score on the display */</exit>
+      <!--${AOs::Tunnel::SM::active::game_over::BLINK_TIMEOUT}-->
       <tran trig="BLINK_TIMEOUT">
        <action>me-&gt;blink_ctr ^= 1U; /* toggle the blink counter */
 BSP_paintString((GAME_TUNNEL_WIDTH - 6U*9U) / 2U,
@@ -388,6 +443,7 @@ BSP_updateScreen();</action>
         <action box="0,-2,12,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::game_over::SCREEN_TIMEOUT}-->
       <tran trig="SCREEN_TIMEOUT" target="../../3">
        <tran_glyph conn="32,77,3,1,30,-11,-32,-19,-4">
         <action box="0,-2,14,2"/>
@@ -398,22 +454,27 @@ BSP_updateScreen();</action>
        <exit box="1,4,5,2"/>
       </state_glyph>
      </state>
+     <!--${AOs::Tunnel::SM::active::screen_saver}-->
      <state name="screen_saver">
+      <!--${AOs::Tunnel::SM::active::screen_saver::initial}-->
       <initial target="../2">
        <initial_glyph conn="36,34,5,1,20,8,-2">
         <action box="1,-2,6,2"/>
        </initial_glyph>
       </initial>
+      <!--${AOs::Tunnel::SM::active::screen_saver::PLAYER_TRIGGER}-->
       <tran trig="PLAYER_TRIGGER" target="../../3">
        <tran_glyph conn="32,38,3,1,30,-10,-32,6,-4">
         <action box="0,-2,13,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Tunnel::SM::active::screen_saver::screen_saver_hide}-->
       <state name="screen_saver_hide">
        <entry>BSP_displayOff(); /* power down the display */
 QTimeEvt_armX(&amp;me-&gt;screenTimeEvt, BSP_TICKS_PER_SEC*3U, 0U);</entry>
        <exit>QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);
 BSP_displayOn(); /* power up the display */</exit>
+       <!--${AOs::Tunnel::SM::active::screen_saver::screen_saver_hid~::SCREEN_TIMEOUT}-->
        <tran trig="SCREEN_TIMEOUT" target="../../3">
         <tran_glyph conn="36,48,3,1,20,6,-2">
          <action box="0,-2,13,2"/>
@@ -424,6 +485,7 @@ BSP_displayOn(); /* power up the display */</exit>
         <exit box="1,4,5,2"/>
        </state_glyph>
       </state>
+      <!--${AOs::Tunnel::SM::active::screen_saver::screen_saver_show}-->
       <state name="screen_saver_show">
        <entry>uint32_t rnd = BSP_random();
 /* clear the screen frame buffer */
@@ -436,6 +498,7 @@ QTimeEvt_armX(&amp;me-&gt;screenTimeEvt, BSP_TICKS_PER_SEC/2U, 0U);</entry>
        <exit>QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);
 BSP_clearFB();
 BSP_updateScreen();</exit>
+       <!--${AOs::Tunnel::SM::active::screen_saver::screen_saver_sho~::SCREEN_TIMEOUT}-->
        <tran trig="SCREEN_TIMEOUT" target="../../2">
         <tran_glyph conn="36,60,3,1,22,-15,-4">
          <action box="0,-2,13,2"/>
@@ -450,6 +513,7 @@ BSP_updateScreen();</exit>
      </state>
      <state_glyph node="2,4,62,80"/>
     </state>
+    <!--${AOs::Tunnel::SM::final}-->
     <state name="final">
      <entry>/* clear the screen */
 BSP_clearFB();
@@ -462,15 +526,22 @@ QF_stop(); /* stop QF and cleanup */</entry>
     <state_diagram size="68,94"/>
    </statechart>
   </class>
+  <!--${AOs::Ship}-->
   <class name="Ship" superclass="qpc::QActive">
    <documentation>Ship Active Object</documentation>
+   <!--${AOs::Ship::x}-->
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Ship::y}-->
    <attribute name="y" type="uint16_t" visibility="0x02" properties="0x00">
     <documentation>vertical position of the ship in the 8s2 fixed-point notation.</documentation>
    </attribute>
+   <!--${AOs::Ship::exp_ctr}-->
    <attribute name="exp_ctr" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Ship::score}-->
    <attribute name="score" type="uint16_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Ship::SM}-->
    <statechart properties="0x03">
+    <!--${AOs::Ship::SM::initial}-->
     <initial target="../1">
      <action>(void)e; /* avoid the compiler warning 'usused parameter' */
 
@@ -487,13 +558,17 @@ QS_SIG_DICTIONARY(DESTROYED_MINE_SIG,   me);</action>
       <action box="1,-2,6,2"/>
      </initial_glyph>
     </initial>
+    <!--${AOs::Ship::SM::active}-->
     <state name="active">
+     <!--${AOs::Ship::SM::active::initial}-->
      <initial target="../1">
       <initial_glyph conn="3,8,5,1,28,4,-4">
        <action box="1,-2,6,2"/>
       </initial_glyph>
      </initial>
+     <!--${AOs::Ship::SM::active::parked}-->
      <state name="parked">
+      <!--${AOs::Ship::SM::active::parked::TAKE_OFF}-->
       <tran trig="TAKE_OFF" target="../../2">
        <tran_glyph conn="4,16,3,1,28,6,-2">
         <action box="0,-2,8,2"/>
@@ -501,6 +576,7 @@ QS_SIG_DICTIONARY(DESTROYED_MINE_SIG,   me);</action>
       </tran>
       <state_glyph node="4,10,23,8"/>
      </state>
+     <!--${AOs::Ship::SM::active::flying}-->
      <state name="flying">
       <entry>ScoreEvt *sev;
 me-&gt;score = 0U; /* reset the score */
@@ -511,6 +587,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)sev, me);
 /* lauch the ship from the initial position */
 me-&gt;x = GAME_SHIP_X;
 me-&gt;y = (GAME_SHIP_Y &lt;&lt; 2);</entry>
+      <!--${AOs::Ship::SM::active::flying::TIME_TICK}-->
       <tran trig="TIME_TICK">
        <action>ObjectImageEvt *oie;
 
@@ -543,6 +620,7 @@ if ((me-&gt;score % 10U) == 0U) { /* is the score &quot;round&quot;? */
         <action box="0,-2,9,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Ship::SM::active::flying::PLAYER_TRIGGER}-->
       <tran trig="PLAYER_TRIGGER">
        <action>ObjectPosEvt *ope = Q_NEW(ObjectPosEvt, MISSILE_FIRE_SIG);
 ope-&gt;x = me-&gt;x;
@@ -552,6 +630,7 @@ QACTIVE_POST(AO_Missile, (QEvt *)ope, me);</action>
         <action box="0,-2,13,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Ship::SM::active::flying::DESTROYED_MINE}-->
       <tran trig="DESTROYED_MINE">
        <action>me-&gt;score += Q_EVT_CAST(ScoreEvt)-&gt;score;
 /* the score will be sent to the Tunnel by the next TIME_TICK */</action>
@@ -559,11 +638,13 @@ QACTIVE_POST(AO_Missile, (QEvt *)ope, me);</action>
         <action box="0,-2,13,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Ship::SM::active::flying::HIT_WALL}-->
       <tran trig="HIT_WALL" target="../../3">
        <tran_glyph conn="4,36,3,1,28,10,-2">
         <action box="0,-2,8,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Ship::SM::active::flying::HIT_MINE}-->
       <tran trig="HIT_MINE" target="../../3">
        <tran_glyph conn="4,39,3,1,28,7,-2">
         <action box="0,-2,10,2"/>
@@ -573,9 +654,12 @@ QACTIVE_POST(AO_Missile, (QEvt *)ope, me);</action>
        <entry box="1,2,5,2"/>
       </state_glyph>
      </state>
+     <!--${AOs::Ship::SM::active::exploding}-->
      <state name="exploding">
       <entry>me-&gt;exp_ctr = 0U;</entry>
+      <!--${AOs::Ship::SM::active::exploding::TIME_TICK}-->
       <tran trig="TIME_TICK">
+       <!--${AOs::Ship::SM::active::exploding::TIME_TICK::[me->exp_ctr<15U]}-->
        <choice>
         <guard>me-&gt;exp_ctr &lt; 15U</guard>
         <action>ObjectImageEvt *oie;
@@ -590,6 +674,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
          <action box="1,0,15,2"/>
         </choice_glyph>
        </choice>
+       <!--${AOs::Ship::SM::active::exploding::TIME_TICK::[else]}-->
        <choice target="../../../1">
         <guard brief="else"/>
         <action>ScoreEvt *gameOver = Q_NEW(ScoreEvt, GAME_OVER_SIG);
@@ -612,12 +697,18 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)gameOver, me);</action>
     <state_diagram size="40,62"/>
    </statechart>
   </class>
+  <!--${AOs::Missile}-->
   <class name="Missile" superclass="qpc::QActive">
    <documentation>Missile Active Object</documentation>
+   <!--${AOs::Missile::x}-->
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Missile::y}-->
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Missile::exp_ctr}-->
    <attribute name="exp_ctr" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Missile::SM}-->
    <statechart properties="0x03">
+    <!--${AOs::Missile::SM::initial}-->
     <initial target="../1">
      <action>(void)e;
 QActive_subscribe(&amp;me-&gt;super, TIME_TICK_SIG);
@@ -630,7 +721,9 @@ QS_SIG_DICTIONARY(DESTROYED_MINE_SIG, me);</action>
       <action box="1,-2,6,2"/>
      </initial_glyph>
     </initial>
+    <!--${AOs::Missile::SM::armed}-->
     <state name="armed">
+     <!--${AOs::Missile::SM::armed::MISSILE_FIRE}-->
      <tran trig="MISSILE_FIRE" target="../../2">
       <action>me-&gt;x = Q_EVT_CAST(ObjectPosEvt)-&gt;x;
 me-&gt;y = Q_EVT_CAST(ObjectPosEvt)-&gt;y;</action>
@@ -640,8 +733,11 @@ me-&gt;y = Q_EVT_CAST(ObjectPosEvt)-&gt;y;</action>
      </tran>
      <state_glyph node="3,5,33,8"/>
     </state>
+    <!--${AOs::Missile::SM::flying}-->
     <state name="flying">
+     <!--${AOs::Missile::SM::flying::TIME_TICK}-->
      <tran trig="TIME_TICK">
+      <!--${AOs::Missile::SM::flying::TIME_TICK::[me->x+GAME_MISSILE_SPEED_X<GAME~}-->
       <choice>
        <guard>me-&gt;x + GAME_MISSILE_SPEED_X &lt; GAME_TUNNEL_WIDTH</guard>
        <action brief="...">ObjectImageEvt *oie;
@@ -656,6 +752,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
         <action box="1,0,22,4"/>
        </choice_glyph>
       </choice>
+      <!--${AOs::Missile::SM::flying::TIME_TICK::[else]}-->
       <choice target="../../../1">
        <guard brief="else"/>
        <choice_glyph conn="12,21,4,1,5,28,-17,-4">
@@ -666,11 +763,13 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
        <action box="0,-2,9,2"/>
       </tran_glyph>
      </tran>
+     <!--${AOs::Missile::SM::flying::HIT_WALL}-->
      <tran trig="HIT_WALL" target="../../3">
       <tran_glyph conn="3,33,3,1,35,6,-2">
        <action box="0,-2,9,2"/>
       </tran_glyph>
      </tran>
+     <!--${AOs::Missile::SM::flying::DESTROYED_MINE}-->
      <tran trig="DESTROYED_MINE" target="../../1">
       <action>QACTIVE_POST(AO_Ship, e, me);</action>
       <tran_glyph conn="3,30,3,1,39,-21,-6">
@@ -679,9 +778,12 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
      </tran>
      <state_glyph node="3,15,33,20"/>
     </state>
+    <!--${AOs::Missile::SM::exploding}-->
     <state name="exploding">
      <entry>me-&gt;exp_ctr = 0U;</entry>
+     <!--${AOs::Missile::SM::exploding::TIME_TICK}-->
      <tran trig="TIME_TICK">
+      <!--${AOs::Missile::SM::exploding::TIME_TICK::[(me->x>=GAME_SPEED_X)&&(me->exp~}-->
       <choice>
        <guard>(me-&gt;x &gt;= GAME_SPEED_X) &amp;&amp; (me-&gt;exp_ctr &lt; 15U)</guard>
        <action brief="...">ObjectImageEvt *oie;
@@ -699,6 +801,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
         <action box="1,0,19,4"/>
        </choice_glyph>
       </choice>
+      <!--${AOs::Missile::SM::exploding::TIME_TICK::[else]}-->
       <choice target="../../../1">
        <guard brief="else"/>
        <choice_glyph conn="12,46,4,1,5,32,-42,-8">
@@ -716,12 +819,18 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
     <state_diagram size="46,55"/>
    </statechart>
   </class>
+  <!--${AOs::Mine1}-->
   <class name="Mine1" superclass="qpc::QHsm">
    <documentation>The Mine1 orthogonal component</documentation>
+   <!--${AOs::Mine1::x}-->
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Mine1::y}-->
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Mine1::exp_ctr}-->
    <attribute name="exp_ctr" type="uint8_t" visibility="0x00" properties="0x00"/>
+   <!--${AOs::Mine1::SM}-->
    <statechart properties="0x01">
+    <!--${AOs::Mine1::SM::initial}-->
     <initial target="../1">
      <action>static uint8_t dict_sent;
 
@@ -752,7 +861,9 @@ QS_SIG_DICTIONARY(MISSILE_IMG_SIG,   me);
       <action box="0,-2,11,2"/>
      </initial_glyph>
     </initial>
+    <!--${AOs::Mine1::SM::unused}-->
     <state name="unused">
+     <!--${AOs::Mine1::SM::unused::MINE_PLANT}-->
      <tran trig="MINE_PLANT" target="../../2/1">
       <action>me-&gt;x = Q_EVT_CAST(ObjectPosEvt)-&gt;x;
 me-&gt;y = Q_EVT_CAST(ObjectPosEvt)-&gt;y;</action>
@@ -762,18 +873,23 @@ me-&gt;y = Q_EVT_CAST(ObjectPosEvt)-&gt;y;</action>
      </tran>
      <state_glyph node="2,4,29,8"/>
     </state>
+    <!--${AOs::Mine1::SM::used}-->
     <state name="used">
      <exit brief="...">/* tell the Tunnel that this mine is becoming disabled */
 MineEvt *mev = Q_NEW(MineEvt, MINE_DISABLED_SIG);
 mev-&gt;id = MINE_ID(me);
 QACTIVE_POST(AO_Tunnel, (QEvt *)mev, me);</exit>
+     <!--${AOs::Mine1::SM::used::MINE_RECYCLE}-->
      <tran trig="MINE_RECYCLE" target="../../1">
       <tran_glyph conn="2,21,3,1,41,-13,-12">
        <action box="0,-2,11,2"/>
       </tran_glyph>
      </tran>
+     <!--${AOs::Mine1::SM::used::planted}-->
      <state name="planted">
+      <!--${AOs::Mine1::SM::used::planted::TIME_TICK}-->
       <tran trig="TIME_TICK">
+       <!--${AOs::Mine1::SM::used::planted::TIME_TICK::[me->x>=GAME_SPEED_X]}-->
        <choice>
         <guard>me-&gt;x &gt;= GAME_SPEED_X</guard>
         <action>ObjectImageEvt *oie;
@@ -788,6 +904,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
          <action box="1,0,20,2"/>
         </choice_glyph>
        </choice>
+       <!--${AOs::Mine1::SM::used::planted::TIME_TICK::[else]}-->
        <choice target="../../../../1">
         <guard brief="else"/>
         <choice_glyph conn="15,30,4,1,4,32,-26,-16">
@@ -798,10 +915,12 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
         <action box="0,-2,10,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Mine1::SM::used::planted::SHIP_IMG}-->
       <tran trig="SHIP_IMG">
        <action>uint8_t x   = Q_EVT_CAST(ObjectImageEvt)-&gt;x;
 uint8_t y   = Q_EVT_CAST(ObjectImageEvt)-&gt;y;
 uint8_t bmp = Q_EVT_CAST(ObjectImageEvt)-&gt;bmp;</action>
+       <!--${AOs::Mine1::SM::used::planted::SHIP_IMG::[collisionwithMINE1_BMP?]}-->
        <choice target="../../../../1">
         <guard brief="collision with MINE1_BMP?">BSP_doBitmapsOverlap(MINE1_BMP, me-&gt;x, me-&gt;y, bmp, x, y)</guard>
         <action brief="...">static MineEvt const mine1_hit = {
@@ -819,10 +938,12 @@ QACTIVE_POST(AO_Ship, (QEvt *)&amp;mine1_hit, me);
         <action box="0,-2,8,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Mine1::SM::used::planted::MISSILE_IMG}-->
       <tran trig="MISSILE_IMG">
        <action>uint8_t x   = Q_EVT_CAST(ObjectImageEvt)-&gt;x;
 uint8_t y   = Q_EVT_CAST(ObjectImageEvt)-&gt;y;
 uint8_t bmp = Q_EVT_CAST(ObjectImageEvt)-&gt;bmp;</action>
+       <!--${AOs::Mine1::SM::used::planted::MISSILE_IMG::[collisionwithMINE1_BMP?]}-->
        <choice target="../../../2">
         <guard brief="collision with MINE1_BMP?">BSP_doBitmapsOverlap(MINE1_BMP, me-&gt;x, me-&gt;y, bmp, x, y)</guard>
         <action brief="...">static ScoreEvt const mine1_destroyed = {
@@ -840,9 +961,12 @@ QACTIVE_POST(AO_Missile, (QEvt *)&amp;mine1_destroyed, me);</action>
       </tran>
       <state_glyph node="4,24,33,24"/>
      </state>
+     <!--${AOs::Mine1::SM::used::exploding}-->
      <state name="exploding">
       <entry>me-&gt;exp_ctr = 0U;</entry>
+      <!--${AOs::Mine1::SM::used::exploding::TIME_TICK}-->
       <tran trig="TIME_TICK">
+       <!--${AOs::Mine1::SM::used::exploding::TIME_TICK::[stillonscreen?]}-->
        <choice>
         <guard brief="still on screen?">(me-&gt;x &gt;= GAME_SPEED_X) &amp;&amp; (me-&gt;exp_ctr &lt; 15)</guard>
         <action>ObjectImageEvt *oie;
@@ -859,6 +983,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
          <action box="1,0,20,2"/>
         </choice_glyph>
        </choice>
+       <!--${AOs::Mine1::SM::used::exploding::TIME_TICK::[else]}-->
        <choice target="../../../../1">
         <guard brief="else"/>
         <choice_glyph conn="14,57,4,1,5,37,-54,-20">
@@ -880,12 +1005,18 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
     <state_diagram size="53,68"/>
    </statechart>
   </class>
+  <!--${AOs::Mine2}-->
   <class name="Mine2" superclass="qpc::QHsm">
    <documentation>The Mine2 orthogonal component</documentation>
+   <!--${AOs::Mine2::x}-->
    <attribute name="x" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Mine2::y}-->
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Mine2::exp_ctr}-->
    <attribute name="exp_ctr" type="uint8_t" visibility="0x00" properties="0x00"/>
+   <!--${AOs::Mine2::SM}-->
    <statechart properties="0x01">
+    <!--${AOs::Mine2::SM::initial}-->
     <initial target="../1">
      <action>static  uint8_t dict_sent;
 
@@ -918,7 +1049,9 @@ QS_SIG_DICTIONARY(MISSILE_IMG_SIG,   me);
       <action box="1,-2,6,2"/>
      </initial_glyph>
     </initial>
+    <!--${AOs::Mine2::SM::unused}-->
     <state name="unused">
+     <!--${AOs::Mine2::SM::unused::MINE_PLANT}-->
      <tran trig="MINE_PLANT" target="../../2/1">
       <action>me-&gt;x = Q_EVT_CAST(ObjectPosEvt)-&gt;x;
 me-&gt;y = Q_EVT_CAST(ObjectPosEvt)-&gt;y;</action>
@@ -928,18 +1061,23 @@ me-&gt;y = Q_EVT_CAST(ObjectPosEvt)-&gt;y;</action>
      </tran>
      <state_glyph node="2,4,29,8"/>
     </state>
+    <!--${AOs::Mine2::SM::used}-->
     <state name="used">
      <exit brief="...">/* tell the Tunnel that this mine is becoming disabled */
 MineEvt *mev = Q_NEW(MineEvt, MINE_DISABLED_SIG);
 mev-&gt;id = MINE_ID(me);
 QACTIVE_POST(AO_Tunnel, (QEvt *)mev, me);</exit>
+     <!--${AOs::Mine2::SM::used::MINE_RECYCLE}-->
      <tran trig="MINE_RECYCLE" target="../../1">
       <tran_glyph conn="2,21,3,1,41,-13,-12">
        <action box="0,-2,11,2"/>
       </tran_glyph>
      </tran>
+     <!--${AOs::Mine2::SM::used::planted}-->
      <state name="planted">
+      <!--${AOs::Mine2::SM::used::planted::TIME_TICK}-->
       <tran trig="TIME_TICK">
+       <!--${AOs::Mine2::SM::used::planted::TIME_TICK::[me->x>=GAME_SPEED_X]}-->
        <choice>
         <guard>me-&gt;x &gt;= GAME_SPEED_X</guard>
         <action>ObjectImageEvt *oie;
@@ -954,6 +1092,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
          <action box="1,0,20,2"/>
         </choice_glyph>
        </choice>
+       <!--${AOs::Mine2::SM::used::planted::TIME_TICK::[else]}-->
        <choice target="../../../../1">
         <guard brief="else"/>
         <choice_glyph conn="15,30,4,1,4,32,-26,-16">
@@ -964,10 +1103,12 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
         <action box="0,-2,10,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Mine2::SM::used::planted::SHIP_IMG}-->
       <tran trig="SHIP_IMG">
        <action>uint8_t x   = Q_EVT_CAST(ObjectImageEvt)-&gt;x;
 uint8_t y   = Q_EVT_CAST(ObjectImageEvt)-&gt;y;
 uint8_t bmp = Q_EVT_CAST(ObjectImageEvt)-&gt;bmp;</action>
+       <!--${AOs::Mine2::SM::used::planted::SHIP_IMG::[collisionwithMINE2_BMP?]}-->
        <choice target="../../../../1">
         <guard brief="collision with MINE2_BMP?">BSP_doBitmapsOverlap(MINE2_BMP, me-&gt;x, me-&gt;y, bmp, x, y)</guard>
         <action>static MineEvt const mine1_hit = {
@@ -985,10 +1126,12 @@ uint8_t bmp = Q_EVT_CAST(ObjectImageEvt)-&gt;bmp;</action>
         <action box="0,-2,8,2"/>
        </tran_glyph>
       </tran>
+      <!--${AOs::Mine2::SM::used::planted::MISSILE_IMG}-->
       <tran trig="MISSILE_IMG">
        <action>uint8_t x   = Q_EVT_CAST(ObjectImageEvt)-&gt;x;
 uint8_t y   = Q_EVT_CAST(ObjectImageEvt)-&gt;y;
 uint8_t bmp = Q_EVT_CAST(ObjectImageEvt)-&gt;bmp;</action>
+       <!--${AOs::Mine2::SM::used::planted::MISSILE_IMG::[collisionwithMINE2_MISSILE_BMP?~}-->
        <choice target="../../../2">
         <guard brief="collision with MINE2_MISSILE_BMP?">BSP_doBitmapsOverlap(MINE2_MISSILE_BMP, me-&gt;x, me-&gt;y, bmp, x, y)</guard>
         <action>/* NOTE: Mine type-2 is nastier than Mine type-1.
@@ -1012,9 +1155,12 @@ QACTIVE_POST(AO_Missile, (QEvt *)&amp;mine2_destroyed, me);</action>
       </tran>
       <state_glyph node="4,24,33,24"/>
      </state>
+     <!--${AOs::Mine2::SM::used::exploding}-->
      <state name="exploding">
       <entry>me-&gt;exp_ctr = 0U;</entry>
+      <!--${AOs::Mine2::SM::used::exploding::TIME_TICK}-->
       <tran trig="TIME_TICK">
+       <!--${AOs::Mine2::SM::used::exploding::TIME_TICK::[stillonscreen?]}-->
        <choice>
         <guard brief="still on screen?">(me-&gt;x &gt;= GAME_SPEED_X) &amp;&amp; (me-&gt;exp_ctr &lt; 15U)</guard>
         <action>ObjectImageEvt *oie;
@@ -1031,6 +1177,7 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
          <action box="1,0,19,2"/>
         </choice_glyph>
        </choice>
+       <!--${AOs::Mine2::SM::used::exploding::TIME_TICK::[else]}-->
        <choice target="../../../../1">
         <guard brief="else"/>
         <choice_glyph conn="15,57,4,1,5,36,-54,-20">
@@ -1052,18 +1199,22 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
     <state_diagram size="53,68"/>
    </statechart>
   </class>
+  <!--${AOs::AO_Tunnel}-->
   <attribute name="AO_Tunnel" type="QActive * const" visibility="0x00" properties="0x00">
    <documentation>/* opaque AO pointer */</documentation>
    <code>= &amp;l_tunnel.super;</code>
   </attribute>
+  <!--${AOs::AO_Ship}-->
   <attribute name="AO_Ship" type="QActive * const" visibility="0x00" properties="0x00">
    <documentation>/* opaque AO pointer */</documentation>
    <code>= &amp;l_ship.super;</code>
   </attribute>
+  <!--${AOs::AO_Missile}-->
   <attribute name="AO_Missile" type="QActive * const" visibility="0x00" properties="0x00">
    <documentation>/* opaque AO pointer */</documentation>
    <code>= &amp;l_missile.super;</code>
   </attribute>
+  <!--${AOs::Tunnel_ctor}-->
   <operation name="Tunnel_ctor" type="void" visibility="0x00" properties="0x01">
    <code>uint8_t n;
 Tunnel *me = &amp;l_tunnel;
@@ -1078,17 +1229,21 @@ for (n = 0; n &lt; GAME_MINES_MAX; ++n) {
 me-&gt;last_mine_x = 0; /* the last mine at the right edge of the tunnel */
 me-&gt;last_mine_y = 0;</code>
   </operation>
+  <!--${AOs::Ship_ctor}-->
   <operation name="Ship_ctor" type="void" visibility="0x00" properties="0x01">
    <code>Ship *me = &amp;l_ship;
 QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Ship_initial));
 me-&gt;x = GAME_SHIP_X;
 me-&gt;y = (GAME_SHIP_Y &lt;&lt; 2);</code>
   </operation>
+  <!--${AOs::Missile_ctor}-->
   <operation name="Missile_ctor" type="void" visibility="0x00" properties="0x01">
    <code>Missile *me = &amp;l_missile;
 QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Missile_initial));</code>
   </operation>
+  <!--${AOs::Mine1_ctor}-->
   <operation name="Mine1_ctor" type="QHsm *" visibility="0x00" properties="0x01">
+   <!--${AOs::Mine1_ctor::id}-->
    <parameter name="id" type="uint8_t"/>
    <code>Mine1 *me;
 Q_REQUIRE(id &lt; GAME_MINES_MAX);
@@ -1097,7 +1252,9 @@ me = &amp;l_mine1[id];
 QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine1_initial));
 return (QHsm *)me;</code>
   </operation>
+  <!--${AOs::Mine2_ctor}-->
   <operation name="Mine2_ctor" type="QHsm *" visibility="0x00" properties="0x01">
+   <!--${AOs::Mine2_ctor::id}-->
    <parameter name="id" type="uint8_t"/>
    <code>Mine2 *me;
 Q_REQUIRE(id &lt; GAME_MINES_MAX);
@@ -1107,10 +1264,12 @@ QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine2_initial));
 return (QHsm *)me;</code>
   </operation>
  </package>
+ <!--${.}-->
  <directory name=".">
+  <!--${.::game.h}-->
   <file name="game.h">
-   <text>#ifndef game_h
-#define game_h
+   <text>#ifndef GAME_H
+#define GAME_H
 
 enum GameSignals { /* signals used in the game */
     TIME_TICK_SIG = Q_USER_SIG, /* published from tick ISR */
@@ -1187,8 +1346,10 @@ $declare${AOs::AO_Tunnel}
 $declare${AOs::AO_Ship}
 $declare${AOs::AO_Missile}
 
-#endif  /* game_h */</text>
+#endif  /* GAME_H */
+</text>
   </file>
+  <!--${.::missile.c}-->
   <file name="missile.c">
    <text>#include &quot;qpc.h&quot;
 #include &quot;bsp.h&quot;
@@ -1207,6 +1368,7 @@ $define${AOs::AO_Missile}
 $define${AOs::Missile_ctor}
 $define${AOs::Missile}</text>
   </file>
+  <!--${.::ship.c}-->
   <file name="ship.c">
    <text>#include &quot;qpc.h&quot;
 #include &quot;bsp.h&quot;
@@ -1230,6 +1392,7 @@ $define${AOs::AO_Ship}
 $define${AOs::Ship_ctor}
 $define${AOs::Ship}</text>
   </file>
+  <!--${.::tunnel.c}-->
   <file name="tunnel.c">
    <text>#include &quot;qpc.h&quot;
 #include &quot;bsp.h&quot;
@@ -1248,6 +1411,7 @@ $define${AOs::AO_Tunnel}
 $define${AOs::Tunnel_ctor}
 $define${AOs::Tunnel}</text>
   </file>
+  <!--${.::mine1.c}-->
   <file name="mine1.c">
    <text>#include &quot;qpc.h&quot;
 #include &quot;bsp.h&quot;
@@ -1268,6 +1432,7 @@ static Mine1 l_mine1[GAME_MINES_MAX]; /* a pool of type-1 mines */
 $define(AOs::Mine1_ctor)
 $define(AOs::Mine1)</text>
   </file>
+  <!--${.::mine2.c}-->
   <file name="mine2.c">
    <text>#include &quot;qpc.h&quot;
 #include &quot;bsp.h&quot;

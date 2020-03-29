@@ -1,9 +1,9 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                     SEGGER Microcontroller GmbH                    *
 *                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
+*       (c) 1995 - 2019 SEGGER Microcontroller GmbH                  *
 *                                                                    *
 *       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
@@ -21,7 +21,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.34.1                                           *
+*       OS version: 5.06.1                                           *
 *                                                                    *
 **********************************************************************
 

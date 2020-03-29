@@ -1,16 +1,16 @@
 /**
 * @file
-* @brief QF/C port to Cortex-M, QUTEST unit test harness, generic C99 compiler
+* @brief QF/C port to MSP430, QUTEST, generic C99 compiler
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.8
-* Date of the Last Update:  2019-01-23
+* Last updated for version 6.8.0
+* Last updated on  2020-03-13
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -28,16 +28,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* QUTEST event queue and thread types */
 #define QF_EQUEUE_TYPE QEQueue
@@ -45,7 +45,7 @@
 /*#define QF_THREAD_TYPE */
 
 /* The maximum number of active objects in the application, see NOTE01 */
-#define QF_MAX_ACTIVE        8
+#define QF_MAX_ACTIVE        8U
 
 /* QF interrupt disable/enable */
 #define QF_INT_DISABLE()     (++QF_intNest)
@@ -100,4 +100,4 @@ extern uint8_t volatile QF_intNest;
 * up to 64, if necessary. Here it is set to a lower level to save some RAM.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

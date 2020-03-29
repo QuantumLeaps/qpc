@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QUTEST port for the MSP-EXP430F5529LP board
-* Last updated for version 6.3.8
-* Last updated on  2019-01-24
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -25,13 +25,21 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
-#include "qpc.h"
+#ifndef Q_SPY
+    #error "Q_SPY must be defined to compile qutest_port.c"
+#endif /* Q_SPY */
+
+#define QP_IMPL       /* this is QP implementation */
+#include "qf_port.h"  /* QF port */
+#include "qassert.h"  /* QP embedded systems-friendly assertions */
+#include "qs_port.h"  /* QS port */
+#include "qs_pkg.h"   /* QS package-scope interface */
 
 #include <msp430f5529.h>  /* MSP430 variant used */
 /* add other drivers if necessary... */

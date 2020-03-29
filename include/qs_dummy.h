@@ -5,14 +5,14 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.3.6
-* Last updated on  2018-10-14
+* Last updated for version 6.7.0
+* Last updated on  2019-12-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,22 +30,22 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qs_dummy_h
-#define qs_dummy_h
+#ifndef QS_DUMMY_H
+#define QS_DUMMY_H
 
 #ifdef Q_SPY
     #error "Q_SPY must NOT be defined to include qs_dummy.h"
 #endif
 
-#define QS_INIT(arg_)                   (0 == 0)
+#define QS_INIT(arg_)                   ((uint8_t)1U)
 #define QS_EXIT()                       ((void)0)
 #define QS_DUMP()                       ((void)0)
 #define QS_FILTER_ON(rec_)              ((void)0)
@@ -60,9 +60,9 @@
 #define QS_GET_BYTE(pByte_)             ((uint16_t)0xFFFFU)
 #define QS_GET_BLOCK(pSize_)            ((uint8_t *)0)
 
-#define QS_BEGIN(rec_, obj_)            if (0) {
+#define QS_BEGIN(rec_, obj_)            if (false) {
 #define QS_END()                        }
-#define QS_BEGIN_NOCRIT(rec_, obj_)     if (0) {
+#define QS_BEGIN_NOCRIT(rec_, obj_)     if (false) {
 #define QS_END_NOCRIT()                 }
 
 #define QS_I8(width_, data_)            ((void)0)
@@ -99,26 +99,26 @@
 /****************************************************************************/
 /* internal QS macros used only in the QP components */
 #ifdef QP_IMPL
-    #define QS_CRIT_STAT_
-    #define QS_BEGIN_(rec_, refObj_, obj_)  if (0) {
-    #define QS_END_()                   }
-    #define QS_BEGIN_NOCRIT_(rec_, refObj_, obj_) if (0) {
-    #define QS_END_NOCRIT_()            }
-    #define QS_U8_(data_)               ((void)0)
-    #define QS_2U8_(data1_, data2_)     ((void)0)
-    #define QS_U16_(data_)              ((void)0)
-    #define QS_U32_(data_)              ((void)0)
-    #define QS_U64_(data_)              ((void)0)
-    #define QS_TIME_()                  ((void)0)
-    #define QS_SIG_(sig_)               ((void)0)
-    #define QS_EVS_(size_)              ((void)0)
-    #define QS_OBJ_(obj_)               ((void)0)
-    #define QS_FUN_(fun_)               ((void)0)
-    #define QS_EQC_(ctr_)               ((void)0)
-    #define QS_MPC_(ctr_)               ((void)0)
-    #define QS_MPS_(size_)              ((void)0)
-    #define QS_TEC_(ctr_)               ((void)0)
+    /* predefined QS trace records */
+    #define QS_BEGIN_PRE_(rec_, refObj_, obj_)  if (false) {
+    #define QS_END_PRE_()               }
+    #define QS_BEGIN_NOCRIT_PRE_(rec_, refObj_, obj_) if (false) {
+    #define QS_END_NOCRIT_PRE_()        }
+    #define QS_U8_PRE_(data_)           ((void)0)
+    #define QS_2U8_PRE_(data1_, data2_) ((void)0)
+    #define QS_U16_PRE_(data_)          ((void)0)
+    #define QS_U32_PRE_(data_)          ((void)0)
+    #define QS_TIME_PRE_()              ((void)0)
+    #define QS_SIG_PRE_(sig_)           ((void)0)
+    #define QS_EVS_PRE_(size_)          ((void)0)
+    #define QS_OBJ_PRE_(obj_)           ((void)0)
+    #define QS_FUN_PRE_(fun_)           ((void)0)
+    #define QS_EQC_PRE_(ctr_)           ((void)0)
+    #define QS_MPC_PRE_(ctr_)           ((void)0)
+    #define QS_MPS_PRE_(size_)          ((void)0)
+    #define QS_TEC_PRE_(ctr_)           ((void)0)
 
+    #define QS_CRIT_STAT_
     #define QF_QS_CRIT_ENTRY()          ((void)0)
     #define QF_QS_CRIT_EXIT()           ((void)0)
     #define QF_QS_ISR_ENTRY(isrnest_, prio_) ((void)0)
@@ -126,4 +126,4 @@
     #define QF_QS_ACTION(act_)          ((void)0)
 #endif /* QP_IMPL */
 
-#endif /* qs_dummy_h */
+#endif /* QS_DUMMY_H */

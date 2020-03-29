@@ -28,23 +28,23 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qv_port_h
-#define qv_port_h
+#ifndef QV_PORT_H
+#define QV_PORT_H
 
 /* macro to put the CPU to sleep inside QV_onIdle() */
 #define QV_CPU_SLEEP() do { \
     __asm volatile ("WFI"); \
     QF_INT_ENABLE(); \
-} while (0)
+} while (false)
 
 #include "qv.h" /* QV platform-independent public interface */
 
-#endif /* qv_port_h */
+#endif /* QV_PORT_H */

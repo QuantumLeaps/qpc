@@ -25,14 +25,14 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
 * Web  : http://www.state-machine.com
-* Email: info@state-machine.com
+* <info@state-machine.com>
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 #define BSP_TICKS_PER_SEC    configTICK_RATE_HZ
 
@@ -44,4 +44,4 @@ void BSP_terminate(int16_t result);
 void BSP_randomSeed(uint32_t seed);   /* random seed */
 uint32_t BSP_random(void);            /* pseudo-random generator */
 
-#endif /* bsp_h */
+#endif /* BSP_H */

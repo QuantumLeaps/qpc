@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "bsp.h"
@@ -38,7 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DISP_WIDTH  9
+#define DISP_WIDTH  15
 
 static char l_display[DISP_WIDTH + 1]; /* the calculator display */
 static int  l_len;  /* number of displayed characters */
@@ -64,11 +64,11 @@ void BSP_insert(int keyId) {
 }
 /*..........................................................................*/
 void BSP_display(double value) {
-    sprintf(l_display, "%9.6g", value);
+    snprintf(l_display, Q_DIM(l_display), "%15.6g", value);
 }
 /*..........................................................................*/
 void BSP_display_error(char const *err) {
-    strcpy(l_display, err);
+    strcpy_s(l_display, Q_DIM(l_display), err);
 }
 /*..........................................................................*/
 void BSP_negate(void) {
@@ -109,7 +109,7 @@ void QF_onClockTick(void) {
 
 /*..........................................................................*/
 /* this function is used by the QP embedded systems-friendly assertions */
-void Q_onAssert(char const * const file, int line) {
+Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
     printf("Assertion failed in %s, line %d", file, line);
     exit(-1);
 }

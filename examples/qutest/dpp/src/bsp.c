@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -45,7 +45,7 @@ enum {
 
 /*..........................................................................*/
 void BSP_init(int argc, char **argv) {
-    Q_ALLEGE(QS_INIT(argc <= 1 ? (void *)0 : argv[1]) != (uint8_t)0);
+    Q_ALLEGE(QS_INIT(argc <= 1 ? (void *)0 : argv[1]) != 0U);
 
     QS_FUN_DICTIONARY(&BSP_displayPaused);
     QS_FUN_DICTIONARY(&BSP_displayPhilStat);

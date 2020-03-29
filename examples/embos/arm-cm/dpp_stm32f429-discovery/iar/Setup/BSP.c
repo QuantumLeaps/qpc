@@ -1,9 +1,9 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                     SEGGER Microcontroller GmbH                    *
 *                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 1995 - 2017 SEGGER Microcontroller GmbH & Co. KG         *
+*       (c) 1995 - 2019 SEGGER Microcontroller GmbH                  *
 *                                                                    *
 *       Internet: segger.com  Support: support_embos@segger.com      *
 *                                                                    *
@@ -21,13 +21,13 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       OS version: 4.34.1                                           *
+*       OS version: 5.06.1                                           *
 *                                                                    *
 **********************************************************************
 
 ----------------------------------------------------------------------
 File    : BSP.c
-Purpose : BSP for the ST STM32F429 Discovery eval board
+Purpose : BSP for the IAR STM32F429 SK eval board
 --------  END-OF-HEADER  ---------------------------------------------
 */
 
@@ -44,12 +44,16 @@ Purpose : BSP for the ST STM32F429 Discovery eval board
 #define RCC_AHBENR                (*(volatile unsigned int*)(RCC_BASE_ADDR + 0x30))
 #define RCC_LEDPORT_BITS          ((1u << 0u) | (1u << 6u))
 
+#define GPIOA_BASE_ADDR           ((unsigned int)0x40020000)
+#define GPIOA_MODER               (*(volatile unsigned int*)(GPIOA_BASE_ADDR + 0x00))
+#define GPIOA_ODR                 (*(volatile unsigned int*)(GPIOA_BASE_ADDR + 0x14))
+
 #define GPIOG_BASE_ADDR           ((unsigned int)0x40021800)
 #define GPIOG_MODER               (*(volatile unsigned int*)(GPIOG_BASE_ADDR + 0x00))
 #define GPIOG_ODR                 (*(volatile unsigned int*)(GPIOG_BASE_ADDR + 0x14))
 
-#define LED0_BIT                  (13u)  // LED3 (green) - PG13
-#define LED1_BIT                  (14u)  // LED4 (red)   - PG14
+#define LED0_BIT                  (4u)  // LED1 - PA4
+#define LED1_BIT                  (3u)  // LED2 - PG3
 
 /*********************************************************************
 *
@@ -70,9 +74,9 @@ void BSP_Init(void) {
   RCC_AHB1RSTR &= ~RCC_LEDPORT_BITS;
   RCC_AHBENR   |=  RCC_LEDPORT_BITS;
 
-  GPIOG_MODER &= ~(3u << (LED0_BIT * 2));   // Reset mode; sets port to input
-  GPIOG_MODER |=  (1u << (LED0_BIT * 2));   // Set to output mode
-  GPIOG_ODR   &=  ~(1u << LED0_BIT);        // Initially clear LEDs, low active
+  GPIOA_MODER &= ~(3u << (LED0_BIT * 2));   // Reset mode; sets port to input
+  GPIOA_MODER |=  (1u << (LED0_BIT * 2));   // Set to output mode
+  GPIOA_ODR   &=  ~(1u << LED0_BIT);        // Initially clear LEDs, low active
 
   GPIOG_MODER &= ~(3u << (LED1_BIT * 2));   // Reset mode; sets port to input
   GPIOG_MODER |=  (1u << (LED1_BIT * 2));   // Set to output mode
@@ -85,7 +89,7 @@ void BSP_Init(void) {
 */
 void BSP_SetLED(int Index) {
   if (Index == 0) {
-    GPIOG_ODR &= ~(1u << LED0_BIT);         // Switch on LED0
+    GPIOA_ODR &= ~(1u << LED0_BIT);         // Switch on LED0
   } else if (Index == 1) {
     GPIOG_ODR &= ~(1u << LED1_BIT);         // Switch on LED1
   }
@@ -97,7 +101,7 @@ void BSP_SetLED(int Index) {
 */
 void BSP_ClrLED(int Index) {
   if (Index == 0) {
-    GPIOG_ODR |= (1u << LED0_BIT);          // Switch off LED0
+    GPIOA_ODR |= (1u << LED0_BIT);          // Switch off LED0
   } else if (Index == 1) {
     GPIOG_ODR |= (1u << LED1_BIT);          // Switch off LED1
   }
@@ -109,7 +113,7 @@ void BSP_ClrLED(int Index) {
 */
 void BSP_ToggleLED(int Index) {
   if (Index == 0) {
-    GPIOG_ODR ^= (1u << LED0_BIT);          // Toggle LED0
+    GPIOA_ODR ^= (1u << LED0_BIT);          // Toggle LED0
   } else if (Index == 1) {
     GPIOG_ODR ^= (1u << LED1_BIT);          // Toggle LED1
   }

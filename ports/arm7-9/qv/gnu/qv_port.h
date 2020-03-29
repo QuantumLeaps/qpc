@@ -28,16 +28,16 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
+* Web:   www.state-machine.com/licensing
 * Email: info@state-machine.com
 ******************************************************************************
 * @endcond
 */
-#ifndef qv_port_h
-#define qv_port_h
+#ifndef QV_PORT_H
+#define QV_PORT_H
 
 void QV_irq(void);
 
@@ -55,5 +55,5 @@ void BSP_irq(void);
 * assembly.
 */
 
-#endif /* qv_port_h */
+#endif /* QV_PORT_H */
 

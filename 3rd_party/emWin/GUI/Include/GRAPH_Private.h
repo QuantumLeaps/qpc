@@ -1,15 +1,15 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2015  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2019  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.32 - Graphical user interface for embedded applications **
+** emWin V6.10 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
 only  be used  in accordance  with  a license  and should  not be  re-
@@ -23,6 +23,7 @@ Purpose     : GRAPH private header file
 #ifndef GRAPH_PRIVATE_H
 #define GRAPH_PRIVATE_H
 
+#include "WM_Intern.h"
 #include "GRAPH.h"
 #include "GUI_ARRAY.h"
 #include "WIDGET.h"
@@ -96,6 +97,8 @@ struct GRAPH_OBJ {
   U8              LineStyleH;
   WM_SCROLL_STATE ScrollStateV;
   WM_SCROLL_STATE ScrollStateH;
+  U8              InvertScrollbarV;
+  U8              InvertScrollbarH;
   void            (* pUserDraw)(WM_HWIN hObj, int Stage);
 };
 
@@ -133,7 +136,10 @@ extern GRAPH_PROPS GRAPH__DefaultProps;
 **********************************************************************
 */
 void GRAPH__AddValue       (GRAPH_DATA_OBJ * pDataObj, void * pData, void * pValue, int Size);
+int  GRAPH__GetValue       (GRAPH_DATA_OBJ * pDataObj, void * pData, void * pValue, int Size, U32 Index);
 void GRAPH__InvalidateGraph(GRAPH_Handle hObj);
 
 #endif /* GUI_WINSUPPORT */
 #endif /* GRAPH_PRIVATE_H */
+
+/*************************** End of file ****************************/

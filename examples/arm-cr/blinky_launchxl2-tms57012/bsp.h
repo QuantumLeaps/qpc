@@ -25,14 +25,14 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web  : https://state-machine.com
-* Email: info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
-#ifndef bsp_h
-#define bsp_h
+#ifndef BSP_H
+#define BSP_H
 
 #define BSP_TICKS_PER_SEC    100U
 
@@ -40,4 +40,4 @@ void BSP_init(void);
 void BSP_ledOff(void);
 void BSP_ledOn(void);
 
-#endif /* bsp_h */
+#endif /* BSP_H */

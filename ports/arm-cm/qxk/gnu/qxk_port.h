@@ -28,19 +28,19 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qxk_port_h
-#define qxk_port_h
+#ifndef QXK_PORT_H
+#define QXK_PORT_H
 
 /* determination if the code executes in the ISR context */
-#define QXK_ISR_CONTEXT_() (QXK_get_IPSR() != (uint32_t)0)
+#define QXK_ISR_CONTEXT_() (QXK_get_IPSR() != 0U)
 
 __attribute__((always_inline))
 static inline uint32_t QXK_get_IPSR(void) {
@@ -51,18 +51,18 @@ static inline uint32_t QXK_get_IPSR(void) {
 
 /* trigger the PendSV exception to pefrom the context switch */
 #define QXK_CONTEXT_SWITCH_() \
-    (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28))
+    (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28))
 
 /* QXK ISR entry and exit */
 #define QXK_ISR_ENTRY() ((void)0)
 
-#define QXK_ISR_EXIT()  do { \
-    QF_INT_DISABLE(); \
-    if (QXK_sched_() != (uint_fast8_t)0) { \
-        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (uint32_t)(1U << 28); \
-    } \
-    QF_INT_ENABLE(); \
-} while (0)
+#define QXK_ISR_EXIT()  do {                                  \
+    QF_INT_DISABLE();                                         \
+    if (QXK_sched_() != 0U) {                                 \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28); \
+    }                                                         \
+    QF_INT_ENABLE();                                          \
+} while (false)
 
 /* initialization of the QXK kernel */
 #define QXK_INIT() QXK_init()
@@ -70,4 +70,4 @@ void QXK_init(void);
 
 #include "qxk.h" /* QXK platform-independent public interface */
 
-#endif /* qxk_port_h */
+#endif /* QXK_PORT_H */

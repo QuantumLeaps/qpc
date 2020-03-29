@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.7.0
+* Last updated on  2019-12-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "dpp.h"
@@ -73,7 +73,7 @@ int main() {
                       Q_DIM(philoQueueSto[n]), /* queue length [events] */
                       (void *)0,             /* stack storage (not used) */
                       0U,                    /* size of the stack [bytes] */
-                      (QEvt *)0);            /* initialization event */
+                      (void *)0);            /* initialization param */
     }
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
@@ -81,7 +81,7 @@ int main() {
                   Q_DIM(tableQueueSto),      /* queue length [events] */
                   (void *)0,                 /* stack storage (not used) */
                   0U,                        /* size of the stack [bytes] */
-                  (QEvt *)0);                /* initialization event */
+                  (void *)0);                /* initialization param */
 
     return QF_run(); /* run the QF application */
 }

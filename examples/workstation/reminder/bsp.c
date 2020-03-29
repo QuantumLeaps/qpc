@@ -25,11 +25,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"
 #include "bsp.h"
@@ -66,7 +66,7 @@ void QF_onClockTick(void) {
     }
 }
 /*..........................................................................*/
-void Q_onAssert(char const * const module, int loc) {
+Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     fprintf(stderr, "Assertion failed in %s:%d", module, loc);
     QF_onCleanup();
     exit(-1);

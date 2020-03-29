@@ -25,15 +25,15 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
 * Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          https://state-machine.com
+*                          <www.state-machine.com/licensing>
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#ifndef lwip_h
-#define lwip_h
+#ifndef LWIP_H
+#define LWIP_H
 
                /* protection against including lwIP in unauthorized modules */
 #ifndef LWIP_ALLOWED
@@ -71,4 +71,4 @@ struct pbuf *pbuf_new(u8_t *data, u16_t len);
 }
 #endif
 
-#endif                                                            /* lwip_h */
+#endif /* LWIP_H */

@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.5.0
-* Last updated on  2019-03-09
+* Last updated for version 6.8.0
+* Last updated on  2020-01-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,11 +29,11 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
@@ -42,7 +42,8 @@
 #include "qf_pkg.h"       /* QF package-scope interface */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 #ifdef Q_SPY              /* QS software tracing enabled? */
-    #include "qs_port.h"  /* include QS port */
+    #include "qs_port.h"  /* QS port */
+    #include "qs_pkg.h"   /* QS facilities for pre-defined trace records */
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
@@ -83,10 +84,11 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
 
     QF_CRIT_ENTRY_();
 
-    QS_BEGIN_NOCRIT_(QS_QF_TICK, (void *)0, (void *)0)
-        QS_TEC_((QTimeEvtCtr)(++prev->ctr)); /* tick ctr */
-        QS_U8_((uint8_t)tickRate);           /* tick rate */
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_TICK, (void *)0, (void *)0)
+        ++prev->ctr;
+        QS_TEC_PRE_(prev->ctr); /* tick ctr */
+        QS_U8_PRE_(tickRate);   /* tick rate */
+    QS_END_NOCRIT_PRE_()
 
     /* scan the linked-list of time events at this rate... */
     for (;;) {
@@ -110,10 +112,10 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
         }
 
         /* time event scheduled for removal? */
-        if (t->ctr == (QTimeEvtCtr)0) {
+        if (t->ctr == 0U) {
             prev->next = t->next;
             /* mark time event 't' as NOT linked */
-            t->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_IS_LINKED);
+            t->super.refCtr_ &= (uint8_t)(~TE_IS_LINKED & 0xFFU);
             /* do NOT advance the prev pointer */
             QF_CRIT_EXIT_(); /* exit crit. section to reduce latency */
 
@@ -124,11 +126,11 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
             --t->ctr;
 
             /* is time event about to expire? */
-            if (t->ctr == (QTimeEvtCtr)0) {
+            if (t->ctr == 0U) {
                 QActive *act = (QActive *)t->act; /* temp. for volatile */
 
                 /* periodic time evt? */
-                if (t->interval != (QTimeEvtCtr)0) {
+                if (t->interval != 0U) {
                     t->ctr = t->interval; /* rearm the time event */
                     prev = t; /* advance to this time event */
                 }
@@ -136,25 +138,25 @@ void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
                 else {
                     prev->next = t->next;
                     /* mark time event 't' as NOT linked */
-                    t->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_IS_LINKED);
+                    t->super.refCtr_ &= (uint8_t)(~TE_IS_LINKED & 0xFFU);
                     /* do NOT advance the prev pointer */
 
-                    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_AUTO_DISARM,
+                    QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_AUTO_DISARM,
                                      QS_priv_.locFilter[TE_OBJ], t)
-                        QS_OBJ_(t);            /* this time event object */
-                        QS_OBJ_(act);          /* the target AO */
-                        QS_U8_((uint8_t)tickRate); /* tick rate */
-                    QS_END_NOCRIT_()
+                        QS_OBJ_PRE_(t);        /* this time event object */
+                        QS_OBJ_PRE_(act);      /* the target AO */
+                        QS_U8_PRE_(tickRate);  /* tick rate */
+                    QS_END_NOCRIT_PRE_()
                 }
 
-                QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_POST,
+                QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_POST,
                                  QS_priv_.locFilter[TE_OBJ], t)
-                    QS_TIME_();                /* timestamp */
-                    QS_OBJ_(t);                /* the time event object */
-                    QS_SIG_(t->super.sig);     /* signal of this time event */
-                    QS_OBJ_(act);              /* the target AO */
-                    QS_U8_((uint8_t)tickRate); /* tick rate */
-                QS_END_NOCRIT_()
+                    QS_TIME_PRE_();            /* timestamp */
+                    QS_OBJ_PRE_(t);            /* the time event object */
+                    QS_SIG_PRE_(t->super.sig); /* signal of this time event */
+                    QS_OBJ_PRE_(act);          /* the target AO */
+                    QS_U8_PRE_(tickRate);      /* tick rate */
+                QS_END_NOCRIT_PRE_()
 
                 QF_CRIT_EXIT_(); /* exit critical section before posting */
 
@@ -239,11 +241,11 @@ void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
 {
     /** @pre The signal must be valid and the tick rate in range */
     Q_REQUIRE_ID(300, (sig >= (enum_t)Q_USER_SIG)
-        && (tickRate < (uint_fast8_t)QF_MAX_TICK_RATE));
+        && (tickRate < QF_MAX_TICK_RATE));
 
     me->next      = (QTimeEvt *)0;
-    me->ctr       = (QTimeEvtCtr)0;
-    me->interval  = (QTimeEvtCtr)0;
+    me->ctr       = 0U;
+    me->interval  = 0U;
     me->super.sig = (QSignal)sig;
 
     /* For backwards compatibility with QTimeEvt_ctor(), the active object
@@ -257,7 +259,7 @@ void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
     * events not allocated from event pools, which must be the case
     * for Time Events.
     */
-    me->super.poolId_ = (uint8_t)0;
+    me->super.poolId_ = 0U;
 
     /* The refCtr_ attribute is not used in time events, so it is
     * reused to hold the tickRate as well as other information
@@ -296,8 +298,7 @@ void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
 void QTimeEvt_armX(QTimeEvt * const me,
                    QTimeEvtCtr const nTicks, QTimeEvtCtr const interval)
 {
-    uint_fast8_t tickRate = ((uint_fast8_t)me->super.refCtr_
-                             & (uint_fast8_t)TE_TICK_RATE);
+    uint_fast8_t tickRate = ((uint_fast8_t)me->super.refCtr_ & TE_TICK_RATE);
     QTimeEvtCtr ctr = me->ctr;
     QF_CRIT_STAT_
 
@@ -305,8 +306,8 @@ void QTimeEvt_armX(QTimeEvt * const me,
     * number of clock ticks cannot be zero, and the signal must be valid.
     */
     Q_REQUIRE_ID(400, (me->act != (void *)0)
-                 && (ctr == (QTimeEvtCtr)0)
-                 && (nTicks != (QTimeEvtCtr)0)
+                 && (ctr == 0U)
+                 && (nTicks != 0U)
                  && (tickRate < (uint_fast8_t)QF_MAX_TICK_RATE)
                  && (me->super.sig >= (QSignal)Q_USER_SIG));
 #ifdef Q_NASSERT
@@ -322,8 +323,8 @@ void QTimeEvt_armX(QTimeEvt * const me,
     * rate a time event can be disarmed and yet still linked into the list,
     * because un-linking is performed exclusively in the QF_tickX() function.
     */
-    if ((me->super.refCtr_ & (uint8_t)TE_IS_LINKED) == (uint8_t)0) {
-        me->super.refCtr_ |= (uint8_t)TE_IS_LINKED; /* mark as linked */
+    if ((me->super.refCtr_ & TE_IS_LINKED) == 0U) {
+        me->super.refCtr_ |= TE_IS_LINKED; /* mark as linked */
 
         /* The time event is initially inserted into the separate
         * "freshly armed" link list based on QF_timeEvtHead_[tickRate].act.
@@ -337,14 +338,14 @@ void QTimeEvt_armX(QTimeEvt * const me,
         QF_timeEvtHead_[tickRate].act = me;
     }
 
-    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_ARM, QS_priv_.locFilter[TE_OBJ], me)
-        QS_TIME_();        /* timestamp */
-        QS_OBJ_(me);       /* this time event object */
-        QS_OBJ_(me->act);  /* the active object */
-        QS_TEC_(nTicks);   /* the number of ticks */
-        QS_TEC_(interval); /* the interval */
-        QS_U8_((uint8_t)tickRate); /* tick rate */
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_ARM, QS_priv_.locFilter[TE_OBJ], me)
+        QS_TIME_PRE_();        /* timestamp */
+        QS_OBJ_PRE_(me);       /* this time event object */
+        QS_OBJ_PRE_(me->act);  /* the active object */
+        QS_TEC_PRE_(nTicks);   /* the number of ticks */
+        QS_TEC_PRE_(interval); /* the interval */
+        QS_U8_PRE_(tickRate);  /* tick rate */
+    QS_END_NOCRIT_PRE_()
 
     QF_CRIT_EXIT_();
 }
@@ -375,32 +376,33 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
     QF_CRIT_ENTRY_();
 
     /* is the time event actually armed? */
-    if (me->ctr != (QTimeEvtCtr)0) {
+    if (me->ctr != 0U) {
         wasArmed = true;
-        me->super.refCtr_ |= (uint8_t)TE_WAS_DISARMED;
+        me->super.refCtr_ |= TE_WAS_DISARMED;
 
-        QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_DISARM, QS_priv_.locFilter[TE_OBJ], me)
-            QS_TIME_();            /* timestamp */
-            QS_OBJ_(me);           /* this time event object */
-            QS_OBJ_(me->act);      /* the target AO */
-            QS_TEC_(me->ctr);      /* the number of ticks */
-            QS_TEC_(me->interval); /* the interval */
-            QS_U8_((uint8_t)(me->super.refCtr_ & (uint8_t)TE_TICK_RATE));
-        QS_END_NOCRIT_()
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_DISARM,
+                             QS_priv_.locFilter[TE_OBJ], me)
+            QS_TIME_PRE_();            /* timestamp */
+            QS_OBJ_PRE_(me);           /* this time event object */
+            QS_OBJ_PRE_(me->act);      /* the target AO */
+            QS_TEC_PRE_(me->ctr);      /* the number of ticks */
+            QS_TEC_PRE_(me->interval); /* the interval */
+            QS_U8_PRE_(me->super.refCtr_ & TE_TICK_RATE);
+        QS_END_NOCRIT_PRE_()
 
-        me->ctr = (QTimeEvtCtr)0;  /* schedule removal from the list */
+        me->ctr = 0U;  /* schedule removal from the list */
     }
     else { /* the time event was already disarmed automatically */
         wasArmed = false;
-        me->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_WAS_DISARMED);
+        me->super.refCtr_ &= (uint8_t)(~TE_IS_LINKED & 0xFFU);
 
-        QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_DISARM_ATTEMPT,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_DISARM_ATTEMPT,
                          QS_priv_.locFilter[TE_OBJ], me)
-            QS_TIME_();            /* timestamp */
-            QS_OBJ_(me);           /* this time event object */
-            QS_OBJ_(me->act);      /* the target AO */
-            QS_U8_((uint8_t)(me->super.refCtr_ & (uint8_t)TE_TICK_RATE));
-        QS_END_NOCRIT_()
+            QS_TIME_PRE_();            /* timestamp */
+            QS_OBJ_PRE_(me);           /* this time event object */
+            QS_OBJ_PRE_(me->act);      /* the target AO */
+            QS_U8_PRE_(me->super.refCtr_ & TE_TICK_RATE);
+        QS_END_NOCRIT_PRE_()
 
     }
     QF_CRIT_EXIT_();
@@ -429,8 +431,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
 * published and should be expected in the active object's state machine.
 */
 bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
-    uint_fast8_t tickRate = (uint_fast8_t)me->super.refCtr_
-                            & (uint_fast8_t)TE_TICK_RATE;
+    uint_fast8_t tickRate = (uint_fast8_t)me->super.refCtr_ & TE_TICK_RATE;
     bool wasArmed;
     QF_CRIT_STAT_
 
@@ -438,14 +439,14 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
     * be zero, and the signal of this time event must be valid
     */
     Q_REQUIRE_ID(600, (me->act != (void *)0)
-                      && (tickRate < (uint_fast8_t)QF_MAX_TICK_RATE)
-                      && (nTicks != (QTimeEvtCtr)0)
+                      && (tickRate < QF_MAX_TICK_RATE)
+                      && (nTicks != 0U)
                       && (me->super.sig >= (QSignal)Q_USER_SIG));
 
     QF_CRIT_ENTRY_();
 
     /* is the time evt not running? */
-    if (me->ctr == (QTimeEvtCtr)0) {
+    if (me->ctr == 0U) {
         wasArmed = false;
 
         /* NOTE: For the duration of a single clock tick of the specified
@@ -454,8 +455,8 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
         * QF_tickX() function.
         */
         /* is the time event linked yet? */
-        if ((me->super.refCtr_ & (uint8_t)TE_IS_LINKED) == (uint8_t)0) {
-            me->super.refCtr_ |= (uint8_t)TE_IS_LINKED; /* mark as linked */
+        if ((me->super.refCtr_ & TE_IS_LINKED) == 0U) {
+            me->super.refCtr_ |= TE_IS_LINKED; /* mark as linked */
 
             /* The time event is initially inserted into the separate
             * "freshly armed" list based on QF_timeEvtHead_[tickRate].act.
@@ -474,15 +475,14 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
     }
     me->ctr = nTicks; /* re-load the tick counter (shift the phasing) */
 
-    QS_BEGIN_NOCRIT_(QS_QF_TIMEEVT_REARM, QS_priv_.locFilter[TE_OBJ], me)
-        QS_TIME_();            /* timestamp */
-        QS_OBJ_(me);           /* this time event object */
-        QS_OBJ_(me->act);      /* the target AO */
-        QS_TEC_(me->ctr);      /* the number of ticks */
-        QS_TEC_(me->interval); /* the interval */
-        QS_2U8_((uint8_t)tickRate,
-                ((wasArmed != false) ? (uint8_t)1 : (uint8_t)0));
-    QS_END_NOCRIT_()
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_REARM, QS_priv_.locFilter[TE_OBJ], me)
+        QS_TIME_PRE_();            /* timestamp */
+        QS_OBJ_PRE_(me);           /* this time event object */
+        QS_OBJ_PRE_(me->act);      /* the target AO */
+        QS_TEC_PRE_(me->ctr);      /* the number of ticks */
+        QS_TEC_PRE_(me->interval); /* the interval */
+        QS_2U8_PRE_(tickRate, (wasArmed ? 1U : 0U));
+    QS_END_NOCRIT_PRE_()
 
     QF_CRIT_EXIT_();
     return wasArmed;
@@ -511,9 +511,9 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
 * the function will return 'true'.
 */
 bool QTimeEvt_wasDisarmed(QTimeEvt * const me) {
-    uint8_t wasDisarmed = (me->super.refCtr_ & (uint8_t)TE_WAS_DISARMED);
-    me->super.refCtr_ |= (uint8_t)TE_WAS_DISARMED; /* set the flag */
-    return (wasDisarmed != (uint8_t)0) ? true : false;
+    uint8_t wasDisarmed = (me->super.refCtr_ & TE_WAS_DISARMED);
+    me->super.refCtr_ |= TE_WAS_DISARMED; /* set the flag */
+    return (wasDisarmed != 0U) ? true : false;
 }
 
 /****************************************************************************/

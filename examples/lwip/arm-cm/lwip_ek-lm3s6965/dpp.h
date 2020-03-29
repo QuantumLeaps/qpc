@@ -25,15 +25,15 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
 * Quantum Leaps Web sites: http://www.quantum-leaps.com
-*                          https://state-machine.com
+*                          <www.state-machine.com/licensing>
 * e-mail:                  info@quantum-leaps.com
 *****************************************************************************/
-#ifndef dpp_h
-#define dpp_h
+#ifndef DPP_H
+#define DPP_H
 
 enum DPPSignals {
    EAT_SIG = Q_USER_SIG,     /* published by Table to let a philosopher eat */
@@ -76,4 +76,4 @@ extern QActive * const AO_Philo[N_PHILO]; /* "opaque" pointers to Philo  AO */
 extern QActive * const AO_Table;          /* "opaque" pointer to Table   AO */
 extern QActive * const AO_LwIPMgr;        /* "opaque" pointer to LwIPMgr AO */
 
-#endif                                                             /* dpp_h */
+#endif  /* DPP_H */

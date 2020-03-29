@@ -28,81 +28,81 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* https://state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qk_port_h
-#define qk_port_h
+#ifndef QK_PORT_H
+#define QK_PORT_H
 
 /* QK-specific Interrupt Request handler BEGIN */
 #ifdef __ARMVFP__
-#define QK_IRQ_BEGIN(name_) \
+#define QK_IRQ_BEGIN(name_)              \
     __stackless __arm void name_(void) { \
-    __asm(" SUB LR, LR, #4\n" \
-    " SRSDB #31!\n" \
-    " CPS #31\n" \
-    " PUSH {R0-R3, R12}"); \
-    __asm(" FMRX R12, FPSCR\n" \
-    " STMFD SP!, {R12}\n" \
-    " FMRX R12, FPEXC\n" \
-    " STMFD SP!, {R12}\n" \
-    " FSTMDBD SP!, {D0-D7}"); \
-    __asm(" AND R3, SP, #4\n" \
-    " SUB SP, SP, R3\n" \
-    " PUSH {R3, LR}\n"); \
+    __asm(" SUB LR, LR, #4\n"            \
+    " SRSDB #31!\n"                      \
+    " CPS #31\n"                         \
+    " PUSH {R0-R3, R12}");               \
+    __asm(" FMRX R12, FPSCR\n"           \
+    " STMFD SP!, {R12}\n"                \
+    " FMRX R12, FPEXC\n"                 \
+    " STMFD SP!, {R12}\n"                \
+    " FSTMDBD SP!, {D0-D7}");            \
+    __asm(" AND R3, SP, #4\n"            \
+    " SUB SP, SP, R3\n"                  \
+    " PUSH {R3, LR}\n");                 \
     ++QK_attr_.intNest; {
 #else
-#define QK_IRQ_BEGIN(name_) \
+#define QK_IRQ_BEGIN(name_)              \
     __stackless __arm void name_(void) { \
-    __asm(" SUB LR, LR, #4\n" \
-    " SRSDB #31!\n" \
-    " CPS #31\n" \
-    " PUSH {R0-R3, R12}"); \
-    __asm(" AND R3, SP, #4\n" \
-    " SUB SP, SP, R3\n" \
-    " PUSH {R3, LR}\n"); \
+    __asm(" SUB LR, LR, #4\n"            \
+    " SRSDB #31!\n"                      \
+    " CPS #31\n"                         \
+    " PUSH {R0-R3, R12}");               \
+    __asm(" AND R3, SP, #4\n"            \
+    " SUB SP, SP, R3\n"                  \
+    " PUSH {R3, LR}\n");                 \
     ++QK_attr_.intNest; {
 #endif
 
 /* QK-specific Interrupt Request handler END */
 #ifdef __ARMVFP__
-#define QK_IRQ_END() \
-    } --QK_attr_.intNest; \
-    if (QK_attr_.intNest == (uint_fast8_t)0) { \
-        if (QK_sched_() != (uint_fast8_t)0) { \
-            QK_activate_(); \
-        } \
-    } \
-    __asm(" POP {R3, LR}\n" \
-    " ADD SP, SP, R3"); \
-    __asm(" FLDMIAD SP!, {D0-D7}\n" \
-    " LDMFD SP!, {R12}\n" \
-    " FMXR FPEXC, R12 \n" \
-    " LDMFD SP!, {R12} \n" \
-    " FMXR FPSCR, R12"); \
-    __asm(" POP {R0-R3, R12}\n" \
-    " RFEIA SP!"); \
+#define QK_IRQ_END()                  \
+    } --QK_attr_.intNest;             \
+    if (QK_attr_.intNest == 0U) {     \
+        if (QK_sched_() != 0U) {      \
+            QK_activate_();           \
+        }                             \
+    }                                 \
+    __asm(" POP {R3, LR}\n"           \
+    " ADD SP, SP, R3");               \
+    __asm(" FLDMIAD SP!, {D0-D7}\n"   \
+    " LDMFD SP!, {R12}\n"             \
+    " FMXR FPEXC, R12 \n"             \
+    " LDMFD SP!, {R12} \n"            \
+    " FMXR FPSCR, R12");              \
+    __asm(" POP {R0-R3, R12}\n"       \
+    " RFEIA SP!");                    \
 }
 #else
-#define QK_IRQ_END() \
-    } --QK_attr_.intNest; \
-    if (QK_attr_.intNest == (uint_fast8_t)0) { \
-        if (QK_sched_() != (uint_fast8_t)0) { \
-            QK_activate_(); \
-        } \
-    } \
-    __asm(" POP {R3, LR}\n" \
-    " ADD SP, SP, R3"); \
-    __asm(" POP {R0-R3, R12}\n" \
-    " RFEIA SP!"); \
+#define QK_IRQ_END()                  \
+    } --QK_attr_.intNest;             \
+    if (QK_attr_.intNest == 0U) {     \
+        if (QK_sched_() != 0U) {      \
+            QK_activate_();           \
+        }                             \
+    }                                 \
+    __asm(" POP {R3, LR}\n"           \
+    " ADD SP, SP, R3");               \
+    __asm(" POP {R0-R3, R12}\n"       \
+    " RFEIA SP!");                    \
 }
 #endif
 
 #include "qk.h" /* QK platform-independent public interface */
 
-#endif /* qk_port_h */
+#endif /* QK_PORT_H */

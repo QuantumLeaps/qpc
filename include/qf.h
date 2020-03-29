@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.5.0
-* Last updated on  2019-03-21
+* Last updated for version 6.8.0
+* Last updated on  2020-01-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -29,29 +29,29 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* https://www.state-machine.com
-* mailto:info@state-machine.com
+* <www.state-machine.com/licensing>
+* <info@state-machine.com>
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_h
-#define qf_h
+#ifndef QF_H
+#define QF_H
 
-#ifndef qpset_h
+#ifndef QPSET_H
 #include "qpset.h"
 #endif
 
 /****************************************************************************/
 #ifndef QF_EVENT_SIZ_SIZE
     /*! Default value of the macro configurable value in qf_port.h */
-    #define QF_EVENT_SIZ_SIZE 2
+    #define QF_EVENT_SIZ_SIZE 2U
 #endif
-#if (QF_EVENT_SIZ_SIZE == 1)
+#if (QF_EVENT_SIZ_SIZE == 1U)
     typedef uint8_t QEvtSize;
-#elif (QF_EVENT_SIZ_SIZE == 2)
+#elif (QF_EVENT_SIZ_SIZE == 2U)
     /*! The data type to store the block-size defined based on
     * the macro #QF_EVENT_SIZ_SIZE. */
     /**
@@ -59,7 +59,7 @@
     * size that can be managed by the pool.
     */
     typedef uint16_t QEvtSize;
-#elif (QF_EVENT_SIZ_SIZE == 4)
+#elif (QF_EVENT_SIZ_SIZE == 4U)
     typedef uint32_t QEvtSize;
 #else
     #error "QF_EVENT_SIZ_SIZE defined incorrectly, expected 1, 2, or 4"
@@ -67,15 +67,15 @@
 
 #ifndef QF_MAX_EPOOL
     /*! Default value of the macro configurable value in qf_port.h */
-    #define QF_MAX_EPOOL         3
+    #define QF_MAX_EPOOL         3U
 #endif
 
 #ifndef QF_MAX_TICK_RATE
     /*! Default value of the macro configurable value in qf_port.h.
-    * Valid values: [0..15]; default 1
+    * Valid values: [0U..15U]; default 1
     */
-    #define QF_MAX_TICK_RATE     1
-#elif (QF_MAX_TICK_RATE > 15)
+    #define QF_MAX_TICK_RATE     1U
+#elif (QF_MAX_TICK_RATE > 15U)
     #error "QF_MAX_TICK_RATE exceeds the maximum of 15"
 #endif
 
@@ -156,7 +156,7 @@ typedef struct QActive {
     /*! QF priority (1..#QF_MAX_ACTIVE) of this active object. */
     uint8_t prio;
 
-#ifdef qxk_h  /* QXK kernel used? */
+#ifdef QXK_H  /* QXK kernel used? */
     /*! QF start priority (1..#QF_MAX_ACTIVE) of this active object. */
     uint8_t startPrio;
 #endif
@@ -168,14 +168,14 @@ void QActive_ctor(QActive * const me, QStateHandler initial);
 
 /*! Virtual table for the ::QActive class */
 typedef struct {
-    struct QHsmVtbl super; /*!< inherits ::QHsmVtbl */
+    struct QHsmVtable super; /*!< inherits ::QHsmVtable */
 
     /*! virtual function to start the active object (thread) */
     /** @sa QACTIVE_START() */
     void (*start)(QActive * const me, uint_fast8_t prio,
-                  QEvt const *qSto[], uint_fast16_t qLen,
-                  void *stkSto, uint_fast16_t stkSize,
-                  QEvt const *ie);
+                  QEvt const * * const qSto, uint_fast16_t const qLen,
+                  void * const stkSto, uint_fast16_t const stkSize,
+                  void const * const par);
 
 #ifdef Q_SPY
     /*! virtual function to asynchronously post (FIFO) an event to an AO */
@@ -191,7 +191,7 @@ typedef struct {
     /** @sa QACTIVE_POST_LIFO() */
     void (*postLIFO)(QActive * const me, QEvt const * const e);
 
-} QActiveVtbl;
+} QActiveVtable;
 
 
 /*! Polymorphically start an active object. */
@@ -214,9 +214,9 @@ typedef struct {
 */
 #define QACTIVE_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, par_) do { \
     Q_ASSERT((me_)->super.vptr);                                             \
-    (*((QActiveVtbl const *)((me_)->super.vptr))->start)(                    \
+    (*((QActiveVtable const *)((me_)->super.vptr))->start)(                  \
         (me_), (prio_), (qSto_), (qLen_), (stkSto_), (stkLen_), (par_));     \
-} while (0)
+} while (false)
 
 #ifdef Q_SPY
     /*! Polymorphically posts an event to an active object (FIFO)
@@ -244,8 +244,8 @@ typedef struct {
     *
     * @sa #QACTIVE_POST_X, QActive_post_().
     */
-    #define QACTIVE_POST(me_, e_, sender_)                                \
-        ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+    #define QACTIVE_POST(me_, e_, sender_)                                  \
+        ((void)(*((QActiveVtable const *)((me_)->super.vptr))->post)((me_), \
                   (e_), QF_NO_MARGIN, (sender_)))
 
     /*! Polymorphically posts an event to an active object (FIFO)
@@ -282,17 +282,17 @@ typedef struct {
     * @usage
     * @include qf_postx.c
     */
-    #define QACTIVE_POST_X(me_, e_, margin_, sender_)               \
-        ((*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+    #define QACTIVE_POST_X(me_, e_, margin_, sender_)                 \
+        ((*((QActiveVtable const *)((me_)->super.vptr))->post)((me_), \
          (e_), (margin_), (sender_)))
 #else
 
-    #define QACTIVE_POST(me_, e_, sender_)                                \
-        ((void)(*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+    #define QACTIVE_POST(me_, e_, sender_)                                  \
+        ((void)(*((QActiveVtable const *)((me_)->super.vptr))->post)((me_), \
                   (e_), QF_NO_MARGIN))
 
-    #define QACTIVE_POST_X(me_, e_, margin_, sender_)               \
-        ((*((QActiveVtbl const *)((me_)->super.vptr))->post)((me_), \
+    #define QACTIVE_POST_X(me_, e_, margin_, sender_)                 \
+        ((*((QActiveVtable const *)((me_)->super.vptr))->post)((me_), \
                   (e_), (margin_)))
 
 #endif
@@ -304,7 +304,7 @@ typedef struct {
 * @param[in]     e_    pointer to the event to post
 */
 #define QACTIVE_POST_LIFO(me_, e_) \
-    ((*((QActiveVtbl const *)((me_)->super.vptr))->postLIFO)((me_), (e_)))
+    ((*((QActiveVtable const *)((me_)->super.vptr))->postLIFO)((me_), (e_)))
 
 /* protected functions for ::QActive ...*/
 
@@ -368,22 +368,22 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2);
 */
 typedef QActive QMActive;
 
-/*! Virtual Table for the ::QMActive class (inherited from ::QActiveVtbl */
+/*! Virtual Table for the ::QMActive class (inherited from ::QActiveVtable */
 /**
 * @note
 * ::QMActive inherits ::QActive exactly, without adding any new virtual
-* functions and therefore, ::QMActiveVtbl is typedef'ed as ::QActiveVtbl.
+* functions and therefore, ::QMActiveVtable is typedef'ed as ::QActiveVtable.
 */
-typedef QActiveVtbl QMActiveVtbl;
+typedef QActiveVtable QMActiveVtable;
 
 /*! protected "constructor" of an ::QMActive active object. */
 void QMActive_ctor(QMActive * const me, QStateHandler initial);
 
 
 /****************************************************************************/
-#if (QF_TIMEEVT_CTR_SIZE == 1)
+#if (QF_TIMEEVT_CTR_SIZE == 1U)
     typedef uint8_t QTimeEvtCtr;
-#elif (QF_TIMEEVT_CTR_SIZE == 2)
+#elif (QF_TIMEEVT_CTR_SIZE == 2U)
 
     /*! type of the Time Event counter, which determines the dynamic
     * range of the time delays measured in clock ticks. */
@@ -392,11 +392,11 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial);
     * This typedef is configurable via the preprocessor switch
     * #QF_TIMEEVT_CTR_SIZE. The other possible values of this type are
     * as follows: @n
-    * uint8_t when (QF_TIMEEVT_CTR_SIZE == 1), and @n
-    * uint32_t when (QF_TIMEEVT_CTR_SIZE == 4).
+    * uint8_t when (QF_TIMEEVT_CTR_SIZE == 1U), and @n
+    * uint32_t when (QF_TIMEEVT_CTR_SIZE == 4U).
     */
     typedef uint16_t QTimeEvtCtr;
-#elif (QF_TIMEEVT_CTR_SIZE == 4)
+#elif (QF_TIMEEVT_CTR_SIZE == 4U)
     typedef uint32_t QTimeEvtCtr;
 #else
     #error "QF_TIMEEVT_CTR_SIZE defined incorrectly, expected 1, 2, or 4"
@@ -634,10 +634,10 @@ void QF_onCleanup(void);
 /*! special value of margin that causes asserting failure in case
 * event allocation or event posting fails
 */
-#define QF_NO_MARGIN ((uint_fast16_t)0xFFFF)
+#define QF_NO_MARGIN ((uint_fast16_t)0xFFFFU)
 
 /*! Invoke the system clock tick processing for rate 0 */
-#define QF_TICK(sender_)   QF_TICK_X((uint_fast8_t)0, (sender_))
+#define QF_TICK(sender_)   QF_TICK_X(0U, (sender_))
 
 /*! Returns 'true' if there are no armed time events at a given tick rate */
 bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate);
@@ -669,15 +669,15 @@ void QF_deleteRef_(void const * const evtRef);
 
     #define Q_NEW(evtT_, sig_, ...)                                   \
         (evtT_##_ctor((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
-                      QF_NO_MARGIN, (enum_t)0), (sig_), ##__VA_ARGS__))
+                      QF_NO_MARGIN, 0), (sig_), ##__VA_ARGS__))
 
     #define Q_NEW_X(e_, evtT_, margin_, sig_, ...) do {        \
         (e_) = (evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
-                                 (margin_), (enum_t)0);        \
+                                 (margin_), 0);        \
         if ((e_) != (evtT_ *)0) {                              \
             evtT_##_ctor((e_), (sig_), ##__VA_ARGS__);         \
-        } \
-     } while (0)
+        }                                                      \
+     } while (false)
 
 #else
 
@@ -777,9 +777,9 @@ void QF_deleteRef_(void const * const evtRef);
 * @sa Q_NEW_REF()
 */
 #define Q_DELETE_REF(evtRef_) do { \
-    QF_deleteRef_((evtRef_)); \
-    (evtRef_) = (void *)0; \
-} while (0)
+    QF_deleteRef_((evtRef_));      \
+    (evtRef_) = (void *)0;         \
+} while (false)
 
 /*! Recycle a dynamic event. */
 void QF_gc(QEvt const * const e);
@@ -806,7 +806,7 @@ void QF_bzero(void * const start, uint_fast16_t len);
 /**
 * @note Not to be used by Clients directly, only in ports of QF
 */
-extern QActive *QF_active_[QF_MAX_ACTIVE + 1];
+extern QActive *QF_active_[QF_MAX_ACTIVE + 1U];
 
 
 /****************************************************************************/
@@ -825,9 +825,5 @@ typedef QActive QTicker;
 /*! Constructor of the QTicker Active Object class */
 void QTicker_ctor(QTicker * const me, uint8_t tickRate);
 
-/****************************************************************************/
-/*! get the current QF version number string of the form "X.Y.Z" */
-#define QF_getVersion() (QP_versionStr)
-
-#endif /* qf_h */
+#endif /* QF_H */
 

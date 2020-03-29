@@ -28,22 +28,22 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
+* Web:   www.state-machine.com/licensing
 * Email: info@state-machine.com
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* The maximum number of active objects in the application, see NOTE1 */
-#define QF_MAX_ACTIVE           32
+#define QF_MAX_ACTIVE           32U
 
 /* The maximum number of system clock tick rates */
-#define QF_MAX_TICK_RATE        2
+#define QF_MAX_TICK_RATE        2U
 
 /* fast unconditional interrupt disabling/enabling for ARM state, NOTE2 */
 #define QF_INT_DISABLE()   \
@@ -69,7 +69,7 @@
     #define QF_CRIT_ENTRY(stat_)    do { \
         __asm volatile ("MRS %0,cpsr" : "=r" (stat_) :: "cc"); \
         QF_INT_DISABLE(); \
-    } while (0)
+    } while (false)
     #define QF_CRIT_EXIT(stat_) \
         __asm volatile ("MSR cpsr_c,%0" :: "r" (stat_) : "cc")
 
@@ -105,4 +105,4 @@ void QF_unused(void);
 *
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */

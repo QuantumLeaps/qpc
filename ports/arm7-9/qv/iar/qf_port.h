@@ -28,22 +28,22 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
+* Web:   www.state-machine.com/licensing
 * Email: info@state-machine.com
 ******************************************************************************
 * @endcond
 */
-#ifndef qf_port_h
-#define qf_port_h
+#ifndef QF_PORT_H
+#define QF_PORT_H
 
 /* The maximum number of active objects in the application, see NOTE1 */
-#define QF_MAX_ACTIVE           32
+#define QF_MAX_ACTIVE           32U
 
 /* The maximum number of system clock tick rates */
-#define QF_MAX_TICK_RATE        2
+#define QF_MAX_TICK_RATE        2U
 
 /* fast unconditional interrupt disabling/enabling for ARM state, NOTE2 */
 #define QF_INT_DISABLE()        __asm("MSR cpsr_c,#(0x1F | 0x80)")
@@ -66,7 +66,7 @@
     #define QF_CRIT_ENTRY(stat_) do { \
         (stat_) = __get_CPSR(); \
         QF_INT_DISABLE(); \
-    } while (0)
+    } while (false)
     #define QF_CRIT_EXIT(stat_) __set_CPSR(stat_)
 
     #include <intrinsics.h> /* for  __get_CPSR()/__set_CPSR() */
@@ -101,4 +101,4 @@ void QF_reserved(void);
 * QP services. Specifically FIQ cannot post or publish events.
 */
 
-#endif /* qf_port_h */
+#endif /* QF_PORT_H */
