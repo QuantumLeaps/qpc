@@ -1,6 +1,6 @@
 /*****************************************************************************
 * Product: Deferred Event state pattern example
-* Last updated for version 6.4.0
+* Last updated for version 6.8.0
 * Last updated on  2019-02-08
 *
 *                    Q u a n t u m  L e a P s
@@ -34,7 +34,7 @@
 #include "qpc.h"
 #include "bsp.h"
 
-#include <stdio.h> /* this example uses printf() to report status */
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 
 Q_DEFINE_THIS_FILE
 
@@ -92,14 +92,14 @@ QState TServer_idle(TServer * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            printf("idle-ENTRY;\n");
+            PRINTF_S("%s\n", "idle-ENTRY;");
 
             /* recall the oldest deferred request... */
             if (QActive_recall(&me->super, &me->requestQueue)) {
-                printf("Request recalled\n");
+                PRINTF_S("%s\n", "Request recalled");
             }
             else {
-                printf("No deferred requests\n");
+                PRINTF_S("%s\n", "No deferred requests");
             }
             status = Q_HANDLED();
             break;
@@ -111,7 +111,7 @@ QState TServer_idle(TServer * const me, QEvt const * const e) {
             */
             Q_NEW_REF(me->activeRequest, RequestEvt);
 
-            printf("Processing request #%d\n",
+            PRINTF_S("Processing request #%d\n",
                    (int)me->activeRequest->ref_num);
 
             status = Q_TRAN(&TServer_receiving);
@@ -133,7 +133,7 @@ QState TServer_busy(TServer * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_EXIT_SIG: {
-            printf("busy-EXIT; done processing request #%d\n",
+            PRINTF_S("busy-EXIT; done processing request #%d\n",
                    (int)me->activeRequest->ref_num);
 
             /* delete the reference to the active request, because
@@ -147,12 +147,12 @@ QState TServer_busy(TServer * const me, QEvt const * const e) {
         case NEW_REQUEST_SIG: {
             /* defer the new request event... */
             if (QActive_defer(&me->super, &me->requestQueue, e)) {
-                printf("Request #%d deferred;\n",
+                PRINTF_S("Request #%d deferred;\n",
                        (int)Q_EVT_CAST(RequestEvt)->ref_num);
             }
             else {
                 /* notify the request sender that his request was denied... */
-                printf("Request #%d IGNORED;\n",
+                PRINTF_S("Request #%d IGNORED;\n",
                        (int)Q_EVT_CAST(RequestEvt)->ref_num);
             }
             status = Q_HANDLED();
@@ -175,7 +175,7 @@ QState TServer_receiving(TServer * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             /* inform about the first stage of processing of the request... */
-            printf("receiving-ENTRY; active request: #%d\n",
+            PRINTF_S("receiving-ENTRY; active request: #%d\n",
                    (int)me->activeRequest->ref_num);
 
             /* one-shot timeout in 1 second */
@@ -205,7 +205,7 @@ QState TServer_authorizing(TServer * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             /* inform about the second stage of processing of the request.. */
-            printf("authorizing-ENTRY; active request: #%d\n",
+            PRINTF_S("authorizing-ENTRY; active request: #%d\n",
                    (int)me->activeRequest->ref_num);
 
             /* one-shot timeout in 2 seconds */
@@ -234,7 +234,7 @@ QState TServer_final(TServer * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            printf("final-ENTRY;\n");
+            PRINTF_S("%s\n", "final-ENTRY;");
             QF_stop(); /* terminate the application */
             status = Q_HANDLED();
             break;
@@ -255,10 +255,10 @@ static QF_MPOOL_EL(RequestEvt) l_smlPoolSto[20]; /* storage for small pool */
 
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
-    printf("Deferred Event state pattern\nQP version: %s\n"
+    PRINTF_S("Deferred Event state pattern\nQP version: %s\n"
            "Press 'n' to generate a new request\n"
            "Press ESC to quit...\n",
-           QP_versionStr);
+           QP_VERSION_STR);
 
     BSP_init(argc, argv); /* initialize the BSP */
 

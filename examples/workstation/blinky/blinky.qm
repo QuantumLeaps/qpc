@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.6.0" links="1">
+<model version="5.0.0" links="1">
  <documentation>Simple &quot;Blinky&quot; model</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -55,7 +55,8 @@ BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
   <!--${.::blinky.c}-->
   <file name="blinky.c">
    <text>#include &quot;qpc.h&quot;
-#include &lt;stdio.h&gt;
+
+#include &quot;safe_std.h&quot; /* portable &quot;safe&quot; &lt;stdio.h&gt;/&lt;string.h&gt; facilities */
 #include &lt;stdlib.h&gt; /* for exit() */
 
 Q_DEFINE_THIS_FILE
@@ -63,13 +64,13 @@ Q_DEFINE_THIS_FILE
 enum { BSP_TICKS_PER_SEC = 100 };
 
 void BSP_ledOff(void) {
-    printf(&quot;LED OFF\n&quot;);
+    PRINTF_S(&quot;%s\n&quot;, &quot;LED OFF&quot;);
 }
 void BSP_ledOn(void) {
-    printf(&quot;LED ON\n&quot;);
+    PRINTF_S(&quot;%s\n&quot;, &quot;LED ON&quot;);
 }
 void Q_onAssert(char const * const module, int loc) {
-    fprintf(stderr, &quot;Assertion failed in %s:%d&quot;, module, loc);
+    FPRINTF_S(stderr, &quot;Assertion failed in %s:%d&quot;, module, loc);
     exit(-1);
 }
 void QF_onStartup(void) {}

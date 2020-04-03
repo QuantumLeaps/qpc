@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QUTEST, QP/C, Win32, MinGW toolset
-# Last updated for version 6.4.0
-# Last updated on  2019-01-09
+# Last updated for version 6.8.0
+# Last updated on  2020-03-31
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -132,7 +132,7 @@ LIBFLAGS := rs
 BIN_DIR = mingw
 
 # gcc options:
-CFLAGS  := -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
+CFLAGS  := -c -g -O -fno-pie -std=c99 -pedantic -Wall -Wextra -W \
 	$(INCLUDES) $(DEFINES)
 
 CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \

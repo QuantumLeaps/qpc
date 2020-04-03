@@ -34,8 +34,8 @@
 #include "qpc.h"
 #include "qhsmtst.h"
 
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 #include <stdlib.h>
-#include <stdio.h>
 
 Q_DEFINE_THIS_FILE
 
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     if (l_outFile == (FILE *)0) { /* interactive version? */
         l_outFile = stdout; /* use the stdout as the output file */
 
-        printf("QHsmTst example, built on %s at %s,\n"
+        PRINTF_S("QHsmTst example, built on %s at %s,\n"
                "QP: %s.\nPress ESC to quit...\n",
                __DATE__, __TIME__, QP_VERSION_STR);
 
@@ -73,9 +73,9 @@ int main(int argc, char *argv[]) {
             QEvt e;
             int c;
 
-            printf("\n");
+            PRINTF_S("\n", "");
             c = (uint8_t)QF_consoleWaitForKey();
-            printf("%c: ", (c >= ' ') ? c : 'X');
+            PRINTF_S("%c: ", (c >= ' ') ? c : 'X');
 
             if ('a' <= c && c <= 'i') { /* in range? */
                 e.sig = (QSignal)(c - 'a' + A_SIG);
@@ -94,13 +94,13 @@ int main(int argc, char *argv[]) {
         }
     }
     else { /* batch version */
-        printf("QHsmTst example, built on %s at %s, QP %s\n"
+        PRINTF_S("QHsmTst example, built on %s at %s, QP %s\n"
                "output saved to %s\n",
                __DATE__, __TIME__, QP_VERSION_STR,
                argv[1]);
 
-        fprintf(l_outFile, "QHsmTst example, QP %s\n",
-                QP_VERSION_STR);
+        FPRINTF_S(l_outFile, "QHsmTst example, QP %s\n",
+                  QP_VERSION_STR);
 
         QHSM_INIT(the_hsm, (QEvt *)0); /* the top-most initial tran. */
 
@@ -135,17 +135,17 @@ int main(int argc, char *argv[]) {
 }
 /*..........................................................................*/
 Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
-    fprintf(stderr, "Assertion failed in %s:%d\n", module, loc);
+    FPRINTF_S(stderr, "Assertion failed in %s:%d\n", module, loc);
     QF_onCleanup();
     exit(-1);
 }
 /*..........................................................................*/
 void BSP_display(char const *msg) {
-    fprintf(l_outFile, msg);
+    FPRINTF_S(l_outFile, "%s", msg);
 }
 /*..........................................................................*/
 void BSP_exit(void) {
-    printf("Bye, Bye!\n");
+    PRINTF_S("\n%s\n", "Bye, Bye!");
     QF_onCleanup();
     exit(0);
 }
@@ -154,7 +154,7 @@ static void dispatch(QSignal sig) {
     QEvt e;
     Q_REQUIRE((A_SIG <= sig) && (sig <= I_SIG));
     e.sig = sig;
-    fprintf(l_outFile, "\n%c:", 'A' + sig - A_SIG);
+    FPRINTF_S(l_outFile, "\n%c:", 'A' + sig - A_SIG);
     QHSM_DISPATCH(the_hsm, &e); /* dispatch the event */
 }
 

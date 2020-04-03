@@ -61,6 +61,6 @@ LOSSES.
 Contact Information:
 ====================
 Quantum Leaps, LLC
-https://state-machine.com
+https://www.state-machine.com
 info@state-machine.com
  

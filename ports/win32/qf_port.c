@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-03-23
+* Last updated on  2020-03-31
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -116,8 +116,8 @@ int_t QF_run(void) {
 
     QF_onCleanup();  /* cleanup callback */
     QS_EXIT();       /* cleanup the QSPY connection */
-    //DeleteCriticalSection(&l_startupCritSect);
-    //DeleteCriticalSection(&l_win32CritSect);
+    /*DeleteCriticalSection(&l_startupCritSect);*/
+    /*DeleteCriticalSection(&l_win32CritSect);*/
     return 0; /* return success */
 }
 /****************************************************************************/

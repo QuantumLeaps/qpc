@@ -34,7 +34,7 @@
 #include "qpc.h"
 #include "history.h"
 
-#include <stdio.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 #include <stdlib.h>
 
 Q_DEFINE_THIS_FILE
@@ -44,7 +44,7 @@ int main() {
     QF_init();
     QF_onStartup();
 
-    printf("History state pattern\nQP version: %s\n"
+    PRINTF_S("History state pattern\nQP version: %s\n"
            "Press 'o' to OPEN  the door\n"
            "Press 'c' to CLOSE the door\n"
            "Press 't' to start TOASTING\n"
@@ -61,9 +61,9 @@ int main() {
         QEvt e;
         uint8_t c;
 
-        printf("\n");
+        PRINTF_S("\n", "");
         c = (uint8_t)QF_consoleWaitForKey();
-        printf("%c: ", (c >= ' ') ? c : 'X');
+        PRINTF_S("%c: ", (c >= ' ') ? c : 'X');
 
         switch (c) {
             case 'o':  e.sig = OPEN_SIG;        break;
@@ -95,7 +95,7 @@ void QF_onClockTick(void) {
 
 /*..........................................................................*/
 Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
-    fprintf(stderr, "Assertion failed in %s, line %d", file, line);
+    FPRINTF_S(stderr, "Assertion failed in %s, line %d", file, line);
     QF_onCleanup();
     exit(-1);
 }

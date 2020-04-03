@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-01-21
+* Last updated on  2020-03-31
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -49,9 +49,8 @@
 #include "qassert.h"  /* QP embedded systems-friendly assertions */
 #include "qs_port.h"  /* include QS port */
 
-#include <stdio.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 #include <stdlib.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -61,7 +60,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-//Q_DEFINE_THIS_MODULE("qs_port")
+/*Q_DEFINE_THIS_MODULE("qs_port")*/
 
 #define QS_TX_SIZE     (8*1024)
 #define QS_RX_SIZE     (2*1024)
@@ -118,7 +117,7 @@ uint8_t QS_onStartup(void const *arg) {
     hints.ai_protocol = IPPROTO_TCP;
     status = getaddrinfo(hostName, serviceName, &hints, &result);
     if (status != 0) {
-        fprintf(stderr,
+        FPRINTF_S(stderr,
             "<TARGET> ERROR   cannot resolve host Name=%s:%s,Err=%d\n",
                     hostName, serviceName, status);
         goto error;
@@ -141,7 +140,7 @@ uint8_t QS_onStartup(void const *arg) {
 
     /* socket could not be opened & connected? */
     if (l_sock == INVALID_SOCKET) {
-        fprintf(stderr, "<TARGET> ERROR   cannot connect to QSPY at "
+        FPRINTF_S(stderr, "<TARGET> ERROR   cannot connect to QSPY at "
             "host=%s:%s\n",
             hostName, serviceName);
         goto error;
@@ -150,14 +149,14 @@ uint8_t QS_onStartup(void const *arg) {
     /* set the socket to non-blocking mode */
     status = fcntl(l_sock, F_GETFL, 0);
     if (status == -1) {
-        fprintf(stderr,
+        FPRINTF_S(stderr,
             "<TARGET> ERROR   Socket configuration failed errno=%d\n",
             errno);
         QS_EXIT();
         goto error;
     }
     if (fcntl(l_sock, F_SETFL, status | O_NONBLOCK) != 0) {
-        fprintf(stderr, "<TARGET> ERROR   Failed to set non-blocking socket "
+        FPRINTF_S(stderr, "<TARGET> ERROR   Failed to set non-blocking socket "
             "errno=%d\n", errno);
         QS_EXIT();
         goto error;
@@ -183,7 +182,7 @@ void QS_onCleanup(void) {
         close(l_sock);
         l_sock = INVALID_SOCKET;
     }
-    //printf("<TARGET> Disconnected from QSPY\n");
+    /*PRINTF_S("<TARGET> Disconnected from QSPY\n");*/
 }
 /*..........................................................................*/
 void QS_onReset(void) {
@@ -197,7 +196,7 @@ void QS_onFlush(void) {
     QS_CRIT_STAT_
 
     if (l_sock == INVALID_SOCKET) { /* socket NOT initialized? */
-        fprintf(stderr, "<TARGET> ERROR   invalid TCP socket\n");
+        FPRINTF_S(stderr, "<TARGET> ERROR   invalid TCP socket\n");
         return;
     }
 
@@ -215,7 +214,7 @@ void QS_onFlush(void) {
                     nanosleep(&c_timeout, NULL);
                 }
                 else { /* some other socket error... */
-                    fprintf(stderr, "<TARGET> ERROR   sending data over TCP,"
+                    FPRINTF_S(stderr, "<TARGET> ERROR   sending data over TCP,"
                            "errno=%d\n", errno);
                     return;
                 }
@@ -254,7 +253,7 @@ void QS_output(void) {
     QS_CRIT_STAT_
 
     if (l_sock == INVALID_SOCKET) { /* socket NOT initialized? */
-        fprintf(stderr, "<TARGET> ERROR   invalid TCP socket\n");
+        FPRINTF_S(stderr, "<TARGET> ERROR   invalid TCP socket\n");
         return;
     }
 
@@ -272,7 +271,7 @@ void QS_output(void) {
                     nanosleep(&c_timeout, NULL);
                 }
                 else { /* some other socket error... */
-                    fprintf(stderr, "<TARGET> ERROR   sending data over TCP,"
+                    FPRINTF_S(stderr, "<TARGET> ERROR   sending data over TCP,"
                            "errno=%d\n", errno);
                     return;
                 }

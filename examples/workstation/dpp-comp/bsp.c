@@ -35,8 +35,8 @@
 #include "dpp.h"
 #include "bsp.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
+#include <stdlib.h>   /* for exit() */
 
 Q_DEFINE_THIS_FILE
 
@@ -55,7 +55,7 @@ void BSP_init(int argc, char *argv[]) {
     (void)argc;
     (void)argv;
 
-    printf("Dining Philosophers Problem example"
+    PRINTF_S("Dining Philosophers Problem example"
            "\nQP %s\n"
            "Press 'p' to pause\n"
            "Press 's' to serve\n"
@@ -79,7 +79,7 @@ void BSP_terminate(int16_t result) {
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
-    printf("Philosopher %2d is %s\n", (int)n, stat);
+    PRINTF_S("Philosopher %2d is %s\n", (int)n, stat);
 
     QS_BEGIN(PHILO_STAT, (void *)0) /* application-specific record begin */
         QS_U8(1, n);  /* Philosopher number */
@@ -88,7 +88,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    printf("Paused is %s\n", paused ? "ON" : "OFF");
+    PRINTF_S("Paused is %s\n", paused ? "ON" : "OFF");
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) {  /* a very cheap pseudo-random-number generator */
@@ -111,7 +111,7 @@ void QF_onStartup(void) {
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
-    printf("\nBye! Bye!\n");
+    PRINTF_S("\n%s\n", "Bye! Bye!");
     QF_consoleCleanup();
 }
 /*..........................................................................*/
@@ -168,7 +168,7 @@ void QS_onCommand(uint8_t cmdId,
 /*..........................................................................*/
 Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
-    fprintf(stderr, "Assertion failed in %s:%d", module, loc);
+    FPRINTF_S(stderr, "Assertion failed in %s:%d", module, loc);
     QF_onCleanup();
     exit(-1);
 }

@@ -40,8 +40,7 @@
 #include "lwip.h"  /* lwIP stack */
 #include "httpd.h" /* lwIP application */
 
-#include <string.h>
-#include <stdio.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 
 Q_DEFINE_THIS_FILE
 
@@ -223,11 +222,11 @@ QState LwIPMgr_running(LwIPMgr *me, QEvt const *e) {
                 ip_net  = ntohl(me->ip_addr);
                     /* publish the text event to display the new IP address */
                 te = Q_NEW(TextEvt, DISPLAY_IPADDR_SIG);
-                snprintf(te->text, Q_DIM(te->text), "%d.%d.%d.%d",
-                         ((ip_net) >> 24) & 0xFF,
-                         ((ip_net) >> 16) & 0xFF,
-                         ((ip_net) >> 8)  & 0xFF,
-                         ip_net           & 0xFF);
+                SNPRINTF_S(te->text, Q_DIM(te->text), "%d.%d.%d.%d",
+                          ((ip_net) >> 24) & 0xFF,
+                          ((ip_net) >> 16) & 0xFF,
+                          ((ip_net) >> 8)  & 0xFF,
+                          ip_net           & 0xFF);
                 QF_PUBLISH((QEvt *)te, me);
             }
 
@@ -317,7 +316,7 @@ static int ssi_handler(int iIndex, char *pcInsert, int iInsertLen) {
             break;
     }
 
-    return snprintf(pcInsert, MAX_TAG_INSERT_LEN, "%d", value);
+    return SPRINTF_S(pcInsert, MAX_TAG_INSERT_LEN, "%d", value);
 }
 
 /* Common Gateway Iinterface (CG) handler ..................................*/

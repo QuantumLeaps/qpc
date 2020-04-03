@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-03-04
+* Last updated on  2020-03-31
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -371,7 +371,7 @@ void QS_target_info_pre_(uint8_t isReset) {
         QS_U8_PRE_(QF_MAX_ACTIVE);
         QS_U8_PRE_(QF_MAX_EPOOL | (QF_MAX_TICK_RATE << 4));
 
-        // send the build time in three bytes (sec, min, hour)...
+        /* send the build time in three bytes (sec, min, hour)... */
         QS_U8_PRE_((10U * (uint8_t)(TIME[6] - ZERO))
                    + (uint8_t)(TIME[7] - ZERO));
         QS_U8_PRE_((10U * (uint8_t)(TIME[3] - ZERO))
@@ -384,7 +384,7 @@ void QS_target_info_pre_(uint8_t isReset) {
                       + (uint8_t)(TIME[1] - ZERO));
         }
 
-        // send the build date in three bytes (day, month, year) ...
+        /* send the build date in three bytes (day, month, year) ... */
         if (Q_BUILD_DATE[4] == ' ') {
             QS_U8_PRE_(DATE[5] - ZERO);
         }
@@ -392,7 +392,7 @@ void QS_target_info_pre_(uint8_t isReset) {
             QS_U8_PRE_((10U * (uint8_t)(DATE[4] - ZERO))
                        + (uint8_t)(DATE[5] - ZERO));
         }
-        // convert the 3-letter month to a number 1-12 ...
+        /* convert the 3-letter month to a number 1-12 ... */
         switch (DATE[0] + DATE[1] + DATE[2]) {
             case (int_t)'J' + (int_t)'a' + (int_t)'n':
                 b = 1U;
@@ -434,7 +434,7 @@ void QS_target_info_pre_(uint8_t isReset) {
                 b = 0U;
                 break;
         }
-        QS_U8_PRE_(b); // store the month
+        QS_U8_PRE_(b); /* store the month */
         QS_U8_PRE_((10U * (uint8_t)(DATE[9] - ZERO))
                    + (uint8_t)(DATE[10] - ZERO));
     QS_endRec_();

@@ -67,20 +67,20 @@
 
     /* Ensure macro versions of ctype.h functions expand to function versions
        to make use of the function semantics defined below */
-    ++disalnum(x)=(isalnum)(x)
-    ++disalpha(x)=(isalpha)(x)
-    ++disblank(x)=(isblank)(x)
-    ++discntrl(x)=(iscntrl)(x)
-    ++disdigit(x)=(isdigit)(x)
-    ++disgraph(x)=(isgraph)(x)
-    ++dislower(x)=(islower)(x)
-    ++disprint(x)=(isprint)(x)
-    ++dispunct(x)=(ispunct)(x)
-    ++disspace(x)=(isspace)(x)
-    ++disupper(x)=(isupper)(x)
-    ++disxdigit(x)=(isxdigit)(x)
-    ++dtolower(x)=(tolower)(x)
-    ++dtoupper(x)=(toupper)(x)
+    --uisalnum
+    --uisalpha
+    --uisblank
+    --uiscntrl
+    --uisdigit
+    --uisgraph
+    --uislower
+    --uisprint
+    --uispunct
+    --uisspace
+    --uisupper
+    --uisxdigit
+    --utolower
+    --utoupper
 
     /* Define semantics for ctype.h functions */
     -sem(isalnum, (1n >= UCHAR_MIN && 1n <= UCHAR_MAX) || 1n == EOF)

@@ -40,7 +40,7 @@
 #ifndef QEP_PORT_H
 #define QEP_PORT_H
 
-//! no-return function specifier (GCC-ARM compiler)
+/*! no-return function specifier (GCC-ARM compiler) */
 #define Q_NORETURN   __attribute__ ((noreturn)) void
 
 #include <stdint.h>  /* Exact-width types. WG14/N843 C99 Standard */

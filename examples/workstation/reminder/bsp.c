@@ -34,8 +34,8 @@
 #include "qpc.h"
 #include "bsp.h"
 
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 #include <stdlib.h>
-#include <stdio.h>
 
 //Q_DEFINE_THIS_FILE
 
@@ -51,7 +51,7 @@ void QF_onStartup(void) {
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
-    printf("\nBye! Bye!\n");
+    PRINTF_S("\n%s\n", "Bye! Bye!");
     QF_consoleCleanup();
 }
 /*..........................................................................*/
@@ -67,7 +67,7 @@ void QF_onClockTick(void) {
 }
 /*..........................................................................*/
 Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
-    fprintf(stderr, "Assertion failed in %s:%d", module, loc);
+    FPRINTF_S(stderr, "Assertion failed in %s:%d", module, loc);
     QF_onCleanup();
     exit(-1);
 }

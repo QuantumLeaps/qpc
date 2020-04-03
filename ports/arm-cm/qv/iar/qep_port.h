@@ -43,7 +43,6 @@
 /*! no-return function specifier (IAR compiler) */
 #define Q_NORETURN  __noreturn void
 
-
 #include <stdint.h>  /* Exact-width types. WG14/N843 C99 Standard */
 #include <stdbool.h> /* Boolean type.      WG14/N843 C99 Standard */
 

@@ -34,8 +34,8 @@
 #include "qpc.h"
 #include "bsp.h"
 
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 #include <stdlib.h>
-#include <stdio.h>
 
 Q_DEFINE_THIS_FILE
 
@@ -104,14 +104,14 @@ QState Cruncher_processing(Cruncher * const me, QEvt const * const e) {
                 status = Q_HANDLED();
             }
             else {
-                printf("pi=%16.14f\n", 4.0*me->sum);
+                PRINTF_S("pi=%16.14f\n", 4.0*me->sum);
                 fflush(stdout);
                 status = Q_TRAN(&Cruncher_processing);
             }
             break;
         }
         case ECHO_SIG: {
-            printf("Echo! pi=%16.14f\n", 4.0*me->sum);
+            PRINTF_S("Echo! pi=%16.14f\n", 4.0*me->sum);
             fflush(stdout);
             status = Q_HANDLED();
             break;
@@ -132,7 +132,7 @@ QState Cruncher_final(Cruncher * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            printf("final-ENTRY;\n");
+            PRINTF_S("%s\n", "final-ENTRY;");
             fflush(stdout);
             QF_stop(); /* terminate the application */
             status = Q_HANDLED();
@@ -155,7 +155,7 @@ static QF_MPOOL_EL(ReminderEvt) l_smlPoolSto[20]; /* storage for small pool */
 
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
-    printf("Reminder state pattern\nQP version: %s\n"
+    PRINTF_S("Reminder state pattern\nQP version: %s\n"
            "Press 'e' to echo the current value...\n"
            "Press ESC to quit...\n",
            QP_versionStr);

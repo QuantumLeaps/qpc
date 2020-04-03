@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: Board Support Package (BSP) for the Calculator example
-* Last updated for version 6.5.0
-* Last updated on  2019-03-20
+* Last updated for version 6.8.0
+* Last updated on  2020-03-31
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -34,9 +34,8 @@
 #include "qpc.h"
 #include "bsp.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
+#include <stdlib.h>   /* for exit() */
 
 #define DISP_WIDTH  15
 
@@ -57,18 +56,18 @@ void BSP_insert(int keyId) {
         ++l_len;
     }
     else if (l_len < (DISP_WIDTH - 1)) {
-        memmove(&l_display[0], &l_display[1], DISP_WIDTH - 1);
+        MEMMOVE_S(&l_display[0], DISP_WIDTH, &l_display[1], DISP_WIDTH - 1);
         l_display[DISP_WIDTH - 1] = (char)keyId;
         ++l_len;
     }
 }
 /*..........................................................................*/
 void BSP_display(double value) {
-    snprintf(l_display, Q_DIM(l_display), "%15.6g", value);
+    SNPRINTF_S(l_display, Q_DIM(l_display), "%15.6g", value);
 }
 /*..........................................................................*/
 void BSP_display_error(char const *err) {
-    strcpy_s(l_display, Q_DIM(l_display), err);
+    STRCPY_S(l_display, Q_DIM(l_display), err);
 }
 /*..........................................................................*/
 void BSP_negate(void) {
@@ -77,11 +76,11 @@ void BSP_negate(void) {
 }
 /*..........................................................................*/
 void BSP_show_display(void) {
-    printf("\n[%s] ", l_display);
+    PRINTF_S("\n[%s] ", l_display);
 }
 /*..........................................................................*/
 void BSP_exit(void) {
-    printf("\nBye! Bye!\n");
+    PRINTF_S("\n%s\n", "Bye! Bye!");
     fflush(stdout);
     QF_onCleanup();
     exit(0);
@@ -92,7 +91,7 @@ double BSP_get_value(void) {
 }
 /*..........................................................................*/
 void BSP_message(char const *msg) {
-    printf(msg);
+    PRINTF_S("%s", msg);
 }
 
 /*..........................................................................*/
@@ -110,6 +109,6 @@ void QF_onClockTick(void) {
 /*..........................................................................*/
 /* this function is used by the QP embedded systems-friendly assertions */
 Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
-    printf("Assertion failed in %s, line %d", file, line);
+    FPRINTF_S(stderr, "Assertion failed in %s, line %d", file, line);
     exit(-1);
 }

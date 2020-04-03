@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-03-23
+* Last updated on  2020-03-31
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -82,8 +82,6 @@ static void sigIntHandler(int dummy);
 
 /* QF functions ============================================================*/
 void QF_init(void) {
-    extern uint_fast8_t QF_maxPool_;
-    extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
     struct sigaction sig_act;
 
     /* lock memory so we're never swapped out to disk */

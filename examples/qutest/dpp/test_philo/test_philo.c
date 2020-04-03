@@ -35,7 +35,7 @@
 #include "bsp.h"
 #include "dpp.h"
 
-//#include <stdio.h>
+//#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 
 Q_DEFINE_THIS_FILE
 
@@ -98,10 +98,10 @@ int main(int argc, char *argv[]) {
 
 /*..........................................................................*/
 void QS_onTestSetup(void) {
-    //printf("QS_onTestSetup\n");
+    //PRINTF_S("%s\n", "QS_onTestSetup");
 }
 void QS_onTestTeardown(void) {
-    //printf("QS_onTestTeardown\n");
+    //PRINTF_S("%s\n", "QS_onTestTeardown");
 }
 
 /*..........................................................................*/

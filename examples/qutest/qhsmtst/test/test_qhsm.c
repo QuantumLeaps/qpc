@@ -87,7 +87,7 @@ void QS_onCommand(uint8_t cmdId,
     (void)param2;
     (void)param3;
 
-    //printf("<TARGET> Command id=%d param=%d\n", (int)cmdId, (int)param);
+    //PRINTF_S("<TARGET> Command id=%d param=%d\n", (int)cmdId, (int)param);
     switch (cmdId) {
        case 0U: {
            break;

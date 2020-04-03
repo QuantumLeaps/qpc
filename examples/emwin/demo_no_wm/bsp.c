@@ -39,9 +39,9 @@
 #include "GUI_SIM.h"
 #include "DIALOG.h"
 
-#include <windows.h>
-#include <stdio.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 #include <time.h>
+#include <windows.h>
 
 Q_DEFINE_THIS_FILE
 
@@ -107,7 +107,7 @@ Q_NORETURN Q_onAssert(char_t const * const file, int_t const loc) {
     char str[256];
 
     QF_CRIT_ENTRY(dummy); /* make sure nothing else is running */
-    sprintf(str, "%s:%d", file, loc);
+    SNPRINTF_S(str, sizeof(str), "%s:%d", file, loc);
     MessageBox(NULL, str, "Assertion Failure", MB_TASKMODAL | MB_OK);
     QF_stop(); /* terminate the QF, causes termination of the MainTask() */
 }

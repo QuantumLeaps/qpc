@@ -36,7 +36,7 @@
 #include "clock.h"
 #include "bsp.h"
 
-#include <stdio.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 
 Q_DEFINE_THIS_FILE
 
@@ -45,14 +45,14 @@ int main(int argc, char *argv[]) {
     static QEvt const *l_alarmClockQSto[10]; /* queue storage for AlarmClock */
     static QF_MPOOL_EL(TimeEvt) l_smlPoolSto[10]; /* storage for small pool */
 
-    printf("Orthogonal Component pattern\nQP version: %s\n"
+    PRINTF_S("Orthogonal Component pattern\nQP version: %s\n"
            "Press 'o' to turn the Alarm ON\n"
            "Press 'f' to turn the Alarm OFF\n"
            "Press '0'..'9' to set the Alarm time\n"
            "Press 'a' to set the Clock in 12-hour mode\n"
            "Press 'b' to set the Clock in 24-hour mode\n"
            "Press ESC to quit...\n",
-           QP_versionStr);
+           QP_VERSION_STR);
 
     BSP_init(argc, argv); /* initialize the BSP */
 

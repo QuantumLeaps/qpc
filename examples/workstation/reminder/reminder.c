@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Reminder state pattern example
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.8.0
+* Last updated on  2020-04-01
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -34,7 +34,7 @@
 #include "qpc.h"
 #include "bsp.h"
 
-#include <stdio.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 
 Q_DEFINE_THIS_FILE
 
@@ -121,7 +121,7 @@ QState Sensor_polling(Sensor * const me, QEvt const * const e) {
             static const QEvt reminderEvt = { DATA_READY_SIG, 0U, 0U };
 
             ++me->pollCtr;
-            printf("polling %3d\n", me->pollCtr);
+            PRINTF_S("polling %3d\n", me->pollCtr);
             if ((me->pollCtr & 0x3U) == 0U) {  /* modulo 4 */
                 QACTIVE_POST(&me->super, &reminderEvt, me);
             }
@@ -159,7 +159,7 @@ QState Sensor_idle(Sensor * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            printf("idle-ENTRY;\n");
+            PRINTF_S("%s\n", "idle-ENTRY;");
             status = Q_HANDLED();
             break;
         }
@@ -179,13 +179,13 @@ QState Sensor_busy(Sensor * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            printf("busy-ENTRY;\n");
+            PRINTF_S("%s\n", "busy-ENTRY;");
             status = Q_HANDLED();
             break;
         }
         case TIMEOUT_SIG: {
             ++me->procCtr;
-            printf("processing %3d\n", me->procCtr);
+            PRINTF_S("processing %3d\n", me->procCtr);
             if ((me->procCtr & 0x1U) == 0U) { /* modulo 2 */
                 status = Q_TRAN(&Sensor_idle);
             }
@@ -210,7 +210,7 @@ static QEvt const *l_sensorQSto[10]; /* Event queue storage for Sensor */
 
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
-    printf("Reminder state pattern\nQP version: %s\n"
+    PRINTF_S("Reminder state pattern\nQP version: %s\n"
            "Press ESC to quit...\n",
            QP_versionStr);
 
@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
 /*..........................................................................*/
 void BSP_onKeyboardInput(uint8_t key) {
     switch (key) {
-        case '\033': {                                      /* ESC pressed? */
+        case '\033': { /* ESC pressed? */
             /* NOTE: this constant event is statically pre-allocated.
             * It can be posted/published as any other event.
             */

@@ -34,9 +34,8 @@
 #include "qpc.h"
 #include "bsp.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
+#include <stdlib.h>   /* for exit() */
 
 #define DISP_WIDTH  9
 
@@ -69,11 +68,11 @@ void BSP_negate(void) {
 }
 /*..........................................................................*/
 void BSP_display(void) {
-    printf("\n[%s] ", l_display);
+    PRINTF_S("\n[%s] ", l_display);
 }
 /*..........................................................................*/
 void BSP_exit(void) {
-    printf("\nBye! Bye!\n");
+    PRINTF_S("\n%s\n", "Bye! Bye!");
     fflush(stdout);
     QF_onCleanup();
     exit(0);
@@ -115,10 +114,11 @@ int BSP_eval(double operand1, int oper, double operand2) {
             result = 0.0;
         }
         if ((-99999999.0 < result) && (result < 99999999.0)) {
-            sprintf(l_display, "%9.6g", result);
+            SNPRINTF_S(l_display, DISP_WIDTH, "%9.6g", result);
         }
         else {
-            strcpy(l_display, " Error 1 ");     /* error: out of range */
+            /* error: out of range */
+            STRCPY_S(l_display, DISP_WIDTH, " Error 1 ");
             ok = 0;
         }
     }
@@ -126,7 +126,7 @@ int BSP_eval(double operand1, int oper, double operand2) {
 }
 /*..........................................................................*/
 void BSP_message(char const *msg) {
-    printf(msg);
+    PRINTF_S("%s", msg);
 }
 
 /*..........................................................................*/
@@ -144,7 +144,7 @@ void QF_onClockTick(void) {
 /*..........................................................................*/
 /* this function is used by the QP embedded systems-friendly assertions */
 Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
-    printf("Assertion failed in %s, line %d", file, line);
+    FPRINTF_S(stderr, "Assertion failed in %s, line %d", file, line);
     QF_onCleanup();
     exit(-1);
 }

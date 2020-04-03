@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Purpose: Fixture for QUTEST self-test
-* Last Updated for Version: 6.3.5
-* Date of the Last Update:  2018-09-22
+* Last Updated for Version: 6.8.0
+* Date of the Last Update:  2020-03-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -25,7 +25,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
 * <www.state-machine.com/licensing>
@@ -43,6 +43,7 @@ enum {
     FIXTURE_SETUP = QS_USER,
     FIXTURE_TEARDOWN,
     COMMAND_X,
+    COMMAND_Y,
     MY_RECORD,
 };
 
@@ -64,6 +65,7 @@ int main(int argc, char *argv[]) {
     QS_USR_DICTIONARY(FIXTURE_SETUP);
     QS_USR_DICTIONARY(FIXTURE_TEARDOWN);
     QS_USR_DICTIONARY(COMMAND_X);
+    QS_USR_DICTIONARY(COMMAND_Y);
     QS_USR_DICTIONARY(MY_RECORD);
 
     return QF_run(); /* run the tests */
@@ -82,8 +84,8 @@ void QS_onTestTeardown(void) {
 
 /*..........................................................................*/
 /*! callback function to execute user commands */
-void QS_onCommand(uint8_t cmdId,   uint32_t param1,
-                  uint32_t param2, uint32_t param3)
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
 {
     (void)param1;
     (void)param2;
@@ -95,6 +97,14 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
             QS_BEGIN(COMMAND_X, (void *)0) /* application-specific record */
                 QS_U32(0, x);
                 /* ... */
+            QS_END()
+            break;
+        }
+        case COMMAND_Y: {
+            QS_BEGIN(COMMAND_Y, (void *)0) /* application-specific record */
+                QS_FUN(&myFun);
+                QS_MEM(buffer, param1);
+                QS_STR((char const *)&buffer[33]);
             QS_END()
             break;
         }

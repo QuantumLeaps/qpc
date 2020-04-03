@@ -35,7 +35,7 @@
 #include "bsp.h"
 #include "calc1_sub.h"
 
-#include <stdio.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 
 Q_DEFINE_THIS_FILE
 
@@ -45,7 +45,7 @@ int main() {
     QF_init();
     QF_onStartup();
 
-    printf("Calculator example, QP version: %s\n"
+    PRINTF_S("Calculator example, QP version: %s\n"
            "Press '0' .. '9'     to enter a digit\n"
            "Press '.'            to enter the decimal point\n"
            "Press '+'            to add\n"
@@ -56,7 +56,7 @@ int main() {
            "Press 'c' or 'C'     to Cancel\n"
            "Press 'e' or 'E'     to Cancel Entry\n"
            "Press <Esc>          to quit.\n\n",
-           QP_versionStr);
+           QP_VERSION_STR);
 
     Calc_ctor(); /* explicitly instantiate the calculator object */
     QHSM_INIT(the_calc, (QEvt *)0); /* trigger initial transition */
@@ -66,10 +66,10 @@ int main() {
 
         BSP_show_display(); /* show the display */
 
-        printf(": ");
+        PRINTF_S("%s", " : ");
         fflush(stdout);
         e.key_code = (uint8_t)QF_consoleWaitForKey();
-        printf("%c ", (e.key_code >= ' ') ? e.key_code : 'X');
+        PRINTF_S("%c ", (e.key_code >= ' ') ? e.key_code : 'X');
 
         switch (e.key_code) {
             case 'c': /* intentionally fall through */

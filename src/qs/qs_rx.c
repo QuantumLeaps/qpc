@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-01-19
+* Last updated on  2020-03-31
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -1240,7 +1240,10 @@ static void QS_rxPoke_(void) {
 */
 uint32_t QS_getTestProbe_(void (* const api)(void)) {
     uint32_t data = 0U;
-    for (uint_fast8_t i = 0U; i < l_testData.tpNum; ++i) {
+    uint_fast8_t i;
+    for (i = 0U; i < l_testData.tpNum; ++i) {
+        uint_fast8_t j;
+
         if (l_testData.tpBuf[i].addr == (QSFun)api) {
             data = l_testData.tpBuf[i].data;
             QS_beginRec_((uint_fast8_t)QS_TEST_PROBE_GET);
@@ -1252,7 +1255,7 @@ uint32_t QS_getTestProbe_(void (* const api)(void)) {
 
             --l_testData.tpNum; /* one less Test-Probe */
             /* move all remaining entries in the buffer up by one */
-            for (uint_fast8_t j = i; j < l_testData.tpNum; ++j) {
+            for (j = i; j < l_testData.tpNum; ++j) {
                 l_testData.tpBuf[j] = l_testData.tpBuf[j + 1U];
             }
             break; /* we are done (Test-Probe retreived) */

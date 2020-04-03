@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-03-23
+* Last updated on  2020-03-31
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -318,7 +318,7 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
         QS_U8_PRE_(tickRate);   /* tick rate */
     QS_END_NOCRIT_PRE_()
 
-    // is current Time Event object provided?
+    /* is current Time Event object provided? */
     t = (QTimeEvt *)QS_rxPriv_.currObj[TE_OBJ];
     if (t != (QTimeEvt *)0) {
 
@@ -330,7 +330,7 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
         /* the recipient AO must be provided */
         Q_ASSERT_ID(820, act != (QActive *)0);
 
-        // periodic time evt?
+        /* periodic time evt? */
         if (t->interval != 0U) {
             t->ctr = t->interval; /* rearm the time event */
         }

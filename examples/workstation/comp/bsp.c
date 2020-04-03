@@ -35,8 +35,8 @@
 #include "clock.h"
 #include "bsp.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
+#include <stdlib.h>   /* for exit() */
 
 //Q_DEFINE_THIS_FILE
 
@@ -47,22 +47,19 @@ void BSP_init(int argc, char *argv[]) {
 }
 /*..........................................................................*/
 void BSP_showMsg(char_t const *str) {
-    printf(str);
-    printf("\n");
+    PRINTF_S("%s\n", str);
     fflush(stdout);
 }
 /*..........................................................................*/
 void BSP_showTime24H(char_t const *str, uint32_t time, uint32_t base) {
-    printf(str);
-    printf("%02d:%02d\n", (int)(time / base), (int)(time % base));
+    PRINTF_S("%s, %02d:%02d\n", str, (int)(time / base), (int)(time % base));
     fflush(stdout);
 }
 /*..........................................................................*/
 void BSP_showTime12H(char_t const *str, uint32_t time, uint32_t base) {
     uint32_t h = time / base;
 
-    printf(str);
-    printf("%02d:%02d %s\n", (h % 12) ? (h % 12) : 12,
+    PRINTF_S("%s %02d:%02d %s\n", str, (h % 12) ? (h % 12) : 12,
            time % base, (h / 12) ? "PM" : "AM");
     fflush(stdout);
 }
@@ -73,7 +70,7 @@ void QF_onStartup(void) {
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
-    printf("\nBye! Bye!\n");
+    PRINTF_S("\n%s\n", "Bye! Bye!");
     QF_consoleCleanup();
 }
 /*..........................................................................*/
@@ -137,7 +134,7 @@ void BSP_onKeyboardInput(uint8_t key) {
 
 /*..........................................................................*/
 Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
-    fprintf(stderr, "Assertion failed in %s, line %d", file, line);
+    FPRINTF_S(stderr, "Assertion failed in %s, line %d", file, line);
     exit(-1);
 }
 

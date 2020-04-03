@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0
-* Last updated on  2020-01-19
+* Last updated on  2020-03-31
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -91,39 +91,6 @@ void QF_consoleSetup(void);
 void QF_consoleCleanup(void);
 int QF_consoleGetKey(void);
 int QF_consoleWaitForKey(void);
-
-/****************************************************************************/
-/* portable "safe" facilities from <stdio.h> and <string.h> ................*/
-#define STRCPY_S(dest_, destsiz_, src_) \
-    strcpy_s(dest_, destsiz_, src_)
-
-#define STRCAT_S(dest_, destsiz_, src_) \
-    strcat_s(dest_, destsiz_, src_)
-
-#define SNPRINTF_S(buf_, bufsiz_, format_, ...) \
-    _snprintf_s(buf_, bufsiz_, _TRUNCATE, format_, ##__VA_ARGS__)
-
-#define PRINTF_S(format_, ...) \
-    printf_s(format_, ##__VA_ARGS__)
-
-#define FPRINTF_S(fp_, format_, ...) \
-    fprintf_s(fp_, format_, ##__VA_ARGS__)
-
-#ifdef _MSC_VER
-#define FREAD_S(buf_, bufsiz_, elsiz_, count_, fp_) \
-    fread_s(buf_, bufsiz_, elsiz_, count_, fp_)
-#else
-#define FREAD_S(buf_, bufsiz_, elsiz_, count_, fp_) \
-    fread(buf_, elsiz_, count_, fp_)
-#endif /* _MSC_VER */
-
-#define FOPEN_S(fp_, fName_, mode_) \
-if (fopen_s(&fp_, fName_, mode_) != 0) { \
-    fp_ = (FILE *)0; \
-} else (void)0
-
-#define LOCALTIME_S(tm_, time_) \
-    localtime_s(tm_, time_)
 
 /****************************************************************************/
 /* interface used only inside QF implementation, but not in applications */

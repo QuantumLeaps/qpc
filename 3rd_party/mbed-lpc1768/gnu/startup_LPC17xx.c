@@ -53,12 +53,14 @@ extern int __stack_end__;
 * assembly to avoid accessing the stack, which might be corrupted by
 * the time assert_failed is called.
 */
-__attribute__ ((naked)) void assert_failed(char const *module, int loc);
+__attribute__ ((naked, noreturn))
+void assert_failed(char const *module, int loc);
 
 /* Function prototypes -----------------------------------------------------*/
 void Default_Handler(void);  /* Default empty handler */
 void Reset_Handler(void);    /* Reset Handler */
 void SystemInit(void);       /* CMSIS system initialization */
+__attribute__ ((noreturn))
 void Q_onAssert(char const *module, int loc); /* QP assertion handler */
 
 /*----------------------------------------------------------------------------
@@ -294,7 +296,7 @@ void Default_Handler(void) {
 *
 * NOTE: the function Q_onAssert should NOT return.
 *****************************************************************************/
-__attribute__ ((naked))
+__attribute__ ((naked, noreturn))
 void assert_failed(char const *module, int loc) {
     /* re-set the SP in case of stack overflow */
     __asm volatile (
