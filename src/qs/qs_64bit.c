@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-19
+* Last updated for version 6.8.1
+* Last updated on  2020-05-06
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -69,7 +69,7 @@ void QS_u64_raw_(uint64_t d) {
 /** @note This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_u64(uint8_t format, uint64_t d) {
+void QS_u64_fmt_(uint8_t format, uint64_t d) {
     uint8_t chksum = QS_priv_.chksum;
     uint8_t *buf   = QS_priv_.buf;
     QSCtr   head   = QS_priv_.head;
