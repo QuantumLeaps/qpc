@@ -20,10 +20,10 @@ Also, this release updates the QP/C ports and examples for workstations (Windows
 - `FREAD_S()` -> `fread_s()`
 - `FOPEN_S()` -> `fopen_s()`
 - `LOCALTIME_S()` -> `localtime_s()`
- 
+
 These "safe" functions are mapped to the best approximation of these services available on a given platform. For example, `STRCPY_S()` is mapped to `strcpy_s()` on Windows and `strcpy()` on POSIX (Linux/MacOS/etc.).
 
-Finally, this release improves the comments in the QF_stop() function. The comments now make it very clear that after calling QF_stop()  the application must terminate and cannot continue. In particular, QF_stop() is **not** intended to be followed by a call to QF_init() to "resurrect" the application. The previous comments apparently were confusing and some developers attempted to "restart" a running application, which led to system crashes.  
+Finally, this release improves the comments in the QF_stop() function. The comments now make it very clear that after calling QF_stop()  the application must terminate and cannot continue. In particular, QF_stop() is **not** intended to be followed by a call to QF_init() to "resurrect" the application. The previous comments apparently were confusing and some developers attempted to "restart" a running application, which led to system crashes.
 
 
 ------------------------------------------------------------------------------
