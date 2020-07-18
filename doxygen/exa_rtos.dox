@@ -43,7 +43,7 @@ The sub-directory <span class="img folder">iar</span> contains the workspace and
 After you load the DPP example into the STM32F4-Discovery board, the application should start blinking the 4 on-board LEDs. You can press the User button (blue) to PAUSE the philosophers for as long as the button is depressed. The philosophers resume dining when you release the User button. (In the PAUSED state the Table active object stops granting permissions to eat, so eventually all philosophers end in the "hungry" state.)
 
 
-------------------------------------------------------------------------------
+
 @section embos_dpp_stm32f429-discovery_qs QS Software Tracing
 
 The DPP example for embOS on STM32F4-Discovery board provides the "Spy" build configuration, which outputs the QS (Quantum Spy) software tracing data through USART2. To get the data out of the board, you need to connect the TTL/RS232 converter as follows:
@@ -113,33 +113,6 @@ Demonstrated features:
 - QP/Spy input over the virtual COM port (bi-directional Spy) (Spy build configuration)
 
 
-@next{freertos_dpp_nucleo-h743zi examples}
-*/
-/*##########################################################################*/
-/*! @page freertos_dpp_nucleo-h743zi DPP on NUCLEO-H743Z
-
-@image html bd_NUCLEO-H743ZI.jpg NUCLEO-H743ZI
-
-@ref dpp "Dining Philosophers Problem (DPP)" example for NUCLEO-H743ZI MCU (Cortex-M7).
-
-@ref dpp "DPP example" for @ref freertos "FreeRTOS" on STTexas Instruments TivaC123GXL MCU (Cortex-M4F) with the following toolchains:
-- ARM-Keil
-- GNU-ARM
-- IAR-ARM
-
-Demonstrated features:
-- Multiple Active Objects
-- Regular "kernel-aware" ISR with "FromISR" APIs
-  + `QF_TICK_X_FROM_ISR()`
-  + `QF_PUBLISH_FROM_ISR()`
-  + `Q_NEW_FROM_ISR()`
-  + `QACTIVE_POST_FROM_ISR()`
-- Hi-priority "kernel-unaware" ISR
-- `vApplicationTickHook()`
-- QP/Spy output over the virtual COM port (Spy build configuration)
-- QP/Spy input over the virtual COM port (bi-directional Spy) (Spy build configuration)
-
-
 @next{freertos_dpp_stm32f746g-disco examples}
 */
 /*##########################################################################*/
@@ -165,6 +138,92 @@ Demonstrated features:
 - QP/Spy input over the virtual COM port (bi-directional Spy) (Spy build configuration)
 
 
+@next{freertos_dpp_nucleo-h743zi}
+*/
+/*##########################################################################*/
+/*! @page freertos_dpp_nucleo-h743zi DPP on NUCLEO-H743ZI
+
+@image html bd_NUCLEO-H743ZI.jpg NUCLEO-H743ZI
+
+@ref dpp "Dining Philosophers Problem (DPP)" example for NUCLEO-H743ZI MCU (Cortex-M7).
+
+Features:
+- multiple active objects, including 5 instances of the same AO class (Philo)
+- [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html) using the virtual COM-port
+- bi-directional [QP/Spy](https://www.state-machine.com/qtools/qs.html#qs_rx) (sending commands to the target)
+
+@next{freertos_start-stop_nucleo-h743zi}
+*/
+/*##########################################################################*/
+/*! @page freertos_start-stop_nucleo-h743zi Start-Stop on NUCLEO-H743ZI
+
+@image html bd_NUCLEO-H743ZI.jpg NUCLEO-H743ZI
+
+Start-Stop example for NUCLEO-H743ZI MCU (Cortex-M7) demonstrates staring and stopping active objects multiple times
+during the runtime, as opposed to starting AOs only at the beginning.
+
+The code for the example is generated automatically by the [QM Model-Based Design tool](https://www.state-machine.com/qm/) (QM version 4.5.0 or higher).
+
+The start-stop application consists of two AOs:
+
+- the Launcher AO is started at the beginning and its job is to periodically (re)start another AO
+
+- the Worker AO is NOT started at the beginning, but instead it is instantiated and started by the Launcher AO.
+
+![Launcher and Worker state machines](start-stop.png)
+
+
+The actual visible work is performed by the Worker AO, which blinks the yellow LED (LD1) on the NUCLEO-H743ZI board. After blinking the LED five times, the Worker AO publishes turns the blue LED (LD2), publishes the DONE event and stops itself (by calling QP::QActive::stop() on itself).
+
+The Launcher AO subscribes to the DONE event. Upon reception of this event, The Launcher AO gives the Worker a bit of time (at least one clock tick) to cleanly terminate and then it explicitly destroys the Worker. The Worker destructor turns the blue LED (LD2) off.
+
+Next the Launcher instantiates the Worker AO by means of the placement new operator and then it starts it again to repeat the cycle, which goes no forever.
+
+
+@remarks
+Because this application is intended for embedded real-time systems, it does not use the dynamic memory (heap). Instead it uses statically allocated memory (static mode of FreeRTOS) as well as **placement-new** and explicit destructor call.
+
+
+It is possible to use the standard **new** and **delete** operators with the standard heap, or some customized memory allocation (overloaded new/delete). This goes beyond the scope of this example.
+
+
+**Supported Toolchains** @n
+This example contains sub-directories for building it with various toolchains. The following toolchains are supported:
+
+- ARM-Keil MDK
+- GNU-ARM
+- IAR EWARM
+
+Please refer to the README.txt files in these sub-directories for more information about building and running the examples.
+
+
+**QP/Spy Support** @n
+This example demonstrates the [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html) in the **Spy build configuration**. The QP/Spy uses the virtual COM port provided by the NUCLEO-H743ZI board. To see the QP/Spy output, you need to launch the qspy host utility, as follows (Windows command prompt):
+
+@verbatim
+qspy -u -c COM4
+@endverbatim
+
+where COM4 is the particular virtual serial port registered by your NUCLEO board. You need to adjust the COM port number for your machine.
+
+
+**Programming the NUCLEO Board** @n
+The NUCLEO boards appear as a USB-flash drive in the file system. Programming of the board is done by simply copying the binary into
+thy flash drive letter.
+
+For example, assuming that the NUCLEO board appears as drive E:, you program it with the following command:
+
+@verbatim
+copy dbg\start-stop.bin E:
+@endverbatim
+
+
+**Demonstrated Features** @n
+- multiple active objects (Launcher and Worker)
+- instantiating, starting and stopping active objects multiple times
+- [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html) using the virtual COM-port
+- bi-directional [QP/Spy](https://www.state-machine.com/qtools/qs.html#qs_rx) (sending commands to the target)
+
 @next{exa_threadx examples}
 */
 
@@ -188,7 +247,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 /*##########################################################################*/
 /*! @page threadx_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
 
-@image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
+@image html bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL (TivaC LaunchPad) board"
 
 @ref dpp "DPP example" for ThreadX on Texas Instruments TivaC123GXL MCU (Cortex-M4F) with the following toolchain:
 - IAR-ARM
@@ -206,14 +265,14 @@ Demonstrated features:
 
 The @ref dpp "DPP example" for ThreadX on STM32F4-Discovery board is located directory <span class="img folder">examples/threadx/arm-cm/dpp_stm32f429-discovery</span>.
 
-@image html bd_STM32F4-Discovery.jpg STM32F4-Discovery board
+@image html bd_STM32F4-Discovery.jpg "STM32F4-Discovery board"
 
 The sub-directory <span class="img folder">iar</span> contains the workspace and project file that you can open in IAR EWARM IDE.
 
 After you load the DPP example into the STM32F4-Discovery board, the application should start blinking the 4 on-board LEDs. You can press the User button (blue) to PAUSE the philosophers for as long as the button is depressed. The philosophers resume dining when you release the User button. (In the PAUSED state the Table active object stops granting permissions to eat, so eventually all philosophers end in the "hungry" state.)
 
 
-------------------------------------------------------------------------------
+
 @section threadx_dpp_stm32f429-discovery_qs QS Software Tracing
 
 The DPP example for ThreadX on STM32F4-Discovery board provides the "Spy" build configuration, which outputs the QS (Quantum Spy) software tracing data through USART2. To get the data out of the board, you need to connect the TTL/RS232 converter as follows:
@@ -251,8 +310,8 @@ The actual COM port number might be different on your Windows machine. Please ch
 The QP/C examples for uC/OS-II are as follows:
 
 - ARM Cortex-M
-    - @subpage ucos-ii_dpp_ek-tm4c123gxl (Cortex-M4F) <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a><br>(ARM-KEIL and IAR EWARM toolsets)
-    - @subpage ucos-ii_dpp_nucleo-l152re (Cortex-M3) <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a><br>(ARM-KEIL and IAR EWARM toolsets)
+    - @subpage ucos-ii_dpp_ek-tm4c123gxl (Cortex-M4F) <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a><br>(ARM-CLANG, GNU-ARM and IAR EWARM toolsets)
+    - @subpage ucos-ii_dpp_nucleo-l053r8 (Cortex-M0+) <a class="preview board" href="bd_NUCLEO-L053R8.jpg" title="NUCLEO-L053R8"></a><br>(ARM-CLANG, GNU-ARM, and IAR EWARM toolsets)
 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
@@ -262,20 +321,20 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 /*##########################################################################*/
 /*! @page ucos-ii_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
 
-@image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
+@image html bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL board"
 
-DPP example for Texas Instruments TivaC123GXL MCU (Cortex-M4F) and IAR EWARM toolsets.
+DPP example for Texas Instruments TivaC123GXL MCU (Cortex-M4F) and ARM-CLANG, GNU-ARM and IAR EWARM toolsets.
 
 @image html under_construction.jpg
 
-@next{ucos-ii_dpp_nucleo-l152re examples}
+@next{ucos-ii_dpp_nucleo-l053r8 examples}
 */
 /*##########################################################################*/
-/*! @page ucos-ii_dpp_nucleo-l152re DPP on NUCLEO-L152RE
+/*! @page ucos-ii_dpp_nucleo-l053r8 DPP on STM32-NUCLEO-L053R8
 
-@image html bd_nucleo-l152re.jpg NUCLEO-L152RE board
+@image html bd_NUCLEO-L053R8.jpg "STM32-NUCLEO-L053R8 board"
 
-DPP example for Texas Instruments STM32 L152RET6 MCU (Cortex-M3) and IAR EWARM toolsets.
+DPP example for STM32 L053R8 MCU (Cortex-M0+) and ARM-CLANG, GNU-ARM and IAR EWARM toolsets.
 
 @image html under_construction.jpg
 

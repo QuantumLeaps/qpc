@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-31
+* Last updated for version 6.8.2
+* Last updated on  2020-06-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -168,6 +168,14 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
         NULL);
     Q_ENSURE_ID(830, me->thread != (HANDLE)0); /* must succeed */
 }
+/*..........................................................................*/
+#ifdef QF_ACTIVE_STOP
+void QActive_stop(QActive * const me) {
+    QActive_unsubscribeAll(me); /* unsubscribe this AO from all events */
+    me->thread = (void *)0; /* stop the thread loop (see ao_thread()) */
+}
+#endif
+
 
 /****************************************************************************/
 void QF_consoleSetup(void) {
@@ -196,12 +204,19 @@ static DWORD WINAPI ao_thread(LPVOID arg) { /* for CreateThread() */
     EnterCriticalSection(&l_startupCritSect);
     LeaveCriticalSection(&l_startupCritSect);
 
-    /* event-loop */
-    for (;;) { /* for-ever */
+#ifdef QF_ACTIVE_STOP
+    while (act->thread)
+#else
+    for (;;) /* for-ever */
+#endif
+    {
         QEvt const *e = QActive_get_(act); /* wait for event */
         QHSM_DISPATCH(&act->super, e);     /* dispatch to the AO's SM */
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
+#ifdef QF_ACTIVE_STOP
+    QF_remove_(act); /* remove this object from QF */
+#endif
     return (DWORD)0; /* return success */
 }
 

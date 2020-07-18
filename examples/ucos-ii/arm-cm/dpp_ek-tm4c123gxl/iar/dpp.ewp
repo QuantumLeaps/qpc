@@ -11,7 +11,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>28</version>
+                <version>31</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -32,11 +32,11 @@
                 </option>
                 <option>
                     <name>Input description</name>
-                    <state>No specifier n, no float nor long long, no scan set, no assignment suppressing.</state>
+                    <state>No specifier n, no float nor long long, no scan set, no assignment suppressing, without multibyte support.</state>
                 </option>
                 <option>
                     <name>Output description</name>
-                    <state>No specifier a, A, no specifier n, no float nor long long, no flags.</state>
+                    <state>No specifier a, A, no specifier n, no float nor long long, no flags, without multibyte support.</state>
                 </option>
                 <option>
                     <name>GOutputBinary</name>
@@ -66,7 +66,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.11.1.13270</state>
+                    <state>8.40.2.22864</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -112,12 +112,12 @@
                 </option>
                 <option>
                     <name>RTConfigPath2</name>
-                    <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Normal.h</state>
+                    <state>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</state>
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>25</version>
-                    <state>40</state>
+                    <version>27</version>
+                    <state>39</state>
                 </option>
                 <option>
                     <name>OGUseCmsis</name>
@@ -133,7 +133,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>25</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -156,7 +156,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>25</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -196,13 +196,26 @@
                     <name>GenLocaleDisplayOnly</name>
                     <state></state>
                 </option>
+                <option>
+                    <name>DSPExtension</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>TrustZone</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>TrustZoneModes</name>
+                    <version>0</version>
+                    <state>0</state>
+                </option>
             </data>
         </settings>
         <settings>
             <name>ICCARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>34</version>
+                <version>35</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -340,8 +353,8 @@
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\ucos-ii</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Ports\ARM-Cortex-M4\Generic\ARM</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Ports\ARM-Cortex-M\ARMv7-M\IAR</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ek-tm4c123gxl</state>
                 </option>
@@ -456,6 +469,10 @@
                 <option>
                     <name>IccRTTI2</name>
                     <state>0</state>
+                </option>
+                <option>
+                    <name>OICompilerExtraOption</name>
+                    <state>1</state>
                 </option>
             </data>
         </settings>
@@ -677,7 +694,7 @@
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>20</version>
+                <version>23</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -989,6 +1006,30 @@
                     <name>IlinkLocaleSelect</name>
                     <state>1</state>
                 </option>
+                <option>
+                    <name>IlinkTrustzoneImportLibraryOut</name>
+                    <state>dpp_import_lib.o</state>
+                </option>
+                <option>
+                    <name>OILinkExtraOption</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>IlinkRawBinaryFile2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinarySymbol2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinarySegment2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinaryAlign2</name>
+                    <state></state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -1033,7 +1074,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>28</version>
+                <version>31</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1088,7 +1129,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.11.1.13270</state>
+                    <state>8.40.2.22864</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -1134,11 +1175,11 @@
                 </option>
                 <option>
                     <name>RTConfigPath2</name>
-                    <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Normal.h</state>
+                    <state>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</state>
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>25</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1155,7 +1196,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>25</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1178,7 +1219,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>25</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1218,13 +1259,26 @@
                     <name>GenLocaleDisplayOnly</name>
                     <state></state>
                 </option>
+                <option>
+                    <name>DSPExtension</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>TrustZone</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>TrustZoneModes</name>
+                    <version>0</version>
+                    <state>0</state>
+                </option>
             </data>
         </settings>
         <settings>
             <name>ICCARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>34</version>
+                <version>35</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1363,8 +1417,8 @@
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\ucos-ii</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Ports\ARM-Cortex-M4\Generic\ARM</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Ports\ARM-Cortex-M\ARMv7-M\IAR</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ek-tm4c123gxl</state>
                 </option>
@@ -1479,6 +1533,10 @@
                 <option>
                     <name>IccRTTI2</name>
                     <state>0</state>
+                </option>
+                <option>
+                    <name>OICompilerExtraOption</name>
+                    <state>1</state>
                 </option>
             </data>
         </settings>
@@ -1700,7 +1758,7 @@
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>20</version>
+                <version>23</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -2012,6 +2070,30 @@
                     <name>IlinkLocaleSelect</name>
                     <state>1</state>
                 </option>
+                <option>
+                    <name>IlinkTrustzoneImportLibraryOut</name>
+                    <state>dpp_import_lib.o</state>
+                </option>
+                <option>
+                    <name>OILinkExtraOption</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>IlinkRawBinaryFile2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinarySymbol2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinarySegment2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinaryAlign2</name>
+                    <state></state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -2056,7 +2138,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>28</version>
+                <version>31</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -2111,7 +2193,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.11.1.13270</state>
+                    <state>8.40.2.22864</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -2157,11 +2239,11 @@
                 </option>
                 <option>
                     <name>RTConfigPath2</name>
-                    <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Normal.h</state>
+                    <state>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</state>
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>25</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -2178,7 +2260,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>25</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -2201,7 +2283,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>25</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -2241,13 +2323,26 @@
                     <name>GenLocaleDisplayOnly</name>
                     <state></state>
                 </option>
+                <option>
+                    <name>DSPExtension</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>TrustZone</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>TrustZoneModes</name>
+                    <version>0</version>
+                    <state>0</state>
+                </option>
             </data>
         </settings>
         <settings>
             <name>ICCARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>34</version>
+                <version>35</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -2386,8 +2481,8 @@
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\ucos-ii</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Ports\ARM-Cortex-M4\Generic\ARM</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Ports\ARM-Cortex-M\ARMv7-M\IAR</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\ek-tm4c123gxl</state>
                 </option>
@@ -2502,6 +2597,10 @@
                 <option>
                     <name>IccRTTI2</name>
                     <state>0</state>
+                </option>
+                <option>
+                    <name>OICompilerExtraOption</name>
+                    <state>1</state>
                 </option>
             </data>
         </settings>
@@ -2723,7 +2822,7 @@
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>20</version>
+                <version>23</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -3034,6 +3133,30 @@
                 <option>
                     <name>IlinkLocaleSelect</name>
                     <state>1</state>
+                </option>
+                <option>
+                    <name>IlinkTrustzoneImportLibraryOut</name>
+                    <state>dpp_import_lib.o</state>
+                </option>
+                <option>
+                    <name>OILinkExtraOption</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>IlinkRawBinaryFile2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinarySymbol2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinarySegment2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinaryAlign2</name>
+                    <state></state>
                 </option>
             </data>
         </settings>
@@ -3202,55 +3325,55 @@
     <group>
         <name>uCOS-II</name>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os_core.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os_core.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os_flag.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os_flag.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os_mbox.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os_mbox.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os_mem.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os_mem.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os_mutex.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os_mutex.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os_q.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os_q.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os_sem.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os_sem.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os_task.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os_task.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os_time.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os_time.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\os_tmr.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\os_tmr.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Source\ucos_ii.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Source\ucos_ii.h</name>
         </file>
     </group>
     <group>
         <name>uCOS-II_Port</name>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Ports\ARM-Cortex-M4\Generic\IAR\os_cpu.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Ports\ARM-Cortex-M\ARMv7-M\IAR\os_cpu.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Ports\ARM-Cortex-M4\Generic\IAR\os_cpu_a.asm</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Ports\ARM-Cortex-M\ARMv7-M\IAR\os_cpu_a.asm</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Ports\ARM-Cortex-M4\Generic\IAR\os_cpu_c.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Ports\ARM-Cortex-M\ARMv7-M\os_cpu_c.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\uCOS-II\Ports\ARM-Cortex-M4\Generic\IAR\os_dbg.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\ucos-ii\Ports\ARM-Cortex-M\ARMv7-M\IAR\os_dbg.c</name>
         </file>
     </group>
 </project>

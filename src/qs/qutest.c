@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-31
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -147,6 +147,14 @@ static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
 
     QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
 }
+//............................................................................
+#ifdef QF_ACTIVE_STOP
+void QActive_stop(QActive * const me) {
+    QActive_unsubscribeAll(me); /* unsubscribe from all events */
+    QF_remove_(me); /* remove this object from QF */
+}
+#endif
+
 /*..........................................................................*/
 static void QActiveDummy_init_(QHsm * const me, void const * const par) {
     (void)par; /* unused parameter */
@@ -193,7 +201,7 @@ static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
-    rec = (status ? (uint_fast8_t)QS_QF_ACTIVE_POST_FIFO
+    rec = (status ? (uint_fast8_t)QS_QF_ACTIVE_POST
                   : (uint_fast8_t)QS_QF_ACTIVE_POST_ATTEMPT);
     QS_BEGIN_NOCRIT_PRE_(rec, QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_PRE_();      /* timestamp */
@@ -206,7 +214,7 @@ static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
     QS_END_NOCRIT_PRE_()
 
     /* callback to examine the posted event under the the same conditions
-    * as producing the QS_QF_ACTIVE_POST_FIFO trace record, which are:
+    * as producing the QS_QF_ACTIVE_POST trace record, which are:
     * 1. the local AO-filter is not set (zero) OR
     * 2. the local AO-filter is set to this AO ('me')
     */
@@ -251,7 +259,7 @@ static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e) {
     QS_END_NOCRIT_PRE_()
 
     /* callback to examine the posted event under the the same conditions
-    * as producing the QS_QF_ACTIVE_POST_FIFO trace record, which are:
+    * as producing the QS_QF_ACTIVE_POST trace record, which are:
     * 1. the local AO-filter is not set (zero) OR
     * 2. the local AO-filter is set to this AO ('me')
     */

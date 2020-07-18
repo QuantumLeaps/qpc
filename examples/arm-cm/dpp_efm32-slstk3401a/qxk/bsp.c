@@ -214,6 +214,7 @@ void BSP_init(void) {
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
+    (void)n; /* unused parameter */
     if (stat[0] == 'e') {
         GPIO->P[LED_PORT].DOUT |=  (1U << LED0_PIN);
     }

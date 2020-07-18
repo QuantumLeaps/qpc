@@ -38,7 +38,7 @@
 Q_DEFINE_THIS_FILE
 
 static QTicker l_ticker0;
-QActive *the_Ticker0 = &l_ticker0;
+QActive *the_Ticker0 = &l_ticker0.super;
 
 /*..........................................................................*/
 int main() {

@@ -1,38 +1,27 @@
-/*============================================================================
-*
-* The uCOS-II OS configuration for the QP port must enable message queues
-* (OS_Q_EN == 1) and memory partitions (OS_MEM_EN == 1). Other settings
-* are irrelevant and are disabled, so that the APIs won't be exposed for
-* building the QP library.
-*
-* However, applications can (and should) provide the actual uCOS-II OS
-* configuration, which will enable any additional features needed
-* by the application.
-*
-* Quantum Leaps, LLC. www.state-machine.com
-* 2016-03-24
-*===========================================================================*/
 /*
 *********************************************************************************************************
-*                                                uC/OS-II
-*                                          The Real-Time Kernel
-*                                  uC/OS-II Configuration File for V2.9x
+*                                              uC/OS-II
+*                                        The Real-Time Kernel
 *
-*                               (c) Copyright 2005-2013, Micrium, Weston, FL
-*                                          All Rights Reserved
+*                    Copyright 1992-2020 Silicon Laboratories Inc. www.silabs.com
 *
+*                                 SPDX-License-Identifier: APACHE-2.0
 *
-* File    : OS_CFG.H
-* By      : Jean J. Labrosse
-* Version : V2.92.08
+*               This software is subject to an open source license and is distributed by
+*                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+*                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
 *
-* LICENSING TERMS:
-* ---------------
-*   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
-* If you plan on using  uC/OS-II  in a commercial product you need to contact Micrium to properly license
-* its use in your product. We provide ALL the source code for your convenience and to help you experience
-* uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
-* licensing fee.
+*********************************************************************************************************
+*/
+
+
+/*
+*********************************************************************************************************
+*
+*                                 uC/OS-II Configuration File for V2.9x
+*
+* Filename : os_cfg.h
+* Version  : V2.93.00
 *********************************************************************************************************
 */
 
@@ -42,10 +31,10 @@
 
                                        /* ---------------------- MISCELLANEOUS ----------------------- */
 #define OS_APP_HOOKS_EN           1u   /* Application-defined hooks are called from the uC/OS-II hooks */
-#define OS_ARG_CHK_EN             0u   /* Enable (1) or Disable (0) argument checking                  */
+#define OS_ARG_CHK_EN             1u   /* Enable (1) or Disable (0) argument checking                  */
 #define OS_CPU_HOOKS_EN           1u   /* uC/OS-II hooks are found in the processor port files         */
 
-#define OS_DEBUG_EN               0u   /* Enable(1) debug variables                                    */
+#define OS_DEBUG_EN               1u   /* Enable(1) debug variables                                    */
 
 #define OS_EVENT_MULTI_EN         0u   /* Include code for OSEventPendMulti()                          */
 #define OS_EVENT_NAME_EN          1u   /* Enable names for Sem, Mutex, Mbox and Q                      */
@@ -63,6 +52,8 @@
 
 #define OS_TICK_STEP_EN           1u   /* Enable tick stepping feature for uC/OS-View                  */
 #define OS_TICKS_PER_SEC        100u   /* Set the number of ticks in one second                        */
+
+#define OS_TLS_TBL_SIZE           0u   /* Size of Thread-Local Storage Table                           */
 
 
                                        /* --------------------- TASK STACK SIZE ---------------------- */
@@ -87,7 +78,7 @@
 
 
                                        /* ----------------------- EVENT FLAGS ------------------------ */
-#define OS_FLAG_EN                0u   /* Enable (1) or Disable (0) code generation for EVENT FLAGS    */
+#define OS_FLAG_EN                1u   /* Enable (1) or Disable (0) code generation for EVENT FLAGS    */
 #define OS_FLAG_ACCEPT_EN         1u   /*     Include code for OSFlagAccept()                          */
 #define OS_FLAG_DEL_EN            1u   /*     Include code for OSFlagDel()                             */
 #define OS_FLAG_NAME_EN           1u   /*     Enable names for event flag group                        */
@@ -97,7 +88,7 @@
 
 
                                        /* -------------------- MESSAGE MAILBOXES --------------------- */
-#define OS_MBOX_EN                0u   /* Enable (1) or Disable (0) code generation for MAILBOXES      */
+#define OS_MBOX_EN                1u   /* Enable (1) or Disable (0) code generation for MAILBOXES      */
 #define OS_MBOX_ACCEPT_EN         1u   /*     Include code for OSMboxAccept()                          */
 #define OS_MBOX_DEL_EN            1u   /*     Include code for OSMboxDel()                             */
 #define OS_MBOX_PEND_ABORT_EN     1u   /*     Include code for OSMboxPendAbort()                       */
@@ -119,7 +110,7 @@
 #define OS_MUTEX_QUERY_EN         1u   /*     Include code for OSMutexQuery()                          */
 
 
-//SAR Modification, was on.            /* ---------------------- MESSAGE QUEUES ---------------------- */
+                                       /* ---------------------- MESSAGE QUEUES ---------------------- */
 #define OS_Q_EN                   1u   /* Enable (1) or Disable (0) code generation for QUEUES         */
 #define OS_Q_ACCEPT_EN            1u   /*     Include code for OSQAccept()                             */
 #define OS_Q_DEL_EN               1u   /*     Include code for OSQDel()                                */
@@ -132,7 +123,7 @@
 
 
                                        /* ------------------------ SEMAPHORES ------------------------ */
-#define OS_SEM_EN                 0u   /* Enable (1) or Disable (0) code generation for SEMAPHORES     */
+#define OS_SEM_EN                 1u   /* Enable (1) or Disable (0) code generation for SEMAPHORES     */
 #define OS_SEM_ACCEPT_EN          1u   /*    Include code for OSSemAccept()                            */
 #define OS_SEM_DEL_EN             1u   /*    Include code for OSSemDel()                               */
 #define OS_SEM_PEND_ABORT_EN      1u   /*    Include code for OSSemPendAbort()                         */
@@ -141,17 +132,23 @@
 
 
                                        /* --------------------- TIME MANAGEMENT ---------------------- */
-#define OS_TIME_DLY_HMSM_EN       0u   /*     Include code for OSTimeDlyHMSM()                         */
+#define OS_TIME_DLY_HMSM_EN       1u   /*     Include code for OSTimeDlyHMSM()                         */
 #define OS_TIME_DLY_RESUME_EN     1u   /*     Include code for OSTimeDlyResume()                       */
 #define OS_TIME_GET_SET_EN        1u   /*     Include code for OSTimeGet() and OSTimeSet()             */
 #define OS_TIME_TICK_HOOK_EN      1u   /*     Include code for OSTimeTickHook()                        */
 
 
-//SAR Modification, was on.            /* --------------------- TIMER MANAGEMENT --------------------- */
-#define OS_TMR_EN                 0u   /* Enable (1) or Disable (0) code generation for TIMERS         */
+                                       /* --------------------- TIMER MANAGEMENT --------------------- */
+#define OS_TMR_EN                 1u   /* Enable (1) or Disable (0) code generation for TIMERS         */
 #define OS_TMR_CFG_MAX           16u   /*     Maximum number of timers                                 */
 #define OS_TMR_CFG_NAME_EN        1u   /*     Determine timer names                                    */
-#define OS_TMR_CFG_WHEEL_SIZE     8u   /*     Size of timer wheel (#Spokes)                            */
+#define OS_TMR_CFG_WHEEL_SIZE     7u   /*     Size of timer wheel (#Spokes)                            */
 #define OS_TMR_CFG_TICKS_PER_SEC 10u   /*     Rate at which timer management task runs (Hz)            */
+
+
+                                       /* ---------------------- TRACE RECORDER ---------------------- */
+#define OS_TRACE_EN               0u   /* Enable (1) or Disable (0) uC/OS-II Trace instrumentation     */
+#define OS_TRACE_API_ENTER_EN     0u   /* Enable (1) or Disable (0) uC/OS-II Trace API enter instrum.  */
+#define OS_TRACE_API_EXIT_EN      0u   /* Enable (1) or Disable (0) uC/OS-II Trace API exit  instrum.  */
 
 #endif

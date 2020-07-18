@@ -3,26 +3,34 @@
 *                                              uC/OS-II
 *                                        The Real-Time Kernel
 *
-*                            (c) Copyright 1992-2013, Micrium, Weston, FL
-*                                           All Rights Reserved
+*                    Copyright 1992-2020 Silicon Laboratories Inc. www.silabs.com
 *
-* File    : uCOS_II.H
-* By      : Jean J. Labrosse
-* Version : V2.92.10
+*                                 SPDX-License-Identifier: APACHE-2.0
 *
-* LICENSING TERMS:
-* ---------------
-*   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
-* If you plan on using  uC/OS-II  in a commercial product you need to contact Micrium to properly license
-* its use in your product. We provide ALL the source code for your convenience and to help you experience
-* uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
-* licensing fee.
+*               This software is subject to an open source license and is distributed by
+*                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+*                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
 *
+*********************************************************************************************************
+*/
+
+
+/*
+*********************************************************************************************************
+* Filename : os.h
+* Version  : V2.93.00
+*********************************************************************************************************
 * Note : This file is included in the uC/OS-II for compatibility with uC/OS-III and should not be used
 *        in normal circumstances.
 *********************************************************************************************************
 */
 
-#include  <ucos_ii.h>
+#ifndef   OS_H
+#define   OS_H
+
+#include  "ucos_ii.h"
 
 
+typedef  INT8U  OS_ERR;
+
+#endif

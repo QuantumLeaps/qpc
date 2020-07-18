@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-19
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -57,10 +57,26 @@
 */
 #define QF_MAX_ACTIVE               32U
 
+/**
+* @description
+* This macro can be defined in the QF ports and should be in range
+* of 1U..255U, inclusive. The value of this macro determines the maximum
+* number of clock tick rates for time events (::QTimeEvt).
+*
+* If the macro is not defined, the default value is 1U.
+*
+* @note Once you choose a certain value of #QF_MAX_TICK_RATE, you must
+* consistently use the same value in building all the QP component libraries
+* and your own application code. The consistency is guaranteed if you define
+* this macro only once in the qf_port.h header file and henceforth include
+* this header file in all builds.
+*/
+#define QF_MAX_TICK_RATE            2U
+
 /*! The maximum number of event pools in the application. */
 /**
 * @description
-* This macro should be defined in the QF ports and should be in range
+* This macro can be defined in the QF ports and should be in range
 * of 1U..255U, inclusive. The value of this macro determines the maximum
 * event pools in the system. Not all event pools must be actually used,
 * but the maximum number of pools cannot exceed #QF_MAX_EPOOL.
@@ -252,13 +268,22 @@ void intEnable(void);
 #define QF_CRIT_EXIT(stat_)         critExit(stat_)
 
 typedef unsigned int crit_stat_t;
-QF_CRIT_STAT_TYPE critEntry(void);
-void critExit(QF_CRIT_STAT_TYPE stat);
+crit_stat_t critEntry(void);
+void critExit(crit_stat_t stat);
 
-#include "qep_port.h"   /* QEP port */
-#include "qxk_port.h"   /* QXK port */
-#include "qf.h"         /* QF platform-independent public interface */
-#include "qxthread.h"   /* QXK extended thread */
+/*! Enable the QActive_stop() API in the QF port. */
+/**
+* @description
+* Defining this macro enables the QActive_stop() API in a given port.
+* This feature should be used with caution, as stopping and re-starting
+* active objects **cleanly** can be tricky.
+*/
+#define QF_ACTIVE_STOP
+
+#include "qep_port.h" /* QEP port */
+#include "qxk_port.h" /* QXK dual-mode kernel port */
+#include "qf.h"       /* QF platform-independent public interface */
+#include "qxthread.h" /* QXK extended thread interface */
 
 #endif /* QF_PORT_H */
 

@@ -9,7 +9,7 @@
 - @subpage exa_qxk
 
 
-------------------------------------------------------------------------------
+
 Click on the following links to see examples for the specified CPU architectures:
 
 - @subpage exa_arm-cm
@@ -33,8 +33,9 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
-- @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
-- @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
+- @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_NUCLEO-L053R8.jpg" title="NUCLEO-L053R8"></a>
+- @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_NUCLEO-L152RE.jpg" title="NUCLEO-L152RE"></a>
+- @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a>
 - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
 - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
@@ -60,8 +61,8 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
-- @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
-- @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
+- @ref arm-cm_dpp_nucleo-l053r8 <a class="preview board" href="bd_NUCLEO-L053R8.jpg" title="NUCLEO-L053R8"></a>
+- @ref arm-cm_dpp_nucleo-l152re <a class="preview board" href="bd_NUCLEO-L152RE.jpg" title="NUCLEO-L152RE"></a>
 - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a>
@@ -107,8 +108,8 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @subpage arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 - @subpage arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
 - @subpage arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
-- @subpage arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_nucleo-l053r8.jpg" title="NUCLEO-L053R8"></a>
-- @subpage arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_nucleo-l152re.jpg" title="NUCLEO-L152RE"></a>
+- @subpage arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_NUCLEO-L053R8.jpg" title="NUCLEO-L053R8"></a>
+- @subpage arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_NUCLEO-L152RE.jpg" title="NUCLEO-L152RE"></a>
 - @subpage arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @subpage arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Disco"></a>
 - @subpage arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a>
@@ -198,7 +199,7 @@ The Blinky example is located in the directory <span class="img folder">qpc/exam
 @endcode
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_blinky_ek-tm4c123gxl_feat Features Demonstrated
 - cooperative QV kernel
   + with ARM-KEIL toolchain
@@ -212,14 +213,14 @@ The Blinky example is located in the directory <span class="img folder">qpc/exam
 - Windows emulation (console, single threaded: win32-qv)
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_blinky_ek-tm4c123gxl_run Running the Example
 Once programmed into the board, the example blinks the on-board LED about once a second.
 
 @image html blinky_ek-tm4c123gxl.gif Blinky on EK-TM4C123GLX (TivaC LaunchPad)
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_blinky_ek-tm4c123gxl_win Windows Emulation
 The Windows emulation is a simple console application that produces the following output:
 
@@ -269,7 +270,7 @@ The Blinky example is located in the directory <span class="img folder">qpc/exam
 @endcode
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_blinky_efm32-slstk3401a_feat Features Demonstrated
 - cooperative QV kernel
   + with ARM-KEIL toolchain
@@ -283,12 +284,12 @@ The Blinky example is located in the directory <span class="img folder">qpc/exam
 - Windows emulation (console, single threaded: win32-qv)
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_blinky_efm32-slstk3401a_run Running the Example
 Once programmed into the board, the example blinks the on-board LED about once a second.
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_blinky_efm32-slstk3401a_win Windows Emulation
 The Windows emulation is a simple console application that produces the following output:
 
@@ -358,7 +359,7 @@ The DPP example is located in the directory <span class="img folder">qpc/example
 @endcode
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_dpp_ek-tm4c123gxl_feat Features Demonstrated
 - cooperative QV kernel
   + with ARM-KEIL toolchain
@@ -382,17 +383,17 @@ The DPP example is located in the directory <span class="img folder">qpc/example
 - Windows emulation with GUI (single threaded, win32-qv)
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_dpp_ek-tm4c123gxl_run Running the Example
 Once programmed into the board, the example rapidly toggles the Blue LED from the idle loop (blue LED glows) and toggles the Red and Green LEDs as the Philosophers change their state. Additionally, you can depress and hold the SW1 button (left) to PAUSE the application (Table transitions into the "paused" state). Releasing the SW1 button causes transition back to the "serving" state.
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_dpp_ek-tm4c123gxl_qutest Unit Testing
 The examples demonstrates the QUTest unit tests for the application.
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_dpp_ek-tm4c123gxl_spy QP/Spy Software Tracing
 The application also demonstrates <a href="https://www.state-machine.com/qtools/qpspy.html" target="_blank" class="extern">QP/Spy</a> software tracing output and input. To exercise this feature, you need to build and upload the Spy build configuration into the board.
 
@@ -451,7 +452,7 @@ The DPP example is located in the directory <span class="img folder">qpc/example
 @endcode
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_dpp_efm32-slstk3401a_feat Features Demonstrated
 - cooperative QV kernel
   + with ARM-KEIL toolchain
@@ -472,12 +473,12 @@ The DPP example is located in the directory <span class="img folder">qpc/example
 - Windows emulation with GUI (single threaded, win32-qv)
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_dpp_efm32-slstk3401a_run Running the Example
 Once programmed into the board, the example rapidly toggles the LED1 from the idle loop (LED1 glows) and toggles LED0 as the Philosophers change their state. Additionally, you can depress and hold the BTN0 button (left) to PAUSE the application (Table transitions into the "paused" state). Releasing the BTN0 button causes transition back to the "serving" state.
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_dpp_efm32-slstk3401a_spy QP/Spy Software Tracing
 The application also demonstrates <a href="https://www.state-machine.com/qtools/qpspy.html" target="_blank" class="extern">QP/Spy</a> software tracing output and input. To exercise this feature, you need to build and upload the Spy build configuration into the board.
 
@@ -497,7 +498,7 @@ Dining Philosophers Problem (DPP) example for  NXP LPC1768 MCU (Cortex-M3) with 
 /*##########################################################################*/
 /*! @page arm-cm_dpp_nucleo-l053r8 DPP on NUCLEO-L053R8
 
-@image html bd_nucleo-l053r8.jpg NUCLEO-L053R8 board
+@image html bd_NUCLEO-L053R8.jpg NUCLEO-L053R8 board
 
 @ref dpp "Dining Philosophers Problem (DPP)" example for NUCLEO-L053R8 MCU (Cortex-M0+).
 
@@ -516,7 +517,7 @@ Features:
 /*##########################################################################*/
 /*! @page arm-cm_dpp_nucleo-l152re DPP on NUCLEO-L152RE
 
-@image html bd_nucleo-l152re.jpg NUCLEO-L152RE board
+@image html bd_NUCLEO-L152RE.jpg NUCLEO-L152RE board
 
 @ref dpp "Dining Philosophers Problem (DPP)" example for NUCLEO-L152RE MCU (Cortex-M3).
 
@@ -554,7 +555,7 @@ Features:
 After you load the DPP example into the STM32F4-Discovery board, the application should start blinking the 4 on-board LEDs. You can press the User button (blue) to PAUSE the philosophers for as long as the button is depressed. The philosophers resume dining when you release the User button. (In the PAUSED state the Table active object stops granting permissions to eat, so eventually all philosophers end in the "hungry" state.)
 
 
-------------------------------------------------------------------------------
+
 @section arm-cm_dpp_stm32f4-discovery_qs QS Software Tracing
 
 The DPP example for embOS on STM32F4-Discovery board provides the "Spy" build configuration, which outputs the QS (Quantum Spy) software tracing data through USART2. To get the data out of the board, you need to connect the TTL/RS232 converter as follows:

@@ -1,17 +1,17 @@
 /**
 * @file
-* @brief QS/C port to a 32-bit CPU and a generic C compiler.
+* @brief QS/C port to uC/OS-II and 32-bit CPUs
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 6.8.1
+* Last updated on  2020-06-01
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,7 +29,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
 * <www.state-machine.com/licensing>
@@ -57,6 +57,13 @@
 * *before* "qs.h".
 */
 #include "qf_port.h" /* use QS with QF */
+
+#if (OS_CRITICAL_METHOD == 3u)
+    #define QS_CRIT_STAT_       OS_CPU_SR cpu_sr;
+    #define QS_CRIT_ENTRY_()    OS_ENTER_CRITICAL()
+    #define QS_CRIT_EXIT_()     OS_EXIT_CRITICAL(); QS_REC_DONE()
+#endif /* OS_CRITICAL_METHOD */
+
 #include "qs.h"      /* QS platform-independent public interface */
 
 #endif /* QS_PORT_H */

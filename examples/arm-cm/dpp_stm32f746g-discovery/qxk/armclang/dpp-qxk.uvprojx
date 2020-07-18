@@ -430,7 +430,7 @@
             <File>
               <FileName>startup_stm32f746xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\stm32f7-discovery\armclang\startup_stm32f746xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\stm32f7-discovery\arm\startup_stm32f746xx.s</FilePath>
             </File>
             <File>
               <FileName>stm32f7xx.h</FileName>
@@ -1139,7 +1139,7 @@
             <File>
               <FileName>startup_stm32f746xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\stm32f7-discovery\armclang\startup_stm32f746xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\stm32f7-discovery\arm\startup_stm32f746xx.s</FilePath>
             </File>
             <File>
               <FileName>stm32f7xx.h</FileName>
@@ -1848,7 +1848,7 @@
             <File>
               <FileName>startup_stm32f746xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\stm32f7-discovery\armclang\startup_stm32f746xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\stm32f7-discovery\arm\startup_stm32f746xx.s</FilePath>
             </File>
             <File>
               <FileName>stm32f7xx.h</FileName>

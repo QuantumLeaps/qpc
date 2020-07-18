@@ -9,8 +9,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-25
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -57,6 +57,7 @@ Q_DEFINE_THIS_MODULE("qf_actq")
 
 
 /****************************************************************************/
+#ifdef Q_SPY
 /**
 * @description
 * Direct event posting is the simplest asynchronous communication method
@@ -67,6 +68,7 @@ Q_DEFINE_THIS_MODULE("qf_actq")
 * @param[in]     margin number of required free slots in the queue after
 *                       posting the event. The special value #QF_NO_MARGIN
 *                       means that this function will assert if posting fails.
+* @param[in]     sender pointer to a sender object (used only for QS tracing)
 *
 * @returns
 * 'true' (success) if the posting succeeded (with the provided margin) and
@@ -87,12 +89,11 @@ Q_DEFINE_THIS_MODULE("qf_actq")
 *
 * @sa QActive_post_(), QActive_postLIFO()
 */
-#ifndef Q_SPY
-bool QActive_post_(QActive * const me, QEvt const * const e,
-                   uint_fast16_t const margin)
-#else
 bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
+#else
+bool QActive_post_(QActive * const me, QEvt const * const e,
+                   uint_fast16_t const margin)
 #endif
 {
     QEQueueCtr nFree; /* temporary to avoid UB for volatile access */
@@ -140,7 +141,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             me->eQueue.nMin = nFree; /* increase minimum so far */
         }
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST,
                          QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_PRE_();               /* timestamp */
             QS_OBJ_PRE_(sender);          /* the sender object */
@@ -153,7 +154,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
 #ifdef Q_UTEST
         /* callback to examine the posted event under the the same conditions
-        * as producing the QS_QF_ACTIVE_POST_FIFO trace record, which are:
+        * as producing the QS_QF_ACTIVE_POST trace record, which are:
         * 1. the local AO-filter is not set (zero) OR
         * 2. the local AO-filter is set to this AO ('me')
         */
@@ -198,7 +199,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
 #ifdef Q_UTEST
         /* callback to examine the posted event under the the same conditions
-        * as producing the QS_QF_ACTIVE_POST_FIFO trace record, which are:
+        * as producing the QS_QF_ACTIVE_POST trace record, which are:
         * 1. the local AO-filter is not set (zero) OR
         * 2. the local AO-filter is set to this AO ('me')
         */
@@ -228,7 +229,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 * because it alters order of events in the queue.
 *
 * @param[in] me pointer (see @ref oop)
-* @param[in  e  pointer to the event to post to the queue
+* @param[in] e  pointer to the event to post to the queue
 *
 * @attention
 * This function should be called only via the macro QACTIVE_POST_LIFO().
@@ -275,7 +276,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 
 #ifdef Q_UTEST
         /* callback to examine the posted event under the the same conditions
-        * as producing the QS_QF_ACTIVE_POST_FIFO trace record, which are:
+        * as producing the QS_QF_ACTIVE_POST trace record, which are:
         * 1. the local AO-filter is not set (zero) OR
         * 2. the local AO-filter is set to this AO ('me')
         */
@@ -428,15 +429,16 @@ static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
 /**
 * @description
 * This macro encapsulates the downcast to (QTicker *), which is used in
-* QTicker_init_() and QTicker_dispatch_(). Such casts can trigger PC-Lint
-* "Note 929: cast from pointer to pointer [MISRA-04 Rule 11.4, advisory]"
-* and this macro helps to encapsulate this deviation.
+* QTicker_init_() and QTicker_dispatch_(). Such casts can trigger PC-Lint-Plus
+* "note 9087: cast from pointer to object type to pointer to different
+* object type [MISRA 2012 Rule 11.3, required]". This macro helps to
+* encapsulate this deviation.
 */
-#define QTICKER_CAST_(me_)  ((QTicker *)(me_))
+#define QTICKER_CAST_(me_)  ((QActive *)(me_))
 
 /*..........................................................................*/
 /*! "constructor" of QTicker */
-void QTicker_ctor(QTicker * const me, uint8_t tickRate) {
+void QTicker_ctor(QTicker * const me, uint_fast8_t tickRate) {
     static QActiveVtable const vtable = {  /* QActive virtual table */
         { &QTicker_init_,
           &QTicker_dispatch_ },
@@ -444,11 +446,11 @@ void QTicker_ctor(QTicker * const me, uint8_t tickRate) {
         &QTicker_post_,
         &QTicker_postLIFO_
     };
-    QActive_ctor(me, Q_STATE_CAST(0)); /* superclass' ctor */
-    me->super.vptr = &vtable.super; /* hook the vptr */
+    QActive_ctor(&me->super, Q_STATE_CAST(0)); /* superclass' ctor */
+    me->super.super.vptr = &vtable.super; /* hook the vptr */
 
     /* reuse eQueue.head for tick-rate */
-    me->eQueue.head = (QEQueueCtr)tickRate;
+    me->super.eQueue.head = (QEQueueCtr)tickRate;
 }
 /*..........................................................................*/
 static void QTicker_init_(QHsm * const me, void const *par) {
@@ -499,7 +501,7 @@ static bool QTicker_post_(QActive * const me, QEvt const * const e,
 
     ++me->eQueue.tail; /* account for one more tick event */
 
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO,
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST,
                          QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_PRE_();      /* timestamp */
         QS_OBJ_PRE_(sender); /* the sender object */

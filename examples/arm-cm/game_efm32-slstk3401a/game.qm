@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.6.0" links="1">
+<model version="5.0.2" links="1">
  <documentation>&quot;Fly 'n' Shoot&quot; game model from Chapters 1 &amp; 9 of PSiCC2
 
 NOTE: Requries QP6.</documentation>
@@ -44,11 +44,11 @@ NOTE: Requries QP6.</documentation>
    <!--${AOs::Tunnel::screenTimeEvt}-->
    <attribute name="screenTimeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
    <!--${AOs::Tunnel::mines[GAME_MINES_MAX]}-->
-   <attribute name="mines[GAME_MINES_MAX]" type="QMsm *" visibility="0x02" properties="0x00"/>
+   <attribute name="mines[GAME_MINES_MAX]" type="QHsm *" visibility="0x02" properties="0x00"/>
    <!--${AOs::Tunnel::mine1_pool[GAME_MINES_MAX]}-->
-   <attribute name="mine1_pool[GAME_MINES_MAX]" type="QMsm *" visibility="0x02" properties="0x00"/>
+   <attribute name="mine1_pool[GAME_MINES_MAX]" type="QHsm *" visibility="0x02" properties="0x00"/>
    <!--${AOs::Tunnel::mine2_pool[GAME_MINES_MAX]}-->
-   <attribute name="mine2_pool[GAME_MINES_MAX]" type="QMsm *" visibility="0x02" properties="0x00"/>
+   <attribute name="mine2_pool[GAME_MINES_MAX]" type="QHsm *" visibility="0x02" properties="0x00"/>
    <!--${AOs::Tunnel::blink_ctr}-->
    <attribute name="blink_ctr" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${AOs::Tunnel::last_mine_x}-->
@@ -115,7 +115,7 @@ if ((me-&gt;last_mine_x + GAME_MINES_DIST_MIN &lt; GAME_TUNNEL_WIDTH)
 {
     uint8_t n;
     for (n = 0U; n &lt; Q_DIM(me-&gt;mines); ++n) { /*look for disabled mines */
-        if (me-&gt;mines[n] == (QMsm *)0) {
+        if (me-&gt;mines[n] == (QHsm *)0) {
             break;
         }
     }
@@ -153,7 +153,7 @@ if ((me-&gt;last_mine_x + GAME_MINES_DIST_MIN &lt; GAME_TUNNEL_WIDTH)
     <code>uint8_t n;
 
 for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
-    if (me-&gt;mines[n] != (QMsm *)0) { /* is the mine used? */
+    if (me-&gt;mines[n] != (QHsm *)0) { /* is the mine used? */
         QHSM_DISPATCH(me-&gt;mines[n], e);
     }
 }</code>
@@ -197,8 +197,8 @@ QS_SIG_DICTIONARY(SCORE_SIG,          me);
      <!--${AOs::Tunnel::SM::active::MINE_DISABLED}-->
      <tran trig="MINE_DISABLED">
       <action>Q_ASSERT((Q_EVT_CAST(MineEvt)-&gt;id &lt; GAME_MINES_MAX)
-         &amp;&amp; (me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] != (QMsm *)0));
-me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] = (QMsm *)0;</action>
+         &amp;&amp; (me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] != (QHsm *)0));
+me-&gt;mines[Q_EVT_CAST(MineEvt)-&gt;id] = (QHsm *)0;</action>
       <tran_glyph conn="2,9,3,-1,14">
        <action box="0,-2,14,2"/>
       </tran_glyph>
@@ -1224,7 +1224,7 @@ QTimeEvt_ctorX(&amp;me-&gt;screenTimeEvt, &amp;me-&gt;super, SCREEN_TIMEOUT_SIG,
 for (n = 0; n &lt; GAME_MINES_MAX; ++n) {
     me-&gt;mine1_pool[n] = Mine1_ctor(n); /* instantiate Mine1 in the pool */
     me-&gt;mine2_pool[n] = Mine2_ctor(n); /* instantiate Mine2 in the pool */
-    me-&gt;mines[n] = (QMsm *)0; /* mine 'n' is unused */
+    me-&gt;mines[n] = (QHsm *)0; /* mine 'n' is unused */
 }
 me-&gt;last_mine_x = 0; /* the last mine at the right edge of the tunnel */
 me-&gt;last_mine_y = 0;</code>

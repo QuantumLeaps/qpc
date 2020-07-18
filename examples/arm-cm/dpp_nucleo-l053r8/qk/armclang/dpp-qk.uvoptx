@@ -755,7 +755,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\3rd_party\nucleo-l053r8\armclang\startup_stm32l053xx.s</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\3rd_party\nucleo-l053r8\arm\startup_stm32l053xx.s</PathWithFileName>
       <FilenameWithoutPath>startup_stm32l053xx.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

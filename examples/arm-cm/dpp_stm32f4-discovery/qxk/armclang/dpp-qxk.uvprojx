@@ -430,7 +430,7 @@
             <File>
               <FileName>startup_stm32f4xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\stm32f4-discovery\armclang\startup_stm32f4xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\stm32f4-discovery\arm\startup_stm32f4xx.s</FilePath>
             </File>
             <File>
               <FileName>README.txt</FileName>
@@ -1109,7 +1109,7 @@
             <File>
               <FileName>startup_stm32f4xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\stm32f4-discovery\armclang\startup_stm32f4xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\stm32f4-discovery\arm\startup_stm32f4xx.s</FilePath>
             </File>
             <File>
               <FileName>README.txt</FileName>
@@ -1788,7 +1788,7 @@
             <File>
               <FileName>startup_stm32f4xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\stm32f4-discovery\armclang\startup_stm32f4xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\stm32f4-discovery\arm\startup_stm32f4xx.s</FilePath>
             </File>
             <File>
               <FileName>README.txt</FileName>

@@ -1,11 +1,11 @@
 /**
 * @file
-* @brief QF/C generic port to uC/OS-II V2.92
+* @brief QF/C generic port to uC/OS-II
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-23
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -105,9 +105,13 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     */
     err = OSTaskCreateExt(&task_function, /* the task function */
              (void *)me,     /* the 'pdata' parameter */
-             &(((OS_STK *)stkSto)[(stkSize / sizeof(OS_STK)) - 1]), /* ptos */
-             p_ucos,         /* uC/OS-II task priority */
-             (INT16U)p_ucos, /* the unique priority is the task id as well */
+#if OS_STK_GROWTH
+             &((OS_STK *)stkSto)[(stkSize/sizeof(OS_STK)) - 1], /* ptos */
+#else
+             (OS_STK *)stkSto, /* ptos */
+#endif
+             p_ucos,           /* uC/OS-II task priority */
+             (INT16U)me->prio, /* the unique AO priority as task ID */
              (OS_STK *)stkSto, /* pbos */
              (INT32U)(stkSize/sizeof(OS_STK)),/* stack size in OS_STK units */
              (void *)0,      /* pext */
@@ -122,7 +126,7 @@ static void task_function(void *pdata) { /* uC/OS-II task signature */
     /* event-loop */
     for (;;) { /* for-ever */
         QEvt const *e = QActive_get_((QActive *)pdata);
-        QHSM_DISPATCH((QMsm *)pdata, e); /* dispatch to the AO's SM */
+        QHSM_DISPATCH((QHsm *)pdata, e); /* dispatch to the AO's SM */
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
 }
@@ -161,7 +165,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
     if (status) { /* can post the event? */
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST,
                          QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_PRE_();         /* timestamp */
             QS_OBJ_PRE_(sender);    /* the sender object */

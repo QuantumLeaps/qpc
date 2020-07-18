@@ -165,7 +165,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
     if (status) { /* can post the event? */
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO,
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST,
                          QS_priv_.locFilter[AO_OBJ], me)
             QS_TIME_PRE_();      /* timestamp */
             QS_OBJ_PRE_(sender); /* the sender object */

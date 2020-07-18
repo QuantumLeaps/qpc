@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST-QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 6.6.0
-# Last updated on  2019-10-14
+# Last updated for version 6.8.2
+# Last updated on  2020-07-16
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -25,11 +25,11 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# along with this program. If not, see <www.gnu.org/licenses/>.
 #
 # Contact information:
-# https://www.state-machine.com
-# mailto:info@state-machine.com
+# <www.state-machine.com/licensing>
+# <info@state-machine.com>
 ##############################################################################
 #
 # examples of invoking this Makefile:
@@ -179,7 +179,15 @@ CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
 	-fno-rtti -fno-exceptions \
 	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
-LINKFLAGS := -no-pie
+ifndef GCC_OLD
+	LINKFLAGS := -no-pie
+endif
+
+ifdef GCOV
+	CFLAGS    += -fprofile-arcs -ftest-coverage
+	CPPFLAGS  += -fprofile-arcs -ftest-coverage
+	LINKFLAGS += -lgcov --coverage
+endif
 
 #-----------------------------------------------------------------------------
 C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))
@@ -240,9 +248,7 @@ debug :
 	$(QUTEST) $(TESTS) DEBUG $(HOST)
 
 clean :
-	-$(RM) $(BIN_DIR)/*.o \
-	$(BIN_DIR)/*.d \
-	$(TARGET_EXE)
+	-$(RM) $(BIN_DIR)/*.*
 
 show :
 	@echo PROJECT      = $(PROJECT)

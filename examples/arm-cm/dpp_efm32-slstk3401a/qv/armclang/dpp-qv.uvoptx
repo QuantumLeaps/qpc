@@ -703,7 +703,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\..\3rd_party\efm32pg1b\armclang\startup_efm32pg1b.s</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\3rd_party\efm32pg1b\arm\startup_efm32pg1b.s</PathWithFileName>
       <FilenameWithoutPath>startup_efm32pg1b.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

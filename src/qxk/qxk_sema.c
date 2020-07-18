@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-18
+* Last updated for version 6.8.2
+* Last updated on  2020-06-15
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -104,7 +104,6 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
 *                       to wait for the semaphore. The value of
 *                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
 *                       occur and the semaphore will wait indefinitely.
-* @param[in]  tickRate  system clock tick rate serviced in this call.
 *
 * @returns
 * 'true' if the semaphore has been signaled and 'false' if a timeout occured.
@@ -143,8 +142,8 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
         curr->super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
         QXThread_teArm_(curr, (QSignal)QXK_SEMA_SIG, nTicks);
 
-        /* remove this curr prio from the ready set (block)
-        * and insert to the waiting set on this mutex */
+        /* remove this curr prio from the ready set (will block)
+        * and insert to the waiting set on this semaphore */
         QPSet_insert(&me->waitSet,        p); /* add to waiting-set */
         QPSet_remove(&QXK_attr_.readySet, p); /* remove from ready-set */
 
@@ -159,7 +158,7 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
                          == QXK_PTR_CAST_(QMState*, me));
 
         /* did the blocking time-out? (signal of zero means that it did) */
-        if (curr->timeEvt.super.sig == (QSignal)0) {
+        if (curr->timeEvt.super.sig == 0U) {
             if (QPSet_hasElement(&me->waitSet, p)) { /* still waiting? */
                 QPSet_remove(&me->waitSet, p); /* remove the unblocked thread */
                 signaled = false; /* the semaphore was NOT signaled */

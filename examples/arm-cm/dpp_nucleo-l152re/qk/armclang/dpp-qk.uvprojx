@@ -450,7 +450,7 @@
             <File>
               <FileName>startup_stm32l1xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\nucleo-l152re\armclang\startup_stm32l1xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\nucleo-l152re\arm\startup_stm32l1xx.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1099,7 +1099,7 @@
             <File>
               <FileName>startup_stm32l1xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\nucleo-l152re\armclang\startup_stm32l1xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\nucleo-l152re\arm\startup_stm32l1xx.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1748,7 +1748,7 @@
             <File>
               <FileName>startup_stm32l1xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\nucleo-l152re\armclang\startup_stm32l1xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\nucleo-l152re\arm\startup_stm32l1xx.s</FilePath>
             </File>
           </Files>
         </Group>

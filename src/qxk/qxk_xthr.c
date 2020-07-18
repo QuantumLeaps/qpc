@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-25
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -94,6 +94,7 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e);
 *
 * @param[in,out] me       pointer (see @ref oop)
 * @param[in]     handler  the thread-handler function
+* @param[in]     tickRate the ticking rate for timeouts in this thread
 *
 * @note
 * Must be called only ONCE before QXTHREAD_START().
@@ -103,7 +104,7 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e);
 * main() function
 *
 * @include
-* qxk_xthread_ctor.c
+* qxk_thread_ctor.c
 */
 void QXThread_ctor(QXThread * const me,
                    QXThreadHandler handler, uint_fast8_t tickRate)
@@ -158,14 +159,14 @@ static void QXThread_dispatch_(QHsm * const me, QEvt const * const e) {
 *                        or zero if queue not used
 * @param[in]     stkSto  pointer to the stack storage (must be provided)
 * @param[in]     stkSize stack size [in bytes] (must not be zero)
-* @param[in]     e       pointer to an extra parameter (might be NULL).
+* @param[in]     par     pointer to an extra parameter (might be NULL).
 *
 * @note
 * Should be called via the macro QXTHREAD_START().
 *
 * @usage
 * The following example shows starting an extended thread:
-* @include qxk_xthread_start.c
+* @include qxk_start.c
 */
 static void QXThread_start_(QActive * const me, uint_fast8_t prio,
                         QEvt const * * const qSto, uint_fast16_t const qLen,
@@ -216,6 +217,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 }
 
 /****************************************************************************/
+#ifdef Q_SPY
 /**
 * @description
 * Direct event posting is the simplest asynchronous communication method
@@ -232,6 +234,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 * @param[in]     margin number of required free slots in the queue after
 *                       posting the event. The special value #QF_NO_MARGIN
 *                       means that this function will assert if posting fails.
+* @param[in]     sender pointer to a sender object (used only for QS tracing).
 *
 * @returns
 * 'true' (success) if the posting succeeded (with the provided margin) and
@@ -252,13 +255,12 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 * here actually points to the QXThread subclass. Therefore the downcast
 * (QXThread *)me is always correct.
 */
-#ifndef Q_SPY
-static bool QXThread_post_(QActive * const me, QEvt const * const e,
-                           uint_fast16_t const margin)
-#else
 static bool QXThread_post_(QActive * const me, QEvt const * const e,
                            uint_fast16_t const margin,
                            void const * const sender)
+#else
+static bool QXThread_post_(QActive * const me, QEvt const * const e,
+                           uint_fast16_t const margin)
 #endif
 {
     bool status;
@@ -323,7 +325,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
                 me->eQueue.nMin = nFree;    /* update minimum so far */
             }
 
-            QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_FIFO,
+            QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST,
                                  QS_priv_.locFilter[AO_OBJ], me)
                 QS_TIME_PRE_();        /* timestamp */
                 QS_OBJ_PRE_(sender);   /* the sender object */
@@ -396,7 +398,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
 * Last-In-First-Out (LIFO) policy is not supported for extened threads.
 *
 * @param[in] me pointer (see @ref oop)
-* @param[in  e  pointer to the event to post to the queue
+* @param[in] e  pointer to the event to post to the queue
 *
 * @sa
 * QActive_postLIFO_()

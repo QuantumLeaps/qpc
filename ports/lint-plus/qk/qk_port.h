@@ -46,6 +46,12 @@
 #define QK_ON_CONTEXT_SW 1
 
 /*! determination if the code executes in the ISR context */
+/**
+* @note This is just an example of #QK_ISR_CONTEXT_ (for ARM Cortex-M).
+* You need to define the macro appropriately for the CPU/compiler you're
+* using. Also, some QK ports will not define this macro, but instead might
+* test the interrupt nesting up-down counter (QK_intNest_).
+*/
 #define QK_ISR_CONTEXT_() (get_IPSR() != 0U)
 
 /* QK interrupt entry and exit... */

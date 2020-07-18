@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example extened for QXK
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.8.2
+* Last updated on  2020-07-15
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -38,7 +38,7 @@
 Q_DEFINE_THIS_FILE
 
 static QTicker l_ticker0;
-QActive *the_Ticker0 = &l_ticker0;
+QActive *the_Ticker0 = &l_ticker0.super;
 
 /*..........................................................................*/
 int main() {

@@ -9,7 +9,7 @@
 <a class="extern" target="_blank" href="https://www.state-machine.com/#Downloads"><strong>QP-bundle&trade;</strong></a> is the **most recommended** way of downloading and installing QP/C&trade;. However, if you are allergic to installers and GUIs or don't have administrator privileges you can also **download and install QP/C&trade; separately** as described in the Application Note: "Getting Started with QP/C" below.
 
 
-------------------------------------------------------------------------------
+
 @section gs_an Getting Started with QP/C&trade; App Note
 The Quantum Leaps Application Note <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf"><strong>Getting Started with QP/C</strong></a> provides instructions on how to download, install and get started with QP/C quickly. The application note also contains a **QP/C Tutorial**, in which you build a simple "Blinky" application.
 

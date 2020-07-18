@@ -1,6 +1,8 @@
 About uCOS-II for ARM Cortex-M Examples
 =======================================
-This folder contains examples for uCOS-II V2.92 running on ARM Cortex-M.
+This folder contains examples for uCOS-II V2.93 running on ARM Cortex-M.
+This uCOS-II version has been released under the permissive Apache License,
+Version 2.0 (see GitHub https://github.com/SiliconLabs/uC-OS2 ).
 
 
 The Blinky Example
@@ -23,8 +25,7 @@ contain projects for the ARM (MDK-ARM) compiler and the IAR compiler.
 
 uCOS-II Source and QP-Port
 ==========================
-The QP-Port to uCOS-II V2.92 is located in qpc\ports\ucos-ii
+The QP-Port to uCOS-II is located in qpc\ports\ucos-ii
 
-The uCOS-II V2.92 source code and ports are located in 3rd_party\uCOS-II.
-Please make sure to read about uCOS-II licensing in the README file
-found in this directory.
+The uCOS-II source code and ports are located in 3rd_party\ucos-ii.
+Please make sure to read the README.md file found in that directory.

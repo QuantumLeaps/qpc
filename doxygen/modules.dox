@@ -37,7 +37,7 @@ QV is a simple **cooperative** kernel (previously called "Vanilla" kernel). This
 The QV scheduler is described in Section 6.3.7 of the book ["Practical UML Statecharts in C/C++, 2nd Ed" (PSiCC2)](https://www.state-machine.com/psicc2/).
 
 
-------------------------------------------------------------------------------
+
 @section qv_overview QV Overview
 The QV scheduler is engaged after every RTC step of any active object to choose the next active object to execute. The QV scheduler always chooses the highest-priority active object that has any events in its event queue. The QV scheduler then extracts the next event from this queue and dispatches it to the state machine associated with the active object. The state machine runs to completion, after which the QV scheduler runs and the cycle repeats.
 
@@ -50,7 +50,7 @@ The QV scheduler can also very easily detect when all event queues are empty, at
 Given the simplicity, portability, and low-resource consumption, the QV scheduler is very attractive. It allows you to partition the problem into active objects and execute these active objects orderly. The thread-level response of this scheduler is the longest RTC step in the whole system, but because event-driven active objects don’t block, the RTC steps tend to be very short (typically just a few microseconds). Also, often you can break up longer RTC steps into shorter pieces, by posting an event to self and returning (“Reminder” state pattern). The self-posted event then triggers the continuation of longer processing.
 
 @remarks
-Sometimes it is not practical to break up long RTC steps, and consequently the thread-level response of the simple @ref "QV kernel" might be too slow. In this cases you need to use a *preemptive* kernel. The big advantage of preemptive kernel is that it effectively decouples high-priority thread from low-priority threads in the time domain. The timeliness of execution of high-priority thread is almost independent on the low-priority threads. But of course there is no such thing as a free lunch. Preemptive kernels open the whole new class of problems related to race conditions. So you need to be very careful about sharing any resources.
+Sometimes it is not practical to break up long RTC steps, and consequently the thread-level response of the simple @ref qv "QV kernel" might be too slow. In this cases you need to use a *preemptive* kernel. The big advantage of preemptive kernel is that it effectively decouples high-priority thread from low-priority threads in the time domain. The timeliness of execution of high-priority thread is almost independent on the low-priority threads. But of course there is no such thing as a free lunch. Preemptive kernels open the whole new class of problems related to race conditions. So you need to be very careful about sharing any resources.
 
 
 @next{qk}
@@ -69,7 +69,7 @@ Preemptive Run-To-Completion (Non-Blocking) Kernel
 The non-blocking, run-to-completion, preemptive threads are known in the literature as "basic threads" (OSEK/AUTOSAR terminology), sometimes also called "fibers" (e.g., Q-Kernel) or "software interrupts" (e.g., TI-RTOS).
 
 
-------------------------------------------------------------------------------
+
 @section qk_overview QK Overview
 The preemptive, run-to-completion (RTC) QK kernel breaks entirely with the endless-loop structure of the thread routines and instead uses threads structured as one-shot, discrete, run-to-completion functions, very much like ISRs [[PSiCC2](https://www.state-machine.com/psicc2/), Chapter 10]. In fact, the QK kernel views interrupts very much like threads of a “super-high” priority, except that interrupts are prioritized in hardware by the interrupt controller, whereas threads are prioritized in software by the RTC kernel.
 
@@ -88,12 +88,12 @@ When a lower-priority thread posts an event to a higher-priority thread, the ker
 <ul class="tag">
   <li><span class="tag">2</span>
 When an interrupt posts an event to a higher-priority thread than the interrupted thread, upon completion of the ISR the kernel must start execution of the higher-priority thread instead of resuming the lower-priority thread. This type of preemption is called <b>asynchronous preemption</b> because it can happen asynchronously, any time interrupts are not explicitly disabled.
-> NOTE: The stack usage during asynchronous preemption on ARM Cortex-M is slightly simplified in the diagram below. A more detailed stack usage diagram is discussed later in the section explaining the @ref "Detailed stack allocation in QK for ARM Cortex-M".
+> NOTE: The stack usage during asynchronous preemption on ARM Cortex-M is slightly simplified in the diagram below. A more detailed stack usage diagram is discussed later in the section explaining the @ref arm-cm_qk_port-asm_pendsv "Detailed stack allocation in QK for ARM Cortex-M".
   </li>
 </ul>
 
 @anchor qk-asynch-fig
-@image html qk_asynch.gif "Synchronous Preemption in QK"
+@image html qk_asynch.gif "Asynchronous Preemption in QK"
 
 
 @note
@@ -130,7 +130,7 @@ Example illustrates: 6 active objects plus two extended threads, QXK blocking de
 Example illustrates: 6 active objects plus two extended threads, QXK blocking delay, QXK semaphore, QXK mutex, QXK blocking message queue.
 
 
-------------------------------------------------------------------------------
+
 @section qxk_basic Basic Threads
 QXK supports **basic**-threads (non-blocking, run-to-completion activations). The basic-threads all nest on the same stack (Main Stack Pointer in ARM Cortex-M), so the stack usage is reduced. The additional advantage of basic-threads is that switching from basic-thread to another basic-thread requires only @ref QXK_activate_() "activation" of the basic-thread, which is much simpler and faster than full context-switch required for @ref qxk_extended "extended"-threads that QXK also supports (see below).
 
@@ -138,7 +138,7 @@ QXK supports **basic**-threads (non-blocking, run-to-completion activations). Th
 QXK adopts the "basic/exteded thread" terms from the <a class="extern" target="_blank"  href="https://www.autosar.org">OSEK/AUTOSAR Operating System</a> specification. Other real-time kernels might use different terminology for similar concepts. For example, the <a class="extern" target="_blank" href="http://www.quasarsoft.com/">Q-Kernel</a> uses the term "fibers", while <a class="extern" target="_blank"  href="http://www.ti.com/tool/TI-RTOS">TI-RTOS</a> uses the term "software interrupts" for concepts closely related to "basic threads".
 
 
-------------------------------------------------------------------------------
+
 @section qxk_extended Extended Threads
 QXK supports **extended**-threads (blocking, typically structrued as endless loops). The extended-threads use private per-thread stacks, as in conventional RTOS kernels. Any switching from basic-to-extended thread or extended-to-extended thread requires full context switch.
 
@@ -149,7 +149,7 @@ QXK is a unique dual-mode kernel on the market that supports interleaving the pr
 @sa ::QXThread
 
 
-------------------------------------------------------------------------------
+
 @section qxk_classes Classes in QXK
 The figure below shows the main classes introduced in the QXK kernel and their relation to the classes of the QP framework.
 
@@ -162,10 +162,10 @@ The figure below shows the main classes introduced in the QXK kernel and their r
   <li><span class="tag">1</span> The ::QXThread class represents the extended (blocking) threads of the QXK kernel. It inherits ::QActive, so that extended-threads can be treated as active objects internally in the framework. However, the extended-threads __do not implement state machines__. Instead, the data fields used for storing the current state in active objects are re-used to store the private stack of the extended-thread. The ::QXThread class also contains the @c timeEvt object (see ::QTimeEvt) for generating timeouts when the extended-thread is blocked.
   </li>
 
-  <li><span class="tag">2</span> The ::QXMutex class represents the @ref qxk_mutex "priority-ceiling mutex" of the QXK kernel. The mutex can block and can be used only in the extended-threads (in case they share resources that need to be protected). The mutex is recursive, meaning that it can be locked multiple times from the same extended thread (but it needs to be unlocked equal number of times).
+  <li><span class="tag">2</span> The ::QXMutex class represents the **priority-ceiling mutex** of the QXK kernel. The mutex can block and can be used only in the extended-threads (in case they share resources that need to be protected). The mutex is recursive, meaning that it can be locked multiple times from the same extended thread (but it needs to be unlocked equal number of times).
   </li>
 
-  <li><span class="tag">3</span> The ::QXSemaphore class represents the @ref qxk_sema "counting semaphore" of the QXK kernel. The semaphore can be waited on only in the extended-threads and the QXK kernel would assert if an active object thread would attempt to wait on a semaphore. On the other hand, a semaphore can be signaled from anywhere in the code, including active objects and ISRs.
+  <li><span class="tag">3</span> The ::QXSemaphore class represents the **counting semaphore** of the QXK kernel. The semaphore can be waited on only in the extended-threads and the QXK kernel would assert if an active object thread would attempt to wait on a semaphore. On the other hand, a semaphore can be signaled from anywhere in the code, including active objects and ISRs.
   </li>
 </ul>
 
@@ -173,7 +173,7 @@ The figure below shows the main classes introduced in the QXK kernel and their r
 The main takeaway from the QXK class diagram is QXK's **optimal, tight integration** with the QP framework. The QXK kernel reuses all mechanisms already provided in QP, thus avoiding any code duplication, inefficient layers of indirection, and additional licensing costs, which are inevitable when using @ref ports_rtos "3rd-party RTOS kernels" to run QP applications.
 
 
-------------------------------------------------------------------------------
+
 @section qxk_features QXK Feature Summary
 As you can see in the list below, <span class="highlight">QXK provides most features you might expect of a traditional blocking **RTOS** kernel and is <strong>recommended</strong> as the preferred RTOS kernel for QP applications</span> that need to mix active objects with traditional blocking code.
 
@@ -227,7 +227,7 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 
 </ul>
 
-<div class="separate"></div>
+
 @subsection qxk_tls Thread Local Storage
 <b>Thread-local storage (TLS)</b> is a programming method that uses static or global memory local to a thread. TLS is specifically useful for writing library-type code, which is used in a multithreaded environment and needs to access per-thread data in an independent way.
 

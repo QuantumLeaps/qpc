@@ -293,10 +293,10 @@ int main(int argc, char *argv[]) {
 
     /* start the active objects... */
     TServer_ctor(&l_tserver);
-    QACTIVE_START((QMActive *)&l_tserver,
+    QACTIVE_START((QActive *)&l_tserver,
                   1U,
                   l_tserverQSto, Q_DIM(l_tserverQSto),
-                  (void *)0, 0U, (QEvt *)0);
+                  (void *)0, 0U, (void *)0);
 
     return QF_run(); /* run the QF application */
 }
@@ -308,12 +308,12 @@ void BSP_onKeyboardInput(uint8_t key) {
             RequestEvt *e = Q_NEW(RequestEvt, NEW_REQUEST_SIG);
             e->ref_num = (++reqCtr); /* set the reference number */
             /* post directly to TServer active object */
-            QACTIVE_POST((QMActive *)&l_tserver, (QEvt *)e, (void *)0);
+            QACTIVE_POST((QActive *)&l_tserver, (QEvt *)e, (void *)0);
             break;
         }
         case '\33': { /* ESC pressed? */
             static QEvt const terminateEvt = { TERMINATE_SIG, 0U, 0U };
-            QACTIVE_POST((QMActive *)&l_tserver, &terminateEvt, (void *)0);
+            QACTIVE_POST((QActive *)&l_tserver, &terminateEvt, (void *)0);
             break;
         }
     }

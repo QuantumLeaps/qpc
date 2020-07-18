@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Board Support Package (BSP) for the Calculator example
-* Last updated for version 6.8.0
-* Last updated on  2020-03-31
+* Last updated for version 6.8.2
+* Last updated on  2020-06-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -37,7 +37,11 @@
 #include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 #include <stdlib.h>   /* for exit() */
 
-#define DISP_WIDTH  15
+#define DISP_WIDTH      15
+
+/* helper macros to "stringify" values */
+#define VAL(x) #x
+#define STRINGIFY(x) VAL(x)
 
 static char l_display[DISP_WIDTH + 1]; /* the calculator display */
 static int  l_len;  /* number of displayed characters */
@@ -63,11 +67,12 @@ void BSP_insert(int keyId) {
 }
 /*..........................................................................*/
 void BSP_display(double value) {
-    SNPRINTF_S(l_display, Q_DIM(l_display), "%15.6g", value);
+    SNPRINTF_S(l_display, Q_DIM(l_display),
+        "%" STRINGIFY(DISP_WIDTH) ".6g", value);
 }
 /*..........................................................................*/
 void BSP_display_error(char const *err) {
-    STRCPY_S(l_display, Q_DIM(l_display), err);
+    STRCPY_S(l_display, DISP_WIDTH, err);
 }
 /*..........................................................................*/
 void BSP_negate(void) {
@@ -76,7 +81,7 @@ void BSP_negate(void) {
 }
 /*..........................................................................*/
 void BSP_show_display(void) {
-    PRINTF_S("\n[%s] ", l_display);
+    PRINTF_S("\n[%" STRINGIFY(DISP_WIDTH) "s] ", l_display);
 }
 /*..........................................................................*/
 void BSP_exit(void) {

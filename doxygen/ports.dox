@@ -12,11 +12,11 @@ The QP/C distribution contains many QP/C ports, which are organized into the thr
 - @subpage ports_os "3rd-Party OS Ports" adapt QP/C to run on top of a 3rd-Party Operating System (OS), such as @ref win32 "Windows" or @ref posix "Linux".
 
 
-------------------------------------------------------------------------------
+
 @section ports_code Port Code Structure
 Starting with QP/C release 5.4.0, **all** available ports are bundled into the QP/C download, as opposed to being distributed as separate QP Development Kits (QDKs). The main benefit is of this approach is that it greatly reduces chances of mistakes in combining the mainline QP/C code with various QDKs. The downside is that the QP/C distribution becomes quite large and that ports cannot be added or updated independently from the QP/C baseline code.
 
-All ports are located in sub-directories of the <span class="img folder">ports</span> @ref qpc_files "top-level folder", with the hierarchical organization outlined below:
+All ports are located in sub-directories of the <span class="img folder">ports</span> top-level folder, with the hierarchical organization outlined below:
 
 <ul class="tag">
   <li><span class="img folder">ports/</span>

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 6.4.0
-# Last updated on  2019-01-09
+# Last updated for version 6.8.0
+# Last updated on  2020-03-31
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -220,7 +220,9 @@ CPPFLAGS = -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
 
 endif  # .....................................................................
 
-LINKFLAGS := -no-pie
+ifndef GCC_OLD
+	LINKFLAGS := -no-pie
+endif
 
 #-----------------------------------------------------------------------------
 C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))

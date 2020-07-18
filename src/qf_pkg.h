@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-27
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -80,7 +80,7 @@
     */
     #define QF_CRIT_EXIT_()     QF_CRIT_EXIT(dummy)
 
-#else
+#elif (!defined QF_CRIT_STAT_)
     #define QF_CRIT_STAT_       QF_CRIT_STAT_TYPE critStat_;
     #define QF_CRIT_ENTRY_()    QF_CRIT_ENTRY(critStat_)
     #define QF_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_)

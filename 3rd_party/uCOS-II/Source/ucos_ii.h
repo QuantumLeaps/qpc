@@ -3,20 +3,21 @@
 *                                              uC/OS-II
 *                                        The Real-Time Kernel
 *
-*                            (c) Copyright 1992-2013, Micrium, Weston, FL
-*                                           All Rights Reserved
+*                    Copyright 1992-2020 Silicon Laboratories Inc. www.silabs.com
 *
-* File    : uCOS_II.H
-* By      : Jean J. Labrosse
-* Version : V2.92.10
+*                                 SPDX-License-Identifier: APACHE-2.0
 *
-* LICENSING TERMS:
-* ---------------
-*   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
-* If you plan on using  uC/OS-II  in a commercial product you need to contact Micrium to properly license
-* its use in your product. We provide ALL the source code for your convenience and to help you experience
-* uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
-* licensing fee.
+*               This software is subject to an open source license and is distributed by
+*                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+*                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
+*
+*********************************************************************************************************
+*/
+
+/*
+*********************************************************************************************************
+* Filename : ucos_ii.h
+* Version  : V2.93.00
 *********************************************************************************************************
 */
 
@@ -33,7 +34,7 @@ extern "C" {
 *********************************************************************************************************
 */
 
-#define  OS_VERSION                 29210u              /* Version of uC/OS-II (Vx.yy mult. by 10000)  */
+#define  OS_VERSION                 29300u              /* Version of uC/OS-II (Vx.yy mult. by 10000)  */
 
 /*
 *********************************************************************************************************
@@ -44,6 +45,7 @@ extern "C" {
 #include <app_cfg.h>
 #include <os_cfg.h>
 #include <os_cpu.h>
+#include "os_trace.h"
 
 /*
 *********************************************************************************************************
@@ -95,7 +97,6 @@ extern "C" {
 
 #define  OS_TCB_RESERVED        ((OS_TCB *)1)
 
-/*$PAGE*/
 /*
 *********************************************************************************************************
 *                             TASK STATUS (Bit definition for OSTCBStat)
@@ -267,6 +268,7 @@ extern "C" {
 #define OS_ERR_ILLEGAL_CREATE_RUN_TIME 19u
 
 #define OS_ERR_MBOX_FULL               20u
+#define OS_ERR_ILLEGAL_DEL_RUN_TIME    21u
 
 #define OS_ERR_Q_FULL                  30u
 #define OS_ERR_Q_EMPTY                 31u
@@ -345,7 +347,7 @@ extern "C" {
 #define OS_ERR_TLS_DESTRUCT_ASSIGNED  163u
 #define OS_ERR_OS_NOT_RUNNING         164u
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                       THREAD LOCAL STORAGE (TLS)
@@ -433,7 +435,7 @@ typedef struct os_flag_node {               /* Event Flag Wait List Node        
 } OS_FLAG_NODE;
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                        MESSAGE MAILBOX DATA
@@ -477,7 +479,7 @@ typedef struct os_mem_data {
 } OS_MEM_DATA;
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                   MUTUAL EXCLUSION SEMAPHORE DATA
@@ -548,7 +550,7 @@ typedef struct os_stk_data {
 } OS_STK_DATA;
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                         TASK CONTROL BLOCK
@@ -576,11 +578,12 @@ typedef struct os_tcb {
 #endif
 
 #if (OS_EVENT_EN)
-    OS_EVENT        *OSTCBEventPtr;         /* Pointer to          event control block                 */
+    OS_EVENT        *OSTCBEventPtr;         /* Pointer to           event control block                */
 #endif
 
 #if (OS_EVENT_EN) && (OS_EVENT_MULTI_EN > 0u)
-    OS_EVENT       **OSTCBEventMultiPtr;    /* Pointer to multiple event control blocks                */
+    OS_EVENT       **OSTCBEventMultiPtr;    /* Pointer to multiple  event control blocks               */
+    OS_EVENT        *OSTCBEventMultiRdy;    /* Pointer to the first event control block readied        */
 #endif
 
 #if ((OS_Q_EN > 0u) && (OS_MAX_QS > 0u)) || (OS_MBOX_EN > 0u)
@@ -625,7 +628,7 @@ typedef struct os_tcb {
 #endif
 } OS_TCB;
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                          TIMER DATA TYPES
@@ -664,7 +667,7 @@ typedef  struct  os_tmr_wheel {
 } OS_TMR_WHEEL;
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                       THREAD LOCAL STORAGE (TLS)
@@ -774,7 +777,7 @@ OS_EXT  OS_TMR_WHEEL      OSTmrWheelTbl[OS_TMR_CFG_WHEEL_SIZE];
 
 extern  INT8U   const     OSUnMapTbl[256];          /* Priority->Index    lookup table                 */
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                          FUNCTION PROTOTYPES
@@ -845,7 +848,7 @@ void          OS_TLS_TaskSw           (void);
 #endif
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                       EVENT FLAGS MANAGEMENT
@@ -1014,7 +1017,7 @@ INT8U         OSMutexQuery            (OS_EVENT        *pevent,
 
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                      MESSAGE QUEUE MANAGEMENT
@@ -1074,7 +1077,7 @@ INT8U         OSQQuery                (OS_EVENT        *pevent,
 
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                        SEMAPHORE MANAGEMENT
@@ -1119,7 +1122,7 @@ void          OSSemSet                (OS_EVENT        *pevent,
 
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                           TASK MANAGEMENT
@@ -1194,7 +1197,7 @@ void          OSTaskRegSet            (INT8U            prio,
                                        INT8U           *perr);
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                           TIME MANAGEMENT
@@ -1287,7 +1290,7 @@ void          OSStatInit              (void);
 
 INT16U        OSVersion               (void);
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                      INTERNAL FUNCTION PROTOTYPES
@@ -1376,7 +1379,7 @@ INT8U         OS_TCBInit              (INT8U            prio,
 void          OSTmr_Init              (void);
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                          FUNCTION PROTOTYPES
@@ -1414,7 +1417,7 @@ void          OSTCBInitHook           (OS_TCB          *ptcb);
 void          OSTimeTickHook          (void);
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                          FUNCTION PROTOTYPES
@@ -1456,7 +1459,7 @@ void          OSIntCtxSw              (void);
 void          OSCtxSw                 (void);
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                   LOOK FOR MISSING #define CONSTANTS
@@ -1919,8 +1922,10 @@ void          OSCtxSw                 (void);
 #error "OS_CFG.H, CANTATA must be disabled for safety-critical release code"
 #endif
 
-#ifdef OS_SCHED_LOCK_EN
-#error "OS_CFG.H, OS_SCHED_LOCK_EN must be disabled for safety-critical release code"
+#if OS_TMR_EN < 1u
+    #if OS_SCHED_LOCK_EN > 0u
+    #error "OS_CFG.H, OS_SCHED_LOCK_EN must be disabled for safety-critical release code if OS_TMR_EN is disabled"
+    #endif
 #endif
 
 #ifdef VSC_VALIDATION_MODE

@@ -216,6 +216,7 @@ void BSP_init(void) {
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
+    (void)n; /* unused parameter */
     GPIOF->DATA_Bits[LED_GREEN] =
          ((stat[0] == 'e')   /* Is Philo[n] eating? */
          ? 0xFFU             /* turn the LED1 on  */

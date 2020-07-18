@@ -1,14 +1,8 @@
 /*============================================================================
 *
-* The uCOS-II application configuration isn't really relevant for porting QP,
-* but the uCOS-II master include file ucos_ii.h with the uCOS-II API includes
-* app_cfg.h. So, this application configuration file is a dummy to
-* successfully include the uCOS-II API, but a different application
-* configuration needs to be provided when the uCOS-II code is actually
-* compiled to build an application.
-*
 * Quantum Leaps, LLC. www.state-machine.com
-* 2015-03-22
+* Customized for EK-TM4C123GXL (ARM Cortex-M4F)
+* 2020-06-08
 *===========================================================================*/
 /*
 *********************************************************************************************************
@@ -21,17 +15,33 @@
 *               part, or may be used as a reference only. This file can be modified as
 *               required to meet the end-product requirements.
 *
-*               Please help us continue to provide the Embedded community with the finest
-*               software available.  Your honesty is greatly appreciated.
-*
-*               You can find our product's user manual, API reference, release notes and
-*               more information at https://doc.micrium.com.
-*               You can contact us at www.micrium.com.
 *********************************************************************************************************
 */
 
-#ifndef  APP_CFG_MODULE_PRESENT
-#define  APP_CFG_MODULE_PRESENT
+/*
+*********************************************************************************************************
+*
+*                                      APPLICATION CONFIGURATION
+*
+*                                            EXAMPLE CODE
+*
+* Filename : app_cfg.h
+*********************************************************************************************************
+*/
+
+#ifndef  _APP_CFG_H_
+#define  _APP_CFG_H_
+
+
+/*
+*********************************************************************************************************
+*                                            INCLUDE FILES
+*********************************************************************************************************
+*/
+
+#include  <stdarg.h>
+#include  <stdio.h>
+
 
 /*
 *********************************************************************************************************
@@ -42,23 +52,23 @@
 
 /*
 *********************************************************************************************************
-*                                            TASK PRIORITIES
+*                                           TASK PRIORITIES
 *********************************************************************************************************
 */
 
-#define  APP_CFG_TASK_START_PRIO                          2u
+#define  APP_CFG_STARTUP_TASK_PRIO          3u
 
-#define  OS_TASK_TMR_PRIO                          (OS_LOWEST_PRIO - 2u)
+#define  OS_TASK_TMR_PRIO                  (OS_LOWEST_PRIO - 2u)
 
 
 /*
 *********************************************************************************************************
-*                                            TASK STACK SIZES
+*                                          TASK STACK SIZES
 *                             Size of the task stacks (# of OS_STK entries)
 *********************************************************************************************************
 */
 
-#define  APP_CFG_TASK_START_STK_SIZE                    256u
+#define  APP_CFG_STARTUP_TASK_STK_SIZE    128u
 
 
 /*
@@ -68,24 +78,36 @@
 */
 
 #ifndef  TRACE_LEVEL_OFF
-#define  TRACE_LEVEL_OFF                               0
+#define  TRACE_LEVEL_OFF                    0u
 #endif
 
 #ifndef  TRACE_LEVEL_INFO
-#define  TRACE_LEVEL_INFO                              1
+#define  TRACE_LEVEL_INFO                   1u
 #endif
 
 #ifndef  TRACE_LEVEL_DBG
-#define  TRACE_LEVEL_DBG                               2
+#define  TRACE_LEVEL_DBG                    2u
 #endif
 
-#define  APP_TRACE_LEVEL                        TRACE_LEVEL_OFF
-#define  APP_TRACE                              printf
+#define  APP_TRACE_LEVEL                   TRACE_LEVEL_OFF
+#define  APP_TRACE                         printf
 
-#define  IPERF_TRACE_LEVEL                      TRACE_LEVEL_OFF
-#define  IPERF_TRACE                            printf
+#define  APP_TRACE_INFO(x)    ((APP_TRACE_LEVEL >= TRACE_LEVEL_INFO)  ? (void)(APP_TRACE x) : (void)0)
+#define  APP_TRACE_DBG(x)     ((APP_TRACE_LEVEL >= TRACE_LEVEL_DBG)   ? (void)(APP_TRACE x) : (void)0)
 
-#define  APP_TRACE_INFO(x)               ((APP_TRACE_LEVEL >= TRACE_LEVEL_INFO)  ? (void)(APP_TRACE x) : (void)0)
-#define  APP_TRACE_DBG(x)                ((APP_TRACE_LEVEL >= TRACE_LEVEL_DBG)   ? (void)(APP_TRACE x) : (void)0)
 
-#endif
+/*
+*********************************************************************************************************
+*                                     CPU PORT CONFIGURATION
+*********************************************************************************************************
+*/
+#define  CPU_CFG_KA_IPL_BOUNDARY            4u
+#define  CPU_CFG_NVIC_PRIO_BITS             3u
+
+/*
+*********************************************************************************************************
+*                                             MODULE END
+*********************************************************************************************************
+*/
+
+#endif                                                          /* End of module include.              */

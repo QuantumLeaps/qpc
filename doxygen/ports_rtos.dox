@@ -78,7 +78,7 @@ The design of FreeRTOS requires the use of special "FromISR" API inside ISRs, wh
 - The QP port does not mandate any specific method to manage the QP time events, but the provided examples use the FreeRTOS "hook" `vApplicationTickHook()` to periodically invoke the QP clock tick QF_TICK_X_FROM_ISR(). (NOTE: the `vApplicationTickHook()` executes in the ISR context and therefore mandates the use of the "FromISR" APIs).
 
 
-------------------------------------------------------------------------------
+
 @section freertos_examples Example Code
 The QP port to FreeRTOS comes with examples located in the directory `qpc/examples/freertos/`. Currently, the examples are provided for the following boards and development toolchains:
 
@@ -86,7 +86,7 @@ The QP port to FreeRTOS comes with examples located in the directory `qpc/exampl
 - STM32F746G-Discovery (ARM Cortex-M7), ARM-KEIL, GNU-ARM, IAR-ARM
 
 
-<div class="separate"></div>
+
 @subsection freertos_isr Writing ISRs for QP/FreeRTOS
 The provided examples show how to write regular "kernel-aware" ISRs as well as "kernel-unaware" ISRs for QP/FreeRTOS. (See also the FreeRTOS documentation for [configMAX_SYSCALL_INTERRUPT_PRIORITY](https://www.freertos.org/a00110.html#kernel_priority).
 
@@ -129,7 +129,7 @@ void UART0_IRQHandler(void) {
 }
 @endcode
 
-<div class="separate"></div>
+
 @subsection freertos_hook Writing FreeRTOS Hooks Running in ISR Context
 FreeRTOS provides "hooks" that are user functions that execute in the ISR context (e.g., `vApplicationTickHook()`). Such ISR-level functions are closely related to ISRs and should also use exclusively only the "FromISR" APIs. Here is an example of the `vApplicationTickHook()`:
 
@@ -146,7 +146,7 @@ void vApplicationTickHook(void) {
 }
 @endcode
 
-<div class="separate"></div>
+
 @subsection freertos_ao Starting Active Objects in QP/FreeRTOS
 As mentioned in the @ref freertos_about "FreeRTOS port summary", the QP port to FreeRTOS uses the [static memory allocation of FreeRTOS](https://freertos.org/Static_Vs_Dynamic_Memory_Allocation.html). This means that all memory for an active object, including the private queue buffer and the private **stack** for the the associated FreeRTOS task must be allocated by the user. Here is an example code that starts an active object:
 
@@ -205,13 +205,13 @@ Currently, the port has been tested only on ARM Cortex-M3 and M4F.
 
 
 @section ucos-ii_source uC/OS-II Source and ARM Cortex-M3/M4 Ports
-The uC/OS-II V2.92 source code and ports are located in 3rd_party@uCOS-II. Please make sure to read about uC/OS-II licensing in the README file found in this directory.
+The uC/OS-II V2.92 source code and ports are located in `3rd_party/uCOS-II`. Please make sure to read about uC/OS-II licensing in the README file found in this directory.
 
 @note
 The official Micrium ARM-Cortex-M ports have been modified by Quantum Leaps to remove the dependencies on the Micrium's uC-CPU and uC-LIB components, and instead to inter-operate with the Cortex Microcontroller Software Interface Standard (CMSIS).
 
 
-------------------------------------------------------------------------------
+
 @section ucos-ii_using Using this QP Port to uC/OS-II
 The example projects for this port are located in @ref exa_ucos-ii "examples/ucos-ii/arm-cm/dpp_ek-tm4c123gxl".
 
@@ -222,7 +222,7 @@ The example projects use this port by directly including the QP source code (and
 However, this port can also be used as a library, in which case you need to build the QP library yourself and include in your project.
 
 
-<div class="separate"></div>
+
 @subsection ucos-ii_build QP Source Files Needed in this QP Port
 Whether you use this QP port as source files or as a library, it is important to note that not all QP soruce files should be included. Here is the list of QP source files needed:
 

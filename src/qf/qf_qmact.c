@@ -12,8 +12,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-18
+* Last updated for version 6.8.2
+* Last updated on  2020-06-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -62,7 +62,7 @@
 *
 * @note  Must be called only ONCE before QMSM_INIT().
 *
-* @sa QHsm_ctor() and QFsm_ctor()
+* @sa QHsm_ctor()
 */
 void QMActive_ctor(QMActive * const me, QStateHandler initial) {
     static QMActiveVtable const vtable = { /* QMActive virtual table */
@@ -88,8 +88,8 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial) {
     * not used in a given project, the call to QMsm_ctor() avoids pulling
     * in the code for QHsm.
     */
-    QMsm_ctor(&me->super, initial);
+    QMsm_ctor((QMsm *)&me->super.super, initial);
 
-    me->super.vptr = &vtable.super; /* hook vptr to QMActive vtable */
+    me->super.super.vptr = &vtable.super; /* hook vptr to QMActive vtable */
 }
 

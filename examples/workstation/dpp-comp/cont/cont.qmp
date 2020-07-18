@@ -28,7 +28,8 @@ When creating a time event, you must commit it to a specific active object 'act'
 me-&gt;comp = comp;</code>
   </operation>
   <!--${Cont::CompTimeEvt::dispatchToComp}-->
-  <operation name="dispatchToComp" type="void" visibility="0x00" properties="0x08">
+  <operation name="dispatchToComp" type="void" visibility="0x00" properties="0x00">
+   <specifiers>const</specifiers>
    <code>QHSM_DISPATCH(me-&gt;comp, (QEvt const *)me);</code>
   </operation>
  </class>

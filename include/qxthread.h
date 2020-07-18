@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-18
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -98,11 +98,12 @@ typedef QActiveVtable QXThreadVtable;
 * @usage
 * @include qxk_start.c
 */
-#define QXTHREAD_START(me_, prio_, qSto_, qLen_, stkSto_, stkLen_, par_) do {\
-    Q_ASSERT((me_)->super.super.vptr);                                       \
-    ((*((QActiveVtable const *)((me_)->super.super.vptr))->start)(           \
-        &(me_)->super, (prio_), (QEvt const **)(qSto_), (qLen_),             \
-        (stkSto_), (stkLen_), (par_)));                                      \
+#define QXTHREAD_START(me_, prio_, qSto_, qLen_, stkSto_, stkSize_, par_) \
+do {                                                                      \
+    Q_ASSERT((me_)->super.super.vptr);                                    \
+    ((*((QActiveVtable const *)((me_)->super.super.vptr))->start)(        \
+        &(me_)->super, (prio_), (QEvt const **)(qSto_), (qLen_),          \
+        (stkSto_), (stkSize_), (par_)));                                  \
 } while (false)
 
 /*! constructor of an extended-thread */
@@ -117,10 +118,10 @@ void QXThread_ctor(QXThread * const me, QXThreadHandler handler,
 * @param[in,out] me_   pointer (see @ref oop)
 * @param[in]     e_    pointer to the event to post
 * @param[in]     margin_ the minimum free slots in the queue, which
-*                must still be available after posting the event.
-*                The special value #QF_NO_MARGIN causes asserting failure
-*                in case event allocation fails.
-* @param[in]     sender_ pointer to the sender object.
+*                      must still be available after posting the event.
+*                      The special value #QF_NO_MARGIN causes asserting
+*                      failure in case event allocation fails.
+* @param[in]     sender_ pointer to the sender object (used in QS tracing)
 *
 * @returns
 * 'true' if the posting succeeded, and 'false' if the posting failed due

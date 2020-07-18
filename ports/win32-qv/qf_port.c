@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-23
+* Last updated for version 6.8.2
+* Last updated on  2020-06-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -200,6 +200,22 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 }
+/*..........................................................................*/
+#ifdef QF_ACTIVE_STOP
+void QActive_stop(QActive * const me) {
+    QF_CRIT_STAT_
+
+    QActive_unsubscribeAll(me); /* unsubscribe from all events */
+
+    /* make sure the AO is no longer in "ready set" */
+    QF_CRIT_ENTRY_();
+    QPSet_remove(&QV_readySet_, me->prio);
+    QF_CRIT_EXIT_();
+
+    QF_remove_(me); /* remove this AO from QF */
+}
+#endif
+
 
 /****************************************************************************/
 static DWORD WINAPI ticker_thread(LPVOID arg) { /* for CreateThread() */

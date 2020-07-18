@@ -26,7 +26,7 @@ lwIP example for Texas Instruments EK-LM3S6965 (Cortex-M3) with GNU-ARM and IAR-
 /*##########################################################################*/
 /*! @page exa_emwin emWin Embedded GUI
 
-<p>The <a href="https://www.state-machine.com/doc/AN_QP_emWin.pdf" target="_blank" class="extern"><strong>Application Note "QP and emWin Embedded GUI"</strong></a> describes how to use QP&trade; with the <a href="https://www.segger.com/emwin.html" target="_blank" class="extern">emWin&trad; Embedded GUI from SEGGER</a> and also <a href="https://www.micrium.com/rtos/gui/" target="_blank" class="extern">µC/GUI from Micriµm</a>, which technically are the same products.
+<p>The <a href="https://www.state-machine.com/doc/AN_QP_emWin.pdf" target="_blank" class="extern"><strong>Application Note "QP and emWin Embedded GUI"</strong></a> describes how to use QP&trade; with the <a href="https://www.segger.com/emwin.html" target="_blank" class="extern">emWin&trade; Embedded GUI from SEGGER</a> and also <a href="https://www.micrium.com/rtos/gui/" target="_blank" class="extern">uC/GUI from Micrium</a>, which technically are the same products.
 </p>
 
 @image html emWin_demo.jpg QP-emWin demo (DPP) running on Windows

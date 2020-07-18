@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-18
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -66,8 +66,8 @@ enum {
 /**
 * @description
 * Static, preallocated standard events that the QEP event processor sends
-* to state handler functions of ::QHsm and ::QFsm subclasses to execute
-* entry actions, exit actions, and initial transitions.
+* to state handler functions of QHsm-style state machine to execute entry
+* actions, exit actions, and initial transitions.
 */
 static QEvt const QEP_reservedEvt_[] = {
     { (QSignal)QEP_EMPTY_SIG_, 0U, 0U },

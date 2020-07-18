@@ -445,7 +445,7 @@
             <File>
               <FileName>startup_stm32h743xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\nucleo-h743zi\armclang\startup_stm32h743xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\nucleo-h743zi\arm\startup_stm32h743xx.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1129,7 +1129,7 @@
             <File>
               <FileName>startup_stm32h743xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\nucleo-h743zi\armclang\startup_stm32h743xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\nucleo-h743zi\arm\startup_stm32h743xx.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1813,7 +1813,7 @@
             <File>
               <FileName>startup_stm32h743xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\nucleo-h743zi\armclang\startup_stm32h743xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\nucleo-h743zi\arm\startup_stm32h743xx.s</FilePath>
             </File>
           </Files>
         </Group>

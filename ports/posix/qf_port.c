@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-23
+* Last updated for version 6.8.2
+* Last updated on  2020-06-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -80,8 +80,6 @@ static void sigIntHandler(int dummy);
 
 /* QF functions ============================================================*/
 void QF_init(void) {
-    extern uint_fast8_t QF_maxPool_;
-    extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
     struct sigaction sig_act;
 
     /* lock memory so we're never swapped out to disk */
@@ -196,12 +194,20 @@ static void *thread_routine(void *arg) { /* the expected POSIX signature */
     pthread_mutex_lock(&l_startupMutex);
     pthread_mutex_unlock(&l_startupMutex);
 
-    /* event-loop */
-    for (;;) { /* for-ever */
+#ifdef QF_ACTIVE_STOP
+    act->thread = true;
+    while (act->thread)
+#else
+    for (;;) /* for-ever */
+#endif
+    {
         QEvt const *e = QActive_get_(act); /* wait for the event */
         QHSM_DISPATCH(&act->super, e);     /* dispatch to the HSM */
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
+#ifdef QF_ACTIVE_STOP
+    QF_remove_(act); /* remove this object from QF */
+#endif
     return (void *)0; /* return success */
 }
 
@@ -258,6 +264,13 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     pthread_attr_destroy(&attr);
     me->thread = 1U;
 }
+/*..........................................................................*/
+#ifdef QF_ACTIVE_STOP
+void QActive_stop(QActive * const me) {
+    QActive_unsubscribeAll(me); /* unsubscribe this AO from all events */
+    me->thread = false; /* stop the thread loop (see thread_routine()) */
+}
+#endif
 
 /****************************************************************************/
 static void sigIntHandler(int dummy) {

@@ -1,7 +1,7 @@
 ##############################################################################
 # Makefile for the Unity test harness v2.5.0, for Windows, Linux, MacOS
-# Last updated for version 6.7.0
-# Last updated on  2019-12-29
+# Last updated for version 6.8.2
+# Last updated on  2020-06-23
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -141,7 +141,9 @@ CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
 	-fno-rtti -fno-exceptions \
 	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
-LINKFLAGS := -no-pie
+ifndef GCC_OLD
+	LINKFLAGS := -no-pie
+endif
 
 #-----------------------------------------------------------------------------
 C_OBJS       := $(patsubst %.c,%.o,   $(C_SRCS))

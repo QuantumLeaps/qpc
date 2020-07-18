@@ -3,11 +3,11 @@
 * Last Updated for Version: 6.3.1
 * Date of the Last Update:  2018-05-20
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -139,7 +139,7 @@ void App_TimeTickHook(void) {
     static struct ButtonsDebouncing {
         uint32_t depressed;
         uint32_t previous;
-    } buttons = { ~0U, ~0U };
+    } buttons = { 0U, 0U };
     uint32_t current;
     uint32_t tmp;
 
@@ -173,7 +173,6 @@ void App_TimeTickHook(void) {
         }
     }
 }
-
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
@@ -250,15 +249,19 @@ void BSP_terminate(int16_t result) {
 
 /* QF callbacks ============================================================*/
 void QF_onStartup(void) {
-    /* initialize the system clock tick... */
-    OS_CPU_SysTickInit(SystemCoreClock / OS_TICKS_PER_SEC);
+    /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
+    * NOTE: do NOT call OS_CPU_SysTickInit() from uC/OS-II
+    */
+    SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
-    /* set priorities of the ISRs used in the system */
-    NVIC_SetPriority(GPIOA_IRQn,   0xFFU);
+    /* set priorities of ALL ISRs used in the system, see NOTE1 */
+    NVIC_SetPriority(SysTick_IRQn,  CPU_CFG_KA_IPL_BOUNDARY + 1U);
+    NVIC_SetPriority(GPIOA_IRQn,    CPU_CFG_KA_IPL_BOUNDARY);
     /* ... */
 
     /* enable IRQs in the NVIC... */
     NVIC_EnableIRQ(GPIOA_IRQn);
+    /* ... */
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
@@ -358,13 +361,28 @@ void QS_onFlush(void) {
     }
     OS_EXIT_CRITICAL();
 }
+/*..........................................................................*/
+/*! callback function to reset the target (to be implemented in the BSP) */
+void QS_onReset(void) {
+    NVIC_SystemReset();
+}
+/*..........................................................................*/
+/*! callback function to execute a user command (to be implemented in BSP) */
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
+{
+    (void)cmdId;
+    (void)param1;
+    (void)param2;
+    (void)param3;
+}
+
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 
 /*****************************************************************************
-* NOTE01:
-* The User LED is used to visualize the idle loop activity. The brightness
-* of the LED is proportional to the frequency of invcations of the idle loop.
-* Please note that the LED is toggled with interrupts locked, so no interrupt
-* execution time contributes to the brightness of the User LED.
+* NOTE1:
+* All ISRs that make system calls MUST be prioritized as "kernel-aware".
+* On Cortex-M3/4/7 this means ISR priorities with numerical valuses higher
+* or equal CPU_CFG_KA_IPL_BOUNDARY.
 */

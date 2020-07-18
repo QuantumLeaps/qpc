@@ -1,25 +1,32 @@
 /*
 *********************************************************************************************************
-*                                                uC/OS-II
-*                                          The Real-Time Kernel
-*                                             TIME MANAGEMENT
+*                                              uC/OS-II
+*                                        The Real-Time Kernel
 *
-*                              (c) Copyright 1992-2013, Micrium, Weston, FL
-*                                           All Rights Reserved
+*                    Copyright 1992-2020 Silicon Laboratories Inc. www.silabs.com
 *
-* File    : OS_TIME.C
-* By      : Jean J. Labrosse
-* Version : V2.92.10
+*                                 SPDX-License-Identifier: APACHE-2.0
 *
-* LICENSING TERMS:
-* ---------------
-*   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
-* If you plan on using  uC/OS-II  in a commercial product you need to contact Micrium to properly license
-* its use in your product. We provide ALL the source code for your convenience and to help you experience
-* uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
-* licensing fee.
+*               This software is subject to an open source license and is distributed by
+*                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+*                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
+*
 *********************************************************************************************************
 */
+
+
+/*
+*********************************************************************************************************
+*
+*                                            TIME MANAGEMENT
+*
+* Filename : os_time.c
+* Version  : V2.93.00
+*********************************************************************************************************
+*/
+
+#ifndef  OS_TIME_C
+#define  OS_TIME_C
 
 #define  MICRIUM_SOURCE
 
@@ -62,15 +69,18 @@ void  OSTimeDly (INT32U ticks)
         OS_ENTER_CRITICAL();
         y            =  OSTCBCur->OSTCBY;        /* Delay current task                                 */
         OSRdyTbl[y] &= (OS_PRIO)~OSTCBCur->OSTCBBitX;
+        OS_TRACE_TASK_SUSPENDED(OSTCBCur);
         if (OSRdyTbl[y] == 0u) {
             OSRdyGrp &= (OS_PRIO)~OSTCBCur->OSTCBBitY;
         }
         OSTCBCur->OSTCBDly = ticks;              /* Load ticks in TCB                                  */
+        OS_TRACE_TASK_DLY(ticks);
         OS_EXIT_CRITICAL();
         OS_Sched();                              /* Find next task to run!                             */
     }
 }
-/*$PAGE*/
+
+
 /*
 *********************************************************************************************************
 *                                    DELAY TASK FOR SPECIFIED TIME
@@ -140,7 +150,8 @@ INT8U  OSTimeDlyHMSM (INT8U   hours,
     return (OS_ERR_NONE);
 }
 #endif
-/*$PAGE*/
+
+
 /*
 *********************************************************************************************************
 *                                        RESUME A DELAYED TASK
@@ -198,6 +209,7 @@ INT8U  OSTimeDlyResume (INT8U prio)
     if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY) {  /* Is task suspended?                   */
         OSRdyGrp               |= ptcb->OSTCBBitY;             /* No,  Make ready                      */
         OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
+        OS_TRACE_TASK_READY(ptcb);
         OS_EXIT_CRITICAL();
         OS_Sched();                                            /* See if this is new highest priority  */
     } else {
@@ -206,7 +218,8 @@ INT8U  OSTimeDlyResume (INT8U prio)
     return (OS_ERR_NONE);
 }
 #endif
-/*$PAGE*/
+
+
 /*
 *********************************************************************************************************
 *                                       GET CURRENT SYSTEM TIME
@@ -237,6 +250,7 @@ INT32U  OSTimeGet (void)
 }
 #endif
 
+
 /*
 *********************************************************************************************************
 *                                          SET SYSTEM CLOCK
@@ -263,3 +277,4 @@ void  OSTimeSet (INT32U ticks)
     OS_EXIT_CRITICAL();
 }
 #endif
+#endif                                           /* OS_TIME_C                                          */

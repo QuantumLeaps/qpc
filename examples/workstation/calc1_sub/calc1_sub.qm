@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.6.0" links="1">
+<model version="5.0.1" links="1">
  <documentation>The improved Calculator model with QMsm state machine implementation strategy and Sub-Machines.</documentation>
  <!--${qpc}-->
  <framework name="qpc" license="../../../QPC-EVAL.qlc"/>
@@ -589,7 +589,7 @@ BSP_negate();</entry>
   <!--${SMs::the_calc}-->
   <attribute name="the_calc" type="QHsm * const" visibility="0x00" properties="0x00">
    <documentation>Opaque pointer to the Calc HSM</documentation>
-   <code>= &amp;Calc_inst.super;</code>
+   <code>= &amp;Calc_inst.super.super;</code>
   </attribute>
   <!--${SMs::Calc_ctor}-->
   <operation name="Calc_ctor" type="void" visibility="0x00" properties="0x00">

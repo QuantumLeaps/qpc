@@ -3,14 +3,14 @@
 * @brief QF/C "port" for QUTEST unit test harness, generic C99 compiler
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.7.0
-* Date of the Last Update:  2019-12-30
+* Last Updated for Version: 6.8.2
+* Date of the Last Update:  2020-06-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -49,6 +49,9 @@
 
 /* The number of system clock tick rates */
 #define QF_MAX_TICK_RATE     2U
+
+/* Activate the QF QActive_stop() API */
+#define QF_ACTIVE_STOP       1
 
 /* QF interrupt disable/enable */
 #define QF_INT_DISABLE()     (++QF_intNest)

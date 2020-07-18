@@ -1,26 +1,32 @@
 /*
 *********************************************************************************************************
-*                                                uC/OS-II
-*                                          The Real-Time Kernel
-*                                            TIMER MANAGEMENT
+*                                              uC/OS-II
+*                                        The Real-Time Kernel
 *
-*                              (c) Copyright 1992-2013, Micrium, Weston, FL
-*                                           All Rights Reserved
+*                    Copyright 1992-2020 Silicon Laboratories Inc. www.silabs.com
 *
+*                                 SPDX-License-Identifier: APACHE-2.0
 *
-* File    : OS_TMR.C
-* By      : Jean J. Labrosse
-* Version : V2.92.10
+*               This software is subject to an open source license and is distributed by
+*                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+*                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
 *
-* LICENSING TERMS:
-* ---------------
-*   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
-* If you plan on using  uC/OS-II  in a commercial product you need to contact Micrium to properly license
-* its use in your product. We provide ALL the source code for your convenience and to help you experience
-* uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
-* licensing fee.
 *********************************************************************************************************
 */
+
+
+/*
+*********************************************************************************************************
+*
+*                                           TIMER MANAGEMENT
+*
+* Filename : os_tmr.c
+* Version  : V2.93.00
+*********************************************************************************************************
+*/
+
+#ifndef  OS_TMR_C
+#define  OS_TMR_C
 
 #define  MICRIUM_SOURCE
 
@@ -65,7 +71,7 @@ static  void     OSTmr_Unlink        (OS_TMR *ptmr);
 static  void     OSTmr_Task          (void   *p_arg);
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                           CREATE A TIMER
@@ -96,12 +102,15 @@ static  void     OSTmr_Task          (void   *p_arg);
 *                               useful for debugging.
 *
 *              perr          Is a pointer to an error code.  '*perr' will contain one of the following:
-*                               OS_ERR_NONE
-*                               OS_ERR_TMR_INVALID_DLY     you specified an invalid delay
-*                               OS_ERR_TMR_INVALID_PERIOD  you specified an invalid period
-*                               OS_ERR_TMR_INVALID_OPT     you specified an invalid option
-*                               OS_ERR_TMR_ISR             if the call was made from an ISR
-*                               OS_ERR_TMR_NON_AVAIL       if there are no free timers from the timer pool
+*                               OS_ERR_NONE                     the call was successful and the timer
+*                                                               was created.
+*                               OS_ERR_ILLEGAL_CREATE_RUN_TIME  if you tried to create a timer after
+*                                                               safety critical operation started.
+*                               OS_ERR_TMR_INVALID_DLY          you specified an invalid delay
+*                               OS_ERR_TMR_INVALID_PERIOD       you specified an invalid period
+*                               OS_ERR_TMR_INVALID_OPT          you specified an invalid option
+*                               OS_ERR_TMR_ISR                  if the call was made from an ISR
+*                               OS_ERR_TMR_NON_AVAIL            if there are no free timers from the timer pool
 *
 * Returns    : A pointer to an OS_TMR data structure.
 *              This is the 'handle' that your application will use to reference the timer created.
@@ -130,6 +139,7 @@ OS_TMR  *OSTmrCreate (INT32U           dly,
 #ifdef OS_SAFETY_CRITICAL_IEC61508
     if (OSSafetyCriticalStartFlag == OS_TRUE) {
         OS_SAFETY_CRITICAL_EXCEPTION();
+        *perr = OS_ERR_ILLEGAL_CREATE_RUN_TIME;
         return ((OS_TMR *)0);
     }
 #endif
@@ -180,12 +190,13 @@ OS_TMR  *OSTmrCreate (INT32U           dly,
     }
 #endif
     OSSchedUnlock();
+    OS_TRACE_TMR_CREATE(ptmr, ptmr->OSTmrName);
     *perr = OS_ERR_NONE;
     return (ptmr);
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                           DELETE A TIMER
@@ -195,12 +206,15 @@ OS_TMR  *OSTmrCreate (INT32U           dly,
 * Arguments  : ptmr          Is a pointer to the timer to stop and delete.
 *
 *              perr          Is a pointer to an error code.  '*perr' will contain one of the following:
-*                               OS_ERR_NONE
-*                               OS_ERR_TMR_INVALID        'ptmr'  is a NULL pointer
-*                               OS_ERR_TMR_INVALID_TYPE   'ptmr'  is not pointing to an OS_TMR
-*                               OS_ERR_TMR_ISR            if the function was called from an ISR
-*                               OS_ERR_TMR_INACTIVE       if the timer was not created
-*                               OS_ERR_TMR_INVALID_STATE  the timer is in an invalid state
+*                               OS_ERR_NONE                  the call was successful and the timer
+*                                                            was deleted.
+*                               OS_ERR_ILLEGAL_DEL_RUN_TIME  if you tried to delete a timer after safety
+*                                                            critical operation started.
+*                               OS_ERR_TMR_INVALID           'ptmr'  is a NULL pointer
+*                               OS_ERR_TMR_INVALID_TYPE      'ptmr'  is not pointing to an OS_TMR
+*                               OS_ERR_TMR_ISR               if the function was called from an ISR
+*                               OS_ERR_TMR_INACTIVE          if the timer was not created
+*                               OS_ERR_TMR_INVALID_STATE     the timer is in an invalid state
 *
 * Returns    : OS_TRUE       If the call was successful
 *              OS_FALSE      If not
@@ -218,18 +232,31 @@ BOOLEAN  OSTmrDel (OS_TMR  *ptmr,
     }
 #endif
 
+#ifdef OS_SAFETY_CRITICAL_IEC61508
+    if (OSSafetyCriticalStartFlag == OS_TRUE) {
+        OS_SAFETY_CRITICAL_EXCEPTION();
+        *perr = OS_ERR_ILLEGAL_DEL_RUN_TIME;
+        return (OS_FALSE);
+    }
+#endif
+
 #if OS_ARG_CHK_EN > 0u
     if (ptmr == (OS_TMR *)0) {
         *perr = OS_ERR_TMR_INVALID;
         return (OS_FALSE);
     }
 #endif
+
+    OS_TRACE_TMR_DEL_ENTER(ptmr);
+
     if (ptmr->OSTmrType != OS_TMR_TYPE) {                   /* Validate timer structure                               */
         *perr = OS_ERR_TMR_INVALID_TYPE;
+        OS_TRACE_TMR_DEL_EXIT(*perr);
         return (OS_FALSE);
     }
     if (OSIntNesting > 0u) {                                /* See if trying to call from an ISR                      */
         *perr  = OS_ERR_TMR_ISR;
+        OS_TRACE_TMR_DEL_EXIT(*perr);
         return (OS_FALSE);
     }
     OSSchedLock();
@@ -239,6 +266,7 @@ BOOLEAN  OSTmrDel (OS_TMR  *ptmr,
              OSTmr_Free(ptmr);                              /* Return timer to free list of timers                    */
              OSSchedUnlock();
              *perr = OS_ERR_NONE;
+             OS_TRACE_TMR_DEL_EXIT(*perr);
              return (OS_TRUE);
 
         case OS_TMR_STATE_STOPPED:                          /* Timer has not started or ...                           */
@@ -246,22 +274,25 @@ BOOLEAN  OSTmrDel (OS_TMR  *ptmr,
              OSTmr_Free(ptmr);                              /* Return timer to free list of timers                    */
              OSSchedUnlock();
              *perr = OS_ERR_NONE;
+             OS_TRACE_TMR_DEL_EXIT(*perr);
              return (OS_TRUE);
 
         case OS_TMR_STATE_UNUSED:                           /* Already deleted                                        */
              OSSchedUnlock();
              *perr = OS_ERR_TMR_INACTIVE;
+             OS_TRACE_TMR_DEL_EXIT(*perr);
              return (OS_FALSE);
 
         default:
              OSSchedUnlock();
              *perr = OS_ERR_TMR_INVALID_STATE;
+             OS_TRACE_TMR_DEL_EXIT(*perr);
              return (OS_FALSE);
     }
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                       GET THE NAME OF A TIMER
@@ -342,7 +373,7 @@ INT8U  OSTmrNameGet (OS_TMR   *ptmr,
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                          GET HOW MUCH TIME IS LEFT BEFORE A TIMER EXPIRES
@@ -440,7 +471,7 @@ INT32U  OSTmrRemainGet (OS_TMR  *ptmr,
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                  FIND OUT WHAT STATE A TIMER IS IN
@@ -513,7 +544,7 @@ INT8U  OSTmrStateGet (OS_TMR  *ptmr,
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                            START A TIMER
@@ -552,12 +583,17 @@ BOOLEAN  OSTmrStart (OS_TMR   *ptmr,
         return (OS_FALSE);
     }
 #endif
+
+    OS_TRACE_TMR_START_ENTER(ptmr);
+
     if (ptmr->OSTmrType != OS_TMR_TYPE) {                   /* Validate timer structure                               */
         *perr = OS_ERR_TMR_INVALID_TYPE;
+        OS_TRACE_TMR_START_EXIT(*perr);
         return (OS_FALSE);
     }
     if (OSIntNesting > 0u) {                                /* See if trying to call from an ISR                      */
         *perr  = OS_ERR_TMR_ISR;
+        OS_TRACE_TMR_START_EXIT(*perr);
         return (OS_FALSE);
     }
     OSSchedLock();
@@ -567,6 +603,7 @@ BOOLEAN  OSTmrStart (OS_TMR   *ptmr,
              OSTmr_Link(ptmr, OS_TMR_LINK_DLY);             /* ... Link timer to timer wheel                          */
              OSSchedUnlock();
              *perr = OS_ERR_NONE;
+             OS_TRACE_TMR_START_EXIT(*perr);
              return (OS_TRUE);
 
         case OS_TMR_STATE_STOPPED:                          /* Start the timer                                        */
@@ -574,22 +611,25 @@ BOOLEAN  OSTmrStart (OS_TMR   *ptmr,
              OSTmr_Link(ptmr, OS_TMR_LINK_DLY);             /* ... Link timer to timer wheel                          */
              OSSchedUnlock();
              *perr = OS_ERR_NONE;
+             OS_TRACE_TMR_START_EXIT(*perr);
              return (OS_TRUE);
 
         case OS_TMR_STATE_UNUSED:                           /* Timer not created                                      */
              OSSchedUnlock();
              *perr = OS_ERR_TMR_INACTIVE;
+             OS_TRACE_TMR_START_EXIT(*perr);
              return (OS_FALSE);
 
         default:
              OSSchedUnlock();
              *perr = OS_ERR_TMR_INVALID_STATE;
+             OS_TRACE_TMR_START_EXIT(*perr);
              return (OS_FALSE);
     }
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                            STOP A TIMER
@@ -649,12 +689,17 @@ BOOLEAN  OSTmrStop (OS_TMR  *ptmr,
         return (OS_FALSE);
     }
 #endif
+
+    OS_TRACE_TMR_STOP_ENTER(ptmr);
+
     if (ptmr->OSTmrType != OS_TMR_TYPE) {                         /* Validate timer structure                         */
         *perr = OS_ERR_TMR_INVALID_TYPE;
+        OS_TRACE_TMR_STOP_EXIT(*perr);
         return (OS_FALSE);
     }
     if (OSIntNesting > 0u) {                                      /* See if trying to call from an ISR                */
         *perr  = OS_ERR_TMR_ISR;
+        OS_TRACE_TMR_STOP_EXIT(*perr);
         return (OS_FALSE);
     }
     OSSchedLock();
@@ -689,28 +734,32 @@ BOOLEAN  OSTmrStop (OS_TMR  *ptmr,
                      break;
              }
              OSSchedUnlock();
+             OS_TRACE_TMR_STOP_EXIT(*perr);
              return (OS_TRUE);
 
         case OS_TMR_STATE_COMPLETED:                              /* Timer has already completed the ONE-SHOT or ...  */
         case OS_TMR_STATE_STOPPED:                                /* ... timer has not started yet.                   */
              OSSchedUnlock();
              *perr = OS_ERR_TMR_STOPPED;
+             OS_TRACE_TMR_STOP_EXIT(*perr);
              return (OS_TRUE);
 
         case OS_TMR_STATE_UNUSED:                                 /* Timer was not created                            */
              OSSchedUnlock();
              *perr = OS_ERR_TMR_INACTIVE;
+             OS_TRACE_TMR_STOP_EXIT(*perr);
              return (OS_FALSE);
 
         default:
              OSSchedUnlock();
              *perr = OS_ERR_TMR_INVALID_STATE;
+             OS_TRACE_TMR_STOP_EXIT(*perr);
              return (OS_FALSE);
     }
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                             SIGNAL THAT IT'S TIME TO UPDATE THE TIMERS
@@ -741,7 +790,7 @@ INT8U  OSTmrSignal (void)
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                      ALLOCATE AND FREE A TIMER
@@ -808,7 +857,7 @@ static  void  OSTmr_Free (OS_TMR *ptmr)
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                                    INITIALIZATION
@@ -871,7 +920,7 @@ void  OSTmr_Init (void)
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                INITIALIZE THE TIMER MANAGEMENT TASK
@@ -933,7 +982,7 @@ static  void  OSTmr_InitTask (void)
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                 INSERT A TIMER INTO THE TIMER WHEEL
@@ -988,7 +1037,7 @@ static  void  OSTmr_Link (OS_TMR  *ptmr,
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                 REMOVE A TIMER FROM THE TIMER WHEEL
@@ -1034,7 +1083,7 @@ static  void  OSTmr_Unlink (OS_TMR *ptmr)
 }
 #endif
 
-/*$PAGE*/
+
 /*
 *********************************************************************************************************
 *                                        TIMER MANAGEMENT TASK
@@ -1070,6 +1119,7 @@ static  void  OSTmr_Task (void *p_arg)
             ptmr_next = (OS_TMR *)ptmr->OSTmrNext;               /* Point to next timer to update because current ... */
                                                                  /* ... timer could get unlinked from the wheel.      */
             if (OSTmrTime == ptmr->OSTmrMatch) {                 /* Process each timer that expires                   */
+                OS_TRACE_TMR_EXPIRED(ptmr);
                 OSTmr_Unlink(ptmr);                              /* Remove from current wheel spoke                   */
                 if (ptmr->OSTmrOpt == OS_TMR_OPT_PERIODIC) {
                     OSTmr_Link(ptmr, OS_TMR_LINK_PERIODIC);      /* Recalculate new position of timer in wheel        */
@@ -1087,3 +1137,4 @@ static  void  OSTmr_Task (void *p_arg)
     }
 }
 #endif
+#endif                                                           /* OS_TMR_C                                */

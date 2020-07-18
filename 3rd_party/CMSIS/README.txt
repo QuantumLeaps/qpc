@@ -1,7 +1,7 @@
 About CMSIS
 ===========
 This folder contains the Cortex Microcontroller Software Interface Standard
-CMSIS 5.6.0 (https://github.com/ARM-software/CMSIS_5/releases/tag/5.6.0).
+CMSIS 5.7.0 (https://github.com/ARM-software/CMSIS_5/releases/tag/5.7.0).
 
 CMSIS provides a single standard across all Cortex-M processor series vendors.
 It enables code re-use and code sharing across software projects and reduces

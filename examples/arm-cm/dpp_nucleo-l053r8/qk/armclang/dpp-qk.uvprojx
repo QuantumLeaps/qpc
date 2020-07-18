@@ -445,7 +445,7 @@
             <File>
               <FileName>startup_stm32l053xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\nucleo-l053r8\armclang\startup_stm32l053xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\nucleo-l053r8\arm\startup_stm32l053xx.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1089,7 +1089,7 @@
             <File>
               <FileName>startup_stm32l053xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\nucleo-l053r8\armclang\startup_stm32l053xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\nucleo-l053r8\arm\startup_stm32l053xx.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -1733,7 +1733,7 @@
             <File>
               <FileName>startup_stm32l053xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\nucleo-l053r8\armclang\startup_stm32l053xx.s</FilePath>
+              <FilePath>..\..\..\..\..\3rd_party\nucleo-l053r8\arm\startup_stm32l053xx.s</FilePath>
             </File>
           </Files>
         </Group>

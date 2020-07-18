@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.1
-* Last updated on  2020-05-13
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -1252,9 +1252,9 @@ static void QS_rxPoke_(void) {
 * @description
 * This function obtains the Test-Probe for a given API.
 *
-* @param[in]  api_id  the API-ID that requests its Test-Probe
+* @param[in]  api  pointer to the API function that requests its Test-Probe
 *
-* @returs Test-Probe data that has been received for the given API
+* @returns Test-Probe data that has been received for the given API
 * from the Host (running qutest). For any ginve API, the function returns
 * the Test-Probe data in the same order as it was received from the Host.
 * If there is no Test-Probe for a ginve API, or no more Test-Probes for

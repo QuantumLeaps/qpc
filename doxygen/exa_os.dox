@@ -26,7 +26,7 @@
 The examples marked with (**Spy**) provide the @ref exa_os-spy "Spy Configuration".
 
 
-------------------------------------------------------------------------------
+
 @section exa_win_posix Windows and POSIX Workstations
 All examples in the <span class="img folder">qpc/examples/workstation</span> directory work both on Windows as well as on POSIX (Linux, MacOS). On each of these operating systems you use the same cross-platform `Makefile` co-located with each example. The provided cross-platform `Makefiles` assume the **GNU GCC toolchain**. The `Makefile` discovers the host operating system and chooses the appropriate QP port version:
 
@@ -43,7 +43,7 @@ On Windows, the **make** utility and the GNU GCC toolchain (**MinGW**) are provi
 ![Blinky example on Linux (QP built from sources)](blinky_posix.png)
 
 
-------------------------------------------------------------------------------
+
 @section exa_os-qv Single-Threaded and Multi-Threaded QP/C Ports
 Each of the examples can be linked to either the single-threaded QP/C ports (@ref win32-qv or @ref posix-qv) or multi-threaded ports (@ref win32 or @ref posix). The choice is made in the `Makefiles`, by editing the line, which defines the `QP_PORT_DIR` symbol. For instance, the following lines select the @ref win32-qv port and leave the @ref win32 port commented-out:
 
@@ -62,12 +62,12 @@ The single-threaded QP/C ports (@ref win32-qv "win32-qv" and @ref posix-qv "posi
 Examples in the <span class="img folder">workstation</span> directory can also be used on the **embedded versions** of the desktop operating systems, such as **Embedded Linux** and **Windows Embedded**. For the embedded applications, the **multi-threaded** @ref ports_os "QP ports" ( @ref posix "posix" and @ref win32 "win32", respectively) are recommended.
 
 
-------------------------------------------------------------------------------
+
 @section exa_os_conf Debug, Release, and Spy Build Configurations
 The `Makefiles` for the examples generally support the following three build configurations.
 
 
-<div class="separate"></div>
+
 @subsection exa_os-dbg Debug Configuration
 This is the default build configuration, with full debugging information and minimal optimization. To build this configuration, type:
 
@@ -84,7 +84,7 @@ make clean
 The object files and the executable is located in the <span class="img folder">build</span> sub-directory.
 
 
-<div class="separate"></div>
+
 @subsection exa_os-rel Release Configuration
 This configuration is built with no debugging information and high optimization. Single-stepping and debugging might be difficult due
 to the lack of debugging information and optimized code. To build this configuration, type:
@@ -102,7 +102,7 @@ make CONF=rel clean
 The object files and the executable is located in the <span class="img folder">build_rel</span> directory.
 
 
-<div class="separate"></div>
+
 @subsection exa_os-spy Spy Configuration
 This configuration is built with the QP's Q-SPY trace functionality. The QP/Spy output is performed by a TCP/IP socket and requires launching the QSPY host application with the -t option. To build this configuration, type:
 

@@ -44,7 +44,7 @@ The ultra-simple Blinky application, which  consists of just one active object n
 - starting an AO.
 
 
-------------------------------------------------------------------------------
+
 @section blinky_sm State Machine
 The very simple state machine of the Blinky AO is shown in the figure below:
 
@@ -65,7 +65,7 @@ The very simple state machine of the Blinky AO is shown in the figure below:
   </li>
 </ul>
 
-------------------------------------------------------------------------------
+
 @section blinky_code State Machine Code
 The Blinky state machine shown above is implemented in the blinky.c source file, as shown in the
 listing below. The code has been specifically organized not to access target resources directly, but instead encapsulate all such access in the calls to the BSP (Board Support Package). So for example, instead of turning the LED on and off by writing to a specific GPIO register on an embedded board, the code calls the BSP functions `BSP_ledOn()` and `BSP_ledOff()`. These functions can then be defined differently for each Target board (or even a desktop workstation), without the need to change the state machine code.

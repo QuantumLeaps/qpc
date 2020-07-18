@@ -1,11 +1,11 @@
 /**
 * @file
-* @brief ::QActive services and ::QF support code
+* @brief ::QActive services and @ref qf support code
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-21
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------

@@ -3,8 +3,8 @@
 * @brief Customizable and memory-efficient assertions for embedded systems
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-03
+* Last updated for version 6.8.2
+* Last updated on  2020-07-07
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -334,7 +334,7 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const location);
 #define Q_ASSERT_COMPILE(test_) Q_ASSERT_STATIC(test_)
 
 /*! Helper macro to calculate static dimension of a 1-dim @p array_ */
-#define Q_DIM(array_) (sizeof(array_) / sizeof((array_)[0]))
+#define Q_DIM(array_) (sizeof(array_) / sizeof((array_)[0U]))
 
 #endif /* QASSERT_H */
 

@@ -3,8 +3,8 @@
 * @brief QF/C port to POSIX API (single-threaded, like the QV kernel)
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-19
+* Last updated for version 6.8.2
+* Last updated on  2020-06-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -49,6 +49,9 @@
 
 /* The number of system clock tick rates */
 #define QF_MAX_TICK_RATE     2U
+
+/* Activate the QF QActive_stop() API */
+#define QF_ACTIVE_STOP       1
 
 /* various QF object sizes configuration for this port */
 #define QF_EVENT_SIZ_SIZE    4U

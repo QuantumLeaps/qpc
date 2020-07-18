@@ -3,8 +3,8 @@
 * @brief QF/C port to POSIX API (multi-threaded)
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-02-26
+* Last updated for version 6.8.2
+* Last updated on  2020-03-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -42,13 +42,16 @@
 /* POSIX event queue and thread types */
 #define QF_EQUEUE_TYPE       QEQueue
 #define QF_OS_OBJECT_TYPE    pthread_cond_t
-#define QF_THREAD_TYPE       uint8_t
+#define QF_THREAD_TYPE       bool
 
 /* The maximum number of active objects in the application */
 #define QF_MAX_ACTIVE        64U
 
 /* The number of system clock tick rates */
 #define QF_MAX_TICK_RATE     2U
+
+/* Activate the QF QActive_stop() API */
+#define QF_ACTIVE_STOP        1
 
 /* various QF object sizes configuration for this port */
 #define QF_EVENT_SIZ_SIZE    4U

@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.1
-* Last updated on  2020-04-02
+* Last updated for version 6.8.2
+* Last updated on  2020-06-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      681U
+#define QP_VERSION      682U
 
 /*! The current QP version number string of the form XX.Y.Z, where XX is
 * a 2-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.8.1"
+#define QP_VERSION_STR  "6.8.2"
 
-/*! Encrypted  current QP release (6.8.1) and date (2020-04-04) */
-#define QP_RELEASE      0x888CC416U
+/*! Encrypted  current QP release (6.8.2) and date (2020-06-30) */
+#define QP_RELEASE      0x886A47F5U
 
 
 /****************************************************************************/
@@ -134,7 +134,7 @@ extern char_t const QP_versionStr[7];
 
 
 /****************************************************************************/
-/*! Event structure. */
+/*! Event class */
 /**
 * @description
 * QEvt represents events without parameters and serves as the base structure
@@ -156,7 +156,9 @@ typedef struct {
 
 #ifdef Q_EVT_CTOR /* Shall the constructor for the QEvt class be provided? */
 
-/*! Custom event constructor. */
+/*! Custom event constructor
+* @public @memberof QEvt
+*/
 QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 
 #endif
@@ -254,8 +256,7 @@ union QHsmAttr {
 };
 
 /****************************************************************************/
-/* Hierarchical State Machine */
-
+/*! Hierarchical State Machine class */
 /**
 * @description
 * ::QHsm represents a Hierarchical State Machine (HSM) with full support for
@@ -293,10 +294,10 @@ struct QHsmVtable {
     void (*dispatch)(QHsm * const me, QEvt const * const e);
 };
 
-/*! Protected "constructor" of ::QHsm */
-void QHsm_ctor(QHsm * const me, QStateHandler initial);
-
-/*! Polymorphically executes the top-most initial transition in a HSM */
+/* QHsm public operations... */
+/*! Polymorphically executes the top-most initial transition in a HSM
+* @public @memberof QHsm
+*/
 /**
 * @param[in,out] me_ pointer (see @ref oop)
 * @param[in]     e_  constant pointer the ::QEvt or a class derived from
@@ -316,7 +317,9 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial);
 /*! Implementation of the top-most initial transition in ::QHsm subclass */
 void QHsm_init_(QHsm * const me, void const * const e);
 
-/*! Polymorphically dispatches an event to a HSM */
+/*! Polymorphically dispatches an event to a HSM
+* @public @memberof QHsm
+*/
 /**
 * @description
 * Processes one event at a time in Run-to-Completion fashion.
@@ -331,7 +334,9 @@ void QHsm_init_(QHsm * const me, void const * const e);
 /*! Implementation of dispatching events to a ::QHsm subclass */
 void QHsm_dispatch_(QHsm * const me, QEvt const * const e);
 
-/*! Obtain the current active state from a HSM (read only). */
+/*! Obtain the current active state from a HSM (read only).
+* @public @memberof QHsm
+*/
 /**
 * @param[in] me_ pointer (see @ref oop)
 * @returns the current active state of a ::QHsm subclass
@@ -339,7 +344,9 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e);
 */
 #define QHsm_state(me_) (Q_STATE_CAST(Q_HSM_UPCAST(me_)->state.fun))
 
-/*! Obtain the current active child state of a given parent in ::QHsm */
+/*! Obtain the current active child state of a given parent in ::QHsm
+* @public @memberof QHsm
+*/
 /**
 * @param[in] me_     pointer (see @ref oop)
 * @param[in] parent_ pointer to the parent state-handler
@@ -349,23 +356,35 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e);
 #define QHsm_childState(me_, parent_) \
     QHsm_childState_(Q_HSM_UPCAST(me_), Q_STATE_CAST(parent_))
 
-/*! Helper function to obtain the current active child state of a parent */
-QStateHandler QHsm_childState_(QHsm * const me,
-                               QStateHandler const parent);
-
 /*! Tests if a given state is part of the current active state
 * configuration in ::QHsm subclasses.
+* @public @memberof QHsm
 */
 bool QHsm_isIn(QHsm * const me, QStateHandler const state);
 
-/* protected methods */
+/* QHsm protected operations... */
+/*! Protected "constructor" of ::QHsm
+* @protected @memberof QHsm
+*/
+void QHsm_ctor(QHsm * const me, QStateHandler initial);
 
-/*! the top-state. */
+/*! the top-state.
+* @protected @memberof QHsm
+*/
 QState QHsm_top(void const * const me, QEvt const * const e);
+
+/* QHsm private operations... */
+/*! Helper function to obtain the current active child state of a parent
+* @private @memberof QHsm
+*/
+QStateHandler QHsm_childState_(QHsm * const me,
+                               QStateHandler const parent);
 
 
 /****************************************************************************/
-/*! QM State Machine implementation strategy */
+/*! QM State Machine implementation strategy
+* @extends QHsm
+*/
 /**
 * @description
 * ::QMsm (QM State Machine) provides a more efficient state machine
@@ -385,7 +404,9 @@ QState QHsm_top(void const * const me, QEvt const * const e);
 *
 * @sa @ref oop
 */
-typedef QHsm QMsm;
+typedef struct {
+    QHsm super; /*!< inherits ::QHsm */
+} QMsm;
 
 /*! State object for the ::QMsm class (QM State Machine). */
 /**
@@ -414,16 +435,10 @@ struct QMTranActTable {
     QActionHandler const act[1];
 };
 
-/*! Protected "constructor" of ::QMsm */
-void QMsm_ctor(QMsm * const me, QStateHandler initial);
-
-/*! Implementation of the top-most initial transition in ::QMsm */
-void QMsm_init_(QHsm * const me, void const * const e);
-
-/*! Implementation of disparching events to ::QMsm */
-void QMsm_dispatch_(QHsm * const me, QEvt const * const e);
-
-/*! Obtain the current active state from a MSM (read only) */
+/* QMsm public operations... */
+/*! Obtain the current active state from a MSM (read only)
+* @public @memberof QMsm
+*/
 /**
 * @param[in] me_     pointer (see @ref oop)
 * @returns the current active state-object
@@ -431,7 +446,9 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e);
 */
 #define QMsm_stateObj(me_) (Q_HSM_UPCAST(me_)->state.obj)
 
-/*! Obtain the current active child state of a given parent in ::QMsm */
+/*! Obtain the current active child state of a given parent in ::QMsm
+* @public @memberof QMsm
+*/
 /**
 * @param[in] me_     pointer (see @ref oop)
 * @param[in] parent_ pointer to the parent state-object
@@ -441,14 +458,35 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e);
 #define QMsm_childStateObj(me_, parent_) \
     QMsm_childStateObj_(Q_HSM_UPCAST(me_), (parent_))
 
-/*! Helper function to obtain the current active child state of a parent */
+/*! Helper function to obtain the current active child state of a parent
+* @public @memberof QMsm
+*/
 QMState const *QMsm_childStateObj_(QMsm const * const me,
                                    QMState const * const parent);
 
 /*! Tests if a given state is part of the current active state
 * configuration in a MSM.
+* @public @memberof QMsm
 */
 bool QMsm_isInState(QMsm const * const me, QMState const * const state);
+
+/* QMsm protected operations... */
+/*! Constructor of ::QMsm
+* @protected @memberof QMsm
+*/
+void QMsm_ctor(QMsm * const me, QStateHandler initial);
+
+/* QMsm private operations... */
+/*! Implementation of the top-most initial transition in ::QMsm
+* @private @memberof QMsm
+*/
+void QMsm_init_(QHsm * const me, void const * const e);
+
+/*! Implementation of disparching events to ::QMsm
+* @private @memberof QMsm
+*/
+void QMsm_dispatch_(QHsm * const me, QEvt const * const e);
+
 
 /*! Macro to call in a state-handler when it executes a regular
 * or and initial transition. Applicable only to ::QHsm subclasses.

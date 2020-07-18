@@ -1,8 +1,8 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 6.8.0
-:: Date of the Last Update:  2020-01-17
+:: Last Updated for Version: 6.8.2
+:: Date of the Last Update:  2020-06-22
 ::
 ::                    Q u a n t u m  L e a P s
 ::                    ------------------------
@@ -38,11 +38,16 @@
 @echo make
 @echo make -CHM
 
-@set DOXHOME="C:\tools\doxygen\bin"
+:: Doxygen tool (adjust to your system) ......................................
+@set DOXYGEN=doxygen
 
-:: Generate Metrics for QP/C++ ..............................................
-@set LIZARD=C:\tools\Python27\python.exe C:\tools\lizard\lizard.py
+:: HTML Help tool (needed only with the -CHM option, (adjust to your system) .
+@set HHC="C:\tools\HTML Help Workshop\hhc.exe"
 
+:: Simple complexity metrics tool  (adjust to your system) ...................
+@set LIZARD=lizard
+
+:: Generate metrics.dox file...
 @set METRICS_INP=..\include ..\src -x ..\src\qs\*
 @set METRICS_OUT=metrics.dox
 
@@ -56,10 +61,10 @@
 @echo @endcode >> %METRICS_OUT%
 @echo */ >> %METRICS_OUT%
 
-:: Generate Doxygen Documentation ........................................... 
+:: Generate Doxygen Documentation...
 if "%1"=="-CHM" (
     @echo Generating HTML...
-    %DOXHOME%\doxygen.exe Doxyfile-CHM
+    %DOXYGEN% Doxyfile-CHM
     
     @echo Adding custom images...
     xcopy preview.js tmp\
@@ -67,26 +72,26 @@ if "%1"=="-CHM" (
     @echo img\img.htm >> tmp\index.hhp
 
     @echo Generating CHM...
-    "C:\tools\HTML Help Workshop\hhc.exe" tmp\index.hhp
+    %HHC% tmp\index.hhp
     
     @echo.
     @echo Cleanup...
     @rmdir /S /Q  tmp
-    @echo CHM file generated in qpc.chm
+    @echo CHM file generated
 
 ) else (
     @echo.
     @echo Cleanup...
-    rmdir /S /Q  C:\qp_lab\qpc\html
+    rmdir /S /Q  ..\html
     
     @echo Adding custom images...
-    xcopy preview.js C:\qp_lab\qpc\html\
-    xcopy img C:\qp_lab\qpc\html\img\
-    copy images\favicon.ico C:\qp_lab\qpc\html
+    xcopy preview.js ..\html\
+    xcopy img ..\html\img\
+    copy images\favicon.ico ..\html
 
     @echo Generating HTML...
-    %DOXHOME%\doxygen.exe Doxyfile
-    @qclean C:\qp_lab\qpc\html
+    %DOXYGEN% Doxyfile
+    @qclean ..\html
 )
 
 @endlocal

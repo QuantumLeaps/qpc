@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.6.0" links="1">
+<model version="5.0.1" links="1">
  <documentation>Calc is the model of the Calculator described in Chapter 4 of PSiCC2</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -605,7 +605,7 @@ enum CalcSignals {
 $declare(Events::CalcEvt)
 $declare(SMs::Calc_ctor)
 
-extern QMsm * const the_calc;  /* &quot;opaque&quot; pointer to calculator MSM */
+extern QHsm * const the_calc;  /* &quot;opaque&quot; pointer to calculator MSM */
 
 #endif /* CALC_H */
 </text>
@@ -621,7 +621,7 @@ $declare(SMs::Calc)
 static Calc l_calc;    /* the only instance of the Calc class */
 
 /* global-scope definitions ---------------------------------------*/
-QMsm * const the_calc = &amp;l_calc.super;  /* &quot;opaque&quot; pointer to MSM */
+QHsm * const the_calc = &amp;l_calc.super;  /* &quot;opaque&quot; pointer to MSM */
 
 $define(SMs::Calc_ctor)
 $define(SMs::Calc)</text>

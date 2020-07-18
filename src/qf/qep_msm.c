@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-18
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -73,16 +73,22 @@ static struct QMState const l_msm_top_s = {
 */
 #define QEP_ACT_PTR_INC_(act_) (++(act_))
 
-/*! helper function to execute a transition-action table. */
-static QState QMsm_execTatbl_(QMsm * const me,
+/*! helper function to execute a transition-action table.
+* @private @memberof QMsm
+*/
+static QState QMsm_execTatbl_(QHsm * const me,
                               struct QMTranActTable const *tatbl);
 
-/*! helper function to exit the current state up to the transition source */
-static void QMsm_exitToTranSource_(QMsm * const me, QMState const *cs,
+/*! helper function to exit the current state up to the transition source
+* @private @memberof QMsm
+*/
+static void QMsm_exitToTranSource_(QHsm * const me, QMState const *cs,
                                    QMState const *ts);
 
-/*! helper function to execute a transition to history */
-static QState QMsm_enterHistory_(QMsm * const me, QMState const * const hist);
+/*! helper function to execute a transition to history
+* @private @memberof QMsm
+*/
+static QState QMsm_enterHistory_(QHsm * const me, QMState const * const hist);
 
 
 /****************************************************************************/
@@ -116,18 +122,19 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial) {
         &QMsm_dispatch_
     };
     /* do not call the QHsm_ctor() here */
-    me->vptr = &vtable;
-    me->state.obj = &l_msm_top_s; /* the current state (top) */
-    me->temp.fun  = initial;      /* the initial transition handler */
+    me->super.vptr = &vtable;
+    me->super.state.obj = &l_msm_top_s; /* the current state (top) */
+    me->super.temp.fun  = initial;      /* the initial transition handler */
 }
 
 /****************************************************************************/
 /**
+* @public @memberof QMsm
 * @description
 * Executes the top-most initial transition in a MSM.
 *
 * @param[in,out] me  pointer (see @ref oop)
-* @param[in]     par pointer to an extra parameter (might be NULL)
+* @param[in]     e   pointer to an extra parameter (might be NULL)
 *
 * @note
 * Must be called only ONCE after the QMsm_ctor().
@@ -152,8 +159,8 @@ void QMsm_init_(QHsm * const me, void const * const e) {
 
     QS_BEGIN_PRE_(QS_QEP_STATE_INIT, QS_priv_.locFilter[SM_OBJ], me)
         QS_OBJ_PRE_(me); /* this state machine object */
-        QS_FUN_PRE_(me->state.obj->stateHandler);        /* source state handler*/
-        QS_FUN_PRE_(me->temp.tatbl->target->stateHandler);/*target state handler*/
+        QS_FUN_PRE_(me->state.obj->stateHandler);        /* source state */
+        QS_FUN_PRE_(me->temp.tatbl->target->stateHandler);/*target state */
     QS_END_PRE_()
 
     /* set state to the last tran. target */
@@ -165,14 +172,15 @@ void QMsm_init_(QHsm * const me, void const * const e) {
     } while (r >= (QState)Q_RET_TRAN_INIT);
 
     QS_BEGIN_PRE_(QS_QEP_INIT_TRAN, QS_priv_.locFilter[SM_OBJ], me)
-        QS_TIME_PRE_();                           /* time stamp */
-        QS_OBJ_PRE_(me);                          /* this state machine object */
+        QS_TIME_PRE_();   /* time stamp */
+        QS_OBJ_PRE_(me);  /* this state machine object */
         QS_FUN_PRE_(me->state.obj->stateHandler); /* the new current state */
     QS_END_PRE_()
 }
 
 /****************************************************************************/
 /**
+* @private @memberof QMsm
 * @description
 * Dispatches an event for processing to a meta state machine (MSM).
 * The processing of an event represents one run-to-completion (RTC) step.
@@ -351,6 +359,7 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e) {
 
 /****************************************************************************/
 /**
+* @private @memberof QMsm
 * @description
 * Helper function to execute transition sequence in a transition-action table.
 *
@@ -364,7 +373,7 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e) {
 * This function is for internal use inside the QEP event processor and
 * should __not__ be called directly from the applications.
 */
-static QState QMsm_execTatbl_(QMsm * const me,
+static QState QMsm_execTatbl_(QHsm * const me,
                               struct QMTranActTable const *tatbl)
 {
     QActionHandler const *a;
@@ -429,6 +438,7 @@ static QState QMsm_execTatbl_(QMsm * const me,
 
 /****************************************************************************/
 /**
+* @private @memberof QMsm
 * @description
 * Static helper function to exit the current state configuration to the
 * transition source, which in a hierarchical state machine might be a
@@ -438,7 +448,7 @@ static QState QMsm_execTatbl_(QMsm * const me,
 * @param[in]     cs   pointer to the current state
 * @param[in]     ts   pointer to the transition source state
 */
-static void QMsm_exitToTranSource_(QMsm * const me, QMState const *cs,
+static void QMsm_exitToTranSource_(QHsm * const me, QMState const *cs,
                                    QMState const *ts)
 {
     QMState const *s = cs;
@@ -468,6 +478,7 @@ static void QMsm_exitToTranSource_(QMsm * const me, QMState const *cs,
 
 /****************************************************************************/
 /**
+* @private @memberof QMsm
 * @description
 * Static helper function to execute the segment of transition to history
 * after entering the composite state and
@@ -476,10 +487,10 @@ static void QMsm_exitToTranSource_(QMsm * const me, QMState const *cs,
 * @param[in]     hist pointer to the history substate
 *
 * @returns
-* #Q_RET_INIT, if an initial transition has been executed in the last entered
-* state or #Q_RET_NULL if no such transition was taken.
+* #Q_RET_TRAN_INIT, if an initial transition has been executed in the last
+* entered state or #Q_RET_NULL if no such transition was taken.
 */
-static QState QMsm_enterHistory_(QMsm * const me, QMState const *const hist) {
+static QState QMsm_enterHistory_(QHsm * const me, QMState const *const hist) {
     QMState const *s = hist;
     QMState const *ts = me->state.obj; /* transition source */
     QMState const *epath[QMSM_MAX_ENTRY_DEPTH_];
@@ -547,7 +558,7 @@ bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
     bool inState = false; /* assume that this MSM is not in 'state' */
     QMState const *s;
 
-    for (s = me->state.obj; s != (QMState *)0; s = s->superstate) {
+    for (s = me->super.state.obj; s != (QMState *)0; s = s->superstate) {
         if (s == state) {
             inState = true; /* match found, return 'true' */
             break;
@@ -577,11 +588,11 @@ bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
 QMState const *QMsm_childStateObj_(QMsm const * const me,
                                    QMState const * const parent)
 {
-    QMState const *child = me->state.obj;
+    QMState const *child = me->super.state.obj;
     bool isFound = false; /* start with the child not found */
     QMState const *s;
 
-    for (s = me->state.obj;
+    for (s = me->super.state.obj;
          s != (QMState *)0;
          s = s->superstate)
     {

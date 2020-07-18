@@ -4,8 +4,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-11-22
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -39,6 +39,23 @@
 */
 #ifndef QV_PORT_H
 #define QV_PORT_H
+
+/*! Macro to put the CPU to sleep safely in the cooperative
+* QV kernel (inside QV_onIdle()).
+*/
+/**
+* @description
+* This macro is provided in some QP ports for the QV kernel and
+* in general it depends on the interrupt disabling policy.
+*
+* @note The provided code is just an example (for ARM Cortex-M).
+*/
+#define QV_CPU_SLEEP() do { \
+    __disable_interrupt(); \
+    QF_INT_ENABLE(); \
+    __WFI(); \
+    __enable_interrupt(); \
+} while (false)
 
 #include "qv.h" /* QV platform-independent public interface */
 

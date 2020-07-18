@@ -3,10 +3,11 @@
 * @ingroup qxk
 * @brief QXMutex_init(), QXMutex_lock(), QXMutex_tryLock() and
 * QXMutex_unlock() definitions.
+* @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-23
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -81,7 +82,7 @@ Q_DEFINE_THIS_MODULE("qxk_mutex")
 * that uses this mutex.
 *
 * @usage
-* @include qxk_mux.c
+* @include qxk_mutex.c
 */
 void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling) {
     QF_CRIT_STAT_
@@ -128,7 +129,7 @@ void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling) {
 * QXMutex_lock() must be ballanced by the matching call to QXMutex_unlock().
 *
 * @usage
-* @include qxk_mux.c
+* @include qxk_mutex.c
 */
 bool QXMutex_lock(QXMutex * const me,
                   uint_fast16_t const nTicks)
@@ -145,6 +146,7 @@ bool QXMutex_lock(QXMutex * const me,
     * - be called from an extended thread;
     * - the ceiling priority must not be used; or if used
     *   - the thread priority must be below the ceiling of the mutex;
+    * - the ceiling must be in range
     * - the thread must NOT be already blocked on any object.
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
@@ -186,7 +188,7 @@ bool QXMutex_lock(QXMutex * const me,
     /* is the mutex locked by this thread already (nested locking)? */
     else if (me->holderPrio == curr->super.startPrio) {
 
-        /* the nesting level must not exceed 0xFF */
+        /* the nesting level must not exceed the dynamic range of uint8_t */
         Q_ASSERT_ID(220, me->lockNest < 0xFFU);
 
         ++me->lockNest;
@@ -223,7 +225,7 @@ bool QXMutex_lock(QXMutex * const me,
                          == QXK_PTR_CAST_(QMState*, me));
 
         /* did the blocking time-out? (signal of zero means that it did) */
-        if (curr->timeEvt.super.sig == (QSignal)0) {
+        if (curr->timeEvt.super.sig == 0U) {
             if (QPSet_hasElement(&me->waitSet, p)) { /* still waiting? */
                 QPSet_remove(&me->waitSet, p); /* remove unblocked thread */
                 locked = false; /* the mutex was NOT locked */
@@ -308,12 +310,12 @@ bool QXMutex_tryLock(QXMutex * const me) {
         QS_BEGIN_NOCRIT_PRE_(QS_MUTEX_LOCK, (void *)0, curr)
             QS_TIME_PRE_();  /* timestamp */
             QS_2U8_PRE_(curr->startPrio, /* the start prio */
-                    me->ceiling); /* the current ceiling */
+                        me->ceiling); /* the current ceiling */
         QS_END_NOCRIT_PRE_()
     }
     /* is the mutex held by this thread already (nested locking)? */
     else if (me->holderPrio == curr->startPrio) {
-        /* the nesting level must not exceed 0xFF */
+        /* the nesting level must not exceed  the dynamic range of uint8_t */
         Q_ASSERT_ID(320, me->lockNest < 0xFFU);
 
         ++me->lockNest;
@@ -349,7 +351,7 @@ bool QXMutex_tryLock(QXMutex * const me) {
 * ballanced by the matching call to QXMutex_unlock().
 *
 * @usage
-* @include qxk_mux.c
+* @include qxk_mutex.c
 */
 void QXMutex_unlock(QXMutex * const me) {
     QActive *curr;

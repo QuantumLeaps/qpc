@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-29
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -54,6 +54,7 @@ Q_DEFINE_THIS_MODULE("qf_time")
 QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
 
 /****************************************************************************/
+#ifdef Q_SPY
 /**
 * @description
 * This function must be called periodically from a time-tick ISR or from
@@ -61,6 +62,7 @@ QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
 * system clock tick rate.
 *
 * @param[in] tickRate  system clock tick rate serviced in this call [1..15].
+* @param[in] sender    pointer to a sender object (used only for QS tracing)
 *
 * @note
 * this function should be called only via the macro QF_TICK_X()
@@ -73,10 +75,9 @@ QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
 * @sa
 * ::QTimeEvt.
 */
-#ifndef Q_SPY
-void QF_tickX_(uint_fast8_t const tickRate)
-#else
 void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
+#else
+void QF_tickX_(uint_fast8_t const tickRate)
 #endif
 {
     QTimeEvt *prev = &QF_timeEvtHead_[tickRate];

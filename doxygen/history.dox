@@ -1,9 +1,61 @@
 /**
 @page history Revision History
 
+@section qpc_6_8_2 Version 6.8.2, 2020-07-17
+
+__Source code changes:__
+
+- Changed definitions of ::QMsm, ::QMActive, and ::QTicker "classes" from using typedef's to using struct's. This means that ::QMsm, ::QMActive, and ::QTicker are now **distinct types** different from the respective base classes: ::QHsm, ::QActive, and ::QActive. Consequently, implicit conversions to the base class are *no longer performed*, which improves the type safety.
+
+@note
+This change might cause compiler warning in code that assumes equivalence between ::QHsm and ::QMsm or ::QActive and ::QMActive. Specifically, any "opaque" pointers to the state machine base class should be of type `QHsm *` (and *not* `QMsm *`). Similarly, any "opaque" pointers to the active object base class should be of type `QActive *` (and *not* `QMActive *`)
+
+
+- Applied the [Doxygen @extends command](https://www.doxygen.nl/manual/commands.html#cmdextends) to indicate **inheritance** and to explicitly specify base classes for all derived classes (e.g., ::QTimeEvt __extends__ ::QEvt).
+- Fixed errors in the Doxygen documentation, such as: missing documentation for parameters, wrong parameter names, unresolved references, etc.
+- Applied new, clearer styling to the Doxygen documentation.
+- Changed the QS trace record name QS_QF_ACTIVE_POST_FIFO to ::QS_QF_ACTIVE_POST and QS_QF_EQUEUE_POST_FIFO to ::QS_QF_EQUEUE_POST. This refactoring now better matches the QP/C API QACTIVE_POST() and QEQueue_post().
+
+
+__Updated Ports:__
+  + enabled #QF_ACTIVE_STOP in the ports: Win32, Win32-QV, Win32-QUTEST, POSIX, POSIX-QV, and POSIX-QUTEST.
+  + @ref ucos-ii "port to uC/OS-II" has been adapted to the new uC/OS-II v2.93.00 (recently released by Silicon Labs under the open source Apache 2.0 license).
+
+
+__Updated Examples:__
+
+  + Modified `Makefile`s for the GNU-ARM projects to use `gcc` as the linker instead of `g++`
+  + Modidfied `Makefile`s for the workstation examples to add the `-no-pie` linker option only when `GCC_OLD` environment variable is NOT defined. This is to accommodates older POSIX platforms with older GCC distribution.
+  + Modified all ARM-KEIL uVision projects for ARM-CLANG to use the startup code in the ARM-ASM syntax.
+  + New uC/OS-II example @ref ucos-ii_dpp_nucleo-l053r8 (Cortex-M0+)
+  + Removed uC/OS-II example for the STM32-NUCLEO-L152RE (Cortex-M3)
+  + Added QM model files: `workstation/defer/defer.qm` and `workstation/reminder2/reminder2.qm`
+
+__Updated QUTest examples to generate code-coverage information:__
+  + Modified `Makefile`s in QUTest examples (directory `examples\qutest`) to generate **code-coverage information**. Specifically, when the `GCOV` environment variable is defined, the `Makefile`s generate code-coverage information for [GCOV](https://en.wikipedia.org/wiki/Gcov).
+
+  @note
+  The GCOV code-coverage generation is currently available only on the hosts.
+
+
+__Updated 3rd-Party Components:__
+
+  + CMSIS from 5.6.0 to 5.7.0
+  + uC/OS-II from 2.92.10 to 2.93.00 (open source Apache 2.0 license)
+
+__Bug Fixes:__
+
+  + [bug#267 "QP/C Spy build configuration fails on 64-bit target"](https://sourceforge.net/p/qpc/bugs/267/)
+
+
+
 @section qpc_6_8_1 Version 6.8.1, 2020-04-04
 
-Fixed the following bugs:
+__Source code changes:__
+
+Improved comments in the QF_stop() function. The comments now make it very clear that after calling QF_stop()  the application must terminate and cannot continue. In particular, QF_stop() is **not** intended to be followed by a call to QF_init() to "resurrect" the application. The previous comments apparently were confusing and some developers attempted to "restart" a running application, which led to system crashes.
+
+__Bug Fixes:__
 
 - [bug#261 QTime_disarm() clears the wrong flag](https://sourceforge.net/p/qpc/bugs/261/)
 - [bug#262 Ticker0 does not work in QPC 6.8.0](https://sourceforge.net/p/qpc/bugs/262/)
@@ -23,13 +75,12 @@ Also, this release updates the QP/C ports and examples for workstations (Windows
 
 These "safe" functions are mapped to the best approximation of these services available on a given platform. For example, `STRCPY_S()` is mapped to `strcpy_s()` on Windows and `strcpy()` on POSIX (Linux/MacOS/etc.).
 
-Finally, this release improves the comments in the QF_stop() function. The comments now make it very clear that after calling QF_stop()  the application must terminate and cannot continue. In particular, QF_stop() is **not** intended to be followed by a call to QF_init() to "resurrect" the application. The previous comments apparently were confusing and some developers attempted to "restart" a running application, which led to system crashes.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_8_0 Version 6.8.0, 2020-03-21
 
-Source code changes:
+__Source code changes:__
 
 - Fixed inconsistencies between QP API declarations in the `.h` files and definitions in the `.c` files, such as different parameter names in declarations and definitions (MISRA-C:2012).
 
@@ -42,25 +93,23 @@ Source code changes:
 - Removed all pre-conditions from QActiveDummy_start_() function in qutest.c. This is to allow starting dummy AOs the exact same way as the real counterparts (e.g., with stack storage, which QActiveDummy does not really need).
 
 
-Updated 3rd-Party Components:
+__Updated 3rd-Party Components:__
 
   + FreeRTOS from 10.2.1 to 10.3.0
   + SEGGER embOS from 4.34.1 to 5.06.1
   + SEGGER emWin from 5.32 to 6.10
-  + Removed TI-RTOS
+  + Removed TI-RTOS (both port and examples)
 
 
-Updated Examples:
+__Updated Examples:__
 
 Converted most of the examples for ARM-MDK from the no-longer maintained compiler-5 (RVDS) to the new ARM Compiler-6 (ARM-clang). The examples for ARM Compiler-6 are located in the `armclang` sub-directories.
 
 @note
 The older ARM Compiler-5 is still supported, but will be phased out in the future. The only examples for ARM Compiler-5 are for the EK-TM4C123GXL (TivaC LanuchPad) board. These examples are located in the `arm` sub-directories.
 
-- Removed support for the TI-RTOS, both in the ports and examples.
 
 
-------------------------------------------------------------------------------
 @section qpc_6_7_0 Version 6.7.0, 2019-12-30
 The main purpose of this release is providing improved compliance with MISRA-C:2012 (including  MISRA-C:2012-Amendment-1) and also to provide support for the [<b>PC-Lint-Plus</b>](https://www.gimpel.com/) static analysis tool (see also feature request [#169](https://sourceforge.net/p/qpc/feature-requests/169/)). Specifically, the QP/C source code and some examples have been adjusted to comply with MISRA-C:2012-Amendment-1 rules, with all deviations captured in the PC-Lint-Plus configuration files. These PC-Lint-Plus configuration files have been provided in the new "port" to PC-Lint-Plus in the directory qpc/ports/lint-plus/.
 
@@ -72,14 +121,15 @@ This release also includes the offline documentation for  **this** particular ve
 
 The backwards-compatiblity layer for QP 4.x has been removed. Among others, the macros Q_ROM and Q_ROM_VAR are no longer defined.
 
-Also, this release updates the Windows-GUI examples with the QWIN Prototyping Toolkit to work with the latest Visual Studio 2019 and specifically with the Resource Editor now available. Specifically here, the Game-GUI example (qpc\examples\arm-cm\game_efm32-slstk3401a\win32-gui) and the DPP-GUI example (qpc\examples\arm-cm\dpp_efm32-slstk3401a\win32-gui) have been updated to build with the Visual Studio 2019.
+Also, this release updates the Windows-GUI examples with the QWIN Prototyping Toolkit to work with the latest Visual Studio 2019 and specifically with the Resource Editor now available. Specifically here, the Game-GUI example (`qpc\examples\arm-cm\game_efm32-slstk3401a\win32-gui`) and the DPP-GUI example (`qpc\examples\arm-cm\dpp_efm32-slstk3401a\win32-gui`) have been updated to build with the Visual Studio 2019.
 
-Finally, this release fixes the following bugs:
+__Bug Fixes:__
+
 - [bug#254 "Q_NEW_X_FROM_ISR for FreeRTOS port"](https://sourceforg/bugs/254/)
 - [bug#255 "IAR-ARM "Multi-file Compilation" fails for QK and QXK applications"](https://sourceforg/bugs/255/)
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_6_0 Version 6.6.0, 2019-10-31
 The main purpose of this release is the change in distribution of the QP/C framework, which is now bundled together with the other QP frameworks (QP/C++ and QP-nano) as well as QM, and the QTools collection into "QP-bundle". This "QP-bundle" provides a single, streamlined and simplified download and installation of all QP frameworks and all the accompanying tools.
 
@@ -98,19 +148,20 @@ This release brings also the following changes:
 - removed Tcl test scripts from QUTest examples
 
 
-------------------------------------------------------------------------------
-@section qpc_6_5_1 Version 6.5.1, 2019-05-24
-This release fixes the following bugs in the QP/C code supporting @ref qutest "QUTest unit testing":
 
-- [bug#241 "QUTest produces superfluous “Trg-Done QS_RX_EVENT” after publish"](https://sourceforge.net/p/qpc/bugs/241/).
+@section qpc_6_5_1 Version 6.5.1, 2019-05-24
+
+__Bug Fixes:__
+
+- [bug#241 "QUTest produces superfluous Trg-Done QS_RX_EVENT� after publish"](https://sourceforge.net/p/qpc/bugs/241/).
 - [bug#242 "QUTest fails to process events posted/​published from user commands"](https://sourceforge.net/p/qpc/bugs/242/).
 
-Also, this release extends the `Makefiles` in the `qpc\examples\qutest` directory to provide the `debug` target. Specificall, the `qpc\examples\qutest\blinky` example has been extended with projects to build/debug this example with Visual C++ (on the host) and with ARM-KEIL on embedded target (EK-TM4C123).
+Also, this release extends the `Makefiles` in the `qpc\examples\qutest` directory to provide the `debug` target. Specificall, the `qpc\examples\qutest\blinky` example has been extended with projects to `build/debug` this example with Visual C++ (on the host) and with ARM-KEIL on embedded target (EK-TM4C123).
 
 Finally, this release adds ports and examples for PIC24/dsPIC 16-bit MCUs with MPLAB-X/XC16 and PIC32 with MPLAB-X/XC32 toolchains.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_5_0 Version 6.5.0, 2019-03-30
 This QP/C release matches the [QM release 4.5.0](https://www.state-machine.com/qm/history.html#qm_4_5_0), which introduced new implementation for QP/C++. Even though this has no impact on the QP/C state machine implementation with QM, this release is needed for compatibility checking between QP and QM.
 
@@ -121,7 +172,7 @@ Additionally, this release changes the API QTimeEvt_ctr() to QTimeEvt_currCtr().
 Additionally, the examples for `calc1` and `calc1_sub` (with QM 4.5.0 models) have been extended to properly handle the operator precedence (multiplication and division have higher precedence than addition and subtraction).
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_4_0 Version 6.4.0, 2019-02-10
 This release brings the following changes:
 
@@ -141,7 +192,7 @@ These additional assertions require #Q_DEFINE_THIS_FILE or #Q_DEFINE_THIS_MODULE
 - fixed examples for MSP430 with CCS and added QUTest support for MSP430.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_3_8 Version 6.3.8, 2018-12-31
 The main purpose of this release is the update the `Makefiles` that use the [GNU-ARM Embedded Toolchain](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm) to match the recent update in [QTools for Windows 6.3.8](https://sourceforge.net/projects/qpc/files/QTools/). Specifically, all `Makefiles` in the `examples` directory have been updated to use the GNU-ARM toolchain located in `qtools\gnu_arm-none-eabi` and use the tools prefix **arm-none-eabi-**.
 
@@ -149,7 +200,7 @@ The main purpose of this release is the update the `Makefiles` that use the [GNU
 The `Makefiles` that use the GNU-ARM included in this release require [QTools for Windows version 6.3.8 or newer](https://sourceforge.net/projects/qpc/files/QTools/) and will **NOT** work with the older QTools collection.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_3_7 Version 6.3.7, 2018-11-20
 The main goal of this release is to provide Python test scripts that match the newly re-designed Python support for the [QUTest unit testing harness](https://www.state-machine.com/qtools/qutest.html) (see QTools **6.3.7**). Specifically, the Python tests scripts (*.py files) in the `qpc/examples/qutest` directory) have been all upgraded to the new syntax and format. Also, all the makefiles in that directory have been modified to execute Python test scripts by default, and Tcl test scripts only when the argument `SCRIPTS=tcl` is specified.
 
@@ -163,7 +214,7 @@ Also, in this release, the prototypes of the internal functions `QActive_start_(
 Finally, this release updates the internal implementation of QXK function `QXThread_post_()` for software tracing and testing with QUTest.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_3_6 Version 6.3.6, 2018-10-20
 This release brings important changes and improvements to the unit-testing support for [QUTest](https://www.state-machine.com/qtools/qutest.html). Specifically, a new "dummy" active object class ::QActiveDummy for testing has been added. Instances of this "dummy" AO can be now used as test-doubles for active objects that are recipients of events directly posted by the active object under test (AOUT). This, in turn, eliminates the need to alter the existing event-posting implementation, so that more of the actual QP code can be used in the QP test-stub (qutest.c).
 
@@ -191,12 +242,12 @@ To facilitate the creation of truly portable, cross-platform examples, the exist
 Finally, this release fixes a bug in the @ref posix-qv "POSIX-QV port", where the internal condition variable `QV_condVar_` has not been initialized.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_3_4 Version 6.3.4, 2018-08-10
 This release adds new API QTimeEvt_wasDisarmed() for checking the status of a ::QTimeEvt object after it has been disarmed. Specifically, the status of the last call to QTimeEvt_disarm() is kept inside the time event object and can be subsequently checked with the QTimeEvt_wasDisarmed() API. This new function is designed to be used directly as a guard condition on the timeout event, as described in the [PSiCC2 book](/psicc2), Section 7.7.3 "Arming and Disarming a Time Event" on page 359. The QTimeEvt_wasDisarmed() has a side effect of setting the "was disabled" status, so the guard evaluates to 'true' the next time it is checked.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_3_3a Version 6.3.3a, 2018-07-16
 This release adds Python test scripts to the QUTest examples (folder `qpc/examples/qutest`). Specifically, the makefiles have been augmented to accept symbol `SCRIPT=py`, in which case the Python test scripts (`*.py`) are used instead of the default Tcl test scripts (`*.tcl`).
 
@@ -204,7 +255,7 @@ This release adds Python test scripts to the QUTest examples (folder `qpc/exampl
 This release does not change any QP/C APIs, QP/C implementation, ports, or other examples.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_3_3 Version 6.3.3, 2018-06-22
 This release fixes the following bugs:
 
@@ -217,7 +268,7 @@ Also, this release demonstrates the new features of QM 4.3.0 in several example 
 Finally, this release updates `3rd_party/CMSIS/Include` to the latest version from GitHub.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_3_2 Version 6.3.2, 2018-06-20
 This release fixes the following bugs:
 
@@ -229,12 +280,12 @@ Also, this release improves the QUTest DPP example (directory `qpc/examples/qute
 Finally, this release modifies the QP/C ports to POSIX and POSIX-QV by allowing to configure the p-thread priority of the ticker thread. This is achieved by adding a `tickPrio` parameter to the `QF_setTickRate()` function. (**NOTE** this modification will require changing existing QP applications for POSIX or POSIX-QV that call `QF_setTickRate()`.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_3_1 Version 6.3.1, 2018-05-24
 This release migrates the [QUTest](https://www.state-machine.com/qtools/qutest.html) examples to [QM 4.2.1](https://www.state-machine.com/qm/history.html#qm_4_2_1), which now can generate QS_FUN_DICTIONARY() records automatically. This release also adds a generic, simple blinky example for QUTest located in `examples/qutest/blinky`. Also, this release fixes a bug in the example `qutest/TDDbook_LedDriver` so that the code compiles cleanly with the updated header file "qassert.h".
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_3_0 Version 6.3.0, 2018-05-10
 The main purpose of this release is fixing the sub-machine support in the QP/Spy build configuration. Specifically, this release fixes the following bug:
 
@@ -246,7 +297,7 @@ This release matches [QM 4.2.0](https://www.state-machine.com/qm/history.html#qm
 Additionally, the release contains some re-factoring of the QS-RX input channel.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_2_0 Version 6.2.0, 2018-03-16
 The main purpose of this release is extednding the functionality of the [QUTest unit testing](https://www.state-machine.com/qtools/qutest.html) for QP/C applications. Specifically, this release adds support for testing of **self-posting** of events in active objects, which is an essential element in the [Reminder](https://www.state-machine.com/doc/Pattern_Reminder.pdf) and [Deferred Event](https://www.state-machine.com/doc/Pattern_DeferredEvent.pdf) design patterns. To implement this new feature, the QS-RX (QS receive channel) has been extened by a small scheduler that processes all secondary events gnenerated by dispatching, posting, or publishing events (only active when the #Q_UTEST macro is defined). Also, the implementation of the target resident QUTest components (files `src/qs/qutest.c` and `src/qf/qf_actq.c`) have been modified to allow posting of events during unit testing.
 
@@ -267,7 +318,7 @@ Additionally, this release updates the QP/C ports to win32-qv and posix-qv to al
 Finally, this release phases out the `qp_port.h` header file. If any of your projects still includes this file, please replace it with the qpc.h heder file.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_1_1 Version 6.1.1, 2018-02-18
 The main purpose of this release is adding the context-switch callbacks to the preemptive @ref qk "QK" and @ref qxk "QXK" kernels. The QK_onContextSw() and QXK_onContextSw() callback functions provide a mechanism to perform additional custom operations when QK/QXK switches context from one thread to another. To avoid extra overhead when this functionality is not needed and for backwards-compatiblity with the existing applications, the callbacks are enabled only when the macros #QK_ON_CONTEXT_SW (for QK) and #QXK_ON_CONTEXT_SW (for QXK) are defined. These macros can be defined either directly in command-line for the compiler, or in the QK/QXK port files (qk_port.c for QK and qxk_port.c for QXK). Examples for the context-switch callbacks have been provided for  for the @ref arm-cm_dpp_nucleo-l053r8 "NUCLEO-L053R8" (Cortex-M0+) and the @ref arm-cm_dpp_nucleo-h743zi "NUCLEO-H743ZI" (Cortex-M7).
 
@@ -278,7 +329,7 @@ Also, this release adds new project files for the Atollic TRUEstudio for STM32. 
 Finally, this relese updates the CMSIS to version 5.3.0 (see `qpc/3rd_party/CMSIS`)
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_1_0 Version 6.1.0, 2018-02-04
 The main purpose of this release is adding the support for the [<strong>ARM Compiler 6 (ARM-Clang)</strong>](https://developer.arm.com/products/software-development-tools/compilers/arm-compiler), which is a C/C++ toolchain for ARM processors based on the modern [Clang frontend](https://clang.llvm.org/) and the [LLVM framework](https://llvm.org/). This release adds the ARM-Clang ports and examples for all built-in kernels (QV, QK, and QXK) for the ARM Cortex-M CPU cores.
 
@@ -291,7 +342,7 @@ Also, this release updates the existing projects for the Code Composer Studio (C
 Also, all examples for MSP430 with CCS have been updated to CCSv7 and re-tested on the supported boards.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_0_4 Version 6.0.4, 2018-01-10
 The main purpose of this release is the provision of the official @ref freertos "QP/C port to FreeRTOS" (version 10). The QP/C port to FreeRTOS is completely generic and should work on any CPU supported by FreeRTOS. The port comes with the following examples (see examples/freertos/):
 - @ref freertos_dpp_ek-tm4c123gxl "DPP on EK-TM4C123GXL (ARM Cortex-M4F)" with ARM-KEIL, GNU-ARM and IAR-ARM toolchains.
@@ -308,7 +359,7 @@ Finally, this release fixes the following bug in the @ref threadx "ThreadX port"
 - [bug#197 "Problems with scheduler locking in QP/C/C++ ports to ThreadX"](https://sourceforge.net/p/qpc/bugs/197/)
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_0_3 Version 6.0.3, 2017-12-12
 
 Changes since version 6.0.1:
@@ -331,7 +382,7 @@ Changes since version 6.0.1:
 This release does not change any of the QP/C APIs.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_0_1 Version 6.0.1, 2017-11-10
 The main focus of this release is to fix the remaining problems with transitions out of eXit-Points in sub-machines. Specifically, this release modifies the QMsm-based state machine implementation strategy (file src/qf/qep_msm.c to properly handle transitions from eXit-Points to Entry-Points and from eXit-Points to History connectors in sub-machines. These changes are part of fixing the following bugs reported for QM:
 
@@ -352,7 +403,7 @@ This QP/C 6.0.1 release is the minium version required in QM 4.1.0. This is beca
 Additionally, this release changes the QXK implementation related to the [bug#186 "QXK: Extended thread context switch causes assertion in PendSV_Handler"](https://sourceforge.net/p/qpc/bugs/186/). Specifically, the case of context switching away and back to the same thread (which can arise under specific interrupt preemption scenarios) is now handled as a simple return from PendSV. The QXK scheduler has been modified to set the "next" thread pointer to NULL when it detects switching back to the "current" thread.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_6_0_0 Version 6.0.0, 2017-10-13
 This release fixes two bugs found in the QXK kernel:
 - [bug#185](https://sourceforge.net/p/qpc/bugs/185/) "QXK: PendSV_Handler uses inconsistent stack frames for saving and restoring AO for Cortex-M0(+)"
@@ -367,7 +418,7 @@ This specific problem observed in QSpy turned out to be caused by a bug in the G
 This release no longer contains the directory `qpc/source`, which was scheduled to be phased out in QP5. In QP6 the source code is found only in the `qpc/src` directory.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_9_9 Version 5.9.9, 2017-09-29
 This release implements the feature request [#132 "Extend the QXK mutex to support also simple operation without the priority-ceiling protocol"](https://sourceforge.net/p/qpc/feature-requests/132/).
 
@@ -382,7 +433,7 @@ Specifically, the ::QXMutex class has been extended as follows:
 - when initialized with `ceiling>0`, ::QXMutex WILL use the priority-ceiling protocol, as before. It will require that the ceiling priority be unique and not used by any other thread or mutex. In other words, the previous functionality remains unchanged.
 
 
------------------------------------------------------------------------------
+
 @section qpc_5_9_8 Version 5.9.8, 2017-09-15
 This release fixes the QXK kernel [bug#182 " Inconsistent QXThread_post_() behavior with respect to the 'margin' parameter"](https://sourceforge.net/p/qpc/bugs/182/).
 
@@ -405,7 +456,7 @@ Modifed ARM Cortex-M examples with the GNU-ARM toolset to be consistent with QP/
 @endverbatim
 
 
------------------------------------------------------------------------------
+
 @section qpc_5_9_7 Version 5.9.7, 2017-08-18
 The main focus of this release are new requested features for the @ref qxk "dual-mode QXK kernel":
 - <a href="https://sourceforge.net/p/qpc/feature-requests/129" class="extern">feature#129 "Allow blocking while holding a mutex in QXK"</a>; and
@@ -436,7 +487,7 @@ Finally, this release fixes the following bug:
 - <a href="https://sourceforge.net/p/qpc/bugs" class="extern">bug#181 "Win32-qv port and QF_run "idle" time"</a>
 
 
------------------------------------------------------------------------------
+
 @section qpc_5_9_6 Version 5.9.6, 2017-08-04
 The main focus of this release are improvements to the "dual-mode" QXK kernel. Specifically, this release implements the <a href="https://sourceforge.net/p/qpc/feature-requests/128/" class="extern">featrue request #128 "QP Semaphore Max Value Setting"</a> for QXK. This feature changes the QXK function QXSemaphore_init(), which now takes additional parameter `count`. This parameter specifies the maximum allowed count for the semaphore (e.g., count of 1 makes the semaphore a binary-semaphore).
 
@@ -452,7 +503,7 @@ Also, this release adds protection in the IRQ priorities initialization in QK/QV
 Finally, this release consistently changes all example projects (for all toolchains) to use the **src/** directory for QP/C source code, instead of the **source/** directory. The source/ directory is now truly obsolete, but is still provided in this release for backwards compatibility with user projects.
 
 
------------------------------------------------------------------------------
+
 @section qpc_5_9_5 Version 5.9.5, 2017-07-20
 This release changes the macro QXTHREAD_START() in the QXK kernel so that
 it can be used only with ::QXThread pointers and not ::QActive pointers.
@@ -474,13 +525,13 @@ to `startup_stm32f746xx.c/s`. The change has been also made in the example
 projects for the STM32F7-Discovery board (for ARM-KEIL and GNU-ARM toolsets).
 
 
------------------------------------------------------------------------------
+
 @section qpc_5_9_4 Version 5.9.4, 2017-07-07
 This release adds Thread-Local Storage (TLS) feature for the dual-mode
 QXK kernel (see @ref qxk_tls).
 
 
------------------------------------------------------------------------------
+
 @section qpc_5_9_3 Version 5.9.3, 2017-06-19
 This release implements the feature request
 <a href="https://sourceforge.net/p/qpc/feature-requests/126/" target="_blank" class="extern">#126</a> "Allow non-asserting
@@ -489,7 +540,7 @@ Q_NEW_X() or QACTIVE_POST_X() with the margin argument of zero will no
 longer assert if the allocation/posting fails.
 
 
------------------------------------------------------------------------------
+
 @section qpc_5_9_2 Version 5.9.2, 2017-06-05
 This release adapts the Makefiles for GNU-ARM to the new location of the
 GNU-ARM toolset, which is now included in the QTools Collection (v 5.9.1)
@@ -517,7 +568,7 @@ QXK kernels and ARM-Keil, GNU-ARM, and IAR-ARM toolsets. The demos support
 bi-directional QP/Spy.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_9_1 Version 5.9.1, 2017-05-26
 This release fixes the following bug:
 - <a href="https://sourceforge.net/p/qpc/bugs/169/" target="_blank" class="extern">bug#169 "Submachine-state eXit Point does not work correctly"</a>
@@ -553,7 +604,7 @@ phased out in the future QP/C releases. Please use the new source code
 structure provided in the `qpc/src` directory.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_9_0 Version 5.9.0, 2017-05-19
 The main purpose of this milestone QP/C release is to provide support for the powerful **Unit Testing Framework** called
 <a href="https://www.state-machine.com/qtools/qutest.html" target="_blank" class="extern"><strong>QUTest&trade;</strong> (pronounced *cutest*)</a>.
@@ -605,7 +656,7 @@ Finally, this release fixes the following bugs:
 - bug#162 "QF critical sections require modification for M7 core"
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_8_2 Version 5.8.2, 2017-02-08
 This release adds examples for the ARM Cortex-<strong>M7</strong> CPU. Specifically,
 the release contains the standard @ref dpp "Dining Philosophers Problem (DPP)"
@@ -626,7 +677,7 @@ Finally, this release fixes the following bugs:
   compilation
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_8_1 Version 5.8.1, 2016-12-16
 This release is in response to a recent finding that many QP users of the
 ports to ARM Cortex-M3/M4 forget to explicitly set their interrupt priorities,
@@ -664,7 +715,7 @@ Changes in detail:
  standard distribution.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_8_0 Version 5.8.0, 2016-11-30
 The main purpose of this milestone QP/C release is to finally provide
 the baseline framework fully compatible with the upcoming QM 4.0.0.
@@ -711,7 +762,7 @@ Finally, the complete list of bugs fixed in this release is as follows:
 - <a href="https://sourceforge.net/p/qpc/bugs/124/">bug#124</a> "Windows port now cause memory leakage"
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_7_4 Version 5.7.4, 2016-11-04
 This release fixes the following bugs:
 - bug#145 QF_PUBLISH() leaks events that have no subscribers
@@ -719,7 +770,7 @@ This release fixes the following bugs:
 - bug#143 QACTIVE_POST_LIFO() on initial transition asserts on QXK
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_7_3 Version 5.7.3, 2016-10-07
 This release adds QP ports to the TI-RTOS kernel (SYS/BIOS) with TI-CCS
 and IAR EWARM toolsets. Examples are provided for the EK-TM4C123GXL
@@ -736,7 +787,7 @@ Also, this release fixes the following bugs:
            returning to task).
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_7_2 Version 5.7.2, 2016-09-30
 This is the first production release of the "dual-mode" QXK kernel.
 "Dual-mode" QXK means that QXK supports both basic-threads (BC1 class
@@ -769,7 +820,7 @@ Finally, this release improves the implementation of scheduler locking
 in publish-subscribe event delivery.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_7_0 Version 5.7.0, 2016-08-31
 This release adds support for sub-machines and sub-machine states for reusing pieces of state machines (an advanced UML concept) to the QMsm-state machine implementation strategy. This feature is to match the upcoming QM 4.0.0.
 
@@ -790,7 +841,7 @@ Changes in detail:
 5. Modified the ARM Cortex-M QXK ports (ARM-KEIL, GNU, IAR, and TI)
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_6_5 Version 5.6.5, 2016-06-06
 This release adds support for the new board: EFM32-SLSTK3401A (Pearl Gecko Starter Kit from Silicon Labs). This board replaces the Stellaris EK-LM3S811 board, which has been discontinued. (The Stellaris EK-LM3S811 board had been used in the "Fly 'n' Shoot" game example accompanying the PSiCC2 book).
 
@@ -807,17 +858,17 @@ This release fixes the following bugs:
 - bug#131 (QF_newRef_ increments reference counter without QF_CRIT_ENTRY_()).
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_6_4 Version 5.6.4, 2016-04-25
 This release fixes a serious Bug #128 (https://sourceforge.net/p/qpc/bugs/128 ) in the QK port to ARM Cortex-M introduced back in QP 5.6.1
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_6_3 Version 5.6.3, 2016-04-12
 This release fixes a serious Bug #126 (https://sourceforge.net/p/qpc/bugs/126 ) in the QK preemptive scheduler introduced in QP 5.6.2.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_6_2 Version 5.6.2, 2016-03-31
 The main purpose of this release is to introduce _atomic event multicasting_, meaning that event publishing to all subscribers is now protected from preemption. This eliminates potential for re-ordering of events under preemptive kernels (such as QK, QXK, or 3rd-party RTOSes), when events are published from low-priority AOs and some higher-priority subscribers can preempt multicasting and post/publish events of their own (before the original event is posted to all subscribers).
 
@@ -864,7 +915,7 @@ Changes in detail:
 16. Implemented Feature Request #110 as well as the duplicate Request #62 by adding function QActive_flushDeferred()
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_6_1 Version 5.6.1, 2016-01-01
 This release is the first official (production) release of the new blocking @ref qxk "QXK" kernel.
 
@@ -875,7 +926,7 @@ Changes in detail:
 2. Corrected example projects for the ARM Cortex-M with TI/CCS toolset
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_6_0 Version 5.6.0-beta, 2015-12-24
 
 The main purpose of this *beta* release is to introduce a new component of the QP/C framework called @ref qxk "QXK" ("eXtended Quantum Kernel"). QXK is a small, preemptive, priority-based, **blocking** kernel that provides most features you might expect of a traditional blocking RTOS kernel.
@@ -919,7 +970,7 @@ Changes in detail:
 12. Updated CMSIS from 4.2 to 4.3 in qpc/3rd-party/CMSIS
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_5_1 Version 5.5.1, 2015-10-05
 The main focus of this release is to improve the AAPCS compliance of the
 ARM Cortex-M port to the QK preemptive kernel. Specifically, the PendSV
@@ -941,7 +992,7 @@ the file `qpc/examples/arm-cm/dpp_ek-tm4c123gxl/qv/bsp.c` did not
 re-enable interrupts in the QV_onIdle() callback.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_5_0 Version 5.5.0, 2015-09-04
 
 The main purpose of this release is the extension of the QS software tracing system to bi-directional communication with embedded Targets. Specifically, the QS-RX (receive channel for QS) has been added with the following capabilities:
@@ -1007,7 +1058,7 @@ Q_onAssert() for each specific project.
 (SYSCTL->RCGCGPIO rather than the deprecated SYSCTL->RCGC2).
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_4_2 Version 5.4.2, 2015-06-04
 
 The main focus of this release is to improve the support for "dual targeting" of QP/C applications, which is developing of deeply embedded code as much as possible on the desktop OS, such as Windows. Experience shows that "dual targeting" dramatically improves productivity of embedded systems developers, perhaps more than any other technique.
@@ -1037,7 +1088,7 @@ Changes in detail:
 9. Improved the PC-Lint support for checking the application-level code located in in `examples/arm-cm/dpp_ek-tm4c123gxl/lint`
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_4_1 Version 5.4.1, 2015-05-14
 
 This release changes the active object class hierarchy so that ::QMActive is now more fundamental and is the base class for ::QActive. (Previously ::QMActive was a subclass of ::QActive). The newly added documentation section about @ref classes "QP/C Design" shows the current class hierarchy.
@@ -1062,7 +1113,7 @@ Also, this release brings several cosmetic improvements:
 7. Several README files have been updated.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_4_0 Version 5.4.0, 2015-04-26
 
 This release changes the basic philosophy of distributing the QP frameworks by **combining** the "QP/C Baseline Code" with all currently available "QP/C Development Kits" (QDK/C). This is done to eliminate any potential mistakes in downloading and installing separate pieces of code.
@@ -1122,7 +1173,7 @@ Changes in detail:
 15. Updated the @ref lwip_ek-lm3s6965 "lwIP-QP example for EK-LM3S6965 board".
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_3_1 Version 5.3.1, 2014-09-19
 
 @note QP/C 5.3.1 remains backwards-compatible with all QP/C ports and
@@ -1144,7 +1195,7 @@ Additionally, this release improves the uC/OS-II port in that it is now generic 
 Finally, this release improves the "QP/C Reference Manual" generated by Doxygen and available both inside the QP/C baseline distribution (qpc.chm file) and online at: https://www.state-machine.com/qpc
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_3_0 Version 5.3.0, 2014-03-31
 
 This release adds the "transition to history" (deep history) feature to
@@ -1245,7 +1296,7 @@ its subclasses like QMActive) "is in" the given state.
 in the QP/C library builds.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_2_1 Version 5.2.1, 2014-01-06
 
 This release fixes two bugs.
@@ -1262,7 +1313,7 @@ configurations: Debug, Release, and Spy.
 trace buffer.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_2_0 Version 5.2.0, 2013-12-26
 
 This release matches the new QM 3.0.0, for which it provides model
@@ -1355,7 +1406,7 @@ in the Embedded.com article "Are We Shooting Ourselves in the Foot with
 Stack Overflow?".
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_1_1 Version 5.1.1, 2013-10-10
 
 This release fixes reversal of logic in the QF_noTimeEvtsActiveX()
@@ -1391,7 +1442,7 @@ qpc/examples/arm-cm/qk/iar/dpp-qk_ek-lm3s811-lint). Updated lint files
 for the latest PC-Lint
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_1_0 Version 5.1.0, 2013-09-23
 
 This release brings significant improvements to the QS software tracing
@@ -1492,7 +1543,7 @@ ARM Cortex-M Interrupt Priorities in QP 5.1" available at:
 https://www.state-machine.com/doc/AN_ARM-Cortex-M_Interrupt-Priorities.pdf
 
 
-------------------------------------------------------------------------------
+
 @section qpc_5_0_0 Version 5.0.0, 2013-09-10
 
 @note QP/C 5.0.0 remains <b>backwards-compatible</b> with the existing QP/C 4.x
@@ -1663,7 +1714,7 @@ Cortex-M (with the GNU, IAR, and Keil toolsets).
     - added search box and tree-view panel to the HTML documentation
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_5_04 Version 4.5.04, Feb 08, 2013
 
 The main purpose of this release is adding support for the ARM Cortex-M4F
@@ -1703,7 +1754,7 @@ several typos.
 moved them to the separate QDK/C-Qt.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_5_03 Version 4.5.03, Nov 27, 2012
 
 This release changes the directory structure of QP ports to various
@@ -1713,7 +1764,7 @@ level up to ports/. Also, the OS examples are moved from the
 examples/80x86/ directory one level up to examples/.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_5_02 Version 4.5.02, Aug 04, 2012
 
 The main purpose of this release is better, more comprehensive
@@ -1804,7 +1855,7 @@ names for user-defined trace records
 when the target resets. This allows QSPY to reset its internal state.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_5_01 Version 4.5.01, Jun 14, 2012
 
 The main purpose of this minor release is providing improved
@@ -1854,7 +1905,7 @@ slot function, but instead to allow defining this slot function in
 the BSP of the application.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_5_00 Version 4.5.00, May 29, 2012
 
 The main pupose of this relase is to improve host-based development of QP
@@ -1933,7 +1984,7 @@ applications (DPP and PELICAN crossing).
 P-threads, including QP ports and examples for Linux and Mac OS X.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_4_01 Version 4.4.01, Mar 23, 2012
 
 The relase fixes a bug in Q-SPY software tracing, which caused the
@@ -1946,7 +1997,7 @@ a few cosmetic changes, which the Microchip C18 compiler didn't like.
    qeq_get.c, qeq_init.c, and qa_get_.c.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_4_00 Version 4.4.00, Jan 30, 2012
 
 The main pupose of this relase is MISRA-C:2004 compliance, strong-type
@@ -2007,7 +2058,7 @@ qpc/doc/, with the following Application notes:
 "QP and ARM Cortex-M, and QP and Windows",
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_3_00 Version 4.3.00, Nov 01, 2011
 
 1. This release changes the names of critical section macros and
@@ -2040,7 +2091,7 @@ latest IAR EWARM version 6.30.
 latest Sourcery CodeBench 2011.07-60.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_2_04 Version 4.2.04, Sep 24, 2011
 
 The main pupose of this relase is to provide a bug fix for the QK port
@@ -2057,7 +2108,7 @@ implemented in the qk_port.s file and consists of clearing the
 PENDSVSET bit programmatically inside PendSV_Handler.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_2_02 Version 4.2.02, Sep 08, 2011
 
 1. The main pupose of this relase is to repackage the default QP/C
@@ -2072,7 +2123,7 @@ distinguish libraries generated by different GNU-toolchains (such
 as CodeRed, Attolic, DevKit ARM, etc.)
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_2_01 Version 4.2.01, Aug 13, 2011
 
 1. Modified file qassert.h to add assertion macros #Q_ASSERT_ID,
@@ -2083,7 +2134,7 @@ volatility of line numbers for indentifying assertions.
 2. Added QP port and examples for Mac OS X on 80x86.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_2_00 Version 4.2.00, Jul 14, 2011
 
 The goal of this milestone release is to extend the number of event
@@ -2155,7 +2206,7 @@ framework.
 latest IAR EWARM 6.20.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_1_07 Version 4.1.07, Feb 28, 2011
 
 The goal of this release is to improve the ease of experimenting with
@@ -2196,7 +2247,7 @@ on 64-bit targets (such as 64-bit Linux).
 latest Sourcery G++ 2011.02-2.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_1_06 Version 4.1.06, Jan 07, 2011
 
 1. Made cosmetic improvements to the example QM models of the
@@ -2212,7 +2263,7 @@ IAR EWARM version 6.10.
 latest Sourcery G++ 2010.09-66.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_1_05 Version 4.1.05, Nov 01, 2010
 
 This release is adds examples for the QM (QP Modeler) graphical modeling
@@ -2236,7 +2287,7 @@ Additionally, the QP/C baseline code has been slighlty modified for
 better conformance to the MISRA C 2004 rules and the latest PC-Lint 9.x.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_1_04 Version 4.1.04, Mar 16, 2010
 
 This release is adds compatibility of all examples for DOS with the DOSBox
@@ -2255,7 +2306,7 @@ improvement extends the CMSIS from Sandstorm to Fury, DustDevil, and Tempest
 Stellaris families.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_1_03 Version 4.1.03, Jan 21, 2010
 
 This release is concerned with the ARM Cortex ports and examples.
@@ -2284,7 +2335,7 @@ any way, so the release has NO IMPACT on the QP/C applications except for the
 ARM Cortex ports and applications.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_1_02 Version 4.1.02, Jan 14, 2010
 
 The purpose of this minor maintenance release is the change in the directory
@@ -2299,7 +2350,7 @@ release has NO IMPACT on the QP/C applications except for the ARM Cortex
 ports and applications.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_1_01 Version 4.1.01, Nov 05, 2009
 
 The main purpose of this release is to replace the Turbo C++ 1.01 toolset
@@ -2320,7 +2371,7 @@ state machine classes with QP 4.x. The SLS example located in
 new State-Local Storage state design pattern.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_1_00 Version 4.1.00, Oct 09, 2009
 
 The release brings a number of improvements to QP/C and updates the QP/C ARM
@@ -2367,7 +2418,7 @@ scheduler and two contex-switches if the ready-set is empty.
 - in the game example moved setting up the QS filters from main.c to bsp.c.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_0_04 Version 4.0.04, Apr 09, 2009
 
 The maintenance release provides a fix for the compile-time assertions,
@@ -2383,7 +2434,7 @@ The main changes in QP v4.0.04 with respect to earlier version are as follows:
 a negative array dimension when the asserted condition is not TRUE.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_0_03 Version 4.0.03, Dec 27, 2008
 
 The main purpose of this release is to fix a bug in the QK preemptive kernel,
@@ -2419,7 +2470,7 @@ when the macro QK_NO_MUTEX is not defined.
 when the macro QK_NO_MUTEX is not defined.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_0_02 Version 4.0.02, Nov 15, 2008
 
 This maintenance release does not change the QP/C API in any way, so the
@@ -2434,7 +2485,7 @@ the PC-lint warining about using the comma-operator (MISRA rule 42).
 HIT_WALL was not declared static.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_0_01 Version 4.0.01, June 09, 2008
 
 This maintenace release is made to allow using QS software tracing with
@@ -2453,7 +2504,7 @@ as static to save stack space, because QF_run() never returns and is not
 reentrant.
 
 
-------------------------------------------------------------------------------
+
 @section qpc_4_0_00 Version 4.0.00, Apr 07, 2008
 
 This milestone release is made for the book /ref PSiCC2. The book describes in
@@ -2494,17 +2545,17 @@ processor with custom event processors, if you wish do so.
 - the data type QSTATE is now deprecated. Please use QState.
 - the "protected" in C don't no longer have the trailing underscore. For
 example, QHsm_ctor_() is replaced with #QHsm_ctor(), etc.
-- the #QF_FSM_ACTIVE macro is now deprecated. Instead, you have the family of
-macros #QF_ACTIVE_SUPER_, #QF_ACTIVE_CTOR_, #QF_ACTIVE_INIT_,
-#QF_ACTIVE_DISPATCH_, #QF_ACTIVE_STATE_, which allow replacing the base class
+- the QF_FSM_ACTIVE macro is now deprecated. Instead, you have the family of
+macros QF_ACTIVE_SUPER_, QF_ACTIVE_CTOR_, QF_ACTIVE_INIT_,
+QF_ACTIVE_DISPATCH_, QF_ACTIVE_STATE_, which allow replacing the base class
 for active objects in QF. By default, these macros are defined to use the QHsm
 class from the QEP hierarchical event processor, but you can replace the event
 processor, if you wish.
-- the internal macro QACTIVE_OSOBJECT_WAIT_() is now #QACTIVE_EQUEUE_WAIT_().
+- the internal macro QACTIVE_OSOBJECT_WAIT_() is now QACTIVE_EQUEUE_WAIT_().
 - the internal macro QACTIVE_OSOBJECT_SIGNAL_() is now
-#QACTIVE_EQUEUE_SIGNAL_().
+QACTIVE_EQUEUE_SIGNAL_().
 - the internal macro QACTIVE_OSOBJECT_ONIDLE_() is now
-#QACTIVE_EQUEUE_ONEMPTY_().
+QACTIVE_EQUEUE_ONEMPTY_().
 - the data mebers QActive.osObject and QActive.thread are now present only if
 the macros #QF_OS_OBJECT_TYPE and #QF_THREAD_TYPE are defined.
 - the QPSet class has been renamed to QPSet64.
@@ -2560,4 +2611,4 @@ P-Thread mutex.
 updated to the latest QP API changes.
 - all examples that use QF now contain the QS software tracing support.
 
-*/can be now used as test-doubles
+*/

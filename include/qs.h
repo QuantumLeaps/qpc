@@ -4,8 +4,8 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-04
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -77,16 +77,16 @@ enum QSpyRecords {
     /* [10] Active Object (AO) records */
     QS_QF_ACTIVE_DEFER,   /*!< AO deferred an event */
     QS_QF_ACTIVE_RECALL,  /*!< AO recalled an event */
-    QS_QF_ACTIVE_SUBSCRIBE, /*!< an AO subscribed to an event */
+    QS_QF_ACTIVE_SUBSCRIBE,   /*!< an AO subscribed to an event */
     QS_QF_ACTIVE_UNSUBSCRIBE, /*!< an AO unsubscribed to an event */
-    QS_QF_ACTIVE_POST_FIFO, /*!< an event was posted (FIFO) directly to AO */
+    QS_QF_ACTIVE_POST,      /*!< an event was posted (FIFO) directly to AO */
     QS_QF_ACTIVE_POST_LIFO, /*!< an event was posted (LIFO) directly to AO */
     QS_QF_ACTIVE_GET,     /*!< AO got an event and its queue is not empty */
     QS_QF_ACTIVE_GET_LAST,/*!< AO got an event and its queue is empty */
     QS_QF_ACTIVE_RECALL_ATTEMPT, /*!< AO attempted to recall an event */
 
     /* [19] Event Queue (EQ) records */
-    QS_QF_EQUEUE_POST_FIFO, /*!< an event was posted (FIFO) to a raw queue */
+    QS_QF_EQUEUE_POST,      /*!< an event was posted (FIFO) to a raw queue */
     QS_QF_EQUEUE_POST_LIFO, /*!< an event was posted (LIFO) to a raw queue */
     QS_QF_EQUEUE_GET,     /*!< get an event and queue still not empty */
     QS_QF_EQUEUE_GET_LAST,/*!< get the last event from the queue */
@@ -555,7 +555,7 @@ QSTimeCtr QS_onGetTime(void);
 * The time event filter affects the following QS records:
 * ::QS_QF_TIMEEVT_ARM, ::QS_QF_TIMEEVT_AUTO_DISARM,
 * ::QS_QF_TIMEEVT_DISARM_ATTEMPT, ::QS_QF_TIMEEVT_DISARM,
-* ::QS_QF_TIMEEVT_REARM, ::QS_QF_TIMEEVT_POST, and ::QS_QF_TIMEEVT_PUBLISH.
+* ::QS_QF_TIMEEVT_REARM and ::QS_QF_TIMEEVT_POST.
 *
 * @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
@@ -577,6 +577,73 @@ QSTimeCtr QS_onGetTime(void);
 * @sa Example of using QS filters in #QS_FILTER_ON documentation
 */
 #define QS_FILTER_AP_OBJ(obj_)  (QS_priv_.locFilter[AP_OBJ] = (obj_))
+
+
+/****************************************************************************/
+/* Facilities for QS ciritical section */
+
+/* QS-specific critical section */
+#ifdef QS_CRIT_ENTRY /* separate QS critical section defined? */
+
+#ifndef QS_CRIT_STAT_TYPE
+    #define QS_CRIT_STAT_
+    #define QS_CRIT_ENTRY_()    QS_CRIT_ENTRY(dummy)
+    #define QS_CRIT_EXIT_()     QS_CRIT_EXIT(dummy); QS_REC_DONE()
+#else
+    #define QS_CRIT_STAT_       QS_CRIT_STAT_TYPE critStat_;
+    #define QS_CRIT_ENTRY_()    QS_CRIT_ENTRY(critStat_)
+    #define QS_CRIT_EXIT_()     QS_CRIT_EXIT(critStat_); QS_REC_DONE()
+#endif /* QS_CRIT_STAT_TYPE */
+
+#else /* separate QS critical section not defined--use the QF definition */
+
+#ifndef QF_CRIT_STAT_TYPE
+    /*! This is an internal macro for defining the critical section
+    * status type. */
+    /**
+    * @description
+    * The purpose of this macro is to enable writing the same code for the
+    * case when critical section status type is defined and when it is not.
+    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
+    * provides the definition of the critical section status variable.
+    * Otherwise this macro is empty.
+    * @sa #QF_CRIT_STAT_TYPE
+    */
+    #define QS_CRIT_STAT_
+
+    /*! This is an internal macro for entering a critical section. */
+    /**
+    * @description
+    * The purpose of this macro is to enable writing the same code for the
+    * case when critical section status type is defined and when it is not.
+    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
+    * invokes #QF_CRIT_ENTRY passing the key variable as the parameter.
+    * Otherwise #QF_CRIT_ENTRY is invoked with a dummy parameter.
+    * @sa #QF_CRIT_ENTRY
+    */
+    #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(dummy)
+
+    /*! This is an internal macro for exiting a critical section. */
+    /**
+    * @description
+    * The purpose of this macro is to enable writing the same code for the
+    * case when critical section status type is defined and when it is not.
+    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
+    * invokes #QF_CRIT_EXIT passing the key variable as the parameter.
+    * Otherwise #QF_CRIT_EXIT is invoked with a dummy parameter.
+    * @sa #QF_CRIT_EXIT
+    */
+    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(dummy); QS_REC_DONE()
+
+#elif (!defined QS_CRIT_STAT_)
+
+    #define QS_CRIT_STAT_       QF_CRIT_STAT_TYPE critStat_;
+    #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(critStat_)
+    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_); QS_REC_DONE()
+
+#endif /* simple unconditional interrupt disabling used */
+
+#endif /* separate QS critical section not defined */
 
 
 /****************************************************************************/
@@ -602,20 +669,6 @@ QSTimeCtr QS_onGetTime(void);
     #define QS_REC_DONE() ((void)0)
 #endif /* QS_REC_DONE */
 
-/* QS-specific critical section */
-#ifdef QS_CRIT_ENTRY /* separate QS critical section defined? */
-
-#ifndef QS_CRIT_STAT_TYPE
-    #define QS_CRIT_STAT_
-    #define QS_CRIT_ENTRY_()    QS_CRIT_ENTRY(dummy)
-    #define QS_CRIT_EXIT_()     QS_CRIT_EXIT(dummy); QS_REC_DONE()
-#else
-    #define QS_CRIT_STAT_       QS_CRIT_STAT_TYPE critStat_;
-    #define QS_CRIT_ENTRY_()    QS_CRIT_ENTRY(critStat_)
-    #define QS_CRIT_EXIT_()     QS_CRIT_EXIT(critStat_); QS_REC_DONE()
-#endif /* QS_CRIT_STAT_TYPE */
-
-#else /* separate QS critical section not defined--use the QF definition */
 
 /*! Begin a user QS record with entering critical section. */
 /**
@@ -776,56 +829,6 @@ enum {
         QS_obj_raw_(obj_)
 
 #endif
-
-
-/****************************************************************************/
-/* Facilities for QS ciritical section */
-
-#ifndef QF_CRIT_STAT_TYPE
-    /*! This is an internal macro for defining the critical section
-    * status type. */
-    /**
-    * @description
-    * The purpose of this macro is to enable writing the same code for the
-    * case when critical section status type is defined and when it is not.
-    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
-    * provides the definition of the critical section status variable.
-    * Otherwise this macro is empty.
-    * @sa #QF_CRIT_STAT_TYPE
-    */
-    #define QS_CRIT_STAT_
-
-    /*! This is an internal macro for entering a critical section. */
-    /**
-    * @description
-    * The purpose of this macro is to enable writing the same code for the
-    * case when critical section status type is defined and when it is not.
-    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
-    * invokes #QF_CRIT_ENTRY passing the key variable as the parameter.
-    * Otherwise #QF_CRIT_ENTRY is invoked with a dummy parameter.
-    * @sa #QF_CRIT_ENTRY
-    */
-    #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(dummy)
-
-    /*! This is an internal macro for exiting a critical section. */
-    /**
-    * @description
-    * The purpose of this macro is to enable writing the same code for the
-    * case when critical section status type is defined and when it is not.
-    * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
-    * invokes #QF_CRIT_EXIT passing the key variable as the parameter.
-    * Otherwise #QF_CRIT_EXIT is invoked with a dummy parameter.
-    * @sa #QF_CRIT_EXIT
-    */
-    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(dummy); QS_REC_DONE()
-
-#else  /* simple unconditional interrupt disabling used */
-    #define QS_CRIT_STAT_       QF_CRIT_STAT_TYPE critStat_;
-    #define QS_CRIT_ENTRY_()    QF_CRIT_ENTRY(critStat_)
-    #define QS_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_); QS_REC_DONE()
-#endif /* simple unconditional interrupt disabling used */
-
-#endif /* separate QS critical section not defined */
 
 
 /****************************************************************************/

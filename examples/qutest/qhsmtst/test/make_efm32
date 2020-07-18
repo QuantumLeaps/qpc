@@ -169,7 +169,7 @@ endif
 CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
 CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
 AS    := $(GNU_ARM)/bin/arm-none-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-none-eabi-g++
+LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
 #-----------------------------------------------------------------------------

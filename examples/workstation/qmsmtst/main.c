@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
                "QP: %s.\nPress ESC to quit...\n",
                __DATE__, __TIME__, QP_VERSION_STR);
 
-        QHSM_INIT(the_msm, (QEvt *)0); /* the top-most initial tran. */
+        QHSM_INIT(the_sm, (QEvt *)0); /* the top-most initial tran. */
 
         for (;;) { /* event loop */
             QEvt e;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
                 e.sig = IGNORE_SIG;
             }
 
-            QHSM_DISPATCH(the_msm, &e); /* dispatch the event */
+            QHSM_DISPATCH(the_sm, &e); /* dispatch the event */
         }
     }
     else { /* batch version */
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
         FPRINTF_S(l_outFile, "QMsmTst example, QP %s\n",
                 QP_VERSION_STR);
 
-        QHSM_INIT(the_msm, (QEvt *)0); /* the top-most initial tran. */
+        QHSM_INIT(the_sm, (QEvt *)0); /* the top-most initial tran. */
 
         /* testing of dynamic transitions... */
         dispatch(A_SIG);
@@ -155,7 +155,7 @@ static void dispatch(QSignal sig) {
     Q_REQUIRE((A_SIG <= sig) && (sig <= I_SIG));
     e.sig = sig;
     FPRINTF_S(l_outFile, "\n%c:", 'A' + sig - A_SIG);
-    QHSM_DISPATCH(the_msm, &e); /* dispatch the event */
+    QHSM_DISPATCH(the_sm, &e); /* dispatch the event */
 }
 
 /*--------------------------------------------------------------------------*/

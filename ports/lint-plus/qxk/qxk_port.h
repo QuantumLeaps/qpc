@@ -4,14 +4,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-18
+* Last updated for version 6.8.2
+* Last updated on  2020-07-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -44,6 +44,13 @@
 
 /*! determination if the code executes in the ISR context
 * (used internally in QXK only)
+*/
+/*! determination if the code executes in the ISR context */
+/**
+* @note This is just an example of #QXK_ISR_CONTEXT_ (for ARM Cortex-M).
+* You need to define the macro appropriately for the CPU/compiler you're
+* using. Also, some QK ports will not define this macro, but instead might
+* test the interrupt nesting up-down counter (QXK_intNest_).
 */
 #define QXK_ISR_CONTEXT_() (getSR() != 0U)
 
@@ -88,10 +95,10 @@
     QF_INT_ENABLE();          \
 } while (false)
 
-#include "qxk.h" /* QXK platform-independent public interface */
-
 uint32_t getSR(void);
 void trigSWI(void);
+
+#include "qxk.h" /* QXK platform-independent public interface */
 
 #endif /* QXK_PORT_H */
 

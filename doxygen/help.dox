@@ -6,12 +6,12 @@
 ![Online Help Features](help_using.png)
 
 
-<div class="separate"></div>
+
 @section help_seq Reading Online Help Sequentially
 You can move from topic to topic by means of the <span class="strong underline">Next:</span> link at the bottom of each page.
 
 
-<div class="separate"></div>
+
 @section help_random Quickly Locating a Topic of Interest
 You can use the following elements:
 
@@ -22,7 +22,7 @@ You can use the following elements:
 - the **Search** box in the upper-right corner of the browser window
 
 
-<div class="separate"></div>
+
 @section help_tree_view Using the Tree View
 The *Tree View* pane on the left-hand side of the browser displays the hierarchical Table of Contents, which can be either **linked-to** or **unlinked-from** the *Current Topic* displayed on the right-hand side. You can toggle between the two modes by pressing the **Link/Unlink Current Topic** icon at the top of the *Tree View* pane.
 
