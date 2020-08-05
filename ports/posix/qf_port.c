@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-06-23
+* Last updated for version 6.8.4
+* Last updated on  2020-08-05
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -220,6 +220,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     pthread_t thread;
     pthread_attr_t attr;
     struct sched_param param;
+    int err;
 
     /* p-threads allocate stack internally */
     Q_REQUIRE_ID(600, stkSto == (void *)0);
@@ -233,36 +234,42 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
+    pthread_attr_init(&attr);
+
     /* SCHED_FIFO corresponds to real-time preemptive priority-based scheduler
     * NOTE: This scheduling policy requires the superuser privileges
     */
-    pthread_attr_init(&attr);
-    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+    pthread_attr_setschedpolicy (&attr, SCHED_FIFO);
+    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+    pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_DETACHED);
 
-    /* see NOTE04 */
+    /* priority of the p-thread, see NOTE04 */
     param.sched_priority = prio
                            + (sched_get_priority_max(SCHED_FIFO)
-                              - QF_MAX_ACTIVE - 3);
-
+                              - QF_MAX_ACTIVE - 3U);
     pthread_attr_setschedparam(&attr, &param);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
     pthread_attr_setstacksize(&attr, (stkSize < PTHREAD_STACK_MIN
                                       ? PTHREAD_STACK_MIN
                                       : stkSize));
 
-    if (pthread_create(&thread, &attr, &thread_routine, me) != 0) {
-        /* Creating the p-thread with the SCHED_FIFO policy failed. Most
-        * probably this application has no superuser privileges, so we just
-        * fall back to the default SCHED_OTHER policy and priority 0.
+    err = pthread_create(&thread, &attr, &thread_routine, me);
+    if (err != 0) {
+        /* Creating p-thread with the SCHED_FIFO policy failed. Most likely
+        * this application has no superuser privileges, so we just fall
+        * back to the default SCHED_OTHER policy and priority 0.
         */
         pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
         param.sched_priority = 0;
         pthread_attr_setschedparam(&attr, &param);
-        Q_ALLEGE_ID(601,
-            pthread_create(&thread, &attr, &thread_routine, me) == 0);
+        err = pthread_create(&thread, &attr, &thread_routine, me);
     }
+    Q_ASSERT_ID(610, err == 0); /* AO thread must be created */
+
+    //pthread_attr_getschedparam(&attr, &param);
+    //printf("param.sched_priority==%d\n", param.sched_priority);
+
     pthread_attr_destroy(&attr);
-    me->thread = 1U;
 }
 /*..........................................................................*/
 #ifdef QF_ACTIVE_STOP
@@ -313,12 +320,12 @@ static void sigIntHandler(int dummy) {
 *
 * However, QF limits the number of priority levels to QF_MAX_ACTIVE.
 * Assuming that a QF application will be real-time, this port reserves the
-* three highest Linux priorities for the ISR-like threads (e.g., the ticker,
-* I/O), and the rest highest-priorities for the active objects.
+* three highest p-thread priorities for the ISR-like threads (e.g., I/O),
+* and the rest highest-priorities for the active objects.
 *
 * NOTE05:
 * In some (older) Linux kernels, the POSIX nanosleep() system call might
 * deliver only 2*actual-system-tick granularity. To compensate for this,
-* you would need to reduce (by 2) the constant NANOSLEEP_NSEC_PER_SEC.
+* you would need to reduce the constant NANOSLEEP_NSEC_PER_SEC by factor 2.
 */
 

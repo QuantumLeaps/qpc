@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-06-23
+* Last updated for version 6.8.4
+* Last updated on  2020-08-05
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -113,19 +113,9 @@ void QF_leaveCriticalSection_(void) {
 
 /****************************************************************************/
 int_t QF_run(void) {
-    struct sched_param sparam;
     QF_CRIT_STAT_
 
     QF_onStartup();  /* invoke startup callback */
-
-    /* try to set the priority of the ticker thread, see NOTE01 */
-    sparam.sched_priority = l_tickPrio;
-    if (pthread_setschedparam(pthread_self(), SCHED_FIFO, &sparam) == 0) {
-        /* success, this application has sufficient privileges */
-    }
-    else {
-        /* setting priority failed, probably due to insufficient privieges */
-    }
 
     l_isRunning = true; /* QF is running */
 
@@ -133,20 +123,24 @@ int_t QF_run(void) {
     if ((l_tick.tv_sec != 0) || (l_tick.tv_nsec != 0)) {
         pthread_attr_t attr;
         struct sched_param param;
-        pthread_t idle;
+        pthread_t ticker;
+        int err;
+
+        pthread_attr_init(&attr);
 
         /* SCHED_FIFO corresponds to real-time preemptive priority-based
         * scheduler.
         * NOTE: This scheduling policy requires the superuser priviledges
         */
-        pthread_attr_init(&attr);
-        pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
-        param.sched_priority = sched_get_priority_min(SCHED_FIFO);
+        pthread_attr_setschedpolicy (&attr, SCHED_FIFO);
+        pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+        pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_DETACHED);
 
+        param.sched_priority = l_tickPrio;
         pthread_attr_setschedparam(&attr, &param);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-        if (pthread_create(&idle, &attr, &ticker_thread, 0) != 0) {
+        err = pthread_create(&ticker, &attr, &ticker_thread, 0);
+        if (err != 0) {
             /* Creating the p-thread with the SCHED_FIFO policy failed.
             * Most probably this application has no superuser privileges,
             * so we just fall back to the default SCHED_OTHER policy
@@ -155,10 +149,13 @@ int_t QF_run(void) {
             pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
             param.sched_priority = 0;
             pthread_attr_setschedparam(&attr, &param);
-            if (pthread_create(&idle, &attr, &ticker_thread, 0) == 0) {
-                return false;
-            }
+            err = pthread_create(&ticker, &attr, &ticker_thread, 0);
         }
+        Q_ASSERT_ID(310, err == 0); /* ticker thread must be created */
+
+        //pthread_attr_getschedparam(&attr, &param);
+        //printf("param.sched_priority==%d\n", param.sched_priority);
+
         pthread_attr_destroy(&attr);
     }
 
@@ -352,12 +349,12 @@ static void sigIntHandler(int dummy) {
 *
 * However, QF limits the number of priority levels to QF_MAX_ACTIVE.
 * Assuming that a QF application will be real-time, this port reserves the
-* three highest Linux priorities for the ISR-like threads (e.g., the ticker,
-* I/O), and the rest highest-priorities for the active objects.
+* three highest p-thread priorities for the ISR-like threads (e.g., I/O),
+* and the rest highest-priorities for the active objects.
 *
 * NOTE05:
 * In some (older) Linux kernels, the POSIX nanosleep() system call might
 * deliver only 2*actual-system-tick granularity. To compensate for this,
-* you would need to reduce (by 2) the constant NANOSLEEP_NSEC_PER_SEC.
+* you would need to reduce the constant NANOSLEEP_NSEC_PER_SEC by factor 2.
 */
 
