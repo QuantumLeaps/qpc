@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 6.9.0
+* Last updated on  2020-08-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -929,17 +929,20 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
         case WAIT4_GLB_FILTER_FRAME: {
             QS_rxReportAck_(QS_RX_GLB_FILTER);
 
-            /* never disable the non-maskable records */
-            l_rx.var.gFlt.data[0] |= 0x01U;
-            l_rx.var.gFlt.data[7] |= 0xFCU;
-            l_rx.var.gFlt.data[8] |= 0x3FU;
-
-            /* never enable the last 3 records (0x7D, 0x7E, 0x7F) */
-            l_rx.var.gFlt.data[15] &= 0x1FU;
-
-            for (i = 0U; i < sizeof(QS_priv_.glbFilter); ++i) {
+            /* apply the received filters */
+            for (i = 0U; i < Q_DIM(QS_priv_.glbFilter); ++i) {
                 QS_priv_.glbFilter[i] = l_rx.var.gFlt.data[i];
             }
+            /* leave the "not maskable" filters enabled,
+            * see qs.h, Miscellaneous QS records (not maskable)
+            */
+            QS_priv_.glbFilter[0] |= 0x01U;
+            QS_priv_.glbFilter[7] |= 0xFCU;
+            QS_priv_.glbFilter[8] |= 0x7FU;
+
+            /* never enable the last 3 records (0x7D, 0x7E, 0x7F) */
+            QS_priv_.glbFilter[15] &= 0x1FU;
+
             /* no need to report Done */
             break;
         }
@@ -981,14 +984,9 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
                     QS_U8_PRE_(i);  /* object kind */
                     QS_OBJ_PRE_(ptr);
                     switch (i) {
-                        case SM_OBJ:
-                            QS_FUN_PRE_(((QHsm *)ptr)->state.fun);
-                            break;
-
-#ifdef Q_UTEST
+                        case SM_OBJ: /* intentionally fall through */
                         case AO_OBJ:
-                            QS_EQC_PRE_(((QActive *)ptr)->eQueue.nFree);
-                            QS_EQC_PRE_(((QActive *)ptr)->eQueue.nMin);
+                            QS_FUN_PRE_(((QHsm *)ptr)->state.fun);
                             break;
                         case MP_OBJ:
                             QS_MPC_PRE_(((QMPool *)ptr)->nFree);
@@ -1005,8 +1003,6 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
                             QS_SIG_PRE_(((QTimeEvt *)ptr)->super.sig);
                             QS_U8_PRE_ (((QTimeEvt *)ptr)->super.refCtr_);
                             break;
-#endif /* Q_UTEST */
-
                         default:
                             break;
                     }

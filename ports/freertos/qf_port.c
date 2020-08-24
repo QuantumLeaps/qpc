@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 6.9.0
+* Last updated on  2020-08-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -67,7 +67,14 @@ void QF_init(void) {
 }
 /*..........................................................................*/
 int_t QF_run(void) {
+    QS_CRIT_STAT_
+
     QF_onStartup();  /* the startup callback (configure/enable interrupts) */
+
+    /* produce the QS_QF_RUN trace record */
+    QS_BEGIN_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_END_PRE_()
+
     vTaskStartScheduler(); /* start the FreeRTOS scheduler */
     Q_ERROR_ID(110); /* the FreeRTOS scheduler should never return */
     return 0; /* dummy return to make the compiler happy */

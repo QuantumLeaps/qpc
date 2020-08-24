@@ -5,6 +5,7 @@
 def on_reset():
     expect_pause()
     continue_test()
+    expect_run()
     glb_filter(GRP_ON)
     loc_filter(OBJ_SM_AO, "AO_Table")
     current_obj(OBJ_SM_AO, "AO_Table")

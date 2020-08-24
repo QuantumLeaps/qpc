@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-31
+* Last updated for version 6.9.0
+* Last updated on  2020-08-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -105,6 +105,7 @@ void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
     /* wait with flushing after successfull initialization (see QS_INIT()) */
 }
 
+
 /****************************************************************************/
 /**
 * @description
@@ -121,11 +122,15 @@ void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
 void QS_filterOn_(uint_fast8_t rec) {
     if (rec == (uint_fast8_t)QS_ALL_RECORDS) {
         uint_fast8_t i;
-        for (i = 0U; i < 15U; ++i) {
-            QS_priv_.glbFilter[i] = 0xFFU; /* set all bits */
+        /* set all global filters (partially unrolled loop) */
+        for (i = 0U; i < Q_DIM(QS_priv_.glbFilter); i += 4U) {
+            QS_priv_.glbFilter[i     ] = 0xFFU;
+            QS_priv_.glbFilter[i + 1U] = 0xFFU;
+            QS_priv_.glbFilter[i + 2U] = 0xFFU;
+            QS_priv_.glbFilter[i + 3U] = 0xFFU;
         }
         /* never turn the last 3 records on (0x7D, 0x7E, 0x7F) */
-        QS_priv_.glbFilter[sizeof(QS_priv_.glbFilter) - 1U] = 0x1FU;
+        QS_priv_.glbFilter[15] = 0x1FU;
     }
     else if (rec == (uint_fast8_t)QS_SM_RECORDS) {
         QS_priv_.glbFilter[0] |= 0xFEU;
@@ -152,7 +157,7 @@ void QS_filterOn_(uint_fast8_t rec) {
         QS_priv_.glbFilter[5] |= 0x1FU;
     }
     else if (rec == (uint_fast8_t)QS_TE_RECORDS) {
-        QS_priv_.glbFilter[4] |= 0x7FU;
+        QS_priv_.glbFilter[4] |= 0x3FU;
     }
     else if (rec == (uint_fast8_t)QS_SC_RECORDS) {
         QS_priv_.glbFilter[6] |= 0x7FU;
@@ -162,11 +167,11 @@ void QS_filterOn_(uint_fast8_t rec) {
         QS_priv_.glbFilter[13] |= 0x01U;
     }
     else if (rec == (uint_fast8_t)QS_U1_RECORDS) {
-        QS_priv_.glbFilter[13] |= 0x1EU;
+        QS_priv_.glbFilter[13] |= 0x3EU;
     }
     else if (rec == (uint_fast8_t)QS_U2_RECORDS) {
-        QS_priv_.glbFilter[13] |= 0xE0U;
-        QS_priv_.glbFilter[14] |= 0x03U;
+        QS_priv_.glbFilter[13] |= 0xC0U;
+        QS_priv_.glbFilter[14] |= 0x07U;
     }
     else if (rec == (uint_fast8_t)QS_U3_RECORDS) {
         QS_priv_.glbFilter[14] |= 0xF8U;
@@ -183,7 +188,11 @@ void QS_filterOn_(uint_fast8_t rec) {
     else {
         /* record numbers can't exceed QS_ESC, so they don't need escaping */
         Q_ASSERT_ID(210, rec < QS_ESC);
+
         QS_priv_.glbFilter[rec >> 3] |= (uint8_t)(1U << (rec & 7U));
+
+        /* never turn the last 3 records on (0x7D, 0x7E, 0x7F) */
+        QS_priv_.glbFilter[15] &= 0x1FU;
     }
 }
 
@@ -200,17 +209,22 @@ void QS_filterOn_(uint_fast8_t rec) {
 * inserted into the QS buffer.
 */
 void QS_filterOff_(uint_fast8_t rec) {
-    uint8_t tmp;
+    uint_fast8_t tmp;
 
     if (rec == (uint_fast8_t)QS_ALL_RECORDS) {
-        /* first clear all global filters */
-        for (tmp = 15U; tmp > 0U; --tmp) {
-            QS_priv_.glbFilter[tmp] = 0x00U;
+        /* clear all global filters (partially unrolled loop) */
+        for (tmp = 0U; tmp < Q_DIM(QS_priv_.glbFilter); tmp += 4U) {
+            QS_priv_.glbFilter[tmp     ] = 0x00U;
+            QS_priv_.glbFilter[tmp + 1U] = 0x00U;
+            QS_priv_.glbFilter[tmp + 2U] = 0x00U;
+            QS_priv_.glbFilter[tmp + 3U] = 0x00U;
         }
-        /* next leave the specific filters enabled  */
+        /* leave the "not maskable" filters enabled,
+        * see qs.h, Miscellaneous QS records (not maskable)
+        */
         QS_priv_.glbFilter[0] = 0x01U;
         QS_priv_.glbFilter[7] = 0xFCU;
-        QS_priv_.glbFilter[8] = 0x3FU;
+        QS_priv_.glbFilter[8] = 0x7FU;
     }
     else if (rec == (uint_fast8_t)QS_SM_RECORDS) {
         QS_priv_.glbFilter[0] &= ~(uint8_t)0xFEU;
@@ -237,7 +251,7 @@ void QS_filterOff_(uint_fast8_t rec) {
         QS_priv_.glbFilter[5] &= ~(uint8_t)0x1FU;
     }
     else if (rec == (uint_fast8_t)QS_TE_RECORDS) {
-        QS_priv_.glbFilter[4] &= ~(uint8_t)0x7FU;
+        QS_priv_.glbFilter[4] &= ~(uint8_t)0x3FU;
     }
     else if (rec == (uint_fast8_t)QS_SC_RECORDS) {
         QS_priv_.glbFilter[6] &= ~(uint8_t)0x7FU;
@@ -247,11 +261,11 @@ void QS_filterOff_(uint_fast8_t rec) {
         QS_priv_.glbFilter[13] &= ~(uint8_t)0x01U;
     }
     else if (rec == (uint_fast8_t)QS_U1_RECORDS) {
-        QS_priv_.glbFilter[13] &= ~(uint8_t)0x1EU;
+        QS_priv_.glbFilter[13] &= ~(uint8_t)0x3EU;
     }
     else if (rec == (uint_fast8_t)QS_U2_RECORDS) {
-        QS_priv_.glbFilter[13] &= ~(uint8_t)0xE0U;
-        QS_priv_.glbFilter[14] &= ~(uint8_t)0x03U;
+        QS_priv_.glbFilter[13] &= ~(uint8_t)0xC0U;
+        QS_priv_.glbFilter[14] &= ~(uint8_t)0x07U;
     }
     else if (rec == (uint_fast8_t)QS_U3_RECORDS) {
         QS_priv_.glbFilter[14] &= ~(uint8_t)0xF8U;
@@ -268,9 +282,16 @@ void QS_filterOff_(uint_fast8_t rec) {
     else {
         /* record IDs can't exceed QS_ESC, so they don't need escaping */
         Q_ASSERT_ID(310, rec < (uint_fast8_t)QS_ESC);
-        tmp =  (uint8_t)(1U << (rec & 0x07U));
+        tmp =  ((uint_fast8_t)1U << (rec & 0x07U));
         tmp ^= 0xFFU; /* invert all bits */
-        QS_priv_.glbFilter[rec >> 3] &= tmp;
+        QS_priv_.glbFilter[rec >> 3] &= (uint8_t)tmp;
+
+        /* leave the "not maskable" filters enabled,
+        * see qs.h, Miscellaneous QS records (not maskable)
+        */
+        QS_priv_.glbFilter[0] |= 0x01U;
+        QS_priv_.glbFilter[7] |= 0xFCU;
+        QS_priv_.glbFilter[8] |= 0x7FU;
     }
 }
 
@@ -343,11 +364,18 @@ void QS_target_info_pre_(uint8_t isReset) {
     static uint8_t const ZERO = (uint8_t)'0';
     static uint8_t const * const TIME = (uint8_t const *)&Q_BUILD_TIME[0];
     static uint8_t const * const DATE = (uint8_t const *)&Q_BUILD_DATE[0];
+    static union {
+        uint16_t u16;
+        uint8_t  u8[2];
+    } endian_test;
     uint8_t b;
 
+    endian_test.u16 = 0x0102U;
     QS_beginRec_((uint_fast8_t)QS_TARGET_INFO);
         QS_U8_PRE_(isReset);
-        QS_U16_PRE_(QP_VERSION); /* two-byte version number */
+        QS_U16_PRE_(((endian_test.u8[0] == 0x01U) /* big endian? */
+                    ? (0x8000U | QP_VERSION)
+                    : QP_VERSION)); /* target endianness + version number */
 
         /* send the object sizes... */
         QS_U8_PRE_(Q_SIGNAL_SIZE | (QF_EVENT_SIZ_SIZE << 4));

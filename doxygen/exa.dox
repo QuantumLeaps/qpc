@@ -328,13 +328,15 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref exa_qxk
 
 
-
 @section exa_ref_tool Native Examples (by Development Toolchain)
 @n
 
 
 @subsection exa_ref_arm-keil ARM-Keil Toolchain (ARM Compiler 5)
 - @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a> &nbsp; (Cortex-M4)
+
+
+@subsection exa_ref_arm-clang ARM-Clang Toolchain (ARM Compiler 6)
 - @ref arm-cm_blinky_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
 - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a> &nbsp; (Cortex-M4)
 - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
@@ -344,14 +346,10 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
 - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
-
-
-@subsection exa_ref_arm-clang ARM-Clang Toolchain (ARM Compiler 6)
 - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_NUCLEO-L053R8.jpg" title="NUCLEO-L053R8"></a> &nbsp; (Cortex-M0+)
 - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
 - @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a> &nbsp; (Cortex-M7)
-
 
 
 @subsection exa_ref_gnu-arm GNU-ARM (command-line with Makefile, importable to Eclipse)
@@ -367,7 +365,6 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
 - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a> &nbsp; (Cortex-M3)
 - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a> &nbsp; (ARM7TDMI)
-
 
 
 @subsection exa_ref_gnu-ccs GNU-ARM with TI CCS IDE
@@ -391,17 +388,14 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a> &nbsp; (ARM7TDMI)
 
 
-
 @subsection exa_ref_ccs-430 CCS for MSP430
 - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 - @ref msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 
 
-
 @subsection exa_ref_iar-430 IAR EW430
 - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 - @ref msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
-
 
 
 @section exa_ref_native Native Examples (by Processor)
@@ -411,13 +405,11 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref exa_msp430 ("classic" MSP430 and "extended" MSP430x)
 
 
-
 @section exa_ref_rtos Examples for Third-Party RTOS
 - @ref exa_embos (SEGGER)
 - @ref exa_freertos (Amazon Web Services)
 - @ref exa_threadx (Express Logic)
 - @ref exa_ucos-ii (Micrium/SiLabs)
-
 
 
 @section exa_ref_os Examples for Workstations (Windows, Linux, MacOS)
@@ -443,7 +435,6 @@ The boards chosen for the examples are generally inexpensive and self-contained 
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
 
-
 @subsection exa_ref_arm-cm ARM Cortex-M Boards
 
 @anchor EK-TM4C123GXL
@@ -455,7 +446,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref freertos_dpp_nucleo-h743zi  (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref threadx_dpp_ek-tm4c123gxl  (ThreadX kernel; IAR-EWARM toolchain)
 - @ref ucos-ii_dpp_ek-tm4c123gxl  (uC/OS-II kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
-
 
 
 @anchor EFM32-SLSTK3401A
@@ -477,12 +467,10 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_nucleo-l053r8 (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 
 
-
 @anchor NUCLEO-L152RE
 ![NUCLEO-L152RE](bd_NUCLEO-L152RE.jpg)
 - @ref arm-cm_dpp_nucleo-l152re (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref ucos-ii_dpp_nucleo-l053r8 (uC/OS-II kernel; ARM-KEIL, IAR-EWARM toolchains)
-
 
 
 @anchor exa_EK-LM3S6965
@@ -490,12 +478,10 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref lwip_ek-lm3s6965 (**LwIP TCP/IP**; QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 
 
-
 @anchor NUCLEO-H743ZI
 ![NUCLEO-H743ZI](bd_NUCLEO-H743ZI.jpg)
 - @ref arm-cm_dpp_nucleo-h743zi (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref freertos_dpp_nucleo-h743zi (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
-
 
 
 @anchor STM32F4-Discovery
@@ -520,12 +506,10 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cr_dpp_launchxl2-tms57012 (QV, QK kernels; CCS-TI-ARM, IAR-EWARM toolchains)
 
 
-
 @subsection exa_ref_arm7-9 ARM7 Boards:
 @anchor AT91SAM7S-EK
 ![AT91SAM7S-EK](bd_AT91SAM7S-EK.jpg)
 - @ref arm7-9_dpp_at91sam7s-ek (QV, QK kernels; IAR-EWARM toolchains)
-
 
 
 @subsection exa_ref_msp430 MSP430 Boards:
@@ -533,8 +517,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 ![MSP-EXP430F5529LP](bd_MSP-EXP430F5529LP.jpg)
 - @ref msp430_blinky_msp-exp430f5529lp (QV, QK kernels; CCS=430, IAR-EW430 toolchains)
 - @ref msp430_dpp_msp-exp430f5529lp (QV, QK kernels; CCS=430, IAR-EW430 toolchains)
-
-
 
 
 @section exa_ref_mcu Examples by MCU Architecture
@@ -564,8 +546,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - MSP430
     - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
     - @ref msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
-
-
 
 @section exa_ref_vendor Examples by MCU Vendor
 - Atmel

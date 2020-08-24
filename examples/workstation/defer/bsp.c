@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: Console-based BSP
-* Last Updated for Version: 6.6.0
-* Date of the Last Update:  2019-12-03
+* Last Updated for Version: 6.9.0
+* Date of the Last Update:  2020-08-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -37,12 +37,23 @@
 #include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 #include <stdlib.h>   /* for exit() */
 
-//Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE
+
+#ifdef Q_SPY
+static uint8_t const l_QF_onClockTick = 0;
+#endif
 
 /*..........................................................................*/
 void BSP_init(int argc, char *argv[]) {
-    (void)argc; /* unused parameter */
-    (void)argv; /* unused parameter */
+    (void)argc;
+    (void)argv;
+    Q_ALLEGE(QS_INIT(argc > 1 ? argv[1] : (void *)0));
+
+    QS_OBJ_DICTIONARY(&l_QF_onClockTick);
+
+    // setup the QS filters...
+    QS_FILTER_ON(QS_ALL_RECORDS);
+    QS_FILTER_OFF(QS_QF_TICK);
 }
 /*..........................................................................*/
 void QF_onStartup(void) {
@@ -57,13 +68,41 @@ void QF_onCleanup(void) {
 /*..........................................................................*/
 void QF_onClockTick(void) {
     int key;
-    QF_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
+    QF_TICK_X(0U, &l_QF_onClockTick); /* perform QF clock tick processing */
+
+    QS_RX_INPUT(); /* handle the QS-RX input */
+    QS_OUTPUT();   /* handle the QS output */
 
     key = QF_consoleGetKey();
     if (key != 0) { /* any key pressed? */
         BSP_onKeyboardInput(key);
     }
 }
+/*--------------------------------------------------------------------------*/
+#ifdef Q_SPY /* define QS callbacks */
+
+/*..........................................................................*/
+/*! callback function to execute user commands */
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
+{
+    switch (cmdId) {
+       case 0U: {
+           break;
+       }
+       default:
+           break;
+    }
+
+    /* unused parameters */
+    (void)param1;
+    (void)param2;
+    (void)param3;
+}
+
+#endif /* Q_SPY */
+/*--------------------------------------------------------------------------*/
+
 /*..........................................................................*/
 Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
     FPRINTF_S(stderr, "Assertion failed in %s, line %d", file, line);

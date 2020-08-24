@@ -1,12 +1,12 @@
 /*****************************************************************************
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.9.0
+* Last updated on  2020-08-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -88,5 +88,5 @@ void tx_application_define(void *first_unused_memory) {
                   l_tableQueueSto, Q_DIM(l_tableQueueSto),
                   l_tableStk, sizeof(l_tableStk), (QEvt *)0);
 
-    (void)QF_run(); /* run the QF application (does not return) */
+    (void)QF_run();
 }

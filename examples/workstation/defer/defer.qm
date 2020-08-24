@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.0.1" links="1">
- <documentation>Dining Philosopher Problem example
+<model version="5.0.3" links="1">
+ <documentation>&quot;Deferred Event&quot; state pattern example
 
 NOTE: Requries QP6.</documentation>
  <!--${qpc}-->
@@ -34,6 +34,8 @@ NOTE: Requries QP6.</documentation>
    <attribute name="authorizedEvt" type="QTimeEvt" visibility="0x00" properties="0x00">
     <documentation>private time event</documentation>
    </attribute>
+   <!--${Components::TServer::inst}-->
+   <attribute name="inst" type="TServer" visibility="0x00" properties="0x01"/>
    <!--${Components::TServer::ctor}-->
    <operation name="ctor" type="void" visibility="0x00" properties="0x00">
     <code>QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;TServer_initial));
@@ -43,11 +45,17 @@ QTimeEvt_ctorX(&amp;me-&gt;receivedEvt,   &amp;me-&gt;super, RECEIVED_SIG,   0U)
 QTimeEvt_ctorX(&amp;me-&gt;authorizedEvt, &amp;me-&gt;super, AUTHORIZED_SIG, 0U);</code>
    </operation>
    <!--${Components::TServer::SM}-->
-   <statechart properties="0x01">
+   <statechart properties="0x03">
     <!--${Components::TServer::SM::initial}-->
     <initial target="../1">
      <action>(void)e; /* unused parameter */
-me-&gt;activeRequest = (RequestEvt const *)0; /* no active request yet */</action>
+me-&gt;activeRequest = (RequestEvt const *)0; /* no active request yet */
+
+
+QS_OBJ_DICTIONARY(&amp;TServer_inst);
+QS_OBJ_DICTIONARY(&amp;TServer_inst.receivedEvt);
+QS_OBJ_DICTIONARY(&amp;TServer_inst.authorizedEvt);
+QS_OBJ_DICTIONARY(&amp;TServer_inst.requestQueue);</action>
      <initial_glyph conn="2,2,5,1,32,6,-2">
       <action box="0,-2,6,2"/>
      </initial_glyph>
@@ -203,7 +211,6 @@ $define${Components::TServer}
 // test harness ============================================================*/
 
 // Local-scope objects -------------------------------------------------------
-static TServer l_tserver;  /* the TServer active object */
 static QEvt const *l_tserverQSto[10]; /* Event queue storage for TServer */
 static QF_MPOOL_EL(RequestEvt) l_smlPoolSto[20]; /* storage for small pool */
 
@@ -214,19 +221,23 @@ int main(int argc, char *argv[]) {
            &quot;Press ESC to quit...\n&quot;,
            QP_VERSION_STR);
 
-    BSP_init(argc, argv); /* initialize the BSP */
-
     QF_init(); /* initialize the framework and the underlying RTOS/OS */
 
+    BSP_init(argc, argv); /* initialize the BSP */
 
     /* publish-subscribe not used, no call to QF_psInit() */
 
     /* initialize event pools... */
     QF_poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
 
+    QS_SIG_DICTIONARY(NEW_REQUEST_SIG, (void *)0); /* global signals */
+    QS_SIG_DICTIONARY(RECEIVED_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(AUTHORIZED_SIG,  (void *)0);
+    QS_SIG_DICTIONARY(TERMINATE_SIG,   (void *)0);
+
     /* start the active objects... */
-    TServer_ctor(&amp;l_tserver);
-    QACTIVE_START((QActive *)&amp;l_tserver,
+    TServer_ctor(&amp;TServer_inst);
+    QACTIVE_START((QActive *)&amp;TServer_inst,
                   1U,
                   l_tserverQSto, Q_DIM(l_tserverQSto),
                   (void *)0, 0U, (void *)0);
@@ -241,12 +252,12 @@ void BSP_onKeyboardInput(uint8_t key) {
             RequestEvt *e = Q_NEW(RequestEvt, NEW_REQUEST_SIG);
             e-&gt;ref_num = (++reqCtr); /* set the reference number */
             /* post directly to TServer active object */
-            QACTIVE_POST((QActive *)&amp;l_tserver, (QEvt *)e, (void *)0);
+            QACTIVE_POST((QActive *)&amp;TServer_inst, (QEvt *)e, (void *)0);
             break;
         }
         case '\33': { /* ESC pressed? */
             static QEvt const terminateEvt = { TERMINATE_SIG, 0U, 0U };
-            QACTIVE_POST((QActive *)&amp;l_tserver, &amp;terminateEvt, (void *)0);
+            QACTIVE_POST((QActive *)&amp;TServer_inst, &amp;terminateEvt, (void *)0);
             break;
         }
     }

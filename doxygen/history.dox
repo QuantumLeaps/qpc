@@ -1,6 +1,43 @@
 /**
 @page history Revision History
 
+@section qpc_6_9_0 Version 6.9.0, 2020-08-21
+The main purpose of this release is to adjust the QP/C RTEF to the changes and improvements introduced in [QTools 6.9.0](https://www.state-machine.com/qtools/history.html). Specifically, QP/C now includes examples for the new [QView Visualization &amp; Monitoring](https://www.state-machine.com/qtools/qview.html) as well as adjustments for the new version of [QUTest Unit Testing](https://www.state-machine.com/qtools/qutest.html).
+
+
+__Source code changes:__
+
+Added new #QS_QF_RUN trace record to [QS software tracing](https://www.state-machine.com/qtools/qs.html), which is now generated in all QP/C ports upon the entry to QF_run(). This trace record marks the end of the application startup, at which time all the [QS dictionaries](https://www.state-machine.com/qtools/qs.html#qs_dict) are typically produced.
+
+@note
+The addition of the #QS_QF_RUN trace record affects only the [Spy build configuration](https://www.state-machine.com/qpc/struct.html#comp_qs) and is has **no impact** on the Release or Debug build configurations.
+
+
+__Updated Ports:__
+
+  + All QP/C ports to 3rd-party RTOSes (embOS, FreeRTOS, ThreadX, uC/OS-II) and OSes (POSIX, POSIX-QV, WIN32, WIN32-QV) have been updated to generate the #QS_QF_RUN trace record.
+
+  + Additionally the POSIX and POSIX-QV ports have been updated to add the call to `pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED)` (see also [bug#276](https://sourceforge.net/p/qpc/bugs/276))
+
+
+__Updated Examples:__
+
+  + All [QUTest](https://www.state-machine.com/qtools/qutest.html) examples (`qpc\examples\qutest` directory) have been modified to use the new location of the `qutest.py` Python module. Also, all QUTest examples that use the `on_reset()` callback have been modified to call `expect_run()`.
+
+@note
+The #QS_QF_RUN record is now generated in [QUTest unit testing](https://www.state-machine.com/qtools/qutest.html), which requires adjustments in the existing [test scripts](https://www.state-machine.com/qtools/qutest_script.html). Specifically, the test scripts that provide their own [on_reset() callback](https://www.state-machine.com/qtools/namespacequtest__dsl.html#aa40735b0e2865f928331d30798090ee2) must now also call [expect_run()](https://www.state-machine.com/qtools/namespacequtest__dsl.html#a6a958064a793bd7edd6ecc39e03c356a).
+
+
+  + ARM Cortex-M examples for STM32 NUCLEO-L053RE (`qpc\examples\arm-cm\dpp_nucleo-l053r8`) and NUCLEO-L152RE (`qpc\examples\arm-cm\dpp_nucleo-l152re`) have been modified to support bi-directional QSPY communication. These examples now include the QView demos.
+  + Added examples of new [Sequence Diagram Generation](https://www.state-machine.com/qtools/html/qspy_seq.html) in QSPY 6.9.0
+
+
+__Bug Fixes:__
+
+  + [bug#276 "QP/C/C++ POSIX port doesn't set thread priorities correctly"](https://sourceforge.net/p/qpc/bugs/276)
+
+
+
 @section qpc_6_8_2 Version 6.8.2, 2020-07-17
 
 __Source code changes:__
@@ -74,8 +111,6 @@ Also, this release updates the QP/C ports and examples for workstations (Windows
 - `LOCALTIME_S()` -> `localtime_s()`
 
 These "safe" functions are mapped to the best approximation of these services available on a given platform. For example, `STRCPY_S()` is mapped to `strcpy_s()` on Windows and `strcpy()` on POSIX (Linux/MacOS/etc.).
-
-
 
 
 @section qpc_6_8_0 Version 6.8.0, 2020-03-21

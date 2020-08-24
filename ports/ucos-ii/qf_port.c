@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 6.9.0
+* Last updated on  2020-08-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -59,7 +59,14 @@ void QF_init(void) {
 }
 /*..........................................................................*/
 int_t QF_run(void) {
-    QF_onStartup();  /* configure & start interrupts, see NOTE0 */
+     QS_CRIT_STAT_
+
+    QF_onStartup();  /* QF callback to configure and start interrupts */
+
+    /* produce the QS_QF_RUN trace record */
+    QS_BEGIN_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_END_PRE_()
+
     OSStart();       /* start uC/OS-II multitasking */
     Q_ERROR_ID(100); /* OSStart() should never return */
     return 0; /* this unreachable return keeps the compiler happy */

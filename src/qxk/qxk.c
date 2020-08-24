@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-06-15
+* Last updated for version 6.9.0
+* Last updated on  2020-08-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -141,6 +141,11 @@ int_t QF_run(void) {
     QF_INT_DISABLE();
     initial_events(); /* process all events posted during initialization */
     QF_onStartup(); /* application-specific startup callback */
+
+    /* produce the QS_QF_RUN trace record */
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_END_NOCRIT_PRE_()
+
     QF_INT_ENABLE();
 
     /* the QXK idle loop... */

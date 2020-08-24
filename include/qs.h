@@ -91,13 +91,14 @@ enum QSpyRecords {
     QS_QF_EQUEUE_GET,     /*!< get an event and queue still not empty */
     QS_QF_EQUEUE_GET_LAST,/*!< get the last event from the queue */
 
-    QS_QF_RESERVED2,
+    /* [23] Reserved QS records */
+    QS_RESERVED_23,
 
     /* [24] Memory Pool (MP) records */
     QS_QF_MPOOL_GET,      /*!< a memory block was removed from memory pool */
     QS_QF_MPOOL_PUT,      /*!< a memory block was returned to memory pool */
 
-    /* [26] QF records */
+    /* [26] Framework (QF) records */
     QS_QF_PUBLISH,        /*!< an event was published */
     QS_QF_NEW_REF,        /*!< new event reference was created */
     QS_QF_NEW,            /*!< new event was created */
@@ -113,7 +114,7 @@ enum QSpyRecords {
     QS_QF_TIMEEVT_REARM,  /*!< rearming of a time event */
     QS_QF_TIMEEVT_POST,   /*!< a time event posted itself directly to an AO */
 
-    /* [38] Additional QF records */
+    /* [38] Additional Framework (QF) records */
     QS_QF_DELETE_REF,     /*!< an event reference is about to be deleted */
     QS_QF_CRIT_ENTRY,     /*!< critical section was entered */
     QS_QF_CRIT_EXIT,      /*!< critical section was exited */
@@ -158,9 +159,9 @@ enum QSpyRecords {
     QS_QUERY_DATA,        /*!< reports the data from "current object" query */
     QS_PEEK_DATA,         /*!< reports the data from the PEEK query */
     QS_ASSERT_FAIL,       /*!< assertion failed in the code */
+    QS_QF_RUN,            /*!< QF_run() was entered */
 
-    /* [70] Reserved QS records */
-    QS_RESERVED_70,
+    /* [71] Reserved QS records */
     QS_RESERVED_71,
     QS_RESERVED_72,
     QS_RESERVED_73,

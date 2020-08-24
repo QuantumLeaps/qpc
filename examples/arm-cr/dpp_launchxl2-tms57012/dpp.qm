@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model version="5.0.2" links="1">
- <documentation>Dining Philosopher Problem example
-NOTE: Requries QP5.</documentation>
+ <documentation>Dining Philosopher Problem example</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
  <!--${Events}-->
@@ -16,6 +15,10 @@ NOTE: Requries QP5.</documentation>
  <package name="AOs" stereotype="0x02">
   <!--${AOs::Philo}-->
   <class name="Philo" superclass="qpc::QActive">
+   <!--${AOs::Philo::inst[N_PHILO]}-->
+   <attribute name="inst[N_PHILO]" type="Philo" visibility="0x00" properties="0x01">
+    <documentation>The array of static insts of the Philo class (Singleton pattern)</documentation>
+   </attribute>
    <!--${AOs::Philo::timeEvt}-->
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
    <!--${AOs::Philo::SM}-->
@@ -27,16 +30,16 @@ NOTE: Requries QP5.</documentation>
 if (registered == (uint8_t)0) {
     registered = (uint8_t)1;
 
-    QS_OBJ_DICTIONARY(&amp;l_philo[0]);
-    QS_OBJ_DICTIONARY(&amp;l_philo[0].timeEvt);
-    QS_OBJ_DICTIONARY(&amp;l_philo[1]);
-    QS_OBJ_DICTIONARY(&amp;l_philo[1].timeEvt);
-    QS_OBJ_DICTIONARY(&amp;l_philo[2]);
-    QS_OBJ_DICTIONARY(&amp;l_philo[2].timeEvt);
-    QS_OBJ_DICTIONARY(&amp;l_philo[3]);
-    QS_OBJ_DICTIONARY(&amp;l_philo[3].timeEvt);
-    QS_OBJ_DICTIONARY(&amp;l_philo[4]);
-    QS_OBJ_DICTIONARY(&amp;l_philo[4].timeEvt);
+    QS_OBJ_DICTIONARY(&amp;Philo_inst[0]);
+    QS_OBJ_DICTIONARY(&amp;Philo_inst[0].timeEvt);
+    QS_OBJ_DICTIONARY(&amp;Philo_inst[1]);
+    QS_OBJ_DICTIONARY(&amp;Philo_inst[1].timeEvt);
+    QS_OBJ_DICTIONARY(&amp;Philo_inst[2]);
+    QS_OBJ_DICTIONARY(&amp;Philo_inst[2].timeEvt);
+    QS_OBJ_DICTIONARY(&amp;Philo_inst[3]);
+    QS_OBJ_DICTIONARY(&amp;Philo_inst[3].timeEvt);
+    QS_OBJ_DICTIONARY(&amp;Philo_inst[4]);
+    QS_OBJ_DICTIONARY(&amp;Philo_inst[4].timeEvt);
 
     QS_FUN_DICTIONARY(&amp;Philo_initial);
     QS_FUN_DICTIONARY(&amp;Philo_thinking);
@@ -141,23 +144,22 @@ Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
   </class>
   <!--${AOs::Table}-->
   <class name="Table" superclass="qpc::QActive">
+   <!--${AOs::Table::inst}-->
+   <attribute name="inst" type="Table" visibility="0x00" properties="0x01">
+    <documentation>The only static inst of the Table class (Singleton pattern)</documentation>
+   </attribute>
    <!--${AOs::Table::fork[N_PHILO]}-->
    <attribute name="fork[N_PHILO]" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${AOs::Table::isHungry[N_PHILO]}-->
    <attribute name="isHungry[N_PHILO]" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${AOs::Table::SM}-->
-   <statechart properties="0x01">
+   <statechart properties="0x03">
     <!--${AOs::Table::SM::initial}-->
     <initial target="../1/2">
      <action>uint8_t n;
 (void)e; /* suppress the compiler warning about unused parameter */
 
-QS_OBJ_DICTIONARY(&amp;l_table);
-QS_FUN_DICTIONARY(&amp;QHsm_top);
-QS_FUN_DICTIONARY(&amp;Table_initial);
-QS_FUN_DICTIONARY(&amp;Table_active);
-QS_FUN_DICTIONARY(&amp;Table_serving);
-QS_FUN_DICTIONARY(&amp;Table_paused);
+QS_OBJ_DICTIONARY(&amp;Table_inst);
 
 QS_SIG_DICTIONARY(DONE_SIG,      (void *)0); /* global signals */
 QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
@@ -361,23 +363,33 @@ me-&gt;fork[n] = FREE;</action>
    </statechart>
   </class>
   <!--${AOs::AO_Philo[N_PHILO]}-->
-  <attribute name="AO_Philo[N_PHILO]" type="QActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Philo[N_PHILO]" type="QActive * const" visibility="0x00" properties="0x00">
+   <code>= { /* &quot;opaque&quot; pointers to Philo AO */
+    &amp;Philo_inst[0].super,
+    &amp;Philo_inst[1].super,
+    &amp;Philo_inst[2].super,
+    &amp;Philo_inst[3].super,
+    &amp;Philo_inst[4].super
+};</code>
+  </attribute>
   <!--${AOs::AO_Table}-->
-  <attribute name="AO_Table" type="QActive * const" visibility="0x00" properties="0x00"/>
+  <attribute name="AO_Table" type="QActive * const" visibility="0x00" properties="0x00">
+   <code>= &amp;Table_inst.super; /* &quot;opaque&quot; pointer to Table AO */</code>
+  </attribute>
   <!--${AOs::Philo_ctor}-->
   <operation name="Philo_ctor" type="void" visibility="0x00" properties="0x00">
    <code>uint8_t n;
 Philo *me;
 for (n = 0U; n &lt; N_PHILO; ++n) {
-    me = &amp;l_philo[n];
+    me = &amp;Philo_inst[n];
     QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Philo_initial));
     QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, TIMEOUT_SIG, 0U);
 }</code>
   </operation>
   <!--${AOs::Table_ctor}-->
   <operation name="Table_ctor" type="void" visibility="0x00" properties="0x00">
-   <code>uint8_t n;
-Table *me = &amp;l_table;
+   <code>Table *me = &amp;Table_inst;
+uint8_t n;
 
 QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Table_initial));
 
@@ -437,10 +449,7 @@ $declare(AOs::AO_Table)
 Q_DEFINE_THIS_FILE
 
 /* Active object class -----------------------------------------------------*/
-$declare(AOs::Philo)
-
-/* Local objects -----------------------------------------------------------*/
-static Philo l_philo[N_PHILO];   /* storage for all Philos */
+$declare${AOs::Philo}
 
 #define THINK_TIME  \
     (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + (BSP_TICKS_PER_SEC/2U))
@@ -448,20 +457,11 @@ static Philo l_philo[N_PHILO];   /* storage for all Philos */
     (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + BSP_TICKS_PER_SEC)
 
 /* helper macro to provide the ID of Philo &quot;me_&quot; */
-#define PHILO_ID(me_)    ((uint8_t)((me_) - l_philo))
+#define PHILO_ID(me_)    ((uint8_t)((me_) - &amp;Philo_inst[0]))
 
-/* Global objects ----------------------------------------------------------*/
-QActive * const AO_Philo[N_PHILO] = { /* &quot;opaque&quot; pointers to Philo AO */
-    &amp;l_philo[0].super,
-    &amp;l_philo[1].super,
-    &amp;l_philo[2].super,
-    &amp;l_philo[3].super,
-    &amp;l_philo[4].super
-};
-
-/* Philo definition --------------------------------------------------------*/
-$define(AOs::Philo_ctor)
-$define(AOs::Philo)</text>
+$define${AOs::AO_Philo[N_PHILO]}
+$define${AOs::Philo_ctor}
+$define${AOs::Philo}</text>
   </file>
   <!--${.::table.c}-->
   <file name="table.c">
@@ -472,22 +472,16 @@ $define(AOs::Philo)</text>
 Q_DEFINE_THIS_FILE
 
 /* Active object class -----------------------------------------------------*/
-$declare(AOs::Table)
+$declare${AOs::Table}
 
 #define RIGHT(n_) ((uint8_t)(((n_) + (N_PHILO - 1U)) % N_PHILO))
 #define LEFT(n_)  ((uint8_t)(((n_) + 1U) % N_PHILO))
 #define FREE      ((uint8_t)0)
 #define USED      ((uint8_t)1)
 
-/* Local objects -----------------------------------------------------------*/
-static Table l_table; /* the single instance of the Table active object */
-
-/* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_Table = &amp;l_table.super; /* &quot;opaque&quot; AO pointer */
-
-/*..........................................................................*/
-$define(AOs::Table_ctor)
-$define(AOs::Table)</text>
+$define${AOs::AO_Table}
+$define${AOs::Table_ctor}
+$define${AOs::Table}</text>
   </file>
  </directory>
 </model>

@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 6.9.0
+* Last updated on  2020-08-10
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -72,10 +72,16 @@ void QF_stop(void) {
 }
 /*..........................................................................*/
 int_t QF_run(void) {
+    QS_CRIT_STAT_
+
     /* function dictionaries for the standard API */
     QS_FUN_DICTIONARY(&QActive_post_);
     QS_FUN_DICTIONARY(&QActive_postLIFO_);
     QS_FUN_DICTIONARY(&QS_processTestEvts_);
+
+    /* produce the QS_QF_RUN trace record */
+    QS_BEGIN_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_END_PRE_()
 
     QS_onTestLoop(); /* run the test loop */
     QS_onCleanup();  /* application cleanup */
@@ -157,8 +163,10 @@ void QActive_stop(QActive * const me) {
 
 /*..........................................................................*/
 static void QActiveDummy_init_(QHsm * const me, void const * const par) {
-    (void)par; /* unused parameter */
     QS_CRIT_STAT_
+
+    (void)par; /* unused parameter */
+
     QS_BEGIN_PRE_(QS_QEP_STATE_INIT, QS_priv_.locFilter[SM_OBJ], me)
         QS_OBJ_PRE_(me);        /* this state machine object */
         QS_FUN_PRE_(me->state.fun); /* the source state */
@@ -249,7 +257,7 @@ static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e) {
     }
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO,
-                     QS_priv_.locFilter[AO_OBJ], me)
+                         QS_priv_.locFilter[AO_OBJ], me)
         QS_TIME_PRE_();      /* timestamp */
         QS_SIG_PRE_(e->sig); /* the signal of this event */
         QS_OBJ_PRE_(me);     /* this active object */
@@ -348,7 +356,7 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
             t->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_IS_LINKED);
 
             QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_AUTO_DISARM,
-                             QS_priv_.locFilter[TE_OBJ], t)
+                                 QS_priv_.locFilter[TE_OBJ], t)
                 QS_OBJ_PRE_(t);        /* this time event object */
                 QS_OBJ_PRE_(act);      /* the target AO */
                 QS_U8_PRE_(tickRate);  /* tick rate */

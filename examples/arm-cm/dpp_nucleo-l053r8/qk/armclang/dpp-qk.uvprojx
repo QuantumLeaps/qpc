@@ -10,7 +10,7 @@
       <TargetName>dpp-dbg</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6100001::V6.10.1::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6130001::V6.13.1::.\ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -398,11 +398,6 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>philo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\philo.c</FilePath>
@@ -416,6 +411,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1042,11 +1042,6 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>philo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\philo.c</FilePath>
@@ -1060,6 +1055,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1686,11 +1686,6 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>philo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\philo.c</FilePath>
@@ -1704,6 +1699,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>

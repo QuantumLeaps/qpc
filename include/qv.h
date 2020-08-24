@@ -5,14 +5,14 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 6.9.0
+* Last updated on  2020-08-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,10 +45,8 @@
 #include "qmpool.h"   /* QV kernel uses the native QP memory pool  */
 #include "qpset.h"    /* QV kernel uses the native QP priority set */
 
-/*! This macro defines the type of the event queue used for the
-* active objects. For the built-in QV kernel, this is ::QEQueue.
-*/
-#define QF_EQUEUE_TYPE  QEQueue
+/* QV event-queue used for AOs */
+#define QF_EQUEUE_TYPE      QEQueue
 
 /*! QV idle callback (customized in BSPs) */
 /**

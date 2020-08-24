@@ -1,8 +1,8 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 6.8.2
-:: Date of the Last Update:  2020-06-22
+:: Last Updated for Version: 6.9.0
+:: Date of the Last Update:  2020-08-24
 ::
 ::                    Q u a n t u m  L e a P s
 ::                    ------------------------

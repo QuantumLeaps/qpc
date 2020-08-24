@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
                   Q_DIM(tableQueueSto), /* queue length [events] */
                   (void *)0,            /* stack storage (not used) */
                   0U,                   /* size of the stack [bytes] */
-                  (QEvt *)0);           /* initialization event */
+                  (void *)0);           /* initialization param */
 
     return QF_run(); /* run the QF application */
 }

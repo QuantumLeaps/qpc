@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-23
+* Last updated for version 6.9.0
+* Last updated on  2020-08-10
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -123,6 +123,11 @@ int_t QF_run(void) {
 
     /* the combined event-loop and background-loop of the QV kernel... */
     QF_INT_DISABLE();
+
+    /* produce the QS_QF_RUN trace record */
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_END_NOCRIT_PRE_()
+
     for (;;) {
         QEvt const *e;
         QActive *a;

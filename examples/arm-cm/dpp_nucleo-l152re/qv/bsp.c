@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, STM32 NUCLEO-L152RE board, cooperative QV kernel
-* Last Updated for Version: 5.6.5
-* Date of the Last Update:  2016-07-05
+* Last Updated for Version: 6.9.0
+* Date of the Last Update:  2020-08-14
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -40,28 +40,12 @@
 
 Q_DEFINE_THIS_FILE
 
-/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-* Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-* DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-*/
-enum KernelAwareISRs {
-    GPIOPORTA_PRIO = QF_AWARE_ISR_CMSIS_PRI, /* see NOTE00 */
-    SYSTICK_PRIO,
-    /* ... */
-    MAX_KERNEL_AWARE_CMSIS_PRI /* keep always last */
-};
-/* "kernel-aware" interrupts should not overlap the PendSV priority */
-Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
-
-void SysTick_Handler(void);
-
-/* Local-scope defines -----------------------------------------------------*/
+/* Local-scope objects -----------------------------------------------------*/
 /* LED pins available on the board (just one user LED LD2--Green on PA.5) */
 #define LED_LD2  (1U << 5)
 
 /* Button pins available on the board (just one user Button B1 on PC.13) */
 #define BTN_B1   (1U << 13)
-
 
 static uint32_t l_rnd;  /* random seed */
 
@@ -79,7 +63,11 @@ static uint32_t l_rnd;  /* random seed */
 #endif
 
 /* ISRs used in the application ==========================================*/
-void SysTick_Handler(void) {   /* system clock tick ISR */
+void SysTick_Handler(void);
+void USART2_IRQHandler(void);
+
+/*..........................................................................*/
+void SysTick_Handler(void) { /* system clock tick ISR -- kernel aware */
     /* state of the button debouncing, see below */
     static struct ButtonsDebouncing {
         uint32_t depressed;
@@ -119,6 +107,16 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
         }
     }
 }
+/*..........................................................................*/
+#if Q_SPY
+void USART2_IRQHandler(void) { /* kernel UNAWARE interrupt */
+    /* is RX register NOT empty? */
+    if ((USART2->SR & (1U << 5)) != 0) {
+        uint32_t b = USART2->DR;
+        QS_RX_PUT(b);
+    }
+}
+#endif
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
@@ -154,6 +152,11 @@ void BSP_init(void) {
         Q_ERROR();
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
+    QS_USR_DICTIONARY(PHILO_STAT);
+
+    /* setup the QS filters... */
+    QS_FILTER_ON(QS_ALL_RECORDS);
+    QS_FILTER_OFF(QS_QF_TICK);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -207,10 +210,14 @@ void QF_onStartup(void) {
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1);
+    NVIC_SetPriority(USART2_IRQn,    0); /* kernel UNAWARE interrupt */
     /* ... */
 
     /* enable IRQs... */
+#ifdef Q_SPY
+    NVIC_EnableIRQ(USART2_IRQn); /* UART2 interrupt used for QS-RX */
+#endif
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
@@ -219,13 +226,14 @@ void QF_onCleanup(void) {
 void QV_onIdle(void) {  /* called with interrupts disabled, see NOTE01 */
 
     /* toggle an LED on and then off (not enough LEDs, see NOTE02) */
-    QF_INT_DISABLE();
     //GPIOA->BSRRL |= LED_LD2;  /* turn LED[n] on  */
     //GPIOA->BSRRH |= LED_LD2;  /* turn LED[n] off */
-    QF_INT_ENABLE();
 
 #ifdef Q_SPY
-    if ((USART2->SR & 0x0080U) != 0) {  /* is TXE empty? */
+    QF_INT_ENABLE();
+    QS_rxParse();  /* parse all the received bytes */
+
+    if ((USART2->SR & (1U << 7)) != 0) {  /* is TXE empty? */
         uint16_t b;
 
         QF_INT_DISABLE();
@@ -233,20 +241,21 @@ void QV_onIdle(void) {  /* called with interrupts disabled, see NOTE01 */
         QF_INT_ENABLE();
 
         if (b != QS_EOD) {  /* not End-Of-Data? */
-            USART2->DR  = (b & 0xFFU);  /* put into the DR register */
+            USART2->DR = (b & 0xFFU);  /* put into the DR register */
         }
     }
 #elif defined NDEBUG
     /* Put the CPU and peripherals to the low-power mode.
     * you might need to customize the clock management for your application,
-    * see the datasheet for your particular Cortex-M3 MCU.
+    * see the datasheet for your particular Cortex-M MCU.
     */
     /* !!!CAUTION!!!
-    * The WFI instruction stops the CPU clock, which unfortunately disables
-    * the JTAG port, so the ST-Link debugger can no longer connect to the
-    * board. For that reason, the call to __WFI() has to be used with CAUTION.
-    *
-    * NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
+    * QV_CPU_SLEEP() contains the WFI instruction, which stops the CPU
+    * clock, which unfortunately disables the JTAG port, so the ST-Link
+    * debugger can no longer connect to the board. For that reason, the call
+    * to QV_CPU_SLEEP() has to be used with CAUTION.
+    */
+    /* NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
     * reset the board, then connect with ST-Link Utilities and erase the part.
     * The trick with BOOT(0) is it gets the part to run the System Loader
     * instead of your broken code. When done disconnect BOOT0, and start over.
@@ -283,9 +292,12 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[2*1024]; /* buffer for Quantum Spy */
+    static uint8_t qsRxBuf[128];  /* buffer for QS-RX channel */
 
     (void)arg; /* avoid the "unused parameter" compiler warning */
+
     QS_initBuf(qsBuf, sizeof(qsBuf));
+    QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
 
     /* enable peripheral clock for USART2 */
     RCC->AHBENR   |=  (1U <<  0);   /* Enable GPIOA clock   */
@@ -302,22 +314,9 @@ uint8_t QS_onStartup(void const *arg) {
     USART2->CR2  = 0x0000U;        /* 1 stop bit               */
     USART2->CR1  = ((1U <<  2) |   /* enable RX                */
                     (1U <<  3) |   /* enable TX                */
+                    (1U <<  5) |   /* enable RX interrupt */
                     (0U << 12) |   /* 1 start bit, 8 data bits */
                     (1U << 13));   /* enable USART             */
-
-
-    /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
 
     return 1U; /* return success */
 }
@@ -340,13 +339,29 @@ void QS_onFlush(void) {
     QF_INT_DISABLE();
     while ((b = QS_getByte()) != QS_EOD) {    /* while not End-Of-Data... */
         QF_INT_ENABLE();
-        while ((USART2->SR & 0x0080U) == 0U) { /* while TXE not empty */
+        while ((USART2->SR & (1U << 7)) == 0U) { /* while TXE not empty */
         }
-        USART2->DR  = (b & 0xFFU);  /* put into the DR register */
+        USART2->DR = (b & 0xFFU);  /* put into the DR register */
         QF_INT_DISABLE();
     }
     QF_INT_ENABLE();
 }
+/*..........................................................................*/
+/*! callback function to reset the target (to be implemented in the BSP) */
+void QS_onReset(void) {
+    NVIC_SystemReset();
+}
+/*..........................................................................*/
+/*! callback function to execute a user command (to be implemented in BSP) */
+void QS_onCommand(uint8_t cmdId,
+                  uint32_t param1, uint32_t param2, uint32_t param3)
+{
+    (void)cmdId;
+    (void)param1;
+    (void)param2;
+    (void)param3;
+}
+
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 

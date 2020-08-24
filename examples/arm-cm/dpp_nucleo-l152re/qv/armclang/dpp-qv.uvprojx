@@ -393,11 +393,6 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>philo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\philo.c</FilePath>
@@ -421,6 +416,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -637,19 +637,14 @@
               <FilePath>..\..\..\..\..\src\qs\qs.c</FilePath>
             </File>
             <File>
-              <FileName>qs_64bit.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\src\qs\qs_64bit.c</FilePath>
-            </File>
-            <File>
               <FileName>qs_fp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
-              <FileName>qs_pkg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
+              <FileName>qs_rx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1042,11 +1037,6 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>philo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\philo.c</FilePath>
@@ -1070,6 +1060,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1286,19 +1281,14 @@
               <FilePath>..\..\..\..\..\src\qs\qs.c</FilePath>
             </File>
             <File>
-              <FileName>qs_64bit.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\src\qs\qs_64bit.c</FilePath>
-            </File>
-            <File>
               <FileName>qs_fp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
-              <FileName>qs_pkg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
+              <FileName>qs_rx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1308,7 +1298,7 @@
       <TargetName>dpp-spy</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060020::V5.06 (build 20)::ARMCC</pCCUsed>
+      <pCCUsed>6130001::V6.13.1::.\ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -1691,11 +1681,6 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>philo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\philo.c</FilePath>
@@ -1719,6 +1704,11 @@
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1866,19 +1856,14 @@
               <FilePath>..\..\..\..\..\src\qs\qs.c</FilePath>
             </File>
             <File>
-              <FileName>qs_64bit.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\src\qs\qs_64bit.c</FilePath>
-            </File>
-            <File>
               <FileName>qs_fp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
-              <FileName>qs_pkg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
+              <FileName>qs_rx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
             </File>
           </Files>
         </Group>

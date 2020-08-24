@@ -25,14 +25,17 @@ Q_DEFINE_THIS_FILE
 /* Active object class -----------------------------------------------------*/
 /*.$declare${AOs::Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Table} ...........................................................*/
-typedef struct {
+typedef struct Table {
 /* protected: */
     QActive super;
+
+/* public: */
 
 /* private: */
     uint8_t fork[N_PHILO];
     uint8_t isHungry[N_PHILO];
 } Table;
+extern Table Table_inst;
 
 /* protected: */
 static QState Table_initial(Table * const me, QEvt const * const e);
@@ -46,24 +49,21 @@ static QState Table_paused(Table * const me, QEvt const * const e);
 #define FREE      ((uint8_t)0)
 #define USED      ((uint8_t)1)
 
-/* Local objects -----------------------------------------------------------*/
-static Table l_table; /* the single instance of the Table active object */
-
-/* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_Table = &l_table.super; /* "opaque" AO pointer */
-
-/*..........................................................................*/
 /*.$skip${QP_VERSION} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*. Check for the minimum required QP version */
 #if (QP_VERSION < 680U) || (QP_VERSION != ((QP_RELEASE^4294967295U) % 0x3E8U))
 #error qpc version 6.8.0 or higher required
 #endif
 /*.$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.$define${AOs::AO_Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${AOs::AO_Table} ........................................................*/
+QActive * const AO_Table = &Table_inst.super; /* "opaque" pointer to Table AO */
+/*.$enddef${AOs::AO_Table} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*.$define${AOs::Table_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Table_ctor} ......................................................*/
 void Table_ctor(void) {
+    Table *me = &Table_inst;
     uint8_t n;
-    Table *me = &l_table;
 
     QActive_ctor(&me->super, Q_STATE_CAST(&Table_initial));
 
@@ -75,18 +75,14 @@ void Table_ctor(void) {
 /*.$enddef${AOs::Table_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*.$define${AOs::Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Table} ...........................................................*/
+Table Table_inst;
 /*.${AOs::Table::SM} .......................................................*/
 static QState Table_initial(Table * const me, QEvt const * const e) {
     /*.${AOs::Table::SM::initial} */
     uint8_t n;
     (void)e; /* suppress the compiler warning about unused parameter */
 
-    QS_OBJ_DICTIONARY(&l_table);
-    QS_FUN_DICTIONARY(&QHsm_top);
-    QS_FUN_DICTIONARY(&Table_initial);
-    QS_FUN_DICTIONARY(&Table_active);
-    QS_FUN_DICTIONARY(&Table_serving);
-    QS_FUN_DICTIONARY(&Table_paused);
+    QS_OBJ_DICTIONARY(&Table_inst);
 
     QS_SIG_DICTIONARY(DONE_SIG,      (void *)0); /* global signals */
     QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
@@ -106,6 +102,11 @@ static QState Table_initial(Table * const me, QEvt const * const e) {
         me->isHungry[n] = 0U;
         BSP_displayPhilStat(n, "thinking");
     }
+
+    QS_FUN_DICTIONARY(&Table_active);
+    QS_FUN_DICTIONARY(&Table_serving);
+    QS_FUN_DICTIONARY(&Table_paused);
+
     return Q_TRAN(&Table_serving);
 }
 /*.${AOs::Table::SM::active} ...............................................*/

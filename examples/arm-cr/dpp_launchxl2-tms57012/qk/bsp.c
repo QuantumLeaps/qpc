@@ -355,19 +355,6 @@ void QS_onCommand(uint8_t cmdId,
     (void)param1;
     (void)param2;
     (void)param3;
-    QS_BEGIN(COMMAND_STAT, (void *)1) /* application-specific record begin */
-        QS_U8(2, cmdId);
-        QS_U32(8, param1);
-        QS_U32(8, param2);
-        QS_U32(8, param3);
-    QS_END()
-
-    if (cmdId == 10U) {
-        Q_ERROR();
-    }
-    else if (cmdId == 11U) {
-        Q_ERROR();
-    }
 }
 
 #endif /* Q_SPY */

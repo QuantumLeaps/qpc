@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.4
-* Last updated on  2020-08-05
+* Last updated for version 6.9.0
+* Last updated on  2020-08-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -161,6 +161,11 @@ int_t QF_run(void) {
 
     /* the combined event-loop and background-loop of the QV kernel */
     QF_CRIT_ENTRY_();
+
+    /* produce the QS_QF_RUN trace record */
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_END_NOCRIT_PRE_()
+
     while (l_isRunning) {
         QEvt const *e;
         QActive *a;

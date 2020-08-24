@@ -4,8 +4,8 @@
 * @ingroup qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.1
-* Last updated on  2020-03-31
+* Last updated for version 6.9.0
+* Last updated on  2020-08-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -89,7 +89,7 @@ if (fopen_s(&fp_, fName_, mode_) != 0) { \
     strcpy(dest_, src_)
 
 #define STRCAT_S(dest_, destsiz_, src_) \
-    strcat(dest_, src)
+    strcat(dest_, src_)
 
 #define SNPRINTF_S(buf_, bufsiz_, format_, ...) \
     snprintf(buf_, bufsiz_, format_, ##__VA_ARGS__)

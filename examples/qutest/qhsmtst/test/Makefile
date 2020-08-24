@@ -7,7 +7,7 @@
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -135,7 +135,7 @@ INCLUDES += -I$(QPC)/include -I$(QPC)/src -I$(QP_PORT_DIR)
 #
 # NOTE:
 # GNU toolset (MinGW) is included in the QTools collection for Windows, see:
-#     http://sourceforge.net/projects/qpc/files/QTools/
+#     https://www.state-machine.com/qtools
 # It is assumed that %QTOOLS%\bin directory is added to the PATH
 #
 CC    := gcc
@@ -146,7 +146,10 @@ LINK  := gcc    # for C programs
 #-----------------------------------------------------------------------------
 # QUTest test script utilities (requires QTOOLS):
 #
-QUTEST := python $(QTOOLS)/qspy/py/qutest.py
+ifeq ("$(wildcard $(QUTEST))","")
+QUTEST := python $(QTOOLS)/qutest/qutest.py
+endif
+
 TESTS  := *.py
 
 #-----------------------------------------------------------------------------

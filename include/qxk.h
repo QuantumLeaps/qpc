@@ -5,14 +5,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-18
+* Last updated for version 6.9.0
+* Last updated on  2020-08-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,27 +48,16 @@
 /****************************************************************************/
 /* QF configuration for QXK -- data members of the QActive class... */
 
-/*! Kernel-dependent type of the event queue used for QXK threads */
-/**
-* @description
-* QXK uses the native QF event queue QEQueue.
-*/
+/* QXK event-queue used for AOs */
 #define QF_EQUEUE_TYPE      QEQueue
 
-/*! Kernel-dependent OS-attribute of threads in QXK */
-/**
-* @description
-* QXK uses this member to store the private stack poiner for extended threads.
+/* QXK OS-object used to store the private stack poiner for extended threads.
 * (The private stack pointer is NULL for basic-threads).
 */
-#define QF_OS_OBJECT_TYPE   void*
+#define QF_OS_OBJECT_TYPE  void*
 
-/*! Kernel-dependent type of the thread attribute in QXK */
-/**
-* @description
-* QXK uses this member to store the private Thread-Local Storage pointer.
-*/
-#define QF_THREAD_TYPE      void*
+/* QXK thread type used to store the private Thread-Local Storage pointer. */
+#define QF_THREAD_TYPE     void*
 
 /*! Access Thread-Local Storage (TLS) and cast it on the given @p type_ */
 #define QXK_TLS(type_) ((type_)QXK_current()->thread)
@@ -86,7 +75,7 @@ typedef struct {
     uint8_t volatile lockHolder;    /*!< prio of the lock holder */
     uint8_t volatile intNest;       /*!< ISR nesting level */
     struct QActive * idleThread;    /*!< pointer to the idle thread */
-    QPSet readySet;  /*!< ready-set of basic and extended threads */
+    QPSet readySet;                 /*!< ready-set of all threads */
 } QXK_PrivAttr;
 
 /*! global attributes of the QXK kernel */

@@ -3,6 +3,7 @@
 
 # preamble...
 def on_reset():
+    expect_run()
     glb_filter(GRP_SM)
     current_obj(OBJ_SM, "the_msm")
 

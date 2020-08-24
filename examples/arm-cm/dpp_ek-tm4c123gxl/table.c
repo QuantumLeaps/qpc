@@ -20,19 +20,22 @@
 #include "dpp.h"
 #include "bsp.h"
 
-Q_DEFINE_THIS_MODULE("table")
+Q_DEFINE_THIS_FILE
 
 /* Active object class -----------------------------------------------------*/
 /*.$declare${AOs::Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Table} ...........................................................*/
-typedef struct {
+typedef struct Table {
 /* protected: */
     QActive super;
+
+/* public: */
 
 /* private: */
     uint8_t fork[N_PHILO];
     uint8_t isHungry[N_PHILO];
 } Table;
+extern Table Table_inst;
 
 /* protected: */
 static QState Table_initial(Table * const me, QEvt const * const e);
@@ -42,15 +45,10 @@ static QState Table_paused(Table * const me, QEvt const * const e);
 /*.$enddecl${AOs::Table} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 #define RIGHT(n_) ((uint8_t)(((n_) + (N_PHILO - 1U)) % N_PHILO))
-#define LEFT(n_)  (((n_) + 1U) % N_PHILO)
-
+#define LEFT(n_)  ((uint8_t)(((n_) + 1U) % N_PHILO))
 #define FREE      ((uint8_t)0)
 #define USED      ((uint8_t)1)
 
-/* Local objects -----------------------------------------------------------*/
-static Table l_table; /* the single instance of the Table active object */
-
-/* Global-scope objects ----------------------------------------------------*/
 /*.$skip${QP_VERSION} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*. Check for the minimum required QP version */
 #if (QP_VERSION < 680U) || (QP_VERSION != ((QP_RELEASE^4294967295U) % 0x3E8U))
@@ -58,18 +56,14 @@ static Table l_table; /* the single instance of the Table active object */
 #endif
 /*.$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*.$define${AOs::AO_Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-
-/* opaque pointer to the Table AO */
 /*.${AOs::AO_Table} ........................................................*/
-QActive * const AO_Table = &l_table.super;
+QActive * const AO_Table = &Table_inst.super; /* "opaque" pointer to Table AO */
 /*.$enddef${AOs::AO_Table} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-
-/*..........................................................................*/
 /*.$define${AOs::Table_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Table_ctor} ......................................................*/
 void Table_ctor(void) {
+    Table *me = &Table_inst;
     uint8_t n;
-    Table *me = &l_table;
 
     QActive_ctor(&me->super, Q_STATE_CAST(&Table_initial));
 
@@ -81,11 +75,14 @@ void Table_ctor(void) {
 /*.$enddef${AOs::Table_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*.$define${AOs::Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Table} ...........................................................*/
+Table Table_inst;
 /*.${AOs::Table::SM} .......................................................*/
 static QState Table_initial(Table * const me, QEvt const * const e) {
     /*.${AOs::Table::SM::initial} */
     uint8_t n;
     (void)e; /* suppress the compiler warning about unused parameter */
+
+    QS_OBJ_DICTIONARY(&Table_inst);
 
     QS_SIG_DICTIONARY(DONE_SIG,      (void *)0); /* global signals */
     QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
@@ -116,9 +113,14 @@ static QState Table_initial(Table * const me, QEvt const * const e) {
 static QState Table_active(Table * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {
+        /*.${AOs::Table::SM::active::TEST} */
+        case TEST_SIG: {
+            status_ = Q_HANDLED();
+            break;
+        }
         /*.${AOs::Table::SM::active::EAT} */
         case EAT_SIG: {
-            Q_ERROR_ID(60);
+            Q_ERROR();
             status_ = Q_HANDLED();
             break;
         }
@@ -161,7 +163,7 @@ static QState Table_serving(Table * const me, QEvt const * const e) {
 
             n = Q_EVT_CAST(TableEvt)->philoNum;
             /* phil ID must be in range and he must be not hungry */
-            Q_ASSERT_ID(40, (n < N_PHILO) && (me->isHungry[n] == 0U));
+            Q_ASSERT((n < N_PHILO) && (me->isHungry[n] == 0U));
 
             BSP_displayPhilStat(n, "hungry  ");
             m = LEFT(n);
@@ -190,12 +192,12 @@ static QState Table_serving(Table * const me, QEvt const * const e) {
 
             n = Q_EVT_CAST(TableEvt)->philoNum;
             /* phil ID must be in range and he must be not hungry */
-            Q_ASSERT_ID(50, (n < N_PHILO) && (me->isHungry[n] == 0U));
+            Q_ASSERT((n < N_PHILO) && (me->isHungry[n] == 0U));
 
             BSP_displayPhilStat(n, "thinking");
             m = LEFT(n);
             /* both forks of Phil[n] must be used */
-            Q_ASSERT_ID(51, (me->fork[n] == USED) && (me->fork[m] == USED));
+            Q_ASSERT((me->fork[n] == USED) && (me->fork[m] == USED));
 
             me->fork[m] = FREE;
             me->fork[n] = FREE;
@@ -221,6 +223,12 @@ static QState Table_serving(Table * const me, QEvt const * const e) {
                 QF_PUBLISH(&pe->super, me);
                 BSP_displayPhilStat(m, "eating  ");
             }
+            status_ = Q_HANDLED();
+            break;
+        }
+        /*.${AOs::Table::SM::active::serving::EAT} */
+        case EAT_SIG: {
+            Q_ERROR();
             status_ = Q_HANDLED();
             break;
         }
@@ -261,7 +269,7 @@ static QState Table_paused(Table * const me, QEvt const * const e) {
         case HUNGRY_SIG: {
             uint8_t n = Q_EVT_CAST(TableEvt)->philoNum;
             /* philo ID must be in range and he must be not hungry */
-            Q_ASSERT_ID(60, (n < N_PHILO) && (me->isHungry[n] == 0U));
+            Q_ASSERT((n < N_PHILO) && (me->isHungry[n] == 0U));
             me->isHungry[n] = 1U;
             BSP_displayPhilStat(n, "hungry  ");
             status_ = Q_HANDLED();
@@ -273,12 +281,12 @@ static QState Table_paused(Table * const me, QEvt const * const e) {
 
             n = Q_EVT_CAST(TableEvt)->philoNum;
             /* phil ID must be in range and he must be not hungry */
-            Q_ASSERT_ID(70, (n < N_PHILO) && (me->isHungry[n] == 0U));
+            Q_ASSERT((n < N_PHILO) && (me->isHungry[n] == 0U));
 
             BSP_displayPhilStat(n, "thinking");
             m = LEFT(n);
             /* both forks of Phil[n] must be used */
-            Q_ASSERT_ID(71, (me->fork[n] == USED) && (me->fork[m] == USED));
+            Q_ASSERT((me->fork[n] == USED) && (me->fork[m] == USED));
 
             me->fork[m] = FREE;
             me->fork[n] = FREE;
