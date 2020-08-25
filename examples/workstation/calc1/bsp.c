@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Board Support Package (BSP) for the Calculator example
-* Last updated for version 6.8.2
-* Last updated on  2020-06-22
+* Last updated for version 6.9.0
+* Last updated on  2020-06-24
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -72,7 +72,7 @@ void BSP_display(double value) {
 }
 /*..........................................................................*/
 void BSP_display_error(char const *err) {
-    STRCPY_S(l_display, DISP_WIDTH, err);
+    STRNCPY_S(l_display, DISP_WIDTH, err);
 }
 /*..........................................................................*/
 void BSP_negate(void) {
@@ -113,7 +113,8 @@ void QF_onClockTick(void) {
 
 /*..........................................................................*/
 /* this function is used by the QP embedded systems-friendly assertions */
-Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
-    FPRINTF_S(stderr, "Assertion failed in %s, line %d", file, line);
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
+    FPRINTF_S(stderr, "Assertion failed in %s:%d", module, loc);
+    QF_onCleanup();
     exit(-1);
 }

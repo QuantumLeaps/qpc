@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Board Support Package (BSP) for the Calculator example
-* Last updated for version 6.8.2
-* Last updated on  2020-06-22
+* Last updated for version 6.9.0
+* Last updated on  2020-06-24
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -108,7 +108,7 @@ int BSP_eval(double operand1, int oper, double operand2) {
             }
             else {
                 /* error: divide by zero */
-                STRCPY_S(l_display, DISP_WIDTH, " Error 0 ");
+                STRNCPY_S(l_display, DISP_WIDTH, " Error 0 ");
                 ok = 0;
             }
             break;
@@ -123,7 +123,7 @@ int BSP_eval(double operand1, int oper, double operand2) {
         }
         else {
             /* error: out of range */
-            STRCPY_S(l_display, DISP_WIDTH, " Error 1 ");
+            STRNCPY_S(l_display, DISP_WIDTH, " Error 1 ");
             ok = 0;
         }
     }

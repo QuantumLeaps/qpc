@@ -40,24 +40,24 @@ expect("@timestamp Trg-Done QS_RX_COMMAND")
 
 test("FunctionWhichReturnsLocalVariable() Should Return The Current Counter Value")
 command(1)
-expect("@timestamp USER+001 FunctionWhichReturnsLocalVariable 0x5A5A")
+expect("@timestamp USER+001 FunctionWhichReturnsLocalVariab 0x5A5A")
 expect("@timestamp Trg-Done QS_RX_COMMAND")
 # This should be true because we can still change our answer
 poke(0, 4, pack('<L', 0x1234))
 command(1)
-expect("@timestamp USER+001 FunctionWhichReturnsLocalVariable 0x1234")
+expect("@timestamp USER+001 FunctionWhichReturnsLocalVariab 0x1234")
 expect("@timestamp Trg-Done QS_RX_COMMAND")
 
 test("FunctionWhichReturnsLocalVariable() Should Return The Current Counter Value Again", NORESET)
 # This should be true again because setup was rerun before this test (and after we changed it to 0x1234)
 command(1)
-expect("@timestamp USER+001 FunctionWhichReturnsLocalVariable 0x5A5A")
+expect("@timestamp USER+001 FunctionWhichReturnsLocalVariab 0x5A5A")
 expect("@timestamp Trg-Done QS_RX_COMMAND")
 
 test("FunctionWhichReturnsLocalVariable() Should Return Current Counter, But Fails Because This Test Is Actually Flawed", NORESET)
 # Sometimes you get the test wrong.  When that happens, you get a failure too... and a quick look should tell
 # you what actually happened...which in this case was a failure to setup the initial condition.
 command(1)
-expect("@timestamp USER+001 FunctionWhichReturnsLocalVariable 0x1234")
+expect("@timestamp USER+001 FunctionWhichReturnsLocalVariab 0x1234")
 expect("@timestamp Trg-Done QS_RX_COMMAND")
 

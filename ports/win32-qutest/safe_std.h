@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.0
-* Last updated on  2020-08-22
+* Last updated on  2020-08-24
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -49,8 +49,8 @@
 #define MEMMOVE_S(dest_, num_, src_, count_) \
     memmove_s(dest_, num_, src_, count_)
 
-#define STRCPY_S(dest_, destsiz_, src_) \
-    strcpy_s(dest_, destsiz_, src_)
+#define STRNCPY_S(dest_, destsiz_, src_) \
+    strncpy_s(dest_, destsiz_, src_, _TRUNCATE)
 
 #define STRCAT_S(dest_, destsiz_, src_) \
     strcat_s(dest_, destsiz_, src_)
@@ -85,8 +85,10 @@ if (fopen_s(&fp_, fName_, mode_) != 0) { \
 #define MEMMOVE_S(dest_, num_, src_, count_) \
     memmove(dest_, src_, count_)
 
-#define STRCPY_S(dest_, destsiz_, src_) \
-    strcpy(dest_, src_)
+#define STRNCPY_S(dest_, destsiz_, src_) do { \
+    strncpy(dest_, src_, destsiz_);           \
+    dest_[(destsiz_) - 1] = '\0';             \
+} while (false)
 
 #define STRCAT_S(dest_, destsiz_, src_) \
     strcat(dest_, src_)

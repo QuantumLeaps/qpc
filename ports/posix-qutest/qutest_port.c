@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-31
+* Last updated for version 6.9.0
+* Last updated on  2020-08-24
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -205,7 +205,7 @@ void QS_onFlush(void) {
     static struct timespec const c_timeout = { 0, QS_TIMEOUT_MS*1000000L };
 
     if (l_sock == INVALID_SOCKET) { /* socket NOT initialized? */
-        FPRINTF_S(stderr, "<TARGET> ERROR   invalid TCP socket\n");
+        FPRINTF_S(stderr, "%s\n", "<TARGET> ERROR   invalid TCP socket");
         return;
     }
 

@@ -3,6 +3,6 @@
 if "%QTOOLS%"=="" (
     set QTOOLS=C:\qp\qtools
 )
-python %QTOOLS%\qview\qview.py dpp.py
+python3 %QTOOLS%\qview\qview.py dpp.py
 
 @endlocal
