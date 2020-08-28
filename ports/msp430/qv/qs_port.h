@@ -1,11 +1,11 @@
 /**
 * @file
-* @brief QS/C port to a 16-bit CPU and a generic C compiler.
+* @brief QS/C port to MSP430 CPUs
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.3.8
-* Date of the Last Update:  2019-01-23
+* Last Updated for Version: 6.9.0
+* Date of the Last Update:  2020-08-27
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -41,13 +41,13 @@
 #define QS_PORT_H
 
 /* QS time-stamp size in bytes */
-#define QS_TIME_SIZE     4
+#define QS_TIME_SIZE     4U
 
 /* object pointer size in bytes */
-#define QS_OBJ_PTR_SIZE  2
+#define QS_OBJ_PTR_SIZE  4U
 
 /* function pointer size in bytes */
-#define QS_FUN_PTR_SIZE  4
+#define QS_FUN_PTR_SIZE  4U
 
 /*****************************************************************************
 * NOTE: QS might be used with or without other QP components, in which

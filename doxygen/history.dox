@@ -9,6 +9,9 @@ __Source code changes:__
 
 Added new #QS_QF_RUN trace record to [QS software tracing](https://www.state-machine.com/qtools/qs.html), which is now generated in all QP/C ports upon the entry to QF_run(). This trace record marks the end of the application startup, at which time all the [QS dictionaries](https://www.state-machine.com/qtools/qs.html#qs_dict) are typically produced.
 
+Also, added the information about the target **endianness** to the #QS_TARGET_INFO QS trace record.
+
+
 @note
 The addition of the #QS_QF_RUN trace record affects only the [Spy build configuration](https://www.state-machine.com/qpc/struct.html#comp_qs) and is has **no impact** on the Release or Debug build configurations.
 
@@ -17,7 +20,9 @@ __Updated Ports:__
 
   + All QP/C ports to 3rd-party RTOSes (embOS, FreeRTOS, ThreadX, uC/OS-II) and OSes (POSIX, POSIX-QV, WIN32, WIN32-QV) have been updated to generate the #QS_QF_RUN trace record.
 
-  + Additionally the POSIX and POSIX-QV ports have been updated to add the call to `pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED)` (see also [bug#276](https://sourceforge.net/p/qpc/bugs/276))
+  + The POSIX and POSIX-QV ports have been updated to add the call to `pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED)` (see also [bug#276](https://sourceforge.net/p/qpc/bugs/276))
+
+  + The MSP430 ports have been extended for the GNU-MSP430 compiler, so that they now work with IAR-MSP40, TI-MSP40 and GNU-MSP430 toolchains.
 
 
 __Updated Examples:__
@@ -30,6 +35,8 @@ The #QS_QF_RUN record is now generated in [QUTest unit testing](https://www.stat
 
   + ARM Cortex-M examples for STM32 NUCLEO-L053RE (`qpc\examples\arm-cm\dpp_nucleo-l053r8`) and NUCLEO-L152RE (`qpc\examples\arm-cm\dpp_nucleo-l152re`) have been modified to support bi-directional QSPY communication. These examples now include the QView demos.
   + Added examples of new [Sequence Diagram Generation](https://www.state-machine.com/qtools/html/qspy_seq.html) in QSPY 6.9.0
+
+  + The example projects for MSP430 now contain the `ccs-ti` and `ccs-gnu` directories, for the TI-MSP430 and GNU-MSP430 toolchains, respectively. 
 
 
 __Bug Fixes:__

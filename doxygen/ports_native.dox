@@ -28,39 +28,38 @@ The QP/C "port" to PC-Lint-Plus is located in the directory <span class="img fol
 
 @code{.x}
  qpc\                  - QP/C installation directory
+  +-ports/           - QP/C ports directory
+  | +-lint-plus/     - QP/C "port" to PC-Lint-Plus
+  | |  +-16bit/      - QP/C++ "port" to 16-bit CPUs
+  | | |  +-cpu.lnt   - Lint options for a 16-bit CPU
+  | | |  +-stdint.h  - Standard exact-width integers for a 16-bit CPU
+  | |  +-32bit/      - QP/C++ "port" to 32-bit CPUs
+  | | |  +-cpu.lnt   - Lint options for a 32-bit CPU
+  | | |  +-stdint.h  - Standard exact-width integers for a 32-bit CPU
+  | | +-qk/          - QP/C port with the QK kernel
+  | | +-qv/          - QP/C port with the QV kernel
+  | | +-qxk/         - QP/C port with the QXK kernel
+  | | +-au-ds.lnt    - Dan Saks recommendations
+  | | +-au-misra3.lnt      - MISRA-C:2012 compliance checks
+  | | +-au-misra3-amd1.lnt - MISRA-C:2012-Amendment-1 additional checks
+  | | +-qpc.lnt      - PC-Lint-Plus options for QP/C applications
+  | | +-std.lnt      - Standard PC-Lint-Plus settings recommended by Quantum Leaps
+  | | +-lin.bat      - Batch file to invoke PC-Lint-Plus to run analysis of QP/C code
+  | | +-options.lnt  - PC/Lint-Plus options for "linting" QP/C source code
+  | | +-lint_qf.log  - PC/Lint-Plus output for the QEP/QF components of QP/C
+  | | +-lint_qs.log  - PC/Lint-Plus output for the QS  component of QP/C
+  | | +-lint_qv.log  - PC/Lint-Plus output for the QV  component of QP/C
+  | | +-lint_qk.log  - PC/Lint-Plus output for the QK  component of QP/C
+  | | +-lint_qxk.log - PC/Lint-Plus output for the QXK component of QP/C
+  | | +-qep_port.h   - QEP component "port" to a "generic C compiler"
+  | | +-stdbool.h    - Standard Boolean type and constants for a "generic C compiler"
   |
-  | +-ports/           - QP/C ports directory
-  | | +-lint-plus/     - QP/C "port" to PC-Lint-Plus
-  | | |  +-16bit/      - QP/C++ "port" to 16-bit CPUs
-  | | | |  +-cpu.lnt   - Lint options for a 16-bit CPU
-  | | | |  +-stdint.h  - Standard exact-width integers for a 16-bit CPU
-  | | |  +-32bit/      - QP/C++ "port" to 32-bit CPUs
-  | | | |  +-cpu.lnt   - Lint options for a 32-bit CPU
-  | | | |  +-stdint.h  - Standard exact-width integers for a 32-bit CPU
-  | | | +-qk/          - QP/C port with the QK kernel
-  | | | +-qv/          - QP/C port with the QV kernel
-  | | | +-qxk/         - QP/C port with the QXK kernel
-  | | | +-au-ds.lnt    - Dan Saks recommendations
-  | | | +-au-misra3.lnt      - MISRA-C:2012 compliance checks
-  | | | +-au-misra3-amd1.lnt - MISRA-C:2012-Amendment-1 additional checks
-  | | | +-qpc.lnt      - PC-Lint-Plus options for QP/C applications
-  | | | +-std.lnt      - Standard PC-Lint-Plus settings recommended by Quantum Leaps
-  | | | +-lin.bat      - Batch file to invoke PC-Lint-Plus to run analysis of QP/C code
-  | | | +-options.lnt  - PC/Lint-Plus options for "linting" QP/C source code
-  | | | +-lint_qf.log  - PC/Lint-Plus output for the QEP/QF components of QP/C
-  | | | +-lint_qs.log  - PC/Lint-Plus output for the QS  component of QP/C
-  | | | +-lint_qv.log  - PC/Lint-Plus output for the QV  component of QP/C
-  | | | +-lint_qk.log  - PC/Lint-Plus output for the QK  component of QP/C
-  | | | +-lint_qxk.log - PC/Lint-Plus output for the QXK component of QP/C
-  | | | +-qep_port.h   - QEP component "port" to a "generic C compiler"
-  | | | +-stdbool.h    - Standard Boolean type and constants for a "generic C compiler"
-  | |
-  | +-examples\        - QP/C examples directory (application)
-  | | +-arm-cm\        - QP/C examples for ARM Cortex-M
-  | | | +-dpp_ek-tm4c123gxl\ - DPP example on the EK-TM4C123GLX board
-  | | | | +-lint-plus\ - directory for linting the application
-  | | | | | +-lin.bat  - Batch to run PC-Lint-Plus analysis of application code
-  | | | | | +-options.lnt - PC-Lint-Plus options for "linting" of application code
+  +-examples\        - QP/C examples directory (application)
+  | +-arm-cm\        - QP/C examples for ARM Cortex-M
+  | | +-dpp_ek-tm4c123gxl\ - DPP example on the EK-TM4C123GLX board
+  | | | +-lint-plus\ - directory for linting the application
+  | | | | +-lin.bat  - Batch to run PC-Lint-Plus analysis of application code
+  | | | | +-options.lnt - PC-Lint-Plus options for "linting" of application code
 @endcode
 
 

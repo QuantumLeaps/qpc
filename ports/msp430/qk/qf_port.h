@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-19
+* Last updated for version 6.9.0
+* Last updated on  2020-08-27
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -62,7 +62,12 @@
 #define QF_CRIT_EXIT(stat_)  __set_interrupt_state(stat_)
 
 
-#include <intrinsics.h> /* intrinsic functions */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+    #include <intrinsics.h> /* intrinsic functions */
+#elif defined(__GNUC__)
+    #include <msp430.h>
+    #include "in430.h"
+#endif
 
 #include "qep_port.h"   /* QEP port */
 #include "qk_port.h"    /* QK preemptive kernel port */
