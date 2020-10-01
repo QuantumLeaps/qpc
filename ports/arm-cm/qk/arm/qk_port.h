@@ -1,16 +1,16 @@
 /**
 * @file
-* @brief QK/C port to ARM Cortex-M, ARM-KEIL toolset
+* @brief QK/C port to ARM Cortex-M, ARM-KEIL toolset (Compiler 5)
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-03-17
+* Last updated for version 6.9.1
+* Last updated on  2020-09-23
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -54,15 +54,31 @@ static __inline uint32_t QK_get_IPSR(void) {
 #define QK_ISR_EXIT()  do {                                   \
     QF_INT_DISABLE();                                         \
     if (QK_sched_() != 0U) {                                  \
-        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28); \
-    } \
-    QF_INT_ENABLE(); \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28U);\
+        QK_ARM_ERRATUM_838869();                              \
+    }                                                         \
+    QF_INT_ENABLE();                                          \
 } while (false)
+
+#if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
+    #define QK_ARM_ERRATUM_838869() ((void)0)
+#else /* Cortex-M3/M4/M7 (v7-M) */
+    /* The following macro implements the recommended workaround for the
+    * ARM Erratum 838869. Specifically, for Cortex-M3/M4/M7 the DSB
+    * (memory barrier) instruction needs to be added before exiting an ISR.
+    */
+    #define QK_ARM_ERRATUM_838869() \
+        __schedule_barrier();       \
+        __asm("dsb");               \
+        __schedule_barrier()
+#endif
 
 /* initialization of the QK kernel */
 #define QK_INIT() QK_init()
 void QK_init(void);
+void QK_thread_ret(void);
 
 #include "qk.h" /* QK platform-independent public interface */
 
 #endif /* QK_PORT_H */
+

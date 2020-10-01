@@ -3,8 +3,8 @@
 * @brief QXK/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-25
+* Last updated for version 6.9.1
+* Last updated on  2020-09-14
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -44,7 +44,6 @@
 /* prototypes --------------------------------------------------------------*/
 void PendSV_Handler(void);
 void NMI_Handler(void);
-void Thread_ret(void);
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
@@ -108,7 +107,7 @@ void QXK_init(void) {
 * NOTE: QXK_stackInit_() must be called before the QXK kernel is made aware
 * of this thread. In that case the kernel cannot use the thread yet, so no
 * critical section is needed.
-****************************************************************************/
+*****************************************************************************/
 void QXK_stackInit_(void *thr, QXThreadHandler const handler,
                     void * const stkSto, uint_fast16_t const stkSize)
 {
@@ -118,7 +117,7 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
     * NOTE: ARM Cortex-M stack grows down from hi -> low memory
     */
     uint32_t *sp =
-        (uint32_t *)((((uint32_t)stkSto + stkSize) >> 3) << 3);
+        (uint32_t *)((((uint32_t)stkSto + stkSize) >> 3U) << 3U);
     uint32_t *sp_limit;
 
     /* synthesize the ARM Cortex-M exception stack frame...*/
@@ -129,7 +128,7 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
     *(--sp) = 0x00000003U;   /* R3  */
     *(--sp) = 0x00000002U;   /* R2  */
     *(--sp) = 0x00000001U;   /* R1  */
-    *(--sp) = (uint32_t)thr; /* R0 (argument to the thread routine */
+    *(--sp) = (uint32_t)thr; /* R0 parameter to the handler (thread object) */
     *(--sp) = 0x0000000BU;   /* R11 */
     *(--sp) = 0x0000000AU;   /* R10 */
     *(--sp) = 0x00000009U;   /* R9  */
@@ -148,7 +147,7 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
     ((QActive *)thr)->osObject = sp;
 
     /* pre-fill the unused part of the stack with 0xDEADBEEF */
-    sp_limit = (uint32_t *)(((((uint32_t)stkSto - 1U) >> 3) + 1U) << 3);
+    sp_limit = (uint32_t *)(((((uint32_t)stkSto - 1U) >> 3U) + 1U) << 3U);
     for (; sp >= sp_limit; --sp) {
         *sp = 0xDEADBEEFU;
     }
@@ -165,13 +164,13 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
 /*Q_ASSERT_COMPILE(QXK_NEXT == offsetof(QXK_Attr, next));*/
 /*Q_ASSERT_COMPILE(QXK_ACT_PRIO == offsetof(QXK_Attr, actPrio));*/
 
-/* NOTE: keep in synch with the QMActive struct in "qf.h/qxk.h" !!! */
-#define QMACTIVE_OSOBJ 28
-#define QMACTIVE_PRIO  36
+/* NOTE: keep in synch with the QActive struct in "qf.h/qxk.h" !!! */
+#define QACTIVE_OSOBJ    28
+#define QACTIVE_DYN_PRIO 36
 
 /* NOTE: keep in synch with the QActive struct in "qf.h/qxk.h" !!! */
-/*Q_ASSERT_COMPILE(QMACTIVE_OSOBJ == offsetof(QActive, osObject));*/
-/*Q_ASSERT_COMPILE(QMACTIVE_PRIO == offsetof(QActive, prio));*/
+/*Q_ASSERT_COMPILE(QACTIVE_OSOBJ == offsetof(QActive, osObject));*/
+/*Q_ASSERT_COMPILE(QACTIVE_DYN_PRIO == offsetof(QActive, dynPrio));*/
 
 /*****************************************************************************
 * The PendSV_Handler exception handler is used for handling context switch
@@ -219,7 +218,7 @@ __asm void PendSV_Handler(void) {
     MOVS    r0,#QF_BASEPRI
     CPSID   i                 /* selectively disable interrutps with BASEPRI */
     MSR     BASEPRI,r0        /* apply the workaround the Cortex-M7 erraturm */
-    CPSIE   i                 /* 837070, see ARM-EPM-064408. */
+    CPSIE   i                 /* 837070, see SDEN-1068427. */
 #endif                        /* M3/M4/M7 */
 
     /* The PendSV exception handler can be preempted by an interrupt,
@@ -237,7 +236,7 @@ __asm void PendSV_Handler(void) {
 
     /* Load pointers into registers... */
     MOV     r12,r0            /* save QXK_attr_.next in r12 */
-    LDR     r2,[r0,#QMACTIVE_OSOBJ] /* r2 := QXK_attr_.next->osObject */
+    LDR     r2,[r0,#QACTIVE_OSOBJ] /* r2 := QXK_attr_.next->osObject */
     LDR     r1,[r3,#QXK_CURR] /* r1 := QXK_attr_.curr */
 
     CMP     r1,#0             /* (QXK_attr_.curr != 0)? */
@@ -263,7 +262,7 @@ PendSV_activate
     LSLS    r3,r3,#24         /* r3 := (1 << 24), set the T bit  (new xpsr) */
     LDR     r2,=QXK_activate_ /* address of QXK_activate_ */
     SUBS    r2,r2,#1          /* align Thumb-address at halfword (new pc) */
-    LDR     r1,=Thread_ret    /* return address after the call   (new lr) */
+    LDR     r1,=QXK_thread_ret /* return address after the call   (new lr) */
 
     SUB     sp,sp,#(8*4)      /* reserve space for exception stack frame */
     ADD     r0,sp,#(5*4)      /* r0 := 5 registers below the top of stack */
@@ -271,6 +270,9 @@ PendSV_activate
 
     MOVS    r0,#6
     MVNS    r0,r0             /* r0 := ~6 == 0xFFFFFFF9 */
+#if (__TARGET_ARCH_THUMB != 3) /* NOT Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+    DSB                       /* ARM Erratum 838869 */
+#endif                        /* NOT (v6-M, v6S-M) */
     BX      r0                /* exception-return to the QXK activator */
 
     /*=========================================================================
@@ -349,11 +351,11 @@ PendSV_restore_ao
 #endif                        /* M3/M4/M7 */
 
     MOV     r0,r12            /* r0 := QXK_attr_.next */
-    MOVS    r2,#QMACTIVE_PRIO /* r2 := offset of .prio into QActive */
-    LDRB    r0,[r0,r2]        /* r0 := QXK_attr_.next->prio */
+    MOVS    r2,#QACTIVE_DYN_PRIO /* r2 := offset of .dynPrio */
+    LDRB    r0,[r0,r2]        /* r0 := QXK_attr_.next->dynPrio */
     LDRB    r2,[r3,#QXK_ACT_PRIO]  /* r2 := QXK_attr_.actPrio */
     CMP     r2,r0
-    BCC     PendSV_activate   /* if (next->prio > topPrio) activate the next AO */
+    BCC     PendSV_activate   /* if (next->dynPrio > topPrio) activate the next AO */
 
     /* otherwise no activation needed... */
     MOVS    r0,#0
@@ -380,6 +382,7 @@ PendSV_return
 #else                         /* M3/M4/M7 */
     MOVS    r0,#0
     MSR     BASEPRI,r0        /* enable interrupts (clear BASEPRI) */
+    DSB                       /* ARM Erratum 838869 */
 #endif                        /* M3/M4/M7 */
     /*>>>>>>>>>>>>>>>>>>>>>>>> CRITICAL SECTION END >>>>>>>>>>>>>>>>>>>>>>>>>*/
     BX      lr                /* return to the preempted AO-thread */
@@ -419,7 +422,7 @@ PendSV_save_ex
 #endif                        /* M3/M4/M7 */
 
     /* store the SP of the current extended-thread */
-    STR     r0,[r1,#QMACTIVE_OSOBJ] /* QXK_attr_.curr->osObject := r0 */
+    STR     r0,[r1,#QACTIVE_OSOBJ] /* QXK_attr_.curr->osObject := r0 */
     MOV     r0,r12            /* QXK_attr_.next (restore value) */
 
     CMP     r2,#0
@@ -449,7 +452,7 @@ PendSV_onContextSw2
     /* restore the AAPCS-clobbered registers after a functin call...  */
     LDR     r3,=QXK_attr_
     LDR     r0,[r3,#QXK_NEXT] /* r0 := QXK_attr_.next */
-    LDR     r2,[r0,#QMACTIVE_OSOBJ] /* r2 := QXK_attr_.curr->osObject */
+    LDR     r2,[r0,#QACTIVE_OSOBJ] /* r2 := QXK_attr_.curr->osObject */
 #endif /* QXK_ON_CONTEXT_SW */
 
     STR     r0,[r3,#QXK_CURR] /* QXK_attr_.curr := r0 (QXK_attr_.next) */
@@ -490,18 +493,21 @@ PendSV_onContextSw2
     /* set the PSP to the next thread's SP */
     MSR     PSP,r2            /* Process Stack Pointer := r2 */
 
+#if (__TARGET_ARCH_THUMB != 3) /* NOT Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+    DSB                       /* ARM Erratum 838869 */
+#endif                        /* NOT (v6-M, v6S-M) */
     BX      lr                /* return to the next extended-thread */
 
     ALIGN                     /* align the code to 4-byte boundary */
 }
 
 /*****************************************************************************
-* Thread_ret is a helper function executed when the QXK activator returns.
+* QXK_thread_ret is a helper function executed when the QXK activator returns.
 *
-* NOTE: Thread_ret does not execute in the PendSV context!
-* NOTE: Thread_ret executes entirely with interrupts DISABLED.
+* NOTE: QXK_thread_ret does not execute in the PendSV context!
+* NOTE: QXK_thread_ret executes entirely with interrupts DISABLED.
 *****************************************************************************/
-__asm void Thread_ret(void) {
+__asm void QXK_thread_ret(void) {
     /* After the QXK activator returns, we need to resume the preempted
     * thread. However, this must be accomplished by a return-from-exception,
     * while we are still in the thread context. The switch to the exception
@@ -556,10 +562,10 @@ __asm void NMI_Handler(void) {
     MOVS    r0,#0
     MSR     BASEPRI,r0        /* enable interrupts (clear BASEPRI) */
 #if (__TARGET_FPU_VFP != 0)   /* if VFP available... */
-    POP     {r0,pc}           /* pop stack "aligner" and EXC_RETURN to PC */
-#else                         /* no VFP */
-    BX      lr                /* return to the preempted task */
+    POP     {r0,lr}           /* pop stack "aligner" and EXC_RETURN to LR */
+    DSB                       /* ARM Erratum 838869 */
 #endif                        /* no VFP */
+    BX      lr                /* return to the preempted task */
 #endif                        /* M3/M4/M7 */
 
     ALIGN                     /* align the code to 4-byte boundary */

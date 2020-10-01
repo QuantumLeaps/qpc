@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-12
+* Last updated for version 6.9.1
+* Last updated on  2020-09-10
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -103,7 +103,8 @@ typedef struct {
 typedef struct {
     uint8_t data[16];
     uint8_t idx;
-} GFltVar;
+    uint8_t recId; /* global/local */
+} FltVar;
 
 typedef struct {
     QSObj    addr;
@@ -138,7 +139,7 @@ static struct {
         TickVar  tick;
         PeekVar  peek;
         PokeVar  poke;
-        GFltVar  gFlt;
+        FltVar   flt;
         AFltVar  aFlt;
         ObjVar   obj;
         EvtVar   evt;
@@ -173,11 +174,9 @@ enum {
     WAIT4_POKE_FRAME,
     WAIT4_FILL_DATA,
     WAIT4_FILL_FRAME,
-    WAIT4_GLB_FILTER_LEN,
-    WAIT4_GLB_FILTER_DATA,
-    WAIT4_GLB_FILTER_FRAME,
-    WAIT4_AO_FILTER_PRIO,
-    WAIT4_AO_FILTER_FRAME,
+    WAIT4_FILTER_LEN,
+    WAIT4_FILTER_DATA,
+    WAIT4_FILTER_FRAME,
     WAIT4_OBJ_KIND,
     WAIT4_OBJ_ADDR,
     WAIT4_OBJ_FRAME,
@@ -403,7 +402,7 @@ static void QS_rxParseData_(uint8_t b) {
                         QS_RX_TRAN_(ERROR_STATE);
                     }
                     break;
-                case QS_RX_POKE:
+                case QS_RX_POKE: /* intentionally fall-through */
                 case QS_RX_FILL:
                     l_rx.var.poke.fill =
                             ((b == (uint8_t)QS_RX_FILL) ? 1U : 0U);
@@ -419,18 +418,14 @@ static void QS_rxParseData_(uint8_t b) {
                         QS_RX_TRAN_(ERROR_STATE);
                     }
                     break;
-                case QS_RX_GLB_FILTER:
-                    QS_RX_TRAN_(WAIT4_GLB_FILTER_LEN);
-                    break;
+                case QS_RX_GLB_FILTER: /* intentionally fall-through */
                 case QS_RX_LOC_FILTER:
-                    l_rx.var.obj.recId = (uint8_t)QS_RX_LOC_FILTER;
-                    QS_RX_TRAN_(WAIT4_OBJ_KIND);
+                    l_rx.var.flt.recId = b;
+                    QS_RX_TRAN_(WAIT4_FILTER_LEN);
                     break;
-                case QS_RX_AO_FILTER:
-                    QS_RX_TRAN_(WAIT4_AO_FILTER_PRIO);
-                    break;
+                case QS_RX_AO_FILTER: /* intentionally fall-through */
                 case QS_RX_CURR_OBJ:
-                    l_rx.var.obj.recId = (uint8_t)QS_RX_CURR_OBJ;
+                    l_rx.var.obj.recId = b;
                     QS_RX_TRAN_(WAIT4_OBJ_KIND);
                     break;
                 case QS_RX_QUERY_CURR:
@@ -454,7 +449,7 @@ static void QS_rxParseData_(uint8_t b) {
                 case QS_RX_TEST_PROBE:
                     if (l_testData.tpNum
                         < (uint8_t)(sizeof(l_testData.tpBuf)
-                                    /sizeof(l_testData.tpBuf[0])))
+                                    / sizeof(l_testData.tpBuf[0])))
                     {
                         l_rx.var.tp.data = 0U;
                         l_rx.var.tp.idx  = 0U;
@@ -631,26 +626,26 @@ static void QS_rxParseData_(uint8_t b) {
             /* keep ignoring the data until a frame is collected */
             break;
         }
-        case WAIT4_GLB_FILTER_LEN: {
-            if (b == sizeof(l_rx.var.gFlt.data)) {
-                l_rx.var.gFlt.idx = 0U;
-                QS_RX_TRAN_(WAIT4_GLB_FILTER_DATA);
+        case WAIT4_FILTER_LEN: {
+            if (b == sizeof(l_rx.var.flt.data)) {
+                l_rx.var.flt.idx = 0U;
+                QS_RX_TRAN_(WAIT4_FILTER_DATA);
             }
             else {
-                QS_rxReportError_((uint8_t)QS_RX_GLB_FILTER);
+                QS_rxReportError_(l_rx.var.flt.recId);
                 QS_RX_TRAN_(ERROR_STATE);
             }
             break;
         }
-        case WAIT4_GLB_FILTER_DATA: {
-            l_rx.var.gFlt.data[l_rx.var.gFlt.idx] = b;
-            ++l_rx.var.gFlt.idx;
-            if (l_rx.var.gFlt.idx == sizeof(l_rx.var.gFlt.data)) {
-                QS_RX_TRAN_(WAIT4_GLB_FILTER_FRAME);
+        case WAIT4_FILTER_DATA: {
+            l_rx.var.flt.data[l_rx.var.flt.idx] = b;
+            ++l_rx.var.flt.idx;
+            if (l_rx.var.flt.idx == sizeof(l_rx.var.flt.data)) {
+                QS_RX_TRAN_(WAIT4_FILTER_FRAME);
             }
             break;
         }
-        case WAIT4_GLB_FILTER_FRAME: {
+        case WAIT4_FILTER_FRAME: {
             /* keep ignoring the data until a frame is collected */
             break;
         }
@@ -691,15 +686,6 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_QUERY_FRAME: {
-            /* keep ignoring the data until a frame is collected */
-            break;
-        }
-        case WAIT4_AO_FILTER_PRIO: {
-            l_rx.var.aFlt.prio = b;
-            QS_RX_TRAN_(WAIT4_AO_FILTER_FRAME);
-            break;
-        }
-        case WAIT4_AO_FILTER_FRAME: {
             /* keep ignoring the data until a frame is collected */
             break;
         }
@@ -828,9 +814,9 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
     switch (state) {
         case WAIT4_INFO_FRAME: {
             /* no need to report Ack or Done */
-            QS_CRIT_ENTRY_();
+            QS_CRIT_E_();
             QS_target_info_pre_(0U); /* send only Target info */
-            QS_CRIT_EXIT_();
+            QS_CRIT_X_();
             break;
         }
         case WAIT4_RESET_FRAME: {
@@ -865,7 +851,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
         case WAIT4_PEEK_FRAME: {
 
             /* no need to report Ack or Done */
-            QS_CRIT_ENTRY_();
+            QS_CRIT_E_();
             QS_beginRec_((uint_fast8_t)QS_PEEK_DATA);
                 ptr = ((uint8_t *)QS_rxPriv_.currObj[AP_OBJ]
                        + l_rx.var.peek.offs);
@@ -889,7 +875,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
                     }
                 }
             QS_endRec_();
-            QS_CRIT_EXIT_();
+            QS_CRIT_X_();
 
             QS_REC_DONE(); /* user callback (if defined) */
             break;
@@ -926,44 +912,64 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             }
             break;
         }
-        case WAIT4_GLB_FILTER_FRAME: {
-            QS_rxReportAck_(QS_RX_GLB_FILTER);
+        case WAIT4_FILTER_FRAME: {
+            QS_rxReportAck_((enum QSpyRxRecords)l_rx.var.flt.recId);
 
             /* apply the received filters */
-            for (i = 0U; i < Q_DIM(QS_priv_.glbFilter); ++i) {
-                QS_priv_.glbFilter[i] = l_rx.var.gFlt.data[i];
+            if (l_rx.var.flt.recId == (uint8_t)QS_RX_GLB_FILTER) {
+                for (i = 0U; i < Q_DIM(QS_priv_.glbFilter); ++i) {
+                    QS_priv_.glbFilter[i] = l_rx.var.flt.data[i];
+                }
+                /* leave the "not maskable" filters enabled,
+                * see qs.h, Miscellaneous QS records (not maskable)
+                */
+                QS_priv_.glbFilter[0] |= 0x01U;
+                QS_priv_.glbFilter[7] |= 0xFCU;
+                QS_priv_.glbFilter[8] |= 0x7FU;
+
+                /* never enable the last 3 records (0x7D, 0x7E, 0x7F) */
+                QS_priv_.glbFilter[15] &= 0x1FU;
             }
-            /* leave the "not maskable" filters enabled,
-            * see qs.h, Miscellaneous QS records (not maskable)
-            */
-            QS_priv_.glbFilter[0] |= 0x01U;
-            QS_priv_.glbFilter[7] |= 0xFCU;
-            QS_priv_.glbFilter[8] |= 0x7FU;
-
-            /* never enable the last 3 records (0x7D, 0x7E, 0x7F) */
-            QS_priv_.glbFilter[15] &= 0x1FU;
-
+            else if (l_rx.var.flt.recId == (uint8_t)QS_RX_LOC_FILTER) {
+                for (i = 0U; i < Q_DIM(QS_priv_.locFilter); ++i) {
+                    QS_priv_.locFilter[i] = l_rx.var.flt.data[i];
+                }
+                /* leave QS_ID == 0 always on */
+                QS_priv_.locFilter[0] |= 0x01U;
+            }
+            else {
+                QS_rxReportError_(l_rx.var.flt.recId);
+            }
             /* no need to report Done */
             break;
         }
         case WAIT4_OBJ_FRAME: {
             i = l_rx.var.obj.kind;
             if (i < (uint8_t)MAX_OBJ) {
-                if (l_rx.var.obj.recId == (uint8_t)QS_RX_LOC_FILTER) {
-                    QS_priv_.locFilter[i] = (void *)l_rx.var.obj.addr;
-                }
-                else { /* set the current object */
+                if (l_rx.var.obj.recId == (uint8_t)QS_RX_CURR_OBJ) {
                     QS_rxPriv_.currObj[i] = (void *)l_rx.var.obj.addr;
+                    QS_rxReportAck_(QS_RX_CURR_OBJ);
                 }
-                QS_rxReportAck_((enum QSpyRxRecords)l_rx.var.obj.recId);
+                else if (l_rx.var.obj.recId == (uint8_t)QS_RX_AO_FILTER) {
+                    if (l_rx.var.obj.addr != 0U) {
+                        int_fast16_t filter =
+                           (int_fast16_t)((QActive *)l_rx.var.obj.addr)->prio;
+                        QS_locFilter_((i == 0)
+                            ? filter
+                            :-filter);
+                        QS_rxReportAck_(QS_RX_AO_FILTER);
+                    }
+                    else {
+                        QS_rxReportError_(QS_RX_AO_FILTER);
+                    }
+                }
+                else {
+                    QS_rxReportError_(l_rx.var.obj.recId);
+                }
             }
             /* both SM and AO */
             else if (i == (uint8_t)SM_AO_OBJ) {
-                if (l_rx.var.obj.recId == (uint8_t)QS_RX_LOC_FILTER) {
-                    QS_priv_.locFilter[SM_OBJ] = (void *)l_rx.var.obj.addr;
-                    QS_priv_.locFilter[AO_OBJ] = (void *)l_rx.var.obj.addr;
-                }
-                else {
+                if (l_rx.var.obj.recId == (uint8_t)QS_RX_CURR_OBJ) {
                     QS_rxPriv_.currObj[SM_OBJ] = (void *)l_rx.var.obj.addr;
                     QS_rxPriv_.currObj[AO_OBJ] = (void *)l_rx.var.obj.addr;
                 }
@@ -976,57 +982,53 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
         }
         case WAIT4_QUERY_FRAME: {
             i = l_rx.var.obj.kind;
-            ptr = (uint8_t *)QS_rxPriv_.currObj[i];
-            if (ptr != (void *)0) {
-                QS_CRIT_ENTRY_();
+            if (QS_rxPriv_.currObj[i] != (void *)0) {
+                QS_CRIT_E_();
                 QS_beginRec_((uint_fast8_t)QS_QUERY_DATA);
                     QS_TIME_PRE_(); /* timestamp */
                     QS_U8_PRE_(i);  /* object kind */
-                    QS_OBJ_PRE_(ptr);
+                    QS_OBJ_PRE_(QS_rxPriv_.currObj[i]);
                     switch (i) {
                         case SM_OBJ: /* intentionally fall through */
                         case AO_OBJ:
-                            QS_FUN_PRE_(((QHsm *)ptr)->state.fun);
+                            QS_FUN_PRE_(((QHsm *)QS_rxPriv_.currObj[i])
+                                        ->state.fun);
                             break;
                         case MP_OBJ:
-                            QS_MPC_PRE_(((QMPool *)ptr)->nFree);
-                            QS_MPC_PRE_(((QMPool *)ptr)->nMin);
+                            QS_MPC_PRE_(((QMPool *)QS_rxPriv_.currObj[i])
+                                        ->nFree);
+                            QS_MPC_PRE_(((QMPool *)QS_rxPriv_.currObj[i])
+                                        ->nMin);
                             break;
                         case EQ_OBJ:
-                            QS_EQC_PRE_(((QEQueue *)ptr)->nFree);
-                            QS_EQC_PRE_(((QEQueue *)ptr)->nMin);
+                            QS_EQC_PRE_(((QEQueue *)QS_rxPriv_.currObj[i])
+                                        ->nFree);
+                            QS_EQC_PRE_(((QEQueue *)QS_rxPriv_.currObj[i])
+                                        ->nMin);
                             break;
                         case TE_OBJ:
-                            QS_OBJ_PRE_(((QTimeEvt *)ptr)->act);
-                            QS_TEC_PRE_(((QTimeEvt *)ptr)->ctr);
-                            QS_TEC_PRE_(((QTimeEvt *)ptr)->interval);
-                            QS_SIG_PRE_(((QTimeEvt *)ptr)->super.sig);
-                            QS_U8_PRE_ (((QTimeEvt *)ptr)->super.refCtr_);
+                            QS_OBJ_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[i])
+                                        ->act);
+                            QS_TEC_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[i])
+                                        ->ctr);
+                            QS_TEC_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[i])
+                                        ->interval);
+                            QS_SIG_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[i])
+                                        ->super.sig);
+                            QS_U8_PRE_ (((QTimeEvt *)QS_rxPriv_.currObj[i])
+                                        ->super.refCtr_);
                             break;
                         default:
                             break;
                     }
                 QS_endRec_();
-                QS_CRIT_EXIT_();
+                QS_CRIT_X_();
 
                 QS_REC_DONE(); /* user callback (if defined) */
             }
             else {
                 QS_rxReportError_((uint8_t)QS_RX_QUERY_CURR);
             }
-            break;
-        }
-        case WAIT4_AO_FILTER_FRAME: {
-            QS_rxReportAck_(QS_RX_AO_FILTER);
-            if (l_rx.var.aFlt.prio <= QF_MAX_ACTIVE) {
-                QS_rxReportAck_(QS_RX_AO_FILTER);
-                QS_priv_.locFilter[AO_OBJ] = QF_active_[l_rx.var.aFlt.prio];
-                QS_priv_.locFilter[SM_OBJ] = QF_active_[l_rx.var.aFlt.prio];
-            }
-            else {
-                QS_rxReportError_((uint8_t)QS_RX_AO_FILTER);
-            }
-            /* no need to report Done */
             break;
         }
         case WAIT4_EVT_FRAME: {
@@ -1059,7 +1061,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
                     ++l_rx.var.evt.e->refCtr_;
 
                     QHSM_DISPATCH((QHsm *)QS_rxPriv_.currObj[SM_OBJ],
-                                  l_rx.var.evt.e);
+                                  l_rx.var.evt.e, 0U);
                     i = 0x01U;  /* success status, recycle needed */
                 }
                 else {
@@ -1076,7 +1078,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
                     ++l_rx.var.evt.e->refCtr_;
 
                     QHSM_INIT((QHsm *)QS_rxPriv_.currObj[SM_OBJ],
-                              l_rx.var.evt.e);
+                              l_rx.var.evt.e, 0U);
                     i = 0x01U;  /* success status, recycle needed */
                 }
                 else {
@@ -1182,11 +1184,11 @@ static void QS_rxHandleBadFrame_(uint8_t state) {
 /****************************************************************************/
 static void QS_rxReportAck_(enum QSpyRxRecords recId) {
     QS_CRIT_STAT_
-    QS_CRIT_ENTRY_();
+    QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_RX_STATUS);
         QS_U8_PRE_(recId); /* record ID */
     QS_endRec_();
-    QS_CRIT_EXIT_();
+    QS_CRIT_X_();
 
     QS_REC_DONE(); /* user callback (if defined) */
 }
@@ -1194,11 +1196,11 @@ static void QS_rxReportAck_(enum QSpyRxRecords recId) {
 /****************************************************************************/
 static void QS_rxReportError_(uint8_t code) {
     QS_CRIT_STAT_
-    QS_CRIT_ENTRY_();
+    QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_RX_STATUS);
         QS_U8_PRE_(0x80U | code); /* error code */
     QS_endRec_();
-    QS_CRIT_EXIT_();
+    QS_CRIT_X_();
 
     QS_REC_DONE(); /* user callback (if defined) */
 }
@@ -1206,12 +1208,12 @@ static void QS_rxReportError_(uint8_t code) {
 /****************************************************************************/
 static void QS_rxReportDone_(enum QSpyRxRecords recId) {
     QS_CRIT_STAT_
-    QS_CRIT_ENTRY_();
+    QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_TARGET_DONE);
         QS_TIME_PRE_();    /* timestamp */
         QS_U8_PRE_(recId); /* record ID */
     QS_endRec_();
-    QS_CRIT_EXIT_();
+    QS_CRIT_X_();
 
     QS_REC_DONE(); /* user callback (if defined) */
 }
@@ -1267,13 +1269,13 @@ uint32_t QS_getTestProbe_(void (* const api)(void)) {
 
             data = l_testData.tpBuf[i].data;
 
-            QS_CRIT_ENTRY_();
+            QS_CRIT_E_();
             QS_beginRec_((uint_fast8_t)QS_TEST_PROBE_GET);
                 QS_TIME_PRE_();    /* timestamp */
                 QS_FUN_PRE_(api);  /* the calling API */
                 QS_U32_PRE_(data); /* the Test-Probe data */
             QS_endRec_();
-            QS_CRIT_EXIT_();
+            QS_CRIT_X_();
 
             QS_REC_DONE(); /* user callback (if defined) */
 

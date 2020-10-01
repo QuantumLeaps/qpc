@@ -4,8 +4,8 @@
 * @ingroup qep qf qv qk qxk qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-03
+* Last updated for version 6.9.1
+* Last updated on  2020-09-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -60,17 +60,6 @@ extern "C" {
     #include "qs_dummy.h" /* QS/C dummy (inactive) interface */
 #endif
 
-/*! Symbols for time-stamping the application build */
-/**
-* @description
-* The exernal symbols Q_APP_BUILD_DATE and Q_APP_BUILD_TIME are defined in
-* the module qstamp.c. This module needs to be re-compiled for every
-* software build.
-*/
-extern char_t const Q_APP_BUILD_DATE[12];
-extern char_t const Q_APP_BUILD_TIME[9];
-
-
 /****************************************************************************/
 #ifndef QP_API_VERSION
 
@@ -91,6 +80,59 @@ extern char_t const Q_APP_BUILD_TIME[9];
 #endif /* #ifndef QP_API_VERSION */
 
 /* QP API compatibility layer... */
+
+/****************************************************************************/
+#if (QP_API_VERSION < 691)
+
+/*! @deprecated enable the QS global filter */
+#define QS_FILTER_ON(rec_)        QS_GLB_FILTER((rec_))
+
+/*! @deprecated disable the QS global filter */
+#define QS_FILTER_OFF(rec_)       QS_GLB_FILTER(-(rec_))
+
+/*! @deprecated enable the QS local filter for SM (state machine) object */
+#define QS_FILTER_SM_OBJ(obj_)    ((void)0)
+
+/*! @deprecated enable the QS local filter for AO (active objects) */
+#define QS_FILTER_AO_OBJ(obj_)    ((void)0)
+
+/*! @deprecated enable the QS local filter for MP (memory pool) object */
+#define QS_FILTER_MP_OBJ(obj_)    ((void)0)
+
+/*! @deprecated enable the QS local filter for EQ (event queue) object */
+#define QS_FILTER_EQ_OBJ(obj_)    ((void)0)
+
+/*! @deprecated enable the QS local filter for TE (time event) object */
+#define QS_FILTER_TE_OBJ(obj_)    ((void)0)
+
+#ifdef Q_SPY
+
+/*! @deprecated local Filter for a generic application object @p obj_. */
+#define QS_FILTER_AP_OBJ(obj_)  (QS_priv_.locFilter_AP = (obj_))
+
+/*! @deprecated begin of a user QS record, instead use QS_BEGIN_ID() */
+#define QS_BEGIN(rec_, obj_)                             \
+    if (((QS_priv_.glbFilter[(uint_fast8_t)(rec_) >> 3U] \
+          & (1U << ((uint_fast8_t)(rec_) & 7U))) != 0U)  \
+        && ((QS_priv_.locFilter_AP == (void *)0)         \
+            || (QS_priv_.locFilter_AP == (obj_))))       \
+    {                                                    \
+        QS_CRIT_STAT_                                    \
+        QS_CRIT_E_();                                    \
+        QS_beginRec_((uint_fast8_t)(rec_));              \
+        QS_TIME_PRE_(); {
+
+/*! @deprecated Output formatted uint32_t to the QS record */
+#define QS_U32_HEX(width_, data_) \
+    (QS_u32_fmt_((uint8_t)(((width_) << 4)) | (uint8_t)0x0FU, (data_)))
+
+#else
+
+#define QS_FILTER_AP_OBJ(obj_)    ((void)0)
+#define QS_BEGIN(rec_, obj_)      if (false) {
+#define QS_U32_HEX(width_, data_) ((void)0)
+
+#endif
 
 /****************************************************************************/
 #if (QP_API_VERSION < 660)
@@ -139,6 +181,7 @@ typedef QHsm        QFsm;
 #endif /* QP_API_VERSION < 540 */
 #endif /* QP_API_VERSION < 580 */
 #endif /* QP_API_VERSION < 660 */
+#endif /* QP_API_VERSION < 691 */
 
 #ifdef __cplusplus
 }

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Dining Philosophers Problem" example, ThreadX kernel
-* Last Updated for Version: 6.3.7
-* Date of the Last Update:  2018-12-17
+* Last updated for version 6.9.1
+* Last updated on  2020-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -133,6 +133,10 @@ void BSP_init(void) {
         Q_ERROR();
     }
     QS_USR_DICTIONARY(PHILO_STAT);
+
+    /* setup the QS filters... */
+    QS_GLB_FILTER(QS_ALL_RECORDS);
+    QS_GLB_FILTER(-QS_QF_TICK);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -155,7 +159,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
     }
     (void)n; /* unused parameter (in all but Spy build configuration) */
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
     QS_END()
@@ -313,10 +317,6 @@ uint8_t QS_onStartup(void const *arg) {
 
     QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
-
-    /* setup the QS filters... */
-    QS_FILTER_ON(QS_ALL_RECORDS);
-    QS_FILTER_OFF(QS_QF_TICK);
 
     return 1U; /* return success */
 }

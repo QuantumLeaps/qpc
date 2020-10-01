@@ -84,6 +84,7 @@ The QP/C examples for FreeRTOS are as follows:
     - @subpage freertos_dpp_ek-tm4c123gxl (Cortex-M4F) <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a><br>(ARM-KEIL, GNU-ARM and IAR EWARM toolchains)
     - @subpage freertos_dpp_stm32f746g-disco (Cortex-M7) <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a><br>(ARM-KEIL, GNU-ARM and IAR EWARM toolchains)
     - @subpage freertos_dpp_nucleo-h743zi (Cortex-M7) <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a><br>(ARM-KEIL, GNU-ARM and IAR EWARM toolchains)
+    - @subpage freertos_start-stop_nucleo-h743zi (Cortex-M7) <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a><br>(ARM-KEIL, GNU-ARM and IAR EWARM toolchains)
 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.

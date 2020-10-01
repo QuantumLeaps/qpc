@@ -3,8 +3,8 @@
 * @brief QF/C, port to ThreadX
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-13
+* Last updated for version 6.9.1
+* Last updated on  2020-09-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -60,7 +60,9 @@
 #include "qep_port.h"  /* QEP port */
 #include "qequeue.h"   /* used for event deferral */
 #include "qf.h"        /* QF platform-independent public interface */
-
+#ifdef Q_SPY
+#include "qmpool.h"    /* needed only for QS-RX */
+#endif
 
 /*****************************************************************************
 * interface used only inside QF, but not in applications
@@ -103,9 +105,9 @@
     #define QF_EPOOL_EVENT_SIZE_(pool_) \
         ((uint_fast16_t)(pool_).tx_block_pool_block_size)
 
-    #define QF_EPOOL_GET_(pool_, e_, margin_) do {                           \
+    #define QF_EPOOL_GET_(pool_, e_, margin_, qs_id_) do {                   \
         QF_CRIT_STAT_                                                        \
-        QF_CRIT_ENTRY_();                                                    \
+        QF_CRIT_E_();                                                        \
         if ((pool_).tx_block_pool_available > (margin_)) {                   \
             Q_ALLEGE(tx_block_allocate(&(pool_), (VOID **)&(e_), TX_NO_WAIT) \
                      == TX_SUCCESS);                                         \
@@ -113,10 +115,10 @@
         else {                                                               \
             (e_) = (QEvt *)0;                                                \
         }                                                                    \
-        QF_CRIT_EXIT_();                                                     \
+        QF_CRIT_X_();                                                        \
     } while (false)
 
-    #define QF_EPOOL_PUT_(dummy, e_) \
+    #define QF_EPOOL_PUT_(dummy, e_, qs_id_) \
         Q_ALLEGE(tx_block_release((VOID *)(e_)) == TX_SUCCESS)
 
 #endif /* ifdef QP_IMPL */

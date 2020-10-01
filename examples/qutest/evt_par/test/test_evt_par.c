@@ -112,22 +112,22 @@ void QS_onTestEvt(QEvt *e) {
 
     switch (e->sig) {
         case MY_EVT0_SIG:
-            QS_BEGIN(MY_EVT0, (void *)0) /* user-specific record */
+            QS_BEGIN_ID(MY_EVT0, 0U) /* app-specific record */
             QS_END()
             break;
         case MY_EVT1_SIG:
-            QS_BEGIN(MY_EVT1, (void *)0) /* user-specific record */
+            QS_BEGIN_ID(MY_EVT1, 0U) /* app-specific record */
                 QS_U32(0, Q_EVT_CAST(MyEvt1)->u32);
             QS_END()
             break;
         case MY_EVT2_SIG:
-            QS_BEGIN(MY_EVT2, (void *)0) /* user-specific record */
+            QS_BEGIN_ID(MY_EVT2, 0U) /* app-specific record */
                 QS_U32(0, Q_EVT_CAST(MyEvt2)->u32);
                 QS_U32(0, Q_EVT_CAST(MyEvt2)->u16);
             QS_END()
             break;
         case MY_EVT3_SIG:
-            QS_BEGIN(MY_EVT3, (void *)0) /* user-specific record */
+            QS_BEGIN_ID(MY_EVT3, 0U) /* app-specific record */
                 QS_U32(0, Q_EVT_CAST(MyEvt3)->u32);
                 QS_U32(0, Q_EVT_CAST(MyEvt3)->u16);
                 QS_U32(0, Q_EVT_CAST(MyEvt3)->u8);

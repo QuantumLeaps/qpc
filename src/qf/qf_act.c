@@ -80,9 +80,9 @@ void QF_add_(QActive * const a) {
                        && (p <= QF_MAX_ACTIVE)
                        && (QF_active_[p] == (QActive *)0));
 
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
     QF_active_[p] = a; /* register the active object at this priority */
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 }
 
 /****************************************************************************/
@@ -111,10 +111,10 @@ void QF_remove_(QActive * const a) {
     Q_REQUIRE_ID(200, (0U < p) && (p <= QF_MAX_ACTIVE)
                        && (QF_active_[p] == a));
 
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
     QF_active_[p] = (QActive *)0; /* free-up the priority level */
     a->super.state.fun = Q_STATE_CAST(0); /* invalidate the state */
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 }
 
 /****************************************************************************/

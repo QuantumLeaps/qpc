@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 6.9.1
+* Last updated on  2020-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -60,13 +60,13 @@
     /**
     * @description
     * The purpose of this macro is to enable writing the same code for the
-    * case when critical section status type is defined and when it is not.
+    * case whe6n critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
-    * invokes #QF_CRIT_ENTRY passing the key variable as the parameter.
-    * Otherwise #QF_CRIT_ENTRY is invoked with a dummy parameter.
-    * @sa #QF_CRIT_ENTRY
+    * invokes QF_CRIT_ENTRY() passing the key variable as the parameter.
+    * Otherwise QF_CRIT_ENTRY() is invoked with a dummy parameter.
+    * @sa QF_CRIT_ENTRY()
     */
-    #define QF_CRIT_ENTRY_()    QF_CRIT_ENTRY(dummy)
+    #define QF_CRIT_E_()     QF_CRIT_ENTRY(dummy)
 
     /*! This is an internal macro for exiting a critical section. */
     /**
@@ -78,12 +78,12 @@
     * Otherwise #QF_CRIT_EXIT is invoked with a dummy parameter.
     * @sa #QF_CRIT_EXIT
     */
-    #define QF_CRIT_EXIT_()     QF_CRIT_EXIT(dummy)
+    #define QF_CRIT_X_()     QF_CRIT_EXIT(dummy)
 
 #elif (!defined QF_CRIT_STAT_)
-    #define QF_CRIT_STAT_       QF_CRIT_STAT_TYPE critStat_;
-    #define QF_CRIT_ENTRY_()    QF_CRIT_ENTRY(critStat_)
-    #define QF_CRIT_EXIT_()     QF_CRIT_EXIT(critStat_)
+    #define QF_CRIT_STAT_    QF_CRIT_STAT_TYPE critStat_;
+    #define QF_CRIT_E_()     QF_CRIT_ENTRY(critStat_)
+    #define QF_CRIT_X_()     QF_CRIT_EXIT(critStat_)
 #endif
 
 /****************************************************************************/
@@ -98,7 +98,7 @@
 
     #define Q_ASSERT_CRIT_(id_, test_) do {               \
         if ((test_)) {} else {                            \
-            QF_CRIT_EXIT_();                              \
+            QF_CRIT_X_();                                 \
             Q_onAssert(&Q_this_module_[0], (int_t)(id_)); \
         }                                                 \
     } while (false)
@@ -106,7 +106,7 @@
     #define Q_REQUIRE_CRIT_(id_, test_) Q_ASSERT_CRIT_((id_), (test_))
 
     #define Q_ERROR_CRIT_(id_) do {                       \
-        QF_CRIT_EXIT_();                                  \
+        QF_CRIT_X_();                                     \
         Q_onAssert(&Q_this_module_[0], (int_t)(id_));     \
     } while (false)
 

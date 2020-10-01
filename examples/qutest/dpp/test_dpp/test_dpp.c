@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QUTEST fixture for the DPP components
-* Last Updated for Version: 6.3.5
-* Date of the Last Update:  2018-09-16
+* Last Updated for Version: 6.9.1
+* Date of the Last Update:  2020-09-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -59,13 +59,13 @@ void QS_onCommand(uint8_t cmdId,
 
     switch (cmdId) {
        case 0U: {
-           QEvt const e = { PAUSE_SIG, 0U, 0U };
-           QHSM_DISPATCH(&AO_Table->super, &e);
+           QEvt const e_pause = { PAUSE_SIG, 0U, 0U };
+           QHSM_DISPATCH(&AO_Table->super, &e_pause, 0U);
            break;
        }
        case 1U: {
-           QEvt const e = { SERVE_SIG, 0U, 0U };
-           QHSM_DISPATCH(&AO_Table->super, &e);
+           QEvt const e_serve = { SERVE_SIG, 0U, 0U };
+           QHSM_DISPATCH(&AO_Table->super, &e_serve, 0U);
            break;
        }
        default:
@@ -92,7 +92,7 @@ void QS_onTestPost(void const *sender, QActive *recipient,
         case EAT_SIG:
         case DONE_SIG:
         case HUNGRY_SIG:
-            QS_BEGIN(QUTEST_ON_POST, (void *)0) /* application-specific record */
+            QS_BEGIN_ID(QUTEST_ON_POST, 0U) /* application-specific record */
                 QS_SIG(e->sig, recipient);
                 QS_U8(0, Q_EVT_CAST(TableEvt)->philoNum);
             QS_END()

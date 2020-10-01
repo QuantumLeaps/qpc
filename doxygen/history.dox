@@ -1,6 +1,83 @@
 /**
 @page history Revision History
 
+@section qpc_6_9_1 Version 6.9.1, 2020-09-28
+The main purpose of this release is a redesign of the [<b>QS Local Filter</b>](https://www.state-machine.com/qtools/qs.html#qs_local) (see also [feature request #127](https://sourceforge.net/p/qpc/feature-requests/127)). This new design supports filtering on __multiple__ active objects (as well as other objects in the Target memory), as opposed to filtering just one such object at a time. The main use case for this redesign of QS Local Filter is an application, where some active objects are very "noisy", and would overwhelm your trace. The new QS Local Filter allows you to selectively silence the "noisy" active objects and let all the others through.
+
+The new QS Local Filter is based on "QS-IDs" associated with various objects in the Target memory. The QS-IDs are small integer numbers, such as the unique priorities assigned to QP Active Objects, but there are more such QS-IDs, which you can assign to various other objects through the macro QS_BEGIN_ID(). Then, you can setup the QS Local Filter to trace only a specific QS-IDs or whole groups of QS-IDs by means of the macro QS_LOC_FILTER() or remotely via the QS-RX channel.
+
+
+__Source code changes:__
+
+The redesign of the QS Local Filter impacts the QS trace instrumentation in QP/C: both the [<b>pre-defined QS trace records</b>](https://www.state-machine.com/qtools/qs.html#qs_pre) and the [<b>application-specific trace records</b>](https://www.state-machine.com/qtools/qs.html#qs_app). The changes to the pre-defined records are confided to the QP/C source code and are transparent to the application developers. However, the changes to the application-specific trace records require adjusting existing applications as follows:
+
+- use the new macro QS_LOC_FILTER() to set/clear the QS Local Filter
+- use the new macro QS_BEGIN_ID() to define [<b>application-specific trace records</b>](https://www.state-machine.com/qtools/qs.html#qs_app).
+
+
+@note
+The macro QS_BEGIN_ID() assigns the specified QS-ID number to the app-specific record, which can be subsequently filtered by the new QS Local Filter. The old macro QS_BEGIN(), with the old Local Filter interface, is still available, but is @ref deprecated "deprecated" and not recommended.
+
+
+The following macros are __deprecated__:
+
+- macro QS_FILTER_SM_OBJ() does nothing in QP/C 6.9.1
+- macro QS_FILTER_AO_OBJ() does nothing in QP/C 6.9.1
+- macro QS_FILTER_MP_OBJ() does nothing in QP/C 6.9.1
+- macro QS_FILTER_EQ_OBJ() does nothing in QP/C 6.9.1
+- macro QS_FILTER_TE_OBJ() does nothing in QP/C 6.9.1
+- macro QS_FILTER_AP_OBJ() still works for QS_BEGIN()
+- macro QS_FILTER_ON() still works, but uses QS_GLB_FILTER() internally
+- macro QS_FILTER_OFF() still works, but uses QS_GLB_FILTER() internally
+- macro QS_BEGIN() still works, but uses the old "AP-OBJ" pointer
+
+
+The following APIs have been __changed__:
+
+- QHSM_INIT() now takes extra `qs_id` parameter
+- QHSM_DISPATCH() now takes extra `qs_id` parameter
+- QMPool_get() now takes extra `qs_id` parameter
+- QMPool_put() now takes extra `qs_id` parameter
+- QEQueue_post() now takes extra `qs_id` parameter
+- QEQueue_postLIFO() now takes extra `qs_id` parameter
+- QEQueue_get() now takes extra `qs_id` parameter
+
+@note
+The API changes are __not backwards-compatible__ and require adjusting existing QP/C applications.
+
+
+Additionally, this release introduces the new pre-defined QS record #QS_QF_NEW_ATTEMPT, which is generated when Q_NEW_X() fails to allocate a dynamic event. Also, this release __reverses the order__ of the pre-defined QS records #QS_QF_NEW and #QS_QF_MPOOL_GET. This was necessary if the dynamic allocation is allowed to fail, because only _after_ attempting to allocate a memory block, the  QF_newX_() function can generate either #QS_QF_NEW or #QS_QF_NEW_ATTEMPT.
+
+@note
+The reversal of #QS_QF_NEW and #QS_QF_MPOOL_GET trace records has implications for the existing [<b>QUTest test scripts</b>](https://www.state-machine.com/qtools/qutest_script.html), where the order of expectations for "QF-New" and "MP-Get" needs to be reversed as well.
+
+
+Additionally, this release modifies the @ref qxk "QXK" source code, so that the `QActive.prio` attribute is the fixed priority assigned in QActive_start(), while `QActive.dynPrio` is the "dynamic" priority that can be changed when a @ref qxk_extended "QXK extended thread" acquires a @ref ::QXMutex "mutex".  
+
+
+__Updated Ports:__
+
+- all ARM Cortex-M ports (added workaround for the [<b>ARM Erratum 838869</b>](https://www.state-machine.com/doc/Cortex-M4_Software_Developers_Errata_Notice_v3.pdf))
+- all QK ports (because of the changed QMPool_get() / QMPool_put() interface)
+- all QXK ports (because of the changed QMPool_get() / QMPool_put() interface)
+- embOS port (because of the changed QMPool_get() / QMPool_put() interface)  
+- FreeRTOS port (because of the changed QMPool_get() / QMPool_put() interface)  
+- ThreadX port (because of the changed QMPool_get() / QMPool_put() interface)  
+- uC/OS-II port (because of the changed QMPool_get() / QMPool_put() interface)  
+- posix, posix-qv (because of the changed QMPool_get() / QMPool_put() interface)
+- win32, win32-qv (because of the changed QMPool_get() / QMPool_put() interface)
+
+
+__Feature Requests:__
+
+- [feature#181 "Use of QS_U64()) on 32 bit machine"](https://sourceforge.net/p/qpc/feature-requests/181)
+
+__Bug Fixes:__
+
+- [bug#279 "Confusing documentation of QF_newX_()"](https://sourceforge.net/p/qpc/bugs/279)
+- [bug#280 "QXK_onContextSw() not called at the end of QXK_activate_()"](https://sourceforge.net/p/qpc/bugs/280)
+
+
 @section qpc_6_9_0 Version 6.9.0, 2020-08-21
 The main purpose of this release is to adjust the QP/C RTEF to the changes and improvements introduced in [QTools 6.9.0](https://www.state-machine.com/qtools/history.html). Specifically, QP/C now includes examples for the new [QView Visualization &amp; Monitoring](https://www.state-machine.com/qtools/qview.html) as well as adjustments for the new version of [QUTest Unit Testing](https://www.state-machine.com/qtools/qutest.html).
 
@@ -36,7 +113,7 @@ The #QS_QF_RUN record is now generated in [QUTest unit testing](https://www.stat
   + ARM Cortex-M examples for STM32 NUCLEO-L053RE (`qpc\examples\arm-cm\dpp_nucleo-l053r8`) and NUCLEO-L152RE (`qpc\examples\arm-cm\dpp_nucleo-l152re`) have been modified to support bi-directional QSPY communication. These examples now include the QView demos.
   + Added examples of new [Sequence Diagram Generation](https://www.state-machine.com/qtools/html/qspy_seq.html) in QSPY 6.9.0
 
-  + The example projects for MSP430 now contain the `ccs-ti` and `ccs-gnu` directories, for the TI-MSP430 and GNU-MSP430 toolchains, respectively. 
+  + The example projects for MSP430 now contain the `ccs-ti` and `ccs-gnu` directories, for the TI-MSP430 and GNU-MSP430 toolchains, respectively.
 
 
 __Bug Fixes:__
@@ -661,7 +738,7 @@ permits nesting of critical sections, which was requested by customers.
 
 Additionally, this release changes the selective interrupt disabling for
 ARM Cortex-M3/4/7 (with the BASEPRI register) to address the hardware problem
-on ARM Cortex-M7 core r0p1 (ARM-EPM-064408, errata 837070). The QP ports to
+on ARM Cortex-M7 core r0p1 ([SDEN-1068427, erratum 837070](https://www.state-machine.com/doc/Cortex-M7_Software_Developers_Errata_Notice_v8.pdf)). The QP ports to
 ARM Cortex-M3/4/7 now implement the workaround recommended by ARM, which is
 to surround MSR BASEPRI with the "CPSID i"/"CPSIE i" pair. This workaround
 works also for Cortex-M3/M4 cores.

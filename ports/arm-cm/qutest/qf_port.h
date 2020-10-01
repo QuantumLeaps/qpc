@@ -3,8 +3,8 @@
 * @brief QF/C port to Cortex-M, QUTEST unit test harness, generic C99 compiler
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.8.0
-* Date of the Last Update:  2020-03-13
+* Last Updated for Version: 6.9.1
+* Date of the Last Update:  2020-09-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -66,9 +66,6 @@
 #include "qmpool.h"    /* QUTEST port uses QMPool memory-pool */
 #include "qf.h"        /* QF platform-independent public interface */
 
-/* interrupt nesting up-down counter */
-extern uint8_t volatile QF_intNest;
-
 /****************************************************************************/
 /* interface used only inside QF implementation, but not in applications */
 #ifdef QP_IMPL
@@ -85,13 +82,14 @@ extern uint8_t volatile QF_intNest;
         QPSet_insert(&QS_rxPriv_.readySet, (uint_fast8_t)(me_)->prio)
 
     /* native QF event pool operations */
-    #define QF_EPOOL_TYPE_  QMPool
+    #define QF_EPOOL_TYPE_            QMPool
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_))
-
-    #define QF_EPOOL_EVENT_SIZE_(p_)  ((p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
-    #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), e_))
+        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
+    #define QF_EPOOL_GET_(p_, e_, m_, qs_id_) \
+        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qs_id_)))
+    #define QF_EPOOL_PUT_(p_, e_, qs_id_) \
+        (QMPool_put(&(p_), (e_), (qs_id_)))
 
     #include "qf_pkg.h" /* internal QF interface */
 

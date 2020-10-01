@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Purpose: Fixture for QUTEST self-test
-* Last Updated for Version: 6.8.0
-* Date of the Last Update:  2020-03-30
+* Last Updated for Version: 6.9.1
+* Date of the Last Update:  2020-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -44,6 +44,7 @@ enum {
     FIXTURE_TEARDOWN,
     COMMAND_X,
     COMMAND_Y,
+    COMMAND_Z,
     MY_RECORD,
 };
 
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]) {
     Q_ALLEGE(QS_INIT(argc > 1 ? argv[1] : (void *)0));
 
     /* global filter */
-    QS_FILTER_ON(QS_ALL_RECORDS); /* enable all QS records */
+    QS_GLB_FILTER(QS_ALL_RECORDS); /* enable all QS records */
 
     /* dictionaries... */
     QS_OBJ_DICTIONARY(buffer);
@@ -66,6 +67,7 @@ int main(int argc, char *argv[]) {
     QS_USR_DICTIONARY(FIXTURE_TEARDOWN);
     QS_USR_DICTIONARY(COMMAND_X);
     QS_USR_DICTIONARY(COMMAND_Y);
+    QS_USR_DICTIONARY(COMMAND_Z);
     QS_USR_DICTIONARY(MY_RECORD);
 
     return QF_run(); /* run the tests */
@@ -73,12 +75,12 @@ int main(int argc, char *argv[]) {
 
 /*--------------------------------------------------------------------------*/
 void QS_onTestSetup(void) {
-    QS_BEGIN(FIXTURE_SETUP, (void *)0)
+    QS_BEGIN_ID(FIXTURE_SETUP, 0U)
     QS_END()
 }
 /*..........................................................................*/
 void QS_onTestTeardown(void) {
-    QS_BEGIN(FIXTURE_TEARDOWN, (void *)0)
+    QS_BEGIN_ID(FIXTURE_TEARDOWN, 0U)
     QS_END()
 }
 
@@ -94,17 +96,26 @@ void QS_onCommand(uint8_t cmdId,
     switch (cmdId) {
         case COMMAND_X: {
             uint32_t x = myFun();
-            QS_BEGIN(COMMAND_X, (void *)0) /* application-specific record */
+            QS_BEGIN_ID(COMMAND_X, 0U) /* app-specific record */
                 QS_U32(0, x);
                 /* ... */
             QS_END()
             break;
         }
         case COMMAND_Y: {
-            QS_BEGIN(COMMAND_Y, (void *)0) /* application-specific record */
+            QS_BEGIN_ID(COMMAND_Y, 0U) /* application-specific record */
                 QS_FUN(&myFun);
                 QS_MEM(buffer, param1);
                 QS_STR((char const *)&buffer[33]);
+            QS_END()
+            break;
+        }
+        case COMMAND_Z: {
+            float32_t f32 = (float32_t)((int32_t)param2/(float32_t)param3);
+            float64_t f64 = (int32_t)param2/(float64_t)param3;
+            QS_BEGIN_ID(COMMAND_Z, 0U) /* app-specific record */
+                QS_F32(param1, f32);
+                QS_F64(param1, f64);
             QS_END()
             break;
         }

@@ -1,13 +1,13 @@
 /*****************************************************************************
-* Product: calc1_sub Example
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Product: calc Example
+* Last updated for version 6.9.1
+* Last updated on  2020-09-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -59,7 +59,7 @@ int main() {
            QP_VERSION_STR);
 
     Calc_ctor(); /* explicitly instantiate the calculator object */
-    QHSM_INIT(the_calc, (QEvt *)0); /* trigger initial transition */
+    QHSM_INIT(the_calc, (void *)0, 0U); /* trigger initial transition */
 
     for (;;) { /* event loop */
         CalcEvt e; /* Calculator event */
@@ -74,16 +74,16 @@ int main() {
         switch (e.key_code) {
             case 'c': /* intentionally fall through */
             case 'C': {
-                ((QEvt *)&e)->sig = C_SIG;
+                e.super.sig = C_SIG;
                 break;
             }
             case 'e': /* intentionally fall through */
             case 'E': {
-                ((QEvt *)&e)->sig = CE_SIG;
+                e.super.sig = CE_SIG;
                 break;
             }
             case '0': {
-                ((QEvt *)&e)->sig = DIGIT_0_SIG;
+                e.super.sig = DIGIT_0_SIG;
                 break;
             }
             case '1': /* intentionally fall through */
@@ -95,37 +95,37 @@ int main() {
             case '7': /* intentionally fall through */
             case '8': /* intentionally fall through */
             case '9': {
-                ((QEvt *)&e)->sig = DIGIT_1_9_SIG;
+                e.super.sig = DIGIT_1_9_SIG;
                 break;
             }
             case '.': {
-                ((QEvt *)&e)->sig = POINT_SIG;
+                e.super.sig = POINT_SIG;
                 break;
             }
             case '+': /* intentionally fall through */
             case '-': /* intentionally fall through */
             case '*': /* intentionally fall through */
             case '/': {
-                ((QEvt *)&e)->sig = OPER_SIG;
+                e.super.sig = OPER_SIG;
                 break;
             }
             case '=': /* intentionally fall through */
             case '\r': { /* Enter key */
-                ((QEvt *)&e)->sig = EQUALS_SIG;
+                e.super.sig = EQUALS_SIG;
                 break;
             }
             case '\33': { /* ESC key */
-                ((QEvt *)&e)->sig = OFF_SIG;
+                e.super.sig = OFF_SIG;
                 break;
             }
             default: {
-                ((QEvt *)&e)->sig = 0; /* invalid event */
+                e.super.sig = 0; /* invalid event */
                 break;
             }
         }
 
-        if (((QEvt *)&e)->sig != 0) {  /* valid event generated? */
-            QHSM_DISPATCH(the_calc, (QEvt *)&e); /* dispatch event */
+        if (e.super.sig != 0) {  /* valid event generated? */
+            QHSM_DISPATCH(the_calc, &e.super, 0U); /* dispatch event */
         }
     }
 

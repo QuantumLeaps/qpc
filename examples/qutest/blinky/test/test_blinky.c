@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
     QACTIVE_START(AO_Blinky,
                   1U,
                   blinkyQSto, Q_DIM(blinkyQSto),
-                  (void *)0, 0U, (QEvt *)0);
+                  (void *)0, 0U, (void *)0);
 
     return QF_run();
 }

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Blinky" on EK-TM4C123GXL board, cooperative Vanilla kernel
-* Last Updated for Version: 5.5.0
-* Date of the Last Update:  2015-08-17
+* Last updated for version 6.9.1
+* Last updated on  2020-09-23
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -47,25 +47,6 @@
     #error Simple Blinky Application does not provide Spy build configuration
 #endif
 
-/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-* Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-* DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-*/
-enum KernelUnawareISRs { /* see NOTE00 */
-    /* ... */
-    MAX_KERNEL_UNAWARE_CMSIS_PRI  /* keep always last */
-};
-/* "kernel-unaware" interrupts can't overlap "kernel-aware" interrupts */
-Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
-
-enum KernelAwareISRs {
-    SYSTICK_PRIO = QF_AWARE_ISR_CMSIS_PRI, /* see NOTE00 */
-    /* ... */
-    MAX_KERNEL_AWARE_CMSIS_PRI /* keep always last */
-};
-/* "kernel-aware" interrupts should not overlap the PendSV priority */
-Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
-
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
 void GPIOPortA_IRQHandler(void);
@@ -81,8 +62,8 @@ void GPIOPortA_IRQHandler(void);
 /* ISRs used in this project ===============================================*/
 void SysTick_Handler(void) {
     QF_TICK_X(0U, (void *)0); /* process time events for rate 0 */
+    QV_ARM_ERRATUM_838869();
 }
-
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
@@ -140,13 +121,13 @@ void QF_onStartup(void) {
     /* assing all priority bits for preemption-prio. and none to sub-prio. */
     NVIC_SetPriorityGrouping(0U);
 
-    /* set priorities of ALL ISRs used in the system, see NOTE00
+    /* set priorities of ALL ISRs used in the system, see NOTE1
     *
     * !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI);
     /* ... */
 
     /* enable IRQs... */
@@ -155,8 +136,8 @@ void QF_onStartup(void) {
 void QF_onCleanup(void) {
 }
 /*..........................................................................*/
-void QV_onIdle(void) { /* CATION: called with interrupts DISABLED, NOTE01 */
-    /* toggle LED2 on and then off, see NOTE02 */
+void QV_onIdle(void) { /* CATION: called with interrupts DISABLED, NOTE2 */
+    /* toggle LED2 on and then off, see NOTE3 */
     GPIOF->DATA_Bits[LED_BLUE] = 0xFFU;
     GPIOF->DATA_Bits[LED_BLUE] = 0x00U;
 
@@ -183,7 +164,7 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
 }
 
 /*****************************************************************************
-* NOTE00:
+* NOTE1:
 * The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
 * ISR priority that is disabled by the QF framework. The value is suitable
 * for the NVIC_SetPriority() CMSIS function.
@@ -200,13 +181,13 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
 * by which a "QF-unaware" ISR can communicate with the QF framework is by
 * triggering a "QF-aware" ISR, which can post/publish events.
 *
-* NOTE01:
+* NOTE2:
 * The QV_onIdle() callback is called with interrupts disabled, because the
 * determination of the idle condition might change by any interrupt posting
 * an event. QV_onIdle() must internally enable interrupts, ideally
 * atomically with putting the CPU to the power-saving mode.
 *
-* NOTE02:
+* NOTE3:
 * One of the LEDs is used to visualize the idle loop activity. The brightness
 * of the LED is proportional to the frequency of invcations of the idle loop.
 * Please note that the LED is toggled with interrupts locked, so no interrupt

@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-11
+* Last updated for version 6.9.1
+* Last updated on  2020-09-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -64,7 +64,7 @@ int_t QF_run(void) {
     QF_onStartup();  /* QF callback to configure and start interrupts */
 
     /* produce the QS_QF_RUN trace record */
-    QS_BEGIN_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_BEGIN_PRE_(QS_QF_RUN, 0U)
     QS_END_PRE_()
 
     OSStart();       /* start uC/OS-II multitasking */
@@ -97,7 +97,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = prio; /* save the QF priority */
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    QHSM_INIT(&me->super, par, me->prio); /* initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* map from QP to uC/OS priority */
@@ -133,7 +133,8 @@ static void task_function(void *pdata) { /* uC/OS-II task signature */
     /* event-loop */
     for (;;) { /* for-ever */
         QEvt const *e = QActive_get_((QActive *)pdata);
-        QHSM_DISPATCH((QHsm *)pdata, e); /* dispatch to the AO's SM */
+        /* dispatch to the AO's SM */
+        QHSM_DISPATCH((QHsm *)pdata, e, ((QActive *)pdata)->prio);
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
 }
@@ -150,7 +151,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     uint_fast16_t nFree;
     QF_CRIT_STAT_
 
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
 
     nFree = (uint_fast16_t)(((OS_Q_DATA *)me->eQueue)->OSQSize
                             - ((OS_Q_DATA *)me->eQueue)->OSNMsgs);
@@ -172,8 +173,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
     if (status) { /* can post the event? */
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST,
-                         QS_priv_.locFilter[AO_OBJ], me)
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST, me->prio)
             QS_TIME_PRE_();         /* timestamp */
             QS_OBJ_PRE_(sender);    /* the sender object */
             QS_SIG_PRE_(e->sig);    /* the signal of the event */
@@ -188,7 +188,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
         }
 
-        QF_CRIT_EXIT_();
+        QF_CRIT_X_();
 
         /* posting the event to uC/OS-II message queue must succeed */
         Q_ALLEGE_ID(720,
@@ -196,8 +196,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     }
     else {
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT,
-                         QS_priv_.locFilter[AO_OBJ], me)
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT, me->prio)
             QS_TIME_PRE_();         /* timestamp */
             QS_OBJ_PRE_(sender);    /* the sender object */
             QS_SIG_PRE_(e->sig);    /* the signal of the event */
@@ -207,7 +206,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_EQC_PRE_(margin);    /* margin requested */
         QS_END_NOCRIT_PRE_()
 
-        QF_CRIT_EXIT_();
+        QF_CRIT_X_();
     }
 
     return status;
@@ -215,9 +214,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 /*..........................................................................*/
 void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_STAT_
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
 
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, me->prio)
         QS_TIME_PRE_();             /* timestamp */
         QS_SIG_PRE_(e->sig);        /* the signal of this event */
         QS_OBJ_PRE_(me);            /* this active object */
@@ -231,7 +230,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 
     /* posting the event to uC/OS message queue must succeed */
     Q_ALLEGE_ID(810,
@@ -245,7 +244,7 @@ QEvt const *QActive_get_(QActive * const me) {
 
     Q_ASSERT_ID(910, err == OS_ERR_NONE);
 
-    QS_BEGIN_PRE_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
+    QS_BEGIN_PRE_(QS_QF_ACTIVE_GET, me->prio)
         QS_TIME_PRE_();             /* timestamp */
         QS_SIG_PRE_(e->sig);        /* the signal of this event */
         QS_OBJ_PRE_(me);            /* this active object */

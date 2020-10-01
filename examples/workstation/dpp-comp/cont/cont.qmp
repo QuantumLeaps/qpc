@@ -30,7 +30,10 @@ me-&gt;comp = comp;</code>
   <!--${Cont::CompTimeEvt::dispatchToComp}-->
   <operation name="dispatchToComp" type="void" visibility="0x00" properties="0x00">
    <specifiers>const</specifiers>
-   <code>QHSM_DISPATCH(me-&gt;comp, (QEvt const *)me);</code>
+   <!--${Cont::CompTimeEvt::dispatchToComp::qs_id}-->
+   <parameter name="qs_id" type="uint_fast8_t const"/>
+   <code>(void)qs_id; /* unused parameter outside Q_SPY */
+QHSM_DISPATCH(me-&gt;comp, (QEvt const *)me, qs_id);</code>
   </operation>
  </class>
  <!--${Cont::Table}-->
@@ -80,7 +83,7 @@ QActive_subscribe(&amp;me-&gt;super, SERVE_SIG);
 QActive_subscribe(&amp;me-&gt;super, TEST_SIG);
 
 for (n = 0U; n &lt; N_PHILO; ++n) {
-    QHSM_INIT(&amp;me-&gt;philo[n].super, (QEvt *)0);
+    QHSM_INIT(&amp;me-&gt;philo[n].super, (void *)0, me-&gt;super.prio);
     me-&gt;fork[n] = FREE;
     me-&gt;isHungry[n] = 0U;
     BSP_displayPhilStat(n, &quot;thinking&quot;);
@@ -93,7 +96,7 @@ for (n = 0U; n &lt; N_PHILO; ++n) {
    <state name="active">
     <!--${Cont::Table::SM::active::TIMEOUT}-->
     <tran trig="TIMEOUT">
-     <action>CompTimeEvt_dispatchToComp(Q_EVT_CAST(CompTimeEvt));</action>
+     <action>CompTimeEvt_dispatchToComp(Q_EVT_CAST(CompTimeEvt), me-&gt;super.prio);</action>
      <tran_glyph conn="2,11,3,-1,14">
       <action box="0,-2,26,4"/>
      </tran_glyph>
@@ -127,7 +130,7 @@ for (n = 0U; n &lt; N_PHILO; ++n) { /* give permissions to eat... */
         /* synchronoulsy dispatch EAT event to the Philo component */
         evt.super.sig = EAT_SIG;
         evt.philo = &amp;me-&gt;philo[n];
-        QHSM_DISPATCH(&amp;me-&gt;philo[n].super, (QEvt const *)&amp;evt);
+        QHSM_DISPATCH(&amp;me-&gt;philo[n].super, &amp;evt.super, me-&gt;super.prio);
 
         me-&gt;isHungry[n] = 0U;
         BSP_displayPhilStat(n, &quot;eating  &quot;);
@@ -154,7 +157,7 @@ me-&gt;fork[n] = USED;
 /* synchronoulsy dispatch EAT event to the Philo component */
 evt.super.sig = EAT_SIG;
 evt.philo = &amp;me-&gt;philo[n];
-QHSM_DISPATCH(&amp;me-&gt;philo[n].super, (QEvt const *)&amp;evt);
+QHSM_DISPATCH(&amp;me-&gt;philo[n].super, &amp;evt.super, me-&gt;super.prio);
 
 BSP_displayPhilStat(n, &quot;eating  &quot;);</action>
        <choice_glyph conn="20,33,5,-1,10">
@@ -200,7 +203,7 @@ if ((me-&gt;isHungry[m] != 0U) &amp;&amp; (me-&gt;fork[m] == FREE)) {
     /* synchronoulsy dispatch EAT event to the Philo component */
     evt.super.sig = EAT_SIG;
     evt.philo = &amp;me-&gt;philo[m];
-    QHSM_DISPATCH(&amp;me-&gt;philo[m].super, (QEvt const *)&amp;evt);
+    QHSM_DISPATCH(&amp;me-&gt;philo[m].super, &amp;evt.super, me-&gt;super.prio);
 
     BSP_displayPhilStat(m, &quot;eating  &quot;);
 }
@@ -214,7 +217,7 @@ if ((me-&gt;isHungry[m] != 0U) &amp;&amp; (me-&gt;fork[n] == FREE)) {
     /* synchronoulsy dispatch EAT event to the Philo component */
     evt.super.sig = EAT_SIG;
     evt.philo = &amp;me-&gt;philo[m];
-    QHSM_DISPATCH(&amp;me-&gt;philo[m].super, (QEvt const *)&amp;evt);
+    QHSM_DISPATCH(&amp;me-&gt;philo[m].super, &amp;evt.super, me-&gt;super.prio);
 
     BSP_displayPhilStat(m, &quot;eating  &quot;);
 }</action>

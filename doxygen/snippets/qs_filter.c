@@ -5,16 +5,21 @@ int main(int arc, char *argv[]) {
         return -1;                /* unable to initialize QSpy */
     }
 
-    /* apply the QS global filters... */
-    QS_FILTER_ON(QS_SM_RECORDS);  /* all state machine records */
-    QS_FILTER_ON(QS_AO_RECORDS);  /* all active object records */
-    QS_FILTER_ON(QS_UA_RECORDS);  /* all user records */
+    /* apply the global QS filters... */
+    /* NOTE: global filters start as being all OFF */
+    QS_GLB_FILTER(QS_QF_RECORDS); /* turn QF-group ON */
+    QS_GLB_FILTER(-QS_QF_TICK);   /* turn #QS_QF_TICK OFF */
 
-    /* apply the QS local filters... */
-    QS_FILTER_SM_OBJ(&philo[3]);  /* trace only this state machine object */
-    QS_FILTER_AO_OBJ(&philo[3]);  /* trace only this active object */
-    QS_FILTER_MP_OBJ(regSizePoolSto); /* trace only this event pool */
-    QS_FILTER_EQ_OBJ(&rawQueue);  /* trace only this event queue */
-    QS_FILTER_TE_OBJ(&philo[3].m_timeEvt); /* trace only this time event */
+    /* apply the local QS filters... */
+    /* NOTE: local filters start as being all ON */
+    QS_LOC_FILTER(-QS_EP_IDS);    /* turn EP (Event-Pool) group  OFF */
+    QS_LOC_FILTER(3);             /* turn AO with prioity 3 ON */
+
+    /* start the active objects... */
+    . . .
+
+    /* NOTE: the following will work only after AO_Table has been started */
+    QS_LOC_FILTER(-AO_Table->prio); /* turn AO_Table OFF */
+
     . . .
 }

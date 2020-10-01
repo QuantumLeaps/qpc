@@ -3,8 +3,8 @@
 /// @cond
 ///===========================================================================
 /// Product: QP/C
-/// Last Updated for Version: 6.8.0
-/// Date of the Last Update:  2020-03-03
+/// Last Updated for Version: 6.9.1
+/// Date of the Last Update:  2020-09-17
 ///
 ///                    Q u a n t u m  L e a P s
 ///                    ------------------------
@@ -242,7 +242,6 @@
  QTimeEvt_postIn,
  QTimeEvt_postEvery,
  QF_getVersion,
- QF_QS_CRIT_EXIT,
  QF_QS_CRIT_ENTRY,
  QF_QS_CRIT_EXIT,
  QF_QS_ISR_ENTRY,
@@ -313,17 +312,13 @@
  QS_EXIT,
  QS_DUMP,
  QS_RESET,
- QS_FILTER_ON,
- QS_FILTER_OFF,
- QS_FILTER_SM_OBJ,
- QS_FILTER_AO_OBJ,
- QS_FILTER_MP_OBJ,
- QS_FILTER_EQ_OBJ,
- QS_FILTER_TE_OBJ,
+ QS_GLB_FILTER,
+ QS_LOC_FILTER,
  QS_FILTER_AP_OBJ,
  QS_GET_BYTE,
  QS_GET_BLOCK,
  QS_BEGIN,
+ QS_BEGIN_ID,
  QS_END,
  QS_BEGIN_NOCRIT,
  QS_END_NOCRIT,
@@ -360,6 +355,8 @@
 
 // M3-D4.9(a) function-like macro
 -esym(9026,
+ QS_GLB_CHECK_,
+ QS_LOC_CHECK_,
  QS_BEGIN_PRE_,
  QS_END_PRE_,
  QS_BEGIN_NOCRIT_PRE_,
@@ -381,8 +378,6 @@
 
 // M3-D4.9(a) function-like macro
 -esym(9026,
- QS_CRIT_ENTRY_,
- QS_CRIT_EXIT_,
  QS_REC_DONE)
 
 // definition of macro ends in semi-colon

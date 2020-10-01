@@ -3,8 +3,8 @@
 * @brief QK/C port to ARM Cortex-M, ARM-CLANG toolset
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-25
+* Last updated for version 6.9.1
+* Last updated on  2020-09-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -43,7 +43,6 @@
 /* prototypes --------------------------------------------------------------*/
 void PendSV_Handler(void);
 void NMI_Handler(void);
-void Thread_ret(void);
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
@@ -72,7 +71,7 @@ void Thread_ret(void);
 */
 void QK_init(void) {
 
-#if (__ARM_ARCH != 6) /* NOT Cortex-M0/M0+/M1(v6-M, v6S-M) */
+#if (__ARM_ARCH != 6) /* NOT Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
 
     uint32_t n;
 
@@ -142,7 +141,7 @@ __asm volatile (
     "  MOVS    r0,#" STRINGIFY(QF_BASEPRI) "\n"
     "  CPSID   i                \n" /* disable interrutps with BASEPRI */
     "  MSR     BASEPRI,r0       \n" /* apply the Cortex-M7 erraturm */
-    "  CPSIE   i                \n" /* 837070, see ARM-EPM-064408. */
+    "  CPSIE   i                \n" /* 837070, see SDEN-1068427. */
 #endif                              /* M3/M4/M7 */
 
     /* The PendSV exception handler can be preempted by an interrupt,
@@ -163,7 +162,7 @@ __asm volatile (
     "  LSRS    r3,r1,#3         \n" /* r3 := (r1 >> 3), set the T bit (new xpsr) */
     "  LDR     r2,=QK_activate_ \n" /* address of QK_activate_ */
     "  SUBS    r2,r2,#1         \n" /* align Thumb-address at halfword (new pc) */
-    "  LDR     r1,=Thread_ret   \n" /* return address after the call   (new lr) */
+    "  LDR     r1,=QK_thread_ret \n" /* return address after the call   (new lr) */
 
     "  SUB     sp,sp,#8*4       \n" /* reserve space for exception stack frame */
     "  ADD     r0,sp,#5*4       \n" /* r0 := 5 registers below the SP */
@@ -171,18 +170,21 @@ __asm volatile (
 
     "  MOVS    r0,#6            \n"
     "  MVNS    r0,r0            \n" /* r0 := ~6 == 0xFFFFFFF9 */
+#if (__ARM_ARCH != 6)               /* NOT Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+    "  DSB                      \n" /* ARM Erratum 838869 */
+#endif                              /* NOT (v6-M, v6S-M) */
     "  BX      r0               \n" /* exception-return to the QK activator */
     );
 }
 
 /*****************************************************************************
-* Thread_ret is a helper function executed when the QK activator returns.
+* QK_thread_ret is a helper function executed when the QK activator returns.
 *
-* NOTE: Thread_ret does not execute in the PendSV context!
-* NOTE: Thread_ret executes entirely with interrupts DISABLED.
+* NOTE: QK_thread_ret does not execute in the PendSV context!
+* NOTE: QK_thread_ret executes entirely with interrupts DISABLED.
 *****************************************************************************/
 __attribute__ ((naked))
-void Thread_ret(void) {
+void QK_thread_ret(void) {
 __asm volatile (
 
     /* After the QK activator returns, we need to resume the preempted
@@ -236,31 +238,30 @@ __asm volatile (
     "  MOVS    r0,#0            \n"
     "  MSR     BASEPRI,r0       \n" /* enable interrupts (clear BASEPRI) */
 #if (__ARM_FP != 0)                 /* if VFP available... */
-    "  POP     {r0,pc}          \n" /* pop stack aligner and EXC_RETURN to PC */
-#else                               /* no VFP */
+    "  POP     {r0,lr}          \n" /* pop stack aligner and EXC_RETURN to LR */
+    "  DSB                      \n" /* ARM Erratum 838869 */
+#endif                              /* if VFP available */
     "  BX      lr               \n" /* return to the preempted task */
-#endif                              /* no VFP */
 #endif                              /* M3/M4/M7 */
     );
 }
 
+/****************************************************************************/
 #if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
 
-/*****************************************************************************
-* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction)
-*****************************************************************************/
+/* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction) */
 __attribute__ ((naked))
 uint_fast8_t QF_qlog2(uint32_t x) {
 __asm volatile (
     "  MOVS    r1,#0            \n"
-#if (QF_MAX_ACTIVE > 16)
+#if (QF_MAX_ACTIVE > 16U)
     "  LSRS    r2,r0,#16        \n"
     "  BEQ     QF_qlog2_1       \n"
     "  MOVS    r1,#16           \n"
     "  MOVS    r0,r2            \n"
     "QF_qlog2_1:                \n"
 #endif
-#if (QF_MAX_ACTIVE > 8)
+#if (QF_MAX_ACTIVE > 8U)
     "  LSRS    r2,r0,#8         \n"
     "  BEQ     QF_qlog2_2       \n"
     "  ADDS    r1, r1,#8        \n"

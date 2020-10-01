@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, STM32 NUCLEO-L152RE board, preemptive QXK kernel
-* Last Updated for Version: 6.9.0
-* Date of the Last Update:  2020-08-14
+* Last updated for version 6.9.1
+* Last updated on  2020-09-22
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -159,8 +159,8 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(PHILO_STAT);
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_ALL_RECORDS);
-    QS_FILTER_OFF(QS_QF_TICK);
+    QS_GLB_FILTER(QS_ALL_RECORDS);
+    QS_GLB_FILTER(-QS_QF_TICK);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -171,7 +171,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
         GPIOA->BSRRH |= LED_LD2;  /* turn LED off */
     }
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);                  /* Philosopher number */
         QS_STR(stat);                 /* Philosopher status */
     QS_END()

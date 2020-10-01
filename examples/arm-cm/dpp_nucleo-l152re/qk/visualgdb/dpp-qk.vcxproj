@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|VisualGDB">
+      <Configuration>Debug</Configuration>
+      <Platform>VisualGDB</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|VisualGDB">
+      <Configuration>Release</Configuration>
+      <Platform>VisualGDB</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Spy|VisualGDB">
+      <Configuration>Spy</Configuration>
+      <Platform>VisualGDB</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{33464F24-9B0F-4276-89FF-8D462C1392EE}</ProjectGuid>
+    <BSP_ID>com.sysprogs.arm.stm32</BSP_ID>
+    <BSP_VERSION>2020.06</BSP_VERSION>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Spy|VisualGDB'" Label="Configuration">
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
+    <GNUConfigurationType>Debug</GNUConfigurationType>
+    <ToolchainID>d883dc4a-545e-4d48-bba0-41645b13fd69</ToolchainID>
+    <ToolchainVersion>9.3.1/(GNU/r0</ToolchainVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Spy|VisualGDB'">
+    <GNUConfigurationType>Debug</GNUConfigurationType>
+    <ToolchainID>d883dc4a-545e-4d48-bba0-41645b13fd69</ToolchainID>
+    <ToolchainVersion>9.3.1/(GNU/r0</ToolchainVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
+    <ToolchainID>d883dc4a-545e-4d48-bba0-41645b13fd69</ToolchainID>
+    <ToolchainVersion>9.3.1/(GNU/r0</ToolchainVersion>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..;../..;../../../../../include;../../../../../src;../../../../../ports/arm-cm/qk/gnu;../../../../../3rd_party/CMSIS/Include;../../../../../3rd_party/nucleo-l152re;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLinkerInputs>;%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
+      <LibrarySearchDirectories>;%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
+      <AdditionalLibraryNames>;%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
+      <LinkerScript>dpp-qk.ld</LinkerScript>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Spy|VisualGDB'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..;../..;../../../../../include;../../../../../src;../../../../../ports/arm-cm/qk/gnu;../../../../../3rd_party/CMSIS/Include;../../../../../3rd_party/nucleo-l152re;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG=1;Q_SPY;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>O3</Optimization>
+    </ClCompile>
+    <Link>
+      <AdditionalLinkerInputs>;%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
+      <LibrarySearchDirectories>;%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
+      <AdditionalLibraryNames>;%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
+      <LinkerScript>dpp-qk.ld</LinkerScript>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..;../..;../../../../../include;../../../../../src;../../../../../ports/arm-cm/qk/gnu;../../../../../3rd_party/CMSIS/Include;../../../../../3rd_party/nucleo-l152re;%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG=1;RELEASE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLinkerInputs>;%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
+      <LibrarySearchDirectories>;%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
+      <AdditionalLibraryNames>;%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
+      <LinkerScript>dpp-qk.ld</LinkerScript>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\3rd_party\nucleo-l152re\gnu\startup_stm32l1xx.c" />
+    <ClCompile Include="..\..\..\..\..\3rd_party\nucleo-l152re\system_stm32l1xx.c" />
+    <ClCompile Include="..\..\..\..\..\include\qstamp.c" />
+    <ClCompile Include="..\..\..\..\..\ports\arm-cm\qk\gnu\qk_port.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qep_hsm.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qep_msm.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qf_act.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qf_actq.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qf_defer.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qf_dyn.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qf_mem.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qf_ps.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qf_qact.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qf_qeq.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qf_qmact.c" />
+    <ClCompile Include="..\..\..\..\..\src\qf\qf_time.c" />
+    <ClCompile Include="..\..\..\..\..\src\qk\qk.c" />
+    <ClCompile Include="..\..\..\..\..\src\qs\qs.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Spy|VisualGDB'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\qs\qs_fp.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Spy|VisualGDB'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\qs\qs_rx.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Spy|VisualGDB'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\philo.c" />
+    <ClCompile Include="..\..\table.c" />
+    <ClCompile Include="..\bsp.c" />
+    <ClCompile Include="..\main.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ItemGroup>
+    <None Include="stm32.props" />
+    <None Include="dpp-qk-Debug.vgdbsettings" />
+    <None Include="dpp-qk-Release.vgdbsettings" />
+    <None Include="stm32.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\ports\arm-cm\qk\gnu\qep_port.h" />
+    <ClInclude Include="..\..\..\..\..\ports\arm-cm\qk\gnu\qf_port.h" />
+    <ClInclude Include="..\..\..\..\..\ports\arm-cm\qk\gnu\qk_port.h" />
+    <ClInclude Include="..\..\..\..\..\ports\arm-cm\qk\gnu\qs_port.h" />
+    <ClInclude Include="..\..\bsp.h" />
+    <ClInclude Include="..\..\dpp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\README.txt" />
+  </ItemGroup>
+</Project>

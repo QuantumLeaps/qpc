@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example with lwIP and direct screen output
-* Last updated for version 5.4.0
-* Last updated on  2015-03-25
+* Last updated for version 6.9.1
+* Last updated on  2020-09-11
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, www.state-machine.com.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -25,10 +25,10 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
-* Web:   www.state-machine.com
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
 *****************************************************************************/
 #include "qpc.h"     /* QP/C header file */
@@ -37,7 +37,7 @@
 
 #include "rit128x96x4.h"      /* RITEK 128x96x4 OLED used in Rev C-D boards */
 
-#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
+#include <stdio.h>   /* for snprintf() */
 
 Q_DEFINE_THIS_FILE
 
@@ -178,7 +178,7 @@ QState Table_serving(Table *me, QEvt const *e) {
             Q_ASSERT((me->fork[n] == USED) && (me->fork[m] == USED));
 
             me->fork[m] = me->fork[n] = FREE;
-            m = RIGHT(n);                       /* check the right neighbor */
+            m = RIGHT(n); /* check the right neighbor */
             if (me->isHungry[m] && (me->fork[m] == FREE)) {
                 me->fork[n] = me->fork[m] = USED;
                 me->isHungry[m] = 0;
@@ -222,8 +222,8 @@ QState Table_serving(Table *me, QEvt const *e) {
             ++me->udpCtr;
 
             te = Q_NEW(TextEvt, SEND_UDP_SIG);
-            SNPRINTF_S(te->text, Q_DIM(te->text), "%s-%d",
-                      ((TextEvt const *)e)->text, (int)me->udpCtr);
+            snprintf(te->text, Q_DIM(te->text), "%s-%d",
+                      Q_EVT_CAST(TextEvt)->text, (int)me->udpCtr);
             QACTIVE_POST(AO_LwIPMgr, (QEvt *)te, me); /* post directly */
 
             return Q_HANDLED();
@@ -267,7 +267,7 @@ static void Table_displayPhilStat(Table *me, uint8_t n, char const *stat) {
         str[1] = '\0';
         RIT128x96x4StringDraw(str, (6*6 + 3*6*n), 4*8, 15);
     }
-    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
     QS_END()
@@ -284,7 +284,7 @@ void Table_displyCgiText(Table *me, char const *text) {
     RIT128x96x4StringDraw("               ", 5*6, 6*8, 15); /* wipe */
     RIT128x96x4StringDraw(text,              5*6, 6*8, 15);
 
-    QS_BEGIN(CGI_TEXT, 0) /* application-specific record begin */
+    QS_BEGIN_ID(CGI_TEXT, 0U) /* app-specific record */
         QS_STR(text); /* User text */
     QS_END()
 }
@@ -294,7 +294,7 @@ void Table_displyUdpText(Table *me, char const *text) {
     RIT128x96x4StringDraw("               ", 5*6, 6*8, 15); /* wipe */
     RIT128x96x4StringDraw(text,              5*6, 6*8, 15);
 
-    QS_BEGIN(UDP_TEXT, 0) /* application-specific record begin */
+    QS_BEGIN_ID(UDP_TEXT, 0U) /* app-specific record */
         QS_STR(text); /* User text */
     QS_END()
 }

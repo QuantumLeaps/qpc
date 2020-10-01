@@ -113,13 +113,8 @@ QS is a software tracing system that enables developers to monitor live event-dr
 
 
 @subsection api_qs_filter QS Filters
-- QS_FILTER_ON()
-- QS_FILTER_OFF()
-- QS_FILTER_SM_OBJ()
-- QS_FILTER_AO_OBJ()
-- QS_FILTER_MP_OBJ()
-- QS_FILTER_EQ_OBJ()
-- QS_FILTER_TE_OBJ()
+- QS_GLB_FILTER()
+- QS_LOC_FILTER()
 - QS_FILTER_AP_OBJ()
 
 
@@ -132,7 +127,7 @@ QS is a software tracing system that enables developers to monitor live event-dr
 
 @subsection api_qs_user QS Application-Specific Records
 - ::QS_USER enumeration
-- QS_BEGIN()
+- QS_BEGIN_ID()
 - QS_END()
 - QS_U8() / QS_I8()
 - QS_U16() / QS_I16()
@@ -140,7 +135,6 @@ QS is a software tracing system that enables developers to monitor live event-dr
 - QS_U32_HEX()
 - QS_STR()
 - QS_MEM()
-
 
 
 @section api_qv QV (Cooperative Kernel)
@@ -160,13 +154,10 @@ Given the simplicity, portability, and low-resource consumption, the QV schedule
 - <a href="qv_8c.html#a779a1bc9482e2d489dc87751cd100fdb"><b>QF_run()</b></a>
 - QV_onIdle()
 - QV_CPU_SLEEP()
-- QV_getVersion()
-
 
 
 @section api_qk QK (Preemptive Run-to-Completion Kernel)
 QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specifically for executing active objects. QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using the single stack. Active objects process their events in run-to-completion (RTC) fashion and remove themselves from the call stack, the same way as nested interrupts remove themselves from the stack upon completion. At the same time high-priority active objects can preempt lower-priority active objects, just like interrupts can preempt each other under a prioritized interrupt controller. QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis RMA) and can be used in hard real-time systems.
-
 
 
 @subsection api_qk_ctrl Kernel Initialization and Control
@@ -175,14 +166,11 @@ QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specif
 - QK_onIdle()
 - QK_schedLock()
 - QK_schedUnlock()
-- QK_getVersion()
-
 
 
 @subsection api_qk_isr Interrupt Management
 - QK_ISR_ENTRY()
 - QK_ISR_EXIT()
-
 
 
 @section api_qxk QXK (Preemptive Dual-Mode RTOS Kernel)
@@ -196,14 +184,11 @@ QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that e
 - QXK_onIdle()
 - QXK_schedLock()
 - QXK_schedUnlock()
-- QXK_getVersion()
-
 
 
 @subsection api_qxk_isr Interrupt Management
 - QXK_ISR_ENTRY()
 - QXK_ISR_EXIT()
-
 
 
 @subsection api_qxk_xthr Extended Thread Management
@@ -217,7 +202,6 @@ QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that e
 - QXThread_queueGet()
 
 
-
 @subsection api_qxk_sema Semaphores
 - ::QXSemaphore class (Semaphore Control Block)
 - QXSemaphore_init()
@@ -226,14 +210,12 @@ QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that e
 - QXSemaphore_signal()
 
 
-
 @subsection api_qxk_mutex Mutexes
 - ::QXMutex class (Mutex Control Block)
 - QXMutex_init()
 - QXMutex_lock()
 - QXMutex_tryLock()
 - QXMutex_unlock()
-
 
 
 @subsection api_qxk_queue Message Queues

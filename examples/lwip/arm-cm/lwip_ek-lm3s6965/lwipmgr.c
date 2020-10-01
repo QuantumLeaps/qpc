@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: lwIP-Manager Active Object
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-07
+* Last updated for version 6.9.1
+* Last updated on  2020-09-11
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -25,7 +25,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
 * <www.state-machine.com/licensing>
@@ -40,7 +40,8 @@
 #include "lwip.h"  /* lwIP stack */
 #include "httpd.h" /* lwIP application */
 
-#include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
+#include <stdio.h>  /* for snprintf() */
+#include <string.h> /* for strlen() */
 
 Q_DEFINE_THIS_FILE
 
@@ -53,12 +54,12 @@ Q_ASSERT_COMPILE((LWIP_DRIVER_END - LWIP_DRIVER_GROUP) >= LWIP_MAX_OFFSET);
 
 /* Active object class -----------------------------------------------------*/
 typedef struct LwIPMgrTag {
-    QActive super;                                   /* derive from QActive */
+    QActive super;  /* inherit QActive */
 
     QTimeEvt te_LWIP_SLOW_TICK;
     struct netif   *netif;
     struct udp_pcb *upcb;
-    uint32_t        ip_addr;    /* IP address in the native host byte order */
+    uint32_t        ip_addr; /* IP address in the native host byte order */
 
 #if LWIP_TCP
     uint32_t tcp_tmr;
@@ -79,10 +80,10 @@ static QState LwIPMgr_initial(LwIPMgr *me, QEvt const *e);
 static QState LwIPMgr_running(LwIPMgr *me, QEvt const *e);
 
 /* Local objects -----------------------------------------------------------*/
-static LwIPMgr l_lwIPMgr;              /* the single instance of LwIPMgr AO */
+static LwIPMgr l_lwIPMgr; /* the single instance of LwIPMgr AO */
 
 /* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_LwIPMgr = (QActive *)&l_lwIPMgr;     /* "opaque" pointer */
+QActive * const AO_LwIPMgr = (QActive *)&l_lwIPMgr; /* "opaque" pointer */
 
 /* Server-Side Include (SSI) demo ..........................................*/
 static char const * const ssi_tags[] = {
@@ -222,11 +223,11 @@ QState LwIPMgr_running(LwIPMgr *me, QEvt const *e) {
                 ip_net  = ntohl(me->ip_addr);
                     /* publish the text event to display the new IP address */
                 te = Q_NEW(TextEvt, DISPLAY_IPADDR_SIG);
-                SNPRINTF_S(te->text, Q_DIM(te->text), "%d.%d.%d.%d",
-                          ((ip_net) >> 24) & 0xFF,
-                          ((ip_net) >> 16) & 0xFF,
-                          ((ip_net) >> 8)  & 0xFF,
-                          ip_net           & 0xFF);
+                snprintf(te->text, sizeof(te->text), "%d.%d.%d.%d",
+                          (int)(((ip_net) >> 24) & 0xFFU),
+                          (int)(((ip_net) >> 16) & 0xFFU),
+                          (int)(((ip_net) >> 8)  & 0xFFU),
+                          (int)(ip_net           & 0xFFU));
                 QF_PUBLISH((QEvt *)te, me);
             }
 
@@ -281,42 +282,42 @@ static int ssi_handler(int iIndex, char *pcInsert, int iInsertLen) {
     STAT_COUNTER value = 0;
 
     switch (iIndex) {
-        case 0:                                                 /* s_xmit   */
+        case 0: /* s_xmit   */
             value = stats->xmit;
             break;
-        case 1:                                                 /* s_recv   */
+        case 1: /* s_recv   */
             value = stats->recv;
             break;
-        case 2:                                                 /* s_fw     */
+        case 2: /* s_fw     */
             value = stats->fw;
             break;
-        case 3:                                                 /* s_drop   */
+        case 3: /* s_drop   */
             value = stats->drop;
             break;
-        case 4:                                                 /* s_chkerr */
+        case 4: /* s_chkerr */
             value = stats->chkerr;
             break;
-        case 5:                                                 /* s_lenerr */
+        case 5: /* s_lenerr */
             value = stats->lenerr;
             break;
-        case 6:                                                 /* s_memerr */
+        case 6: /* s_memerr */
             value = stats->memerr;
             break;
-        case 7:                                                 /* s_rterr  */
+        case 7: /* s_rterr  */
             value = stats->rterr;
             break;
-        case 8:                                                 /* s_proerr */
+        case 8: /* s_proerr */
             value = stats->proterr;
             break;
-        case 9:                                                 /* s_opterr */
+        case 9: /* s_opterr */
             value = stats->opterr;
             break;
-        case 10:                                                /* s_err    */
+        case 10: /* s_err    */
             value = stats->err;
             break;
     }
 
-    return SPRINTF_S(pcInsert, MAX_TAG_INSERT_LEN, "%d", value);
+    return snprintf(pcInsert, MAX_TAG_INSERT_LEN, "%d", value);
 }
 
 /* Common Gateway Iinterface (CG) handler ..................................*/
@@ -326,7 +327,7 @@ static char const *cgi_display(int index, int numParams,
 {
     int i;
     for (i = 0; i < numParams; ++i) {
-        if (strstr(param[i], "text") != (char *)0) {   /* param text found? */
+        if (strstr(param[i], "text") != (char *)0) { /* param text found? */
             TextEvt *te = Q_NEW(TextEvt, DISPLAY_CGI_SIG);
             strncpy(te->text, value[i], Q_DIM(te->text));
             QF_PUBLISH((QEvt *)te, AO_LwIPMgr);
@@ -344,7 +345,7 @@ static void udp_rx_handler(void *arg, struct udp_pcb *upcb,
     strncpy(te->text, (char *)p->payload, Q_DIM(te->text));
     QF_PUBLISH((QEvt *)te, AO_LwIPMgr);
 
-    udp_connect(upcb, addr, port);            /* connect to the remote host */
-    pbuf_free(p);                                   /* don't leak the pbuf! */
+    udp_connect(upcb, addr, port); /* connect to the remote host */
+    pbuf_free(p); /* don't leak the pbuf! */
 }
 

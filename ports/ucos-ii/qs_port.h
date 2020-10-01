@@ -60,8 +60,8 @@
 
 #if (OS_CRITICAL_METHOD == 3u)
     #define QS_CRIT_STAT_       OS_CPU_SR cpu_sr;
-    #define QS_CRIT_ENTRY_()    OS_ENTER_CRITICAL()
-    #define QS_CRIT_EXIT_()     OS_EXIT_CRITICAL(); QS_REC_DONE()
+    #define QS_CRIT_E_()    OS_ENTER_CRITICAL()
+    #define QS_CRIT_X_()     OS_EXIT_CRITICAL(); QS_REC_DONE()
 #endif /* OS_CRITICAL_METHOD */
 
 #include "qs.h"      /* QS platform-independent public interface */

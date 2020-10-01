@@ -118,9 +118,10 @@
 
 /*! Platform-dependent macro defining the event pool initialization */
 /**
-* @note This is a specific implementation for the QK-port of QF.
-* In other QF ports you need to define the macro appropriately for
-* the underlying kernel/OS you're using.
+* @note
+* This is an example implementation based on the native ::QMPool class.
+* In other QF ports, the port might be using a memory pool from the
+* underlying kernel/OS.
 */
 #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
     (QMPool_init(&(p_), (poolSto_), (poolSize_), (QMPoolSize)(evtSize_)))
@@ -137,20 +138,24 @@
 /*! Platform-dependent macro defining how QF should obtain an event
 * @a e_ from the event pool @a p_ with the free margin @a m_. */
 /**
-* @note This is a specific implementation for the QK-port of QF.
-* In other QF ports you need to define the macro appropriately for
-* the underlying kernel/OS you're using.
+* @note
+* This is an example implementation based on the native ::QMPool class.
+* In other QF ports, the port might be using a memory pool from the
+* underlying kernel/OS.
 */
-#define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
+#define QF_EPOOL_GET_(p_, e_, m_, qs_id_) \
+    ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qs_id_)))
 
 /*! Platform-dependent macro defining how QF should return an event
 * @a e_ to the event pool @a p_ */
 /**
-* @note This is a specific implementation for the QK-port of QF.
-* In other QF ports you need to define the macro appropriately for
-* the underlying kernel/OS you're using.
+* @note
+* This is an example implementation based on the native ::QMPool class.
+* In other QF ports, the port might be using a memory pool from the
+* underlying kernel/OS.
 */
-#define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), (e_)))
+#define QF_EPOOL_PUT_(p_, e_, qs_id_) \
+    (QMPool_put(&(p_), (e_), (qs_id_)))
 
 /*! Macro defined only for the internal QP implementation. It should
 * be not defined for the application-level code

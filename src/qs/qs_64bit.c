@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.1
-* Last updated on  2020-05-06
+* Last updated for version 6.9.1
+* Last updated on  2020-09-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -39,8 +39,6 @@
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qs_port.h"      /* QS port */
-
-#if (QS_OBJ_PTR_SIZE == 8U) || (QS_FUN_PTR_SIZE == 8U)
 
 #include "qs_pkg.h"
 
@@ -88,6 +86,4 @@ void QS_u64_fmt_(uint8_t format, uint64_t d) {
     QS_priv_.head   = head;   /* save the head */
     QS_priv_.chksum = chksum; /* save the checksum */
 }
-
-#endif /* (QS_OBJ_PTR_SIZE == 8U) || (QS_FUN_PTR_SIZE == 8U) */
 

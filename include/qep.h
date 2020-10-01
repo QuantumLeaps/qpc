@@ -4,7 +4,7 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
+* Last updated for version 6.9.1
 * Last updated on  2020-08-17
 *
 *                    Q u a n t u m  L e a P s
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      690U
+#define QP_VERSION      691U
 
 /*! The current QP version number string of the form XX.Y.Z, where XX is
 * a 2-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.9.0"
+#define QP_VERSION_STR  "6.9.1"
 
-/*! Encrypted  current QP release (6.9.0) and date (2020-08-21) */
-#define QP_RELEASE      0x884D22FDU
+/*! Encrypted  current QP release (6.9.1) and date (2020-09-22) */
+#define QP_RELEASE      0x883DB9ACU
 
 
 /****************************************************************************/
@@ -287,52 +287,89 @@ typedef struct {
 
 /*! Virtual table for the ::QHsm class. */
 struct QHsmVtable {
+#ifdef Q_SPY
     /*! Triggers the top-most initial transition in a HSM. */
+    void (*init)(QHsm * const me, void const * const e,
+                 uint_fast8_t const qs_id);
+#else
     void (*init)(QHsm * const me, void const * const e);
+#endif /* Q_SPY */
 
+#ifdef Q_SPY
     /*! Dispatches an event to a SM. */
+    void (*dispatch)(QHsm * const me, QEvt const * const e,
+                     uint_fast8_t const qs_id);
+#else
     void (*dispatch)(QHsm * const me, QEvt const * const e);
+#endif /* Q_SPY */
 };
 
 /* QHsm public operations... */
-/*! Polymorphically executes the top-most initial transition in a HSM
-* @public @memberof QHsm
-*/
-/**
-* @param[in,out] me_ pointer (see @ref oop)
-* @param[in]     e_  constant pointer the ::QEvt or a class derived from
-*                    ::QEvt (see @ref oop)
-* @note Must be called only ONCE after the SM "constructor".
-*
-* @usage
-* The following example illustrates how to initialize a SM, and dispatch
-* events to it:
-* @include qep_qhsm_use.c
-*/
-#define QHSM_INIT(me_, par_) do {        \
-    Q_ASSERT((me_)->vptr);               \
-    (*(me_)->vptr->init)((me_), (par_)); \
-} while (false)
 
-/*! Implementation of the top-most initial transition in ::QHsm subclass */
-void QHsm_init_(QHsm * const me, void const * const e);
+#ifdef Q_SPY
+    /*! Polymorphically executes the top-most initial transition in a HSM
+    * @public @memberof QHsm
+    */
+    /**
+    * @param[in,out] me_ pointer (see @ref oop)
+    * @param[in]     e_  constant pointer the ::QEvt or a class derived from
+    *                    ::QEvt (see @ref oop)
+    * @note Must be called only ONCE after the SM "constructor".
+    *
+    * @usage
+    * The following example illustrates how to initialize a SM, and dispatch
+    * events to it:
+    * @include qep_qhsm_use.c
+    */
+    #define QHSM_INIT(me_, par_, qs_id_) do {          \
+        Q_ASSERT((me_)->vptr);                         \
+        (*(me_)->vptr->init)((me_), (par_), (qs_id_)); \
+    } while (false)
 
-/*! Polymorphically dispatches an event to a HSM
-* @public @memberof QHsm
-*/
-/**
-* @description
-* Processes one event at a time in Run-to-Completion fashion.
-*
-* @param[in,out] me_ pointer (see @ref oop)
-* @param[in]     e_  constant pointer the ::QEvt or a structure derived from
-*                     ::QEvt (see @ref oop)
-* @note Must be called after the "constructor" and after QHSM_INIT().
-*/
-#define QHSM_DISPATCH(me_, e_) ((*(me_)->vptr->dispatch)((me_), (e_)))
+    /*! Implementation of the top-most initial transition in ::QHsm subclass */
+    void QHsm_init_(QHsm * const me, void const * const e,
+                    uint_fast8_t const qs_id);
+#else
 
-/*! Implementation of dispatching events to a ::QHsm subclass */
-void QHsm_dispatch_(QHsm * const me, QEvt const * const e);
+    #define QHSM_INIT(me_, par_, dummy) do { \
+        Q_ASSERT((me_)->vptr);               \
+        (*(me_)->vptr->init)((me_), (par_)); \
+    } while (false)
+
+    /*! Implementation of the top-most initial transition in ::QHsm subclass */
+    void QHsm_init_(QHsm * const me, void const * const e);
+
+#endif /* Q_SPY */
+
+
+#ifdef Q_SPY
+    /*! Polymorphically dispatches an event to a HSM
+    * @public @memberof QHsm
+    */
+    /**
+    * @description
+    * Processes one event at a time in Run-to-Completion fashion.
+    *
+    * @param[in,out] me_ pointer (see @ref oop)
+    * @param[in]     e_  constant pointer the ::QEvt or a structure derived from
+    *                     ::QEvt (see @ref oop)
+    * @note Must be called after the "constructor" and after QHSM_INIT().
+    */
+    #define QHSM_DISPATCH(me_, e_, qs_id_) \
+        ((*(me_)->vptr->dispatch)((me_), (e_), (qs_id_)))
+
+    /*! Implementation of dispatching events to a ::QHsm subclass */
+    void QHsm_dispatch_(QHsm * const me, QEvt const * const e,
+                        uint_fast8_t const qs_id);
+#else
+
+    #define QHSM_DISPATCH(me_, e_, dummy) \
+        ((*(me_)->vptr->dispatch)((me_), (e_)))
+
+    /*! Implementation of dispatching events to a ::QHsm subclass */
+    void QHsm_dispatch_(QHsm * const me, QEvt const * const e);
+
+#endif /* Q_SPY */
 
 /*! Obtain the current active state from a HSM (read only).
 * @public @memberof QHsm
@@ -480,12 +517,22 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial);
 /*! Implementation of the top-most initial transition in ::QMsm
 * @private @memberof QMsm
 */
+#ifdef Q_SPY
+void QMsm_init_(QHsm * const me, void const * const e,
+                uint_fast8_t const qs_id);
+#else
 void QMsm_init_(QHsm * const me, void const * const e);
+#endif
 
 /*! Implementation of disparching events to ::QMsm
 * @private @memberof QMsm
 */
+#ifdef Q_SPY
+void QMsm_dispatch_(QHsm * const me, QEvt const * const e,
+                    uint_fast8_t const qs_id);
+#else
 void QMsm_dispatch_(QHsm * const me, QEvt const * const e);
+#endif
 
 
 /*! Macro to call in a state-handler when it executes a regular

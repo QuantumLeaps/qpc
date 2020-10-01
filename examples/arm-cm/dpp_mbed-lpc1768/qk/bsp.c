@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, NXP mbed-LPC1768 board, QK kernel
-* Last Updated for Version: 5.6.5
-* Date of the Last Update:  2016-07-05
+* Last updated for version 6.9.1
+* Last updated on  2020-09-22
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -39,26 +39,6 @@
 /* add other drivers if necessary... */
 
 Q_DEFINE_THIS_FILE
-
-/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-* Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-* DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-*/
-enum KernelUnawareISRs { /* see NOTE00 */
-    /* ... */
-    MAX_KERNEL_UNAWARE_CMSIS_PRI  /* keep always last */
-};
-/* "kernel-unaware" interrupts can't overlap "kernel-aware" interrupts */
-Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
-
-enum KernelAwareISRs {
-    EINT0_PRIO = QF_AWARE_ISR_CMSIS_PRI, /* see NOTE00 */
-    SYSTICK_PRIO,
-    /* ... */
-    MAX_KERNEL_AWARE_CMSIS_PRI /* keep always last */
-};
-/* "kernel-aware" interrupts should not overlap the PendSV priority */
-Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
@@ -184,6 +164,11 @@ void BSP_init(void) {
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_OBJ_DICTIONARY(&l_EINT0_IRQHandler);
     QS_USR_DICTIONARY(PHILO_STAT);
+
+    /* setup the QS filters... */
+    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
+    QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
+    QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -200,7 +185,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
         LPC_GPIO1->FIOCLR = LED_2;  /* turn LED off */
     }
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);                  /* Philosopher number */
         QS_STR(stat);                 /* Philosopher status */
     QS_END()
@@ -237,14 +222,14 @@ void QF_onStartup(void) {
     /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
-    /* set priorities of ALL ISRs used in the system, see NOTE00
+    /* set priorities of ALL ISRs used in the system, see NOTE1
     *
     * !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
-    NVIC_SetPriority(EINT0_IRQn,     EINT0_PRIO);
+    NVIC_SetPriority(EINT0_IRQn,     QF_AWARE_ISR_CMSIS_PRI);
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
     /* ... */
 
     /* enable IRQs in the NVIC... */
@@ -255,7 +240,7 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QK_onIdle(void) {
-    /* toggle the User LED on and then off, see NOTE01 */
+    /* toggle the User LED on and then off, see NOTE2 */
     QF_INT_DISABLE();
     LPC_GPIO1->FIOSET = LED_4;  /* turn LED on  */
     __NOP();   /* a couple of NOPs to actually see the LED glow */
@@ -349,19 +334,6 @@ uint8_t QS_onStartup(void const *arg) {
 
     QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
-
-    /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
 
     return 1U; /* return success */
 }
@@ -488,7 +460,7 @@ static void UART0_setBaudrate(uint32_t baud) {
 /*--------------------------------------------------------------------------*/
 
 /*****************************************************************************
-* NOTE00:
+* NOTE1:
 * The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
 * ISR priority that is disabled by the QF framework. The value is suitable
 * for the NVIC_SetPriority() CMSIS function.
@@ -506,7 +478,7 @@ static void UART0_setBaudrate(uint32_t baud) {
 * by which a "QF-unaware" ISR can communicate with the QF framework is by
 * triggering a "QF-aware" ISR, which can post/publish events.
 *
-* NOTE01:
+* NOTE2:
 * The User LED is used to visualize the idle loop activity. The brightness
 * of the LED is proportional to the frequency of invcations of the idle loop.
 * Please note that the LED is toggled with interrupts locked, so no interrupt

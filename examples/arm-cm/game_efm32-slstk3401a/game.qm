@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.0.2" links="1">
+<model version="5.0.4" links="1">
  <documentation>&quot;Fly 'n' Shoot&quot; game model from Chapters 1 &amp; 9 of PSiCC2
 
 NOTE: Requries QP6.</documentation>
@@ -142,7 +142,8 @@ if ((me-&gt;last_mine_x + GAME_MINES_DIST_MIN &lt; GAME_TUNNEL_WIDTH)
         ope.super.sig = MINE_PLANT_SIG;
         ope.x = me-&gt;last_mine_x;
         ope.y = me-&gt;last_mine_y;
-        QHSM_DISPATCH(me-&gt;mines[n], (QEvt *)&amp;ope); /* direct dispatch */
+        /* direct dispatch */
+        QHSM_DISPATCH(me-&gt;mines[n], (QEvt *)&amp;ope, me-&gt;super.prio);
     }
 }</code>
    </operation>
@@ -151,10 +152,9 @@ if ((me-&gt;last_mine_x + GAME_MINES_DIST_MIN &lt; GAME_TUNNEL_WIDTH)
     <!--${AOs::Tunnel::dispatchToAllMin~::e}-->
     <parameter name="e" type="QEvt const *"/>
     <code>uint8_t n;
-
 for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
     if (me-&gt;mines[n] != (QHsm *)0) { /* is the mine used? */
-        QHSM_DISPATCH(me-&gt;mines[n], e);
+        QHSM_DISPATCH(me-&gt;mines[n], e, me-&gt;super.prio);
     }
 }</code>
    </operation>
@@ -164,8 +164,8 @@ for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
     <initial target="../1/2">
      <action>uint8_t n;
 for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
-    QHSM_INIT(me-&gt;mine1_pool[n], (QEvt *)0);/*initial tran. for Mine1 */
-    QHSM_INIT(me-&gt;mine2_pool[n], (QEvt *)0);/*initial tran. for Mine2 */
+    QHSM_INIT(me-&gt;mine1_pool[n], (void *)0, me-&gt;super.prio);
+    QHSM_INIT(me-&gt;mine2_pool[n], (void *)0, me-&gt;super.prio);
 }
 BSP_randomSeed(1234); /* seed the pseudo-random generator */
 

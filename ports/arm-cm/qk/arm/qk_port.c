@@ -3,8 +3,8 @@
 * @brief QK/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-25
+* Last updated for version 6.9.1
+* Last updated on  2020-09-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -43,7 +43,6 @@
 /* prototypes --------------------------------------------------------------*/
 void PendSV_Handler(void);
 void NMI_Handler(void);
-void Thread_ret(void);
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
@@ -139,7 +138,7 @@ __asm void PendSV_Handler(void) {
     MOVS    r0,#QF_BASEPRI
     CPSID   i                 /* disable interrutps with BASEPRI */
     MSR     BASEPRI,r0        /* apply the Cortex-M7 erraturm */
-    CPSIE   i                 /* 837070, see ARM-EPM-064408. */
+    CPSIE   i                 /* 837070, see SDEN-1068427. */
 #endif                        /* M3/M4/M7 */
 
     /* The PendSV exception handler can be preempted by an interrupt,
@@ -160,7 +159,7 @@ __asm void PendSV_Handler(void) {
     LSRS    r3,r1,#3          /* r3 := (r1 >> 3), set the T bit (new xpsr) */
     LDR     r2,=QK_activate_  /* address of QK_activate_ */
     SUBS    r2,r2,#1          /* align Thumb-address at halfword (new pc) */
-    LDR     r1,=Thread_ret    /* return address after the call   (new lr) */
+    LDR     r1,=QK_thread_ret /* return address after the call   (new lr) */
 
     SUB     sp,sp,#8*4        /* reserve space for exception stack frame */
     ADD     r0,sp,#5*4        /* r0 := 5 registers below the SP */
@@ -168,18 +167,21 @@ __asm void PendSV_Handler(void) {
 
     MOVS    r0,#6
     MVNS    r0,r0             /* r0 := ~6 == 0xFFFFFFF9 */
+#if (__TARGET_ARCH_THUMB != 3) /* NOT Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+    DSB                       /* ARM Erratum 838869 */
+#endif                        /* NOT (v6-M, v6S-M) */
     BX      r0                /* exception-return to the QK activator */
 
     ALIGN                     /* align the code to 4-byte boundary */
 }
 
 /*****************************************************************************
-* Thread_ret is a helper function executed when the QK activator returns.
+* QK_thread_ret is a helper function executed when the QK activator returns.
 *
-* NOTE: Thread_ret does not execute in the PendSV context!
-* NOTE: Thread_ret executes entirely with interrupts DISABLED.
+* NOTE: QK_thread_ret does not execute in the PendSV context!
+* NOTE: QK_thread_ret executes entirely with interrupts DISABLED.
 *****************************************************************************/
-__asm void Thread_ret(void) {
+__asm void QK_thread_ret(void) {
     /* After the QK activator returns, we need to resume the preempted
     * thread. However, this must be accomplished by a return-from-exception,
     * while we are still in the thread context. The switch to the exception
@@ -234,20 +236,19 @@ __asm void NMI_Handler(void) {
     MOVS    r0,#0
     MSR     BASEPRI,r0        /* enable interrupts (clear BASEPRI) */
 #if (__TARGET_FPU_VFP != 0)   /* if VFP available... */
-    POP     {r0,pc}           /* pop stack "aligner" and EXC_RETURN to PC */
-#else                         /* no VFP */
-    BX      lr                /* return to the preempted task */
+    POP     {r0,lr}           /* pop stack "aligner" and EXC_RETURN to LR */
+    DSB                       /* ARM Erratum 838869 */
 #endif                        /* no VFP */
+    BX      lr                /* return to the preempted task */
 #endif                        /* M3/M4/M7 */
 
     ALIGN                     /* align the code to 4-byte boundary */
 }
 
+/****************************************************************************/
 #if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
 
-/*****************************************************************************
-* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction)
-*****************************************************************************/
+/* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction) */
 __asm uint_fast8_t QF_qlog2(uint32_t x) {
     MOVS    r1,#0
 

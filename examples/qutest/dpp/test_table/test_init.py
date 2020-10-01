@@ -4,7 +4,7 @@
 # preamble...
 def on_reset():
     expect_pause()
-    glb_filter(GRP_ON)
+    glb_filter(GRP_ALL)
     continue_test()
     expect("===RTC===> St-Init  Obj=AO_Philo[0],State=QHsm_top->NULL")
     expect("@timestamp AO-Subsc Obj=AO_Philo[0],Sig=EAT_SIG")

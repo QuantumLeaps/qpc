@@ -5,14 +5,14 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-11
+* Last updated for version 6.9.1
+* Last updated on  2020-09-14
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -184,13 +184,13 @@ void QXK_schedUnlock(QSchedStatus stat);
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         (Q_ASSERT_ID(110, (me_)->eQueue.frontEvt != (QEvt *)0))
 
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) do {                          \
-        QPSet_insert(&QXK_attr_.readySet, (uint_fast8_t)(me_)->prio); \
-        if (!QXK_ISR_CONTEXT_()) {                                    \
-            if (QXK_sched_() != 0U) {                    \
-                QXK_activate_();                                      \
-            }                                                         \
-        }                                                             \
+    #define QACTIVE_EQUEUE_SIGNAL_(me_) do {                             \
+        QPSet_insert(&QXK_attr_.readySet, (uint_fast8_t)(me_)->dynPrio); \
+        if (!QXK_ISR_CONTEXT_()) {                                       \
+            if (QXK_sched_() != 0U) {                                    \
+                QXK_activate_();                                         \
+            }                                                            \
+        }                                                                \
     } while (false)
 
     /* native QF event pool operations */
@@ -198,8 +198,10 @@ void QXK_schedUnlock(QSchedStatus stat);
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
         (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
     #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
-    #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), (e_)))
+    #define QF_EPOOL_GET_(p_, e_, m_, qs_id_) \
+        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qs_id_)))
+    #define QF_EPOOL_PUT_(p_, e_, qs_id_) \
+        (QMPool_put(&(p_), (e_), (qs_id_)))
 
 #endif /* QP_IMPL */
 

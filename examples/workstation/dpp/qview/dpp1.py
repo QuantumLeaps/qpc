@@ -12,12 +12,6 @@
 # about the addresses of the Philosopher objects and the states of their
 # state machines.
 #
-# This version of the DPP customization uses the application-specific
-# packet QS_USER_00 (PHILO_STAT) produced when the status of a Philo changes.
-#
-# NOTE: this is a desktop appliction, which you cannot reset (and restart).
-# Therefore, the desktop applications must be started *after* the QView is
-# already running and is attached to the QSPY host application.
 
 class DPP:
     def __init__(self):
@@ -57,11 +51,7 @@ class DPP:
         # NOTE: Normally, for an embedded application you would like
         # to start with resetting the Target, to start clean with
         # Qs dictionaries, etc.
-        #
-        # Howver, this is a desktop appliction, which you cannot reset
-        # (and restart). Therefore, the desktop applications must be started
-        # *after* the QView is already running.
-        #reset_target()
+        reset_target()
 
     # on_reset() callback invoked when Target-reset packet is received
     # NOTE: the QS dictionaries are not known at this time yet, so
@@ -77,10 +67,9 @@ class DPP:
     def on_run(self):
         glb_filter("QS_QEP_TRAN")
 
-        # NOTE: the names of objects for loc_filter() and current_obj()
-        # must match the QS Object Dictionaries produced by the application.
+        # NOTE: the names of objects for current_obj() must match
+        # the QS Object Dictionaries produced by the application.
         current_obj(OBJ_AO, "Table_inst")
-        loc_filter(OBJ_TE, "Philo_inst[0].timeEvt")
 
         # turn lists into tuples for better performance
         self._philo_obj = tuple(self._philo_obj)

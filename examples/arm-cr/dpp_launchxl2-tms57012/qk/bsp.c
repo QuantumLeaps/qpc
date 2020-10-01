@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "DPP" on LAUCHXL2-TMS570LS12 board, preemptive QK kernel
-* Last Updated for Version: 5.9.7
-* Date of the Last Update:  2017-08-18
+* Last updated for version 6.9.1
+* Last updated on  2020-09-22
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -169,6 +169,11 @@ void BSP_init(void) {
     QS_OBJ_DICTIONARY(&l_ssiTest);
     QS_USR_DICTIONARY(PHILO_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
+
+    /* setup the QS filters... */
+    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
+    QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
+    QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
 }
 
 /*..........................................................................*/
@@ -180,7 +185,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
         LED2_PORT->DCLR = (1U << LED2_PIN);
     }
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
     QS_END()
@@ -301,20 +306,6 @@ uint8_t QS_onStartup(void const *arg) {
     VIM_RAM[13 + 1] = (t_isrFuncPTR)&sciHighLevel; /* install the ISR */
     vimREG->FIRQPR0 |= (1U << 13);   /* designate interrupt as FIQ */
     vimREG->REQMASKSET0 = (1U << 13); /* enable interrupt */
-
-    /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
-    QS_FILTER_ON(COMMAND_STAT);
 
     return 1U; /* return success */
 }

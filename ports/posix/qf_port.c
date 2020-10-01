@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-11
+* Last updated for version 6.9.1
+* Last updated on  2020-09-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -282,6 +282,13 @@ void QActive_stop(QActive * const me) {
     me->thread = false; /* stop the thread loop (see thread_routine()) */
 }
 #endif
+/*..........................................................................*/
+void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
+    (void)me;    /* unused parameter */
+    (void)attr1; /* unused parameter */
+    (void)attr2; /* unused parameter */
+    Q_ERROR_ID(900); /* this function should not be called in this QP port */
+}
 
 /****************************************************************************/
 static void sigIntHandler(int dummy) {

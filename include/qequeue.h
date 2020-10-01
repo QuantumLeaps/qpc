@@ -175,13 +175,14 @@ void QEQueue_init(QEQueue * const me,
 
 /*! Post an event to the "raw" thread-safe event queue (FIFO). */
 bool QEQueue_post(QEQueue * const me, QEvt const * const e,
-                  uint_fast16_t const margin);
+                  uint_fast16_t const margin, uint_fast8_t const qs_id);
 
 /*! Post an event to the "raw" thread-safe event queue (LIFO). */
-void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e);
+void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
+                      uint_fast8_t const qs_id);
 
 /*! Obtain an event from the "raw" thread-safe queue. */
-QEvt const *QEQueue_get(QEQueue * const me);
+QEvt const *QEQueue_get(QEQueue * const me, uint_fast8_t const qs_id);
 
 /*! "raw" thread-safe QF event queue operation for obtaining the number
 * of free entries still available in the queue. */

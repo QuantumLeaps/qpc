@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-11
+* Last updated for version 6.9.1
+* Last updated on  2020-09-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -160,7 +160,7 @@ int_t QF_run(void) {
     }
 
     /* the combined event-loop and background-loop of the QV kernel */
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
 
     /* produce the QS_QF_RUN trace record */
     QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, (void *)0, (void *)0)
@@ -176,7 +176,7 @@ int_t QF_run(void) {
 
             QPSet_findMax(&QV_readySet_, p);
             a = QF_active_[p];
-            QF_CRIT_EXIT_();
+            QF_CRIT_X_();
 
             /* the active object 'a' must still be registered in QF
             * (e.g., it must not be stopped)
@@ -193,7 +193,7 @@ int_t QF_run(void) {
             QHSM_DISPATCH(&a->super, e);
             QF_gc(e);
 
-            QF_CRIT_ENTRY_();
+            QF_CRIT_E_();
 
             if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
                 QPSet_remove(&QV_readySet_, p);
@@ -210,7 +210,7 @@ int_t QF_run(void) {
             }
         }
     }
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
     QF_onCleanup();  /* cleanup callback */
     QS_EXIT();       /* cleanup the QSPY connection */
 
@@ -296,13 +296,20 @@ void QActive_stop(QActive * const me) {
     QActive_unsubscribeAll(me); /* unsubscribe from all events */
 
     /* make sure the AO is no longer in "ready set" */
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
     QPSet_remove(&QV_readySet_, me->prio);
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 
     QF_remove_(me); /* remove this AO from QF */
 }
 #endif
+/*..........................................................................*/
+void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
+    (void)me;    /* unused parameter */
+    (void)attr1; /* unused parameter */
+    (void)attr2; /* unused parameter */
+    Q_ERROR_ID(900); /* this function should not be called in this QP port */
+}
 
 /****************************************************************************/
 static void *ticker_thread(void *arg) { /* for pthread_create() */

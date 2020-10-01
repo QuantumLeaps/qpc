@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
     QS_OBJ_DICTIONARY(&Counter);
 
     /* filter setup... */
-    QS_FILTER_ON(QS_ALL_RECORDS);
+    QS_GLB_FILTER(QS_ALL_RECORDS);
 
     return QF_run(); /* run the tests */
 }
@@ -75,7 +75,7 @@ void QS_onCommand(uint8_t cmdId,
     switch (cmdId) {
         case 0: { /* call the CUT: FindFunction_WhichIsBroken */
             int ret = FindFunction_WhichIsBroken((int)param1);
-            QS_BEGIN(QS_USER + cmdId, (void *)0) /* user-specific record */
+            QS_BEGIN_ID(QS_USER + cmdId, 0U) /* app-specific record */
                 QS_FUN(&FindFunction_WhichIsBroken); /* function called */
                 QS_I32(0, (int32_t)ret); /* returned value */
                 QS_I16(0, (int16_t)param1); /* parameter */
@@ -84,7 +84,7 @@ void QS_onCommand(uint8_t cmdId,
         }
         case 1: { /* call the CUT: FunctionWhichReturnsLocalVariable */
             int ret = FunctionWhichReturnsLocalVariable();
-            QS_BEGIN(QS_USER + cmdId, (void *)0) /* user-specific record */
+            QS_BEGIN_ID(QS_USER + cmdId, 0U) /* app-specific record */
                 QS_FUN(&FunctionWhichReturnsLocalVariable); /* function called */
                 QS_U32_HEX(0, (uint32_t)ret); /* returned value */
             QS_END()

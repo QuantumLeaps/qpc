@@ -4,8 +4,8 @@
 * @brief Internal (package scope) QS/C interface.
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-04
+* Last updated for version 6.9.1
+* Last updated on  2020-09-15
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -45,40 +45,35 @@
 * entering critical section. */
 /**
 * @note This macro is intended to use only inside QP components and NOT
-* at the application level. @sa #QS_BEGIN
+* at the application level.
+* @sa QS_BEGIN_ID()
 */
-#define QS_BEGIN_PRE_(rec_, objFilter_, obj_)                    \
-    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3] \
-        & (uint_fast8_t)(1U << ((uint8_t)(rec_) & 7U))) != 0U)   \
-        && (((objFilter_) == (void *)0)                          \
-            || ((objFilter_) == (obj_))))                        \
-    {                                                            \
-        QS_CRIT_ENTRY_();                                        \
+#define QS_BEGIN_PRE_(rec_, qs_id_)                     \
+    if (QS_GLB_CHECK_(rec_) && QS_LOC_CHECK_(qs_id_)) { \
+        QS_CRIT_E_();                               \
         QS_beginRec_((uint_fast8_t)(rec_));
 
 /*!  Internal QS macro to end a predefined QS record with
 * exiting critical section. */
 /**
 * @note This macro is intended to use only inside QP components and NOT
-* at the application level. @sa #QS_END
+* at the application level.
+* @sa QS_END()
 */
 #define QS_END_PRE_()    \
         QS_endRec_();    \
-        QS_CRIT_EXIT_(); \
+        QS_CRIT_X_(); \
     }
 
 /*! Internal macro to begin a predefined QS record without
 * entering critical section. */
 /**
 * @note This macro is intended to use only inside QP components and NOT
-* at the application level. @sa #QS_BEGIN_NOCRIT
+* at the application level.
+* @sa QS_BEGIN_NOCRIT()
 */
-#define QS_BEGIN_NOCRIT_PRE_(rec_, objFilter_, obj_)            \
-    if ((((uint_fast8_t)QS_priv_.glbFilter[(uint8_t)(rec_) >> 3]\
-        & (uint_fast8_t)(1U << ((uint8_t)(rec_) & 7U))) != 0U)  \
-        && (((objFilter_) == (void *)0)                         \
-            || ((objFilter_) == (obj_))))                       \
-    {                                                           \
+#define QS_BEGIN_NOCRIT_PRE_(rec_, qs_id_)              \
+    if (QS_GLB_CHECK_(rec_) && QS_LOC_CHECK_(qs_id_)) { \
         QS_beginRec_((uint_fast8_t)(rec_));
 
 /*! Internal QS macro to end a predefined QS record without
@@ -259,10 +254,6 @@
 /*! send the predefined target info trace record
  * (object sizes, build time-stamp, QP version) */
 void QS_target_info_pre_(uint8_t isReset);
-
-/****************************************************************************/
-extern char_t const Q_BUILD_DATE[12];
-extern char_t const Q_BUILD_TIME[9];
 
 /****************************************************************************/
 /*! Private QS-RX attributes to keep track of the current objects and

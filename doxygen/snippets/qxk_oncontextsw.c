@@ -7,7 +7,7 @@ void QXK_onContextSw(QActive *prev, QActive *next) {
     }
 
     /* If you use QS software tracing, use the _NOCRIT() begin/end */
-    QS_BEGIN_NOCRIT(ON_CONTEXT_SW, (void *)1)
+    QS_BEGIN_NOCRIT(ON_CONTEXT_SW, 0U)
         QS_OBJ(prev);
         QS_OBJ(next);
     QS_END_NOCRIT()

@@ -5,8 +5,8 @@
 * @ingroup qv
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-10
+* Last updated for version 6.9.1
+* Last updated on  2020-09-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -125,7 +125,7 @@ int_t QF_run(void) {
     QF_INT_DISABLE();
 
     /* produce the QS_QF_RUN trace record */
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, 0U)
     QS_END_NOCRIT_PRE_()
 
     for (;;) {
@@ -139,7 +139,7 @@ int_t QF_run(void) {
             a = QF_active_[p];
 
 #ifdef Q_SPY
-            QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, QS_priv_.locFilter[AO_OBJ], a)
+            QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a->prio)
                 QS_TIME_PRE_();     /* timestamp */
                 QS_2U8_PRE_(p,      /* priority of the scheduled AO */
                             pprev); /* previous priority */
@@ -157,7 +157,7 @@ int_t QF_run(void) {
             * 3. determine if event is garbage and collect it if so
             */
             e = QActive_get_(a);
-            QHSM_DISPATCH(&a->super, e);
+            QHSM_DISPATCH(&a->super, e, a->prio);
             QF_gc(e);
 
             QF_INT_DISABLE();
@@ -169,7 +169,7 @@ int_t QF_run(void) {
         else { /* no AO ready to run --> idle */
 #ifdef Q_SPY
             if (pprev != 0U) {
-                QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, (void *)0, (void *)0)
+                QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, 0U)
                     QS_TIME_PRE_();    /* timestamp */
                     QS_U8_PRE_(pprev); /* previous priority */
                 QS_END_NOCRIT_PRE_()
@@ -234,7 +234,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = (uint8_t)prio; /* set the current priority of the AO */
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, par); /* top-most initial tran. */
+    QHSM_INIT(&me->super, par, me->prio); /* top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 }
 

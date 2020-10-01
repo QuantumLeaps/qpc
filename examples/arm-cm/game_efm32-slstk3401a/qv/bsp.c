@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, EFM32-SLSTK3401A board, QV kernel
-* Last updated for version 5.9.0
-* Last updated on  2017-04-14
+* Last updated for version 6.9.1
+* Last updated on  2020-09-22
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -44,27 +44,6 @@
 /* add other drivers if necessary... */
 
 Q_DEFINE_THIS_FILE
-
-/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-* Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-* DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-*/
-enum KernelUnawareISRs { /* see NOTE00 */
-    USART0_RX_PRIO,
-    /* ... */
-    MAX_KERNEL_UNAWARE_CMSIS_PRI  /* keep always last */
-};
-/* "kernel-unaware" interrupts can't overlap "kernel-aware" interrupts */
-Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
-
-enum KernelAwareISRs {
-    GPIO_EVEN_PRIO = QF_AWARE_ISR_CMSIS_PRI, /* see NOTE00 */
-    SYSTICK_PRIO,
-    /* ... */
-    MAX_KERNEL_AWARE_CMSIS_PRI /* keep always last */
-};
-/* "kernel-aware" interrupts should not overlap the PendSV priority */
-Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
 /* ISRs defined in this BSP ------------------------------------------------*/
 void SysTick_Handler(void);
@@ -149,6 +128,7 @@ void SysTick_Handler(void) {
            }
        }
     }
+    QV_ARM_ERRATUM_838869();
 }
 /*..........................................................................*/
 void GPIO_EVEN_IRQHandler(void) {
@@ -169,6 +149,7 @@ void USART0_RX_IRQHandler(void) {
         uint32_t b = l_USART0->RXDATA;
         QS_RX_PUT(b);
     }
+    QV_ARM_ERRATUM_838869();
 }
 #else
 void USART0_RX_IRQHandler(void) {}
@@ -224,6 +205,11 @@ void BSP_init(void) {
     QS_OBJ_DICTIONARY(&l_GPIO_EVEN_IRQHandler);
     QS_USR_DICTIONARY(SCORE_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
+
+    /* setup the QS filters... */
+    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
+    QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
+    QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
 }
 
 /*..........................................................................*/
@@ -613,7 +599,7 @@ void BSP_updateScore(uint16_t score) {
     str[0] = (s % 10U) + '0';
     BSP_paintString(6U*6U, BSP_SCREEN_HEIGHT - 8U, str);
 
-    QS_BEGIN(SCORE_STAT, (void *)1) /* application-specific record begin */
+    QS_BEGIN_ID(SCORE_STAT, 0U) /* app-specific record */
         QS_U16(4, score);
     QS_END()
 }
@@ -684,9 +670,9 @@ void QF_onStartup(void) {
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(USART0_RX_IRQn, USART0_RX_PRIO);
-    NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
-    NVIC_SetPriority(GPIO_EVEN_IRQn, GPIO_EVEN_PRIO);
+    NVIC_SetPriority(USART0_RX_IRQn, 0U); /* kernel unaware interrupt */
+    NVIC_SetPriority(GPIO_EVEN_IRQn, QF_AWARE_ISR_CMSIS_PRI);
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
     /* ... */
 
     /* enable IRQs... */
@@ -813,17 +799,6 @@ uint8_t QS_onStartup(void const *arg) {
     QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
-    /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
     return 1U; /* return success */
 }
 /*..........................................................................*/
@@ -868,7 +843,7 @@ void QS_onCommand(uint8_t cmdId,
     (void)param1;
     (void)param2;
     (void)param3;
-    QS_BEGIN(COMMAND_STAT, (void *)1) /* application-specific record begin */
+    QS_BEGIN_ID(COMMAND_STAT, 0U) /* app-specific record */
         QS_U8(2, cmdId);
         QS_U32(8, param1);
         QS_U32(8, param2);

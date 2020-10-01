@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP on AT91SAM7S-EK, QK kernel, IAR-ARM
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 6.9.1
+* Last updated on  2020-09-22
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -174,6 +174,11 @@ void BSP_init(void) {
         Q_ERROR();
     }
     QS_OBJ_DICTIONARY(&l_ISR_tick);
+
+    /* setup the QS filters... */
+    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
+    QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
+    QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {
@@ -194,7 +199,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
         LED_OFF(1); /* turn LED off */
     }
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);                  /* Philosopher number */
         QS_STR(stat);                 /* Philosopher status */
     QS_END()
@@ -331,19 +336,6 @@ uint8_t QS_onStartup(void const *arg) {
     pTC0->TC_CMR = (AT91C_TC_CPCTRG | AT91C_TC_CLKS_TIMER_DIV3_CLOCK);
     pTC0->TC_CCR = AT91C_TC_CLKEN;  /* TC_CCR: enable Clock Counter */
     pTC0->TC_CCR = AT91C_TC_SWTRG;  /* TC_CCR: start counting */
-
-    /* setup the QS filters... */
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(PHILO_STAT);
 
     return 1U; /* indicate successfull QS initialization */
 }

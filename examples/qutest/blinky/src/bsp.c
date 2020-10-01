@@ -48,13 +48,13 @@ void BSP_init() {
 }
 /*..........................................................................*/
 void BSP_ledOff(void) {
-    QS_BEGIN(LED, AO_Blinky)
+    QS_BEGIN_ID(LED, AO_Blinky->prio)
        QS_U8(1, 0);
     QS_END()
 }
 /*..........................................................................*/
 void BSP_ledOn(void) {
-    QS_BEGIN(LED, AO_Blinky)
+    QS_BEGIN_ID(LED, AO_Blinky->prio)
        QS_U8(1, 1);
     QS_END()
 }

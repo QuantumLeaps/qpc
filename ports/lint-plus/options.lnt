@@ -2,8 +2,8 @@
 /// @brief PC-Lint-Plus option file for linting QP/C source code
 /// @cond
 ///===========================================================================
-/// Last updated for version 6.8.0
-/// Last updated on  2020-01-27
+/// Last updated for version 6.9.1
+/// Last updated on  2020-09-17
 ///
 ///                    Q u a n t u m  L e a P s
 ///                    ------------------------
@@ -91,8 +91,8 @@ qpc.lnt             // QP/C options
  QF_EVT_REF_CTR_INC_,
  QF_EVT_REF_CTR_DEC_,
  QF_PTR_AT_,
- QF_CRIT_ENTRY_,
- QF_CRIT_EXIT_,
+ QF_CRIT_E_,
+ QF_CRIT_X_,
  Q_ASSERT_CRIT_,
  Q_REQUIRE_CRIT_,
  Q_ERROR_CRIT_,
@@ -222,6 +222,8 @@ qpc.lnt             // QP/C options
 
 // M3-D4.9(adv) function-like macro
 -esym(9026,
+ QS_CRIT_E_,
+ QS_CRIT_X_,
  QS_PTR_INC_)
 
 // M3-R14.3(r) boolean condition for 'if' always evaluates to 'false'
@@ -261,6 +263,11 @@ qpc.lnt             // QP/C options
 // definition of macro ends in semi-colon
 -esym(823,
  QS_CRIT_STAT_,
+ QS_BEGIN_PRE_,
+ QS_BEGIN_NOCRIT_PRE_)
+
+// constant value used in Boolean context (left operand to || operator)
+-emacro(506,
  QS_BEGIN_PRE_,
  QS_BEGIN_NOCRIT_PRE_)
 

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: History Example, Win32
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.9.1
+* Last updated on  2020-09-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -55,7 +55,7 @@ int main() {
 
     /* instantiate the ToastOven HSM and trigger the initial transition */
     ToastOven_ctor();
-    QHSM_INIT(the_oven, (QEvt *)0);
+    QHSM_INIT(the_oven, (void *)0, 0U);
 
     for (;;) {
         QEvt e;
@@ -73,8 +73,9 @@ int main() {
             case 'f':  e.sig = OFF_SIG;         break;
             case 0x1B: e.sig = TERMINATE_SIG;   break;
         }
-                               /* dispatch the event into the state machine */
-        QHSM_DISPATCH(the_oven,  &e);
+
+        /* dispatch the event into the state machine */
+        QHSM_DISPATCH(the_oven,  &e, 0U);
     }
 
     QF_onCleanup();
@@ -96,5 +97,6 @@ void QF_onClockTick(void) {
 /*..........................................................................*/
 Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
     FPRINTF_S(stderr, "Assertion failed in %s, line %d", file, line);
+    QF_onCleanup();
     exit(-1);
 }

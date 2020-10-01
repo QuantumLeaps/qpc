@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, preemptive QXK kernel
-* Last Updated for Version: 6.0.4
-* Date of the Last Update:  2018-01-05
+* Last updated for version 6.9.1
+* Last updated on  2020-09-22
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -42,27 +42,6 @@
 /* add other drivers if necessary... */
 
 Q_DEFINE_THIS_FILE  /* define the name of this file for assertions */
-
-/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-* Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-* DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-*/
-enum KernelUnawareISRs { /* see NOTE1 */
-    UART0_PRIO,
-    /* ... */
-    MAX_KERNEL_UNAWARE_CMSIS_PRI /* keep always last */
-};
-/* "kernel-unaware" interrupts can't overlap "kernel-aware" interrupts */
-Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
-
-enum KernelAwareISRs {
-    SYSTICK_PRIO = QF_AWARE_ISR_CMSIS_PRI, /* see NOTE00 */
-    GPIOA_PRIO,
-    /* ... */
-    MAX_KERNEL_AWARE_CMSIS_PRI /* keep always last */
-};
-/* "kernel-aware" interrupts should not overlap the PendSV priority */
-Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
 /* prototypes of ISRs defined in this BSP ----------------------------------*/
 void SysTick_Handler(void);
@@ -213,6 +192,11 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(PHILO_STAT);
     QS_USR_DICTIONARY(PAUSED_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
+
+    /* setup the QS filters... */
+    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
+    QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
+    QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -222,7 +206,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
          ? 0xFFU             /* turn the LED1 on  */
          : 0U);              /* turn the LED1 off */
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
     QS_END()
@@ -242,7 +226,7 @@ void BSP_displayPaused(uint8_t paused) {
         GPIOF->DATA_Bits[LED_GREEN] = 0x0U;
     }
 
-    QS_BEGIN(PAUSED_STAT, (void *)0) /* application-specific record begin */
+    QS_BEGIN_ID(PAUSED_STAT, 0U) /* app-specific record */
         QS_U8(1, paused);  /* Paused status */
     QS_END()
 }
@@ -294,15 +278,15 @@ void QF_onStartup(void) {
     /* assing all priority bits for preemption-prio. and none to sub-prio. */
     NVIC_SetPriorityGrouping(0U);
 
-    /* set priorities of ALL ISRs used in the system, see NOTE00
+    /* set priorities of ALL ISRs used in the system, see NOTE1
     *
     * !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(UART0_IRQn,     UART0_PRIO);
-    NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
-    NVIC_SetPriority(GPIOA_IRQn,     GPIOA_PRIO);
+    NVIC_SetPriority(UART0_IRQn,     0U); /* kernel unaware interrupt */
+    NVIC_SetPriority(GPIOA_IRQn,     QF_AWARE_ISR_CMSIS_PRI);
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
     /* ... */
 
     /* enable IRQs... */
@@ -319,7 +303,7 @@ void QF_onCleanup(void) {
 void QXK_onIdle(void) {
     float volatile x;
 
-    /* toggle the User LED on and then off, see NOTE01 */
+    /* toggle the User LED on and then off, see NOTE2 */
     QF_INT_DISABLE();
     GPIOF->DATA_Bits[LED_BLUE] = 0xFFU;  /* turn the Blue LED on  */
     GPIOF->DATA_Bits[LED_BLUE] = 0U;     /* turn the Blue LED off */
@@ -421,12 +405,6 @@ uint8_t QS_onStartup(void const *arg) {
     QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
 
-    /* setup the QS filters... */
-    QS_FILTER_ON(QS_SM_RECORDS); /* state machine records */
-    QS_FILTER_ON(QS_UA_RECORDS); /* all usedr records */
-    //QS_FILTER_ON(QS_MUTEX_LOCK);
-    //QS_FILTER_ON(QS_MUTEX_UNLOCK);
-
     return 1U; /* return success */
 }
 /*..........................................................................*/
@@ -471,7 +449,7 @@ void QS_onCommand(uint8_t cmdId,
     (void)param1;
     (void)param2;
     (void)param3;
-    QS_BEGIN(COMMAND_STAT, (void *)1) /* application-specific record begin */
+    QS_BEGIN_ID(COMMAND_STAT, 0U) /* app-specific record */
         QS_U8(2, cmdId);
         QS_U32(8, param1);
         QS_U32(8, param2);

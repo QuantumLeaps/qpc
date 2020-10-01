@@ -58,7 +58,7 @@ static QState Table_paused (Table *me, QEvt const *e);
 enum ForkState { FREE, USED };
 
 /* Local objects -----------------------------------------------------------*/
-static Table l_table;     /* the single instance of the Table active object */
+static Table l_table; /* the single instance of the Table active object */
 
 #ifdef Q_SPY
 enum QSUserRecords {
@@ -68,7 +68,7 @@ enum QSUserRecords {
 #endif
 
 /* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_Table = (QActive *)&l_table;      /* "opaque" AO pointer */
+QActive * const AO_Table = (QActive *)&l_table; /* "opaque" AO pointer */
 
 /* GUI definition ==========================================================*/
 enum YCoord {
@@ -102,9 +102,9 @@ static void displyPhilStat(uint8_t n, char const *stat) {
     l_philoStat[n] = stat;
     GUI_DispStringAt(stat,  l_xOrg + STATE_X, l_yOrg + l_philoY[n]);
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n])  /* application-specific record begin */
-        QS_U8(1, n);                                  /* Philosopher number */
-        QS_STR(stat);                                 /* Philosopher status */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
+        QS_U8(1, n);  /* Philosopher number */
+        QS_STR(stat); /* Philosopher status */
     QS_END()
 }
 /*..........................................................................*/
@@ -116,8 +116,8 @@ static void displyTableStat(char const *stat) {
     l_tableState = stat;
     GUI_DispStringAt(stat,  l_xOrg + STATE_X, l_yOrg + l_tableY);
 
-    QS_BEGIN(TABLE_STAT, AO_Table)     /* application-specific record begin */
-        QS_STR(stat);                                 /* Philosopher status */
+    QS_BEGIN_ID(TABLE_STAT, AO_Table->prio) /* app-specific record */
+        QS_STR(stat); /* Philosopher status */
     QS_END()
 }
 
@@ -172,13 +172,13 @@ QState Table_initial(Table *me, QEvt const *e) {
     QS_FUN_DICTIONARY(&Table_initial);
     QS_FUN_DICTIONARY(&Table_serving);
 
-    QS_SIG_DICTIONARY(DONE_SIG,      0);                  /* global signals */
+    QS_SIG_DICTIONARY(DONE_SIG,      0); /* global signals */
     QS_SIG_DICTIONARY(EAT_SIG,       0);
     QS_SIG_DICTIONARY(PAUSE_SIG, 0);
 
-    QS_SIG_DICTIONARY(HUNGRY_SIG,    me);          /* signal just for Table */
+    QS_SIG_DICTIONARY(HUNGRY_SIG,    me); /* signal just for Table */
 
-    GUI_Init();                              /* initialize the embedded GUI */
+    GUI_Init(); /* initialize the embedded GUI */
 
     QActive_subscribe((QActive *)me, DONE_SIG);
 
@@ -196,19 +196,19 @@ QState Table_ready(Table *me, QEvt const *e) {
         }
 
         /* ... hardkey events ... */
-        case KEY_LEFT_REL_SIG: {                   /* hardkey LEFT released */
+        case KEY_LEFT_REL_SIG: { /* hardkey LEFT released */
             moveDppScreen(-5, 0);
             return Q_HANDLED();
         }
-        case KEY_RIGHT_REL_SIG: {                 /* hardkey RIGHT released */
+        case KEY_RIGHT_REL_SIG: { /* hardkey RIGHT released */
             moveDppScreen(5, 0);
             return Q_HANDLED();
         }
-        case KEY_DOWN_REL_SIG: {                   /* hardkey DOWN released */
+        case KEY_DOWN_REL_SIG: {  /* hardkey DOWN released */
             moveDppScreen(0, 5);
             return Q_HANDLED();
         }
-        case KEY_UP_REL_SIG: {                       /* hardkey UP released */
+        case KEY_UP_REL_SIG: {    /* hardkey UP released */
             moveDppScreen(0, -5);
             return Q_HANDLED();
         }
@@ -223,7 +223,7 @@ QState Table_serving(Table *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             displyTableStat("serving");
-            for (n = 0; n < N_PHILO; ++n) {   /* give permissions to eat... */
+            for (n = 0; n < N_PHILO; ++n) { /* give permissions to eat... */
                 if (me->isHungry[n]
                     && (me->fork[LEFT(n)] == FREE)
                         && (me->fork[n] == FREE))
@@ -260,7 +260,7 @@ QState Table_serving(Table *me, QEvt const *e) {
             Q_ASSERT(n < N_PHILO);
             displyPhilStat(n, "thinking");
             me->fork[LEFT(n)] = me->fork[n] = FREE;
-            m = RIGHT(n);                       /* check the right neighbor */
+            m = RIGHT(n); /* check the right neighbor */
             if (me->isHungry[m] && me->fork[m] == FREE) {
                 me->fork[n] = me->fork[m] = USED;
                 me->isHungry[m] = 0;
@@ -269,7 +269,7 @@ QState Table_serving(Table *me, QEvt const *e) {
                 QF_PUBLISH((QEvt *)pe, me);
                 displyPhilStat(m, "eating  ");
             }
-            m = LEFT(n);                         /* check the left neighbor */
+            m = LEFT(n); /* check the left neighbor */
             n = LEFT(m);
             if (me->isHungry[m] && me->fork[n] == FREE) {
                 me->fork[m] = me->fork[n] = USED;
@@ -281,8 +281,8 @@ QState Table_serving(Table *me, QEvt const *e) {
             }
             return Q_HANDLED();
         }
-        case PAUSE_SIG:                          /* "Toggle" button pressed */
-        case KEY_CENTER_PRESS_SIG: {              /* hardkey CENTER pressed */
+        case PAUSE_SIG:              /* "Toggle" button pressed */
+        case KEY_CENTER_PRESS_SIG: { /* hardkey CENTER pressed */
             return Q_TRAN(&Table_paused);
         }
     }
@@ -311,8 +311,8 @@ QState Table_paused(Table *me, QEvt const *e) {
             me->fork[LEFT(n)] = me->fork[n] = FREE;
             return Q_HANDLED();
         }
-        case PAUSE_SIG:                          /* "Toggle" button pressed */
-        case KEY_CENTER_REL_SIG: {               /* hardkey CENTER released */
+        case PAUSE_SIG:            /* "Toggle" button pressed */
+        case KEY_CENTER_REL_SIG: { /* hardkey CENTER released */
             return Q_TRAN(&Table_serving);
         }
     }

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * BSP for DPP example, Microstick II board, cooperative QV kernel
-* Last updated for version 6.5.1
-* Last updated on  2019-06-10
+* Last updated for version 6.9.1
+* Last updated on  2020-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -102,6 +102,11 @@ void BSP_init(void) {
         Q_ERROR();
     }
     QS_OBJ_DICTIONARY(&l_T2Interrupt);
+
+    /* setup the QS filters... */
+    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
+    QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
+    QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {
@@ -113,7 +118,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
     (void)stat;
     LED_TOGGLE();
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
     QS_END()
@@ -213,11 +218,6 @@ uint8_t QS_onStartup(void const *arg) {
     U2BRG  = (uint16_t)((FCY_HZ / (4.0 * QS_BAUD_RATE)) - 1.0 + 0.5);
     U2MODEbits.UARTEN = 1;
     U2STAbits.UTXEN   = 1;
-
-    /* setup the QS filters... */
-    QS_FILTER_ON(QS_SM_RECORDS);
-    //QS_FILTER_ON(QS_AO_RECORDS);
-    QS_FILTER_ON(QS_UA_RECORDS);
 
     return 1U; /* indicate successful QS initialization */
 }

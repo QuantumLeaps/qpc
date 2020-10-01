@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-12
+* Last updated for version 6.9.1
+* Last updated on  2020-09-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -40,6 +40,7 @@
 #define QP_IMPL           /* this is QP implementation */
 #include "qs_port.h"      /* QS port */
 #include "qs_pkg.h"       /* QS package-scope interface */
+#include "qstamp.h"       /* QP time-stamp */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 
 Q_DEFINE_THIS_MODULE("qs")
@@ -76,16 +77,6 @@ void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
     /* the provided buffer must be at least 8 bytes long */
     Q_REQUIRE_ID(100, stoSize > 8U);
 
-    /* all maskable filters off */
-    QS_filterOff_((uint_fast8_t)QS_ALL_RECORDS);
-
-    QS_priv_.locFilter[SM_OBJ] = (void *)0;
-    QS_priv_.locFilter[AO_OBJ] = (void *)0;
-    QS_priv_.locFilter[MP_OBJ] = (void *)0;
-    QS_priv_.locFilter[EQ_OBJ] = (void *)0;
-    QS_priv_.locFilter[TE_OBJ] = (void *)0;
-    QS_priv_.locFilter[AP_OBJ] = (void *)0;
-
     QS_priv_.buf      = &sto[0];
     QS_priv_.end      = (QSCtr)stoSize;
     QS_priv_.head     = 0U;
@@ -95,6 +86,10 @@ void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
     QS_priv_.chksum   = 0U;
     QS_priv_.critNest = 0U;
 
+    QS_glbFilter_(-(int_fast16_t)QS_ALL_RECORDS); /* all global filters OFF */
+    QS_locFilter_((int_fast16_t)QS_ALL_IDS);      /* all local filters ON */
+    QS_priv_.locFilter_AP = (void *)0;            /* deprecated "AP-filter" */
+
     /* produce an empty record to "flush" the QS trace buffer */
     QS_beginRec_((uint_fast8_t)QS_EMPTY);
     QS_endRec_();
@@ -102,205 +97,280 @@ void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
     /* produce the reset record to inform QSPY of a new session */
     QS_target_info_pre_(0xFFU); /* send Reset and Target info */
 
-    /* wait with flushing after successfull initialization (see QS_INIT()) */
-}
-
-
-/****************************************************************************/
-/**
-* @description
-* This function sets up the QS filter to enable the record type @p rec.
-* The argument @a #QS_ALL_RECORDS specifies to filter-in all records.
-* This function should be called indirectly through the macro #QS_FILTER_ON.
-*
-* @note Filtering based on the record-type is only the first layer of
-* filtering. The second layer is based on the object-type. Both filter
-* layers must be enabled for the QS record to be inserted into the QS buffer.
-* @sa QS_filterOff_(), QS_FILTER_SM_OBJ, QS_FILTER_AO_OBJ, QS_FILTER_MP_OBJ,
-* QS_FILTER_EQ_OBJ, and QS_FILTER_TE_OBJ.
-*/
-void QS_filterOn_(uint_fast8_t rec) {
-    if (rec == (uint_fast8_t)QS_ALL_RECORDS) {
-        uint_fast8_t i;
-        /* set all global filters (partially unrolled loop) */
-        for (i = 0U; i < Q_DIM(QS_priv_.glbFilter); i += 4U) {
-            QS_priv_.glbFilter[i     ] = 0xFFU;
-            QS_priv_.glbFilter[i + 1U] = 0xFFU;
-            QS_priv_.glbFilter[i + 2U] = 0xFFU;
-            QS_priv_.glbFilter[i + 3U] = 0xFFU;
-        }
-        /* never turn the last 3 records on (0x7D, 0x7E, 0x7F) */
-        QS_priv_.glbFilter[15] = 0x1FU;
-    }
-    else if (rec == (uint_fast8_t)QS_SM_RECORDS) {
-        QS_priv_.glbFilter[0] |= 0xFEU;
-        QS_priv_.glbFilter[1] |= 0x03U;
-        QS_priv_.glbFilter[6] |= 0x80U;
-        QS_priv_.glbFilter[7] |= 0x03U;
-    }
-    else if (rec == (uint_fast8_t)QS_AO_RECORDS) {
-        QS_priv_.glbFilter[1] |= 0xFCU;
-        QS_priv_.glbFilter[2] |= 0x07U;
-        QS_priv_.glbFilter[5] |= 0x20U;
-    }
-    else if (rec == (uint_fast8_t)QS_EQ_RECORDS) {
-        QS_priv_.glbFilter[2] |= 0x78U;
-        QS_priv_.glbFilter[5] |= 0x40U;
-    }
-    else if (rec == (uint_fast8_t)QS_MP_RECORDS) {
-        QS_priv_.glbFilter[3] |= 0x03U;
-        QS_priv_.glbFilter[5] |= 0x80U;
-    }
-    else if (rec == (uint_fast8_t)QS_QF_RECORDS) {
-        QS_priv_.glbFilter[3] |= 0xFCU;
-        QS_priv_.glbFilter[4] |= 0xC0U;
-        QS_priv_.glbFilter[5] |= 0x1FU;
-    }
-    else if (rec == (uint_fast8_t)QS_TE_RECORDS) {
-        QS_priv_.glbFilter[4] |= 0x3FU;
-    }
-    else if (rec == (uint_fast8_t)QS_SC_RECORDS) {
-        QS_priv_.glbFilter[6] |= 0x7FU;
-    }
-    else if (rec == (uint_fast8_t)QS_U0_RECORDS) {
-        QS_priv_.glbFilter[12] |= 0xF0U;
-        QS_priv_.glbFilter[13] |= 0x01U;
-    }
-    else if (rec == (uint_fast8_t)QS_U1_RECORDS) {
-        QS_priv_.glbFilter[13] |= 0x3EU;
-    }
-    else if (rec == (uint_fast8_t)QS_U2_RECORDS) {
-        QS_priv_.glbFilter[13] |= 0xC0U;
-        QS_priv_.glbFilter[14] |= 0x07U;
-    }
-    else if (rec == (uint_fast8_t)QS_U3_RECORDS) {
-        QS_priv_.glbFilter[14] |= 0xF8U;
-    }
-    else if (rec == (uint_fast8_t)QS_U4_RECORDS) {
-        QS_priv_.glbFilter[15] |= 0x1FU;
-    }
-    else if (rec == (uint_fast8_t)QS_UA_RECORDS) {
-        QS_priv_.glbFilter[12] |= 0xF0U;
-        QS_priv_.glbFilter[13] |= 0xFFU;
-        QS_priv_.glbFilter[14] |= 0xFFU;
-        QS_priv_.glbFilter[15] |= 0x1FU;
-    }
-    else {
-        /* record numbers can't exceed QS_ESC, so they don't need escaping */
-        Q_ASSERT_ID(210, rec < QS_ESC);
-
-        QS_priv_.glbFilter[rec >> 3] |= (uint8_t)(1U << (rec & 7U));
-
-        /* never turn the last 3 records on (0x7D, 0x7E, 0x7F) */
-        QS_priv_.glbFilter[15] &= 0x1FU;
-    }
+    /* hold off flushing after successfull initialization (see QS_INIT()) */
 }
 
 /****************************************************************************/
 /**
 * @description
-* This function sets up the QS filter to disable the record type @p rec.
-* The argument @a #QS_ALL_RECORDS specifies to suppress all records.
-* This function should be called indirectly through the macro #QS_FILTER_OFF.
+* This function sets up the global QS filter to enable or disable the
+* given QS record or a group of records @p rec.
 *
-* @note Filtering records based on the record-type is only the first layer of
-* filtering (global filter). The second layer is based on the object-type
-* (local filter). Both filter layers must be enabled for the QS record to be
-* inserted into the QS buffer.
+* @param[in] filter  the QS record number or group to enable in the filter,
+*                 if positive or disable, if negative. The record numbers
+*                 must be from the enumeration ::QSpyRecords. The record
+*                 groups from enumeration ::QSpyRecordGroups.
+* @note
+* Filtering based on the record-type (global filter) is only the first layer
+* of filtering. The second layer is based on the object-id (local filter).
+* Both filter layers must be enabled for the QS record to be inserted into
+* the QS buffer.
 */
-void QS_filterOff_(uint_fast8_t rec) {
-    uint_fast8_t tmp;
-
-    if (rec == (uint_fast8_t)QS_ALL_RECORDS) {
-        /* clear all global filters (partially unrolled loop) */
-        for (tmp = 0U; tmp < Q_DIM(QS_priv_.glbFilter); tmp += 4U) {
-            QS_priv_.glbFilter[tmp     ] = 0x00U;
-            QS_priv_.glbFilter[tmp + 1U] = 0x00U;
-            QS_priv_.glbFilter[tmp + 2U] = 0x00U;
-            QS_priv_.glbFilter[tmp + 3U] = 0x00U;
+void QS_glbFilter_(int_fast16_t const filter) {
+    bool isRemove = (filter < 0);
+    uint8_t rec = isRemove ? (uint8_t)(-filter) : (uint8_t)filter;
+    switch (rec) {
+        case QS_ALL_RECORDS: {
+            uint8_t tmp = (isRemove ? 0x00U : 0xFFU);
+            uint_fast8_t i;
+            /* set all global filters (partially unrolled loop) */
+            for (i = 0U; i < Q_DIM(QS_priv_.glbFilter); i += 4U) {
+                QS_priv_.glbFilter[i     ] = tmp;
+                QS_priv_.glbFilter[i + 1U] = tmp;
+                QS_priv_.glbFilter[i + 2U] = tmp;
+                QS_priv_.glbFilter[i + 3U] = tmp;
+            }
+            if (isRemove) {
+                /* leave the "not maskable" filters enabled,
+                * see qs.h, Miscellaneous QS records (not maskable)
+                */
+                QS_priv_.glbFilter[0] = 0x01U;
+                QS_priv_.glbFilter[7] = 0xFCU;
+                QS_priv_.glbFilter[8] = 0x7FU;
+            }
+            else {
+                /* never turn the last 3 records on (0x7D, 0x7E, 0x7F) */
+                QS_priv_.glbFilter[15] = 0x1FU;
+            }
+            break;
         }
-        /* leave the "not maskable" filters enabled,
-        * see qs.h, Miscellaneous QS records (not maskable)
-        */
-        QS_priv_.glbFilter[0] = 0x01U;
-        QS_priv_.glbFilter[7] = 0xFCU;
-        QS_priv_.glbFilter[8] = 0x7FU;
-    }
-    else if (rec == (uint_fast8_t)QS_SM_RECORDS) {
-        QS_priv_.glbFilter[0] &= ~(uint8_t)0xFEU;
-        QS_priv_.glbFilter[1] &= ~(uint8_t)0x03U;
-        QS_priv_.glbFilter[6] &= ~(uint8_t)0x80U;
-        QS_priv_.glbFilter[7] &= ~(uint8_t)0x03U;
-    }
-    else if (rec == (uint_fast8_t)QS_AO_RECORDS) {
-        QS_priv_.glbFilter[1] &= ~(uint8_t)0xFCU;
-        QS_priv_.glbFilter[2] &= ~(uint8_t)0x07U;
-        QS_priv_.glbFilter[5] &= ~(uint8_t)0x20U;
-    }
-    else if (rec == (uint_fast8_t)QS_EQ_RECORDS) {
-        QS_priv_.glbFilter[2] &= ~(uint8_t)0x78U;
-        QS_priv_.glbFilter[5] &= ~(uint8_t)0x40U;
-    }
-    else if (rec == (uint_fast8_t)QS_MP_RECORDS) {
-        QS_priv_.glbFilter[3] &= ~(uint8_t)0x03U;
-        QS_priv_.glbFilter[5] &= ~(uint8_t)0x80U;
-    }
-    else if (rec == (uint_fast8_t)QS_QF_RECORDS) {
-        QS_priv_.glbFilter[3] &= ~(uint8_t)0xFCU;
-        QS_priv_.glbFilter[4] &= ~(uint8_t)0xC0U;
-        QS_priv_.glbFilter[5] &= ~(uint8_t)0x1FU;
-    }
-    else if (rec == (uint_fast8_t)QS_TE_RECORDS) {
-        QS_priv_.glbFilter[4] &= ~(uint8_t)0x3FU;
-    }
-    else if (rec == (uint_fast8_t)QS_SC_RECORDS) {
-        QS_priv_.glbFilter[6] &= ~(uint8_t)0x7FU;
-    }
-    else if (rec == (uint_fast8_t)QS_U0_RECORDS) {
-        QS_priv_.glbFilter[12] &= ~(uint8_t)0xF0U;
-        QS_priv_.glbFilter[13] &= ~(uint8_t)0x01U;
-    }
-    else if (rec == (uint_fast8_t)QS_U1_RECORDS) {
-        QS_priv_.glbFilter[13] &= ~(uint8_t)0x3EU;
-    }
-    else if (rec == (uint_fast8_t)QS_U2_RECORDS) {
-        QS_priv_.glbFilter[13] &= ~(uint8_t)0xC0U;
-        QS_priv_.glbFilter[14] &= ~(uint8_t)0x07U;
-    }
-    else if (rec == (uint_fast8_t)QS_U3_RECORDS) {
-        QS_priv_.glbFilter[14] &= ~(uint8_t)0xF8U;
-    }
-    else if (rec == (uint_fast8_t)QS_U4_RECORDS) {
-        QS_priv_.glbFilter[15] &= 0x1FU;
-    }
-    else if (rec == (uint_fast8_t)QS_UA_RECORDS) {
-        QS_priv_.glbFilter[12] &= ~(uint8_t)0xF0U;
-        QS_priv_.glbFilter[13] = 0U;
-        QS_priv_.glbFilter[14] = 0U;
-        QS_priv_.glbFilter[15] &= ~(uint8_t)0x1FU;
-    }
-    else {
-        /* record IDs can't exceed QS_ESC, so they don't need escaping */
-        Q_ASSERT_ID(310, rec < (uint_fast8_t)QS_ESC);
-        tmp =  ((uint_fast8_t)1U << (rec & 0x07U));
-        tmp ^= 0xFFU; /* invert all bits */
-        QS_priv_.glbFilter[rec >> 3] &= (uint8_t)tmp;
+        case QS_SM_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[0] &= (uint8_t)(~0xFEU & 0xFFU);
+                QS_priv_.glbFilter[1] &= (uint8_t)(~0x03U & 0xFFU);
+                QS_priv_.glbFilter[6] &= (uint8_t)(~0x80U & 0xFFU);
+                QS_priv_.glbFilter[7] &= (uint8_t)(~0x03U & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[0] |= 0xFEU;
+                QS_priv_.glbFilter[1] |= 0x03U;
+                QS_priv_.glbFilter[6] |= 0x80U;
+                QS_priv_.glbFilter[7] |= 0x03U;
+            }
+            break;
+        case QS_AO_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[1] &= (uint8_t)(~0xFCU & 0xFFU);
+                QS_priv_.glbFilter[2] &= (uint8_t)(~0x07U & 0xFFU);
+                QS_priv_.glbFilter[5] &= (uint8_t)(~0x20U & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[1] |= 0xFCU;
+                QS_priv_.glbFilter[2] |= 0x07U;
+                QS_priv_.glbFilter[5] |= 0x20U;
+            }
+            break;
+        case QS_EQ_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[2] &= (uint8_t)(~0x78U & 0xFFU);
+                QS_priv_.glbFilter[5] &= (uint8_t)(~0x40U & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[2] |= 0x78U;
+                QS_priv_.glbFilter[5] |= 0x40U;
+            }
+            break;
+        case QS_MP_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[3] &= (uint8_t)(~0x03U & 0xFFU);
+                QS_priv_.glbFilter[5] &= (uint8_t)(~0x80U & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[3] |= 0x03U;
+                QS_priv_.glbFilter[5] |= 0x80U;
+            }
+            break;
+        case QS_QF_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[2] &= (uint8_t)(~0x80U & 0xFFU);
+                QS_priv_.glbFilter[3] &= (uint8_t)(~0xFCU & 0xFFU);
+                QS_priv_.glbFilter[4] &= (uint8_t)(~0xC0U & 0xFFU);
+                QS_priv_.glbFilter[5] &= (uint8_t)(~0x1FU & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[2] |= 0x80U;
+                QS_priv_.glbFilter[3] |= 0xFCU;
+                QS_priv_.glbFilter[4] |= 0xC0U;
+                QS_priv_.glbFilter[5] |= 0x1FU;
+            }
+            break;
+        case QS_TE_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[4] &= (uint8_t)(~0x3FU & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[4] |= 0x3FU;
+            }
+            break;
+        case QS_SC_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[6] &= (uint8_t)(~0x7FU & 0xFFU);
+            }
+            else {
+               QS_priv_.glbFilter[6] |= 0x7FU;
+            }
+            break;
+        case QS_U0_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[12] &= (uint8_t)(~0xF0U & 0xFFU);
+                QS_priv_.glbFilter[13] &= (uint8_t)(~0x01U & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[12] |= 0xF0U;
+                QS_priv_.glbFilter[13] |= 0x01U;
+            }
+            break;
+        case QS_U1_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[13] &= (uint8_t)(~0x3EU & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[13] |= 0x3EU;
+            }
+            break;
+        case QS_U2_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[13] &= (uint8_t)(~0xC0U & 0xFFU);
+                QS_priv_.glbFilter[14] &= (uint8_t)(~0x07U & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[13] |= 0xC0U;
+                QS_priv_.glbFilter[14] |= 0x07U;
+            }
+            break;
+        case QS_U3_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[14] &= (uint8_t)(~0xF8U & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[14] |= 0xF8U;
+            }
+            break;
+        case QS_U4_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[15] &= 0x1FU;
+            }
+            else {
+                QS_priv_.glbFilter[15] |= 0x1FU;
+            }
+            break;
+        case QS_UA_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[12] &= (uint8_t)(~0xF0U & 0xFFU);
+                QS_priv_.glbFilter[13] = 0U;
+                QS_priv_.glbFilter[14] = 0U;
+                QS_priv_.glbFilter[15] &= (uint8_t)(~0x1FU & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[12] |= 0xF0U;
+                QS_priv_.glbFilter[13] |= 0xFFU;
+                QS_priv_.glbFilter[14] |= 0xFFU;
+                QS_priv_.glbFilter[15] |= 0x1FU;
+            }
+            break;
+        default:
+            /* QS rec number can't exceed 0x7D, so no need for escaping */
+            Q_ASSERT_ID(210, rec < 0x7DU);
 
-        /* leave the "not maskable" filters enabled,
-        * see qs.h, Miscellaneous QS records (not maskable)
-        */
-        QS_priv_.glbFilter[0] |= 0x01U;
-        QS_priv_.glbFilter[7] |= 0xFCU;
-        QS_priv_.glbFilter[8] |= 0x7FU;
+            if (isRemove) {
+                QS_priv_.glbFilter[rec >> 3U]
+                    &= (uint8_t)(~(1U << (rec & 7U)) & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[rec >> 3U]
+                    |= (1U << (rec & 7U));
+                /* never turn the last 3 records on (0x7D, 0x7E, 0x7F) */
+                QS_priv_.glbFilter[15] &= 0x1FU;
+            }
+            break;
     }
+}
+
+/****************************************************************************/
+/**
+* @description
+* This function sets up the local QS filter to enable or disable the
+* given QS object-id or a group of object-ids @p qs_id.
+*
+* @param[in] qs_id  the QS object-id or group to enable in the filter,
+*                 if positive or disable, if negative. The qs_id numbers
+*                 must be in the range 1..127.
+* @note
+* Filtering based on the object-id (local filter) is the second layer of
+* filtering. The first layer is based on the QS record-type (gloabl filter).
+* Both filter layers must be enabled for the QS record to be inserted into
+* the QS buffer.
+*/
+void QS_locFilter_(int_fast16_t const filter) {
+    bool isRemove = (filter < 0);
+    uint8_t qs_id = isRemove ? (uint8_t)(-filter) : (uint8_t)filter;
+    uint8_t tmp = (isRemove ? 0x00U : 0xFFU);
+    uint_fast8_t i;
+    switch (qs_id) {
+        case QS_ALL_IDS:
+            /* set all global filters (partially unrolled loop) */
+            for (i = 0U; i < Q_DIM(QS_priv_.locFilter); i += 4U) {
+                QS_priv_.locFilter[i     ] = tmp;
+                QS_priv_.locFilter[i + 1U] = tmp;
+                QS_priv_.locFilter[i + 2U] = tmp;
+                QS_priv_.locFilter[i + 3U] = tmp;
+            }
+            break;
+        case QS_AO_IDS:
+            for (i = 0U; i < 8U; i += 4U) {
+                QS_priv_.locFilter[i     ] = tmp;
+                QS_priv_.locFilter[i + 1U] = tmp;
+                QS_priv_.locFilter[i + 2U] = tmp;
+                QS_priv_.locFilter[i + 3U] = tmp;
+            }
+            break;
+        case QS_EP_IDS:
+            i = 8U;
+            QS_priv_.locFilter[i     ] = tmp;
+            QS_priv_.locFilter[i + 1U] = tmp;
+            break;
+        case QS_AP_IDS:
+            i = 12U;
+            QS_priv_.locFilter[i     ] = tmp;
+            QS_priv_.locFilter[i + 1U] = tmp;
+            QS_priv_.locFilter[i + 2U] = tmp;
+            QS_priv_.locFilter[i + 3U] = tmp;
+            break;
+        default:
+            if (qs_id < 0x7FU) {
+                if (isRemove) {
+                    QS_priv_.locFilter[qs_id >> 3U]
+                        &= (uint8_t)(~(1U << (qs_id & 7U)) & 0xFFU);
+                }
+                else {
+                    QS_priv_.locFilter[qs_id >> 3U]
+                        |= (1U << (qs_id & 7U));
+                }
+            }
+            else {
+                Q_ERROR_ID(310); /* incorrect qs_id */
+            }
+            break;
+    }
+    QS_priv_.locFilter[0] |= 0x01U; /* leave QS_ID == 0 always on */
 }
 
 /****************************************************************************/
 /**
 * @description
 * This function must be called at the beginning of each QS record.
-* This function should be called indirectly through the macro #QS_BEGIN,
-* or #QS_BEGIN_NOCRIT, depending if it's called in a normal code or from
+* This function should be called indirectly through the macro QS_BEGIN_ID(),
+* or QS_BEGIN_NOCRIT(), depending if it's called in a normal code or from
 * a critical section.
 */
 void QS_beginRec_(uint_fast8_t rec) {
@@ -326,8 +396,8 @@ void QS_beginRec_(uint_fast8_t rec) {
 /**
 * @description
 * This function must be called at the end of each QS record.
-* This function should be called indirectly through the macro #QS_END,
-* or #QS_END_NOCRIT, depending if it's called in a normal code or from
+* This function should be called indirectly through the macro QS_END(),
+* or QS_END_NOCRIT(), depending if it's called in a normal code or from
 * a critical section.
 */
 void QS_endRec_(void) {
@@ -378,26 +448,26 @@ void QS_target_info_pre_(uint8_t isReset) {
                     : QP_VERSION)); /* target endianness + version number */
 
         /* send the object sizes... */
-        QS_U8_PRE_(Q_SIGNAL_SIZE | (QF_EVENT_SIZ_SIZE << 4));
+        QS_U8_PRE_(Q_SIGNAL_SIZE | (QF_EVENT_SIZ_SIZE << 4U));
 
 #ifdef QF_EQUEUE_CTR_SIZE
-        QS_U8_PRE_(QF_EQUEUE_CTR_SIZE | (QF_TIMEEVT_CTR_SIZE << 4));
+        QS_U8_PRE_(QF_EQUEUE_CTR_SIZE | (QF_TIMEEVT_CTR_SIZE << 4U));
 #else
-        QS_U8_PRE_(QF_TIMEEVT_CTR_SIZE << 4);
+        QS_U8_PRE_(QF_TIMEEVT_CTR_SIZE << 4U);
 #endif /* QF_EQUEUE_CTR_SIZE */
 
 #ifdef QF_MPOOL_CTR_SIZE
-        QS_U8_PRE_(QF_MPOOL_SIZ_SIZE | (QF_MPOOL_CTR_SIZE << 4));
+        QS_U8_PRE_(QF_MPOOL_SIZ_SIZE | (QF_MPOOL_CTR_SIZE << 4U));
 #else
         QS_U8_PRE_(0U);
 #endif /* QF_MPOOL_CTR_SIZE */
 
-        QS_U8_PRE_(QS_OBJ_PTR_SIZE | (QS_FUN_PTR_SIZE << 4));
+        QS_U8_PRE_(QS_OBJ_PTR_SIZE | (QS_FUN_PTR_SIZE << 4U));
         QS_U8_PRE_(QS_TIME_SIZE);
 
         /* send the limits... */
         QS_U8_PRE_(QF_MAX_ACTIVE);
-        QS_U8_PRE_(QF_MAX_EPOOL | (QF_MAX_TICK_RATE << 4));
+        QS_U8_PRE_(QF_MAX_EPOOL | (QF_MAX_TICK_RATE << 4U));
 
         /* send the build time in three bytes (sec, min, hour)... */
         QS_U8_PRE_((10U * (uint8_t)(TIME[6] - ZERO))
@@ -506,7 +576,7 @@ void QS_u16_fmt_(uint8_t format, uint16_t d) {
 
     QS_INSERT_ESC_BYTE_(format)
     QS_INSERT_ESC_BYTE_(b)
-    b = (uint8_t)(d >> 8);
+    b = (uint8_t)(d >> 8U);
     QS_INSERT_ESC_BYTE_(b)
 
     QS_priv_.head   = head;   /* save the head */
@@ -532,7 +602,7 @@ void QS_u32_fmt_(uint8_t format, uint32_t d) {
     /* insert 4 bytes... */
     for (i = 4U; i != 0U; --i) {
         QS_INSERT_ESC_BYTE_((uint8_t)x)
-        x >>= 8;
+        x >>= 8U;
     }
 
     QS_priv_.head   = head;   /* save the head */
@@ -590,7 +660,7 @@ void QS_u16_raw_(uint16_t d) {
     QS_priv_.used += 2U; /* 2 bytes are about to be added */
 
     QS_INSERT_ESC_BYTE_((uint8_t)x)
-    x >>= 8;
+    x >>= 8U;
     QS_INSERT_ESC_BYTE_((uint8_t)x)
 
     QS_priv_.head   = head;    /* save the head */
@@ -612,7 +682,7 @@ void QS_u32_raw_(uint32_t d) {
     QS_priv_.used += 4U; /* 4 bytes are about to be added */
     for (i = 4U; i != 0U; --i) {
         QS_INSERT_ESC_BYTE_((uint8_t)x)
-        x >>= 8;
+        x >>= 8U;
     }
 
     QS_priv_.head   = head;    /* save the head */
@@ -757,13 +827,13 @@ void QS_sig_dict_pre_(enum_t const sig, void const * const obj,
 {
     QS_CRIT_STAT_
 
-    QS_CRIT_ENTRY_();
+    QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_SIG_DICT);
     QS_SIG_PRE_(sig);
     QS_OBJ_PRE_(obj);
     QS_str_raw_((*name == (char_t)'&') ? &name[1] : name);
     QS_endRec_();
-    QS_CRIT_EXIT_();
+    QS_CRIT_X_();
     QS_onFlush();
 }
 
@@ -775,12 +845,12 @@ void QS_obj_dict_pre_(void const * const obj,
 {
     QS_CRIT_STAT_
 
-    QS_CRIT_ENTRY_();
+    QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_OBJ_DICT);
     QS_OBJ_PRE_(obj);
     QS_str_raw_((*name == (char_t)'&') ? &name[1] : name);
     QS_endRec_();
-    QS_CRIT_EXIT_();
+    QS_CRIT_X_();
     QS_onFlush();
 }
 
@@ -790,12 +860,12 @@ void QS_obj_dict_pre_(void const * const obj,
 void QS_fun_dict_pre_(void (* const fun)(void), char_t const *name) {
     QS_CRIT_STAT_
 
-    QS_CRIT_ENTRY_();
+    QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_FUN_DICT);
     QS_FUN_PRE_(fun);
     QS_str_raw_((*name == (char_t)'&') ? &name[1] : name);
     QS_endRec_();
-    QS_CRIT_EXIT_();
+    QS_CRIT_X_();
     QS_onFlush();
 }
 
@@ -807,12 +877,12 @@ void QS_usr_dict_pre_(enum_t const rec,
 {
     QS_CRIT_STAT_
 
-    QS_CRIT_ENTRY_();
+    QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_USR_DICT);
     QS_u8_raw_((uint8_t)rec);
     QS_str_raw_(name);
     QS_endRec_();
-    QS_CRIT_EXIT_();
+    QS_CRIT_X_();
     QS_onFlush();
 }
 
@@ -881,7 +951,7 @@ void QS_ASSERTION(char_t const * const module,
 {
     uint32_t volatile delay_ctr;
 
-    QS_BEGIN_NOCRIT_PRE_(QS_ASSERT_FAIL, (void *)0, (void *)0)
+    QS_BEGIN_NOCRIT_PRE_(QS_ASSERT_FAIL, 0U)
         QS_TIME_PRE_();
         QS_U16_PRE_(loc);
         QS_STR_PRE_((module != (char_t *)0) ? module : "?");
@@ -896,7 +966,7 @@ void QS_ASSERTION(char_t const * const module,
 /* Output the critical section entry/exit
 */
 void QF_QS_CRIT_ENTRY(void) {
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_CRIT_ENTRY, (void *)0, (void *)0)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_CRIT_ENTRY, 0U)
         QS_TIME_PRE_();
         ++QS_priv_.critNest;
         QS_u8_raw_(QS_priv_.critNest);
@@ -904,7 +974,7 @@ void QF_QS_CRIT_ENTRY(void) {
 }
 
 void QF_QS_CRIT_EXIT(void) {
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_CRIT_EXIT, (void *)0, (void *)0)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_CRIT_EXIT, 0U)
         QS_TIME_PRE_();
         QS_u8_raw_(QS_priv_.critNest);
         --QS_priv_.critNest;
@@ -915,14 +985,14 @@ void QF_QS_CRIT_EXIT(void) {
 /* Output the ISR entry/exit
 */
 void QF_QS_ISR_ENTRY(uint8_t const isrnest, uint8_t const prio) {
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ISR_ENTRY, (void *)0, (void *)0)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ISR_ENTRY, 0U)
         QS_TIME_PRE_();
         QS_2u8_raw_(isrnest, prio);
     QS_END_NOCRIT_PRE_()
 }
 
 void QF_QS_ISR_EXIT(uint8_t const isrnest, uint8_t const prio) {
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ISR_EXIT, (void *)0, (void *)0)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ISR_EXIT, 0U)
         QS_TIME_PRE_();
         QS_2u8_raw_(isrnest, prio);
     QS_END_NOCRIT_PRE_()

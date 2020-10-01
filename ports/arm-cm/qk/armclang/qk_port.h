@@ -3,14 +3,14 @@
 * @brief QK/C port to ARM Cortex-M, ARM-CLANG toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.1.0
-* Date of the Last Update:  2018-01-31
+* Last updated for version 6.9.1
+* Last updated on  2020-09-23
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -42,7 +42,6 @@
 /* determination if the code executes in the ISR context */
 #define QK_ISR_CONTEXT_() (QK_get_IPSR() != 0U)
 
-
 __attribute__((always_inline))
 static inline uint32_t QK_get_IPSR(void) {
     uint32_t regIPSR;
@@ -56,15 +55,29 @@ static inline uint32_t QK_get_IPSR(void) {
 #define QK_ISR_EXIT()  do {                                   \
     QF_INT_DISABLE();                                         \
     if (QK_sched_() != 0U) {                                  \
-        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28); \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28U);\
+        QK_ARM_ERRATUM_838869();                              \
     }                                                         \
     QF_INT_ENABLE();                                          \
 } while (false)
 
+#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+    #define QK_ARM_ERRATUM_838869() ((void)0)
+#else /* Cortex-M3/M4/M7 (v7-M) */
+    /* The following macro implements the recommended workaround for the
+    * ARM Erratum 838869. Specifically, for Cortex-M3/M4/M7 the DSB
+    * (memory barrier) instruction needs to be added before exiting an ISR.
+    */
+    #define QK_ARM_ERRATUM_838869() \
+        __asm volatile ("dsb" ::: "memory")
+#endif
+
 /* initialization of the QK kernel */
 #define QK_INIT() QK_init()
 void QK_init(void);
+void QK_thread_ret(void);
 
 #include "qk.h" /* QK platform-independent public interface */
 
 #endif /* QK_PORT_H */
+

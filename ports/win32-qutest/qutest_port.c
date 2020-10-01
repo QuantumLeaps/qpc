@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-31
+* Last updated for version 6.9.1
+* Last updated on  2020-09-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -227,7 +227,7 @@ void QS_onFlush(void) {
                 nBytes -= (uint16_t)nSent;
             }
             else {
-                break;
+                break; /* break out of the for-ever loop */
             }
         }
         /* set nBytes for the next call to QS_getBlock() */

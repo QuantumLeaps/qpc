@@ -55,7 +55,7 @@ void Led_DICTIONARY(void) {
 /*--------------------------------------------------------------------------*/
 /* turns a given LED off */
 void Led_off(uint8_t index) {
-    QS_BEGIN(LED_MOD, (void *)0) /* user-specific record */
+    QS_BEGIN_ID(LED_MOD, 0U) /* app-specific record */
         QS_FUN(&Led_off); /* function called */
         QS_U8 (0, index); /* parameter */
     QS_END()
@@ -71,7 +71,7 @@ uint32_t Led_on(uint8_t index) {
         ret = (uint32_t)qs_tp_;
     )
 
-    QS_BEGIN(LED_MOD, (void *)0) /* user-specific record */
+    QS_BEGIN_ID(LED_MOD, 0U) /* app-specific record */
         QS_FUN(&Led_on);  /* function called */
         QS_U32(0, ret);   /* value returned */
         QS_U8 (0, index); /* parameter */

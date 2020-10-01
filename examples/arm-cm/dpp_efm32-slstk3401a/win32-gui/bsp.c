@@ -248,8 +248,8 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(PHILO_STAT);
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_ALL_RECORDS);
-    QS_FILTER_OFF(QS_QF_TICK);
+    QS_GLB_FILTER(QS_ALL_RECORDS);
+    QS_GLB_FILTER(-QS_QF_TICK);
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {
@@ -277,7 +277,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
     /* set the "segment" # n to the bitmap # 'bitmapNum' */
     SegmentDisplay_setSegment(&l_philos, (UINT)n, bitmapNum);
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
     QS_END()

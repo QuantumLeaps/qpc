@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 6.9.1
+* Last updated on  2020-09-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -113,7 +113,7 @@ void QEQueue_init(QEQueue * const me, QEvt const * * const qSto,
 * @sa QEQueue_postLIFO(), QEQueue_get()
 */
 bool QEQueue_post(QEQueue * const me, QEvt const * const e,
-                  uint_fast16_t const margin)
+                  uint_fast16_t const margin, uint_fast8_t const qs_id)
 {
     QEQueueCtr nFree; /* temporary to avoid UB for volatile access */
     bool status;
@@ -122,7 +122,9 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
     /* @pre event must be valid */
     Q_REQUIRE_ID(200, e != (QEvt *)0);
 
-    QF_CRIT_ENTRY_();
+    (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
+
+    QF_CRIT_E_();
     nFree = me->nFree; /* get volatile into the temporary */
 
     /* required margin available? */
@@ -140,8 +142,7 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
             me->nMin = nFree; /* update minimum so far */
         }
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_EQUEUE_POST,
-                         QS_priv_.locFilter[EQ_OBJ], me)
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_EQUEUE_POST, qs_id)
             QS_TIME_PRE_();          /* timestamp */
             QS_SIG_PRE_(e->sig);     /* the signal of this event */
             QS_OBJ_PRE_(me);         /* this queue object */
@@ -172,8 +173,7 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
         */
         Q_ASSERT_CRIT_(210, margin != QF_NO_MARGIN);
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_EQUEUE_POST_ATTEMPT,
-                         QS_priv_.locFilter[EQ_OBJ], me)
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_EQUEUE_POST_ATTEMPT, qs_id)
             QS_TIME_PRE_();          /* timestamp */
             QS_SIG_PRE_(e->sig);     /* the signal of this event */
             QS_OBJ_PRE_(me);         /* this queue object */
@@ -184,7 +184,7 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
 
         status = false;
     }
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 
     return status;
 }
@@ -212,12 +212,16 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
 * @sa
 * QEQueue_post(), QEQueue_get(), QActive_defer()
 */
-void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
+void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
+                      uint_fast8_t const qs_id)
+{
     QEvt const *frontEvt; /* temporary to avoid UB for volatile access */
     QEQueueCtr nFree;     /* temporary to avoid UB for volatile access */
     QF_CRIT_STAT_
 
-    QF_CRIT_ENTRY_();
+    (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
+
+    QF_CRIT_E_();
     nFree = me->nFree;    /* get volatile into the temporary */
 
     /** @pre the queue must be able to accept the event (cannot overflow) */
@@ -234,7 +238,7 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
         me->nMin = nFree; /* update minimum so far */
     }
 
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_EQUEUE_POST_LIFO, QS_priv_.locFilter[EQ_OBJ], me)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_EQUEUE_POST_LIFO, qs_id)
         QS_TIME_PRE_();         /* timestamp */
         QS_SIG_PRE_(e->sig);    /* the signal of this event */
         QS_OBJ_PRE_(me);        /* this queue object */
@@ -255,7 +259,7 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
         QF_PTR_AT_(me->ring, me->tail) = frontEvt; /* save old front evt */
     }
 
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 }
 
 /****************************************************************************/
@@ -277,11 +281,13 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e) {
 * @sa
 * QEQueue_post(), QEQueue_postLIFO(), QActive_recall()
 */
-QEvt const *QEQueue_get(QEQueue * const me) {
+QEvt const *QEQueue_get(QEQueue * const me, uint_fast8_t const qs_id) {
     QEvt const *e;
     QF_CRIT_STAT_
 
-    QF_CRIT_ENTRY_();
+    (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
+
+    QF_CRIT_E_();
     e = me->frontEvt; /* always remove the event from the front location */
 
     /* was the queue not empty? */
@@ -298,8 +304,7 @@ QEvt const *QEQueue_get(QEQueue * const me) {
             }
             --me->tail;
 
-            QS_BEGIN_NOCRIT_PRE_(QS_QF_EQUEUE_GET,
-                                 QS_priv_.locFilter[EQ_OBJ], me)
+            QS_BEGIN_NOCRIT_PRE_(QS_QF_EQUEUE_GET, qs_id)
                 QS_TIME_PRE_();      /* timestamp */
                 QS_SIG_PRE_(e->sig); /* the signal of this event */
                 QS_OBJ_PRE_(me);     /* this queue object */
@@ -313,8 +318,7 @@ QEvt const *QEQueue_get(QEQueue * const me) {
             /* all entries in the queue must be free (+1 for fronEvt) */
             Q_ASSERT_CRIT_(410, nFree == (me->end + 1U));
 
-            QS_BEGIN_NOCRIT_PRE_(QS_QF_EQUEUE_GET_LAST,
-                             QS_priv_.locFilter[EQ_OBJ], me)
+            QS_BEGIN_NOCRIT_PRE_(QS_QF_EQUEUE_GET_LAST, qs_id)
                 QS_TIME_PRE_();      /* timestamp */
                 QS_SIG_PRE_(e->sig); /* the signal of this event */
                 QS_OBJ_PRE_(me);     /* this queue object */
@@ -322,7 +326,7 @@ QEvt const *QEQueue_get(QEQueue * const me) {
             QS_END_NOCRIT_PRE_()
         }
     }
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
     return e;
 }
 

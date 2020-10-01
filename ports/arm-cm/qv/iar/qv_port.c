@@ -1,6 +1,6 @@
 /**
 * @file
-* @brief QV/C port to ARM Cortex-M, ARM-KEIL toolset
+* @brief QV/C port to ARM Cortex-M, IAR-ARM toolset
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0

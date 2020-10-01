@@ -3,7 +3,7 @@
 
 def on_reset():
     expect_pause()
-    glb_filter(GRP_ON)
+    glb_filter(GRP_ALL)
     continue_test()
     expect("@timestamp TE0-Arm  Obj=l_blinky.timeEvt,AO=l_blinky,*")
     expect("===RTC===> St-Init  Obj=l_blinky,State=QHsm_top->Blinky_off")
@@ -26,8 +26,8 @@ current_obj(OBJ_MP,"EvtPool1")
 query_curr(OBJ_MP)
 expect("@timestamp Query-MP Obj=EvtPool1,*")
 post("TIMEOUT_SIG")
-expect("@timestamp QF-New   Sig=TIMEOUT_SIG,*")
 expect("@timestamp MP-Get   Obj=EvtPool1,*")
+expect("@timestamp QF-New   Sig=TIMEOUT_SIG,*")
 expect("@timestamp AO-Post  Sdr=QS_RX,Obj=l_blinky,Evt<Sig=TIMEOUT_SIG,*")
 expect("@timestamp AO-GetL  Obj=l_blinky,Evt<Sig=TIMEOUT_SIG,*")
 expect("@timestamp Disp===> Obj=l_blinky,Sig=TIMEOUT_SIG,State=Blinky_off")

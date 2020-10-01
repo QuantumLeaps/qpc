@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-11
+* Last updated for version 6.9.1
+* Last updated on  2020-09-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -76,7 +76,7 @@ int_t QF_run(void) {
     QF_onStartup();  /* QF callback to configure and start interrupts */
 
     /* produce the QS_QF_RUN trace record */
-    QS_BEGIN_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_BEGIN_PRE_(QS_QF_RUN, 0U)
     QS_END_PRE_()
 
     OS_Start();      /* start embOS multitasking */
@@ -102,7 +102,7 @@ static void thread_function(void *pVoid) { /* embOS signature */
     /* event-loop */
     for (;;) {  /* for-ever */
         QEvt const *e = QActive_get_(act);
-        QHSM_DISPATCH(&act->super, e);
+        QHSM_DISPATCH(&act->super, e, act->prio);
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
 }
@@ -120,7 +120,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     me->prio = prio;  /* save the QF priority */
     QF_add_(me);      /* make QF aware of this active object */
-    QHSM_INIT(&me->super, par); /* thake the top-most initial tran. */
+    QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* create an embOS task for the AO */
@@ -151,7 +151,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     bool status;
     QF_CRIT_STAT_
 
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
     nFree = (uint_fast16_t)(me->eQueue.maxMsg - me->eQueue.nofMsg);
 
     if (margin == QF_NO_MARGIN) {
@@ -172,8 +172,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
     if (status) { /* can post the event? */
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST,
-                         QS_priv_.locFilter[AO_OBJ], me)
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST, me->prio)
             QS_TIME_PRE_();      /* timestamp */
             QS_OBJ_PRE_(sender); /* the sender object */
             QS_SIG_PRE_(e->sig); /* the signal of the event */
@@ -187,7 +186,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
         }
 
-        QF_CRIT_EXIT_();
+        QF_CRIT_X_();
 
         /* posting to the embOS mailbox must succeed, see NOTE3 */
         Q_ALLEGE_ID(520,
@@ -196,8 +195,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     }
     else {
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT,
-                         QS_priv_.locFilter[AO_OBJ], me)
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT, me->prio)
             QS_TIME_PRE_();      /* timestamp */
             QS_OBJ_PRE_(sender); /* the sender object */
             QS_SIG_PRE_(e->sig); /* the signal of the event */
@@ -207,7 +205,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_EQC_PRE_(margin); /* margin requested */
         QS_END_NOCRIT_PRE_()
 
-        QF_CRIT_EXIT_();
+        QF_CRIT_X_();
    }
 
     return status;
@@ -215,9 +213,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 /*..........................................................................*/
 void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_STAT_
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
 
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, QS_priv_.locFilter[AO_OBJ], me)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, me->prio)
         QS_TIME_PRE_();          /* timestamp */
         QS_SIG_PRE_(e->sig);     /* the signal of this event */
         QS_OBJ_PRE_(me);         /* this active object */
@@ -230,7 +228,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 
     /* posting to the embOS mailbox must succeed, see NOTE3 */
     Q_ALLEGE_ID(810,
@@ -244,7 +242,7 @@ QEvt const *QActive_get_(QActive * const me) {
 
     OS_GetMail(&me->eQueue, (void *)&e);
 
-    QS_BEGIN_PRE_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
+    QS_BEGIN_PRE_(QS_QF_ACTIVE_GET, me->prio)
         QS_TIME_PRE_();          /* timestamp */
         QS_SIG_PRE_(e->sig);     /* the signal of this event */
         QS_OBJ_PRE_(me);         /* this active object */

@@ -133,12 +133,12 @@ void QS_onCommand(uint8_t cmdId,
     switch (cmdId) {
        case 0U: {
            QEvt const e = { PAUSE_SIG, 0U, 0U };
-           QHSM_DISPATCH(&AO_Table->super, &e);
+           QHSM_DISPATCH(&AO_Table->super, &e, AO_Table->prio);
            break;
        }
        case 1U: {
            QEvt const e = { SERVE_SIG, 0U, 0U };
-           QHSM_DISPATCH(&AO_Table->super, &e);
+           QHSM_DISPATCH(&AO_Table->super, &e, AO_Table->prio);
            break;
        }
        default:
@@ -165,7 +165,7 @@ void QS_onTestPost(void const *sender, QActive *recipient,
         case EAT_SIG:
         case DONE_SIG:
         case HUNGRY_SIG:
-            QS_BEGIN(QUTEST_ON_POST, (void *)0) /* app-specific record */
+            QS_BEGIN_ID(QUTEST_ON_POST, 0U) /* app-specific record */
                 QS_SIG(e->sig, recipient);
                 QS_U8(0, Q_EVT_CAST(TableEvt)->philoNum);
             QS_END()

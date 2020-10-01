@@ -80,6 +80,7 @@ void SysTick_Handler(void) {
 void Timer0A_IRQHandler(void) {
     TIMER0->ICR |= (1U << 0); /* clear the Timer0 interrupt source */
     QF_TICK_X(1U, (void *)0); /* process time events for rate 1 */
+    QV_ARM_ERRATUM_838869();
 }
 /*..........................................................................*/
 void GPIOPortF_IRQHandler(void) {
@@ -88,6 +89,7 @@ void GPIOPortF_IRQHandler(void) {
         QF_PUBLISH(&pressedEvt, &l_SysTick_Handler);
     }
     GPIOF->ICR = 0xFFU; /* clear interrupt sources */
+    QV_ARM_ERRATUM_838869();
 }
 
 /* BSP functions ===========================================================*/

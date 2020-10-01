@@ -3,14 +3,14 @@
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM compiler
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.0.3
-* Date of the Last Update:  2017-12-09
+* Last updated for version 6.9.1
+* Last updated on  2020-09-28
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -50,24 +50,38 @@ static inline uint32_t QXK_get_IPSR(void) {
 }
 
 /* trigger the PendSV exception to pefrom the context switch */
-#define QXK_CONTEXT_SWITCH_() \
-    (*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28))
+#define QXK_CONTEXT_SWITCH_()                             \
+    *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28U);\
+    QXK_ARM_ERRATUM_838869()
 
 /* QXK ISR entry and exit */
 #define QXK_ISR_ENTRY() ((void)0)
 
-#define QXK_ISR_EXIT()  do {                                  \
-    QF_INT_DISABLE();                                         \
-    if (QXK_sched_() != 0U) {                                 \
-        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28); \
-    }                                                         \
-    QF_INT_ENABLE();                                          \
+#define QXK_ISR_EXIT()  do {   \
+    QF_INT_DISABLE();          \
+    if (QXK_sched_() != 0U) {  \
+        QXK_CONTEXT_SWITCH_(); \
+    }                          \
+    QF_INT_ENABLE();           \
 } while (false)
+
+#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+    #define QXK_ARM_ERRATUM_838869() ((void)0)
+#else /* Cortex-M3/M4/M7 (v7-M) */
+    /* The following macro implements the recommended workaround for the
+    * ARM Erratum 838869. Specifically, for Cortex-M3/M4/M7 the DSB
+    * (memory barrier) instruction needs to be added before exiting an ISR.
+    */
+    #define QXK_ARM_ERRATUM_838869() \
+        __asm volatile ("dsb" ::: "memory")
+#endif
 
 /* initialization of the QXK kernel */
 #define QXK_INIT() QXK_init()
 void QXK_init(void);
+void QXK_thread_ret(void);
 
 #include "qxk.h" /* QXK platform-independent public interface */
 
 #endif /* QXK_PORT_H */
+

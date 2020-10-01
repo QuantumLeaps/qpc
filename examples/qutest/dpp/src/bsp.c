@@ -1,11 +1,11 @@
 /*****************************************************************************
 * Product: DPP example, BSP for QUTest
-* Last Updated for Version: 6.3.2
-* Date of the Last Update:  2018-06-16
+* Last Updated for Version: 6.9.1
+* Date of the Last Update:  2020-09-16
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
@@ -64,14 +64,14 @@ void BSP_displayPaused(uint8_t paused) {
     QS_TEST_PROBE(
         Q_ASSERT_ID(100, 0);
     )
-    QS_BEGIN(BSP_CALL, (void *)0) /* application-specific record */
+    QS_BEGIN_ID(BSP_CALL, 0U) /* app-specific record */
         QS_FUN(&BSP_displayPaused);
         QS_U8(0, paused);
     QS_END()
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char_t const *stat) {
-    QS_BEGIN(BSP_CALL, (void *)0) /* application-specific record */
+    QS_BEGIN_ID(BSP_CALL, 0U) /* app-specific record */
         QS_FUN(&BSP_displayPhilStat);
         QS_U8(0, n);
         QS_STR(stat);
@@ -85,7 +85,7 @@ uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     QS_TEST_PROBE(
         rnd = qs_tp_;
     )
-    QS_BEGIN(BSP_CALL, (void *)0) /* application-specific record */
+    QS_BEGIN_ID(BSP_CALL, 0U) /* app-specific record */
         QS_FUN(&BSP_random);
         QS_U32(0, rnd);
     QS_END()
@@ -99,7 +99,7 @@ void BSP_randomSeed(uint32_t seed) {
         seed = qs_tp_;
     )
     l_rnd = seed;
-    QS_BEGIN(BSP_CALL, (void *)0) /* application-specific record */
+    QS_BEGIN_ID(BSP_CALL, 0U) /* app-specific record */
         QS_FUN(&BSP_randomSeed);
         QS_U32(0, seed);
     QS_END()

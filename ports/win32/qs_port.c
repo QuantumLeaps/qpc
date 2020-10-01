@@ -204,9 +204,9 @@ void QS_onFlush(void) {
     }
 
     nBytes = QS_TX_CHUNK;
-    QS_CRIT_ENTRY_();
+    QS_CRIT_E_();
     while ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
-        QS_CRIT_EXIT_();
+        QS_CRIT_X_();
         for (;;) { /* for-ever until break or return */
             int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
             if (nSent == SOCKET_ERROR) { /* sending failed? */
@@ -235,9 +235,9 @@ void QS_onFlush(void) {
         }
         /* set nBytes for the next call to QS_getBlock() */
         nBytes = QS_TX_CHUNK;
-        QS_CRIT_ENTRY_();
+        QS_CRIT_E_();
     }
-    QS_CRIT_EXIT_();
+    QS_CRIT_X_();
 }
 /*..........................................................................*/
 QSTimeCtr QS_onGetTime(void) {
@@ -259,9 +259,9 @@ void QS_output(void) {
     }
 
     nBytes = QS_TX_CHUNK;
-    QS_CRIT_ENTRY_();
+    QS_CRIT_E_();
     if ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
-        QS_CRIT_EXIT_();
+        QS_CRIT_X_();
         for (;;) { /* for-ever until break or return */
             int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
             if (nSent == SOCKET_ERROR) { /* sending failed? */
@@ -290,7 +290,7 @@ void QS_output(void) {
         }
     }
     else {
-        QS_CRIT_EXIT_();
+        QS_CRIT_X_();
     }
 }
 /*..........................................................................*/

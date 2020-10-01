@@ -9,8 +9,7 @@
 * the qstamp object file.)
 */
 
-extern char const Q_BUILD_DATE[12];
-extern char const Q_BUILD_TIME[9];
+#include "qstamp.h"
 
 /*! the calendar date of the last translation of the form: "Mmm dd yyyy" */
 char const Q_BUILD_DATE[12] = __DATE__;

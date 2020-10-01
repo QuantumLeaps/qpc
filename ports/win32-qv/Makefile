@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C port to Win32-QV, MinGW toolset
-# Last updated for version 6.8.0
-# Last updated on  2020-03-31
+# Last updated for version 6.9.1
+# Last updated on  2020-09-10
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -108,7 +108,7 @@ C_QS_SRCS := \
 CPP_SRCS :=
 
 # defines:
-DEFINES  := -DQWIN_GUI
+DEFINES  := -DQWIN_GUI -DQP_API_VERSION=9999
 
 #-----------------------------------------------------------------------------
 # MinGW toolset (NOTE: assumed to be on your PATH)

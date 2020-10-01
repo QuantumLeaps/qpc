@@ -83,7 +83,7 @@
     /*! macro to override the default ::QTimeEvtCtr size.
     * Valid values: 1, 2, or 4; default 2
     */
-    #define QF_TIMEEVT_CTR_SIZE  2
+    #define QF_TIMEEVT_CTR_SIZE  2U
 #endif
 
 /****************************************************************************/
@@ -155,13 +155,13 @@ typedef struct QActive {
     QF_THREAD_TYPE thread;
 #endif
 
+#ifdef QXK_H  /* QXK kernel used? */
+    /*! QXK dynamic priority (1..#QF_MAX_ACTIVE) of this AO/thread */
+    uint8_t dynPrio;
+#endif
+
     /*! QF priority (1..#QF_MAX_ACTIVE) of this active object. */
     uint8_t prio;
-
-#ifdef QXK_H  /* QXK kernel used? */
-    /*! QF start priority (1..#QF_MAX_ACTIVE) of this active object. */
-    uint8_t startPrio;
-#endif
 
 } QActive;
 

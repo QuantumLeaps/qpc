@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-13
+* Last updated for version 6.9.1
+* Last updated on  2020-09-10
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -162,8 +162,9 @@ void QF_gcFromISR(QEvt const * const e);
 QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
                       uint_fast16_t const margin, enum_t const sig);
 
-void *QMPool_getFromISR(QMPool * const me, uint_fast16_t const margin);
-void QMPool_putFromISR(QMPool * const me, void *b);
+void *QMPool_getFromISR(QMPool * const me, uint_fast16_t const margin,
+                        uint_fast8_t const qs_id);
+void QMPool_putFromISR(QMPool * const me, void *b, uint_fast8_t const qs_id);
 
 enum FreeRTOS_TaskAttrs {
     TASK_NAME_ATTR
@@ -192,16 +193,16 @@ enum FreeRTOS_TaskAttrs {
     /* FreeRTOS blocking for event queue implementation (task level) */
     #define QACTIVE_EQUEUE_WAIT_(me_)                 \
         while ((me_)->eQueue.frontEvt == (QEvt *)0) { \
-            QF_CRIT_EXIT_();                          \
+            QF_CRIT_X_();                          \
             ulTaskNotifyTake(pdTRUE, portMAX_DELAY);  \
-            QF_CRIT_ENTRY_();                         \
+            QF_CRIT_E_();                         \
         }
 
     /* FreeRTOS signaling (unblocking) for event queue (task level) */
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do {           \
-        QF_CRIT_EXIT_();                               \
+        QF_CRIT_X_();                               \
         xTaskNotifyGive((TaskHandle_t)&(me_)->thread); \
-        QF_CRIT_ENTRY_();                              \
+        QF_CRIT_E_();                              \
     } while (false)
 
     #define QF_SCHED_STAT_
@@ -213,8 +214,10 @@ enum FreeRTOS_TaskAttrs {
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
         (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
     #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_) ((e_) = (QEvt *)QMPool_get(&(p_), (m_)))
-    #define QF_EPOOL_PUT_(p_, e_)     (QMPool_put(&(p_), (e_)))
+    #define QF_EPOOL_GET_(p_, e_, m_, qs_id_) \
+        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qs_id_)))
+    #define QF_EPOOL_PUT_(p_, e_, qs_id_) \
+        (QMPool_put(&(p_), (e_), (qs_id_)))
 
 #endif /* ifdef QP_IMPL */
 

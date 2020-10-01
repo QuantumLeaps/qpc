@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-10
+* Last updated for version 6.9.1
+* Last updated on  2020-09-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -80,7 +80,7 @@ int_t QF_run(void) {
     QS_FUN_DICTIONARY(&QS_processTestEvts_);
 
     /* produce the QS_QF_RUN trace record */
-    QS_BEGIN_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_BEGIN_PRE_(QS_QF_RUN, 0U)
     QS_END_PRE_()
 
     QS_onTestLoop(); /* run the test loop */
@@ -105,20 +105,21 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, par); /* the top-most initial tran. */
+    QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
 }
 
 /****************************************************************************/
-static void QActiveDummy_init_(QHsm * const me, void const * const par);
-static void QActiveDummy_dispatch_(QHsm * const me, QEvt const * const e);
-
+static void QActiveDummy_init_(QHsm * const me, void const * const par,
+                               uint_fast8_t const qs_id);
+static void QActiveDummy_dispatch_(QHsm * const me, QEvt const * const e,
+                               uint_fast8_t const qs_id);
+static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
+                   uint_fast16_t const margin, void const * const sender);
+static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e);
 static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
                                 QEvt const * * const qSto, uint_fast16_t qLen,
                                 void *stkSto, uint_fast16_t stkSize,
                                 void const * const par);
-static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
-                   uint_fast16_t const margin, void const * const sender);
-static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e);
 
 /*..........................................................................*/
 /*! "constructor" of QActiveDummy */
@@ -151,7 +152,8 @@ static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
 
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    /* the top-most initial tran. (virtual) */
+    QHSM_INIT(&me->super, par, me->prio);
 }
 //............................................................................
 #ifdef QF_ACTIVE_STOP
@@ -162,21 +164,29 @@ void QActive_stop(QActive * const me) {
 #endif
 
 /*..........................................................................*/
-static void QActiveDummy_init_(QHsm * const me, void const * const par) {
+static void QActiveDummy_init_(QHsm * const me, void const * const par,
+                               uint_fast8_t const qs_id)
+{
     QS_CRIT_STAT_
 
-    (void)par; /* unused parameter */
+    (void)par;   /* unused parameter */
+    (void)qs_id; /* unused parameter */
 
-    QS_BEGIN_PRE_(QS_QEP_STATE_INIT, QS_priv_.locFilter[SM_OBJ], me)
+    QS_BEGIN_PRE_(QS_QEP_STATE_INIT, ((QActive const *)me)->prio)
         QS_OBJ_PRE_(me);        /* this state machine object */
         QS_FUN_PRE_(me->state.fun); /* the source state */
         QS_FUN_PRE_(me->temp.fun);  /* the target of the initial transition */
     QS_END_PRE_()
 }
 /*..........................................................................*/
-static void QActiveDummy_dispatch_(QHsm * const me, QEvt const * const e) {
+static void QActiveDummy_dispatch_(QHsm * const me, QEvt const * const e,
+                                   uint_fast8_t const qs_id)
+{
     QS_CRIT_STAT_
-    QS_BEGIN_PRE_(QS_QEP_DISPATCH, QS_priv_.locFilter[SM_OBJ], me)
+
+    (void)qs_id; /* unused parameter */
+
+    QS_BEGIN_PRE_(QS_QEP_DISPATCH, ((QActive const *)me)->prio)
         QS_TIME_PRE_();             /* time stamp */
         QS_SIG_PRE_(e->sig);        /* the signal of the event */
         QS_OBJ_PRE_(me);            /* this state machine object */
@@ -202,7 +212,7 @@ static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
         }
     )
 
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
 
     /* is it a dynamic event? */
     if (e->poolId_ != 0U) {
@@ -211,7 +221,7 @@ static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
 
     rec = (status ? (uint_fast8_t)QS_QF_ACTIVE_POST
                   : (uint_fast8_t)QS_QF_ACTIVE_POST_ATTEMPT);
-    QS_BEGIN_NOCRIT_PRE_(rec, QS_priv_.locFilter[AO_OBJ], me)
+    QS_BEGIN_NOCRIT_PRE_(rec, me->prio)
         QS_TIME_PRE_();      /* timestamp */
         QS_OBJ_PRE_(sender); /* the sender object */
         QS_SIG_PRE_(e->sig); /* the signal of the event */
@@ -221,17 +231,16 @@ static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
         QS_EQC_PRE_(margin); /* margin requested */
     QS_END_NOCRIT_PRE_()
 
-    /* callback to examine the posted event under the the same conditions
-    * as producing the QS_QF_ACTIVE_POST trace record, which are:
-    * 1. the local AO-filter is not set (zero) OR
-    * 2. the local AO-filter is set to this AO ('me')
+    /* callback to examine the posted event under the same conditions
+    * as producing the #QS_QF_ACTIVE_POST trace record, which are:
+    * the local filter for this AO ('me->prio') is set
     */
-    if ((QS_priv_.locFilter[AO_OBJ] == (QActive *)0)
-        || (QS_priv_.locFilter[AO_OBJ] == me))
+    if ((QS_priv_.locFilter[me->prio >> 3U]
+         & (1U << (me->prio & 7U))) != 0U)
     {
         QS_onTestPost(sender, me, e, status);
     }
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 
     /* recycle the event immediately, because it was not really posted */
     QF_gc(e);
@@ -249,15 +258,14 @@ static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e) {
         Q_onAssert("qf_actq", 210);
     )
 
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
 
     /* is it a dynamic event? */
     if (e->poolId_ != 0U) {
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO,
-                         QS_priv_.locFilter[AO_OBJ], me)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, me->prio)
         QS_TIME_PRE_();      /* timestamp */
         QS_SIG_PRE_(e->sig); /* the signal of this event */
         QS_OBJ_PRE_(me);     /* this active object */
@@ -266,18 +274,17 @@ static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e) {
         QS_EQC_PRE_(0U);     /* min number of free entries */
     QS_END_NOCRIT_PRE_()
 
-    /* callback to examine the posted event under the the same conditions
-    * as producing the QS_QF_ACTIVE_POST trace record, which are:
-    * 1. the local AO-filter is not set (zero) OR
-    * 2. the local AO-filter is set to this AO ('me')
+    /* callback to examine the posted event under the same conditions
+    * as producing the #QS_QF_ACTIVE_POST trace record, which are:
+    * the local filter for this AO ('me->prio') is set
     */
-    if ((QS_priv_.locFilter[AO_OBJ] == (QActive *)0)
-        || (QS_priv_.locFilter[AO_OBJ] == me))
+    if ((QS_priv_.locFilter[me->prio >> 3U]
+         & (1U << (me->prio & 7U))) != 0U)
     {
         QS_onTestPost((QActive *)0, me, e, true);
     }
 
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 
     /* recycle the event immediately, because it was not really posted */
     QF_gc(e);
@@ -305,7 +312,7 @@ void QS_processTestEvts_(void) {
         * 3. determine if event is garbage and collect it if so
         */
         e = QActive_get_(a);
-        QHSM_DISPATCH(&a->super, e);
+        QHSM_DISPATCH(&a->super, e, a->prio);
         QF_gc(e);
 
         if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
@@ -325,10 +332,10 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
     QTimeEvt *prev;
     QF_CRIT_STAT_
 
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
     prev = &QF_timeEvtHead_[tickRate];
 
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_TICK, (void *)0, (void *)0)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_TICK, 0U)
         ++prev->ctr;
         QS_TEC_PRE_(prev->ctr); /* tick ctr */
         QS_U8_PRE_(tickRate);   /* tick rate */
@@ -355,16 +362,14 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
             /* mark time event 't' as NOT linked */
             t->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_IS_LINKED);
 
-            QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_AUTO_DISARM,
-                                 QS_priv_.locFilter[TE_OBJ], t)
+            QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_AUTO_DISARM, act->prio)
                 QS_OBJ_PRE_(t);        /* this time event object */
                 QS_OBJ_PRE_(act);      /* the target AO */
                 QS_U8_PRE_(tickRate);  /* tick rate */
             QS_END_NOCRIT_PRE_()
         }
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_POST,
-                         QS_priv_.locFilter[TE_OBJ], t)
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_POST, act->prio)
             QS_TIME_PRE_();            /* timestamp */
             QS_OBJ_PRE_(t);            /* the time event object */
             QS_SIG_PRE_(t->super.sig); /* signal of this time event */
@@ -372,11 +377,11 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
             QS_U8_PRE_(tickRate);      /* tick rate */
         QS_END_NOCRIT_PRE_()
 
-        QF_CRIT_EXIT_(); /* exit critical section before posting */
+        QF_CRIT_X_(); /* exit critical section before posting */
 
         QACTIVE_POST(act, &t->super, sender); /* asserts if queue overflows */
 
-        QF_CRIT_ENTRY_();
+        QF_CRIT_E_();
     }
 
     /* update the linked list of time events */
@@ -406,27 +411,27 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
             /* mark time event 't' as NOT linked */
             t->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_IS_LINKED);
             /* do NOT advance the prev pointer */
-            QF_CRIT_EXIT_(); /* exit crit. section to reduce latency */
+            QF_CRIT_X_(); /* exit crit. section to reduce latency */
 
             /* prevent merging critical sections, see NOTE1 below  */
             QF_CRIT_EXIT_NOP();
         }
         else {
             prev = t; /* advance to this time event */
-            QF_CRIT_EXIT_(); /* exit crit. section to reduce latency */
+            QF_CRIT_X_(); /* exit crit. section to reduce latency */
 
             /* prevent merging critical sections, see NOTE1 below  */
             QF_CRIT_EXIT_NOP();
         }
-        QF_CRIT_ENTRY_(); /* re-enter crit. section to continue */
+        QF_CRIT_E_(); /* re-enter crit. section to continue */
     }
 
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 }
 
 /****************************************************************************/
 Q_NORETURN Q_onAssert(char_t const * const module, int_t const location) {
-    QS_BEGIN_NOCRIT_PRE_(QS_ASSERT_FAIL, (void *)0, (void *)0)
+    QS_BEGIN_NOCRIT_PRE_(QS_ASSERT_FAIL, 0U)
         QS_TIME_PRE_();
         QS_U16_PRE_(location);
         QS_STR_PRE_((module != (char_t *)0) ? module : "?");

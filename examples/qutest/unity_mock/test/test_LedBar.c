@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     QS_FUN_DICTIONARY(&LedBar_setPercent);
 
     /* filter setup... */
-    QS_FILTER_ON(QS_ALL_RECORDS);
+    QS_GLB_FILTER(QS_ALL_RECORDS);
 
     return QF_run(); /* run the tests */
 }
@@ -71,7 +71,7 @@ void QS_onCommand(uint8_t cmdId,
     switch (cmdId) {
         case 0: { /* call the CUT: LedBar_setPercent */
             uint32_t ret = LedBar_setPercent((uint8_t)param1);
-            QS_BEGIN(QS_USER + cmdId, (void *)0) /* user-specific record */
+            QS_BEGIN_ID(QS_USER + cmdId, 0U) /* app-specific record */
                 QS_FUN(&LedBar_setPercent); /* function called */
                 QS_U32(0, ret); /* value returned */
                 QS_U8 (0, (uint8_t)param1); /* parameter */

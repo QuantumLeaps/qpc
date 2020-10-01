@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 6.9.1
+* Last updated on  2020-09-24
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -41,7 +41,9 @@
 #define QXTHREAD_H
 
 /****************************************************************************/
-/*! eXtended (blocking) thread of the QXK preemptive kernel */
+/*! eXtended (blocking) thread of the QXK preemptive kernel
+* @extends QActive
+*/
 /**
 * @description
 * QXThread represents the eXtended (blocking) thread of the QXK preemptive

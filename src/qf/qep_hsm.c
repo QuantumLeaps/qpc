@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 6.9.1
+* Last updated on  2020-09-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -81,28 +81,34 @@ static QEvt const QEP_reservedEvt_[] = {
     ((*(state_))(me, &QEP_reservedEvt_[(sig_)]))
 
 /*! helper macro to trigger exit action in an HSM */
-#define QEP_EXIT_(state_) do {                                           \
-    if (QEP_TRIG_((state_), Q_EXIT_SIG) == (QState)Q_RET_HANDLED) {      \
-        QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, QS_priv_.locFilter[SM_OBJ], me) \
-            QS_OBJ_PRE_(me);                                             \
-            QS_FUN_PRE_(state_);                                         \
-        QS_END_PRE_()                                                    \
-    }                                                                    \
+#define QEP_EXIT_(state_, qs_id_) do {                              \
+    if (QEP_TRIG_((state_), Q_EXIT_SIG) == (QState)Q_RET_HANDLED) { \
+        QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, (qs_id_))                  \
+            QS_OBJ_PRE_(me);                                        \
+            QS_FUN_PRE_(state_);                                    \
+        QS_END_PRE_()                                               \
+    }                                                               \
 } while (false)
 
 /*! helper macro to trigger entry action in an HSM */
-#define QEP_ENTER_(state_) do {                                           \
-    if (QEP_TRIG_((state_), Q_ENTRY_SIG) == (QState)Q_RET_HANDLED) {      \
-        QS_BEGIN_PRE_(QS_QEP_STATE_ENTRY, QS_priv_.locFilter[SM_OBJ], me) \
-            QS_OBJ_PRE_(me);                                              \
-            QS_FUN_PRE_(state_);                                          \
-        QS_END_PRE_()                                                     \
-    }                                                                     \
+#define QEP_ENTER_(state_, qs_id_) do {                              \
+    if (QEP_TRIG_((state_), Q_ENTRY_SIG) == (QState)Q_RET_HANDLED) { \
+        QS_BEGIN_PRE_(QS_QEP_STATE_ENTRY, (qs_id_))                  \
+            QS_OBJ_PRE_(me);                                         \
+            QS_FUN_PRE_(state_);                                     \
+        QS_END_PRE_()                                                \
+    }                                                                \
 } while (false)
 
 /*! helper function to execute a transition chain in HSM */
+#ifdef Q_SPY
+static int_fast8_t QHsm_tran_(QHsm * const me,
+                              QStateHandler path[QHSM_MAX_NEST_DEPTH_],
+                              uint_fast8_t const qs_id);
+#else
 static int_fast8_t QHsm_tran_(QHsm * const me,
                               QStateHandler path[QHSM_MAX_NEST_DEPTH_]);
+#endif
 
 
 /****************************************************************************/
@@ -142,10 +148,17 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial) {
 *
 * @param[in,out] me  pointer (see @ref oop)
 * @param[in]     e   pointer to an extra parameter (might be NULL)
+* @param[in]     qs_id QS-id of this state machine (for QS local filter)
 *
 * @note Must be called only ONCE after the QHsm_ctor().
 */
-void QHsm_init_(QHsm * const me, void const * const e) {
+#ifdef Q_SPY
+void QHsm_init_(QHsm * const me, void const * const e,
+                uint_fast8_t const qs_id)
+#else
+void QHsm_init_(QHsm * const me, void const * const e)
+#endif
+{
     QStateHandler t = me->state.fun;
     QState r;
     QS_CRIT_STAT_
@@ -164,7 +177,7 @@ void QHsm_init_(QHsm * const me, void const * const e) {
     /* the top-most initial transition must be taken */
     Q_ASSERT_ID(210, r == (QState)Q_RET_TRAN);
 
-    QS_BEGIN_PRE_(QS_QEP_STATE_INIT, QS_priv_.locFilter[SM_OBJ], me)
+    QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
         QS_OBJ_PRE_(me);           /* this state machine object */
         QS_FUN_PRE_(t);            /* the source state */
         QS_FUN_PRE_(me->temp.fun); /* the target of the initial transition */
@@ -187,7 +200,7 @@ void QHsm_init_(QHsm * const me, void const * const e) {
 
         /* retrace the entry path in reverse (desired) order... */
         do {
-            QEP_ENTER_(path[ip]); /* enter path[ip] */
+            QEP_ENTER_(path[ip], qs_id); /* enter path[ip] */
             --ip;
         } while (ip >= 0);
 
@@ -197,17 +210,17 @@ void QHsm_init_(QHsm * const me, void const * const e) {
 
 #ifdef Q_SPY
         if (r == (QState)Q_RET_TRAN) {
-            QS_BEGIN_PRE_(QS_QEP_STATE_INIT, QS_priv_.locFilter[SM_OBJ], me)
+            QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
                 QS_OBJ_PRE_(me);           /* this state machine object */
                 QS_FUN_PRE_(t);            /* the source state */
-                QS_FUN_PRE_(me->temp.fun); /* the target of the initial tran. */
+                QS_FUN_PRE_(me->temp.fun); /* target of the initial tran. */
             QS_END_PRE_()
         }
 #endif /* Q_SPY */
 
     } while (r == (QState)Q_RET_TRAN);
 
-    QS_BEGIN_PRE_(QS_QEP_INIT_TRAN, QS_priv_.locFilter[SM_OBJ], me)
+    QS_BEGIN_PRE_(QS_QEP_INIT_TRAN, qs_id)
         QS_TIME_PRE_();    /* time stamp */
         QS_OBJ_PRE_(me);   /* this state machine object */
         QS_FUN_PRE_(t);    /* the new active state */
@@ -246,12 +259,19 @@ QState QHsm_top(void const * const me, QEvt const * const e) {
 *
 * @param[in,out] me pointer (see @ref oop)
 * @param[in]     e  pointer to the event to be dispatched to the HSM
+* @param[in]     qs_id QS-id of this state machine (for QS local filter)
 *
 * @note
 * This function should be called only via the virtual table (see
 * QHSM_DISPATCH()) and should NOT be called directly in the applications.
 */
-void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
+#ifdef Q_SPY
+void QHsm_dispatch_(QHsm * const me, QEvt const * const e,
+                    uint_fast8_t const qs_id)
+#else
+void QHsm_dispatch_(QHsm * const me, QEvt const * const e)
+#endif
+{
     QStateHandler t = me->state.fun;
     QStateHandler s;
     QState r;
@@ -263,7 +283,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
     Q_REQUIRE_ID(400, (t != Q_STATE_CAST(0))
                        && (t == me->temp.fun));
 
-    QS_BEGIN_PRE_(QS_QEP_DISPATCH, QS_priv_.locFilter[SM_OBJ], me)
+    QS_BEGIN_PRE_(QS_QEP_DISPATCH, qs_id)
         QS_TIME_PRE_();         /* time stamp */
         QS_SIG_PRE_(e->sig);    /* the signal of the event */
         QS_OBJ_PRE_(me);        /* this state machine object */
@@ -277,7 +297,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
 
         if (r == (QState)Q_RET_UNHANDLED) { /* unhandled due to a guard? */
 
-            QS_BEGIN_PRE_(QS_QEP_UNHANDLED, QS_priv_.locFilter[SM_OBJ], me)
+            QS_BEGIN_PRE_(QS_QEP_UNHANDLED, qs_id)
                 QS_SIG_PRE_(e->sig); /* the signal of the event */
                 QS_OBJ_PRE_(me);     /* this state machine object */
                 QS_FUN_PRE_(s);      /* the current state */
@@ -299,7 +319,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
         /* exit current state to transition source s... */
         for (; t != s; t = me->temp.fun) {
             if (QEP_TRIG_(t, Q_EXIT_SIG) == (QState)Q_RET_HANDLED) {
-                QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, QS_priv_.locFilter[SM_OBJ], me)
+                QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, qs_id)
                     QS_OBJ_PRE_(me);  /* this state machine object */
                     QS_FUN_PRE_(t);   /* the exited state */
                 QS_END_PRE_()
@@ -308,12 +328,16 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
             }
         }
 
+#ifdef Q_SPY
+        ip = QHsm_tran_(me, path, qs_id);
+#else
         ip = QHsm_tran_(me, path);
+#endif
 
 #ifdef Q_SPY
         if (r == (QState)Q_RET_TRAN_HIST) {
 
-            QS_BEGIN_PRE_(QS_QEP_TRAN_HIST, QS_priv_.locFilter[SM_OBJ], me)
+            QS_BEGIN_PRE_(QS_QEP_TRAN_HIST, qs_id)
                 QS_OBJ_PRE_(me);      /* this state machine object */
                 QS_FUN_PRE_(t);       /* the source of the transition */
                 QS_FUN_PRE_(path[0]); /* the target of the tran. to history */
@@ -324,7 +348,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
 
         /* retrace the entry path in reverse (desired) order... */
         for (; ip >= 0; --ip) {
-            QEP_ENTER_(path[ip]);  /* enter path[ip] */
+            QEP_ENTER_(path[ip], qs_id);  /* enter path[ip] */
         }
 
         t = path[0];      /* stick the target into register */
@@ -333,7 +357,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
         /* drill into the target hierarchy... */
         while (QEP_TRIG_(t, Q_INIT_SIG) == (QState)Q_RET_TRAN) {
 
-            QS_BEGIN_PRE_(QS_QEP_STATE_INIT, QS_priv_.locFilter[SM_OBJ], me)
+            QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
                 QS_OBJ_PRE_(me);           /* this state machine object */
                 QS_FUN_PRE_(t);            /* the source (pseudo)state */
                 QS_FUN_PRE_(me->temp.fun); /* the target of the transition */
@@ -356,14 +380,14 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
 
             /* retrace the entry path in reverse (correct) order... */
             do {
-                QEP_ENTER_(path[ip]); /* enter path[ip] */
+                QEP_ENTER_(path[ip], qs_id); /* enter path[ip] */
                 --ip;
             } while (ip >= 0);
 
             t = path[0]; /* current state becomes the new source */
         }
 
-        QS_BEGIN_PRE_(QS_QEP_TRAN, QS_priv_.locFilter[SM_OBJ], me)
+        QS_BEGIN_PRE_(QS_QEP_TRAN, qs_id)
             QS_TIME_PRE_();          /* time stamp */
             QS_SIG_PRE_(e->sig);     /* the signal of the event */
             QS_OBJ_PRE_(me);         /* this state machine object */
@@ -375,7 +399,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
 #ifdef Q_SPY
     else if (r == (QState)Q_RET_HANDLED) {
 
-        QS_BEGIN_PRE_(QS_QEP_INTERN_TRAN, QS_priv_.locFilter[SM_OBJ], me)
+        QS_BEGIN_PRE_(QS_QEP_INTERN_TRAN, qs_id)
             QS_TIME_PRE_();          /* time stamp */
             QS_SIG_PRE_(e->sig);     /* the signal of the event */
             QS_OBJ_PRE_(me);         /* this state machine object */
@@ -385,7 +409,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
     }
     else {
 
-        QS_BEGIN_PRE_(QS_QEP_IGNORED, QS_priv_.locFilter[SM_OBJ], me)
+        QS_BEGIN_PRE_(QS_QEP_IGNORED, qs_id)
             QS_TIME_PRE_();          /* time stamp */
             QS_SIG_PRE_(e->sig);     /* the signal of the event */
             QS_OBJ_PRE_(me);         /* this state machine object */
@@ -408,10 +432,19 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e) {
 * @param[in,out] me   pointer (see @ref oop)
 * @param[in,out] path array of pointers to state-handler functions
 *                     to execute the entry actions
-* @returns the depth of the entry path stored in the @p path parameter.
+* @param[in]     qs_id QS-id of this state machine (for QS local filter)
+*
+* @returns
+* the depth of the entry path stored in the @p path parameter.
 */
+#ifdef Q_SPY
+static int_fast8_t QHsm_tran_(QHsm * const me,
+                              QStateHandler path[QHSM_MAX_NEST_DEPTH_],
+                              uint_fast8_t const qs_id)
+#else
 static int_fast8_t QHsm_tran_(QHsm * const me,
                               QStateHandler path[QHSM_MAX_NEST_DEPTH_])
+#endif
 {
     int_fast8_t ip = -1; /* transition entry path index */
     int_fast8_t iq; /* helper transition entry path index */
@@ -422,7 +455,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
 
     /* (a) check source==target (transition to self)... */
     if (s == t) {
-        QEP_EXIT_(s);        /* exit the source */
+        QEP_EXIT_(s, qs_id); /* exit the source */
         ip = 0; /* enter the target */
     }
     else {
@@ -439,13 +472,13 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
 
             /* (c) check source->super==target->super... */
             if (me->temp.fun == t) {
-                QEP_EXIT_(s);        /* exit the source */
+                QEP_EXIT_(s, qs_id); /* exit the source */
                 ip = 0; /* enter the target */
             }
             else {
                 /* (d) check source->super==target... */
                 if (me->temp.fun == path[0]) {
-                    QEP_EXIT_(s); /* exit the source */
+                    QEP_EXIT_(s, qs_id); /* exit the source */
                 }
                 else {
                     /* (e) check rest of source==target->super->super..
@@ -482,7 +515,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
                         /* entry path must not overflow */
                         Q_ASSERT_ID(520, ip < QHSM_MAX_NEST_DEPTH_);
 
-                        QEP_EXIT_(s); /* exit the source */
+                        QEP_EXIT_(s, qs_id); /* exit the source */
 
                         /* (f) check the rest of source->super
                         *                  == target->super->super...
@@ -511,8 +544,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
                                 if (QEP_TRIG_(t, Q_EXIT_SIG)
                                     == (QState)Q_RET_HANDLED)
                                 {
-                                    QS_BEGIN_PRE_(QS_QEP_STATE_EXIT,
-                                              QS_priv_.locFilter[SM_OBJ], me)
+                                    QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, qs_id)
                                         QS_OBJ_PRE_(me);
                                         QS_FUN_PRE_(t);
                                     QS_END_PRE_()

@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-11
+* Last updated for version 6.9.1
+* Last updated on  2020-09-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -60,7 +60,7 @@ int_t QF_run(void) {
     QF_onStartup();  /* QF callback to configure and start interrupts */
 
     /* produce the QS_QF_RUN trace record */
-    QS_BEGIN_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_BEGIN_PRE_(QS_QF_RUN, 0U)
     QS_END_PRE_()
 
     return 0; /* return success */
@@ -76,7 +76,7 @@ static void thread_function(ULONG thread_input) { /* ThreadX signature */
     /* event-loop */
     for (;;) { /* for-ever */
         QEvt const *e = QActive_get_(act);
-        QHSM_DISPATCH(&act->super, e);
+        QHSM_DISPATCH(&act->super, e, act->prio);
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
 }
@@ -100,7 +100,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = prio;  /* save the QF priority */
     QF_add_(me);      /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    QHSM_INIT(&me->super, par, me->prio); /* initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* convert QF priority to the ThreadX priority */
@@ -133,7 +133,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     bool status;
     QF_CRIT_STAT_
 
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
     nFree = (uint_fast16_t)me->eQueue.tx_queue_available_storage;
 
     if (margin == QF_NO_MARGIN) {
@@ -154,8 +154,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
     if (status) { /* can post the event? */
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST,
-                         QS_priv_.locFilter[AO_OBJ], me)
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST, me->prio)
             QS_TIME_PRE_();       /* timestamp */
             QS_OBJ_PRE_(sender);  /* the sender object */
             QS_SIG_PRE_(e->sig);  /* the signal of the event */
@@ -169,7 +168,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
         }
 
-        QF_CRIT_EXIT_();
+        QF_CRIT_X_();
 
         /* posting to the ThreadX message queue must succeed, see NOTE1 */
         Q_ALLEGE_ID(520,
@@ -178,8 +177,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     }
     else {
 
-        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT,
-                         QS_priv_.locFilter[AO_OBJ], me)
+        QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT, me->prio)
             QS_TIME_PRE_();       /* timestamp */
             QS_OBJ_PRE_(sender);  /* the sender object */
             QS_SIG_PRE_(e->sig);  /* the signal of the event */
@@ -189,7 +187,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_EQC_PRE_(0U);      /* min # free entries (unknown) */
         QS_END_NOCRIT_PRE_()
 
-        QF_CRIT_EXIT_();
+        QF_CRIT_X_();
     }
 
     return status;
@@ -197,10 +195,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 /*..........................................................................*/
 void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_STAT_
-    QF_CRIT_ENTRY_();
+    QF_CRIT_E_();
 
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO,
-                     QS_priv_.locFilter[AO_OBJ], me)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, me->prio)
         QS_TIME_PRE_();       /* timestamp */
         QS_SIG_PRE_(e->sig);  /* the signal of this event */
         QS_OBJ_PRE_(me);      /* this active object */
@@ -213,7 +210,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
-    QF_CRIT_EXIT_();
+    QF_CRIT_X_();
 
     /* LIFO posting must succeed, see NOTE1 */
     Q_ALLEGE_ID(610,
@@ -229,7 +226,7 @@ QEvt const *QActive_get_(QActive * const me) {
         tx_queue_receive(&me->eQueue, (VOID *)&e, TX_WAIT_FOREVER)
         == TX_SUCCESS);
 
-    QS_BEGIN_PRE_(QS_QF_ACTIVE_GET, QS_priv_.locFilter[AO_OBJ], me)
+    QS_BEGIN_PRE_(QS_QF_ACTIVE_GET, me->prio)
         QS_TIME_PRE_();       /* timestamp */
         QS_SIG_PRE_(e->sig);  /* the signal of this event */
         QS_OBJ_PRE_(me);      /* this active object */
@@ -258,7 +255,7 @@ void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio) {
         QS_CRIT_STAT_
         lockStat->lockPrio = prio;
 
-        QS_BEGIN_PRE_(QS_SCHED_LOCK, (void *)0, (void *)0)
+        QS_BEGIN_PRE_(QS_SCHED_LOCK, 0U)
             QS_TIME_PRE_(); /* timestamp */
             QS_2U8_PRE_((QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE
                          - lockStat->prevThre),
@@ -284,7 +281,7 @@ void QFSchedUnlock_(QFSchedLock const * const lockStat) {
     Q_REQUIRE_ID(900, (lockStat->lockHolder != (TX_THREAD *)0)
                       && (lockStat->lockPrio != 0U));
 
-    QS_BEGIN_PRE_(QS_SCHED_LOCK, (void *)0, (void *)0)
+    QS_BEGIN_PRE_(QS_SCHED_LOCK, 0U)
         QS_TIME_PRE_(); /* timestamp */
         QS_2U8_PRE_(lockStat->lockPrio, /* prev lock prio */
                     (QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE

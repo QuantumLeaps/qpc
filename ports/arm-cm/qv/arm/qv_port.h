@@ -3,14 +3,14 @@
 * @brief QV/C port to ARM Cortex-M, ARM-KEIL toolset
 * @cond
 ******************************************************************************
-* Last Updated for Version: 5.9.0
-* Date of the Last Update:  2017-03-17
+* Last updated for version 6.9.1
+* Last updated on  2020-09-23
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -47,22 +47,32 @@
         QF_INT_ENABLE(); \
     } while (false)
 
-#else /* Cortex-M3/M4/M4F */
+    #define QV_ARM_ERRATUM_838869() ((void)0)
+
+#else /* Cortex-M3/M4/M7(v7-M) */
 
     /* macro to put the CPU to sleep inside QV_onIdle() */
     #define QV_CPU_SLEEP() do { \
-        QF_PRIMASK_DISABLE(); \
-        QF_INT_ENABLE(); \
-        __wfi(); \
-        QF_PRIMASK_ENABLE(); \
+        QF_PRIMASK_DISABLE();   \
+        QF_INT_ENABLE();        \
+        __wfi();                \
+        QF_PRIMASK_ENABLE();    \
     } while (false)
 
     /* initialization of the QV kernel for Cortex-M3/M4/M4F */
     #define QV_INIT() QV_init()
     void QV_init(void);
 
+    /* The following macro implements the recommended workaround for the
+    * ARM Erratum 838869. Specifically, for Cortex-M3/M4/M7 the DSB
+    * (memory barrier) instruction needs to be added before exiting an ISR.
+    * This macro should be inserted at the end of ISRs.
+    */
+    #define QV_ARM_ERRATUM_838869() __asm("dsb")
+
 #endif
 
 #include "qv.h" /* QV platform-independent public interface */
 
 #endif /* QV_PORT_H */
+

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, EFM32-SLSTK3401A, Win32-GUI
-* Last updated for version 6.8.0
-* Last updated on  2020-03-31
+* Last updated for version 6.9.1
+* Last updated on  2020-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -132,8 +132,8 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(PLAYER_TRIGGER);
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_ALL_RECORDS);
-    QS_FILTER_OFF(QS_QF_TICK);
+    QS_GLB_FILTER(QS_ALL_RECORDS);
+    QS_GLB_FILTER(-QS_QF_TICK);
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {

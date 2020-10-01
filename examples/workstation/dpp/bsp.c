@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example (console)
-* Last Updated for Version: 6.3.6
-* Date of the Last Update:  2018-10-14
+* Last Updated for Version: 6.9.1
+* Date of the Last Update:  2020-09-10
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -69,8 +69,8 @@ void BSP_init(int argc, char *argv[]) {
     QS_USR_DICTIONARY(PHILO_STAT);
 
     /* setup the QS filters... */
-    QS_FILTER_ON(QS_ALL_RECORDS);
-    QS_FILTER_OFF(QS_QF_TICK);
+    QS_GLB_FILTER(QS_ALL_RECORDS);
+    QS_GLB_FILTER(-QS_QF_TICK);
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {
@@ -81,7 +81,8 @@ void BSP_terminate(int16_t result) {
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
     PRINTF_S("Philosopher %2d is %s\n", (int)n, stat);
 
-    QS_BEGIN(PHILO_STAT, (void *)0) /* application-specific record begin */
+     /* application-specific record */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio)
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
     QS_END()

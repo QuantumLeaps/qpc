@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 
 /*--------------------------------------------------------------------------*/
 void BSP_display(char const *msg) {
-    QS_BEGIN(BSP_DISPLAY, (void *)0) /* application-specific record */
+    QS_BEGIN_ID(BSP_DISPLAY, 0U) /* app-specific record */
         QS_STR(msg);
     QS_END()
 }

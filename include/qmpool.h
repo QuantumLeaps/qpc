@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-18
+* Last updated for version 6.9.1
+* Last updated on  2020-09-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -151,10 +151,12 @@ void QMPool_init(QMPool * const me, void * const poolSto,
                  uint_fast32_t poolSize, uint_fast16_t blockSize);
 
 /*! Obtains a memory block from a memory pool. */
-void *QMPool_get(QMPool * const me, uint_fast16_t const margin);
+void *QMPool_get(QMPool * const me, uint_fast16_t const margin,
+                 uint_fast8_t const qs_id);
 
 /*! Recycles a memory block back to a memory pool. */
-void QMPool_put(QMPool * const me, void *b);
+void QMPool_put(QMPool * const me, void *b,
+                uint_fast8_t const qs_id);
 
 /*! Memory pool element to allocate correctly aligned storage
 * for QMPool class.

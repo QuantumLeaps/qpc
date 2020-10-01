@@ -3,8 +3,8 @@
 * @brief QV/C port to ARM Cortex-M, GNU-ARM toolset
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-25
+* Last updated for version 6.9.1
+* Last updated on  2020-09-23
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -54,14 +54,14 @@ __attribute__ ((naked, optimize("-fno-stack-protector")))
 uint_fast8_t QF_qlog2(uint32_t x) {
 __asm volatile (
     "  MOV     r1,#0            \n"
-#if (QF_MAX_ACTIVE > 16)
+#if (QF_MAX_ACTIVE > 16U)
     "  LSR     r2,r0,#16        \n"
     "  BEQ     QF_qlog2_1       \n"
     "  MOV     r1,#16           \n"
     "  MOV     r0,r2            \n"
     "QF_qlog2_1:                \n"
 #endif
-#if (QF_MAX_ACTIVE > 8)
+#if (QF_MAX_ACTIVE > 8U)
     "  LSR     r2,r0,#8         \n"
     "  BEQ     QF_qlog2_2       \n"
     "  ADD     r1, r1,#8        \n"

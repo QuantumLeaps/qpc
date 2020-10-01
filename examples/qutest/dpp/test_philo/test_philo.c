@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QUTEST fixture for the DPP components
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.9.1
+* Last updated on  2020-09-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -83,15 +83,18 @@ int main(int argc, char *argv[]) {
     Philo_ctor(); /* instantiate all Philosopher active objects */
     n = 2U;
     QACTIVE_START(AO_Philo[n],           /* AO to start */
-                  (uint_fast8_t)(n + 1), /* QP priority of the AO */
+                  n + 1U,                /* QP priority of the AO */
                   philoQueueSto[n],      /* event queue storage */
                   Q_DIM(philoQueueSto[n]), /* queue length [events] */
                   (void *)0,             /* stack storage (not used) */
                   0U,                    /* size of the stack [bytes] */
-                  (QEvt *)0);             /* initialization event */
+                  (void *)0);            /* initialization param */
 
     /* instantiate all dummy AOs... */
     QActiveDummy_ctor(&l_dummyTable);
+    QACTIVE_START(&l_dummyTable,
+                  6U, /* QP priority of the dummy */
+                  (QEvt const **)0, 0U, (void *)0, 0U, (void *)0);
 
     return QF_run(); /* run the QF application */
 }
@@ -116,13 +119,13 @@ void QS_onCommand(uint8_t cmdId,
 
     switch (cmdId) {
        case 0U: {
-           QEvt const e = { PAUSE_SIG, 0U, 0U };
-           QHSM_DISPATCH(&AO_Table->super, &e);
+           QEvt const e_pause = { PAUSE_SIG, 0U, 0U };
+           QHSM_DISPATCH(&AO_Table->super, &e_pause, param1);
            break;
        }
        case 1U: {
-           QEvt const e = { SERVE_SIG, 0U, 0U };
-           QHSM_DISPATCH(&AO_Table->super, &e);
+           QEvt const e_serve = { SERVE_SIG, 0U, 0U };
+           QHSM_DISPATCH(&AO_Table->super, &e_serve, param1);
            break;
        }
        default:
@@ -149,7 +152,7 @@ void QS_onTestPost(void const *sender, QActive *recipient,
         case EAT_SIG:
         case DONE_SIG:
         case HUNGRY_SIG:
-            QS_BEGIN(QUTEST_ON_POST, (void *)0) /* app-specific record */
+            QS_BEGIN_ID(QUTEST_ON_POST, 0U) /* app-specific record */
                 QS_SIG(e->sig, recipient);
                 QS_U8(0, Q_EVT_CAST(TableEvt)->philoNum);
             QS_END()

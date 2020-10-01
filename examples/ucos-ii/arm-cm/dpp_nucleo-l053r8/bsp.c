@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-L053R8 board, uC/OS-II RTOS
-* Last Updated for Version: 6.3.1
-* Date of the Last Update:  2018-05-20
+* Last updated for version 6.9.1
+* Last updated on  2020-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -183,6 +183,10 @@ void BSP_init(void) {
     QS_OBJ_DICTIONARY(&l_tickHook);
     QS_USR_DICTIONARY(PHILO_STAT);
     QS_USR_DICTIONARY(ON_CONTEXT_SW);
+
+    /* setup the QS filters... */
+    QS_GLB_FILTER(QS_SM_RECORDS);
+    QS_GLB_FILTER(QS_UA_RECORDS);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -193,7 +197,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
         GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED off */
     }
 
-    QS_BEGIN(PHILO_STAT, AO_Philo[n]) /* application-specific record begin */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);                  /* Philosopher number */
         QS_STR(stat);                 /* Philosopher status */
     QS_END()
@@ -301,10 +305,6 @@ uint8_t QS_onStartup(void const *arg) {
 
     QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
     QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
-
-    /* setup the QS filters... */
-    QS_FILTER_ON(QS_SM_RECORDS);
-    QS_FILTER_ON(QS_UA_RECORDS);
 
     return 1U; /* return success */
 }

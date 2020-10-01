@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.0.0" links="1">
+<model version="5.0.4" links="1">
  <documentation>Dining Philosopher Problem example
 
 NOTE: Requries QP6.</documentation>
@@ -141,7 +141,7 @@ QACTIVE_POST(APP_alarmClock, Q_NEW(QEvt, ALARM_SIG), me);</action>
 me-&gt;current_time = 0U;
 
 /* (!) trigger the initial transition in the component */
-QHSM_INIT((QHsm *)&amp;me-&gt;alarm, (QEvt *)0);</action>
+QHSM_INIT((QHsm *)&amp;me-&gt;alarm, (void *)0, me-&gt;super.prio);</action>
      <initial_glyph conn="2,4,5,1,44,4,-2">
       <action box="0,-2,6,2"/>
      </initial_glyph>
@@ -180,7 +180,7 @@ QTimeEvt_armX(&amp;me-&gt;timeEvt, BSP_TICKS_PER_SEC,
      <!--${Components::AlarmClock::SM::timekeeping::ALARM_SET, ALARM_ON, ALARM_OFF}-->
      <tran trig="ALARM_SET, ALARM_ON, ALARM_OFF">
       <action>/* (!) synchronously dispatch to the orthogonal component */
-QHSM_DISPATCH((QHsm *)&amp;me-&gt;alarm, e);</action>
+QHSM_DISPATCH((QHsm *)&amp;me-&gt;alarm, e, me-&gt;super.prio);</action>
       <tran_glyph conn="2,22,3,-1,18">
        <action box="0,-2,11,6"/>
       </tran_glyph>
@@ -208,7 +208,7 @@ pe.super.sig = TIME_SIG;
 pe.current_time = me-&gt;current_time;
 
 /* (!) synchronously dispatch to the orthogonal component */
-QHSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
+QHSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super, me-&gt;super.prio);</action>
        <tran_glyph conn="4,44,3,-1,16">
         <action box="0,-2,8,2"/>
        </tran_glyph>
@@ -233,7 +233,7 @@ pe.super.sig = TIME_SIG;
 pe.current_time = me-&gt;current_time;
 
 /* (!) synchronously dispatch to the orthogonal component */
-QHSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super);</action>
+QHSM_DISPATCH(&amp;me-&gt;alarm.super, &amp;pe.super, me-&gt;super.prio);</action>
        <tran_glyph conn="4,58,3,-1,16">
         <action box="0,-2,8,2"/>
        </tran_glyph>

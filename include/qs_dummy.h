@@ -5,14 +5,14 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.7.0
-* Last updated on  2019-12-17
+* Last updated for version 6.9.1
+* Last updated on  2020-09-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,21 +48,15 @@
 #define QS_INIT(arg_)                   ((uint8_t)1U)
 #define QS_EXIT()                       ((void)0)
 #define QS_DUMP()                       ((void)0)
-#define QS_FILTER_ON(rec_)              ((void)0)
-#define QS_FILTER_OFF(rec_)             ((void)0)
-#define QS_FILTER_SM_OBJ(obj_)          ((void)0)
-#define QS_FILTER_AO_OBJ(obj_)          ((void)0)
-#define QS_FILTER_MP_OBJ(obj_)          ((void)0)
-#define QS_FILTER_EQ_OBJ(obj_)          ((void)0)
-#define QS_FILTER_TE_OBJ(obj_)          ((void)0)
-#define QS_FILTER_AP_OBJ(obj_)          ((void)0)
+#define QS_GLB_FILTER(rec_)             ((void)0)
+#define QS_LOC_FILTER(qs_id_)           ((void)0)
 
 #define QS_GET_BYTE(pByte_)             ((uint16_t)0xFFFFU)
 #define QS_GET_BLOCK(pSize_)            ((uint8_t *)0)
 
-#define QS_BEGIN(rec_, obj_)            if (false) {
+#define QS_BEGIN_ID(rec_, qs_id_)       if (false) {
 #define QS_END()                        }
-#define QS_BEGIN_NOCRIT(rec_, obj_)     if (false) {
+#define QS_BEGIN_NOCRIT(rec_, qs_id_)   if (false) {
 #define QS_END_NOCRIT()                 }
 
 #define QS_I8(width_, data_)            ((void)0)
@@ -74,7 +68,6 @@
 #define QS_F32(width_, data_)           ((void)0)
 #define QS_F64(width_, data_)           ((void)0)
 #define QS_U64(width_, data_)           ((void)0)
-#define QS_U32_HEX(width_, data_)       ((void)0)
 #define QS_STR(str_)                    ((void)0)
 #define QS_MEM(mem_, size_)             ((void)0)
 #define QS_SIG(sig_, obj_)              ((void)0)
@@ -100,9 +93,9 @@
 /* internal QS macros used only in the QP components */
 #ifdef QP_IMPL
     /* predefined QS trace records */
-    #define QS_BEGIN_PRE_(rec_, refObj_, obj_)  if (false) {
+    #define QS_BEGIN_PRE_(rec_, qs_id_) if (false) {
     #define QS_END_PRE_()               }
-    #define QS_BEGIN_NOCRIT_PRE_(rec_, refObj_, obj_) if (false) {
+    #define QS_BEGIN_NOCRIT_PRE_(rec_, qs_id_) if (false) {
     #define QS_END_NOCRIT_PRE_()        }
     #define QS_U8_PRE_(data_)           ((void)0)
     #define QS_2U8_PRE_(data1_, data2_) ((void)0)

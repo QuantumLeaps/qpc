@@ -3,8 +3,8 @@
 * @brief QF/C generic port to uC/OS-II
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.1
-* Last updated on  2020-06-01
+* Last updated for version 6.9.1
+* Last updated on  2020-09-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -76,8 +76,8 @@
 #if (OS_CRITICAL_METHOD == 3u)
     /* internal uC/OS-II critical section operations, NOTE1 */
     #define QF_CRIT_STAT_       OS_CPU_SR cpu_sr;
-    #define QF_CRIT_ENTRY_()    OS_ENTER_CRITICAL()
-    #define QF_CRIT_EXIT_()     OS_EXIT_CRITICAL()
+    #define QF_CRIT_E_()    OS_ENTER_CRITICAL()
+    #define QF_CRIT_X_()     OS_EXIT_CRITICAL()
 #endif /* OS_CRITICAL_METHOD */
 
     /* uC/OS-II-specific scheduler locking, see NOTE2 */
@@ -104,21 +104,21 @@
     } while (false)
 
     #define QF_EPOOL_EVENT_SIZE_(pool_) ((pool_)->OSMemBlkSize)
-    #define QF_EPOOL_GET_(pool_, e_, m_) do {       \
-        QF_CRIT_STAT_                               \
-        QF_CRIT_ENTRY_();                           \
-        if ((pool_)->OSMemNFree > (m_)) {           \
-            INT8U err;                              \
-            (e_) = (QEvt *)OSMemGet((pool_), &err); \
-            Q_ASSERT_ID(205, err == OS_ERR_NONE);   \
-        }                                           \
-        else {                                      \
-            (e_) = (QEvt *)0;                       \
-        }                                           \
-        QF_CRIT_EXIT_();                            \
+    #define QF_EPOOL_GET_(pool_, e_, m_, qs_id_) do { \
+        QF_CRIT_STAT_                                 \
+        QF_CRIT_E_();                                 \
+        if ((pool_)->OSMemNFree > (m_)) {             \
+            INT8U err;                                \
+            (e_) = (QEvt *)OSMemGet((pool_), &err);   \
+            Q_ASSERT_ID(205, err == OS_ERR_NONE);     \
+        }                                             \
+        else {                                        \
+            (e_) = (QEvt *)0;                         \
+        }                                             \
+        QF_CRIT_X_();                                 \
     } while (false)
 
-    #define QF_EPOOL_PUT_(pool_, e_) \
+    #define QF_EPOOL_PUT_(pool_, e_, qs_id_) \
         Q_ALLEGE_ID(305, OSMemPut((pool_), (void *)(e_)) == OS_ERR_NONE)
 
 #endif /* ifdef QP_IMPL */
