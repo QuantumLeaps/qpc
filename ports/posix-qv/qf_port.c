@@ -163,7 +163,7 @@ int_t QF_run(void) {
     QF_CRIT_E_();
 
     /* produce the QS_QF_RUN trace record */
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, 0)
     QS_END_NOCRIT_PRE_()
 
     while (l_isRunning) {
@@ -190,7 +190,7 @@ int_t QF_run(void) {
             * 3. determine if event is garbage and collect it if so
             */
             e = QActive_get_(a);
-            QHSM_DISPATCH(&a->super, e);
+            QHSM_DISPATCH(&a->super, e, a->prio);
             QF_gc(e);
 
             QF_CRIT_E_();
@@ -285,7 +285,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = (uint8_t)prio;
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    QHSM_INIT(&me->super, par, &me->prio); /* the top-most initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 }
 /*..........................................................................*/
