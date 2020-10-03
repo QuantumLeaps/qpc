@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-31
+* Last updated for version 6.9.1
+* Last updated on  2020-10-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -196,7 +196,7 @@ void QS_onFlush(void) {
     QS_CRIT_STAT_
 
     if (l_sock == INVALID_SOCKET) { /* socket NOT initialized? */
-        FPRINTF_S(stderr, "<TARGET> ERROR   invalid TCP socket\n");
+        FPRINTF_S(stderr, "<TARGET> ERROR   %s\n", "invalid TCP socket");
         return;
     }
 
@@ -253,7 +253,7 @@ void QS_output(void) {
     QS_CRIT_STAT_
 
     if (l_sock == INVALID_SOCKET) { /* socket NOT initialized? */
-        FPRINTF_S(stderr, "<TARGET> ERROR   invalid TCP socket\n");
+        FPRINTF_S(stderr, "<TARGET> ERROR   %s\n", "invalid TCP socket");
         return;
     }
 

@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.1
-* Last updated on  2020-09-18
+* Last updated on  2020-10-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -121,7 +121,7 @@ int_t QF_run(void) {
     QF_onStartup();  /* invoke startup callback */
 
     /* produce the QS_QF_RUN trace record */
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, (void *)0, (void *)0)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, 0U)
     QS_END_NOCRIT_PRE_()
 
     /* try to set the priority of the ticker thread, see NOTE01 */
@@ -206,7 +206,7 @@ static void *thread_routine(void *arg) { /* the expected POSIX signature */
 #endif
     {
         QEvt const *e = QActive_get_(act); /* wait for the event */
-        QHSM_DISPATCH(&act->super, e);     /* dispatch to the HSM */
+        QHSM_DISPATCH(&act->super, e, act->prio); /* dispatch to the HSM */
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
 #ifdef QF_ACTIVE_STOP
@@ -235,7 +235,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     me->prio = (uint8_t)prio;
     QF_add_(me); /* make QF aware of this active object */
 
-    QHSM_INIT(&me->super, par); /* the top-most initial tran. (virtual) */
+    /* the top-most initial tran. (virtual) */
+    QHSM_INIT(&me->super, par, me->prio);
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     pthread_attr_init(&attr);

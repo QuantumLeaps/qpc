@@ -52,7 +52,7 @@ Additionally, this release introduces the new pre-defined QS record #QS_QF_NEW_A
 The reversal of #QS_QF_NEW and #QS_QF_MPOOL_GET trace records has implications for the existing [<b>QUTest test scripts</b>](https://www.state-machine.com/qtools/qutest_script.html), where the order of expectations for "QF-New" and "MP-Get" needs to be reversed as well.
 
 
-Additionally, this release modifies the @ref qxk "QXK" source code, so that the `QActive.prio` attribute is the fixed priority assigned in QActive_start(), while `QActive.dynPrio` is the "dynamic" priority that can be changed when a @ref qxk_extended "QXK extended thread" acquires a @ref ::QXMutex "mutex".  
+Additionally, this release modifies the @ref qxk "QXK" source code, so that the `QActive.prio` attribute is the fixed priority assigned in QActive_start(), while `QActive.dynPrio` is the "dynamic" priority that can be changed when a @ref qxk_extended "QXK extended thread" acquires a @ref ::QXMutex "mutex".
 
 
 __Updated Ports:__
@@ -60,10 +60,10 @@ __Updated Ports:__
 - all ARM Cortex-M ports (added workaround for the [<b>ARM Erratum 838869</b>](https://www.state-machine.com/doc/Cortex-M4_Software_Developers_Errata_Notice_v3.pdf))
 - all QK ports (because of the changed QMPool_get() / QMPool_put() interface)
 - all QXK ports (because of the changed QMPool_get() / QMPool_put() interface)
-- embOS port (because of the changed QMPool_get() / QMPool_put() interface)  
-- FreeRTOS port (because of the changed QMPool_get() / QMPool_put() interface)  
-- ThreadX port (because of the changed QMPool_get() / QMPool_put() interface)  
-- uC/OS-II port (because of the changed QMPool_get() / QMPool_put() interface)  
+- embOS port (because of the changed QMPool_get() / QMPool_put() interface)
+- FreeRTOS port (because of the changed QMPool_get() / QMPool_put() interface)
+- ThreadX port (because of the changed QMPool_get() / QMPool_put() interface)
+- uC/OS-II port (because of the changed QMPool_get() / QMPool_put() interface)
 - posix, posix-qv (because of the changed QMPool_get() / QMPool_put() interface)
 - win32, win32-qv (because of the changed QMPool_get() / QMPool_put() interface)
 
