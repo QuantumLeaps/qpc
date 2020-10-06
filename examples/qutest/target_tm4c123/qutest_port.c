@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QUTEST port for the EK-TM4C123GXL board
-* Last updated for version 6.8.0
-* Last updated on  2020-01-18
+* Last updated for version 6.9.1
+* Last updated on  2020-10-06
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -48,18 +48,6 @@
 /* add other drivers if necessary... */
 
 //Q_DEFINE_THIS_MODULE("qutest_port")
-
-/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-* Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-* DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-*/
-enum KernelUnawareISRs { /* see NOTE00 */
-    UART0_PRIO,
-    /* ... */
-    MAX_KERNEL_UNAWARE_CMSIS_PRI  /* keep always last */
-};
-/* "kernel-unaware" interrupts can't overlap "kernel-aware" interrupts */
-//Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
 
 /* ISRs defined in this BSP ------------------------------------------------*/
 void UART0_IRQHandler(void);
@@ -180,12 +168,14 @@ uint8_t QS_onStartup(void const *arg) {
     UART0->IM   |= (1U << 4) | (1U << 6); /* enable RX and RX-TO interrupt */
     UART0->IFLS |= (0x2U << 2);    /* interrupt on RX FIFO half-full */
 
-    /* enable the UART RX interrupt... */
+    /* explicitly set NVIC priorities of all Cortex-M interrupts used */
     NVIC_SetPriorityGrouping(0U);
-    NVIC_SetPriority(UART0_IRQn, UART0_PRIO);
+    NVIC_SetPriority(UART0_IRQn, 0U); /* kernel unaware interrupt */
+
+    /* enable the UART RX interrupt... */
     NVIC_EnableIRQ(UART0_IRQn);  /* UART0 interrupt used for QS-RX */
 
-    return (uint8_t)1; /* return success */
+    return 1U; /* return success */
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {

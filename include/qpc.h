@@ -149,7 +149,7 @@ extern "C" {
 
 /*! @deprecated call to the QMSM_DISPATCH() operation;
 * instead use: QHSM_DISPATCH() */
-#define QMSM_DISPATCH(me_, e_) QHSM_DISPATCH((me_), (e_))
+#define QMSM_DISPATCH(me_, e_) QHSM_DISPATCH((me_), (e_), 0U)
 
 /****************************************************************************/
 #if (QP_API_VERSION < 540)

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, STM32746G-Discovery board, FreeRTOS kernel
 * Last updated for version 6.9.1
-* Last updated on  2020-09-22
+* Last updated on  2020-10-06
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -41,6 +41,10 @@
 /* add other drivers if necessary... */
 
 Q_DEFINE_THIS_FILE /* define the name of this file for assertions */
+
+/* "RTOS-aware" interrupt priorities for FreeRTOS on ARM Cortex-M, NOTE1 */
+#define RTOS_AWARE_ISR_CMSIS_PRI \
+    (configMAX_SYSCALL_INTERRUPT_PRIORITY >> (8-__NVIC_PRIO_BITS))
 
 /* Local-scope objects -----------------------------------------------------*/
 static uint32_t l_rnd; /* random seed */
@@ -336,10 +340,8 @@ void QF_onStartup(void) {
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
     NVIC_SetPriority(USART1_IRQn,  0U); /* kernel unaware interrupt */
-    NVIC_SetPriority(EXTI0_IRQn,
-        (configMAX_SYSCALL_INTERRUPT_PRIORITY >> (8-__NVIC_PRIO_BITS)));
-    NVIC_SetPriority(SysTick_IRQn,
-        (configMAX_SYSCALL_INTERRUPT_PRIORITY >> (8-__NVIC_PRIO_BITS)) + 1U);
+    NVIC_SetPriority(EXTI0_IRQn,   RTOS_AWARE_ISR_CMSIS_PRI);
+    NVIC_SetPriority(SysTick_IRQn, RTOS_AWARE_ISR_CMSIS_PRI + 1U);
     /* ... */
 
     /* enable IRQs... */
