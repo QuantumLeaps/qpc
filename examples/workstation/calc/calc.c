@@ -648,6 +648,7 @@ static QState Calc_operand2(Calc * const me, QEvt const * const e) {
             /*.${SMs::Calc::SM::on::operand2::OPER::[BSP_eval()]} */
             if (BSP_eval(me->operand1, me->operator, BSP_get_value())) {
                 me->operand1 = BSP_get_value();
+                me->operator = Q_EVT_CAST(CalcEvt)->key_code;
                 status_ = Q_TRAN(&Calc_opEntered);
             }
             /*.${SMs::Calc::SM::on::operand2::OPER::[else]} */

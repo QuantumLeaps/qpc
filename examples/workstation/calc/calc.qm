@@ -470,7 +470,8 @@ BSP_negate();</entry>
        <!--${SMs::Calc::SM::on::operand2::OPER::[BSP_eval()]}-->
        <choice target="../../../7">
         <guard brief="BSP_eval()">BSP_eval(me-&gt;operand1, me-&gt;operator, BSP_get_value())</guard>
-        <action>me-&gt;operand1 = BSP_get_value();</action>
+        <action>me-&gt;operand1 = BSP_get_value();
+me-&gt;operator = Q_EVT_CAST(CalcEvt)-&gt;key_code;</action>
         <choice_glyph conn="6,77,5,3,16,-5,4">
          <action box="1,1,10,2"/>
         </choice_glyph>

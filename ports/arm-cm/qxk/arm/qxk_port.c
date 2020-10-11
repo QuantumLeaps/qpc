@@ -4,7 +4,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.1
-* Last updated on  2020-09-14
+* Last updated on  2020-10-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -111,8 +111,6 @@ void QXK_init(void) {
 void QXK_stackInit_(void *thr, QXThreadHandler const handler,
                     void * const stkSto, uint_fast16_t const stkSize)
 {
-    extern void QXK_threadRet_(void); /* extended thread return */
-
     /* round down the stack top to the 8-byte boundary
     * NOTE: ARM Cortex-M stack grows down from hi -> low memory
     */

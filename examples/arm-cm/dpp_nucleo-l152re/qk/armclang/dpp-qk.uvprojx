@@ -654,7 +654,7 @@
       <TargetName>dpp-rel</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060020::V5.06 (build 20)::ARMCC</pCCUsed>
+      <pCCUsed>6130001::V6.13.1::.\ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>

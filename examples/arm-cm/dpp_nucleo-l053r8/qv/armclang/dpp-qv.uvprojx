@@ -659,7 +659,7 @@
       <TargetName>dpp-rel</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6070000::V6.7::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6130001::V6.13.1::.\ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -961,7 +961,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>0</interw>
-            <Optim>7</Optim>
+            <Optim>6</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
