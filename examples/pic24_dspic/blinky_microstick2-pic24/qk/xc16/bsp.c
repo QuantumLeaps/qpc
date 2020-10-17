@@ -138,7 +138,7 @@ void QK_onIdle(void) {
     //LED_OFF();
 
 #ifdef NDEBUG
-    Idle();                /* transition to Idle mode */
+    //Idle(); /* transition to Idle mode */
 #endif
 }
 

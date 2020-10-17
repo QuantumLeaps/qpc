@@ -137,7 +137,7 @@ void QV_onIdle(void) { /* entered with interrupts DISABLED, see NOTE01 */
 
 #ifdef NDEBUG
     __asm__ volatile("disi #0x0001");
-    Idle(); /* transition to Idle mode, see NOTE02 */
+    //Idle(); /* transition to Idle mode */
 #else
     QF_INT_ENABLE(); /* enable interrupts, see NOTE01 */
 #endif

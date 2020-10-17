@@ -646,6 +646,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
             </File>
+            <File>
+              <FileName>qs_rx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
@@ -654,7 +659,7 @@
       <TargetName>dpp-rel</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6070000::V6.7::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6130001::V6.13.1::.\ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -1290,6 +1295,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
             </File>
+            <File>
+              <FileName>qs_rx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
@@ -1298,7 +1308,7 @@
       <TargetName>dpp-spy</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6070000::V6.7::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6130001::V6.13.1::.\ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -1864,6 +1874,11 @@
               <FileName>qs_pkg.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
+            </File>
+            <File>
+              <FileName>qs_rx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
             </File>
           </Files>
         </Group>

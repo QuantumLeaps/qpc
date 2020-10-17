@@ -193,7 +193,7 @@ void QK_onIdle(void) {
         U2TXREG = (uint8_t)b;   /* stick the byte to TXREG for transmission */
     }
 #elif defined NDEBUG
-    Idle();                /* transition to Idle mode */
+    //Idle(); /* transition to Idle mode */
 #endif
 }
 

@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.1
-* Last updated on  2020-09-30
+* Last updated on  2020-10-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -51,9 +51,10 @@ void QS_u64_raw_(uint64_t d) {
     uint8_t *buf   = QS_priv_.buf;
     QSCtr   head   = QS_priv_.head;
     QSCtr   end    = QS_priv_.end;
+    int_fast8_t i;
 
     QS_priv_.used += 8U; /* 8 bytes are about to be added */
-    for (int_fast8_t i = 8U; i != 0U; --i) {
+    for (i = 8U; i != 0U; --i) {
         uint8_t b = (uint8_t)d;
         QS_INSERT_ESC_BYTE_(b)
         d >>= 8;
@@ -72,12 +73,13 @@ void QS_u64_fmt_(uint8_t format, uint64_t d) {
     uint8_t *buf   = QS_priv_.buf;
     QSCtr   head   = QS_priv_.head;
     QSCtr   end    = QS_priv_.end;
+    int_fast8_t i;
 
     QS_priv_.used += 9U; /* 9 bytes are about to be added */
     QS_INSERT_ESC_BYTE_(format) /* insert the format byte */
 
     /* output 8 bytes of data... */
-    for (int_fast8_t i = 8U; i != 0U; --i) {
+    for (i = 8U; i != 0U; --i) {
         format = (uint8_t)d;
         QS_INSERT_ESC_BYTE_(format)
         d >>= 8;
