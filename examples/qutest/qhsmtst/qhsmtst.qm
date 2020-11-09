@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.6.0" links="1">
+<model version="5.1.0" links="1">
  <documentation>QHsmTst is a contrived state machine from Chapter 2 of the PSiCC2 book for testing all possible transition topologies with up to 4-levels of state nesting.</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -14,7 +14,7 @@
    <statechart properties="0x03">
     <!--${HSMs::QHsmTst::SM::initial}-->
     <initial target="../1/5">
-     <action>(void)e; /* avoid compiler warning */
+     <action>(void)par; /* unused parameter */
 me-&gt;foo = 0U;
 BSP_display(&quot;top-INIT;&quot;);
 

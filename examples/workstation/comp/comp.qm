@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.0.4" links="1">
+<model version="5.1.0" links="1">
  <documentation>Dining Philosopher Problem example
 
 NOTE: Requries QP6.</documentation>
@@ -34,7 +34,7 @@ NOTE: Requries QP6.</documentation>
     <!--${Components::Alarm::SM::initial}-->
     <initial target="../1">
      <action>me-&gt;alarm_time = 12U*60U;
-(void)e; /* avoid compiler warning about unused parameter */</action>
+(void)par; /* unused parameter */</action>
      <initial_glyph conn="2,3,5,1,36,4,-4">
       <action box="0,-2,6,2"/>
      </initial_glyph>
@@ -137,7 +137,7 @@ QACTIVE_POST(APP_alarmClock, Q_NEW(QEvt, ALARM_SIG), me);</action>
    <statechart properties="0x01">
     <!--${Components::AlarmClock::SM::initial}-->
     <initial target="../1">
-     <action>(void)e; /* avoid compiler warning about unused parameter */
+     <action>(void)par; /* unused parameter */
 me-&gt;current_time = 0U;
 
 /* (!) trigger the initial transition in the component */

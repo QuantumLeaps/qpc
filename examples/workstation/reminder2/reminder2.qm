@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.0.2" links="1">
+<model version="5.1.0" links="1">
  <documentation>Dining Philosopher Problem example
 
 NOTE: Requries QP6.</documentation>
@@ -33,7 +33,7 @@ NOTE: Requries QP6.</documentation>
    <statechart properties="0x03">
     <!--${Components::Cruncher::SM::initial}-->
     <initial target="../1">
-     <action>(void)e; /* unused parameter */</action>
+     <action>(void)par; /* unused parameter */</action>
      <initial_glyph conn="2,2,5,1,44,6,-2">
       <action box="0,-2,6,2"/>
      </initial_glyph>

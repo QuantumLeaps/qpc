@@ -12,7 +12,7 @@
    <statechart properties="0x01">
     <!--${SMs::ToastOven::SM::initial}-->
     <initial target="../1">
-     <action>(void)e; /* avoid compiler warning */</action>
+     <action>(void)par; /* unused parameter */</action>
      <initial_glyph conn="3,2,5,1,51,4,-4">
       <action box="2,-2,13,4"/>
      </initial_glyph>

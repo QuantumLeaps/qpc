@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="4.6.0" links="1">
+<model version="5.1.0" links="1">
  <documentation>Blinky Low-Power example</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -21,7 +21,7 @@
    <statechart properties="0x03">
     <!--${AOs::Blinky0::SM::initial}-->
     <initial target="../1">
-     <action>(void)e; /* unused parameter */
+     <action>(void)par; /* unused parameter */
 QActive_subscribe(&amp;me-&gt;super, BTN_PRESSED_SIG);</action>
      <initial_glyph conn="4,4,5,1,34,4,-4">
       <action box="0,-2,10,2"/>
@@ -113,7 +113,7 @@ QTimeEvt_armX(&amp;me-&gt;timeEvt0, 2U, 2U);</entry>
    <statechart properties="0x03">
     <!--${AOs::Blinky1::SM::initial}-->
     <initial target="../1">
-     <action>(void)e; /* unused parameter */
+     <action>(void)par; /* unused parameter */
 QActive_subscribe(&amp;me-&gt;super, BTN_PRESSED_SIG);</action>
      <initial_glyph conn="4,4,5,1,32,4,-4">
       <action box="0,-2,10,2"/>

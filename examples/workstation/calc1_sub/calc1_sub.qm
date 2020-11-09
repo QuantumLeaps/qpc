@@ -128,7 +128,7 @@ return true;</code>
    <statechart properties="0x01">
     <!--${SMs::Calc::SM::initial}-->
     <initial target="../1">
-     <action>(void)e; /* unused parameter */</action>
+     <action>(void)par; /* unused parameter */</action>
      <initial_glyph conn="2,2,5,1,94,4,-2">
       <action box="1,-2,13,4"/>
      </initial_glyph>

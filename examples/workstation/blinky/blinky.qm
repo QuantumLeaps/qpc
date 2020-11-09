@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.0.0" links="1">
+<model version="5.1.0" links="1">
  <documentation>Simple &quot;Blinky&quot; model</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -13,7 +13,7 @@
    <statechart properties="0x03">
     <!--${AOs::Blinky::SM::initial}-->
     <initial target="../1">
-     <action>(void)e; /* unused parameter */
+     <action>(void)par; /* unused parameter */
 QTimeEvt_armX(&amp;me-&gt;timeEvt,
 BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
      <initial_glyph conn="2,3,5,1,20,4,-4">

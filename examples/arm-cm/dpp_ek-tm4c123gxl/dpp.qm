@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.0.2" links="1">
+<model version="5.1.0" links="1">
  <documentation>Dining Philosopher Problem example</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -26,7 +26,7 @@
     <!--${AOs::Philo::SM::initial}-->
     <initial target="../1">
      <action>static uint8_t registered = (uint8_t)0; /* starts off with 0, per C-standard */
-(void)e; /* suppress the compiler warning about unused parameter */
+(void)par; /* unused parameter */
 if (registered == (uint8_t)0) {
     registered = (uint8_t)1;
 
@@ -157,7 +157,8 @@ Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
     <!--${AOs::Table::SM::initial}-->
     <initial target="../1/2">
      <action>uint8_t n;
-(void)e; /* suppress the compiler warning about unused parameter */
+
+(void)par; /* unused parameter */
 
 QS_OBJ_DICTIONARY(&amp;Table_inst);
 

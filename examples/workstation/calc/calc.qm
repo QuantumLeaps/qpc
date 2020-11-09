@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.0.4" links="1">
+<model version="5.1.0" links="1">
  <documentation>Calc is the model of the Calculator described in Chapter 4 of PSiCC2</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -25,7 +25,7 @@
     <!--${SMs::Calc::SM::initial}-->
     <initial target="../1">
      <action>BSP_clear();
-(void)e; /* unused parameter */</action>
+(void)par; /* unused parameter */</action>
      <initial_glyph conn="2,2,5,1,80,4,-2">
       <action box="1,-2,13,4"/>
      </initial_glyph>

@@ -14,7 +14,7 @@
    <statechart properties="0x03">
     <!--${SMs::QMsmTst::SM::initial}-->
     <initial target="../1/5">
-     <action>(void)e; /* avoid compiler warning */
+     <action>(void)par; /* unused parameter */
 me-&gt;foo = 0U;
 BSP_display(&quot;top-INIT;&quot;);
 

@@ -1,8 +1,3 @@
-NOTE: The FreeRTOS distribution has been modified by Quantum Leaps
-to contain only components used by the QP ports and examples.
-Please refer to the original FreeRTOS website for the complete,
-unmodified distribution.
-
 Directories:
 
 + The FreeRTOS/Source directory contains the FreeRTOS source code, and contains
