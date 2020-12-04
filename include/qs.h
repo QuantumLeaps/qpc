@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.1
-* Last updated on  2020-09-30
+* Last updated on  2020-12-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -666,7 +666,7 @@ enum {
 #elif (QS_OBJ_PTR_SIZE == 4U)
     #define QS_OBJ(obj_)        (QS_u32_fmt_(QS_OBJ_T, (uint32_t)(obj_)))
 #elif (QS_OBJ_PTR_SIZE == 8U)
-    #define QS_OBJ(obj_)        (QS_u64(QS_OBJ_T, (uint64_t)(obj_)))
+    #define QS_OBJ(obj_)        (QS_u64_fmt_(QS_OBJ_T, (uint64_t)(obj_)))
 #else
     /*! Output formatted object pointer to the QS record */
     #define QS_OBJ(obj_)        (QS_u32_fmt_(QS_OBJ_T, (uint32_t)(obj_)))

@@ -14,7 +14,7 @@
 * Product(s)  :
 * This license is available only for evaluation purposes and
 * the generated code is still licensed under the terms of GPL.
-* Please submit request for extension of the evaluaion period at:
+* Please submit request for extension of the evaluation period at:
 * <www.state-machine.com/licensing/#RequestForm>
 */
 /*.$endhead${src::qmsmtst.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
