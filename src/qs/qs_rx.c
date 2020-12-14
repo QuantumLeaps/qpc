@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-10
+* Last updated for version 6.9.2
+* Last updated on  2020-12-14
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -318,6 +318,74 @@ uint16_t QS_rxGetNfree(void) {
                            - QS_rxPriv_.head);
     }
     return nFree;
+}
+
+/****************************************************************************/
+/**
+* @description
+* This function programmatically sets the "current object" in the Target.
+*/
+void QS_setCurrObj(uint8_t obj_kind, void *obj_ptr) {
+
+    Q_REQUIRE_ID(100, obj_kind < Q_DIM(QS_rxPriv_.currObj));
+    QS_rxPriv_.currObj[obj_kind] = obj_ptr;
+}
+
+/****************************************************************************/
+/**
+* @description
+* This function programmatically generates the response to the query for
+* a "current object".
+*/
+void QS_queryCurrObj(uint8_t obj_kind) {
+    if (QS_rxPriv_.currObj[obj_kind] != (void *)0) {
+        QS_CRIT_STAT_
+        QS_CRIT_E_();
+        QS_beginRec_((uint_fast8_t)QS_QUERY_DATA);
+            QS_TIME_PRE_();       /* timestamp */
+            QS_U8_PRE_(obj_kind); /* object kind */
+            QS_OBJ_PRE_(QS_rxPriv_.currObj[obj_kind]);
+            switch (obj_kind) {
+                case SM_OBJ: /* intentionally fall through */
+                case AO_OBJ:
+                    QS_FUN_PRE_(((QHsm *)QS_rxPriv_.currObj[obj_kind])
+                                ->state.fun);
+                    break;
+                case MP_OBJ:
+                    QS_MPC_PRE_(((QMPool *)QS_rxPriv_.currObj[obj_kind])
+                                ->nFree);
+                    QS_MPC_PRE_(((QMPool *)QS_rxPriv_.currObj[obj_kind])
+                                ->nMin);
+                    break;
+                case EQ_OBJ:
+                    QS_EQC_PRE_(((QEQueue *)QS_rxPriv_.currObj[obj_kind])
+                                ->nFree);
+                    QS_EQC_PRE_(((QEQueue *)QS_rxPriv_.currObj[obj_kind])
+                                ->nMin);
+                    break;
+                case TE_OBJ:
+                    QS_OBJ_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[obj_kind])
+                                ->act);
+                    QS_TEC_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[obj_kind])
+                                ->ctr);
+                    QS_TEC_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[obj_kind])
+                                ->interval);
+                    QS_SIG_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[obj_kind])
+                                ->super.sig);
+                    QS_U8_PRE_ (((QTimeEvt *)QS_rxPriv_.currObj[obj_kind])
+                                ->super.refCtr_);
+                    break;
+                default:
+                    break;
+            }
+        QS_endRec_();
+        QS_CRIT_X_();
+
+        QS_REC_DONE(); /* user callback (if defined) */
+    }
+    else {
+        QS_rxReportError_((uint8_t)QS_RX_QUERY_CURR);
+    }
 }
 
 /****************************************************************************/
@@ -981,54 +1049,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             break;
         }
         case WAIT4_QUERY_FRAME: {
-            i = l_rx.var.obj.kind;
-            if (QS_rxPriv_.currObj[i] != (void *)0) {
-                QS_CRIT_E_();
-                QS_beginRec_((uint_fast8_t)QS_QUERY_DATA);
-                    QS_TIME_PRE_(); /* timestamp */
-                    QS_U8_PRE_(i);  /* object kind */
-                    QS_OBJ_PRE_(QS_rxPriv_.currObj[i]);
-                    switch (i) {
-                        case SM_OBJ: /* intentionally fall through */
-                        case AO_OBJ:
-                            QS_FUN_PRE_(((QHsm *)QS_rxPriv_.currObj[i])
-                                        ->state.fun);
-                            break;
-                        case MP_OBJ:
-                            QS_MPC_PRE_(((QMPool *)QS_rxPriv_.currObj[i])
-                                        ->nFree);
-                            QS_MPC_PRE_(((QMPool *)QS_rxPriv_.currObj[i])
-                                        ->nMin);
-                            break;
-                        case EQ_OBJ:
-                            QS_EQC_PRE_(((QEQueue *)QS_rxPriv_.currObj[i])
-                                        ->nFree);
-                            QS_EQC_PRE_(((QEQueue *)QS_rxPriv_.currObj[i])
-                                        ->nMin);
-                            break;
-                        case TE_OBJ:
-                            QS_OBJ_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[i])
-                                        ->act);
-                            QS_TEC_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[i])
-                                        ->ctr);
-                            QS_TEC_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[i])
-                                        ->interval);
-                            QS_SIG_PRE_(((QTimeEvt *)QS_rxPriv_.currObj[i])
-                                        ->super.sig);
-                            QS_U8_PRE_ (((QTimeEvt *)QS_rxPriv_.currObj[i])
-                                        ->super.refCtr_);
-                            break;
-                        default:
-                            break;
-                    }
-                QS_endRec_();
-                QS_CRIT_X_();
-
-                QS_REC_DONE(); /* user callback (if defined) */
-            }
-            else {
-                QS_rxReportError_((uint8_t)QS_RX_QUERY_CURR);
-            }
+            QS_queryCurrObj(l_rx.var.obj.kind);
             break;
         }
         case WAIT4_EVT_FRAME: {

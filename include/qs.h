@@ -4,8 +4,8 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-12-04
+* Last updated for version 6.9.2
+* Last updated on  2020-12-14
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -917,25 +917,31 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize);
 /*! Parse all bytes present in the QS RX data buffer */
 void QS_rxParse(void);
 
-/*! put one byte into the QS RX lock-free buffer */
+/*! Put one byte into the QS RX lock-free buffer */
 void QS_RX_PUT(uint8_t const b);
 
 /*! Obtain the number of free bytes in the QS RX data buffer */
 uint16_t QS_rxGetNfree(void);
 
-/*! callback function to reset the Target (to be implemented in the BSP) */
+/*! Set the "current object" in the Target */
+void QS_setCurrObj(uint8_t obj_kind, void *obj_ptr);
+
+/*! Query the "current object" in the Target */
+void QS_queryCurrObj(uint8_t obj_kind);
+
+/*! Callback function to reset the Target (to be implemented in the BSP) */
 void QS_onReset(void);
 
-/*! callback function to execute user commands (to be implemented in BSP) */
+/*! Callback function to execute user commands (to be implemented in BSP) */
 void QS_onCommand(uint8_t cmdId,   uint32_t param1,
                   uint32_t param2, uint32_t param3);
 
-/*! macro to handle the QS output from the application
+/*! Macro to handle the QS output from the application
 * NOTE: if this macro is used, the application must define QS_output().
 */
 #define QS_OUTPUT()   (QS_output())
 
-/*! macro to handle the QS-RX input to the application
+/*! Macro to handle the QS-RX input to the application
 * NOTE: if this macro is used, the application must define QS_rx_input().
 */
 #define QS_RX_INPUT() (QS_rx_input())
