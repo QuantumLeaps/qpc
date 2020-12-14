@@ -51,7 +51,12 @@ class DPP:
         # NOTE: Normally, for an embedded application you would like
         # to start with resetting the Target, to start clean with
         # Qs dictionaries, etc.
-        reset_target()
+        #
+        # Howver, this is a desktop appliction, which you cannot reset
+        # (and restart). Therefore, the desktop applications must be started
+        # *after* the QView is already running.
+        #reset_target()
+
 
     # on_reset() callback invoked when Target-reset packet is received
     # NOTE: the QS dictionaries are not known at this time yet, so
