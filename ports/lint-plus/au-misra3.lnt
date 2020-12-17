@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// Copyright Gimpel Software LLC 2019. All rights reserved.
+// Copyright Gimpel Software LLC 2020. All rights reserved.
 //
 // This file is provided by Gimpel Software LLC (https://www.gimpel.com) for
 // use with PC-lint Plus. Redistribution is permitted but any redistribution
@@ -30,8 +30,8 @@
 
  */
 
-/* version check */ -cond('%PCLP_NO_LNT_VERSION_CHECK%' != '1' && (%LINT_MAJOR_VERSION% != 1 || %LINT_MINOR_VERSION% != 3),
-    +fatal_error(This configuration file is intended for PC-lint Plus 1.3.
+/* version check */ -cond('%PCLP_NO_LNT_VERSION_CHECK%' != '1' && (%LINT_MAJOR_VERSION% != 1 || %LINT_MINOR_VERSION% != 4),
+    +fatal_error(This configuration file is intended for PC-lint Plus 1.4.
                  You are attempting to use it with PC-lint Plus %LINT_MAJOR_VERSION%.%LINT_MINOR_VERSION%.
                  It is recommended that you use configuration files intended
                  for PC-lint Plus %LINT_MAJOR_VERSION%.%LINT_MINOR_VERSION%.)

@@ -12,8 +12,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-18
+* Last updated for version 6.9.2
+* Last updated on  2020-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -66,7 +66,11 @@
 void QActive_ctor(QActive * const me, QStateHandler initial) {
     static QActiveVtable const vtable = {  /* QActive virtual table */
         { &QHsm_init_,
-          &QHsm_dispatch_ },
+          &QHsm_dispatch_
+#ifdef Q_SPY
+          ,&QHsm_getStateHandler_
+#endif
+        },
         &QActive_start_,
         &QActive_post_,
         &QActive_postLIFO_

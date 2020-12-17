@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-03
+* Last updated for version 6.9.2
+* Last updated on  2020-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -107,7 +107,6 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const * const hist,
 static QState QMsm_enterHistory_(QHsm * const me, QMState const * const hist);
 #endif
 
-
 /****************************************************************************/
 /**
 * @description
@@ -137,6 +136,9 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial) {
     static struct QHsmVtable const vtable = { /* QHsm virtual table */
         &QMsm_init_,
         &QMsm_dispatch_
+#ifdef Q_SPY
+        ,&QMsm_getStateHandler_
+#endif
     };
     /* do not call the QHsm_ctor() here */
     me->super.vptr = &vtable;
@@ -411,6 +413,13 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e)
         /* empty */
     }
 }
+
+/****************************************************************************/
+#ifdef Q_SPY
+QStateHandler QMsm_getStateHandler_(QHsm * const me) {
+    return me->state.obj->stateHandler;
+}
+#endif
 
 /****************************************************************************/
 /**

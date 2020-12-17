@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-08-17
+* Last updated for version 6.9.2
+* Last updated on  2020-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      691U
+#define QP_VERSION      692U
 
 /*! The current QP version number string of the form XX.Y.Z, where XX is
 * a 2-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.9.1"
+#define QP_VERSION_STR  "6.9.2"
 
-/*! Encrypted  current QP release (6.9.1) and date (2020-09-22) */
-#define QP_RELEASE      0x883DB9ACU
+/*! Encrypted  current QP release (6.9.2) and date (2020-12-22) */
+#define QP_RELEASE      0x880FF2EBU
 
 
 /****************************************************************************/
@@ -288,20 +288,21 @@ typedef struct {
 /*! Virtual table for the ::QHsm class. */
 struct QHsmVtable {
 #ifdef Q_SPY
-    /*! Triggers the top-most initial transition in a HSM. */
+    /*! Triggers the top-most initial transition in the HSM. */
     void (*init)(QHsm * const me, void const * const e,
                  uint_fast8_t const qs_id);
-#else
-    void (*init)(QHsm * const me, void const * const e);
-#endif /* Q_SPY */
 
-#ifdef Q_SPY
-    /*! Dispatches an event to a SM. */
+    /*! Dispatches an event to the HSM. */
     void (*dispatch)(QHsm * const me, QEvt const * const e,
                      uint_fast8_t const qs_id);
+
+    /*! Get the current state handler of the HSM. */
+    QStateHandler (*getStateHandler)(QHsm * const me);
 #else
+    void (*init)(QHsm * const me, void const * const e);
     void (*dispatch)(QHsm * const me, QEvt const * const e);
 #endif /* Q_SPY */
+
 };
 
 /* QHsm public operations... */
@@ -361,6 +362,9 @@ struct QHsmVtable {
     /*! Implementation of dispatching events to a ::QHsm subclass */
     void QHsm_dispatch_(QHsm * const me, QEvt const * const e,
                         uint_fast8_t const qs_id);
+
+    /*! Implementation of getting the state handler in a ::QHsm subclass */
+    QStateHandler QHsm_getStateHandler_(QHsm * const me);
 #else
 
     #define QHSM_DISPATCH(me_, e_, dummy) \
@@ -534,6 +538,12 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e,
 void QMsm_dispatch_(QHsm * const me, QEvt const * const e);
 #endif
 
+/*! Implementation of getting the state handler in a ::QMsm
+* @private @memberof QMsm
+*/
+#ifdef Q_SPY
+QStateHandler QMsm_getStateHandler_(QHsm * const me);
+#endif
 
 /*! Macro to call in a state-handler when it executes a regular
 * or and initial transition. Applicable only to ::QHsm subclasses.

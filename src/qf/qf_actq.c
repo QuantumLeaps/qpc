@@ -9,8 +9,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-03
+* Last updated for version 6.9.2
+* Last updated on  2020-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -438,7 +438,11 @@ static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
 void QTicker_ctor(QTicker * const me, uint_fast8_t tickRate) {
     static QActiveVtable const vtable = {  /* QActive virtual table */
         { &QTicker_init_,
-          &QTicker_dispatch_ },
+          &QTicker_dispatch_
+#ifdef Q_SPY
+          ,&QHsm_getStateHandler_
+#endif
+        },
         &QActive_start_,
         &QTicker_post_,
         &QTicker_postLIFO_

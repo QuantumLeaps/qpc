@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.2
-* Last updated on  2020-12-14
+* Last updated on  2020-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -348,8 +348,9 @@ void QS_queryCurrObj(uint8_t obj_kind) {
             switch (obj_kind) {
                 case SM_OBJ: /* intentionally fall through */
                 case AO_OBJ:
-                    QS_FUN_PRE_(((QHsm *)QS_rxPriv_.currObj[obj_kind])
-                                ->state.fun);
+                    QS_FUN_PRE_((*((QHsm *)QS_rxPriv_.currObj[obj_kind])->vptr
+                                ->getStateHandler)(
+                                     ((QHsm *)QS_rxPriv_.currObj[obj_kind])));
                     break;
                 case MP_OBJ:
                     QS_MPC_PRE_(((QMPool *)QS_rxPriv_.currObj[obj_kind])

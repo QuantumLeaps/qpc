@@ -4,8 +4,8 @@
 * @ingroup qxk
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-14
+* Last updated for version 6.9.2
+* Last updated on  2020-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -115,7 +115,11 @@ void QXThread_ctor(QXThread * const me,
 {
     static QXThreadVtable const vtable = { /* QXThread virtual table */
         { &QXThread_init_,       /* not used in QXThread */
-          &QXThread_dispatch_ }, /* not used in QXThread */
+          &QXThread_dispatch_    /* not used in QXThread */
+#ifdef Q_SPY
+         ,&QHsm_getStateHandler_ /* not used in QXThread */
+#endif
+        },
         &QXThread_start_,
         &QXThread_post_,
         &QXThread_postLIFO_

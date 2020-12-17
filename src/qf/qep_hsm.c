@@ -4,8 +4,8 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-03
+* Last updated for version 6.9.2
+* Last updated on  2020-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -100,7 +100,7 @@ static QEvt const QEP_reservedEvt_[] = {
     }                                                                \
 } while (false)
 
-/*! helper function to execute a transition chain in HSM */
+/*! helper function to execute state transition */
 #ifdef Q_SPY
 static int_fast8_t QHsm_tran_(QHsm * const me,
                               QStateHandler path[QHSM_MAX_NEST_DEPTH_],
@@ -109,7 +109,6 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
 static int_fast8_t QHsm_tran_(QHsm * const me,
                               QStateHandler path[QHSM_MAX_NEST_DEPTH_]);
 #endif
-
 
 /****************************************************************************/
 /**
@@ -135,6 +134,9 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial) {
     static struct QHsmVtable const vtable = { /* QHsm virtual table */
         &QHsm_init_,
         &QHsm_dispatch_
+#ifdef Q_SPY
+        ,&QHsm_getStateHandler_
+#endif
     };
     me->vptr      = &vtable;
     me->state.fun = Q_STATE_CAST(&QHsm_top);
@@ -575,6 +577,13 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
     }
     return ip;
 }
+
+/****************************************************************************/
+#ifdef Q_SPY
+QStateHandler QHsm_getStateHandler_(QHsm * const me) {
+    return me->state.fun;
+}
+#endif
 
 /****************************************************************************/
 /**

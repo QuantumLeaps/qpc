@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-08
+* Last updated for version 6.9.2
+* Last updated on  2020-12-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -126,7 +126,11 @@ static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
 void QActiveDummy_ctor(QActiveDummy * const me) {
     static QActiveVtable const vtable = {  /* QActive virtual table */
         { &QActiveDummy_init_,
-          &QActiveDummy_dispatch_ },
+          &QActiveDummy_dispatch_
+#ifdef Q_SPY
+          ,&QHsm_getStateHandler_
+#endif
+        },
         &QActiveDummy_start_,
         &QActiveDummy_post_,
         &QActiveDummy_postLIFO_
