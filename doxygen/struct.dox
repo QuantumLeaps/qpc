@@ -132,6 +132,13 @@ The QP/C RTEF supports the comprehensive [QP/Spy software tracing system](https:
 The QS software tracing instrumentation is only active in the **Spy build configuration** and is completely inactive in Release and Debug build configurations. Specifically, the QS instrumentation does not need to be removed or changed in any way in the production code. It is specifically designed to be safely left in the code, without causing any side effects.
 
 
+@section DbC Design by Contract
+
+<a href="https://en.wikipedia.org/wiki/Design_by_contract" target="_blank" class="extern">Design by Contract</a> (DbC) is a philosophy that views a software system as a set of components whose collaboration is based on precisely defined specifications of mutual obligations — the <em>contracts</em>. The central idea of this method is to inherently embed the contracts in the code and validate them automatically at runtime.
+In C and C++, the most important aspects of DbC (the contracts) can be implemented with <em>assertions</em>. Assertions are increasingly popular among the developers of mission-critical software. For example, <a href="https://jaxenter.com/power-ten-nasas-coding-commandments-114124.html" target="_blank" class="extern">NASA requires certain density of assertions</a> in such software.
+
+In the context of the QP/C framework, DbC provides an excellent methodology for implementing a very robust <em>error-handling policy</em>. Due to <a href="https://www.state-machine.com/concepts/event-driven/#Inversion">inversion of control</a> so typical in all event-driven systems, the QP/C framework controls many more aspects of the application than a traditional RTOS. A framework is in a much better position to make sure that the <em>application</em> is performing correctly, rather than the application to check error codes or catch exceptions originating from the framework.
+
 
 @section coding Coding Standard
 The QP/C framework has been developed in strict adherence to the documented <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_QL_Coding_Standard.pdf"><strong>Quantum Leaps Coding Standard</strong></a>.

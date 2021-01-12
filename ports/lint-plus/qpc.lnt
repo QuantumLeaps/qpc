@@ -3,8 +3,8 @@
 /// @cond
 ///===========================================================================
 /// Product: QP/C
-/// Last Updated for Version: 6.9.1
-/// Date of the Last Update:  2020-09-17
+/// Last Updated for Version: 6.9.2
+/// Date of the Last Update:  2020-12-19
 ///
 ///                    Q u a n t u m  L e a P s
 ///                    ------------------------
@@ -54,6 +54,10 @@
 // give Q_onAssert() the semantics of "exit"
 -function(exit,
  Q_onAssert)
+
+// M3-R1.4(r) keyword '_Noreturn' is deprecated
+-emacro(586,
+ Q_NORETURN)
 
 // M3-D4.9(a) function-like macro
 -esym(9026,

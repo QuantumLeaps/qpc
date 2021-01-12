@@ -23,6 +23,7 @@
 *.pdb
 *.ncb
 *.suo
+*.sdf
 *.chw
 *.sfr
 *.ewt

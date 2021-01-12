@@ -2,8 +2,8 @@
 /// @brief PC-Lint-Plus option file for linting QP/C source code
 /// @cond
 ///===========================================================================
-/// Last updated for version 6.9.1
-/// Last updated on  2020-09-17
+/// Last updated for version 6.9.2
+/// Last updated on  2020-12-19
 ///
 ///                    Q u a n t u m  L e a P s
 ///                    ------------------------
@@ -51,6 +51,7 @@
 -std=c89            // C language standard
 au-misra3.lnt       // MISRA-C:2012
 au-misra3-amd1.lnt  // MISRA-C:2012 amendment 1 options
+au-misra3-amd2.lnt  // MISRA-C:2012 amendment 2 options
 au-ds.lnt           // Dan Saks recommendations
 //-strong(AXJ)        // Strong type checking
 

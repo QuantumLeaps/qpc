@@ -1,11 +1,11 @@
-# Doxyfile 1.8.18
+# Doxyfile 1.9.0
 
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "6.9.1"
+PROJECT_NUMBER         = "6.9.2"
 PROJECT_BRIEF          =
 PROJECT_LOGO           = images/header_logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -26,6 +26,7 @@ JAVADOC_AUTOBRIEF      = NO
 JAVADOC_BANNER         = NO
 QT_AUTOBRIEF           = YES
 MULTILINE_CPP_IS_BRIEF = YES
+PYTHON_DOCSTRING       = YES
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 4
@@ -33,6 +34,7 @@ ALIASES                = "next{1}=<hr><b>Next:</b> @ref \1</p>" \
                          "description=@par Description" \
                          "hint=@par Hint" \
                          "usage=@par Usage" \
+                         "caption{1}=<div class=\"caption\" align=\"center\">\1</div>" \
                          "reqdef{2}=<div class= vmargin20></div>@anchor \1 <TABLE><TR ALIGN= left><TH NOWRAP>\1</TH><TH WIDTH= 100%>\2</TH></TR></TABLE>" \
                          "reqref{1}=@ref \1 \"\1\"" \
                          "termdef{2}=@anchor term_\1 @par \2" \
@@ -57,6 +59,7 @@ INLINE_GROUPED_CLASSES = YES
 INLINE_SIMPLE_STRUCTS  = YES
 TYPEDEF_HIDES_STRUCT   = YES
 LOOKUP_CACHE_SIZE      = 0
+NUM_PROC_THREADS       = 1
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
@@ -68,6 +71,7 @@ EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = YES
 EXTRACT_LOCAL_METHODS  = NO
 EXTRACT_ANON_NSPACES   = NO
+RESOLVE_UNNAMED_PARAMS = YES
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = NO
 HIDE_FRIEND_COMPOUNDS  = NO
@@ -183,7 +187,6 @@ CLANG_DATABASE_PATH    =
 # Configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
 ALPHABETICAL_INDEX     = YES
-COLS_IN_ALPHA_INDEX    = 5
 IGNORE_PREFIX          =
 #---------------------------------------------------------------------------
 # Configuration options related to the HTML output
@@ -333,6 +336,7 @@ PREDEFINED             = Q_SPY \
                          QF_MPOOL_SIZ_SIZE \
                          QF_MPOOL_CTR_SIZE \
                          QF_TIMEEVT_CTR_SIZE \
+                         QF_ACTIVE_STOP \
                          QS_TIME_SIZE
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
@@ -360,6 +364,8 @@ COLLABORATION_GRAPH    = YES
 GROUP_GRAPHS           = YES
 UML_LOOK               = YES
 UML_LIMIT_NUM_FIELDS   = 10
+DOT_UML_DETAILS        = NO
+DOT_WRAP_THRESHOLD     = 17
 TEMPLATE_RELATIONS     = NO
 INCLUDE_GRAPH          = YES
 INCLUDED_BY_GRAPH      = YES

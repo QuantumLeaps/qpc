@@ -5,13 +5,13 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.2
-* Last updated on  2020-12-16
+* Last updated on  2021-01-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,7 +45,7 @@
 Q_DEFINE_THIS_MODULE("qs_rx")
 
 /****************************************************************************/
-QSrxPrivAttr QS_rxPriv_;      /* QS-RX private attributes */
+QSrxPrivAttr QS_rxPriv_;  /* QS-RX private attributes */
 
 /****************************************************************************/
 #if (QS_OBJ_PTR_SIZE == 1U)
@@ -252,8 +252,9 @@ static void QS_rxPoke_(void);
 void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
     QS_rxPriv_.buf  = &sto[0];
     QS_rxPriv_.end  = (QSCtr)(stoSize - 1U);
-    QS_rxPriv_.head = 0U;
-    QS_rxPriv_.tail = 0U;
+    /* establish empty condition */
+    QS_rxPriv_.head = QS_rxPriv_.end;
+    QS_rxPriv_.tail = QS_rxPriv_.end;
 
     QS_rxPriv_.currObj[SM_OBJ] = (void *)0;
     QS_rxPriv_.currObj[AO_OBJ] = (void *)0;
@@ -281,18 +282,21 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
 
 /****************************************************************************/
 /*! put one byte into the QS RX lock-free buffer */
-void QS_RX_PUT(uint8_t const b) {
-    if (QS_rxPriv_.head != 0U) {
-        if ((QS_rxPriv_.head - QS_rxPriv_.tail) != 1U) {
-            QS_rxPriv_.buf[QS_rxPriv_.head] = b;
-            --QS_rxPriv_.head;
-        }
+bool QS_RX_PUT(uint8_t const b) {
+    QSCtr head = QS_rxPriv_.head;
+    if (head != 0U) {
+        --head;
     }
     else {
-        if (QS_rxPriv_.tail != QS_rxPriv_.end) {
-            QS_rxPriv_.buf[0] = b;
-            QS_rxPriv_.head = QS_rxPriv_.end;
-        }
+        head = QS_rxPriv_.end;
+    }
+    if (head != QS_rxPriv_.tail) { /* buffer NOT full? */
+        QS_rxPriv_.buf[QS_rxPriv_.head] = b;
+        QS_rxPriv_.head = head;
+        return true;  /* byte placed in the buffer */
+    }
+    else {
+        return false; /* byte NOT placed in the buffer */
     }
 }
 
@@ -306,18 +310,16 @@ void QS_RX_PUT(uint8_t const b) {
 * be moving, meaning that bytes can be concurrently removed from the buffer.
 */
 uint16_t QS_rxGetNfree(void) {
-    uint16_t nFree;
-    if (QS_rxPriv_.head == QS_rxPriv_.tail) {
-        nFree = (uint16_t)QS_rxPriv_.end;
+    QSCtr head = QS_rxPriv_.head;
+    if (head == QS_rxPriv_.tail) { /* buffer empty? */
+        return (uint16_t)QS_rxPriv_.end;
     }
-    else if (QS_rxPriv_.head < QS_rxPriv_.tail) {
-        nFree = (uint16_t)(QS_rxPriv_.tail - QS_rxPriv_.head);
+    else if (head < QS_rxPriv_.tail) {
+        return (uint16_t)(QS_rxPriv_.end + head - QS_rxPriv_.tail);
     }
     else {
-        nFree = (uint16_t)((QS_rxPriv_.tail + QS_rxPriv_.end)
-                           - QS_rxPriv_.head);
+        return (uint16_t)(head - QS_rxPriv_.tail - 1U);
     }
-    return nFree;
 }
 
 /****************************************************************************/
@@ -391,14 +393,16 @@ void QS_queryCurrObj(uint8_t obj_kind) {
 
 /****************************************************************************/
 void QS_rxParse(void) {
-    while (QS_rxPriv_.head != QS_rxPriv_.tail) { /*QS-RX buffer not empty? */
-        uint8_t b = *QS_RX_AT_(QS_rxPriv_.tail);
+    QSCtr head = QS_rxPriv_.head;
+    QSCtr tail = QS_rxPriv_.tail;
+    while (head != tail) { /* QS-RX buffer NOT empty? */
+        uint8_t b = *QS_RX_AT_(tail);
 
-        if (QS_rxPriv_.tail != 0U) {
-            --QS_rxPriv_.tail;
+        if (tail != 0U) {
+            --tail;
         }
         else {
-             QS_rxPriv_.tail = QS_rxPriv_.end;
+            tail = QS_rxPriv_.end;
         }
 
         if (l_rx.esc != 0U) {  /* escaped byte arrived? */
@@ -432,6 +436,7 @@ void QS_rxParse(void) {
             QS_rxParseData_(b);
         }
     }
+    QS_rxPriv_.tail = tail;
 }
 
 /****************************************************************************/

@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.2
-* Last updated on  2020-12-14
+* Last updated on  2021-01-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -918,7 +918,7 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize);
 void QS_rxParse(void);
 
 /*! Put one byte into the QS RX lock-free buffer */
-void QS_RX_PUT(uint8_t const b);
+bool QS_RX_PUT(uint8_t const b);
 
 /*! Obtain the number of free bytes in the QS RX data buffer */
 uint16_t QS_rxGetNfree(void);

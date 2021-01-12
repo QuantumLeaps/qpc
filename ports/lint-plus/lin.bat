@@ -1,8 +1,8 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C build script for PC-Lint-Plus
-:: Last Updated for Version: 6.8.0
-:: Date of the Last Update:  2020-01-26
+:: Last Updated for Version: 6.9.2
+:: Date of the Last Update:  2020-12-19
 ::
 ::                    Q u a n t u m  L e a P s
 ::                    ------------------------
@@ -42,7 +42,7 @@
 @echo.
 
 :: NOTE: adjust to for your installation directory of PC-Lint-Plus
-@set PCLP=C:\tools\lint-plus\pclp32.exe
+@set PCLP=C:\tools\lint-plus\windows\pclp32.exe
 
 if NOT exist "%PCLP%" (
     @echo The PC-Lint-Plus toolset not found. Please adjust lin.bat
