@@ -383,34 +383,14 @@
           <GroupName>Applicatioin</GroupName>
           <Files>
             <File>
-              <FileName>test_blinky.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\test_blinky.c</FilePath>
-            </File>
-            <File>
-              <FileName>blinky.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\blinky.c</FilePath>
-            </File>
-            <File>
-              <FileName>blinky.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\src\blinky.h</FilePath>
-            </File>
-            <File>
-              <FileName>bsp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\bsp.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\src\bsp.h</FilePath>
-            </File>
-            <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\include\qstamp.c</FilePath>
+            </File>
+            <File>
+              <FileName>test_qutest.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\test_qutest.c</FilePath>
             </File>
           </Files>
         </Group>

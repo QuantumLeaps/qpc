@@ -1,5 +1,5 @@
 # test-script for QUTest unit testing harness
-# see https://www.state-machine.com/qtools/html
+# see https://www.state-machine.com/qtools/qutest.html
 
 # preamble...
 def on_reset():

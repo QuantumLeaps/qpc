@@ -112,7 +112,7 @@ void QS_onCommand(uint8_t cmdId,
         }
         case COMMAND_Z: {
             float32_t f32 = (float32_t)((int32_t)param2/(float32_t)param3);
-            float64_t f64 = (int32_t)param2/(float64_t)param3;
+            float64_t f64 = (float64_t)param2/(float64_t)param3;
             QS_BEGIN_ID(COMMAND_Z, 0U) /* app-specific record */
                 QS_F32(param1, f32);
                 QS_F64(param1, f64);

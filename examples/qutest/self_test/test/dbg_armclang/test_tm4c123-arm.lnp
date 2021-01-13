@@ -1,0 +1,27 @@
+--cpu=Cortex-M4.fp.sp
+".\dbg_armclang\qstamp.o"
+".\dbg_armclang\test_qutest.o"
+".\dbg_armclang\system_tm4c123gh6pm.o"
+".\dbg_armclang\startup_tm4c123gh6pm.o"
+".\dbg_armclang\qep_hsm.o"
+".\dbg_armclang\qep_msm.o"
+".\dbg_armclang\qf_act.o"
+".\dbg_armclang\qf_actq.o"
+".\dbg_armclang\qf_defer.o"
+".\dbg_armclang\qf_dyn.o"
+".\dbg_armclang\qf_mem.o"
+".\dbg_armclang\qf_ps.o"
+".\dbg_armclang\qf_qact.o"
+".\dbg_armclang\qf_qeq.o"
+".\dbg_armclang\qf_qmact.o"
+".\dbg_armclang\qf_time.o"
+".\dbg_armclang\qs.o"
+".\dbg_armclang\qs_64bit.o"
+".\dbg_armclang\qs_fp.o"
+".\dbg_armclang\qs_rx.o"
+".\dbg_armclang\qutest.o"
+".\dbg_armclang\qutest_port.o"
+--library_type=microlib --strict --scatter ".\dbg_armclang\test_tm4c123-arm.sct"
+--entry Reset_Handler --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\dbg_armclang\test_tm4c123-arm.map" -o .\dbg_armclang\test_tm4c123-arm.axf

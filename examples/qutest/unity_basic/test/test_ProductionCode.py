@@ -1,6 +1,6 @@
 # QUTEST script corresponding to the test_ProductionCode.c test fixture.
 # This test fixture corresponds to ../test_unity/TestProductionCode.c fixture.
-# see https://www.state-machine.com/qtools/qutest.html
+# see https://www.state-machine.com/qtools/qutest.html/qutest.html
 
 # preamble...
 def on_setup():
