@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Purpose: Fixture for QUTEST self-test
-* Last Updated for Version: 6.9.1
-* Date of the Last Update:  2020-09-16
+* Last Updated for Version: 6.9.2
+* Date of the Last Update:  2021-01-13
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -112,7 +112,7 @@ void QS_onCommand(uint8_t cmdId,
         }
         case COMMAND_Z: {
             float32_t f32 = (float32_t)((int32_t)param2/(float32_t)param3);
-            float64_t f64 = (float64_t)param2/(float64_t)param3;
+            float64_t f64 = -6.02214076E23;
             QS_BEGIN_ID(COMMAND_Z, 0U) /* app-specific record */
                 QS_F32(param1, f32);
                 QS_F64(param1, f64);

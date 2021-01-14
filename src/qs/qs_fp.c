@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-21
+* Last updated for version 6.9.2
+* Last updated on  2021-01-13
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -81,10 +81,7 @@ void QS_f32_fmt_(uint8_t format, float32_t f) {
 void QS_f64_fmt_(uint8_t format, float64_t d) {
     union F64Rep {
         float64_t d;
-        struct UInt2 {
-            uint32_t u1;
-            uint32_t u2;
-        } i;
+        uint32_t  u[2];
     } fu64; /* the internal binary representation */
     uint8_t chksum = QS_priv_.chksum;
     uint8_t *buf   = QS_priv_.buf;
@@ -100,27 +97,27 @@ void QS_f64_fmt_(uint8_t format, float64_t d) {
 
     fu64.d = d; /* assign the binary representation */
 
+    /* is this a big-endian machine? */
+    if (endian.u8 == 0U) {
+        /* swap fu64.u[0] <-> fu64.u[1]... */
+        i = fu64.u[0];
+        fu64.u[0] = fu64.u[1];
+        fu64.u[1] = i;
+    }
+
     QS_priv_.used += 9U; /* 9 bytes about to be added */
     QS_INSERT_ESC_BYTE_(format) /* insert the format byte */
 
-    /* is this a big-endian machine? */
-    if (endian.u8 == 0U) {
-        /* swap fu64.i.u1 <-> fu64.i.u2... */
-        i = fu64.i.u1;
-        fu64.i.u1 = fu64.i.u2;
-        fu64.i.u2 = i;
+    /* output 4 bytes from fu64.u[0]... */
+    for (i = 4U; i != 0U; --i) {
+        QS_INSERT_ESC_BYTE_((uint8_t)fu64.u[0])
+        fu64.u[0] >>= 8;
     }
 
-    /* output 4 bytes from fu64.i.u1 ... */
+    /* output 4 bytes from fu64.u[1]... */
     for (i = 4U; i != 0U; --i) {
-        QS_INSERT_ESC_BYTE_((uint8_t)fu64.i.u1)
-        fu64.i.u1 >>= 8;
-    }
-
-    /* output 4 bytes from fu64.i.u2 ... */
-    for (i = 4U; i != 0U; --i) {
-        QS_INSERT_ESC_BYTE_((uint8_t)fu64.i.u2)
-        fu64.i.u2 >>= 8;
+        QS_INSERT_ESC_BYTE_((uint8_t)fu64.u[1])
+        fu64.u[1] >>= 8;
     }
 
     QS_priv_.head   = head;   /* save the head */

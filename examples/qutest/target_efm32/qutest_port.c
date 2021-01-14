@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QUTEST port for the EFM32-SLSTK3401A board
-* Last updated for version 6.9.1
-* Last updated on  2020-10-06
+* Last updated for version 6.9.2
+* Last updated on  2021-01-13
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -100,6 +100,37 @@ uint8_t QS_onStartup(void const *arg) {
 
     QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
+
+    /* NOTE: SystemInit() already called from the startup code
+    *  but SystemCoreClock needs to be updated
+    */
+    SystemCoreClockUpdate();
+
+    /* configure the FPU usage by choosing one of the options... */
+#if 0
+    /* OPTION 1:
+    * Use the automatic FPU state preservation and the FPU lazy stacking.
+    *
+    * NOTE:
+    * Use the following setting when FPU is used in more than one task or
+    * in any ISRs. This setting is the safest and recommended, but requires
+    * extra stack space and CPU cycles.
+    */
+    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
+#else
+    /* OPTION 2:
+    * Do NOT to use the automatic FPU state preservation and
+    * do NOT to use the FPU lazy stacking.
+    *
+    * NOTE:
+    * Use the following setting when FPU is used in ONE task only and not
+    * in any ISR. This setting is very efficient, but if more than one task
+    * (or ISR) start using the FPU, this can lead to corruption of the
+    * FPU registers. This option should be used with CAUTION.
+    */
+    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos)
+                    | (1U << FPU_FPCCR_LSPEN_Pos));
+#endif /* FPU */
 
     /* Enable peripheral clocks */
     CMU_ClockEnable(cmuClock_HFPER, true);
