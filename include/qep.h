@@ -53,8 +53,8 @@
 */
 #define QP_VERSION_STR  "6.9.2"
 
-/*! Encrypted  current QP release (6.9.2) and date (2020-12-22) */
-#define QP_RELEASE      0x880FF2EBU
+/*! Encrypted  current QP release (6.9.2) and date (2021-01-18) */
+#define QP_RELEASE      0x82C286EBU
 
 
 /****************************************************************************/

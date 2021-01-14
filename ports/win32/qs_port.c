@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-03-31
+* Last updated for version 6.9.2
+* Last updated on  2021-01-14
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -44,7 +44,8 @@
 #define QP_IMPL       /* this is QP implementation */
 #include "qf_port.h"  /* QF port */
 #include "qassert.h"  /* QP embedded systems-friendly assertions */
-#include "qs_port.h"  /* include QS port */
+#include "qs_port.h"  /* QS port */
+#include "qs_pkg.h"   /* QS package-scope interface */
 
 #include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
 #include <stdlib.h>
@@ -295,20 +296,12 @@ void QS_output(void) {
 }
 /*..........................................................................*/
 void QS_rx_input(void) {
-    uint8_t buf[QS_RX_SIZE];
-    int status = recv(l_sock, (char *)buf, (int)sizeof(buf), 0);
-    if (status != SOCKET_ERROR) { /* any data received? */
-        uint8_t *pb;
-        int i = (int)QS_rxGetNfree();
-        if (i > status) {
-            i = status;
-        }
-        status -= i;
-        /* reorder the received bytes into QS-RX buffer */
-        for (pb = &buf[0]; i > 0; --i, ++pb) {
-            QS_RX_PUT(*pb);
-        }
-        QS_rxParse(); /* parse all n-bytes of data */
+    int status = recv(l_sock,
+                      (char *)QS_rxPriv_.buf, (int)QS_rxPriv_.end, 0);
+    if (status > 0) { /* any data received? */
+        QS_rxPriv_.tail = 0U;
+        QS_rxPriv_.head = status; /* # bytes received */
+        QS_rxParse(); /* parse all received bytes */
     }
 }
 

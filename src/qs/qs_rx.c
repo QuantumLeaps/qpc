@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.2
-* Last updated on  2021-01-11
+* Last updated on  2021-01-14
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -251,10 +251,9 @@ static void QS_rxPoke_(void);
 */
 void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
     QS_rxPriv_.buf  = &sto[0];
-    QS_rxPriv_.end  = (QSCtr)(stoSize - 1U);
-    /* establish empty condition */
-    QS_rxPriv_.head = QS_rxPriv_.end;
-    QS_rxPriv_.tail = QS_rxPriv_.end;
+    QS_rxPriv_.end  = (QSCtr)stoSize;
+    QS_rxPriv_.head = 0U;
+    QS_rxPriv_.tail = 0U;
 
     QS_rxPriv_.currObj[SM_OBJ] = (void *)0;
     QS_rxPriv_.currObj[AO_OBJ] = (void *)0;
@@ -283,12 +282,9 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
 /****************************************************************************/
 /*! put one byte into the QS RX lock-free buffer */
 bool QS_RX_PUT(uint8_t const b) {
-    QSCtr head = QS_rxPriv_.head;
-    if (head != 0U) {
-        --head;
-    }
-    else {
-        head = QS_rxPriv_.end;
+    QSCtr head = QS_rxPriv_.head + 1U;
+    if (head == QS_rxPriv_.end) {
+        head = 0U;
     }
     if (head != QS_rxPriv_.tail) { /* buffer NOT full? */
         QS_rxPriv_.buf[QS_rxPriv_.head] = b;
@@ -312,13 +308,13 @@ bool QS_RX_PUT(uint8_t const b) {
 uint16_t QS_rxGetNfree(void) {
     QSCtr head = QS_rxPriv_.head;
     if (head == QS_rxPriv_.tail) { /* buffer empty? */
-        return (uint16_t)QS_rxPriv_.end;
+        return (uint16_t)(QS_rxPriv_.end - 1U);
     }
     else if (head < QS_rxPriv_.tail) {
-        return (uint16_t)(QS_rxPriv_.end + head - QS_rxPriv_.tail);
+        return (uint16_t)(QS_rxPriv_.tail - head - 1U);
     }
     else {
-        return (uint16_t)(head - QS_rxPriv_.tail - 1U);
+        return (uint16_t)(QS_rxPriv_.end + QS_rxPriv_.tail - head - 1U);
     }
 }
 
@@ -395,14 +391,13 @@ void QS_queryCurrObj(uint8_t obj_kind) {
 void QS_rxParse(void) {
     QSCtr head = QS_rxPriv_.head;
     QSCtr tail = QS_rxPriv_.tail;
+    QSCtr end  = QS_rxPriv_.end;
     while (head != tail) { /* QS-RX buffer NOT empty? */
         uint8_t b = *QS_RX_AT_(tail);
 
-        if (tail != 0U) {
-            --tail;
-        }
-        else {
-            tail = QS_rxPriv_.end;
+        ++tail;
+        if (tail == end) {
+            tail = 0U;
         }
 
         if (l_rx.esc != 0U) {  /* escaped byte arrived? */
