@@ -631,7 +631,7 @@ Features:
 
 "Fly 'n' Shoot" game example for Silicon Labs Pearl Gecko MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolchains.
 
-@image html game_win32.png Game emulation running in Windows GUI
+@image html game_win32.jpg Game emulation running in Windows GUI
 @n
 @n
 @image html under_construction.jpg

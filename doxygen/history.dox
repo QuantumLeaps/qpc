@@ -1,6 +1,65 @@
 /**
 @page history Revision History
 
+@section qpc_6_9_2 Version 6.9.2, 2021-01-18
+The main purpose of this release is a redesign of the QS-RX (software tracing input) to implement the feature request #187:
+
+- [feature#187 "Make the byte order in QS-RX buffer compatible with DMA"](https://sourceforge.net/p/qpc/feature-requests/187/)
+
+Additionally, as part of the re-design of the internal QS-RX implementation, this release fixes the bug #287 ("QS_rxGetNfree() returns too low value", see the "Bug Fixes" section)
+
+Additionally, this release introduces a new "virtual" function `getStateHandler()` in the `QHsm` base class. This is part of the fix for bug #290 ("QView query object state reports wrong state with QMsm strategy", see the "Bug Fixes" section)
+
+__Source code changes:__
+
+The introduction of the `getStateHandler()` virtual function involves the following code changes:
+- `qpc/include/qep.h`
+- `qpc/src/qf/qep_hsm.c`
+- `qpc/src/qf/qep_msm.c`
+- `qpc/src/qf/qf_actq.c`
+- `qpc/src/qf/qf_qact.c`
+- `qpc/src/qf/qf_qmact.c`
+- `qpc/src/qs/qs_rx.c`
+- `qpc/src/qs/qutest.c`
+- `qpc/src/qxk/qxk_xthr.c`
+- `qpc/include/qs.h` file -- added new API QS_queryCurrObj()
+
+The redesign of QS-RX implementation involves the following code changes:
+- `qpc/include/qs.h` -- macro `QS_RX_PUT()` now returns `bool` (true if the byte was inserted into the QS-RX buffer and false otherwise)
+- `qpc/src/qs/qs_rx.c` - changed several functions
+- `qpc/src/qs/qs_fp.c` - improved implementation
+
+
+__Modified QP/C ports:__
+- `qpc/ports/posix/` - modified to take advantage of the QS-RX direct byte ordering
+- `qpc/ports/posix-qutest/` - modified to take advantage of the QS-RX direct byte ordering
+- `qpc/ports/posix-qv/` - modified to take advantage of the QS-RX direct byte ordering
+- `qpc/ports/win32/` - modified to take advantage of the QS-RX direct byte ordering
+- `qpc/ports/win32-qutest/` - modified to take advantage of the QS-RX direct byte ordering
+- `qpc/ports/win32-qv/` - modified to take advantage of the QS-RX direct byte ordering
+
+
+__Added QP/C ports:__
+- `qpc/ports/freertos-esp32/` - added new port to FreeRTOS-ESP32
+
+
+__Updated examples:__
+- `qpc/examples/workstation/calc` fixed minor bug in the calculator
+
+
+__Bug Fixes:__
+- [bug#289 "QS_OBJ_PTR() macro does not compile on 64-bit machine"](https://sourceforge.net/p/qpc/bugs/289/)
+- [bug#288 "POSIX port does not compile in Spy build configuration"](https://sourceforge.net/p/qpc/bugs/288/)
+- [bug#287 "QS_rxGetNfree() returns too low value"](https://sourceforge.net/p/qpc/bugs/287/)
+- [bug#285 "QView bug with querying the state of QMsm-type state machines"](https://sourceforge.net/p/qpc/bugs/285/)
+- [bug#284 "Typo in QM generated headers"](https://sourceforge.net/p/qpc/bugs/284/)
+
+
+__Updated 3rd-Party Components:__
+- `qpc/3rd_party/CMSIS` to version 5.7.0
+- `qpc/3rd_party/FreeRTOS` to version 10.4.3 (202012LTS released December 2020)
+
+
 @section qpc_6_9_1 Version 6.9.1, 2020-09-28
 The main purpose of this release is a redesign of the [<b>QS Local Filter</b>](https://www.state-machine.com/qtools/qs.html#qs_local) (see also [feature request #127](https://sourceforge.net/p/qpc/feature-requests/127)). This new design supports filtering on __multiple__ active objects (as well as other objects in the Target memory), as opposed to filtering just one such object at a time. The main use case for this redesign of QS Local Filter is an application, where some active objects are very "noisy", and would overwhelm your trace. The new QS Local Filter allows you to selectively silence the "noisy" active objects and let all the others through.
 
