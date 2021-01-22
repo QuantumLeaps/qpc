@@ -732,7 +732,7 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_OBJ_ADDR: {
-            l_rx.var.obj.addr |= ((uint32_t)b << l_rx.var.obj.idx);
+            l_rx.var.obj.addr |= ((QSObj)b << l_rx.var.obj.idx);
             l_rx.var.obj.idx += 8U;
             if (l_rx.var.obj.idx == (uint8_t)(8*QS_OBJ_PTR_SIZE)) {
                 QS_RX_TRAN_(WAIT4_OBJ_FRAME);
@@ -849,7 +849,7 @@ static void QS_rxParseData_(uint8_t b) {
             break;
         }
         case WAIT4_TEST_PROBE_ADDR: {
-            l_rx.var.tp.addr |= ((uint32_t)b << l_rx.var.tp.idx);
+            l_rx.var.tp.addr |= ((QSFun)b << l_rx.var.tp.idx);
             l_rx.var.tp.idx += 8U;
             if (l_rx.var.tp.idx == (uint8_t)(8U * QS_FUN_PTR_SIZE)) {
                 QS_RX_TRAN_(WAIT4_TEST_PROBE_FRAME);
