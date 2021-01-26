@@ -1105,9 +1105,6 @@
     +e9006                              /* sizeof used with expression with side effect */
     +elib(9006)
     -append(9006,[MISRA 2012 Rule 13.6, mandatory])
-    +e9089                              /* potential side-effect in argument to sizeof */
-    +elib(9089)
-    -append(9089,[MISRA 2012 Rule 13.6, mandatory])
 
 /**** Rule 14.1 (Req) ************/
 

@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-11
+* Last updated for version 6.9.2a
+* Last updated on  2021-01-26
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -87,11 +87,18 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void const * const par)
 {
     UINT tx_prio; /* ThreadX priority corresponding to the QF priority prio */
+    CHAR tx_name[5]; /* name passed to ThreadX queue and thread */
+
+    tx_name[0] = 'A';
+    tx_name[1] = 'O';
+    tx_name[2] = '0' + (prio / 10U);
+    tx_name[3] = '0' + (prio % 10U);
+    tx_name[4] = '\0';
 
     /* allege that the ThreadX queue is created successfully */
     Q_ALLEGE_ID(210,
         tx_queue_create(&me->eQueue,
-            (CHAR *)"AO",
+            tx_name,
             TX_1_ULONG,
             (VOID *)qSto,
             (ULONG)(qLen * sizeof(ULONG)))
@@ -109,7 +116,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     Q_ALLEGE_ID(220,
         tx_thread_create(
             &me->thread, /* ThreadX thread control block */
-            (CHAR *)"AO",     /* thread name */
+            tx_name,     /* thread name */
             &thread_function, /* thread function */
             (ULONG)me, /* thread parameter */
             stkSto,    /* stack start */
