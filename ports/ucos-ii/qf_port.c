@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-03
+* Last updated for version 6.9.2a
+* Last updated on  2020-01-26
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -89,6 +89,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 {
     INT8U p_ucos;
     INT8U err;
+    char_t task_name[4]; /* task name to be passed to OSTaskCreateExt() */
 
     me->eQueue = OSQCreate((void **)qSto, qLen);  /* create uC/OS-II queue */
     /* the uC/OS-II queue must be created correctly */
@@ -102,6 +103,14 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     /* map from QP to uC/OS priority */
     p_ucos = (INT8U)(QF_MAX_ACTIVE - me->prio);
+
+    /* prepare the unique task name of the form "Axx",
+    * where xx is a 2-digit QP priority of the Active Object
+    */
+    task_name[0] = 'A';
+    task_name[1] = '0' + (prio / 10U);
+    task_name[2] = '0' + (prio % 10U);
+    task_name[3] = '\0'; /* zero-terminate */
 
     /* create AO's task... */
     /*
@@ -121,7 +130,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
              (INT16U)me->prio, /* the unique AO priority as task ID */
              (OS_STK *)stkSto, /* pbos */
              (INT32U)(stkSize/sizeof(OS_STK)),/* stack size in OS_STK units */
-             (void *)0,      /* pext */
+             task_name,        /* pext */
              (INT16U)me->thread); /* task options, see NOTE1 */
 
     /* uC/OS-II task must be created correctly */

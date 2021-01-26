@@ -87,13 +87,15 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void const * const par)
 {
     UINT tx_prio; /* ThreadX priority corresponding to the QF priority prio */
-    CHAR tx_name[5]; /* name passed to ThreadX queue and thread */
+    CHAR tx_name[4]; /* name passed to ThreadX queue and thread */
 
+    /* prepare the unique name of the form "Axx",
+    * where xx is a 2-digit QP priority of the Active Object
+    */
     tx_name[0] = 'A';
-    tx_name[1] = 'O';
-    tx_name[2] = '0' + (prio / 10U);
-    tx_name[3] = '0' + (prio % 10U);
-    tx_name[4] = '\0';
+    tx_name[1] = '0' + (prio / 10U);
+    tx_name[2] = '0' + (prio % 10U);
+    tx_name[3] = '\0';
 
     /* allege that the ThreadX queue is created successfully */
     Q_ALLEGE_ID(210,
@@ -116,7 +118,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     Q_ALLEGE_ID(220,
         tx_thread_create(
             &me->thread, /* ThreadX thread control block */
-            tx_name,     /* thread name */
+            tx_name,     /* unique thread name */
             &thread_function, /* thread function */
             (ULONG)me, /* thread parameter */
             stkSto,    /* stack start */

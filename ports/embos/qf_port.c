@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-03
+* Last updated for version 6.9.2a
+* Last updated on  2021-01-26
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -112,6 +112,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
+    char task_name[4]; /* task name to be passed to OS_CreateTaskEx() */
+
     /* create the embOS message box for the AO */
     OS_CreateMB(&me->eQueue,
                 (OS_U16)sizeof(QEvt *),
@@ -123,9 +125,17 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
+    /* prepare the unique task name of the form "Axx",
+    * where xx is a 2-digit QP priority of the Active Object
+    */
+    task_name[0] = 'A';
+    task_name[1] = '0' + (prio / 10U);
+    task_name[2] = '0' + (prio % 10U);
+    task_name[3] = '\0'; /* zero-terminate */
+
     /* create an embOS task for the AO */
     OS_CreateTaskEx(&me->thread,
-                    "AO",
+                    task_name,     /* the unique task name */
                     (OS_PRIO)prio, /* embOS uses the same numbering as QP */
                     &thread_function,
                     (void OS_STACKPTR *)stkSto,
