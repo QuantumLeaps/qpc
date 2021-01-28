@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QUTEST port for the EFM32-SLSTK3401A board
-* Last updated for version 6.9.2
-* Last updated on  2021-01-13
+* Last updated for version 6.9.2a
+* Last updated on  2021-01-28
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -97,6 +97,8 @@ uint8_t QS_onStartup(void const *arg) {
         0,                /* Auto CS Hold cycles */
         0                 /* Auto CS Setup cycles */
     };
+
+    (void)arg; /* unused parameter */
 
     QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
