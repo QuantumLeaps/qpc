@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EFM32-SLSTK3401A board, cooperative QV kernel
-* Last updated for version 6.9.1
-* Last updated on  2020-09-22
+* Last updated for version 6.9.2a
+* Last updated on  2021-01-31
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -137,6 +137,7 @@ void USART0_RX_IRQHandler(void) {
         uint32_t b = l_USART0->RXDATA;
         QS_RX_PUT(b);
     }
+    QV_ARM_ERRATUM_838869();
 }
 #else
 void USART0_RX_IRQHandler(void) {}
