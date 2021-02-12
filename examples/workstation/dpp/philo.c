@@ -34,6 +34,9 @@ typedef struct Philo {
 /* private: */
     QTimeEvt timeEvt;
 } Philo;
+
+/* public: */
+static void Philo_ctor(Philo * const me);
 extern Philo Philo_inst[N_PHILO];
 
 /* protected: */
@@ -57,8 +60,8 @@ static QState Philo_eating(Philo * const me, QEvt const * const e);
 #error qpc version 6.8.0 or higher required
 #endif
 /*.$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$define${AOs::AO_Philo[N_PHILO]} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::AO_Philo[N_PHILO]} ...............................................*/
+/*.$define${Shared::AO_Philo[N_PHILO]} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${Shared::AO_Philo[N_PHILO]} ............................................*/
 QActive * const AO_Philo[N_PHILO] = { /* "opaque" pointers to Philo AO */
     &Philo_inst[0].super,
     &Philo_inst[1].super,
@@ -66,22 +69,25 @@ QActive * const AO_Philo[N_PHILO] = { /* "opaque" pointers to Philo AO */
     &Philo_inst[3].super,
     &Philo_inst[4].super
 };
-/*.$enddef${AOs::AO_Philo[N_PHILO]} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$define${AOs::Philo_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Philo_ctor} ......................................................*/
-void Philo_ctor(void) {
+/*.$enddef${Shared::AO_Philo[N_PHILO]} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.$define${Shared::Philo_ctor_call} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${Shared::Philo_ctor_call} ..............................................*/
+void Philo_ctor_call(void) {
     uint8_t n;
-    Philo *me;
     for (n = 0U; n < N_PHILO; ++n) {
-        me = &Philo_inst[n];
-        QActive_ctor(&me->super, Q_STATE_CAST(&Philo_initial));
-        QTimeEvt_ctorX(&me->timeEvt, &me->super, TIMEOUT_SIG, 0U);
+        Philo_ctor(&Philo_inst[n]);
     }
 }
-/*.$enddef${AOs::Philo_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.$enddef${Shared::Philo_ctor_call} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*.$define${AOs::Philo} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Philo} ...........................................................*/
 Philo Philo_inst[N_PHILO];
+/*.${AOs::Philo::ctor} .....................................................*/
+static void Philo_ctor(Philo * const me) {
+    QActive_ctor(&me->super, Q_STATE_CAST(&Philo_initial));
+    QTimeEvt_ctorX(&me->timeEvt, &me->super, TIMEOUT_SIG, 0U);
+}
+
 /*.${AOs::Philo::SM} .......................................................*/
 static QState Philo_initial(Philo * const me, void const * const par) {
     /*.${AOs::Philo::SM::initial} */

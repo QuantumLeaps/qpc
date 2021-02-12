@@ -5,34 +5,77 @@
 NOTE: Requries QP6.</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
- <!--${Events}-->
- <package name="Events" stereotype="0x01">
-  <!--${Events::ObjectPosEvt}-->
+ <!--${Shared}-->
+ <package name="Shared" stereotype="0x01">
+  <!--${Shared::ObjectPosEvt}-->
   <class name="ObjectPosEvt" superclass="qpc::QEvt">
-   <!--${Events::ObjectPosEvt::x}-->
+   <!--${Shared::ObjectPosEvt::x}-->
    <attribute name="x" type="uint8_t" visibility="0x00" properties="0x00"/>
-   <!--${Events::ObjectPosEvt::y}-->
+   <!--${Shared::ObjectPosEvt::y}-->
    <attribute name="y" type="uint8_t" visibility="0x00" properties="0x00"/>
   </class>
-  <!--${Events::ObjectImageEvt}-->
+  <!--${Shared::ObjectImageEvt}-->
   <class name="ObjectImageEvt" superclass="qpc::QEvt">
-   <!--${Events::ObjectImageEvt::x}-->
+   <!--${Shared::ObjectImageEvt::x}-->
    <attribute name="x" type="uint8_t" visibility="0x00" properties="0x00"/>
-   <!--${Events::ObjectImageEvt::y}-->
+   <!--${Shared::ObjectImageEvt::y}-->
    <attribute name="y" type="int8_t" visibility="0x00" properties="0x00"/>
-   <!--${Events::ObjectImageEvt::bmp}-->
+   <!--${Shared::ObjectImageEvt::bmp}-->
    <attribute name="bmp" type="uint8_t" visibility="0x00" properties="0x00"/>
   </class>
-  <!--${Events::MineEvt}-->
+  <!--${Shared::MineEvt}-->
   <class name="MineEvt" superclass="qpc::QEvt">
-   <!--${Events::MineEvt::id}-->
+   <!--${Shared::MineEvt::id}-->
    <attribute name="id" type="uint8_t" visibility="0x00" properties="0x00"/>
   </class>
-  <!--${Events::ScoreEvt}-->
+  <!--${Shared::ScoreEvt}-->
   <class name="ScoreEvt" superclass="qpc::QEvt">
-   <!--${Events::ScoreEvt::score}-->
+   <!--${Shared::ScoreEvt::score}-->
    <attribute name="score" type="uint16_t" visibility="0x00" properties="0x00"/>
   </class>
+  <!--${Shared::AO_Tunnel}-->
+  <attribute name="AO_Tunnel" type="QActive * const" visibility="0x00" properties="0x00">
+   <documentation>/* opaque AO pointer */</documentation>
+   <code>= &amp;Tunnel_inst.super;</code>
+  </attribute>
+  <!--${Shared::AO_Ship}-->
+  <attribute name="AO_Ship" type="QActive * const" visibility="0x00" properties="0x00">
+   <documentation>/* opaque AO pointer */</documentation>
+   <code>= &amp;Ship_inst.super;</code>
+  </attribute>
+  <!--${Shared::AO_Missile}-->
+  <attribute name="AO_Missile" type="QActive * const" visibility="0x00" properties="0x00">
+   <documentation>/* opaque AO pointer */</documentation>
+   <code>= &amp;Missile_inst.super;</code>
+  </attribute>
+  <!--${Shared::Tunnel_ctor_call}-->
+  <operation name="Tunnel_ctor_call" type="void" visibility="0x00" properties="0x01">
+   <code>Tunnel_ctor(&amp;Tunnel_inst);</code>
+  </operation>
+  <!--${Shared::Ship_ctor_call}-->
+  <operation name="Ship_ctor_call" type="void" visibility="0x00" properties="0x01">
+   <code>Ship_ctor(&amp;Ship_inst);</code>
+  </operation>
+  <!--${Shared::Missile_ctor_call}-->
+  <operation name="Missile_ctor_call" type="void" visibility="0x00" properties="0x01">
+   <code>Missile_ctor(&amp;Missile_inst);</code>
+  </operation>
+  <!--${Shared::Mine1_ctor_call}-->
+  <operation name="Mine1_ctor_call" type="QHsm *" visibility="0x00" properties="0x01">
+   <!--${Shared::Mine1_ctor_call::id}-->
+   <parameter name="id" type="uint8_t"/>
+   <code>Q_REQUIRE(id &lt; GAME_MINES_MAX);
+Mine1_ctor(&amp;Mine1_inst[id]);
+return &amp;Mine1_inst[id].super;</code>
+  </operation>
+  <!--${Shared::Mine2_ctor_call}-->
+  <operation name="Mine2_ctor_call" type="QHsm *" visibility="0x00" properties="0x01">
+   <!--${Shared::Mine2_ctor_call::id}-->
+   <parameter name="id" type="uint8_t"/>
+   <code>Q_REQUIRE(id &lt; GAME_MINES_MAX);
+Mine2_ctor(&amp;Mine2_inst[id]);
+return &amp;Mine2_inst[id].super;</code>
+  </operation>
  </package>
  <!--${AOs}-->
  <package name="AOs" stereotype="0x02">
@@ -61,6 +104,10 @@ NOTE: Requries QP6.</documentation>
    <attribute name="wall_thickness_bottom" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${AOs::Tunnel::wall_gap}-->
    <attribute name="wall_gap" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Tunnel::inst}-->
+   <attribute name="inst" type="Tunnel" visibility="0x00" properties="0x01">
+    <documentation>static instance (Singleton)</documentation>
+   </attribute>
    <!--${AOs::Tunnel::advance}-->
    <operation name="advance" type="void" visibility="0x02" properties="0x00">
     <code>uint32_t rnd;
@@ -158,6 +205,21 @@ for (n = 0U; n &lt; GAME_MINES_MAX; ++n) {
     }
 }</code>
    </operation>
+   <!--${AOs::Tunnel::ctor}-->
+   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
+    <documentation>constructor</documentation>
+    <code>uint8_t n;
+QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Tunnel_initial));
+QTimeEvt_ctorX(&amp;me-&gt;blinkTimeEvt,  &amp;me-&gt;super, BLINK_TIMEOUT_SIG,  0U);
+QTimeEvt_ctorX(&amp;me-&gt;screenTimeEvt, &amp;me-&gt;super, SCREEN_TIMEOUT_SIG, 0U);
+for (n = 0; n &lt; GAME_MINES_MAX; ++n) {
+    me-&gt;mine1_pool[n] = Mine1_ctor_call(n); /* instantiate Mine1 */
+    me-&gt;mine2_pool[n] = Mine2_ctor_call(n); /* instantiate Mine2 */
+    me-&gt;mines[n] = (QHsm *)0; /* mine 'n' is unused */
+}
+me-&gt;last_mine_x = 0; /* the last mine at the right edge of the tunnel */
+me-&gt;last_mine_y = 0;</code>
+   </operation>
    <!--${AOs::Tunnel::SM}-->
    <statechart properties="0x03">
     <!--${AOs::Tunnel::SM::initial}-->
@@ -174,8 +236,8 @@ QActive_subscribe(&amp;me-&gt;super, PLAYER_TRIGGER_SIG);
 QActive_subscribe(&amp;me-&gt;super, PLAYER_QUIT_SIG);
 
 /* object dictionaries... */
-QS_OBJ_DICTIONARY(&amp;l_tunnel.blinkTimeEvt);
-QS_OBJ_DICTIONARY(&amp;l_tunnel.screenTimeEvt);
+QS_OBJ_DICTIONARY(&amp;Tunnel_inst.blinkTimeEvt);
+QS_OBJ_DICTIONARY(&amp;Tunnel_inst.screenTimeEvt);
 
 /* local signals... */
 QS_SIG_DICTIONARY(BLINK_TIMEOUT_SIG,  me);
@@ -539,6 +601,17 @@ QF_stop(); /* stop QF and cleanup */</entry>
    <attribute name="exp_ctr" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${AOs::Ship::score}-->
    <attribute name="score" type="uint16_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Ship::inst}-->
+   <attribute name="inst" type="Ship" visibility="0x00" properties="0x01">
+    <documentation>static instance (Singleton)</documentation>
+   </attribute>
+   <!--${AOs::Ship::ctor}-->
+   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
+    <documentation>constructor</documentation>
+    <code>QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Ship_initial));
+me-&gt;x = GAME_SHIP_X;
+me-&gt;y = (GAME_SHIP_Y &lt;&lt; 2);</code>
+   </operation>
    <!--${AOs::Ship::SM}-->
    <statechart properties="0x03">
     <!--${AOs::Ship::SM::initial}-->
@@ -706,6 +779,15 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)gameOver, me);</action>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${AOs::Missile::exp_ctr}-->
    <attribute name="exp_ctr" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Missile::inst}-->
+   <attribute name="inst" type="Missile" visibility="0x00" properties="0x01">
+    <documentation>static instance (Singleton)</documentation>
+   </attribute>
+   <!--${AOs::Missile::ctor}-->
+   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
+    <documentation>constructor</documentation>
+    <code>QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Missile_initial));</code>
+   </operation>
    <!--${AOs::Missile::SM}-->
    <statechart properties="0x03">
     <!--${AOs::Missile::SM::initial}-->
@@ -828,6 +910,16 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${AOs::Mine1::exp_ctr}-->
    <attribute name="exp_ctr" type="uint8_t" visibility="0x00" properties="0x00"/>
+   <!--${AOs::Mine1::inst[GAME_MINES_MAX]}-->
+   <attribute name="inst[GAME_MINES_MAX]" type="Mine1" visibility="0x00" properties="0x01">
+    <documentation>static instances (Singletons)</documentation>
+   </attribute>
+   <!--${AOs::Mine1::ctor}-->
+   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
+    <documentation>constructor</documentation>
+    <code>/* superclass' ctor */
+QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine1_initial));</code>
+   </operation>
    <!--${AOs::Mine1::SM}-->
    <statechart properties="0x01">
     <!--${AOs::Mine1::SM::initial}-->
@@ -835,11 +927,11 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
      <action>static uint8_t dict_sent;
 
 if (!dict_sent) {
-    QS_OBJ_DICTIONARY(&amp;l_mine1[0]); /* obj. dictionaries for Mine1 pool */
-    QS_OBJ_DICTIONARY(&amp;l_mine1[1]);
-    QS_OBJ_DICTIONARY(&amp;l_mine1[2]);
-    QS_OBJ_DICTIONARY(&amp;l_mine1[3]);
-    QS_OBJ_DICTIONARY(&amp;l_mine1[4]);
+    QS_OBJ_DICTIONARY(&amp;Mine1_inst[0]);
+    QS_OBJ_DICTIONARY(&amp;Mine1_inst[1]);
+    QS_OBJ_DICTIONARY(&amp;Mine1_inst[2]);
+    QS_OBJ_DICTIONARY(&amp;Mine1_inst[3]);
+    QS_OBJ_DICTIONARY(&amp;Mine1_inst[4]);
 
     QS_FUN_DICTIONARY(&amp;Mine1_initial);/*fun. dictionaries for Mine1 HSM */
     QS_FUN_DICTIONARY(&amp;Mine1_unused);
@@ -1014,6 +1106,16 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
    <attribute name="y" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${AOs::Mine2::exp_ctr}-->
    <attribute name="exp_ctr" type="uint8_t" visibility="0x00" properties="0x00"/>
+   <!--${AOs::Mine2::inst[GAME_MINES_MAX]}-->
+   <attribute name="inst[GAME_MINES_MAX]" type="Mine2" visibility="0x00" properties="0x01">
+    <documentation>static instances (Singletons)</documentation>
+   </attribute>
+   <!--${AOs::Mine2::ctor}-->
+   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
+    <documentation>constructor</documentation>
+    <code>/* superclass' ctor */
+QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine2_initial));</code>
+   </operation>
    <!--${AOs::Mine2::SM}-->
    <statechart properties="0x01">
     <!--${AOs::Mine2::SM::initial}-->
@@ -1022,11 +1124,11 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
 
 if (!dict_sent) {
     /* object dictionaries for Mine2 pool... */
-    QS_OBJ_DICTIONARY(&amp;l_mine2[0]);
-    QS_OBJ_DICTIONARY(&amp;l_mine2[1]);
-    QS_OBJ_DICTIONARY(&amp;l_mine2[2]);
-    QS_OBJ_DICTIONARY(&amp;l_mine2[3]);
-    QS_OBJ_DICTIONARY(&amp;l_mine2[4]);
+    QS_OBJ_DICTIONARY(&amp;Mine2_inst[0]);
+    QS_OBJ_DICTIONARY(&amp;Mine2_inst[1]);
+    QS_OBJ_DICTIONARY(&amp;Mine2_inst[2]);
+    QS_OBJ_DICTIONARY(&amp;Mine2_inst[3]);
+    QS_OBJ_DICTIONARY(&amp;Mine2_inst[4]);
 
     /*function dictionaries for Mine2 HSM... */
     QS_FUN_DICTIONARY(&amp;Mine2_initial);
@@ -1199,70 +1301,6 @@ QACTIVE_POST(AO_Tunnel, (QEvt *)oie, me);</action>
     <state_diagram size="53,68"/>
    </statechart>
   </class>
-  <!--${AOs::AO_Tunnel}-->
-  <attribute name="AO_Tunnel" type="QActive * const" visibility="0x00" properties="0x00">
-   <documentation>/* opaque AO pointer */</documentation>
-   <code>= &amp;l_tunnel.super;</code>
-  </attribute>
-  <!--${AOs::AO_Ship}-->
-  <attribute name="AO_Ship" type="QActive * const" visibility="0x00" properties="0x00">
-   <documentation>/* opaque AO pointer */</documentation>
-   <code>= &amp;l_ship.super;</code>
-  </attribute>
-  <!--${AOs::AO_Missile}-->
-  <attribute name="AO_Missile" type="QActive * const" visibility="0x00" properties="0x00">
-   <documentation>/* opaque AO pointer */</documentation>
-   <code>= &amp;l_missile.super;</code>
-  </attribute>
-  <!--${AOs::Tunnel_ctor}-->
-  <operation name="Tunnel_ctor" type="void" visibility="0x00" properties="0x01">
-   <code>uint8_t n;
-Tunnel *me = &amp;l_tunnel;
-QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Tunnel_initial));
-QTimeEvt_ctorX(&amp;me-&gt;blinkTimeEvt,  &amp;me-&gt;super, BLINK_TIMEOUT_SIG,  0U);
-QTimeEvt_ctorX(&amp;me-&gt;screenTimeEvt, &amp;me-&gt;super, SCREEN_TIMEOUT_SIG, 0U);
-for (n = 0; n &lt; GAME_MINES_MAX; ++n) {
-    me-&gt;mine1_pool[n] = Mine1_ctor(n); /* instantiate Mine1 in the pool */
-    me-&gt;mine2_pool[n] = Mine2_ctor(n); /* instantiate Mine2 in the pool */
-    me-&gt;mines[n] = (QHsm *)0; /* mine 'n' is unused */
-}
-me-&gt;last_mine_x = 0; /* the last mine at the right edge of the tunnel */
-me-&gt;last_mine_y = 0;</code>
-  </operation>
-  <!--${AOs::Ship_ctor}-->
-  <operation name="Ship_ctor" type="void" visibility="0x00" properties="0x01">
-   <code>Ship *me = &amp;l_ship;
-QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Ship_initial));
-me-&gt;x = GAME_SHIP_X;
-me-&gt;y = (GAME_SHIP_Y &lt;&lt; 2);</code>
-  </operation>
-  <!--${AOs::Missile_ctor}-->
-  <operation name="Missile_ctor" type="void" visibility="0x00" properties="0x01">
-   <code>Missile *me = &amp;l_missile;
-QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Missile_initial));</code>
-  </operation>
-  <!--${AOs::Mine1_ctor}-->
-  <operation name="Mine1_ctor" type="QHsm *" visibility="0x00" properties="0x01">
-   <!--${AOs::Mine1_ctor::id}-->
-   <parameter name="id" type="uint8_t"/>
-   <code>Mine1 *me;
-Q_REQUIRE(id &lt; GAME_MINES_MAX);
-me = &amp;l_mine1[id];
-/* superclass' ctor */
-QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine1_initial));
-return (QHsm *)me;</code>
-  </operation>
-  <!--${AOs::Mine2_ctor}-->
-  <operation name="Mine2_ctor" type="QHsm *" visibility="0x00" properties="0x01">
-   <!--${AOs::Mine2_ctor::id}-->
-   <parameter name="id" type="uint8_t"/>
-   <code>Mine2 *me;
-Q_REQUIRE(id &lt; GAME_MINES_MAX);
-me = &amp;l_mine2[id];
-/* superclass' ctor */
-QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Mine2_initial));
-return (QHsm *)me;</code>
-  </operation>
  </package>
  <!--${.}-->
  <directory name=".">
@@ -1303,11 +1341,6 @@ enum GameSignals { /* signals used in the game */
     MAX_SIG /* the last signal (keep always last) */
 };
 
-$declare${Events::ObjectPosEvt}
-$declare${Events::ObjectImageEvt}
-$declare${Events::MineEvt}
-$declare${Events::ScoreEvt}
-
 #define GAME_TUNNEL_WIDTH          BSP_SCREEN_WIDTH
 #define GAME_TUNNEL_HEIGHT         (BSP_SCREEN_HEIGHT - 10U)
 #define GAME_MINES_MAX             5U
@@ -1332,19 +1365,8 @@ enum GameBitmapIds {
     MAX_BMP
 };
 
-/* active objects' &quot;constructors&quot; */
-$declare${AOs::Tunnel_ctor}
-$declare${AOs::Ship_ctor}
-$declare${AOs::Missile_ctor}
-
-/* instantiation of the Mines orthogonal components */
-$declare${AOs::Mine1_ctor}
-$declare${AOs::Mine2_ctor}
-
-/* opaque pointers to active objects in the application */
-$declare${AOs::AO_Tunnel}
-$declare${AOs::AO_Ship}
-$declare${AOs::AO_Missile}
+/* declare shared facilities */
+$declare${Shared}
 
 #endif  /* GAME_H */
 </text>
@@ -1359,13 +1381,12 @@ $declare${AOs::AO_Missile}
 
 /* local objects -----------------------------------------------------------*/
 $declare${AOs::Missile}
-static Missile l_missile; /* the sole instance of the Missile active object */
 
 /* Public-scope objects ----------------------------------------------------*/
-$define${AOs::AO_Missile}
+$define${Shared::AO_Missile}
 
 /* Active object definition ------------------------------------------------*/
-$define${AOs::Missile_ctor}
+$define${Shared::Missile_ctor_call}
 $define${AOs::Missile}</text>
   </file>
   <!--${.::ship.c}-->
@@ -1382,14 +1403,11 @@ $define${AOs::Missile}</text>
 /* encapsulated delcaration of the Ship active object ----------------------*/
 $declare${AOs::Ship}
 
-/* local objects -----------------------------------------------------------*/
-static Ship l_ship; /* the sole instance of the Ship active object */
-
 /* Public-scope objects ----------------------------------------------------*/
-$define${AOs::AO_Ship}
+$define${Shared::AO_Ship}
 
 /* Active object definition ------------------------------------------------*/
-$define${AOs::Ship_ctor}
+$define${Shared::Ship_ctor_call}
 $define${AOs::Ship}</text>
   </file>
   <!--${.::tunnel.c}-->
@@ -1402,13 +1420,12 @@ Q_DEFINE_THIS_FILE
 
 /* local objects -----------------------------------------------------------*/
 $declare${AOs::Tunnel}
-static Tunnel l_tunnel; /* the sole instance of the Tunnel active object */
 
 /* Public-scope objects ----------------------------------------------------*/
-$define${AOs::AO_Tunnel}
+$define${Shared::AO_Tunnel}
 
 /* Active object definition ================================================*/
-$define${AOs::Tunnel_ctor}
+$define${Shared::Tunnel_ctor_call}
 $define${AOs::Tunnel}</text>
   </file>
   <!--${.::mine1.c}-->
@@ -1422,14 +1439,11 @@ Q_DEFINE_THIS_FILE
 /* encapsulated delcaration of the Mine1 HSM -------------------------------*/
 $declare(AOs::Mine1)
 
-/* local objects -----------------------------------------------------------*/
-static Mine1 l_mine1[GAME_MINES_MAX]; /* a pool of type-1 mines */
-
 /* helper macro to provide the ID of this mine */
-#define MINE_ID(me_)    ((uint8_t)((me_) - l_mine1))
+#define MINE_ID(me_)    ((uint8_t)((me_) - &amp;Mine1_inst[0]))
 
 /* Mine1 class definition --------------------------------------------------*/
-$define(AOs::Mine1_ctor)
+$define(Shared::Mine1_ctor_call)
 $define(AOs::Mine1)</text>
   </file>
   <!--${.::mine2.c}-->
@@ -1443,14 +1457,11 @@ Q_DEFINE_THIS_FILE
 /* encapsulated delcaration of the Mine2 HSM -------------------------------*/
 $declare(AOs::Mine2)
 
-/* local objects -----------------------------------------------------------*/
-static Mine2 l_mine2[GAME_MINES_MAX]; /* a pool of type-2 mines */
-
 /* helper macro to provide the ID of this mine */
-#define MINE_ID(me_)    ((uint8_t)((me_) - l_mine2))
+#define MINE_ID(me_)    ((uint8_t)((me_) - &amp;Mine2_inst[0]))
 
 /* Mine2 class definition --------------------------------------------------*/
-$define(AOs::Mine2_ctor)
+$define(Shared::Mine2_ctor_call)
 $define(AOs::Mine2)</text>
   </file>
  </directory>

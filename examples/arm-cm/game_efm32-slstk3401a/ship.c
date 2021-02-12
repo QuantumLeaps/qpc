@@ -28,7 +28,7 @@
 /* encapsulated delcaration of the Ship active object ----------------------*/
 /*.$declare${AOs::Ship} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Ship} ............................................................*/
-typedef struct {
+typedef struct Ship {
 /* protected: */
     QActive super;
 
@@ -37,7 +37,13 @@ typedef struct {
     uint16_t y;
     uint8_t exp_ctr;
     uint16_t score;
+
+/* public: */
 } Ship;
+
+/* public: */
+static void Ship_ctor(Ship * const me);
+extern Ship Ship_inst;
 
 /* protected: */
 static QState Ship_initial(Ship * const me, void const * const par);
@@ -47,9 +53,6 @@ static QState Ship_flying(Ship * const me, QEvt const * const e);
 static QState Ship_exploding(Ship * const me, QEvt const * const e);
 /*.$enddecl${AOs::Ship} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
-/* local objects -----------------------------------------------------------*/
-static Ship l_ship; /* the sole instance of the Ship active object */
-
 /* Public-scope objects ----------------------------------------------------*/
 /*.$skip${QP_VERSION} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*. Check for the minimum required QP version */
@@ -57,25 +60,30 @@ static Ship l_ship; /* the sole instance of the Ship active object */
 #error qpc version 6.8.0 or higher required
 #endif
 /*.$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$define${AOs::AO_Ship} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.$define${Shared::AO_Ship} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /* opaque AO pointer */
-/*.${AOs::AO_Ship} .........................................................*/
-QActive * const AO_Ship = &l_ship.super;
-/*.$enddef${AOs::AO_Ship} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.${Shared::AO_Ship} ......................................................*/
+QActive * const AO_Ship = &Ship_inst.super;
+/*.$enddef${Shared::AO_Ship} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 /* Active object definition ------------------------------------------------*/
-/*.$define${AOs::Ship_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Ship_ctor} .......................................................*/
-void Ship_ctor(void) {
-    Ship *me = &l_ship;
+/*.$define${Shared::Ship_ctor_call} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${Shared::Ship_ctor_call} ...............................................*/
+void Ship_ctor_call(void) {
+    Ship_ctor(&Ship_inst);
+}
+/*.$enddef${Shared::Ship_ctor_call} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.$define${AOs::Ship} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${AOs::Ship} ............................................................*/
+Ship Ship_inst;
+/*.${AOs::Ship::ctor} ......................................................*/
+static void Ship_ctor(Ship * const me) {
     QActive_ctor(&me->super, Q_STATE_CAST(&Ship_initial));
     me->x = GAME_SHIP_X;
     me->y = (GAME_SHIP_Y << 2);
 }
-/*.$enddef${AOs::Ship_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$define${AOs::Ship} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Ship} ............................................................*/
+
 /*.${AOs::Ship::SM} ........................................................*/
 static QState Ship_initial(Ship * const me, void const * const par) {
     /*.${AOs::Ship::SM::initial} */

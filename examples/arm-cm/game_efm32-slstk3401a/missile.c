@@ -25,7 +25,7 @@
 /* local objects -----------------------------------------------------------*/
 /*.$declare${AOs::Missile} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Missile} .........................................................*/
-typedef struct {
+typedef struct Missile {
 /* protected: */
     QActive super;
 
@@ -33,7 +33,13 @@ typedef struct {
     uint8_t x;
     uint8_t y;
     uint8_t exp_ctr;
+
+/* public: */
 } Missile;
+
+/* public: */
+static void Missile_ctor(Missile * const me);
+extern Missile Missile_inst;
 
 /* protected: */
 static QState Missile_initial(Missile * const me, void const * const par);
@@ -41,7 +47,6 @@ static QState Missile_armed(Missile * const me, QEvt const * const e);
 static QState Missile_flying(Missile * const me, QEvt const * const e);
 static QState Missile_exploding(Missile * const me, QEvt const * const e);
 /*.$enddecl${AOs::Missile} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-static Missile l_missile; /* the sole instance of the Missile active object */
 
 /* Public-scope objects ----------------------------------------------------*/
 /*.$skip${QP_VERSION} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
@@ -50,23 +55,28 @@ static Missile l_missile; /* the sole instance of the Missile active object */
 #error qpc version 6.8.0 or higher required
 #endif
 /*.$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$define${AOs::AO_Missile} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.$define${Shared::AO_Missile} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /* opaque AO pointer */
-/*.${AOs::AO_Missile} ......................................................*/
-QActive * const AO_Missile = &l_missile.super;
-/*.$enddef${AOs::AO_Missile} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.${Shared::AO_Missile} ...................................................*/
+QActive * const AO_Missile = &Missile_inst.super;
+/*.$enddef${Shared::AO_Missile} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 /* Active object definition ------------------------------------------------*/
-/*.$define${AOs::Missile_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Missile_ctor} ....................................................*/
-void Missile_ctor(void) {
-    Missile *me = &l_missile;
-    QActive_ctor(&me->super, Q_STATE_CAST(&Missile_initial));
+/*.$define${Shared::Missile_ctor_call} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${Shared::Missile_ctor_call} ............................................*/
+void Missile_ctor_call(void) {
+    Missile_ctor(&Missile_inst);
 }
-/*.$enddef${AOs::Missile_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.$enddef${Shared::Missile_ctor_call} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*.$define${AOs::Missile} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Missile} .........................................................*/
+Missile Missile_inst;
+/*.${AOs::Missile::ctor} ...................................................*/
+static void Missile_ctor(Missile * const me) {
+    QActive_ctor(&me->super, Q_STATE_CAST(&Missile_initial));
+}
+
 /*.${AOs::Missile::SM} .....................................................*/
 static QState Missile_initial(Missile * const me, void const * const par) {
     /*.${AOs::Missile::SM::initial} */

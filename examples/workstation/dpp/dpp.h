@@ -32,8 +32,11 @@ enum DPPSignals {
     MAX_SIG         /* the last signal */
 };
 
-/*.$declare${Events::TableEvt} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${Events::TableEvt} .....................................................*/
+/* number of philosophers */
+#define N_PHILO ((uint8_t)5)
+
+/*.$declare${Shared} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${Shared::TableEvt} .....................................................*/
 typedef struct {
 /* protected: */
     QEvt super;
@@ -41,26 +44,13 @@ typedef struct {
 /* public: */
     uint8_t philoNum;
 } TableEvt;
-/*.$enddecl${Events::TableEvt} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-
-/* number of philosophers */
-#define N_PHILO ((uint8_t)5)
-
-/*.$declare${AOs::Philo_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Philo_ctor} ......................................................*/
-void Philo_ctor(void);
-/*.$enddecl${AOs::Philo_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$declare${AOs::AO_Philo[N_PHILO]} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 extern QActive * const AO_Philo[N_PHILO];
-/*.$enddecl${AOs::AO_Philo[N_PHILO]} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-
-/*.$declare${AOs::Table_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Table_ctor} ......................................................*/
-void Table_ctor(void);
-/*.$enddecl${AOs::Table_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$declare${AOs::AO_Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 extern QActive * const AO_Table;
-/*.$enddecl${AOs::AO_Table} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.${Shared::Philo_ctor_call} ..............................................*/
+void Philo_ctor_call(void);
+/*.${Shared::Table_ctor_call} ..............................................*/
+void Table_ctor_call(void);
+/*.$enddecl${Shared} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 #ifdef QXK_H
     void Test1_ctor(void);

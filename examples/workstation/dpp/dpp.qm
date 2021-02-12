@@ -3,13 +3,38 @@
  <documentation>Dining Philosopher Problem example</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
- <!--${Events}-->
- <package name="Events" stereotype="0x01">
-  <!--${Events::TableEvt}-->
+ <!--${Shared}-->
+ <package name="Shared" stereotype="0x01">
+  <!--${Shared::TableEvt}-->
   <class name="TableEvt" superclass="qpc::QEvt">
-   <!--${Events::TableEvt::philoNum}-->
+   <!--${Shared::TableEvt::philoNum}-->
    <attribute name="philoNum" type="uint8_t" visibility="0x00" properties="0x00"/>
   </class>
+  <!--${Shared::AO_Philo[N_PHILO]}-->
+  <attribute name="AO_Philo[N_PHILO]" type="QActive * const" visibility="0x00" properties="0x00">
+   <code>= { /* &quot;opaque&quot; pointers to Philo AO */
+    &amp;Philo_inst[0].super,
+    &amp;Philo_inst[1].super,
+    &amp;Philo_inst[2].super,
+    &amp;Philo_inst[3].super,
+    &amp;Philo_inst[4].super
+};</code>
+  </attribute>
+  <!--${Shared::AO_Table}-->
+  <attribute name="AO_Table" type="QActive * const" visibility="0x00" properties="0x00">
+   <code>= &amp;Table_inst.super; /* &quot;opaque&quot; pointer to Table AO */</code>
+  </attribute>
+  <!--${Shared::Philo_ctor_call}-->
+  <operation name="Philo_ctor_call" type="void" visibility="0x00" properties="0x00">
+   <code>uint8_t n;
+for (n = 0U; n &lt; N_PHILO; ++n) {
+    Philo_ctor(&amp;Philo_inst[n]);
+}</code>
+  </operation>
+  <!--${Shared::Table_ctor_call}-->
+  <operation name="Table_ctor_call" type="void" visibility="0x00" properties="0x00">
+   <code>Table_ctor(&amp;Table_inst);</code>
+  </operation>
  </package>
  <!--${AOs}-->
  <package name="AOs" stereotype="0x02">
@@ -21,6 +46,12 @@
    </attribute>
    <!--${AOs::Philo::timeEvt}-->
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Philo::ctor}-->
+   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
+    <documentation>constructor</documentation>
+    <code>QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Philo_initial));
+QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, TIMEOUT_SIG, 0U);</code>
+   </operation>
    <!--${AOs::Philo::SM}-->
    <statechart properties="0x01">
     <!--${AOs::Philo::SM::initial}-->
@@ -152,6 +183,17 @@ Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
    <attribute name="fork[N_PHILO]" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${AOs::Table::isHungry[N_PHILO]}-->
    <attribute name="isHungry[N_PHILO]" type="uint8_t" visibility="0x02" properties="0x00"/>
+   <!--${AOs::Table::ctor}-->
+   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
+    <documentation>constructor</documentation>
+    <code>uint8_t n;
+
+QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Table_initial));
+for (n = 0U; n &lt; N_PHILO; ++n) {
+    me-&gt;fork[n] = FREE;
+    me-&gt;isHungry[n] = 0U;
+}</code>
+   </operation>
    <!--${AOs::Table::SM}-->
    <statechart properties="0x03">
     <!--${AOs::Table::SM::initial}-->
@@ -362,42 +404,6 @@ me-&gt;fork[n] = FREE;</action>
     <state_diagram size="49,69"/>
    </statechart>
   </class>
-  <!--${AOs::AO_Philo[N_PHILO]}-->
-  <attribute name="AO_Philo[N_PHILO]" type="QActive * const" visibility="0x00" properties="0x00">
-   <code>= { /* &quot;opaque&quot; pointers to Philo AO */
-    &amp;Philo_inst[0].super,
-    &amp;Philo_inst[1].super,
-    &amp;Philo_inst[2].super,
-    &amp;Philo_inst[3].super,
-    &amp;Philo_inst[4].super
-};</code>
-  </attribute>
-  <!--${AOs::AO_Table}-->
-  <attribute name="AO_Table" type="QActive * const" visibility="0x00" properties="0x00">
-   <code>= &amp;Table_inst.super; /* &quot;opaque&quot; pointer to Table AO */</code>
-  </attribute>
-  <!--${AOs::Philo_ctor}-->
-  <operation name="Philo_ctor" type="void" visibility="0x00" properties="0x00">
-   <code>uint8_t n;
-Philo *me;
-for (n = 0U; n &lt; N_PHILO; ++n) {
-    me = &amp;Philo_inst[n];
-    QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Philo_initial));
-    QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, TIMEOUT_SIG, 0U);
-}</code>
-  </operation>
-  <!--${AOs::Table_ctor}-->
-  <operation name="Table_ctor" type="void" visibility="0x00" properties="0x00">
-   <code>Table *me = &amp;Table_inst;
-uint8_t n;
-
-QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Table_initial));
-
-for (n = 0U; n &lt; N_PHILO; ++n) {
-    me-&gt;fork[n] = FREE;
-    me-&gt;isHungry[n] = 0U;
-}</code>
-  </operation>
  </package>
  <!--${.}-->
  <directory name=".">
@@ -419,16 +425,10 @@ enum DPPSignals {
     MAX_SIG         /* the last signal */
 };
 
-$declare(Events::TableEvt)
-
 /* number of philosophers */
 #define N_PHILO ((uint8_t)5)
 
-$declare(AOs::Philo_ctor)
-$declare(AOs::AO_Philo[N_PHILO])
-
-$declare(AOs::Table_ctor)
-$declare(AOs::AO_Table)
+$declare${Shared}
 
 #ifdef QXK_H
     void Test1_ctor(void);
@@ -459,8 +459,8 @@ $declare${AOs::Philo}
 /* helper macro to provide the ID of Philo &quot;me_&quot; */
 #define PHILO_ID(me_)    ((uint8_t)((me_) - &amp;Philo_inst[0]))
 
-$define${AOs::AO_Philo[N_PHILO]}
-$define${AOs::Philo_ctor}
+$define${Shared::AO_Philo[N_PHILO]}
+$define${Shared::Philo_ctor_call}
 $define${AOs::Philo}</text>
   </file>
   <!--${.::table.c}-->
@@ -479,8 +479,8 @@ $declare${AOs::Table}
 #define FREE      ((uint8_t)0)
 #define USED      ((uint8_t)1)
 
-$define${AOs::AO_Table}
-$define${AOs::Table_ctor}
+$define${Shared::AO_Table}
+$define${Shared::Table_ctor_call}
 $define${AOs::Table}</text>
   </file>
  </directory>

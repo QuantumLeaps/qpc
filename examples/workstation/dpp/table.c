@@ -35,6 +35,9 @@ typedef struct Table {
     uint8_t fork[N_PHILO];
     uint8_t isHungry[N_PHILO];
 } Table;
+
+/* public: */
+static void Table_ctor(Table * const me);
 extern Table Table_inst;
 
 /* protected: */
@@ -55,27 +58,30 @@ static QState Table_paused(Table * const me, QEvt const * const e);
 #error qpc version 6.8.0 or higher required
 #endif
 /*.$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$define${AOs::AO_Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::AO_Table} ........................................................*/
+/*.$define${Shared::AO_Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${Shared::AO_Table} .....................................................*/
 QActive * const AO_Table = &Table_inst.super; /* "opaque" pointer to Table AO */
-/*.$enddef${AOs::AO_Table} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$define${AOs::Table_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Table_ctor} ......................................................*/
-void Table_ctor(void) {
-    Table *me = &Table_inst;
+/*.$enddef${Shared::AO_Table} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.$define${Shared::Table_ctor_call} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${Shared::Table_ctor_call} ..............................................*/
+void Table_ctor_call(void) {
+    Table_ctor(&Table_inst);
+}
+/*.$enddef${Shared::Table_ctor_call} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.$define${AOs::Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${AOs::Table} ...........................................................*/
+Table Table_inst;
+/*.${AOs::Table::ctor} .....................................................*/
+static void Table_ctor(Table * const me) {
     uint8_t n;
 
     QActive_ctor(&me->super, Q_STATE_CAST(&Table_initial));
-
     for (n = 0U; n < N_PHILO; ++n) {
         me->fork[n] = FREE;
         me->isHungry[n] = 0U;
     }
 }
-/*.$enddef${AOs::Table_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$define${AOs::Table} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Table} ...........................................................*/
-Table Table_inst;
+
 /*.${AOs::Table::SM} .......................................................*/
 static QState Table_initial(Table * const me, void const * const par) {
     /*.${AOs::Table::SM::initial} */

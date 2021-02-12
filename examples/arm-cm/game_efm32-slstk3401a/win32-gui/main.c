@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example for Windows
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.9.2
+* Last updated on  2021-02-12
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,13 +48,7 @@ int main() {
     static QF_MPOOL_EL(QEvt) smlPoolSto[10*WIN_FUDGE_FACTOR];
     static QF_MPOOL_EL(ObjectImageEvt)
            medPoolSto[(2*GAME_MINES_MAX + 10)*WIN_FUDGE_FACTOR];
-
     static QSubscrList subscrSto[MAX_PUB_SIG];
-
-    /* explicitly invoke the active objects' ctors... */
-    Missile_ctor();
-    Ship_ctor();
-    Tunnel_ctor();
 
     QF_init();  /* initialize the framework and the underlying RT kernel */
     BSP_init(); /* initialize the Board Support Package */
@@ -78,16 +72,19 @@ int main() {
     QS_SIG_DICTIONARY(GAME_OVER_SIG,      (void *)0);
 
     /* start the active objects... */
+    Tunnel_ctor_call();
     QACTIVE_START(AO_Tunnel,
                   1U,                /* QP priority */
                   tunnelQueueSto,  Q_DIM(tunnelQueueSto), /* evt queue */
                   (void *)0, 0U,     /* no per-thread stack */
                   (QEvt *)0);        /* no initialization event */
+    Ship_ctor_call();
     QACTIVE_START(AO_Ship,
                   2U,                /* QP priority */
                   shipQueueSto,    Q_DIM(shipQueueSto), /* evt queue */
                   (void *)0, 0U,     /* no per-thread stack */
                   (QEvt *)0);        /* no initialization event */
+    Missile_ctor_call();
     QACTIVE_START(AO_Missile,
                   3U,                /* QP priority */
                   missileQueueSto, Q_DIM(missileQueueSto), /* evt queue */

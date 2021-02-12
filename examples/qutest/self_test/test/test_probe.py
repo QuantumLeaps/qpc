@@ -1,20 +1,15 @@
 # test-script for QUTest unit testing harness
 # see https://www.state-machine.com/qtools/qutest.html
 
-# preamble...
-def on_setup():
-    expect("@timestamp FIXTURE_SETUP")
-
-def on_teardown():
-    expect("@timestamp FIXTURE_TEARDOWN")
+include("test_include.pyi")
 
 # tests...
 test("Single Test Probe")
-command("COMMAND_X")
+command_x()
 expect("@timestamp COMMAND_X 0")
 expect("@timestamp Trg-Done QS_RX_COMMAND")
 probe("myFun", 1)
-command("COMMAND_X")
+command_x()
 expect("@timestamp TstProbe Fun=myFun,Data=1")
 expect("@timestamp COMMAND_X 1")
 expect("@timestamp Trg-Done QS_RX_COMMAND")

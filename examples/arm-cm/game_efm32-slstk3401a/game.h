@@ -51,50 +51,6 @@ enum GameSignals { /* signals used in the game */
     MAX_SIG /* the last signal (keep always last) */
 };
 
-/*.$declare${Events::ObjectPosEvt} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${Events::ObjectPosEvt} .................................................*/
-typedef struct {
-/* protected: */
-    QEvt super;
-
-/* public: */
-    uint8_t x;
-    uint8_t y;
-} ObjectPosEvt;
-/*.$enddecl${Events::ObjectPosEvt} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$declare${Events::ObjectImageEvt} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${Events::ObjectImageEvt} ...............................................*/
-typedef struct {
-/* protected: */
-    QEvt super;
-
-/* public: */
-    uint8_t x;
-    int8_t y;
-    uint8_t bmp;
-} ObjectImageEvt;
-/*.$enddecl${Events::ObjectImageEvt} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$declare${Events::MineEvt} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${Events::MineEvt} ......................................................*/
-typedef struct {
-/* protected: */
-    QEvt super;
-
-/* public: */
-    uint8_t id;
-} MineEvt;
-/*.$enddecl${Events::MineEvt} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$declare${Events::ScoreEvt} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${Events::ScoreEvt} .....................................................*/
-typedef struct {
-/* protected: */
-    QEvt super;
-
-/* public: */
-    uint16_t score;
-} ScoreEvt;
-/*.$enddecl${Events::ScoreEvt} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-
 #define GAME_TUNNEL_WIDTH          BSP_SCREEN_WIDTH
 #define GAME_TUNNEL_HEIGHT         (BSP_SCREEN_HEIGHT - 10U)
 #define GAME_MINES_MAX             5U
@@ -119,45 +75,62 @@ enum GameBitmapIds {
     MAX_BMP
 };
 
-/* active objects' "constructors" */
-/*.$declare${AOs::Tunnel_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Tunnel_ctor} .....................................................*/
-void Tunnel_ctor(void);
-/*.$enddecl${AOs::Tunnel_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$declare${AOs::Ship_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Ship_ctor} .......................................................*/
-void Ship_ctor(void);
-/*.$enddecl${AOs::Ship_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$declare${AOs::Missile_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Missile_ctor} ....................................................*/
-void Missile_ctor(void);
-/*.$enddecl${AOs::Missile_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/* declare shared facilities */
+/*.$declare${Shared} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${Shared::ObjectPosEvt} .................................................*/
+typedef struct {
+/* protected: */
+    QEvt super;
 
-/* instantiation of the Mines orthogonal components */
-/*.$declare${AOs::Mine1_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Mine1_ctor} ......................................................*/
-QHsm * Mine1_ctor(uint8_t id);
-/*.$enddecl${AOs::Mine1_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$declare${AOs::Mine2_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Mine2_ctor} ......................................................*/
-QHsm * Mine2_ctor(uint8_t id);
-/*.$enddecl${AOs::Mine2_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/* public: */
+    uint8_t x;
+    uint8_t y;
+} ObjectPosEvt;
+/*.${Shared::ObjectImageEvt} ...............................................*/
+typedef struct {
+/* protected: */
+    QEvt super;
 
-/* opaque pointers to active objects in the application */
-/*.$declare${AOs::AO_Tunnel} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/* public: */
+    uint8_t x;
+    int8_t y;
+    uint8_t bmp;
+} ObjectImageEvt;
+/*.${Shared::MineEvt} ......................................................*/
+typedef struct {
+/* protected: */
+    QEvt super;
+
+/* public: */
+    uint8_t id;
+} MineEvt;
+/*.${Shared::ScoreEvt} .....................................................*/
+typedef struct {
+/* protected: */
+    QEvt super;
+
+/* public: */
+    uint16_t score;
+} ScoreEvt;
 
 /* opaque AO pointer */
 extern QActive * const AO_Tunnel;
-/*.$enddecl${AOs::AO_Tunnel} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$declare${AOs::AO_Ship} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /* opaque AO pointer */
 extern QActive * const AO_Ship;
-/*.$enddecl${AOs::AO_Ship} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$declare${AOs::AO_Missile} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /* opaque AO pointer */
 extern QActive * const AO_Missile;
-/*.$enddecl${AOs::AO_Missile} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.${Shared::Tunnel_ctor_call} .............................................*/
+void Tunnel_ctor_call(void);
+/*.${Shared::Ship_ctor_call} ...............................................*/
+void Ship_ctor_call(void);
+/*.${Shared::Missile_ctor_call} ............................................*/
+void Missile_ctor_call(void);
+/*.${Shared::Mine1_ctor_call} ..............................................*/
+QHsm * Mine1_ctor_call(uint8_t id);
+/*.${Shared::Mine2_ctor_call} ..............................................*/
+QHsm * Mine2_ctor_call(uint8_t id);
+/*.$enddecl${Shared} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 #endif  /* GAME_H */

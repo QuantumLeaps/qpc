@@ -1,17 +1,11 @@
 # test-script for QUTest unit testing harness
 # see https://www.state-machine.com/qtools/qutest.html
 
-# preamble...
-def on_setup():
-    expect("@timestamp FIXTURE_SETUP")
-
-def on_teardown():
-    expect("@timestamp FIXTURE_TEARDOWN")
-
+include("test_include.pyi")
 
 # tests...
 test("Peek/Poke/Fill uint8_t")
-current_obj(OBJ_AP,"buffer")
+curr_ap_obj("buffer")
 fill(0,1,100,0x1A)
 peek(0,1,5)
 expect("@timestamp Trg-Peek Offs=0,Size=1,Num=5,Data=<1A,1A,1A,1A,1A>")

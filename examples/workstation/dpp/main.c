@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example for Windows
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.9.2
+* Last updated on  2021-02-10
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -48,8 +48,6 @@ int main(int argc, char *argv[]) {
     static QF_MPOOL_EL(TableEvt) smlPoolSto[2*N_PHILO*WIN_FUDGE_FACTOR];
     uint8_t n;
 
-    Philo_ctor(); /* instantiate all Philosopher active objects */
-    Table_ctor(); /* instantiate the Table active object */
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init(argc, argv); /* initialize the Board Support Package */
@@ -61,6 +59,7 @@ int main(int argc, char *argv[]) {
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     /* start the active objects... */
+    Philo_ctor_call(); /* call all Philosopher ctors */
     for (n = 0U; n < N_PHILO; ++n) {
         QACTIVE_START(AO_Philo[n],           /* AO to start */
                       (uint_fast8_t)(n + 1), /* QP priority of the AO */
@@ -70,6 +69,7 @@ int main(int argc, char *argv[]) {
                       0U,                    /* size of the stack [bytes] */
                      (QEvt *)0);             /* initialization event */
     }
+    Table_ctor_call(); /* call Table ctor */
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */

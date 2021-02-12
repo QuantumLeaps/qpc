@@ -25,7 +25,7 @@ Q_DEFINE_THIS_FILE
 /* local objects -----------------------------------------------------------*/
 /*.$declare${AOs::Tunnel} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Tunnel} ..........................................................*/
-typedef struct {
+typedef struct Tunnel {
 /* protected: */
     QActive super;
 
@@ -41,12 +41,18 @@ typedef struct {
     uint8_t wall_thickness_top;
     uint8_t wall_thickness_bottom;
     uint8_t wall_gap;
+
+/* public: */
 } Tunnel;
 
 /* private: */
 static void Tunnel_advance(Tunnel * const me);
 static void Tunnel_plantMine(Tunnel * const me);
 static void Tunnel_dispatchToAllMines(Tunnel * const me, QEvt const * e);
+
+/* public: */
+static void Tunnel_ctor(Tunnel * const me);
+extern Tunnel Tunnel_inst;
 
 /* protected: */
 static QState Tunnel_initial(Tunnel * const me, void const * const par);
@@ -60,7 +66,6 @@ static QState Tunnel_screen_saver_hide(Tunnel * const me, QEvt const * const e);
 static QState Tunnel_screen_saver_show(Tunnel * const me, QEvt const * const e);
 static QState Tunnel_final(Tunnel * const me, QEvt const * const e);
 /*.$enddecl${AOs::Tunnel} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-static Tunnel l_tunnel; /* the sole instance of the Tunnel active object */
 
 /* Public-scope objects ----------------------------------------------------*/
 /*.$skip${QP_VERSION} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
@@ -69,33 +74,23 @@ static Tunnel l_tunnel; /* the sole instance of the Tunnel active object */
 #error qpc version 6.8.0 or higher required
 #endif
 /*.$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$define${AOs::AO_Tunnel} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.$define${Shared::AO_Tunnel} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /* opaque AO pointer */
-/*.${AOs::AO_Tunnel} .......................................................*/
-QActive * const AO_Tunnel = &l_tunnel.super;
-/*.$enddef${AOs::AO_Tunnel} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.${Shared::AO_Tunnel} ....................................................*/
+QActive * const AO_Tunnel = &Tunnel_inst.super;
+/*.$enddef${Shared::AO_Tunnel} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 /* Active object definition ================================================*/
-/*.$define${AOs::Tunnel_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Tunnel_ctor} .....................................................*/
-void Tunnel_ctor(void) {
-    uint8_t n;
-    Tunnel *me = &l_tunnel;
-    QActive_ctor(&me->super, Q_STATE_CAST(&Tunnel_initial));
-    QTimeEvt_ctorX(&me->blinkTimeEvt,  &me->super, BLINK_TIMEOUT_SIG,  0U);
-    QTimeEvt_ctorX(&me->screenTimeEvt, &me->super, SCREEN_TIMEOUT_SIG, 0U);
-    for (n = 0; n < GAME_MINES_MAX; ++n) {
-        me->mine1_pool[n] = Mine1_ctor(n); /* instantiate Mine1 in the pool */
-        me->mine2_pool[n] = Mine2_ctor(n); /* instantiate Mine2 in the pool */
-        me->mines[n] = (QHsm *)0; /* mine 'n' is unused */
-    }
-    me->last_mine_x = 0; /* the last mine at the right edge of the tunnel */
-    me->last_mine_y = 0;
+/*.$define${Shared::Tunnel_ctor_call} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${Shared::Tunnel_ctor_call} .............................................*/
+void Tunnel_ctor_call(void) {
+    Tunnel_ctor(&Tunnel_inst);
 }
-/*.$enddef${AOs::Tunnel_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.$enddef${Shared::Tunnel_ctor_call} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*.$define${AOs::Tunnel} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Tunnel} ..........................................................*/
+Tunnel Tunnel_inst;
 /*.${AOs::Tunnel::advance} .................................................*/
 static void Tunnel_advance(Tunnel * const me) {
     uint32_t rnd;
@@ -194,6 +189,21 @@ static void Tunnel_dispatchToAllMines(Tunnel * const me, QEvt const * e) {
     }
 }
 
+/*.${AOs::Tunnel::ctor} ....................................................*/
+static void Tunnel_ctor(Tunnel * const me) {
+    uint8_t n;
+    QActive_ctor(&me->super, Q_STATE_CAST(&Tunnel_initial));
+    QTimeEvt_ctorX(&me->blinkTimeEvt,  &me->super, BLINK_TIMEOUT_SIG,  0U);
+    QTimeEvt_ctorX(&me->screenTimeEvt, &me->super, SCREEN_TIMEOUT_SIG, 0U);
+    for (n = 0; n < GAME_MINES_MAX; ++n) {
+        me->mine1_pool[n] = Mine1_ctor_call(n); /* instantiate Mine1 */
+        me->mine2_pool[n] = Mine2_ctor_call(n); /* instantiate Mine2 */
+        me->mines[n] = (QHsm *)0; /* mine 'n' is unused */
+    }
+    me->last_mine_x = 0; /* the last mine at the right edge of the tunnel */
+    me->last_mine_y = 0;
+}
+
 /*.${AOs::Tunnel::SM} ......................................................*/
 static QState Tunnel_initial(Tunnel * const me, void const * const par) {
     /*.${AOs::Tunnel::SM::initial} */
@@ -209,8 +219,8 @@ static QState Tunnel_initial(Tunnel * const me, void const * const par) {
     QActive_subscribe(&me->super, PLAYER_QUIT_SIG);
 
     /* object dictionaries... */
-    QS_OBJ_DICTIONARY(&l_tunnel.blinkTimeEvt);
-    QS_OBJ_DICTIONARY(&l_tunnel.screenTimeEvt);
+    QS_OBJ_DICTIONARY(&Tunnel_inst.blinkTimeEvt);
+    QS_OBJ_DICTIONARY(&Tunnel_inst.screenTimeEvt);
 
     /* local signals... */
     QS_SIG_DICTIONARY(BLINK_TIMEOUT_SIG,  me);

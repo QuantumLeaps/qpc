@@ -25,7 +25,7 @@ Q_DEFINE_THIS_FILE
 /* encapsulated delcaration of the Mine1 HSM -------------------------------*/
 /*.$declare${AOs::Mine1} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Mine1} ...........................................................*/
-typedef struct {
+typedef struct Mine1 {
 /* protected: */
     QHsm super;
 
@@ -37,6 +37,10 @@ typedef struct {
     uint8_t exp_ctr;
 } Mine1;
 
+/* public: */
+static void Mine1_ctor(Mine1 * const me);
+extern Mine1 Mine1_inst[GAME_MINES_MAX];
+
 /* protected: */
 static QState Mine1_initial(Mine1 * const me, void const * const par);
 static QState Mine1_unused(Mine1 * const me, QEvt const * const e);
@@ -45,11 +49,8 @@ static QState Mine1_planted(Mine1 * const me, QEvt const * const e);
 static QState Mine1_exploding(Mine1 * const me, QEvt const * const e);
 /*.$enddecl${AOs::Mine1} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
-/* local objects -----------------------------------------------------------*/
-static Mine1 l_mine1[GAME_MINES_MAX]; /* a pool of type-1 mines */
-
 /* helper macro to provide the ID of this mine */
-#define MINE_ID(me_)    ((uint8_t)((me_) - l_mine1))
+#define MINE_ID(me_)    ((uint8_t)((me_) - &Mine1_inst[0]))
 
 /* Mine1 class definition --------------------------------------------------*/
 /*.$skip${QP_VERSION} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
@@ -58,30 +59,34 @@ static Mine1 l_mine1[GAME_MINES_MAX]; /* a pool of type-1 mines */
 #error qpc version 6.8.0 or higher required
 #endif
 /*.$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*.$define${AOs::Mine1_ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-/*.${AOs::Mine1_ctor} ......................................................*/
-QHsm * Mine1_ctor(uint8_t id) {
-    Mine1 *me;
+/*.$define${Shared::Mine1_ctor_call} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*.${Shared::Mine1_ctor_call} ..............................................*/
+QHsm * Mine1_ctor_call(uint8_t id) {
     Q_REQUIRE(id < GAME_MINES_MAX);
-    me = &l_mine1[id];
-    /* superclass' ctor */
-    QHsm_ctor(&me->super, Q_STATE_CAST(&Mine1_initial));
-    return (QHsm *)me;
+    Mine1_ctor(&Mine1_inst[id]);
+    return &Mine1_inst[id].super;
 }
-/*.$enddef${AOs::Mine1_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*.$enddef${Shared::Mine1_ctor_call} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*.$define${AOs::Mine1} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /*.${AOs::Mine1} ...........................................................*/
+Mine1 Mine1_inst[GAME_MINES_MAX];
+/*.${AOs::Mine1::ctor} .....................................................*/
+static void Mine1_ctor(Mine1 * const me) {
+    /* superclass' ctor */
+    QHsm_ctor(&me->super, Q_STATE_CAST(&Mine1_initial));
+}
+
 /*.${AOs::Mine1::SM} .......................................................*/
 static QState Mine1_initial(Mine1 * const me, void const * const par) {
     /*.${AOs::Mine1::SM::initial} */
     static uint8_t dict_sent;
 
     if (!dict_sent) {
-        QS_OBJ_DICTIONARY(&l_mine1[0]); /* obj. dictionaries for Mine1 pool */
-        QS_OBJ_DICTIONARY(&l_mine1[1]);
-        QS_OBJ_DICTIONARY(&l_mine1[2]);
-        QS_OBJ_DICTIONARY(&l_mine1[3]);
-        QS_OBJ_DICTIONARY(&l_mine1[4]);
+        QS_OBJ_DICTIONARY(&Mine1_inst[0]);
+        QS_OBJ_DICTIONARY(&Mine1_inst[1]);
+        QS_OBJ_DICTIONARY(&Mine1_inst[2]);
+        QS_OBJ_DICTIONARY(&Mine1_inst[3]);
+        QS_OBJ_DICTIONARY(&Mine1_inst[4]);
 
         QS_FUN_DICTIONARY(&Mine1_initial);/*fun. dictionaries for Mine1 HSM */
         QS_FUN_DICTIONARY(&Mine1_unused);
