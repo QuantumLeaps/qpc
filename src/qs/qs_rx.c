@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2a
-* Last updated on  2021-01-28
+* Last updated for version 6.9.3
+* Last updated on  2021-03-02
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -288,7 +288,7 @@ bool QS_RX_PUT(uint8_t const b) {
     }
     if (head != QS_rxPriv_.tail) { /* buffer NOT full? */
         QS_rxPriv_.buf[QS_rxPriv_.head] = b;
-        QS_rxPriv_.head = head;
+        QS_rxPriv_.head = head; /* update the head to a *valid* index */
         return true;  /* byte placed in the buffer */
     }
     else {
@@ -389,14 +389,15 @@ void QS_queryCurrObj(uint8_t obj_kind) {
 
 /****************************************************************************/
 void QS_rxParse(void) {
-    QSCtr head = QS_rxPriv_.head;
-    while (head != QS_rxPriv_.tail) { /* QS-RX buffer NOT empty? */
-        uint8_t b = *QS_RX_AT_(QS_rxPriv_.tail);
+    QSCtr tail = QS_rxPriv_.tail;
+    while (QS_rxPriv_.head != tail) { /* QS-RX buffer NOT empty? */
+        uint8_t b = *QS_RX_AT_(tail);
 
-        ++QS_rxPriv_.tail;
-        if (QS_rxPriv_.tail == QS_rxPriv_.end) {
-            QS_rxPriv_.tail = 0U;
+        ++tail;
+        if (tail == QS_rxPriv_.end) {
+            tail = 0U;
         }
+        QS_rxPriv_.tail = tail; /* update the tail to a *valid* index */
 
         if (l_rx.esc != 0U) {  /* escaped byte arrived? */
             l_rx.esc = 0U;
@@ -1058,7 +1059,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             i = 0U; /* use 'i' as status, 0 == success,no-recycle */
 
             if (l_rx.var.evt.prio == 0U) { /* publish */
-                QF_PUBLISH(l_rx.var.evt.e, &QS_rxPriv_);
+                QF_publish_(l_rx.var.evt.e, &QS_rxPriv_, 0U);
             }
             else if (l_rx.var.evt.prio < QF_MAX_ACTIVE) {
                 if (QACTIVE_POST_X(QF_active_[l_rx.var.evt.prio],
