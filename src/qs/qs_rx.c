@@ -1059,7 +1059,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
             i = 0U; /* use 'i' as status, 0 == success,no-recycle */
 
             if (l_rx.var.evt.prio == 0U) { /* publish */
-                QF_publish_(l_rx.var.evt.e, &QS_rxPriv_, 0U);
+                QF_PUBLISH(l_rx.var.evt.e, &QS_rxPriv_);
             }
             else if (l_rx.var.evt.prio < QF_MAX_ACTIVE) {
                 if (QACTIVE_POST_X(QF_active_[l_rx.var.evt.prio],
