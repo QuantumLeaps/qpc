@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, EFM32-SLSTK3401A, Win32-GUI
-* Last updated for version 6.9.1
-* Last updated on  2020-09-22
+* Last updated for version 6.9.3
+* Last updated on  2021-03-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -74,7 +74,9 @@ static void paintBitsClear(uint8_t x, uint8_t y,
         PLAYER_TRIGGER = QS_USER,
         COMMAND_STAT
     };
-    static uint8_t const l_clock_tick = 0U;
+
+    /* QSpy source IDs */
+    static QSpyId const l_clock_tick = { 0U };
 #endif
 
 /* Local functions ---------------------------------------------------------*/
@@ -752,9 +754,8 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
             return 0;
         }
 
-        /* commands from regular buttons and menus... */
+        /* commands from child controls and menus... */
         case WM_COMMAND: {
-            SetFocus(hWnd);
             switch (wParam) {
                 case IDOK:
                 case IDCANCEL: {
@@ -762,15 +763,20 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
                     PostQuitMessage(0);
                     break;
                 }
+                case IDC_USER0:    /* owner-drawn buttons... */
+                case IDC_USER1: {
+                    SetFocus(hWnd);
+                    break;
+                }
             }
             return 0;
         }
 
-        /* owner-drawn buttons... */
+        /* drawing of owner-drawn buttons... */
         case WM_DRAWITEM: {
             LPDRAWITEMSTRUCT pdis = (LPDRAWITEMSTRUCT)lParam;
             switch (pdis->CtlID) {
-                case IDC_USER0: {  /* USER owner-drawn Button0 */
+                case IDC_USER0: {  /* owner-drawn Button0 */
                     OutputDebugString("USER0\n");
                     switch (OwnerDrawnButton_draw(&l_userBtn0, pdis)) {
                         case BTN_DEPRESSED: {
@@ -788,9 +794,15 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
                     }
                     break;
                 }
-                case IDC_USER1: {  /* USER owner-drawn Button1 */
+                case IDC_USER1: {  /* owner-drawn Button1 */
                     OutputDebugString("USER1\n");
                     switch (OwnerDrawnButton_draw(&l_userBtn1, pdis)) {
+                        case BTN_DEPRESSED: {
+                             break;
+                        }
+                        case BTN_RELEASED: {
+                            break;
+                        }
                         default: {
                             break;
                         }

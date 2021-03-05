@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, Win32-GUI
-* Last updated for version 6.8.0
-* Last updated on  2020-03-31
+* Last updated for version: 6.9.3
+* Date of the Last Update:  2021-03-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -146,6 +146,9 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
             /* --> QP: spawn the application thread to run main_gui() */
             Q_ALLEGE(CreateThread(NULL, 0, &appThread, NULL, 0, NULL)
                      != (HANDLE)0);
+
+            SetDlgItemTextA(hWnd, IDC_EDIT1, "Edit1");
+            SetDlgItemTextA(hWnd, IDC_EDIT2, "Edit2");
             return 0;
         }
 
@@ -154,20 +157,29 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
             return 0;
         }
 
-        /* commands from regular buttons and menus... */
+        /* commands from child controls and menus... */
         case WM_COMMAND: {
-            SetFocus(hWnd);
             switch (wParam) {
                 case IDOK:
                 case IDCANCEL: {
                     PostQuitMessage(0);
                     break;
                 }
+                case IDC_PAUSE: { /* owner-drawn button(s) */
+                    SetFocus(hWnd);
+                    break;
+                }
+                case IDC_BUTTON1: { /* regular button */
+                    char buf[32];
+                    GetDlgItemTextA(hWnd, IDC_EDIT1, buf, sizeof(buf));
+                    SetDlgItemTextA(hWnd, IDC_EDIT2, buf);
+                    break;
+                }
             }
             return 0;
         }
 
-        /* owner-drawn buttons... */
+        /* drawing of owner-drawn buttons... */
         case WM_DRAWITEM: {
             LPDRAWITEMSTRUCT pdis = (LPDRAWITEMSTRUCT)lParam;
             switch (pdis->CtlID) {
