@@ -86,26 +86,5 @@
     <ClInclude Include="qwin_gui.h">
       <Filter>QWIN-GUI</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\qassert.h">
-      <Filter>QP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\qep.h">
-      <Filter>QP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\qequeue.h">
-      <Filter>QP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\qf.h">
-      <Filter>QP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\qmpool.h">
-      <Filter>QP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\qpset.h">
-      <Filter>QP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\qs.h">
-      <Filter>QP</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

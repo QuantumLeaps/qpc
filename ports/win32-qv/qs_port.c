@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2021-01-14
+* Last updated for version 6.9.3
+* Last updated on  2021-03-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -80,7 +80,7 @@ uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsBuf[QS_TX_SIZE];   /* buffer for QS-TX channel */
     static uint8_t qsRxBuf[QS_RX_SIZE]; /* buffer for QS-RX channel */
     char hostName[128];
-    char const *serviceName = "6601";  /* default QSPY server port */
+    char const *serviceName = "6601";   /* default QSPY server port */
     char const *src;
     char *dst;
     int status;
@@ -136,7 +136,7 @@ uint8_t QS_onStartup(void const *arg) {
     for (rp = result; rp != NULL; rp = rp->ai_next) {
         l_sock = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
         if (l_sock != INVALID_SOCKET) {
-            if (connect(l_sock, rp->ai_addr, rp->ai_addrlen)
+            if (connect(l_sock, rp->ai_addr, (int)rp->ai_addrlen)
                 == SOCKET_ERROR)
             {
                 closesocket(l_sock);
@@ -159,8 +159,8 @@ uint8_t QS_onStartup(void const *arg) {
     /* set the socket to non-blocking mode */
     ioctl_opt = 1;
     if (ioctlsocket(l_sock, FIONBIO, &ioctl_opt) != NO_ERROR) {
-        FPRINTF_S(stderr, "<TARGET> ERROR   Failed to set non-blocking socket "
-            "WASErr=%d\n", WSAGetLastError());
+        FPRINTF_S(stderr, "<TARGET> ERROR   %s WASErr=%d\n,",
+            "Failed to set non-blocking socket", WSAGetLastError());
         goto error;
     }
 
@@ -219,8 +219,8 @@ void QS_onFlush(void) {
                     Sleep(QS_TIMEOUT_MS);
                 }
                 else { /* some other socket error... */
-                    FPRINTF_S(stderr, "<TARGET> ERROR   sending data over TCP,"
-                           "WASErr=%d\n", err);
+                    FPRINTF_S(stderr, "<TARGET> ERROR   %s WASErr=%d\n",
+                              "sending data over TCP", err);
                     return;
                 }
             }
@@ -231,7 +231,7 @@ void QS_onFlush(void) {
                 nBytes -= (uint16_t)nSent;
             }
             else {
-                break;
+                break; /* break out of the for-ever loop */
             }
         }
         /* set nBytes for the next call to QS_getBlock() */
