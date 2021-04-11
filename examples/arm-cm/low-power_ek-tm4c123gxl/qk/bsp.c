@@ -90,7 +90,7 @@ void GPIOPortF_IRQHandler(void) {
     QK_ISR_ENTRY();  /* inform QK about entering an ISR */
     if ((GPIOF->RIS & BTN_SW1) != 0U) { /* interrupt caused by SW1? */
         static QEvt const pressedEvt = { BTN_PRESSED_SIG, 0U, 0U};
-        QF_PUBLISH(&pressedEvt, &l_SysTick_Handler);
+        QF_PUBLISH(&pressedEvt, (void *)0);
     }
     GPIOF->ICR = 0xFFU; /* clear interrupt sources */
     QK_ISR_EXIT(); /* inform QK about exiting an ISR */

@@ -240,6 +240,9 @@ enum QSpyIdGroups {
     QS_AP_IDS  = (0x80 + (enum_t)QS_AP_ID), /*!< Application-specific IDs */
 };
 
+/*! QSpy ID type for applying local filtering */
+typedef struct { uint8_t prio; } QSpyId;
+
 #ifndef QS_TIME_SIZE
 
     /*! The size [bytes] of the QS time stamp. Valid values: 1U, 2U, or 4U;

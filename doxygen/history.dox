@@ -1,6 +1,58 @@
 /**
 @page history Revision History
 
+@section qpc_6_9_3 Version 6.9.3, 2021-04-12
+
+__Feature Requests:__
+- [feature#191 "Add QS local filtering to QF_PUBLISH()"](https://sourceforge.net/p/qpc/feature-requests/191/)
+
+The feature has been implemented by means of the "sender" parameter of the `QF_PUBLISH()` macro, which must now be a pointer to a struct that has the `prio` member. This design enables applying QS local filter to the `prio` as the QS-Id. This  works for publishing events from active objects. For publishing events outside active objects (e.g., from ISRs), the header file `qs.h` provides a type `QSpyId`, which should be used to define QS ID variables to be used as "sender" in `QF_PUBLISH()`.
+
+@note
+This change only affects the Spy build configuration, where the QS software tracing instrumentation is enabled. The existing code could require modifications to provide "sender" pointer that can access `prio` directly. For example, AOs would need to call `QF_PUBLISH(e, &me->super)` instead of `QF_PUBLISH(e, me)`.
+
+
+- [feature#185 "Add possibility of assigning name to AO threads in QP-RTOS ports"](https://sourceforge.net/p/qpc/feature-requests/185/)
+
+This feature request is now implemented uniformely in all QP-ports to 3rd-party RTOSes by means of the generic QP API QActive_setAttr(). Specifically, the QP port will allow you to set the thread name by calling QActive_setAttr() before calling QACTIVE_START().
+
+
+__Bug Fixes:__
+- [bug#292 "QP-C-C++ on 64 Bit Linux - Setting of Current-Obj - AO_Obj from QView raises segmentation fault"](https://sourceforge.net/p/qpc/bugs/292/)
+- [bug#293 "[Qpccp 6.9.2] test of assertion fail now"](https://sourceforge.net/p/qpc/bugs/293/)
+- [bug#298 "ARM Cortex-M Erratum 838869 Handled Inconsistently in Ports"](https://sourceforge.net/p/qpc/bugs/298/)
+
+
+__Source code changes:__
+- `qpc/include/qf.h` - feature#191
+- `qpc/include/qs.h` - feature#191
+- `qpc/src/qf/qf_ps.c` - feature#191
+- `qpc/src/qs/qs_rx.c` - feature#191 and bug#292
+
+
+__Modified QP/C ports:__
+- `qpc/ports/arm-cm/` - fixed [bug#298](https://sourceforge.net/p/qpc/bugs/298/)
+- `qpc/ports/embos/` - implemented [feature#185](https://sourceforge.net/p/qpc/feature-requests/185/)
+- `qpc/ports/threadx/` - implemented [feature#185](https://sourceforge.net/p/qpc/feature-requests/185/)
+- `qpc/ports/ucos2/` - implemented [feature#185](https://sourceforge.net/p/qpc/feature-requests/185/)
+- `qpc/ports/win32/` - added QSpy64 (64-bit) build configuration to the Visual Studio project
+- `qpc/ports/win32-qv/` - added QSpy64 (64-bit) build configuration to the Visual Studio project
+- `qpc/ports/win32-quit/` - added "port" used for "QP Unit Internal Testing" (QUIT) 
+
+
+__Updated examples:__
+- all examples using `QF_PUBLISH()` - adjusted the `sender` parameter of the macro to have the `prio` member
+- `qpc/examples/arm-cm/` - fixed [bug#298](https://sourceforge.net/p/qpc/bugs/298/) (added calls to `QV|QK|QXK_ARM_ERRATUM_838869()`)
+- `qpc/examples/qutest/self_test/test/` - added examples of the Python include files (`*.pyi`) for the new [include command](https://www.state-machine.com/qtools/namespacequtest__dsl.html).
+- `qpc/examples/arm-cm/dpp_efm32-slstk3401a/win32-gui/` - corrected handling of user-drawn buttons in `bsp.c`
+- `qpc/examples/arm-cm/game_efm32-slstk3401a/win32-gui/` - corrected handling of user-drawn buttons in `bsp.c`
+
+
+__Updated 3rd-Party Components:__
+- `qpc/3rd_party/threadx` to version 6.1.6 (latest open source version from [GitHub](https://github.com/azure-rtos/threadx) )
+
+
+
 @section qpc_6_9_2 Version 6.9.2, 2021-01-18
 The main purpose of this release is a redesign of the QS-RX (software tracing input) to implement the feature request #187:
 
@@ -40,7 +92,7 @@ __Modified QP/C ports:__
 
 
 __Added QP/C ports:__
-- `qpc/ports/freertos-esp32/` - added new port to FreeRTOS-ESP32
+- `qpc/ports/freertos-esp32/` - added new *experimental* port to FreeRTOS-ESP32
 
 
 __Updated examples:__
@@ -1024,7 +1076,7 @@ Changes in detail:
 This release adds support for the new board: EFM32-SLSTK3401A (Pearl Gecko Starter Kit from Silicon Labs). This board replaces the Stellaris EK-LM3S811 board, which has been discontinued. (The Stellaris EK-LM3S811 board had been used in the "Fly 'n' Shoot" game example accompanying the PSiCC2 book).
 
 This release also introduces a new version of the QWIN GUI Toolkit in the Windows prototypes for the "Fly 'n' Shoot" game and the DPP-GUI
-version (see https://www.state-machine.com/products/#QWIN).
+version (see https://www.state-machine.com/products/qtools/#QWin).
 
 Additionally, this release also includes the QP/C integration with the emWin emgedded GUI from SEGGER, which is also the same product as
 uC/GUI distributed by Micrium (@ref exa_emwin).

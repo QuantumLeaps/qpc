@@ -8,12 +8,12 @@ To check what's new in QP/C, please see @ref history "QP/C Revision History".
 
 
 @section ab_about What is it?
-<a class="extern" target="_blank" href="https://www.state-machine.com/products/"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#RTEF"><strong>Real-Time Embedded Framework (RTEF)</strong></a> for building modern, responsive and modular real-time embedded applications as systems of asynchronous event-driven <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Active"><strong>active objects</strong></a> (<a href="https://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; RTEF is a member of a larger family of real-time embedded frameworks (RTEFs) consisting of QP/C and <a href="https://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a> frameworks, which are all strictly quality controlled, thoroughly documented, and available under @ref licensing "dual licensing model".
+<a class="extern" target="_blank" href="https://www.state-machine.com/products/"><strong>QP/C&trade; (Quantum Platform in C)</strong></a> is a lightweight <a class="extern" target="_blank" href="https://www.state-machine.com/rtef/"><strong>Real-Time Embedded Framework (RTEF)</strong></a> for building modern, responsive and modular real-time embedded applications as systems of asynchronous event-driven <a class="extern" target="_blank" href="https://www.state-machine.com/active-object/"><strong>active objects</strong></a> (<a href="https://en.wikipedia.org/wiki/Actor_model">actors</a>). The QP/C&trade; RTEF is a member of a larger family of real-time embedded frameworks (RTEFs) consisting of QP/C and <a href="https://www.state-machine.com/qpcpp" target="_blank" class="extern">QP/C++</a> frameworks, which are all strictly quality controlled, thoroughly documented, and available under @ref licensing "dual licensing model".
 
-The behavior of active objects is specified in QP/C by means of <a href="https://www.state-machine.com/doc/concepts#HSM" target="_blank" class="extern"><strong>hierarchical state machines</strong></a> (UML statecharts). The framework supports @ref sm "manual coding of UML state machines in C" as well as automatic code generation by means of the free <a href="https://www.state-machine.com/qm"><strong>QM&trade; model-based design tool</strong></a>.
+The behavior of active objects is specified in QP/C by means of <a href="https://www.state-machine.com/fsm/#HSM" target="_blank" class="extern"><strong>hierarchical state machines</strong></a> (UML statecharts). The framework supports @ref sm "manual coding of UML state machines in C" as well as automatic code generation by means of the free <a href="https://www.state-machine.com/qm"><strong>QM&trade; model-based design tool</strong></a>.
 
 @attention
-To use QP/C&trade; effectively, you need to understand the <a href="https://www.state-machine.com/doc/concepts" target="_blank" class="extern"><strong>key concepts</strong></a> that underline the architecture of the framework and your applications based on the framework.
+To use QP/C&trade; effectively, you need to understand the <a href="https://www.state-machine.com/category/concepts/" target="_blank" class="extern"><strong>key concepts</strong></a> that underline the architecture of the framework and your applications based on the framework.
 
 <div style="clear:both"></div>
 
@@ -25,8 +25,8 @@ To use QP/C&trade; effectively, you need to understand the <a href="https://www.
 
 @section ab_goals What does it do?
 The main goals of the QP/C&trade; framework are:
-- to provide a reusable event-driven **architecture** based on <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Active">active objects (actors)</a>, which is inherently **safer**, more extensible, and easier to understand than the usual _shared-state concurrency_ based on a traditional Real-Time Operating System (RTOS).
-- to provide a simple-to-use coding techniques for <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#HSM">hierarchical state machines</a>, with which to implement the behavior of active objects.
+- to provide a reusable event-driven **architecture** based on <a class="extern" target="_blank" href="https://www.state-machine.com/active-object/">active objects (actors)</a>, which is inherently **safer**, more extensible, and easier to understand than the usual _shared-state concurrency_ based on a traditional Real-Time Operating System (RTOS).
+- to provide a simple-to-use coding techniques for <a class="extern" target="_blank" href="https://www.state-machine.com/fsm/#HSM">hierarchical state machines</a>, with which to implement the behavior of active objects.
 - to provide efficient and thread-safe asynchronous mechanisms for active objects to communicate, such as direct event passing and publish-subscribe.
 - to provide event-driven timing services (time events).
 - to provide a selection of built-in real-time kernels to run the QP applications, such as the cooperative @ref qv "QV kernel", the preemptive non-blocking @ref qk "QK kernel", and the preemptive blocking @ref qxk "QXK kernel".
@@ -38,7 +38,7 @@ The main goals of the QP/C&trade; framework are:
 
 @section ab_special What's special about it?
 
-The QP/C&trade; Real-Time Embedded Framework (RTEF) is a unique offering on the embedded software market. It provides a modern, reusable **architecture** of embedded applications, which combines object-orientation with the particular model of concurrency, known as <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Active"><strong>active objects</strong></a> (actors). This architecture is generally **safer**, more responsive and easier to understand than "free threading" with a traditional Real-Time Operating System (RTOS). It also provides sufficiently high level of abstraction and the right abstractions to effectively apply modeling and code generation to deeply embedded systems.
+The QP/C&trade; Real-Time Embedded Framework (RTEF) is a unique offering on the embedded software market. It provides a modern, reusable **architecture** of embedded applications, which combines object-orientation with the particular model of concurrency, known as <a class="extern" target="_blank" href="https://www.state-machine.com/active-object/"><strong>active objects</strong></a> (actors). This architecture is generally **safer**, more responsive and easier to understand than "free threading" with a traditional Real-Time Operating System (RTOS). It also provides sufficiently high level of abstraction and the right abstractions to effectively apply modeling and code generation to deeply embedded systems.
 
 
 
@@ -66,10 +66,10 @@ The most unique characteristic of the QP/C&trade; framework is its very small fo
 
 @subsection hsms Hierarchical State Machines
 The behavior of active objects is specified in QP by means of
-<a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#HSM">hierarchical state machines (UML statecharts)</a>. The framework supports @ref sm "manual coding of UML state machines in C" (or C++ in case of QP/C++) as well as fully **automatic code generation** by means of the free graphical <a class="extern" target="_blank" href="https://www.state-machine.com/qm">QM&trade; model-based design (MBD) tool</a>.
+<a class="extern" target="_blank" href="https://www.state-machine.com/fsm/#HSM">hierarchical state machines (UML statecharts)</a>. The framework supports @ref sm "manual coding of UML state machines in C" (or C++ in case of QP/C++) as well as fully **automatic code generation** by means of the free graphical <a class="extern" target="_blank" href="https://www.state-machine.com/qm">QM&trade; model-based design (MBD) tool</a>.
 
 @remarks
-State machines can be an incredibly powerful technique, but they require an event-driven **infrastructure** (framework) that provides, at a minimum: a run-to-completion (RTC) execution context for each state machine, queuing of events, and event-based timing services. This is really the pivotal point. Without an event-driven framewok (like QP/C), state machines are like <a class="extern" target="_blank" href="https://www.state-machine.com/doc/concepts#Infrastructure">cars without an infrastructure of roads</a>.
+State machines can be an incredibly powerful technique, but they require an event-driven **infrastructure** (framework) that provides, at a minimum: a run-to-completion (RTC) execution context for each state machine, queuing of events, and event-based timing services. This is really the pivotal point. Without an event-driven framewok (like QP/C), state machines are like <a class="extern" target="_blank" href="https://www.state-machine.com/rtef/">cars without an infrastructure of roads</a>.
 
 
 @subsection kernels Built-in Kernels

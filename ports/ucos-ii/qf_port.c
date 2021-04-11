@@ -75,11 +75,6 @@ int_t QF_run(void) {
 void QF_stop(void) {
     QF_onCleanup();  /* cleanup callback */
 }
-/*..........................................................................*/
-void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
-    (void)attr2; /* unused parameter */
-    me->thread = attr1;
-}
 
 /*..........................................................................*/
 void QActive_start_(QActive * const me, uint_fast8_t prio,
@@ -89,7 +84,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 {
     INT8U p_ucos;
     INT8U err;
-    char_t task_name[4]; /* task name to be passed to OSTaskCreateExt() */
+     /* task name to be passed to OSTaskCreateExt() */
+    void *task_name = (void *)me->eQueue;
 
     me->eQueue = OSQCreate((void **)qSto, qLen);  /* create uC/OS-II queue */
     /* the uC/OS-II queue must be created correctly */
@@ -103,14 +99,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     /* map from QP to uC/OS priority */
     p_ucos = (INT8U)(QF_MAX_ACTIVE - me->prio);
-
-    /* prepare the unique task name of the form "Axx",
-    * where xx is a 2-digit QP priority of the Active Object
-    */
-    task_name[0] = 'A';
-    task_name[1] = '0' + (prio / 10U);
-    task_name[2] = '0' + (prio % 10U);
-    task_name[3] = '\0'; /* zero-terminate */
 
     /* create AO's task... */
     /*
@@ -135,6 +123,23 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     /* uC/OS-II task must be created correctly */
     Q_ENSURE_ID(220, err == OS_ERR_NONE);
+}
+/*..........................................................................*/
+void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
+    switch (attr1) {
+        case TASK_NAME_ATTR:
+           /* this function must be called before QACTIVE_START(),
+           * which implies that me->eQueue must not be used yet;
+           */
+           Q_ASSERT_ID(300, me->eQueue == (OS_EVENT *)0);
+           /* temporarily store the name, cast 'const' away */
+            me->eQueue = (OS_EVENT *)attr2;
+            break;
+        /* ... */
+        default:
+            me->thread = attr1;
+            break;
+    }
 }
 
 /*..........................................................................*/

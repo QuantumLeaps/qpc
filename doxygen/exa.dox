@@ -304,9 +304,9 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 
 1. The book “Practical UML Statecharts in C/C++, 2nd Edition” [PSiCC2] and the companion web-page to the book (https://www.state-machine.com/psicc2/
 2. Free Support Forum for QP/QM (https://sourceforge.net/p/qpc/discussion/668726 )
-3. QP Code Downloads summary (https://www.state-machine.com/downloads )
-4. QP Application Notes (https://www.state-machine.com/doc/an )
-5. "State Space" Blog (https://embeddedgurus.com/state-space/ )
+3. QP Code Downloads summary (https://www.state-machine.com/#Downloads )
+4. QP Application Notes (https://www.state-machine.com/an/ )
+5. "State Space" Blog (https://www.state-machine.com/category/blog/ )
 
 @next{exa_ref}
 */

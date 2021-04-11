@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Fly 'n' Shoot" game example, EFM32-SLSTK3401A board, QV kernel
-* Last updated for version 6.9.1
-* Last updated on  2020-09-22
+* Last updated for version 6.9.3
+* Last updated on  2021-03-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -73,9 +73,10 @@ static void paintBitsClear(uint8_t x, uint8_t y,
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
 
-    /* QS source IDs */
-    static uint8_t const l_SysTick_Handler = 0U;
-    static uint8_t const l_GPIO_EVEN_IRQHandler = 0U;
+    /* QSpy source IDs */
+    static QSpyId const l_SysTick_Handler = { 0U };
+    static QSpyId const l_GPIO_EVEN_IRQHandler = { 0U };
+
     static USART_TypeDef * const l_USART0 = ((USART_TypeDef *)(0x40010000UL));
 
     enum AppRecords { /* application-specific trace records */

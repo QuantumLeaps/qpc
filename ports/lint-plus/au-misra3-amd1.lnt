@@ -166,13 +166,13 @@
 
 /**** Rule 21.15 (Req) ************/
 
-    +e857              /* incompatible pointer arguments to memcpy/memmove/memcmp */
+    +e857	  	    /* incompatible pointer arguments to memcpy/memmove/memcmp */
     +elib(857)
     -append(857,[MISRA 2012 Rule 21.15, required])
 
 /**** Rule 21.16 (Req) ************/
 
-    +e9098          /* pointer argument to memcmp does not point to a pointer type
+    +e9098  	    /* pointer argument to memcmp does not point to a pointer type
                        or an essentially signed, unsigned, boolean, or enum type */
     +elib(9098)
     -append(9098,[MISRA 2012 Rule 21.16, required])

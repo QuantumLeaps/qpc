@@ -74,9 +74,10 @@ static void paintBitsClear(uint8_t x, uint8_t y,
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
 
-    /* QS source IDs */
-    static uint8_t const l_SysTick_Handler = 0U;
-    static uint8_t const l_GPIO_EVEN_IRQHandler = 0U;
+    /* QSpy source IDs */
+    static QSpyId const l_SysTick_Handler = { 0U };
+    static QSpyId const l_GPIO_EVEN_IRQHandler = { 0U };
+
     static USART_TypeDef * const l_USART0 = ((USART_TypeDef *)(0x40010000UL));
 
     enum AppRecords { /* application-specific trace records */

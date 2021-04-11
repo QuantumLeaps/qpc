@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example with lwIP and direct screen output
-* Last updated for version 6.9.1
-* Last updated on  2020-09-11
+* Last updated for version 6.9.3
+* Last updated on  2021-03-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -35,7 +35,7 @@
 #include "dpp.h"     /* application events and active objects */
 #include "bsp.h"     /* Board Support Package header file */
 
-#include "rit128x96x4.h"      /* RITEK 128x96x4 OLED used in Rev C-D boards */
+#include "rit128x96x4.h" /* RITEK 128x96x4 OLED used in Rev C-D boards */
 
 #include <stdio.h>   /* for snprintf() */
 
@@ -159,7 +159,7 @@ QState Table_serving(Table *me, QEvt const *e) {
                 me->fork[m] = me->fork[n] = USED;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = n;
-                QF_PUBLISH((QEvt *)pe, me);
+                QF_PUBLISH((QEvt *)pe, &me->super);
                 Table_displayPhilStat(me, n, "eating  ");
             }
             else {
@@ -184,7 +184,7 @@ QState Table_serving(Table *me, QEvt const *e) {
                 me->isHungry[m] = 0;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = m;
-                QF_PUBLISH((QEvt *)pe, me);
+                QF_PUBLISH((QEvt *)pe, &me->super);
                 Table_displayPhilStat(me, m, "eating  ");
             }
             m = LEFT(n); /* check the left neighbor */
@@ -194,7 +194,7 @@ QState Table_serving(Table *me, QEvt const *e) {
                 me->isHungry[m] = 0;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = m;
-                QF_PUBLISH((QEvt *)pe, me);
+                QF_PUBLISH((QEvt *)pe, &me->super);
                 Table_displayPhilStat(me, m, "eating  ");
             }
             return Q_HANDLED();

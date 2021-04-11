@@ -162,7 +162,7 @@ QState Philo_eating(Philo *me, QEvt const *e) {
         case Q_EXIT_SIG: {
             TableEvt *pe = Q_NEW(TableEvt, DONE_SIG);
             pe->philoNum = PHILO_ID(me);
-            QF_PUBLISH((QEvt *)pe, me);
+            QF_PUBLISH((QEvt *)pe, &me->super);
             return Q_HANDLED();
         }
         case TIMEOUT_SIG: {

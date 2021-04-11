@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example (console)
-* Last Updated for Version: 6.9.1
-* Date of the Last Update:  2020-09-10
+* Last Updated for Version: 6.9.3
+* Date of the Last Update:  2021-03-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -47,7 +47,9 @@ static uint32_t l_rnd; /* random seed */
     enum {
         PHILO_STAT = QS_USER
     };
-    static uint8_t const l_clock_tick = 0U;
+
+    /* QSpy source IDs */
+    static QSpyId const l_clock_tick = { 0U };
 #endif
 
 /*..........................................................................*/

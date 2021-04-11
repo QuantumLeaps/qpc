@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2a
-* Last updated on  2021-01-26
+* Last updated for version 6.9.3
+* Last updated on  2021-04-09
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -94,7 +94,7 @@ static void thread_function(void *pVoid) { /* embOS signature */
 
 #ifdef __TARGET_FPU_VFP
     /* does the task use the FPU? see NOTE1 */
-    if ((act->osObject & QF_TASK_USES_FPU) != 0U) {
+    if ((act->osObject & TASK_USES_FPU) != 0U) {
         OS_ExtendTaskContext_VFP();
     }
 #endif  /* __TARGET_FPU_VFP */
@@ -112,8 +112,6 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    char task_name[4]; /* task name to be passed to OS_CreateTaskEx() */
-
     /* create the embOS message box for the AO */
     OS_CreateMB(&me->eQueue,
                 (OS_U16)sizeof(QEvt *),
@@ -125,17 +123,13 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
-    /* prepare the unique task name of the form "Axx",
-    * where xx is a 2-digit QP priority of the Active Object
-    */
-    task_name[0] = 'A';
-    task_name[1] = '0' + (prio / 10U);
-    task_name[2] = '0' + (prio % 10U);
-    task_name[3] = '\0'; /* zero-terminate */
-
     /* create an embOS task for the AO */
     OS_CreateTaskEx(&me->thread,
-                    task_name,     /* the unique task name */
+#if (OS_TRACKNAME != 0)
+                    me->thread.Name, /* the configured task name */
+#elif
+                    "AO",            /* a generic AO task name */
+#endif
                     (OS_PRIO)prio, /* embOS uses the same numbering as QP */
                     &thread_function,
                     (void OS_STACKPTR *)stkSto,
@@ -145,8 +139,20 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 }
 /*..........................................................................*/
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
-    (void)attr2; /* unused parameter */
-    me->osObject = attr1;
+    switch (attr1) {
+        case TASK_NAME_ATTR:
+#if (OS_TRACKNAME != 0)
+           Q_ASSERT_ID(300, me->thread.Name == (char_t *)0);
+           me->thread.Name = (char_t const *)attr2;
+#endif
+            break;
+        case TASK_USES_FPU:
+            me->osObject = attr1;
+            break;
+        /* ... */
+        default:
+            break;
+    }
 }
 /*..........................................................................*/
 #ifndef Q_SPY

@@ -197,7 +197,7 @@ static QState Philo_eating(Philo * const me, QEvt const * const e) {
         case Q_EXIT_SIG: {
             TableEvt *pe = Q_NEW(TableEvt, DONE_SIG);
             pe->philoNum = PHILO_ID(me);
-            QF_PUBLISH(&pe->super, me);
+            QF_PUBLISH(&pe->super, &me->super);
             QTimeEvt_disarm(&me->timeEvt);
             status_ = Q_HANDLED();
             break;

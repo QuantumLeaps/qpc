@@ -149,7 +149,7 @@ static QState Table_serving(Table * const me, QEvt const * const e) {
                     me->fork[n] = USED;
                     te = Q_NEW(TableEvt, EAT_SIG);
                     te->philoNum = n;
-                    QF_PUBLISH(&te->super, me);
+                    QF_PUBLISH(&te->super, &me->super);
                     me->isHungry[n] = 0U;
                     BSP_displayPhilStat(n, "eating  ");
                 }
@@ -174,7 +174,7 @@ static QState Table_serving(Table * const me, QEvt const * const e) {
                 me->fork[n] = USED;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = n;
-                QF_PUBLISH(&pe->super, me);
+                QF_PUBLISH(&pe->super, &me->super);
                 BSP_displayPhilStat(n, "eating  ");
                 status_ = Q_HANDLED();
             }
@@ -209,7 +209,7 @@ static QState Table_serving(Table * const me, QEvt const * const e) {
                 me->isHungry[m] = 0U;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = m;
-                QF_PUBLISH(&pe->super, me);
+                QF_PUBLISH(&pe->super, &me->super);
                 BSP_displayPhilStat(m, "eating  ");
             }
             m = LEFT(n); /* check the left neighbor */
@@ -220,7 +220,7 @@ static QState Table_serving(Table * const me, QEvt const * const e) {
                 me->isHungry[m] = 0U;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = m;
-                QF_PUBLISH(&pe->super, me);
+                QF_PUBLISH(&pe->super, &me->super);
                 BSP_displayPhilStat(m, "eating  ");
             }
             status_ = Q_HANDLED();

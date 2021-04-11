@@ -3,14 +3,14 @@
 * @brief QF/C, port to ThreadX
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-08
+* Last updated for version 6.9.3
+* Last updated on  2021-04-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -55,6 +55,10 @@
 #define QF_CRIT_ENTRY(stat_)  ((stat_) = tx_interrupt_control(TX_INT_DISABLE))
 #define QF_CRIT_EXIT(stat_)   ((void)tx_interrupt_control(stat_))
 
+enum ThreadX_ThreadAttrs {
+    THREAD_NAME_ATTR
+};
+
 #include "tx_api.h"    /* ThreadX API */
 
 #include "qep_port.h"  /* QEP port */
@@ -94,7 +98,7 @@
     /* internal implementation of scheduler locking/unlocking */
     void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio);
     void QFSchedUnlock_(QFSchedLock const * const lockStat);
-    extern UINT _tx_thread_system_state; /* internal TX interrupt counter */
+    extern ULONG volatile _tx_thread_system_state; /* internal TX interrupt counter */
 
     /* TreadX block pool operations... */
     #define QF_EPOOL_TYPE_              TX_BLOCK_POOL

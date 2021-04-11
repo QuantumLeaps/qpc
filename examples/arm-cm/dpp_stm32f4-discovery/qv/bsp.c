@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "DPP" example on STM32F4-Discovery board, cooperative QV kernel
-* Last updated for version 6.9.1
-* Last updated on  2020-09-22
+* Last updated for version 6.9.3
+* Last updated on  2021-03-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -67,8 +67,8 @@ static uint32_t l_rnd;    /* random seed */
     static QSTimeCtr QS_tickTime_;
     static QSTimeCtr QS_tickPeriod_;
 
-    /* event-source identifiers used for tracing */
-    static uint8_t const l_SysTick;
+    /* QSpy source IDs */
+    static QSpyId const l_SysTick = { 0U };
 
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, cooperative QV kernel
-* Last updated for version 6.9.2a
-* Last updated on  2021-01-31
+* Last updated for version 6.9.3
+* Last updated on  2021-03-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -65,9 +65,9 @@ static uint32_t  l_rnd;  /* random seed */
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
 
-    /* QS source IDs */
-    static uint8_t const l_SysTick_Handler = 0U;
-    static uint8_t const l_GPIOPortA_IRQHandler = 0U;
+    /* QSpy source IDs */
+    static QSpyId const l_SysTick_Handler = { 0U };
+    static QSpyId const l_GPIOPortA_IRQHandler = { 0U };
 
     #define UART_BAUD_RATE      115200U
     #define UART_FR_TXFE        (1U << 7)

@@ -150,7 +150,7 @@ Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
      <entry>QTimeEvt_armX(&amp;me-&gt;timeEvt, EAT_TIME, 0U);</entry>
      <exit>TableEvt *pe = Q_NEW(TableEvt, DONE_SIG);
 pe-&gt;philoNum = PHILO_ID(me);
-QF_PUBLISH(&amp;pe-&gt;super, me);</exit>
+QF_PUBLISH(&amp;pe-&gt;super, &amp;me-&gt;super);</exit>
      <!--${AOs::Philo::SM::eating::TIMEOUT}-->
      <tran trig="TIMEOUT" target="../../1">
       <tran_glyph conn="2,51,3,1,22,-41,-5">
@@ -254,7 +254,7 @@ for (n = 0U; n &lt; N_PHILO; ++n) { /* give permissions to eat... */
         me-&gt;fork[n] = USED;
         te = Q_NEW(TableEvt, EAT_SIG);
         te-&gt;philoNum = n;
-        QF_PUBLISH(&amp;te-&gt;super, me);
+        QF_PUBLISH(&amp;te-&gt;super, &amp;me-&gt;super);
         me-&gt;isHungry[n] = 0U;
         BSP_displayPhilStat(n, &quot;eating  &quot;);
     }
@@ -277,7 +277,7 @@ me-&gt;fork[m] = USED;
 me-&gt;fork[n] = USED;
 pe = Q_NEW(TableEvt, EAT_SIG);
 pe-&gt;philoNum = n;
-QF_PUBLISH(&amp;pe-&gt;super, me);
+QF_PUBLISH(&amp;pe-&gt;super, &amp;me-&gt;super);
 BSP_displayPhilStat(n, &quot;eating  &quot;);</action>
         <choice_glyph conn="19,26,5,-1,10">
          <action box="1,0,10,2"/>
@@ -319,7 +319,7 @@ if ((me-&gt;isHungry[m] != 0U) &amp;&amp; (me-&gt;fork[m] == FREE)) {
     me-&gt;isHungry[m] = 0U;
     pe = Q_NEW(TableEvt, EAT_SIG);
     pe-&gt;philoNum = m;
-    QF_PUBLISH(&amp;pe-&gt;super, me);
+    QF_PUBLISH(&amp;pe-&gt;super, &amp;me-&gt;super);
     BSP_displayPhilStat(m, &quot;eating  &quot;);
 }
 m = LEFT(n); /* check the left neighbor */
@@ -330,7 +330,7 @@ if ((me-&gt;isHungry[m] != 0U) &amp;&amp; (me-&gt;fork[n] == FREE)) {
     me-&gt;isHungry[m] = 0U;
     pe = Q_NEW(TableEvt, EAT_SIG);
     pe-&gt;philoNum = m;
-    QF_PUBLISH(&amp;pe-&gt;super, me);
+    QF_PUBLISH(&amp;pe-&gt;super, &amp;me-&gt;super);
     BSP_displayPhilStat(m, &quot;eating  &quot;);
 }</action>
        <tran_glyph conn="4,34,3,-1,15">

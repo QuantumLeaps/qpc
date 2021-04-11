@@ -11,7 +11,7 @@ QState Philo_eating(Philo * const me, QEvt const * const e) {
             QTimeEvt_disarm(&me->timeEvt);
             pe = Q_NEW(TableEvt, DONE_SIG);
             pe->philNum = me->num;
-            QF_PUBLISH((QEvt *)pe, me);
+            QF_PUBLISH((QEvt *)pe, &me->super);
             status = Q_HANDLED();
             break;
         }

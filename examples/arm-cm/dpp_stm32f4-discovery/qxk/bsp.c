@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "DPP" example on STM32F4-Discovery board, dual-mode QXK kernel
-* Last updated for version 6.9.2a
-* Last updated on  2021-01-31
+* Last updated for version 6.9.3
+* Last updated on  2021-03-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -67,8 +67,8 @@ static uint32_t l_rnd;    /* random seed */
     static QSTimeCtr QS_tickTime_;
     static QSTimeCtr QS_tickPeriod_;
 
-    /* event-source identifiers used for tracing */
-    static uint8_t const l_SysTick;
+    /* QSpy source IDs */
+    static QSpyId const l_SysTick = { 0U };
 
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,

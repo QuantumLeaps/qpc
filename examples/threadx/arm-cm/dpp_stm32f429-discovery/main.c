@@ -1,12 +1,12 @@
 /*****************************************************************************
-* Last updated for version 6.9.0
-* Last updated on  2020-08-11
+* Last updated for version 6.9.3
+* Last updated on  2021-04-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -80,10 +80,13 @@ void tx_application_define(void *first_unused_memory) {
     QS_OBJ_DICTIONARY(l_philoQueueSto[4]);
 
     for (n = 0; n < N_PHILO; ++n) { /* start the active objects... */
+        QActive_setAttr(AO_Philo[n], THREAD_NAME_ATTR, "Philo");
         QACTIVE_START(AO_Philo[n], (uint8_t)(n + 1),
                       l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
                       l_philoStk[n], sizeof(l_philoStk[n]), (QEvt *)0);
     }
+
+    QActive_setAttr(AO_Table, THREAD_NAME_ATTR, "Table");
     QACTIVE_START(AO_Table, (uint8_t)(N_PHILO + 1),
                   l_tableQueueSto, Q_DIM(l_tableQueueSto),
                   l_tableStk, sizeof(l_tableStk), (QEvt *)0);

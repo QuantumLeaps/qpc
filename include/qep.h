@@ -4,14 +4,14 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2020-12-16
+* Last updated for version 6.9.3
+* Last updated on  2021-02-26
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -45,16 +45,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      692U
+#define QP_VERSION      693U
 
 /*! The current QP version number string of the form XX.Y.Z, where XX is
 * a 2-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.9.2"
+#define QP_VERSION_STR  "6.9.3"
 
-/*! Encrypted  current QP release (6.9.2) and date (2021-01-18) */
-#define QP_RELEASE      0x82C286EBU
+/*! Encrypted  current QP release (6.9.3) and date (2021-04-12) */
+#define QP_RELEASE      0x8295AA8AU
 
 
 /****************************************************************************/
@@ -315,6 +315,8 @@ struct QHsmVtable {
     * @param[in,out] me_ pointer (see @ref oop)
     * @param[in]     e_  constant pointer the ::QEvt or a class derived from
     *                    ::QEvt (see @ref oop)
+    * @param[in]     qs_id_ QS local filter ID
+    *
     * @note Must be called only ONCE after the SM "constructor".
     *
     * @usage
@@ -327,7 +329,7 @@ struct QHsmVtable {
         (*(me_)->vptr->init)((me_), (par_), (qs_id_)); \
     } while (false)
 
-    /*! Implementation of the top-most initial transition in ::QHsm subclass */
+    /*! Implementation of the top-most initial tran. in ::QHsm subclass */
     void QHsm_init_(QHsm * const me, void const * const e,
                     uint_fast8_t const qs_id);
 #else
@@ -337,7 +339,7 @@ struct QHsmVtable {
         (*(me_)->vptr->init)((me_), (par_)); \
     } while (false)
 
-    /*! Implementation of the top-most initial transition in ::QHsm subclass */
+    /*! Implementation of the top-most initial tran. in ::QHsm subclass */
     void QHsm_init_(QHsm * const me, void const * const e);
 
 #endif /* Q_SPY */
@@ -352,8 +354,8 @@ struct QHsmVtable {
     * Processes one event at a time in Run-to-Completion fashion.
     *
     * @param[in,out] me_ pointer (see @ref oop)
-    * @param[in]     e_  constant pointer the ::QEvt or a structure derived from
-    *                     ::QEvt (see @ref oop)
+    * @param[in]     e_  constant pointer the ::QEvt or a structure
+    *                    derived from ::QEvt (see @ref oop)
     * @note Must be called after the "constructor" and after QHSM_INIT().
     */
     #define QHSM_DISPATCH(me_, e_, qs_id_) \

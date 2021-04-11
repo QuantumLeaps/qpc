@@ -61,7 +61,7 @@ static uint32_t l_rnd;    /* random seed */
 
 #ifdef Q_SPY
     /* event-source identifiers used for tracing */
-    static uint8_t const l_embos_ticker = 0U;
+    static QSpyId const l_embos_ticker = { 0U };
 
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;

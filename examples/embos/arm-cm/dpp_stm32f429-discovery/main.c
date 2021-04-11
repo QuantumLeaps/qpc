@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "Dining Philosophers Problem" example, embOS
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 6.9.3
+* Last updated on  2021-04-09
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -63,13 +63,15 @@ int main() {
 
     /* start the active objects... */
     for (n = 0U; n < N_PHILO; ++n) {
+        QActive_setAttr(AO_Philo[n], TASK_NAME_ATTR, "Philo");
         QACTIVE_START(AO_Philo[n], (uint8_t)(n + 1),
                       philoQueueSto[n], Q_DIM(philoQueueSto[n]),
                       philoStack[n], sizeof(philoStack[n]), (QEvt *)0);
     }
 
     /* set the embOS task attributes BEFORE calling QACTIVE_START() */
-    QActive_setAttr(AO_Table, QF_TASK_USES_FPU, 0);
+    QActive_setAttr(AO_Table, TASK_USES_FPU, 0);
+    QActive_setAttr(AO_Table, TASK_NAME_ATTR, "Table");
     QACTIVE_START(AO_Table, (uint8_t)(N_PHILO + 1),
                   tableQueueSto, Q_DIM(tableQueueSto),
                   tableStack, sizeof(tableStack), (QEvt *)0);

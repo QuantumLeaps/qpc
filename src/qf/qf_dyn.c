@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-03
+* Last updated for version 6.9.3
+* Last updated on  2021-04-09
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -201,7 +201,10 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
     }
     /* event cannot be allocated */
     else {
-        /* must tolerate failed allocation */
+        /* This assertion means that the event allocation failed,
+         * and this failure cannot be tolerated. The most frequent
+         * reason is an event leak in the application.
+         */
         Q_ASSERT_ID(320, margin != QF_NO_MARGIN);
 
         QS_BEGIN_PRE_(QS_QF_NEW_ATTEMPT, (uint_fast8_t)QS_EP_ID + idx + 1U)

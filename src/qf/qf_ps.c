@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-03
+* Last updated for version 6.9.3
+* Last updated on  2021-02-26
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -118,7 +118,8 @@ void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal) {
 #ifndef Q_SPY
 void QF_publish_(QEvt const * const e)
 #else
-void QF_publish_(QEvt const * const e, void const * const sender)
+void QF_publish_(QEvt const * const e,
+                 void const * const sender, uint_fast8_t const qs_id)
 #endif
 {
     QPSet subscrList; /* local, modifiable copy of the subscriber list */
@@ -129,7 +130,7 @@ void QF_publish_(QEvt const * const e, void const * const sender)
 
     QF_CRIT_E_();
 
-    QS_BEGIN_NOCRIT_PRE_(QS_QF_PUBLISH, 0U)
+    QS_BEGIN_NOCRIT_PRE_(QS_QF_PUBLISH, qs_id)
         QS_TIME_PRE_();          /* the timestamp */
         QS_OBJ_PRE_(sender);     /* the sender object */
         QS_SIG_PRE_(e->sig);     /* the signal of the event */

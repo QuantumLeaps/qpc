@@ -3,14 +3,14 @@
 * @brief QF/C generic port to uC/OS-II
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-08
+* Last updated for version 6.9.3
+* Last updated on  2021-04-08
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -60,6 +60,10 @@
 #else
     #error Unsupported uC/OS-II critical section type
 #endif /* OS_CRITICAL_METHOD */
+
+enum UCOS2_TaskAttrs {
+    TASK_NAME_ATTR
+};
 
 #include "qep_port.h" /* QEP port */
 #include "qequeue.h"  /* native QF event queue for deferring events */

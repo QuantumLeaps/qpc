@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last Updated for Version: 6.9.1 / embOS v4.34.1
-* Last updated on  2020-09-08
+* Last Updated for Version: 6.9.3 / embOS v4.34.1
+* Last updated on  2021-04-09
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -57,8 +57,11 @@
 #define QF_CRIT_ENTRY(dummy)  QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)   QF_INT_ENABLE()
 
-/* thread options... */
-#define QF_TASK_USES_FPU    1U
+/* thread attributes... */
+enum EmbOS_TaskAttrs {
+    TASK_NAME_ATTR,
+    TASK_USES_FPU
+};
 
 #include "RTOS.h"      /* embOS API */
 #include "qep_port.h"  /* QEP port */

@@ -228,7 +228,7 @@ QState LwIPMgr_running(LwIPMgr *me, QEvt const *e) {
                           (int)(((ip_net) >> 16) & 0xFFU),
                           (int)(((ip_net) >> 8)  & 0xFFU),
                           (int)(ip_net           & 0xFFU));
-                QF_PUBLISH((QEvt *)te, me);
+                QF_PUBLISH((QEvt *)te, &me->super);
             }
 
 #if LWIP_TCP

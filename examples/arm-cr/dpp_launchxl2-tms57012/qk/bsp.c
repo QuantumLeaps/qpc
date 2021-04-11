@@ -71,9 +71,9 @@ static uint32_t l_rnd;      /* random seed */
 
 #ifdef Q_SPY
 
-    /* QS source IDs */
-    static uint8_t const l_rtiCompare0 = 0U;
-    static uint8_t const l_ssiTest = 0U;
+    /* QSpy source IDs */
+    static QSpyId const l_rtiCompare0 = { 0U };
+    static QSpyId const l_ssiTest = { 0U };
 
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,

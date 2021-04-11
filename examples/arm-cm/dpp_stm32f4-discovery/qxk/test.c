@@ -88,7 +88,7 @@ static void Thread1_run(QXThread * const me) {
         QXThread_delay(BSP_TICKS_PER_SEC/7);  /* BLOCK */
 
         /* publish to thread2 */
-        //QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), &l_test1);
+        //QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), &l_test1.super);
 
         /* test TLS */
         lib_fun(1U);

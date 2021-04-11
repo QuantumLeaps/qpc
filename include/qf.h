@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-14
+* Last updated for version 6.9.3
+* Last updated on  2021-02-26
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -604,7 +604,8 @@ void QF_onCleanup(void);
 #ifdef Q_SPY
 
     /*! Publish event to the framework. */
-    void QF_publish_(QEvt const * const e, void const * const sender);
+    void QF_publish_(QEvt const * const e,
+                     void const * const sender, uint_fast8_t const qs_id);
 
     /*! Invoke the event publishing facility QF_publish_(). */
     /**
@@ -615,12 +616,11 @@ void QF_onCleanup(void);
     *
     * @param[in] e_      pointer to the posted event
     * @param[in] sender_ pointer to the sender object. This argument is
-    *          actually only used when QS software tracing is enabled
-    *          (macro #Q_SPY is defined). When QS software tracing is
-    *          disabled, the macro calls QF_publish_() without the
-    *          @p sender_ parameter, so the overhead of passing this
-    *          extra argument is entirely avoided.
-    *
+    *            actually only used when QS software tracing is enabled
+    *            (macro #Q_SPY is defined). When QS software tracing is
+    *            disabled, the macro calls QF_publish_() without the
+    *            @p sender_ parameter, so the overhead of passing this
+    *            extra argument is entirely avoided.
     * @note
     * the pointer to the sender object is not necessarily a pointer
     * to an active object. In fact, if QF_PUBLISH() is called from an
@@ -630,7 +630,8 @@ void QF_onCleanup(void);
     * @sa QF_publish_().
     */
     #define QF_PUBLISH(e_, sender_) \
-        (QF_publish_((e_), (void const *)(sender_)))
+        (QF_publish_((e_), (void const *)(sender_), (sender_)->prio))
+
 #else
 
     void QF_publish_(QEvt const * const e);
