@@ -6,8 +6,12 @@
 # to all hungry Philosophers).
 #
 # This version of the DPP customization uses the application-specific
-# packet QS_USER_00 (PHILO_STAT) produced when the status of a Philo changes.
+# trace record QS_USER_00 (PHILO_STAT) produced when the status of
+# a Philo changes.
 #
+# NOTE: this is a desktop appliction, which you cannot reset (and restarted).
+# Therefore, the desktop applications must be started *after* the QView is
+# already running and is attached to the QSPY host application.
 
 class DPP:
     def __init__(self):
@@ -88,10 +92,10 @@ class DPP:
             post("PAUSE_SIG")
             QView.print_text("Table PAUSED")
 
-    # intercept the QS_USER_00 application-specific packet
-    # this packet has the following structure (see bsp.c:displayPhilStat()):
-    # record-ID, seq-num, Timestamp, format-byte, Philo-num,
-    #    format-bye, Zero-terminated string (status)
+    # Intercept the QS_USER_00 application-specific trace record.
+    # This record has the following structure (see bsp.c:displayPhilStat()):
+    # Seq-Num, Record-ID, Timestamp, format-byte, Philo-num,
+    #    format-byte, Zero-terminated string (status)
     def QS_USER_00(self, packet):
         # unpack: Timestamp->data[0], Philo-num->data[1], status->data[3]
         data = qunpack("xxTxBxZ", packet)

@@ -37,6 +37,7 @@
 @echo usage:
 @echo make
 @echo make -CHM
+@echo make -DOC
 
 :: Doxygen tool (adjust to your system) ......................................
 @set DOXYGEN=doxygen
@@ -54,7 +55,7 @@
 @echo /** @page metrics Code Metrics > %METRICS_OUT%
 @echo.>> %METRICS_OUT%
 @echo @code{cpp} >> %METRICS_OUT%
-@echo                    Code Metrics for QP/C >> %METRICS_OUT%
+@echo                    Code Metrics >> %METRICS_OUT%
 
 %LIZARD% -m -L500 -a10 -C20 -V %METRICS_INP% >> %METRICS_OUT%
 
@@ -90,7 +91,7 @@ if "%1"=="-CHM" (
     copy images\favicon.ico ..\html
 
     @echo Generating HTML...
-    %DOXYGEN% Doxyfile
+    %DOXYGEN% Doxyfile%1
     @qclean ..\html
 )
 
