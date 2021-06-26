@@ -52,8 +52,8 @@
 #define QF_CRIT_ENTRY(dummy)  portENTER_CRITICAL(&QF_esp32mux)
 #define QF_CRIT_EXIT(dummy)   portEXIT_CRITICAL(&QF_esp32mux)
 
-#include "FreeRTOS.h"  /* FreeRTOS master include file, see NOTE4 */
-#include "task.h"      /* FreeRTOS task  management */
+#include "freertos/FreeRTOS.h"  /* FreeRTOS master include file, see NOTE4 */
+#include "freertos/task.h"      /* FreeRTOS task  management */
 
 #include "qep_port.h"  /* QEP port */
 #include "qequeue.h"   /* this QP port uses the native QF event queue */
