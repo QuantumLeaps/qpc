@@ -1,17 +1,17 @@
 /**
 * @file
-* @brief QF/C port to FreeRTOS-ESP32 adaptation
+* @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-11-28
+* Last updated for version 6.9.4
+* Last updated on  2021-06-29
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -29,7 +29,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* along with this program. If not, see <www.gnu.org/licenses>.
 *
 * Contact information:
 * <www.state-machine.com/licensing>
@@ -47,7 +47,9 @@
 #else
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
-#include <esp_log.h>
+
+#include "esp_log.h"
+#include "esp_freertos_hooks.h"
 
 Q_DEFINE_THIS_MODULE("qf_port")
 //static const char *TAG = "qf_port";
@@ -60,6 +62,14 @@ Q_DEFINE_THIS_MODULE("qf_port")
     #error "FreeRTOS configMAX_PRIORITIES must not be less than QF_MAX_ACTIVE"
 #endif
 
+#if defined( CONFIG_QPC_PINNED_TO_CORE_0 )
+    #define QPC_CPU_NUM         PRO_CPU_NUM
+#elif defined( CONFIG_QPC_PINNED_TO_CORE_1 )
+    #define QPC_CPU_NUM         APP_CPU_NUM
+#else
+    /* Defaults to APP_CPU */
+    #define QPC_CPU_NUM         APP_CPU_NUM
+#endif
 
 /* Global objects ----------------------------------------------------------*/
 PRIVILEGED_DATA portMUX_TYPE QF_esp32mux = portMUX_INITIALIZER_UNLOCKED;
@@ -70,15 +80,14 @@ int_t qf_run_active = 0;
 
 /*==========================================================================*/
 void QF_init(void) {
-    /* empty for FreeRTOS */
-    /*portMUX_TYPE QF_esp32mux = portMUX_INITIALIZER_UNLOCKED;*/
+    esp_register_freertos_tick_hook_for_cpu(freertos_tick_hook, QPC_CPU_NUM);
 }
 /*..........................................................................*/
 int_t QF_run(void) {
-    //QF_onStartup();  /* the startup callback (configure/enable interrupts) */
+    QF_onStartup();
     //vTaskStartScheduler(); /* start the FreeRTOS scheduler */
     //Q_ERROR_ID(110); /* the FreeRTOS scheduler should never return */
-   qf_run_active = 100;
+    qf_run_active = 100;
     return 0; /* dummy return to make the compiler happy */
 }
 /*..........................................................................*/
@@ -121,7 +130,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
               (UBaseType_t)(prio + tskIDLE_PRIORITY),  /* FreeRTOS priority */
               (StackType_t *)stkSto,    /* stack storage */
               &me->thread,              /* task buffer */
-              1);                       /* CPU number */
+              QPC_CPU_NUM);            /* CPU number */
     Q_ENSURE_ID(210, thr != (TaskHandle_t)0); /* must be created */
 }
 /*..........................................................................*/

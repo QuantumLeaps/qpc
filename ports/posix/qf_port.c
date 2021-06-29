@@ -4,14 +4,14 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-10-03
+* Last updated for version 6.9.4
+* Last updated on  2021-06-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -101,6 +101,7 @@ void QF_init(void) {
     l_tickPrio = sched_get_priority_min(SCHED_FIFO); /* default tick prio */
 
     /* install the SIGINT (Ctrl-C) signal handler */
+    memset(&sig_act, 0, sizeof(sig_act));
     sig_act.sa_handler = &sigIntHandler;
     sigaction(SIGINT, &sig_act, NULL);
 }

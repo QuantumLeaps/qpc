@@ -44,7 +44,7 @@
 
 /**** Dir 2.1 (Req) ************/
 
-    -std(c99) 		       /* strict ISO C99 */
+    -std(c99)                /* strict ISO C99 */
     /* Note: if you code to the C90 standard instead, you may
        want to comment out the above option and uncomment the
        following option. You will also want to do likewise for
@@ -87,7 +87,7 @@
 /**** Dir 4.5 (Adv) ************/
 
     +fta            /* enable typographical ambiguity checking */
-    +e9046	  	    /* typographical ambiguity */
+    +e9046              /* typographical ambiguity */
     +elib(9046)
     -append(9046,[MISRA 2012 Directive 4.5, advisory])
 
@@ -149,7 +149,7 @@
     /* While MISRA has declared this rule to be "undecidable", Gimpel
      * Software provides the following options to assist:
      */
-    -std(c99) 		       /* strict ISO C99 */
+    -std(c99)                /* strict ISO C99 */
     /* Note: if you code to the C90 standard instead, you may
        want to comment out the above option and uncomment the
        following option. You will also want to do likewise for
@@ -161,7 +161,7 @@
     /* While MISRA has declared this rule to be "undecidable", Gimpel
      * Software provides the following options to assist:
      */
-    -std(c99) 		       /* strict ISO C99 */
+    -std(c99)                /* strict ISO C99 */
     /* Note: if you code to the C90 standard instead, you may
        want to comment out the above option and uncomment the
        following option. You will also want to do likewise for
@@ -491,16 +491,16 @@
 
 /**** Rule 2.3 (Adv) ************/
 
-    +e751	   /* local typedef not referenced */
+    +e751       /* local typedef not referenced */
     +elib(751)
     -append(751,[MISRA 2012 Rule 2.3, advisory])
-    +e756	   /* global not referenced */
+    +e756       /* global not referenced */
     +elib(756)
     -append(756,[MISRA 2012 Rule 2.3, advisory])
 
 /**** Rule 2.4 (Adv) ************/
 
-    +e753	   /* local tag not referenced */
+    +e753       /* local tag not referenced */
     +elib(753)
     -append(753,[MISRA 2012 Rule 2.4, advisory])
     +e9058
@@ -509,22 +509,22 @@
 
 /**** Rule 2.5 (Adv) ************/
 
-    +e750	   /* local macro not referenced */
+    +e750       /* local macro not referenced */
     +elib(750)
     -append(750,[MISRA 2012 Rule 2.5, advisory])
-    +e755	   /* global macro not referenced */
+    +e755       /* global macro not referenced */
     +elib(755)
     -append(755,[MISRA 2012 Rule 2.5, advisory])
 
 /**** Rule 2.6 (Adv) ************/
 
-    +e563	   /* label not referenced */
+    +e563       /* label not referenced */
     +elib(563)
     -append(563,[MISRA 2012 Rule 2.6, advisory])
 
 /**** Rule 2.7 (Adv) ************/
 
-    +e715      	     /* not referenced */
+    +e715               /* not referenced */
     +elib(715)
     -append(715,[MISRA 2012 Rule 2.7, advisory])
 
@@ -546,7 +546,7 @@
 
 /**** Rule 3.2 (Req) ************/
 
-    +e427      	     /* C++ comment ends in \\ */
+    +e427               /* C++ comment ends in \\ */
     +elib(427)
     -append(427,[MISRA 2012 Rule 3.2, required])
 
@@ -814,7 +814,7 @@
 
 /**** Rule 8.10 (Req) ************/
 
-    +e695    	     /* inline function without storage-class specifier */
+    +e695             /* inline function without storage-class specifier */
     +elib(695)
     -append(695,[MISRA 2012 Rule 8.10, required])
     +estring(9056,extern)     /* inline function defined with extern */
@@ -828,7 +828,7 @@
 
 /**** Rule 8.12 (Req) ************/
 
-    +e488	/* duplicate enumerator values */
+    +e488    /* duplicate enumerator values */
     +elib(488)
     -append(488,[MISRA 2012 Rule 8.12, required])
 
@@ -837,13 +837,13 @@
     /* While MISRA has declared this rule to be "undecidable", Gimpel
      * Software provides the following options to assist:
      */
-    +e818	/* pointer could be declared pointing to const */
+    +e818    /* pointer could be declared pointing to const */
     +elib(818)
     -append(818,[MISRA 2012 Rule 8.13, advisory])
-    +e844	/* pointer could be declared pointing to const */
+    +e844    /* pointer could be declared pointing to const */
     +elib(844)
     -append(844,[MISRA 2012 Rule 8.13, advisory])
-    +e954	/* pointer could be declared pointing to const */
+    +e954    /* pointer could be declared pointing to const */
     +elib(954)
     -append(954,[MISRA 2012 Rule 8.13, advisory])
 
@@ -899,7 +899,7 @@
 
 /**** Rule 10.1 (Req) ************/
 
-    +e48				/* bad type */
+    +e48                /* bad type */
     +elib(48)
     -append(48,[MISRA 2012 Rule 10.1, required])
     +e9027                              /* unpermitted operand */
@@ -1067,7 +1067,7 @@
     /* While MISRA has declared this rule to be "undecidable", Gimpel
      * Software provides the following options to assist:
      */
-    +e564			/* variable depends on order of evaluation */
+    +e564            /* variable depends on order of evaluation */
     +elib(564)
     -append(564,[MISRA 2012 Rule 13.2, required])
 
@@ -1123,13 +1123,13 @@
     /* While MISRA has declared this rule to be "undecidable", Gimpel
      * Software provides the following options to assist:
      */
-    +e685			/* relational always evaluates to true/false */
+    +e685            /* relational always evaluates to true/false */
     +elib(685)
     -append(685,[MISRA 2012 Rule 14.3, required])
-    +e774			/* boolean always evaluates to true/false */
+    +e774            /* boolean always evaluates to true/false */
     +elib(774)
     -append(774,[MISRA 2012 Rule 14.3, required])
-    +e650			/* constant out of range for operator */
+    +e650            /* constant out of range for operator */
     +elib(650)
     -append(650,[MISRA 2012 Rule 14.3, required])
 
@@ -1296,7 +1296,7 @@
 
 /**** Rule 17.3 (Mand) ************/
 
-    +e718  	      		 /* symbol undeclared, assumed to return int */
+    +e718                     /* symbol undeclared, assumed to return int */
     +elib(718)
     -append(718,[MISRA 2012 Rule 17.3, mandatory])
 

@@ -37,7 +37,7 @@ __Modified QP/C ports:__
 - `qpc/ports/ucos2/` - implemented [feature#185](https://sourceforge.net/p/qpc/feature-requests/185/)
 - `qpc/ports/win32/` - added QSpy64 (64-bit) build configuration to the Visual Studio project
 - `qpc/ports/win32-qv/` - added QSpy64 (64-bit) build configuration to the Visual Studio project
-- `qpc/ports/win32-quit/` - added "port" used for "QP Unit Internal Testing" (QUIT) 
+- `qpc/ports/win32-quit/` - added "port" used for "QP Unit Internal Testing" (QUIT)
 
 
 __Updated examples:__

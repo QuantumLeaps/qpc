@@ -4,8 +4,8 @@
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2021-01-14
+* Last updated for version 6.9.4
+* Last updated on  2021-06-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -177,6 +177,7 @@ uint8_t QS_onStartup(void const *arg) {
     QS_onFlush();
 
     /* install the SIGINT (Ctrl-C) signal handler */
+    memset(&sig_act, 0, sizeof(sig_act));
     sig_act.sa_handler = &sigIntHandler;
     sigaction(SIGINT, &sig_act, NULL);
 

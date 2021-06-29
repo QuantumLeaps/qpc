@@ -1,17 +1,17 @@
 /**
 * @file
-* @brief QF/C port to FreeRTOS-ESP32 (Espressif ESP32-IDF 4.x) adaptation
+* @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
 * @ingroup ports
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-11-28
+* Last updated for version 6.9.4
+* Last updated on  2021-06-29
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -52,8 +52,8 @@
 #define QF_CRIT_ENTRY(dummy)  portENTER_CRITICAL(&QF_esp32mux)
 #define QF_CRIT_EXIT(dummy)   portEXIT_CRITICAL(&QF_esp32mux)
 
-#include "FreeRTOS.h"  /* FreeRTOS master include file, see NOTE4 */
-#include "task.h"      /* FreeRTOS task  management */
+#include "freertos/FreeRTOS.h"  /* FreeRTOS master include file, see NOTE4 */
+#include "freertos/task.h"      /* FreeRTOS task  management */
 
 #include "qep_port.h"  /* QEP port */
 #include "qequeue.h"   /* this QP port uses the native QF event queue */
@@ -222,15 +222,27 @@ enum FreeRTOS_TaskAttrs {
 
 /*****************************************************************************
 * NOTE0:
-* FreeRTOS-ESP32 is a significantly changed version of the FreeRTOS kernel
-* developed by Espressif to support the ESP32 multi-core CPUs (see ESP32 IDF).
-* FreeRTOS-ESP32 is NOT compatible with the baseine FreeRTOS and it needs to
-* be treated as a separate RTOS kernel. According to the comments in the source
-* code, FreeRTOS-ESP32 is based on FreeRTOS V8.2.0, but apparently FreeRTOS-ESP32
-* has been updated with the newer features introduced to the original FreeRTOS
-* in the later versions. For example, FreeRTOS-ESP32 supports the "static
-* allocation", first introduced in baseline FreeRTOS V9.x. This prot to
-* QP-FreeRTOS-ESP32 takes advantage of the "static allocation".
+* This is the "experimental" port to the [Espressif ESP-IDF][1]
+* IoT Framework, which is loosely based on the [FreeRTOS kernel][2].
+*
+* "Experimental" means that the port has not been thouroughly tested at
+* Quantum Leaps and no working examples are provided.
+*
+* The [Espressif ESP-IDF][1] is based on a significantly changed version
+* of the FreeRTOS kernel developed by Espressif to support the ESP32 multi-core
+* CPUs (see [ESP-IDF][1]).
+*
+* The Espressif version of FreeRTOS is __NOT__ compatible with the baseline
+* FreeRTOS and it needs to be treated as a separate RTOS kernel.
+* According to the comments in the Espressif source code, FreeRTOS-ESP-IDF
+* is based on FreeRTOS V8.2.0, but apparently FreeRTOS-ESP-IDF has been
+* updated with the newer features introduced to the original FreeRTOS in the
+* later versions. For example, FreeRTOS-ESP32 supports the "static allocation",
+* first introduced in baseline FreeRTOS V9.x. This QP port to FreeRTOS-ESP-IDF
+* takes advantage of the "static allocation".
+*
+* [1]: https://www.espressif.com/en/products/sdks/esp-idf
+* [2]: https://freertos.org
 *
 * NOTE1:
 * The maximum number of active objects QF_MAX_ACTIVE can be increased to 64,
