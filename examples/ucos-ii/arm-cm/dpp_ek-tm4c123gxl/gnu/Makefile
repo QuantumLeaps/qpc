@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP/C on EK-TM4C123GXL, uC/OS-II kernel, GNU-ARM
-# Last Updated for Version: 6.8.1
-# Date of the Last Update:  2020-06-01
+# Last Updated for Version: 6.9.4
+# Date of the Last Update:  2021-07-01
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -25,7 +25,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program. If not, see <www.gnu.org/licenses/>.
+# along with this program. If not, see <http://www.gnu.org/licenses>.
 #
 # Contact information:
 # <www.state-machine.com/licensing>
@@ -151,12 +151,10 @@ DEFINES   := -DTARGET_IS_TM4C123_RB1 -D__FPU_PRESENT
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
-# ARM_ARCH:  [6 | 7] (NOTE: must match ARM_CPU!)
 # ARM_FPU:   [ | vfp]
 # FLOAT_ABI: [ | soft | softfp | hard]
 #
 ARM_CPU   := -mcpu=cortex-m4
-ARM_ARCH  := 7   # NOTE: must match the ARM_CPU!
 ARM_FPU   := -mfpu=vfp
 FLOAT_ABI := -mfloat-abi=softfp
 ASM_FPU   := -defsym=__FPU_PRESENT=1
