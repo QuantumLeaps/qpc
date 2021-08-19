@@ -113,16 +113,6 @@ The software shall support hierarchical state nesting
 @subsection sas_qep State Machine Event Processor
 
 
-@reqdef{RQPC101, The software shall support hierarchical state nesting}
-@par Amplification
-State hierarchy is the primary mechanism of behavioral reuse in state machines.
-@par Rationale
-This is a useful thing to have
-
-@reqdef{RQPC102, The software shall support manual coding}
-
-
-
 @subsection sas_qv Cooperative Run-to-Completion Kernel
 
 

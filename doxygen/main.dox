@@ -2,9 +2,14 @@
 
 @image html qp_banner.jpg
 
-@section ab_new What's new?
-To check what's new in QP/C, please see @ref history "QP/C Revision History".
+@htmlonly
+<a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP/C on GitHub"><img style="float:right; clear:right;" src="img/github-corner.png"></a>
+@endhtmlonly
 
+@section ab_new What's new?
+To check what's new in QP/C, please see @ref history "QP/C Revision History". You can also get the latest __QP/C code__, with the recent enhancements and bug fixes, from the <a class="extern" target="_blank" href="https://github.com/QuantumLeaps/qpc"><strong>GitHub QP/C repository</strong></a>.
+
+<div style="clear:both"></div>
 
 
 @section ab_about What is it?
@@ -15,13 +20,7 @@ The behavior of active objects is specified in QP/C by means of <a href="https:/
 @attention
 To use QP/C&trade; effectively, you need to understand the <a href="https://www.state-machine.com/category/concepts/" target="_blank" class="extern"><strong>key concepts</strong></a> that underline the architecture of the framework and your applications based on the framework.
 
-<div style="clear:both"></div>
 
-
-
-@htmlonly
-<img style="float:right; margin:10px 8px 8px 15px; clear:right;" src="img/logo_qp.gif" title="QP">
-@endhtmlonly
 
 @section ab_goals What does it do?
 The main goals of the QP/C&trade; framework are:
@@ -124,7 +123,6 @@ Training and consulting services are also available from Quantum Leaps. Please r
 
 - e-mail: <a class="extern" target="_blank" href="mailto:info@state-machine.com">info@state-machine.com</a>
 
-@image html logo_ql_TM.jpg
 
 @next{gs}
 */

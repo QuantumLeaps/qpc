@@ -5,9 +5,9 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "6.9.3"
-PROJECT_BRIEF          =
-PROJECT_LOGO           = images/header_logo_ql.png
+PROJECT_NUMBER         = "6.9.4"
+PROJECT_BRIEF          = "Real-Time Embedded Framework"
+PROJECT_LOGO           = images/logo_ql.png
 OUTPUT_DIRECTORY       =
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO
@@ -15,7 +15,17 @@ OUTPUT_LANGUAGE        = English
 OUTPUT_TEXT_DIRECTION  = None
 BRIEF_MEMBER_DESC      = YES
 REPEAT_BRIEF           = YES
-ABBREVIATE_BRIEF       =
+ABBREVIATE_BRIEF       = "The $name class" \
+                         "The $name widget" \
+                         "The $name file" \
+                         is \
+                         provides \
+                         specifies \
+                         contains \
+                         represents \
+                         a \
+                         an \
+                         the
 ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = NO
@@ -24,21 +34,22 @@ STRIP_FROM_INC_PATH    =
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = NO
 JAVADOC_BANNER         = NO
-QT_AUTOBRIEF           = YES
-MULTILINE_CPP_IS_BRIEF = YES
+QT_AUTOBRIEF           = NO
+MULTILINE_CPP_IS_BRIEF = NO
 PYTHON_DOCSTRING       = YES
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 4
 ALIASES                = "next{1}=<hr><b>Next:</b> @ref \1</p>" \
                          "description=@par Description" \
+                         "amplification=@par Amplification" \
+                         "rationale=@par Rationale" \
+                         "caption{1}=<div class=\"caption\" align=\"center\">\1</div>" \
                          "hint=@par Hint" \
                          "usage=@par Usage" \
-                         "caption{1}=<div class=\"caption\" align=\"center\">\1</div>" \
-                         "reqdef{2}=<div class= vmargin20></div>@anchor \1 <TABLE><TR ALIGN= left><TH NOWRAP>\1</TH><TH WIDTH= 100%>\2</TH></TR></TABLE>" \
-                         "reqref{1}=@ref \1 \"\1\"" \
-                         "termdef{2}=@anchor term_\1 @par \2" \
-                         "termref{1}=@ref term_\1"
+                         "termref{2}=<a class=\"extern\" target=\"_blank\" href=\"https://www.state-machine.com/\1\">\2</a>" \
+                         "reqdef{1}=@anchor \1 @xrefitem reqdef \"Requirement\" \"Requirement Index\" @ref \1" \
+                         "reqref{1}=@ref \1 \"\1\""
 OPTIMIZE_OUTPUT_FOR_C  = YES
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
@@ -181,6 +192,7 @@ SOURCE_TOOLTIPS        = YES
 USE_HTAGS              = NO
 VERBATIM_HEADERS       = YES
 CLANG_ASSISTED_PARSING = NO
+CLANG_ADD_INC_PATHS    = YES
 CLANG_OPTIONS          =
 CLANG_DATABASE_PATH    =
 #---------------------------------------------------------------------------
@@ -194,14 +206,15 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = ../html
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = ../../doxygen/header.html
-HTML_FOOTER            = ../../doxygen/footer.html
+HTML_HEADER            = ../../doxygen/header-awesome.html
+HTML_FOOTER            = ../../doxygen/footer-awesome.html
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  = ../../doxygen/ql.css
-HTML_EXTRA_FILES       =
-HTML_COLORSTYLE_HUE    = 220
-HTML_COLORSTYLE_SAT    = 100
-HTML_COLORSTYLE_GAMMA  = 80
+HTML_EXTRA_STYLESHEET  = ../../doxygen/doxygen-awesome.css \
+                         ../../doxygen/ql-awesome.css
+HTML_EXTRA_FILES       = ../../doxygen/doxygen-awesome-darkmode-toggle.js
+HTML_COLORSTYLE_HUE    = 209
+HTML_COLORSTYLE_SAT    = 255
+HTML_COLORSTYLE_GAMMA  = 113
 HTML_TIMESTAMP         = NO
 HTML_DYNAMIC_MENUS     = YES
 HTML_DYNAMIC_SECTIONS  = NO
@@ -231,7 +244,7 @@ ECLIPSE_DOC_ID         = com.state-machine.qp
 DISABLE_INDEX          = YES
 GENERATE_TREEVIEW      = YES
 ENUM_VALUES_PER_LINE   = 4
-TREEVIEW_WIDTH         = 180
+TREEVIEW_WIDTH         = 300
 EXT_LINKS_IN_WINDOW    = NO
 HTML_FORMULA_FORMAT    = png
 FORMULA_FONTSIZE       = 10
@@ -239,7 +252,7 @@ FORMULA_TRANSPARENT    = YES
 FORMULA_MACROFILE      =
 USE_MATHJAX            = NO
 MATHJAX_FORMAT         = HTML-CSS
-MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
+MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@2
 MATHJAX_EXTENSIONS     =
 MATHJAX_CODEFILE       =
 SEARCHENGINE           = YES

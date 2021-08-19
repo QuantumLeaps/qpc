@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: DPP example, NUCLEO-L053R8 board, preemptive QXK kernel
-* Last updated for version 6.9.3
-* Last updated on  2021-03-03
+* Product: DPP example, STM32 NUCLEO-L053R8 board, preemptive QXK kernel
+* Last updated for version 6.9.4
+* Last updated on  2021-08-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -55,6 +55,7 @@ static uint32_t l_rnd;  /* random seed */
 
     /* QSpy source IDs */
     static QSpyId const l_SysTick_Handler = { 0U };
+    static QSpyId const l_EXTI0_1_IRQHandler = { 0U };
 
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER
@@ -118,7 +119,7 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
 void EXTI0_1_IRQHandler(void) {
     static QEvt const testEvt = { TEST_SIG, 0U, 0U };
     QXK_ISR_ENTRY(); /* inform QXK about entering an ISR */
-    QXTHREAD_POST_X(XT_Test2, &testEvt, 0U, (void *)0);
+    QXTHREAD_POST_X(XT_Test2, &testEvt, 0U, &l_EXTI0_1_IRQHandler);
     QXK_ISR_EXIT();  /* inform QXK about exiting an ISR */
 }
 /*..........................................................................*/
@@ -167,6 +168,7 @@ void BSP_init(void) {
         Q_ERROR();
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
+    QS_OBJ_DICTIONARY(&l_EXTI0_1_IRQHandler);
     QS_USR_DICTIONARY(PHILO_STAT);
 
     /* setup the QS filters... */

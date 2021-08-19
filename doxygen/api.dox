@@ -66,7 +66,7 @@ QF is a portable, event-driven, real-time framework for execution of active obje
 - QTimeEvt_armX()
 - QTimeEvt_disarm()
 - QTimeEvt_rearm()
-- QTimeEvt_ctr()
+- QTimeEvt_currCtr()
 - ::QTicker active object
 
 
