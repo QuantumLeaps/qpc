@@ -191,8 +191,6 @@ uint_fast16_t QActive_flushDeferred(QActive const * const me,
     QEvt const *e = QEQueue_get(eq, me->prio);
     uint_fast16_t n = 0U;
 
-    (void)me; /* unused parameter */
-
     for (; e != (QEvt *)0; e = QEQueue_get(eq, me->prio)) {
         QF_gc(e); /* garbage collect */
         ++n; /* count the flushed event */
