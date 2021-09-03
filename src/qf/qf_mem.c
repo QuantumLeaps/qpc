@@ -4,14 +4,14 @@
 * @brief ::QMPool implementatin (Memory Pool)
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-03
+* Last updated for version 6.9.4
+* Last updated on  2021-09-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -97,8 +97,8 @@ void QMPool_init(QMPool * const me, void * const poolSto,
     * and the blockSize must not be too close to the top of the dynamic range
     */
     Q_REQUIRE_ID(100, (poolSto != (void *)0)
-              && (poolSize >= sizeof(QFreeBlock))
-              && ((blockSize + sizeof(QFreeBlock)) > blockSize));
+            && (poolSize >= (uint_fast32_t)sizeof(QFreeBlock))
+            && ((uint_fast16_t)(blockSize + sizeof(QFreeBlock)) > blockSize));
 
     me->free_head = poolSto;
 

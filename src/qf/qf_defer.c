@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-03
+* Last updated for version 6.9.4
+* Last updated on  2021-09-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -80,8 +80,6 @@ bool QActive_defer(QActive const * const me, QEQueue * const eq,
 {
     bool status = QEQueue_post(eq, e, 0U, me->prio);
     QS_CRIT_STAT_
-
-    (void)me; /* unused parameter */
 
     QS_BEGIN_PRE_(QS_QF_ACTIVE_DEFER, me->prio)
         QS_TIME_PRE_();      /* time stamp */
@@ -190,8 +188,6 @@ uint_fast16_t QActive_flushDeferred(QActive const * const me,
 {
     QEvt const *e = QEQueue_get(eq, me->prio);
     uint_fast16_t n = 0U;
-
-    (void)me; /* unused parameter */
 
     for (; e != (QEvt *)0; e = QEQueue_get(eq, me->prio)) {
         QF_gc(e); /* garbage collect */

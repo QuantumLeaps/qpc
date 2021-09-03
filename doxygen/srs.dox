@@ -1,22 +1,18 @@
 /*! @page srs_toc Requirements (SRS)
 
 <h1>Software Requirements Specification (SRS)</h1>
-<p>This document specifies the requirements for the **QP/C** @termref{rtef, real-time embedded framework (RTEF)} (later referenced simply as _QP/C_). This document describes the intended features of _QP/C_, as well as the interfaces to other software, hardware, and various other technical dependencies. The quick links to the main sections of this SRS are given below:
+<p>This document specifies the requirements for the **QP/C** @termref{rtef, real-time embedded framework (RTEF)} (later referenced simply as _QP/C_). This document describes the intended features of _QP/C_, as well as the interfaces to other software, such as application-level software as well as the lower-level software providing services to QP/C. The quick links to the main sections of this SRS are given below:
 </p>
 
 - @subpage srs_intro
   + @ref srs_purpose
-  + @ref srs_scope
   + @ref srs_audience
   + @ref srs_conv
   + @ref srs_refs
-  + @ref srs_prod
-  + @ref srs_funct
-  + @ref srs_user
   + @ref srs_assume
 - @subpage srs_fun
-  + @ref srs_qf
   + @ref srs_qep
+  + @ref srs_qf
   + @ref srs_qv
   + @ref srs_qk
   + @ref srs_qxk
@@ -51,10 +47,6 @@ The purpose of the QP/C @termref{ao} @termref{framework} is to provide a reusabl
 
 
 
-@section srs_scope Project Scope
-
-
-
 @section srs_audience Intended Audience
 
 This SRS document is primarily intended for **embedded software engineers**, who develop applications based on the QP/C framework.
@@ -76,25 +68,11 @@ Requirement definitions use consistent terminology to indicate whether something
 
 
 @section srs_refs References
-
-
-@section srs_prod Product Perspective
-
-
-
-@section srs_funct Product Functions
-
 - @reqref{RQPC101}
 - @reqref{RQPC102}
 
 - @reqref{RQPC201}
 - @reqref{RQPC202}
-
-
-@section srs_user User Characteristics
-The main users of the QP/C framework are **embedded software engineers**, who develop applications based on the QP/C framework.
-
-
 
 
 @section srs_assume Assumptions and Dependencies
@@ -105,23 +83,60 @@ The main users of the QP/C framework are **embedded software engineers**, who de
 /*! @page srs_fun Functional Requirements
 
 
-@section srs_qf Active Object Framework
+@section srs_qep State Machine Event Processor (QEP)
+The QP/C Event Processor (QEP) is a sub-component of the QP/C framework that implements processing of events according to state machine machine semantics. Specifically, according to that semantics each event is processed to completion (Run-to-Completion) before the processing of the next event can begin.
 
 
-@section srs_qep State Machine Event Processor
+@reqdef{RQPC101} QEP shall process events according to the Run-To-Completion (RTC) semantics.
 
-@reqdef{RQPC101} The software shall support hierarchical state nesting
-
-@amplification
-State hierarchy is the primary mechanism of behavioral reuse in state machines.
+@description
+RTC event processing means that a given event must be handled entirely (to completion) before processing of the next event can begin. QEP shall implement this requirement via a generic "dispatch" operation, which will process one event at at time and needs to complete (return) before it can be called again.
 
 @rationale
-This is a useful thing to have
+RTC is the universally assumed semantics of processing events in virtually all event-driven systems. The main advantage of RTC is that it eliminates by design any concurrency hazards within a given software component.
 
-@reqdef{RQPC102} The software shall support manual coding
 
-@amplification
-The implementation must be traceable.
+@reqdef{RQPC102} QEP shall support multiple and interchangeable event processing strategies, including various state machine implementations.
+
+
+@reqdef{RQPC103} QEP shall support hierarchical state machines with the following features:
+- leaf states
+- composite states
+- entry actions to states
+- exit actions from states
+- nested initial transitions in composite states
+- regular transitions between states at any level of nesting
+- internal transitions in states
+- guard conditions on all types of transitions
+- transitions to history (shallow)
+- transitions to history (deep)
+
+
+@reqdef{RQPC104} The state machine implementation must be __human readable__.
+
+@reqdef{RQPC105} The state machine implementation must be __traceable__.
+
+@reqdef{RQPC106} The state machine implementation must be amenable to automatic code generation.
+
+@reqdef{RQPC107} The QMsm-state machine implementation strategy shall additionally support the following features:
+- submachines
+- entry points
+- exit points
+- submachine states
+
+@reqdef{RQPC108} The generic "dispatch" operation must not use dynamic memory.
+
+@reqdef{RQPC109} The generic "dispatch" operation must be deterministic.
+
+@reqdef{RQPC110} The generic "dispatch" operation must use limited and known amount of call stack.
+
+@reqdef{RQPC111} The application-level code shall have an easy access to the instance variables via just one pointer.
+
+@reqdef{RQPC112} The application-level code shall have an easy access to the current event via just one pointer.
+
+
+@section srs_qf Active Object Framework
+
 
 
 @section srs_qv Cooperative Run-to-Completion Kernel
