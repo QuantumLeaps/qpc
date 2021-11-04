@@ -8,4 +8,3 @@
 INPUT                  = main.dox \
                          srs.dox \
                          modules.dox
-                         ../../doxygen/help.dox

@@ -1,18 +1,17 @@
-# Doxyfile 1.9.1
+# Doxyfile 1.9.2
 
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = "6.9.4"
+PROJECT_NAME           = QP/C
+PROJECT_NUMBER         = 6.9.4
 PROJECT_BRIEF          = "Real-Time Embedded Framework"
 PROJECT_LOGO           = images/logo_ql.png
 OUTPUT_DIRECTORY       =
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
-OUTPUT_TEXT_DIRECTION  = None
 BRIEF_MEMBER_DESC      = YES
 REPEAT_BRIEF           = YES
 ABBREVIATE_BRIEF       = "The $name class" \
@@ -91,6 +90,7 @@ INTERNAL_DOCS          = NO
 CASE_SENSE_NAMES       = NO
 HIDE_SCOPE_NAMES       = YES
 HIDE_COMPOUND_REFERENCE= NO
+SHOW_HEADERFILE        = YES
 SHOW_INCLUDE_FILES     = YES
 SHOW_GROUPED_MEMB_INC  = NO
 FORCE_LOCAL_INCLUDES   = NO
@@ -120,6 +120,7 @@ QUIET                  = NO
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
+WARN_IF_INCOMPLETE_DOC = YES
 WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
@@ -134,14 +135,14 @@ INPUT                  = main.dox \
                          exa.dox \
                          exa_apps.dox \
                          exa_native.dox \
-                         ../../doxygen/exa_low-power.dox \
+                         ../../ql-doxygen/exa_low-power.dox \
                          exa_rtos.dox \
                          exa_os.dox \
                          exa_qutest.dox \
                          exa_mware.dox \
                          ports.dox \
                          ports_native.dox \
-                         ../../doxygen/ports_arm-cm.dox \
+                         ../../ql-doxygen/ports_arm-cm.dox \
                          ports_rtos.dox \
                          ports_os.dox \
                          history.dox \
@@ -151,7 +152,7 @@ INPUT                  = main.dox \
                          ../include \
                          ../src \
                          ../ports/lint-plus \
-                         ../../doxygen/help.dox
+                         ../../ql-doxygen/help.dox
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.dox \
                          *.h \
@@ -173,7 +174,7 @@ EXAMPLE_PATH           = snippets \
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             = images \
-                         ../../doxygen/images
+                         ../../ql-doxygen/images
 INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
@@ -206,12 +207,12 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = ../html
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = ../../doxygen/header-awesome.html
-HTML_FOOTER            = ../../doxygen/footer-awesome.html
+HTML_HEADER            = ../../ql-doxygen/header-awesome.html
+HTML_FOOTER            = ../../ql-doxygen/footer-awesome.html
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  = ../../doxygen/doxygen-awesome.css \
-                         ../../doxygen/ql-awesome.css
-HTML_EXTRA_FILES       = ../../doxygen/doxygen-awesome-darkmode-toggle.js
+HTML_EXTRA_STYLESHEET  = ../../ql-doxygen/doxygen-awesome.css \
+                         ../../ql-doxygen/ql-awesome.css
+HTML_EXTRA_FILES       = ../../ql-doxygen/doxygen-awesome-darkmode-toggle.js
 HTML_COLORSTYLE_HUE    = 209
 HTML_COLORSTYLE_SAT    = 255
 HTML_COLORSTYLE_GAMMA  = 113
@@ -243,6 +244,7 @@ GENERATE_ECLIPSEHELP   = NO
 ECLIPSE_DOC_ID         = com.state-machine.qp
 DISABLE_INDEX          = YES
 GENERATE_TREEVIEW      = YES
+FULL_SIDEBAR           = NO
 ENUM_VALUES_PER_LINE   = 4
 TREEVIEW_WIDTH         = 300
 EXT_LINKS_IN_WINDOW    = NO
@@ -251,6 +253,7 @@ FORMULA_FONTSIZE       = 10
 FORMULA_TRANSPARENT    = YES
 FORMULA_MACROFILE      =
 USE_MATHJAX            = NO
+MATHJAX_VERSION        = MathJax_2
 MATHJAX_FORMAT         = HTML-CSS
 MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@2
 MATHJAX_EXTENSIONS     =
@@ -281,7 +284,6 @@ PDF_HYPERLINKS         = YES
 USE_PDFLATEX           = YES
 LATEX_BATCHMODE        = NO
 LATEX_HIDE_INDICES     = NO
-LATEX_SOURCE_CODE      = NO
 LATEX_BIB_STYLE        = plain
 LATEX_TIMESTAMP        = NO
 LATEX_EMOJI_DIRECTORY  =
@@ -294,7 +296,6 @@ COMPACT_RTF            = NO
 RTF_HYPERLINKS         = NO
 RTF_STYLESHEET_FILE    =
 RTF_EXTENSIONS_FILE    =
-RTF_SOURCE_CODE        = NO
 #---------------------------------------------------------------------------
 # Configuration options related to the man page output
 #---------------------------------------------------------------------------
@@ -315,7 +316,6 @@ XML_NS_MEMB_FILE_SCOPE = NO
 #---------------------------------------------------------------------------
 GENERATE_DOCBOOK       = NO
 DOCBOOK_OUTPUT         = docbook
-DOCBOOK_PROGRAMLISTING = NO
 #---------------------------------------------------------------------------
 # Configuration options for the AutoGen Definitions output
 #---------------------------------------------------------------------------

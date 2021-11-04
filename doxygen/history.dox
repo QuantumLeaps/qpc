@@ -1,6 +1,16 @@
 /**
 @page history Revision History
 
+
+@section qpc_6_9_4 Version 6.9.4, 2021-10-31
+
+- removed unused `ARM_ARCH` symbol from Makefiles for GNU-ARM
+- imoroved the Doxygen documentation for member functions of classes in C
+- introudced new styling for the HTML documentation
+- updated links in the documentation
+
+
+
 @section qpc_6_9_3 Version 6.9.3, 2021-04-12
 
 __Feature Requests:__
@@ -616,7 +626,7 @@ This release does not change any of the QP/C APIs.
 @section qpc_6_0_1 Version 6.0.1, 2017-11-10
 The main focus of this release is to fix the remaining problems with transitions out of eXit-Points in sub-machines. Specifically, this release modifies the QMsm-based state machine implementation strategy (file src/qf/qep_msm.c to properly handle transitions from eXit-Points to Entry-Points and from eXit-Points to History connectors in sub-machines. These changes are part of fixing the following bugs reported for QM:
 
-- [bug#190 "Exit-Point segment targeting History doesn't work](https://sourceforge.net/p/qpc/bugs/190/)
+- [bug#190 "Exit-Point segment targeting History doesn't work"](https://sourceforge.net/p/qpc/bugs/190/)
 
 - [bug#189 "Exit-Point segment targeting an Entry-Point to sub-machine state doesn't work"](https://sourceforge.net/p/qpc/bugs/189/)
 

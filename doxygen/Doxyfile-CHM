@@ -6,8 +6,8 @@
 # Configuration options related to the HTML output
 #---------------------------------------------------------------------------
 HTML_OUTPUT            = tmp
-HTML_HEADER            = ../../doxygen/header.html
-HTML_FOOTER            = ../../doxygen/footer.html
-HTML_EXTRA_STYLESHEET  = ../../doxygen/ql.css
+HTML_HEADER            = ../../ql-doxygen/header.html
+HTML_FOOTER            = ../../ql-doxygen/footer.html
+HTML_EXTRA_STYLESHEET  = ../../ql-doxygen/ql.css
 HTML_EXTRA_FILES       =
 GENERATE_HTMLHELP      = YES

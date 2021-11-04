@@ -84,7 +84,7 @@ Requirement definitions use consistent terminology to indicate whether something
 
 
 @section srs_qep State Machine Event Processor (QEP)
-The QP/C Event Processor (QEP) is a sub-component of the QP/C framework that implements processing of events according to state machine machine semantics. Specifically, according to that semantics each event is processed to completion (Run-to-Completion) before the processing of the next event can begin.
+The QP/C Event Processor (QEP) is a sub-component of the QP/C framework that implements processing of events according to state machine semantics. Specifically, according to that semantics each event is processed to completion (Run-to-Completion) before the processing of the next event can begin.
 
 
 @reqdef{RQPC101} QEP shall process events according to the Run-To-Completion (RTC) semantics.
