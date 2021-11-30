@@ -1,4 +1,4 @@
-![QP framework](https://www.state-machine.com/img/qp_banner.jpg)
+![QP Framework](doxygen/images/qp_banner.jpg)
 
 > **NOTE:** If your company has a policy forbidding open source in your
 product, all QP frameworks can be
@@ -112,13 +112,12 @@ The **QP/C Manual** is located online at: https://www.state-machine.com/qpc
 - [Quantum Leaps licensing](https://www.state-machine.com/licensing)
 - [info@state-machine.com](mailto:info@state-machine.com)
 
-   [RTEF]: <https://www.state-machine.com/doc/concepts#RTEF>
-   [QP]: <https://www.state-machine.com/products/#QP>
+   [RTEF]: <https://www.state-machine.com/rtef>
+   [QP]: <https://www.state-machine.com/products/qp>
    [QP/C]: <https://www.state-machine.com/qpc>
    [QP/C++]: <https://www.state-machine.com/qpcpp>
-   [QP-nano]: <https://www.state-machine.com/qpn>
-   [QM]: <https://www.state-machine.com/qm>
-   [Active]: <https://www.state-machine.com/doc/concepts#Active>
-   [HSM]: <https://www.state-machine.com/doc/concepts#HSM>
+   [QM]: <https://www.state-machine.com/products/qm>
+   [Active]: <https://www.state-machine.com/active-object>
+   [HSM]: <https://www.state-machine.com/fsm#HSM>
    [Lic]: <https://www.state-machine.com/licensing>
    [AN]: <https://www.state-machine.com/doc/AN_Getting_Started_with_QPC.pdf>
