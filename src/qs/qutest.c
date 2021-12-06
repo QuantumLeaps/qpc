@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2020-12-16
+* Last updated for version 6.9.4
+* Last updated on  2021-10-07
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -53,6 +53,7 @@ Q_DEFINE_THIS_MODULE("qutest")
 uint8_t volatile QF_intNest;
 
 /* QF functions ============================================================*/
+/*! @static @public @memberof QF */
 void QF_init(void) {
     /* Clear the internal QF variables, so that the framework can start
     * correctly even if the startup code fails to clear the uninitialized
@@ -67,10 +68,12 @@ void QF_init(void) {
     QF_bzero(&QS_rxPriv_.readySet, sizeof(QS_rxPriv_.readySet));
 }
 /*..........................................................................*/
+/*! @static @public @memberof QF */
 void QF_stop(void) {
     QS_onReset();
 }
 /*..........................................................................*/
+/*! @static @public @memberof QF */
 int_t QF_run(void) {
     QS_CRIT_STAT_
 
@@ -89,6 +92,7 @@ int_t QF_run(void) {
 }
 
 /*..........................................................................*/
+/*! @private @memberof QActive */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
@@ -122,7 +126,9 @@ static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
                                 void const * const par);
 
 /*..........................................................................*/
-/*! "constructor" of QActiveDummy */
+/*! "constructor" of QActiveDummy
+* @public @memberof QActiveDummy
+*/
 void QActiveDummy_ctor(QActiveDummy * const me) {
     static QActiveVtable const vtable = {  /* QActive virtual table */
         { &QActiveDummy_init_,
@@ -135,10 +141,12 @@ void QActiveDummy_ctor(QActiveDummy * const me) {
         &QActiveDummy_post_,
         &QActiveDummy_postLIFO_
     };
-    QActive_ctor(&me->super, Q_STATE_CAST(0)); /* superclass' ctor */
+    /* superclass' ctor */
+    QActive_ctor(&me->super, Q_STATE_CAST(0));
     me->super.super.vptr = &vtable.super;      /* hook the vptr */
 }
 /*..........................................................................*/
+/*! @private @memberof QActiveDummy */
 static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
                                 QEvt const * * const qSto, uint_fast16_t qLen,
                                 void *stkSto, uint_fast16_t stkSize,
@@ -161,6 +169,7 @@ static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
 }
 //............................................................................
 #ifdef QF_ACTIVE_STOP
+/*! @public @memberof QActive */
 void QActive_stop(QActive * const me) {
     QActive_unsubscribeAll(me); /* unsubscribe from all events */
     QF_remove_(me); /* remove this object from QF */
@@ -168,6 +177,7 @@ void QActive_stop(QActive * const me) {
 #endif
 
 /*..........................................................................*/
+/*! @private @memberof QActiveDummy */
 static void QActiveDummy_init_(QHsm * const me, void const * const par,
                                uint_fast8_t const qs_id)
 {
@@ -183,6 +193,7 @@ static void QActiveDummy_init_(QHsm * const me, void const * const par,
     QS_END_PRE_()
 }
 /*..........................................................................*/
+/*! @private @memberof QActiveDummy */
 static void QActiveDummy_dispatch_(QHsm * const me, QEvt const * const e,
                                    uint_fast8_t const qs_id)
 {
@@ -198,6 +209,7 @@ static void QActiveDummy_dispatch_(QHsm * const me, QEvt const * const e,
     QS_END_PRE_()
 }
 /*..........................................................................*/
+/*! @private @memberof QActiveDummy */
 static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
                                uint_fast16_t const margin,
                                void const * const sender)
@@ -252,6 +264,7 @@ static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
     return status; /* the event is "posted" correctly */
 }
 /*..........................................................................*/
+/*! @private @memberof QActiveDummy */
 static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_STAT_
     QS_TEST_PROBE_DEF(&QActive_postLIFO_)
@@ -295,6 +308,7 @@ static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e) {
 }
 
 /****************************************************************************/
+/*! @static @private @memberof QS */
 void QS_processTestEvts_(void) {
     QS_TEST_PROBE_DEF(&QS_processTestEvts_)
 
@@ -330,6 +344,7 @@ void QS_processTestEvts_(void) {
 *    the TE is disarmed (if one-shot) and then posted to the recipient AO.
 * 2. The linked-list of all armed Time Events is updated.
 */
+/*! @static @private @memberof QS */
 void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
     QTimeEvt *t;
     QActive *act;

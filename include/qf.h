@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.3
-* Last updated on  2021-02-26
+* Last updated for version 6.9.4
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -114,10 +114,10 @@ struct QEQueue; /* forward declaration */
 * @include qf_qactive.c
 */
 typedef struct QActive {
-    QHsm super; /*!< inherits ::QHsm */
+    QHsm super; /*!< @protected inherits ::QHsm */
 
 #ifdef QF_EQUEUE_TYPE
-    /*! OS-dependent event-queue type. */
+    /*! @private OS-dependent event-queue type. */
     /**
     * @description
     * The type of the queue depends on the underlying operating system or
@@ -133,7 +133,7 @@ typedef struct QActive {
 #endif
 
 #ifdef QF_OS_OBJECT_TYPE
-    /*! OS-dependent per-thread object. */
+    /*! @private OS-dependent per-thread object. */
     /**
     * @description
     * This data might be used in various ways, depending on the QF port.
@@ -145,7 +145,7 @@ typedef struct QActive {
 #endif
 
 #ifdef QF_THREAD_TYPE
-    /*! OS-dependent representation of the thread of the active object. */
+    /*! @private OS-dependent representation of the thread of the AO. */
     /**
     * @description
     * This data might be used in various ways, depending on the QF port.
@@ -156,20 +156,20 @@ typedef struct QActive {
 #endif
 
 #ifdef QXK_H  /* QXK kernel used? */
-    /*! QXK dynamic priority (1..#QF_MAX_ACTIVE) of this AO/thread */
+    /*! @private QXK dynamic priority (1..#QF_MAX_ACTIVE) of this AO/thread */
     uint8_t dynPrio;
 #endif
 
-    /*! QF priority (1..#QF_MAX_ACTIVE) of this active object. */
+    /*! @private QF priority (1..#QF_MAX_ACTIVE) of this active object. */
     uint8_t prio;
 
 } QActive;
 
 /*! Virtual table for the ::QActive class */
 typedef struct {
-    struct QHsmVtable super; /*!< inherits ::QHsmVtable */
+    struct QHsmVtable super; /*!< @protected inherits ::QHsmVtable */
 
-    /*! virtual function to start the active object (thread) */
+    /*! @private virtual function to start the AO/thread */
     /** @sa QACTIVE_START() */
     void (*start)(QActive * const me, uint_fast8_t prio,
                   QEvt const * * const qSto, uint_fast16_t const qLen,
@@ -177,7 +177,9 @@ typedef struct {
                   void const * const par);
 
 #ifdef Q_SPY
-    /*! virtual function to asynchronously post (FIFO) an event to an AO */
+    /*! @private virtual function to asynchronously post (FIFO)
+    * an event to the AO
+    */
     /** @sa QACTIVE_POST() and QACTIVE_POST_X() */
     bool (*post)(QActive * const me, QEvt const * const e,
                  uint_fast16_t const margin, void const * const sender);
@@ -186,16 +188,16 @@ typedef struct {
                  uint_fast16_t const margin);
 #endif
 
-    /*! virtual function to asynchronously post (LIFO) an event to an AO */
+    /*! @private virtual function to asynchronously post (LIFO)
+    * an event to the AO
+    */
     /** @sa QACTIVE_POST_LIFO() */
     void (*postLIFO)(QActive * const me, QEvt const * const e);
 
 } QActiveVtable;
 
 /* QActive public operations... */
-/*! Polymorphically start an active object.
-* @public @memberof QActive
-*/
+/*! Polymorphically start an active object. */
 /**
 * @description
 * Starts execution of the AO and registers the AO with the framework.
@@ -223,7 +225,6 @@ typedef struct {
 #ifdef Q_SPY
     /*! Polymorphically posts an event to an active object (FIFO)
     * with delivery guarantee.
-    * @public @memberof QActive
     */
     /**
     * @description
@@ -254,7 +255,6 @@ typedef struct {
 
     /*! Polymorphically posts an event to an active object (FIFO)
     * without delivery guarantee.
-    * @public @memberof QActive
     */
     /**
     * @description
@@ -304,9 +304,7 @@ typedef struct {
 #endif
 
 /*! Polymorphically posts an event to an active object using the
-* Last-In-First-Out (LIFO) policy.
-* @public @memberof QActive
-*/
+* Last-In-First-Out (LIFO) policy. */
 /**
 * @param[in,out] me_   pointer (see @ref oop)
 * @param[in]     e_    pointer to the event to post
@@ -398,7 +396,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2);
 * @include qf_qmactive.c
 */
 typedef struct {
-    QActive super; /*!< inherits ::QActive */
+    QActive super; /*!< @protected inherits ::QActive */
 } QMActive;
 
 /*! Virtual Table for the ::QMActive class (inherited from ::QActiveVtable */
@@ -478,15 +476,15 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial);
 * allocate ::QTimeEvt instances with the Q_NEW() or Q_NEW_X() macros.
 */
 typedef struct QTimeEvt {
-    QEvt super; /*<! inherits ::QEvt */
+    QEvt super; /*!< @protected inherits ::QEvt */
 
-    /*! link to the next time event in the list */
+    /*! @private link to the next time event in the list */
     struct QTimeEvt * volatile next;
 
-    /*! the active object that receives the time events */
+    /*! @private the active object that receives the time events */
     void * volatile act;
 
-    /*! the internal down-counter of the time event. */
+    /*! @private internal down-counter of the time event. */
     /**
     * @description
     * The down-counter is decremented by 1 in every QF_tickX_() invocation.
@@ -495,7 +493,9 @@ typedef struct QTimeEvt {
     */
     QTimeEvtCtr volatile ctr;
 
-    /*! the interval for periodic time event (zero for one-shot time event) */
+    /*! @private interval for periodic time event
+    * (zero for one-shot time event)
+    */
     /**
     * @description
     * The value of the interval is re-loaded to the internal down-counter
@@ -543,6 +543,16 @@ QTimeEvtCtr QTimeEvt_currCtr(QTimeEvt const * const me);
 /****************************************************************************/
 /* QF facilities */
 
+/*! QF services. */
+/**
+* @description
+* This class groups together QF services. It has only static members and
+* should not be instantiated.
+*/
+typedef struct {
+    uint8_t dummy;
+} QF;
+
 /*! Subscriber-List structure */
 /**
 * @description
@@ -556,24 +566,36 @@ typedef QPSet QSubscrList;
 
 /* public functions */
 
-/*! QF initialization. */
+/*! QF initialization.
+* @static @public @memberof QF
+*/
 void QF_init(void);
 
-/*! Publish-subscribe initialization. */
+/*! Publish-subscribe initialization.
+* @static @public @memberof QF
+*/
 void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal);
 
-/*! Event pool initialization for dynamic allocation of events. */
+/*! Event pool initialization for dynamic allocation of events.
+* @static @public @memberof QF
+*/
 void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
                  uint_fast16_t const evtSize);
 
-/*! Obtain the block size of any registered event pools */
+/*! Obtain the block size of any registered event pools.
+* @static @public @memberof QF
+*/
 uint_fast16_t QF_poolGetMaxBlockSize(void);
 
-/*! Transfers control to QF to run the application. */
+/*! Transfers control to QF to run the application.
+* @static @public @memberof QF
+*/
 int_t QF_run(void);
 
 /*! Function invoked by the application layer to stop the QF
-* application and return control to the OS/Kernel. */
+* application and return control to the OS/Kernel.
+* @static @public @memberof QF
+*/
 void QF_stop(void);
 
 /*! Startup QF callback. */
@@ -582,6 +604,7 @@ void QF_stop(void);
 * The timeline for calling QF_onStartup() depends on the particular
 * QF port. In most cases, QF_onStartup() is called from QF_run(), right
 * before starting any multitasking kernel or the background loop.
+* @static @public @memberof QF
 */
 void QF_onStartup(void);
 
@@ -598,16 +621,19 @@ void QF_onStartup(void);
 * anything to exit to.
 *
 * @sa QF_stop()
+* @static @public @memberof QF
 */
 void QF_onCleanup(void);
 
 #ifdef Q_SPY
 
-    /*! Publish event to the framework. */
+    /*! Publish event to the framework.
+    * @static @private @memberof QF
+    */
     void QF_publish_(QEvt const * const e,
                      void const * const sender, uint_fast8_t const qs_id);
 
-    /*! Invoke the event publishing facility QF_publish_(). */
+    /*! Invoke the event publishing facility. */
     /**
     * @description
     * This macro is the recommended way of publishing events, because it
@@ -641,7 +667,9 @@ void QF_onCleanup(void);
 
 #ifdef Q_SPY
 
-    /*! Processes all armed time events at every clock tick. */
+    /*! Processes all armed time events at every clock tick.
+    * @static @private @memberof QF
+    */
     void QF_tickX_(uint_fast8_t const tickRate, void const * const sender);
 
     /*! Invoke the system clock tick processing QF_tickX_(). */
@@ -690,30 +718,46 @@ void QF_onCleanup(void);
 /*! Invoke the system clock tick processing for rate 0 */
 #define QF_TICK(sender_)   QF_TICK_X(0U, (sender_))
 
-/*! Returns 'true' if there are no armed time events at a given tick rate */
+/*! Returns 'true' if there are no armed time events at a given tick rate.
+* @static @public @memberof QF
+*/
 bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate);
 
-/*! Register an active object to be managed by the framework */
+/*! Register an active object to be managed by the framework.
+* @static @private @memberof QF
+*/
 void QF_add_(QActive * const a);
 
-/*! Remove the active object from the framework. */
+/*! Remove the active object from the framework.
+* @static @private @memberof QF
+*/
 void QF_remove_(QActive * const a);
 
-/*! Obtain the minimum of free entries of the given event pool. */
+/*! Obtain the minimum of free entries of the given event pool.
+* @static @public @memberof QF
+*/
 uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId);
 
 /*! This function returns the minimum of free entries of
-* the given event queue. */
+* the given event queue.
+* @static @public @memberof QF
+*/
 uint_fast16_t QF_getQueueMin(uint_fast8_t const prio);
 
-/*! Internal QF implementation of creating new dynamic event. */
+/*! Internal QF implementation of creating new dynamic event.
+* @static @private @memberof QF
+*/
 QEvt *QF_newX_(uint_fast16_t const evtSize,
                uint_fast16_t const margin, enum_t const sig);
 
-/*! Internal QF implementation of creating new event reference. */
+/*! Internal QF implementation of creating new event reference.
+* @static @private @memberof QF
+*/
 QEvt const *QF_newRef_(QEvt const * const e, void const * const evtRef);
 
-/*! Internal QF implementation of deleting event reference. */
+/*! Internal QF implementation of deleting event reference.
+* @static @private @memberof QF
+*/
 void QF_deleteRef_(void const * const evtRef);
 
 #ifdef Q_EVT_CTOR /* Shall the ctor for the ::QEvt class be provided? */
@@ -836,7 +880,9 @@ void QF_deleteRef_(void const * const evtRef);
 /*! Recycle a dynamic event. */
 void QF_gc(QEvt const * const e);
 
-/*! Clear a specified region of memory to zero. */
+/*! Clear a specified region of memory to zero.
+* @static @public @memberof QF
+*/
 void QF_bzero(void * const start, uint_fast16_t len);
 
 #ifndef QF_CRIT_EXIT_NOP
@@ -875,7 +921,7 @@ extern QActive *QF_active_[QF_MAX_ACTIVE + 1U];
 * as low as you wish.
 */
 typedef struct {
-    QActive super; /*!< inherits ::QActive */
+    QActive super; /*!< @protected inherits ::QActive */
 } QTicker;
 
 /*! Constructor of the QTicker Active Object class */

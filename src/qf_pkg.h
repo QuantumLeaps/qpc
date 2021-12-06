@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-16
+* Last updated for version 6.9.4
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -113,19 +113,23 @@
 #endif /* Q_NASSERT */
 
 /****************************************************************************/
-/* internal implementation (should be used via vtable only) */
+/* internal prototypes (should be used via vtable only) */
 
-/*! Implementation of the active object start operation */
+/*! Prototype of the internal active object start implementation */
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par);
 
-/*! Get an event from the event queue of an active object. */
+/*! Get an event from the event queue of an active object.
+* @private @memberof QActive
+*/
 QEvt const *QActive_get_(QActive *const me);
 
 #ifdef Q_SPY
-    /*! Implementation of the active object post (FIFO) operation */
+    /*! Prototype of the internal active object post (FIFO) implementation.
+    * @private @memberof QActive
+    */
     bool QActive_post_(QActive * const me, QEvt const * const e,
                        uint_fast16_t const margin,
                        void const * const sender);
@@ -134,12 +138,15 @@ QEvt const *QActive_get_(QActive *const me);
                        uint_fast16_t const margin);
 #endif
 
-/*! Implementation of the active object post LIFO operation */
+/*! Prototype of the internal active object post LIFO implementation.
+* @private @memberof QActive
+*/
 void QActive_postLIFO_(QActive * const me, QEvt const * const e);
 
-
 /****************************************************************************/
-/*! heads of linked lists of time events, one for every clock tick rate */
+/*! heads of linked lists of time events, one for every clock tick rate.
+* @static @private @memberof QF
+*/
 extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
 
 /* The following flags and bitmasks are for the fields of the @c refCtr_
@@ -156,7 +163,7 @@ extern uint_fast8_t QF_maxPool_;     /*!< # of initialized event pools */
 extern QSubscrList *QF_subscrList_;  /*!< the subscriber list array */
 extern enum_t QF_maxPubSignal_;      /*!< the maximum published signal */
 
-/*! structure representing a free block in the Native QF Memory Pool */
+/*! structure representing a free block in the Native QF Memory Pool. */
 typedef struct QFreeBlock {
     struct QFreeBlock * volatile next;
 } QFreeBlock;

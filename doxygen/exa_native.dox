@@ -21,10 +21,6 @@ Click on the following links to see examples for the specified CPU architectures
 /*##########################################################################*/
 /*! @page exa_qv QV Kernel (Non-Preemptive, Priority-Based, Non-Blocking)
 
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
-
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
@@ -48,10 +44,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 */
 /*##########################################################################*/
 /*! @page exa_qk QK Kernel (Preemptive, Run-To-Completion/Non-Blocking)
-
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
@@ -78,10 +70,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 /*##########################################################################*/
 /*! @page exa_qxk QXK Kernel (Preemptive, Run-To-Completion/Blocking)
 
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
-
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
@@ -95,10 +83,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 */
 /*##########################################################################*/
 /*! @page exa_arm-cm ARM Cortex-M (Cortex-M0/M0+/M3/M4/M7)
-
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
@@ -119,10 +103,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 /*##########################################################################*/
 /*! @page exa_arm-cr ARM Cortex-R
 
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
-
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
@@ -132,10 +112,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 /*##########################################################################*/
 /*! @page exa_arm7-9 ARM7/ARM9 ("classic" ARM)
 
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
-
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
@@ -143,10 +119,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 */
 /*##########################################################################*/
 /*! @page exa_msp430 MSP430 ("classic" MSP430 and "extended" MSP430x)
-
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.

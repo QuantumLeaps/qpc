@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on NUCLEO-L053R8, uC/OS-II kernel, GNU-ARM
 # Last Updated for Version: 6.9.4
-# Date of the Last Update:  2021-07-01
+# Date of the Last Update:  2021-12-05
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -117,6 +117,7 @@ QP_SRCS := \
 	qf_act.c \
 	qf_defer.c \
 	qf_dyn.c \
+	qf_mem.c \
 	qf_ps.c \
 	qf_qact.c \
 	qf_qeq.c \

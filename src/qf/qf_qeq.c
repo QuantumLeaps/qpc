@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-03
+* Last updated for version 6.9.4
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -53,6 +53,7 @@ Q_DEFINE_THIS_MODULE("qf_qeq")
 
 /****************************************************************************/
 /**
+* @public @memberof QEQueue
 * @description
 * Initialize the event queue by giving it the storage for the ring buffer.
 *
@@ -90,6 +91,7 @@ void QEQueue_init(QEQueue * const me, QEvt const * * const qSto,
 
 /****************************************************************************/
 /**
+* @public @memberof QEQueue
 * @description
 * Post an event to the "raw" thread-safe event queue using the
 * First-In-First-Out (FIFO) order.
@@ -191,6 +193,7 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
 
 /****************************************************************************/
 /**
+* @public @memberof QEQueue
 * @description
 * Post an event to the "raw" thread-safe event queue using the
 * Last-In-First-Out (LIFO) order.
@@ -264,6 +267,7 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
 
 /****************************************************************************/
 /**
+* @public @memberof QEQueue
 * @description
 * Retrieves an event from the front of the "raw" thread-safe queue and
 * returns a pointer to this event to the caller.

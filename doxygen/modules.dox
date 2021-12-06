@@ -1,3 +1,15 @@
+/*! @defgroup qp QP
+
+@brief
+Real-Time Embedded Framework
+
+QP Real-Time Embedded Framework (RTEF) is a reusable architecture for building real-time embedded (RTE) software as a system of collaborating, @ref srs_ed "event-driven" @ref srs_ao "Active Objects" (a.k.a. Actors).
+
+The internal behavior of Active Objects is specified in QP by means of @ref srs_sm "Hierarchical State Machines" (UML statecharts). The QP framework supports manual coding of Hierarchical State Machines in as well as Model-Based Design (MBD) and automatic code generation.
+*/
+
+/*##########################################################################*/
+
 /*! @defgroup qep QEP
 
 @brief

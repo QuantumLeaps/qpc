@@ -4,8 +4,8 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2021-01-13
+* Last updated for version 6.9.4
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -43,6 +43,7 @@
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
@@ -74,6 +75,7 @@ void QS_f32_fmt_(uint8_t format, float32_t f) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @description
 * This function is only to be used through macros, never in the
 * client code directly.

@@ -3,8 +3,8 @@
 * @brief QF/C, port to ThreadX
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.3
-* Last updated on  2021-04-08
+* Last updated for version 6.9.4
+* Last updated on  2021-12-05
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -59,14 +59,12 @@ enum ThreadX_ThreadAttrs {
     THREAD_NAME_ATTR
 };
 
-#include "tx_api.h"    /* ThreadX API */
+#include "tx_api.h"   /* ThreadX API */
 
-#include "qep_port.h"  /* QEP port */
-#include "qequeue.h"   /* used for event deferral */
-#include "qf.h"        /* QF platform-independent public interface */
-#ifdef Q_SPY
-#include "qmpool.h"    /* needed only for QS-RX */
-#endif
+#include "qep_port.h" /* QEP port */
+#include "qequeue.h"  /* native QF event queue for deferring events */
+#include "qmpool.h"   /* native QF event pool */
+#include "qf.h"       /* QF platform-independent public interface */
 
 /*****************************************************************************
 * interface used only inside QF, but not in applications
@@ -100,30 +98,15 @@ enum ThreadX_ThreadAttrs {
     void QFSchedUnlock_(QFSchedLock const * const lockStat);
     extern ULONG volatile _tx_thread_system_state; /* internal TX interrupt counter */
 
-    /* TreadX block pool operations... */
-    #define QF_EPOOL_TYPE_              TX_BLOCK_POOL
-    #define QF_EPOOL_INIT_(pool_, poolSto_, poolSize_, evtSize_)          \
-        Q_ALLEGE(tx_block_pool_create(&(pool_), (CHAR *)"QP", (evtSize_), \
-                 (poolSto_), (poolSize_)) == TX_SUCCESS)
-
-    #define QF_EPOOL_EVENT_SIZE_(pool_) \
-        ((uint_fast16_t)(pool_).tx_block_pool_block_size)
-
-    #define QF_EPOOL_GET_(pool_, e_, margin_, qs_id_) do {                   \
-        QF_CRIT_STAT_                                                        \
-        QF_CRIT_E_();                                                        \
-        if ((pool_).tx_block_pool_available > (margin_)) {                   \
-            Q_ALLEGE(tx_block_allocate(&(pool_), (VOID **)&(e_), TX_NO_WAIT) \
-                     == TX_SUCCESS);                                         \
-        }                                                                    \
-        else {                                                               \
-            (e_) = (QEvt *)0;                                                \
-        }                                                                    \
-        QF_CRIT_X_();                                                        \
-    } while (false)
-
-    #define QF_EPOOL_PUT_(dummy, e_, qs_id_) \
-        Q_ALLEGE(tx_block_release((VOID *)(e_)) == TX_SUCCESS)
+    /* native QF event pool operations */
+    #define QF_EPOOL_TYPE_            QMPool
+    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
+    #define QF_EPOOL_GET_(p_, e_, m_, qs_id_) \
+        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qs_id_)))
+    #define QF_EPOOL_PUT_(p_, e_, qs_id_) \
+        (QMPool_put(&(p_), (e_), (qs_id_)))
 
 #endif /* ifdef QP_IMPL */
 

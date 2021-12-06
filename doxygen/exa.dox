@@ -1,9 +1,5 @@
 /*! @page exa Examples
 
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
-
 @tableofcontents
 
 @section exa_gen General Comments
@@ -314,12 +310,7 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 /*##########################################################################*/
 /*! @page exa_ref Cross-Reference
 
-@htmlonly
-<script src="preview.js" type="text/javascript"></script>
-@endhtmlonly
-
 @tableofcontents
-
 
 
 @section exa_ref_kernel Native Examples (by Built-in Kernel)

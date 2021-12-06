@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, ThreadX kernel
-* Last updated for version 6.9.1
-* Last updated on  2020-09-22
+* Last updated for version 6.9.4
+* Last updated on  2021-12-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -72,10 +72,8 @@ static TX_TIMER l_tick_timer; /* ThreadX timer to call QF_TICK_X() */
         COMMAND_STAT
     };
 
-    /* ThreadX thread and thread function for QS output, see NOTE1 */
-    static TX_THREAD l_qs_output_thread;
-    static void qs_thread_function(ULONG thread_input);
-    static ULONG qs_thread_stkSto[64];
+    /* QSpy source IDs */
+    static QSpyId const l_clock_tick = { QS_AP_ID };
 #endif
 
 /* ISRs used in the application ==========================================*/
@@ -180,7 +178,18 @@ void BSP_terminate(int16_t result) {
 }
 
 
+#ifdef Q_SPY
+    /* ThreadX "idle" thread for QS output, see NOTE1 */
+    static TX_THREAD idle_thread;
+    static void idle_thread_fun(ULONG thread_input);
+    static ULONG idle_thread_stack[64];
+#endif
+
 /* QF callbacks ============================================================*/
+static VOID timer_expiration(ULONG id) {
+    QF_TICK_X(id, &l_clock_tick); /* perform the QF clock tick processing */
+}
+/*..........................................................................*/
 void QF_onStartup(void) {
     /*
     * NOTE:
@@ -194,8 +203,8 @@ void QF_onStartup(void) {
     * or from active object(s).
     */
     Q_ALLEGE(tx_timer_create(&l_tick_timer, /* ThreadX timer object */
-        (CHAR *)"QF_TICK", /* name of the timer */
-        (VOID (*)(ULONG))&QF_tickX_, /* expiration function */
+        (CHAR *)"QP-tick", /* name of the timer */
+        &timer_expiration, /* expiration function */
         0U,       /* expiration function input (tick rate) */
         1U,       /* initial ticks */
         1U,       /* reschedule ticks */
@@ -205,15 +214,15 @@ void QF_onStartup(void) {
 #ifdef Q_SPY
     NVIC_EnableIRQ(UART0_IRQn);  /* UART0 interrupt used for QS-RX */
 
-    /* start a ThreadX timer to perform QS output. See NOTE1... */
-    Q_ALLEGE(tx_thread_create(&l_qs_output_thread, /* thread control block */
-        (CHAR *)"QS_TX",       /* thread name */
-        &qs_thread_function,   /* thread function */
-        0UL,                   /* thread input (unsued) */
-        qs_thread_stkSto,      /* stack start */
-        sizeof(qs_thread_stkSto), /* stack size in bytes */
-        TX_MAX_PRIORITIES - 1, /* ThreadX prio (lowest possible) */
-        TX_MAX_PRIORITIES - 1, /* preemption threshold disabled */
+    /* start a ThreadX "idle" thread. See NOTE1... */
+    Q_ALLEGE(tx_thread_create(&idle_thread, /* thread control block */
+        (CHAR *)("idle"), /* thread name */
+        &idle_thread_fun,       /* thread function */
+        0LU,                    /* thread input (unsued) */
+        idle_thread_stack,       /* stack start */
+        sizeof(idle_thread_stack), /* stack size in bytes */
+        TX_MAX_PRIORITIES - 1U, /* ThreadX priority (LOWEST possible), NOTE1 */
+        TX_MAX_PRIORITIES - 1U, /* preemption threshold disabled */
         TX_NO_TIME_SLICE,
         TX_AUTO_START)
              == TX_SUCCESS);
@@ -246,12 +255,9 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
 /* QS callbacks ============================================================*/
 #ifdef Q_SPY
 
-//............................................................................
-static void qs_thread_function(ULONG thread_input) { /* see NOTE1 */
-    (void)thread_input; /* unused */
-
+/*..........................................................................*/
+static void idle_thread_fun(ULONG thread_input) { /* see NOTE1 */
     for (;;) {
-
         QS_rxParse();  /* parse all the received bytes */
 
         if ((UART0->FR & UART_FR_TXFE) != 0U) {  /* TX done? */
@@ -260,15 +266,15 @@ static void qs_thread_function(ULONG thread_input) { /* see NOTE1 */
             QF_CRIT_STAT_TYPE intStat;
 
             QF_CRIT_ENTRY(intStat);
-            block = QS_getBlock(&fifo);  /* try to get next block to transmit */
+            block = QS_getBlock(&fifo); /* try to get next block to transmit */
             QF_CRIT_EXIT(intStat);
 
-            while (fifo-- != 0) {        /* any bytes in the block? */
+            while (fifo-- != 0U) {       /* any bytes in the block? */
                 UART0->DR = *block++;    /* put into the FIFO */
             }
         }
 
-        /* no blocking in this thread; see NOTE1 */
+        /* no blocking in this "idle" thread; see NOTE1 */
     }
 }
 
@@ -361,24 +367,17 @@ void QS_onReset(void) {
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    void assert_failed(char const *module, int loc);
     (void)cmdId;
     (void)param1;
     (void)param2;
     (void)param3;
+
     QS_BEGIN_ID(COMMAND_STAT, 0U) /* app-specific record */
         QS_U8(2, cmdId);
         QS_U32(8, param1);
         QS_U32(8, param2);
         QS_U32(8, param3);
     QS_END()
-
-    if (cmdId == 10U) {
-        Q_ERROR();
-    }
-    else if (cmdId == 11U) {
-        assert_failed("QS_onCommand", 123);
-    }
 }
 
 #endif /* Q_SPY */
@@ -386,12 +385,12 @@ void QS_onCommand(uint8_t cmdId,
 
 /*****************************************************************************
 * NOTE1:
-* This application uses the ThreadX thread of the lowest priority to perform
+* ThreadX apparently does not have a concpet of an "idle" thread, but
+* it can be emulated by a regular, but NON-BLOCKING ThreadX thread of
+* the lowest priority.
+*
+* In the Q_SPY configuration, this "idle" thread is uded to perform
 * the QS data output to the host. This is not the only choice available, and
 * other applications might choose to peform the QS output some other way.
-*
-* The lowest-priority thread does not block, so in effect, it becomes the
-* idle loop. This presents no problems to ThreadX - its idle task in the
-* scheduler does not need to run.
 */
 

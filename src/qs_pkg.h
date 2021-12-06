@@ -50,7 +50,7 @@
 */
 #define QS_BEGIN_PRE_(rec_, qs_id_)                     \
     if (QS_GLB_CHECK_(rec_) && QS_LOC_CHECK_(qs_id_)) { \
-        QS_CRIT_E_();                               \
+        QS_CRIT_E_();                                   \
         QS_beginRec_((uint_fast8_t)(rec_));
 
 /*!  Internal QS macro to end a predefined QS record with
@@ -60,8 +60,8 @@
 * at the application level.
 * @sa QS_END()
 */
-#define QS_END_PRE_()    \
-        QS_endRec_();    \
+#define QS_END_PRE_() \
+        QS_endRec_(); \
         QS_CRIT_X_(); \
     }
 

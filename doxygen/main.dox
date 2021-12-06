@@ -93,7 +93,7 @@ QP/C is licensed under the sustainable <a class="extern" target="_blank" href="h
 
 
 @subsection open-source Open Source Projects
-If you are developing and distributing **open source** applications under the GNU General Public License (GPL), as published by the Free Software Foundation, then you are free to use the Quantum Leaps software under the <a class="extern" target="_blank" href="http://www.gnu.org/copyleft/gpl.html">GPL version 3</a> of the License, or (at your option) any later version. Please note that GPL requires that all modifications to the original code as well as your application code (Derivative Works as defined in the Copyright Law) must also be released under the terms of the GPL open source license.
+If you are developing and distributing **open source** applications under the GNU General Public License (GPL), as published by the Free Software Foundation, then you are free to use the Quantum Leaps software under the <a class="extern" target="_blank" href="https://www.gnu.org/copyleft/gpl.html">GPL version 3</a> of the License, or (at your option) any later version. Please note that GPL requires that all modifications to the original code as well as your application code (Derivative Works as defined in the Copyright Law) must also be released under the terms of the GPL open source license.
 
 
 @subsection closed-source Closed Source Projects
@@ -101,7 +101,7 @@ If you are developing and distributing traditional **closed source** application
 
 
 @section support How to get help?
-Please post any **technical questions** to the <a class="extern" target="_blank" href="http://sourceforge.net/p/qpc/discussion/668726"><strong>Free Support Forum</strong></a> hosted on SourceForge.net. Posts to this forum benefit the whole community and are typically answered the same day.
+Please post any **technical questions** to the <a class="extern" target="_blank" href="https://sourceforge.net/p/qpc/discussion/668726"><strong>Free Support Forum</strong></a> hosted on SourceForge.net. Posts to this forum benefit the whole community and are typically answered the same day.
 
 Direct **Commercial Support** is available to the commercial licensees. Every commercial license includes one year of Technical Support for the licensed software. The support term can be extended annually.
 
@@ -114,12 +114,9 @@ Training and consulting services are also available from Quantum Leaps. Please r
 
 - Quantum Leaps licensing:  <a class="extern" target="_blank" href="https://www.state-machine.com/licensing">state-machine.com/licensing</a>
 
-- QP/QM on SourceForge.net: <a class="extern" target="_blank" href="https://sourceforge.net/projects/qpc">sourceforge.net/projects/qpc</a>
-
 - QP/QM on GitHub: <a class="extern" target="_blank" href="https://github.com/QuantumLeaps">github.com/QuantumLeaps</a>
 
 - e-mail: <a class="extern" target="_blank" href="mailto:info@state-machine.com">info@state-machine.com</a>
-
 
 @next{gs}
 */

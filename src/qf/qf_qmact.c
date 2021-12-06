@@ -12,14 +12,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2020-12-16
+* Last updated for version 6.9.4
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -53,6 +53,7 @@
 
 /****************************************************************************/
 /**
+* @protected @memberof QMActive
 * @description
 * Performs the first step of active object initialization by assigning
 * the virtual pointer and calling the superclass constructor.

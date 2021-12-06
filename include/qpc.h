@@ -1,17 +1,19 @@
 /**
+* @ingroup qp
+* @{
 * @file
 * @brief QP/C public interface including backwards-compatibility layer
-* @ingroup qep qf qv qk qxk qs
+* @}
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-30
+* Last updated for version 6.9.4
+* Last updated on  2021-11-13
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -65,17 +67,20 @@ extern "C" {
 
 /*! Specifies the backwards compatibility with the QP/C API version. */
 /**
+* @ingroup qp
+* @{
 * @description
-* For example, QP_API_VERSION=580 will cause generating the compatibility
+* For example, QP_API_VERSION==580 will cause generating the compatibility
 * layer with QP/C version 5.8.0 and newer, but not older than 5.8.0.
-* QP_API_VERSION=0 causes generation of the maximum currently supported
+* QP_API_VERSION==0 causes generation of the maximum currently supported
 * backwards compatibilty. This is the default.@n
 * @n
-* Conversely, QP_API_VERSION=9999 means that no compatibility layer should
+* Conversely, QP_API_VERSION==9999 means that no compatibility layer should
 * be generated. This setting is useful for checking if an application
 * complies with the latest QP/C API.
 */
 #define QP_API_VERSION 0
+/** @} */
 
 #endif /* #ifndef QP_API_VERSION */
 

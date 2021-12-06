@@ -4,14 +4,14 @@
 * @ingroup qs qpspy
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2021-01-12
+* Last updated for version 6.9.4
+* Last updated on  2021-10-07
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -277,84 +277,140 @@ typedef struct { uint8_t prio; } QSpyId;
 
 
 /****************************************************************************/
-/* QS services. */
+/*! QS software tracing facilities */
+/**
+* @description
+* This class groups together QS services. It has only static members and
+* should not be instantiated.
+*/
+typedef struct {
+    uint8_t dummy;
+} QS;
 
-/*! Initialize the QS data buffer. */
+/*! Initialize the QS data buffer.
+* @static @public @memberof QS
+*/
 void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize);
 
-/*! Set/clear the global Filter for a given QS record or group of records. */
+/*! Set/clear the global Filter for a given QS record or group of records.
+* @static @private @memberof QS
+*/
 void QS_glbFilter_(int_fast16_t const filter);
 
-/*! Set/clear the local Filter for a given object-id or group of object-ids.*/
+/*! Set/clear the local Filter for a given object-id or group of object-ids.
+* @static @private @memberof QS
+*/
 void QS_locFilter_(int_fast16_t const filter);
 
-/*! Mark the begin of a QS record @p rec */
+/*! Mark the begin of a QS record @p rec
+* @static @private @memberof QS
+*/
 void QS_beginRec_(uint_fast8_t rec);
 
-/*! Mark the end of a QS record @p rec */
+/*! Mark the end of a QS record @p rec
+* @static @private @memberof QS
+*/
 void QS_endRec_(void);
 
 /* unformatted (raw) data elements output ..................................*/
-/*! output raw uint8_t data element (without format information) */
+/*! output raw uint8_t data element (without format information)
+* @static @private @memberof QS
+*/
 void QS_u8_raw_(uint8_t d);
 
-/*! output two raw uint8_t data elements (without format information) */
+/*! output two raw uint8_t data elements (without format information)
+* @static @private @memberof QS
+*/
 void QS_2u8_raw_(uint8_t d1, uint8_t d2);
 
-/*! Output raw uint16_t data element (without format information) */
+/*! Output raw uint16_t data element (without format information)
+* @static @private @memberof QS
+*/
 void QS_u16_raw_(uint16_t d);
 
-/*! Output raw uint32_t data element (without format information) */
+/*! Output raw uint32_t data element (without format information)
+* @static @private @memberof QS
+*/
 void QS_u32_raw_(uint32_t d);
 
-/*! Output raw zero-terminated string element (without format information) */
+/*! Output raw zero-terminated string element (without format information)
+* @static @private @memberof QS
+*/
 void QS_str_raw_(char_t const *str);
 
 /* formatted data elements output ..........................................*/
-/*! Output uint8_t data element with format information */
+/*! Output uint8_t data element with format information
+* @static @private @memberof QS
+*/
 void QS_u8_fmt_(uint8_t format, uint8_t d);
 
-/*! output uint16_t data element with format information */
+/*! output uint16_t data element with format information
+* @static @private @memberof QS
+*/
 void QS_u16_fmt_(uint8_t format, uint16_t d);
 
-/*! Output uint32_t data element with format information */
+/*! Output uint32_t data element with format information
+* @static @private @memberof QS
+*/
 void QS_u32_fmt_(uint8_t format, uint32_t d);
 
-/*! Output 32-bit floating point data element with format information */
+/*! Output 32-bit floating point data element with format information
+* @static @private @memberof QS
+*/
 void QS_f32_fmt_(uint8_t format, float32_t f);
 
-/*! Output 64-bit floating point data element with format information */
+/*! Output 64-bit floating point data element with format information
+* @static @private @memberof QS
+*/
 void QS_f64_fmt_(uint8_t format, float64_t d);
 
-/*! Output obj pointer data element without format information */
+/*! Output obj pointer data element without format information
+* @static @private @memberof QS
+*/
 void QS_obj_raw_(void const * const obj);
 
-/*! Output zero-terminated ASCII string element with format information */
+/*! Output zero-terminated ASCII string element with format information
+* @static @private @memberof QS
+*/
 void QS_str_fmt_(char_t const *str);
 
-/*! Output memory block of up to 255-bytes with format information */
+/*! Output memory block of up to 255-bytes with format information
+* @static @private @memberof QS
+*/
 void QS_mem_fmt_(uint8_t const *blk, uint8_t size);
 
-/*! Output raw uint64_t data element without format information */
+/*! Output raw uint64_t data element without format information
+* @static @private @memberof QS
+*/
 void QS_u64_raw_(uint64_t d);
 
-/*! Output uint64_t data element with format information */
+/*! Output uint64_t data element with format information
+* @static @private @memberof QS
+*/
 void QS_u64_fmt_(uint8_t format, uint64_t d);
 
 /* QS buffer access *********************************************************/
-/*! Byte-oriented interface to the QS data buffer. */
+/*! Byte-oriented interface to the QS data buffer.
+* @static @public @memberof QS
+*/
 uint16_t QS_getByte(void);
 
-/*! Constant for End-Of-Data condition returned from QS_getByte() */
+/*! Constant for End-Of-Data condition returned from QS_getByte()
+* @static @public @memberof QS
+*/
 #define QS_EOD ((uint16_t)0xFFFFU)
 
-/*! Block-oriented interface to the QS data buffer. */
+/*! Block-oriented interface to the QS data buffer.
+* @static @public @memberof QS
+*/
 uint8_t const *QS_getBlock(uint16_t *pNbytes);
 
 
 /* platform-specific callback functions, need to be implemented by clients */
 
-/*! Callback to startup the QS facility */
+/*! Callback to startup the QS facility
+* @static @public @memberof QS
+*/
 /**
 * @description
 * This is a platform-dependent "callback" function invoked through the macro
@@ -373,7 +429,9 @@ uint8_t const *QS_getBlock(uint16_t *pNbytes);
 */
 uint8_t QS_onStartup(void const *arg);
 
-/*! Callback to cleanup the QS facility */
+/*! Callback to cleanup the QS facility
+* @static @public @memberof QS
+*/
 /**
 * @description
 * This is a platform-dependent "callback" function invoked through the macro
@@ -383,7 +441,9 @@ uint8_t QS_onStartup(void const *arg);
 */
 void QS_onCleanup(void);
 
-/*! Callback to flush the QS trace data to the host */
+/*! Callback to flush the QS trace data to the host
+* @static @public @memberof QS
+*/
 /**
 * @description
 * This is a platform-dependent "callback" function to flush the QS trace
@@ -393,7 +453,9 @@ void QS_onCleanup(void);
 */
 void QS_onFlush(void);
 
-/*! Callback to obtain a timestamp for a QS record. */
+/*! Callback to obtain a timestamp for a QS record.
+* @static @public @memberof QS
+*/
 /**
 * @description
 * This is a platform-dependent "callback" function invoked from the macro
@@ -417,7 +479,9 @@ QSTimeCtr QS_onGetTime(void);
 /****************************************************************************/
 /* Macros for adding QS instrumentation to the client code */
 
-/*! Initialize the QS facility. */
+/*! Initialize the QS facility.
+* @static @public @memberof QS
+*/
 /**
 * @description
 * This macro provides an indirection layer to invoke the QS initialization
@@ -426,7 +490,9 @@ QSTimeCtr QS_onGetTime(void);
 */
 #define QS_INIT(arg_)           (QS_onStartup(arg_))
 
-/*! Cleanup the QS facility. */
+/*! Cleanup the QS facility.
+* @static @public @memberof QS
+*/
 /**
 * @description
 * This macro provides an indirection layer to invoke the QS cleanup
@@ -435,7 +501,9 @@ QSTimeCtr QS_onGetTime(void);
 */
 #define QS_EXIT()               (QS_onCleanup())
 
-/*! Flush the QS trace data to the host */
+/*! Flush the QS trace data to the host
+* @static @public @memberof QS
+*/
 /**
 * @description
 * This macro invokes the QS_flush() platform-dependent callback function
@@ -445,7 +513,9 @@ QSTimeCtr QS_onGetTime(void);
 */
 #define QS_FLUSH()   (QS_onFlush())
 
-/*! Global Filter for a given record type @p rec. */
+/*! Global Filter for a given record type @p rec
+* @static @public @memberof QS
+*/
 /**
 * @description
 * This macro provides an indirection layer to call QS_glbFilter_()
@@ -456,7 +526,9 @@ QSTimeCtr QS_onGetTime(void);
 */
 #define QS_GLB_FILTER(rec_)  (QS_glbFilter_((int_fast16_t)(rec_)))
 
-/*! Local Filter for a given object-id @p qs_id. */
+/*! Local Filter for a given object-id @p qs_id
+* @static @public @memberof QS
+*/
 /**
 * @description
 * This macro provides an indirection layer to call QS_locFilter_()
@@ -807,19 +879,27 @@ enum {
 #define QS_USR_DICTIONARY(rec_) \
     (QS_usr_dict_pre_((rec_), #rec_))
 
-/*! Output predefined signal-dictionary record */
+/*! Output predefined signal-dictionary record
+* @static @private @memberof QS
+*/
 void QS_sig_dict_pre_(enum_t const sig, void const * const obj,
                       char_t const *name);
 
-/*! Output predefined object-dictionary record */
+/*! Output predefined object-dictionary record
+* @static @private @memberof QS
+*/
 void QS_obj_dict_pre_(void const * const obj,
                       char_t const *name);
 
-/*! Output predefined function-dictionary record */
+/*! Output predefined function-dictionary record
+* @static @private @memberof QS
+*/
 void QS_fun_dict_pre_(void (* const fun)(void),
                       char_t const *name);
 
-/*! Output predefined user-dictionary record */
+/*! Output predefined user-dictionary record
+* @static @private @memberof QS
+*/
 void QS_usr_dict_pre_(enum_t const rec,
                       char_t const * const name);
 
@@ -836,16 +916,24 @@ void QS_ASSERTION(char_t const * const module,
                   int_t const loc,
                   uint32_t delay);
 
-/*! Output the critical section entry */
+/*! Output the critical section entry
+* @static @private @memberof QS
+*/
 void QF_QS_CRIT_ENTRY(void);
 
-/*! Output the critical section exit */
+/*! Output the critical section exit
+* @static @private @memberof QS
+*/
 void QF_QS_CRIT_EXIT(void);
 
-/*! Output the interrupt entry record */
+/*! Output the interrupt entry record
+* @static @private @memberof QS
+*/
 void QF_QS_ISR_ENTRY(uint8_t const isrnest, uint8_t const prio);
 
-/*! Output the interrupt exit record */
+/*! Output the interrupt exit record
+* @static @private @memberof QS
+*/
 void QF_QS_ISR_EXIT(uint8_t const isrnest, uint8_t const prio);
 
 /*! Execute an action that is only necessary for QS output */
@@ -914,28 +1002,44 @@ enum QSpyRxRecords {
     QS_RX_EVENT           /*!< inject an event to the Target */
 };
 
-/*! Initialize the QS RX data buffer. */
+/*! Initialize the QS RX data buffer.
+* @static @public @memberof QS
+*/
 void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize);
 
-/*! Parse all bytes present in the QS RX data buffer */
+/*! Parse all bytes present in the QS RX data buffer
+* @static @public @memberof QS
+*/
 void QS_rxParse(void);
 
-/*! Put one byte into the QS RX lock-free buffer */
+/*! Put one byte into the QS RX lock-free buffer
+* @static @public @memberof QS
+*/
 bool QS_RX_PUT(uint8_t const b);
 
-/*! Obtain the number of free bytes in the QS RX data buffer */
+/*! Obtain the number of free bytes in the QS RX data buffer
+* @static @public @memberof QS
+*/
 uint16_t QS_rxGetNfree(void);
 
-/*! Set the "current object" in the Target */
+/*! Set the "current object" in the Target
+* @static @public @memberof QS
+*/
 void QS_setCurrObj(uint8_t obj_kind, void *obj_ptr);
 
-/*! Query the "current object" in the Target */
+/*! Query the "current object" in the Target
+* @static @public @memberof QS
+*/
 void QS_queryCurrObj(uint8_t obj_kind);
 
-/*! Callback function to reset the Target (to be implemented in the BSP) */
+/*! Callback function to reset the Target (to be implemented in the BSP)
+* @static @public @memberof QS
+*/
 void QS_onReset(void);
 
-/*! Callback function to execute user commands (to be implemented in BSP) */
+/*! Callback function to execute user commands (to be implemented in BSP)
+* @static @public @memberof QS
+*/
 void QS_onCommand(uint8_t cmdId,   uint32_t param1,
                   uint32_t param2, uint32_t param3);
 
@@ -955,29 +1059,45 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
     /*! callback to setup a unit test inside the Target */
     void QS_onTestSetup(void);
 
-    /*! callback to teardown after a unit test inside the Target */
+    /*! callback to teardown after a unit test inside the Target
+    * @static @public @memberof QS
+    */
     void QS_onTestTeardown(void);
 
-    /*! callback to run the test loop */
+    /*! callback to run the test loop
+    * @static @public @memberof QS
+    */
     void QS_onTestLoop(void);
 
-    /*! callback to "massage" the test event before dispatching/posting it */
+    /*! callback to "massage" the test event before dispatching/posting it
+    * @static @public @memberof QS
+    */
     void QS_onTestEvt(QEvt *e);
 
-    /*! callback to examine an event that is about to be posted */
+    /*! callback to examine an event that is about to be posted
+    * @static @public @memberof QS
+    */
     void QS_onTestPost(void const *sender, QActive *recipient,
                        QEvt const *e, bool status);
 
-    /*! QS internal function to process posted events during test */
+    /*! QS internal function to process posted events during test
+    * @static @public @memberof QS
+    */
     void QS_processTestEvts_(void);
 
-    /*! internal function to process armed time events during test */
+    /*! internal function to process armed time events during test
+    * @static @public @memberof QS
+    */
     void QS_tickX_(uint_fast8_t const tickRate, void const * const sender);
 
-    /*! QS internal function to get the Test-Probe for a given API */
+    /*! QS internal function to get the Test-Probe for a given API
+    * @static @public @memberof QS
+    */
     uint32_t QS_getTestProbe_(void (* const api)(void));
 
-    /*! QS macro to define the Test-Probe for a given @p fun_ */
+    /*! QS macro to define the Test-Probe for a given @p fun_
+    * @static @public @memberof QS
+    */
     #define QS_TEST_PROBE_DEF(fun_) \
         uint32_t const qs_tp_ = QS_getTestProbe_((void (*)(void))(fun_));
 
@@ -1014,7 +1134,9 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
         QActive super; /*< inherit QActive */
     } QActiveDummy;
 
-    /*! Constructor of the QActiveDummy Active Object class */
+    /*! Constructor of the QActiveDummy Active Object class
+    * @public @memberof QActiveDummy
+    */
     void QActiveDummy_ctor(QActiveDummy * const me);
 
 #else /* Q_UTEST not defined */

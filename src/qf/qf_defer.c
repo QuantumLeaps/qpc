@@ -5,7 +5,7 @@
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.4
-* Last updated on  2021-09-03
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -52,6 +52,7 @@ Q_DEFINE_THIS_MODULE("qf_defer")
 
 /****************************************************************************/
 /**
+* @protected @memberof QActive
 * @description
 * This function is part of the event deferral support. An active object
 * uses this function to defer an event @p e to the QF-supported native
@@ -94,6 +95,7 @@ bool QActive_defer(QActive const * const me, QEQueue * const eq,
 
 /****************************************************************************/
 /**
+* @protected @memberof QActive
 * @description
 * This function is part of the event deferral support. An active object
 * uses this function to recall a deferred event from a given QF
@@ -169,6 +171,7 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
 
 /****************************************************************************/
 /**
+* @protected @memberof QActive
 * @description
 * This function is part of the event deferral support. An active object
 * can use this function to flush a given QF event queue. The function makes

@@ -9,14 +9,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2020-12-16
+* Last updated for version 6.9.4
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -59,6 +59,7 @@ Q_DEFINE_THIS_MODULE("qf_actq")
 /****************************************************************************/
 #ifdef Q_SPY
 /**
+* @private @memberof QActive
 * @description
 * Direct event posting is the simplest asynchronous communication method
 * available in QF.
@@ -216,6 +217,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
 /****************************************************************************/
 /**
+* @private @memberof QActive
 * @description
 * posts an event to the event queue of the active object @p me using the
 * Last-In-First-Out (LIFO) policy.
@@ -303,6 +305,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 
 /****************************************************************************/
 /**
+* @private @memberof QActive
 * @description
 * The behavior of this function depends on the kernel/OS used in the QF port.
 * For built-in kernels (QV or QK) the function can be called only when
@@ -372,6 +375,7 @@ QEvt const *QActive_get_(QActive * const me) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QF
 * @description
 * Queries the minimum of free ever present in the given event queue of
 * an active object with priority @p prio, since the active object
@@ -424,6 +428,7 @@ static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
 
 /*! Perform downcast to QTicker pointer. */
 /**
+* @public @memberof QTicker
 * @description
 * This macro encapsulates the downcast to (QTicker *), which is used in
 * QTicker_init_() and QTicker_dispatch_(). Such casts can trigger PC-Lint-Plus
@@ -455,6 +460,7 @@ void QTicker_ctor(QTicker * const me, uint_fast8_t tickRate) {
 }
 /*..........................................................................*/
 #ifdef Q_SPY
+/** @private @memberof QTicker */
 static void QTicker_init_(QHsm * const me, void const *par,
                               uint_fast8_t const qs_id)
 #else
@@ -470,6 +476,7 @@ static void QTicker_init_(QHsm * const me, void const *par)
 }
 /*..........................................................................*/
 #ifdef Q_SPY
+/** @private @memberof QTicker */
 static void QTicker_dispatch_(QHsm * const me, QEvt const * const e,
                               uint_fast8_t const qs_id)
 #else
@@ -495,6 +502,7 @@ static void QTicker_dispatch_(QHsm * const me, QEvt const * const e)
 }
 /*..........................................................................*/
 #ifndef Q_SPY
+/** @private @memberof QTicker */
 static bool QTicker_post_(QActive * const me, QEvt const * const e,
                           uint_fast16_t const margin)
 #else
@@ -535,6 +543,7 @@ static bool QTicker_post_(QActive * const me, QEvt const * const e,
     return true; /* the event is always posted correctly */
 }
 /*..........................................................................*/
+/** @private @memberof QTicker */
 static void QTicker_postLIFO_(QActive * const me, QEvt const * const e) {
     (void)me; /* unused parameter */
     (void)e;  /* unused parameter */

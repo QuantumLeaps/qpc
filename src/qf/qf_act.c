@@ -4,14 +4,14 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 6.8.4
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -50,11 +50,13 @@
 
 Q_DEFINE_THIS_MODULE("qf_act")
 
-/* public objects ***********************************************************/
+/* global objects ***********************************************************/
+/** @static @private @memberof QF */
 QActive *QF_active_[QF_MAX_ACTIVE + 1U]; /* to be used by QF ports only */
 
 /****************************************************************************/
 /**
+* @static @private @memberof QF
 * @description
 * This function adds a given active object to the active objects
 * managed by the QF framework. It should not be called by the application
@@ -87,6 +89,7 @@ void QF_add_(QActive * const a) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QF
 * @description
 * This function removes a given active object from the active objects managed
 * by the QF framework. It should not be called by the application
@@ -129,6 +132,7 @@ void QF_remove_(QActive * const a) {
 
 /****************************************************************************/
 /**
+* @static @public @memberof QF
 * @description
 * Clears a memory buffer by writing zeros byte-by-byte.
 *
@@ -153,6 +157,9 @@ void QF_bzero(void * const start, uint_fast16_t len) {
 /* log-base-2 implementation ************************************************/
 #ifndef QF_LOG2
 
+    /**
+    * @static @public @memberof QF
+    */
     uint_fast8_t QF_LOG2(QPSetBits x) {
         static uint8_t const log2LUT[16] = {
             0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,

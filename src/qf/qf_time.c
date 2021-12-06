@@ -1,11 +1,11 @@
 /**
 * @file
-* @brief ::QTimeEvt implementation and QF system clock tick QF_tickX_())
+* @brief QF/C time events and time management services
 * @ingroup qf
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.4
-* Last updated on  2021-09-03
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -51,11 +51,13 @@
 Q_DEFINE_THIS_MODULE("qf_time")
 
 /* Package-scope objects ****************************************************/
+/** @static @private @memberof QF */
 QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
 
 /****************************************************************************/
 #ifdef Q_SPY
 /**
+* @static @private @memberof QF
 * @description
 * This function must be called periodically from a time-tick ISR or from
 * a task so that QF can manage the timeout events assigned to the given
@@ -190,6 +192,7 @@ void QF_tickX_(uint_fast8_t const tickRate)
 
 /****************************************************************************/
 /**
+* @static @public @memberof QF
 * @description
 * Find out if any time events are armed at the given clock tick rate.
 *
@@ -222,6 +225,7 @@ bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate) {
 
 /****************************************************************************/
 /**
+* @public @memberof QTimeEvt
 * @description
 * When creating a time event, you must commit it to a specific active object
 * @p act, tick rate @p tickRate and event signal @p sig. You cannot change
@@ -271,26 +275,29 @@ void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
 
 /****************************************************************************/
 /**
+* @public @memberof QTimeEvt
 * @description
 * Arms a time event to fire in a specified number of clock ticks and with
 * a specified interval. If the interval is zero, the time event is armed for
-* one shot ('one-shot' time event). The time event gets directly posted
-* (using the FIFO policy) into the event queue of the host active object.
+* one shot ('one-shot' time event). When the timeout expires, the time event
+* gets directly posted (using the FIFO policy) into the event queue of the
+* host active object. After posting, a one-shot time event gets automatically
+* disarmed while a periodic time event (interval != 0) is automatically
+* re-armed.
+*
+* A time event can be disarmed at any time by calling QTimeEvt_disarm().
+* Also, a time event can be re-armed to fire in a different number of clock
+* ticks by calling the QTimeEvt_rearm().
 *
 * @param[in,out] me     pointer (see @ref oop)
 * @param[in]     nTicks number of clock ticks (at the associated rate)
 *                       to rearm the time event with.
 * @param[in]     interval interval (in clock ticks) for periodic time event.
 *
-* @note
-* After posting, a one-shot time event gets automatically disarmed
-* while a periodic time event (interval != 0) is automatically re-armed.
-*
-* @note
-* A time event can be disarmed at any time by calling the
-* QTimeEvt_disarm() function. Also, a time event can be re-armed to fire
-* in a different number of clock ticks by calling the QTimeEvt_rearm()
-* function.
+* @attention
+* Arming an already armed time event is __not__ allowed and is considered
+* a programming error. The QP/C framework will assert if it detects an
+* attempt to arm an already armed time event.
 *
 * @usage
 * The following example shows how to arm a one-shot time event from a state
@@ -357,6 +364,7 @@ void QTimeEvt_armX(QTimeEvt * const me,
 
 /****************************************************************************/
 /**
+* @public @memberof QTimeEvt
 * @description
 * Disarm the time event so it can be safely reused.
 *
@@ -417,6 +425,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
 
 /****************************************************************************/
 /**
+* @public @memberof QTimeEvt
 * @description
 * Rearms a time event with a new number of clock ticks. This function can
 * be used to adjust the current period of a periodic time event or to
@@ -499,6 +508,7 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
 
 /****************************************************************************/
 /**
+* @public @memberof QTimeEvt
 * @description
 * Useful for checking whether a one-shot time event was disarmed in the
 * QTimeEvt_disarm() operation.
@@ -527,6 +537,7 @@ bool QTimeEvt_wasDisarmed(QTimeEvt * const me) {
 
 /****************************************************************************/
 /**
+* @public @memberof QTimeEvt
 * @description
 * Useful for checking how many clock ticks (at the tick rate associated
 * with the time event) remain until the time event expires.

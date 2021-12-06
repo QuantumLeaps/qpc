@@ -1,6 +1,6 @@
 /**
 * @file
-* @brief Command-line macros and macros for porting QP
+* @brief Command-line macros and macros for porting and configuring QP
 */
 
 /*! The preprocessor switch to disable checking assertions */
@@ -33,6 +33,14 @@
 * This macro requires that #Q_SPY be defined as well.
 */
 #define Q_UTEST
+
+
+/*! The preprocessor switch to enable constructor in the ::QEvt class
+* instrumentation in the code */
+/**
+* @tr{RQP005}
+*/
+#define Q_EVT_CTOR
 
 /*! This macro defines the type of the thread handle used for AOs */
 #define QF_THREAD_TYPE         void*

@@ -1,11 +1,13 @@
 /**
+* @ingroup qep
+* @{
 * @file
 * @brief Public QEP/C interface
-* @ingroup qep
+* @}
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.4
-* Last updated on  2021-07-29
+* Last updated on  2021-11-15
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -41,6 +43,9 @@
 #define QEP_H
 
 /****************************************************************************/
+/*! @ingroup qp
+* @{
+*/
 /*! The current QP version as a decimal constant XXYZ, where XX is a 2-digit
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
@@ -96,8 +101,10 @@ typedef float float32_t;
 */
 typedef double float64_t;
 
-/*! the current QP version number string in ROM, based on QP_VERSION_STR */
+/*! the current QP version number string in ROM, based on #QP_VERSION_STR */
 extern char_t const QP_versionStr[7];
+
+/*! @} */
 
 /****************************************************************************/
 #ifndef Q_SIGNAL_SIZE
@@ -109,6 +116,8 @@ extern char_t const QP_versionStr[7];
     * This macro can be defined in the QEP port file (qep_port.h) to
     * configure the ::QSignal type. When the macro is not defined, the
     * default of 2 bytes is applied.
+    *
+    * @tr{RQP002A}
     */
     #define Q_SIGNAL_SIZE 2U
 #endif
@@ -124,6 +133,8 @@ extern char_t const QP_versionStr[7];
     * (The signal conveys the type of the occurrence-what happened?)
     * However, an event can also contain additional quantitative information
     * about the occurrence in form of event parameters.
+    *
+    * @tr{RQP002A}
     */
     typedef uint16_t QSignal;
 #elif (Q_SIGNAL_SIZE == 4U)
@@ -137,27 +148,30 @@ extern char_t const QP_versionStr[7];
 /*! Event class */
 /**
 * @description
-* QEvt represents events without parameters and serves as the base structure
+* QEvt represents events without parameters and serves as the base class
 * for derivation of events with parameters.
 *
 * @usage
 * The following example illustrates how to add an event parameter by
-* derivation of the QEvt structure. Please note that the QEvt member
+* derivation of the QEvt class. Please note that the QEvt member
 * super is defined as the FIRST member of the derived struct.
 * @include qep_qevt.c
 *
 * @sa @ref oop
+*
+* @tr{RQP001} @tr{RQP004}
 */
 typedef struct {
-    QSignal sig;              /*!< signal of the event instance */
-    uint8_t poolId_;          /*!< pool ID (0 for static event) */
-    uint8_t volatile refCtr_; /*!< reference counter */
+    QSignal sig;     /*!< @public signal of the event instance @tr{RQP002} */
+    uint8_t poolId_; /*!< @private pool ID (0 for static event) @tr{RQP003} */
+    uint8_t volatile refCtr_; /*!< @private reference counter @tr{RQP003} */
 } QEvt;
 
 #ifdef Q_EVT_CTOR /* Shall the constructor for the QEvt class be provided? */
 
 /*! Custom event constructor
 * @public @memberof QEvt
+* @tr{RQP005}
 */
 QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 
@@ -179,11 +193,11 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 */
 #define Q_HSM_UPCAST(ptr_) ((QHsm *)(ptr_))
 
-/*! Perform downcast of an event onto a subclass of QEvt @p class_ */
+/*! Perform downcast of an event onto a subclass of ::QEvt @p class_ */
 /**
 * @description
-* QEvt represents events without parameters and serves as the base structure
-* This macro encapsulates the downcast of QEvt pointers, which violates
+* ::QEvt represents events without parameters and serves as the base class
+* This macro encapsulates the downcast of ::QEvt pointers, which violates
 * MISRA-C 2004 rule 11.4(advisory). This macro helps to localize this
 * deviation.
 */
@@ -200,7 +214,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 
 
 /****************************************************************************/
-/*! typedef of the return type from a state/action-handler function. */
+/*! typedef of the return type from a state/action-handler functions. */
 typedef uint_fast8_t QState;
 
 /* forward declaration */
@@ -227,7 +241,7 @@ typedef void (*QXThreadHandler)(QXThread * const me);
 */
 #define Q_STATE_CAST(handler_)  ((QStateHandler)(handler_))
 
-/*! Perform cast to QActionHandler. */
+/*! Perform cast to ::QActionHandler. */
 /**
 * @description
 * This macro encapsulates the cast of a specific action handler function
@@ -248,11 +262,11 @@ typedef struct QMTranActTable QMTranActTable;
 * attributes of the ::QHsm class.
 */
 union QHsmAttr {
-    QStateHandler   fun;         /*!< pointer to a state-handler function */
-    QActionHandler  act;         /*!< pointer to an action-handler function */
-    QXThreadHandler thr;         /*!< pointer to an thread-handler function */
-    struct QMState const *obj;   /*!< pointer to QMState object */
-    QMTranActTable const *tatbl; /*!< transition-action table */
+    QStateHandler   fun;         /*!< @private pointer to a state-handler */
+    QActionHandler  act;         /*!< @private pointer to an action-handler */
+    QXThreadHandler thr;         /*!< @private pointer to an thread-handler */
+    struct QMState const *obj;   /*!< @private pointer to QMState object */
+    QMTranActTable const *tatbl; /*!< @private transition-action table */
 };
 
 /****************************************************************************/
@@ -270,19 +284,20 @@ union QHsmAttr {
 * generate code.
 *
 * @note ::QHsm is not intended to be instantiated directly, but rather serves
-* as the base structure for derivation of state machines in the application
+* as the base class for derivation of state machines in the application
 * code.
 *
 * @usage
-* The following example illustrates how to derive a state machine structure
-* from QHsm. Please note that the QHsm member super is defined as the FIRST
-* member of the derived struct.
+* The following example illustrates how to derive a state machine class
+* from ::QHsm. Please note that the ::QHsm member `super` is defined as the
+* FIRST member of the derived class.
+*
 * @include qep_qhsm.c
 */
 typedef struct {
-    struct QHsmVtable const *vptr; /*!< virtual pointer */
-    union QHsmAttr state; /*!< current active state (state-variable) */
-    union QHsmAttr temp;  /*!< temporary: tran. chain, target state, etc. */
+    struct QHsmVtable const *vptr; /*!< @private virtual pointer */
+    union QHsmAttr state; /*!< @private current active state (state-var) */
+    union QHsmAttr temp;  /*!< @private temporary: target/act-table, etc. */
 } QHsm;
 
 /*! Virtual table for the ::QHsm class. */
@@ -308,9 +323,7 @@ struct QHsmVtable {
 /* QHsm public operations... */
 
 #ifdef Q_SPY
-    /*! Polymorphically executes the top-most initial transition in a HSM
-    * @public @memberof QHsm
-    */
+    /*! Polymorphically executes the top-most initial transition in a HSM */
     /**
     * @param[in,out] me_ pointer (see @ref oop)
     * @param[in]     e_  constant pointer the ::QEvt or a class derived from
@@ -329,7 +342,9 @@ struct QHsmVtable {
         (*(me_)->vptr->init)((me_), (par_), (qs_id_)); \
     } while (false)
 
-    /*! Implementation of the top-most initial tran. in ::QHsm subclass */
+    /*! Implementation of the top-most initial tran. in ::QHsm subclass.
+    * @private @memberof QHsm
+    */
     void QHsm_init_(QHsm * const me, void const * const e,
                     uint_fast8_t const qs_id);
 #else
@@ -346,40 +361,39 @@ struct QHsmVtable {
 
 
 #ifdef Q_SPY
-    /*! Polymorphically dispatches an event to a HSM
-    * @public @memberof QHsm
-    */
+    /*! Polymorphically dispatches an event to a HSM */
     /**
     * @description
     * Processes one event at a time in Run-to-Completion fashion.
     *
     * @param[in,out] me_ pointer (see @ref oop)
-    * @param[in]     e_  constant pointer the ::QEvt or a structure
+    * @param[in]     e_  constant pointer the ::QEvt or a class
     *                    derived from ::QEvt (see @ref oop)
     * @note Must be called after the "constructor" and after QHSM_INIT().
     */
     #define QHSM_DISPATCH(me_, e_, qs_id_) \
         ((*(me_)->vptr->dispatch)((me_), (e_), (qs_id_)))
 
-    /*! Implementation of dispatching events to a ::QHsm subclass */
+    /*! Implementation of dispatching events to a ::QHsm subclass
+    * @private @memberof QHsm
+    */
     void QHsm_dispatch_(QHsm * const me, QEvt const * const e,
                         uint_fast8_t const qs_id);
 
-    /*! Implementation of getting the state handler in a ::QHsm subclass */
+    /*! Implementation of getting the state handler in a ::QHsm subclass
+    * @private @memberof QHsm
+    */
     QStateHandler QHsm_getStateHandler_(QHsm * const me);
 #else
 
     #define QHSM_DISPATCH(me_, e_, dummy) \
         ((*(me_)->vptr->dispatch)((me_), (e_)))
 
-    /*! Implementation of dispatching events to a ::QHsm subclass */
     void QHsm_dispatch_(QHsm * const me, QEvt const * const e);
 
 #endif /* Q_SPY */
 
-/*! Obtain the current active state from a HSM (read only).
-* @public @memberof QHsm
-*/
+/*! Obtain the current active state from a HSM (read only). */
 /**
 * @param[in] me_ pointer (see @ref oop)
 * @returns the current active state of a ::QHsm subclass
@@ -387,9 +401,7 @@ struct QHsmVtable {
 */
 #define QHsm_state(me_) (Q_STATE_CAST(Q_HSM_UPCAST(me_)->state.fun))
 
-/*! Obtain the current active child state of a given parent in ::QHsm
-* @public @memberof QHsm
-*/
+/*! Obtain the current active child state of a given parent in ::QHsm */
 /**
 * @param[in] me_     pointer (see @ref oop)
 * @param[in] parent_ pointer to the parent state-handler
@@ -437,18 +449,18 @@ QStateHandler QHsm_childState_(QHsm * const me,
 *
 * @note
 * ::QMsm is not intended to be instantiated directly, but rather serves as
-* the base structure for derivation of state machines in the application code.
+* the base class for derivation of state machines in the application code.
 *
 * @usage
-* The following example illustrates how to derive a state machine structure
-* from ::QMsm. Please note that the ::QMsm member 'super' is defined as the
+* The following example illustrates how to derive a state machine class
+* from ::QMsm. Please note that the ::QMsm member `super` is defined as the
 * _first_ member of the derived struct.
 * @include qep_qmsm.c
 *
 * @sa @ref oop
 */
 typedef struct {
-    QHsm super; /*!< inherits ::QHsm */
+    QHsm super; /*!< @protected inherits ::QHsm */
 } QMsm;
 
 /*! State object for the ::QMsm class (QM State Machine). */
@@ -464,24 +476,22 @@ typedef struct {
 * not be used in hand-crafted code.
 */
 struct QMState {
-    struct QMState const *superstate;   /*!< superstate of this state */
-    QStateHandler  const stateHandler;  /*!< state handler function */
-    QActionHandler const entryAction;   /*!< entry action handler function */
-    QActionHandler const exitAction;    /*!< exit action handler function */
-    QActionHandler const initAction;    /*!< init action handler function */
+    struct QMState const *superstate;  /*!< @private superstate of the state */
+    QStateHandler  const stateHandler; /*!< @private state handler */
+    QActionHandler const entryAction;  /*!< @private entry action handler */
+    QActionHandler const exitAction;   /*!< @private exit action handler */
+    QActionHandler const initAction;   /*!< @private init action handler */
 };
 typedef struct QMState QMState;
 
 /*! Transition-Action Table for the Meta State Machine. */
 struct QMTranActTable {
-    struct QMState const *target;
-    QActionHandler const act[1];
+    struct QMState const *target;      /*!< @private */
+    QActionHandler const act[1];       /*!< @private */
 };
 
 /* QMsm public operations... */
-/*! Obtain the current active state from a MSM (read only)
-* @public @memberof QMsm
-*/
+/*! Obtain the current active state from a MSM (read only) */
 /**
 * @param[in] me_     pointer (see @ref oop)
 * @returns the current active state-object
@@ -489,9 +499,7 @@ struct QMTranActTable {
 */
 #define QMsm_stateObj(me_) (Q_HSM_UPCAST(me_)->state.obj)
 
-/*! Obtain the current active child state of a given parent in ::QMsm
-* @public @memberof QMsm
-*/
+/*! Obtain the current active child state of a given parent in ::QMsm */
 /**
 * @param[in] me_     pointer (see @ref oop)
 * @param[in] parent_ pointer to the parent state-object

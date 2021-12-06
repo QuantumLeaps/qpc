@@ -4,8 +4,8 @@
 * @ingroup qf
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.3
-* Last updated on  2021-02-26
+* Last updated for version 6.9.4
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -52,11 +52,15 @@ Q_DEFINE_THIS_MODULE("qf_ps")
 
 
 /* Package-scope objects ****************************************************/
+/** @static @private @memberof QF */
 QSubscrList *QF_subscrList_;
+
+/** @static @private @memberof QF */
 enum_t QF_maxPubSignal_;
 
 /****************************************************************************/
 /**
+* @static @public @memberof QF
 * @description
 * This function initializes the publish-subscribe facilities of QF and must
 * be called exactly once before any subscriptions/publications occur in
@@ -97,6 +101,7 @@ void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QF
 * @description
 * This function posts (using the FIFO policy) the event @a e to **all**
 * active objects that have subscribed to the signal @a e->sig, which is
@@ -187,6 +192,7 @@ void QF_publish_(QEvt const * const e,
 
 /****************************************************************************/
 /**
+* @public @memberof QActive
 * @description
 * This function is part of the Publish-Subscribe event delivery mechanism
 * available in QF. Subscribing to an event means that the framework will
@@ -229,6 +235,7 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
 
 /****************************************************************************/
 /**
+* @public @memberof QActive
 * @description
 * This function is part of the Publish-Subscribe event delivery mechanism
 * available in QF. Un-subscribing from an event means that the framework
@@ -280,6 +287,7 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
 
 /****************************************************************************/
 /**
+* @public @memberof QActive
 * @description
 * This function is part of the Publish-Subscribe event delivery mechanism
 * available in QF. Un-subscribing from all events means that the framework

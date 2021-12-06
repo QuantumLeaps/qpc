@@ -4,14 +4,14 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2020-12-16
+* Last updated for version 6.9.4
+* Last updated on  2021-10-07
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -109,6 +109,7 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const * const hist);
 
 /****************************************************************************/
 /**
+* @protected @memberof QMsm
 * @description
 * Performs the first step of QMsm initialization by assigning the initial
 * pseudostate to the currently active state of the state machine.
@@ -626,6 +627,7 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const *const hist)
 
 /****************************************************************************/
 /**
+* @public @memberof QMsm
 * @description
 * Tests if a state machine derived from QMsm is-in a given state.
 *
@@ -654,6 +656,7 @@ bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
 
 /****************************************************************************/
 /**
+* @private @memberof QMsm
 * @description
 * Finds the child state of the given @c parent, such that this child state
 * is an ancestor of the currently active state. The main purpose of this

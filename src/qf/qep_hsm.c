@@ -4,14 +4,14 @@
 * @ingroup qep
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2020-12-16
+* Last updated for version 6.9.4
+* Last updated on  2021-10-07
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -112,6 +112,7 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
 
 /****************************************************************************/
 /**
+* @protected @memberof QHsm
 * @description
 * Performs the first step of HSM initialization by assigning the initial
 * pseudostate to the currently active state of the state machine.
@@ -145,6 +146,7 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial) {
 
 /****************************************************************************/
 /**
+* @private @memberof QHsm
 * @description
 * Executes the top-most initial transition in a HSM.
 *
@@ -234,6 +236,7 @@ void QHsm_init_(QHsm * const me, void const * const e)
 
 /****************************************************************************/
 /**
+* @protected @memberof QHsm
 * @description
 * QHsm_top() is the ultimate root of state hierarchy in all HSMs derived
 * from ::QHsm.
@@ -255,6 +258,7 @@ QState QHsm_top(void const * const me, QEvt const * const e) {
 
 /****************************************************************************/
 /**
+* @private @memberof QHsm
 * @description
 * Dispatches an event for processing to a hierarchical state machine (HSM).
 * The processing of an event represents one run-to-completion (RTC) step.
@@ -427,6 +431,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e)
 
 /****************************************************************************/
 /**
+* @private @memberof QHsm
 * @description
 * Static helper function to execute transition sequence in a hierarchical
 * state machine (HSM).
@@ -587,6 +592,7 @@ QStateHandler QHsm_getStateHandler_(QHsm * const me) {
 
 /****************************************************************************/
 /**
+* @public @memberof QHsm
 * @description
 * Tests if a state machine derived from QHsm is-in a given state.
 *
@@ -624,6 +630,7 @@ bool QHsm_isIn(QHsm * const me, QStateHandler const state) {
 
 /****************************************************************************/
 /**
+* @public @memberof QHsm
 * @description
 * Finds the child state of the given @c parent, such that this child state
 * is an ancestor of the currently active state. The main purpose of this

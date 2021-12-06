@@ -4,14 +4,14 @@
 * @ingroup qs
 * @cond
 ******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-18
+* Last updated for version 6.9.4
+* Last updated on  2021-09-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2002-2021 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -102,6 +102,7 @@ void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @description
 * This function sets up the global QS filter to enable or disable the
 * given QS record or a group of records @p rec.
@@ -298,6 +299,7 @@ void QS_glbFilter_(int_fast16_t const filter) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @description
 * This function sets up the local QS filter to enable or disable the
 * given QS object-id or a group of object-ids @p qs_id.
@@ -367,6 +369,7 @@ void QS_locFilter_(int_fast16_t const filter) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @description
 * This function must be called at the beginning of each QS record.
 * This function should be called indirectly through the macro QS_BEGIN_ID(),
@@ -394,6 +397,7 @@ void QS_beginRec_(uint_fast8_t rec) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @description
 * This function must be called at the end of each QS record.
 * This function should be called indirectly through the macro QS_END(),
@@ -430,6 +434,7 @@ void QS_endRec_(void) {
 }
 
 /****************************************************************************/
+/** @static @private @memberof QS */
 void QS_target_info_pre_(uint8_t isReset) {
     static uint8_t const ZERO = (uint8_t)'0';
     static uint8_t const * const TIME = (uint8_t const *)&Q_BUILD_TIME[0];
@@ -540,6 +545,7 @@ void QS_target_info_pre_(uint8_t isReset) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @description
 * @note This function is only to be used through macros, never in the
 * client code directly.
@@ -561,6 +567,7 @@ void QS_u8_fmt_(uint8_t format, uint8_t d) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @description
 * This function is only to be used through macros, never in the
 * client code directly.
@@ -585,6 +592,7 @@ void QS_u16_fmt_(uint8_t format, uint16_t d) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
@@ -611,7 +619,9 @@ void QS_u32_fmt_(uint8_t format, uint32_t d) {
 
 /****************************************************************************/
 /*! output uint8_t data element without format information */
-/** @note This function is only to be used through macros, never in the
+/**
+* @static @private @memberof QS
+* @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_u8_raw_(uint8_t d) {
@@ -628,7 +638,9 @@ void QS_u8_raw_(uint8_t d) {
 }
 
 /****************************************************************************/
-/** @note This function is only to be used through macros, never in the
+/**
+* @static @private @memberof QS
+* @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_2u8_raw_(uint8_t d1, uint8_t d2) {
@@ -647,6 +659,7 @@ void QS_2u8_raw_(uint8_t d1, uint8_t d2) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
@@ -668,7 +681,9 @@ void QS_u16_raw_(uint16_t d) {
 }
 
 /****************************************************************************/
-/** @note This function is only to be used through macros, never in the
+/**
+* @static @private @memberof QS
+* @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_u32_raw_(uint32_t d) {
@@ -690,7 +705,9 @@ void QS_u32_raw_(uint32_t d) {
 }
 
 /****************************************************************************/
-/** @note This function is only to be used through macros, never in the
+/**
+* @static @private @memberof QS
+* @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_obj_raw_(void const * const obj) {
@@ -709,6 +726,7 @@ void QS_obj_raw_(void const * const obj) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
@@ -735,6 +753,7 @@ void QS_str_raw_(char_t const *str) {
 
 /****************************************************************************/
 /**
+* @static @public @memberof QS
 * @description
 * This function delivers one byte at a time from the QS data buffer.
 *
@@ -765,6 +784,7 @@ uint16_t QS_getByte(void) {
 
 /****************************************************************************/
 /**
+* @static @public @memberof QS
 * @description
 * This function delivers a contiguous block of data from the QS data buffer.
 * The function returns the pointer to the beginning of the block, and writes
@@ -820,7 +840,9 @@ uint8_t const *QS_getBlock(uint16_t *pNbytes) {
 }
 
 /****************************************************************************/
-/** @note This function is only to be used through macro QS_SIG_DICTIONARY()
+/**
+* @static @private @memberof QS
+* @note This function is only to be used through macro QS_SIG_DICTIONARY()
 */
 void QS_sig_dict_pre_(enum_t const sig, void const * const obj,
                       char_t const *name)
@@ -838,7 +860,9 @@ void QS_sig_dict_pre_(enum_t const sig, void const * const obj,
 }
 
 /****************************************************************************/
-/** @note This function is only to be used through macro QS_OBJ_DICTIONARY()
+/**
+* @static @private @memberof QS
+* @note This function is only to be used through macro QS_OBJ_DICTIONARY()
 */
 void QS_obj_dict_pre_(void const * const obj,
                       char_t const *name)
@@ -855,7 +879,9 @@ void QS_obj_dict_pre_(void const * const obj,
 }
 
 /****************************************************************************/
-/** @note This function is only to be used through macro QS_FUN_DICTIONARY()
+/**
+* @static @private @memberof QS
+* @note This function is only to be used through macro QS_FUN_DICTIONARY()
 */
 void QS_fun_dict_pre_(void (* const fun)(void), char_t const *name) {
     QS_CRIT_STAT_
@@ -870,7 +896,9 @@ void QS_fun_dict_pre_(void (* const fun)(void), char_t const *name) {
 }
 
 /****************************************************************************/
-/** @note This function is only to be used through macro QS_USR_DICTIONARY()
+/**
+* @static @private @memberof QS
+* @note This function is only to be used through macro QS_USR_DICTIONARY()
 */
 void QS_usr_dict_pre_(enum_t const rec,
                       char_t const * const name)
@@ -887,7 +915,9 @@ void QS_usr_dict_pre_(enum_t const rec,
 }
 
 /****************************************************************************/
-/** @note This function is only to be used through macros, never in the
+/**
+* @static @private @memberof QS
+* @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_mem_fmt_(uint8_t const *blk, uint8_t size) {
@@ -916,6 +946,7 @@ void QS_mem_fmt_(uint8_t const *blk, uint8_t size) {
 
 /****************************************************************************/
 /**
+* @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
@@ -944,7 +975,9 @@ void QS_str_fmt_(char_t const *str) {
 }
 
 /****************************************************************************/
-/*! Output the assertion failure trace record */
+/*! Output the assertion failure trace record
+* @static @public @memberof QS
+*/
 void QS_ASSERTION(char_t const * const module,
                   int_t const loc,
                   uint32_t delay)
@@ -963,7 +996,8 @@ void QS_ASSERTION(char_t const * const module,
 }
 
 /****************************************************************************/
-/* Output the critical section entry/exit
+/*! Output the critical section entry/exit
+* @static @public @memberof QS
 */
 void QF_QS_CRIT_ENTRY(void) {
     QS_BEGIN_NOCRIT_PRE_(QS_QF_CRIT_ENTRY, 0U)
@@ -982,7 +1016,8 @@ void QF_QS_CRIT_EXIT(void) {
 }
 
 /****************************************************************************/
-/* Output the ISR entry/exit
+/*! Output the ISR entry
+* @static @public @memberof QS
 */
 void QF_QS_ISR_ENTRY(uint8_t const isrnest, uint8_t const prio) {
     QS_BEGIN_NOCRIT_PRE_(QS_QF_ISR_ENTRY, 0U)
@@ -991,6 +1026,9 @@ void QF_QS_ISR_ENTRY(uint8_t const isrnest, uint8_t const prio) {
     QS_END_NOCRIT_PRE_()
 }
 
+/*! Output the ISR exit
+* @static @public @memberof QS
+*/
 void QF_QS_ISR_EXIT(uint8_t const isrnest, uint8_t const prio) {
     QS_BEGIN_NOCRIT_PRE_(QS_QF_ISR_EXIT, 0U)
         QS_TIME_PRE_();
