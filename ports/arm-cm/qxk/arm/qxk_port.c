@@ -1,40 +1,30 @@
-/**
-* @file
-* @brief QXK/C port to ARM Cortex-M, ARM-KEIL toolset
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-10-11
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @file
+* @brief QXK/C port to ARM Cortex-M, ARM-KEIL toolset
 */
 /* This QXK port is part of the interanl QP implementation */
 #define QP_IMPL 1U
@@ -97,8 +87,8 @@ void QXK_init(void) {
     SCB_SYSPRI[3] |= (0xFFU << 16);
 }
 
-/*****************************************************************************
-* Initialize the private stack of an extended QXK thread.
+/*==========================================================================*/
+/* Initialize the private stack of an extended QXK thread.
 *
 * NOTE: the function aligns the stack to the 8-byte boundary for compatibility
 * with the AAPCS. Additionally, the function pre-fills the stack with the
@@ -107,7 +97,7 @@ void QXK_init(void) {
 * NOTE: QXK_stackInit_() must be called before the QXK kernel is made aware
 * of this thread. In that case the kernel cannot use the thread yet, so no
 * critical section is needed.
-*****************************************************************************/
+*/
 void QXK_stackInit_(void *thr, QXThreadHandler const handler,
                     void * const stkSto, uint_fast16_t const stkSize)
 {
@@ -170,8 +160,8 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
 /*Q_ASSERT_COMPILE(QACTIVE_OSOBJ == offsetof(QActive, osObject));*/
 /*Q_ASSERT_COMPILE(QACTIVE_DYN_PRIO == offsetof(QActive, dynPrio));*/
 
-/*****************************************************************************
-* The PendSV_Handler exception handler is used for handling context switch
+/*==========================================================================*/
+/* The PendSV_Handler exception handler is used for handling context switch
 * and asynchronous preemption in QXK. The use of the PendSV exception is
 * the recommended and most efficient method for performing context switches
 * with ARM Cortex-M.
@@ -191,7 +181,7 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
 * entered immediately after the exit from the *last* nested interrupt (or
 * exception). In QXK, this is exactly the time when the QXK activator needs to
 * handle the asynchronous preemption.
-*****************************************************************************/
+*/
 __asm void PendSV_Handler(void) {
     IMPORT  QXK_attr_         /* extern variable */
     IMPORT  QXK_activate_     /* extern function */
@@ -273,7 +263,7 @@ PendSV_activate
 #endif                        /* NOT (v6-M, v6S-M) */
     BX      r0                /* exception-return to the QXK activator */
 
-    /*=========================================================================
+    /*------------------------------------------------------------------------
     * Saving AO-thread before crossing to eXtended-thread
     * expected register contents:
     * r0  -> QXK_attr_.next
@@ -287,7 +277,7 @@ PendSV_save_ao
     SUB     sp,sp,#(8*4)      /* make room for 8 registers r4-r11 */
     MOV     r0,sp             /* r0 := temporary stack pointer */
     STMIA   r0!,{r4-r7}       /* save the low registers */
-    MOV     r4,r8             /* move the high registers to low registers... */
+    MOV     r4,r8             /* move the high registers to low registers...*/
     MOV     r5,r9
     MOV     r6,r10
     MOV     r7,r11
@@ -308,7 +298,7 @@ PendSV_save_ao
     BNE     PendSV_restore_ex /* branch if (QXK_attr_.next->osObject != 0) */
     /* otherwise continue to restoring next AO-thread... */
 
-    /*-------------------------------------------------------------------------
+    /*------------------------------------------------------------------------
     * Restoring AO-thread after crossing from eXtended-thread
     * expected register contents:
     * r1  -> QXK_attr_.curr
@@ -499,12 +489,12 @@ PendSV_onContextSw2
     ALIGN                     /* align the code to 4-byte boundary */
 }
 
-/*****************************************************************************
-* QXK_thread_ret is a helper function executed when the QXK activator returns.
+/*==========================================================================*/
+/* QXK_thread_ret is a helper function executed when the QXK activator returns.
 *
 * NOTE: QXK_thread_ret does not execute in the PendSV context!
 * NOTE: QXK_thread_ret executes entirely with interrupts DISABLED.
-*****************************************************************************/
+*/
 __asm void QXK_thread_ret(void) {
     /* After the QXK activator returns, we need to resume the preempted
     * thread. However, this must be accomplished by a return-from-exception,
@@ -538,15 +528,15 @@ __asm void QXK_thread_ret(void) {
     ALIGN                     /* align the code to 4-byte boundary */
 }
 
-/*****************************************************************************
-* The NMI_Handler exception handler is used for returning back to the
+/*==========================================================================*/
+/* The NMI_Handler exception handler is used for returning back to the
 * interrupted task. The NMI exception simply removes its own interrupt
 * stack frame from the stack and returns to the preempted task using the
 * interrupt stack frame that must be at the top of the stack.
 *
 * NOTE: The NMI exception is entered with interrupts DISABLED, so it needs
 * to re-enable interrupts before it returns to the preempted task.
-*****************************************************************************/
+*/
 __asm void NMI_Handler(void) {
 
     PRESERVE8                 /* preserve the 8-byte stack alignment */
@@ -569,7 +559,7 @@ __asm void NMI_Handler(void) {
     ALIGN                     /* align the code to 4-byte boundary */
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 #if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
 
 /* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction) */
