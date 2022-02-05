@@ -10,7 +10,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -205,12 +205,12 @@ __asm void PendSV_Handler(void) {
     * a critical section...
     */
     LDR     r3,=QXK_attr_
-    LDR     r2,=0xE000ED04    /* Interrupt Control and State Register */
+    LDR     r2,=NVIC_ICSR     /* Interrupt Control and State Register */
     MOVS    r1,#1
     LSLS    r1,r1,#27         /* r0 := (1 << 27) (UNPENDSVSET bit) */
 
     /*<<<<<<<<<<<<<<<<<<<<<<< CRITICAL SECTION BEGIN <<<<<<<<<<<<<<<<<<<<<<<<*/
-#if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+#if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     CPSID   i                 /* disable interrupts (set PRIMASK) */
 #else
     MOVS    r0,#QF_BASEPRI
@@ -268,7 +268,7 @@ PendSV_activate
 
     MOVS    r0,#6
     MVNS    r0,r0             /* r0 := ~6 == 0xFFFFFFF9 */
-#if (__TARGET_ARCH_THUMB != 3) /* NOT Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+#if (__TARGET_ARCH_THUMB != 3) /* NOT Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
     DSB                       /* ARM Erratum 838869 */
 #endif                        /* NOT (v6-M, v6S-M) */
     BX      r0                /* exception-return to the QXK activator */
@@ -477,7 +477,7 @@ PendSV_onContextSw2
 #else                         /* M3/M4/M7 */
     MOVS    r1,#0
     MSR     BASEPRI,r1        /* enable interrupts (clear BASEPRI) */
-#if (__TARGET_FPU_VFP != TRUE) /* if VFP available... */
+#if (__TARGET_FPU_VFP != 0)   /* if VFP available... */
     LDMIA   r2!,{r1,lr}       /* restore aligner and EXC_RETURN into lr */
     TST     lr,#(1 << 4)      /* is it return to the VFP exception frame? */
     IT      EQ                /* if lr[4] is zero... */
@@ -569,11 +569,10 @@ __asm void NMI_Handler(void) {
     ALIGN                     /* align the code to 4-byte boundary */
 }
 
+/****************************************************************************/
 #if (__TARGET_ARCH_THUMB == 3) /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
 
-/*****************************************************************************
-* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction)
-*****************************************************************************/
+/* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction) */
 __asm uint_fast8_t QF_qlog2(uint32_t x) {
     MOVS    r1,#0
 
