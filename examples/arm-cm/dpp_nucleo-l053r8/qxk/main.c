@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -76,9 +76,6 @@ int main() {
     * configures and starts SysTick.
     */
     BSP_init();
-
-    /* object dictionaries... */
-    QS_OBJ_DICTIONARY(&l_ticker0);
 
     /* start the extended thread */
     QXTHREAD_START(XT_Test1,                 /* Thread to start */

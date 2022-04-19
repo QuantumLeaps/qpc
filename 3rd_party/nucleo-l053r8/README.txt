@@ -26,7 +26,7 @@ of clock setting using the PLL driven from the MSE.
 NOTE:
 The NUCLEO boards have a wide range of possible clock selections, depending
 on the solder bridge configuration. Please see Chapter 5.7 "OSC clock" in
-the STM32 NUCLEO Boards User Manual (ST document UM1724) for more information. 
+the STM32 NUCLEO Boards User Manual (ST document UM1724) for more information.
 ***
 
 

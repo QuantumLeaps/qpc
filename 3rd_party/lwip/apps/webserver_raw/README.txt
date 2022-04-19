@@ -45,4 +45,4 @@ qfsgen [root-dir [output-file]] [-h]
 
 when qfsgen is invoked without parameters, it processes the folder
 fs in the current directory and generates file fsdata.h also in the
-current directory. 
+current directory.

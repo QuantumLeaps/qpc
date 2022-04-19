@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-31
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief ::QMsm implementation
 * @ingroup qep
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-10-07
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qep_port.h"     /* QEP port */
@@ -49,12 +42,11 @@
 
 Q_DEFINE_THIS_MODULE("qep_msm")
 
-/****************************************************************************/
+/*==========================================================================*/
 /*! internal QEP constants */
-enum {
-    /*! maximum depth of entry levels in a MSM for transition to history. */
-    QMSM_MAX_ENTRY_DEPTH_ = 4
-};
+
+/*! maximum depth of entry levels in a MSM for transition to history. */
+#define QMSM_MAX_ENTRY_DEPTH_  4
 
 static struct QMState const l_msm_top_s = {
     (struct QMState *)0,
@@ -64,51 +56,38 @@ static struct QMState const l_msm_top_s = {
     Q_ACTION_CAST(0)
 };
 
-/*! Internal QEP macro to increment the given action table @p act_ */
-/**
-* @note
-* Incrementing a pointer violates the MISRA-C 2004 Rule 17.4(req),
-* pointer arithmetic other than array indexing. Encapsulating this violation
-* in a macro allows to selectively suppress this specific deviation.
-*/
-#define QEP_ACT_PTR_INC_(act_) (++(act_))
-
-/*! helper function to execute a transition-action table.
-* @private @memberof QMsm
-*/
 #ifdef Q_SPY
-static QState QMsm_execTatbl_(QHsm * const me,
-                              struct QMTranActTable const *tatbl,
-                              uint_fast8_t const qs_id);
-#else
-static QState QMsm_execTatbl_(QHsm * const me,
-                              struct QMTranActTable const *tatbl);
-#endif
+    /*! helper function to execute a transition-action table.
+    * @private @memberof QMsm
+    */
+    static QState QMsm_execTatbl_(QHsm * const me,
+                                  struct QMTranActTable const *tatbl,
+                                  uint_fast8_t const qs_id);
 
-/*! helper function to exit the current state up to the transition source
-* @private @memberof QMsm
-*/
-#ifdef Q_SPY
-static void QMsm_exitToTranSource_(QHsm * const me, QMState const *cs,
-                                   QMState const *ts,
-                                   uint_fast8_t const qs_id);
-#else
-static void QMsm_exitToTranSource_(QHsm * const me, QMState const *cs,
-                                   QMState const *ts);
-#endif
+    /*! helper function to exit the current state up to the transition source
+    * @private @memberof QMsm
+    */
+    static void QMsm_exitToTranSource_(QHsm * const me, QMState const *cs,
+                                       QMState const *ts,
+                                       uint_fast8_t const qs_id);
 
-/*! helper function to execute a transition to history
-* @private @memberof QMsm
-*/
-#ifdef Q_SPY
-static QState QMsm_enterHistory_(QHsm * const me, QMState const * const hist,
-                                 uint_fast8_t const qs_id);
+    /*! helper function to execute a transition to history
+    * @private @memberof QMsm
+    */
+    static QState QMsm_enterHistory_(QHsm * const me,
+                                     QMState const * const hist,
+                                     uint_fast8_t const qs_id);
 #else
-static QState QMsm_enterHistory_(QHsm * const me, QMState const * const hist);
-#endif
+    static QState QMsm_execTatbl_(QHsm * const me,
+                                  struct QMTranActTable const *tatbl);
+    static void QMsm_exitToTranSource_(QHsm * const me, QMState const *cs,
+                                       QMState const *ts);
+    static QState QMsm_enterHistory_(QHsm * const me,
+                                     QMState const * const hist);
+#endif /* Q_SPY */
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @protected @memberof QMsm
 * @description
 * Performs the first step of QMsm initialization by assigning the initial
@@ -147,8 +126,8 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial) {
     me->super.temp.fun  = initial;      /* the initial transition handler */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QMsm
 * @description
 * Executes the top-most initial transition in a MSM.
@@ -167,10 +146,9 @@ void QMsm_init_(QHsm * const me, void const * const e,
 void QMsm_init_(QHsm * const me, void const * const e)
 #endif
 {
-    QState r;
     QS_CRIT_STAT_
 
-    /** @pre the virtual pointer must be initialized, the top-most initial
+    /*! @pre the virtual pointer must be initialized, the top-most initial
     * transition must be initialized, and the initial transition must not
     * be taken yet.
     */
@@ -179,15 +157,15 @@ void QMsm_init_(QHsm * const me, void const * const e)
                       && (me->state.obj == &l_msm_top_s));
 
     /* execute the top-most initial tran. */
-    r = (*me->temp.fun)(me, Q_EVT_CAST(QEvt));
+    QState r = (*me->temp.fun)(me, Q_EVT_CAST(QEvt));
 
     /* the top-most initial transition must be taken */
     Q_ASSERT_ID(210, r == (QState)Q_RET_TRAN_INIT);
 
     QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
         QS_OBJ_PRE_(me); /* this state machine object */
-        QS_FUN_PRE_(me->state.obj->stateHandler);        /* source state */
-        QS_FUN_PRE_(me->temp.tatbl->target->stateHandler);/*target state */
+        QS_FUN_PRE_(me->state.obj->stateHandler);          /* source state */
+        QS_FUN_PRE_(me->temp.tatbl->target->stateHandler); /* target state */
     QS_END_PRE_()
 
     /* set state to the last tran. target */
@@ -210,8 +188,8 @@ void QMsm_init_(QHsm * const me, void const * const e)
     QS_END_PRE_()
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @private @memberof QMsm
 * @description
 * Dispatches an event for processing to a meta state machine (MSM).
@@ -237,7 +215,7 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e)
     QState r;
     QS_CRIT_STAT_
 
-    /** @pre current state must be initialized */
+    /*! @pre current state must be initialized */
     Q_REQUIRE_ID(300, s != (QMState *)0);
 
     QS_BEGIN_PRE_(QS_QEP_DISPATCH, qs_id)
@@ -284,7 +262,7 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e)
     /* any kind of transition taken? */
     if (r >= (QState)Q_RET_TRAN) {
 #ifdef Q_SPY
-        QMState const *ts = t; /* transition source for QS tracing */
+        QMState const * const ts = t; /* transition source for QS tracing */
 
         /* the transition source state must not be NULL */
         Q_ASSERT_ID(320, ts != (QMState *)0);
@@ -292,7 +270,7 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e)
 
         do {
             /* save the transition-action table before it gets clobbered */
-            struct QMTranActTable const *tatbl = me->temp.tatbl;
+            struct QMTranActTable const * const tatbl = me->temp.tatbl;
             union QHsmAttr tmp; /* temporary to save intermediate values */
 
             /* was TRAN, TRAN_INIT, or TRAN_EP taken? */
@@ -415,15 +393,15 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e)
     }
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 #ifdef Q_SPY
 QStateHandler QMsm_getStateHandler_(QHsm * const me) {
     return me->state.obj->stateHandler;
 }
 #endif
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @private @memberof QMsm
 * @description
 * Helper function to execute transition sequence in a transition-action table.
@@ -448,28 +426,30 @@ static QState QMsm_execTatbl_(QHsm * const me,
                               struct QMTranActTable const *tatbl)
 #endif
 {
-    QActionHandler const *a;
     QState r = (QState)Q_RET_NULL;
     QS_CRIT_STAT_
 
-    /** @pre the transition-action table pointer must not be NULL */
+    /*! @pre the transition-action table pointer must not be NULL */
     Q_REQUIRE_ID(400, tatbl != (struct QMTranActTable *)0);
 
-    for (a = &tatbl->act[0]; *a != Q_ACTION_CAST(0); QEP_ACT_PTR_INC_(a)) {
+    for (QActionHandler const *a = &tatbl->act[0];
+         *a != Q_ACTION_CAST(0);
+         ++a)
+    {
         r = (*(*a))(me); /* call the action through the 'a' pointer */
 #ifdef Q_SPY
         if (r == (QState)Q_RET_ENTRY) {
 
             QS_BEGIN_PRE_(QS_QEP_STATE_ENTRY, qs_id)
                 QS_OBJ_PRE_(me); /* this state machine object */
-                QS_FUN_PRE_(me->temp.obj->stateHandler);/*entered state handler */
+                QS_FUN_PRE_(me->temp.obj->stateHandler);/*entered state */
             QS_END_PRE_()
         }
         else if (r == (QState)Q_RET_EXIT) {
 
             QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, qs_id)
                 QS_OBJ_PRE_(me); /* this state machine object */
-                QS_FUN_PRE_(me->temp.obj->stateHandler); /* exited state handler*/
+                QS_FUN_PRE_(me->temp.obj->stateHandler); /* exited state */
             QS_END_PRE_()
         }
         else if (r == (QState)Q_RET_TRAN_INIT) {
@@ -508,8 +488,8 @@ static QState QMsm_execTatbl_(QHsm * const me,
     return r;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @private @memberof QMsm
 * @description
 * Static helper function to exit the current state configuration to the
@@ -555,8 +535,8 @@ static void QMsm_exitToTranSource_(QHsm * const me, QMState const *cs,
     }
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @private @memberof QMsm
 * @description
 * Static helper function to execute the segment of transition to history
@@ -580,8 +560,6 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const *const hist)
     QMState const *s = hist;
     QMState const *ts = me->state.obj; /* transition source */
     QMState const *epath[QMSM_MAX_ENTRY_DEPTH_];
-    QState r;
-    uint_fast8_t i = 0U;  /* transition entry path index */
     QS_CRIT_STAT_
 
     QS_BEGIN_PRE_(QS_QEP_TRAN_HIST, qs_id)
@@ -590,11 +568,12 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const *const hist)
         QS_FUN_PRE_(hist->stateHandler); /* target state handler */
     QS_END_PRE_()
 
+    int_fast8_t i = 0;  /* transition entry path index */
     while (s != ts) {
         if (s->entryAction != Q_ACTION_CAST(0)) {
+            Q_ASSERT_ID(620, i < QMSM_MAX_ENTRY_DEPTH_);
             epath[i] = s;
             ++i;
-            Q_ASSERT_ID(620, i <= Q_DIM(epath));
         }
         s = s->superstate;
         if (s == (QMState *)0) {
@@ -603,7 +582,7 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const *const hist)
     }
 
     /* retrace the entry path in reverse (desired) order... */
-    while (i > 0U) {
+    while (i > 0) {
         --i;
         (void)(*epath[i]->entryAction)(me); /* run entry action in epath[i] */
 
@@ -616,6 +595,7 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const *const hist)
     me->state.obj = hist; /* set current state to the transition target */
 
     /* initial tran. present? */
+    QState r;
     if (hist->initAction != Q_ACTION_CAST(0)) {
         r = (*hist->initAction)(me); /* execute the transition action */
     }
@@ -625,8 +605,8 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const *const hist)
     return r;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QMsm
 * @description
 * Tests if a state machine derived from QMsm is-in a given state.
@@ -643,9 +623,11 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const *const hist)
 */
 bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
     bool inState = false; /* assume that this MSM is not in 'state' */
-    QMState const *s;
 
-    for (s = me->super.state.obj; s != (QMState *)0; s = s->superstate) {
+    for (QMState const *s = me->super.state.obj;
+         s != (QMState *)0;
+         s = s->superstate)
+    {
         if (s == state) {
             inState = true; /* match found, return 'true' */
             break;
@@ -654,8 +636,8 @@ bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
     return inState;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @private @memberof QMsm
 * @description
 * Finds the child state of the given @c parent, such that this child state
@@ -673,14 +655,13 @@ bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
 *
 * @sa QMsm_childStateObj()
 */
-QMState const *QMsm_childStateObj_(QMsm const * const me,
-                                   QMState const * const parent)
+QMState const *QMsm_childStateObj(QHsm const * const me,
+                                  QMState const * const parent)
 {
-    QMState const *child = me->super.state.obj;
+    QMState const *child = me->state.obj;
     bool isFound = false; /* start with the child not found */
-    QMState const *s;
 
-    for (s = me->super.state.obj;
+    for (QMState const *s = me->state.obj;
          s != (QMState *)0;
          s = s->superstate)
     {
@@ -693,12 +674,11 @@ QMState const *QMsm_childStateObj_(QMsm const * const me,
         }
     }
 
-    /** @post the child must be found */
-    Q_ENSURE_ID(810, isFound != false);
+    /*! @post the child must be found */
+    Q_ENSURE_ID(810, isFound);
 #ifdef Q_NASSERT
     (void)isFound; /* avoid compiler warning about unused variable */
 #endif
 
     return child; /* return the child */
 }
-

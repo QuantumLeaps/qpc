@@ -1,8 +1,9 @@
-static Table l_table;
+Table Table_inst; /* the instance of the Table Active Object */
 
 /* top-most initial transition */
 static QState Table_initial(Table * const me, QEvt const * const e) {
     . . .
-    QS_OBJ_DICTIONARY(&l_table); /* provide object dictionary for table */
+    /* provide object dictionary for Table */
+    QS_OBJ_DICTIONARY(&Table_inst); /* <--- */
     . . .
 }

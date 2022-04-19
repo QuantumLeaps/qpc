@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example extened for QXK
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for: @ref qpc_7_0_0
+* Last updated on  2022-02-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -53,24 +53,8 @@ int main() {
     static void const *test2QueueSto[5];
     static uint64_t test2StackSto[64];
 
-    uint8_t n;
-
-    Philo_ctor(); /* instantiate all Philosopher active objects */
-    Table_ctor(); /* instantiate the Table active object */
-    QTicker_ctor(&l_ticker0, 0U); /* ticker AO for tick rate 0 */
-    Test1_ctor(); /* instantiate the Test1 extended thread */
-    Test2_ctor(); /* instantiate the Test2 extended thread */
-
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init();   /* initialize the Board Support Package */
-
-    /* object dictionaries... */
-    QS_OBJ_DICTIONARY(AO_Table);
-    QS_OBJ_DICTIONARY(AO_Philo[0]);
-    QS_OBJ_DICTIONARY(AO_Philo[1]);
-    QS_OBJ_DICTIONARY(AO_Philo[2]);
-    QS_OBJ_DICTIONARY(AO_Philo[3]);
-    QS_OBJ_DICTIONARY(AO_Philo[4]);
 
     /* initialize publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
@@ -79,6 +63,7 @@ int main() {
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     /* start the extended thread */
+    Test1_ctor(); /* instantiate the Test1 extended thread */
     QXTHREAD_START(XT_Test1,             /* Thread to start */
                   1U,                    /* QP priority of the thread */
                   test1QueueSto,         /* message queue storage */
@@ -90,7 +75,8 @@ int main() {
     /* NOTE: leave priority 2 free for a mutex */
 
     /* start the Philo active objects... */
-    for (n = 0U; n < N_PHILO; ++n) {
+    for (uint8_t n = 0U; n < N_PHILO; ++n) {
+        Philo_ctor(n); /* instantiate Philo[n] AO */
         QACTIVE_START(AO_Philo[n],       /* AO to start */
                       n + 3U,            /* QP priority of the AO */
                       philoQueueSto[n],  /* event queue storage */
@@ -101,12 +87,14 @@ int main() {
     }
 
     /* example of prioritizing the Ticker0 active object */
+    QTicker_ctor(&l_ticker0, 0U); /* ticker AO for tick rate 0 */
     QACTIVE_START(the_Ticker0,
                   N_PHILO + 3U,
                   0, 0U, 0, 0U, (void *)0);
 
     /* NOTE: leave priority (N_PHILO + 4) free for mutex */
 
+    Test2_ctor(); /* instantiate the Test2 extended thread */
     QXTHREAD_START(XT_Test2,             /* Thread to start */
                   N_PHILO + 5U,          /* QP priority of the thread */
                   test2QueueSto,         /* message queue storage */
@@ -117,6 +105,7 @@ int main() {
 
     /* NOTE: leave priority (N_PHILO + 6) free for mutex */
 
+    Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,              /* AO to start */
                   N_PHILO + 7U,          /* QP priority of the AO */
                   tableQueueSto,         /* event queue storage */

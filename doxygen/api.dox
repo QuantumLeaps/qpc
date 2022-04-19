@@ -232,12 +232,15 @@ QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that e
 - QMPool_put()
 
 
-
 @subsection api_qxk_tls Thread-Local Storage
 - QXK_current()
 - QXK_TLS()
 
+@next{deprecated}
 */
 /*##########################################################################*/
 /*! @page deprecated Deprecated APIs
+
+__The following QP/C APIs are now deprecated:__
+
 */

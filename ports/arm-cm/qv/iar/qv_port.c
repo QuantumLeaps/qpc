@@ -10,7 +10,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -51,14 +51,14 @@ uint_fast8_t QF_qlog2(uint32_t x) {
     uint_fast8_t n;
     __asm (
         "MOVS    %[n],#0\n"
-#if (QF_MAX_ACTIVE > 16)
+#if (QF_MAX_ACTIVE > 16U)
         "LSRS    r2,r0,#16\n"
         "BEQ.N   QF_qlog2_1\n"
         "MOVS    %[n],#16\n"
         "MOVS    r0,r2\n"
     "QF_qlog2_1:\n"
 #endif
-#if (QF_MAX_ACTIVE > 8)
+#if (QF_MAX_ACTIVE > 8U)
         "LSRS    r2,r0,#8\n"
         "BEQ.N   QF_qlog2_2\n"
         "ADDS    %[n],%[n],#8\n"

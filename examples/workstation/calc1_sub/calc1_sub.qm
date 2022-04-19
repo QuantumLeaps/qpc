@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.0.1" links="1">
+<model version="5.1.4" links="1">
  <documentation>The improved Calculator model with QMsm state machine implementation strategy and Sub-Machines.</documentation>
  <!--${qpc}-->
  <framework name="qpc" license="../../../QPC-EVAL.qlc"/>
@@ -17,9 +17,9 @@
   <class name="Calc" superclass="qpc::QMsm">
    <documentation>Calculator state machine</documentation>
    <!--${SMs::Calc::op1}-->
-   <attribute name="op1" type="double" visibility="0x02" properties="0x00"/>
+   <attribute name="op1" type="float64_t" visibility="0x02" properties="0x00"/>
    <!--${SMs::Calc::op2}-->
-   <attribute name="op2" type="double" visibility="0x02" properties="0x00"/>
+   <attribute name="op2" type="float64_t" visibility="0x02" properties="0x00"/>
    <!--${SMs::Calc::oper1}-->
    <attribute name="oper1" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${SMs::Calc::oper2}-->
@@ -36,10 +36,10 @@
 * false when error encountered
 */</documentation>
     <!--${SMs::Calc::eval::op}-->
-    <parameter name="op" type="double"/>
+    <parameter name="op" type="float64_t"/>
     <!--${SMs::Calc::eval::oper}-->
     <parameter name="oper" type="uint8_t"/>
-    <code>double result;
+    <code>float64_t result;
 if ((oper == KEY_NULL) || (oper == KEY_PLUS) || (oper == KEY_MINUS)) {
     switch (me-&gt;oper2) {
         case KEY_MULT: {
@@ -199,8 +199,8 @@ BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
       <!--${SMs::Calc::SM::on::ready::POINT}-->
       <tran trig="POINT" target="../../6" cpref="../../../3/2">
        <action>BSP_clear();
-BSP_insert((int)'0');
-BSP_insert((int)'.');</action>
+BSP_insert((uint8_t)'0');
+BSP_insert((uint8_t)'.');</action>
        <tran_glyph conn="55,34,2,0,3,-3,2">
         <action box="0,0,6,2"/>
        </tran_glyph>
@@ -278,8 +278,8 @@ BSP_insert(Q_EVT_CAST(CalcEvt)-&gt;key_code);</action>
       <!--${SMs::Calc::SM::on::opEntered::POINT}-->
       <tran trig="POINT" target="../../7" cpref="../../../3/2">
        <action>BSP_clear();
-BSP_insert((int)'0');
-BSP_insert((int)'.');</action>
+BSP_insert((uint8_t)'0');
+BSP_insert((uint8_t)'.');</action>
        <tran_glyph conn="55,72,2,0,5,-3,2">
         <action box="0,0,6,2"/>
        </tran_glyph>
@@ -469,8 +469,8 @@ BSP_clear();</action>
       </tran>
       <!--${SMs::Calc::SM::operand::zero::POINT}-->
       <tran trig="POINT" target="../../8">
-       <action>BSP_insert((int)'0');
-BSP_insert((int)'.');</action>
+       <action>BSP_insert((uint8_t)'0');
+BSP_insert((uint8_t)'.');</action>
        <tran_glyph conn="8,23,2,2,2,40,-2">
         <action box="1,0,6,2"/>
        </tran_glyph>
@@ -486,7 +486,7 @@ BSP_insert((int)'.');</action>
       <exit>BSP_message(&quot;intgr-EXIT;&quot;);</exit>
       <!--${SMs::Calc::SM::operand::intgr::POINT}-->
       <tran trig="POINT" target="../../8">
-       <action>BSP_insert((int)'.');</action>
+       <action>BSP_insert((uint8_t)'.');</action>
        <tran_glyph conn="24,18,3,3,16,-6,2">
         <action box="0,-2,6,2"/>
        </tran_glyph>
@@ -632,11 +632,11 @@ extern QHsm * const the_calc;  /* &quot;opaque&quot; pointer to calculator HSM *
 
 Q_DEFINE_THIS_FILE
 
-#define KEY_NULL    '\0'
-#define KEY_PLUS    '+'
-#define KEY_MINUS   '-'
-#define KEY_MULT    '*'
-#define KEY_DIVIDE  '/'
+#define KEY_NULL    ((uint8_t)'\0')
+#define KEY_PLUS    ((uint8_t)'+')
+#define KEY_MINUS   ((uint8_t)'-')
+#define KEY_MULT    ((uint8_t)'*')
+#define KEY_DIVIDE  ((uint8_t)'/')
 
 $declare${SMs::Calc}
 

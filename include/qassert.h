@@ -1,49 +1,44 @@
-/**
-* @file
-* @brief Customizable and memory-efficient assertions for embedded systems
-* @cond
-******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-07
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief Customizable and memory-efficient assertions for embedded systems
+* @ingroup qp
 */
 #ifndef QASSERT_H
 #define QASSERT_H
 
-/**
+/*!
 * @note
 * This header file can be used in C, C++, and mixed C/C++ programs.
 *
-* @note The preprocessor switch #Q_NASSERT disables checking assertions.
+* @note
+* The preprocessor switch #Q_NASSERT disables checking assertions.
 * However, it is generally __not__ advisable to disable assertions,
 * __especially__ in the production code. Instead, the assertion handler
 * Q_onAssert() should be very carefully designed and tested.
@@ -67,28 +62,17 @@
 
     /* provide typedefs so that qassert.h could be used "standalone"... */
 
-    /*! typedef for character strings. */
-    /**
-    * @description
-    * This typedef specifies character type for exclusive use in character
-    * strings. Use of this type, rather than plain 'char', is in compliance
-    * with the MISRA-C 2004 Rules 6.1(req), 6.3(adv).
-    */
-    typedef char char_t;
-
-    /*! typedef for assertions-ids and line numbers in assertions. */
-    /**
+    /*! typedef for assertions-ids and line numbers in assertions.
     * @description
     * This typedef specifies integer type for exclusive use in assertions.
     * Use of this type, rather than plain 'int', is in compliance
-    * with the MISRA-C 2004 Rules 6.1(req), 6.3(adv).
+    * with the MISRA-C 2012 Dir 4.6 (adv).
     */
     typedef int int_t;
 
 #endif
 
-    /*! Define the file name (with `__FILE__`) for assertions in this file. */
-    /**
+    /*! Define the file name (with `__FILE__`) for assertions in this file
     * @description
     * Macro to be placed at the top of each C/C++ module to define the
     * single instance of the file name string to be used in reporting
@@ -102,10 +86,9 @@
     * @sa Q_DEFINE_THIS_MODULE()
     */
     #define Q_DEFINE_THIS_FILE \
-        static char_t const Q_this_module_[] = __FILE__;
+        static char const Q_this_module_[] = __FILE__;
 
-    /*! Define the user-specified module name for assertions in this file. */
-    /**
+    /*! Define the user-specified module name for assertions in this file.
     * @description
     * Macro to be placed at the top of each C/C++ module to define the
     * single instance of the module name string to be used in reporting
@@ -118,10 +101,9 @@
     * @note This macro should __not__ be terminated by a semicolon.
     */
     #define Q_DEFINE_THIS_MODULE(name_) \
-        static char_t const Q_this_module_[] = name_;
+        static char const Q_this_module_[] = name_;
 
-    /*! General purpose assertion. */
-    /**
+    /*! General purpose assertion.
     * @description
     * Makes sure the @p test_ parameter is TRUE. Calls the Q_onAssert()
     * callback if the @p test_ expression evaluates to FALSE. This
@@ -136,8 +118,7 @@
     #define Q_ASSERT(test_) ((test_) \
         ? (void)0 : Q_onAssert(&Q_this_module_[0], __LINE__))
 
-    /*! General purpose assertion with user-specified assertion-id. */
-    /**
+    /*! General purpose assertion with user-specified assertion-id.
     * @description
     * Makes sure the @p test_ parameter is TRUE. Calls the Q_onAssert()
     * callback if the @p test_ evaluates to FALSE. This assertion takes the
@@ -156,8 +137,7 @@
         ? (void)0 : Q_onAssert(&Q_this_module_[0], (id_)))
 
     /*! General purpose assertion that __always__ evaluates the @p test_
-    * expression. */
-    /**
+    * expression.
     * @description
     * Like the Q_ASSERT() macro, except it __always__ evaluates the @p test_
     * expression even when assertions are disabled with the #Q_NASSERT macro.
@@ -171,8 +151,7 @@
     #define Q_ALLEGE(test_)    Q_ASSERT(test_)
 
     /*! General purpose assertion with user-specified assertion-id that
-    * __always__ evaluates the @p test_ expression. */
-    /**
+    * __always__ evaluates the @p test_ expression.
     * @description
     * Like the Q_ASSERT_ID() macro, except it __always__ evaluates the
     * @p test_ expression even when assertions are disabled with the
@@ -185,8 +164,7 @@
     */
     #define Q_ALLEGE_ID(id_, test_) Q_ASSERT_ID((id_), (test_))
 
-    /*! Assertion for a wrong path through the code. */
-    /**
+    /*! Assertion for a wrong path through the code.
     * @description
     * Calls the Q_onAssert() callback if ever executed.
     *
@@ -195,8 +173,7 @@
     #define Q_ERROR() \
         Q_onAssert(&Q_this_module_[0], __LINE__)
 
-    /*! Assertion with user-specified assertion-id for a wrong path. */
-    /**
+    /*! Assertion with user-specified assertion-id for a wrong path
     * @description
     * Calls the Q_onAssert() callback if ever executed. This assertion
     * takes the user-supplied parameter @p id_ to identify the location of
@@ -213,7 +190,7 @@
 
 #endif /* Q_NASSERT */
 
-/****************************************************************************/
+/*==========================================================================*/
 #ifdef __cplusplus
     extern "C" {
 #endif
@@ -223,8 +200,7 @@
     #define Q_NORETURN    void
 #endif /*  Q_NORETURN */
 
-/*! Callback function invoked in case of any assertion failure. */
-/**
+/*! Callback function invoked in case of any assertion failure.
 * @description
 * This is an application-specific callback function needs to be defined in
 * the application to perform the clean system shutdown and perhaps a reset.
@@ -251,14 +227,13 @@
 * #Q_ERROR, #Q_ALLEGE as well as #Q_ASSERT_ID, #Q_REQUIRE_ID, #Q_ENSURE_ID,
 * #Q_ERROR_ID, and #Q_ALLEGE_ID.
 */
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const location);
+Q_NORETURN Q_onAssert(char const * const module, int_t const location);
 
 #ifdef __cplusplus
     }
 #endif
 
-/*! Assertion for checking preconditions. */
-/**
+/*! Assertion for checking preconditions.
 * @description
 * This macro is equivalent to #Q_ASSERT, except the name provides a better
 * documentation of the intention of this assertion.
@@ -267,8 +242,7 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const location);
 */
 #define Q_REQUIRE(test_)         Q_ASSERT(test_)
 
-/*! Assertion for checking preconditions with user-specified assertion-id. */
-/**
+/*! Assertion for checking preconditions with user-specified assertion-id.
 * @description
 * Equivalent to #Q_ASSERT_ID, except the macro name provides a better
 * documentation of the intention of this assertion.
@@ -278,16 +252,16 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const location);
 */
 #define Q_REQUIRE_ID(id_, test_) Q_ASSERT_ID((id_), (test_))
 
-/*! Assertion for checking postconditions. */
-/** Equivalent to #Q_ASSERT, except the macro name provides a better
+/*! Assertion for checking postconditions.
+* @description
+* Equivalent to #Q_ASSERT, except the macro name provides a better
 * documentation of the intention of this assertion.
 *
 * @param[in] test_ Boolean expression
 */
 #define Q_ENSURE(test_) Q_ASSERT(test_)
 
-/*! Assertion for checking postconditions with user-specified assertion-id. */
-/**
+/*! Assertion for checking postconditions with user-specified assertion-id.
 * @description
 * Equivalent to #Q_ASSERT_ID, except the name provides a better documentation
 * of the intention of this assertion.
@@ -297,8 +271,7 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const location);
 */
 #define Q_ENSURE_ID(id_, test_) Q_ASSERT_ID((id_), (test_))
 
-/*! Assertion for checking invariants. */
-/**
+/*! Assertion for checking invariants.
 * @description
 * Equivalent to #Q_ASSERT, except the macro name provides a better
 * documentation of the intention of this assertion.
@@ -307,8 +280,7 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const location);
 */
 #define Q_INVARIANT(test_) Q_ASSERT(test_)
 
-/*! Assertion for checking invariants with user-specified assertion-id. */
-/**
+/*! Assertion for checking invariants with user-specified assertion-id.
 * @description
 * Equivalent to #Q_ASSERT_ID, except the macro name provides a better
 * documentation of the intention of this assertion.
@@ -318,8 +290,7 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const location);
 */
 #define Q_INVARIANT_ID(id_, test_) Q_ASSERT_ID((id_), (test_))
 
-/*! Static (compile-time) assertion. */
-/**
+/*! Static (compile-time) assertion.
 * @description
 * This type of assertion deliberately causes a compile-time error when
 * the @p test_ evaluates to FALSE. The macro exploits the fact that in C/C++
@@ -337,4 +308,3 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const location);
 #define Q_DIM(array_) (sizeof(array_) / sizeof((array_)[0U]))
 
 #endif /* QASSERT_H */
-

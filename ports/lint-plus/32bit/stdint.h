@@ -1,4 +1,4 @@
-/**
+/*!
 * @file
 * @brief Selected exact-width and fast minimum-width integer types
 * for 32-bit CPU architecture (e.g., ARM Cortex-M).
@@ -18,7 +18,8 @@
 #define STDINT_H
 
 /*lint -save */
-/*lint -e9093   M3:R21.2(r) name matches a pattern reserved to the compiler */
+/*lint -e9093   M3:R21.2(R) name matches a pattern reserved to the compiler */
+/*lint -e586    B18:R5.2(b) keyword 'short'/'long' is deprecated */
 
 /* Exact-width types. WG14/N843 C99 Standard, Section 7.18.1.1 */
 typedef signed char        int8_t;   /*!< exact-width  8-bit signed   int  */

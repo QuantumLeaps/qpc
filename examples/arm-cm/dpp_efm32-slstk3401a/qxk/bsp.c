@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -187,8 +187,19 @@ void BSP_init(void) {
     if (QS_INIT((void *)0) == 0) { /* initialize the QS software tracing */
         Q_ERROR();
     }
+    /* global signals */
+    QS_SIG_DICTIONARY(DONE_SIG,      (void *)0);
+    QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
+    QS_SIG_DICTIONARY(PAUSE_SIG,     (void *)0);
+    QS_SIG_DICTIONARY(SERVE_SIG,     (void *)0);
+    QS_SIG_DICTIONARY(TEST_SIG,      (void *)0);
+    QS_SIG_DICTIONARY(HUNGRY_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(HUNGRY_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(TIMEOUT_SIG,   (void *)0);
+
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_OBJ_DICTIONARY(&l_GPIO_EVEN_IRQHandler);
+
     QS_USR_DICTIONARY(PHILO_STAT);
     QS_USR_DICTIONARY(PAUSED_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
@@ -337,7 +348,7 @@ void QXK_onIdle(void) {
 }
 
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */

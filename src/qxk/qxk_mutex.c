@@ -1,43 +1,36 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @ingroup qxk
 * @brief QXMutex_init(), QXMutex_lock(), QXMutex_tryLock() and
 * QXMutex_unlock() definitions.
 * @ingroup qxk
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-14
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -57,8 +50,8 @@
 
 Q_DEFINE_THIS_MODULE("qxk_mutex")
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Initialize the QXK priority ceiling mutex.
 *
@@ -86,9 +79,9 @@ Q_DEFINE_THIS_MODULE("qxk_mutex")
 */
 void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling) {
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
-    /** @pre the celiling priority of the mutex must:
+
+    /*! @pre the celiling priority of the mutex must:
     * - cannot exceed the maximum #QF_MAX_ACTIVE;
     * - the ceiling priority of the mutex must not be already in use;
     * (QF requires priority to be **unique**).
@@ -110,8 +103,8 @@ void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling) {
     QF_CRIT_X_();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Lock the QXK priority ceiling mutex ::QXMutex.
 *
@@ -134,14 +127,12 @@ void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling) {
 bool QXMutex_lock(QXMutex * const me,
                   uint_fast16_t const nTicks)
 {
-    bool locked = true; /* assume that the mutex will be locked */
-    QXThread *curr;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
-    curr = QXK_PTR_CAST_(QXThread*, QXK_attr_.curr);
 
-    /** @pre this function must:
+    QXThread * const curr = QXK_PTR_CAST_(QXThread*, QXK_attr_.curr);
+
+    /*! @pre this function must:
     * - NOT be called from an ISR;
     * - be called from an extended thread;
     * - the ceiling priority must not be used; or if used
@@ -155,10 +146,11 @@ bool QXMutex_lock(QXMutex * const me,
             || (curr->super.prio < me->ceiling)) /* below ceiling */
         && (me->ceiling <= QF_MAX_ACTIVE) /* in range */
         && (curr->super.super.temp.obj == (QMState *)0)); /* not blocked */
-    /** @pre also: the thread must NOT be holding a scheduler lock. */
+    /*! @pre also: the thread must NOT be holding a scheduler lock. */
     Q_REQUIRE_ID(201, QXK_attr_.lockHolder != curr->super.prio);
 
     /* is the mutex available? */
+    bool locked = true; /* assume that the mutex will be locked */
     if (me->lockNest == 0U) {
         me->lockNest = 1U;
 
@@ -194,8 +186,6 @@ bool QXMutex_lock(QXMutex * const me,
         ++me->lockNest;
     }
     else { /* the mutex is alredy locked by a different thread */
-        uint_fast8_t p;
-
         /* the ceiling holder priority must be valid */
         Q_ASSERT_ID(230, 0U < me->holderPrio);
         Q_ASSERT_ID(231, me->holderPrio <= QF_MAX_ACTIVE);
@@ -209,7 +199,7 @@ bool QXMutex_lock(QXMutex * const me,
         /* remove the curr dynamic prio from the ready set (block)
         * and insert it to the waiting set on this mutex
         */
-        p = (uint_fast8_t)curr->super.dynPrio;
+        uint_fast8_t const p = (uint_fast8_t)curr->super.dynPrio;
         QPSet_remove(&QXK_attr_.readySet, p);
         QPSet_insert(&me->waitSet,        p);
 
@@ -245,8 +235,8 @@ bool QXMutex_lock(QXMutex * const me,
     return locked;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Try to lock the QXK priority ceiling mutex ::QXMutex.
 *
@@ -267,16 +257,15 @@ bool QXMutex_lock(QXMutex * const me,
 * QXMutex_unlock().
 */
 bool QXMutex_tryLock(QXMutex * const me) {
-    QActive *curr;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
-    curr = QXK_attr_.curr;
+
+    QActive *curr = QXK_attr_.curr;
     if (curr == (QActive *)0) { /* called from a basic thread? */
         curr = QF_active_[QXK_attr_.actPrio];
     }
 
-    /** @pre this function must:
+    /*! @pre this function must:
     * - NOT be called from an ISR;
     * - the calling thread must be valid;
     * - the ceiling must be not used; or
@@ -288,7 +277,7 @@ bool QXMutex_tryLock(QXMutex * const me) {
         && ((me->ceiling == 0U) /* ceiling not used */
             || (curr->prio < me->ceiling)) /* below ceiling */
         && (me->ceiling <= QF_MAX_ACTIVE));
-    /** @pre also: the thread must NOT be holding a scheduler lock. */
+    /*! @pre also: the thread must NOT be holding a scheduler lock. */
     Q_REQUIRE_ID(301, QXK_attr_.lockHolder != curr->prio);
 
     /* is the mutex available? */
@@ -332,11 +321,11 @@ bool QXMutex_tryLock(QXMutex * const me) {
     }
     QF_CRIT_X_();
 
-    return (curr != (QActive *)0);
+    return curr != (QActive *)0;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Unlock the QXK priority ceiling mutex.
 *
@@ -356,16 +345,15 @@ bool QXMutex_tryLock(QXMutex * const me) {
 * @include qxk_mutex.c
 */
 void QXMutex_unlock(QXMutex * const me) {
-    QActive *curr;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
-    curr = QXK_attr_.curr;
+
+    QActive *curr = QXK_attr_.curr;
     if (curr == (QActive *)0) { /* called from a basic thread? */
         curr = QF_active_[QXK_attr_.actPrio];
     }
 
-    /** @pre this function must:
+    /*! @pre this function must:
     * - NOT be called from an ISR;
     * - the calling thread must be valid;
     * - the ceiling must not be used or
@@ -377,9 +365,9 @@ void QXMutex_unlock(QXMutex * const me) {
         && ((me->ceiling == 0U) /* ceiling not used OR... */
             || (curr->dynPrio == me->ceiling)) /* curr at ceiling prio */
         && (me->ceiling <= QF_MAX_ACTIVE));
-    /** @pre also: the mutex must be already locked at least once. */
+    /*! @pre also: the mutex must be already locked at least once. */
     Q_REQUIRE_ID(401, me->lockNest > 0U);
-    /** @pre also: the mutex must be held by this thread. */
+    /*! @pre also: the mutex must be held by this thread. */
     Q_REQUIRE_ID(402, me->holderPrio == curr->prio);
 
     /* is this the last nesting level? */
@@ -406,12 +394,9 @@ void QXMutex_unlock(QXMutex * const me) {
 
         /* are any other threads waiting for this mutex? */
         if (QPSet_notEmpty(&me->waitSet)) {
-            uint_fast8_t p;
-            QXThread *thr;
-
             /* find the highest-priority thread waiting on this mutex */
-            QPSet_findMax(&me->waitSet, p);
-            thr = QXK_PTR_CAST_(QXThread*, QF_active_[p]);
+            uint_fast8_t const p = QPSet_findMax(&me->waitSet);
+            QXThread * const thr = QXK_PTR_CAST_(QXThread*, QF_active_[p]);
 
             /* the waiting thread must:
             * - the ceiling must not be used; or if used
@@ -470,4 +455,3 @@ void QXMutex_unlock(QXMutex * const me) {
     }
     QF_CRIT_X_();
 }
-

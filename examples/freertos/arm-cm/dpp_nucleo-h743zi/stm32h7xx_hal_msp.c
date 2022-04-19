@@ -87,7 +87,18 @@
  * @{
  */
 
-#ifdef Q_SPY
+/* NOTE:
+* STM32Cube's initialization calls the weakly defiend HAL_InitTick(), which
+* by default configures and starts the Systick interrupt. This is TOO EARLY,
+* because the system os NOT ready yet to handle interrutps.
+* To avoid problems, a dummy definition for HAL_InitTick() is provided
+* in the fiel stm32l5xx_hal_msp.c. The SystTick is configured and
+* started later in QF_onStartup().
+*/
+HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
+    (void)TickPriority; /* unused parameter */
+    return HAL_OK;
+}
 
 /**
  * @brief UART MSP Initialization
@@ -97,9 +108,7 @@
  * @param huart: UART handle pointer
  * @retval None
  */
-void HAL_UART_MspInit(UART_HandleTypeDef *huart)
-{
-    GPIO_InitTypeDef  GPIO_InitStruct;
+void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 
     /*##-1- Enable peripherals and GPIO Clocks #################################*/
     /* Enable GPIO TX/RX clock */
@@ -111,6 +120,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 
     /*##-2- Configure peripheral GPIO ##########################################*/
     /* UART TX GPIO pin configuration  */
+    GPIO_InitTypeDef  GPIO_InitStruct;
     GPIO_InitStruct.Pin       = USARTx_TX_PIN;
     GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull      = GPIO_PULLUP;
@@ -152,11 +162,23 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
     /* this is delayed till QF_onCleanup() */
 }
 
-void HAL_UARTEx_WakeupCallback(UART_HandleTypeDef *huart) {
-    (void)huart;
+/* dummy legacy callacks for STM32CubeH7 */
+void HAL_UARTEx_RxFifoFullCallback(UART_HandleTypeDef *huart) {
+    (void)huart; /* unused parameter */
 }
 
-#endif /* Q_SPY */
+void HAL_UARTEx_TxFifoEmptyCallback(UART_HandleTypeDef *huart) {
+    (void)huart; /* unused parameter */
+}
+
+void HAL_UARTEx_WakeupCallback(UART_HandleTypeDef *huart) {
+    (void)huart; /* unused parameter */
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    (void)huart; /* unused parameter */
+}
+
 /**
  * @}
  */

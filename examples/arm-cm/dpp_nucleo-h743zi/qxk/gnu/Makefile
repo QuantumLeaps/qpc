@@ -1,6 +1,6 @@
 ##############################################################################
 # Product: Makefile for QP/C on NUCLEO-H743ZI, QXK kernel, GNU-ARM
-# Last Updated for Version: 6.9.4
+# Last Updated for Version: 7.0.0
 # Date of the Last Update:  2021-07-01
 #
 #                    Q u a n t u m  L e a P s
@@ -73,10 +73,10 @@ VPATH = \
 	$(QPC)/src/qxk \
 	$(QPC)/src/qs \
 	$(QP_PORT_DIR) \
-	$(QPC)/3rd_party/nucleo-h743zi \
-	$(QPC)/3rd_party/nucleo-h743zi/gnu \
-	$(QPC)/3rd_party/nucleo-h743zi/Drivers/BSP/STM32H7xx_Nucleo_144 \
-	$(QPC)/3rd_party/nucleo-h743zi/Drivers/STM32H7xx_HAL_Driver/Src
+	$(QPC)/3rd_party/STM32CubeH7/nucleo-h743zi/gnu \
+	$(QPC)/3rd_party/STM32CubeH7/Drivers/BSP\STM32H7xx_Nucleo_144 \
+	$(QPC)/3rd_party/STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src \
+	$(QPC)/3rd_party/STM32CubeH7/Drivers/CMSIS/Device/ST/STM32H7xx/Source/Templates
 
 # list of all include directories needed by this project
 INCLUDES  = \
@@ -85,9 +85,9 @@ INCLUDES  = \
 	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPC)/3rd_party/CMSIS/Include \
-	-I$(QPC)/3rd_party/nucleo-h743zi \
-	-I$(QPC)/3rd_party/nucleo-h743zi/Drivers/BSP/STM32H7xx_Nucleo_144 \
-	-I$(QPC)/3rd_party/nucleo-h743zi/Drivers/STM32H7xx_HAL_Driver/Inc
+	-I$(QPC)/3rd_party/STM32CubeH7/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
+	-I$(QPC)/3rd_party/STM32CubeH7/Drivers/BSP/STM32H7xx_Nucleo_144 \
+	-I$(QPC)/3rd_party/STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Inc
 
 #-----------------------------------------------------------------------------
 # files
@@ -151,8 +151,7 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DSTM32H743xx -DUSE_HAL_DRIVER -DUSE_STM32H7XX_NUCLEO_144 \
-	-DQXK_ON_CONTEXT_SW
+DEFINES   := -DQXK_ON_CONTEXT_SW -DSTM32H743xx -DUSE_HAL_DRIVER -DUSE_STM32H7XX_NUCLEO_144
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]

@@ -1,46 +1,110 @@
-/**
-* @file
-* @ingroup qs
-* @brief Internal (package scope) QS/C interface.
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-15
+/*============================================================================
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of open-source GPL 3.0
+* (or any later version), or alternatively, under the terms of one of the
+* closed-source Quantum Leaps commercial licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GPL 3.0 license can be found at:
+* <www.gnu.org/licenses/gpl-3.0.txt>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* The terms of the closed-source Quantum Leaps commercial licenses
+* can be found at:
+* <www.state-machine.com/licensing>
+*
+* NOTE: Please do NOT plagiarize this software to sidestep the license
+* obligations. This is both unfair and illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/**
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @ingroup qs
+* @brief Internal (package scope) QS/C interface.
 */
 #ifndef QS_PKG_H
 #define QS_PKG_H
 
-/****************************************************************************/
+/*==========================================================================*/
+
+/*! QS received record types (RX channel)
+* @description
+* This enumeration specifies the record types for the QS receive channel
+*/
+enum QSpyRxRecords {
+    QS_RX_INFO,           /*!< query Target info (ver, config, tstamp) */
+    QS_RX_COMMAND,        /*!< execute a user-defined command in the Target */
+    QS_RX_RESET,          /*!< reset the Target */
+    QS_RX_TICK,           /*!< call QF_TICK_X() in the Target */
+    QS_RX_PEEK,           /*!< peek Target memory */
+    QS_RX_POKE,           /*!< poke Target memory */
+    QS_RX_FILL,           /*!< fill Target memory */
+    QS_RX_TEST_SETUP,     /*!< test setup */
+    QS_RX_TEST_TEARDOWN,  /*!< test teardown */
+    QS_RX_TEST_PROBE,     /*!< set a Test-Probe in the Target */
+    QS_RX_GLB_FILTER,     /*!< set global filters in the Target */
+    QS_RX_LOC_FILTER,     /*!< set local  filters in the Target */
+    QS_RX_AO_FILTER,      /*!< set local AO filter in the Target */
+    QS_RX_CURR_OBJ,       /*!< set the "current-object" in the Target */
+    QS_RX_TEST_CONTINUE,  /*!< continue a test after QS_TEST_PAUSE() */
+    QS_RX_QUERY_CURR,     /*!< query the "current object" in the Target */
+    QS_RX_EVENT           /*!< inject an event to the Target */
+};
+
+/*==========================================================================*/
+/*! Frame character of the QS output protocol */
+#define QS_FRAME    (0x7EU)
+
+/*! Escape character of the QS output protocol */
+#define QS_ESC      (0x7DU)
+
+/*! The expected checksum value over an uncorrupted QS record */
+#define QS_GOOD_CHKSUM (0xFFU)
+
+/*! Escape modifier of the QS output protocol */
+/**
+* @description
+* The escaped byte is XOR-ed with the escape modifier before it is inserted
+* into the QS buffer.
+*/
+#define QS_ESC_XOR  (0x20U)
+
+/*==========================================================================*/
+/*! send the predefined target info trace record
+ * (object sizes, build time-stamp, QP version) */
+void QS_target_info_pre_(uint8_t isReset);
+
+/*==========================================================================*/
+/*! Private QS-RX attributes to keep track of the current objects and
+* the lock-free RX buffer
+*/
+typedef struct {
+    void     *currObj[MAX_OBJ]; /*!< current objects */
+    uint8_t  *buf;        /*!< pointer to the start of the ring buffer */
+    QSCtr     end;        /*!< offset of the end of the ring buffer */
+    QSCtr volatile head;  /*!< offset to where next byte will be inserted */
+    QSCtr volatile tail;  /*!< offset of where next byte will be extracted */
+#ifdef Q_UTEST
+    QPSet     readySet;   /*!< QUTEST ready-set of active objects */
+    bool      inTestLoop; /*!< QUTEST event loop is running */
+#endif
+} QSrxPrivAttr;
+
+extern QSrxPrivAttr QS_rxPriv_; /* QS-RX private attributes */
+
+/*==========================================================================*/
 /*! Internal QS macro to begin a predefined QS record with
 * entering critical section. */
 /**
@@ -101,7 +165,7 @@
 #define QS_STR_PRE_(msg_)       (QS_str_raw_((msg_)))
 
 
-#if (Q_SIGNAL_SIZE == 1U)
+#if (!defined Q_SIGNAL_SIZE || (Q_SIGNAL_SIZE == 1U))
     /*! Internal macro to output an unformatted event signal data element */
     /**
     * @note the size of the pointer depends on the macro #Q_SIGNAL_SIZE.
@@ -115,7 +179,7 @@
 
 #define QS_OBJ_PRE_(obj_)       (QS_obj_raw_(obj_))
 
-#if (QS_FUN_PTR_SIZE == 1U)
+#if (!defined QS_FUN_PTR_SIZE || (QS_FUN_PTR_SIZE == 1U))
     #define QS_FUN_PRE_(fun_)   (QS_u8_raw_((uint8_t)(fun_)))
 #elif (QS_FUN_PTR_SIZE == 2U)
     #define QS_FUN_PRE_(fun_)   (QS_u16_raw_((uint16_t)(fun_)))
@@ -131,9 +195,8 @@
     #define QS_FUN_PRE_(fun_)   (QS_u32_raw_((uint32_t)(fun_)))
 #endif
 
-
-/****************************************************************************/
-#if (QF_EQUEUE_CTR_SIZE == 1U)
+/*==========================================================================*/
+#if (!defined QF_EQUEUE_CTR_SIZE || (QF_EQUEUE_CTR_SIZE == 1U))
 
     /*! Internal QS macro to output an unformatted event queue counter
     * data element. */
@@ -148,7 +211,7 @@
 #endif
 
 
-#if (QF_EVENT_SIZ_SIZE == 1U)
+#if (!defined QF_EVENT_SIZ_SIZE || (QF_EVENT_SIZ_SIZE == 1U))
 
     /*! Internal QS macro to output an unformatted event size
     * data element. */
@@ -163,7 +226,7 @@
 #endif
 
 
-#if (QF_MPOOL_SIZ_SIZE == 1U)
+#if (!defined QF_MPOOL_SIZ_SIZE || (QF_MPOOL_SIZ_SIZE == 1U))
 
     /*! Internal QS macro to output an unformatted memory pool
     * block-size data element */
@@ -177,7 +240,7 @@
     #define QS_MPS_PRE_(size_)      QS_u32_raw_((uint32_t)(size_))
 #endif
 
-#if (QF_MPOOL_CTR_SIZE == 1U)
+#if (!defined QF_MPOOL_CTR_SIZE || (QF_MPOOL_CTR_SIZE == 1U))
 
     /*! Internal QS macro to output an unformatted memory pool
     * block-counter data element. */
@@ -192,7 +255,7 @@
 #endif
 
 
-#if (QF_TIMEEVT_CTR_SIZE == 1U)
+#if (!defined QF_TIMEEVT_CTR_SIZE || (QF_TIMEEVT_CTR_SIZE == 1U))
 
     /*! Internal QS macro to output an unformatted time event
     * tick-counter data element */
@@ -206,8 +269,7 @@
     #define QS_TEC_PRE_(ctr_)       QS_u32_raw_((uint32_t)(ctr_))
 #endif
 
-
-/****************************************************************************/
+/*==========================================================================*/
 /*! Internal QS macro to insert an un-escaped byte into the QS buffer */
 #define QS_INSERT_BYTE_(b_) \
     buf[head] = (b_);       \
@@ -216,7 +278,6 @@
         head = 0U;          \
     }
 
-/****************************************************************************/
 /*! Internal QS macro to insert an escaped byte into the QS buffer */
 #define QS_INSERT_ESC_BYTE_(b_)                      \
     chksum = (uint8_t)(chksum + (b_));               \
@@ -229,49 +290,4 @@
         ++QS_priv_.used;                             \
     }
 
-/****************************************************************************/
-/*! Frame character of the QS output protocol */
-#define QS_FRAME    (0x7EU)
-
-/****************************************************************************/
-/*! Escape character of the QS output protocol */
-#define QS_ESC      (0x7DU)
-
-/****************************************************************************/
-/*! The expected checksum value over an uncorrupted QS record */
-#define QS_GOOD_CHKSUM (0xFFU)
-
-/****************************************************************************/
-/*! Escape modifier of the QS output protocol */
-/**
-* @description
-* The escaped byte is XOR-ed with the escape modifier before it is inserted
-* into the QS buffer.
-*/
-#define QS_ESC_XOR  (0x20U)
-
-/****************************************************************************/
-/*! send the predefined target info trace record
- * (object sizes, build time-stamp, QP version) */
-void QS_target_info_pre_(uint8_t isReset);
-
-/****************************************************************************/
-/*! Private QS-RX attributes to keep track of the current objects and
-* the lock-free RX buffer
-*/
-typedef struct {
-    void     *currObj[MAX_OBJ]; /*!< current objects */
-    uint8_t  *buf;        /*!< pointer to the start of the ring buffer */
-    QSCtr     end;        /*!< offset of the end of the ring buffer */
-    QSCtr     head;       /*!< offset to where next byte will be inserted */
-    QSCtr     tail;       /*!< offset of where next byte will be extracted */
-#ifdef Q_UTEST
-    QPSet     readySet;   /*!< QUTEST ready-set of active objects */
-    bool      inTestLoop; /*!< QUTEST event loop is running */
-#endif
-} QSrxPrivAttr;
-
-extern QSrxPrivAttr QS_rxPriv_; /* QS-RX private attributes */
-
 #endif  /* QS_PKG_H */
-

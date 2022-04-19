@@ -43,7 +43,7 @@ emulating software intended for deeply-embedded targets.
 
 The multi-threaded QP/C ports (win32 and posix) are intended for the
 actual applications that run on (embedded)Windows or (embedded)Linux.
- 
+
 
 Debug, Release, and Spy Build Configurations
 ============================================

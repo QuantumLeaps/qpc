@@ -1,4 +1,5 @@
 #ifdef QXK_ON_CONTEXT_SW
+
 /* NOTE: the context-switch callback is called with interrupts DISABLED */
 void QXK_onContextSw(QActive *prev, QActive *next) {
     (void)prev;
@@ -12,4 +13,5 @@ void QXK_onContextSw(QActive *prev, QActive *next) {
         QS_OBJ(next);
     QS_END_NOCRIT()
 }
+
 #endif /* QXK_ON_CONTEXT_SW */

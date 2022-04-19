@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -212,7 +212,7 @@ static QEvt const *l_sensorQSto[10]; /* Event queue storage for Sensor */
 int main(int argc, char *argv[]) {
     PRINTF_S("Reminder state pattern\nQP version: %s\n"
            "Press ESC to quit...\n",
-           QP_versionStr);
+           QP_VERSION_STR);
 
     BSP_init(argc, argv); /* initialize the BSP */
 

@@ -18,14 +18,14 @@ https://github.com/SiliconLabs/uC-OS2
 ***
 NOTE: The uC-OS2 from GitHub has been altered by Quantum Leaps to reduce its size.
 Specifically, the Ports sub-directory has been cleaned up and only the uC-OS2 ports
-relevant to the provided examples have been retained. 
+relevant to the provided examples have been retained.
 ***
 
 
 uC-OS2 Ports
 =============
 The folder "Ports" contains the generic uC-OS2 Ports to ARM-Cortex-M3 and ARM-Cortex-M4.
- 
+
 ***
 NOTE: The ports have been modified by Quantum Leaps to remove the dependencies on the
 Micrium's uC-CPU and uC-LIB components, and instead to inter-operate with the Cortex

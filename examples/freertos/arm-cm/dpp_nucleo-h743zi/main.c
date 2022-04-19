@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -47,12 +47,8 @@ int main() {
     static StackType_t philoStack[N_PHILO][configMINIMAL_STACK_SIZE];
     static StackType_t tableStack[configMINIMAL_STACK_SIZE];
 
-    uint8_t n;
-
-    Philo_ctor(); /* instantiate all Philosopher active objects */
-    Table_ctor(); /* instantiate the Table active object */
-
     QF_init();    /* initialize the framework and the underlying RT kernel */
+    BSP_init();   /* initialize the Board Support Package */
 
     /* initialize publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
@@ -60,16 +56,9 @@ int main() {
     /* initialize event pools... */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
-    /* initialize the Board Support Package
-    * NOTE: BSP_init() is called *after* initializing publish-subscribe and
-    * event pools, to make the system ready to accept SysTick interrupts.
-    * Unfortunately, the STM32Cube code that must be called from BSP,
-    * configures and starts SysTick.
-    */
-    BSP_init();
-
     /* start the active objects... */
-    for (n = 0U; n < N_PHILO; ++n) {
+    Philo_ctor(); /* instantiate all Philosopher active objects */
+    for (uint8_t n = 0U; n < N_PHILO; ++n) {
         QActive_setAttr(AO_Philo[n], TASK_NAME_ATTR, "Philo");
         QACTIVE_START(AO_Philo[n],   /* AO to start */
             (uint_fast8_t)(n + 1),   /* QP priority of the AO */
@@ -80,6 +69,7 @@ int main() {
             (QEvt *)0);              /* initialization event (not used) */
     }
 
+    Table_ctor(); /* instantiate the Table active object */
     QActive_setAttr(AO_Table, TASK_NAME_ATTR, "Table");
     QACTIVE_START(AO_Table,          /* AO to start */
         (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */

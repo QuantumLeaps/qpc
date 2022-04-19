@@ -1,14 +1,12 @@
 /**
 @page history Revision History
 
-
-@section qpc_6_9_4 Version 6.9.4, 2021-10-31
+@section qpc_7_0_0 Version 7.0.0, 2022-04-30
 
 - removed unused `ARM_ARCH` symbol from Makefiles for GNU-ARM
-- imoroved the Doxygen documentation for member functions of classes in C
-- introudced new styling for the HTML documentation
-- updated links in the documentation
-
+- restructured the Doxygen documentation
+  + introudced new styling for the HTML documentation
+  + updated links in the documentation
 
 
 @section qpc_6_9_3 Version 6.9.3, 2021-04-12
@@ -2267,7 +2265,7 @@ enclosed in doble quotes "".
 
 @note This modification has impact on some QP/C ports.
 
-4. Added typedefs for char_t, int_t, float32_t, and float64_t to
+4. Added typedefs for char, int_t, float32_t, and float64_t to
 event.h header file for compliance with MISRA-C:2004 rules 6.1 and 6.3.
 
 5. Added macros Q_STATE_CAST() and Q_EVENT_CAST() to qep.h to

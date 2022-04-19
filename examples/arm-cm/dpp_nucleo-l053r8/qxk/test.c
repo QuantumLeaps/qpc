@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example
-* Last updated for version 6.7.0
-* Last updated on  2019-12-27
+* Last updated for: @ref qpc_7_0_0
+* Last updated on  2022-04-11
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -60,8 +60,6 @@ QXThread * const XT_Test2 = &l_test2;
 /*..........................................................................*/
 static void Thread1_run(QXThread * const me) {
 
-    QS_OBJ_DICTIONARY(&l_test1);
-
     me->super.thread = &l_tls1; /* initialize the TLS for Thread1 */
 
     for (;;) {
@@ -96,8 +94,6 @@ void Test1_ctor(void) {
 
 /*..........................................................................*/
 static void Thread2_run(QXThread * const me) {
-
-    QS_OBJ_DICTIONARY(&l_test2);
 
     /* initialize the semaphore before using it
     * NOTE: the semaphore is initialized in the highest-priority thread

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.0.4" links="1">
+<model version="5.1.3" links="1">
  <documentation>QMsmTst is a QMsm state machine test based on the contrived state machine from Chapter 2 of the PSiCC2 book for testing all possible transition topologies with up to 4-levels of state nesting.</documentation>
  <!--${qpc}-->
  <framework name="qpc" license="../../../QPC-EVAL.qlc"/>
@@ -280,7 +280,7 @@ BSP_display(&quot;s2-I;&quot;);</action>
   </class>
   <!--${SMs::QMsmTst_ctor}-->
   <operation name="QMsmTst_ctor" type="void" visibility="0x00" properties="0x00">
-   <code>QMsmTst *me = &amp;l_msmtst;
+   <code>QMsmTst *me = &amp;l_sm;
 QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;QMsmTst_initial));</code>
   </operation>
  </package>
@@ -308,28 +308,30 @@ enum QMsmTstSignals {
 
 extern QHsm * const the_sm; /* opaque pointer to the test SM */
 
-$declare(SMs::QMsmTst_ctor)
+$declare${SMs::QMsmTst_ctor}
 
 /* BSP functions to dispaly a message and exit */
 void BSP_display(char const *msg);
 void BSP_exit(void);
 
-#endif /* QMSMTST_H */</text>
+#endif /* QMSMTST_H */
+</text>
   </file>
   <!--${.::qmsmtst.c}-->
   <file name="qmsmtst.c">
    <text>#include &quot;qpc.h&quot;
 #include &quot;qmsmtst.h&quot;
 
-$declare(SMs::QMsmTst)
+$declare${SMs::QMsmTst}
 
-static QMsmTst l_msmtst; /* the only instance of the QMsmTst class */
+static QMsmTst l_sm; /* the only instance of the QMsmTst class */
 
 /* global-scope definitions ---------------------------------------*/
-QHsm * const the_sm = &amp;l_msmtst.super.super; /* the opaque pointer */
+QHsm * const the_sm = &amp;l_sm.super.super; /* the opaque pointer */
 
-$define(SMs::QMsmTst_ctor)
-$define(SMs::QMsmTst)</text>
+$define${SMs::QMsmTst_ctor}
+$define${SMs::QMsmTst}
+</text>
   </file>
  </directory>
 </model>

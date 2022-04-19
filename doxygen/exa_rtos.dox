@@ -1,7 +1,7 @@
 /*##########################################################################*/
 /*! @page exa_rtos Examples for Third-Party RTOS
 
-The main purpose of integrating QP/C with conventional RTOSes is to enable you to incorporate various communication stacks (TCP/IP, USB, CAN, etc.) as well as other middleware, which requires the ability to **block** the task code.
+The main purpose of integrating QP/C with conventional RTOSes is to enable you to incorporate various communication stacks (TCP/IP, USB, CAN, etc.) as well as other middleware, which requires the ability to **block** the task code. Currently the following 3rd-party RTOSes are supported:
 
 - @subpage exa_embos (directory <span class="img folder">examples/embos/</span>)
 - @subpage exa_freertos (directory <span class="img folder">examples/freertos/</span>)
@@ -20,47 +20,47 @@ You do **not** need to use a third-party RTOS just to achieve preemptive multita
 The QP/C examples for SEGGER embOS are as follows:
 
 - ARM Cortex-M
-    - @subpage embos_dpp_stm32f429-discovery (Cortex-M4F) <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery">STM32F4-Discovery</a><br>(IAR EWARM toolset)
+    - @subpage embos_dpp_nucleo-h743zi (Cortex-M7) <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a><br>(GNU-ARM and IAR EWARM toolsets)
 
 @note
 You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; icon in the list below to see the picture of the board.
 
-@next{embos_dpp_stm32f429-discovery}
+@next{embos_dpp_nucleo-h743zi}
 */
 /*##########################################################################*/
-/*! @page embos_dpp_stm32f429-discovery DPP on STM32F4-Discovery
+/*! @page embos_dpp_nucleo-h743zi DPP on NUCLEO-H743ZI
 
-The @ref dpp "DPP example" for embOS on STM32F4-Discovery board is located directory <span class="img folder">examples/embos/arm-cm/dpp_stm32f429-discovery</span>.
+The @ref dpp "DPP example" for embOS on NUCLEO-H743ZI board is located directory <span class="img folder">examples/embos/arm-cm/dpp_nucleo-h743zi</span>.
 
-@image html bd_STM32F4-Discovery.jpg STM32F4-Discovery board
+@image html bd_NUCLEO-H743ZI.jpg NUCLEO-H743ZI
 
-The sub-directory <span class="img folder">iar</span> contains the workspace and project file that you can open in IAR EWARM IDE.
-
-After you load the DPP example into the STM32F4-Discovery board, the application should start blinking the 4 on-board LEDs. You can press the User button (blue) to PAUSE the philosophers for as long as the button is depressed. The philosophers resume dining when you release the User button. (In the PAUSED state the Table active object stops granting permissions to eat, so eventually all philosophers end in the "hungry" state.)
+@ref dpp "Dining Philosophers Problem (DPP)" example for NUCLEO-H743ZI MCU (Cortex-M7).
 
 
+Toolsets:
+- GNU-ARM in directory <span class="img folder">examples/embos/arm-cm/dpp_nucleo-h743zi/gnu</span>. Makefile provided.
 
-@section embos_dpp_stm32f429-discovery_qs QS Software Tracing
+@verbatim
+make
+make CONF=rel
+make CONF=spy
+@endverbatim
 
-The DPP example for embOS on STM32F4-Discovery board provides the "Spy" build configuration, which outputs the QS (Quantum Spy) software tracing data through USART2. To get the data out of the board, you need to connect the TTL/RS232 converter as follows:
+- IAR EWARM in directory <span class="img folder">examples/embos/arm-cm/dpp_nucleo-h743zi/iar</span>. Workspace `dpp.eww` provided.
 
-<center>
-STM32F4-Discovery  | TTL/RS232 Converter
--------------------|:------------------------
-PA2                | TX
-PA3                | RX (currently not used)
-VDD                | VCC
-GND                | GND
-</center>
-
-@image html bd_STM32F4-Discovery_RS232.jpg STM32F4-Discovery board connected to RS232 level shifter
+Features:
+- embOS RTOS kernel
+- BSP with embOS-specific: OS_TICK_HOOK, OS_Idle(), "kernel unaware" ISRs
+- multiple active objects, including 5 instances of the same AO class (Philo)
+- [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html) using the virtual COM-port
+- bi-directional [QP/Spy](https://www.state-machine.com/qtools/qs.html#qs_rx) (sending commands to the target)
 
 The output is generated at 115200 baud rate.
 
-Here is an example invocation of the QSPY host application to receive the QS data from STM32F4-Discovery:
+Here is an example invocation of the QSPY host application to receive the QS data from NUCLEO-H743ZI:
 
 @verbatim
-qspy -cCOM1
+qspy -c COM4
 @endverbatim
 
 The actual COM port number might be different on your Windows machine. Please check the Device Manager to find the COM port number.
@@ -156,7 +156,7 @@ Features:
 Start-Stop example for NUCLEO-H743ZI MCU (Cortex-M7) demonstrates staring and stopping active objects multiple times
 during the runtime, as opposed to starting AOs only at the beginning.
 
-The code for the example is generated automatically by the [QM Model-Based Design tool](https://www.state-machine.com/qm/) (QM version 4.5.0 or higher).
+The code for the example is generated automatically by the [QM Model-Based Design tool](https://www.state-machine.com/products/qm/) (QM version 4.5.0 or higher).
 
 The start-stop application consists of two AOs:
 

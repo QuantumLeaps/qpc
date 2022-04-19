@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -57,8 +57,9 @@ static uint32_t l_rnd;  /* random seed */
     static QSpyId const l_SysTick_Handler = { 0U };
 
     enum AppRecords { /* application-specific trace records */
-        PHILO_STAT = QS_USER
-    };
+        PHILO_STAT = QS_USER,
+        CONTEXT_SW,
+   };
 
 #endif
 
@@ -167,7 +168,12 @@ void BSP_init(void) {
         Q_ERROR();
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
+    QS_OBJ_DICTIONARY(XT_Test1);
+    QS_OBJ_DICTIONARY(XT_Test2);
+    QS_OBJ_DICTIONARY(the_Ticker0);
+
     QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(CONTEXT_SW);
 
     /* setup the QS filters... */
     QS_GLB_FILTER(QS_SM_RECORDS);
@@ -262,6 +268,10 @@ void QXK_onContextSw(QActive *prev, QActive *next) {
     if (next != (QActive *)0) {
         //_impure_ptr = next->thread; /* switch to next TLS */
     }
+    QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
+        QS_OBJ(prev);
+        QS_OBJ(next);
+    QS_END_NOCRIT()
 }
 #endif /* QXK_ON_CONTEXT_SW */
 /*..........................................................................*/
@@ -307,7 +317,7 @@ void QXK_onIdle(void) { /* called with interrupts enabled */
 }
 
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */

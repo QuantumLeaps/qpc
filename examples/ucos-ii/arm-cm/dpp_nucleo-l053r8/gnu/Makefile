@@ -1,6 +1,6 @@
 ##############################################################################
 # Product: Makefile for QP/C on NUCLEO-L053R8, uC/OS-II kernel, GNU-ARM
-# Last Updated for Version: 6.9.4
+# Last Updated for Version: 7.0.0
 # Date of the Last Update:  2021-12-05
 #
 #                    Q u a n t u m  L e a P s

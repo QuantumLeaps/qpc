@@ -12,7 +12,7 @@
 /*lint -save */
 /*lint -e9071 M3-R21.1(r), defined macro is reserved to the compiler */
 /*lint -e9093 the name is reserved to the compiler */
-/*lint -emacro(506, true) constant value used in Boolean context (operand to ! operator) */
+/*lint -emacro(8523, false, true) cast to boolean */
 
 #ifndef __cplusplus
 
@@ -22,7 +22,7 @@ typedef _Bool   bool;     /*!< standard Boolean data type */
 #define false ((bool)0)
 
 /*! standard 'true' constant */
-#define true  ((bool)!false)
+#define true  ((bool)1)
 
 #endif /* !__cplusplus */
 

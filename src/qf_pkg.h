@@ -1,46 +1,44 @@
-/**
-* @file
-* @brief Internal (package scope) QF/C interface.
-* @ingroup qf
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-09-16
+/*============================================================================
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of open-source GPL 3.0
+* (or any later version), or alternatively, under the terms of one of the
+* closed-source Quantum Leaps commercial licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GPL 3.0 license can be found at:
+* <www.gnu.org/licenses/gpl-3.0.txt>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* The terms of the closed-source Quantum Leaps commercial licenses
+* can be found at:
+* <www.state-machine.com/licensing>
+*
+* NOTE: Please do NOT plagiarize this software to sidestep the license
+* obligations. This is both unfair and illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/**
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief Internal (package scope) QF/C interface.
+* @ingroup qf
 */
 #ifndef QF_PKG_H
 #define QF_PKG_H
 
-/****************************************************************************/
+/*==========================================================================*/
+
 /* QF-specific critical section */
 #ifndef QF_CRIT_STAT_TYPE
     /*! This is an internal macro for defining the critical section
@@ -86,7 +84,8 @@
     #define QF_CRIT_X_()     QF_CRIT_EXIT(critStat_)
 #endif
 
-/****************************************************************************/
+/*==========================================================================*/
+
 /* Assertions inside the crticial section */
 #ifdef Q_NASSERT /* Q_NASSERT defined--assertion checking disabled */
 
@@ -112,7 +111,8 @@
 
 #endif /* Q_NASSERT */
 
-/****************************************************************************/
+/*==========================================================================*/
+
 /* internal prototypes (should be used via vtable only) */
 
 /*! Prototype of the internal active object start implementation */
@@ -143,7 +143,8 @@ QEvt const *QActive_get_(QActive *const me);
 */
 void QActive_postLIFO_(QActive * const me, QEvt const * const e);
 
-/****************************************************************************/
+/*==========================================================================*/
+
 /*! heads of linked lists of time events, one for every clock tick rate.
 * @static @private @memberof QF
 */
@@ -154,8 +155,8 @@ extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
 * is NOT used for reference counting in time events, because the @c poolId_
 * attribute is zero ("static events").
 */
-#define TE_IS_LINKED      (1U << 7)
-#define TE_WAS_DISARMED   (1U << 6)
+#define TE_IS_LINKED      (1U << 7U)
+#define TE_WAS_DISARMED   (1U << 6U)
 #define TE_TICK_RATE      0x0FU
 
 extern QF_EPOOL_TYPE_ QF_pool_[QF_MAX_EPOOL]; /*!< allocate event pools */
@@ -186,11 +187,10 @@ typedef struct QFreeBlock {
 * @description
 * This macro is specifically and exclusively used for checking the range
 * of a block pointer returned to the pool. Such a check must rely on the
-* pointer arithmetic not compliant with the MISRA-C 2004 rules 17.2(req) and
-* 17.3(req). Defining a specific macro for this purpose allows to selectively
-* disable the warnings for this particular case.
+* pointer arithmetic not compliant with the MISRA-C 2012 Rule 18.3(R).
+* Defining a specific macro for this purpose allows to selectively disable
+* the warnings for this particular case.
 */
 #define QF_PTR_RANGE_(x_, min_, max_)  (((min_) <= (x_)) && ((x_) <= (max_)))
 
 #endif /* QF_PKG_H */
-

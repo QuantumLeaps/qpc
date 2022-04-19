@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -285,7 +285,7 @@ void QK_onIdle(void) {
 #endif
 }
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     QF_INT_DISABLE(); /* disable all interrupts */
     /*
     * NOTE: add here your application-specific error handling

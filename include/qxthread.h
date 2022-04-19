@@ -1,50 +1,41 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QXK/C eXtended (blocking) thread.
 * @ingroup qxk
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-24
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2002-2020 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #ifndef QXTHREAD_H
 #define QXTHREAD_H
 
-/****************************************************************************/
+/*==========================================================================*/
 /*! eXtended (blocking) thread of the QXK preemptive kernel
 * @extends QActive
-*/
-/**
 * @description
 * QXThread represents the eXtended (blocking) thread of the QXK preemptive
 * kernel. Each extended thread in the application must be represented by
@@ -53,7 +44,7 @@
 * @note
 * Typically, ::QXThread is instantiated directly in the application code.
 * The customization of the thread occurs in the QXThread_ctor(), where you
-* provide the thred-handler function as the parameter.
+* provide the thread-handler function as the parameter.
 *
 * @sa
 * - ::QXThread
@@ -75,16 +66,14 @@ struct QXThread {
     QTimeEvt timeEvt; /*!< time event to handle blocking timeouts */
 };
 
-/*! Virtual Table for the ::QXThread class (inherited from ::QActiveVtable) */
-/**
+/*! Virtual Table for the ::QXThread class (inherited from ::QActiveVtable)
 * @note
 * ::QXThread inherits ::QActive without adding any new virtual
 * functions and therefore, ::QXThreadVtable is typedef'ed as ::QActiveVtable.
 */
 typedef QActiveVtable QXThreadVtable;
 
-/*! Polymorphically start an extended thread. */
-/**
+/*! Polymorphically start an extended thread.
 * @description
 * Starts execution of the thread and registers the thread with the framework.
 *
@@ -112,7 +101,7 @@ do {                                                                      \
 void QXThread_ctor(QXThread * const me, QXThreadHandler handler,
                    uint_fast8_t tickRate);
 
-/**
+/*! Asynchronous posting events to the event queue of an eXtended thread
 * @description
 * This macro does not assert if the queue overflows and cannot accept
 * the event with the specified margin of free slots remaining.
@@ -147,21 +136,26 @@ void QXThread_ctor(QXThread * const me, QXThreadHandler handler,
 #define QXTHREAD_POST_X(me_, e_, margin_, sender_) \
     QACTIVE_POST_X(&(me_)->super, (e_), (margin_), (sender_))
 
-/*! delay (block) the current extended thread for a specified # ticks */
+/*! delay (block) the current extended thread for a specified # ticks
+* @static @public @memberof QXThread
+*/
 bool QXThread_delay(uint_fast16_t const nTicks);
 
-/*! cancel the delay */
+/*! cancel the delay
+* @public @memberof QXThread
+*/
 bool QXThread_delayCancel(QXThread * const me);
 
-/*! obtain a message from the private message queue (block if no messages) */
+/*! obtain a message from the private message queue (block if no messages)
+* @static @public @memberof QXThread
+*/
 QEvt const *QXThread_queueGet(uint_fast16_t const nTicks);
 
 /*! no-timeout special timeout value when blocking on queues or semaphores */
 #define QXTHREAD_NO_TIMEOUT  ((uint_fast16_t)0)
 
-/****************************************************************************/
-/*! Counting Semaphore of the QXK preemptive kernel */
-/**
+/*==========================================================================*/
+/*! Counting Semaphore of the QXK preemptive kernel
 * @description
 * ::QXSemaphore is a blocking mechanism intended primarily for signaling
 * @ref ::QXThread "extended threads". The semaphore is initialized with
@@ -186,35 +180,41 @@ typedef struct {
     uint16_t max_count; /*!< maximum value of the semaphore counter */
 } QXSemaphore;
 
-/*! initialize the counting semaphore */
+/*! initialize the counting semaphore
+* @public @memberof QXSemaphore
+*/
 void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
                       uint_fast16_t max_count);
 
-/*! wait (block) on the semaphore */
+/*! wait (block) on the semaphore
+* @public @memberof QXSemaphore
+*/
 bool QXSemaphore_wait(QXSemaphore * const me,
                       uint_fast16_t const nTicks);
 
-/*! try wait on the semaphore (non-blocking) */
+/*! try wait on the semaphore (non-blocking)
+* @public @memberof QXSemaphore
+*/
 bool QXSemaphore_tryWait(QXSemaphore * const me);
 
-/*! signal (unblock) the semaphore */
+/*! signal (unblock) the semaphore
+* @public @memberof QXSemaphore
+*/
 bool QXSemaphore_signal(QXSemaphore * const me);
 
-
-/****************************************************************************/
-/*! Blocking Mutex the QXK preemptive kernel */
-/**
+/*==========================================================================*/
+/*! Blocking Mutex the QXK preemptive kernel
 * @description
 * ::QXMutex is a blocking mutual exclusion mechanism that can also apply
 * the **priority ceiling protocol** to avoid unbounded priority inversion
 * (if initialized with a non-zero ceiling priority, see QXMutex_init()).
 * In that case, ::QXMutex requires its own uinque QP priority level, which
 * cannot be used by any thread or any other ::QXMutex.
-* If initialzied with zero ceiling priority, ::QXMutex does **not** use the
+* If initialized with zero ceiling priority, ::QXMutex does **not** use the
 * priority ceiling protocol and does not require a unique QP priority
 * (see QXMutex_init()).
 * ::QXMutex is **recursive** (reentrant), which means that it can be locked
-* mutiliple times (up to 255 levels) by the *same* thread without causing
+* multiple times (up to 255 levels) by the *same* thread without causing
 * deadlock.
 * ::QXMutex is primarily intended for the @ref ::QXThread
 * "extened (blocking) threads", but can also be used by the @ref ::QActive
@@ -249,18 +249,25 @@ typedef struct {
     uint8_t ceiling; /*!< prioirty ceiling of this mutex */
 } QXMutex;
 
-/*! initialize the QXK priority-ceiling mutex ::QXMutex */
+/*! initialize the QXK priority-ceiling mutex ::QXMutex
+* @public @memberof QXMutex
+*/
 void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling);
 
-/*! lock the QXK priority-ceiling mutex ::QXMutex */
+/*! lock the QXK priority-ceiling mutex ::QXMutex
+* @public @memberof QXMutex
+*/
 bool QXMutex_lock(QXMutex * const me,
                   uint_fast16_t const nTicks);
 
-/*! try to lock the QXK priority-ceiling mutex ::QXMutex */
+/*! try to lock the QXK priority-ceiling mutex ::QXMutex
+* @public @memberof QXMutex
+*/
 bool QXMutex_tryLock(QXMutex * const me);
 
-/*! unlock the QXK priority-ceiling mutex ::QXMutex */
+/*! unlock the QXK priority-ceiling mutex ::QXMutex
+* @public @memberof QXMutex
+*/
 void QXMutex_unlock(QXMutex * const me);
 
 #endif /* QXTHREAD_H */
-

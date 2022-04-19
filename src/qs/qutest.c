@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QF/C stub for QUTEST unit testing
 * @ingroup qs
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-10-07
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 /* only build when Q_UTEST is defined */
 #ifdef Q_UTEST
@@ -75,14 +68,13 @@ void QF_stop(void) {
 /*..........................................................................*/
 /*! @static @public @memberof QF */
 int_t QF_run(void) {
-    QS_CRIT_STAT_
-
     /* function dictionaries for the standard API */
     QS_FUN_DICTIONARY(&QActive_post_);
     QS_FUN_DICTIONARY(&QActive_postLIFO_);
     QS_FUN_DICTIONARY(&QS_processTestEvts_);
 
     /* produce the QS_QF_RUN trace record */
+    QS_CRIT_STAT_
     QS_BEGIN_PRE_(QS_QF_RUN, 0U)
     QS_END_PRE_()
 
@@ -98,11 +90,11 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
+    (void)stkSto;  /* unused parameter */
+    (void)stkSize; /* unused parameter */
+
     /* priority must be in range */
     Q_REQUIRE_ID(200, (0U < prio) && (prio <= QF_MAX_ACTIVE));
-
-    (void)stkSto;
-    (void)stkSize;
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
     me->prio = (uint8_t)prio; /* set the current priority of the AO */
@@ -112,7 +104,57 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
 }
 
-/****************************************************************************/
+/*==========================================================================*/
+static void QHsmDummy_init_(QHsm * const me, void const * const par,
+                            uint_fast8_t const qs_id);
+static void QHsmDummy_dispatch_(QHsm * const me, QEvt const * const e,
+                               uint_fast8_t const qs_id);
+
+/*..........................................................................*/
+/*! "constructor" of QHsmDummy
+* @public @memberof QHsmDummy
+*/
+void QHsmDummy_ctor(QHsmDummy * const me) {
+    static struct QHsmVtable const vtable = {  /* QHsm virtual table */
+        &QHsmDummy_init_,
+        &QHsmDummy_dispatch_
+#ifdef Q_SPY
+        ,&QHsm_getStateHandler_
+#endif
+    };
+    /* superclass' ctor */
+    QHsm_ctor(&me->super, Q_STATE_CAST(0));
+    me->super.vptr = &vtable;  /* hook the vptr */
+}
+/*..........................................................................*/
+/*! @private @memberof QActiveDummy */
+static void QHsmDummy_init_(QHsm * const me, void const * const par,
+                               uint_fast8_t const qs_id)
+{
+    (void)par;   /* unused parameter */
+
+    QS_CRIT_STAT_
+    QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
+        QS_OBJ_PRE_(me);        /* this state machine object */
+        QS_FUN_PRE_(me->state.fun); /* the source state */
+        QS_FUN_PRE_(me->temp.fun);  /* the target of the initial transition */
+    QS_END_PRE_()
+}
+/*..........................................................................*/
+/*! @private @memberof QActiveDummy */
+static void QHsmDummy_dispatch_(QHsm * const me, QEvt const * const e,
+                                uint_fast8_t const qs_id)
+{
+    QS_CRIT_STAT_
+    QS_BEGIN_PRE_(QS_QEP_DISPATCH, qs_id)
+        QS_TIME_PRE_();             /* time stamp */
+        QS_SIG_PRE_(e->sig);        /* the signal of the event */
+        QS_OBJ_PRE_(me);            /* this state machine object */
+        QS_FUN_PRE_(me->state.fun); /* the current state */
+    QS_END_PRE_()
+}
+
+/*==========================================================================*/
 static void QActiveDummy_init_(QHsm * const me, void const * const par,
                                uint_fast8_t const qs_id);
 static void QActiveDummy_dispatch_(QHsm * const me, QEvt const * const e,
@@ -143,7 +185,7 @@ void QActiveDummy_ctor(QActiveDummy * const me) {
     };
     /* superclass' ctor */
     QActive_ctor(&me->super, Q_STATE_CAST(0));
-    me->super.super.vptr = &vtable.super;      /* hook the vptr */
+    me->super.super.vptr = &vtable.super;  /* hook the vptr */
 }
 /*..........................................................................*/
 /*! @private @memberof QActiveDummy */
@@ -166,6 +208,7 @@ static void QActiveDummy_start_(QActive * const me, uint_fast8_t prio,
 
     /* the top-most initial tran. (virtual) */
     QHSM_INIT(&me->super, par, me->prio);
+    //QS_FLUSH();
 }
 //............................................................................
 #ifdef QF_ACTIVE_STOP
@@ -181,32 +224,18 @@ void QActive_stop(QActive * const me) {
 static void QActiveDummy_init_(QHsm * const me, void const * const par,
                                uint_fast8_t const qs_id)
 {
-    QS_CRIT_STAT_
-
-    (void)par;   /* unused parameter */
     (void)qs_id; /* unused parameter */
 
-    QS_BEGIN_PRE_(QS_QEP_STATE_INIT, ((QActive const *)me)->prio)
-        QS_OBJ_PRE_(me);        /* this state machine object */
-        QS_FUN_PRE_(me->state.fun); /* the source state */
-        QS_FUN_PRE_(me->temp.fun);  /* the target of the initial transition */
-    QS_END_PRE_()
+    QHsmDummy_init_(me, par, ((QActive const *)me)->prio);
 }
 /*..........................................................................*/
 /*! @private @memberof QActiveDummy */
 static void QActiveDummy_dispatch_(QHsm * const me, QEvt const * const e,
                                    uint_fast8_t const qs_id)
 {
-    QS_CRIT_STAT_
-
     (void)qs_id; /* unused parameter */
 
-    QS_BEGIN_PRE_(QS_QEP_DISPATCH, ((QActive const *)me)->prio)
-        QS_TIME_PRE_();             /* time stamp */
-        QS_SIG_PRE_(e->sig);        /* the signal of the event */
-        QS_OBJ_PRE_(me);            /* this state machine object */
-        QS_FUN_PRE_(me->state.fun); /* the current state */
-    QS_END_PRE_()
+    QHsmDummy_dispatch_(me, e, ((QActive const *)me)->prio);
 }
 /*..........................................................................*/
 /*! @private @memberof QActiveDummy */
@@ -214,12 +243,10 @@ static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
                                uint_fast16_t const margin,
                                void const * const sender)
 {
-    bool status = true;
-    uint_fast8_t rec;
-    QF_CRIT_STAT_
     QS_TEST_PROBE_DEF(&QActive_post_)
 
     /* test-probe#1 for faking queue overflow */
+    bool status = true;
     QS_TEST_PROBE_ID(1,
         status = false;
         if (margin == QF_NO_MARGIN) {
@@ -228,6 +255,7 @@ static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
         }
     )
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
 
     /* is it a dynamic event? */
@@ -235,8 +263,8 @@ static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
         QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
     }
 
-    rec = (status ? (uint_fast8_t)QS_QF_ACTIVE_POST
-                  : (uint_fast8_t)QS_QF_ACTIVE_POST_ATTEMPT);
+    uint_fast8_t const rec = (status ? (uint_fast8_t)QS_QF_ACTIVE_POST
+                             : (uint_fast8_t)QS_QF_ACTIVE_POST_ATTEMPT);
     QS_BEGIN_NOCRIT_PRE_(rec, me->prio)
         QS_TIME_PRE_();      /* timestamp */
         QS_OBJ_PRE_(sender); /* the sender object */
@@ -266,7 +294,6 @@ static bool QActiveDummy_post_(QActive * const me, QEvt const * const e,
 /*..........................................................................*/
 /*! @private @memberof QActiveDummy */
 static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e) {
-    QF_CRIT_STAT_
     QS_TEST_PROBE_DEF(&QActive_postLIFO_)
 
     /* test-probe#1 for faking queue overflow */
@@ -275,6 +302,7 @@ static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e) {
         Q_onAssert("qf_actq", 210);
     )
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
 
     /* is it a dynamic event? */
@@ -307,7 +335,7 @@ static void QActiveDummy_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_gc(e);
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 /*! @static @private @memberof QS */
 void QS_processTestEvts_(void) {
     QS_TEST_PROBE_DEF(&QS_processTestEvts_)
@@ -316,12 +344,8 @@ void QS_processTestEvts_(void) {
     QS_TEST_PROBE(return;)
 
     while (QPSet_notEmpty(&QS_rxPriv_.readySet)) {
-        QEvt const *e;
-        QActive *a;
-        uint_fast8_t p;
-
-        QPSet_findMax(&QS_rxPriv_.readySet, p);
-        a = QF_active_[p];
+        uint_fast8_t const p = QPSet_findMax(&QS_rxPriv_.readySet);
+        QActive * const a = QF_active_[p];
 
         /* perform the run-to-completion (RTC) step...
         * 1. retrieve the event from the AO's event queue, which by this
@@ -329,7 +353,7 @@ void QS_processTestEvts_(void) {
         * 2. dispatch the event to the AO's state machine.
         * 3. determine if event is garbage and collect it if so
         */
-        e = QActive_get_(a);
+        QEvt const * const e = QActive_get_(a);
         QHSM_DISPATCH(&a->super, e, a->prio);
         QF_gc(e);
 
@@ -346,13 +370,10 @@ void QS_processTestEvts_(void) {
 */
 /*! @static @private @memberof QS */
 void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
-    QTimeEvt *t;
-    QActive *act;
-    QTimeEvt *prev;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
-    prev = &QF_timeEvtHead_[tickRate];
+
+    QTimeEvt *prev = &QF_timeEvtHead_[tickRate];
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_TICK, 0U)
         ++prev->ctr;
@@ -361,13 +382,14 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
     QS_END_NOCRIT_PRE_()
 
     /* is current Time Event object provided? */
-    t = (QTimeEvt *)QS_rxPriv_.currObj[TE_OBJ];
+    QTimeEvt *t = (QTimeEvt *)QS_rxPriv_.currObj[TE_OBJ];
     if (t != (QTimeEvt *)0) {
 
         /* the time event must be armed */
         Q_ASSERT_ID(810, t->ctr != 0U);
 
-        act = (QActive *)(t->act); /* temp. for volatile */
+        /* temp. for volatile */
+        QActive * const act = (QActive * const)(t->act);
 
         /* the recipient AO must be provided */
         Q_ASSERT_ID(820, act != (QActive *)0);
@@ -447,14 +469,22 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
 
     QF_CRIT_X_();
 }
+/*..........................................................................*/
+/*! @static @private @memberof QS */
+void QS_test_pause_(void) {
+    QS_beginRec_((uint_fast8_t)QS_TEST_PAUSED);
+    QS_endRec_();
+    QS_onTestLoop();
+}
 
-/****************************************************************************/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const location) {
+/*==========================================================================*/
+Q_NORETURN Q_onAssert(char const * const module, int_t const location) {
     QS_BEGIN_NOCRIT_PRE_(QS_ASSERT_FAIL, 0U)
         QS_TIME_PRE_();
         QS_U16_PRE_(location);
-        QS_STR_PRE_((module != (char_t *)0) ? module : "?");
+        QS_STR_PRE_((module != (char *)0) ? module : "?");
     QS_END_NOCRIT_PRE_()
+
     QS_onFlush(); /* flush the assertion record to the host */
     QS_onTestLoop(); /* loop to wait for commands (typically reset) */
     QS_onReset(); /* in case the QUTEST loop ever returns, reset manually */
@@ -463,4 +493,3 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const location) {
 }
 
 #endif /* Q_UTEST */
-

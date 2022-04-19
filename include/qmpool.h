@@ -1,46 +1,39 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QP native, platform-independent memory pool ::QMPool interface.
 * @ingroup qf
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-08
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #ifndef QMPOOL_H
 #define QMPOOL_H
 
-/****************************************************************************/
+/*==========================================================================*/
 #ifndef QF_MPOOL_SIZ_SIZE
     /*! macro to override the default ::QMPoolSize size [bytes].
     * Valid values 1U, 2U, or 4U; default 2U
@@ -51,8 +44,6 @@
 
     /*! The data type to store the block-size based on the macro
     * #QF_MPOOL_SIZ_SIZE.
-    */
-    /**
     * @description
     * The dynamic range of this data type determines the maximum size
     * of blocks that can be managed by the native QF event pool.
@@ -67,7 +58,7 @@
     #error "QF_MPOOL_SIZ_SIZE defined incorrectly, expected 1U, 2U, or 4U"
 #endif
 
-/****************************************************************************/
+/*==========================================================================*/
 #ifndef QF_MPOOL_CTR_SIZE
     /*! macro to override the default ::QMPoolCtr size [bytes].
     * Valid values 1U, 2U, or 4U; default 2U
@@ -78,8 +69,6 @@
 
     /*! The data type to store the block-counter based on the macro
     * #QF_MPOOL_CTR_SIZE.
-    */
-    /**
     * @description
     * The dynamic range of this data type determines the maximum number
     * of blocks that can be stored in the pool.
@@ -93,9 +82,8 @@
     #error "QF_MPOOL_CTR_SIZE defined incorrectly, expected 1U, 2U, or 4U"
 #endif
 
-/****************************************************************************/
-/*! Native QF Memory Pool */
-/**
+/*==========================================================================*/
+/*! Native QF Memory Pool
 * @description
 * A fixed block-size memory pool is a very fast and efficient data
 * structure for dynamic allocation of fixed block-size chunks of memory.
@@ -134,8 +122,7 @@ typedef struct {
     /*! number of free blocks remaining */
     QMPoolCtr volatile nFree;
 
-    /*! minimum number of free blocks ever present in this pool */
-    /**
+    /*! minimum number of free blocks ever present in this pool
     * @description
     * this attribute remembers the low watermark of the pool, which
     * provides a valuable information for sizing event pools.
@@ -160,12 +147,9 @@ void QMPool_put(QMPool * const me, void *b,
 
 /*! Memory pool element to allocate correctly aligned storage
 * for QMPool class.
-*/
-/**
 * @param[in] evType_ event type (name of the subclass of QEvt)
 */
 #define QF_MPOOL_EL(evType_) \
     struct { void *sto_[((sizeof(evType_) - 1U)/sizeof(void*)) + 1U]; }
 
 #endif /* QMPOOL_H */
-

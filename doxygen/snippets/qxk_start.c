@@ -4,16 +4,8 @@ Q_DEFINE_THIS_FILE
 
 int main() {
     . . .
-    /* stack for the QXK's idle thread */
-    static uint64_t idleStackSto[32];
-
-    Test_ctor();  /* instantiate the Test "naked" thread */
-
     QF_init();    /* initialize the framework */
     BSP_init();   /* initialize the Board Support Package */
-
-    /* initialize QXK... */
-    QXK_init(idleStackSto, sizeof(idleStackSto));
 
     /* initialize publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
@@ -21,7 +13,8 @@ int main() {
     /* initialize event pools... */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
-    /* start the active objects (basic-threads)... */
+    /* start the active objects (basic threads)... */
+    Table_ctor(); /* instantiate the Table AO */
     QACTIVE_START(AO_Table,              /* AO to start */
                   N_PHILO + 2U,          /* QP priority of the AO */
                   tableQueueSto,         /* event queue storage */
@@ -32,6 +25,7 @@ int main() {
     . . .
 
     /* start the extended-threads... */
+    Test_ctor();  /* instantiate the Test extended thread */
     QXTHREAD_START(XT_Test,              /* Thread to start */
                   10U,                   /* QP priority of the thread */
                   testQueueSto,          /* message queue storage */

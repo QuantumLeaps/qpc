@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.1.0" links="1">
+<model version="5.1.4" links="1">
  <documentation>Dining Philosopher Problem example</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -25,10 +25,11 @@
    <statechart properties="0x01">
     <!--${AOs::Philo::SM::initial}-->
     <initial target="../1">
-     <action>static uint8_t registered = (uint8_t)0; /* starts off with 0, per C-standard */
-(void)par; /* unused parameter */
-if (registered == (uint8_t)0) {
-    registered = (uint8_t)1;
+     <action>(void)par; /* unused parameter */
+
+static bool registered = false;
+if (!registered) {
+    registered = true;
 
     QS_OBJ_DICTIONARY(&amp;Philo_inst[0]);
     QS_OBJ_DICTIONARY(&amp;Philo_inst[0].timeEvt);
@@ -49,8 +50,8 @@ if (registered == (uint8_t)0) {
 QS_SIG_DICTIONARY(HUNGRY_SIG, me);  /* signal for each Philos */
 QS_SIG_DICTIONARY(TIMEOUT_SIG, me); /* signal for each Philos */
 
-QActive_subscribe(&amp;me-&gt;super, EAT_SIG);
-QActive_subscribe(&amp;me-&gt;super, TEST_SIG);</action>
+QActive_subscribe(&amp;me-&gt;super, (enum_t)EAT_SIG);
+QActive_subscribe(&amp;me-&gt;super, (enum_t)TEST_SIG);</action>
      <initial_glyph conn="2,3,5,1,20,5,-3">
       <action box="0,-2,6,2"/>
      </initial_glyph>
@@ -58,7 +59,7 @@ QActive_subscribe(&amp;me-&gt;super, TEST_SIG);</action>
     <!--${AOs::Philo::SM::thinking}-->
     <state name="thinking">
      <entry>QTimeEvt_armX(&amp;me-&gt;timeEvt, THINK_TIME, 0U);</entry>
-     <exit>QTimeEvt_disarm(&amp;me-&gt;timeEvt);</exit>
+     <exit>(void)QTimeEvt_disarm(&amp;me-&gt;timeEvt);</exit>
      <!--${AOs::Philo::SM::thinking::TIMEOUT}-->
      <tran trig="TIMEOUT" target="../../2">
       <tran_glyph conn="2,13,3,1,20,12,-3">
@@ -169,10 +170,10 @@ QS_SIG_DICTIONARY(TEST_SIG,      (void *)0);
 
 QS_SIG_DICTIONARY(HUNGRY_SIG,    me); /* signal just for Table */
 
-QActive_subscribe(&amp;me-&gt;super, DONE_SIG);
-QActive_subscribe(&amp;me-&gt;super, PAUSE_SIG);
-QActive_subscribe(&amp;me-&gt;super, SERVE_SIG);
-QActive_subscribe(&amp;me-&gt;super, TEST_SIG);
+QActive_subscribe(&amp;me-&gt;super, (enum_t)DONE_SIG);
+QActive_subscribe(&amp;me-&gt;super, (enum_t)PAUSE_SIG);
+QActive_subscribe(&amp;me-&gt;super, (enum_t)SERVE_SIG);
+QActive_subscribe(&amp;me-&gt;super, (enum_t)TEST_SIG);
 
 for (n = 0U; n &lt; N_PHILO; ++n) {
     me-&gt;fork[n] = FREE;
@@ -383,7 +384,7 @@ Philo *me;
 for (n = 0U; n &lt; N_PHILO; ++n) {
     me = &amp;Philo_inst[n];
     QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Philo_initial));
-    QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, TIMEOUT_SIG, 0U);
+    QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, (enum_t)TIMEOUT_SIG, 0U);
 }</code>
   </operation>
   <!--${AOs::Table_ctor}-->
@@ -457,7 +458,9 @@ $declare${AOs::Philo}
     (QTimeEvtCtr)((BSP_random() % BSP_TICKS_PER_SEC) + BSP_TICKS_PER_SEC)
 
 /* helper macro to provide the ID of Philo &quot;me_&quot; */
-#define PHILO_ID(me_)    ((uint8_t)((me_) - &amp;Philo_inst[0]))
+static inline uint8_t PHILO_ID(Philo * const me) {
+    return (uint8_t)(me - &amp;Philo_inst[0]);
+}
 
 $define${AOs::AO_Philo[N_PHILO]}
 $define${AOs::Philo_ctor}

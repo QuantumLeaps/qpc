@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
     PRINTF_S("Reminder state pattern\nQP version: %s\n"
            "Press 'e' to echo the current value...\n"
            "Press ESC to quit...\n",
-           QP_versionStr);
+           QP_VERSION_STR);
     fflush(stdout);
 
     Cruncher_ctor(&l_cruncher);

@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: QMsmTst Example
-* Last updated for version 6.9.1
-* Last updated on  2020-09-11
+* Last updated for: @ref qpc_7_0_0
+* Last updated on: 2021-12-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -46,15 +46,24 @@ static void dispatch(QSignal sig);
 /*..........................................................................*/
 int main(int argc, char *argv[]) {
 
-#ifdef Q_SPY
-    uint8_t qsBuf[128];
-    QS_initBuf(qsBuf, sizeof(qsBuf));
-#endif
-
     QF_init();
     QF_onStartup();
 
     QMsmTst_ctor(); /* instantiate the QMsmTst object */
+
+    Q_ALLEGE(QS_INIT((void *)0));
+    QS_OBJ_DICTIONARY(the_sm);
+    QS_SIG_DICTIONARY(A_SIG, (void *)0);
+    QS_SIG_DICTIONARY(B_SIG, (void *)0);
+    QS_SIG_DICTIONARY(C_SIG, (void *)0);
+    QS_SIG_DICTIONARY(D_SIG, (void *)0);
+    QS_SIG_DICTIONARY(E_SIG, (void *)0);
+    QS_SIG_DICTIONARY(F_SIG, (void *)0);
+    QS_SIG_DICTIONARY(G_SIG, (void *)0);
+    QS_SIG_DICTIONARY(H_SIG, (void *)0);
+    QS_SIG_DICTIONARY(I_SIG, (void *)0);
+    QS_GLB_FILTER(QS_ALL_RECORDS);
+    QS_GLB_FILTER(-QS_QF_TICK);
 
     if (argc > 1) {   /* file name provided? */
         l_outFile = fopen(argv[1], "w");
@@ -74,6 +83,8 @@ int main(int argc, char *argv[]) {
             int c;
 
             PRINTF_S("\n", "");
+            QS_OUTPUT(); /* handle the QS output */
+
             c = (uint8_t)QF_consoleWaitForKey();
             PRINTF_S("%c: ", (c >= ' ') ? c : 'X');
 
@@ -134,7 +145,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     FPRINTF_S(stderr, "Assertion failed in %s:%d\n", module, loc);
     QF_onCleanup();
     exit(-1);
@@ -156,6 +167,7 @@ static void dispatch(QSignal sig) {
     e.sig = sig;
     FPRINTF_S(l_outFile, "\n%c:", 'A' + sig - A_SIG);
     QHSM_DISPATCH(the_sm, &e, 0U); /* dispatch the event */
+    QS_OUTPUT(); /* handle the QS output */
 }
 
 /*--------------------------------------------------------------------------*/
@@ -173,19 +185,12 @@ void QF_onClockTick(void) {
 /*--------------------------------------------------------------------------*/
 #ifdef Q_SPY /* define QS callbacks */
 
-/*! callback function to execute user commands */
+/*! callback function to execute user commands (dummy definition) */
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    switch (cmdId) {
-       case 0U: {
-           break;
-       }
-       default:
-           break;
-    }
-
     /* unused parameters */
+    (void)cmdId;
     (void)param1;
     (void)param2;
     (void)param3;

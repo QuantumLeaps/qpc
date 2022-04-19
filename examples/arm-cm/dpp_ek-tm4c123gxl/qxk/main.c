@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -104,6 +104,7 @@ int main() {
     /* example of prioritizing the Ticker0 active object */
     QACTIVE_START(the_Ticker0, (uint_fast8_t)(N_PHILO + 3),
                   0, 0, 0, 0, 0);
+    QS_LOC_FILTER(-the_Ticker0->prio); /* don't show the ticker thread */
 
     /* NOTE: leave priority (N_PHILO + 4) free for mutex */
 

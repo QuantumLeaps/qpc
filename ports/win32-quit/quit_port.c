@@ -10,7 +10,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -93,7 +93,7 @@ int main(void) {
 }
 
 /*==========================================================================*/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const location) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const location) {
     QUIT_fail_("Q_onAssert", module, location);
     for (;;) { /* explicitly make it "noreturn" */
     }

@@ -5,7 +5,7 @@ QState Bomb_initial(Bomb * const me, QEvt const * const e) {
     me->timeout = INIT_TIMEOUT;
     me->defuse  = Q_EVT_CAST(BombInitEvt)->defuse;
 
-    return Q_TRAN(&Bomb_setting); /* initial transition */
+    return Q_TRAN(&Bomb_setting); /* <--- initial transition */
 }
 
 /* state handler function for the Calc HSM ................................*/

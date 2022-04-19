@@ -1,15 +1,3 @@
-/*! @defgroup qp QP
-
-@brief
-Real-Time Embedded Framework
-
-QP Real-Time Embedded Framework (RTEF) is a reusable architecture for building real-time embedded (RTE) software as a system of collaborating, @ref srs_ed "event-driven" @ref srs_ao "Active Objects" (a.k.a. Actors).
-
-The internal behavior of Active Objects is specified in QP by means of @ref srs_sm "Hierarchical State Machines" (UML statecharts). The QP framework supports manual coding of Hierarchical State Machines in as well as Model-Based Design (MBD) and automatic code generation.
-*/
-
-/*##########################################################################*/
-
 /*! @defgroup qep QEP
 
 @brief
@@ -17,7 +5,6 @@ Hierarchical Event Processor
 
 QEP is a universal, UML-compliant event processor that enables developers to code UML state machines in highly readable ANSI-C, in which every state machine element is mapped to code precisely, unambiguously, and exactly once (traceability). QEP fully supports hierarchical state nesting, which is the fundamental mechanism for reusing behavior across many states instead of repeating the same actions and transitions over and over again.
 */
-
 /*##########################################################################*/
 /*! @defgroup qf QF
 
@@ -26,7 +13,6 @@ Active Object (Actor) Framework
 
 QF is a portable, event-driven, real-time framework for execution of active objects (concurrent state machines) specifically designed for real-time embedded (RTE) systems.
 */
-
 /*##########################################################################*/
 /*! @defgroup qs QS
 
@@ -35,7 +21,6 @@ Software Tracing Instrumentation
 
 QS is software tracing system that enables developers to monitor live QP applications with minimal target system resources and without stopping or significantly slowing down the code. QS is an ideal tool for testing, troubleshooting, and optimizing QP applications. QS can even be used to support acceptance testing in product manufacturing. Please see <a href="https://www.state-machine.com/qtools/qs.html"><b>QS Manual</b></a> inside the <a href="https://www.state-machine.com/qtools" target="_blank" class="extern">QTools collection</a> for more information.
 */
-
 /*##########################################################################*/
 /*! @defgroup qv QV
 
@@ -64,10 +49,8 @@ Given the simplicity, portability, and low-resource consumption, the QV schedule
 @remarks
 Sometimes it is not practical to break up long RTC steps, and consequently the thread-level response of the simple @ref qv "QV kernel" might be too slow. In this cases you need to use a *preemptive* kernel. The big advantage of preemptive kernel is that it effectively decouples high-priority thread from low-priority threads in the time domain. The timeliness of execution of high-priority thread is almost independent on the low-priority threads. But of course there is no such thing as a free lunch. Preemptive kernels open the whole new class of problems related to race conditions. So you need to be very careful about sharing any resources.
 
-
 @next{qk}
 */
-
 /*##########################################################################*/
 /*! @defgroup qk QK
 
@@ -111,10 +94,8 @@ When an interrupt posts an event to a higher-priority thread than the interrupte
 @note
 A traditional RTOS kernel does not distinguish between the synchronous and asynchronous preemptions and makes all preemptions look like the more stack-intensive asynchronous preemptions. In contrast, a RTC kernel can implement synchronous preemption as a simple function call (to QK_activate_()), which is much more efficient than a full context-switch.
 
-
 @next{qxk}
 */
-
 /*##########################################################################*/
 /*! @defgroup qxk QXK
 
@@ -142,7 +123,6 @@ Example illustrates: 6 active objects plus two extended threads, QXK blocking de
 Example illustrates: 6 active objects plus two extended threads, QXK blocking delay, QXK semaphore, QXK mutex, QXK blocking message queue.
 
 
-
 @section qxk_basic Basic Threads
 QXK supports **basic**-threads (non-blocking, run-to-completion activations). The basic-threads all nest on the same stack (Main Stack Pointer in ARM Cortex-M), so the stack usage is reduced. The additional advantage of basic-threads is that switching from basic-thread to another basic-thread requires only @ref QXK_activate_() "activation" of the basic-thread, which is much simpler and faster than full context-switch required for @ref qxk_extended "extended"-threads that QXK also supports (see below).
 
@@ -157,9 +137,7 @@ QXK supports **extended**-threads (blocking, typically structrued as endless loo
 @remarks
 QXK is a unique dual-mode kernel on the market that supports interleaving the priorities of basic threads and extended threads. Other dual-mode kernels typically limit the priorities of basic threads to be always higher (more urgent) than any of the extended threads.
 
-
 @sa ::QXThread
-
 
 
 @section qxk_classes Classes in QXK
@@ -171,7 +149,7 @@ The figure below shows the main classes introduced in the QXK kernel and their r
   <li><span class="tag">0</span> The abstract ::QActive class represents active objects in QP. This class contains the @c thread object of the underlying kernel (QXK thread-control-block in this case) as well as the event queue and the unique priority of the active object.
   </li>
 
-  <li><span class="tag">1</span> The ::QXThread class represents the extended (blocking) threads of the QXK kernel. It inherits ::QActive, so that extended-threads can be treated as active objects internally in the framework. However, the extended-threads __do not implement state machines__. Instead, the data fields used for storing the current state in active objects are re-used to store the private stack of the extended-thread. The ::QXThread class also contains the @c timeEvt object (see ::QTimeEvt) for generating timeouts when the extended-thread is blocked.
+  <li><span class="tag">1</span> The ::QXThread class represents the extended (blocking) threads of the QXK kernel. It inherits ::QActive, so that extended-threads can be treated as active objects internally in the framework. However, the extended-threads **do not implement state machines**. Instead, the data fields used for storing the current state in active objects are re-used to store the private stack of the extended-thread. The ::QXThread class also contains the @c timeEvt object (see ::QTimeEvt) for generating timeouts when the extended-thread is blocked.
   </li>
 
   <li><span class="tag">2</span> The ::QXMutex class represents the **priority-ceiling mutex** of the QXK kernel. The mutex can block and can be used only in the extended-threads (in case they share resources that need to be protected). The mutex is recursive, meaning that it can be locked multiple times from the same extended thread (but it needs to be unlocked equal number of times).
@@ -236,7 +214,6 @@ As you can see in the list below, <span class="highlight">QXK provides most feat
 
 <li><span class="bullet">&gt;</span> @ref qxk_tls "Thread-Local Storage" for all threads (basic threads and extended threads).
 </li>
-
 </ul>
 
 

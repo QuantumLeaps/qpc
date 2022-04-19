@@ -38,7 +38,7 @@ On Windows, the **make** utility and the GNU GCC toolchain (**MinGW**) are provi
 
 
 @n
-![Blinky example on Windows (QP linked from a library)](blinky_win.png)
+![Blinky example on Windows (QP linked from a library)](blinky_win32.png)
 @n
 ![Blinky example on Linux (QP built from sources)](blinky_posix.png)
 

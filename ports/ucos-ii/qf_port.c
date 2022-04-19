@@ -1,41 +1,34 @@
-/**
-* @file
-* @brief QF/C generic port to uC/OS-II
-* @ingroup ports
-* @cond
-******************************************************************************
-* Last updated for version 6.9.2a
-* Last updated on  2020-01-26
+/*============================================================================
+* QF/C port to uC/OS-II, generic C99 compiler
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @ingroup ports
+* @brief QF/C port to uC/OS-II, generic C99 compiler
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -59,11 +52,10 @@ void QF_init(void) {
 }
 /*..........................................................................*/
 int_t QF_run(void) {
-     QS_CRIT_STAT_
-
     QF_onStartup();  /* QF callback to configure and start interrupts */
 
     /* produce the QS_QF_RUN trace record */
+    QS_CRIT_STAT_
     QS_BEGIN_PRE_(QS_QF_RUN, 0U)
     QS_END_PRE_()
 
@@ -116,7 +108,11 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 #endif
              p_ucos,           /* uC/OS-II task priority */
              (INT16U)me->prio, /* the unique AO priority as task ID */
+#if OS_STK_GROWTH
              (OS_STK *)stkSto, /* pbos */
+#else
+             &((OS_STK *)stkSto)[(stkSize/sizeof(OS_STK)) - 1], /* pbos */
+#endif
              (INT32U)(stkSize/sizeof(OS_STK)),/* stack size in OS_STK units */
              task_name,        /* pext */
              (INT16U)me->thread); /* task options, see NOTE1 */
@@ -170,7 +166,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     nFree = (uint_fast16_t)(((OS_Q_DATA *)me->eQueue)->OSQSize
                             - ((OS_Q_DATA *)me->eQueue)->OSNMsgs);
     if (margin == QF_NO_MARGIN) {
-        if (nFree > (QEQueueCtr)0) {
+        if (nFree > 0U) {
             status = true; /* can post */
         }
         else {
@@ -192,8 +188,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_OBJ_PRE_(sender);    /* the sender object */
             QS_SIG_PRE_(e->sig);    /* the signal of the event */
             QS_OBJ_PRE_(me);        /* this active object (recipient) */
-            QS_U8_PRE_(e->poolId_); /* the pool Id of the event */
-            QS_U8_PRE_(e->refCtr_); /* the ref count of the event */
+            QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_EQC_PRE_(nFree);     /* # free entries */
             QS_EQC_PRE_(0U);        /* min # free entries (unknown) */
         QS_END_NOCRIT_PRE_()
@@ -206,7 +201,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
         /* posting the event to uC/OS-II message queue must succeed */
         Q_ALLEGE_ID(720,
-            OSQPost((OS_EVENT *)me->eQueue, (void *)e) == OS_ERR_NONE);
+            OSQPost(me->eQueue, (void *)e) == OS_ERR_NONE);
     }
     else {
 
@@ -236,7 +231,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QS_OBJ_PRE_(me);            /* this active object */
         QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
         QS_EQC_PRE_(((OS_Q *)me->eQueue)->OSQSize
-                - ((OS_Q *)me->eQueue)->OSQEntries); /* # free entries */
+                     - ((OS_Q *)me->eQueue)->OSQEntries); /* # free entries */
         QS_EQC_PRE_(0U);            /* min # free entries (unknown) */
     QS_END_NOCRIT_PRE_()
 

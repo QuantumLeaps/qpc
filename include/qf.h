@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QF/C platform-independent public interface.
 * @ingroup qf
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-09-16
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #ifndef QF_H
 #define QF_H
@@ -44,7 +37,7 @@
 #include "qpset.h"
 #endif
 
-/****************************************************************************/
+/*==========================================================================*/
 #ifndef QF_EVENT_SIZ_SIZE
     /*! Default value of the macro configurable value in qf_port.h */
     #define QF_EVENT_SIZ_SIZE 2U
@@ -53,8 +46,7 @@
     typedef uint8_t QEvtSize;
 #elif (QF_EVENT_SIZ_SIZE == 2U)
     /*! The data type to store the block-size defined based on
-    * the macro #QF_EVENT_SIZ_SIZE. */
-    /**
+    * the macro #QF_EVENT_SIZ_SIZE.
     * The dynamic range of this data type determines the maximum block
     * size that can be managed by the pool.
     */
@@ -86,14 +78,12 @@
     #define QF_TIMEEVT_CTR_SIZE  2U
 #endif
 
-/****************************************************************************/
+/*==========================================================================*/
 struct QEQueue; /* forward declaration */
 
-/****************************************************************************/
+/*==========================================================================*/
 /*! Active Object base class (based on ::QHsm implementation)
 * @extends QHsm
-*/
-/**
 * @description
 * Active objects in QP are encapsulated state machines (each embedding an
 * event queue and a thread) that communicate with one another asynchronously
@@ -117,8 +107,7 @@ typedef struct QActive {
     QHsm super; /*!< @protected inherits ::QHsm */
 
 #ifdef QF_EQUEUE_TYPE
-    /*! @private OS-dependent event-queue type. */
-    /**
+    /*! @private OS-dependent event-queue type.
     * @description
     * The type of the queue depends on the underlying operating system or
     * a kernel. Many kernels support "message queues" that can be adapted
@@ -133,8 +122,7 @@ typedef struct QActive {
 #endif
 
 #ifdef QF_OS_OBJECT_TYPE
-    /*! @private OS-dependent per-thread object. */
-    /**
+    /*! @private OS-dependent per-thread object.
     * @description
     * This data might be used in various ways, depending on the QF port.
     * In some ports osObject is used to block the calling thread when
@@ -145,8 +133,7 @@ typedef struct QActive {
 #endif
 
 #ifdef QF_THREAD_TYPE
-    /*! @private OS-dependent representation of the thread of the AO. */
-    /**
+    /*! @private OS-dependent representation of the thread of the AO.
     * @description
     * This data might be used in various ways, depending on the QF port.
     * In some ports thread is used to store the thread handle. In other
@@ -169,8 +156,9 @@ typedef struct QActive {
 typedef struct {
     struct QHsmVtable super; /*!< @protected inherits ::QHsmVtable */
 
-    /*! @private virtual function to start the AO/thread */
-    /** @sa QACTIVE_START() */
+    /*! @private virtual function to start the AO/thread
+    * @sa QACTIVE_START()
+    */
     void (*start)(QActive * const me, uint_fast8_t prio,
                   QEvt const * * const qSto, uint_fast16_t const qLen,
                   void * const stkSto, uint_fast16_t const stkSize,
@@ -179,8 +167,8 @@ typedef struct {
 #ifdef Q_SPY
     /*! @private virtual function to asynchronously post (FIFO)
     * an event to the AO
+    * @sa QACTIVE_POST() and QACTIVE_POST_X()
     */
-    /** @sa QACTIVE_POST() and QACTIVE_POST_X() */
     bool (*post)(QActive * const me, QEvt const * const e,
                  uint_fast16_t const margin, void const * const sender);
 #else
@@ -190,15 +178,14 @@ typedef struct {
 
     /*! @private virtual function to asynchronously post (LIFO)
     * an event to the AO
+    * @sa QACTIVE_POST_LIFO()
     */
-    /** @sa QACTIVE_POST_LIFO() */
     void (*postLIFO)(QActive * const me, QEvt const * const e);
 
 } QActiveVtable;
 
 /* QActive public operations... */
-/*! Polymorphically start an active object. */
-/**
+/*! Polymorphically start an active object.
 * @description
 * Starts execution of the AO and registers the AO with the framework.
 *
@@ -225,8 +212,6 @@ typedef struct {
 #ifdef Q_SPY
     /*! Polymorphically posts an event to an active object (FIFO)
     * with delivery guarantee.
-    */
-    /**
     * @description
     * This macro asserts if the queue overflows and cannot accept the event.
     *
@@ -255,8 +240,6 @@ typedef struct {
 
     /*! Polymorphically posts an event to an active object (FIFO)
     * without delivery guarantee.
-    */
-    /**
     * @description
     * This macro does not assert if the queue overflows and cannot accept
     * the event with the specified margin of free slots remaining.
@@ -304,8 +287,7 @@ typedef struct {
 #endif
 
 /*! Polymorphically posts an event to an active object using the
-* Last-In-First-Out (LIFO) policy. */
-/**
+* Last-In-First-Out (LIFO) policy.
 * @param[in,out] me_   pointer (see @ref oop)
 * @param[in]     e_    pointer to the event to post
 */
@@ -323,8 +305,8 @@ void QActive_ctor(QActive * const me, QStateHandler initial);
     /*! Stops execution of an active object and removes it from the
     * framework's supervision.
     * @protected @memberof QActive
-    */
-    /** @attention
+    *
+    * @attention
     * QActive_stop() must be called only from the AO that is about
     * to stop its execution. By that time, any pointers or references
     * to the AO are considered invalid (dangling) and it becomes
@@ -371,11 +353,10 @@ uint_fast16_t QActive_flushDeferred(QActive const * const me,
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2);
 
 
-/****************************************************************************/
+/*==========================================================================*/
+
 /*! QMActive active object base class (based on ::QMsm implementation)
 * @extends QActvie
-*/
-/**
 * @description
 * QMActive represents an active object that uses the ::QMsm style state
 * machine implementation strategy. This strategy requires the use of the
@@ -399,8 +380,7 @@ typedef struct {
     QActive super; /*!< @protected inherits ::QActive */
 } QMActive;
 
-/*! Virtual Table for the ::QMActive class (inherited from ::QActiveVtable */
-/**
+/*! Virtual Table for the ::QMActive class (inherited from ::QActiveVtable
 * @note
 * ::QMActive inherits ::QActive exactly, without adding any new virtual
 * functions and therefore, ::QMActiveVtable is typedef'ed as ::QActiveVtable.
@@ -414,14 +394,14 @@ typedef QActiveVtable QMActiveVtable;
 void QMActive_ctor(QMActive * const me, QStateHandler initial);
 
 
-/****************************************************************************/
+/*==========================================================================*/
+
 #if (QF_TIMEEVT_CTR_SIZE == 1U)
     typedef uint8_t QTimeEvtCtr;
 #elif (QF_TIMEEVT_CTR_SIZE == 2U)
 
     /*! type of the Time Event counter, which determines the dynamic
-    * range of the time delays measured in clock ticks. */
-    /**
+    * range of the time delays measured in clock ticks.
     * @description
     * This typedef is configurable via the preprocessor switch
     * #QF_TIMEEVT_CTR_SIZE. The other possible values of this type are
@@ -438,8 +418,6 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial);
 
 /*! Time Event class
 * @extends QEvt
-*/
-/**
 * @description
 * Time events are special QF events equipped with the notion of time passage.
 * The basic usage model of the time events is as follows. An active object
@@ -460,14 +438,15 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial);
 *
 * Internally, the armed time events are organized into linked lists--one list
 * for every supported ticking rate. These linked lists are scanned in every
-* invocation of the QF_tickX_() function. Only armed (timing out) time events
+* invocation of the QF_TICK_X() macro. Only armed (timing out) time events
 * are in the list, so only armed time events consume CPU cycles.
 *
 * @sa ::QTimeEvt for the description of the data members @n @ref oop
 *
 * @note
-* QF manages the time events in the function QF_tickX_(), which must be called
-* periodically, from the clock tick ISR or from the special ::QTicker
+* QF manages the time events in the QF_TICK_X() macro, which must be called
+* periodically, from the clock tick ISR or from other periodic source.
+* QF_TICK_X() caYou might also use the special ::QTicker
 * active object.
 *
 * @note
@@ -484,8 +463,7 @@ typedef struct QTimeEvt {
     /*! @private the active object that receives the time events */
     void * volatile act;
 
-    /*! @private internal down-counter of the time event. */
-    /**
+    /*! @private internal down-counter of the time event.
     * @description
     * The down-counter is decremented by 1 in every QF_tickX_() invocation.
     * The time event fires (gets posted or published) when the down-counter
@@ -495,8 +473,6 @@ typedef struct QTimeEvt {
 
     /*! @private interval for periodic time event
     * (zero for one-shot time event)
-    */
-    /**
     * @description
     * The value of the interval is re-loaded to the internal down-counter
     * when the time event expires, so that the time event keeps timing out
@@ -540,11 +516,9 @@ bool QTimeEvt_wasDisarmed(QTimeEvt * const me);
 QTimeEvtCtr QTimeEvt_currCtr(QTimeEvt const * const me);
 
 
-/****************************************************************************/
-/* QF facilities */
-
-/*! QF services. */
-/**
+/*==========================================================================*/
+/* QF services. */
+/*!
 * @description
 * This class groups together QF services. It has only static members and
 * should not be instantiated.
@@ -553,8 +527,7 @@ typedef struct {
     uint8_t dummy;
 } QF;
 
-/*! Subscriber-List structure */
-/**
+/*! Subscriber-List structure
 * @description
 * This data type represents a set of active objects that subscribe to
 * a given signal. The set is represented as a priority-set, where each
@@ -598,8 +571,7 @@ int_t QF_run(void);
 */
 void QF_stop(void);
 
-/*! Startup QF callback. */
-/**
+/*! Startup QF callback.
 * @description
 * The timeline for calling QF_onStartup() depends on the particular
 * QF port. In most cases, QF_onStartup() is called from QF_run(), right
@@ -608,8 +580,7 @@ void QF_stop(void);
 */
 void QF_onStartup(void);
 
-/*! Cleanup QF callback. */
-/**
+/*! Cleanup QF callback.
 * @description
 * QF_onCleanup() is called in some QF ports before QF returns to the
 * underlying operating system or RTOS.
@@ -633,8 +604,7 @@ void QF_onCleanup(void);
     void QF_publish_(QEvt const * const e,
                      void const * const sender, uint_fast8_t const qs_id);
 
-    /*! Invoke the event publishing facility. */
-    /**
+    /*! Invoke the event publishing facility.
     * @description
     * This macro is the recommended way of publishing events, because it
     * provides the vital information for software tracing and avoids any
@@ -672,21 +642,19 @@ void QF_onCleanup(void);
     */
     void QF_tickX_(uint_fast8_t const tickRate, void const * const sender);
 
-    /*! Invoke the system clock tick processing QF_tickX_(). */
-    /**
+    /*! Invoke the system clock tick processing QF_tickX_().
     * @description
-    * This macro is the recommended way of invoking clock tick processing,
-    * because it provides the vital information for software tracing and
-    * avoids any overhead when the tracing is disabled.
+    * This macro processes all armed ::QTimeEvt objects associated with
+    * the tick rate @p tickRate_ .
     *
     * @param[in] tickRate_ clock tick rate to be serviced through this call
-    * @param[in] sender_   pointer to the sender object. This argument
-    *            is actually only used when QS software tracing is enabled
+    * @param[in] sender_   pointer to the sender object. This parameter
+    *            is actually used only when QS software tracing is enabled
     *            (macro #Q_SPY is defined)
     * @note
     * When QS software tracing is disabled, the macro calls QF_tickX_()
-    * without the @p sender parameter, so the overhead of passing this
-    * extra argument is entirely avoided.
+    * without the @p sender_ parameter, so the overhead of passing this
+    * extra parameter is entirely avoided.
     *
     * @note
     * The pointer to the sender object is not necessarily a pointer
@@ -699,7 +667,12 @@ void QF_onCleanup(void);
     * system tick rates:
     * @include qf_tickx.c
     *
-    * @sa QF_tickX_().
+    * @sa ::QTimeEvt
+    * @sa QTimeEvt_ctorX()
+    * @sa QF_tickX_()
+    * @sa QF_TICK()
+    * @sa QXThread_ctor()
+    * @sa QXThread_delay()
     */
     #define QF_TICK_X(tickRate_, sender_) (QF_tickX_((tickRate_), (sender_)))
 
@@ -715,7 +688,9 @@ void QF_onCleanup(void);
 */
 #define QF_NO_MARGIN ((uint_fast16_t)0xFFFFU)
 
-/*! Invoke the system clock tick processing for rate 0 */
+/*! Invoke the system clock tick processing for tick rate 0
+* @sa QF_TICK_X()
+*/
 #define QF_TICK(sender_)   QF_TICK_X(0U, (sender_))
 
 /*! Returns 'true' if there are no armed time events at a given tick rate.
@@ -764,20 +739,19 @@ void QF_deleteRef_(void const * const evtRef);
 
     #define Q_NEW(evtT_, sig_, ...)                                   \
         (evtT_##_ctor((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
-                      QF_NO_MARGIN, 0), (sig_), ##__VA_ARGS__))
+                      QF_NO_MARGIN, 0), (enum_t)(sig_), ##__VA_ARGS__))
 
     #define Q_NEW_X(e_, evtT_, margin_, sig_, ...) do {        \
         (e_) = (evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
                                  (margin_), 0);                \
         if ((e_) != (evtT_ *)0) {                              \
-            evtT_##_ctor((e_), (sig_), ##__VA_ARGS__);         \
+            evtT_##_ctor((e_), (enum_t)(sig_), ##__VA_ARGS__); \
         }                                                      \
      } while (false)
 
 #else
 
-    /*! Allocate a dynamic event. */
-    /**
+    /*! Allocate a dynamic event.
     * @description
     * The macro calls the internal QF function QF_newX_() with
     * margin == #QF_NO_MARGIN, which causes an assertion when the event
@@ -800,10 +774,9 @@ void QF_deleteRef_(void const * const evtRef);
     */
     #define Q_NEW(evtT_, sig_)                           \
         ((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
-                           QF_NO_MARGIN, (sig_)))
+                           QF_NO_MARGIN, (enum_t)(sig_)))
 
-    /*! Allocate a dynamic event (non-asserting version). */
-    /**
+    /*! Allocate a dynamic event (non-asserting version).
     * @description
     * This macro allocates a new event and sets the pointer @p e_, while
     * leaving at least @p margin_ of events still available in the pool
@@ -829,13 +802,13 @@ void QF_deleteRef_(void const * const evtRef);
     * The following example illustrates dynamic allocation of an event:
     * @include qf_postx.c
     */
-    #define Q_NEW_X(e_, evtT_, margin_, sig_) ((e_) = \
-        (evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), (margin_), (sig_)))
+    #define Q_NEW_X(e_, evtT_, margin_, sig_) ((e_) =   \
+        (evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
+                          (margin_), (enum_t)(sig_)))
 
 #endif /* Q_EVT_CTOR */
 
-/*! Create a new reference of the current event `e` */
-/**
+/*! Create a new reference of the current event `e`
 * @description
 * The current event processed by an active object is available only for
 * the duration of the run-to-completion (RTC) step. After that step, the
@@ -857,8 +830,7 @@ void QF_deleteRef_(void const * const evtRef);
 #define Q_NEW_REF(evtRef_, evtT_)  \
     ((evtRef_) = (evtT_ const *)QF_newRef_(e, (evtRef_)))
 
-/*! Delete the event reference */
-/**
+/*! Delete the event reference
 * @description
 * Every event reference created with the macro Q_NEW_REF() needs to be
 * eventually deleted by means of the macro Q_DELETE_REF() to avoid leaking
@@ -877,7 +849,9 @@ void QF_deleteRef_(void const * const evtRef);
     (evtRef_) = (void *)0;         \
 } while (false)
 
-/*! Recycle a dynamic event. */
+/*! Recycle a dynamic event
+* @static @private @memberof QF
+*/
 void QF_gc(QEvt const * const e);
 
 /*! Clear a specified region of memory to zero.
@@ -886,8 +860,7 @@ void QF_gc(QEvt const * const e);
 void QF_bzero(void * const start, uint_fast16_t len);
 
 #ifndef QF_CRIT_EXIT_NOP
-    /*! No-operation for exiting a critical section */
-    /**
+    /*! No-operation for exiting a critical section
     * @description
     * In some QF ports the critical section exit takes effect only on the
     * next machine instruction. If this next instruction is another entry
@@ -900,32 +873,33 @@ void QF_bzero(void * const start, uint_fast16_t len);
     #define QF_CRIT_EXIT_NOP()   ((void)0)
 #endif
 
-/*! array of registered active objects */
-/**
+/*! array of registered active objects
 * @note Not to be used by Clients directly, only in ports of QF
 */
 extern QActive *QF_active_[QF_MAX_ACTIVE + 1U];
 
-
-/****************************************************************************/
-/*! QTicker Active Object class
+/*==========================================================================*/
+/*! "Ticker" Active Object class
 * @extends QActive
-*/
-/**
 * @description
-* The QTicker is an efficient active object specialized to process
-* QF system clock tick at a specified tick frequency [0..::QF_MAX_TICK_RATE].
+* QTicker is an efficient active object specialized to process
+* QF system clock tick at a specified tick rate [0..#QF_MAX_TICK_RATE].
 * Placing system clock tick processing in an active object allows you
-* to remove the non-deterministic QF::TICK_X() processing from the interrupt
+* to remove the non-deterministic QF_TICK_X() processing from the interrupt
 * level and move it into the thread-level, where you can prioritize it
 * as low as you wish.
+*
+* @usage
+* The following example illustrates use of QTicker active objects:
+* @include qf_ticker.c
 */
 typedef struct {
     QActive super; /*!< @protected inherits ::QActive */
 } QTicker;
 
-/*! Constructor of the QTicker Active Object class */
+/*! Constructor of the QTicker Active Object class
+* @public @memberof QTicker
+*/
 void QTicker_ctor(QTicker * const me, uint_fast8_t tickRate);
 
 #endif /* QF_H */
-

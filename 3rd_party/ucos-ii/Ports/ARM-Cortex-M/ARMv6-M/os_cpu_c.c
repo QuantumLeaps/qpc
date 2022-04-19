@@ -543,7 +543,7 @@ void  OS_CPU_SysTickInit (INT32U  cnts)
 
                                                                 /* Enable timer.                                        */
     OS_CPU_CM0_NVIC_ST_CTRL  |= OS_CPU_CM0_NVIC_ST_CTRL_CLK_SRC |
-	                            OS_CPU_CM0_NVIC_ST_CTRL_ENABLE;
+                                OS_CPU_CM0_NVIC_ST_CTRL_ENABLE;
                                                                 /* Enable timer interrupt.                              */
     OS_CPU_CM0_NVIC_ST_CTRL  |= OS_CPU_CM0_NVIC_ST_CTRL_INTEN;
 }

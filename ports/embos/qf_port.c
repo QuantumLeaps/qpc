@@ -11,7 +11,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -142,8 +142,8 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     switch (attr1) {
         case TASK_NAME_ATTR:
 #if (OS_TRACKNAME != 0)
-           Q_ASSERT_ID(300, me->thread.Name == (char_t *)0);
-           me->thread.Name = (char_t const *)attr2;
+           Q_ASSERT_ID(300, me->thread.Name == (char *)0);
+           me->thread.Name = (char const *)attr2;
 #endif
             break;
         case TASK_USES_FPU:

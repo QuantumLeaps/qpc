@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.1.0" links="1">
+<model version="5.1.3" links="1">
  <documentation>Simple &quot;Blinky&quot; model</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -7,6 +7,8 @@
  <package name="AOs" stereotype="0x02">
   <!--${AOs::Blinky}-->
   <class name="Blinky" superclass="qpc::QActive">
+   <!--${AOs::Blinky::inst}-->
+   <attribute name="inst" type="Blinky" visibility="0x00" properties="0x01"/>
    <!--${AOs::Blinky::timeEvt}-->
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
    <!--${AOs::Blinky::SM}-->
@@ -46,7 +48,7 @@ BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
       <entry box="1,2,12,4"/>
      </state_glyph>
     </state>
-    <state_diagram size="22,29"/>
+    <state_diagram size="24,29"/>
    </statechart>
   </class>
  </package>
@@ -85,13 +87,12 @@ enum BlinkySignals {
 };
 
 //*============== ask QM to declare the Blinky class ================*/
-$declare${AOs::Blinky}
+$declare ${AOs::Blinky}
 
-static Blinky l_blinky;
-QActive * const AO_Blinky = &amp;l_blinky.super;
+QActive * const AO_Blinky = &amp;Blinky_inst.super;
 
 static void Blinky_ctor(void) {
-    Blinky *me = (Blinky *)AO_Blinky;
+    Blinky *me = &amp;Blinky_inst;
     QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Blinky_initial));
     QTimeEvt_ctorX(&amp;me-&gt;timeEvt, &amp;me-&gt;super, TIMEOUT_SIG, 0U);
 }
@@ -107,12 +108,12 @@ int main() {
                   1U, /* priority */
                   blinky_queueSto, Q_DIM(blinky_queueSto),
                   (void *)0, 0U, /* no stack */
-                  (QEvt *)0);    /* no initialization event */
+                  (void *)0);    /* no initialization parameter */
     return QF_run(); /* run the QF application */
 }
 
 /*================ ask QM to define the Blinky class ================*/
-$define${AOs::Blinky}
+$define ${AOs::Blinky}
 
 </text>
   </file>

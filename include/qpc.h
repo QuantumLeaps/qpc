@@ -1,58 +1,46 @@
-/**
-* @ingroup qp
-* @{
-* @file
-* @brief QP/C public interface including backwards-compatibility layer
-* @}
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-11-13
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
-*/
-#ifndef QPC_H
-#define QPC_H
-
-/**
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief QP/C public interface including backwards-compatibility layer
 * @description
 * This header file must be included directly or indirectly
 * in all application modules (*.c files) that use QP/C.
+* @ingroup qp
 */
+#ifndef QPC_H
+#define QPC_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/****************************************************************************/
+/*==========================================================================*/
 #include "qf_port.h"      /* QF/C port from the port directory */
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 
@@ -62,31 +50,34 @@ extern "C" {
     #include "qs_dummy.h" /* QS/C dummy (inactive) interface */
 #endif
 
-/****************************************************************************/
+/*==========================================================================*/
+
 #ifndef QP_API_VERSION
 
-/*! Specifies the backwards compatibility with the QP/C API version. */
-/**
-* @ingroup qp
-* @{
+/*! Specifies the backwards compatibility with the QP/C API version.
 * @description
-* For example, QP_API_VERSION==580 will cause generating the compatibility
-* layer with QP/C version 5.8.0 and newer, but not older than 5.8.0.
+* For example, QP_API_VERSION==691 will cause generating the compatibility
+* layer with QP/C version 6.9.1 and newer, but not older than 6.9.1.
 * QP_API_VERSION==0 causes generation of the maximum currently supported
-* backwards compatibilty. This is the default.@n
-* @n
+* backwards compatibility. This is the default.<br>
+* <br>
 * Conversely, QP_API_VERSION==9999 means that no compatibility layer should
 * be generated. This setting is useful for checking if an application
 * complies with the latest QP/C API.
 */
 #define QP_API_VERSION 0
-/** @} */
 
 #endif /* #ifndef QP_API_VERSION */
 
+/*==========================================================================*/
 /* QP API compatibility layer... */
 
-/****************************************************************************/
+#if (QP_API_VERSION < 700)
+
+/*! @deprecated plain 'char' is no longer forbidden in MISRA-C 2012 */
+typedef char char_t;
+
+/*==========================================================================*/
 #if (QP_API_VERSION < 691)
 
 /*! @deprecated enable the QS global filter */
@@ -139,14 +130,15 @@ extern "C" {
 
 #endif
 
-/****************************************************************************/
+/*==========================================================================*/
 #if (QP_API_VERSION < 660)
 
 /*! @deprecated casting to QXThreadHandler
-* instead use: the new signature of QXThreadHandler and don't cast */
+* instead use: the new signature of QXThreadHandler and don't cast
+*/
 #define Q_XTHREAD_CAST(handler_) ((QXThreadHandler)(handler_))
 
-/****************************************************************************/
+/*==========================================================================*/
 #if (QP_API_VERSION < 580)
 
 /*! @deprecated call to the QMSM_INIT() operation; instead use: QHSM_INIT() */
@@ -156,7 +148,7 @@ extern "C" {
 * instead use: QHSM_DISPATCH() */
 #define QMSM_DISPATCH(me_, e_) QHSM_DISPATCH((me_), (e_), 0U)
 
-/****************************************************************************/
+/*==========================================================================*/
 #if (QP_API_VERSION < 540)
 
 /*! @deprecated QFsm state machine;
@@ -187,10 +179,10 @@ typedef QHsm        QFsm;
 #endif /* QP_API_VERSION < 580 */
 #endif /* QP_API_VERSION < 660 */
 #endif /* QP_API_VERSION < 691 */
+#endif /* QP_API_VERSION < 700 */
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* QPC_H */
-

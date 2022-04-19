@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief Publish-Subscribe services
 * @ingroup qf
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-09-16
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -51,15 +44,16 @@
 Q_DEFINE_THIS_MODULE("qf_ps")
 
 
-/* Package-scope objects ****************************************************/
-/** @static @private @memberof QF */
+/*==========================================================================*/
+/* Package-scope objects */
+/*! @static @private @memberof QF */
 QSubscrList *QF_subscrList_;
 
-/** @static @private @memberof QF */
+/*! @static @private @memberof QF */
 enum_t QF_maxPubSignal_;
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @public @memberof QF
 * @description
 * This function initializes the publish-subscribe facilities of QF and must
@@ -99,8 +93,8 @@ void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal) {
     QF_bzero(subscrSto, (uint_fast16_t)maxSignal * sizeof(QSubscrList));
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QF
 * @description
 * This function posts (using the FIFO policy) the event @a e to **all**
@@ -127,12 +121,10 @@ void QF_publish_(QEvt const * const e,
                  void const * const sender, uint_fast8_t const qs_id)
 #endif
 {
-    QPSet subscrList; /* local, modifiable copy of the subscriber list */
-    QF_CRIT_STAT_
-
-    /** @pre the published signal must be within the configured range */
+    /*! @pre the published signal must be within the configured range */
     Q_REQUIRE_ID(200, e->sig < (QSignal)QF_maxPubSignal_);
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_PUBLISH, qs_id)
@@ -155,14 +147,13 @@ void QF_publish_(QEvt const * const e,
     }
 
     /* make a local, modifiable copy of the subscriber list */
-    subscrList = QF_PTR_AT_(QF_subscrList_, e->sig);
+    QPSet subscrList = QF_PTR_AT_(QF_subscrList_, e->sig);
     QF_CRIT_X_();
 
     if (QPSet_notEmpty(&subscrList)) { /* any subscribers? */
-        uint_fast8_t p;
+        /* the highest-prio subscriber */;
+        uint_fast8_t p = QPSet_findMax(&subscrList);
         QF_SCHED_STAT_
-
-        QPSet_findMax(&subscrList, p); /* the highest-prio subscriber */
 
         QF_SCHED_LOCK_(p); /* lock the scheduler up to prio 'p' */
         do { /* loop over all subscribers */
@@ -174,7 +165,8 @@ void QF_publish_(QEvt const * const e,
 
             QPSet_remove(&subscrList, p); /* remove the handled subscriber */
             if (QPSet_notEmpty(&subscrList)) { /* still more subscribers? */
-                QPSet_findMax(&subscrList, p); /* highest-prio subscriber */
+                /* highest-prio subscriber */
+                p = QPSet_findMax(&subscrList);
             }
             else {
                 p = 0U; /* no more subscribers */
@@ -190,8 +182,8 @@ void QF_publish_(QEvt const * const e,
     QF_gc(e);
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QActive
 * @description
 * This function is part of the Publish-Subscribe event delivery mechanism
@@ -211,14 +203,14 @@ void QF_publish_(QEvt const * const e,
 * QF_publish_(), QActive_unsubscribe(), and QActive_unsubscribeAll()
 */
 void QActive_subscribe(QActive const * const me, enum_t const sig) {
-    uint_fast8_t p = (uint_fast8_t)me->prio;
-    QF_CRIT_STAT_
+    uint_fast8_t const p = (uint_fast8_t)me->prio;
 
     Q_REQUIRE_ID(300, ((enum_t)Q_USER_SIG <= sig)
               && (sig < QF_maxPubSignal_)
               && (0U < p) && (p <= QF_MAX_ACTIVE)
               && (QF_active_[p] == me));
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_SUBSCRIBE, me->prio)
@@ -233,8 +225,8 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
     QF_CRIT_X_();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QActive
 * @description
 * This function is part of the Publish-Subscribe event delivery mechanism
@@ -260,10 +252,9 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
 * QF_publish_(), QActive_subscribe(), and QActive_unsubscribeAll()
 */
 void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
-    uint_fast8_t p = (uint_fast8_t)me->prio;
-    QF_CRIT_STAT_
+    uint_fast8_t const p = (uint_fast8_t)me->prio;
 
-    /** @pre the singal and the prioriy must be in ragne, the AO must also
+    /*! @pre the singal and the prioriy must be in ragne, the AO must also
     * be registered with the framework
     */
     Q_REQUIRE_ID(400, ((enum_t)Q_USER_SIG <= sig)
@@ -271,6 +262,7 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
               && (0U < p) && (p <= QF_MAX_ACTIVE)
               && (QF_active_[p] == me));
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_UNSUBSCRIBE, me->prio)
@@ -285,8 +277,8 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
     QF_CRIT_X_();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QActive
 * @description
 * This function is part of the Publish-Subscribe event delivery mechanism
@@ -310,13 +302,12 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
 * QF_publish_(), QActive_subscribe(), and QActive_unsubscribe()
 */
 void QActive_unsubscribeAll(QActive const * const me) {
-    uint_fast8_t p = (uint_fast8_t)me->prio;
-    enum_t sig;
+    uint_fast8_t const p = (uint_fast8_t)me->prio;
 
     Q_REQUIRE_ID(500, (0U < p) && (p <= QF_MAX_ACTIVE)
                         && (QF_active_[p] == me));
 
-    for (sig = (enum_t)Q_USER_SIG; sig < QF_maxPubSignal_; ++sig) {
+    for (enum_t sig = (enum_t)Q_USER_SIG; sig < QF_maxPubSignal_; ++sig) {
         QF_CRIT_STAT_
         QF_CRIT_E_();
         if (QPSet_hasElement(&QF_PTR_AT_(QF_subscrList_, sig), p)) {
@@ -334,4 +325,3 @@ void QActive_unsubscribeAll(QActive const * const me) {
         QF_CRIT_EXIT_NOP();
     }
 }
-

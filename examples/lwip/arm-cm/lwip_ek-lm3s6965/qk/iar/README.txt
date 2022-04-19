@@ -15,7 +15,7 @@ relative location.
 Stack Size and Heap Size
 ------------------------
 In this project, the size of the C stack and heap are determined in
-the linker script blinky-qk.icf (see the next section). 
+the linker script blinky-qk.icf (see the next section).
 
 
 Linker Script
@@ -39,7 +39,7 @@ ARM Cortex-M microcontrollers.
 
 The startup file typically does not need to be modified or adapted for
 applications. It provides only weak definitions of all exception and
-interrupt handlers, as well as the assert_failed() function.  
+interrupt handlers, as well as the assert_failed() function.
 
 The weak function assert_failed() defined in this file might be re-defined
 in the application to customize it for the application-specific error-

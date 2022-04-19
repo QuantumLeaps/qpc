@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -62,11 +62,22 @@ void BSP_init(int argc, char *argv[]) {
            "Press 'p' to pause\n"
            "Press 's' to serve\n"
            "Press ESC to quit...\n",
-           QP_versionStr);
+           QP_VERSION_STR);
 
     BSP_randomSeed(1234U);
 
     Q_ALLEGE(QS_INIT((argc > 1) ? argv[1] : (void *)0));
+
+    /* global signals */
+    QS_SIG_DICTIONARY(DONE_SIG,      (void *)0);
+    QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
+    QS_SIG_DICTIONARY(PAUSE_SIG,     (void *)0);
+    QS_SIG_DICTIONARY(SERVE_SIG,     (void *)0);
+    QS_SIG_DICTIONARY(TEST_SIG,      (void *)0);
+    QS_SIG_DICTIONARY(HUNGRY_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(HUNGRY_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(TIMEOUT_SIG,   (void *)0);
+
     QS_OBJ_DICTIONARY(&l_clock_tick); /* must be called *after* QF_init() */
     QS_USR_DICTIONARY(PHILO_STAT);
 

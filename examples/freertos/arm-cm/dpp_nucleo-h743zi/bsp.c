@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, NUCLEO-H743ZI board, FreeRTOS kernel
-* Last updated for version 6.9.1
-* Last updated on  2020-10-06
+* Last updated for: @ref qpc_7_0_0
+* Last updated on  2022-02-28
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -96,10 +96,10 @@ void EXTI0_IRQHandler(void) {
 void USART3_IRQHandler(void); /* prototype */
 void USART3_IRQHandler(void) {
     /* is RX register NOT empty? */
-    if ((l_uartHandle.Instance->ISR & USART_ISR_RXNE) != 0) {
+    if ((l_uartHandle.Instance->ISR & USART_ISR_RXNE_RXFNE) != 0) {
         uint32_t b = l_uartHandle.Instance->RDR;
         QS_RX_PUT(b);
-        l_uartHandle.Instance->ISR &= ~USART_ISR_RXNE; /* clear interrupt */
+        l_uartHandle.Instance->ISR &= ~USART_ISR_RXNE_RXFNE; /* clear int. */
     }
 }
 #endif
@@ -359,7 +359,7 @@ void QF_onCleanup(void) {
 }
 
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */

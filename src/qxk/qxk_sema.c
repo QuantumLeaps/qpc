@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QXK preemptive kernel semaphore functions
 * @ingroup qxk
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-14
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -55,8 +48,8 @@
 
 Q_DEFINE_THIS_MODULE("qxk_sema")
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Initializes a semaphore with the specified count and maximum count.
 * If the semaphore is used for resource sharing, both the initial count
@@ -79,7 +72,7 @@ Q_DEFINE_THIS_MODULE("qxk_sema")
 void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
                       uint_fast16_t max_count)
 {
-    /** @pre max_count must be greater than zero */
+    /*! @pre max_count must be greater than zero */
     Q_REQUIRE_ID(100, max_count > 0U);
 
     me->count     = (uint16_t)count;
@@ -87,8 +80,8 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
     QPSet_setEmpty(&me->waitSet);
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * When an extended thread calls QXSemaphore_wait() and the value of the
 * semaphore counter is greater than 0, QXSemaphore_wait() decrements the
@@ -112,14 +105,13 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
 * Multiple extended threads can wait for a given semahpre.
 */
 bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
-    bool signaled = true; /* assume that the semaphore will be signaled */
-    QXThread *curr;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
-    curr = QXK_PTR_CAST_(QXThread*, QXK_attr_.curr); /* volatile into temp. */
 
-    /** @pre this function must:
+    /* volatile into temp. */
+    QXThread * const curr = QXK_PTR_CAST_(QXThread*, QXK_attr_.curr);
+
+    /*! @pre this function must:
     * - NOT be called from an ISR;
     * - the semaphore must be initialized
     * - be called from an extended thread;
@@ -129,14 +121,15 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
         && (me->max_count > 0U) /* sema must be initialized */
         && (curr != (QXThread *)0) /* curr must be extended */
         && (curr->super.super.temp.obj == (QMState *)0)); /* NOT blocked */
-    /** @pre also: the thread must NOT be holding a scheduler lock. */
+    /*! @pre also: the thread must NOT be holding a scheduler lock. */
     Q_REQUIRE_ID(201, QXK_attr_.lockHolder != curr->super.prio);
 
+    bool signaled = true; /* assume that the semaphore will be signaled */
     if (me->count > 0U) {
         --me->count; /* semaphore taken: decrement the count */
     }
     else {
-        uint_fast8_t p = (uint_fast8_t)curr->super.dynPrio;
+        uint_fast8_t const p = (uint_fast8_t)curr->super.dynPrio;
 
         /* remember the blocking object (this semaphore) */
         curr->super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
@@ -181,8 +174,8 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
     return signaled;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * This function checks if the semaphore counter is greater than 0,
 * in which case the counter is decremented.
@@ -197,13 +190,13 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
 * threds (active objects).
 */
 bool QXSemaphore_tryWait(QXSemaphore * const me) {
-    bool isAvailable;
-    QF_CRIT_STAT_
-
-    /** @pre the semaphore must be initialized */
+    /*! @pre the semaphore must be initialized */
     Q_REQUIRE_ID(300, me->max_count > 0U);
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
+
+    bool isAvailable;
     /* is the semaphore available? */
     if (me->count > 0U) {
         --me->count;
@@ -217,8 +210,8 @@ bool QXSemaphore_tryWait(QXSemaphore * const me) {
     return isAvailable;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * If the semaphore counter value is 0 or more, it is incremented, and
 * this function returns to its caller. If the extended threads are waiting
@@ -238,24 +231,21 @@ bool QXSemaphore_tryWait(QXSemaphore * const me) {
 * threads (AOs), and extended threads.
 */
 bool QXSemaphore_signal(QXSemaphore * const me) {
-    bool signaled = true; /* assume that the semaphore will be signaled */
-    QF_CRIT_STAT_
-
-    /** @pre the semaphore must be initialized */
+    /*! @pre the semaphore must be initialized */
     Q_REQUIRE_ID(400, me->max_count > 0U);
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
+
+    bool signaled = true; /* assume that the semaphore will be signaled */
     if (me->count < me->max_count) {
 
         ++me->count; /* increment the semaphore count */
 
         if (QPSet_notEmpty(&me->waitSet)) {
-            uint_fast8_t p;
-            QXThread *thr;
-
             /* find the highest-priority thread waiting on this semaphore */
-            QPSet_findMax(&me->waitSet, p);
-            thr = QXK_PTR_CAST_(QXThread*, QF_active_[p]);
+            uint_fast8_t const p = QPSet_findMax(&me->waitSet);
+            QXThread * const thr = QXK_PTR_CAST_(QXThread*, QF_active_[p]);
 
             /* assert that the tread:
             * - must be registered in QF;
@@ -286,4 +276,3 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
 
     return signaled;
 }
-

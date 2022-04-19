@@ -7,7 +7,7 @@
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -44,9 +44,9 @@ typedef struct {     /* the Blinky active object */
     QTimeEvt timeEvt; /* private time event generator */
 } Blinky;
 
-static Blinky l_blinky; /* the Blinky active object */
+static Blinky Blinky_inst; /* the Blinky active object */
 
-QActive * const AO_Blinky = &l_blinky.super;
+QActive * const AO_Blinky = &Blinky_inst.super;
 
 /* hierarchical state machine ... */
 static QState Blinky_initial(Blinky * const me, QEvt const * const e);
@@ -55,7 +55,7 @@ static QState Blinky_on     (Blinky * const me, QEvt const * const e);
 
 /*..........................................................................*/
 void Blinky_ctor(void) {
-    Blinky * const me = &l_blinky;
+    Blinky * const me = &Blinky_inst;
     QActive_ctor(&me->super, Q_STATE_CAST(&Blinky_initial));
     QTimeEvt_ctorX(&me->timeEvt, &me->super, TIMEOUT_SIG, 0U);
 }

@@ -1,42 +1,35 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief Cooperative QV kernel, definition of QP::QV_readySet_ and
 * implementation of kernel-specific functions.
 * @ingroup qv
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-18
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -59,8 +52,8 @@ Q_DEFINE_THIS_MODULE("qv")
 /* Package-scope objects ****************************************************/
 QPSet QV_readySet_; /* QV ready-set of active objects */
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Initializes QF and must be called exactly once before any other QF
 * function. Typically, QF_init() is called from main() even before
@@ -84,8 +77,8 @@ void QF_init(void) {
 #endif
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * This function stops the QF application. After calling this function,
 * QF attempts to gracefully stop the application. This graceful shutdown
@@ -106,8 +99,8 @@ void QF_stop(void) {
     /* nothing else to do for the cooperative QV kernel */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * QF_run() is typically called from main() after you initialize
 * the QF and start at least one active object with QACTIVE_START().
@@ -129,14 +122,10 @@ int_t QF_run(void) {
     QS_END_NOCRIT_PRE_()
 
     for (;;) {
-        QEvt const *e;
-        QActive *a;
-        uint_fast8_t p;
-
         /* find the maximum priority AO ready to run */
         if (QPSet_notEmpty(&QV_readySet_)) {
-            QPSet_findMax(&QV_readySet_, p);
-            a = QF_active_[p];
+            uint_fast8_t const p = QPSet_findMax(&QV_readySet_);
+            QActive * const a = QF_active_[p];
 
 #ifdef Q_SPY
             QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a->prio)
@@ -156,7 +145,7 @@ int_t QF_run(void) {
             * 2. dispatch the event to the AO's state machine.
             * 3. determine if event is garbage and collect it if so
             */
-            e = QActive_get_(a);
+            QEvt const * const e = QActive_get_(a);
             QHSM_DISPATCH(&a->super, e, a->prio);
             QF_gc(e);
 
@@ -195,8 +184,8 @@ int_t QF_run(void) {
 #endif
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Starts execution of the AO and registers the AO with the framework.
 * Also takes the top-most initial transition in the AO's state machine.
@@ -224,7 +213,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 {
     (void)stkSize; /* unused parameter */
 
-    /** @pre The priority must be in range and the stack storage must not
+    /*! @pre The priority must be in range and the stack storage must not
     * be provided, because the QV kernel does not need per-AO stacks.
     */
     Q_REQUIRE_ID(500, (0U < prio) && (prio <= QF_MAX_ACTIVE)
@@ -237,4 +226,3 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QHSM_INIT(&me->super, par, me->prio); /* top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 }
-

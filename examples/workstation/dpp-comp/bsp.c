@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example (console)
-* Last Updated for Version: 6.9.3
-* Date of the Last Update:  2021-03-03
+* Last updated for: @ref qpc_7_0_0
+* Date of the Last Update:  2022-02-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -62,16 +62,29 @@ void BSP_init(int argc, char *argv[]) {
            "Press 'p' to pause\n"
            "Press 's' to serve\n"
            "Press ESC to quit...\n",
-           QP_versionStr);
+           QP_VERSION_STR);
 
     BSP_randomSeed(1234U);
 
     Q_ALLEGE(QS_INIT((argc > 1) ? argv[1] : (void *)0));
+
     QS_OBJ_DICTIONARY(&l_clock_tick); /* must be called *after* QF_init() */
     QS_USR_DICTIONARY(PHILO_STAT);
+    QS_FUN_DICTIONARY(&QHsm_top);
+
+    /* global signals */
+    QS_SIG_DICTIONARY(DONE_SIG,      (void *)0);
+    QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
+    QS_SIG_DICTIONARY(PAUSE_SIG,     (void *)0);
+    QS_SIG_DICTIONARY(SERVE_SIG,     (void *)0);
+    QS_SIG_DICTIONARY(TEST_SIG,      (void *)0);
+    QS_SIG_DICTIONARY(HUNGRY_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(HUNGRY_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(TIMEOUT_SIG,   (void *)0);
 
     /* setup the QS filters... */
     QS_GLB_FILTER(QS_ALL_RECORDS);
+    QS_LOC_FILTER(QS_ALL_IDS);
     QS_GLB_FILTER(-QS_QF_TICK);
 }
 /*..........................................................................*/

@@ -1,5 +1,5 @@
-About this Example
-==================
+About this Example
+==================
 This directory contains a QP example application for the
 EFM32-SLSTK3401A board (Pearl Gecko Starter Kit). This directory
 contains portable code that should compile with any C compiler for
@@ -12,7 +12,7 @@ Please refer to the README files in the sub-directories for specific
 instructions how to use and customize the example to your needs.
 
 
-Support Code for EFM32-SLSTK3401A Board 
+Support Code for EFM32-SLSTK3401A Board
 =======================================
 The directory 3rd_party\efm32pg1b contains the CMSIS-compliant
 device code for the EFM32PG1B200F256GM48 MCU. Please see the README.txt

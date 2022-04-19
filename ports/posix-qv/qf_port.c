@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QF/C port to POSIX API (single-threaded, like QV kernel)
 * @ingroup ports
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-06-17
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 
 /* expose features from the 2008 POSIX standard (IEEE Standard 1003.1-2008) */
@@ -168,15 +161,10 @@ int_t QF_run(void) {
     QS_END_NOCRIT_PRE_()
 
     while (l_isRunning) {
-        QEvt const *e;
-        QActive *a;
-        uint_fast8_t p;
-
         /* find the maximum priority AO ready to run */
         if (QPSet_notEmpty(&QV_readySet_)) {
-
-            QPSet_findMax(&QV_readySet_, p);
-            a = QF_active_[p];
+            uint_fast8_t p = QPSet_findMax(&QV_readySet_);
+            QActive *a = QF_active_[p];
             QF_CRIT_X_();
 
             /* the active object 'a' must still be registered in QF
@@ -190,7 +178,7 @@ int_t QF_run(void) {
             * 2. dispatch the event to the AO's state machine.
             * 3. determine if event is garbage and collect it if so
             */
-            e = QActive_get_(a);
+            QEvt const *e = QActive_get_(a);
             QHSM_DISPATCH(&a->super, e, a->prio);
             QF_gc(e);
 

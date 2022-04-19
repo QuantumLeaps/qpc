@@ -1,6 +1,6 @@
 ##############################################################################
 # Product: Makefile for QP/C on NUCLEO-H743ZI, FreeRTOS, GNU-ARM
-# Last Updated for Version: 6.9.4
+# Last Updated for Version: 7.0.0
 # Date of the Last Update:  2021-07-01
 #
 #                    Q u a n t u m  L e a P s
@@ -78,10 +78,10 @@ VPATH = \
 	$(QP_PORT_DIR) \
 	$(FREERTOS)/Source \
 	$(FREERTOS)/Source/portable/GCC/ARM_CM7/r0p1 \
-	$(QPC)/3rd_party/nucleo-h743zi \
-	$(QPC)/3rd_party/nucleo-h743zi/gnu \
-	$(QPC)/3rd_party/nucleo-h743zi/Drivers/BSP/STM32H7xx_Nucleo_144 \
-	$(QPC)/3rd_party/nucleo-h743zi/Drivers/STM32H7xx_HAL_Driver/Src
+	$(QPC)/3rd_party/STM32CubeH7/nucleo-h743zi/gnu \
+	$(QPC)/3rd_party/STM32CubeH7/Drivers/BSP\STM32H7xx_Nucleo_144 \
+	$(QPC)/3rd_party/STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Src \
+	$(QPC)/3rd_party/STM32CubeH7/Drivers/CMSIS/Device/ST/STM32H7xx/Source/Templates
 
 # list of all include directories needed by this project
 INCLUDES  = \
@@ -92,9 +92,9 @@ INCLUDES  = \
 	-I$(FREERTOS)/Source/include \
 	-I$(FREERTOS)/Source/portable/GCC/ARM_CM4F \
 	-I$(QPC)/3rd_party/CMSIS/Include \
-	-I$(QPC)/3rd_party/nucleo-h743zi \
-	-I$(QPC)/3rd_party/nucleo-h743zi/Drivers/BSP/STM32H7xx_Nucleo_144 \
-	-I$(QPC)/3rd_party/nucleo-h743zi/Drivers/STM32H7xx_HAL_Driver/Inc
+	-I$(QPC)/3rd_party/STM32CubeH7/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
+	-I$(QPC)/3rd_party/STM32CubeH7/Drivers/BSP/STM32H7xx_Nucleo_144 \
+	-I$(QPC)/3rd_party/STM32CubeH7/Drivers/STM32H7xx_HAL_Driver/Inc
 
 #-----------------------------------------------------------------------------
 # files
@@ -197,7 +197,7 @@ MKDIR := mkdir
 RM    := rm
 
 #-----------------------------------------------------------------------------
-# build options for various configurations for ARM Cortex-M4F
+# build options for various configurations for ARM Cortex-M
 #
 
 # combine all the soruces...

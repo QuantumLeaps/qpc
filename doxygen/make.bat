@@ -1,35 +1,26 @@
 @echo off
 :: ==========================================================================
 :: Product: QP/C script for generating Doxygen documentation
-:: Last Updated for Version: 6.9.4
-:: Date of the Last Update:  2021-08-14
+:: Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 ::
-::                    Q u a n t u m  L e a P s
-::                    ------------------------
-::                    Modern Embedded Software
+:: SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 ::
-:: Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+:: This software is dual-licensed under the terms of the open source GNU
+:: General Public License version 3 (or any later version), or alternatively,
+:: under the terms of one of the closed source Quantum Leaps commercial
+:: licenses.
 ::
-:: This program is open source software: you can redistribute it and/or
-:: modify it under the terms of the GNU General Public License as published
-:: by the Free Software Foundation, either version 3 of the License, or
-:: (at your option) any later version.
+:: The terms of the open source GNU General Public License version 3
+:: can be found at: <www.gnu.org/licenses/gpl-3.0>
 ::
-:: Alternatively, this program may be distributed and modified under the
-:: terms of Quantum Leaps commercial licenses, which expressly supersede
-:: the GNU General Public License and are specifically designed for
-:: licensees interested in retaining the proprietary status of their code.
+:: The terms of the closed source Quantum Leaps commercial licenses
+:: can be found at: <www.state-machine.com/licensing>
 ::
-:: This program is distributed in the hope that it will be useful,
-:: but WITHOUT ANY WARRANTY; without even the implied warranty of
-:: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-:: GNU General Public License for more details.
-::
-:: You should have received a copy of the GNU General Public License
-:: along with this program. If not, see <http://www.gnu.org/licenses/>.
+:: Redistributions in source code must retain this top-level comment block.
+:: Plagiarizing this software to sidestep the license obligations is illegal.
 ::
 :: Contact information:
-:: <www.state-machine.com/licensing>
+:: <www.state-machine.com>
 :: <info@state-machine.com>
 :: ==========================================================================
 @setlocal
@@ -37,7 +28,7 @@
 @echo usage:
 @echo make
 @echo make -CHM
-@echo make -DOC
+@echo make ...
 
 :: Doxygen tool (adjust to your system) ......................................
 @set DOXYGEN=doxygen
@@ -48,8 +39,14 @@
 :: Simple complexity metrics tool  (adjust to your system) ...................
 @set LIZARD=lizard
 
+:: QP/C directory ............................................................
+@set QPC=..
+
+:: HTML outut directory ......................................................
+@set HTML_OUT=%QPC%\html
+
 :: Generate metrics.dox file...
-@set METRICS_INP=..\include ..\src -x ..\src\qs\*
+@set METRICS_INP=%QPC%\include %QPC%\src -x %QPC%\src\qs\*
 @set METRICS_OUT=metrics.dox
 
 @echo /** @page metrics Code Metrics > %METRICS_OUT%
@@ -66,15 +63,14 @@
 if "%1"=="-CHM" (
     @echo Generating HTML...
     %DOXYGEN% Doxyfile-CHM
-    
+
     @echo Adding custom images...
-    xcopy preview.js tmp\
     xcopy img tmp\img\
-    @echo img\img.htm >> tmp\index.hhp
+    xcopy /Y ..\..\ql-doxygen\jquery.js tmp
 
     @echo Generating CHM...
     %HHC% tmp\index.hhp
-    
+
     @echo.
     @echo Cleanup...
     @rmdir /S /Q  tmp
@@ -83,16 +79,15 @@ if "%1"=="-CHM" (
 ) else (
     @echo.
     @echo Cleanup...
-    rmdir /S /Q  ..\html
-    
-    @echo Adding custom images...
-    xcopy preview.js ..\html\
-    xcopy img ..\html\img\
-    copy images\favicon.ico ..\html
+    rmdir /S /Q  %HTML_OUT%
 
     @echo Generating HTML...
     %DOXYGEN% Doxyfile%1
-    rem @qclean ..\html
+
+    @echo Adding custom images...
+    xcopy img %HTML_OUT%\img\
+    xcopy /Y ..\..\ql-doxygen\jquery.js %HTML_OUT%
+    rem @qclean %HTML_OUT%
 )
 
 @endlocal

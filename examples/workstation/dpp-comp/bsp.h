@@ -7,7 +7,7 @@
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2012 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C)-2012 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -39,7 +39,7 @@
 
 void BSP_init(int argc, char *argv[]);
 void BSP_displayPaused(uint8_t paused);
-void BSP_displayPhilStat(uint8_t n, char_t const *stat);
+void BSP_displayPhilStat(uint8_t n, char const *stat);
 void BSP_terminate(int16_t result);
 
 void BSP_randomSeed(uint32_t seed);                          /* random seed */

@@ -23,17 +23,17 @@ copy the binary image to the mbed folder for execution.
 The whole build process and loading the image to the mbed board can
 be executed directly from the QM modeling (by means of external tools).
 The provided QM model (dpp.qm) comes pre-configured with tools
-setup to build (via make) and copy the code to the mbed board. 
+setup to build (via make) and copy the code to the mbed board.
 
 
-Support Code for NXP mbed-LPC1768 Board 
+Support Code for NXP mbed-LPC1768 Board
 =======================================
 The directory 3rd_party\mbed-lpc1768 contains the CMSIS-compliant
 device code for the NXP LPC176xx MCUs (ARM Cortex-M3). Please see the
 README.txt file in this folder for more details.
 
 
-Note About the Board Support Package for NXP mbed-LPC1768 
+Note About the Board Support Package for NXP mbed-LPC1768
 =========================================================
 The provided Board Support Package (see bsp.c) is minimal for the
 application at hand and is completely **standalone**, meaning that

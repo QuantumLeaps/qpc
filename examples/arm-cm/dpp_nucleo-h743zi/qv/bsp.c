@@ -1,43 +1,40 @@
-/*****************************************************************************
-* Product: DPP example, NUCLEO-H743ZI board, cooperative QV kernel
-* Last updated for version 6.9.3
-* Last updated on  2021-03-03
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-*****************************************************************************/
+============================================================================*/
+/*!
+* @date Last updated on: 2022-02-25
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @ingroup examples
+* @brief DPP example, NUCLEO-H743ZIE board, cooperative QV kernel
+*/
 #include "qpc.h"
 #include "dpp.h"
 #include "bsp.h"
 
 /* STM32CubeH7 include files */
-//#include "stm32h7xx_it.h"
-
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_nucleo_144.h"
 /* add other drivers if necessary... */
@@ -49,7 +46,7 @@ void SysTick_Handler(void);
 void USART3_IRQHandler(void);
 
 /* Local-scope objects -----------------------------------------------------*/
-static uint32_t l_rnd;      /* random seed */
+static uint32_t l_rnd; /* random seed */
 
 #ifdef Q_SPY
 
@@ -58,7 +55,6 @@ static uint32_t l_rnd;      /* random seed */
 
     /* QSpy source IDs */
     static QSpyId const l_SysTick_Handler = { 0U };
-    static QSpyId const l_GPIO_EVEN_IRQHandler = { 0U };
 
     static UART_HandleTypeDef l_uartHandle;
 
@@ -92,7 +88,7 @@ void SysTick_Handler(void) {
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
     * and Michael Barr, page 71.
     */
-    current = BSP_PB_GetState(BUTTON_KEY); /* read the Key button */
+    current = BSP_PB_GetState(BUTTON_USER); /* read the User button */
     tmp = buttons.depressed; /* save the debounced depressed buttons */
     buttons.depressed |= (buttons.previous & current); /* set depressed */
     buttons.depressed &= (buttons.previous | current); /* clear released */
@@ -120,26 +116,16 @@ void SysTick_Handler(void) {
 */
 void USART3_IRQHandler(void) {
     /* is RX register NOT empty? */
-    if ((l_uartHandle.Instance->ISR & USART_ISR_RXNE) != 0) {
+    if ((l_uartHandle.Instance->ISR & USART_ISR_RXNE_RXFNE) != 0) {
         uint32_t b = l_uartHandle.Instance->RDR;
         QS_RX_PUT(b);
-        l_uartHandle.Instance->ISR &= ~USART_ISR_RXNE; /* clear interrupt */
+        l_uartHandle.Instance->ISR &= ~USART_ISR_RXNE_RXFNE; /* clear int. */
     }
-}
-/*..........................................................................*/
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle) {
-    (void)UartHandle;
-    /* dummy implementation needed for STM32Cube */
 }
 #endif
 
 /*..........................................................................*/
 void BSP_init(void) {
-    /* NOTE: SystemInit() has been already called from the startup code
-    *  but SystemCoreClock needs to be updated
-    */
-    SystemCoreClockUpdate();
-
     SCB_EnableICache(); /* Enable I-Cache */
     SCB_EnableDCache(); /* Enable D-Cache */
 
@@ -148,24 +134,13 @@ void BSP_init(void) {
     __HAL_FLASH_ART_ENABLE();
 #endif /* ART_ACCLERATOR_ENABLE */
 
-    /* Setup the FPU so that:
-    * do NOT to use the automatic FPU state preservation and
-    * do NOT to use the FPU lazy stacking.
-    *
-    * NOTE:
-    * This setting is very efficient, but the FPU must NOT be used in any ISR.
-    * If any ISR starts using the FPU, it can lead to corruption of the
-    * FPU registers. This option should be used with CAUTION.
-    */
-    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
-
     /* Configure the LEDs */
     BSP_LED_Init(LED1);
     BSP_LED_Init(LED2);
     BSP_LED_Init(LED3);
 
     /* Configure the User Button in GPIO Mode */
-    BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_GPIO);
+    BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
 
     //...
     BSP_randomSeed(1234U);
@@ -173,8 +148,16 @@ void BSP_init(void) {
     if (QS_INIT((void *)0) == 0) { /* initialize the QS software tracing */
         Q_ERROR();
     }
+
+    /* object dictionaries... */
+    QS_OBJ_DICTIONARY(AO_Table);
+    QS_OBJ_DICTIONARY(AO_Philo[0]);
+    QS_OBJ_DICTIONARY(AO_Philo[1]);
+    QS_OBJ_DICTIONARY(AO_Philo[2]);
+    QS_OBJ_DICTIONARY(AO_Philo[3]);
+    QS_OBJ_DICTIONARY(AO_Philo[4]);
+
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
-    QS_OBJ_DICTIONARY(&l_GPIO_EVEN_IRQHandler);
     QS_USR_DICTIONARY(PHILO_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
 
@@ -184,11 +167,11 @@ void BSP_init(void) {
 }
 /*..........................................................................*/
 void BSP_ledOn(void) {
-    //BSP_LED_On(LED1); not enough LEDs
+    BSP_LED_On(LED1);
 }
 /*..........................................................................*/
 void BSP_ledOff(void) {
-    //BSP_LED_Off(LED1); not enough LEDs
+    BSP_LED_Off(LED1);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -240,21 +223,22 @@ void BSP_terminate(int16_t result) {
 
 /*..........................................................................*/
 void QF_onStartup(void) {
-    /* assing all priority bits for preemption-prio. and none to sub-prio. */
+    /* assign all priority bits for preemption-prio. and none to sub-prio.
+    * NOTE: this might have been changed by STM32Cube.
+    */
     NVIC_SetPriorityGrouping(0U);
 
     /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
-    /* set priorities of ALL ISRs used in the system, see NOTE00
+    /* set priorities of ALL ISRs used in the system, see NOTE1
     *
     * !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(USART3_IRQn,  0U);
-    //NVIC_SetPriority(GPIO_EVEN_IRQn, QF_AWARE_ISR_CMSIS_PRI);
-    NVIC_SetPriority(SysTick_IRQn, QF_AWARE_ISR_CMSIS_PRI + 1U);
+    NVIC_SetPriority(USART3_IRQn,  0U); /* kernel unaware interrupt */
+    NVIC_SetPriority(SysTick_IRQn, QF_AWARE_ISR_CMSIS_PRI);
     /* ... */
 
     /* enable IRQs... */
@@ -265,6 +249,7 @@ void QF_onStartup(void) {
 /*..........................................................................*/
 void QF_onCleanup(void) {
 }
+
 /*..........................................................................*/
 void QV_onIdle(void) { /* CATION: called with interrupts DISABLED, NOTE01 */
     /* toggle the User LED on and then off, see NOTE02 */
@@ -309,7 +294,7 @@ void QV_onIdle(void) { /* CATION: called with interrupts DISABLED, NOTE01 */
 }
 
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
@@ -318,8 +303,10 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
-    /* light up both LEDs */
+    /* light all LEDs */
     BSP_LED_On(LED1);
+    BSP_LED_On(LED2);
+    BSP_LED_On(LED3);
     /* for debugging, hang on in an endless loop... */
     for (;;) {
     }
@@ -332,8 +319,8 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
 #ifdef Q_SPY
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsTxBuf[2*1024]; /* buffer for QS-TX channel */
-    static uint8_t qsRxBuf[100];    /* buffer for QS-RX channel */
+    static uint8_t qsTxBuf[1024]; /* buffer for QS-TX channel */
+    static uint8_t qsRxBuf[256];  /* buffer for QS-RX channel */
 
     QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
@@ -350,7 +337,7 @@ uint8_t QS_onStartup(void const *arg) {
         return 0U; /* return failure */
     }
 
-    /* Set USART to receive 1 byte at a time via interrupt */
+    /* Set UART to receive 1 byte at a time via interrupt */
     HAL_UART_Receive_IT(&l_uartHandle, (uint8_t *)qsRxBuf, 1);
 
     QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
@@ -417,7 +404,7 @@ void QS_onCommand(uint8_t cmdId,
 /*--------------------------------------------------------------------------*/
 
 /*****************************************************************************
-* NOTE00:
+* NOTE1:
 * The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
 * ISR priority that is disabled by the QF framework. The value is suitable
 * for the NVIC_SetPriority() CMSIS function.
@@ -434,13 +421,13 @@ void QS_onCommand(uint8_t cmdId,
 * by which a "QF-unaware" ISR can communicate with the QF framework is by
 * triggering a "QF-aware" ISR, which can post/publish events.
 *
-* NOTE01:
+* NOTE2:
 * The QV_onIdle() callback is called with interrupts disabled, because the
 * determination of the idle condition might change by any interrupt posting
 * an event. QV_onIdle() must internally enable interrupts, ideally
 * atomically with putting the CPU to the power-saving mode.
 *
-* NOTE02:
+* NOTE3:
 * The User LED is used to visualize the idle loop activity. The brightness
 * of the LED is proportional to the frequency of invcations of the idle loop.
 * Please note that the LED is toggled with interrupts locked, so no interrupt

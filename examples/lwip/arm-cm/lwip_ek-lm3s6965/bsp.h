@@ -7,7 +7,7 @@
 *                    ---------------------------
 *                    innovating embedded systems
 *
-* Copyright (C) 2002-2010 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C)-2010 Quantum Leaps, LLC. All rights reserved.
 *
 * This software may be distributed and modified under the terms of the GNU
 * General Public License version 2 (GPL) as published by the Free Software

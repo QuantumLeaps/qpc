@@ -11,7 +11,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -64,13 +64,12 @@
 * QK ports will not define this macro, but instead will provide ISR
 * skeleton code in assembly.
 */
-#define QK_ISR_ENTRY() do { \
-    QF_INT_DISABLE(); \
-    ++QK_intNest_; \
+#define QK_ISR_ENTRY() do {                     \
+    QF_INT_DISABLE();                           \
+    ++QK_intNest_;                              \
     QF_QS_ISR_ENTRY(QK_intNest_, QK_currPrio_); \
-    QF_INT_ENABLE(); \
+    QF_INT_ENABLE();                            \
 } while (false)
-
 
 /*! Define the ISR exit sequence, if the compiler supports writing
 * interrupts in C.

@@ -3,7 +3,6 @@
 @subpage struct       "&nbsp;"
 @subpage api          "&nbsp;"
 @subpage exa          "&nbsp;"
-@subpage exa_apps     "&nbsp;"
 @subpage exa_native   "&nbsp;"
 @subpage exa_low-power "&nbsp;"
 @subpage exa_rtos     "&nbsp;"

@@ -1,4 +1,4 @@
-extern QActive *AO_Table;
+extern QActive * const AO_Table;
 
 QState Philoso_hungry(Philo * const me, QEvt const * const e) {
     QState status;
@@ -6,7 +6,7 @@ QState Philoso_hungry(Philo * const me, QEvt const * const e) {
         case Q_ENTRY_SIG: {
             TableEvt *pe = Q_NEW(TableEvt, HUNGRY_SIG); /* dynamic alloc */
             pe->philNum = me->num;
-            QACTIVE_POST(AO_Table, &pe->super, me); /* direct posting */
+            QACTIVE_POST(AO_Table, &pe->super, me); /* <--- */
             status = Q_HANDLED();
             break;
         }

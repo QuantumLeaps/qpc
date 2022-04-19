@@ -50,7 +50,6 @@
 #
 PROJECT := test_qhsmtst
 TARGET  := nucleo-l053r8
-TARGET_DIR := ..\..\target_nucleo-l053r8
 
 #-----------------------------------------------------------------------------
 # project directories:
@@ -63,6 +62,7 @@ endif
 
 # QP port used in this project
 QP_PORT_DIR := $(QPC)/ports/arm-cm/qutest
+TARGET_DIR  := $(QPC)/examples/qutest/target_nucleo-l053r8
 
 # make sure that QTOOLS env. variable is defined...
 ifeq ("$(wildcard $(QTOOLS))","")

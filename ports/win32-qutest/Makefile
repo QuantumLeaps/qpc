@@ -1,34 +1,25 @@
 ##############################################################################
-# Product: Makefile for QUTEST, QP/C, Win32, MinGW toolset
-# Last updated for version 6.8.0
-# Last updated on  2020-03-31
+# QP/C Real-Time Embedded Framework (RTEF)
+# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 #
-#                    Q u a n t u m  L e a P s
-#                    ------------------------
-#                    Modern Embedded Software
+# SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 #
-# Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+# This software is dual-licensed under the terms of the open source GNU
+# General Public License version 3 (or any later version), or alternatively,
+# under the terms of one of the closed source Quantum Leaps commercial
+# licenses.
 #
-# This program is open source software: you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# The terms of the open source GNU General Public License version 3
+# can be found at: <www.gnu.org/licenses/gpl-3.0>
 #
-# Alternatively, this program may be distributed and modified under the
-# terms of Quantum Leaps commercial licenses, which expressly supersede
-# the GNU General Public License and are specifically designed for
-# licensees interested in retaining the proprietary status of their code.
+# The terms of the closed source Quantum Leaps commercial licenses
+# can be found at: <www.state-machine.com/licensing>
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# Redistributions in source code must retain this top-level comment block.
+# Plagiarizing this software to sidestep the license obligations is illegal.
 #
 # Contact information:
-# <www.state-machine.com/licensing>
+# <www.state-machine.com>
 # <info@state-machine.com>
 ##############################################################################
 # examples of invoking this Makefile:
@@ -40,7 +31,7 @@
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    https://sourceforge.net/projects/qpc/files/QTools/
+#    https://github.com/QuantumLeaps/qtools
 #
 
 #-----------------------------------------------------------------------------
@@ -90,9 +81,9 @@ C_SRCS := \
 	qf_qmact.c \
 	qf_time.c \
 	qs.c \
-	qs_64bit.c \
 	qs_rx.c \
 	qs_fp.c \
+	qs_64bit.c \
 	qutest.c \
 	qutest_port.c
 
@@ -118,7 +109,7 @@ LIB   := ar
 # Typically, you should not need to change anything below this line
 
 # basic utilities (included in Qtools for Windows), see:
-#    http://sourceforge.net/projects/qpc/files/Qtools
+#    https://github.com/QuantumLeaps/qtools
 
 MKDIR := mkdir
 RM    := rm

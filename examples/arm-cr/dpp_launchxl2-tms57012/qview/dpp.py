@@ -8,10 +8,6 @@
 # This version of the DPP customization uses the application-specific
 # trace record QS_USER_00 (PHILO_STAT) produced when the status of
 # a Philo changes.
-#
-# NOTE: this is a desktop appliction, which you cannot reset (and restarted).
-# Therefore, the desktop applications must be started *after* the QView is
-# already running and is attached to the QSPY host application.
 
 class DPP:
     def __init__(self):
@@ -51,12 +47,7 @@ class DPP:
         # NOTE: Normally, for an embedded application you would like
         # to start with resetting the Target, to start clean with
         # Qs dictionaries, etc.
-        #
-        # Howver, this is a desktop appliction, which you cannot reset
-        # (and restart). Therefore, the desktop applications must be started
-        # *after* the QView is already running.
-        #reset_target()
-
+        reset_target()
 
     # on_reset() callback
     def on_reset(self):

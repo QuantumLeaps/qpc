@@ -1,4 +1,4 @@
-//*****************************************************************************
+//============================================================================*
 //
 // gpio.h - Defines and Macros for GPIO API.
 //
@@ -35,28 +35,28 @@
 //
 // This is part of revision 2.1.2.111 of the Tiva Peripheral Driver Library.
 //
-//*****************************************************************************
+//============================================================================*
 
 #ifndef __DRIVERLIB_GPIO_H__
 #define __DRIVERLIB_GPIO_H__
 
-//*****************************************************************************
+//============================================================================*
 //
 // If building with a C++ compiler, make all of the definitions in this header
 // have a C binding.
 //
-//*****************************************************************************
+//============================================================================*
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following values define the bit field for the ui8Pins argument to
 // several of the APIs.
 //
-//*****************************************************************************
+//============================================================================*
 #define GPIO_PIN_0              0x00000001  // GPIO pin 0
 #define GPIO_PIN_1              0x00000002  // GPIO pin 1
 #define GPIO_PIN_2              0x00000004  // GPIO pin 2
@@ -66,22 +66,22 @@ extern "C"
 #define GPIO_PIN_6              0x00000040  // GPIO pin 6
 #define GPIO_PIN_7              0x00000080  // GPIO pin 7
 
-//*****************************************************************************
+//============================================================================*
 //
 // Values that can be passed to GPIODirModeSet as the ui32PinIO parameter, and
 // returned from GPIODirModeGet.
 //
-//*****************************************************************************
+//============================================================================*
 #define GPIO_DIR_MODE_IN        0x00000000  // Pin is a GPIO input
 #define GPIO_DIR_MODE_OUT       0x00000001  // Pin is a GPIO output
 #define GPIO_DIR_MODE_HW        0x00000002  // Pin is a peripheral function
 
-//*****************************************************************************
+//============================================================================*
 //
 // Values that can be passed to GPIOIntTypeSet as the ui32IntType parameter,
 // and returned from GPIOIntTypeGet.
 //
-//*****************************************************************************
+//============================================================================*
 #define GPIO_FALLING_EDGE       0x00000000  // Interrupt on falling edge
 #define GPIO_RISING_EDGE        0x00000004  // Interrupt on rising edge
 #define GPIO_BOTH_EDGES         0x00000001  // Interrupt on both edges
@@ -89,12 +89,12 @@ extern "C"
 #define GPIO_HIGH_LEVEL         0x00000006  // Interrupt on high level
 #define GPIO_DISCRETE_INT       0x00010000  // Interrupt for individual pins
 
-//*****************************************************************************
+//============================================================================*
 //
 // Values that can be passed to GPIOPadConfigSet as the ui32Strength parameter,
 // and returned by GPIOPadConfigGet in the *pui32Strength parameter.
 //
-//*****************************************************************************
+//============================================================================*
 #define GPIO_STRENGTH_2MA       0x00000001  // 2mA drive strength
 #define GPIO_STRENGTH_4MA       0x00000002  // 4mA drive strength
 #define GPIO_STRENGTH_6MA       0x00000065  // 6mA drive strength
@@ -103,12 +103,12 @@ extern "C"
 #define GPIO_STRENGTH_10MA      0x00000075  // 10mA drive strength
 #define GPIO_STRENGTH_12MA      0x00000077  // 12mA drive strength
 
-//*****************************************************************************
+//============================================================================*
 //
 // Values that can be passed to GPIOPadConfigSet as the ui32PadType parameter,
 // and returned by GPIOPadConfigGet in the *pui32PadType parameter.
 //
-//*****************************************************************************
+//============================================================================*
 #define GPIO_PIN_TYPE_STD       0x00000008  // Push-pull
 #define GPIO_PIN_TYPE_STD_WPU   0x0000000A  // Push-pull with weak pull-up
 #define GPIO_PIN_TYPE_STD_WPD   0x0000000C  // Push-pull with weak pull-down
@@ -117,12 +117,12 @@ extern "C"
 #define GPIO_PIN_TYPE_WAKE_HIGH 0x00000208  // Hibernate wake, high
 #define GPIO_PIN_TYPE_WAKE_LOW  0x00000108  // Hibernate wake, low
 
-//*****************************************************************************
+//============================================================================*
 //
 // Values that can be passed to GPIOIntEnable() and GPIOIntDisable() functions
 // in the ui32IntFlags parameter.
 //
-//*****************************************************************************
+//============================================================================*
 #define GPIO_INT_PIN_0          0x00000001
 #define GPIO_INT_PIN_1          0x00000002
 #define GPIO_INT_PIN_2          0x00000004
@@ -133,11 +133,11 @@ extern "C"
 #define GPIO_INT_PIN_7          0x00000080
 #define GPIO_INT_DMA            0x00000100
 
-//*****************************************************************************
+//============================================================================*
 //
 // Prototypes for the APIs.
 //
-//*****************************************************************************
+//============================================================================*
 extern void GPIODirModeSet(uint32_t ui32Port, uint8_t ui8Pins,
                            uint32_t ui32PinIO);
 extern uint32_t GPIODirModeGet(uint32_t ui32Port, uint8_t ui8Pin);
@@ -189,11 +189,11 @@ extern void GPIODMATriggerDisable(uint32_t ui32Port, uint8_t ui8Pins);
 extern void GPIOADCTriggerEnable(uint32_t ui32Port, uint8_t ui8Pins);
 extern void GPIOADCTriggerDisable(uint32_t ui32Port, uint8_t ui8Pins);
 
-//*****************************************************************************
+//============================================================================*
 //
 // Mark the end of the C bindings section for C++ compilers.
 //
-//*****************************************************************************
+//============================================================================*
 #ifdef __cplusplus
 }
 #endif

@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QF/C dynamic event management
 * @ingroup qf
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-09-16
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -55,10 +48,10 @@ Q_DEFINE_THIS_MODULE("qf_dyn")
 QF_EPOOL_TYPE_ QF_pool_[QF_MAX_EPOOL]; /* allocate the event pools */
 uint_fast8_t QF_maxPool_; /* number of initialized event pools */
 
-/****************************************************************************/
+/*==========================================================================*/
 #ifdef Q_EVT_CTOR  /* Provide the constructor for the ::QEvt class? */
 
-/**
+/*!
 * @public @memberof QEvt
 * @description
 * Constructor for the ::QEvt class provided when the switch #Q_EVT_CTOR
@@ -68,7 +61,7 @@ uint_fast8_t QF_maxPool_; /* number of initialized event pools */
 * @param[in]     sig  signal to be assigned to the event
 */
 QEvt *QEvt_ctor(QEvt * const me, enum_t const sig) {
-    /** @pre the me pointer must be valid */
+    /*! @pre the me pointer must be valid */
     Q_REQUIRE_ID(100, me != (QEvt *)0);
     me->sig = (QSignal)sig;
     return me;
@@ -77,8 +70,8 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig) {
 #endif /* Q_EVT_CTOR */
 
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @public @memberof QF
 * @description
 * This function initializes one event pool at a time and must be called
@@ -115,9 +108,10 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig) {
 void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
                  uint_fast16_t const evtSize)
 {
-    /** @pre cannot exceed the number of available memory pools */
-    Q_REQUIRE_ID(200, QF_maxPool_ < Q_DIM(QF_pool_));
-    /** @pre please initialize event pools in ascending order of evtSize: */
+    /*! @pre cannot exceed the number of available memory pools */
+    Q_REQUIRE_ID(200, QF_maxPool_ < QF_MAX_EPOOL);
+
+    /*! @pre please initialize event pools in ascending order of evtSize: */
     Q_REQUIRE_ID(201, (QF_maxPool_ == 0U)
         || (QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - 1U])
             < evtSize));
@@ -129,15 +123,15 @@ void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
 #ifdef Q_SPY
     /* generate the object-dictionary entry for the initialized pool */
     {
-        char_t obj_name[9] = "EvtPool?";
-        obj_name[7] = '0' + (QF_maxPool_ & 0x7FU);
-        QS_obj_dict_pre_(&QF_pool_[QF_maxPool_ - 1U], obj_name);
+        uint8_t obj_name[9] = "EvtPool?";
+        obj_name[7] = (uint8_t)(((uint8_t)'0' + QF_maxPool_) & 0x7FU);
+        QS_obj_dict_pre_(&QF_pool_[QF_maxPool_ - 1U], (char const *)obj_name);
     }
 #endif /* Q_SPY*/
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QF
 * @description
 * Allocates an event dynamically from one of the QF event pools.
@@ -167,9 +161,7 @@ void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
 QEvt *QF_newX_(uint_fast16_t const evtSize,
                uint_fast16_t const margin, enum_t const sig)
 {
-    QEvt *e;
     uint_fast8_t idx;
-    QS_CRIT_STAT_
 
     /* find the pool index that fits the requested event size ... */
     for (idx = 0U; idx < QF_maxPool_; ++idx) {
@@ -181,6 +173,8 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
     Q_ASSERT_ID(310, idx < QF_maxPool_);
 
     /* get e -- platform-dependent */
+    QEvt *e;
+
 #ifdef Q_SPY
     QF_EPOOL_GET_(QF_pool_[idx], e,
                   ((margin != QF_NO_MARGIN) ? margin : 0U),
@@ -191,6 +185,7 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
 #endif
 
     /* was e allocated correctly? */
+    QS_CRIT_STAT_
     if (e != (QEvt *)0) {
         e->sig = (QSignal)sig;     /* set signal for this event */
         e->poolId_ = (uint8_t)(idx + 1U); /* store the pool ID */
@@ -219,8 +214,8 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
     return e; /* can't be NULL if we can't tolerate failed allocation */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @public @memberof QF
 * @description
 * This function implements a simple garbage collector for the dynamic events.
@@ -267,7 +262,7 @@ void QF_gc(QEvt const * const e) {
         }
         /* this is the last reference to this event, recycle it */
         else {
-            uint_fast8_t idx = (uint_fast8_t)e->poolId_ - 1U;
+            uint_fast8_t const idx = (uint_fast8_t)e->poolId_ - 1U;
 
             QS_BEGIN_NOCRIT_PRE_(QS_QF_GC,
                                  (uint_fast8_t)QS_EP_ID + e->poolId_)
@@ -292,8 +287,8 @@ void QF_gc(QEvt const * const e) {
     }
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QF
 * @description
 * Creates and returns a new reference to the current event e
@@ -309,7 +304,6 @@ void QF_gc(QEvt const * const e) {
 * The only allowed use is thorough the macro Q_NEW_REF().
 */
 QEvt const *QF_newRef_(QEvt const * const e, void const * const evtRef) {
-    QF_CRIT_STAT_
 
     /*! @pre the event must be dynamic and the provided event reference
     * must not be already in use */
@@ -317,6 +311,7 @@ QEvt const *QF_newRef_(QEvt const * const e, void const * const evtRef) {
         (e->poolId_ != 0U)
         && (evtRef == (void *)0));
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
 
     QF_EVT_REF_CTR_INC_(e); /* increments the ref counter */
@@ -332,8 +327,9 @@ QEvt const *QF_newRef_(QEvt const * const e, void const * const evtRef) {
 
     return e;
 }
-/****************************************************************************/
-/**
+
+/*==========================================================================*/
+/*!
 * @static @private @memberof QF
 * @description
 * Deletes an existing reference to the event e
@@ -358,8 +354,8 @@ void QF_deleteRef_(void const * const evtRef) {
     QF_gc(e);
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @public @memberof QF
 * @description
 * Obtain the block size of any registered event pools
@@ -367,4 +363,3 @@ void QF_deleteRef_(void const * const evtRef) {
 uint_fast16_t QF_poolGetMaxBlockSize(void) {
     return QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - 1U]);
 }
-

@@ -12,7 +12,7 @@ It contains three build configurations: Debug (default), Release, and
 Spy.
 
 Also, the Makefile has been specifically designed to work as an external
-Makefile with the Eclipse CDT. 
+Makefile with the Eclipse CDT.
 
 The various build configurations are built as follows:
 
@@ -41,7 +41,7 @@ for ARM Cortex-M4F projects, due to the support for the hardware FPU
 The stack and heap sizes are determined in this project by the GCC linker
 script (.ld file), which provides a template of the recommended GCC linker
 script for QP applications.
-   
+
 
 Startup Code
 ============
@@ -56,7 +56,7 @@ ARM Cortex-M microcontrollers.
 
 The startup file typically does not need to be modified or adapted for
 applications. It provides only weak definitions of all exception and
-interrupt handlers, as well as the assert_failed() function.  
+interrupt handlers, as well as the assert_failed() function.
 
 The weak function assert_failed() defined in this file might be re-defined
 in the application to customize it for the application-specific error-
@@ -69,7 +69,7 @@ Also, assert_failed() is intended to handle catastrophic errors and
 should NOT return.
 ***
 
-  
+
 Adjusting the CPU Clock Speed
 =============================
 The current setting is to run at 2MHz from the MSI (internal oscillator),
@@ -81,6 +81,6 @@ of clock setting using the PLL driven from the MSE.
 NOTE:
 The NUCLEO boards have a wide range of possible clock selections, depending
 on the solder bridge configuration. Please see Chapter 5.7 "OSC clock" in
-the STM32 NUCLEO Boards User Manual (ST document UM1724) for more information. 
+the STM32 NUCLEO Boards User Manual (ST document UM1724) for more information.
 ***
 

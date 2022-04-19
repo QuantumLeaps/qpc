@@ -1,40 +1,33 @@
-/**
-* @file
-* @brief QK/C port to ARM Cortex-M, ARM-CLANG toolset
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-23
+/*============================================================================
+* QK/C port to ARM Cortex-M, ARM-CLANG
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2022-04-09
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief QK/C port to ARM Cortex-M, ARM-CLANG toolset
 */
 /* This QK port is part of the interanl QP implementation */
 #define QP_IMPL 1U
@@ -42,7 +35,11 @@
 
 /* prototypes --------------------------------------------------------------*/
 void PendSV_Handler(void);
-void NMI_Handler(void);
+#ifndef QK_ARM_CM_USE_NMI
+    void SVC_Handler(void);
+#else
+    void NMI_Handler(void);
+#endif
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
@@ -71,37 +68,40 @@ void NMI_Handler(void);
 */
 void QK_init(void) {
 
-#if (__ARM_ARCH != 6) /* NOT Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
-
-    uint32_t n;
+#if (__ARM_ARCH != 6) /* if ARMv7-M and higher... */
 
     /* set exception priorities to QF_BASEPRI...
     * SCB_SYSPRI1: Usage-fault, Bus-fault, Memory-fault
     */
-    SCB_SYSPRI[1] |= (QF_BASEPRI << 16) | (QF_BASEPRI << 8) | QF_BASEPRI;
+    SCB_SYSPRI[1] |= (QF_BASEPRI << 16U) | (QF_BASEPRI << 8U) | QF_BASEPRI;
 
     /* SCB_SYSPRI2: SVCall */
-    SCB_SYSPRI[2] |= (QF_BASEPRI << 24);
+    SCB_SYSPRI[2] |= (QF_BASEPRI << 24U);
 
     /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
-    SCB_SYSPRI[3] |= (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI;
+    SCB_SYSPRI[3] |= (QF_BASEPRI << 24U) | (QF_BASEPRI << 16U) | QF_BASEPRI;
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
-    n = 8U + ((*SCnSCB_ICTR & 0x7U) << 3); /* (# NVIC_PRIO registers)/4 */
+    uint32_t n = 8U + ((*SCnSCB_ICTR & 0x7U) << 3U); /*(# NVIC_PRIO regs)/4 */
     do {
         --n;
-        NVIC_IP[n] = (QF_BASEPRI << 24) | (QF_BASEPRI << 16)
-                     | (QF_BASEPRI << 8) | QF_BASEPRI;
-    } while (n != 0);
+        NVIC_IP[n] = (QF_BASEPRI << 24U) | (QF_BASEPRI << 16U)
+                     | (QF_BASEPRI << 8U) | QF_BASEPRI;
+    } while (n != 0U);
 
-#endif /* NOT Cortex-M0/M0+/M1(v6-M, v6S-M) */
+#endif /* ARMv7-M and higher */
 
-    /* SCB_SYSPRI3: PendSV set to the lowest priority 0xFF */
-    SCB_SYSPRI[3] |= (0xFFU << 16);
+    /* SCB_SYSPRI3: PendSV set to priority 0xFF (lowest) */
+    SCB_SYSPRI[3] |= (0xFFU << 16U);
+
+#ifndef QK_ARM_CM_USE_NMI
+    /* SCB_SYSPRI2: SVCall */
+    SCB_SYSPRI[2] &= ~(0xFFU << 24U); /* prioiry 0 (highest) */
+#endif
 }
 
-/*****************************************************************************
-* The PendSV_Handler exception handler is used for handling context switch
+/*==========================================================================*/
+/* The PendSV_Handler exception handler is used for handling context switch
 * and asynchronous preemption in QK. The use of the PendSV exception is
 * the recommended and most efficient method for performing context switches
 * with ARM Cortex-M.
@@ -121,7 +121,7 @@ void QK_init(void) {
 * entered immediately after the exit from the *last* nested interrupt (or
 * exception). In QK, this is exactly the time when the QK activator needs to
 * handle the asynchronous preemption.
-*****************************************************************************/
+*/
 __attribute__ ((naked))
 void PendSV_Handler(void) {
 __asm volatile (
@@ -132,9 +132,9 @@ __asm volatile (
     "  LSLS    r1,r1,#27        \n" /* r0 := (1 << 27) (UNPENDSVSET bit) */
 
     /*<<<<<<<<<<<<<<<<<<<<<<< CRITICAL SECTION BEGIN <<<<<<<<<<<<<<<<<<<<<<<<*/
-#if (__ARM_ARCH == 6)               /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+#if (__ARM_ARCH == 6)               /* if ARMv6-M... */
     "  CPSID   i                \n" /* disable interrupts (set PRIMASK) */
-#else                               /* M3/M4/M7 */
+#else                               /* ARMv7-M and higher */
 #if (__ARM_FP != 0)                 /* if VFP available... */
     "  PUSH    {r0,lr}          \n" /* ... push lr plus stack-aligner */
 #endif                              /* VFP available */
@@ -142,7 +142,7 @@ __asm volatile (
     "  CPSID   i                \n" /* disable interrutps with BASEPRI */
     "  MSR     BASEPRI,r0       \n" /* apply the Cortex-M7 erraturm */
     "  CPSIE   i                \n" /* 837070, see SDEN-1068427. */
-#endif                              /* M3/M4/M7 */
+#endif                              /* ARMv7-M and higher */
 
     /* The PendSV exception handler can be preempted by an interrupt,
     * which might pend PendSV exception again. The following write to
@@ -170,19 +170,19 @@ __asm volatile (
 
     "  MOVS    r0,#6            \n"
     "  MVNS    r0,r0            \n" /* r0 := ~6 == 0xFFFFFFF9 */
-#if (__ARM_ARCH != 6)               /* NOT Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+#if (__ARM_ARCH != 6)               /* if ARMv7-M and higher... */
     "  DSB                      \n" /* ARM Erratum 838869 */
-#endif                              /* NOT (v6-M, v6S-M) */
+#endif                              /* ARMv7-M and higher */
     "  BX      r0               \n" /* exception-return to the QK activator */
     );
 }
 
-/*****************************************************************************
-* QK_thread_ret is a helper function executed when the QK activator returns.
+/*==========================================================================*/
+/* QK_thread_ret is a helper function executed when the QXK activator returns.
 *
 * NOTE: QK_thread_ret does not execute in the PendSV context!
-* NOTE: QK_thread_ret executes entirely with interrupts DISABLED.
-*****************************************************************************/
+* NOTE: QK_thread_ret is entered with interrupts DISABLED.
+*/
 __attribute__ ((naked))
 void QK_thread_ret(void) {
 __asm volatile (
@@ -190,66 +190,65 @@ __asm volatile (
     /* After the QK activator returns, we need to resume the preempted
     * thread. However, this must be accomplished by a return-from-exception,
     * while we are still in the thread context. The switch to the exception
-    * contex is accomplished by triggering the NMI exception.
-    * NOTE: The NMI exception is triggered with nterrupts DISABLED,
-    * because QK activator disables interrutps before return.
+    * contex is accomplished by triggering the SVC or NMI exception.
     */
 
-    /* before triggering the NMI exception, make sure that the
-    * VFP stack frame will NOT be used...
-    */
+#if (__ARM_ARCH == 6)               /* if ARMv6-M... */
+    "  CPSIE   i                \n" /* enable interrupts (clear PRIMASK) */
+#else                               /* ARMv7-M and higher */
+    "  MOVS    r0,#0            \n"
+    "  MSR     BASEPRI,r0       \n" /* enable interrupts (clear BASEPRI) */
 #if (__ARM_FP != 0)                 /* if VFP available... */
+    /* make sure that the VFP stack frame will NOT be used */
     "  MRS     r0,CONTROL       \n" /* r0 := CONTROL */
     "  BICS    r0,r0,#4         \n" /* r0 := r0 & ~4 (FPCA bit) */
     "  MSR     CONTROL,r0       \n" /* CONTROL := r0 (clear CONTROL[2] FPCA bit) */
     "  ISB                      \n" /* ISB after MSR CONTROL (ARM AN321,Sect.4.16) */
 #endif                              /* VFP available */
+#endif                              /* ARMv7-M and higher */
 
-    /* trigger NMI to return to preempted task...
-    * NOTE: The NMI exception is triggered with nterrupts DISABLED
-    */
-    "  LDR     r0,=0xE000ED04   \n" /* Interrupt Control and State Register */
+#ifndef QK_ARM_CM_USE_NMI            /* if use SVC... */
+    "  SVC     #0               \n" /* trigger SVC */
+#else                               /* use NMI */
+    "  LDR     r0,=" STRINGIFY(NVIC_ICSR) "\n" /* Interrupt Control and State */
     "  MOVS    r1,#1            \n"
     "  LSLS    r1,r1,#31        \n" /* r1 := (1 << 31) (NMI bit) */
     "  STR     r1,[r0]          \n" /* ICSR[31] := 1 (pend NMI) */
     "  B       .                \n" /* wait for preemption by NMI */
+#endif                              /* use NMI */
     );
 }
 
-/*****************************************************************************
-* The NMI_Handler exception handler is used for returning back to the
-* interrupted task. The NMI exception simply removes its own interrupt
-* stack frame from the stack and returns to the preempted task using the
-* interrupt stack frame that must be at the top of the stack.
-*
-* NOTE: The NMI exception is entered with interrupts DISABLED, so it needs
-* to re-enable interrupts before it returns to the preempted task.
-*****************************************************************************/
+/*==========================================================================*/
+/* This exception handler is used for returning back to the interrupted task.
+* The exception handler simply removes its own interrupt stack frame from
+* the stack (MSP) and returns to the preempted task using the interrupt
+* stack frame that must be at the top of the stack.
+*/
 __attribute__ ((naked))
-void NMI_Handler(void) {
+#ifndef QK_ARM_CM_USE_NMI            /* if use SVC... */
+void SVC_Handler(void)
+#else                               /* use NMI */
+void NMI_Handler(void)
+#endif                              /* use NMI */
+{
 __asm volatile (
-
     "  ADD     sp,sp,#(8*4)     \n" /* remove one 8-register exception frame */
 
-#if (__ARM_ARCH == 6)               /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
-    "  CPSIE   i                \n" /* enable interrupts (clear PRIMASK) */
-    "  BX      lr               \n" /* return to the preempted task */
-#else                               /* M3/M4/M7 */
-    "  MOVS    r0,#0            \n"
-    "  MSR     BASEPRI,r0       \n" /* enable interrupts (clear BASEPRI) */
+#if (__ARM_ARCH != 6)               /* if ARMv7-M and higher... */
 #if (__ARM_FP != 0)                 /* if VFP available... */
     "  POP     {r0,lr}          \n" /* pop stack aligner and EXC_RETURN to LR */
     "  DSB                      \n" /* ARM Erratum 838869 */
-#endif                              /* if VFP available */
+#endif                              /* VFP available */
+#endif                              /* ARMv7-M and higher */
     "  BX      lr               \n" /* return to the preempted task */
-#endif                              /* M3/M4/M7 */
     );
 }
 
-/****************************************************************************/
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+/*==========================================================================*/
+#if (__ARM_ARCH == 6) /* if ARMv6-M... */
 
-/* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction) */
+/* hand-optimized quick LOG2 in assembly (No CLZ instruction in ARMv6-M) */
 __attribute__ ((naked))
 uint_fast8_t QF_qlog2(uint32_t x) {
 __asm volatile (
@@ -283,5 +282,5 @@ __asm volatile (
     );
 }
 
-#endif /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+#endif /* ARMv6-M */
 

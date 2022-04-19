@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @ingroup qf
 * @brief ::QMPool implementatin (Memory Pool)
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-09-16
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -50,8 +43,8 @@
 
 Q_DEFINE_THIS_MODULE("qf_mem")
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QMPool
 * @description
 * Initialize a fixed block-size memory pool by providing it with the pool
@@ -90,10 +83,7 @@ Q_DEFINE_THIS_MODULE("qf_mem")
 void QMPool_init(QMPool * const me, void * const poolSto,
                  uint_fast32_t poolSize, uint_fast16_t blockSize)
 {
-    QFreeBlock *fb;
-    uint_fast16_t nblocks;
-
-    /** @pre The memory block must be valid
+    /*! @pre The memory block must be valid
     * and the poolSize must fit at least one free block
     * and the blockSize must not be too close to the top of the dynamic range
     */
@@ -105,7 +95,9 @@ void QMPool_init(QMPool * const me, void * const poolSto,
 
     /* round up the blockSize to fit an integer # free blocks, no division */
     me->blockSize = (QMPoolSize)sizeof(QFreeBlock);  /* start with just one */
-    nblocks = 1U;/* #free blocks that fit in one memory block */
+
+    /* #free blocks that fit in one memory block */
+    uint_fast16_t nblocks = 1U;
     while (me->blockSize < (QMPoolSize)blockSize) {
         me->blockSize += (QMPoolSize)sizeof(QFreeBlock);
         ++nblocks;
@@ -118,7 +110,9 @@ void QMPool_init(QMPool * const me, void * const poolSto,
     /* chain all blocks together in a free-list... */
     poolSize -= (uint_fast32_t)blockSize; /* don't count the last block */
     me->nTot  = 1U; /* the last block already in the pool */
-    fb = (QFreeBlock *)me->free_head; /* start at the head of the free list */
+
+    /* start at the head of the free list */
+    QFreeBlock *fb = (QFreeBlock *)me->free_head;
 
     /* chain all blocks together in a free-list... */
     while (poolSize >= (uint_fast32_t)blockSize) {
@@ -135,8 +129,8 @@ void QMPool_init(QMPool * const me, void * const poolSto,
     me->end   = fb;              /* the last block in this pool */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QMPool
 * @description
 * Recycle a memory block to the fixed block-size memory pool.
@@ -159,16 +153,15 @@ void QMPool_init(QMPool * const me, void * const poolSto,
 * @include qmp_use.c
 */
 void QMPool_put(QMPool * const me, void *b, uint_fast8_t const qs_id) {
-    QF_CRIT_STAT_
+    (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
 
-    /** @pre # free blocks cannot exceed the total # blocks and
+    /*! @pre # free blocks cannot exceed the total # blocks and
     * the block pointer must be from this pool.
     */
     Q_REQUIRE_ID(200, (me->nFree < me->nTot)
                       && QF_PTR_RANGE_(b, me->start, me->end));
 
-    (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
-
+    QF_CRIT_STAT_
     QF_CRIT_E_();
     ((QFreeBlock *)b)->next = (QFreeBlock *)me->free_head;/* link into list */
     me->free_head = b;      /* set as new head of the free list */
@@ -183,8 +176,8 @@ void QMPool_put(QMPool * const me, void *b, uint_fast8_t const qs_id) {
     QF_CRIT_X_();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QMPool
 * @description
 * The function allocates a memory block from the pool and returns a pointer
@@ -193,6 +186,10 @@ void QMPool_put(QMPool * const me, void *b, uint_fast8_t const qs_id) {
 * @param[in,out] me      pointer (see @ref oop)
 * @param[in]     margin  the minimum number of unused blocks still available
 *                        in the pool after the allocation.
+*
+* @returns
+* A pointer to a memory block or NULL if no more blocks are available in
+* the memory pool.
 *
 * @note
 * This function can be called from any task level or ISR level.
@@ -204,7 +201,7 @@ void QMPool_put(QMPool * const me, void *b, uint_fast8_t const qs_id) {
 * a critical section when nesting of critical section is not supported.
 *
 * @attention
-* An allocated block must be later returned back to the same pool
+* An allocated block must be later returned back to the **same** pool
 * from which it has been allocated.
 *
 * @sa QMPool_put()
@@ -216,14 +213,13 @@ void QMPool_put(QMPool * const me, void *b, uint_fast8_t const qs_id) {
 void *QMPool_get(QMPool * const me, uint_fast16_t const margin,
                  uint_fast8_t const qs_id)
 {
-    QFreeBlock *fb;
+    (void)qs_id; /* unused parameter, if Q_SPY not defined */
+
     QF_CRIT_STAT_
-
-    (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
-
     QF_CRIT_E_();
 
     /* have more free blocks than the requested margin? */
+    QFreeBlock *fb;
     if (me->nFree > (QMPoolCtr)margin) {
         void *fb_next;
         fb = (QFreeBlock *)me->free_head; /* get a free block */
@@ -272,7 +268,7 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin,
         QS_BEGIN_NOCRIT_PRE_(QS_QF_MPOOL_GET_ATTEMPT, qs_id)
             QS_TIME_PRE_();         /* timestamp */
             QS_OBJ_PRE_(me);        /* this memory pool */
-            QS_MPC_PRE_(me->nFree); /* the number of free blocks in the pool */
+            QS_MPC_PRE_(me->nFree); /* # of free blocks in the pool */
             QS_MPC_PRE_(margin);    /* the requested margin */
         QS_END_NOCRIT_PRE_()
     }
@@ -281,8 +277,8 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin,
     return fb;  /* return the block or NULL pointer to the caller */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QMPool
 * @description
 * This function obtains the minimum number of free blocks in the given
@@ -296,17 +292,15 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin,
 * the minimum number of unused blocks in the given event pool.
 */
 uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId) {
-    uint_fast16_t min;
+
+    /*! @pre the poolId must be in range */
+    Q_REQUIRE_ID(400, (poolId <= QF_MAX_EPOOL)
+                      && (0U < poolId) && (poolId <= QF_maxPool_));
+
     QF_CRIT_STAT_
-
-    /** @pre the poolId must be in range */
-    Q_REQUIRE_ID(400, (0U < poolId) && (poolId <= QF_maxPool_)
-                      && (poolId <= QF_MAX_EPOOL));
-
     QF_CRIT_E_();
-    min = (uint_fast16_t)QF_pool_[poolId - 1U].nMin;
+    uint_fast16_t const min = (uint_fast16_t)QF_pool_[poolId - 1U].nMin;
     QF_CRIT_X_();
 
     return min;
 }
-

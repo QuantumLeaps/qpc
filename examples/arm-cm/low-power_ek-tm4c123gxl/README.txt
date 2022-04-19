@@ -1,5 +1,5 @@
-About this Example
-==================
+About this Example
+==================
 This directory contains the simple "Low-Power" QP example application for
 the EK-TM4C123GXL board (TivaC LauchPad) with the coopertative QV kernel,
 the preemptive QK kernel, and the dual-mode QXK kernel. This directory
@@ -14,7 +14,7 @@ Please refer to the README files in the sub-directories for specific
 instructions how to use and customize the example to your needs.
 
 
-Support Code for EK-TM4C123GXL Board 
+Support Code for EK-TM4C123GXL Board
 ====================================
 The directory qpc\3rd_party\ek-tm4c123gxl contains the CMSIS-compliant
 device code for the TM4C123GH6PM MCU. Please see the README.txt file in

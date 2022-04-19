@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QXK preemptive kernel extended (blocking) thread functions
 * @ingroup qxk
-* @cond
-******************************************************************************
-* Last updated for version 6.9.2
-* Last updated on  2020-12-16
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -56,19 +49,18 @@
 Q_DEFINE_THIS_MODULE("qxk_xthr")
 
 /*! intertnal macro to encapsulate casting of pointers for MISRA deviations */
-/**
+/*!
 * @description
 * This macro is specifically and exclusively used for downcasting pointers
 * to QActive to pointers to QXThread in situations when it is known
-* that such downcasting is correct.
-* However, such pointer casting is not compliant with
-* MISRA-2012-Rule 11.3(required) as well as other messages (e.g.,
+* that such downcasting is correct.However, such pointer casting is not
+* compliant with MISRA-2012-Rule 11.3(req) as well as other messages (e.g.,
 * PC-Lint-Plus warning 826). Defining this specific macro for this purpose
 * allows to selectively disable the warnings for this particular case.
 */
 #define QXTHREAD_CAST_(ptr_) ((QXThread *)(ptr_))
 
-/****************************************************************************/
+/*==========================================================================*/
 #ifndef Q_SPY
     static void QXThread_init_(QHsm * const me, void const * const par);
     static void QXThread_dispatch_(QHsm * const me, QEvt const * const e);
@@ -88,9 +80,8 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par);
 
-
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Performs the first step of QXThread initialization by assigning the
 * thread-handler function and the tick rate at which it will handle
@@ -99,6 +90,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 * @param[in,out] me       pointer (see @ref oop)
 * @param[in]     handler  the thread-handler function
 * @param[in]     tickRate the ticking rate for timeouts in this thread
+*                (see QXThread_delay() and QF_TICK_X())
 *
 * @note
 * Must be called only ONCE before QXTHREAD_START().
@@ -136,7 +128,7 @@ void QXThread_ctor(QXThread * const me,
                    (enum_t)QXK_DELAY_SIG, tickRate);
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 /* QXThread virtual function implementations... */
 #ifndef Q_SPY
 static void QXThread_init_(QHsm * const me, void const * const par)
@@ -153,7 +145,7 @@ static void QXThread_init_(QHsm * const me, void const * const par,
     Q_ERROR_ID(110);
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 #ifndef Q_SPY
 static void QXThread_dispatch_(QHsm * const me, QEvt const * const e)
 #else
@@ -169,8 +161,8 @@ static void QXThread_dispatch_(QHsm * const me, QEvt const * const e,
     Q_ERROR_ID(120);
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Starts execution of an extended thread and registers it with the framework.
 * The extended thread becomes ready-to-run immediately and is scheduled
@@ -201,7 +193,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 {
     QF_CRIT_STAT_
 
-    /** @pre this function must:
+    /*! @pre this function must:
     * - NOT be called from an ISR;
     * - the thread priority cannot exceed #QF_MAX_ACTIVE;
     * - the stack storage must be provided;
@@ -242,9 +234,9 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
     QF_CRIT_X_();
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 #ifdef Q_SPY
-/**
+/*!
 * @description
 * Direct event posting is the simplest asynchronous communication method
 * available in QF. The following example illustrates how the Philo active
@@ -289,11 +281,11 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
                            uint_fast16_t const margin)
 #endif
 {
-    bool status;
     QF_CRIT_STAT_
     QS_TEST_PROBE_DEF(&QXThread_post_)
 
     /* is it the private time event? */
+    bool status;
     if (e == &QXTHREAD_CAST_(me)->timeEvt.super) {
         QF_CRIT_E_();
         /* the private time event is disarmed and not in any queue,
@@ -311,7 +303,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
     else if (me->eQueue.end != 0U) {
         QEQueueCtr nFree; /* temporary to avoid UB for volatile access */
 
-        /** @pre event pointer must be valid */
+        /*! @pre event pointer must be valid */
         Q_REQUIRE_ID(300, e != (QEvt *)0);
 
         QF_CRIT_E_();
@@ -417,8 +409,8 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
     return status;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Last-In-First-Out (LIFO) policy is not supported for extened threads.
 *
@@ -434,8 +426,8 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e) {
     Q_ERROR_ID(410);
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * The QXThread_queueGet() operation allows the calling extended thread to
 * receive QP events directly into its own built-in event queue from an ISR,
@@ -455,15 +447,12 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e) {
 * Otherwise the event pointer of NULL indicates that the queue has timed out.
 */
 QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
-    QXThread *thr;
-    QEQueueCtr nFree;
-    QEvt const *e;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
-    thr = QXTHREAD_CAST_(QXK_attr_.curr);
 
-    /** @pre this function must:
+    QXThread * const thr = QXTHREAD_CAST_(QXK_attr_.curr);
+
+    /*! @pre this function must:
     * - NOT be called from an ISR;
     * - be called from an extended thread;
     * - the thread must NOT be already blocked on any object.
@@ -471,7 +460,7 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
     Q_REQUIRE_ID(500, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
         && (thr != (QXThread *)0) /* current thread must be extended */
         && (thr->super.super.temp.obj == (QMState *)0)); /* !blocked */
-    /** @pre also: the thread must NOT be holding a scheduler lock. */
+    /*! @pre also: the thread must NOT be holding a scheduler lock. */
     Q_REQUIRE_ID(501, QXK_attr_.lockHolder != thr->super.prio);
 
     /* is the queue empty? */
@@ -495,9 +484,10 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
     }
 
     /* is the queue not empty? */
+    QEvt const *e;
     if (thr->super.eQueue.frontEvt != (QEvt *)0) {
-        e = thr->super.eQueue.frontEvt; /* always remove from the front */
-        nFree= thr->super.eQueue.nFree + 1U; /* volatile into tmp */
+        e = thr->super.eQueue.frontEvt; /* remove from the front */
+        QEQueueCtr const nFree= thr->super.eQueue.nFree + 1U;
         thr->super.eQueue.nFree = nFree; /* update the number of free */
 
         /* any events in the ring buffer? */
@@ -541,8 +531,8 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
     return e;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Intenral implementation of blocking the given extended thread.
 *
@@ -550,15 +540,15 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
 * Must be called from within a critical section
 */
 void QXThread_block_(QXThread const * const me) {
-    /** @pre the thread holding the lock cannot block! */
+    /*! @pre the thread holding the lock cannot block! */
     Q_REQUIRE_ID(600, (QXK_attr_.lockHolder != me->super.prio));
 
     QPSet_remove(&QXK_attr_.readySet, (uint_fast8_t)me->super.dynPrio);
     (void)QXK_sched_();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Intenral implementation of un-blocking the given extended thread.
 *
@@ -574,8 +564,8 @@ void QXThread_unblock_(QXThread const * const me) {
     }
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Intenral implementation of arming the private time event for a given
 * timeout at a given system tick rate.
@@ -586,7 +576,7 @@ void QXThread_unblock_(QXThread const * const me) {
 void QXThread_teArm_(QXThread * const me, QSignal sig,
                      uint_fast16_t const nTicks)
 {
-    /** @pre the time event must be unused */
+    /*! @pre the time event must be unused */
     Q_REQUIRE_ID(700, me->timeEvt.ctr == 0U);
 
     me->timeEvt.super.sig = sig;
@@ -601,9 +591,9 @@ void QXThread_teArm_(QXThread * const me, QSignal sig,
         * because un-linking is performed exclusively in QF_tickX().
         */
         if ((me->timeEvt.super.refCtr_ & TE_IS_LINKED) == 0U) {
-            uint_fast8_t tickRate = ((uint_fast8_t)me->timeEvt.super.refCtr_
-                                    & TE_TICK_RATE);
-            Q_ASSERT_ID(710, tickRate < Q_DIM(QF_timeEvtHead_));
+            uint_fast8_t const tickRate
+                 = ((uint_fast8_t)me->timeEvt.super.refCtr_ & TE_TICK_RATE);
+            Q_ASSERT_ID(710, tickRate < QF_MAX_TICK_RATE);
 
             me->timeEvt.super.refCtr_ |= TE_IS_LINKED;
 
@@ -621,8 +611,8 @@ void QXThread_teArm_(QXThread * const me, QSignal sig,
     }
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Intenral implementation of disarming the private time event.
 *
@@ -643,24 +633,37 @@ bool QXThread_teDisarm_(QXThread * const me) {
     return wasArmed;
 }
 
-/****************************************************************************/
-/*! delay (timed blocking of) the current thread (static, no me-ptr) */
+/*==========================================================================*/
+/*! delay (timed blocking of) the current thread (static, no me-ptr)
+* @description
+* Blocking delay for the number of clock tick at the associated tick rate.
+*
+* @param[in]  nTicks    number of clock ticks (at the associated rate)
+*                       to wait for the event to arrive.
+* @note
+* For the delay to work, the QF_TICK_X() macro needs to be called
+* periodicially at the associated clock tick rate.
+*
+* @sa QXThread_ctor()
+* @sa QF_TICK_X()
+*/
 bool QXThread_delay(uint_fast16_t const nTicks) {
-    QXThread *thr;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
-    thr = QXTHREAD_CAST_(QXK_attr_.curr);
 
-    /** @pre this function must:
+    QXThread * const thr = QXTHREAD_CAST_(QXK_attr_.curr);
+
+    /*! @pre this function must:
     * - NOT be called from an ISR;
+    * - number of ticks cannot be zero
     * - be called from an extended thread;
     * - the thread must NOT be already blocked on any object.
     */
     Q_REQUIRE_ID(800, (!QXK_ISR_CONTEXT_()) /* can't block inside an ISR */
+        && (nTicks != 0U) /* number of ticks cannot be zero */
         && (thr != (QXThread *)0) /* current thread must be extended */
         && (thr->super.super.temp.obj == (QMState *)0)); /* !blocked */
-    /** @pre also: the thread must NOT be holding a scheduler lock. */
+    /*! @pre also: the thread must NOT be holding a scheduler lock. */
     Q_REQUIRE_ID(801, QXK_attr_.lockHolder != thr->super.prio);
 
     /* remember the blocking object */
@@ -680,16 +683,24 @@ bool QXThread_delay(uint_fast16_t const nTicks) {
     /* signal of zero means that the time event was posted without
     * being canceled.
     */
-    return (bool)(thr->timeEvt.super.sig == 0U);
+    return thr->timeEvt.super.sig == 0U;
 }
 
-/****************************************************************************/
-/*! cancel the delay */
+/*==========================================================================*/
+/*! cancel the delay
+* @description
+* Cancel the blocking delay and cause return from the QXThread_delay()
+* function.
+*
+* @returns
+* "true" if the thread was actually blocked on QXThread_delay() and
+* "false" otherwise.
+*/
 bool QXThread_delayCancel(QXThread * const me) {
-    bool wasArmed;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
+
+    bool wasArmed;
     if (me->super.super.temp.obj == QXK_PTR_CAST_(QMState*, &me->timeEvt)) {
         wasArmed = QXThread_teDisarm_(me);
         QXThread_unblock_(me);
@@ -702,8 +713,8 @@ bool QXThread_delayCancel(QXThread * const me) {
     return wasArmed;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Called when the extended-thread handler function returns.
 *
@@ -714,23 +725,21 @@ bool QXThread_delayCancel(QXThread * const me) {
 * cleanup after the thread.
 */
 void QXK_threadRet_(void) {
-    QXThread const *thr;
-    uint_fast8_t p;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
-    thr = QXTHREAD_CAST_(QXK_attr_.curr);
 
-    /** @pre this function must:
+    QXThread const * const thr = QXTHREAD_CAST_(QXK_attr_.curr);
+
+    /*! @pre this function must:
     * - NOT be called from an ISR;
     * - be called from an extended thread;
     */
     Q_REQUIRE_ID(900, (!QXK_ISR_CONTEXT_()) /* can't be in the ISR context */
         && (thr != (QXThread *)0)); /* current thread must be extended */
-    /** @pre also: the thread must NOT be holding a scheduler lock. */
+    /*! @pre also: the thread must NOT be holding a scheduler lock. */
     Q_REQUIRE_ID(901, QXK_attr_.lockHolder != thr->super.prio);
 
-    p = (uint_fast8_t)thr->super.prio;
+    uint_fast8_t const p = (uint_fast8_t)thr->super.prio;
 
     /* remove this thread from the QF */
     QF_active_[p] = (QActive *)0;
@@ -738,4 +747,3 @@ void QXK_threadRet_(void) {
     (void)QXK_sched_();
     QF_CRIT_X_();
 }
-

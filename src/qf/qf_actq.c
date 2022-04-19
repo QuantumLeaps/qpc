@@ -1,4 +1,31 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief ::QActive native queue operations (based on ::QEQueue)
 *
@@ -7,40 +34,6 @@
 * QF active object queue is used (instead of a message queue of an RTOS).
 *
 * @ingroup qf
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-09-16
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -55,10 +48,9 @@
 
 Q_DEFINE_THIS_MODULE("qf_actq")
 
-
-/****************************************************************************/
+/*==========================================================================*/
 #ifdef Q_SPY
-/**
+/*!
 * @private @memberof QActive
 * @description
 * Direct event posting is the simplest asynchronous communication method
@@ -75,15 +67,15 @@ Q_DEFINE_THIS_MODULE("qf_actq")
 * 'true' (success) if the posting succeeded (with the provided margin) and
 * 'false' (failure) when the posting fails.
 *
-* @attention
-* This function should be called only via the macro QACTIVE_POST()
-* or QACTIVE_POST_X().
-*
 * @note
 * The #QF_NO_MARGIN value of the @p margin parameter is special and denotes
 * situation when the post() operation is assumed to succeed (event delivery
 * guarantee). An assertion fires, when the event cannot be delivered in this
 * case.
+*
+* @attention
+* This function should be called only via the macro QACTIVE_POST()
+* or QACTIVE_POST_X().
 *
 * @usage
 * @include qf_post.c
@@ -97,22 +89,20 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin)
 #endif
 {
-    QEQueueCtr nFree; /* temporary to avoid UB for volatile access */
-    bool status;
-    QF_CRIT_STAT_
-    QS_TEST_PROBE_DEF(&QActive_post_)
-
-    /** @pre event pointer must be valid */
+    /*! @pre event pointer must be valid */
     Q_REQUIRE_ID(100, e != (QEvt *)0);
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
-    nFree = me->eQueue.nFree; /* get volatile into the temporary */
+    QEQueueCtr nFree = me->eQueue.nFree; /* get volatile into the temporary */
 
     /* test-probe#1 for faking queue overflow */
+    QS_TEST_PROBE_DEF(&QActive_post_)
     QS_TEST_PROBE_ID(1,
         nFree = 0U;
     )
 
+    bool status;
     if (margin == QF_NO_MARGIN) {
         if (nFree > 0U) {
             status = true; /* can post */
@@ -157,9 +147,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         * as producing the #QS_QF_ACTIVE_POST trace record, which are:
         * the local filter for this AO ('me->prio') is set
         */
-        if ((QS_priv_.locFilter[me->prio >> 3U]
-             & (1U << (me->prio & 7U))) != 0U)
-        {
+        if (QS_LOC_CHECK_(me->prio)) {
             /* callback to examine the posted event */
             QS_onTestPost(sender, me, e, status);
         }
@@ -200,9 +188,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         * as producing the #QS_QF_ACTIVE_POST trace record, which are:
         * the local filter for this AO ('me->prio') is set
         */
-        if ((QS_priv_.locFilter[me->prio >> 3U]
-             & (1U << (me->prio & 7U))) != 0U)
-        {
+        if (QS_LOC_CHECK_(me->prio)) {
             QS_onTestPost(sender, me, e, status);
         }
 #endif
@@ -215,8 +201,8 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     return status;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @private @memberof QActive
 * @description
 * posts an event to the event queue of the active object @p me using the
@@ -235,15 +221,13 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 * @sa QActive_post_(), QACTIVE_POST(), QACTIVE_POST_X()
 */
 void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
-    QEvt const *frontEvt;  /* temporary to avoid UB for volatile access */
-    QEQueueCtr nFree;      /* temporary to avoid UB for volatile access */
-    QF_CRIT_STAT_
-    QS_TEST_PROBE_DEF(&QActive_postLIFO_)
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
-    nFree = me->eQueue.nFree; /* get volatile into the temporary */
+    QEQueueCtr nFree = me->eQueue.nFree; /* get volatile into the temporary */
 
     /* test-probe#1 for faking queue overflow */
+    QS_TEST_PROBE_DEF(&QActive_postLIFO_)
     QS_TEST_PROBE_ID(1,
         nFree = 0U;
     )
@@ -276,14 +260,13 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         * as producing the #QS_QF_ACTIVE_POST trace record, which are:
         * the local filter for this AO ('me->prio') is set
         */
-        if ((QS_priv_.locFilter[me->prio >> 3U]
-             & (1U << (me->prio & 7U))) != 0U)
-        {
+        if (QS_LOC_CHECK_(me->prio)) {
             QS_onTestPost((QActive *)0, me, e, true);
         }
 #endif
 
-    frontEvt = me->eQueue.frontEvt; /* read volatile into the temporary */
+    /* temporary to avoid UB for volatile access */
+    QEvt const * const frontEvt  = me->eQueue.frontEvt;
     me->eQueue.frontEvt = e; /* deliver the event directly to the front */
 
     /* was the queue empty? */
@@ -303,8 +286,8 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_X_();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @private @memberof QActive
 * @description
 * The behavior of this function depends on the kernel/OS used in the QF port.
@@ -327,15 +310,14 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 * no events are available.
 */
 QEvt const *QActive_get_(QActive * const me) {
-    QEQueueCtr nFree;
-    QEvt const *e;
-    QF_CRIT_STAT_
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
     QACTIVE_EQUEUE_WAIT_(me);  /* wait for event to arrive directly */
 
-    e = me->eQueue.frontEvt; /* always remove event from the front location */
-    nFree = me->eQueue.nFree + 1U; /* get volatile into tmp */
+    /* always remove event from the front */
+    QEvt const * const e = me->eQueue.frontEvt;
+    QEQueueCtr const nFree = me->eQueue.nFree + 1U; /* volatile into tmp */
     me->eQueue.nFree = nFree; /* update the number of free */
 
     /* any events in the ring buffer? */
@@ -373,8 +355,8 @@ QEvt const *QActive_get_(QActive * const me) {
     return e;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QF
 * @description
 * Queries the minimum of free ever present in the given event queue of
@@ -394,21 +376,19 @@ QEvt const *QActive_get_(QActive * const me) {
 * object with priority @p prio, since the active object was started.
 */
 uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
-    uint_fast16_t min;
-    QF_CRIT_STAT_
 
     Q_REQUIRE_ID(400, (prio <= QF_MAX_ACTIVE)
                       && (QF_active_[prio] != (QActive *)0));
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
-    min = (uint_fast16_t)QF_active_[prio]->eQueue.nMin;
+    uint_fast16_t const min = (uint_fast16_t)QF_active_[prio]->eQueue.nMin;
     QF_CRIT_X_();
 
     return min;
 }
 
-/****************************************************************************/
-
+/*==========================================================================*/
 #ifdef Q_SPY
     static void QTicker_init_(QHsm * const me, void const *par,
                               uint_fast8_t const qs_id);
@@ -427,14 +407,12 @@ uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
 static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
 
 /*! Perform downcast to QTicker pointer. */
-/**
-* @public @memberof QTicker
+/*!
 * @description
 * This macro encapsulates the downcast to (QTicker *), which is used in
-* QTicker_init_() and QTicker_dispatch_(). Such casts can trigger PC-Lint-Plus
-* "note 9087: cast from pointer to object type to pointer to different
-* object type [MISRA 2012 Rule 11.3, required]". This macro helps to
-* encapsulate this deviation.
+* QTicker_init_() and QTicker_dispatch_(). Such casts violate MISRA-C 2012
+* Rule 11.3(req) "cast from pointer to object type to pointer to different
+* object type".
 */
 #define QTICKER_CAST_(me_)  ((QActive *)(me_))
 
@@ -460,7 +438,7 @@ void QTicker_ctor(QTicker * const me, uint_fast8_t tickRate) {
 }
 /*..........................................................................*/
 #ifdef Q_SPY
-/** @private @memberof QTicker */
+/*! @private @memberof QTicker */
 static void QTicker_init_(QHsm * const me, void const *par,
                               uint_fast8_t const qs_id)
 #else
@@ -476,7 +454,7 @@ static void QTicker_init_(QHsm * const me, void const *par)
 }
 /*..........................................................................*/
 #ifdef Q_SPY
-/** @private @memberof QTicker */
+/*! @private @memberof QTicker */
 static void QTicker_dispatch_(QHsm * const me, QEvt const * const e,
                               uint_fast8_t const qs_id)
 #else
@@ -502,7 +480,7 @@ static void QTicker_dispatch_(QHsm * const me, QEvt const * const e)
 }
 /*..........................................................................*/
 #ifndef Q_SPY
-/** @private @memberof QTicker */
+/*! @private @memberof QTicker */
 static bool QTicker_post_(QActive * const me, QEvt const * const e,
                           uint_fast16_t const margin)
 #else
@@ -511,11 +489,10 @@ static bool QTicker_post_(QActive * const me, QEvt const * const e,
                           void const * const sender)
 #endif
 {
-    QF_CRIT_STAT_
-
     (void)e; /* unused parameter */
     (void)margin; /* unused parameter */
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
     if (me->eQueue.frontEvt == (QEvt *)0) {
 
@@ -543,10 +520,9 @@ static bool QTicker_post_(QActive * const me, QEvt const * const e,
     return true; /* the event is always posted correctly */
 }
 /*..........................................................................*/
-/** @private @memberof QTicker */
+/*! @private @memberof QTicker */
 static void QTicker_postLIFO_(QActive * const me, QEvt const * const e) {
     (void)me; /* unused parameter */
     (void)e;  /* unused parameter */
     Q_ERROR_ID(900);
 }
-

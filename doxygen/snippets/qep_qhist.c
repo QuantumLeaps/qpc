@@ -27,7 +27,7 @@ static QState ToastOven_doorOpen(ToastOven * const me,
     switch (e->sig) {
         ~ ~ ~
         case CLOSE_SIG: {
-            status = Q_TRAN_HIST(hist_doorClosed); /*<== */
+            status = Q_TRAN_HIST(hist_doorClosed); /*<--- */
             break;
         }
         default: {

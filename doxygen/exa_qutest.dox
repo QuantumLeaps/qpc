@@ -54,8 +54,6 @@ The projects within the <span class="img folder">examples/qutest</span> director
           </li>
           <li><span class="img file_py">test_philo.py</span> &mdash; test script for `Philo` (Python)
           </li>
-          <li><span class="img file_tcl">test_philo.tcl</span> &mdash; test script for `Philo` (Tcl)
-          </li>
         </ul>
       </ul>
       <ul class="tag">
@@ -67,8 +65,6 @@ The projects within the <span class="img folder">examples/qutest</span> director
           <li><span class="img file_c">test_philo.c</span> &mdash; test fixture for `Table` AO
           </li>
           <li><span class="img file_py">test_philo.py</span> &mdash; test script for `Table` (Python)
-          </li>
-          <li><span class="img file_tcl">test_philo.tcl</span> &mdash; test script for `Table` (Tcl)
           </li>
         </ul>
       </ul>
@@ -88,11 +84,7 @@ The projects within the <span class="img folder">examples/qutest</span> director
           </li>
           <li><span class="img file_py">test_init.py</span> &mdash; test script for DPP initialization (Python)
           </li>
-          <li><span class="img file_tcl">test_init.tcl</span> &mdash; test script for DPP initialization (Tcl)
-          </li>
           <li><span class="img file_py">test_tick.py</span> &mdash; test script for DPP tick processing (Python)
-          </li>
-          <li><span class="img file_tcl">test_tick.tcl</span> &mdash; test script for DPP tick processing (Tcl)
           </li>
         </ul>
       </ul>
@@ -110,7 +102,7 @@ The projects within the <span class="img folder">examples/qutest</span> director
   <li><span class="tag">A</span> The <span class="img folder">src</span> sub-directory contains the production code to be tested. This directory contains the <span class="img file_qm">.qm</span> model file as well as the generated code from the model.
   </li>
 
-  <li><span class="tag">B</span> The <span class="img folder">test_philo</span> sub-directory contains the unit test code for a component, such as `Philo` in this case. Here, you can find the <span class="img file_c">test_*.c</span> **test fixture**, the test scripts <span class="img file_py">test_*.py</span> (Python) and <span class="img file_tcl">test_*.tcl</span> (Tcl) as well as the cross-platform <span class="img file_mak">Makefile</span> to build the code and *run* the tests on the host.
+  <li><span class="tag">B</span> The <span class="img folder">test_philo</span> sub-directory contains the unit test code for a component, such as `Philo` in this case. Here, you can find the <span class="img file_c">test_*.c</span> **test fixture**, the test scripts <span class="img file_py">test_*.py</span> (Python) as well as the cross-platform <span class="img file_mak">Makefile</span> to build the code and *run* the tests on the host.
   </li>
 
   <li><span class="tag">C</span> The <span class="img folder">test_dpp</span> sub-directory contains integration-test code for the application, such as `DPP` in this case. The objective is to test the initialization and interactions *among* components. Here, you can find the <span class="img file_c">main.c</span> `main()` function as well as the <span class="img file_c">test_dpp.c</span> *test fixture*. This directory also contains <span class="img file_mak">make_*</span> *makefiles* to build and run the code on the **embedded targets**.
@@ -121,10 +113,8 @@ The projects within the <span class="img folder">examples/qutest</span> director
 </ul>
 
 
-
 @section exa_qutest-test Building and Running the Tests
 As usual in Test-Driven Development (TDD), the provided <span class="img file_mak">Makefiles</span> both *build* the code and *run* the tests.
-
 
 
 @subsection exa_qutest_host Host Computers
@@ -133,11 +123,6 @@ Typically, you start testing on your host computer. Before building/running the 
 Next, you open another terminal window, change directory to the <span class="img folder">test_...</span> folder of interest, and type `make`. This will build the application and run the tests (Python), as shown in the screen shot below:
 
 ![Testing on the host (Python)](qutest_py.png)
-
-To use the Tcl scripts, you invoke the `make` with the `SCRIPT=tcl` symbol:
-
-![Testing on the host (Tcl)](qutest_tcl.png)
-
 
 
 @subsection exa_qutest_target Embedded Targets
@@ -148,10 +133,6 @@ To test the code on an embedded board, you need to connect the board to the host
 Next, you open another terminal window, change directory to the <span class="img folder">test_...</span> folder of interest, and type `make -f make_tm4c123`. This will build the application and run the tests (Python), as shown in the screen shot below:
 
 ![Testing on the TM4C123 embedded target (Python)](qutest_tm4c123_py.png)
-
-To use the Tcl scripts, you invoke the `make -f make_tm4c123` with the `SCRIPT=tcl` symbol:
-
-![Testing on the TM4C123 embedded target (Tcl)](qutest_tm4c123_tcl.png)
 
 
 @next{exa_os}

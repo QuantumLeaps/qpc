@@ -3,20 +3,23 @@
 Q_DEFINE_THIS_FILE
 
 int main() {
-    static Philo l_philo[N]; /* N Philo active objects */
-    static QEvt const *l_philQueueSto[N][N]; /* storage for event queues */
-    static int l_philoStk[N][256];  /* stacks for the Philo active objects */
+
+    QF_init();  /* initialize the framework and the underlying RT kernel */
+    BSP_init(); /* initialize the Board Support Package */
 
     . . .
-    for (n = 0; n < N; ++n) {
-        TableEvt ie;  /* initialization event for the Philo SM */
-        ie.philNum = n;
-        Philo_ctor(&l_philo[n]);
-        QACTIVE_START((QActive *)&l_philo[n],  /* Philo pointer */
-            (uint_fast8_t)(n*10 + 1),          /* priority */
-            l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]), /* queue */
-            l_philoStk[n], sizeof(l_philoStk[n]), /* per AO stack */
-            &ie.super);                        /* initialization event */
-    }
+
+    /* instantiate and start the active objects... */
+    Blinky_ctor();
+    static QEvt const *l_blinkyQSto[10]; /* Event queue storage for Blinky */
+    QACTIVE_START(AO_Blinky,      /* AO pointer to start */
+                  1U,             /* unique QP priority of the AO */
+                  l_blinkyQSto,   /* storage for the AO's queue */
+                  Q_DIM(l_blinkyQSto), /* lenght of the queue [entries] */
+                  (void *)0,      /* stack storage (not used in QK) */
+                  0U,             /* stack size [bytes] (not used in QK) */
+                  (void *)0);     /* initialization parameter (or 0) */
     . . .
-} 
+    return QF_run(); /* run the QF application */
+}
+ 

@@ -14,7 +14,7 @@
  * assembly to re-set the stack pointer, in case it is corrupted by the
  * time assert_failed is called.
  */
-//****************************************************************************
+//============================================================================
 //
 // Startup code for use with TI's Code Composer Studio.
 //
@@ -36,7 +36,7 @@
 // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
 // DAMAGES, FOR ANY REASON WHATSOEVER.
 //
-//****************************************************************************
+//============================================================================
 
 /* top of stack defined in the linker script -------------------------------*/
 extern int __STACK_TOP;
@@ -170,7 +170,7 @@ void PWM1Gen3_IRQHandler   (void);
 void PWM1Fault_IRQHandler  (void);
 
 
-//*****************************************************************************
+//============================================================================*
 //
 // The vector table.  Note that the proper constructs must be placed on this to
 // ensure that it ends up at physical address 0x0000.0000 or at the start of
@@ -179,7 +179,7 @@ void PWM1Fault_IRQHandler  (void);
 //                      !!!!!!  NOTE  !!!!!!
 // You must MANUALLY remove the (int)&Default_Handler from the interrupts
 // that you actually wish to handle in your application!
-//*****************************************************************************
+//============================================================================*
 #pragma DATA_SECTION(g_pfnVectors, ".intvecs")
 int const g_pfnVectors[] = {
     (int)&__STACK_TOP,            /* The initial stack pointer       */
@@ -341,7 +341,7 @@ int const g_pfnVectors[] = {
     (int)&Default_Handler, //(int)&PWM1Fault_IRQHandler,   /* PWM 1 Fault                     */
 };
 
-//*****************************************************************************
+//============================================================================*
 //
 // This is the code that gets called when the processor first starts execution
 // following a reset event.  Only the absolutely necessary set is performed,
@@ -350,7 +350,7 @@ int const g_pfnVectors[] = {
 // resetting the bits in that register) are left solely in the hands of the
 // application.
 //
-//*****************************************************************************
+//============================================================================*
 void Reset_Handler(void) {
     // First, call the CMSIS SystemInit() to set up the CPU clock.
     // Next, jump to the CCS C initialization routine. This will enable the

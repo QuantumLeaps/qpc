@@ -31,14 +31,13 @@
 *.avrsuo
 *.Debug
 *.Release
-lint*.txt
-*.Miro
 *.bak
 *.qlc
+*.dox
 JLink*.*
 version-*
-metrics.dox
 
+doxygen/
 html/
 test_priv/
 dbg/

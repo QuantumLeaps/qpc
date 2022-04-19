@@ -11,7 +11,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -125,11 +125,11 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     /* this function must be called before QACTIVE_START(),
     * which implies that me->thread.tx_thread_name must not be used yet;
     */
-    Q_REQUIRE_ID(300, me->thread.tx_thread_name == (char_t *)0);
+    Q_REQUIRE_ID(300, me->thread.tx_thread_name == (char *)0);
     switch (attr1) {
         case THREAD_NAME_ATTR:
             /* temporarily store the name, cast 'const' away */
-            me->thread.tx_thread_name = (char_t *)attr2;
+            me->thread.tx_thread_name = (char *)attr2;
             break;
         /* ... */
     }

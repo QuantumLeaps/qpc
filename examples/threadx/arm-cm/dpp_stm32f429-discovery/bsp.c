@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: "DPP example, STM32F429 Discovery board, ThreadX kernel
-* Last updated for version 6.9.4
+* Last updated for: @ref qpc_7_0_0
 * Last updated on  2021-12-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -257,7 +257,7 @@ void QF_onCleanup(void) {
 }
 
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
@@ -282,15 +282,15 @@ static void idle_thread_fun(ULONG thread_input) { /* see NOTE1 */
         __NOP();
         __NOP();
         LED_GPIO_PORT->BSRRH = LED6_PIN; /* turn LED off */
-    
+
         if ((USART2->SR & 0x80U) != 0U) { /* is TXE empty? */
             uint16_t b;
             QF_CRIT_STAT_TYPE intStat;
-    
+
             QF_CRIT_ENTRY(intStat);
             b = QS_getByte();
             QF_CRIT_EXIT(intStat);
-    
+
             if (b != QS_EOD) {  /* not End-Of-Data? */
                 USART2->DR  = (b & 0xFFU);  /* put into the DR register */
             }

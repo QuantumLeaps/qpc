@@ -1,40 +1,33 @@
-/**
-* @file
-* @brief QF/C port to Cortex-M, dual-mode QXK kernel, ARM-CLANG toolset
-* @cond
-******************************************************************************
-* Last updated for version 6.3.8
-* Last updated on  2019-01-10
+/*============================================================================
+* QF/C port to ARM Cortex-M, QXK, ARM-CLANG
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2022-04-09
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief QF/C port to Cortex-M, dual-mode QXK kernel, ARM-CLANG toolset
 */
 #ifndef QF_PORT_H
 #define QF_PORT_H
@@ -97,27 +90,27 @@
     #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
     /* Cortex-M3/M4/M7 provide the CLZ instruction for fast LOG2 */
-    #define QF_LOG2(n_) ((uint_fast8_t)(32U - __builtin_clz((unsigned)(n_))))
+    #define QF_LOG2(n_) ((uint_fast8_t)(32 - __builtin_clz((unsigned)(n_))))
 
 #endif
 
 #define QF_CRIT_EXIT_NOP()      __asm volatile ("isb")
 
-#include "qep_port.h" /* QEP port */
+#include "qep_port.h"   /* QEP port */
 
 #if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
     /* hand-optimized quick LOG2 in assembly */
     uint_fast8_t QF_qlog2(uint32_t x);
 #endif /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
 
-#include "qxk_port.h" /* QXK dual-mode kernel port */
-#include "qf.h"       /* QF platform-independent public interface */
-#include "qxthread.h" /* QXK extended thread interface */
+#include "qxk_port.h"   /* QXK dual-mode kernel port */
+#include "qf.h"         /* QF platform-independent public interface */
+#include "qxthread.h"   /* QXK extended thread interface */
 
 /*****************************************************************************
 * NOTE1:
 * The maximum number of active objects QF_MAX_ACTIVE can be increased
-* up to 64, if necessary. Here it is set to a lower level to save some RAM.
+* up to 64U, if necessary. Here it is set to a lower level to save some RAM.
 *
 * NOTE2:
 * On Cortex-M0/M0+/M1 (architecture v6-M, v6S-M), the interrupt disabling

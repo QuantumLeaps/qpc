@@ -1,41 +1,38 @@
-/**
-* @file
-* @brief Internal (package scope) QXK/C interface.
-* @ingroup qxk
-* @cond
-******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-23
+/*============================================================================
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of open-source GPL 3.0
+* (or any later version), or alternatively, under the terms of one of the
+* closed-source Quantum Leaps commercial licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GPL 3.0 license can be found at:
+* <www.gnu.org/licenses/gpl-3.0.txt>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* The terms of the closed-source Quantum Leaps commercial licenses
+* can be found at:
+* <www.state-machine.com/licensing>
+*
+* NOTE: Please do NOT plagiarize this software to sidestep the license
+* obligations. This is both unfair and illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/**
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief Internal (package scope) QXK/C interface.
+* @ingroup qxk
 */
 #ifndef QXK_PKG_H
 #define QXK_PKG_H
@@ -77,7 +74,7 @@ bool QXThread_teDisarm_(QXThread * const me);
 * This macro is specifically and exclusively used for casting pointers
 * that are never de-referenced, but only used for internal bookkeeping and
 * checking (via assertions) the correct operation of the QXK kernel.
-* Such pointer casting is not compliant with MISRA-2012-Rule 11.3(required)
+* Such pointer casting is not compliant with MISRA-2012-Rule 11.3(req)
 * as well as other messages (e.g., PC-Lint-Plus warning 826).
 * Defining this specific macro for this purpose allows to selectively
 * disable the warnings for this particular case.
@@ -87,4 +84,3 @@ bool QXThread_teDisarm_(QXThread * const me);
 #include "qf_pkg.h"  /* QF package-scope interface */
 
 #endif /* QXK_PKG_H */
-

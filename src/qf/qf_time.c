@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QF/C time events and time management services
 * @ingroup qf
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-09-16
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -51,14 +44,27 @@
 Q_DEFINE_THIS_MODULE("qf_time")
 
 /* Package-scope objects ****************************************************/
-/** @static @private @memberof QF */
+/*! @static @private @memberof QF */
 QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
 
-/****************************************************************************/
 #ifdef Q_SPY
-/**
+    /*! intertnal macro to encapsulate a MISRA deviation
+    * @description
+    * This internal macro encapsulates the violation of MISRA-C 2012
+    * Rule 11.5(A) "A conversion should not be performed from pointer to void
+    * into pointer to object".
+    */
+    #define QACTIVE_CAST_(ptr_) ((QActive *)(ptr_))
+#endif
+
+/*==========================================================================*/
+#ifdef Q_SPY
+/*!
 * @static @private @memberof QF
 * @description
+* This internal helper function processes all armed ::QTimeEvt objects
+* associated wit the tick rate @p tickRate .
+*
 * This function must be called periodically from a time-tick ISR or from
 * a task so that QF can manage the timeout events assigned to the given
 * system clock tick rate.
@@ -74,8 +80,9 @@ QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
 * each other. For example, higher clock tick rates might be serviced from
 * interrupts while others from tasks (active objects).
 *
-* @sa
-* ::QTimeEvt.
+* @sa ::QTimeEvt.
+* @sa QF_tickX_()
+* @sa QF_TICK()
 */
 void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
 #else
@@ -83,8 +90,8 @@ void QF_tickX_(uint_fast8_t const tickRate)
 #endif
 {
     QTimeEvt *prev = &QF_timeEvtHead_[tickRate];
-    QF_CRIT_STAT_
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_TICK, 0U)
@@ -130,7 +137,8 @@ void QF_tickX_(uint_fast8_t const tickRate)
 
             /* is time event about to expire? */
             if (t->ctr == 0U) {
-                QActive *act = (QActive *)t->act; /* temp. for volatile */
+                /* temporary for volatile */
+                QActive * const act = (QActive *)t->act;
 
                 /* periodic time evt? */
                 if (t->interval != 0U) {
@@ -177,21 +185,8 @@ void QF_tickX_(uint_fast8_t const tickRate)
     QF_CRIT_X_();
 }
 
-/*****************************************************************************
-* NOTE1:
-* In some QF ports the critical section exit takes effect only on the next
-* machine instruction. If this case, the next instruction is another entry
-* to a critical section, the critical section won't be really exited, but
-* rather the two adjacent critical sections would be merged.
-*
-* The QF_CRIT_EXIT_NOP() macro contains minimal code required
-* to prevent such merging of critical sections in QF ports,
-* in which it can occur.
-*/
-
-
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @public @memberof QF
 * @description
 * Find out if any time events are armed at the given clock tick rate.
@@ -206,11 +201,11 @@ void QF_tickX_(uint_fast8_t const tickRate)
 * This function should be called in critical section.
 */
 bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate) {
-    bool inactive;
 
-    /** @pre the tick rate must be in range */
+    /*! @pre the tick rate must be in range */
     Q_REQUIRE_ID(200, tickRate < QF_MAX_TICK_RATE);
 
+    bool inactive;
     if (QF_timeEvtHead_[tickRate].next != (QTimeEvt *)0) {
         inactive = false;
     }
@@ -223,8 +218,8 @@ bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate) {
     return inactive;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QTimeEvt
 * @description
 * When creating a time event, you must commit it to a specific active object
@@ -245,7 +240,7 @@ bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate) {
 void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
                     enum_t const sig, uint_fast8_t tickRate)
 {
-    /** @pre The signal must be valid and the tick rate in range */
+    /*! @pre The signal must be valid and the tick rate in range */
     Q_REQUIRE_ID(300, (sig >= (enum_t)Q_USER_SIG)
         && (tickRate < QF_MAX_TICK_RATE));
 
@@ -273,8 +268,8 @@ void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
     me->super.refCtr_ = (uint8_t)tickRate;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QTimeEvt
 * @description
 * Arms a time event to fire in a specified number of clock ticks and with
@@ -307,14 +302,14 @@ void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
 void QTimeEvt_armX(QTimeEvt * const me,
                    QTimeEvtCtr const nTicks, QTimeEvtCtr const interval)
 {
-    uint_fast8_t tickRate = ((uint_fast8_t)me->super.refCtr_ & TE_TICK_RATE);
-    QTimeEvtCtr ctr = me->ctr;
+    uint_fast8_t const tickRate
+                       = ((uint_fast8_t)me->super.refCtr_ & TE_TICK_RATE);
+    QTimeEvtCtr const ctr = me->ctr;
 #ifdef Q_SPY
     uint_fast8_t const qs_id = ((QActive *)(me->act))->prio;
 #endif
-    QF_CRIT_STAT_
 
-    /** @pre the host AO must be valid, time evnet must be disarmed,
+    /*! @pre the host AO must be valid, time evnet must be disarmed,
     * number of clock ticks cannot be zero, and the signal must be valid.
     */
     Q_REQUIRE_ID(400, (me->act != (void *)0)
@@ -326,6 +321,7 @@ void QTimeEvt_armX(QTimeEvt * const me,
     (void)ctr; /* avoid compiler warning about unused variable */
 #endif
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
     me->ctr = nTicks;
     me->interval = interval;
@@ -362,8 +358,8 @@ void QTimeEvt_armX(QTimeEvt * const me,
     QF_CRIT_X_();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QTimeEvt
 * @description
 * Disarm the time event so it can be safely reused.
@@ -383,15 +379,15 @@ void QTimeEvt_armX(QTimeEvt * const me,
 * there is no harm in disarming an already disarmed time event
 */
 bool QTimeEvt_disarm(QTimeEvt * const me) {
-    bool wasArmed;
 #ifdef Q_SPY
-    uint_fast8_t const qs_id = ((QActive *)(me->act))->prio;
+    uint_fast8_t const qs_id = QACTIVE_CAST_(me->act)->prio;
 #endif
-    QF_CRIT_STAT_
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
 
     /* is the time event actually armed? */
+    bool wasArmed;
     if (me->ctr != 0U) {
         wasArmed = true;
         me->super.refCtr_ |= TE_WAS_DISARMED;
@@ -420,11 +416,12 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
 
     }
     QF_CRIT_X_();
+
     return wasArmed;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QTimeEvt
 * @description
 * Rearms a time event with a new number of clock ticks. This function can
@@ -446,14 +443,13 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
 * published and should be expected in the active object's state machine.
 */
 bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
-    uint_fast8_t tickRate = (uint_fast8_t)me->super.refCtr_ & TE_TICK_RATE;
-    bool wasArmed;
+    uint_fast8_t const tickRate
+                       = (uint_fast8_t)me->super.refCtr_ & TE_TICK_RATE;
 #ifdef Q_SPY
     uint_fast8_t const qs_id = ((QActive *)(me->act))->prio;
 #endif
-    QF_CRIT_STAT_
 
-    /** @pre AO must be valid, tick rate must be in range, nTicks must not
+    /*! @pre AO must be valid, tick rate must be in range, nTicks must not
     * be zero, and the signal of this time event must be valid
     */
     Q_REQUIRE_ID(600, (me->act != (void *)0)
@@ -461,9 +457,11 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
                       && (nTicks != 0U)
                       && (me->super.sig >= (QSignal)Q_USER_SIG));
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
 
     /* is the time evt not running? */
+    bool wasArmed;
     if (me->ctr == 0U) {
         wasArmed = false;
 
@@ -503,11 +501,12 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
     QS_END_NOCRIT_PRE_()
 
     QF_CRIT_X_();
+
     return wasArmed;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QTimeEvt
 * @description
 * Useful for checking whether a one-shot time event was disarmed in the
@@ -530,13 +529,13 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
 * the function will return 'true'.
 */
 bool QTimeEvt_wasDisarmed(QTimeEvt * const me) {
-    uint8_t wasDisarmed = (me->super.refCtr_ & TE_WAS_DISARMED);
+    uint8_t const wasDisarmed = (me->super.refCtr_ & TE_WAS_DISARMED);
     me->super.refCtr_ |= TE_WAS_DISARMED; /* set the flag */
-    return (wasDisarmed != 0U) ? true : false;
+    return wasDisarmed != 0U;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QTimeEvt
 * @description
 * Useful for checking how many clock ticks (at the tick rate associated
@@ -553,13 +552,22 @@ bool QTimeEvt_wasDisarmed(QTimeEvt * const me) {
 * The function is thread-safe.
 */
 QTimeEvtCtr QTimeEvt_currCtr(QTimeEvt const * const me) {
-    QTimeEvtCtr ret;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
-    ret = me->ctr;
+    QTimeEvtCtr const ret = me->ctr;
     QF_CRIT_X_();
 
     return ret;
 }
 
+/*============================================================================
+* NOTE1:
+* In some QF ports the critical section exit takes effect only on the next
+* machine instruction. If this case, the next instruction is another entry
+* to a critical section, the critical section won't be really exited, but
+* rather the two adjacent critical sections would be merged.
+*
+* The QF_CRIT_EXIT_NOP() macro contains minimal code required
+* to prevent such merging of critical sections in QF ports,
+* in which it can occur.
+*/

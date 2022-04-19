@@ -1,4 +1,4 @@
-# Doxyfile 1.9.2
+# Doxyfile 1.9.3
 
 @INCLUDE = Doxyfile
 
@@ -8,7 +8,6 @@
 HTML_OUTPUT            = tmp
 HTML_HEADER            = ../../ql-doxygen/header.html
 HTML_FOOTER            = ../../ql-doxygen/footer.html
-HTML_EXTRA_STYLESHEET  = ../../ql-doxygen/ql.css \
-                         ../../ql-doxygen/preview.js
-HTML_EXTRA_FILES       =
+HTML_EXTRA_STYLESHEET  = ../../ql-doxygen/ql.css
+HTML_EXTRA_FILES       = ../../ql-doxygen/preview.js
 GENERATE_HTMLHELP      = YES

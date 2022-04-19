@@ -1,5 +1,5 @@
-About this Example
-==================
+About this Example
+==================
 This folder contains the simple "Blinky" QP example application.
 This directory contains portable code that should compile with any C
 compiler for ARM Cortex-M.

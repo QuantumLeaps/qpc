@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 6.8.2
-# Last updated on  2020-06-23
+# Last updated for version 7.0.0
+# Last updated on  2022-02-16
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -56,13 +56,10 @@ PROJECT := dpp
 #
 
 # list of all source directories used by this project
-VPATH := . \
-	cont \
-	comp
+VPATH := .
 
 # list of all include directories needed by this project
-INCLUDES := -I. \
-	-Icont
+INCLUDES := -I.
 
 # location of the QP/C framework (if not provided in an env. variable)
 ifeq ($(QPC),)

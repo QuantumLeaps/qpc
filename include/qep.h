@@ -1,131 +1,106 @@
-/**
-* @ingroup qep
-* @{
-* @file
-* @brief Public QEP/C interface
-* @}
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-11-15
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief Public QEP/C interface
+* @ingroup qep
+* @rtr{RQP001} @rtr{RQP101}
 */
 #ifndef QEP_H
 #define QEP_H
 
-/****************************************************************************/
-/*! @ingroup qp
+/*==========================================================================*/
+/*! @addtogroup qp
 * @{
 */
 /*! The current QP version as a decimal constant XXYZ, where XX is a 2-digit
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      694U
+#define QP_VERSION      700U
 
 /*! The current QP version number string of the form XX.Y.Z, where XX is
 * a 2-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "6.9.4"
+#define QP_VERSION_STR  "7.0.0"
 
-/*! Encrypted  current QP release (6.9.4) and date (2021-07-31) */
-#define QP_RELEASE      0x8264FD99U
-
-
-/****************************************************************************/
-/* typedefs for basic numerical types; MISRA-C 2004 rule 6.3(req). */
-
-/*! typedef for character strings. */
-/**
-* @description
-* This typedef specifies character type for exclusive use in character
-* strings. Use of this type, rather than plain 'char', is in compliance
-* with the MISRA-C 2004 Rules 6.1(req), 6.3(adv).
+/*! Encrypted  current QP release (7.0.0) and date (2022-01-31)
 */
-typedef char char_t;
+#define QP_RELEASE      0x7CCAAA13U
+
+/*==========================================================================*/
+/* typedefs for basic numerical types; MISRA-C 2012 Dir 4.6(A). */
 
 /*! typedef for line numbers in assertions and return from QF_run() */
-typedef int int_t;
-
-/*! typedef for unsigned int promotions in expressions */
-typedef unsigned uint_t;
+typedef signed int int_t;
 
 /*! typedef for enumerations used for event signals */
-typedef int enum_t;
+typedef signed int enum_t;
 
-/*! IEEE 754 32-bit floating point number, MISRA-C 2004 rule 6.3(req) */
-/**
+/*! IEEE 754 32-bit floating point number, MISRA-C 2012 Dir 4.6(A)
 * @note QP does not use floating-point types anywhere in the internal
 * implementation, except in QS software tracing, where utilities for
-* output of floating-point numbers are provided for application-level
+* output of floating-point numbers are provided for application-specific
 * trace records.
 */
 typedef float float32_t;
 
-/*! IEEE 754 64-bit floating point number, MISRA-C 2004 rule 6.3(req) */
-/**
+/*! IEEE 754 64-bit floating point number, MISRA-C 2012 Dir 4.6(A)
 * @note QP does not use floating-point types anywhere in the internal
 * implementation, except in QS software tracing, where utilities for
-* output of floating-point numbers are provided for application-level
+* output of floating-point numbers are provided for application-specific
 * trace records.
 */
 typedef double float64_t;
 
 /*! the current QP version number string in ROM, based on #QP_VERSION_STR */
-extern char_t const QP_versionStr[7];
+extern char const QP_versionStr[7];
 
 /*! @} */
-
-/****************************************************************************/
+/*==========================================================================*/
 #ifndef Q_SIGNAL_SIZE
 
     /*! The size (in bytes) of the signal of an event. Valid values:
-    * 1U, 2U, or 4U; default 2U */
-    /**
+    * 1U, 2U, or 4U; default 2U
     * @description
     * This macro can be defined in the QEP port file (qep_port.h) to
     * configure the ::QSignal type. When the macro is not defined, the
     * default of 2 bytes is applied.
     *
-    * @tr{RQP002A}
+    * @rtr{RQP002A}
     */
     #define Q_SIGNAL_SIZE 2U
 #endif
 #if (Q_SIGNAL_SIZE == 1U)
     typedef uint8_t QSignal;
 #elif (Q_SIGNAL_SIZE == 2U)
-    /*! QSignal represents the signal of an event. */
-    /**
+    /*! QSignal represents the signal of an event.
     * @description
     * The relationship between an event and a signal is as follows. A signal
     * in UML is the specification of an asynchronous stimulus that triggers
@@ -134,7 +109,7 @@ extern char_t const QP_versionStr[7];
     * However, an event can also contain additional quantitative information
     * about the occurrence in form of event parameters.
     *
-    * @tr{RQP002A}
+    * @rtr{RQP002A}
     */
     typedef uint16_t QSignal;
 #elif (Q_SIGNAL_SIZE == 4U)
@@ -143,10 +118,8 @@ extern char_t const QP_versionStr[7];
     #error "Q_SIGNAL_SIZE defined incorrectly, expected 1U, 2U, or 4U"
 #endif
 
-
-/****************************************************************************/
-/*! Event class */
-/**
+/*==========================================================================*/
+/*! Event class
 * @description
 * QEvt represents events without parameters and serves as the base class
 * for derivation of events with parameters.
@@ -157,63 +130,46 @@ extern char_t const QP_versionStr[7];
 * super is defined as the FIRST member of the derived struct.
 * @include qep_qevt.c
 *
-* @sa @ref oop
-*
-* @tr{RQP001} @tr{RQP004}
+* @rtr{RQP001} @rtr{RQP004}
 */
 typedef struct {
-    QSignal sig;     /*!< @public signal of the event instance @tr{RQP002} */
-    uint8_t poolId_; /*!< @private pool ID (0 for static event) @tr{RQP003} */
-    uint8_t volatile refCtr_; /*!< @private reference counter @tr{RQP003} */
+    QSignal sig;     /*!< @public signal of the event instance @rtr{RQP002} */
+    uint8_t poolId_; /*!< @private pool ID (0 for static event) @rtr{RQP003} */
+    uint8_t volatile refCtr_; /*!< @private reference counter @rtr{RQP003} */
 } QEvt;
 
 #ifdef Q_EVT_CTOR /* Shall the constructor for the QEvt class be provided? */
 
 /*! Custom event constructor
 * @public @memberof QEvt
-* @tr{RQP005}
+* @rtr{RQP005}
 */
 QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 
 #endif
 
-/****************************************************************************/
-/*! Perform upcast from a subclass of ::QHsm to the base class ::QHsm */
-/**
-* @description
-* Upcasting from a subclass to superclass is a very frequent and __safe__
-* operation in object-oriented programming and object-oriented languages
-* (such as C++) perform such upcasting automatically. However, OOP is
-* implemented in C just as a set of coding conventions (see @ref oop),
-* and the C compiler does not "know" that certain types are related by
-* inheritance. Therefore for C, the upcast must be performed explicitly.
-* Unfortunately, pointer casting violates the advisory MISRA-C 2004 rule 11.4
-* "cast pointer to pointer". This macro encapsulates this deviation and
-* provides a descriptive name for the reason of this cast.
-*/
-#define Q_HSM_UPCAST(ptr_) ((QHsm *)(ptr_))
-
-/*! Perform downcast of an event onto a subclass of ::QEvt @p class_ */
-/**
+/*==========================================================================*/
+/*! Perform downcast of an event onto a subclass of ::QEvt @p class_
 * @description
 * ::QEvt represents events without parameters and serves as the base class
 * This macro encapsulates the downcast of ::QEvt pointers, which violates
-* MISRA-C 2004 rule 11.4(advisory). This macro helps to localize this
-* deviation.
+* MISRA-C 2012 Rule 11.3(R) "A cast shall not be performed between a
+* pointer to object type and a pointer to a different object type". This
+* macro helps to localize this deviation.
+*
+* @rtr{RQP003}
 */
 #define Q_EVT_CAST(class_) ((class_ const *)e)
 
 /*! Perform cast from unsigned integer pointer @p uintptr_ to pointer
-* of type @p type_. */
-/**
+* of type @p type_.
 * @description
 * This macro encapsulates the cast to (type_ *), which QP ports or
 * application might use to access embedded hardware registers.
 */
 #define Q_UINT2PTR_CAST(type_, uintptr_)  ((type_ *)(uintptr_))
 
-
-/****************************************************************************/
+/*==========================================================================*/
 /*! typedef of the return type from a state/action-handler functions. */
 typedef uint_fast8_t QState;
 
@@ -229,24 +185,28 @@ typedef QState (*QActionHandler)(void * const me);
 /*! Pointer to a thread-handler function. */
 typedef void (*QXThreadHandler)(QXThread * const me);
 
-/*! Perform cast to ::QStateHandler. */
-/**
+/*! Perform cast to ::QStateHandler.
 * @description
 * This macro encapsulates the cast of a specific state handler function
-* pointer to ::QStateHandler, which violates MISRA:C-2012 rule 11.1(req).
-* This macro helps to localize this deviation.
+* pointer to ::QStateHandler, which violates MISRA:C-2012 Rule 11.1(req)
+* "Conversions shall not be performed between a pointer to function and
+* any other type". This macro helps to localize this deviation.
+*
+* @ptr{PQP11-1} @ptr{PQA11-1}
 *
 * @usage
 * @include qep_qhsm_ctor.c
 */
 #define Q_STATE_CAST(handler_)  ((QStateHandler)(handler_))
 
-/*! Perform cast to ::QActionHandler. */
-/**
+/*! Perform cast to ::QActionHandler.
 * @description
 * This macro encapsulates the cast of a specific action handler function
-* pointer to ::QActionHandler, which violates MISRA:C-2012 rule 11.1(req).
-* This macro helps to localize this deviation.
+* pointer to ::QActionHandler, which violates MISRA:C-2012 Rule 11.1(R)
+* "Conversions shall not be performed between a pointer to function and
+* any other type". This macro helps to localize this deviation.
+*
+* @ptr{PQP11-1} @ptr{PQA11-1}
 */
 #define Q_ACTION_CAST(action_)  ((QActionHandler)(action_))
 
@@ -255,8 +215,7 @@ struct QMState;
 struct QHsmVtable;
 typedef struct QMTranActTable QMTranActTable;
 
-/*! Attribute of for the ::QHsm class (Hierarchical State Machine). */
-/**
+/*! Attribute of for the ::QHsm class (Hierarchical State Machine).
 * @description
 * This union represents possible values stored in the 'state' and 'temp'
 * attributes of the ::QHsm class.
@@ -269,9 +228,8 @@ union QHsmAttr {
     QMTranActTable const *tatbl; /*!< @private transition-action table */
 };
 
-/****************************************************************************/
-/*! Hierarchical State Machine class */
-/**
+/*==========================================================================*/
+/*! Hierarchical State Machine class
 * @description
 * ::QHsm represents a Hierarchical State Machine (HSM) with full support for
 * hierarchical nesting of states, entry/exit actions, initial transitions,
@@ -292,15 +250,18 @@ union QHsmAttr {
 * from ::QHsm. Please note that the ::QHsm member `super` is defined as the
 * FIRST member of the derived class.
 *
+* @rtr{RQP103}
+*
 * @include qep_qhsm.c
 */
 typedef struct {
-    struct QHsmVtable const *vptr; /*!< @private virtual pointer */
+    struct QHsmVtable const *vptr; /*!< @private virtual pointer @rtr{RQP102} */
     union QHsmAttr state; /*!< @private current active state (state-var) */
     union QHsmAttr temp;  /*!< @private temporary: target/act-table, etc. */
 } QHsm;
 
 /*! Virtual table for the ::QHsm class. */
+/*! @rtr{RQP102} */
 struct QHsmVtable {
 #ifdef Q_SPY
     /*! Triggers the top-most initial transition in the HSM. */
@@ -317,14 +278,11 @@ struct QHsmVtable {
     void (*init)(QHsm * const me, void const * const e);
     void (*dispatch)(QHsm * const me, QEvt const * const e);
 #endif /* Q_SPY */
-
 };
 
 /* QHsm public operations... */
-
 #ifdef Q_SPY
-    /*! Polymorphically executes the top-most initial transition in a HSM */
-    /**
+    /*! Polymorphically executes the top-most initial transition in a HSM
     * @param[in,out] me_ pointer (see @ref oop)
     * @param[in]     e_  constant pointer the ::QEvt or a class derived from
     *                    ::QEvt (see @ref oop)
@@ -336,6 +294,8 @@ struct QHsmVtable {
     * The following example illustrates how to initialize a SM, and dispatch
     * events to it:
     * @include qep_qhsm_use.c
+    *
+    * @rtr{RQP102}
     */
     #define QHSM_INIT(me_, par_, qs_id_) do {          \
         Q_ASSERT((me_)->vptr);                         \
@@ -344,6 +304,7 @@ struct QHsmVtable {
 
     /*! Implementation of the top-most initial tran. in ::QHsm subclass.
     * @private @memberof QHsm
+    * @rtr{RQP103}
     */
     void QHsm_init_(QHsm * const me, void const * const e,
                     uint_fast8_t const qs_id);
@@ -359,10 +320,8 @@ struct QHsmVtable {
 
 #endif /* Q_SPY */
 
-
 #ifdef Q_SPY
-    /*! Polymorphically dispatches an event to a HSM */
-    /**
+    /*! Polymorphically dispatches an event to a HSM
     * @description
     * Processes one event at a time in Run-to-Completion fashion.
     *
@@ -370,12 +329,15 @@ struct QHsmVtable {
     * @param[in]     e_  constant pointer the ::QEvt or a class
     *                    derived from ::QEvt (see @ref oop)
     * @note Must be called after the "constructor" and after QHSM_INIT().
+    *
+    * @rtr{RQP102}
     */
     #define QHSM_DISPATCH(me_, e_, qs_id_) \
         ((*(me_)->vptr->dispatch)((me_), (e_), (qs_id_)))
 
     /*! Implementation of dispatching events to a ::QHsm subclass
     * @private @memberof QHsm
+    * @rtr{RQP103}
     */
     void QHsm_dispatch_(QHsm * const me, QEvt const * const e,
                         uint_fast8_t const qs_id);
@@ -393,23 +355,40 @@ struct QHsmVtable {
 
 #endif /* Q_SPY */
 
-/*! Obtain the current active state from a HSM (read only). */
-/**
-* @param[in] me_ pointer (see @ref oop)
-* @returns the current active state of a ::QHsm subclass
-* @note this macro is used in QM for auto-generating code for state history
+/*! Perform upcast from a subclass of ::QHsm to the base class ::QHsm
+* @description
+* Upcasting from a subclass to superclass is a very frequent and __safe__
+* operation in object-oriented programming and object-oriented languages
+* (such as C++) perform such upcasting automatically. However, OOP is
+* implemented in C just as a set of coding conventions (see @ref oop),
+* and the C compiler does not "know" that certain types are related by
+* inheritance. Therefore for C, the upcast must be performed explicitly.
+* Unfortunately, pointer casting violates the advisory MISRA-C 2012
+* Rule 11.3(req) "A cast shall not be performed between a pointer to object
+* type and a pointer to a different object type". This macro encapsulates
+* this deviation and provides a descriptive name for the reason of this cast.
 */
-#define QHsm_state(me_) (Q_STATE_CAST(Q_HSM_UPCAST(me_)->state.fun))
+#define Q_HSM_UPCAST(ptr_) ((QHsm *)(ptr_))
 
-/*! Obtain the current active child state of a given parent in ::QHsm */
-/**
-* @param[in] me_     pointer (see @ref oop)
-* @param[in] parent_ pointer to the parent state-handler
-* @returns the current active child state-handler of a given parent
-* @note this macro is used in QM for auto-generating code for state history
+/*! Obtain the current active state from a HSM (read only).
+* @public @memberof QHsm
+* @param[in] me pointer (see @ref oop)
+* @returns the current active state of a ::QHsm class
+* @note this function is used in QM for auto-generating code for state history
 */
-#define QHsm_childState(me_, parent_) \
-    QHsm_childState_(Q_HSM_UPCAST(me_), Q_STATE_CAST(parent_))
+static inline QStateHandler QHsm_state(QHsm * const me) {
+    return Q_STATE_CAST(me->state.fun);
+}
+
+/*! Obtain the current active child state of a given parent in ::QHsm
+* @public @memberof QHsm
+* @param[in] me     pointer (see @ref oop)
+* @param[in] parent pointer to the parent state-handler
+* @returns the current active child state-handler of a given parent
+* @note this function is used in QM for auto-generating code for state history
+*/
+QStateHandler QHsm_childState(QHsm * const me,
+                              QStateHandler const parent);
 
 /*! Tests if a given state is part of the current active state
 * configuration in ::QHsm subclasses.
@@ -428,19 +407,9 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial);
 */
 QState QHsm_top(void const * const me, QEvt const * const e);
 
-/* QHsm private operations... */
-/*! Helper function to obtain the current active child state of a parent
-* @private @memberof QHsm
-*/
-QStateHandler QHsm_childState_(QHsm * const me,
-                               QStateHandler const parent);
-
-
-/****************************************************************************/
+/*==========================================================================*/
 /*! QM State Machine implementation strategy
 * @extends QHsm
-*/
-/**
 * @description
 * ::QMsm (QM State Machine) provides a more efficient state machine
 * implementation strategy than ::QHsm, but requires the use of the QM
@@ -457,14 +426,13 @@ QStateHandler QHsm_childState_(QHsm * const me,
 * _first_ member of the derived struct.
 * @include qep_qmsm.c
 *
-* @sa @ref oop
+* @rtr{RQP104}
 */
 typedef struct {
     QHsm super; /*!< @protected inherits ::QHsm */
 } QMsm;
 
-/*! State object for the ::QMsm class (QM State Machine). */
-/**
+/*! State object for the ::QMsm class (QM State Machine).
 * @description
 * This class groups together the attributes of a ::QMsm state, such as the
 * parent state (state nesting), the associated state handler function and
@@ -474,6 +442,8 @@ typedef struct {
 * @attention
 * The ::QMState class is only intended for the QM code generator and should
 * not be used in hand-crafted code.
+*
+* @rtr{RQP104}
 */
 struct QMState {
     struct QMState const *superstate;  /*!< @private superstate of the state */
@@ -491,29 +461,25 @@ struct QMTranActTable {
 };
 
 /* QMsm public operations... */
-/*! Obtain the current active state from a MSM (read only) */
-/**
-* @param[in] me_     pointer (see @ref oop)
-* @returns the current active state-object
-* @note this macro is used in QM for auto-generating code for state history
-*/
-#define QMsm_stateObj(me_) (Q_HSM_UPCAST(me_)->state.obj)
-
-/*! Obtain the current active child state of a given parent in ::QMsm */
-/**
-* @param[in] me_     pointer (see @ref oop)
-* @param[in] parent_ pointer to the parent state-object
-* @returns the current active child state-object of a given parent
-* @note this macro is used in QM for auto-generating code for state history
-*/
-#define QMsm_childStateObj(me_, parent_) \
-    QMsm_childStateObj_(Q_HSM_UPCAST(me_), (parent_))
-
-/*! Helper function to obtain the current active child state of a parent
+/*! Obtain the current active state from a MSM (read only)
 * @public @memberof QMsm
+* @param[in] me     pointer (see @ref oop)
+* @returns the current active state-object
+* @note this function is used in QM for auto-generating code for state history
 */
-QMState const *QMsm_childStateObj_(QMsm const * const me,
-                                   QMState const * const parent);
+static inline QMState const *QMsm_stateObj(QHsm * const me) {
+    return me->state.obj;
+}
+
+/*! Obtain the current active child state of a given parent in ::QMsm
+* @public @memberof QMsm
+* @param[in] me     pointer (see @ref oop)
+* @param[in] parent pointer to the parent state-object
+* @returns the current active child state-object of a given parent
+* @note this function is used in QM for auto-generating code for state history
+*/
+QMState const *QMsm_childStateObj(QHsm const * const me,
+                                  QMState const * const parent);
 
 /*! Tests if a given state is part of the current active state
 * configuration in a MSM.
@@ -530,6 +496,7 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial);
 /* QMsm private operations... */
 /*! Implementation of the top-most initial transition in ::QMsm
 * @private @memberof QMsm
+* @rtr{RQP104}
 */
 #ifdef Q_SPY
 void QMsm_init_(QHsm * const me, void const * const e,
@@ -540,6 +507,7 @@ void QMsm_init_(QHsm * const me, void const * const e);
 
 /*! Implementation of disparching events to ::QMsm
 * @private @memberof QMsm
+* @rtr{RQP104}
 */
 #ifdef Q_SPY
 void QMsm_dispatch_(QHsm * const me, QEvt const * const e,
@@ -558,6 +526,7 @@ QStateHandler QMsm_getStateHandler_(QHsm * const me);
 /*! Macro to call in a state-handler when it executes a regular
 * or and initial transition. Applicable only to ::QHsm subclasses.
 * @include qep_qtran.c
+* @rtr{RQP103} @rtr{RQP120E}
 */
 #define Q_TRAN(target_)  \
     ((Q_HSM_UPCAST(me))->temp.fun = Q_STATE_CAST(target_), (QState)Q_RET_TRAN)
@@ -565,6 +534,7 @@ QStateHandler QMsm_getStateHandler_(QHsm * const me);
 /*! Macro to call in a state-handler when it executes a transition
 * to history. Applicable only to HSMs.
 *
+* @rtr{RQP103} @rtr{RQP120H}
 * @usage
 * @include qep_qhist.c
 */
@@ -574,14 +544,15 @@ QStateHandler QMsm_getStateHandler_(QHsm * const me);
 /*! Macro to call in a state-handler when it designates the
 * superstate of a given state. Applicable only to ::QHsm subclasses.
 *
+* @rtr{RQP103}
 * @usage
-* @include qep_qtran.c
+* @include qep_qsuper.c
 */
 #define Q_SUPER(super_)  \
     ((Q_HSM_UPCAST(me))->temp.fun = Q_STATE_CAST(super_), (QState)Q_RET_SUPER)
 
 /*! Macro to call in a state-handler when it handles an event.
-*  Applicable to both HSMs and FSMs.
+* @rtr{RQP103} @rtr{RQP120B} @rtr{RQP120C}
 */
 #define Q_HANDLED()      ((QState)Q_RET_HANDLED)
 
@@ -596,10 +567,8 @@ QStateHandler QMsm_getStateHandler_(QHsm * const me);
 */
 #define Q_ACTION_NULL    ((QActionHandler)0)
 
-
-/****************************************************************************/
-/*! All possible values returned from state/action handlers */
-/**
+/*==========================================================================*/
+/*! All possible values returned from state/action handlers
 * @note The order matters for algorithmic correctness.
 */
 enum {
@@ -659,34 +628,34 @@ enum {
 * transition. Applicable only to ::QMsm subclasses.
 */
 #define QM_TRAN(tatbl_) ((Q_HSM_UPCAST(me))->temp.tatbl \
-      = (QMTranActTable *)(tatbl_), (QState)Q_RET_TRAN)
+      = (QMTranActTable const *)(tatbl_), (QState)Q_RET_TRAN)
 
 /*! Macro to call in a QM state-handler when it executes an initial
 * transition. Applicable only to ::QMsm subclasses.
 */
 #define QM_TRAN_INIT(tatbl_) ((Q_HSM_UPCAST(me))->temp.tatbl \
-    = (QMTranActTable *)(tatbl_), (QState)Q_RET_TRAN_INIT)
+    = (QMTranActTable const *)(tatbl_), (QState)Q_RET_TRAN_INIT)
 
 /*! Macro to call in a QM state-handler when it executes a transition
 * to history. Applicable only to ::QMsm subclasses.
 */
-#define QM_TRAN_HIST(history_, tatbl_)                                 \
-    ((((Q_HSM_UPCAST(me))->state.obj = (history_)),                    \
-       ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable *)(tatbl_))), \
+#define QM_TRAN_HIST(history_, tatbl_)                                      \
+    ((((Q_HSM_UPCAST(me))->state.obj  = (history_)),                        \
+      ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_))), \
      (QState)Q_RET_TRAN_HIST)
 
 /*! Macro to call in a QM state-handler when it executes a transition
 * to the submachine via an entry point.
 */
 #define QM_TRAN_EP(tatbl_) ((Q_HSM_UPCAST(me))->temp.tatbl \
-    = (struct QMTranActTable *)(tatbl_), (QState)Q_RET_TRAN_EP)
+    = (QMTranActTable const *)(tatbl_), (QState)Q_RET_TRAN_EP)
 
 /*! Macro to call in a QM state-handler when it executes a transition
 * to exit point. Applicable only to ::QMsm subclasses.
 */
-#define QM_TRAN_XP(xp_, tatbl_)                                        \
-    ((((Q_HSM_UPCAST(me))->state.act = (xp_)),                         \
-       ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable *)(tatbl_))), \
+#define QM_TRAN_XP(xp_, tatbl_)                                             \
+    ((((Q_HSM_UPCAST(me))->state.act  = (xp_)),                             \
+      ((Q_HSM_UPCAST(me))->temp.tatbl = (QMTranActTable const *)(tatbl_))), \
      (QState)Q_RET_TRAN_XP)
 
 /*! Macro to call in a QM state-handler when it handled an event.
@@ -726,4 +695,3 @@ enum {
 };
 
 #endif /* QEP_H */
-

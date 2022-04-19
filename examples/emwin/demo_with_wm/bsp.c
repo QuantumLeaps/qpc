@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -103,7 +103,7 @@ void QF_onClockTick(void) {
 }
 
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const file, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const file, int_t const loc) {
     char str[256];
 
     QF_CRIT_ENTRY(dummy); /* make sure nothing else is running */

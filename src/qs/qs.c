@@ -1,41 +1,34 @@
-/**
-* @file
-* @brief QS software tracing services
-* @ingroup qs
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-09-16
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2002-2021 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
 * <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief QS software tracing services
+* @ingroup qs
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qs_port.h"      /* QS port */
@@ -45,11 +38,11 @@
 
 Q_DEFINE_THIS_MODULE("qs")
 
-/****************************************************************************/
+/*==========================================================================*/
 QSPrivAttr QS_priv_;  /* QS private attributes */
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * This function should be called from QS_onStartup() to provide QS with
 * the data buffer. The first parameter @p sto[] is the address of the memory
@@ -100,8 +93,8 @@ void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
     /* hold off flushing after successfull initialization (see QS_INIT()) */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @description
 * This function sets up the global QS filter to enable or disable the
@@ -118,11 +111,11 @@ void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
 * the QS buffer.
 */
 void QS_glbFilter_(int_fast16_t const filter) {
-    bool isRemove = (filter < 0);
-    uint8_t rec = isRemove ? (uint8_t)(-filter) : (uint8_t)filter;
+    bool const isRemove = (filter < 0);
+    uint8_t const rec = isRemove ? (uint8_t)(-filter) : (uint8_t)filter;
     switch (rec) {
         case QS_ALL_RECORDS: {
-            uint8_t tmp = (isRemove ? 0x00U : 0xFFU);
+            uint8_t const tmp = (isRemove ? 0x00U : 0xFFU);
             uint_fast8_t i;
             /* set all global filters (partially unrolled loop) */
             for (i = 0U; i < Q_DIM(QS_priv_.glbFilter); i += 4U) {
@@ -297,8 +290,8 @@ void QS_glbFilter_(int_fast16_t const filter) {
     }
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @description
 * This function sets up the local QS filter to enable or disable the
@@ -314,13 +307,13 @@ void QS_glbFilter_(int_fast16_t const filter) {
 * the QS buffer.
 */
 void QS_locFilter_(int_fast16_t const filter) {
-    bool isRemove = (filter < 0);
-    uint8_t qs_id = isRemove ? (uint8_t)(-filter) : (uint8_t)filter;
-    uint8_t tmp = (isRemove ? 0x00U : 0xFFU);
+    bool const isRemove = (filter < 0);
+    uint8_t const qs_id = isRemove ? (uint8_t)(-filter) : (uint8_t)filter;
+    uint8_t const tmp = (isRemove ? 0x00U : 0xFFU);
     uint_fast8_t i;
     switch (qs_id) {
         case QS_ALL_IDS:
-            /* set all global filters (partially unrolled loop) */
+            /* set all local filters (partially unrolled loop) */
             for (i = 0U; i < Q_DIM(QS_priv_.locFilter); i += 4U) {
                 QS_priv_.locFilter[i     ] = tmp;
                 QS_priv_.locFilter[i + 1U] = tmp;
@@ -367,8 +360,8 @@ void QS_locFilter_(int_fast16_t const filter) {
     QS_priv_.locFilter[0] |= 0x01U; /* leave QS_ID == 0 always on */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @description
 * This function must be called at the beginning of each QS record.
@@ -377,11 +370,11 @@ void QS_locFilter_(int_fast16_t const filter) {
 * a critical section.
 */
 void QS_beginRec_(uint_fast8_t rec) {
-    uint8_t b      = (uint8_t)(QS_priv_.seq + 1U);
-    uint8_t chksum = 0U;              /* reset the checksum */
-    uint8_t *buf   = QS_priv_.buf;    /* put in a temporary (register) */
-    QSCtr   head   = QS_priv_.head;   /* put in a temporary (register) */
-    QSCtr   end    = QS_priv_.end;    /* put in a temporary (register) */
+    uint8_t const b = (uint8_t)(QS_priv_.seq + 1U);
+    uint8_t chksum  = 0U;                /* reset the checksum */
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
 
     QS_priv_.seq = b; /* store the incremented sequence num */
     QS_priv_.used += 2U; /* 2 bytes about to be added */
@@ -395,8 +388,8 @@ void QS_beginRec_(uint_fast8_t rec) {
     QS_priv_.chksum = chksum; /* save the checksum */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @description
 * This function must be called at the end of each QS record.
@@ -405,9 +398,9 @@ void QS_beginRec_(uint_fast8_t rec) {
 * a critical section.
 */
 void QS_endRec_(void) {
-    uint8_t *buf = QS_priv_.buf;  /* put in a temporary (register) */
-    QSCtr   head = QS_priv_.head;
-    QSCtr   end  = QS_priv_.end;
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr   head        = QS_priv_.head;
+    QSCtr const end     = QS_priv_.end;
     uint8_t b = QS_priv_.chksum;
     b ^= 0xFFU;   /* invert the bits in the checksum */
 
@@ -433,8 +426,8 @@ void QS_endRec_(void) {
     }
 }
 
-/****************************************************************************/
-/** @static @private @memberof QS */
+/*==========================================================================*/
+/*! @static @private @memberof QS */
 void QS_target_info_pre_(uint8_t isReset) {
     static uint8_t const ZERO = (uint8_t)'0';
     static uint8_t const * const TIME = (uint8_t const *)&Q_BUILD_TIME[0];
@@ -443,7 +436,6 @@ void QS_target_info_pre_(uint8_t isReset) {
         uint16_t u16;
         uint8_t  u8[2];
     } endian_test;
-    uint8_t b;
 
     endian_test.u16 = 0x0102U;
     QS_beginRec_((uint_fast8_t)QS_TARGET_INFO);
@@ -496,7 +488,8 @@ void QS_target_info_pre_(uint8_t isReset) {
                        + (uint8_t)(DATE[5] - ZERO));
         }
         /* convert the 3-letter month to a number 1-12 ... */
-        switch (DATE[0] + DATE[1] + DATE[2]) {
+        uint8_t b;
+        switch ((int_t)DATE[0] + (int_t)DATE[1] + (int_t)DATE[2]) {
             case (int_t)'J' + (int_t)'a' + (int_t)'n':
                 b = 1U;
                 break;
@@ -543,18 +536,18 @@ void QS_target_info_pre_(uint8_t isReset) {
     QS_endRec_();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @description
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_u8_fmt_(uint8_t format, uint8_t d) {
-    uint8_t chksum = QS_priv_.chksum; /* put in a temporary (register) */
-    uint8_t *buf   = QS_priv_.buf;    /* put in a temporary (register) */
-    QSCtr   head   = QS_priv_.head;   /* put in a temporary (register) */
-    QSCtr   end    = QS_priv_.end;    /* put in a temporary (register) */
+    uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr   head        = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
 
     QS_priv_.used += 2U; /* 2 bytes about to be added */
 
@@ -565,18 +558,18 @@ void QS_u8_fmt_(uint8_t format, uint8_t d) {
     QS_priv_.chksum = chksum; /* save the checksum */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @description
 * This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_u16_fmt_(uint8_t format, uint16_t d) {
-    uint8_t chksum = QS_priv_.chksum; /* put in a temporary (register) */
-    uint8_t *buf   = QS_priv_.buf;    /* put in a temporary (register) */
-    QSCtr   head   = QS_priv_.head;   /* put in a temporary (register) */
-    QSCtr   end    = QS_priv_.end;    /* put in a temporary (register) */
+    uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
     uint8_t b = (uint8_t)d;
 
     QS_priv_.used += 3U; /* 3 bytes about to be added */
@@ -590,25 +583,24 @@ void QS_u16_fmt_(uint8_t format, uint16_t d) {
     QS_priv_.chksum = chksum; /* save the checksum */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_u32_fmt_(uint8_t format, uint32_t d) {
-    uint8_t chksum = QS_priv_.chksum; /* put in a temporary (register) */
-    uint8_t *buf   = QS_priv_.buf;    /* put in a temporary (register) */
-    QSCtr   head   = QS_priv_.head;   /* put in a temporary (register) */
-    QSCtr   end    = QS_priv_.end;    /* put in a temporary (register) */
+    uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
     uint32_t x = d;
-    uint_fast8_t i;
 
     QS_priv_.used += 5U; /* 5 bytes about to be added */
     QS_INSERT_ESC_BYTE_(format) /* insert the format byte */
 
     /* insert 4 bytes... */
-    for (i = 4U; i != 0U; --i) {
+    for (uint_fast8_t i = 4U; i != 0U; --i) {
         QS_INSERT_ESC_BYTE_((uint8_t)x)
         x >>= 8U;
     }
@@ -617,18 +609,18 @@ void QS_u32_fmt_(uint8_t format, uint32_t d) {
     QS_priv_.chksum = chksum; /* save the checksum */
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 /*! output uint8_t data element without format information */
-/**
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_u8_raw_(uint8_t d) {
-    uint8_t chksum = QS_priv_.chksum; /* put in a temporary (register) */
-    uint8_t *buf = QS_priv_.buf;      /* put in a temporary (register) */
-    QSCtr   head = QS_priv_.head;     /* put in a temporary (register) */
-    QSCtr   end  = QS_priv_.end;      /* put in a temporary (register) */
+    uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
 
     QS_priv_.used += 1U; /* 1 byte about to be added */
     QS_INSERT_ESC_BYTE_(d)
@@ -637,17 +629,17 @@ void QS_u8_raw_(uint8_t d) {
     QS_priv_.chksum = chksum;  /* save the checksum */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_2u8_raw_(uint8_t d1, uint8_t d2) {
-    uint8_t chksum = QS_priv_.chksum; /* put in a temporary (register) */
-    uint8_t *buf = QS_priv_.buf;      /* put in a temporary (register) */
-    QSCtr   head = QS_priv_.head;     /* put in a temporary (register) */
-    QSCtr   end  = QS_priv_.end;      /* put in a temporary (register) */
+    uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
 
     QS_priv_.used += 2U; /* 2 bytes are about to be added */
     QS_INSERT_ESC_BYTE_(d1)
@@ -657,17 +649,17 @@ void QS_2u8_raw_(uint8_t d1, uint8_t d2) {
     QS_priv_.chksum = chksum;  /* save the checksum */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_u16_raw_(uint16_t d) {
-    uint8_t chksum = QS_priv_.chksum; /* put in a temporary (register) */
-    uint8_t *buf = QS_priv_.buf;      /* put in a temporary (register) */
-    QSCtr   head = QS_priv_.head;     /* put in a temporary (register) */
-    QSCtr   end  = QS_priv_.end;      /* put in a temporary (register) */
+    uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
     uint16_t x   = d;
 
     QS_priv_.used += 2U; /* 2 bytes are about to be added */
@@ -680,22 +672,21 @@ void QS_u16_raw_(uint16_t d) {
     QS_priv_.chksum = chksum;  /* save the checksum */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_u32_raw_(uint32_t d) {
-    uint8_t chksum = QS_priv_.chksum; /* put in a temporary (register) */
-    uint8_t *buf = QS_priv_.buf;      /* put in a temporary (register) */
-    QSCtr   head = QS_priv_.head;     /* put in a temporary (register) */
-    QSCtr   end  = QS_priv_.end;      /* put in a temporary (register) */
+    uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
     uint32_t x = d;
-    uint_fast8_t i;
 
     QS_priv_.used += 4U; /* 4 bytes are about to be added */
-    for (i = 4U; i != 0U; --i) {
+    for (uint_fast8_t i = 4U; i != 0U; --i) {
         QS_INSERT_ESC_BYTE_((uint8_t)x)
         x >>= 8U;
     }
@@ -704,8 +695,8 @@ void QS_u32_raw_(uint32_t d) {
     QS_priv_.chksum = chksum;  /* save the checksum */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
@@ -724,21 +715,20 @@ void QS_obj_raw_(void const * const obj) {
 #endif
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_str_raw_(char_t const *str) {
-    uint8_t chksum = QS_priv_.chksum; /* put in a temporary (register) */
-    uint8_t *buf = QS_priv_.buf;      /* put in a temporary (register) */
-    QSCtr   head = QS_priv_.head;     /* put in a temporary (register) */
-    QSCtr   end  = QS_priv_.end;      /* put in a temporary (register) */
-    QSCtr   used = QS_priv_.used;     /* put in a temporary (register) */
-    char_t const *s;
+void QS_str_raw_(char const *str) {
+    uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
+    QSCtr used          = QS_priv_.used; /* put in a temporary (register) */
 
-    for (s = str; *s != '\0'; ++s) {
+    for (char const *s = str; *s != '\0'; ++s) {
         chksum += (uint8_t)*s; /* update checksum */
         QS_INSERT_BYTE_((uint8_t)*s)  /* ASCII char doesn't need escaping */
         ++used;
@@ -751,8 +741,8 @@ void QS_str_raw_(char_t const *str) {
     QS_priv_.used   = used;   /* save # of used buffer space */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @public @memberof QS
 * @description
 * This function delivers one byte at a time from the QS data buffer.
@@ -769,8 +759,8 @@ uint16_t QS_getByte(void) {
         ret = QS_EOD; /* set End-Of-Data */
     }
     else {
-        uint8_t const *buf = QS_priv_.buf;  /* put in a temporary */
-        QSCtr tail   = QS_priv_.tail; /* put in a temporary (register) */
+        uint8_t const * const buf = QS_priv_.buf;  /* put in a temporary */
+        QSCtr tail = QS_priv_.tail; /* put in a temporary (register) */
         ret = (uint16_t)buf[tail];    /* set the byte to return */
         ++tail; /* advance the tail */
         if (tail == QS_priv_.end) { /* tail wrap around? */
@@ -782,8 +772,8 @@ uint16_t QS_getByte(void) {
     return ret; /* return the byte or EOD */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @public @memberof QS
 * @description
 * This function delivers a contiguous block of data from the QS data buffer.
@@ -807,13 +797,13 @@ uint16_t QS_getByte(void) {
 * @note QS_getBlock() is NOT protected with a critical section.
 */
 uint8_t const *QS_getBlock(uint16_t *pNbytes) {
-    QSCtr used = QS_priv_.used; /* put in a temporary (register) */
+    QSCtr const used = QS_priv_.used; /* put in a temporary (register) */
     uint8_t const *buf;
 
     /* any bytes used in the ring buffer? */
     if (used != 0U) {
-        QSCtr tail = QS_priv_.tail;  /* put in a temporary (register) */
-        QSCtr end  = QS_priv_.end;   /* put in a temporary (register) */
+        QSCtr tail       = QS_priv_.tail; /* put in a temporary (register) */
+        QSCtr const end  = QS_priv_.end;  /* put in a temporary (register) */
         QSCtr n = (QSCtr)(end - tail);
         if (n > used) {
             n = used;
@@ -839,13 +829,13 @@ uint8_t const *QS_getBlock(uint16_t *pNbytes) {
     return buf;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macro QS_SIG_DICTIONARY()
 */
 void QS_sig_dict_pre_(enum_t const sig, void const * const obj,
-                      char_t const *name)
+                      char const *name)
 {
     QS_CRIT_STAT_
 
@@ -853,55 +843,119 @@ void QS_sig_dict_pre_(enum_t const sig, void const * const obj,
     QS_beginRec_((uint_fast8_t)QS_SIG_DICT);
     QS_SIG_PRE_(sig);
     QS_OBJ_PRE_(obj);
-    QS_str_raw_((*name == (char_t)'&') ? &name[1] : name);
+    QS_str_raw_((*name == '&') ? &name[1] : name);
     QS_endRec_();
     QS_CRIT_X_();
     QS_onFlush();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macro QS_OBJ_DICTIONARY()
 */
 void QS_obj_dict_pre_(void const * const obj,
-                      char_t const *name)
+                      char const *name)
 {
     QS_CRIT_STAT_
 
     QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_OBJ_DICT);
     QS_OBJ_PRE_(obj);
-    QS_str_raw_((*name == (char_t)'&') ? &name[1] : name);
+    QS_str_raw_((*name == '&') ? &name[1] : name);
     QS_endRec_();
     QS_CRIT_X_();
     QS_onFlush();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
+* @static @private @memberof QS
+* @note This function is only to be used through macro QS_OBJ_ARR_DICTIONARY()
+*/
+void QS_obj_arr_dict_pre_(void const * const obj,
+                          uint_fast16_t idx,
+                          char const *name)
+{
+    Q_REQUIRE_ID(400, idx < 1000U);
+
+    /* format idx into a char buffer as "xxx\0" */
+    uint8_t idx_str[4];
+    uint_fast16_t tmp = idx;
+    uint8_t i;
+    idx_str[3] = 0U; /* zero-terminate */
+    idx_str[2] = (uint8_t)((uint8_t)'0' + (tmp % 10U));
+    tmp /= 10U;
+    idx_str[1] =  (uint8_t)((uint8_t)'0' + (tmp % 10U));
+    if (idx_str[1] == (uint8_t)'0') {
+       i = 2U;
+    }
+    else {
+       tmp /= 10U;
+       idx_str[0] =  (uint8_t)((uint8_t)'0' + (tmp % 10U));
+        if (idx_str[0] == (uint8_t)'0') {
+           i = 1U;
+        }
+        else {
+           i = 0U;
+        }
+    }
+
+    QS_CRIT_STAT_
+    uint8_t j = ((*name == '&') ? 1U : 0U);
+
+    QS_CRIT_E_();
+    QS_beginRec_((uint_fast8_t)QS_OBJ_DICT);
+    QS_OBJ_PRE_(obj);
+    for (; name[j] != '\0'; ++j) {
+        QS_U8_PRE_(name[j]);
+        if (name[j] == '[') {
+            ++j;
+            break;
+        }
+    }
+    for (; idx_str[i] != 0U; ++i) {
+        QS_U8_PRE_(idx_str[i]);
+    }
+    /* skip chars until ']' */
+    for (; name[j] != '\0'; ++j) {
+        if (name[j] == ']') {
+            break;
+        }
+    }
+    for (; name[j] != '\0'; ++j) {
+        QS_U8_PRE_(name[j]);
+    }
+    QS_U8_PRE_(0U); /* zero-terminate */
+    QS_endRec_();
+    QS_CRIT_X_();
+    QS_onFlush();
+}
+
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macro QS_FUN_DICTIONARY()
 */
-void QS_fun_dict_pre_(void (* const fun)(void), char_t const *name) {
+void QS_fun_dict_pre_(void (* const fun)(void), char const *name) {
     QS_CRIT_STAT_
 
     QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_FUN_DICT);
     QS_FUN_PRE_(fun);
-    QS_str_raw_((*name == (char_t)'&') ? &name[1] : name);
+    QS_str_raw_((*name == '&') ? &name[1] : name);
     QS_endRec_();
     QS_CRIT_X_();
     QS_onFlush();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macro QS_USR_DICTIONARY()
 */
 void QS_usr_dict_pre_(enum_t const rec,
-                      char_t const * const name)
+                      char const * const name)
 {
     QS_CRIT_STAT_
 
@@ -914,19 +968,18 @@ void QS_usr_dict_pre_(enum_t const rec,
     QS_onFlush();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_mem_fmt_(uint8_t const *blk, uint8_t size) {
     uint8_t chksum = QS_priv_.chksum;
-    uint8_t *buf   = QS_priv_.buf;  /* put in a temporary (register) */
-    QSCtr   head   = QS_priv_.head; /* put in a temporary (register) */
-    QSCtr   end    = QS_priv_.end;  /* put in a temporary (register) */
-    uint8_t const *pb = blk;
-    uint8_t len;
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
+    uint8_t const *pb   = blk;
 
     QS_priv_.used += ((QSCtr)size + 2U); /* size+2 bytes to be added */
 
@@ -935,7 +988,7 @@ void QS_mem_fmt_(uint8_t const *blk, uint8_t size) {
 
     QS_INSERT_ESC_BYTE_(size)
     /* output the 'size' number of bytes */
-    for (len = size; len > 0U; --len) {
+    for (uint8_t len = size; len > 0U; --len) {
         QS_INSERT_ESC_BYTE_(*pb)
         ++pb;
     }
@@ -944,25 +997,24 @@ void QS_mem_fmt_(uint8_t const *blk, uint8_t size) {
     QS_priv_.chksum = chksum; /* save the checksum */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_str_fmt_(char_t const *str) {
+void QS_str_fmt_(char const *str) {
     uint8_t chksum = QS_priv_.chksum;
-    uint8_t *buf   = QS_priv_.buf;  /* put in a temporary (register) */
-    QSCtr   head   = QS_priv_.head; /* put in a temporary (register) */
-    QSCtr   end    = QS_priv_.end;  /* put in a temporary (register) */
-    QSCtr   used   = QS_priv_.used; /* put in a temporary (register) */
-    char_t const *s;
+    uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
+    QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
+    QSCtr const end     = QS_priv_.end;  /* put in a temporary (register) */
+    QSCtr used          = QS_priv_.used; /* put in a temporary (register) */
 
     used += 2U; /* account for the format byte and the terminating-0 */
     QS_INSERT_BYTE_((uint8_t)QS_STR_T)
     chksum += (uint8_t)QS_STR_T;
 
-    for (s = str; *s != '\0'; ++s) {
+    for (char const *s = str; *s != '\0'; ++s) {
         QS_INSERT_BYTE_((uint8_t)*s) /* ASCII char doesn't need escaping */
         chksum += (uint8_t)*s; /* update checksum */
         ++used;
@@ -974,28 +1026,27 @@ void QS_str_fmt_(char_t const *str) {
     QS_priv_.used   = used;    /* save # of used buffer space */
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 /*! Output the assertion failure trace record
 * @static @public @memberof QS
 */
-void QS_ASSERTION(char_t const * const module,
+void QS_ASSERTION(char const * const module,
                   int_t const loc,
                   uint32_t delay)
 {
-    uint32_t volatile delay_ctr;
-
     QS_BEGIN_NOCRIT_PRE_(QS_ASSERT_FAIL, 0U)
         QS_TIME_PRE_();
         QS_U16_PRE_(loc);
-        QS_STR_PRE_((module != (char_t *)0) ? module : "?");
+        QS_STR_PRE_((module != (char *)0) ? module : "?");
     QS_END_NOCRIT_PRE_()
     QS_onFlush();
-    for (delay_ctr = delay; delay_ctr > 0U; --delay_ctr) {
+
+    for (uint32_t volatile delay_ctr = delay; delay_ctr > 0U; --delay_ctr) {
     }
     QS_onCleanup();
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 /*! Output the critical section entry/exit
 * @static @public @memberof QS
 */
@@ -1015,7 +1066,7 @@ void QF_QS_CRIT_EXIT(void) {
     QS_END_NOCRIT_PRE_()
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 /*! Output the ISR entry
 * @static @public @memberof QS
 */
@@ -1035,4 +1086,3 @@ void QF_QS_ISR_EXIT(uint8_t const isrnest, uint8_t const prio) {
         QS_2u8_raw_(isrnest, prio);
     QS_END_NOCRIT_PRE_()
 }
-

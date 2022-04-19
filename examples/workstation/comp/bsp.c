@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2018 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -46,17 +46,17 @@ void BSP_init(int argc, char *argv[]) {
     (void)argv; /* unused parameter */
 }
 /*..........................................................................*/
-void BSP_showMsg(char_t const *str) {
+void BSP_showMsg(char const *str) {
     PRINTF_S("%s\n", str);
     fflush(stdout);
 }
 /*..........................................................................*/
-void BSP_showTime24H(char_t const *str, uint32_t time, uint32_t base) {
+void BSP_showTime24H(char const *str, uint32_t time, uint32_t base) {
     PRINTF_S("%s, %02d:%02d\n", str, (int)(time / base), (int)(time % base));
     fflush(stdout);
 }
 /*..........................................................................*/
-void BSP_showTime12H(char_t const *str, uint32_t time, uint32_t base) {
+void BSP_showTime12H(char const *str, uint32_t time, uint32_t base) {
     uint32_t h = time / base;
 
     PRINTF_S("%s %02d:%02d %s\n", str, (h % 12) ? (h % 12) : 12,
@@ -133,7 +133,7 @@ void BSP_onKeyboardInput(uint8_t key) {
 }
 
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
+Q_NORETURN Q_onAssert(char const * const file, int_t const line) {
     FPRINTF_S(stderr, "Assertion failed in %s, line %d", file, line);
     exit(-1);
 }

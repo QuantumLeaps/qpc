@@ -1,47 +1,45 @@
-/**
-* @file
-* @brief QS floating point output implementation
-* @ingroup qs
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-09-16
+/*============================================================================
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of open-source GPL 3.0
+* (or any later version), or alternatively, under the terms of one of the
+* closed-source Quantum Leaps commercial licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GPL 3.0 license can be found at:
+* <www.gnu.org/licenses/gpl-3.0.txt>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* The terms of the closed-source Quantum Leaps commercial licenses
+* can be found at:
+* <www.state-machine.com/licensing>
+*
+* NOTE: Please do NOT plagiarize this software to sidestep the license
+* obligations. This is both unfair and illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/**
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief QS floating point output implementation
+* @ingroup qs
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qs_port.h"      /* QS port */
 #include "qs_pkg.h"       /* QS package-scope internal interface */
 
-/****************************************************************************/
+/*==========================================================================*/
+
 /**
 * @static @private @memberof QS
 * @note This function is only to be used through macros, never in the
@@ -52,10 +50,10 @@ void QS_f32_fmt_(uint8_t format, float32_t f) {
         float32_t f;
         uint32_t  u;
     } fu32;  /* the internal binary representation */
-    uint8_t chksum = QS_priv_.chksum; /* put in a temporary (register) */
-    uint8_t *buf = QS_priv_.buf;      /* put in a temporary (register) */
-    QSCtr   head = QS_priv_.head;     /* put in a temporary (register) */
-    QSCtr   end  = QS_priv_.end;      /* put in a temporary (register) */
+    uint8_t chksum      = QS_priv_.chksum; /* put in a temporary (register) */
+    uint8_t * const buf = QS_priv_.buf;
+    QSCtr head          = QS_priv_.head;
+    QSCtr const end     = QS_priv_.end;
     uint_fast8_t i;
 
     fu32.f = f; /* assign the binary representation */
@@ -66,14 +64,15 @@ void QS_f32_fmt_(uint8_t format, float32_t f) {
     /* insert 4 bytes... */
     for (i = 4U; i != 0U; --i) {
         QS_INSERT_ESC_BYTE_((uint8_t)fu32.u)
-        fu32.u >>= 8;
+        fu32.u >>= 8U;
     }
 
     QS_priv_.head   = head;   /* save the head */
     QS_priv_.chksum = chksum; /* save the checksum */
 }
 
-/****************************************************************************/
+/*==========================================================================*/
+
 /**
 * @static @private @memberof QS
 * @description
@@ -85,10 +84,10 @@ void QS_f64_fmt_(uint8_t format, float64_t d) {
         float64_t d;
         uint32_t  u[2];
     } fu64; /* the internal binary representation */
-    uint8_t chksum = QS_priv_.chksum;
-    uint8_t *buf   = QS_priv_.buf;
-    QSCtr   head   = QS_priv_.head;
-    QSCtr   end    = QS_priv_.end;
+    uint8_t chksum      = QS_priv_.chksum;
+    uint8_t * const buf = QS_priv_.buf;
+    QSCtr head          = QS_priv_.head;
+    QSCtr const end     = QS_priv_.end;
     uint32_t i;
 
     /* static constant untion to detect endianness of the machine */
@@ -113,16 +112,15 @@ void QS_f64_fmt_(uint8_t format, float64_t d) {
     /* output 4 bytes from fu64.u[0]... */
     for (i = 4U; i != 0U; --i) {
         QS_INSERT_ESC_BYTE_((uint8_t)fu64.u[0])
-        fu64.u[0] >>= 8;
+        fu64.u[0] >>= 8U;
     }
 
     /* output 4 bytes from fu64.u[1]... */
     for (i = 4U; i != 0U; --i) {
         QS_INSERT_ESC_BYTE_((uint8_t)fu64.u[1])
-        fu64.u[1] >>= 8;
+        fu64.u[1] >>= 8U;
     }
 
     QS_priv_.head   = head;   /* save the head */
     QS_priv_.chksum = chksum; /* save the checksum */
 }
-

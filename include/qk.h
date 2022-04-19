@@ -1,42 +1,35 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QK/C (preemptive non-blocking kernel) platform-independent
 * public interface.
 * @ingroup qk
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-08
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #ifndef QK_H
 #define QK_H
@@ -45,7 +38,7 @@
 #include "qmpool.h"   /* QK kernel uses the native QP memory pool  */
 #include "qpset.h"    /* QK kernel uses the native QP priority set */
 
-/****************************************************************************/
+/*==========================================================================*/
 /* QF configuration for QK -- data members of the QActive class... */
 
 /* QK event-queue used for AOs */
@@ -56,8 +49,7 @@
 */
 #define QF_THREAD_TYPE      void*
 
-
-/****************************************************************************/
+/*==========================================================================*/
 /*! private attributes of the QK kernel */
 typedef struct {
     uint8_t volatile actPrio;    /*!< prio of the active AO */
@@ -71,13 +63,12 @@ typedef struct {
 /*! global private attributes of the QK kernel */
 extern QK_PrivAttr QK_attr_;
 
-/****************************************************************************/
+/*==========================================================================*/
 #ifdef QK_ON_CONTEXT_SW
 
     struct QActive; /* forward declaration */
 
-    /*! QK context switch callback (customized in BSPs for QK) */
-    /**
+    /*! QK context switch callback (customized in BSPs for QK)
     * @description
     * This callback function provides a mechanism to perform additional
     * custom operations when QK switches context from one thread to
@@ -100,8 +91,7 @@ extern QK_PrivAttr QK_attr_;
 
 #endif /* QK_ON_CONTEXT_SW */
 
-/*! QK idle callback (customized in BSPs for QK) */
-/**
+/*! QK idle callback (customized in BSPs for QK)
 * @description
 * QK_onIdle() is called continuously by the QK idle loop. This callback
 * gives the application an opportunity to enter a power-saving CPU mode,
@@ -115,8 +105,7 @@ extern QK_PrivAttr QK_attr_;
 */
 void QK_onIdle(void);
 
-
-/****************************************************************************/
+/*==========================================================================*/
 /*! QK scheduler finds the highest-priority thread ready to run */
 uint_fast8_t QK_sched_(void);
 
@@ -125,7 +114,7 @@ uint_fast8_t QK_sched_(void);
 */
 void QK_activate_(void);
 
-/****************************************************************************/
+/*==========================================================================*/
 /*! QK Scheduler locking */
 
 /*! The scheduler lock status */
@@ -137,7 +126,7 @@ QSchedStatus QK_schedLock(uint_fast8_t ceiling);
 /*! QK Scheduler unlock */
 void QK_schedUnlock(QSchedStatus stat);
 
-/****************************************************************************/
+/*==========================================================================*/
 /* interface used only inside QP implementation, but not in applications */
 #ifdef QP_IMPL
 
@@ -198,4 +187,3 @@ void QK_schedUnlock(QSchedStatus stat);
 #endif /* QP_IMPL */
 
 #endif /* QK_H */
-

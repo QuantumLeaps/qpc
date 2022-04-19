@@ -1,4 +1,4 @@
-//*****************************************************************************
+//============================================================================*
 //
 // sysctl.h - Prototypes for the system control driver.
 //
@@ -35,17 +35,17 @@
 //
 // This is part of revision 9453 of the Stellaris Peripheral Driver Library.
 //
-//*****************************************************************************
+//============================================================================*
 
 #ifndef __SYSCTL_H__
 #define __SYSCTL_H__
 
-//*****************************************************************************
+//============================================================================*
 //
 // If building with a C++ compiler, make all of the definitions in this header
 // have a C binding.
 //
-//*****************************************************************************
+//============================================================================*
 #ifdef __cplusplus
 extern "C"
 {
@@ -53,7 +53,7 @@ extern "C"
 
 typedef unsigned char tBoolean;
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the
 // SysCtlPeripheralPresent(), SysCtlPeripheralEnable(),
@@ -61,7 +61,7 @@ typedef unsigned char tBoolean;
 // ulPeripheral parameter.  The peripherals in the fourth group (upper nibble
 // is 3) can only be used with the SysCtlPeripheralPresent() API.
 //
-//*****************************************************************************
+//============================================================================*
 #ifndef DEPRECATED
 #define SYSCTL_PERIPH_WDOG      0x00000008  // Watchdog
 #endif
@@ -195,12 +195,12 @@ typedef unsigned char tBoolean;
 #define SYSCTL_PERIPH2_HIBERNATE \
                                 0xf0001400  // Hibernate
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the SysCtlPinPresent() API
 // as the ulPin parameter.
 //
-//*****************************************************************************
+//============================================================================*
 #define SYSCTL_PIN_PWM0         0x00000001  // PWM0 pin
 #define SYSCTL_PIN_PWM1         0x00000002  // PWM1 pin
 #define SYSCTL_PIN_PWM2         0x00000004  // PWM2 pin
@@ -235,12 +235,12 @@ typedef unsigned char tBoolean;
 #define SYSCTL_PIN_CCP5         0x20000000  // CCP5 pin
 #define SYSCTL_PIN_32KHZ        0x80000000  // 32kHz pin
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the SysCtlLDOSet() API as
 // the ulVoltage value, or returned by the SysCtlLDOGet() API.
 //
-//*****************************************************************************
+//============================================================================*
 #define SYSCTL_LDO_2_25V        0x00000005  // LDO output of 2.25V
 #define SYSCTL_LDO_2_30V        0x00000004  // LDO output of 2.30V
 #define SYSCTL_LDO_2_35V        0x00000003  // LDO output of 2.35V
@@ -253,21 +253,21 @@ typedef unsigned char tBoolean;
 #define SYSCTL_LDO_2_70V        0x0000001c  // LDO output of 2.70V
 #define SYSCTL_LDO_2_75V        0x0000001b  // LDO output of 2.75V
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the SysCtlLDOConfigSet() API.
 //
-//*****************************************************************************
+//============================================================================*
 #define SYSCTL_LDOCFG_ARST      0x00000001  // Allow LDO failure to reset
 #define SYSCTL_LDOCFG_NORST     0x00000000  // Do not reset on LDO failure
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the SysCtlIntEnable(),
 // SysCtlIntDisable(), and SysCtlIntClear() APIs, or returned in the bit mask
 // by the SysCtlIntStatus() API.
 //
-//*****************************************************************************
+//============================================================================*
 #define SYSCTL_INT_MOSC_PUP     0x00000100  // MOSC power-up interrupt
 #define SYSCTL_INT_USBPLL_LOCK  0x00000080  // USB PLL lock interrupt
 #define SYSCTL_INT_PLL_LOCK     0x00000040  // PLL lock interrupt
@@ -278,12 +278,12 @@ typedef unsigned char tBoolean;
 #define SYSCTL_INT_BOR          0x00000002  // Brown out interrupt
 #define SYSCTL_INT_PLL_FAIL     0x00000001  // PLL failure interrupt
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the SysCtlResetCauseClear()
 // API or returned by the SysCtlResetCauseGet() API.
 //
-//*****************************************************************************
+//============================================================================*
 #define SYSCTL_CAUSE_LDO        0x00000020  // LDO power not OK reset
 #define SYSCTL_CAUSE_WDOG1      0x00000020  // Watchdog 1 reset
 #define SYSCTL_CAUSE_SW         0x00000010  // Software reset
@@ -293,22 +293,22 @@ typedef unsigned char tBoolean;
 #define SYSCTL_CAUSE_POR        0x00000002  // Power on reset
 #define SYSCTL_CAUSE_EXT        0x00000001  // External reset
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the SysCtlBrownOutConfigSet()
 // API as the ulConfig parameter.
 //
-//*****************************************************************************
+//============================================================================*
 #define SYSCTL_BOR_RESET        0x00000002  // Reset instead of interrupting
 #define SYSCTL_BOR_RESAMPLE     0x00000001  // Resample BOR before asserting
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the SysCtlPWMClockSet() API
 // as the ulConfig parameter, and can be returned by the SysCtlPWMClockGet()
 // API.
 //
-//*****************************************************************************
+//============================================================================*
 #define SYSCTL_PWMDIV_1         0x00000000  // PWM clock is processor clock /1
 #define SYSCTL_PWMDIV_2         0x00100000  // PWM clock is processor clock /2
 #define SYSCTL_PWMDIV_4         0x00120000  // PWM clock is processor clock /4
@@ -317,24 +317,24 @@ typedef unsigned char tBoolean;
 #define SYSCTL_PWMDIV_32        0x00180000  // PWM clock is processor clock /32
 #define SYSCTL_PWMDIV_64        0x001A0000  // PWM clock is processor clock /64
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the SysCtlADCSpeedSet() API
 // as the ulSpeed parameter, and can be returned by the SyCtlADCSpeedGet()
 // API.
 //
-//*****************************************************************************
+//============================================================================*
 #define SYSCTL_ADCSPEED_1MSPS   0x00000F00  // 1,000,000 samples per second
 #define SYSCTL_ADCSPEED_500KSPS 0x00000A00  // 500,000 samples per second
 #define SYSCTL_ADCSPEED_250KSPS 0x00000500  // 250,000 samples per second
 #define SYSCTL_ADCSPEED_125KSPS 0x00000000  // 125,000 samples per second
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the SysCtlClockSet() API as
 // the ulConfig parameter.
 //
-//*****************************************************************************
+//============================================================================*
 #define SYSCTL_SYSDIV_1         0x07800000  // Processor clock is osc/pll /1
 #define SYSCTL_SYSDIV_2         0x00C00000  // Processor clock is osc/pll /2
 #define SYSCTL_SYSDIV_3         0x01400000  // Processor clock is osc/pll /3
@@ -499,12 +499,12 @@ typedef unsigned char tBoolean;
 #define SYSCTL_INT_OSC_DIS      0x00000002  // Disable internal oscillator
 #define SYSCTL_MAIN_OSC_DIS     0x00000001  // Disable main oscillator
 
-//*****************************************************************************
+//============================================================================*
 //
 // The following are values that can be passed to the SysCtlDeepSleepClockSet()
 // API as the ulConfig parameter.
 //
-//*****************************************************************************
+//============================================================================*
 #define SYSCTL_DSLP_DIV_1       0x00000000  // Deep-sleep clock is osc /1
 #define SYSCTL_DSLP_DIV_2       0x00800000  // Deep-sleep clock is osc /2
 #define SYSCTL_DSLP_DIV_3       0x01000000  // Deep-sleep clock is osc /3
@@ -575,11 +575,11 @@ typedef unsigned char tBoolean;
 #define SYSCTL_DSLP_OSC_EXT32   0x00000070  // Osc source is ext. 32 KHz
 #define SYSCTL_DSLP_PIOSC_PD    0x00000002  // Power down PIOSC in deep-sleep
 
-//*****************************************************************************
+//============================================================================*
 //
 // Prototypes for the APIs.
 //
-//*****************************************************************************
+//============================================================================*
 extern unsigned long SysCtlSRAMSizeGet(void);
 extern unsigned long SysCtlFlashSizeGet(void);
 extern tBoolean SysCtlPinPresent(unsigned long ulPin);
@@ -632,11 +632,11 @@ extern void SysCtlUSBPLLDisable(void);
 extern unsigned long SysCtlI2SMClkSet(unsigned long ulInputClock,
                                       unsigned long ulMClk);
 
-//*****************************************************************************
+//============================================================================*
 //
 // Mark the end of the C bindings section for C++ compilers.
 //
-//*****************************************************************************
+//============================================================================*
 #ifdef __cplusplus
 }
 #endif

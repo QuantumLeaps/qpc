@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -46,22 +46,10 @@ int main() {
     static QEvt const *philoQueueSto[N_PHILO][N_PHILO];
     static QSubscrList subscrSto[MAX_PUB_SIG];
     static QF_MPOOL_EL(TableEvt) smlPoolSto[2*N_PHILO]; /* small pool */
-    uint8_t n;
-
-    Philo_ctor(); /* instantiate all Philosopher active objects */
-    Table_ctor(); /* instantiate the Table active object */
     QTicker_ctor(&l_ticker0, 0U); /* ticker AO for tick rate 0 */
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init();   /* initialize the Board Support Package */
-
-    /* object dictionaries... */
-    QS_OBJ_DICTIONARY(AO_Table);
-    QS_OBJ_DICTIONARY(AO_Philo[0]);
-    QS_OBJ_DICTIONARY(AO_Philo[1]);
-    QS_OBJ_DICTIONARY(AO_Philo[2]);
-    QS_OBJ_DICTIONARY(AO_Philo[3]);
-    QS_OBJ_DICTIONARY(AO_Philo[4]);
 
     /* initialize publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
@@ -72,7 +60,8 @@ int main() {
     QACTIVE_START(the_Ticker0, 1U, 0, 0, 0, 0, 0);
 
     /* start the active objects... */
-    for (n = 0U; n < N_PHILO; ++n) {
+    for (uint8_t n = 0U; n < N_PHILO; ++n) {
+        Philo_ctor(n); /* instantiate Philo[n] AO */
         QACTIVE_START(AO_Philo[n],           /* AO to start */
                       (uint_fast8_t)(n + 2), /* QP priority of the AO */
                       philoQueueSto[n],      /* event queue storage */
@@ -81,6 +70,8 @@ int main() {
                       0U,                    /* size of the stack [bytes] */
                       (QEvt *)0);            /* initialization event */
     }
+
+    Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 2), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */

@@ -7,7 +7,7 @@ QState Blinky_off(Blinky * const me, QEvt const * const e) {
             break;
         }
         case TIMEOUT_SIG: {
-            status = Q_TRAN(&Blinky_on); /*<== */
+            status = Q_TRAN(&Blinky_on); /*<--- */
             break;
         }
         default: {

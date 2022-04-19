@@ -12,7 +12,7 @@ Please refer to the README files in the sub-directories for specific
 instructions how to use and customize the example to your needs.
 
 
-Support Code for EK-TM4C123GXL Board 
+Support Code for EK-TM4C123GXL Board
 ====================================
 The directory qpc\3rd_party\ek-tm4c123gxl contains the CMSIS-compliant
 device code for the TM4C123GH6PM MCU (ARM Cortex-M4F). Please see the

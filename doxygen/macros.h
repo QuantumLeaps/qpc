@@ -1,6 +1,6 @@
 /**
 * @file
-* @brief Command-line macros and macros for porting and configuring QP
+* @brief Various macros for configuring and porting QP/C
 */
 
 /*! The preprocessor switch to disable checking assertions */
@@ -34,11 +34,10 @@
 */
 #define Q_UTEST
 
-
 /*! The preprocessor switch to enable constructor in the ::QEvt class
 * instrumentation in the code */
 /**
-* @tr{RQP005}
+* @rtr{RQP005}
 */
 #define Q_EVT_CTOR
 
@@ -72,12 +71,12 @@
 #define QACTIVE_EQUEUE_WAIT_(me_)                  \
     (Q_ASSERT((me_)->eQueue.frontEvt != (QEvt *)0))
 
-#if (QF_MAX_ACTIVE <= 8)
+#if (QF_MAX_ACTIVE <= 8U)
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do {       \
         QPSet8_insert(&QK_readySet_, (me_)->prio); \
-        if (QK_intNest_ == (uint_fast8_t)0) {      \
+        if (QK_intNest_ == 0U) {                   \
             uint_fast8_t p = QK_schedPrio_();      \
-            if (p != (uint_fast8_t)0) {            \
+            if (p != 0U) {                         \
                 QK_sched_(p);                      \
             }                                      \
         }                                          \
@@ -99,9 +98,9 @@
     */
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do {        \
         QPSet64_insert(&QK_readySet_, (me_)->prio); \
-        if (QK_intNest_ == (uint_fast8_t)0) {       \
+        if (QK_intNest_ == 0U) {                    \
             uint_fast8_t p = QK_schedPrio_();       \
-            if (p != (uint_fast8_t)0) {             \
+            if (p != 0U) {                         \
                 QK_sched_(p);                       \
             }                                       \
         }                                           \

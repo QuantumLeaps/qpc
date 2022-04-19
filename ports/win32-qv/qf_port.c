@@ -11,7 +11,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -108,12 +108,8 @@ int_t QF_run(void) {
     while (l_isRunning) {
         /* find the maximum priority AO ready to run */
         if (QPSet_notEmpty(&QV_readySet_)) {
-            uint_fast8_t p;
-            QActive *a;
-            QEvt const *e;
-
-            QPSet_findMax(&QV_readySet_, p);
-            a = QF_active_[p];
+            uint_fast8_t p = QPSet_findMax(&QV_readySet_);
+            QActive *a = QF_active_[p];
             QF_CRIT_X_();
 
             /* the active object 'a' must still be registered in QF
@@ -127,7 +123,7 @@ int_t QF_run(void) {
             * 2. dispatch the event to the AO's state machine.
             * 3. determine if event is garbage and collect it if so
             */
-            e = QActive_get_(a);
+            QEvt const *e = QActive_get_(a);
             QHSM_DISPATCH(&a->super, e, a->prio);
             QF_gc(e);
 

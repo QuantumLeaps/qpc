@@ -3,7 +3,7 @@ NXT mbed-LPC1768 board.
 
 The sub-directory "gnu" contains code that is specific to the particular
 ARM toolchain, such GNU-ARM. Support for other toolchains can be added,
-if needed. 
+if needed.
 
 
 Adjusting the CPU Clock Speed

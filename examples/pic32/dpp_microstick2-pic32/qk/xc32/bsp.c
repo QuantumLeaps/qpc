@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -116,7 +116,7 @@ void BSP_terminate(int16_t result) {
     (void)result;
 }
 /*..........................................................................*/
-void BSP_displayPhilStat(uint8_t const n, char_t const *stat) {
+void BSP_displayPhilStat(uint8_t const n, char const *stat) {
     (void)n;
     (void)stat;
     LED_TOGGLE();
@@ -147,7 +147,7 @@ void BSP_randomSeed(uint32_t seed) {
 * debugging and MUST be changed for deployment of the application (assuming
 * that you ship your production code with assertions enabled).
 */
-Q_NORETURN Q_onAssert(char_t const * const file, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const file, int_t const loc) {
     (void)file;       /* unused parameter */
     (void)loc;        /* unused parameter */
     QF_INT_DISABLE(); /* make sure that interrupts are disabled */

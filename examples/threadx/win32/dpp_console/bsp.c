@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product: DPP example, ThreadX kernel, Win32 emulation, console app.
-* Last updated for version 6.9.4
+* Last updated for: @ref qpc_7_0_0
 * Last updated on  2021-12-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -71,7 +71,7 @@ void BSP_init(void) {
         "Press 'p' to pause\n"
         "Press 's' to serve\n"
         "Press 'x' to quit...\n",
-        QP_versionStr);
+        QP_VERSION_STR);
 
     /* seed the random number generator */
     BSP_randomSeed(1234U);
@@ -187,7 +187,7 @@ void QF_onCleanup(void) {
 }
 
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     printf("Assertion failed in %s:%d\n", module, loc);
     QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 }

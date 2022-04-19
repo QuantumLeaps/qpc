@@ -35,7 +35,7 @@ size), but unfortunately the Spy configuration will no longer link due to
 exceeding the code size limit. Unfortunately also, the example won't compile
 with the free evaluation MDK-ARM uVision, because it exceeds the 32KB limit
 of this toolset.
-*** 
+***
 
 ***
 NOTE:
@@ -51,9 +51,9 @@ Downloading the Code to the EK-LM3S6965 Board
 The "gnu" sub-folder contains the flash.bat file to download the binary image
 to the board. This batch file requires installation of the free LMFlash utility
 from Texas Instruments.
-   
+
 The IAR project in the "iar" sub-folder allows you to download and debug
-the code on the board from the EWARM IDE. 
+the code on the board from the EWARM IDE.
 
 
 Running the QP-lwIP Example
@@ -178,17 +178,17 @@ structured embedded applications as a set of concurrently executing
 hierarchical state machines (UML statecharts). The QP frameworks support
 manual coding of UML state machines in C or C++ as well as fully
 automatic code generation by means of the free graphical QM modeling tool.
- 
+
 Current versions of QP are: QP/C and QP/C++, which require about 4KB of code
 and a few hundred bytes of RAM, and the ultra-lightweight QP-nano, which
-requires only 1-2KB of code and just several bytes of RAM. 
+requires only 1-2KB of code and just several bytes of RAM.
 
 QP can work with or without a traditional OS/RTOS. In the standalone
 configuration, QP can completely replace a traditional RTOS. QP includes a
 simple non-preemptive scheduler and a fully preemptive kernel (QK). The QP/C
 and QP/C++ frameworks can also work with a traditional OS/RTOS to take
 advantage of existing device drivers, communication stacks, and other
-middleware. 
+middleware.
 
 All versions of QP are described in detail in the book Practical UML
 Statecharts in C/C++, Second Edition: Event-Driven Programming for Embedded
@@ -196,12 +196,12 @@ Systems by Dr. Miro Samek, (ISBN: 978-0750687065). QP has a strong user
 community and has been applied worldwide by some of the largest companies in
 their respective industries, such as: consumer electronics, telecommunications
 equipment, industrial automation, transportation systems, medical devices,
-national defense, and many more. 
+national defense, and many more.
 
 QP is licensed under the GPL version 3 open source license as well as under
 commercial closed-source licenses, which are expressly designed for users, who
 wish to retain the proprietary character of their code. More information about
-QP can be found at the QP homepage at http://www.state-machine.com. 
+QP can be found at the QP homepage at http://www.state-machine.com.
 
 
 About lwIP TCP/IP Stack
@@ -216,7 +216,7 @@ used either with or without an underlying RTOS.
 The focus of the lwIP TCP/IP implementation is to reduce the RAM usage while
 still having a full scale TCP. This makes lwIP suitable for use in embedded
 systems with tens of kilobytes of free RAM and room for around 40 kilobytes
-of code ROM. 
+of code ROM.
 
 lwIP is licensed under the BSD open source license. More information about
 lwIP can be found at the lwIP homepage at http://www.sics.se/~adam/lwip/.
@@ -224,7 +224,7 @@ lwIP can be found at the lwIP homepage at http://www.sics.se/~adam/lwip/.
 The lwIP version 1.4.1 (the latest as of this writing) is included in the
 qpc\3rd_party\lwip directory. Please refer to this directory for more
 information about licensing lwIP and the source.
-   
+
 
 Contact information
 ===================

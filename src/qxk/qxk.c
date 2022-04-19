@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief QXK preemptive dual-mode kernel core functions
 * @ingroup qxk
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-18
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -61,8 +54,8 @@ QXK_PrivAttr QXK_attr_; /* global private attributes of the QXK kernel */
 /* Local-scope objects ******************************************************/
 static QActive l_idleThread;
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Initializes QF and must be called exactly once before any other QF
 * function. Typically, QF_init() is called from main() even before
@@ -95,8 +88,8 @@ void QF_init(void) {
 #endif
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * This function stops the QF application. After calling this function,
 * QF attempts to gracefully stop the application. This graceful shutdown
@@ -117,7 +110,7 @@ void QF_stop(void) {
     /* nothing else to do for the preemptive QXK kernel */
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 /*! process all events posted during initialization */
 static void initial_events(void); /* prototype */
 static void initial_events(void) {
@@ -129,8 +122,8 @@ static void initial_events(void) {
     }
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * QF_run() is typically called from main() after you initialize
 * the QF and start at least one active object with QACTIVE_START().
@@ -158,8 +151,8 @@ int_t QF_run(void) {
 #endif
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * Starts execution of the AO and registers the AO with the framework.
 * Also takes the top-most initial transition in the AO's state machine.
@@ -186,9 +179,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    QF_CRIT_STAT_
-
-    /** @pre AO cannot be started:
+    /*! @pre AO cannot be started:
     * - from an ISR;
     * - the priority must be in range;
     * - the stack storage must NOT be provided (because the QK kernel does
@@ -209,6 +200,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* see if this AO needs to be scheduled in case QXK is already running */
+    QF_CRIT_STAT_
     QF_CRIT_E_();
     if (QXK_sched_() != 0U) { /* activation needed? */
         QXK_activate_();
@@ -216,8 +208,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QF_CRIT_X_();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * This function locks the QXK scheduler to the specified ceiling.
 *
@@ -247,18 +239,18 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 * @include qxk_lock.c
 */
 QSchedStatus QXK_schedLock(uint_fast8_t ceiling) {
-    QSchedStatus stat;
     QF_CRIT_STAT_
     QF_CRIT_E_();
 
-    /** @pre The QXK scheduler lock:
+    /*! @pre The QXK scheduler lock:
     * - cannot be called from an ISR;
     */
     Q_REQUIRE_ID(400, !QXK_ISR_CONTEXT_());
 
     /* first store the previous lock prio if below the ceiling */
+    QSchedStatus stat;
     if ((uint_fast8_t)QXK_attr_.lockPrio < ceiling) {
-        stat = ((QSchedStatus)QXK_attr_.lockPrio << 8);
+        stat = ((QSchedStatus)QXK_attr_.lockPrio << 8U);
         QXK_attr_.lockPrio = (uint8_t)ceiling;
 
         QS_BEGIN_NOCRIT_PRE_(QS_SCHED_LOCK, 0U)
@@ -281,8 +273,8 @@ QSchedStatus QXK_schedLock(uint_fast8_t ceiling) {
     return stat; /* return the status to be saved in a stack variable */
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * This function unlocks the QXK scheduler to the previous status.
 *
@@ -305,12 +297,12 @@ QSchedStatus QXK_schedLock(uint_fast8_t ceiling) {
 void QXK_schedUnlock(QSchedStatus stat) {
     /* has the scheduler been actually locked by the last QXK_schedLock()? */
     if (stat != 0xFFU) {
-        uint_fast8_t lockPrio = (uint_fast8_t)QXK_attr_.lockPrio;
-        uint_fast8_t prevPrio = (uint_fast8_t)(stat >> 8U);
+        uint_fast8_t const lockPrio = (uint_fast8_t)QXK_attr_.lockPrio;
+        uint_fast8_t const prevPrio = (uint_fast8_t)(stat >> 8U);
         QF_CRIT_STAT_
         QF_CRIT_E_();
 
-        /** @pre The scheduler cannot be unlocked:
+        /*! @pre The scheduler cannot be unlocked:
         * - from the ISR context; and
         * - the current lock priority must be greater than the previous
         */
@@ -336,8 +328,8 @@ void QXK_schedUnlock(QSchedStatus stat) {
     }
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @description
 * The QXK scheduler finds the priority of the highest-priority thread
 * that is ready to run.
@@ -351,11 +343,8 @@ void QXK_schedUnlock(QSchedStatus stat) {
 * returns with interrupts **disabled**.
 */
 uint_fast8_t QXK_sched_(void) {
-    uint_fast8_t p; /* next thread priority */
-    QActive *next;
-
     /* find the highest-prio thread ready to run */
-    QPSet_findMax(&QXK_attr_.readySet, p);
+    uint_fast8_t p = QPSet_findMax(&QXK_attr_.readySet);
 
     if (p <= (uint_fast8_t)QXK_attr_.lockPrio) { /* below the lock prio? */
         /* dynamic priority of the thread holding the lock */
@@ -364,9 +353,10 @@ uint_fast8_t QXK_sched_(void) {
             Q_ASSERT_ID(610, QPSet_hasElement(&QXK_attr_.readySet, p));
         }
     }
-    next = QF_active_[p];
 
-    /* the thread found must be registered in QF */
+    QActive * const next = QF_active_[p];
+
+    /* the next thread found must be registered in QF */
     Q_ASSERT_ID(620, next != (QActive *)0);
 
     /* is the current thread a basic-thread? */
@@ -418,8 +408,8 @@ uint_fast8_t QXK_sched_(void) {
     return p;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @attention
 * QXK_activate_() must be always called with interrupts **disabled** and
 * returns with interrupts **disabled**.
@@ -431,23 +421,20 @@ uint_fast8_t QXK_sched_(void) {
 void QXK_activate_(void) {
     uint_fast8_t const pin = (uint_fast8_t)QXK_attr_.actPrio;
     QActive *a = QXK_attr_.next; /* the next AO (basic-thread) to run */
-    uint_fast8_t p;
 
     /* QXK Context switch callback defined or QS tracing enabled? */
 #if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
     uint_fast8_t pprev = pin;
 #endif /* QXK_ON_CONTEXT_SW || Q_SPY */
 
-    /** @pre QXK_attr_.next must be valid */
+    /*! @pre QXK_attr_.next must be valid */
     Q_REQUIRE_ID(700, (a != (QActive *)0) && (pin < QF_MAX_ACTIVE));
 
     /* dynamic priority of the next AO */
-    p = (uint_fast8_t)a->dynPrio; /* dynamic priority of the next AO */
+    uint_fast8_t p = (uint_fast8_t)a->dynPrio;
 
     /* loop until no more ready-to-run AOs of higher prio than the initial */
     do  {
-        QEvt const *e;
-
         a = QF_active_[p]; /* obtain the pointer to the AO */
         QXK_attr_.actPrio = (uint8_t)p; /* this becomes the base prio */
         QXK_attr_.next = (QActive *)0; /* clear the next AO */
@@ -455,7 +442,6 @@ void QXK_activate_(void) {
         QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a->prio)
             QS_TIME_PRE_();     /* timestamp */
             /* next prio & prev prio */
-
             QS_2U8_PRE_(p, pprev);
         QS_END_NOCRIT_PRE_()
 
@@ -482,7 +468,7 @@ void QXK_activate_(void) {
         * 2. dispatch the event to the AO's state machine.
         * 3. determine if event is garbage and collect it if so
         */
-        e = QActive_get_(a);
+        QEvt const * const e = QActive_get_(a);
         QHSM_DISPATCH(&a->super, e, a->prio);
         QF_gc(e);
 
@@ -496,7 +482,7 @@ void QXK_activate_(void) {
         * NOTE: this part must match the QXK_sched_(),
         * current is a basic-thread path.
         */
-        QPSet_findMax(&QXK_attr_.readySet, p);
+        p = QPSet_findMax(&QXK_attr_.readySet);
 
         if (p <= (uint_fast8_t)QXK_attr_.lockPrio) { /* below lock prio? */
             p = (uint_fast8_t)QXK_attr_.lockHolder; /* thread holding lock */
@@ -561,25 +547,22 @@ void QXK_activate_(void) {
 #endif /* QXK_ON_CONTEXT_SW || Q_SPY */
 }
 
-/****************************************************************************/
+/*==========================================================================*/
 struct QActive *QXK_current(void) {
-    struct QActive *curr;
-    QF_CRIT_STAT_
-
-    QF_CRIT_E_();
-
-    /** @pre the QXK kernel must be running */
+    /*! @pre the QXK kernel must be running */
     Q_REQUIRE_ID(800, QXK_attr_.lockPrio <= QF_MAX_ACTIVE);
 
-    curr = QXK_attr_.curr;
+    QF_CRIT_STAT_
+    QF_CRIT_E_();
+
+    struct QActive *curr = QXK_attr_.curr;
     if (curr == (QActive *)0) { /* basic thread? */
         curr = QF_active_[QXK_attr_.actPrio];
     }
     QF_CRIT_X_();
 
-    /** @post the current thread must be valid */
+    /*! @post the current thread must be valid */
     Q_ENSURE_ID(890, curr != (QActive *)0);
 
     return curr;
 }
-

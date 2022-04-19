@@ -1,60 +1,53 @@
-/**
-* @file
-* @brief QV/C port to ARM Cortex-M, ARM-CLANG toolset
-* @cond
-******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-25
+/*============================================================================
+* QV/C port to ARM Cortex-M, ARM-CLANG
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2022-04-09
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief QV/C port to ARM Cortex-M, ARM-CLANG toolset
 */
 /* This QV port is part of the interanl QP implementation */
 #define QP_IMPL 1U
 #include "qf_port.h"
 
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+#if (__ARM_ARCH == 6) /* ARMv6-M? */
 
 /* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction) */
 __attribute__ ((naked))
 uint_fast8_t QF_qlog2(uint32_t x) {
 __asm volatile (
     "  MOVS    r1,#0            \n"
-#if (QF_MAX_ACTIVE > 16)
+#if (QF_MAX_ACTIVE > 16U)
     "  LSRS    r2,r0,#16        \n"
     "  BEQ     QF_qlog2_1       \n"
     "  MOVS    r1,#16           \n"
     "  MOVS    r0,r2            \n"
     "QF_qlog2_1:                \n"
 #endif
-#if (QF_MAX_ACTIVE > 8)
+#if (QF_MAX_ACTIVE > 8U)
     "  LSRS    r2,r0,#8         \n"
     "  BEQ     QF_qlog2_2       \n"
     "  ADDS    r1, r1,#8        \n"
@@ -68,7 +61,7 @@ __asm volatile (
     "QF_qlog2_3:                \n"
     "  LDR     r2,=QF_qlog2_LUT \n"
     "  LDRB    r0,[r2,r0]       \n"
-    "  ADDS    r0,r1, r0        \n"
+    "  ADDS    r0,r1,r0         \n"
     "  BX      lr               \n"
     "  .align                   \n"
     "QF_qlog2_LUT:              \n"
@@ -76,7 +69,7 @@ __asm volatile (
     );
 }
 
-#else /* NOT Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+#else /* ARMv7-M or higher */
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
@@ -121,5 +114,5 @@ void QV_init(void) {
     } while (n != 0);
 }
 
-#endif /* NOT Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+#endif /* ARMv7-M or higher */
 

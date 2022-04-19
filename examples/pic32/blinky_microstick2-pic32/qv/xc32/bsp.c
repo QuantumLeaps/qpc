@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -96,7 +96,7 @@ void BSP_ledOn(void) {
     LED_ON();
 }
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const file, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const file, int_t const loc) {
     (void)file;       /* unused parameter */
     (void)loc;        /* unused parameter */
     QF_INT_DISABLE(); /* make sure that interrupts are disabled */

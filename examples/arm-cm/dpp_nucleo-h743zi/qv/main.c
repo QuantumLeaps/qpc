@@ -1,36 +1,35 @@
-/*****************************************************************************
-* Product: DPP example
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-*****************************************************************************/
+============================================================================*/
+/*!
+* @date Last updated on: 2022-02-25
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @ingroup examples
+* @brief DPP example
+*/
 #include "qpc.h"
 #include "dpp.h"
 #include "bsp.h"
@@ -43,12 +42,9 @@ int main() {
     static QEvt const *philoQueueSto[N_PHILO][N_PHILO];
     static QSubscrList subscrSto[MAX_PUB_SIG];
     static QF_MPOOL_EL(TableEvt) smlPoolSto[2*N_PHILO]; /* small pool */
-    uint8_t n;
-
-    Philo_ctor(); /* instantiate all Philosopher active objects */
-    Table_ctor(); /* instantiate the Table active object */
 
     QF_init();    /* initialize the framework and the underlying RT kernel */
+    BSP_init();   /* initialize the Board Support Package */
 
     /* initialize publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
@@ -56,24 +52,9 @@ int main() {
     /* initialize event pools... */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
-    /* initialize the Board Support Package
-    * NOTE: BSP_init() is called *after* initializing publish-subscribe and
-    * event pools, to make the system ready to accept SysTick interrupts.
-    * Unfortunately, the STM32Cube code that must be called from BSP,
-    * configures and starts SysTick.
-    */
-    BSP_init();
-
-    /* object dictionaries... */
-    QS_OBJ_DICTIONARY(AO_Table);
-    QS_OBJ_DICTIONARY(AO_Philo[0]);
-    QS_OBJ_DICTIONARY(AO_Philo[1]);
-    QS_OBJ_DICTIONARY(AO_Philo[2]);
-    QS_OBJ_DICTIONARY(AO_Philo[3]);
-    QS_OBJ_DICTIONARY(AO_Philo[4]);
-
     /* start the active objects... */
-    for (n = 0U; n < N_PHILO; ++n) {
+    Philo_ctor(); /* instantiate all Philosopher active objects */
+    for (uint8_t n = 0U; n < N_PHILO; ++n) {
         QACTIVE_START(AO_Philo[n],           /* AO to start */
                       (uint_fast8_t)(n + 1), /* QP priority of the AO */
                       philoQueueSto[n],      /* event queue storage */
@@ -82,6 +63,7 @@ int main() {
                       0U,                    /* size of the stack [bytes] */
                       (QEvt *)0);            /* initialization event */
     }
+    Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,                  /* AO to start */
                   (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */

@@ -1,4 +1,4 @@
-# Doxyfile 1.9.2
+# Doxyfile 1.9.3
 
 @INCLUDE = ../../ql-doxygen/Doxyfile-QL
 
@@ -7,7 +7,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = QP/C
-PROJECT_NUMBER         = 6.9.4
+PROJECT_NUMBER         = 7.0.0
 PROJECT_BRIEF          = "Real-Time Embedded Framework"
 PROJECT_LOGO           = images/logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -15,7 +15,7 @@ CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
-REPEAT_BRIEF           = YES
+REPEAT_BRIEF           = NO
 ABBREVIATE_BRIEF       = "The $name class" \
                          "The $name widget" \
                          "The $name file" \
@@ -33,7 +33,7 @@ FULL_PATH_NAMES        = NO
 STRIP_FROM_PATH        =
 STRIP_FROM_INC_PATH    =
 SHORT_NAMES            = NO
-JAVADOC_AUTOBRIEF      = NO
+JAVADOC_AUTOBRIEF      = YES
 JAVADOC_BANNER         = NO
 QT_AUTOBRIEF           = NO
 MULTILINE_CPP_IS_BRIEF = NO
@@ -97,7 +97,7 @@ GENERATE_TODOLIST      = YES
 GENERATE_TESTLIST      = YES
 GENERATE_BUGLIST       = YES
 GENERATE_DEPRECATEDLIST= YES
-ENABLED_SECTIONS       =
+ENABLED_SECTIONS       = QPC CERT
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
 SHOW_FILES             = YES
@@ -122,42 +122,55 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = main.dox \
                          gs.dox \
-                         ../../qp-doxygen/srs.dox \
-                         struct.dox \
+                         ../../cert-pack/srs.dox \
+                         ../../cert-pack/sas.dox \
+                         ../../cert-pack/sds.dox \
+                         ../../cert-pack/misra.dox \
                          api.dox \
                          exa.dox \
-                         exa_apps.dox \
                          exa_native.dox \
-                         ../../qp-doxygen/exa_low-power.dox \
                          exa_rtos.dox \
                          exa_os.dox \
                          exa_qutest.dox \
                          exa_mware.dox \
                          ports.dox \
                          ports_native.dox \
-                         ../../qp-doxygen/ports_arm-cm.dox \
+                         ports_arm-cm.dox \
                          ports_rtos.dox \
                          ports_os.dox \
-                         ../../qp-doxygen/tr.dox \
                          metrics.dox \
                          history.dox \
-                         ../../ql-doxygen/help.dox \
                          modules.dox \
+                         dir.dox \
                          macros.h \
+                         ../include/qpc.h \
+                         ../include/qep.h \
+                         ../include/qf.h \
+                         ../include/qequeue.h \
+                         ../include/qmpool.h \
+                         ../include/qpset.h \
+                         ../include/qv.h \
+                         ../include/qk.h \
+                         ../include/qxk.h \
+                         ../include/qxthread.h \
+                         ../include/qs.h \
                          ../include \
                          ../src \
-                         ../ports/lint-plus
+                         ../../ql-doxygen/help.dox
 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.dox \
                          *.h \
+                         *.hpp \
                          *.c \
                          *.cpp \
                          *.s \
                          *.asm \
                          *.lnt
+
 RECURSIVE              = YES
 EXCLUDE                = ../include/qs_dummy.h
+
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        = QP_IMPL
@@ -165,12 +178,14 @@ EXAMPLE_PATH           = snippets \
                          ../include \
                          ../src \
                          ../ports \
+                         ../ports/lint-plus \
                          ../examples
+
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             = images \
                          ../../ql-doxygen/images \
-                         ../../qp-doxygen/images
+                         ../../cert-pack/images
 INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
@@ -214,11 +229,12 @@ HTML_COLORSTYLE_HUE    = 209
 HTML_COLORSTYLE_SAT    = 255
 HTML_COLORSTYLE_GAMMA  = 113
 HTML_TIMESTAMP         = NO
-HTML_DYNAMIC_MENUS     = YES
+HTML_DYNAMIC_MENUS     = NO
 HTML_DYNAMIC_SECTIONS  = NO
 HTML_INDEX_NUM_ENTRIES = 100
 GENERATE_DOCSET        = NO
 DOCSET_FEEDNAME        = "Doxygen generated docs"
+DOCSET_FEEDURL         =
 DOCSET_BUNDLE_ID       = com.state-machine.doc
 DOCSET_PUBLISHER_ID    = com.state-machine.doc
 DOCSET_PUBLISHER_NAME  = QuantumLeaps
@@ -245,6 +261,7 @@ FULL_SIDEBAR           = NO
 ENUM_VALUES_PER_LINE   = 4
 TREEVIEW_WIDTH         = 300
 EXT_LINKS_IN_WINDOW    = NO
+OBFUSCATE_EMAILS       = NO
 HTML_FORMULA_FORMAT    = png
 FORMULA_FONTSIZE       = 10
 FORMULA_TRANSPARENT    = YES

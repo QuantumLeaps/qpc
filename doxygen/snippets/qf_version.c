@@ -1,1 +1,1 @@
-    printf("DPP example\nQP version %s\n", QP_getVersion());
+printf("My project\nQP version %s\n", QP_VERSION_STR);

@@ -12,7 +12,7 @@ Please refer to the README files in the sub-directories for specific
 instructions how to use and customize the example to your needs.
 
 
-Support Code for NUCLEO-L053R8 Board 
+Support Code for NUCLEO-L053R8 Board
 ====================================
 The directory qpc\3rd_party\nucleo-l053r8 contains the CMSIS-compliant
 device code for the STM32L053 MCU (ARM Cortex-M0+). Please see the

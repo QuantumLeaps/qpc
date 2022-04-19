@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
 * @file
 * @brief ::QEQueue implementation (QP native thread-safe queue)
 * @ingroup qf
-* @cond
-******************************************************************************
-* Last updated for version 6.9.4
-* Last updated on  2021-09-16
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -50,9 +43,8 @@
 
 Q_DEFINE_THIS_MODULE("qf_qeq")
 
-
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QEQueue
 * @description
 * Initialize the event queue by giving it the storage for the ring buffer.
@@ -84,13 +76,8 @@ void QEQueue_init(QEQueue * const me, QEvt const * * const qSto,
     me->nMin     = me->nFree;
 }
 
-/**
-* @note this function is used for the "raw" thread-safe queues and NOT
-* for the queues of active objects.
-*/
-
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QEQueue
 * @description
 * Post an event to the "raw" thread-safe event queue using the
@@ -117,19 +104,17 @@ void QEQueue_init(QEQueue * const me, QEvt const * * const qSto,
 bool QEQueue_post(QEQueue * const me, QEvt const * const e,
                   uint_fast16_t const margin, uint_fast8_t const qs_id)
 {
-    QEQueueCtr nFree; /* temporary to avoid UB for volatile access */
-    bool status;
-    QF_CRIT_STAT_
-
     /* @pre event must be valid */
     Q_REQUIRE_ID(200, e != (QEvt *)0);
 
     (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
-    nFree = me->nFree; /* get volatile into the temporary */
+    QEQueueCtr nFree  = me->nFree; /* get volatile into the temporary */
 
     /* required margin available? */
+    bool status;
     if (((margin == QF_NO_MARGIN) && (nFree > 0U))
         || (nFree > (QEQueueCtr)margin))
     {
@@ -170,7 +155,7 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
         status = true; /* event posted successfully */
     }
     else {
-        /** @note assert if event cannot be posted and dropping events is
+        /*! @note assert if event cannot be posted and dropping events is
         * not acceptable
         */
         Q_ASSERT_CRIT_(210, margin != QF_NO_MARGIN);
@@ -191,8 +176,8 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
     return status;
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QEQueue
 * @description
 * Post an event to the "raw" thread-safe event queue using the
@@ -218,16 +203,13 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
 void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
                       uint_fast8_t const qs_id)
 {
-    QEvt const *frontEvt; /* temporary to avoid UB for volatile access */
-    QEQueueCtr nFree;     /* temporary to avoid UB for volatile access */
+    (void)qs_id; /* unused parameter, if Q_SPY not defined */
+
     QF_CRIT_STAT_
-
-    (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
-
     QF_CRIT_E_();
-    nFree = me->nFree;    /* get volatile into the temporary */
+    QEQueueCtr nFree = me->nFree; /* get volatile into the temporary */
 
-    /** @pre the queue must be able to accept the event (cannot overflow) */
+    /*! @pre the queue must be able to accept the event (cannot overflow) */
     Q_REQUIRE_CRIT_(300, nFree != 0U);
 
     /* is it a dynamic event? */
@@ -245,12 +227,12 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
         QS_TIME_PRE_();         /* timestamp */
         QS_SIG_PRE_(e->sig);    /* the signal of this event */
         QS_OBJ_PRE_(me);        /* this queue object */
-        QS_2U8_PRE_(e->poolId_, e->refCtr_);/* pool Id & ref Count of the event */
+        QS_2U8_PRE_(e->poolId_, e->refCtr_);/* pool Id & ref Count of event */
         QS_EQC_PRE_(nFree);     /* number of free entries */
         QS_EQC_PRE_(me->nMin);  /* min number of free entries */
     QS_END_NOCRIT_PRE_()
 
-    frontEvt = me->frontEvt; /* read volatile into the temporary */
+    QEvt const * const frontEvt = me->frontEvt; /* read volatile into temp */
     me->frontEvt = e; /* deliver event directly to the front of the queue */
 
     /* was the queue not empty? */
@@ -261,12 +243,11 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
         }
         QF_PTR_AT_(me->ring, me->tail) = frontEvt; /* save old front evt */
     }
-
     QF_CRIT_X_();
 }
 
-/****************************************************************************/
-/**
+/*==========================================================================*/
+/*!
 * @public @memberof QEQueue
 * @description
 * Retrieves an event from the front of the "raw" thread-safe queue and
@@ -286,18 +267,16 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
 * QEQueue_post(), QEQueue_postLIFO(), QActive_recall()
 */
 QEvt const *QEQueue_get(QEQueue * const me, uint_fast8_t const qs_id) {
-    QEvt const *e;
-    QF_CRIT_STAT_
-
     (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
 
+    QF_CRIT_STAT_
     QF_CRIT_E_();
-    e = me->frontEvt; /* always remove the event from the front location */
+    QEvt const * const e = me->frontEvt; /* remove event from the front */
 
     /* was the queue not empty? */
     if (e != (QEvt *)0) {
         /* use a temporary variable to increment volatile me->nFree */
-        QEQueueCtr nFree = me->nFree + 1U;
+        QEQueueCtr const nFree = me->nFree + 1U;
         me->nFree = nFree; /* update the number of free */
 
         /* any events in the ring buffer? */
@@ -333,4 +312,3 @@ QEvt const *QEQueue_get(QEQueue * const me, uint_fast8_t const qs_id) {
     QF_CRIT_X_();
     return e;
 }
-

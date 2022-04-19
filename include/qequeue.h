@@ -1,46 +1,33 @@
-/**
-* @file
-* @brief QP natvie, platform-independent, thread-safe event queue interface
-* @ingroup qf
-* @cond
-******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-18
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
-*/
-#ifndef QEQUEUE_H
-#define QEQUEUE_H
-
-/**
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief QP natvie, platform-independent, thread-safe event queue interface
 * @description
 * This header file must be included in all QF ports that use native QF
 * event queue for active objects. Also, this file needs to be included
@@ -49,14 +36,16 @@
 * thread-safe queues are used for communication between active objects
 * and non-framework entities, such as ISRs, device drivers, or legacy
 * code.
+* @ingroup qf
 */
+#ifndef QEQUEUE_H
+#define QEQUEUE_H
 
 #ifndef QF_EQUEUE_CTR_SIZE
 
     /*! The size [bytes] of the ring-buffer counters used in the
     * native QF event queue implementation. Valid values: 1U, 2U, or 4U;
-    * default 1U. */
-    /**
+    * default 1U.
     * @description
     * This macro can be defined in the QF port file (qf_port.h) to
     * configure the ::QEQueueCtr type. Here the macro is not defined so the
@@ -67,8 +56,7 @@
 #if (QF_EQUEUE_CTR_SIZE == 1U)
 
     /*! The data type to store the ring-buffer counters based on
-    * the macro #QF_EQUEUE_CTR_SIZE. */
-    /**
+    * the macro #QF_EQUEUE_CTR_SIZE.
     * @description
     * The dynamic range of this data type determines the maximum length
     * of the ring buffer managed by the native QF event queue.
@@ -82,9 +70,9 @@
     #error "QF_EQUEUE_CTR_SIZE defined incorrectly, expected 1U, 2U, or 4U"
 #endif
 
-/****************************************************************************/
-/*! Native QF Event Queue */
-/**
+/*==========================================================================*/
+
+/*! Native QF Event Queue
 * @description
 * This class describes the native QF event queue, which can be used as
 * the event queue for active objects, or as a simple "raw" event queue for
@@ -128,8 +116,7 @@
 * @sa ::QEQueue for the description of the data members
 */
 typedef struct QEQueue {
-    /*! pointer to event at the front of the queue. */
-    /**
+    /*! pointer to event at the front of the queue.
     * @description
     * All incoming and outgoing events pass through the frontEvt location.
     * When the queue is empty (which is most of the time), the extra
@@ -157,8 +144,7 @@ typedef struct QEQueue {
     /*! number of free events in the ring buffer. */
     QEQueueCtr volatile nFree;
 
-    /*! minimum number of free events ever in the ring buffer. */
-    /**
+    /*! minimum number of free events ever in the ring buffer.
     * @description
     * this attribute remembers the low-watermark of the ring buffer,
     * which provides a valuable information for sizing event queues.
@@ -185,8 +171,7 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
 QEvt const *QEQueue_get(QEQueue * const me, uint_fast8_t const qs_id);
 
 /*! "raw" thread-safe QF event queue operation for obtaining the number
-* of free entries still available in the queue. */
-/**
+* of free entries still available in the queue.
 * @description
 * This operation needs to be used with caution because the number of free
 * entries can change unexpectedly. The main intent for using this operation
@@ -194,29 +179,31 @@ QEvt const *QEQueue_get(QEQueue * const me, uint_fast8_t const qs_id);
 * only from a single thread (by a single AO),  so the number of free
 * entries cannot change unexpectedly.
 *
-* @param[in] me_ pointer (see @ref oop)
+* @param[in] me pointer (see @ref oop)
 *
 * @returns the current number of free slots in the queue.
 */
-#define QEQueue_getNFree(me_) ((me_)->nFree)
+static inline QEQueueCtr QEQueue_getNFree(QEQueue * const me) {
+    return me->nFree;
+}
 
 /*! "raw" thread-safe QF event queue operation for obtaining the minimum
-* number of free entries ever in the queue (a.k.a. "low-watermark"). */
-/**
+* number of free entries ever in the queue (a.k.a. "low-watermark").
 * @description
 * This operation needs to be used with caution because the "low-watermark"
 * can change unexpectedly. The main intent for using this operation is to
 * get an idea of queue usage to size the queue adequately.
 *
-* @param[in] me_  pointer (see @ref oop)
+* @param[in] me  pointer (see @ref oop)
 *
 * @returns the minimum number of free entries ever in the queue since init.
 */
-#define QEQueue_getNMin(me_) ((me_)->nMin)
+static inline QEQueueCtr QEQueue_getNMin(QEQueue * const me) {
+    return me->nMin;
+}
 
 /*! "raw" thread-safe QF event queue operation to find out if the queue
-* is empty. */
-/**
+* is empty.
 * @description
 * This operation needs to be used with caution because the queue status
 * can change unexpectedly. The main intent for using this operation is in
@@ -228,7 +215,8 @@ QEvt const *QEQueue_get(QEQueue * const me, uint_fast8_t const qs_id);
 *
 * @returns 'true' if the queue is current empty and 'false' otherwise.
 */
-#define QEQueue_isEmpty(me_) ((me_)->frontEvt == (QEvt *)0)
+static inline bool QEQueue_isEmpty(QEQueue * const me) {
+    return me->frontEvt == (QEvt *)0;
+}
 
 #endif /* QEQUEUE_H */
-

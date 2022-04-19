@@ -1,36 +1,35 @@
-/*****************************************************************************
-* Product: DPP example, NUCLEO-H743ZI board, dual-mode QXK kernel
-* Last updated for version 6.9.3
-* Last updated on  2021-03-03
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-*****************************************************************************/
+============================================================================*/
+/*!
+* @date Last updated on: 2022-02-25
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @ingroup examples
+* @brief DPP example, NUCLEO-H743ZIE board, dual-mode QXK kernel
+*/
 #include "qpc.h"
 #include "dpp.h"
 #include "bsp.h"
@@ -64,7 +63,7 @@ static uint32_t l_rnd; /* random seed */
         PHILO_STAT = QS_USER,
         PAUSED_STAT,
         COMMAND_STAT,
-        ON_CONTEXT_SW
+        CONTEXT_SW
     };
 
 #endif
@@ -89,13 +88,13 @@ void SysTick_Handler(void) {
 #endif
 
     //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
-    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
+    QACTIVE_POST(&ticker0.super, 0, &l_SysTick_Handler); /* post to ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
     * and Michael Barr, page 71.
     */
-    current = BSP_PB_GetState(BUTTON_KEY); /* read the Key button */
+    current = BSP_PB_GetState(BUTTON_USER); /* read the User button */
     tmp = buttons.depressed; /* save the debounced depressed buttons */
     buttons.depressed |= (buttons.previous & current); /* set depressed */
     buttons.depressed &= (buttons.previous | current); /* clear released */
@@ -125,16 +124,11 @@ void SysTick_Handler(void) {
 */
 void USART3_IRQHandler(void) {
     /* is RX register NOT empty? */
-    if ((l_uartHandle.Instance->ISR & USART_ISR_RXNE) != 0) {
+    if ((l_uartHandle.Instance->ISR & USART_ISR_RXNE_RXFNE) != 0) {
         uint32_t b = l_uartHandle.Instance->RDR;
         QS_RX_PUT(b);
-        l_uartHandle.Instance->ISR &= ~USART_ISR_RXNE; /* clear interrupt */
+        l_uartHandle.Instance->ISR &= ~USART_ISR_RXNE_RXFNE; /* clear int. */
     }
-}
-/*..........................................................................*/
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle) {
-    (void)UartHandle;
-    /* dummy implementation needed for STM32Cube */
 }
 #endif
 
@@ -153,38 +147,13 @@ void BSP_init(void) {
     __HAL_FLASH_ART_ENABLE();
 #endif /* ART_ACCLERATOR_ENABLE */
 
-    /* configure the FPU usage by choosing one of the options... */
-#if 1
-    /* OPTION 1:
-    * Use the automatic FPU state preservation and the FPU lazy stacking.
-    *
-    * NOTE:
-    * Use the following setting when FPU is used in more than one task or
-    * in any ISRs. This setting is the safest and recommended, but requires
-    * extra stack space and CPU cycles.
-    */
-    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
-#else
-    /* OPTION 2:
-    * Do NOT to use the automatic FPU state preservation and
-    * do NOT to use the FPU lazy stacking.
-    *
-    * NOTE:
-    * Use the following setting when FPU is used in ONE task only and not
-    * in any ISR. This setting is very efficient, but if more than one task
-    * (or ISR) start using the FPU, this can lead to corruption of the
-    * FPU registers. This option should be used with CAUTION.
-    */
-    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
-#endif
-
     /* Configure the LEDs */
     BSP_LED_Init(LED1);
     BSP_LED_Init(LED2);
     BSP_LED_Init(LED3);
 
     /* Configure the User Button in GPIO Mode */
-    BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_GPIO);
+    BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
 
     //...
     BSP_randomSeed(1234U);
@@ -193,12 +162,24 @@ void BSP_init(void) {
     if (QS_INIT((void *)0) == 0) {
         Q_ERROR();
     }
+
+    /* object dictionaries... */
+    QS_OBJ_DICTIONARY(AO_Table);
+    QS_OBJ_DICTIONARY(AO_Philo[0]);
+    QS_OBJ_DICTIONARY(AO_Philo[1]);
+    QS_OBJ_DICTIONARY(AO_Philo[2]);
+    QS_OBJ_DICTIONARY(AO_Philo[3]);
+    QS_OBJ_DICTIONARY(AO_Philo[4]);
+    QS_OBJ_DICTIONARY(XT_Test1);
+    QS_OBJ_DICTIONARY(XT_Test2);
+    QS_OBJ_DICTIONARY(&ticker0);
+
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_OBJ_DICTIONARY(&l_EXTI0_IRQHandler);
     QS_USR_DICTIONARY(PHILO_STAT);
     QS_USR_DICTIONARY(PAUSED_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
-    QS_USR_DICTIONARY(ON_CONTEXT_SW);
+    QS_USR_DICTIONARY(CONTEXT_SW);
 
     /* setup the QS filters... */
     QS_GLB_FILTER(QS_SM_RECORDS);
@@ -238,13 +219,12 @@ void BSP_displayPaused(uint8_t paused) {
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     uint32_t rnd;
-    QSchedStatus lockStat;
 
     /* Some flating point code is to exercise the VFP... */
     float volatile x = 3.1415926F;
     x = x + 2.7182818F;
 
-    lockStat = QXK_schedLock(N_PHILO); /* lock scheduler up to N_PHILO prio */
+    QSchedStatus lockStat = QXK_schedLock(N_PHILO); /* N_PHILO prio. ceiling */
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
@@ -298,7 +278,7 @@ void QXK_onContextSw(QActive *prev, QActive *next) {
     if (next != (QActive *)0) {
         //_impure_ptr = next->thread; /* switch to next TLS */
     }
-    QS_BEGIN_NOCRIT(ON_CONTEXT_SW, 0U) /* no critical section! */
+    QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
         QS_OBJ(prev);
         QS_OBJ(next);
     QS_END_NOCRIT()
@@ -346,7 +326,7 @@ void QXK_onIdle(void) {
 }
 
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
+Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     /*
     * NOTE: add here your application-specific error handling
     */
@@ -355,8 +335,10 @@ Q_NORETURN Q_onAssert(char_t const * const module, int_t const loc) {
     QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
-    /* light up LED */
+    /* light all LEDs */
     BSP_LED_On(LED1);
+    BSP_LED_On(LED2);
+    BSP_LED_On(LED3);
     /* for debugging, hang on in an endless loop... */
     for (;;) {
     }

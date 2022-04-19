@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2019 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -40,13 +40,13 @@
 Q_DEFINE_THIS_FILE
 
 /* instantiate dummy collaborator AOs... */
-static QActiveDummy l_dummyPhilo[N_PHILO];
+static QActiveDummy Philo_inst[N_PHILO];
 QActive * const AO_Philo[N_PHILO] = {
-    &l_dummyPhilo[0].super,
-    &l_dummyPhilo[1].super,
-    &l_dummyPhilo[2].super,
-    &l_dummyPhilo[3].super,
-    &l_dummyPhilo[4].super
+    &Philo_inst[0].super,
+    &Philo_inst[1].super,
+    &Philo_inst[2].super,
+    &Philo_inst[3].super,
+    &Philo_inst[4].super
 };
 
 /*..........................................................................*/
@@ -59,22 +59,12 @@ int main(int argc, char *argv[]) {
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init(argc, argv); /* initialize the Board Support Package */
 
-    /* object dictionaries... */
-    QS_OBJ_DICTIONARY(AO_Table);
-    QS_OBJ_DICTIONARY(AO_Philo[0]);
-    QS_OBJ_DICTIONARY(AO_Philo[1]);
-    QS_OBJ_DICTIONARY(AO_Philo[2]);
-    QS_OBJ_DICTIONARY(AO_Philo[3]);
-    QS_OBJ_DICTIONARY(AO_Philo[4]);
 
-    /* signal dictionaries */
-    QS_SIG_DICTIONARY(DONE_SIG,      (void *)0);
-    QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
-    QS_SIG_DICTIONARY(PAUSE_SIG,     (void *)0);
-    QS_SIG_DICTIONARY(SERVE_SIG,     (void *)0);
-    QS_SIG_DICTIONARY(TEST_SIG,      (void *)0);
-    QS_SIG_DICTIONARY(HUNGRY_SIG,    (void *)0);
-    QS_SIG_DICTIONARY(TIMEOUT_SIG,   (void *)0);
+    QS_OBJ_DICTIONARY(&Philo_inst[0]);
+    QS_OBJ_DICTIONARY(&Philo_inst[1]);
+    QS_OBJ_DICTIONARY(&Philo_inst[2]);
+    QS_OBJ_DICTIONARY(&Philo_inst[3]);
+    QS_OBJ_DICTIONARY(&Philo_inst[4]);
 
     /* pause execution of the test and wait for the test script to continue */
     QS_TEST_PAUSE();
@@ -90,7 +80,7 @@ int main(int argc, char *argv[]) {
     *       them to events.
     */
     for (n = 0; n < N_PHILO; ++n) {
-        QActiveDummy_ctor(&l_dummyPhilo[n]);
+        QActiveDummy_ctor(&Philo_inst[n]);
         QACTIVE_START(AO_Philo[n],
                      (uint_fast8_t)(n + 1U), /* priority */
                      (QEvt const **)0, 0U, (void *)0, 0U,

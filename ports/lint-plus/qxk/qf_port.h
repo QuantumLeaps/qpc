@@ -1,41 +1,37 @@
-/**
-* @file
-* @brief QF/C port example for QXK, generic C compiler.
-* @ingroup qxk
-* @cond
-******************************************************************************
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2021-12-23
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @ingroup qf
+* @brief QF/C port example for QXK, generic C99 compiler.
+* @description
+* This is an example QP/C port with the documentation for the main
+* items, such as configuration macros, functions, and includes.
 */
 #ifndef QF_PORT_H
 #define QF_PORT_H
@@ -57,10 +53,11 @@
 */
 #define QF_MAX_ACTIVE               32U
 
+/*! The maximum number of clock tick rates in the application. */
 /**
 * @description
 * This macro can be defined in the QF ports and should be in range
-* of 1U..255U, inclusive. The value of this macro determines the maximum
+* of 1U..15U, inclusive. The value of this macro determines the maximum
 * number of clock tick rates for time events (::QTimeEvt).
 *
 * If the macro is not defined, the default value is 1U.
@@ -71,7 +68,7 @@
 * this macro only once in the qf_port.h header file and henceforth include
 * this header file in all builds.
 */
-#define QF_MAX_TICK_RATE            2U
+#define QF_MAX_TICK_RATE            1U
 
 /*! The maximum number of event pools in the application. */
 /**

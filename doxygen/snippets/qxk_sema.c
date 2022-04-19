@@ -12,7 +12,7 @@ int main() {
 void main_threadXYZ(QXThread * const me) {
     while (1) {
         . . .
-        QXSemaphore_wait(&BTN_sema,  /* pointer to semaphore to wait on */
+        QXSemaphore_wait(&BTN_sema,  /* <--- pointer to semaphore to wait on */
                          QXTHREAD_NO_TIMEOUT); /* timeout for waiting */
         . . .
     }
@@ -20,6 +20,6 @@ void main_threadXYZ(QXThread * const me) {
 
 void GPIO_Handler(void) {
     . . .
-    QXSemaphore_signal(&BTN_sema); /* pointer to semaphore to signal */
+    QXSemaphore_signal(&BTN_sema); /* <--- pointer to semaphore to signal */
     . . .
 }

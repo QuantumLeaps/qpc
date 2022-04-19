@@ -26,6 +26,8 @@ QP/C examples are located in sub-directories of the <span class="img folder">exa
     <li><span class="img folder">arm-cm/</span> &mdash; Native examples for ARM-Cortex-M (bare-metal) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="tag">A</span>
     </li>
     <ul class="tag">
+      <li><span class="img folder">blinky_ek-tm4c123gxl/</span> &mdash; Blinky example for EK-TM4C123GXL board
+      </li>
       <li><span class="img folder">dpp_ek-tm4c123gxl/</span> &mdash; DPP example for EK-TM4C123GXL board
       </li>
       <li><span class="img folder">qk/</span> &mdash; Version for the @ref comp_qk "preemptive QK kernel"
@@ -210,17 +212,16 @@ Because the QP distribution contains *all* examples, the number of sub-directori
 
 
 @subsection exa_sec_apps Example Applications
-To demonstrate QP/C features on an embedded board, you need to create an application that does "something interesting". Instead of inventing this "something interesting" for each and every example, the example projects implement one of the three @subpage exa_apps "example applications", which are described on the separate pages:
+To demonstrate QP/C features on an embedded board, you need to create an application that does "something interesting". Instead of inventing this "something interesting" for each and every example, the example projects implement one of the three  "example applications", which are described on the @ref gs_tut "QP&trade;/C Tutorial":
 
-- @ref blinky
-- @ref dpp
-- @ref game
+- @ref tut_blinky
+- @ref tut_dpp
+- @ref tut_game
 
 With the exception of the game application, all other example applications can be implemented on a board with just a couple of LEDs. The @ref game application is a bit more involved and requires a small graphic display on the board.
 
 Beyond these basic applications for demonstrating and testing the various @ref ports "QP/C ports", the QP/C distribution contains all examples described in the book <a class="extern" target="_blank" href="https://www.state-machine.com/psicc2" >Practical UML Statecharts in C/C++, 2nd Edition</a>.
 @sa @ref exa_os
-
 
 
 @subsection exa_sec_boards Development Boards

@@ -1,35 +1,26 @@
 @echo off
 :: ===========================================================================
-:: Product: QP/C build script for PC-Lint-Plus
-:: Last Updated for Version: 6.9.2
-:: Date of the Last Update:  2020-12-19
+:: Batch script for linting QP/C with PC-Lint-Plus
+:: Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 ::
-::                    Q u a n t u m  L e a P s
-::                    ------------------------
-::                    Modern Embedded Software
+:: SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 ::
-:: Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+:: This software is dual-licensed under the terms of the open source GNU
+:: General Public License version 3 (or any later version), or alternatively,
+:: under the terms of one of the closed source Quantum Leaps commercial
+:: licenses.
 ::
-:: This program is open source software: you can redistribute it and/or
-:: modify it under the terms of the GNU General Public License as published
-:: by the Free Software Foundation, either version 3 of the License, or
-:: (at your option) any later version.
+:: The terms of the open source GNU General Public License version 3
+:: can be found at: <www.gnu.org/licenses/gpl-3.0>
 ::
-:: Alternatively, this program may be distributed and modified under the
-:: terms of Quantum Leaps commercial licenses, which expressly supersede
-:: the GNU General Public License and are specifically designed for
-:: licensees interested in retaining the proprietary status of their code.
+:: The terms of the closed source Quantum Leaps commercial licenses
+:: can be found at: <www.state-machine.com/licensing>
 ::
-:: This program is distributed in the hope that it will be useful,
-:: but WITHOUT ANY WARRANTY; without even the implied warranty of
-:: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-:: GNU General Public License for more details.
-::
-:: You should have received a copy of the GNU General Public License
-:: along with this program. If not, see <www.gnu.org/licenses/>.
+:: Redistributions in source code must retain this top-level comment block.
+:: Plagiarizing this software to sidestep the license obligations is illegal.
 ::
 :: Contact information:
-:: <www.state-machine.com/licensing>
+:: <www.state-machine.com>
 :: <info@state-machine.com>
 :: ===========================================================================
 @setlocal
@@ -37,8 +28,8 @@
 :: usage of lin.bat
 @echo Usage: lin [16bit] [-d...]
 @echo examples:
-@echo lin -dQ_SPY -dQ_UTEST : use 32bit CPU (default) and define Q_SPY and Q_UTEST
-@echo lin 16bit -dQ_SPY     : use 16bit CPU includes and define Q_SPY
+@echo lin -uQ_SPY -uQ_UTEST : use 32bit CPU (default) and undefine Q_SPY/Q_UTEST
+@echo lin 16bit -uQ_SPY : use 16bit CPU includes and undefine Q_SPY
 @echo.
 
 :: NOTE: adjust to for your installation directory of PC-Lint-Plus

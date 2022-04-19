@@ -197,11 +197,11 @@ int g_iNumCGIs = 0;
 #endif /* INCLUDE_HTTPD_CGI */
 
 #ifdef DYNAMIC_HTTP_HEADERS
-//****************************************************************************
+//============================================================================
 //
 // HTTP header strings for various filename extensions.
 //
-//****************************************************************************
+//============================================================================
 typedef struct {
     char const *pszExtension;
     unsigned long ulHeaderIndex;
@@ -400,12 +400,12 @@ static void get_tag_insert(struct http_state *hs) {
 #endif /* INCLUDE_HTTPD_SSI */
 
 #ifdef DYNAMIC_HTTP_HEADERS
-//****************************************************************************
+//============================================================================
 //
 // Generate the relevant HTTP headers for the given filename and write
 // them into the supplied buffer. Returns TRUE on success or FALSE on failure.
 //
-//****************************************************************************
+//============================================================================
 static void get_http_headers(struct http_state *pState, char const *pszURI) {
     int iLoop;
     char *pszWork;

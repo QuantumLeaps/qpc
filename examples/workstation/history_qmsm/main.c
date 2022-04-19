@@ -7,7 +7,7 @@
 *                    ------------------------
 *                    Modern Embedded Software
 *
-* Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -51,7 +51,7 @@ int main() {
            "Press 'b' to start BAKING\n"
            "Press 'f' to turn the oven OFF\n"
            "Press ESC to quit...\n",
-           QP_versionStr);
+           QP_VERSION_STR);
 
     /* instantiate the ToastOven HSM and trigger the initial transition */
     ToastOven_ctor();
@@ -95,7 +95,7 @@ void QF_onClockTick(void) {
 }
 
 /*..........................................................................*/
-Q_NORETURN Q_onAssert(char_t const * const file, int_t const line) {
+Q_NORETURN Q_onAssert(char const * const file, int_t const line) {
     FPRINTF_S(stderr, "Assertion failed in %s, line %d", file, line);
     QF_onCleanup();
     exit(-1);

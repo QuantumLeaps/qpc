@@ -1,3 +1,8 @@
+#ifdef Q_SPY
+    /* QS-ID for local filtering */
+    static QSpyId const l_ISR_timer = { QS_AP_ID + 5 };
+#endif
+
 /* case 1: Interrupt Controller available,
 * "unconditional interrupt unlocking" critical section policy
 * (nesting of critical sections _not_ allowed)
@@ -5,7 +10,7 @@
 interrupt void ISR_timer() { /* entered with interrupts disabled in hardware */
     QF_INT_ENABLE();  /* enable interrupts */
 
-    QF_TICK(&l_ISR_timer); /*<-- call the QF tick processing */
+    QF_TICK(&l_ISR_timer); /* <--- call the QF tick processing */
 
     QF_INT_DISABLE(); /* disable interrupts again */
     /* send the EOI instruction to the Interrupt Controller */
@@ -16,5 +21,5 @@ interrupt void ISR_timer() { /* entered with interrupts disabled in hardware */
 * (nesting of critical sections allowed)
 */
 interrupt void ISR_timer() {
-    QF_TICK(&l_ISR_timer); /*<-- call the QF tick processing */
+    QF_TICK(&l_ISR_timer); /* <--- call the QF tick processing */
 }

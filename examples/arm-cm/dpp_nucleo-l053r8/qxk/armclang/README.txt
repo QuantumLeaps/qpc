@@ -19,13 +19,13 @@ is moved to different relative location.
 
 Adjusting Stack and Heap Sizes
 ==============================
-The stack and heap sizes are determined in this project by the 
+The stack and heap sizes are determined in this project by the
 command-line options for the ARM assembler (see the Asm tab in
 the "Options for Target" dialog box in uVision). Specifically,
 you should define symbols: Stack_Size=xxx Heap_Size=yyy, where
 xxx represents a numerical value of stack size and yyy the
 numberical value of the heap size.
-  
+
 
 Startup Code
 ============
@@ -40,7 +40,7 @@ ARM Cortex-M microcontrollers.
 
 The startup file typically does not need to be modified or adapted for
 applications. It provides only weak definitions of all exception and
-interrupt handlers, as well as the assert_failed() function.  
+interrupt handlers, as well as the assert_failed() function.
 
 The weak function assert_failed() defined in this file might be re-defined
 in the application to customize it for the application-specific error-
@@ -53,7 +53,7 @@ Also, assert_failed() is intended to handle catastrophic errors and
 should NOT return.
 ***
 
-  
+
 Adjusting the CPU Clock Speed
 =============================
 The current setting is to run at 2MHz from the MSI (internal oscillator),
@@ -65,7 +65,7 @@ of clock setting using the PLL driven from the MSE.
 NOTE:
 The NUCLEO boards have a wide range of possible clock selections, depending
 on the solder bridge configuration. Please see Chapter 5.7 "OSC clock" in
-the STM32 NUCLEO Boards User Manual (ST document UM1724) for more information. 
+the STM32 NUCLEO Boards User Manual (ST document UM1724) for more information.
 ***
 
   
