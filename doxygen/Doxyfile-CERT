@@ -1,0 +1,10 @@
+# Doxyfile 1.9.3
+
+@INCLUDE = Doxyfile
+
+#---------------------------------------------------------------------------
+# Configuration options related to the input files
+#---------------------------------------------------------------------------
+
+ENABLED_SECTIONS += CERT
+

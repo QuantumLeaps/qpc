@@ -33,11 +33,9 @@
 *.Release
 *.bak
 *.qlc
-*.dox
 JLink*.*
 version-*
 
-doxygen/
 html/
 test_priv/
 dbg/
