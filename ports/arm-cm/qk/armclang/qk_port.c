@@ -1,5 +1,5 @@
 /*============================================================================
-* QK/C port to ARM Cortex-M, ARM-CLANG
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -23,27 +23,29 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-04-09
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-10-02
+* @version Last updated for: @ref qpc_7_1_2
 *
 * @file
 * @brief QK/C port to ARM Cortex-M, ARM-CLANG toolset
 */
-/* This QK port is part of the interanl QP implementation */
+/* This QK port is part of the internal QP implementation */
 #define QP_IMPL 1U
 #include "qf_port.h"
 
 /* prototypes --------------------------------------------------------------*/
 void PendSV_Handler(void);
-#ifndef QK_ARM_CM_USE_NMI
-    void SVC_Handler(void);
-#else
-    void NMI_Handler(void);
+#ifdef QK_USE_IRQ_HANDLER           /* if use IRQ... */
+void QK_USE_IRQ_HANDLER(void);
+#else                               /* use default (NMI) */
+void NMI_Handler(void);
 #endif
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
-#define NVIC_IP      ((uint32_t volatile *)0xE000E400)
+#define NVIC_EN      ((uint32_t volatile *)0xE000E100)
+#define NVIC_IP      ((uint8_t  volatile *)0xE000E400)
+#define NVIC_PEND    0xE000E200
 #define NVIC_ICSR    0xE000ED04
 
 /* helper macros to "stringify" values */
@@ -54,11 +56,11 @@ void PendSV_Handler(void);
 * Initialize the exception priorities and IRQ priorities to safe values.
 *
 * Description:
-* On Cortex-M3/M4/M7, this QK port disables interrupts by means of the
+* On ARMv7-M or higher, this QK port disables interrupts by means of the
 * BASEPRI register. However, this method cannot disable interrupt
 * priority zero, which is the default for all interrupts out of reset.
 * The following code changes the SysTick priority and all IRQ priorities
-* to the safe value QF_BASEPRI, wich the QF critical section can disable.
+* to the safe value QF_BASEPRI, which the QF critical section can disable.
 * This avoids breaching of the QF critical sections in case the
 * application programmer forgets to explicitly set priorities of all
 * "kernel aware" interrupts.
@@ -67,44 +69,45 @@ void PendSV_Handler(void);
 * changed by the application-level code.
 */
 void QK_init(void) {
-
-#if (__ARM_ARCH != 6) /* if ARMv7-M and higher... */
+#if (__ARM_ARCH != 6)   /*--------- if ARMv7-M and higher... */
 
     /* set exception priorities to QF_BASEPRI...
     * SCB_SYSPRI1: Usage-fault, Bus-fault, Memory-fault
     */
-    SCB_SYSPRI[1] |= (QF_BASEPRI << 16U) | (QF_BASEPRI << 8U) | QF_BASEPRI;
+    SCB_SYSPRI[1] = (SCB_SYSPRI[1]
+        | (QF_BASEPRI << 16) | (QF_BASEPRI << 8) | QF_BASEPRI);
 
     /* SCB_SYSPRI2: SVCall */
-    SCB_SYSPRI[2] |= (QF_BASEPRI << 24U);
+    SCB_SYSPRI[2] = (SCB_SYSPRI[2] | (QF_BASEPRI << 24));
 
     /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
-    SCB_SYSPRI[3] |= (QF_BASEPRI << 24U) | (QF_BASEPRI << 16U) | QF_BASEPRI;
+    SCB_SYSPRI[3] = (SCB_SYSPRI[3]
+        | (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI);
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
-    uint32_t n = 8U + ((*SCnSCB_ICTR & 0x7U) << 3U); /*(# NVIC_PRIO regs)/4 */
-    do {
-        --n;
-        NVIC_IP[n] = (QF_BASEPRI << 24U) | (QF_BASEPRI << 16U)
-                     | (QF_BASEPRI << 8U) | QF_BASEPRI;
-    } while (n != 0U);
+    uint8_t nprio = (8U + ((*SCnSCB_ICTR & 0x7U) << 3U))*4;
+    for (uint8_t n = 0U; n < nprio; ++n) {
+        NVIC_IP[n] = QF_BASEPRI;
+    }
 
-#endif /* ARMv7-M and higher */
+#endif                  /*--------- ARMv7-M or higher */
 
     /* SCB_SYSPRI3: PendSV set to priority 0xFF (lowest) */
-    SCB_SYSPRI[3] |= (0xFFU << 16U);
+    SCB_SYSPRI[3] = (SCB_SYSPRI[3] | (0xFFU << 16U));
 
-#ifndef QK_ARM_CM_USE_NMI
-    /* SCB_SYSPRI2: SVCall */
-    SCB_SYSPRI[2] &= ~(0xFFU << 24U); /* prioiry 0 (highest) */
-#endif
+#ifdef QK_USE_IRQ_NUM   /*--------- QK IRQ specified? */
+    /* The QK port is configured to use a given ARM Cortex-M IRQ #
+    * to return to thread mode (default is to use the NMI exception)
+    */
+    NVIC_IP[QK_USE_IRQ_NUM] = 0U; /* priority 0 (highest) */
+    NVIC_EN[QK_USE_IRQ_NUM / 32U] = (1U << (QK_USE_IRQ_NUM % 32U));
+#endif                  /*--------- QK IRQ specified */
 }
 
 /*==========================================================================*/
-/* The PendSV_Handler exception handler is used for handling context switch
-* and asynchronous preemption in QK. The use of the PendSV exception is
-* the recommended and most efficient method for performing context switches
-* with ARM Cortex-M.
+/* The PendSV_Handler exception is used for handling the asynchronous
+* preemption in QK. The use of the PendSV exception is the recommended and
+* the most efficient method for performing context switches with ARM Cortex-M.
 *
 * The PendSV exception should have the lowest priority in the whole system
 * (0xFF, see QK_init). All other exceptions and interrupts should have higher
@@ -132,17 +135,17 @@ __asm volatile (
     "  LSLS    r1,r1,#27        \n" /* r0 := (1 << 27) (UNPENDSVSET bit) */
 
     /*<<<<<<<<<<<<<<<<<<<<<<< CRITICAL SECTION BEGIN <<<<<<<<<<<<<<<<<<<<<<<<*/
-#if (__ARM_ARCH == 6)               /* if ARMv6-M... */
+#if (__ARM_ARCH == 6)   /*--------- if ARMv6-M... */
     "  CPSID   i                \n" /* disable interrupts (set PRIMASK) */
 #else                               /* ARMv7-M and higher */
-#if (__ARM_FP != 0)                 /* if VFP available... */
+#if (__ARM_FP != 0)     /*--------- if VFP available... */
     "  PUSH    {r0,lr}          \n" /* ... push lr plus stack-aligner */
-#endif                              /* VFP available */
+#endif                  /*--------- VFP available */
     "  MOVS    r0,#" STRINGIFY(QF_BASEPRI) "\n"
     "  CPSID   i                \n" /* disable interrutps with BASEPRI */
     "  MSR     BASEPRI,r0       \n" /* apply the Cortex-M7 erraturm */
     "  CPSIE   i                \n" /* 837070, see SDEN-1068427. */
-#endif                              /* ARMv7-M and higher */
+#endif                  /*--------- ARMv7-M and higher */
 
     /* The PendSV exception handler can be preempted by an interrupt,
     * which might pend PendSV exception again. The following write to
@@ -162,7 +165,7 @@ __asm volatile (
     "  LSRS    r3,r1,#3         \n" /* r3 := (r1 >> 3), set the T bit (new xpsr) */
     "  LDR     r2,=QK_activate_ \n" /* address of QK_activate_ */
     "  SUBS    r2,r2,#1         \n" /* align Thumb-address at halfword (new pc) */
-    "  LDR     r1,=QK_thread_ret \n" /* return address after the call   (new lr) */
+    "  LDR     r1,=QK_thread_ret \n" /* return address after the call  (new lr) */
 
     "  SUB     sp,sp,#8*4       \n" /* reserve space for exception stack frame */
     "  ADD     r0,sp,#5*4       \n" /* r0 := 5 registers below the SP */
@@ -170,9 +173,9 @@ __asm volatile (
 
     "  MOVS    r0,#6            \n"
     "  MVNS    r0,r0            \n" /* r0 := ~6 == 0xFFFFFFF9 */
-#if (__ARM_ARCH != 6)               /* if ARMv7-M and higher... */
+#if (__ARM_ARCH != 6)   /*--------- if ARMv7-M and higher... */
     "  DSB                      \n" /* ARM Erratum 838869 */
-#endif                              /* ARMv7-M and higher */
+#endif                  /*--------- ARMv7-M and higher */
     "  BX      r0               \n" /* exception-return to the QK activator */
     );
 }
@@ -190,57 +193,80 @@ __asm volatile (
     /* After the QK activator returns, we need to resume the preempted
     * thread. However, this must be accomplished by a return-from-exception,
     * while we are still in the thread context. The switch to the exception
-    * contex is accomplished by triggering the SVC or NMI exception.
+    * context is accomplished by triggering the NMI exception or the selected
+    * IRQ (if macro #QK_USE_IRQ_NUM is defined).
     */
 
-#if (__ARM_ARCH == 6)               /* if ARMv6-M... */
-    "  CPSIE   i                \n" /* enable interrupts (clear PRIMASK) */
-#else                               /* ARMv7-M and higher */
-    "  MOVS    r0,#0            \n"
-    "  MSR     BASEPRI,r0       \n" /* enable interrupts (clear BASEPRI) */
-#if (__ARM_FP != 0)                 /* if VFP available... */
+    /* before triggering the NMI/IRQ, make sure that the VFP stack frame
+    *  will NOT be used...
+    */
+#if (__ARM_FP != 0)     /*--------- if VFP available... */
     /* make sure that the VFP stack frame will NOT be used */
     "  MRS     r0,CONTROL       \n" /* r0 := CONTROL */
     "  BICS    r0,r0,#4         \n" /* r0 := r0 & ~4 (FPCA bit) */
     "  MSR     CONTROL,r0       \n" /* CONTROL := r0 (clear CONTROL[2] FPCA bit) */
     "  ISB                      \n" /* ISB after MSR CONTROL (ARM AN321,Sect.4.16) */
-#endif                              /* VFP available */
-#endif                              /* ARMv7-M and higher */
+#endif                  /*--------- VFP available */
 
-#ifndef QK_ARM_CM_USE_NMI            /* if use SVC... */
-    "  SVC     #0               \n" /* trigger SVC */
-#else                               /* use NMI */
+#ifndef QK_USE_IRQ_NUM  /*--------- IRQ NOT defined, use NMI by default */
     "  LDR     r0,=" STRINGIFY(NVIC_ICSR) "\n" /* Interrupt Control and State */
     "  MOVS    r1,#1            \n"
     "  LSLS    r1,r1,#31        \n" /* r1 := (1 << 31) (NMI bit) */
     "  STR     r1,[r0]          \n" /* ICSR[31] := 1 (pend NMI) */
-    "  B       .                \n" /* wait for preemption by NMI */
-#endif                              /* use NMI */
+
+#else                   /*--------- use the selected IRQ */
+    "  LDR     r0,=" STRINGIFY(NVIC_PEND + (QK_USE_IRQ_NUM / 32)) "\n"
+    "  MOVS    r1,#1            \n"
+    "  LSLS    r1,r1,#" STRINGIFY(QK_USE_IRQ_NUM % 32) "\n" /* r1 := IRQ bit */
+    "  STR     r1,[r0]          \n" /* pend the IRQ */
+
+    /* now enable interrupts so that pended IRQ can be entered */
+#if (__ARM_ARCH == 6)   /*--------- if ARMv6-M... */
+    "  CPSIE   i                \n" /* enable interrupts (clear PRIMASK) */
+#else                   /*--------- ARMv7-M and higher */
+    "  MOVS    r0,#0            \n"
+    "  MSR     BASEPRI,r0       \n" /* enable interrupts (clear BASEPRI) */
+#endif                  /*--------- ARMv7-M and higher */
+#endif                  /*--------- use IRQ */
+
+    /* NOTE! interrupts are still disabled when NMI is used */
+    "  B       .                \n" /* wait for preemption by NMI/IRQ */
     );
 }
 
 /*==========================================================================*/
-/* This exception handler is used for returning back to the interrupted task.
+/* This exception handler is used for returning back to the preempted thread.
 * The exception handler simply removes its own interrupt stack frame from
 * the stack (MSP) and returns to the preempted task using the interrupt
 * stack frame that must be at the top of the stack.
 */
 __attribute__ ((naked))
-#ifndef QK_ARM_CM_USE_NMI            /* if use SVC... */
-void SVC_Handler(void)
-#else                               /* use NMI */
-void NMI_Handler(void)
-#endif                              /* use NMI */
-{
+#ifndef QK_USE_IRQ_NUM  /*--------- IRQ NOT defined, use NMI by default */
+
+/* NOTE: The NMI_Handler() is entered with interrupts still disabled! */
+void NMI_Handler(void) {
+__asm volatile (
+    /* enable interrupts */
+#if (__ARM_ARCH == 6)   /*--------- if ARMv6-M... */
+    "  CPSIE   i                \n" /* enable interrupts (clear PRIMASK) */
+#else                   /*--------- ARMv7-M and higher */
+    "  MOVS    r0,#0            \n"
+    "  MSR     BASEPRI,r0       \n" /* enable interrupts (clear BASEPRI) */
+#endif                  /*--------- ARMv7-M and higher */
+);
+
+#else                   /*--------- use the selected IRQ */
+
+/* NOTE: The IRQ Handler is entered with interrupts enabled */
+void QK_USE_IRQ_HANDLER(void) {
+#endif                  /*--------- use IRQ */
 __asm volatile (
     "  ADD     sp,sp,#(8*4)     \n" /* remove one 8-register exception frame */
 
-#if (__ARM_ARCH != 6)               /* if ARMv7-M and higher... */
-#if (__ARM_FP != 0)                 /* if VFP available... */
+#if (__ARM_FP != 0)     /*--------- if VFP available... */
     "  POP     {r0,lr}          \n" /* pop stack aligner and EXC_RETURN to LR */
     "  DSB                      \n" /* ARM Erratum 838869 */
-#endif                              /* VFP available */
-#endif                              /* ARMv7-M and higher */
+#endif                  /*--------- VFP available */
     "  BX      lr               \n" /* return to the preempted task */
     );
 }
@@ -274,7 +300,7 @@ __asm volatile (
     "QF_qlog2_3:                \n"
     "  LDR     r2,=QF_qlog2_LUT \n"
     "  LDRB    r0,[r2,r0]       \n"
-    "  ADDS    r0,r1, r0        \n"
+    "  ADDS    r0,r1,r0         \n"
     "  BX      lr               \n"
     "  .align                   \n"
     "QF_qlog2_LUT:              \n"

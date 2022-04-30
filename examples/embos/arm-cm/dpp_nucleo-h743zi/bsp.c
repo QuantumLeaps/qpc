@@ -74,7 +74,7 @@ static void tick_handler(void) {  /* signature of embOS tick hook routine */
     static struct ButtonsDebouncing {
         uint32_t depressed;
         uint32_t previous;
-    } buttons = { ~0U, ~0U };
+    } buttons = { 0U, 0U };
     uint32_t current;
     uint32_t tmp;
     static uint_fast8_t ctr = 1U;
@@ -89,7 +89,7 @@ static void tick_handler(void) {  /* signature of embOS tick hook routine */
     /* scale down the 1000Hz embOS tick to the desired BSP_TICKS_PER_SEC */
     if (--ctr == 0U) {
         ctr = 1000U/BSP_TICKS_PER_SEC;
-        QF_TICK_X(0U, &l_embos_ticker);
+        QTIMEEVT_TICK_X(0U, &l_embos_ticker);
 
         /* Perform the debouncing of buttons. The algorithm for debouncing
         * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -104,11 +104,11 @@ static void tick_handler(void) {  /* signature of embOS tick hook routine */
         if (tmp != 0U) {  /* debounced Key button state changed? */
             if (buttons.depressed != 0U) { /* PB0 depressed?*/
                 static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
-                QF_PUBLISH(&pauseEvt, &l_SysTick_Handler);
+                QACTIVE_PUBLISH(&pauseEvt, &l_SysTick_Handler);
             }
             else { /* the button is released */
                 static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
-                QF_PUBLISH(&serveEvt, &l_SysTick_Handler);
+                QACTIVE_PUBLISH(&serveEvt, &l_SysTick_Handler);
             }
         }
     }

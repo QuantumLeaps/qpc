@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QUTEST-QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 6.9.0
-# Last updated on  2020-08-01
+# Last updated for version 7.1.3
+# Last updated on  2022-11-13
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -92,16 +92,9 @@ LIBS     :=
 DEFINES  :=
 
 #-----------------------------------------------------------------------------
-# add QP/C framework (depends on the OS this Makefile runs on):
+# add QP/C framework:
 #
-ifeq ($(OS),Windows_NT)
-	QP_PORT_DIR := $(QPC)/ports/win32-qutest
-	LIB_DIRS += -L$(QP_PORT_DIR)/mingw
-	LIBS     += -lqp -lws2_32
-QS_SRCS :=
-else
-	QP_PORT_DIR := $(QPC)/ports/posix-qutest
-	C_SRCS += \
+C_SRCS += \
 	qep_hsm.c \
 	qep_msm.c \
 	qf_act.c \
@@ -121,14 +114,25 @@ else
 	qutest.c \
 	qutest_port.c
 
-	LIBS += -lpthread
+
+ifeq ($(OS),Windows_NT)
+
+QP_PORT_DIR := $(QPC)/ports/win32-qutest
+LIBS += -lws2_32
+
+else
+
+QP_PORT_DIR := $(QPC)/ports/posix-qutest
+#QP_PORT_DIR := $(QPC)/ports/posix
+LIBS += -lpthread
+
 endif
 
 #============================================================================
 # Typically you should not need to change anything below this line
 
 VPATH    += $(QPC)/src/qf $(QPC)/src/qs $(QP_PORT_DIR)
-INCLUDES += -I$(QPC)/include -I$(QPC)/src -I$(QP_PORT_DIR)
+INCLUDES += -I$(QPC)/include -I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
 # GNU toolset:
@@ -200,7 +204,6 @@ C_OBJS_EXT   := $(addprefix $(BIN_DIR)/, $(C_OBJS))
 C_DEPS_EXT   := $(patsubst %.o,%.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
 CPP_DEPS_EXT := $(patsubst %.o,%.d, $(CPP_OBJS_EXT))
-
 
 #-----------------------------------------------------------------------------
 # rules

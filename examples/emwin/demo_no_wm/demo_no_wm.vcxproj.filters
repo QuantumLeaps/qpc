@@ -17,6 +17,12 @@
       <UniqueIdentifier>{edb4bdd4-7822-4812-b677-b21cb00121b0}</UniqueIdentifier>
       <Extensions>*.lib</Extensions>
     </Filter>
+    <Filter Include="QP_port">
+      <UniqueIdentifier>{fb8baeb5-20bc-4c74-8d10-5072bd677583}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QP">
+      <UniqueIdentifier>{0bf083b7-36c5-45c0-999e-f3474c913bc3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bsp.c">
@@ -46,8 +52,47 @@
     <ClCompile Include="Config\SIMConf.c">
       <Filter>emWin</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\include\qstamp.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\src\qf\qep_hsm.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qep_msm.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qf_act.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qf_actq.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qf_defer.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qf_dyn.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qf_mem.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qf_ps.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qf_qact.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qf_qeq.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qf_qmact.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\qf\qf_time.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ports\win32-qv\qf_port.c">
+      <Filter>QP_port</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ports\win32-qv\qs_port.c">
+      <Filter>QP_port</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +108,18 @@
     <ClInclude Include="Config\LCDConf.h">
       <Filter>emWin</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\ports\win32-qv\qep_port.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ports\win32-qv\qf_port.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ports\win32-qv\qs_port.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ports\win32-qv\safe_std.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="simulation.res">
@@ -76,5 +133,10 @@
     <Library Include="..\..\..\3rd_party\emWin\Simulation\GUISim.lib">
       <Filter>emWin</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\ports\win32-qv\README.md">
+      <Filter>QP_port</Filter>
+    </None>
   </ItemGroup>
 </Project>

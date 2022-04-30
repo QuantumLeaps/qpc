@@ -1,3 +1,36 @@
+##############################################################################
+# Makefile for the Unity test harness v2.5.2, for Windows, Linux, MacOS
+# Last updated for version 7.1.3
+# Last updated on  2022-11-13
+#
+#                    Q u a n t u m  L e a P s
+#                    ------------------------
+#                    Modern Embedded Software
+#
+# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+#
+# This program is open source software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Alternatively, this program may be distributed and modified under the
+# terms of Quantum Leaps commercial licenses, which expressly supersede
+# the GNU General Public License and are specifically designed for
+# licensees interested in retaining the proprietary status of their code.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <www.gnu.org/licenses/>.
+#
+# Contact information:
+# <www.state-machine.com/licensing>
+# <info@state-machine.com>
+##############################################################################
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the QTools collection for Windows, see:
@@ -14,17 +47,14 @@ PROJECT := print_ledbar
 #
 
 # list of all source directories used by this project
-VPATH := . \
-	../src
+VPATH = . \
+	../src \
+	mocks
 
 # list of all include directories needed by this project
 INCLUDES := -I. \
-	-I../src
-
-# location of the QP/C framework (if not provided in an env. variable)
-ifeq ($(QPC),)
-QPC := ../../../..
-endif
+	-I../src \
+	-Imocks
 
 #-----------------------------------------------------------------------------
 # project files:
@@ -39,20 +69,42 @@ C_SRCS := \
 # C++ source files...
 CPP_SRCS :=
 
-LIB_DIRS  :=
-LIBS      :=
+LIB_DIRS :=
+LIBS     :=
 
 # defines...
 DEFINES  :=
 
-ifeq (,$(CONF))
-	CONF := dbg
+#-----------------------------------------------------------------------------
+# external dependencies
+
+# make sure that QTOOLS env. variable is defined...
+ifeq ("$(wildcard $(QTOOLS))","")
+$(error QTOOLS not found. Please install QTools and define QTOOLS env. variable)
 endif
+
+# location of the QP/C framework (if not provided in an env. variable)
+ifeq ($(QPC),)
+QPC := ../../../..
+endif
+
+# location of the QTOOLS directory (if not provided in an environemnt var.)
+ifeq ($(QTOOLS),)
+QTOOLS := c:/qp/qtools
+endif
+
+# location of the Unity unit testing harness
+ifeq ($(UNITY),)
+UNITY := $(QTOOLS)/unity
+endif
+
+# add QP/C, Unity/CMock to the build...
+VPATH    += $(UNITY)/src $(UNITY)/extras/cmock/src
+INCLUDES += -I$(QPC)/include -I$(UNITY)/src -I$(UNITY)/extras/cmock/src
+#C_SRCS   += unity.c cmock.c
 
 #============================================================================
 # Typically you should not need to change anything below this line
-
-INCLUDES += -I$(QPC)/include
 
 #-----------------------------------------------------------------------------
 # GNU toolset:
@@ -85,47 +137,16 @@ else
 endif
 
 #-----------------------------------------------------------------------------
-# build configurations...
-
-ifeq (rel, $(CONF)) # Release configuration ..................................
-
-BIN_DIR := build_rel
-# gcc options:
-CFLAGS  = -c -O3 -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
-	$(INCLUDES) $(DEFINES) -DNDEBUG
-
-CPPFLAGS = -c -O3 -fno-pie -std=c++11 -pedantic -Wall -Wextra \
-	-fno-rtti -fno-exceptions \
-	$(INCLUDES) $(DEFINES) -DNDEBUG
-
-else ifeq (spy, $(CONF))  # Spy configuration ................................
-
-BIN_DIR := build_spy
-
-C_SRCS   += $(QS_SRCS)
-VPATH    += $(QPC)/src/qs
-
-# gcc options:
-CFLAGS  = -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
-	$(INCLUDES) $(DEFINES) -DQ_SPY
-
-CPPFLAGS = -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
-	-fno-rtti -fno-exceptions \
-	$(INCLUDES) $(DEFINES) -DQ_SPY
-
-else # default Debug configuration .........................................
+# build options...
 
 BIN_DIR := build
 
-# gcc options:
-CFLAGS  = -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
-	$(INCLUDES) $(DEFINES)
+CFLAGS  := -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
+	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
-CPPFLAGS = -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
+CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
 	-fno-rtti -fno-exceptions \
-	$(INCLUDES) $(DEFINES)
-
-endif  # .....................................................................
+	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
 ifndef GCC_OLD
 	LINKFLAGS := -no-pie
@@ -168,8 +189,6 @@ $(BIN_DIR)/%.o : %.c
 
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) $< -o $@
-
-.PHONY : clean show
 
 # include dependency files only if our goal depends on their existence
 ifneq ($(MAKECMDGOALS),clean)

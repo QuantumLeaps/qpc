@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on NUCLEO-H743ZI, QK kernel, GNU-ARM
-# Last Updated for Version: 7.0.0
-# Date of the Last Update:  2022-02-28
+# Last Updated for Version: 7.0.1
+# Date of the Last Update:  2022-05-23
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -82,7 +82,6 @@ VPATH = \
 INCLUDES  = \
 	-I../.. \
 	-I$(QPC)/include \
-	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPC)/3rd_party/CMSIS/Include \
 	-I$(QPC)/3rd_party/STM32CubeH7/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
@@ -147,7 +146,8 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DSTM32H743xx -DUSE_HAL_DRIVER -DUSE_STM32H7XX_NUCLEO_144 \
+DEFINES   := -DQP_API_VERSION=9999 \
+	-DSTM32H743xx -DUSE_HAL_DRIVER -DUSE_STM32H7XX_NUCLEO_144 \
 	-DQK_ON_CONTEXT_SW
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...

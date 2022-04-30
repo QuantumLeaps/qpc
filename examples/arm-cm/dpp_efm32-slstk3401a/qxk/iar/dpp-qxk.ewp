@@ -215,6 +215,9 @@
                 <option>
                     <name>CCDefines</name>
                     <state>EFM32PG1B200F256GM48</state>
+                    <state>QXK_USE_IRQ_HANDLER=CRYPTO_IRQHandler</state>
+                    <state>QXK_USE_IRQ_NUM=25</state>
+                    <state>QXK_ON_CONTEXT_SW=1</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -338,7 +341,6 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\efm32pg1b</state>
@@ -1392,7 +1394,6 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\efm32pg1b</state>
@@ -2446,7 +2447,6 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\efm32pg1b</state>

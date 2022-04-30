@@ -1,0 +1,3 @@
+[submodule "3rd_party"]
+	path = 3rd_party
+	url = https://github.com/QuantumLeaps/3rd_party.git

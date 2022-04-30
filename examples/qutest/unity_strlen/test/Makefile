@@ -1,7 +1,7 @@
 ##############################################################################
-# Makefile for the Unity test harness, for Windows, Linux, MacOS
-# Last updated for version 7.0.0
-# Last updated on  2022-03-12
+# Makefile for the Unity test harness v2.5.2, for Windows, Linux, MacOS
+# Last updated for version 7.1.3
+# Last updated on  2022-11-13
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -39,7 +39,7 @@
 #
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
-# is included in the Qtools collection for Windows, see:
+# is included in the QTools collection for Windows, see:
 #    https://github.com/QuantumLeaps/qtools
 #
 
@@ -51,13 +51,16 @@ PROJECT := test_my_strlen
 #-----------------------------------------------------------------------------
 # project directories:
 #
+
 # list of all source directories used by this project
 VPATH = . \
-	../src
+	../src \
+	mocks
 
 # list of all include directories needed by this project
-INCLUDES  = -I. \
-	-I../src
+INCLUDES := -I. \
+	-I../src \
+	-Imocks
 
 #-----------------------------------------------------------------------------
 # project files:
@@ -113,7 +116,7 @@ C_SRCS   += unity.c cmock.c
 #
 # NOTE:
 # GNU toolset (MinGW) is included in the QTools collection for Windows, see:
-#     http://sourceforge.net/projects/qpc/files/QTools/
+#     https://www.state-machine.com/qtools
 # It is assumed that %QTOOLS%\bin directory is added to the PATH
 #
 CC    := gcc
@@ -164,11 +167,6 @@ C_DEPS_EXT   := $(patsubst %.o,%.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
 CPP_DEPS_EXT := $(patsubst %.o,%.d, $(CPP_OBJS_EXT))
 
-# create $(BIN_DIR) if it does not exist
-ifeq ("$(wildcard $(BIN_DIR))","")
-$(shell $(MKDIR) $(BIN_DIR))
-endif
-
 #-----------------------------------------------------------------------------
 # rules
 #
@@ -180,14 +178,6 @@ all : $(TARGET_EXE)
 norun : all
 else
 all : $(TARGET_EXE) run
-endif
-
-ifeq (, $(TESTS))
-ifeq ($(SCRIPT),py)
-TESTS := *.py
-else
-TESTS := *.tcl
-endif
 endif
 
 $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
@@ -208,10 +198,15 @@ $(BIN_DIR)/%.o : %.c
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) $< -o $@
 
-# include dependency files only if our goal depends on their existence
+# create BIN_DIR and include dependencies only if needed
 ifneq ($(MAKECMDGOALS),clean)
   ifneq ($(MAKECMDGOALS),show)
+     ifneq ($(MAKECMDGOALS),debug)
+ifeq ("$(wildcard $(BIN_DIR))","")
+$(shell $(MKDIR) $(BIN_DIR))
+endif
 -include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
+     endif
   endif
 endif
 

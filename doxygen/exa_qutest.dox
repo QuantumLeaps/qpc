@@ -1,7 +1,5 @@
 /*! @page exa_qutest Examples for QUTest Unit Testing Harness
 
-@tableofcontents
-
 <p>The examples in the <span class="img folder">qpc/examples/qutest</span> directory demonstrate how to test embedded code with the [<b>QUTest</b>](https://www.state-machine.com/qtools/qutest.html) unit testing harness. Currently, the following examples are provided:
 </p>
 
@@ -14,10 +12,8 @@
 - <span class="img folder">unity_mock</span> &mdash; Comparison of a advanced testing (mocking) with Unity and QUTest
 
 
-
 @section exa_qutest-dir General Code Organization
-The projects within the <span class="img folder">examples/qutest</span> directory have the customary structure used for testing. The production code to be tested is located in the <span class="img folder">src</span> sub-directory. The testing code is located in the <span class="img folder">test_...</span> sub-folder(s). The following directory tree illustrates the structure for the `dpp` example:
-
+The projects within the <span class="img folder">examples/qutest</span> directory have the customary structure used for testing. The production code to be tested is located in the <span class="img folder">src</span> sub-directory. The testing code is located in the <span class="img folder">test_~~~</span> sub-folder(s). The following directory tree illustrates the structure for the `dpp` example:
 
 <ul class="tag">
   <li><span class="img folder">examples/</span>
@@ -88,7 +84,7 @@ The projects within the <span class="img folder">examples/qutest</span> director
           </li>
         </ul>
       </ul>
-      <li><span class="img folder">.../</span> &mdash; Other QUTest examples...
+      <li><span class="img folder">~~~/</span> &mdash; Other QUTest examples~~~
       </li>
       <li><span class="img folder">target_efm32/</span> &mdash; Code for the **embedded target** (EFM32) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="tag">D</span>
       </li>
@@ -120,9 +116,11 @@ As usual in Test-Driven Development (TDD), the provided <span class="img file_ma
 @subsection exa_qutest_host Host Computers
 Typically, you start testing on your host computer. Before building/running the code, you need to open a terminal window and launch the [QSPY host application](https://www.state-machine.com/qtools/qspy.html) with the `-t` [command-line option](https://www.state-machine.com/qtools/qspy.html#qspy_command).
 
-Next, you open another terminal window, change directory to the <span class="img folder">test_...</span> folder of interest, and type `make`. This will build the application and run the tests (Python), as shown in the screen shot below:
+Next, you open another terminal window, change directory to the <span class="img folder">test_~~~</span> folder of interest, and type `make`. This will build the application and run the tests (Python), as shown in the screen shot below:
 
-![Testing on the host (Python)](qutest_py.png)
+@image html  qutest_py.png
+@image latex qutest_py.png width=6.5in
+@caption{Testing on the host (Python)}
 
 
 @subsection exa_qutest_target Embedded Targets
@@ -130,10 +128,13 @@ The QUTest testing system allows you also to easily test the code directly on th
 
 To test the code on an embedded board, you need to connect the board to the host computer and launch the and launch the [QSPY host application](https://www.state-machine.com/qtools/qspy.html) with the `-c COM<n>` [command-line option](https://www.state-machine.com/qtools/qspy.html#qspy_command), where `<n>` is the specific COM port number on your host that the board is using.
 
-Next, you open another terminal window, change directory to the <span class="img folder">test_...</span> folder of interest, and type `make -f make_tm4c123`. This will build the application and run the tests (Python), as shown in the screen shot below:
+Next, you open another terminal window, change directory to the <span class="img folder">test_~~~</span> folder of interest, and type `make -f make_tm4c123`. This will build the application and run the tests (Python), as shown in the screen shot below:
 
-![Testing on the TM4C123 embedded target (Python)](qutest_tm4c123_py.png)
+@image html  qutest_tm4c123_py.png
+@image latex qutest_tm4c123_py.png width=6.5in
+@caption{Testing on the TM4C123 embedded target (Python)}
 
-
-@next{exa_os}
+@ifnot LATEX
+@nav_next{exa_os}
+@endif
 */

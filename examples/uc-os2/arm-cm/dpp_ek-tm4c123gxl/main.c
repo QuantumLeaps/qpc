@@ -42,8 +42,8 @@ int main() {
     static QEvt const *tableQueueSto[N_PHILO];
     static QEvt const *philoQueueSto[N_PHILO][N_PHILO];
 
-    static OS_STK philoStk[N_PHILO][100]; /* stacks for the Philosophers */
-    static OS_STK tableStk[128];          /* stack for the Table */
+    static OS_STK philoStk[N_PHILO][160]; /* stacks for the Philosophers */
+    static OS_STK tableStk[200];          /* stack for the Table */
 
     static QSubscrList subscrSto[MAX_PUB_SIG];
     static QF_MPOOL_EL(TableEvt) smlPoolSto[2*N_PHILO]; /* event pool */

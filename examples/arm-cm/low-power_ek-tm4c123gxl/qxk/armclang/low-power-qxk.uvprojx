@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>__FPU_PRESENT</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -354,7 +354,7 @@
             <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=16</Define>
+              <Define>Stack_Size=2048 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -982,7 +982,7 @@
               <MiscControls></MiscControls>
               <Define>NDEBUG __FPU_PRESENT</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -998,7 +998,7 @@
             <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=16</Define>
+              <Define>Stack_Size=2048 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -1626,7 +1626,7 @@
               <MiscControls></MiscControls>
               <Define>Q_SPY __FPU_PRESENT</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1642,7 +1642,7 @@
             <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=16</Define>
+              <Define>Stack_Size=2048 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>

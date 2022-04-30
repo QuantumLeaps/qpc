@@ -1,3 +1,37 @@
+##############################################################################
+# Product: Makefile for QUTEST-QP/C for Windows and POSIX *HOSTS*
+# Last updated for version 7.1.3
+# Last updated on  2022-11-13
+#
+#                    Q u a n t u m  L e a P s
+#                    ------------------------
+#                    Modern Embedded Software
+#
+# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+#
+# This program is open source software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Alternatively, this program may be distributed and modified under the
+# terms of Quantum Leaps commercial licenses, which expressly supersede
+# the GNU General Public License and are specifically designed for
+# licensees interested in retaining the proprietary status of their code.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <www.gnu.org/licenses/>.
+#
+# Contact information:
+# <www.state-machine.com/licensing>
+# <info@state-machine.com>
+##############################################################################
+#
 # examples of invoking this Makefile:
 # building configurations: Debug (default), Release, and Spy
 # make
@@ -16,11 +50,6 @@
 # project name:
 #
 PROJECT := trace_ledbar
-
-# default to CONF=spy
-ifeq ($(CONF),)
-CONF := spy
-endif
 
 #-----------------------------------------------------------------------------
 # project directories:
@@ -57,41 +86,20 @@ C_SRCS := \
 # C++ source files...
 CPP_SRCS :=
 
-LIB_DIRS  :=
-LIBS      :=
+LIB_DIRS :=
+LIBS     :=
 
 # defines...
 DEFINES  :=
 
+# 	default to CONF=spy
 ifeq (,$(CONF))
-	CONF := dbg
+	CONF := spy
 endif
 
 #-----------------------------------------------------------------------------
-# add QP/C framework (depends on the OS this Makefile runs on):
+# add QP/C framework:
 #
-ifeq ($(OS),Windows_NT)
-
-# NOTE:
-# For Windows hosts, you can choose:
-# - the single-threaded QP/C port (win32-qv) or
-# - the multithreaded QP/C port (win32).
-#
-QP_PORT_DIR := $(QPC)/ports/win32-qv
-#QP_PORT_DIR := $(QPC)/ports/win32
-LIB_DIRS += -L$(QP_PORT_DIR)/$(CONF)
-LIBS     += -lqp -lws2_32
-
-else
-
-# NOTE:
-# For POSIX hosts (Linux, MacOS), you can choose:
-# - the single-threaded QP/C port (win32-qv) or
-# - the multithreaded QP/C port (win32).
-#
-QP_PORT_DIR := $(QPC)/ports/posix-qv
-#QP_PORT_DIR := $(QPC)/ports/posix
-
 C_SRCS += \
 	qep_hsm.c \
 	qep_msm.c \
@@ -114,6 +122,26 @@ QS_SRCS := \
 	qs_fp.c \
 	qs_port.c
 
+ifeq ($(OS),Windows_NT)
+
+# NOTE:
+# For Windows hosts, you can choose:
+# - the single-threaded QP/C port (win32-qv) or
+# - the multithreaded QP/C port (win32).
+#
+QP_PORT_DIR := $(QPC)/ports/win32-qv
+#QP_PORT_DIR := $(QPC)/ports/win32
+LIBS += -lws2_32
+
+else
+
+# NOTE:
+# For POSIX hosts (Linux, MacOS), you can choose:
+# - the single-threaded QP/C port (win32-qv) or
+# - the multithreaded QP/C port (win32).
+#
+QP_PORT_DIR := $(QPC)/ports/posix-qv
+#QP_PORT_DIR := $(QPC)/ports/posix
 LIBS += -lpthread
 
 endif
@@ -122,7 +150,7 @@ endif
 # Typically you should not need to change anything below this line
 
 VPATH    += $(QPC)/src/qf $(QP_PORT_DIR)
-INCLUDES += -I$(QPC)/include -I$(QPC)/src -I$(QP_PORT_DIR)
+INCLUDES += -I$(QPC)/include -I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
 # GNU toolset:
@@ -219,7 +247,7 @@ endif
 #-----------------------------------------------------------------------------
 # rules
 #
-
+	
 all: $(TARGET_EXE)
 	$(TARGET_EXE)
 
@@ -256,7 +284,7 @@ clean :
 	$(TARGET_EXE)
 
 show :
-	@echo PROJECT      = $(PROJECT)
+	@echo PROJECT       = $(PROJECT)
 	@echo TARGET_EXE   = $(TARGET_EXE)
 	@echo VPATH        = $(VPATH)
 	@echo C_SRCS       = $(C_SRCS)

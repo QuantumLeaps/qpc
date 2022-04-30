@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -355,7 +355,7 @@
             <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=16</Define>
+              <Define>Stack_Size=2048 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -1024,7 +1024,7 @@
               <MiscControls></MiscControls>
               <Define>NDEBUG,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1040,7 +1040,7 @@
             <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=16</Define>
+              <Define>Stack_Size=2048 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -1709,7 +1709,7 @@
               <MiscControls></MiscControls>
               <Define>Q_SPY,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1725,7 +1725,7 @@
             <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=16</Define>
+              <Define>Stack_Size=2048 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>

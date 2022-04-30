@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last updated for version 6.8.2
-* Last updated on  2020-07-17
+* Last updated for version 7.1.2
+* Last updated on  2022-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -70,23 +70,23 @@ int main() {
     /* start the active objects... */
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
         Philo_ctor(n); /* instantiate Philo[n] AO */
-        QACTIVE_START(AO_Philo[n],           /* AO to start */
-                      (uint_fast8_t)(n + 2), /* QP priority of the AO */
-                      philoQueueSto[n],      /* event queue storage */
-                      Q_DIM(philoQueueSto[n]), /* queue length [events] */
-                      (void *)0,             /* stack storage (not used) */
-                      0U,                    /* size of the stack [bytes] */
-                      (QEvt *)0);            /* initialization event */
+        QACTIVE_START(AO_Philo[n], /* AO to start */
+            n + 2U,                /* QF-priority */
+            philoQueueSto[n],      /* event queue storage */
+            Q_DIM(philoQueueSto[n]), /* queue length [events] */
+            (void *)0,             /* stack storage (not used) */
+            0U,                    /* size of the stack [bytes] */
+            (void *)0);            /* initialization param */
     }
 
     Table_ctor(); /* instantiate the Table active object */
-    QACTIVE_START(AO_Table,                  /* AO to start */
-                  (uint_fast8_t)(N_PHILO + 2), /* QP priority of the AO */
-                  tableQueueSto,             /* event queue storage */
-                  Q_DIM(tableQueueSto),      /* queue length [events] */
-                  (void *)0,                 /* stack storage (not used) */
-                  0U,                        /* size of the stack [bytes] */
-                  (QEvt *)0);                /* initialization event */
+    QACTIVE_START(AO_Table,        /* AO to start */
+        N_PHILO + 2U,              /* QF-priority */
+        tableQueueSto,             /* event queue storage */
+        Q_DIM(tableQueueSto),      /* queue length [events] */
+        (void *)0,                 /* stack storage (not used) */
+        0U,                        /* size of the stack [bytes] */
+        (void *)0);                /* initialization param */
 
     return QF_run(); /* run the QF application */
 }

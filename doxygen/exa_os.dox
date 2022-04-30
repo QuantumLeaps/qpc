@@ -1,7 +1,5 @@
 /*! @page exa_os Examples for Workstations (Windows/POSIX)
 
-@tableofcontents
-
 <p>The examples in the <span class="img folder">qpc/examples/workstation</span> directory are designed for workstations (running Windows, Linux, or MacOS). Currently, the following examples are provided:
 </p>
 
@@ -37,11 +35,14 @@ All examples in the <span class="img folder">qpc/examples/workstation</span> dir
 On Windows, the **make** utility and the GNU GCC toolchain (**MinGW**) are provided in the [<b>QTools collection</b>](https://www.state-machine.com/qtools), which is available for a separate download. The code can be also built with other tools as well, such as the Microsoft Visual Studio 2013 and newer.
 
 
-@n
-![Blinky example on Windows (QP linked from a library)](blinky_win32.png)
-@n
-![Blinky example on Linux (QP built from sources)](blinky_posix.png)
+@image html  blinky_win32.png
+@image latex blinky_win32.png width=4.0in
+@caption{Blinky example on Windows}
 
+<br>
+@image html  blinky_posix.png
+@image latex blinky_posix.png width=4.0in
+@caption{Blinky example on Linux}
 
 
 @section exa_os-qv Single-Threaded and Multi-Threaded QP/C Ports
@@ -102,7 +103,6 @@ make CONF=rel clean
 The object files and the executable is located in the <span class="img folder">build_rel</span> directory.
 
 
-
 @subsection exa_os-spy Spy Configuration
 This configuration is built with the QP's Q-SPY trace functionality. The QP/Spy output is performed by a TCP/IP socket and requires launching the QSPY host application with the -t option. To build this configuration, type:
 
@@ -125,12 +125,16 @@ The Spy build configuration requires launching the [QSPY host utility](https://w
 @remark
 Only specific examples support the Spy build configuration. The examples that don't support it, will report an error or will fail the linking stage.
 
+@image html  dpp_win.png
+@image latex dpp_win.png width=5.0in
+@caption{DPP with QSPY example on Windows (QSPY running in a separate command-prompt)}
 
-@n
-![DPP with QSPY example on Windows (QSPY running in a separate command-prompt)](dpp_win.png)
-@n
-![DPP with QSPY example on Linux (QSPY running in a separate terminal)](dpp_posix.png)
+<br>
+@image html  dpp_posix.png
+@image latex dpp_posix.png width=6.0in
+@caption{DPP with QSPY example on Linux (QSPY running in a separate command-prompt)}
 
-
-@next{exa_mware}
+@ifnot LATEX
+@nav_next{exa_mware}
+@endif
 */

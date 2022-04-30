@@ -1,41 +1,33 @@
-/**
-* @file
-* @brief QF/C port to embOS
-* @ingroup ports
-* @cond
-******************************************************************************
-* Last updated for version 6.9.3
-* Last updated on  2021-04-09
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2022-11-22
+* @version Last updated for: @ref qpc_7_1_3
+*
+* @file
+* @brief QF/C port to embOS
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -107,7 +99,7 @@ static void thread_function(void *pVoid) { /* embOS signature */
     }
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -118,8 +110,10 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                 (OS_UINT)qLen,
                 (void *)&qSto[0]);
 
-    me->prio = prio;  /* save the QF priority */
-    QF_add_(me);      /* make QF aware of this active object */
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    QActive_register_(me); /* register this AO */
+
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
@@ -130,7 +124,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 #elif
                     "AO",            /* a generic AO task name */
 #endif
-                    (OS_PRIO)prio, /* embOS uses the same numbering as QP */
+                    (OS_PRIO)me->prio,/* embOS uses the same numbering as QP*/
                     &thread_function,
                     (void OS_STACKPTR *)stkSto,
                     (OS_UINT)stkSize,
@@ -155,13 +149,8 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     }
 }
 /*..........................................................................*/
-#ifndef Q_SPY
-bool QActive_post_(QActive * const me, QEvt const * const e,
-                   uint_fast16_t const margin)
-#else
 bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
-#endif /* Q_SPY */
 {
     uint_fast16_t nFree;
     bool status;
@@ -199,7 +188,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QS_END_NOCRIT_PRE_()
 
         if (e->poolId_ != 0U) { /* is it a pool event? */
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+            QEvt_refCtr_inc_(e); /* increment the reference counter */
         }
 
         QF_CRIT_X_();
@@ -241,7 +230,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QS_END_NOCRIT_PRE_()
 
     if (e->poolId_ != 0U) { /* is it a pool event? */
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     QF_CRIT_X_();

@@ -1,42 +1,57 @@
 /*! @page gs Getting Started
-@nav{index,gs_get}
 
 The following sections describe how to get started with QP&trade;/C quickly:
 - @subpage gs_get
-- @subpage gs_over
 - @subpage gs_tut
 
-The YouTube Video <a class="extern" target="_blank" href="https://youtu.be/O7ER6_VqIH0"><strong>Getting Started with QP&trade; Frameworks</strong></a> provides instructions on how to download, install and get started with QP quickly.
+The YouTube Video <a class="extern" target="_blank" href="https://youtu.be/O7ER6_VqIH0">Getting Started with QP&trade; Frameworks</a> provides instructions on how to download, install and get started with QP quickly.
 
-[![Video: Getting Started with QP&trade; Real-Time Embedded Framework](gs-video.jpg)](https://youtu.be/O7ER6_VqIH0)
+@image html  gs-video.jpg
+@image latex gs-video.jpg width=4.5in
+@caption{Video: Getting Started with QP&trade; Real-Time Embedded Framework}
 
+@note
+@htmlonly
+<a href="modules.html" title="QP Cert-Pack"><img src="cert-pack.png" style="float:right; margin:0 20px 20px 0;"></img></a>
+@endhtmlonly
+Information about the QP/C functionality, architecture, design, and other aspects is provided in the [Certification Package](modules.html):
+- @ref srs &mdash; QP/C functionality
+- @ref sas &mdash; QP/C architecture
+- @ref sds &mdash; QP/C design
+- @ref misra &mdash; QP/C compliance with MISRA-C
+
+@ifnot LATEX
 @nav{index,gs_get}
+@endif
 */
 /*##########################################################################*/
 /*! @page gs_get Downloading &amp; Installing QP&trade;/C
-@tableofcontents
-@nav{gs,gs_over}
+@ifnot LATEX
+@nav{gs,gs_tut}
+@endif
 
 @section gs_bundle Downloading QP&trade;/C in QP&trade;-Bundle
 The most recommended way of obtaining QP&trade;/C&trade; is by downloading the @webref{#Downloads, <b>QP-bundle&trade;</b>}, which includes QP&trade;/C as well as other QP&trade; frameworks and also the @webref{products/qm, QM&trade; modeling tool} and the @webref{products/qtools, QTools&trade; collection}. The main advantage of obtaining QP&trade;/C bundled together like that is that you get all components, tools and examples ready to go.
 
-[![QP-bundle Downloads](qp-bundle.png)](https://www.state-machine.com/#Downloads)
+@image html  qp-bundle.png
+@image latex qp-bundle.png width=1.5in
+@caption{QP-bundle Downloads}
 
 @note
-<a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP&trade;/C on GitHub"><img style="float:right; clear:right;" src="img/github-corner.png"></a>
+@htmlonly
+<a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP&trade;/C on GitHub"><img style="float:right; clear:right;" src="img/logo_github.png"></a>
+@endhtmlonly
 If you are allergic to installers and GUIs or don't have administrator privileges you can also **download and install QP&trade;/C separately** from the <a class="extern" target="_blank" href="https://github.com/QuantumLeaps/qpc"><b>QP&trade;/C GitHub repository</b></a>, as described in the next section.
 
 
 @section gs_gh Downloading QP&trade;/C from GitHub
 Go to the <a class="extern" href="https://github.com/QuantumLeaps/qpc/releases" target="_blank">QP&trade;/C <strong>release</strong> page on GitHub</a>, and choose the QP&trade;/C version number you wish to download. You should select the latest QP&trade;/C version, unless you have a very specific reason to go with an older release.
 
-Inside the release directory (e.g., `6.9.3`), you need to choose the QP&trade;/C archive for your platform. QM&trade; is available for Windows (`qpc_<ver>-win32.zip`), Linux (`qpc_<ver>-linux64.zip`), and MacOS (`qm_<ver>-macx64.dmg`).
-
-![QP&trade;/C downloads from GitHub](qpc_gh.jpg)
-
+@image html  qpc_gh.jpg
+@image latex qpc_gh.jpg width=5.0in
+@caption{<a class="extern" href="https://github.com/QuantumLeaps/qpc/releases" target="_blank">QP&trade;/C downloads from GitHub</a>}
 
 @section gs_dir QP&trade;/C Installation Folder
-
 The following annotated directory tree lists the top-level directories provided in the standard QP&trade;/C distribution.
 
 <ul class="tag">
@@ -56,96 +71,21 @@ The following annotated directory tree lists the top-level directories provided 
   </ul>
 </ul>
 
+@attention
+The QP/C GitHub repository does not contain the `3rd_party` folder, which is needed to build the @ref exa "QP&trade;/C Examples". Therefore, it is highly **recommended** to download the latest [QP/C Release](https://github.com/QuantumLeaps/qpc/releases) as opposed to cloning the repo directly.
+
 @remark
-The standard QP&trade;/C distribution contains many @ref exa "Example Projects", which are specifically designed to help you learn to use QP&trade;/C and to serve you as starting points for your own projects.
+The standard QP&trade;/C distribution contains the `examples` folder with many @ref exa "Example Projects", which are specifically designed to help you learn to use QP&trade;/C and to serve you as starting points for your own projects.
 
-<br>
-@nav{gs,gs_over}
-*/
-/*##########################################################################*/
-/*! @page gs_over QP&trade;/C Overview
-@nav{gs_get,gs_tut}
-@tableofcontents
-
-This section gives a quick, high-level overview of the QP&trade; framework and its context of use. The main purpose is to provide the links to the more detailed information available in this QP&trade;/C Manual.
-
-@section gs_struct General System Structure
-The block diagram below illustrates the general system architecture based on the QP&trade;/C framework:
-
-![General system architecture based on QP&trade;/C](qp_comp.jpg)
-
-
-@note
-The following sections describe the system structure from top to bottom because this is the order most relevant for the development of **QP&trade; Applications**.
-
-
-@section gs_app QP&trade; Application
-The **QP&trade; Application** consists of event-driven @webref{active-object, Active Objects}. The application is not a part of QP&trade;, but rather is *derived* from the QP&trade; framework that supplies the @ref api "API" for building the application as well as runtime environment to execute it on an embedded target.
-
-@sa
-- @ref srs_app "Application Requirements"
-- @ref exa "Application Examples"
-
-
-@section gs_qep QEP State Machine Processor
-The QEP component provides services related to event-driven **State Machines**. This is the most relevant QP&trade; layer for the application developers, because they spend most of their time elaborating the state machines of their Active Objects.
-
-@sa
-- @ref srs_evt "Event Requirements"
-- @ref srs_sm  "State Machine Overview &amp; Requirements"
-- @ref sas_sm  "State Machine Architecture"
-- @ref sds_sm  "State Machine Design &amp; Implementation"
-
-
-@section gs_qf QF Active Object Framework
-The QF component provides services related to **Active Objects** like: asynchronous event passing, queuing of events, publish-subscribe, time events, deterministic event pools for mutable events, etc. These services form the core of the QP&trade; framework, which provides the Run-To-Completion (RTC) execution context for the Active Objects and their internal state machines. The application developers often use the Active Object services in the *actions* executed by the state machines.
-
-@sa
-- @ref srs_ao  "Active Object Overview &amp; Requirements"
-- @ref sas_ao  "Active Object Architecture"
-- @ref sds_ao  "Active Object Design &amp; Implementation"
-
-
-@section gs_kernel Real-Time Kernels/RTOS/GPOS
-The QP&trade; framework can run standalone with one of the provided built-in kernels or it can run on top of a traditional, 3rd-party RTOS, or on top of a general-purpose OS.
-
-
-@subsubsection gs_kernel-builtin Built-in Real-Time Kernels
-The QP&trade; framework contains a selection of built-in real-time kernels, such as:
-- the cooperative QV kernel (see @ref srs_qv_intro "QV Kernel Theory of Operation"),
-- the preemptive non-blocking QK kernel (see @ref srs_qk_intro "QK Kernel Theory of Operation"), and
-- the preemptive, dual-mode, blocking QXK kernel (see @ref srs_qxk_intro "QXK Kernel Theory of Operation").
-
-
-@subsection gs_kernel-rtos 3rd-Party RTOS Kernels
-QP&trade; can also work with many 3rd-party RTOSes, such as:
-- @ref embos "embOS (SEGGER)"
-- @ref freertos "FreeRTOS (AWS)"
-- @ref threadx "ThreadX (Microsoft)"
-- @ref ucos-ii "uC/OS-II (Silicon Labs)"
-
-
-@subsection gs_kernel-gpos General-Purpose Operating Systems
-Finally, QP&trade; can also work with general-purpose operating systems, such as:
-- @ref posix "POSIX (Linux, QNX, VxWorks, Integrity, etc.)"
-- @ref win32 "Windows".
-
-
-@section gs_qs QS Software Tracing
-The QS component provides special instrumentation inside QP that can produce detailed information from the execution of the QP Application. This information, produced in live system can be valuable for debugging, fine-tuning and testing of the QP Applications.
-
-@sa
-- @ref srs_qs "Software Tracing Overview &amp; Requirements"
-- @ref sas_qs "Software Tracing Architecture"
-- @ref sds_qs "Software Tracing Design &amp; Implementation"
-
-<br>
-@nav{gs_get,gs_tut}
+@ifnot LATEX
+@nav{gs,gs_tut}
+@endif
 */
 /*##########################################################################*/
 /*! @page gs_tut QP&trade;/C Tutorial
-@tableofcontents
-@nav{gs_over,tut_blinky}
+@ifnot LATEX
+@nav{gs_get,tut_blinky}
+@endif
 
 This Tutorial describes how to use the QP/C&trade; real-time embedded framework in a series of progressively advancing examples. The first example ("Blinky") uses only one Active Object with a simple non-hierarchical state machine. The following example ("DPP") demonstrates multiple, communicating Active Objects. Finally, the last example ("Fly'n'Shoot" game) demonstrates all features the QP&trade; framework. It is highly recommended to study the simpler examples before the more advanced ones, as the basic information won't be repeated in the later examples.
 
@@ -163,23 +103,27 @@ Keeping this in mind, the provided @ref exa "QP&trade;/C application examples", 
 
 Only after convincing yourself that the example project works "as is", you can think about creating your own projects. At this point, the easiest and recommended way is to copy the existing working example project folder (such as the Blinky example) and rename it.
 
-After copying the project folder, you still need to change the name of the project/workspace. The easiest and safest way to do this is to open the project/workspace in the corresponding IDE and use the Save As... option to save the project under a different name. (You can do this also with the @webref{products/qm, QM model file}, which you can open in QM and "Save As" a different model.)
+After copying the project folder, you still need to change the name of the project/workspace. The easiest and safest way to do this is to open the project/workspace in the corresponding IDE and use the Save As~~~ option to save the project under a different name. (You can do this also with the @webref{products/qm, QM model file}, which you can open in QM and "Save As" a different model.)
 
 @note
 By copying and re-naming an existing, working project, as opposed to creating a new one
 from scratch, you inherit the correct compiler and linker options an other project settings, which will help you get started much faster.
 
-<br>
-@nav{gs_over,tut_blinky}
+@ifnot LATEX
+@nav{gs_get,tut_blinky}
+@endif
 */
 /*##########################################################################*/
 /*! @page tut_blinky Simple Blinky Application
-@tableofcontents
+@ifnot LATEX
 @nav{gs_tut,tut_dpp}
+@endif
 
 The ultra-simple Blinky example is the embedded systems' equivalent of the venerable <i>"Hello World!"</i> program, that is, the simplest possible working QP&trade; application that does "something". In the case of Blinky, this "something" is blinking an LED at the rate of 1Hz, where an LED turns on and remains on for 0.5 seconds on then turns off and remains off for 0.5 seconds.
 
-![Blinky on EK-TM4C123GLX (TivaC LaunchPad)](blinky_ek-tm4c123gxl.gif)
+@image html  blinky_ek-tm4c123gxl.gif
+@image latex blinky_ek-tm4c123gxl.jpg width=2.0in
+@caption{Blinky on EK-TM4C123GLX (TivaC LaunchPad)}
 
 @note
 The Blinky example is provided for other supported boards as well, not just TivaC LaunchPad. Please look for examples named <span class="img folder">dpp_<board-name></span> in the @ref exa "qpc/examples/examples" directory (e.g., `qpc/examples/arm-cm/blinky_ek-tm4c123gxl` for the EK-TM4C123GXL board (TivaC LaunchPad)).
@@ -196,14 +140,19 @@ The ultra-simple Blinky application, which  consists of just one active object n
 
 The details of the Blinky application are describe in the Quantum Leaps Application Note @webref{doc/AN_Getting_Started_with_QP.pdf, Getting Started with QP&trade; Real-Time Embedded Frameworks}.
 
-[![Application Note: Getting Started with QP&trade;](AN-getting_started.jpg)](https://www.state-machine.com/doc/AN_Getting_Started_with_QP.pdf)
+@image html  AN-getting_started.jpg
+@image latex AN-getting_started.jpg width=2.0in
+@caption{@webref{doc/AN_Getting_Started_with_QP.pdf, Getting Started with QP&trade; Real-Time Embedded Frameworks}}
 
+@ifnot LATEX
 @nav{gs_tut,tut_dpp}
+@endif
 */
 /*##########################################################################*/
 /*! @page tut_dpp Dining Philosophers Problem (DPP)
-@tableofcontents
+@ifnot LATEX
 @nav{tut_blinky,tut_game}
+@endif
 
 The Dining Philosophers Problem (DPP) example is an intermediate-level application with *multiple* active objects. It illustrates the following QP&trade; features, such as:
 
@@ -222,22 +171,28 @@ The DPP example is provided for most supported boards as well as in the command-
 
 The Dining Philosophers Problem (DPP) example is described in the @webref{doc/AN_DPP.pdf, Application Note: Dining Philosophers Problem (DPP) Example}.
 
-[![Application Note: Dining Philosophers Problem (DPP) Example](AN_DPP.jpg)](https://www.state-machine.com/doc/AN_Fly-n-Shoot.pdf)
-
+@image html  AN_DPP.jpg
+@image latex AN_DPP.jpg width=2.0in
+@caption{@webref{doc/AN_DPP.pdf, Application Note: Dining Philosophers Problem (DPP) Example}}
 
 @note
 There is also a DPP variant that implements the "Philosophers" as passive "Orthogonal Components" of the "Table" active object. That DPP version is located in <span class="img folder">qpc/examples/examples/workstation/dpp-comp/</span>
 
-<br>
+@ifnot LATEX
 @nav{tut_blinky,tut_game}
+@endif
 */
 /*##########################################################################*/
 /*! @page tut_game "Fly 'n' Shoot" Game
+@ifnot LATEX
 @nav{tut_dpp,tut_low}
+@endif
 
 The "Fly 'n' shoot" game example is a moderately advanced  application of a vintage computer game. It requires a LCD screen and push-buttons on the board.
 
-![EFM32 Pearl-Gecko board](bd_EFM32-SLSTK3401A.jpg)
+@image html  bd_EFM32-SLSTK3401A.jpg
+@image latex bd_EFM32-SLSTK3401A.jpg width=4.5in
+@caption{EFM32 Pearl-Geckob}
 
 "Fly 'n' shoot" game and illustrates the following QP&trade; features, such as:
 
@@ -249,25 +204,31 @@ The "Fly 'n' shoot" game example is a moderately advanced  application of a vint
 - publish-subscribe event delivery;
 - developing of embedded software on Windows (see also @webref{qtools/qwin.html,QWin&trade; GUI Prototyping Toolkit})
 
-!["Fly 'n' Shoot" game running on Windows](qwin_ani.gif)
+@image html  qwin_ani.gif    "Fly 'n' Shoot game running on Windows"
+@image latex qwin_static.jpg "Fly 'n' Shoot game running on Windows" width=6in
 
-The "Fly 'n' Shoot" game example is described in the @webref{doc/AN_Fly-n-Shoot.pdf, Application Note: Fly 'n' Shoot Game Example}.
-
-
-[![Application Note: Fly 'n' Shoot Game Example](AN-game.jpg)](https://www.state-machine.com/doc/AN_Fly-n-Shoot.pdf)
+The "Fly 'n' Shoot" game example is described in the @webref{doc/AN_Fly-n-Shoot.pdf,Application Note: Fly 'n' Shoot Game Example}.
 
 
-[!["Fly'n'Shoot" game tutorial video](game-video.jpg)](https://youtu.be/h_u92uLssDo)
-
+@image html  AN-game.jpg "Application Note: Fly 'n' Shoot Game Example"
+@image latex AN-game.jpg "Application Note: Fly 'n' Shoot Game Example" width=2in
 <br>
+
+@image html  game-video.jpg
+@image latex game-video.jpg width=5in
+@caption{Fly'n'Shoot game tutorial video}
+
+@ifnot LATEX
 @nav{tut_dpp,tut_low}
+@endif
 */
 /*##########################################################################*/
 /*! @page tut_low Low-Power Example
-@tableofcontents
-@nav{tut_game,srs}
+@ifnot LATEX
+@nav{tut_game,exa}
+@endif
 
-The main principle of low-power design for software is to keep the hardware in the most appropriate low-power sleep mode for as long as possible. Most commonly, the software enters a low-power sleep mode from the **idle callback** (a.k.a. "idle hook"), which is called when the software has nothing left to do and is waiting for an interrupt to deliver more work. The QP/C and QP/C++ Real-Time Embedded Frameworks (RTEFs) support the *idle callback* in all of the built-in real-time kernels, such as the cooperative @ref qv "QV kernel", the preemptive non-blocking @ref qk "QK kernel" and the preemptive blocking @ref qxk "QXK kernel". Also, such an *idle callback* is provided in all 3rd-party traditional RTOS kernels that QP/C/C++ have been @ref ports_rtos "ported to".
+The main principle of low-power design for software is to keep the hardware in the most appropriate low-power sleep mode for as long as possible. Most commonly, the software enters a low-power sleep mode from the **idle callback** (a.k.a. "idle hook"), which is called when the software has nothing left to do and is waiting for an interrupt to deliver more work. The QP/C and QP/C++ Real-Time Embedded Frameworks (RTEFs) support the *idle callback* in all of the built-in real-time kernels, such as the cooperative @ref srs_qv "QV kernel", the preemptive non-blocking @ref srs_qk "QK kernel" and the preemptive blocking @ref srs_qxk "QXK kernel". Also, such an *idle callback* is provided in all 3rd-party traditional RTOS kernels that QP/C/C++ have been @ref ports_rtos "ported to".
 
 @remark
 Design for low-power is a broad subject that requires a holistic system approach to achieve a really long battery-powered operation. This example covers only certain *software-related* aspects of the problem.
@@ -280,8 +241,10 @@ interrupt that occurs at a predetermined rate, typically between 10Hz and 1000Hz
 
 While the system clock tick is very useful, it also has the unfortunate side effect of taking the processor out of a low power state as many as 1000 times per second regardless if real work needs to be done or not. This effect can have a significant negative impact on the power efficiency of the system.
 
-![Additional power dissipation caused by the system clock tick](exa_low-power_tick.gif)
 
+@image html  exa_low-power_tick.png
+@image latex exa_low-power_tick.png width=6.0in
+@caption{Additional power dissipation caused by the system clock tick}
 
 @subsection arm-cm_low_power_tickless The "Tickless Mode"
 Some real-time kernels use the low-power optimization called the "tickless mode" (a.k.a. "tick supression" or "dynamic tick"). In this mode, instead of indiscriminately making the clock tick fire with a fixed period, the kernel adjusts the clock ticks *dynamically*, as needed. Specifically, after each clock tick the kernel re-calculates the time for the next clock tick and then sets the clock tick interrupt for the earliest timeout it has to wait for. So for example, if the shortest wait the kernel has to attend to is 300 milliseconds into the future, then the clock interrupt will be set for 300 milliseconds.
@@ -297,7 +260,6 @@ For the reasons just mentioned, the QP&trade; Real-Time Embedded Frameworks don'
 The support for multiple static clock tick rates is much *simpler* than the "dynamic tick", and essentially does not increase the complexity of the kernel (because the same code for the single tick rate can handle other tick rates the same way). Also, multiple static tick rates require much simpler hardware timers, which can be clocked specifically to the desired frequency and don't need particularly wide dynamic range. For example, 16-bit timers or even 8-bit timers are completely adequate.
 
 Yet the *multiple clock rates* can deliver similar low-power operation for the system, while keeping the QP framework much simpler and easier to certify than "tickless" kernels. The rest of this example explains how to use the multiple static clock rates in QP/C/C++ and shows how to leverage this feature to achieve low-power software design.
-
 
 
 @section arm-cm_low_power_app The Low-Power Example Application
@@ -339,8 +301,9 @@ The low-power example is located in QP/C and QP/C++ distributions, in the direct
 @note
 To focus the discussion, this example uses the **EK-TM4C123GXL** evaluation board (a.k.a. TivaC LaunchPad) with Cortex-M4 MCU. However, the general demonstrated principles apply to most modern microcontrollers.
 
-<br>
-![EK-TM4C123GXL evaluation board](bd_EK-TM4C123GXL_pins.jpg)
+@image html  bd_EK-TM4C123GXL.jpg
+@image latex bd_EK-TM4C123GXL.jpg width=2.5in
+@caption{EK-TM4C123GXL (TivaC LaunchPad}
 
 @subsection arm-cm_low_power_behave Behavior
 The the low-power example illustrates the use of two clock tick rates to toggle the LEDs available on the EK-TM4C123GXL board. After the application code is loaded to the board, the **Green-LED** starts blinking once per two seconds (a second on and a second off), while the **Red-LED** lights up and stays on. If no buttons on the board are pressed, the **Green-LED** stops blinking after 4 times. The **Red-LED** shows the **idle** condition, where the system is in a sleep mode.
@@ -373,53 +336,40 @@ The behavior just described is designed for the slow human interaction with the 
 
 The following logic analyzer trace shows the behavior of the low-power application at the faster time scale. The explanation section immediately following the tarce explains the most interesting points:
 
-![low-power application after pressing the SW1 button](exa_low-power_sig.png)
+@image html  exa_low-power_sig.png "low-power application after pressing the SW1 button"
+@image latex exa_low-power_sig.png "low-power application after pressing the SW1 button"
 
-<dl class="tag">
-  <dt>0</dt><dd>
-The plot shows the logic-analyzer traces of the following signals (from the top): **SW1** button (active low), **Blinky1** (Blue-LED), **Blinky0** (Green-LED) and **Idle** (Red-LED). The Idle callback turns the **Red-LED** on when the system enters the low-power sleep mode and it turns the **Red-LED** off when the system is active.
-  </dd>
-  <dt>1</dt><dd>
-At this time the **SW1** button is depressed, which triggers an interrupt that activates both the slow and the fast clock tick rates. The clock tick interrupts trigger toggling of the **Blinky0** (Green-LED) at the slower tick rate-0 and **Blinky1** (Blue-LED) at the faster tick rate-1.
-  </dd>
-  <dt>2</dt><dd>
-The **Blinky1** (Blue-LED) stops toggling after 13 cycles. At this point also the **Idle** callback turns the **fast tick rate-1** off.
-  </dd>
-  <dt>3</dt><dd>
-The **Blinky0** (Green-LED) stops toggling after 4 cycles.
-  </dd>
-  <dt>4</dt><dd>
-The **Idle** callback turns the **slow tick rate-0** off. The system enters the low-power sleep mode without any clock ticks running and remains in this state until the **SW1** button is pressed again.
-  </dd>
-</dl>
-<div style="clear:both;"></div>
+`[0]` The plot shows the logic-analyzer traces of the following signals (from the top): **SW1** button (active low), **Blinky1** (Blue-LED), **Blinky0** (Green-LED) and **Idle** (Red-LED). The Idle callback turns the **Red-LED** on when the system enters the low-power sleep mode and it turns the **Red-LED** off when the system is active.
 
-@note
+`[1]` At this time the **SW1** button is depressed, which triggers an interrupt that activates both the slow and the fast clock tick rates. The clock tick interrupts trigger toggling of the **Blinky0** (Green-LED) at the slower tick rate-0 and **Blinky1** (Blue-LED) at the faster tick rate-1.
+
+`[2]` The **Blinky1** (Blue-LED) stops toggling after 13 cycles. At this point also the **Idle** callback turns the **fast tick rate-1** off.
+
+`[3]` The **Blinky0** (Green-LED) stops toggling after 4 cycles.
+
+`[4]` The **Idle** callback turns the **slow tick rate-0** off. The system enters the low-power sleep mode without any clock ticks running and remains in this state until the **SW1** button is pressed again.
+
+@remark
 The **Idle** line (Red-LED) goes down twice as fast as the changes in the state of the **Green-LED** or the **Blue-LED**. This is because the application uses timeouts of **2 clock ticks** for toggling these lines instead of just one clock tick, which then could be slower. This is not quite optimal for the energy dissipation (as the CPU is woken up twice as often as it needs to be), but it illustrates more accurately how the fixed clock rates work as well as the one-tick delay to enter the low-power sleep mode from the idle callback.
-
 
 
 @subsection arm-cm_low_power_sm State Machines
 The versions of this low-power example for the **QK** and **QV** kernels use two active objects **Blinky0** and **Blinky1**, which toggle the **Green-LED** at the slow tick rate 0, and the **Blue-LED** at the fast tick rate 1, respectively. The state machines of the Blinky0 and Blinky1 active objects are shown below:
 
-![state machines Blinky0 and Blinky1 active objects](exa_low-power_sm.png)
+@image html  exa_low-power_sm.png
+@image latex exa_low-power_sm.png width=4.0in
+@caption{state machines Blinky0 and Blinky1 active objects}
 
-<dl class="tag">
-  <dt>0</dt><dd>
-The **Blinky0** state machine, in the entry action to the "active" state, calls `BSP_tickRate0_on()` to turn the tick rate-0 on. This is done *before* arming the time event `me->timeEvt0` that uses the clock rate-0.
-  </dd>
-  <dt>1</dt><dd>
-Similarly, the **Blinky1** state machine, in the entry action to the "active" state, calls `BSP_tickRate1_on()` to turn the tick rate-1 on. This is done *before* arming the time event `me->timeEvt1` that uses the clock rate-1.
-  </dd>
-</dl>
-<div style="clear:both;"></div>
 
+`[0]` The **Blinky0** state machine, in the entry action to the "active" state, calls `BSP_tickRate0_on()` to turn the tick rate-0 on. This is done *before* arming the time event `me->timeEvt0` that uses the clock rate-0.
+
+`[1]` Similarly, the **Blinky1** state machine, in the entry action to the "active" state, calls `BSP_tickRate1_on()` to turn the tick rate-1 on. This is done *before* arming the time event `me->timeEvt1` that uses the clock rate-1.
 
 
 @subsection arm-cm_low_power_xt Extended Thread (QXK)
 The version of this low-power example for the **QXK** kernel uses one active object **Blinky0** (with the state machine shown above), but instead of the Blinky1 active object, the QXK version uses an eXtended thread (::QXThread) called **XBlinky1**, with the code shown below:
 
-@code{c}
+@code{.c}
     #include "qpc.h"
     #include "low_power.h"
     #include "bsp.h"
@@ -431,14 +381,14 @@ The version of this low-power example for the **QXK** kernel uses one active obj
     QXThread XT_Blinky1;
     QXSemaphore XSEM_sw1;
 
-    /*..........................................................................*/
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..*/
     void XBlinky1_ctor(void) {
         QXThread_ctor(&XT_Blinky1,
                       &XBlinky1_run, /* thread routine */
                       1U); /* associate the thread with tick rate-1 */
     }
 
-    /*..........................................................................*/
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..*/
     static void XBlinky1_run(QXThread * const me) {
         bool isActive = false;
 
@@ -463,19 +413,16 @@ The version of this low-power example for the **QXK** kernel uses one active obj
     }
 @endcode
 
-<dl class="tag">
-  <dt>0</dt><dd> The **XBlinky1** extended thread emulates the states with the `isActive` flag. When the flag is not set (meaning that the system is not active), the thread waits (and blocks) on the global semaphore `XSEM_sw1`.
-  </dd>
-  <dt>1</dt><dd> After the semaphore is signalled (from the GPIO interrupt in the BSP), the **XBlinky1** extened thread calls `BSP_tickRate1_on()` to turn the tick rate-1 on. This is done *before* later calling QXThread_delay() function, which in case uses the clock rate-1.
-  </dd>
-</dl>
-<div style="clear:both;"></div>
+
+`[0]` The **XBlinky1** extended thread emulates the states with the `isActive` flag. When the flag is not set (meaning that the system is not active), the thread waits (and blocks) on the global semaphore `XSEM_sw1`.
+
+`[1]` After the semaphore is signalled (from the GPIO interrupt in the BSP), the **XBlinky1** extened thread calls `BSP_tickRate1_on()` to turn the tick rate-1 on. This is done *before* later calling QXThread_delay() function, which in case uses the clock rate-1.
 
 
 @subsection arm-cm_low_power_idle The Idle Callback (QK/QXK)
 The most important functionality in this low-power example is implemented in the **idle callback** located in the BSP (Board Support Package). The idle callback QK_onIdle() for the preemptive QK kernel and the idle callback QXK_onIdle() for the QXK kernel are almost identical and are explained in this section.
 
-@code{c}
+@code{.c}
 [0] void QXK_onIdle(void) {
 
 [1]     QF_INT_DISABLE();
@@ -502,46 +449,44 @@ The most important functionality in this low-power example is implemented in the
     }
 @endcode
 
-<dl class="tag">
-  <dt>0</dt><dd> The idle callback for QK and QXK are called from the idle loop with interrupts enabled.
-  </dd>
-  <dt>1</dt><dd> Interrupts are disabled to access the shared bitmask `l_activeSet`, which stores the information about active clock rates and peripherals. This bitmask is shared between the idle callback and the application-level threads.
-  </dd>
-  <dt>2</dt><dd> If the SYSTICK timer is active (source of the tick-0 rate)...
-  </dd>
-  <dt>3</dt><dd> The `QF_noTimeEvtsActiveX(0)` function is called to check whether no time events are active at the clock rate-0.
 
-> <b>NOTE:</b> The QF_noTimeEvtsActiveX() function is designed to be called from a critical section, which is the case here.
+`[0]` The idle callback for QK and QXK are called from the idle loop with interrupts enabled.
 
-  </dd>
-  <dt>4</dt><dd> If both of these conditions hold, it is safe to turn the clock rate-0 off, which is done here.
-  </dd>
-  <dt>5</dt><dd> The bit indicating that SYSTICK timer is active is cleared in the `l_activeSet` bitmask.
-  </dd>
-  <dt>6</dt><dd> Simliarly, the bit corresponding to TIMER0 is checked in  the `l_activeSet` bitmask.
-  </dd>
-  <dt>7</dt><dd> The `QF_noTimeEvtsActiveX(1)` function is called to check whether no time events are active at the clock rate-1.
-  </dd>
-  <dt>8-9</dt><dd> If both of these conditions hold, it is safe to turn the clock rate-1 off, which is done here.
-  </dd>
-  <dt>10</dt><dd> The bit indicating that TIMER0 timer is active is cleared in the `l_activeSet` bitmask.
-  </dd>
-  <dt>11</dt><dd> Interrupts are enabled, so the following code is no logner inside critical section
-  </dd>
-  <dt>12</dt><dd> The **Red-LED** is turned ON right before entering the low-power sleep mode
-  </dd>
-  <dt>13</dt><dd> The `__WFI()` instruction stops the CPU and enters the **low-power sleep mode**
-  </dd>
-  <dt>14</dt><dd> The **Red-LED** is turned off after waking up from the sleep mode
-  </dd>
-</dl>
-<div style="clear:both;"></div>
+`[1]` Interrupts are disabled to access the shared bitmask `l_activeSet`, which stores the information about active clock rates and peripherals. This bitmask is shared between the idle callback and the application-level threads.
+
+`[2]` If the SYSTICK timer is active (source of the tick-0 rate)~~~
+
+`[3]` The `QF_noTimeEvtsActiveX(0)` function is called to check whether no time events are active at the clock rate-0.
+
+@remark
+The QF_noTimeEvtsActiveX() function is designed to be called from a critical section, which is the case here.
+
+
+`[4]` If both of these conditions hold, it is safe to turn the clock rate-0 off, which is done here.
+
+`[5]` The bit indicating that SYSTICK timer is active is cleared in the `l_activeSet` bitmask.
+
+`[6]` Simliarly, the bit corresponding to TIMER0 is checked in  the `l_activeSet` bitmask.
+
+`[7]` The `QF_noTimeEvtsActiveX(1)` function is called to check whether no time events are active at the clock rate-1.
+
+`[8-9]` If both of these conditions hold, it is safe to turn the clock rate-1 off, which is done here.
+
+`[10]` The bit indicating that TIMER0 timer is active is cleared in the `l_activeSet` bitmask.
+
+`[11]` Interrupts are enabled, so the following code is no logner inside critical section
+
+`[12]` The **Red-LED** is turned ON right before entering the low-power sleep mode
+
+`[13]` The `__WFI()` instruction stops the CPU and enters the **low-power sleep mode**
+
+`[14]` The **Red-LED** is turned off after waking up from the sleep mode
 
 
 @subsection arm-cm_low_power_idle-qv The Idle Callback (QV)
 The idle callback QV_onIdle() for the cooperative QV kernel is slightly different, because it is called with interrupts **disabled**. The following listing shows the complete QV_onIdle() callback, with the most important points explained in the section below:
 
-@code{c}
+@code{.c}
 [0] void QV_onIdle(void) { /* NOTE: called with interrupts DISABLED */
 
 [1]     if (((l_activeSet & (1U << SYSTICK_ACTIVE)) != 0U) /* rate-0 enabled? */
@@ -566,20 +511,19 @@ The idle callback QV_onIdle() for the cooperative QV kernel is slightly differen
     }
 @endcode
 
-<dl class="tag">
-  <dt>0</dt><dd> The idle callback for QV is called from the QV event-loop with interrupts **disabled**.
-  </dd>
-  <dt>1</dt><dd> The `l_activeSet` bitmask is tested right away, because interrupts are already disabled
-  </dd>
-  <dt>2</dt><dd> The `QF_noTimeEvtsActiveX(0)` function is called to check whether no time events are active at the clock rate-0.
+`[0]` The idle callback for QV is called from the QV event-loop with interrupts **disabled**.
 
-> <b>NOTE:</b> The QF_noTimeEvtsActiveX() function is designed to be called from a critical section, which is the case here.
+`[1]` The `l_activeSet` bitmask is tested right away, because interrupts are already disabled
 
-  </dd>
-  <dt>3</dt><dd> The QV_CPU_SLEEP() macro enters **low-power sleep mode** with interrupts still disabled. This port-specific macro is designed to re-anable interrupts **atomically** with entering the sleep mode.
-  </dd>
-</dl>
-<div style="clear:both;"></div>
+`[2]` The `QF_noTimeEvtsActiveX(0)` function is called to check whether no time events are active at the clock rate-0.
 
-@nav{tut_game,srs}
+@remark
+The QF_noTimeEvtsActiveX() function is designed to be called from a critical section, which is the case here.
+
+
+`[3]` The QV_CPU_SLEEP() macro enters **low-power sleep mode** with interrupts still disabled. This port-specific macro is designed to re-anable interrupts **atomically** with entering the sleep mode.
+
+@ifnot LATEX
+@nav{tut_game,exa}
+@endif
 */

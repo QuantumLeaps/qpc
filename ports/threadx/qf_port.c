@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2022-08-19
+* @version Last updated for: @ref qpc_7_1_0
+*
 * @file
 * @brief QF/C, port to ThreadX
 * @ingroup ports
-* @cond
-******************************************************************************
-* Last updated for version 6.9.3
-* Last updated on  2021-04-08
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -81,13 +74,11 @@ static void thread_function(ULONG thread_input) { /* ThreadX signature */
     }
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    UINT tx_prio; /* ThreadX priority corresponding to the QF priority prio */
-
     /* allege that the ThreadX queue is created successfully */
     Q_ALLEGE_ID(210,
         tx_queue_create(&me->eQueue,
@@ -97,14 +88,12 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
             (ULONG)(qLen * sizeof(ULONG)))
         == TX_SUCCESS);
 
-    me->prio = prio;  /* save the QF priority */
-    QF_add_(me);      /* make QF aware of this active object */
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority */
+    me->pthre = (uint8_t)(prioSpec >> 8U); /* preemption-threshold */
+    QActive_register_(me); /* register this AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
-
-    /* convert QF priority to the ThreadX priority */
-    tx_prio = QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - prio;
 
     Q_ALLEGE_ID(220,
         tx_thread_create(
@@ -114,8 +103,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
             (ULONG)me, /* thread parameter */
             stkSto,    /* stack start */
             stkSize,   /* stack size in bytes */
-            tx_prio,   /* ThreadX priority */
-            tx_prio,   /* preemption threshold disabled (same as priority) */
+            QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - me->prio, /* ThreadX prio */
+            QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - me->pthre, /* preempt-thre */
             TX_NO_TIME_SLICE,
             TX_AUTO_START)
         == TX_SUCCESS);
@@ -135,13 +124,8 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     }
 }
 /*..........................................................................*/
-#ifndef Q_SPY
-bool QActive_post_(QActive * const me, QEvt const * const e,
-                   uint_fast16_t const margin)
-#else
 bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
-#endif /* Q_SPY */
 {
     uint_fast16_t nFree;
     bool status;
@@ -179,7 +163,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QS_END_NOCRIT_PRE_()
 
         if (e->poolId_ != 0U) { /* is it a pool event? */
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+            QEvt_refCtr_inc_(e); /* increment the reference counter */
         }
 
         QF_CRIT_X_();
@@ -221,7 +205,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QS_END_NOCRIT_PRE_()
 
     if (e->poolId_ != 0U) { /* is it a pool event? */
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     QF_CRIT_X_();

@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: BSP for SEGGER emWin (version 6.10), Win32 simulation
-* Last updated for version 6.8.0
-* Last updated on  2020-01-22
+* Product: BSP for SEGGER emWin (version 6.28), Win32 simulation
+* Last updated for version 7.1.3
+* Last updated on  2022-11-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -36,7 +36,7 @@
 #include "bsp.h"
 
 #include "GUI.h"
-#include "GUI_SIM.h"
+#include "LCD_SIM.h"
 #include "DIALOG.h"
 
 #include "safe_std.h" /* portable "safe" <stdio.h>/<string.h> facilities */
@@ -47,7 +47,7 @@ Q_DEFINE_THIS_FILE
 
 /*..........................................................................*/
 static void simHardKey(int keyIndex, int keyState) {
-    static const QEvt keyEvt[] = {
+    static QEvt const keyEvt[] = {
         { KEY_UP_REL_SIG,       0 }, /* hardkey UP released */
         { KEY_UP_PRESS_SIG,     0 }, /* hardkey UP pressed */
         { KEY_RIGHT_REL_SIG,    0 }, /* hardkey RIGHT released */
@@ -99,7 +99,7 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
-    QF_TICK(&l_clock_tick); /* perform the QF clock tick processing */
+    QTIMEEVT_TICK_X(0U, &l_clock_tick); /* QF clock tick processing */
 }
 
 /*..........................................................................*/

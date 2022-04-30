@@ -1,48 +1,41 @@
-/**
-* @file
-* @brief QV/C port to ARM Cortex-M, IAR-ARM toolset
-* @cond
-******************************************************************************
-* Last updated for version 6.8.0
-* Last updated on  2020-01-25
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2022-05-13
+* @version Last updated for: @ref qpcpp_7_0_1
+*
+* @file
+* @brief QV/C port to ARM Cortex-M, IAR-ARM toolset
 */
 /* This QV port is part of the interanl QP implementation */
 #define QP_IMPL 1U
 #include "qf_port.h"
 
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+#if (__ARM_ARCH == 6) /* ARMv6-M? */
 
-/* hand-optimized quick LOG2 in assembly (M0/M0+ have no CLZ instruction) */
+/* hand-optimized quick LOG2 in assembly (no CLZ instruction in ARMv6-M) */
 uint_fast8_t QF_qlog2(uint32_t x) {
     static uint8_t const log2LUT[16] = {
         0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,
@@ -75,7 +68,7 @@ uint_fast8_t QF_qlog2(uint32_t x) {
     return n + log2LUT[x];
 }
 
-#else /* NOT Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+#else /* ARMv7-M or higher */
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
@@ -103,13 +96,15 @@ void QV_init(void) {
     /* set exception priorities to QF_BASEPRI...
     * SCB_SYSPRI1: Usage-fault, Bus-fault, Memory-fault
     */
-    SCB_SYSPRI[1] |= (QF_BASEPRI << 16) | (QF_BASEPRI << 8) | QF_BASEPRI;
+    SCB_SYSPRI[1] = (SCB_SYSPRI[1]
+        | (QF_BASEPRI << 16) | (QF_BASEPRI << 8) | QF_BASEPRI);
 
     /* SCB_SYSPRI2: SVCall */
-    SCB_SYSPRI[2] |= (QF_BASEPRI << 24);
+    SCB_SYSPRI[2] = (SCB_SYSPRI[2] | (QF_BASEPRI << 24));
 
     /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
-    SCB_SYSPRI[3] |= (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI;
+    SCB_SYSPRI[3] = (SCB_SYSPRI[3]
+        | (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI);
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
     n = 8U + ((*SCnSCB_ICTR & 0x7U) << 3); /* (# NVIC_PRIO registers)/4 */
@@ -120,5 +115,5 @@ void QV_init(void) {
     } while (n != 0);
 }
 
-#endif /* NOT Cortex-M0/M0+/M1 */
+#endif /* ARMv7-M or higher */
 

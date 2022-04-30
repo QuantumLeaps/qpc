@@ -3,6 +3,7 @@
 *.d
 *.lib
 *.a
+*.bin
 *.elf
 *.err
 *.hex
@@ -32,12 +33,14 @@
 *.Debug
 *.Release
 *.bak
-*.qlc
-JLink*.*
+.qpc
 version-*
+JLink*.*
 
-3rd_party/
 html/
+latex/
+cert-pack/
+cert-latex/
 test_priv/
 dbg/
 rel/

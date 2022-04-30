@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-08-29
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
 * @brief QF/C port to POSIX API (single-threaded, like QV kernel)
@@ -59,7 +59,6 @@
 Q_DEFINE_THIS_MODULE("qf_port")
 
 /* Global objects ==========================================================*/
-QPSet  QV_readySet_;        /* QV-ready set of active objects */
 pthread_cond_t QV_condVar_; /* Cond.var. to signal events */
 
 /* Local objects ===========================================================*/
@@ -162,9 +161,9 @@ int_t QF_run(void) {
 
     while (l_isRunning) {
         /* find the maximum priority AO ready to run */
-        if (QPSet_notEmpty(&QV_readySet_)) {
-            uint_fast8_t p = QPSet_findMax(&QV_readySet_);
-            QActive *a = QF_active_[p];
+        if (QPSet_notEmpty(&QF_readySet_)) {
+            uint_fast8_t p = QPSet_findMax(&QF_readySet_);
+            QActive *a = QActive_registry_[p];
             QF_CRIT_X_();
 
             /* the active object 'a' must still be registered in QF
@@ -185,7 +184,7 @@ int_t QF_run(void) {
             QF_CRIT_E_();
 
             if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
-                QPSet_remove(&QV_readySet_, p);
+                QPSet_remove(&QF_readySet_, p);
             }
         }
         else {
@@ -194,7 +193,7 @@ int_t QF_run(void) {
             * for events. Instead, the POSIX-QV port efficiently waits until
             * QP events become available.
             */
-            while (QPSet_isEmpty(&QV_readySet_)) {
+            while (QPSet_isEmpty(&QF_readySet_)) {
                 pthread_cond_wait(&QV_condVar_, &l_pThreadMutex);
             }
         }
@@ -225,7 +224,7 @@ void QF_stop(void) {
 
     /* unblock the event-loop so it can terminate */
     p = 1U;
-    QPSet_insert(&QV_readySet_, p);
+    QPSet_insert(&QF_readySet_, p);
     pthread_cond_signal(&QV_condVar_);
 }
 
@@ -259,20 +258,20 @@ int QF_consoleWaitForKey(void) {
 }
 
 /****************************************************************************/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                   QEvt const * * const qSto, uint_fast16_t const qLen,
                   void * const stkSto, uint_fast16_t const stkSize,
                   void const * const par)
 {
     (void)stkSize; /* unused parameter in the POSIX port */
 
-    Q_REQUIRE_ID(600, (0U < prio)  /* priority...*/
-        && (prio <= QF_MAX_ACTIVE) /*... in range */
-        && (stkSto == (void *)0)); /* statck storage must NOT...
-                                       * ... be provided */
+    /* no external stack storage needed for this port */
+    Q_REQUIRE_ID(600, (stkSto == (void *)0));
     QEQueue_init(&me->eQueue, qSto, qLen);
-    me->prio = (uint8_t)prio;
-    QF_add_(me); /* make QF aware of this active object */
+
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    QActive_register_(me); /* register this AO */
 
     /* the top-most initial tran. (virtual) */
     QHSM_INIT(&me->super, par, me->prio);
@@ -287,10 +286,10 @@ void QActive_stop(QActive * const me) {
 
     /* make sure the AO is no longer in "ready set" */
     QF_CRIT_E_();
-    QPSet_remove(&QV_readySet_, me->prio);
+    QPSet_remove(&QF_readySet_, me->prio);
     QF_CRIT_X_();
 
-    QF_remove_(me); /* remove this AO from QF */
+    QActive_unregister_(me); /* un-register this active object */
 }
 #endif
 /*..........................................................................*/
@@ -306,7 +305,7 @@ static void *ticker_thread(void *arg) { /* for pthread_create() */
     (void)arg; /* unused parameter */
     while (l_isRunning) { /* the clock tick loop... */
         nanosleep(&l_tick, NULL); /* sleep for the number of ticks, NOTE05 */
-        QF_onClockTick(); /* clock tick callback (must call QF_TICK_X()) */
+        QF_onClockTick(); /* clock tick callback (must call QTIMEEVT_TICK_X()) */
     }
     return (void *)0; /* return success */
 }
@@ -317,8 +316,8 @@ static void sigIntHandler(int dummy) {
     exit(-1);
 }
 
-/*****************************************************************************
-* NOTE01:
+/*==========================================================================*/
+/* NOTE01:
 * In Linux, the scheduler policy closest to real-time is the SCHED_FIFO
 * policy, available only with superuser privileges. QF_run() attempts to set
 * this policy as well as to maximize its priority, so that the ticking

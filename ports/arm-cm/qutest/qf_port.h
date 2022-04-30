@@ -1,5 +1,5 @@
 /*============================================================================
-* QF/C port to ARM Cortex-M, QUTest, generic C99
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-04-09
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-11-11
+* @version Last updated for: @ref qpc_7_1_3
 *
 * @file
 * @brief QF/C port to Cortex-M, QUTEST unit test harness, generic C99 compiler
@@ -44,8 +44,8 @@
 #define QF_MAX_TICK_RATE     2U
 
 /* QF interrupt disable/enable */
-#define QF_INT_DISABLE()     (++QF_intNest)
-#define QF_INT_ENABLE()      (--QF_intNest)
+#define QF_INT_DISABLE()     (++QF_intLock_)
+#define QF_INT_ENABLE()      (--QF_intLock_)
 
 /* QF critical section */
 /* QF_CRIT_STAT_TYPE not defined */
@@ -72,7 +72,7 @@
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0)
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-        QPSet_insert(&QS_rxPriv_.readySet, (uint_fast8_t)(me_)->prio)
+        QPSet_insert(&QF_readySet_, (uint_fast8_t)(me_)->prio)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool

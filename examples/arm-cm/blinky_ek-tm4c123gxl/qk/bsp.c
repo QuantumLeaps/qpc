@@ -62,7 +62,7 @@ void GPIOPortA_IRQHandler(void);
 /* ISRs used in this project ===============================================*/
 void SysTick_Handler(void) {
     QK_ISR_ENTRY();   /* inform QK about entering an ISR */
-    QF_TICK_X(0U, (void *)0); /* process time events for rate 0 */
+    QTIMEEVT_TICK_X(0U, (void *)0); /* process time events for rate 0 */
     QK_ISR_EXIT();  /* inform QK about exiting an ISR */
 }
 

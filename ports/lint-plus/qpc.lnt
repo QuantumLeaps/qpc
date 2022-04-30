@@ -22,11 +22,11 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2021-12-31
-//! @version Last updated for version: 7.0.0
+//! @date Last updated on: 2022-10-13
+//! @version Last updated for version: 7.1.3
 //!
 //! @file
-//! @brief PC-Lint-Plus option file for linting QP/C __Applications__
+//! @brief PC-Lint-Plus option file for linting **QP/C Applications**
 
 // M3-D4.8(A) complete definition is unnecessary in this translation unit
 -efile(9045,
@@ -46,7 +46,8 @@
 // give Q_onAssert() the semantics of "no return"
 -sem(Q_onAssert, r_no)
 
-// M3-R1.4(R) keyword '_Noreturn' is deprecated
+// M3-R1.4(R1.4) keyword '_Noreturn' is deprecated
+// @tr{PQA01_4}
 -emacro(586,
  Q_NORETURN)
 
@@ -67,6 +68,7 @@
  Q_ASSERT_STATIC,
  Q_ASSERT_COMPILE,
  Q_DEFINE_THIS_MODULE,
+ Q_UNUSED_PAR,
  Q_DIM)
 
 // definition of macro ends in semicolon
@@ -87,6 +89,7 @@
  Q_IGNORED,
  Q_HSM_UPCAST,
  Q_EVT_CAST,
+ QEVT_INITIALIZER,
  Q_UINT2PTR_CAST,
  Q_STATE_CAST,
  Q_ACTION_CAST,
@@ -189,19 +192,20 @@
  QF_INT_ENABLE,
  QF_CRIT_ENTRY,
  QF_CRIT_EXIT,
+ Q_PRIO,
  QF_LOG2,
  Q_NEW,
  Q_NEW_X,
  Q_NEW_REF,
  Q_DELETE_REF,
+ QF_PUBLISH,
+ QF_TICK_X,
+ QF_TICK,
  QF_INT_DISABLE,
  QF_INT_ENABLE,
  QF_CRIT_ENTRY,
  QF_CRIT_EXIT,
  QF_CRIT_EXIT_NOP,
- QF_TICK,
- QF_TICK_X,
- QF_PUBLISH,
  QF_MPOOL_EL,
  QF_LOG2,
  QF_QS_CRIT_ENTRY,
@@ -218,9 +222,12 @@
  QACTIVE_POST,
  QACTIVE_POST_X,
  QACTIVE_POST_LIFO,
+ QACTIVE_PUBLISH,
  QACTIVE_EQUEUE_WAIT_,
  QACTIVE_EQUEUE_SIGNAL_,
- QACTIVE_EQUEUE_ONEMPTY_)
+ QACTIVE_EQUEUE_ONEMPTY_,
+ QTIMEEVT_TICK,
+ QTIMEEVT_TICK_X)
 
 // M3-R10.3(R) cannot assign enum to different essential type 'int_t'
 -emacro(9034,

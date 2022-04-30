@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP on MSP-EXP430F5529LP, preemptive QK kernel
-* Last updated for version 6.9.1
-* Last updated on  2020-09-22
+* Last updated for version 7.1.1
+* Last updated on  2022-09-09
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -91,12 +91,12 @@ static uint32_t l_rnd;
 #endif
     QK_ISR_ENTRY();    /* inform QK about entering the ISR */
 
-    QF_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
+    QTIMEEVT_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
 
     QK_ISR_EXIT();     /* inform QK about exiting the ISR */
 
 #ifdef NDEBUG
-    __low_power_mode_off_on_exit(); /* turn the low-power mode OFF, NOTE1 */
+    __low_power_mode_off_on_exit(); /* see NOTE1 */
 #endif
 }
 
@@ -138,7 +138,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    /* not enouhg LEDs to implement this feature */
+    /* not enough LEDs to implement this feature */
     if (paused != 0U) {
         //P1OUT |=  LED1;
     }
@@ -178,8 +178,8 @@ void QF_onCleanup(void) {
 void QK_onIdle(void) {
     /* toggle LED2 on and then off, see NOTE2 */
     QF_INT_DISABLE();
-    P4OUT |=  LED2;  /* turn LED2 on */
-    P4OUT &= ~LED2;  /* turn LED2 off */
+    P4OUT |=  LED2;        /* turn LED2 on */
+    P4OUT &= ~LED2;        /* turn LED2 off */
     QF_INT_ENABLE();
 
 #ifdef Q_SPY
@@ -215,8 +215,12 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     (void)loc;
     QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
-    /* write invalid password to WDT: cause a password-validation RESET */
-    WDTCTL = 0xDEAD;
+    QF_INT_DISABLE(); /* disable all interrupts */
+
+    /* cause the reset of the CPU... */
+    WDTCTL = WDTPW | WDTHOLD;
+    __asm("    push &0xFFFE");
+    /* return from function does the reset */
 }
 
 /* QS callbacks ============================================================*/
@@ -326,8 +330,8 @@ void QS_onCommand(uint8_t cmdId,
 *
 * NOTE2:
 * One of the LEDs is used to visualize the idle loop activity. The brightness
-* of the LED is proportional to the frequency of invocations of the idle loop.
-* Please note that the LED is toggled with interrupts disabled, so no
-* interrupt execution time contributes to the brightness of the User LED.
+* of the LED is proportional to the frequency of invcations of the idle loop.
+* Please note that the LED is toggled with interrupts locked, so no interrupt
+* execution time contributes to the brightness of the User LED.
 */
 

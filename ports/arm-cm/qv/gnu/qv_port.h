@@ -1,5 +1,5 @@
 /*============================================================================
-* QV/C port to ARM Cortex-M, GNU-ARM
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial

@@ -83,7 +83,7 @@ void SysTick_Handler(void) {
     static struct ButtonsDebouncing {
         uint32_t depressed;
         uint32_t previous;
-    } buttons = { ~0U, ~0U };
+    } buttons = { 0U, 0U };
     uint32_t current;
     uint32_t tmp;
 
@@ -94,7 +94,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
     QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
@@ -110,11 +110,11 @@ void SysTick_Handler(void) {
     if ((tmp & (1U << PB0_PIN)) != 0U) {  /* debounced PB0 state changed? */
         if ((buttons.depressed & (1U << PB0_PIN)) != 0U) { /* PB0 depressed?*/
             static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
-            QF_PUBLISH(&pauseEvt, &l_SysTick_Handler);
+            QACTIVE_PUBLISH(&pauseEvt, &l_SysTick_Handler);
         }
         else {            /* the button is released */
             static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
-            QF_PUBLISH(&serveEvt, &l_SysTick_Handler);
+            QACTIVE_PUBLISH(&serveEvt, &l_SysTick_Handler);
         }
     }
     QV_ARM_ERRATUM_838869();

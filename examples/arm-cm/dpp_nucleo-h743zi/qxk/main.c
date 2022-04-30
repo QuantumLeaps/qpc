@@ -27,7 +27,6 @@
 * @version Last updated for: @ref qpc_7_0_0
 *
 * @file
-* @ingroup examples
 * @brief DPP example
 */
 #include "qpc.h"

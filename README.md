@@ -1,18 +1,19 @@
 ![QP Framework](doxygen/images/qp_banner.jpg)
 
-> **NOTE:** If your company has a policy forbidding open source in your
-products, all QP frameworks can be
-[licensed commercially](https://www.state-machine.com/licensing),
-in which case you don't use any open source license and you do not violate
-your policy.
-
-
----------------------------------------------------------------------------
 # What's New?
 View QP/C Revision History at: https://www.state-machine.com/qpc/history.html
 
+> **NOTE:** If you're interested in the latest QP/C version from GitHub,
+it is recommened that you clone this repo like that:
 
----------------------------------------------------------------------------
+```
+git clone https://github.com/QuantumLeaps/qpc --recurse-submodules --depth 1
+```
+
+Alternatively, you can also download the latest
+[QP/C Release](https://github.com/QuantumLeaps/qpc/releases).
+
+
 # Getting Started with QP/C
 The most recommended way of obtaining QP/C is by downloading the
 [QP-bundle](https://www.state-machine.com/#Downloads), which includes QP/C
@@ -20,15 +21,10 @@ as well as the QM modeling tool and the QTools collection. The main advantage of
 obtaining QP/C bundled together like that is that you get all components,
 tools and examples ready to go.
 
-><span style="background:yellow;"><strong>NOTE:</strong></span>
-If you're interested in the latest QP/C version from Git,
-it is highly recommened that you download the latest
-[QP/C Release](https://github.com/QuantumLeaps/qpc/releases)
-as opposed to cloning the repo directy. This is because the `3rd_party`
-directory needed to build the examples is no longer provided in the
-`qpc` repository (and is provided in the QP/C release).
-
 ### Getting Started Resources
+- ["QP/C Tutorial"][Tutorial]
+describes a series of progressively advanced QP/C example applications.
+
 - [Video: "Getting Started with QP Real-Time Embedded Frameworks"][Video]
 provides instructions on how to download, install, and get started with QP.
 
@@ -36,17 +32,6 @@ provides instructions on how to download, install, and get started with QP.
 contains also a tutorial, in which you build a simple "Blinky" application.
 
 
----------------------------------------------------------------------------
-# Documentation
-The online HTML documention for the **latest** version of QP/C is located
-at: https://www.state-machine.com/qpc
-
-The offline HTML documentation for **this** particular version of QP/C
-is located in the sub-folder [html](html). To view the offline documentation,
-open the file [html/index.html](html/index.html) in your web browser.
-
-
----------------------------------------------------------------------------
 # About QP/C
 QP/C (Quantum Platform in C) is a lightweight, open source
 [Real-Time Embedded Framework (RTEF)][RTEF] for building modern embedded
@@ -104,9 +89,9 @@ and many times more open source users worldwide, the QP™ frameworks are the
 most popular such offering on the market. They power countless electronic
 products ranging from implantable medical devices to complex weapon systems.
 
----------------------------------------------------------------------------
+
 # QP/C Licensing
-QP/C is licensed under the increasingly popular [dual licensing model][Lic],
+QP/C is licensed under the sustainable [dual licensing model][Lic],
 in which both the open source software distribution mechanism and
 traditional closed source software distribution models are combined.
 
@@ -115,11 +100,15 @@ product, all QP frameworks can be [licensed commercially][Lic], in which case
 you don't use any open source license and you do not violate your policy.
 
 
----------------------------------------------------------------------------
 # QP/C Documentation
-The **QP/C Manual** is located online at: https://www.state-machine.com/qpc
+The online HTML documention for the **latest** version of QP/C is located
+at: https://www.state-machine.com/qpc
 
----------------------------------------------------------------------------
+The offline HTML documentation for **this** particular version of QP/C
+is located in the sub-folder [html](html). To view the offline documentation,
+open the file [html/index.html](html/index.html) in your web browser.
+
+
 # How to Get Help?
 - [Free Support Forum](https://sourceforge.net/p/qpc/discussion/668726)
 - [Bug Reports](https://sourceforge.net/p/qpc/bugs/)
@@ -127,6 +116,13 @@ The **QP/C Manual** is located online at: https://www.state-machine.com/qpc
 - [Quantum Leaps website](https://www.state-machine.com)
 - [Quantum Leaps licensing](https://www.state-machine.com/licensing)
 - [info@state-machine.com](mailto:info@state-machine.com)
+
+
+# How to Help this Project?
+If you like this project, please give it a star (in the upper-right corner of your browser window):
+
+![GitHub star](doxygen/images/github-star.jpg)
+
 
    [RTEF]: <https://www.state-machine.com/rtef>
    [QP]: <https://www.state-machine.com/products/qp>
@@ -138,4 +134,5 @@ The **QP/C Manual** is located online at: https://www.state-machine.com/qpc
    [Lic]: <https://www.state-machine.com/licensing>
    [Cust]: <https://www.state-machine.com/customers>
    [AN]: <https://www.state-machine.com/doc/AN_Getting_Started_with_QP.pdf>
+   [Tutorial]: <https://www.state-machine.com/qpc/gs_tut.html>
    [Video]: <https://youtu.be/O7ER6_VqIH0>

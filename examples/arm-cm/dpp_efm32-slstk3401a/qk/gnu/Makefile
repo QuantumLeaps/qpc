@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on EMF32-SLSTK3401A, QK kernel, GNU-ARM
-# Last Updated for Version: 7.0.0
-# Date of the Last Update:  2021-07-01
+# Last Updated for Version: 7.0.1
+# Date of the Last Update:  2022-05-23
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -80,7 +80,6 @@ VPATH = \
 INCLUDES  = \
 	-I../.. \
 	-I$(QPC)/include \
-	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPC)/3rd_party/CMSIS/Include \
 	-I$(QPC)/3rd_party/efm32pg1b
@@ -138,7 +137,9 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DEFM32PG1B200F256GM48=1
+DEFINES   := -DEFM32PG1B200F256GM48=1 \
+	-DQK_USE_IRQ_NUM=25 \
+	-DQK_USE_IRQ_HANDLER=CRYPTO_IRQHandler
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]

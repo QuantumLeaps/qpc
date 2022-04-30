@@ -90,7 +90,7 @@ static uint32_t l_rnd;
        (((BSP_SMCLK / 8) + BSP_TICKS_PER_SEC/2) / BSP_TICKS_PER_SEC) + 1;
 #endif
 
-    QF_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
+    QTIMEEVT_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
 }
 
 

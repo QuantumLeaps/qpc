@@ -1,18 +1,18 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2011  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2022  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.08 - Graphical user interface for embedded applications **
+** emWin V6.28 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
-only be used in accordance with a license and should not be re-
+only  be used  in accordance  with  a license  and should  not be  re-
 distributed in any way. We appreciate your understanding and fairness.
 ----------------------------------------------------------------------
 File        : LCDConf.c
@@ -31,14 +31,17 @@ Purpose     : Display controller configuration (single layer)
 //
 // Physical display size
 //
-#define XSIZE_PHYS  320
-#define YSIZE_PHYS  240
-#define VYSIZE_PHYS (YSIZE_PHYS << 1)
+#define XSIZE_PHYS 320
+#define YSIZE_PHYS 240
 
 //
 // Color conversion
 //
-#define COLOR_CONVERSION GUICC_8888
+#if GUI_USE_ARGB
+  #define COLOR_CONVERSION GUICC_M8888I
+#else
+  #define COLOR_CONVERSION GUICC_8888
+#endif
 
 //
 // Display driver
@@ -95,7 +98,7 @@ void LCD_X_Config(void) {
   //
   GUI_DEVICE_CreateAndLink(DISPLAY_DRIVER, COLOR_CONVERSION, 0, 0);
   //
-  // Display driver configuration, required for Lin-driver
+  // Display driver configuration
   //
   LCD_SetSizeEx    (0, XSIZE_PHYS,   YSIZE_PHYS);
   LCD_SetVSizeEx   (0, VXSIZE_PHYS,  VYSIZE_PHYS);

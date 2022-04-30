@@ -96,7 +96,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK_X(0U, &l_SysTick); /* process time events for tick rate 0 */
+    QTIMEEVT_TICK_X(0U, &l_SysTick); /* process time events for tick rate 0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -111,11 +111,11 @@ void SysTick_Handler(void) {
     if ((tmp & BTN_B1) != 0U) {  /* debounced B1 state changed? */
         if ((buttons.depressed & BTN_B1) != 0U) { /* is B1 depressed? */
             static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
-            QF_PUBLISH(&pauseEvt, &l_SysTick);
+            QACTIVE_PUBLISH(&pauseEvt, &l_SysTick);
         }
         else { /* the button is released */
             static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
-            QF_PUBLISH(&serveEvt, &l_SysTick);
+            QACTIVE_PUBLISH(&serveEvt, &l_SysTick);
         }
     }
 

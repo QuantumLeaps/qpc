@@ -1,13 +1,13 @@
 /*****************************************************************************
 * Product:  Initialization for emWin/uC/GUI, Win32 simulation VC++
-* Last Updated for Version: 5.1.1
-* Date of the Last Update:  Nov 08, 2013
+* Last updated for version 7.1.3
+* Last updated on  2022-11-16
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C)-2013 Quantum Leaps, LLC. All rights reserved.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -32,7 +32,7 @@
 * <info@state-machine.com>
 *****************************************************************************/
 #include "GUI.h"
-#include "GUI_SIM.h"
+#include "LCD_SIM.h"
 
 void SIM_X_Init() {
     if (((LCD_GetDevCap(LCD_DEVCAP_XSIZE) * LCD_GetXMag()) == 320)

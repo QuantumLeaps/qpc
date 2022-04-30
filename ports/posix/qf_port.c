@@ -1,41 +1,34 @@
-/**
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+*
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
+*
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
+*
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
+*
+* Contact information:
+* <www.state-machine.com>
+* <info@state-machine.com>
+============================================================================*/
+/*!
+* @date Last updated on: 2022-08-29
+* @version Last updated for: @ref qpc_7_1_0
+*
 * @file
 * @brief QF/C port to POSIX API (multi-threaded)
 * @ingroup ports
-* @cond
-******************************************************************************
-* Last updated for: @ref qpc_7_0_0
-* Last updated on  2021-06-17
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-******************************************************************************
-* @endcond
 */
 
 /* expose features from the 2008 POSIX standard (IEEE Standard 1003.1-2008) */
@@ -141,7 +134,7 @@ int_t QF_run(void) {
 
     l_isRunning = true;
     while (l_isRunning) { /* the clock tick loop... */
-        QF_onClockTick(); /* clock tick callback (must call QF_TICK_X()) */
+        QF_onClockTick(); /* callback (must call QTIMEEVT_TICK_X()) */
 
         nanosleep(&l_tick, NULL); /* sleep for the number of ticks, NOTE05 */
     }
@@ -211,13 +204,13 @@ static void *thread_routine(void *arg) { /* the expected POSIX signature */
         QF_gc(e); /* check if the event is garbage, and collect it if so */
     }
 #ifdef QF_ACTIVE_STOP
-    QF_remove_(act); /* remove this object from QF */
+    QActive_unregister_(act); /* un-register this active object */
 #endif
     return (void *)0; /* return success */
 }
 
 /****************************************************************************/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -233,8 +226,9 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QEQueue_init(&me->eQueue, qSto, qLen);
     pthread_cond_init(&me->osObject, NULL);
 
-    me->prio = (uint8_t)prio;
-    QF_add_(me); /* make QF aware of this active object */
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    QActive_register_(me); /* register this AO */
 
     /* the top-most initial tran. (virtual) */
     QHSM_INIT(&me->super, par, me->prio);
@@ -250,7 +244,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_DETACHED);
 
     /* priority of the p-thread, see NOTE04 */
-    param.sched_priority = prio
+    param.sched_priority = me->prio
                            + (sched_get_priority_max(SCHED_FIFO)
                               - QF_MAX_ACTIVE - 3U);
     pthread_attr_setschedparam(&attr, &param);

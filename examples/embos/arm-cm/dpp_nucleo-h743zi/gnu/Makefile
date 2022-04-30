@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on NUCLEO-H743ZI, embOS RTOS, GNU-ARM
-# Last Updated for Version: 7.0.0
-# Date of the Last Update:  2022-02-28
+# Last Updated for Version: 7.0.1
+# Date of the Last Update:  2022-05-23
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -85,7 +85,6 @@ INCLUDES  = \
 	-I../.. \
 	-ISEGGER \
 	-I$(QPC)/include \
-	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPC)/3rd_party/embOS-gnu/Start/Inc \
 	-I$(QPC)/3rd_party/CMSIS/Include \

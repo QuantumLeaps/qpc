@@ -77,6 +77,7 @@ static void paintBitsClear(uint8_t x, uint8_t y,
 
     /* QSpy source IDs */
     static QSpyId const l_clock_tick = { 0U };
+    static QSpyId const l_player = { 0U };
 #endif
 
 /* Local functions ---------------------------------------------------------*/
@@ -86,7 +87,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
 /*..........................................................................*/
 static void playerTrigger(void) {
     static QEvt const fireEvt = { PLAYER_TRIGGER_SIG, 0U, 0U };
-    QF_PUBLISH(&fireEvt, (void*)0);
+    QACTIVE_PUBLISH(&fireEvt, &l_player);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -99,8 +100,8 @@ void QF_onCleanup(void) {
 /*..........................................................................*/
 void QF_onClockTick(void) {
     static QEvt const tickEvt = { TIME_TICK_SIG, 0U, 0U };
-    QF_TICK_X(0U, &l_clock_tick);  /* process time events for rate 0 */
-    QF_PUBLISH(&tickEvt, &l_clock_tick); /* publish the tick event */
+    QTIMEEVT_TICK_X(0U, &l_clock_tick);  /* process time events for rate 0 */
+    QACTIVE_PUBLISH(&tickEvt, &l_clock_tick); /* publish the tick event */
 
     QS_RX_INPUT(); /* handle the QS-RX input */
     QS_OUTPUT();   /* handle the QS output */
@@ -131,6 +132,7 @@ void BSP_init(void) {
 
     /* send the QS dictionaries... */
     QS_OBJ_DICTIONARY(&l_clock_tick);
+    QS_OBJ_DICTIONARY(&l_player);
     QS_USR_DICTIONARY(PLAYER_TRIGGER);
 
     /* setup the QS filters... */

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.1.0" links="1">
+<model version="5.2.1" links="1">
  <documentation>Calc is the model of the Calculator described in Chapter 4 of PSiCC2</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>

@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 6.8.2
-# Last updated on  2020-06-23
+# Last updated for version 7.1.3
+# Last updated on  2022-11-13
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -79,8 +79,8 @@ C_SRCS := \
 # C++ source files...
 CPP_SRCS :=
 
-LIB_DIRS  :=
-LIBS      :=
+LIB_DIRS :=
+LIBS     :=
 
 # defines...
 # QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
@@ -91,30 +91,8 @@ ifeq (,$(CONF))
 endif
 
 #-----------------------------------------------------------------------------
-# add QP/C framework (depends on the OS this Makefile runs on):
+# add QP/C framework:
 #
-ifeq ($(OS),Windows_NT)
-
-# NOTE:
-# For Windows hosts, you can choose:
-# - the single-threaded QP/C port (win32-qv) or
-# - the multithreaded QP/C port (win32).
-#
-QP_PORT_DIR := $(QPC)/ports/win32-qv
-#QP_PORT_DIR := $(QPC)/ports/win32
-LIB_DIRS += -L$(QP_PORT_DIR)/$(CONF)
-LIBS     += -lqp -lws2_32
-
-else
-
-# NOTE:
-# For POSIX hosts (Linux, MacOS), you can choose:
-# - the single-threaded QP/C port (win32-qv) or
-# - the multithreaded QP/C port (win32).
-#
-QP_PORT_DIR := $(QPC)/ports/posix-qv
-#QP_PORT_DIR := $(QPC)/ports/posix
-
 C_SRCS += \
 	qep_hsm.c \
 	qep_msm.c \
@@ -137,6 +115,27 @@ QS_SRCS := \
 	qs_fp.c \
 	qs_port.c
 
+ifeq ($(OS),Windows_NT)
+
+# NOTE:
+# For Windows hosts, you can choose:
+# - the single-threaded QP/C port (win32-qv) or
+# - the multithreaded QP/C port (win32).
+#
+QP_PORT_DIR := $(QPC)/ports/win32-qv
+#QP_PORT_DIR := $(QPC)/ports/win32
+LIBS += -lws2_32
+
+else
+
+# NOTE:
+# For POSIX hosts (Linux, MacOS), you can choose:
+# - the single-threaded QP/C port (win32-qv) or
+# - the multithreaded QP/C port (win32).
+#
+QP_PORT_DIR := $(QPC)/ports/posix-qv
+#QP_PORT_DIR := $(QPC)/ports/posix
+
 LIBS += -lpthread
 
 endif
@@ -145,14 +144,14 @@ endif
 # Typically you should not need to change anything below this line
 
 VPATH    += $(QPC)/src/qf $(QP_PORT_DIR)
-INCLUDES += -I$(QPC)/include -I$(QPC)/src -I$(QP_PORT_DIR)
+INCLUDES += -I$(QPC)/include -I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
 # GNU toolset:
 #
 # NOTE:
 # GNU toolset (MinGW) is included in the QTools collection for Windows, see:
-#     http://sourceforge.net/projects/qpc/files/QTools/
+#     https://www.state-machine.com/qtools
 # It is assumed that %QTOOLS%\bin directory is added to the PATH
 #
 CC    := gcc
@@ -234,14 +233,11 @@ C_DEPS_EXT   := $(patsubst %.o,%.d, $(C_OBJS_EXT))
 CPP_OBJS_EXT := $(addprefix $(BIN_DIR)/, $(CPP_OBJS))
 CPP_DEPS_EXT := $(patsubst %.o,%.d, $(CPP_OBJS_EXT))
 
-# create $(BIN_DIR) if it does not exist
-ifeq ("$(wildcard $(BIN_DIR))","")
-$(shell $(MKDIR) $(BIN_DIR))
-endif
-
 #-----------------------------------------------------------------------------
 # rules
 #
+
+.PHONY: clean show
 
 all: $(TARGET_EXE)
 
@@ -261,16 +257,17 @@ $(BIN_DIR)/%.o : %.c
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) $< -o $@
 
-.PHONY : clean show
-
-# include dependency files only if our goal depends on their existence
+# create BIN_DIR and include dependencies only if needed
 ifneq ($(MAKECMDGOALS),clean)
   ifneq ($(MAKECMDGOALS),show)
+     ifneq ($(MAKECMDGOALS),debug)
+ifeq ("$(wildcard $(BIN_DIR))","")
+$(shell $(MKDIR) $(BIN_DIR))
+endif
 -include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
+     endif
   endif
 endif
-
-.PHONY : clean show
 
 clean :
 	-$(RM) $(BIN_DIR)/*.o \

@@ -1,13 +1,13 @@
 ::============================================================================
 :: Batch file to program the flash of EFM32-SLSTK3401A board
-:: 
+::
 :: NOTE: requires the J-Link commander (JLink.exe) from SEGGER, see:
 :: https://www.segger.com/j-link-commander.html
-:: 
+::
 setlocal
 
 @echo off
-@echo Load a given binary file to the flash of EFM32-SLSTK3401A 
+@echo Load a given binary file to the flash of EFM32-SLSTK3401A
 @echo usage:   flash bin-file
 @echo example: flash dbg\blinky-qk.bin
 
@@ -17,7 +17,7 @@ setlocal
 ::
 if [%JLINK%] EQU [] set JLINK=%QTOOLS%\..\JLink
 if not exist "%JLINK%\JLink.exe" (
-    @echo The JLink tool not found. Please adjust flash.bat 
+    @echo The JLink tool not found. Please adjust flash.bat
     @goto end
 )
 

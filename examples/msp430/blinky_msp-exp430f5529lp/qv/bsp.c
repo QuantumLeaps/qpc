@@ -1,11 +1,11 @@
 /*****************************************************************************
 * Product: "Blinky" on MSP-EXP430F5529LP, cooperative QV kernel
-* Last updated for version 5.6.5
-* Last updated on  2016-06-05
+* Last updated for version 7.1.1
+* Last updated on  2022-09-09
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
@@ -44,10 +44,6 @@
 #error Simple Blinky Application does not provide Spy build configuration
 #endif
 
-#if (((~QP_RELEASE & 0xFFFFFFFFU) % 0x3E8U) < 570)
-#error Required QP version 5.7.0 or higher.
-#endif
-
 /* Local-scope objects -----------------------------------------------------*/
 /* 1MHz clock setting, see BSP_init() */
 #define BSP_MCK     1000000U
@@ -75,7 +71,7 @@
     __low_power_mode_off_on_exit(); /* see NOTE1 */
 #endif
 
-    QF_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
+    QTIMEEVT_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
 }
 
 
@@ -118,11 +114,12 @@ void QV_onIdle(void) { /* NOTE: called with interrutps DISABLED, see NOTE1 */
     * you might need to customize the clock management for your application,
     * see the datasheet for your particular MSP430 MCU.
     */
-    __low_power_mode_1(); /* Enter LPM1; also ENABLES interrupts */
+    __low_power_mode_1(); /* enter LPM1; also ENABLES interrupts */
 #else
     QF_INT_ENABLE(); /* just enable interrupts */
 #endif
 }
+
 /*..........................................................................*/
 Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     /*

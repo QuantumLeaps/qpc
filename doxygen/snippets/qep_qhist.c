@@ -4,7 +4,7 @@ typedef struct  {
     QStateHandler hist_doorClosed; /* history of doorClosed */
 } ToastOven;
 
-/*..........................................................*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.*/
 static QState ToastOven_doorClosed(ToastOven * const me,
                                    QEvt const * const e)
 {
@@ -19,7 +19,7 @@ static QState ToastOven_doorClosed(ToastOven * const me,
     }
     return status;
 }
-/*..........................................................*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.*/
 static QState ToastOven_doorOpen(ToastOven * const me,
                                  QEvt const * const e)
 {

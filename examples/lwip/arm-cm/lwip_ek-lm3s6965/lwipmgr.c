@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: lwIP-Manager Active Object
-* Last updated for version 6.9.1
-* Last updated on  2020-09-11
+* Last updated for version 7.0.1
+* Last updated on  2022-06-06
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -45,8 +45,8 @@
 
 Q_DEFINE_THIS_FILE
 
-      /* the LwIP driver signal group must fit the actual number of signals */
-Q_ASSERT_COMPILE((LWIP_DRIVER_END - LWIP_DRIVER_GROUP) >= LWIP_MAX_OFFSET);
+/* the LwIP driver signal group must fit the actual number of signals */
+Q_ASSERT_STATIC((LWIP_DRIVER_END - LWIP_DRIVER_GROUP) >= LWIP_MAX_OFFSET);
 
 #define FLASH_USERREG0          (*(uint32_t const *)0x400FE1E0)
 #define FLASH_USERREG1          (*(uint32_t const *)0x400FE1E4)
@@ -228,7 +228,7 @@ QState LwIPMgr_running(LwIPMgr *me, QEvt const *e) {
                           (int)(((ip_net) >> 16) & 0xFFU),
                           (int)(((ip_net) >> 8)  & 0xFFU),
                           (int)(ip_net           & 0xFFU));
-                QF_PUBLISH((QEvt *)te, &me->super);
+                QACTIVE_PUBLISH((QEvt *)te, &me->super);
             }
 
 #if LWIP_TCP
@@ -330,7 +330,7 @@ static char const *cgi_display(int index, int numParams,
         if (strstr(param[i], "text") != (char *)0) { /* param text found? */
             TextEvt *te = Q_NEW(TextEvt, DISPLAY_CGI_SIG);
             strncpy(te->text, value[i], Q_DIM(te->text));
-            QF_PUBLISH((QEvt *)te, AO_LwIPMgr);
+            QACTIVE_PUBLISH((QEvt *)te, AO_LwIPMgr);
             return "/thank_you.htm";
         }
     }
@@ -343,7 +343,7 @@ static void udp_rx_handler(void *arg, struct udp_pcb *upcb,
 {
     TextEvt *te = Q_NEW(TextEvt, DISPLAY_UDP_SIG);
     strncpy(te->text, (char *)p->payload, Q_DIM(te->text));
-    QF_PUBLISH((QEvt *)te, AO_LwIPMgr);
+    QACTIVE_PUBLISH((QEvt *)te, AO_LwIPMgr);
 
     udp_connect(upcb, addr, port); /* connect to the remote host */
     pbuf_free(p); /* don't leak the pbuf! */

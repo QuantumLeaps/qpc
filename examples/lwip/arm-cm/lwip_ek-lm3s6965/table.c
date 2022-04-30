@@ -159,7 +159,7 @@ QState Table_serving(Table *me, QEvt const *e) {
                 me->fork[m] = me->fork[n] = USED;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = n;
-                QF_PUBLISH((QEvt *)pe, &me->super);
+                QACTIVE_PUBLISH((QEvt *)pe, &me->super);
                 Table_displayPhilStat(me, n, "eating  ");
             }
             else {
@@ -184,7 +184,7 @@ QState Table_serving(Table *me, QEvt const *e) {
                 me->isHungry[m] = 0;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = m;
-                QF_PUBLISH((QEvt *)pe, &me->super);
+                QACTIVE_PUBLISH((QEvt *)pe, &me->super);
                 Table_displayPhilStat(me, m, "eating  ");
             }
             m = LEFT(n); /* check the left neighbor */
@@ -194,7 +194,7 @@ QState Table_serving(Table *me, QEvt const *e) {
                 me->isHungry[m] = 0;
                 pe = Q_NEW(TableEvt, EAT_SIG);
                 pe->philoNum = m;
-                QF_PUBLISH((QEvt *)pe, &me->super);
+                QACTIVE_PUBLISH((QEvt *)pe, &me->super);
                 Table_displayPhilStat(me, m, "eating  ");
             }
             return Q_HANDLED();
