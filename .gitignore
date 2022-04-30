@@ -36,6 +36,7 @@
 JLink*.*
 version-*
 
+3rd_party/
 html/
 test_priv/
 dbg/
@@ -47,7 +48,6 @@ build_spy/
 settings/
 .settings/
 targetConfigs/
-3rd_party/emWin/
 
 Debug/
 Release/

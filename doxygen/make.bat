@@ -1,6 +1,6 @@
 @echo off
 :: ==========================================================================
-:: Product: QP/C script for generating Doxygen documentation
+:: Product: batch script for generating Doxygen documentation
 :: Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 ::
 :: SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -66,7 +66,7 @@ if "%1"=="-CHM" (
 
     @echo Adding custom images...
     xcopy img tmp\img\
-    xcopy /Y ..\..\ql-doxygen\jquery.js tmp
+    @echo img\img.htm >> tmp\index.hhp
 
     @echo Generating CHM...
     %HHC% tmp\index.hhp

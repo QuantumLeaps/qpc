@@ -5,6 +5,8 @@
 #---------------------------------------------------------------------------
 # Configuration options related to the HTML output
 #---------------------------------------------------------------------------
+PROJECT_LOGO           = images/logo_ql-comp.png
+
 HTML_OUTPUT            = tmp
 HTML_HEADER            = ../../ql-doxygen/header.html
 HTML_FOOTER            = ../../ql-doxygen/footer.html

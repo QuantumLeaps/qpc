@@ -155,7 +155,7 @@ This Tutorial consists of the following lessons:
 - @subpage tut_game
 - @subpage tut_low
 
-@attention
+@remark
 Perhaps the most important fact of life to remember is that in embedded systems nothing works until everything works. This means that you should always start with a *working* system and *gradually* evolve it, changing one thing at a time and making sure that it keeps *working* every step of the way.<br>
 <br>
 Keeping this in mind, the provided @ref exa "QP&trade;/C application examples", such as the super-simple Blinky, or a bit more advanced DPP or “Fly 'n' Shoot” game, allow you to get started with a working project rather than starting from scratch. You should also always try one of the provided example projects on the same evaluation board that it was designed for, before making any changes.

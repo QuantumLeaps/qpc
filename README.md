@@ -13,6 +13,30 @@ View QP/C Revision History at: https://www.state-machine.com/qpc/history.html
 
 
 ---------------------------------------------------------------------------
+# Getting Started with QP/C
+The most recommended way of obtaining QP/C is by downloading the
+[QP-bundle](https://www.state-machine.com/#Downloads), which includes QP/C
+as well as the QM modeling tool and the QTools collection. The main advantage of
+obtaining QP/C bundled together like that is that you get all components,
+tools and examples ready to go.
+
+><span style="background:yellow;"><strong>NOTE:</strong></span>
+If you're interested in the latest QP/C version from Git,
+it is highly recommened that you download the latest
+[QP/C Release](https://github.com/QuantumLeaps/qpc/releases)
+as opposed to cloning the repo directy. This is because the `3rd_party`
+directory needed to build the examples is no longer provided in the
+`qpc` repository (and is provided in the QP/C release).
+
+### Getting Started Resources
+- [Video: "Getting Started with QP Real-Time Embedded Frameworks"][Video]
+provides instructions on how to download, install, and get started with QP.
+
+- [AppNote: "Getting Started with QP Real-Time Embedded Frameworks"][AN]
+contains also a tutorial, in which you build a simple "Blinky" application.
+
+
+---------------------------------------------------------------------------
 # Documentation
 The online HTML documention for the **latest** version of QP/C is located
 at: https://www.state-machine.com/qpc
@@ -27,10 +51,9 @@ open the file [html/index.html](html/index.html) in your web browser.
 QP/C (Quantum Platform in C) is a lightweight, open source
 [Real-Time Embedded Framework (RTEF)][RTEF] for building modern embedded
 software as systems of asynchronous, event-driven [active objects][Active]
-(actors). The [QP/C] framework is a member of a larger [QP] family
-consisting of [QP/C], [QP/C++], and [QP-nano] frameworks, which are all
-strictly quality controlled, thoroughly documented, and [commercially
-licensable][Lic].
+(actors). The [QP/C] framework is a member of a [QP] family consisting of
+[QP/C] and [QP/C++] frameworks, which are strictly quality controlled,
+thoroughly documented, and [commercially licensable][Lic].
 
 ## Safer Model of Concurrency
 The [QP] framework family is based on the [Active Object][Active] (**actor**)
@@ -75,20 +98,11 @@ as ARM Cortex-M (M0/M0+/M3/M4/M7).
 QP/C can also work with a traditional RTOS, such as ThreadX, FreeRTOS, embOS,
 uC/OS-II and TI-RTOS, as well as with (embedded) Linux (POSIX) and Windows.
 
-## Maturity
-With 60,000 downloads a year, the [QP] family is the most popular such
-solution on the embedded software market. It provides a modern, reusable
-architecture for embedded applications, which combines the active-object
-model of concurrency with hierarchical state machines.
-
----------------------------------------------------------------------------
-# Getting Started with QP/C
-- The [Video: "Getting Started with QP Real-Time Embedded Frameworks"][Video]
-provides instructions on how to download, install, and get started with QP.
-
-- The [AppNote: "Getting Started with QP Real-Time Embedded Frameworks"][AN]
-contains also a tutorial, in which you build a simple "Blinky" application.
-
+## Popularity and Maturity
+With 20 years of continuous development, over [350 commercial licensees][Cust],
+and many times more open source users worldwide, the QP™ frameworks are the
+most popular such offering on the market. They power countless electronic
+products ranging from implantable medical devices to complex weapon systems.
 
 ---------------------------------------------------------------------------
 # QP/C Licensing
@@ -99,6 +113,7 @@ traditional closed source software distribution models are combined.
 > **NOTE:** If your company has a policy forbidding open source in your
 product, all QP frameworks can be [licensed commercially][Lic], in which case
 you don't use any open source license and you do not violate your policy.
+
 
 ---------------------------------------------------------------------------
 # QP/C Documentation
@@ -121,5 +136,6 @@ The **QP/C Manual** is located online at: https://www.state-machine.com/qpc
    [Active]: <https://www.state-machine.com/active-object>
    [HSM]: <https://www.state-machine.com/fsm#HSM>
    [Lic]: <https://www.state-machine.com/licensing>
+   [Cust]: <https://www.state-machine.com/customers>
    [AN]: <https://www.state-machine.com/doc/AN_Getting_Started_with_QP.pdf>
    [Video]: <https://youtu.be/O7ER6_VqIH0>
