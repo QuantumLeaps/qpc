@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QF/C stub for QUTEST unit testing
-* @ingroup qs
 */
 /* only build when Q_UTEST is defined */
 #ifdef Q_UTEST
@@ -401,7 +400,7 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
         else { /* one-shot time event: automatically disarm */
             t->ctr = 0U; /* auto-disarm */
             /* mark time event 't' as NOT linked */
-            t->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_IS_LINKED);
+            t->super.refCtr_ &= (uint8_t)(~(uint8_t)QTE_IS_LINKED);
 
             QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_AUTO_DISARM, act->prio)
                 QS_OBJ_PRE_(t);        /* this time event object */
@@ -450,7 +449,7 @@ void QS_tickX_(uint_fast8_t const tickRate, void const * const sender) {
         if (t->ctr == 0U) {
             prev->next = t->next;
             /* mark time event 't' as NOT linked */
-            t->super.refCtr_ &= (uint8_t)(~(uint8_t)TE_IS_LINKED);
+            t->super.refCtr_ &= (uint8_t)(~(uint8_t)QTE_IS_LINKED);
             /* do NOT advance the prev pointer */
             QF_CRIT_X_(); /* exit crit. section to reduce latency */
 

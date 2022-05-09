@@ -37,7 +37,7 @@
 /*! The preprocessor switch to enable constructor in the ::QEvt class
 * instrumentation in the code */
 /**
-* @rtr{RQP005}
+* @tr{RQP005}
 */
 #define Q_EVT_CTOR
 
@@ -50,7 +50,7 @@
 /*! This macro defines the type of the OS-Object used for blocking
 * the native ::QEQueue when the queue is empty */
 /**
-* @description
+* @details
 * This macro is used when ::QEQueue is used as the event-queue for AOs
 * but also the AO queue must *block* when the queue is empty.
 * In that case, #QF_OS_OBJECT_TYPE specifies the blocking mechanism.
@@ -100,7 +100,7 @@
         QPSet64_insert(&QK_readySet_, (me_)->prio); \
         if (QK_intNest_ == 0U) {                    \
             uint_fast8_t p = QK_schedPrio_();       \
-            if (p != 0U) {                         \
+            if (p != 0U) {                          \
                 QK_sched_(p);                       \
             }                                       \
         }                                           \
@@ -168,10 +168,4 @@
 * be not defined for the application-level code
 */
 #define QP_IMPL
-
-/*! Macro that should be defined (typically on the compiler's command line)
-in the Win32-GUI applications that use the @ref win32 or @ref win32-qv ports.
-*/
-#define WIN32_GUI
-
 

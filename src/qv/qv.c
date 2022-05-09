@@ -29,7 +29,6 @@
 * @file
 * @brief Cooperative QV kernel, definition of QP::QV_readySet_ and
 * implementation of kernel-specific functions.
-* @ingroup qv
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -54,7 +53,7 @@ QPSet QV_readySet_; /* QV ready-set of active objects */
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Initializes QF and must be called exactly once before any other QF
 * function. Typically, QF_init() is called from main() even before
 * initializing the Board Support Package (BSP).
@@ -79,7 +78,7 @@ void QF_init(void) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function stops the QF application. After calling this function,
 * QF attempts to gracefully stop the application. This graceful shutdown
 * might take some time to complete. The typical use of this function is
@@ -101,7 +100,7 @@ void QF_stop(void) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * QF_run() is typically called from main() after you initialize
 * the QF and start at least one active object with QACTIVE_START().
 *
@@ -186,7 +185,7 @@ int_t QF_run(void) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Starts execution of the AO and registers the AO with the framework.
 * Also takes the top-most initial transition in the AO's state machine.
 * This initial transition is taken in the callee's thread of execution.

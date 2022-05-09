@@ -364,7 +364,7 @@ The application also demonstrates <a href="https://www.state-machine.com/qtools/
 
 @image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
 
-The DPP example is located in the directory <span class="img folder">qpc/examples/arm-cm/dpp_efm32-slstk3401a</span> and includes versions for @ref qv "cooperative QV kernel", the  @ref qk "preemptive QK kernel", and the @ref qxk "preemptive dual mode QXK RTOS kernel"  each provided for the ARM-KEIL, GNU-ARM, and IAR-ARM. The following annotated directory listing describes the contents of the example folder:
+The DPP example is located in the directory <span class="img folder">qpc/examples/arm-cm/dpp_efm32-slstk3401a</span> and includes versions for @ref srs_qv "cooperative QV kernel", the  @ref srs_qk "preemptive QK kernel", and the @ref srs_qxk "preemptive dual mode QXK RTOS kernel"  each provided for the ARM-KEIL, GNU-ARM, and IAR-ARM. The following annotated directory listing describes the contents of the example folder:
 
 @code{c}
  qpc/                      // QP/C installation directory
@@ -458,9 +458,9 @@ Dining Philosophers Problem (DPP) example for  NXP LPC1768 MCU (Cortex-M3) with 
 @ref dpp "Dining Philosophers Problem (DPP)" example for STM32 NUCLEO-L053R8 MCU (Cortex-M0+).
 
 Demonstrated built-in kernels:
-- cooperative @ref qv with ARM-Clang, ARM-Keil, GNU-ARM (Makefile and Atollic TRUEstudio), and IAR-ARM toolchains
-- preemptive, run-to-completion @ref qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
-- dual-mode (run-to-completion/blocking) @ref qxk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- cooperative @ref srs_qv with ARM-Clang, ARM-Keil, GNU-ARM (Makefile and Atollic TRUEstudio), and IAR-ARM toolchains
+- preemptive, run-to-completion @ref srs_qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- dual-mode (run-to-completion/blocking) @ref srs_qxk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
 
 
 Features:
@@ -477,8 +477,8 @@ Features:
 @ref dpp "Dining Philosophers Problem (DPP)" example for STM32 NUCLEO-L152RE MCU (Cortex-M3).
 
 Demonstrated built-in kernels:
-- cooperative @ref qv with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
-- preemptive, run-to-completion @ref qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- cooperative @ref srs_qv with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- preemptive, run-to-completion @ref srs_qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
 
 
 Features:
@@ -495,9 +495,9 @@ The @ref dpp "DPP example" for STM32F4-Discovery board is located directory <spa
 ![STM32F4-Discovery board](bd_STM32F4-Disco.jpg)
 
 Demonstrated built-in kernels:
-- cooperative @ref qv with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
-- preemptive, run-to-completion @ref qk with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
-- dual-mode (run-to-completion/blocking) @ref qxk with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- cooperative @ref srs_qv with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- preemptive, run-to-completion @ref srs_qk with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- dual-mode (run-to-completion/blocking) @ref srs_qxk with ARM-Keil, GNU-ARM, and IAR-ARM toolchains
 
 
 Features:
@@ -545,9 +545,9 @@ The actual COM port number might be different on your Windows machine. Please ch
 @ref dpp "Dining Philosophers Problem (DPP)" example for STM32 NUCLEO-H743ZI MCU (Cortex-M7).
 
 Demonstrated built-in kernels:
-- cooperative @ref qv with ARM-Clang, ARM-Keil, GNU-ARM (Makefile and Atollic TRUEstudio), and IAR-ARM toolchains
-- preemptive, run-to-completion @ref qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
-- dual-mode (run-to-completion/blocking) @ref qxk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- cooperative @ref srs_qv with ARM-Clang, ARM-Keil, GNU-ARM (Makefile and Atollic TRUEstudio), and IAR-ARM toolchains
+- preemptive, run-to-completion @ref srs_qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- dual-mode (run-to-completion/blocking) @ref srs_qxk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
 
 Features:
 - multiple active objects, including 5 instances of the same AO class (Philo)
@@ -558,16 +558,16 @@ Features:
 */
 
 /*##########################################################################*/
-/*! @page arm-cm_dpp_nucleo-l552ze DPP on STM32 STM32 NUCLEO-L552ZE Q
+/*! @page arm-cm_dpp_nucleo-l552ze DPP on STM32 NUCLEO-L552ZE Q
 
 ![STM32 NUCLEO-L552ZE Q](bd_NUCLEO-L552ZE.jpg)
 
 @ref dpp "Dining Philosophers Problem (DPP)" example for STM32 NUCLEO-L552ZE Q (Cortex-M33).
 
 Demonstrated built-in kernels:
-- cooperative @ref qv with ARM-Clang, ARM-Keil, GNU-ARM (Makefile and Atollic TRUEstudio), and IAR-ARM toolchains
-- preemptive, run-to-completion @ref qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
-- dual-mode (run-to-completion/blocking) @ref qxk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- cooperative @ref srs_qv with ARM-Clang, ARM-Keil, GNU-ARM (Makefile and Atollic TRUEstudio), and IAR-ARM toolchains
+- preemptive, run-to-completion @ref srs_qk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
+- dual-mode (run-to-completion/blocking) @ref srs_qxk with ARM-Clang, ARM-Keil, GNU-ARM, and IAR-ARM toolchains
 
 Features:
 - multiple active objects, including 5 instances of the same AO class (Philo)

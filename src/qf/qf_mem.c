@@ -27,7 +27,6 @@
 * @version Last updated for: @ref qpc_7_0_0
 *
 * @file
-* @ingroup qf
 * @brief ::QMPool implementatin (Memory Pool)
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -46,7 +45,7 @@ Q_DEFINE_THIS_MODULE("qf_mem")
 /*==========================================================================*/
 /*!
 * @public @memberof QMPool
-* @description
+* @details
 * Initialize a fixed block-size memory pool by providing it with the pool
 * memory to manage, size of this memory, and the block size.
 *
@@ -132,7 +131,7 @@ void QMPool_init(QMPool * const me, void * const poolSto,
 /*==========================================================================*/
 /*!
 * @public @memberof QMPool
-* @description
+* @details
 * Recycle a memory block to the fixed block-size memory pool.
 *
 * @param[in,out] me   pointer (see @ref oop)
@@ -179,7 +178,7 @@ void QMPool_put(QMPool * const me, void *b, uint_fast8_t const qs_id) {
 /*==========================================================================*/
 /*!
 * @public @memberof QMPool
-* @description
+* @details
 * The function allocates a memory block from the pool and returns a pointer
 * to the block back to the caller.
 *
@@ -280,7 +279,7 @@ void *QMPool_get(QMPool * const me, uint_fast16_t const margin,
 /*==========================================================================*/
 /*!
 * @public @memberof QMPool
-* @description
+* @details
 * This function obtains the minimum number of free blocks in the given
 * event pool since this pool has been initialized by a call to QF_poolInit().
 *

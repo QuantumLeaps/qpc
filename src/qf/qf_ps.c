@@ -28,7 +28,6 @@
 *
 * @file
 * @brief Publish-Subscribe services
-* @ingroup qf
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -55,7 +54,7 @@ enum_t QF_maxPubSignal_;
 /*==========================================================================*/
 /*!
 * @static @public @memberof QF
-* @description
+* @details
 * This function initializes the publish-subscribe facilities of QF and must
 * be called exactly once before any subscriptions/publications occur in
 * the application.
@@ -96,7 +95,7 @@ void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QF
-* @description
+* @details
 * This function posts (using the FIFO policy) the event @a e to **all**
 * active objects that have subscribed to the signal @a e->sig, which is
 * called _multicasting_. The multicasting performed in this function is
@@ -185,7 +184,7 @@ void QF_publish_(QEvt const * const e,
 /*==========================================================================*/
 /*!
 * @public @memberof QActive
-* @description
+* @details
 * This function is part of the Publish-Subscribe event delivery mechanism
 * available in QF. Subscribing to an event means that the framework will
 * start posting all published events with a given signal @p sig to the
@@ -228,7 +227,7 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
 /*==========================================================================*/
 /*!
 * @public @memberof QActive
-* @description
+* @details
 * This function is part of the Publish-Subscribe event delivery mechanism
 * available in QF. Un-subscribing from an event means that the framework
 * will stop posting published events with a given signal @p sig to the
@@ -280,7 +279,7 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
 /*==========================================================================*/
 /*!
 * @public @memberof QActive
-* @description
+* @details
 * This function is part of the Publish-Subscribe event delivery mechanism
 * available in QF. Un-subscribing from all events means that the framework
 * will stop posting any published events to the event queue of the active

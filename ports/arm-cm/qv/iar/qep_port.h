@@ -1,7 +1,6 @@
 /**
 * @file
 * @brief QEP/C port, generic IAR compiler
-* @ingroup qep
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.0

@@ -31,7 +31,6 @@
 * @version Last updated for: @ref qpc_7_0_0
 *
 * @file
-* @ingroup qs
 * @brief Internal (package scope) QS/C interface.
 */
 #ifndef QS_PKG_H
@@ -40,7 +39,7 @@
 /*==========================================================================*/
 
 /*! QS received record types (RX channel)
-* @description
+* @details
 * This enumeration specifies the record types for the QS receive channel
 */
 enum QSpyRxRecords {
@@ -75,7 +74,7 @@ enum QSpyRxRecords {
 
 /*! Escape modifier of the QS output protocol */
 /**
-* @description
+* @details
 * The escaped byte is XOR-ed with the escape modifier before it is inserted
 * into the QS buffer.
 */

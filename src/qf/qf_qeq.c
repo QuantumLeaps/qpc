@@ -28,7 +28,6 @@
 *
 * @file
 * @brief ::QEQueue implementation (QP native thread-safe queue)
-* @ingroup qf
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -46,7 +45,7 @@ Q_DEFINE_THIS_MODULE("qf_qeq")
 /*==========================================================================*/
 /*!
 * @public @memberof QEQueue
-* @description
+* @details
 * Initialize the event queue by giving it the storage for the ring buffer.
 *
 * @param[in,out] me   pointer (see @ref oop)
@@ -79,7 +78,7 @@ void QEQueue_init(QEQueue * const me, QEvt const * * const qSto,
 /*==========================================================================*/
 /*!
 * @public @memberof QEQueue
-* @description
+* @details
 * Post an event to the "raw" thread-safe event queue using the
 * First-In-First-Out (FIFO) order.
 *
@@ -179,7 +178,7 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
 /*==========================================================================*/
 /*!
 * @public @memberof QEQueue
-* @description
+* @details
 * Post an event to the "raw" thread-safe event queue using the
 * Last-In-First-Out (LIFO) order.
 *
@@ -249,7 +248,7 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
 /*==========================================================================*/
 /*!
 * @public @memberof QEQueue
-* @description
+* @details
 * Retrieves an event from the front of the "raw" thread-safe queue and
 * returns a pointer to this event to the caller.
 *

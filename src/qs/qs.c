@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QS software tracing services
-* @ingroup qs
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qs_port.h"      /* QS port */
@@ -43,7 +42,7 @@ QSPrivAttr QS_priv_;  /* QS private attributes */
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function should be called from QS_onStartup() to provide QS with
 * the data buffer. The first parameter @p sto[] is the address of the memory
 * block, and the second parameter @p stoSize is the size of this block
@@ -96,7 +95,7 @@ void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QS
-* @description
+* @details
 * This function sets up the global QS filter to enable or disable the
 * given QS record or a group of records @p rec.
 *
@@ -293,7 +292,7 @@ void QS_glbFilter_(int_fast16_t const filter) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QS
-* @description
+* @details
 * This function sets up the local QS filter to enable or disable the
 * given QS object-id or a group of object-ids @p qs_id.
 *
@@ -363,7 +362,7 @@ void QS_locFilter_(int_fast16_t const filter) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QS
-* @description
+* @details
 * This function must be called at the beginning of each QS record.
 * This function should be called indirectly through the macro QS_BEGIN_ID(),
 * or QS_BEGIN_NOCRIT(), depending if it's called in a normal code or from
@@ -391,7 +390,7 @@ void QS_beginRec_(uint_fast8_t rec) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QS
-* @description
+* @details
 * This function must be called at the end of each QS record.
 * This function should be called indirectly through the macro QS_END(),
 * or QS_END_NOCRIT(), depending if it's called in a normal code or from
@@ -539,7 +538,7 @@ void QS_target_info_pre_(uint8_t isReset) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QS
-* @description
+* @details
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
@@ -561,7 +560,7 @@ void QS_u8_fmt_(uint8_t format, uint8_t d) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QS
-* @description
+* @details
 * This function is only to be used through macros, never in the
 * client code directly.
 */
@@ -744,7 +743,7 @@ void QS_str_raw_(char const *str) {
 /*==========================================================================*/
 /*!
 * @static @public @memberof QS
-* @description
+* @details
 * This function delivers one byte at a time from the QS data buffer.
 *
 * @returns the byte in the least-significant 8-bits of the 16-bit return
@@ -775,7 +774,7 @@ uint16_t QS_getByte(void) {
 /*==========================================================================*/
 /*!
 * @static @public @memberof QS
-* @description
+* @details
 * This function delivers a contiguous block of data from the QS data buffer.
 * The function returns the pointer to the beginning of the block, and writes
 * the number of bytes in the block to the location pointed to by @p pNbytes.

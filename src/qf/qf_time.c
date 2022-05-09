@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QF/C time events and time management services
-* @ingroup qf
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -49,7 +48,7 @@ QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
 
 #ifdef Q_SPY
     /*! intertnal macro to encapsulate a MISRA deviation
-    * @description
+    * @details
     * This internal macro encapsulates the violation of MISRA-C 2012
     * Rule 11.5(A) "A conversion should not be performed from pointer to void
     * into pointer to object".
@@ -61,7 +60,7 @@ QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
 #ifdef Q_SPY
 /*!
 * @static @private @memberof QF
-* @description
+* @details
 * This internal helper function processes all armed ::QTimeEvt objects
 * associated wit the tick rate @p tickRate .
 *
@@ -125,7 +124,7 @@ void QF_tickX_(uint_fast8_t const tickRate)
         if (t->ctr == 0U) {
             prev->next = t->next;
             /* mark time event 't' as NOT linked */
-            t->super.refCtr_ &= (uint8_t)(~TE_IS_LINKED & 0xFFU);
+            t->super.refCtr_ &= (uint8_t)(~QTE_IS_LINKED & 0xFFU);
             /* do NOT advance the prev pointer */
             QF_CRIT_X_(); /* exit crit. section to reduce latency */
 
@@ -149,7 +148,7 @@ void QF_tickX_(uint_fast8_t const tickRate)
                 else {
                     prev->next = t->next;
                     /* mark time event 't' as NOT linked */
-                    t->super.refCtr_ &= (uint8_t)(~TE_IS_LINKED & 0xFFU);
+                    t->super.refCtr_ &= (uint8_t)(~QTE_IS_LINKED & 0xFFU);
                     /* do NOT advance the prev pointer */
 
                     QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_AUTO_DISARM, act->prio)
@@ -188,7 +187,7 @@ void QF_tickX_(uint_fast8_t const tickRate)
 /*==========================================================================*/
 /*!
 * @static @public @memberof QF
-* @description
+* @details
 * Find out if any time events are armed at the given clock tick rate.
 *
 * @param[in]  tickRate  system clock tick rate to find out about.
@@ -221,7 +220,7 @@ bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate) {
 /*==========================================================================*/
 /*!
 * @public @memberof QTimeEvt
-* @description
+* @details
 * When creating a time event, you must commit it to a specific active object
 * @p act, tick rate @p tickRate and event signal @p sig. You cannot change
 * these attributes later.
@@ -271,7 +270,7 @@ void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
 /*==========================================================================*/
 /*!
 * @public @memberof QTimeEvt
-* @description
+* @details
 * Arms a time event to fire in a specified number of clock ticks and with
 * a specified interval. If the interval is zero, the time event is armed for
 * one shot ('one-shot' time event). When the timeout expires, the time event
@@ -303,7 +302,7 @@ void QTimeEvt_armX(QTimeEvt * const me,
                    QTimeEvtCtr const nTicks, QTimeEvtCtr const interval)
 {
     uint_fast8_t const tickRate
-                       = ((uint_fast8_t)me->super.refCtr_ & TE_TICK_RATE);
+                       = ((uint_fast8_t)me->super.refCtr_ & QTE_TICK_RATE);
     QTimeEvtCtr const ctr = me->ctr;
 #ifdef Q_SPY
     uint_fast8_t const qs_id = ((QActive *)(me->act))->prio;
@@ -331,8 +330,8 @@ void QTimeEvt_armX(QTimeEvt * const me,
     * rate a time event can be disarmed and yet still linked into the list,
     * because un-linking is performed exclusively in the QF_tickX() function.
     */
-    if ((me->super.refCtr_ & TE_IS_LINKED) == 0U) {
-        me->super.refCtr_ |= TE_IS_LINKED; /* mark as linked */
+    if ((me->super.refCtr_ & QTE_IS_LINKED) == 0U) {
+        me->super.refCtr_ |= QTE_IS_LINKED; /* mark as linked */
 
         /* The time event is initially inserted into the separate
         * "freshly armed" link list based on QF_timeEvtHead_[tickRate].act.
@@ -361,7 +360,7 @@ void QTimeEvt_armX(QTimeEvt * const me,
 /*==========================================================================*/
 /*!
 * @public @memberof QTimeEvt
-* @description
+* @details
 * Disarm the time event so it can be safely reused.
 *
 * @param[in,out] me     pointer (see @ref oop)
@@ -390,7 +389,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
     bool wasArmed;
     if (me->ctr != 0U) {
         wasArmed = true;
-        me->super.refCtr_ |= TE_WAS_DISARMED;
+        me->super.refCtr_ |= QTE_WAS_DISARMED;
 
         QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_DISARM, qs_id)
             QS_TIME_PRE_();            /* timestamp */
@@ -398,20 +397,20 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
             QS_OBJ_PRE_(me->act);      /* the target AO */
             QS_TEC_PRE_(me->ctr);      /* the number of ticks */
             QS_TEC_PRE_(me->interval); /* the interval */
-            QS_U8_PRE_(me->super.refCtr_ & TE_TICK_RATE);
+            QS_U8_PRE_(me->super.refCtr_ & QTE_TICK_RATE);
         QS_END_NOCRIT_PRE_()
 
         me->ctr = 0U;  /* schedule removal from the list */
     }
     else { /* the time event was already disarmed automatically */
         wasArmed = false;
-        me->super.refCtr_ &= (uint8_t)(~TE_WAS_DISARMED & 0xFFU);
+        me->super.refCtr_ &= (uint8_t)(~QTE_WAS_DISARMED & 0xFFU);
 
         QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_DISARM_ATTEMPT, qs_id)
             QS_TIME_PRE_();            /* timestamp */
             QS_OBJ_PRE_(me);           /* this time event object */
             QS_OBJ_PRE_(me->act);      /* the target AO */
-            QS_U8_PRE_(me->super.refCtr_ & TE_TICK_RATE);
+            QS_U8_PRE_(me->super.refCtr_ & QTE_TICK_RATE);
         QS_END_NOCRIT_PRE_()
 
     }
@@ -423,7 +422,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
 /*==========================================================================*/
 /*!
 * @public @memberof QTimeEvt
-* @description
+* @details
 * Rearms a time event with a new number of clock ticks. This function can
 * be used to adjust the current period of a periodic time event or to
 * prevent a one-shot time event from expiring (e.g., a watchdog time event).
@@ -444,7 +443,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
 */
 bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
     uint_fast8_t const tickRate
-                       = (uint_fast8_t)me->super.refCtr_ & TE_TICK_RATE;
+                       = (uint_fast8_t)me->super.refCtr_ & QTE_TICK_RATE;
 #ifdef Q_SPY
     uint_fast8_t const qs_id = ((QActive *)(me->act))->prio;
 #endif
@@ -471,8 +470,8 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
         * QF_tickX() function.
         */
         /* is the time event linked yet? */
-        if ((me->super.refCtr_ & TE_IS_LINKED) == 0U) {
-            me->super.refCtr_ |= TE_IS_LINKED; /* mark as linked */
+        if ((me->super.refCtr_ & QTE_IS_LINKED) == 0U) {
+            me->super.refCtr_ |= QTE_IS_LINKED; /* mark as linked */
 
             /* The time event is initially inserted into the separate
             * "freshly armed" list based on QF_timeEvtHead_[tickRate].act.
@@ -508,7 +507,7 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
 /*==========================================================================*/
 /*!
 * @public @memberof QTimeEvt
-* @description
+* @details
 * Useful for checking whether a one-shot time event was disarmed in the
 * QTimeEvt_disarm() operation.
 *
@@ -529,15 +528,15 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
 * the function will return 'true'.
 */
 bool QTimeEvt_wasDisarmed(QTimeEvt * const me) {
-    uint8_t const wasDisarmed = (me->super.refCtr_ & TE_WAS_DISARMED);
-    me->super.refCtr_ |= TE_WAS_DISARMED; /* set the flag */
+    uint8_t const wasDisarmed = (me->super.refCtr_ & QTE_WAS_DISARMED);
+    me->super.refCtr_ |= QTE_WAS_DISARMED; /* set the flag */
     return wasDisarmed != 0U;
 }
 
 /*==========================================================================*/
 /*!
 * @public @memberof QTimeEvt
-* @description
+* @details
 * Useful for checking how many clock ticks (at the tick rate associated
 * with the time event) remain until the time event expires.
 *

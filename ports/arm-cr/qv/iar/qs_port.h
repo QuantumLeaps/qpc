@@ -1,7 +1,6 @@
 /**
 * @file
 * @brief QS/C port to a 32-bit CPU and a generic C compiler.
-* @ingroup qs
 * @cond
 ******************************************************************************
 * Last Updated for Version: 5.7.0

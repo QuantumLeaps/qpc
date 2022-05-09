@@ -27,10 +27,8 @@
 * @version Last updated for: @ref qpc_7_0_0
 *
 * @file
-* @ingroup qxk
 * @brief QXMutex_init(), QXMutex_lock(), QXMutex_tryLock() and
 * QXMutex_unlock() definitions.
-* @ingroup qxk
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -52,7 +50,7 @@ Q_DEFINE_THIS_MODULE("qxk_mutex")
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Initialize the QXK priority ceiling mutex.
 *
 * @param[in,out] me      pointer (see @ref oop)
@@ -105,7 +103,7 @@ void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Lock the QXK priority ceiling mutex ::QXMutex.
 *
 * @param[in,out] me      pointer (see @ref oop)
@@ -237,7 +235,7 @@ bool QXMutex_lock(QXMutex * const me,
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Try to lock the QXK priority ceiling mutex ::QXMutex.
 *
 * @param[in,out] me      pointer (see @ref oop)
@@ -326,7 +324,7 @@ bool QXMutex_tryLock(QXMutex * const me) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Unlock the QXK priority ceiling mutex.
 *
 * @param[in,out] me      pointer (see @ref oop)

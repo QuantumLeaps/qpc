@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QXK preemptive kernel extended (blocking) thread functions
-* @ingroup qxk
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -50,7 +49,7 @@ Q_DEFINE_THIS_MODULE("qxk_xthr")
 
 /*! intertnal macro to encapsulate casting of pointers for MISRA deviations */
 /*!
-* @description
+* @details
 * This macro is specifically and exclusively used for downcasting pointers
 * to QActive to pointers to QXThread in situations when it is known
 * that such downcasting is correct.However, such pointer casting is not
@@ -82,7 +81,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Performs the first step of QXThread initialization by assigning the
 * thread-handler function and the tick rate at which it will handle
 * the timeouts.
@@ -163,7 +162,7 @@ static void QXThread_dispatch_(QHsm * const me, QEvt const * const e,
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Starts execution of an extended thread and registers it with the framework.
 * The extended thread becomes ready-to-run immediately and is scheduled
 * if the QXK is already running.
@@ -237,7 +236,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
 /*==========================================================================*/
 #ifdef Q_SPY
 /*!
-* @description
+* @details
 * Direct event posting is the simplest asynchronous communication method
 * available in QF. The following example illustrates how the Philo active
 * object posts directly the HUNGRY event to the Table active object.@n
@@ -411,7 +410,7 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Last-In-First-Out (LIFO) policy is not supported for extened threads.
 *
 * @param[in] me pointer (see @ref oop)
@@ -428,7 +427,7 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * The QXThread_queueGet() operation allows the calling extended thread to
 * receive QP events directly into its own built-in event queue from an ISR,
 * basic thread (AO), or another extended thread.
@@ -533,7 +532,7 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Intenral implementation of blocking the given extended thread.
 *
 * @note
@@ -549,7 +548,7 @@ void QXThread_block_(QXThread const * const me) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Intenral implementation of un-blocking the given extended thread.
 *
 * @note
@@ -566,7 +565,7 @@ void QXThread_unblock_(QXThread const * const me) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Intenral implementation of arming the private time event for a given
 * timeout at a given system tick rate.
 *
@@ -590,12 +589,12 @@ void QXThread_teArm_(QXThread * const me, QSignal sig,
         * rate a time event can be disarmed and yet still linked in the list,
         * because un-linking is performed exclusively in QF_tickX().
         */
-        if ((me->timeEvt.super.refCtr_ & TE_IS_LINKED) == 0U) {
+        if ((me->timeEvt.super.refCtr_ & QTE_IS_LINKED) == 0U) {
             uint_fast8_t const tickRate
-                 = ((uint_fast8_t)me->timeEvt.super.refCtr_ & TE_TICK_RATE);
+                 = ((uint_fast8_t)me->timeEvt.super.refCtr_ & QTE_TICK_RATE);
             Q_ASSERT_ID(710, tickRate < QF_MAX_TICK_RATE);
 
-            me->timeEvt.super.refCtr_ |= TE_IS_LINKED;
+            me->timeEvt.super.refCtr_ |= QTE_IS_LINKED;
 
             /* The time event is initially inserted into the separate
             * "freshly armed" list based on QF_timeEvtHead_[tickRate].act.
@@ -613,7 +612,7 @@ void QXThread_teArm_(QXThread * const me, QSignal sig,
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Intenral implementation of disarming the private time event.
 *
 * @note
@@ -635,7 +634,7 @@ bool QXThread_teDisarm_(QXThread * const me) {
 
 /*==========================================================================*/
 /*! delay (timed blocking of) the current thread (static, no me-ptr)
-* @description
+* @details
 * Blocking delay for the number of clock tick at the associated tick rate.
 *
 * @param[in]  nTicks    number of clock ticks (at the associated rate)
@@ -688,7 +687,7 @@ bool QXThread_delay(uint_fast16_t const nTicks) {
 
 /*==========================================================================*/
 /*! cancel the delay
-* @description
+* @details
 * Cancel the blocking delay and cause return from the QXThread_delay()
 * function.
 *
@@ -715,7 +714,7 @@ bool QXThread_delayCancel(QXThread * const me) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Called when the extended-thread handler function returns.
 *
 * @note

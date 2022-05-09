@@ -122,11 +122,6 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = main.dox \
                          gs.dox \
-                         ../../cert-pack/srs.dox \
-                         ../../cert-pack/sas.dox \
-                         ../../cert-pack/sds.dox \
-                         ../../cert-pack/misra.dox \
-                         api.dox \
                          exa.dox \
                          exa_native.dox \
                          exa_rtos.dox \
@@ -138,9 +133,15 @@ INPUT                  = main.dox \
                          ports_arm-cm.dox \
                          ports_rtos.dox \
                          ports_os.dox \
-                         metrics.dox \
+                         api.dox \
                          history.dox \
-                         modules.dox \
+                         ../../ql-doxygen/help.dox \
+                         ../../cert-pack/srs.dox \
+                         ../../cert-pack/sas.dox \
+                         ../../cert-pack/sds.dox \
+                         ../../cert-pack/misra.dox \
+                         ../../cert-pack/tr.dox \
+                         metrics.dox \
                          dir.dox \
                          macros.h \
                          ../include/qpc.h \
@@ -156,7 +157,9 @@ INPUT                  = main.dox \
                          ../include/qs.h \
                          ../include \
                          ../src \
-                         ../../ql-doxygen/help.dox
+                         ../ports/arm-cm/qv/gnu \
+                         ../ports/arm-cm/qk/gnu \
+                         ../ports/arm-cm/qxk/gnu
 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.dox \
@@ -169,7 +172,8 @@ FILE_PATTERNS          = *.dox \
                          *.lnt
 
 RECURSIVE              = YES
-EXCLUDE                = ../include/qs_dummy.h
+EXCLUDE                = ../include/qs_dummy.h \
+                         ../include/quit.h
 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =

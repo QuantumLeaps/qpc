@@ -32,7 +32,6 @@
 *
 * @file
 * @brief Internal (package scope) QXK/C interface.
-* @ingroup qxk
 */
 #ifndef QXK_PKG_H
 #define QXK_PKG_H
@@ -70,7 +69,7 @@ bool QXThread_teDisarm_(QXThread * const me);
 
 /*! intertnal macro to encapsulate casting of pointers for MISRA deviations */
 /**
-* @description
+* @details
 * This macro is specifically and exclusively used for casting pointers
 * that are never de-referenced, but only used for internal bookkeeping and
 * checking (via assertions) the correct operation of the QXK kernel.

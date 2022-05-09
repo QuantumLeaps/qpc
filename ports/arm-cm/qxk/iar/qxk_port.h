@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-04-09
+* @date Last updated on: 2022-05-02
 * @version Last updated for: @ref qpc_7_0_0
 *
 * @file
@@ -61,8 +61,17 @@
     #define QXK_ARM_ERRATUM_838869() __DSB()
 #endif /* ARMv6-M */
 
-/* Use NMI ARM Cortex-M exception to return to thread mode (default SVC) */
-//#define QXK_ARM_CM_USE_NMI 1
+/* Use a given ARM Cortex-M IRQ to return to thread mode (default NMI)
+*
+* NOTE:
+* If you need the NMI for other purposes, you can define the macros
+* QXK_USE_IRQ_NUM and QXK_USE_IRQ_HANDLER to use thus specified IRQ
+* instead of the NMI (the IRQ should not be used for anything else).
+* These two macros can be defined on the command line to the compiler
+* and are actually needed only to compile the qxk_port.c file.
+*/
+//#define QXK_USE_IRQ_NUM     25
+//#define QXK_USE_IRQ_HANDLER CRYPTO_IRQHandler
 
 /* initialization of the QXK kernel */
 #define QXK_INIT() QXK_init()

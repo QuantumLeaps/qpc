@@ -27,7 +27,6 @@
 * @version Last updated for: @ref qpc_7_0_0
 *
 * @file
-* @ingroup examples
 * @brief DPP example, NUCLEO-H743ZIE board, dual-mode QXK kernel
 */
 #include "qpc.h"

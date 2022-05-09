@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QP native, platform-independent priority sets of 32 or 64 elements.
-* @ingroup qf
 */
 #ifndef QPSET_H
 #define QPSET_H

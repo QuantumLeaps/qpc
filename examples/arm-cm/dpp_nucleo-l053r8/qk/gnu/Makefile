@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on NUCLEO-L053R8, QK kernel, GNU-ARM
 # Last Updated for Version: 7.0.0
-# Date of the Last Update:  2021-07-01
+# Date of the Last Update:  2022-05-02
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -134,7 +134,9 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   :=
+DEFINES   := \
+	-DQK_USE_IRQ_NUM=30 \
+	-DQK_USE_IRQ_HANDLER=LCD_IRQHandler
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]

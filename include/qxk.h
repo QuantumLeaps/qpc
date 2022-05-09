@@ -29,7 +29,6 @@
 * @file
 * @brief QXK/C (preemptive dual-mode kernel) platform-independent
 * public interface.
-* @ingroup qxk
 */
 #ifndef QXK_H
 #define QXK_H
@@ -78,7 +77,7 @@ extern QXK_PrivAttr QXK_attr_;
 #ifdef QXK_ON_CONTEXT_SW
 
     /*! QXK context switch callback (customized in BSPs for QXK)
-    * @description
+    * @details
     * This callback function provides a mechanism to perform additional
     * custom operations when QXK switches context from one thread to
     * another.
@@ -101,7 +100,7 @@ extern QXK_PrivAttr QXK_attr_;
 #endif /* QXK_ON_CONTEXT_SW */
 
 /*! QXK idle callback (customized in BSPs for QXK)
-* @description
+* @details
 * QXK_onIdle() is called continuously by the QXK idle thread. This callback
 * gives the application an opportunity to enter a power-saving CPU mode,
 * or perform some other idle processing.

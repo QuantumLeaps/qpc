@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QS/C receive channel services
-* @ingroup qs
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qs_port.h"      /* QS port */
@@ -215,7 +214,7 @@ static void QS_rxPoke_(void);
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function should be called from QS_onStartup() to provide QS-RX with
 * the receive data buffer.
 *
@@ -283,7 +282,7 @@ bool QS_RX_PUT(uint8_t const b) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function is intended to be called from the ISR that reads the QS-RX
 * bytes from the QSPY host application. The function returns the conservative
 * number of free bytes currently available in the buffer, assuming that
@@ -305,7 +304,7 @@ uint16_t QS_rxGetNfree(void) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function programmatically sets the "current object" in the Target.
 */
 void QS_setCurrObj(uint8_t obj_kind, void *obj_ptr) {
@@ -315,7 +314,7 @@ void QS_setCurrObj(uint8_t obj_kind, void *obj_ptr) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function programmatically generates the response to the query for
 * a "current object".
 */
@@ -1255,7 +1254,7 @@ static void QS_rxPoke_(void) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function obtains the Test-Probe for a given API.
 *
 * @param[in]  api  pointer to the API function that requests its Test-Probe

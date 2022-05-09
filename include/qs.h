@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QS/C platform-independent public interface.
-* @ingroup qs
 */
 #ifndef QS_H
 #define QS_H
@@ -39,7 +38,7 @@
 
 /*==========================================================================*/
 /*! QS pre-defined record types (TX channel)
-* @description
+* @details
 * This enumeration specifies the record types used in the QP components.
 * You can specify your own record types starting from ::QS_USER offset.
 * Currently, the maximum of all records cannot exceed 125.
@@ -208,7 +207,7 @@ typedef struct { uint8_t prio; } QSpyId;
 
     /*! The size [bytes] of the QS time stamp. Valid values: 1U, 2U, or 4U;
     * default 4U.
-    * @description
+    * @details
     * This macro can be defined in the QS port file (qs_port.h) to
     * configure the ::QSTimeCtr type. Here the macro is not defined so the
     * default of 4 byte is chosen.
@@ -236,7 +235,7 @@ typedef struct { uint8_t prio; } QSpyId;
 
 /*==========================================================================*/
 /*! QS software tracing facilities
-* @description
+* @details
 * This class groups together QS services. It has only static members and
 * should not be instantiated.
 */
@@ -365,7 +364,7 @@ uint8_t const *QS_getBlock(uint16_t *pNbytes);
 
 /*! Callback to startup the QS facility
 * @static @public @memberof QS
-* @description
+* @details
 * This is a platform-dependent "callback" function invoked through the macro
 * QS_INIT(). You need to implement this function in your application.
 * At a minimum, the function must configure the QS buffer by calling
@@ -384,7 +383,7 @@ uint8_t QS_onStartup(void const *arg);
 
 /*! Callback to cleanup the QS facility
 * @static @public @memberof QS
-* @description
+* @details
 * This is a platform-dependent "callback" function invoked through the macro
 * QS_EXIT(). You need to implement this function in your application.
 * The main purpose of this function is to close the QS output channel, if
@@ -394,7 +393,7 @@ void QS_onCleanup(void);
 
 /*! Callback to flush the QS trace data to the host
 * @static @public @memberof QS
-* @description
+* @details
 * This is a platform-dependent "callback" function to flush the QS trace
 * buffer to the host. The function typically busy-waits until all the data
 * in the buffer is sent to the host. This is acceptable only in the initial
@@ -404,7 +403,7 @@ void QS_onFlush(void);
 
 /*! Callback to obtain a timestamp for a QS record.
 * @static @public @memberof QS
-* @description
+* @details
 * This is a platform-dependent "callback" function invoked from the macro
 * QS_TIME_PRE_() to add the time stamp to a QS record.
 *
@@ -426,7 +425,7 @@ QSTimeCtr QS_onGetTime(void);
 /* Macros for adding QS instrumentation to the client code */
 
 /*! Initialize the QS facility.
-* @description
+* @details
 * This macro provides an indirection layer to invoke the QS initialization
 * routine if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
 * @sa QS_onStartup(), example of setting up a QS filter in QS_GLB_FILTER()
@@ -434,7 +433,7 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_INIT(arg_)           (QS_onStartup(arg_))
 
 /*! Cleanup the QS facility.
-* @description
+* @details
 * This macro provides an indirection layer to invoke the QS cleanup
 * routine if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
 * @sa QS_onCleanup()
@@ -442,7 +441,7 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_EXIT()               (QS_onCleanup())
 
 /*! Flush the QS trace data to the host.
-* @description
+* @details
 * This macro invokes the QS_flush() platform-dependent callback function
 * to flush the QS trace buffer to the host. The function typically
 * busy-waits until all the data in the buffer is sent to the host.
@@ -451,7 +450,7 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_FLUSH()   (QS_onFlush())
 
 /*! Global Filter for a given record type @p rec
-* @description
+* @details
 * This macro provides an indirection layer to call QS_glbFilter_()
 * if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
 *
@@ -461,7 +460,7 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_GLB_FILTER(rec_)  (QS_glbFilter_((int_fast16_t)(rec_)))
 
 /*! Local Filter for a given object-id @p qs_id
-* @description
+* @details
 * This macro provides an indirection layer to call QS_locFilter_()
 * if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
 *
@@ -491,7 +490,7 @@ QSTimeCtr QS_onGetTime(void);
 #ifndef QF_CRIT_STAT_TYPE
     /*! This is an internal macro for defining the critical section
     * status type.
-    * @description
+    * @details
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -502,7 +501,7 @@ QSTimeCtr QS_onGetTime(void);
     #define QS_CRIT_STAT_
 
     /*! This is an internal macro for entering a critical section.
-    * @description
+    * @details
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -513,7 +512,7 @@ QSTimeCtr QS_onGetTime(void);
     #define QS_CRIT_E_()     QF_CRIT_ENTRY(dummy)
 
     /*! This is an internal macro for exiting a critical section.
-    * @description
+    * @details
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -588,7 +587,7 @@ QSTimeCtr QS_onGetTime(void);
     }
 
 /*! formats for application-specific data elements
-* @description
+* @details
 * QS uses this enumeration is used only internally for the formatted user
 * data elements.
 */
@@ -717,7 +716,7 @@ enum {
 /* Dictionary trace records */
 
 /*! Output signal dictionary record
-* @description
+* @details
 * A signal dictionary record associates the numerical value of the signal
 * and the binary address of the state machine that consumes that signal
 * with the human-readable name of the signal.
@@ -760,7 +759,7 @@ enum {
     (QS_sig_dict_pre_((sig_), (obj_), #sig_))
 
 /*! Output object dictionary record
-* @description
+* @details
 * An object dictionary record associates the binary address of an object
 * in the target's memory with the human-readable name of the object.
 *
@@ -776,7 +775,7 @@ enum {
     (QS_obj_dict_pre_((obj_), #obj_))
 
 /*! Output object-array dictionary record
-* @description
+* @details
 * An object array dictionary record associates the binary address of the
 * object element in the target's memory with the human-readable name
 * of the object.
@@ -785,15 +784,15 @@ enum {
 * the QS log, because instead of dealing with cryptic machine addresses the
 * QSpy host utility can display human-readable object names.
 *
-* The following example shows the definition of object dictionary entry
-* for the Table active object:
-* @include qs_objDic.c
+* The following example shows the definition of object array dictionary
+* for `Philo_inst[n]` and `Philo_inst[n].timeEvt`:
+* @include qs_objArrDic.c
 */
 #define QS_OBJ_ARR_DICTIONARY(obj_, idx_) \
     (QS_obj_arr_dict_pre_((obj_), (idx_), #obj_))
 
 /*! Output function dictionary record
-* @description
+* @details
 * A function dictionary record associates the binary address of a function
 * in the target's memory with the human-readable name of the function.
 *
@@ -808,7 +807,7 @@ enum {
     (QS_fun_dict_pre_((void (*)(void))(fun_), #fun_))
 
 /*! Output user QS-record dictionary record
-* @description
+* @details
 * A user QS-record dictionary record associates the numerical value of a
 * user record with the human-readable identifier.
 */
@@ -850,7 +849,7 @@ void QS_usr_dict_pre_(enum_t const rec,
 /* Miscellaneous pre-formatted trace records used in applications */
 
 /*! Output the assertion failure trace record
-* @description
+* @details
 * This trace record is intended to use from the Q_onAssert() callback.
 */
 void QS_ASSERTION(char const * const module,
@@ -1041,7 +1040,8 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
     extern uint8_t volatile QF_intNest;
 
     /*! QHsmDummy class
-    * @description
+    * @extends QHsm
+    * @details
     * QHsmDummy is a test double for the role of "Orthogonal Components"
     * HSM objects in QUTest unit testing.
     */
@@ -1055,7 +1055,8 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
     void QHsmDummy_ctor(QHsmDummy * const me);
 
     /*! QActiveDummy Object class
-    * @description
+    * @extends QActive
+    * @details
     * QActiveDummy is a test double for the role of collaborating active
     * objects in QUTest unit testing.
     */

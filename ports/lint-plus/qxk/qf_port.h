@@ -27,9 +27,8 @@
 * @version Last updated for: @ref qpc_7_0_0
 *
 * @file
-* @ingroup qf
 * @brief QF/C port example for QXK, generic C99 compiler.
-* @description
+* @details
 * This is an example QP/C port with the documentation for the main
 * items, such as configuration macros, functions, and includes.
 */
@@ -38,7 +37,7 @@
 
 /*! The maximum number of active objects in the application. */
 /**
-* @description
+* @details
 * This macro *must* be defined in the QF port and should be in range
 * of 1U..64U, inclusive. The value of this macro determines the maximum
 * priority level of an active object in the system. Not all priority
@@ -55,7 +54,7 @@
 
 /*! The maximum number of clock tick rates in the application. */
 /**
-* @description
+* @details
 * This macro can be defined in the QF ports and should be in range
 * of 1U..15U, inclusive. The value of this macro determines the maximum
 * number of clock tick rates for time events (::QTimeEvt).
@@ -72,7 +71,7 @@
 
 /*! The maximum number of event pools in the application. */
 /**
-* @description
+* @details
 * This macro can be defined in the QF ports and should be in range
 * of 1U..255U, inclusive. The value of this macro determines the maximum
 * event pools in the system. Not all event pools must be actually used,
@@ -94,7 +93,7 @@
 * Valid values: 1U, 2U, or 4U; default 2U
 */
 /**
-* @description
+* @details
 * This macro can be defined in the QF ports to configure the ::QEvtSize
 * type. If the macro is not defined, the default of 2 byte will be chosen in
 * qf.h. The valid #QF_EVENT_SIZ_SIZE values of 1U, 2U, or 4U, correspond
@@ -115,7 +114,7 @@
 * event queue implementation. Valid values: 1U, 2U, or 4U; default 1U
 */
 /**
-* @description
+* @details
 * This macro can be defined in the QF ports to configure the ::QEQueueCtr
 * type. If the macro is not defined, the default of 1 byte will be chosen in
 * qequeue.h. The valid #QF_EQUEUE_CTR_SIZE values of 1U, 2U, or 4U, correspond
@@ -137,7 +136,7 @@
 * event pool. Valid values: 1U, 2U, or 4U; default #QF_EVENT_SIZ_SIZE.
 */
 /**
-* @description
+* @details
 * This macro can be defined in the QF ports to configure the ::QMPoolSize
 * type. If the macro is not defined, the default of #QF_EVENT_SIZ_SIZE
 * will be chosen in qmpool.h, because the memory pool is primarily used for
@@ -161,7 +160,7 @@
 * native QF event pool. Valid values: 1U, 2U, or 4U; default 2U.
 */
 /**
-* @description
+* @details
 * This macro can be defined in the QF ports to configure the ::QMPoolCtr
 * type. If the macro is not defined, the default of 2 bytes will be chosen
 * in qmpool.h. The valid #QF_MPOOL_CTR_SIZE values of 1U, 2U, or 4U,
@@ -183,7 +182,7 @@
 * in the ::QTimeEvt struct. Valid values: 1U, 2U, or 4U; default 2U.
 */
 /**
-* @description
+* @details
 * This macro can be defined in the QF ports to configure the internal tick
 * counters of Time Events. If the macro is not defined, the default of 2
 * bytes will be chosen in qf.h. The valid #QF_TIMEEVT_CTR_SIZE values of 1,
@@ -212,7 +211,7 @@
 
 /*! Define the interrupt enabling policy. */
 /**
-* @description
+* @details
 * This macro encapsulates platform-specific way of enabling interrupts
 * from "C" for a given CPU and compiler.
 *
@@ -226,7 +225,7 @@ void intEnable(void);
 
 /*! Define the type of the critical section status. */
 /**
-* @description
+* @details
 * Defining this macro configures the "saving and restoring critical section
 * status" policy. Coversely, if this macro is not defined, the simple
 * "unconditional critical section exit" is used.
@@ -235,7 +234,7 @@ void intEnable(void);
 
 /*! Define the critical section entry policy. */
 /**
-* @description
+* @details
 * This macro enters a critical section (often by means of disabling
 * interrupts). When the "saving and restoring critical section status"
 * policy is used, the macro sets the @a status_ argument to the critical
@@ -250,7 +249,7 @@ void intEnable(void);
 
 /*! Define the critical section exit policy. */
 /**
-* @description
+* @details
 * This macro enters a critical section (often by means of disabling
 * interrupts). When the "saving and restoring critical section status"
 * policy is used, the macro restores the critical section status from the
@@ -270,7 +269,7 @@ void critExit(crit_stat_t stat);
 
 /*! Enable the QActive_stop() API in the QF port. */
 /**
-* @description
+* @details
 * Defining this macro enables the QActive_stop() API in a given port.
 * This feature should be used with caution, as stopping and re-starting
 * active objects **cleanly** can be tricky.

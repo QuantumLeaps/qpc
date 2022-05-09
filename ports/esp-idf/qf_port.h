@@ -1,7 +1,6 @@
 /**
 * @file
 * @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
-* @ingroup ports
 * @cond
 ******************************************************************************
 * Last updated for: @ref qpc_7_0_0

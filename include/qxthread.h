@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QXK/C eXtended (blocking) thread.
-* @ingroup qxk
 */
 #ifndef QXTHREAD_H
 #define QXTHREAD_H
@@ -36,7 +35,7 @@
 /*==========================================================================*/
 /*! eXtended (blocking) thread of the QXK preemptive kernel
 * @extends QActive
-* @description
+* @details
 * QXThread represents the eXtended (blocking) thread of the QXK preemptive
 * kernel. Each extended thread in the application must be represented by
 * the corresponding ::QXThread instance
@@ -74,7 +73,7 @@ struct QXThread {
 typedef QActiveVtable QXThreadVtable;
 
 /*! Polymorphically start an extended thread.
-* @description
+* @details
 * Starts execution of the thread and registers the thread with the framework.
 *
 * @param[in,out] me_      pointer (see @ref oop)
@@ -102,7 +101,7 @@ void QXThread_ctor(QXThread * const me, QXThreadHandler handler,
                    uint_fast8_t tickRate);
 
 /*! Asynchronous posting events to the event queue of an eXtended thread
-* @description
+* @details
 * This macro does not assert if the queue overflows and cannot accept
 * the event with the specified margin of free slots remaining.
 *
@@ -156,7 +155,7 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks);
 
 /*==========================================================================*/
 /*! Counting Semaphore of the QXK preemptive kernel
-* @description
+* @details
 * ::QXSemaphore is a blocking mechanism intended primarily for signaling
 * @ref ::QXThread "extended threads". The semaphore is initialized with
 * the maximum count (see QXSemaphore_init()), which allows you to create
@@ -204,7 +203,7 @@ bool QXSemaphore_signal(QXSemaphore * const me);
 
 /*==========================================================================*/
 /*! Blocking Mutex the QXK preemptive kernel
-* @description
+* @details
 * ::QXMutex is a blocking mutual exclusion mechanism that can also apply
 * the **priority ceiling protocol** to avoid unbounded priority inversion
 * (if initialized with a non-zero ceiling priority, see QXMutex_init()).
@@ -225,8 +224,8 @@ bool QXSemaphore_signal(QXSemaphore * const me);
 * threads contending for the mutex blocks while holding the mutex (between
 * the QXMutex_lock() and QXMutex_unlock() operations). If no blocking is
 * needed while holding the mutex, the more efficient non-blocking mechanism
-* of @ref QXK_schedLock() "selective QXK scheduler locking" should be used
-* instead. @ref QXK_schedLock() "Selective scheduler locking" is available
+* of @ref srs_qxk_schedLock() "selective QXK scheduler locking" should be used
+* instead. @ref srs_qxk_schedLock() "Selective scheduler locking" is available
 * for both @ref ::QActive "basic threads" and @ref ::QXThread "extended
 * threads", so it is applicable to situations where resources are shared
 * among all these threads.

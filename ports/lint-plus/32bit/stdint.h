@@ -3,7 +3,7 @@
 * @brief Selected exact-width and fast minimum-width integer types
 * for 32-bit CPU architecture (e.g., ARM Cortex-M).
 *
-* @description
+* @details
 * This header is part of the ANSI C99 standard library to define the
 * standard exact-width integer types (see C99 Section 7.18.1.1).
 * If the compiler does not provide the stdint.h header file, you can

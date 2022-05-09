@@ -29,7 +29,6 @@
 * @file
 * @brief QK/C (preemptive non-blocking kernel) platform-independent
 * public interface.
-* @ingroup qk
 */
 #ifndef QK_H
 #define QK_H
@@ -69,7 +68,7 @@ extern QK_PrivAttr QK_attr_;
     struct QActive; /* forward declaration */
 
     /*! QK context switch callback (customized in BSPs for QK)
-    * @description
+    * @details
     * This callback function provides a mechanism to perform additional
     * custom operations when QK switches context from one thread to
     * another.
@@ -92,7 +91,7 @@ extern QK_PrivAttr QK_attr_;
 #endif /* QK_ON_CONTEXT_SW */
 
 /*! QK idle callback (customized in BSPs for QK)
-* @description
+* @details
 * QK_onIdle() is called continuously by the QK idle loop. This callback
 * gives the application an opportunity to enter a power-saving CPU mode,
 * or perform some other idle processing.

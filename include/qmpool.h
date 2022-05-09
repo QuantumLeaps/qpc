@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QP native, platform-independent memory pool ::QMPool interface.
-* @ingroup qf
 */
 #ifndef QMPOOL_H
 #define QMPOOL_H
@@ -44,7 +43,7 @@
 
     /*! The data type to store the block-size based on the macro
     * #QF_MPOOL_SIZ_SIZE.
-    * @description
+    * @details
     * The dynamic range of this data type determines the maximum size
     * of blocks that can be managed by the native QF event pool.
     */
@@ -69,7 +68,7 @@
 
     /*! The data type to store the block-counter based on the macro
     * #QF_MPOOL_CTR_SIZE.
-    * @description
+    * @details
     * The dynamic range of this data type determines the maximum number
     * of blocks that can be stored in the pool.
     */
@@ -84,7 +83,7 @@
 
 /*==========================================================================*/
 /*! Native QF Memory Pool
-* @description
+* @details
 * A fixed block-size memory pool is a very fast and efficient data
 * structure for dynamic allocation of fixed block-size chunks of memory.
 * A memory pool offers fast and deterministic allocation and recycling of
@@ -123,7 +122,7 @@ typedef struct {
     QMPoolCtr volatile nFree;
 
     /*! minimum number of free blocks ever present in this pool
-    * @description
+    * @details
     * this attribute remembers the low watermark of the pool, which
     * provides a valuable information for sizing event pools.
     * @sa QF_getPoolMin().

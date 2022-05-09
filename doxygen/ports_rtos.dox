@@ -10,7 +10,7 @@ Another reason you might be interested in running QP/C on top of a conventional 
 You do **not** need to use a traditional RTOS just to achieve preemptive multitasking with QP. The @ref comp_qk "preemptive QK kernel", available as part of the QP package, supports preemptive priority-based multitasking and is fully compatible with Rate Monotonic Scheduling to achieve guaranteed, hard real-time performance. The preemptive, run-to-completion QK kernel perfectly matches the run-to-completion execution semantics of active objects, yet it is simpler, faster, and more efficient than any traditional blocking kernel.
 
 @attention
-QP/C 6.x includes a small, preemptive, priority-based, @ref qxk "dual-mode blocking QXK kernel" that executes active objects like the QK kernel (@ref qxk_basic "basic threads"), but can also execute traditional blocking threads (@ref qxk_extended "extended threads"). In this respect, QXK behaves exactly like a conventional RTOS. The QXK kernel is recommended as the preferred RTOS kernel for applications that need to mix active objects with traditional blocking code. Due to the tight and optimal integration between QXK and the rest of QP, QXK offers better performance and smaller memory footprint than any @ref ports_rtos "QP port to a 3rd-party RTOS". Additionally, QXK is already included in QP, so you avoid additional licensing costs of 3rd-party kernels.
+QP/C 6.x includes a small, preemptive, priority-based, @ref srs_qxk "dual-mode blocking QXK kernel" that executes active objects like the QK kernel (@ref srs_qxk_basic "basic threads"), but can also execute traditional blocking threads (@ref srs_qxk_extended "extended threads"). In this respect, QXK behaves exactly like a conventional RTOS. The QXK kernel is recommended as the preferred RTOS kernel for applications that need to mix active objects with traditional blocking code. Due to the tight and optimal integration between QXK and the rest of QP, QXK offers better performance and smaller memory footprint than any @ref ports_rtos "QP port to a 3rd-party RTOS". Additionally, QXK is already included in QP, so you avoid additional licensing costs of 3rd-party kernels.
 
 
 The QP/C framework can work with virtually any traditional real-time operating
@@ -30,25 +30,21 @@ Combined with a conventional RTOS, QP/C takes full advantage of the multitasking
 /*##########################################################################*/
 /*! @page embos embOS
 
-<p>The QP/C/C++ ports and examples for embOS are described in the Quantum Leaps Application Note @webref{doc/AN_RTOS-embOS.pdf, QP and embOS}.
-</p>
+![SEGGER embOS](logo_embos.png)
 
-@htmlonly
-<div class="image">
-<a target="_blank" href="https://www.state-machine.com/doc/AN_RTOS-embOS.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
-<div class="caption">
-Application Note: QP and embOS
-</div>
-</div>
-@endhtmlonly
+The QP/C/C++ ports and examples for embOS are described in the Quantum Leaps Application Note @webref{doc/AN_RTOS-embOS.pdf, QP and embOS}.
+
+[![Application Note: QP and embOS](img/AN.jpg)](https://www.state-machine.com/doc/AN_RTOS-embOS.pdf)
+@caption{[Application Note: "QP and embOS"](https://www.state-machine.com/doc/AN_RTOS-embOS.pdf)}
 
 @next{freertos}
 */
 
 /*##########################################################################*/
 /*! @page freertos FreeRTOS
-
 @tableofcontents
+
+![FreeRTOS](logo_freertos.png)
 
 @section freertos_about About the QP Port to FreeRTOS
 The <span class="img folder">ports/freertos/</span> directory contains a generic platform-independent QP/C port to <a href="https://freertos.org" target="_blank" class="extern">FreeRTOS kernel</a> (version 10). The provided QP port to FreeRTOS has been designed *generically* to rely exclusively on the existing FreeRTOS API. This means that the port should run without changes on any CPU/compiler platform supported by FreeRTOS.
@@ -79,19 +75,18 @@ The design of FreeRTOS requires the use of special "FromISR" API inside ISRs, wh
 
 
 @section freertos_examples Example Code
-The QP port to FreeRTOS comes with examples located in the directory `qpc/examples/freertos/`. Currently, the examples are provided for the following boards and development toolchains:
+The QP port to FreeRTOS comes with examples located in the directory `qpc/examples/freertos`. Currently, the examples are provided for the following boards and development toolchains:
 
 - EK-TM4C123GXL (ARM Cortex-M4F), ARM-KEIL, GNU-ARM, IAR-ARM
 - STM32F746G-Discovery (ARM Cortex-M7), ARM-KEIL, GNU-ARM, IAR-ARM
 
 
-
 @subsection freertos_isr Writing ISRs for QP/FreeRTOS
 The provided examples show how to write regular "kernel-aware" ISRs as well as "kernel-unaware" ISRs for QP/FreeRTOS. (See also the FreeRTOS documentation for [configMAX_SYSCALL_INTERRUPT_PRIORITY](https://www.freertos.org/a00110.html#kernel_priority).
 
-Here is an example of a regular "kernel-aware" ISR (note the use of the "FromISR" QP APIs"):
+Here is an example of a regular "kernel-aware" ISR (note the use of the `FromISR` suffix in the QP APIs):
 
-@code{c}
+@code{.c}
 /* NOTE: only the "FromISR" API variants are allowed in the ISRs! */
 void GPIOPortA_IRQHandler(void) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -107,9 +102,9 @@ void GPIOPortA_IRQHandler(void) {
 }
 @endcode
 
-Here is an example of a "kernel-unaware" ISR  (See also the FreeRTOS documentation for [configMAX_SYSCALL_INTERRUPT_PRIORITY](https://www.freertos.org/a00110.html#kernel_priority):
+Here is an example of a "kernel-unaware" ISR (See also the FreeRTOS documentation for [configMAX_SYSCALL_INTERRUPT_PRIORITY](https://www.freertos.org/a00110.html#kernel_priority) ):
 
-@code{c}
+@code{.c}
 /*
 * ISR for receiving bytes from the QSPY Back-End
 * NOTE: This ISR is "kernel-unaware" meaning that it does not interact with
@@ -149,7 +144,7 @@ void vApplicationTickHook(void) {
 @subsection freertos_ao Starting Active Objects in QP/FreeRTOS
 As mentioned in the @ref freertos_about "FreeRTOS port summary", the QP port to FreeRTOS uses the [static memory allocation of FreeRTOS](https://freertos.org/Static_Vs_Dynamic_Memory_Allocation.html). This means that all memory for an active object, including the private queue buffer and the private **stack** for the the associated FreeRTOS task must be allocated by the user. Here is an example code that starts an active object:
 
-@code{c}
+@code{.c}
 int main() {
     . . .
     static QEvt const *tableQueueSto[N_PHILO];
@@ -172,35 +167,28 @@ int main() {
 
 @next{threadx}
 */
-
 /*##########################################################################*/
 /*! @page threadx ThreadX
 
-<p>The QP/C/C++ ports and examples for ThreadX are described in the Quantum Leaps Application Note @webref{doc/AN_RTOS-ThreadX.pdf, QP and ThreadX}.
-</p>
+![ThreadX](logo_threadx.jpg)
 
-@htmlonly
-<div class="image">
-<a target="_blank" href="https://www.state-machine.com/doc/AN_RTOS-ThreadX.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
-<div class="caption">
-Application Note: QP and ThreadX
-</div>
-</div>
-@endhtmlonly
+The QP/C/C++ ports and examples for ThreadX (now Azure RTOS) are described in the Quantum Leaps Application Note  @webref{doc/AN_RTOS-ThreadX.pdf, QP and ThreadX}.
+
+[![Application Note: QP and ThreadX](img/AN.jpg)](https://www.state-machine.com/doc/AN_RTOS-ThreadX.pdf)
+@caption{[Application Note: "QP and ThreadX"](https://www.state-machine.com/doc/AN_RTOS-ThreadX.pdf)}
 
 @next{uc-os2}
 */
 
 /*##########################################################################*/
-/*! @page uc-os2 uC-OS
+/*! @page uc-os2 uC-OS2
+
+![uC-OS2](logo_uc-os2.jpg)
 
 @section uc-os2_about About the QP Port to uC-OS2
 This directory contains a generic platform-independent QP/C port to uC-OS2 V2.92.
 
 Typically, you should not need to change the files in this directory to adapt the QP-uC-OS2 port on any CPU/Compiler to which uC-OS2 has been ported, because all the CPU and compiler specifics are handled by the uC-OS2 RTOS.
-
-@note
-Currently, the port has been tested only on ARM Cortex-M3 and M4F.
 
 
 @section uc-os2_source uC-OS2 Source and ARM Cortex-M3/M4 Ports
@@ -254,14 +242,8 @@ Specifically, the QP source files qf_actq.c and qf_mem.c must **NOT** be include
 
 The QP/C/C++ ports and examples for uC-OS2 are described in the Quantum Leaps Application Note @webref{doc/AN_RTOS-uCOS2.pdf, QP and uC-OS2}.
 
-@htmlonly
-<div class="image">
-<a target="_blank" href="https://www.state-machine.com/doc/AN_RTOS-uCOS2.pdf"><img border="0" src="img/AN.jpg" title="Download PDF"></a>
-<div class="caption">
-Application Note: QP and uC-OS2
-</div>
-</div>
-@endhtmlonly
+[![QP and uC-OS2](img/AN.jpg)](https://www.state-machine.com/doc/AN_RTOS-uCOS2.pdf)
+@caption{[Application Note: QP and uC-OS2](https://www.state-machine.com/doc/AN_RTOS-uCOS2.pdf)}
 
 @next{ports_os}
 */

@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QS long-long (64-bit) output
-* @ingroup qs
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qs_port.h"      /* QS port */

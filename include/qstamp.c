@@ -28,13 +28,12 @@
 *
 * @file
 * @brief Application build time-stamp
-* @description
+* @details
 * This module needs to be re-compiled in every new software build. To achive
 * this, it is recommended to delete the object file (qstamp.o, or qstamp.obj)
 * in the build directory before each build. (Most development tools allow
 * you to specify a pre-build command, which is the ideal place to delete
 * the qstamp object file.)
-* @ingroup qs
 */
 
 #include "qstamp.h"

@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP/C on EMF32-SLSTK3401A, QXK kernel, GNU-ARM
 # Last Updated for Version: 7.0.0
-# Date of the Last Update:  2021-07-01
+# Date of the Last Update:  2022-05-02
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005-2022 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -142,7 +142,9 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DEFM32PG1B200F256GM48=1
+DEFINES   := -DEFM32PG1B200F256GM48=1 \
+	-DQXK_USE_IRQ_NUM=25 \
+	-DQXK_USE_IRQ_HANDLER=CRYPTO_IRQHandler
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]

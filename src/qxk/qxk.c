@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QXK preemptive dual-mode kernel core functions
-* @ingroup qxk
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -56,7 +55,7 @@ static QActive l_idleThread;
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Initializes QF and must be called exactly once before any other QF
 * function. Typically, QF_init() is called from main() even before
 * initializing the Board Support Package (BSP).
@@ -90,7 +89,7 @@ void QF_init(void) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function stops the QF application. After calling this function,
 * QF attempts to gracefully stop the application. This graceful shutdown
 * might take some time to complete. The typical use of this function is
@@ -124,7 +123,7 @@ static void initial_events(void) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * QF_run() is typically called from main() after you initialize
 * the QF and start at least one active object with QACTIVE_START().
 *
@@ -153,7 +152,7 @@ int_t QF_run(void) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Starts execution of the AO and registers the AO with the framework.
 * Also takes the top-most initial transition in the AO's state machine.
 * This initial transition is taken in the callee's thread of execution.
@@ -210,7 +209,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function locks the QXK scheduler to the specified ceiling.
 *
 * @param[in]   ceiling    priority ceiling to which the QXK scheduler
@@ -275,7 +274,7 @@ QSchedStatus QXK_schedLock(uint_fast8_t ceiling) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function unlocks the QXK scheduler to the previous status.
 *
 * @param[in]   stat       previous QXK Scheduler lock status returned from
@@ -330,7 +329,7 @@ void QXK_schedUnlock(QSchedStatus stat) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * The QXK scheduler finds the priority of the highest-priority thread
 * that is ready to run.
 *

@@ -1,7 +1,6 @@
 /**
 * @file
 * @brief QEP/C port, generic C99 compiler
-* @ingroup ports
 * @cond
 ******************************************************************************
 * Last Updated for Version: 5.4.0

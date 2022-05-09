@@ -2,7 +2,7 @@
 * @file
 * @brief Boolean type and constansts. WG14/N843 C99 Standard, Section 7.16
 *
-* @description
+* @details
 * This header is part of the ANSI C99 standard library to define the
 * standard Boolean type as well as the 'true' and 'false' constansts.
 */

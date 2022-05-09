@@ -27,9 +27,8 @@
 * @version Last updated for: @ref qpc_7_0_0
 *
 * @file
-* @ingroup qs
 * @brief QS/C port to a 32-bit CPU and a generic C99 compiler.
-* @description
+* @details
 * This is an example of a QP/C port with the documentation for the
 * configuration macros and includes.
 */

@@ -28,7 +28,6 @@
 *
 * @file
 * @brief ::QActive services and @ref qf support code
-* @ingroup qf
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -51,7 +50,7 @@ QActive *QF_active_[QF_MAX_ACTIVE + 1U]; /* to be used by QF ports only */
 /*==========================================================================*/
 /*!
 * @static @private @memberof QF
-* @description
+* @details
 * This function adds a given active object to the active objects
 * managed by the QF framework. It should not be called by the application
 * directly, only by the QP ports.
@@ -83,7 +82,7 @@ void QF_add_(QActive * const a) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QF
-* @description
+* @details
 * This function removes a given active object from the active objects managed
 * by the QF framework. It should not be called by the application
 * directly, only by the QP ports.
@@ -115,7 +114,7 @@ void QF_remove_(QActive * const a) {
 /*==========================================================================*/
 /*!
 * @static @public @memberof QF
-* @description
+* @details
 * Clears a memory buffer by writing zeros byte-by-byte.
 *
 * @param[in]  start  pointer to the beginning of a memory buffer.

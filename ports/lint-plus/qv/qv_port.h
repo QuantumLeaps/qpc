@@ -1,7 +1,6 @@
 /**
 * @file
 * @brief QV/C port example for a generic C compiler.
-* @ingroup qv
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.2
@@ -44,7 +43,7 @@
 * QV kernel (inside QV_onIdle()).
 */
 /**
-* @description
+* @details
 * This macro is provided in some QP ports for the QV kernel and
 * in general it depends on the interrupt disabling policy.
 *

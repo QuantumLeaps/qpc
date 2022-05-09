@@ -1,7 +1,6 @@
 /*##########################################################################*/
 /*! @page ports_native Native (Bare-Metal) Ports
 
-- @subpage lint (generic C compiler)
 - @subpage arm-cm (Cortex-M0/M0+/M3/M4/M4/M7)
     - @ref arm-cm_qv  (ARM-CLANG, ARM-KEIL, GNU-ARM, IAR-ARM )
     - @ref arm-cm_qk  (ARM-CLANG, ARM-KEIL, GNU-ARM, IAR-ARM)
@@ -16,148 +15,37 @@
     - @ref msp430_qv (TI-CCS, IAR toolchains)
     - @ref msp430_qk (TI-CCS, IAR toolchains)
 
-*/
-/*##########################################################################*/
-/*! @page lint PC-Lint-Plus
-
-@tableofcontents
-
-<p>The QP/C distribution contains a "port" to <a href="https://www.gimpel.com" target="_blank" class="extern"><b>PC-Lint-Plus</b></a> static analysis tool from <a href="https://www.gimpel.com" target="_blank" class="extern">Gimpel Software</a>, which is a static analysis tool for C and C++ with one of the longest track records and best value of the money in the industry. The "PC-Lint-Plus port" allows you to statically analyze the QP/C source code and facilitates static analysis of your **application code** based on QP/C.
-</p>
-The QP/C "port" to PC-Lint-Plus is located in the directory <span class="img folder">qpc/ports/lint-plus</span> and includes also lint configuration files, as well as an example of "linting" application code in the directory <span class="img folder">qpc/examples/arm-cm/dpp_ek-tm4c123gxl/lint-plus</span>. The following listing describes the most important files in these three directories.
-
-@code{.x}
- qpc\                  - QP/C installation directory
-  +-ports/           - QP/C ports directory
-  | +-lint-plus/     - QP/C "port" to PC-Lint-Plus
-  | |  +-16bit/      - QP/C++ "port" to 16-bit CPUs
-  | | |  +-cpu.lnt   - Lint options for a 16-bit CPU
-  | | |  +-stdint.h  - Standard exact-width integers for a 16-bit CPU
-  | |  +-32bit/      - QP/C++ "port" to 32-bit CPUs
-  | | |  +-cpu.lnt   - Lint options for a 32-bit CPU
-  | | |  +-stdint.h  - Standard exact-width integers for a 32-bit CPU
-  | | +-qk/          - QP/C port with the QK kernel
-  | | +-qv/          - QP/C port with the QV kernel
-  | | +-qxk/         - QP/C port with the QXK kernel
-  | | +-au-ds.lnt    - Dan Saks recommendations
-  | | +-au-misra3.lnt      - MISRA-C:2012 compliance checks
-  | | +-au-misra3-amd1.lnt - MISRA-C:2012-Amendment-1 additional checks
-  | | +-qpc.lnt      - PC-Lint-Plus options for QP/C applications
-  | | +-std.lnt      - Standard PC-Lint-Plus settings recommended by Quantum Leaps
-  | | +-lin.bat      - Batch file to invoke PC-Lint-Plus to run analysis of QP/C code
-  | | +-options.lnt  - PC/Lint-Plus options for "linting" QP/C source code
-  | | +-lint_qf.log  - PC/Lint-Plus output for the QEP/QF components of QP/C
-  | | +-lint_qs.log  - PC/Lint-Plus output for the QS  component of QP/C
-  | | +-lint_qv.log  - PC/Lint-Plus output for the QV  component of QP/C
-  | | +-lint_qk.log  - PC/Lint-Plus output for the QK  component of QP/C
-  | | +-lint_qxk.log - PC/Lint-Plus output for the QXK component of QP/C
-  | | +-qep_port.h   - QEP component "port" to a "generic C compiler"
-  | | +-stdbool.h    - Standard Boolean type and constants for a "generic C compiler"
-  |
-  +-examples\        - QP/C examples directory (application)
-  | +-arm-cm\        - QP/C examples for ARM Cortex-M
-  | | +-dpp_ek-tm4c123gxl\ - DPP example on the EK-TM4C123GLX board
-  | | | +-lint-plus\ - directory for linting the application
-  | | | | +-lin.bat  - Batch to run PC-Lint-Plus analysis of application code
-  | | | | +-options.lnt - PC-Lint-Plus options for "linting" of application code
-@endcode
-
-
-
-@section lint_qpc Linting the QP/C Source Code
-The directory <span class="img folder">qpc/ports/lint-plus</span> (see listing above) contains also the **lin.bat** batch file for "linting" the QP/C source code. The `lin.bat` batch file invokes PC-Lint-Plus and generates the lint output files. As shown in the listing above, the lint output is collected into four text files `lint_qf.log`, `lint_qs.log`, `lint_qk.log`, `lint_qv.log`, and `lint_qs.log`, for QEP/QF, QK, QV, QXK and QS components of the QP/C framework, respectively.
-
-@note
-In order to execute the `lin.bat` file on your system, you might need to adjust the symbol  `PCLP_DIR` at the top of the batch file, to the PC-Lint-Plus installation directory on your computer.
-
-@remarks
-The `lin.bat` batch file invoked without any command-line options checks the QP/C code in the ::Q_SPY build configuration with software tracing enabled. However, by the nature of software tracing, the ::Q_SPY configuration transgresses many more MISRA-C rules than the standard configuration. However, the ::Q_SPY configuration is never used for production code, so the MISRA-C compliance of the QP/C framework should not be judged by the deviations that happen only in the ::Q_SPY configuration.
-
-
-According to the PC-Lint-Plus guidelines, the `lin.bat` uses two option files: the `qpc.lnt` configuration file discussed before and the `options.lnt` configuration file that covers all deviations from the MISRA-C rules **within the QP/C source code**. These deviations are intentionally localized to QP/C code and are independent from your **application-level** code. In other words, a MISRA-C deviation present in the QP/C code does **not** mean that such deviation is somehow allowed or its detection is somehow suppressed in the **application-level** code. This is because the the `options.lnt` configuration file for internals of QP/C is **not** used to "lint" the application-level code.
-
-
-
-@section lint_app Linting QP/C Application Code
-The QP/C baseline code contains an example of MISRA-C compliance checking with PC-Lint-Plus: the DPP example for the EK-TM4C123GLX Cortex-M4F board, located in the directory <span class="img folder">qpc/examples/arm-cm/dpp_ek-tm4c123gxl/lint-plus</span>. The PC-Lint-Plus analysis is very simple and requires invoking the **lin.bat** file.
-
-@note
-In order to execute the **lin.bat** file on your system, you might need to adjust the symbol  `PCLP_DIR` at the top of the batch file, to the PC-Lint-Plus installation directory on your computer. You
-
-
-The `lint-plus` subdirectory contains also the local version of the `options.lnt` configuration file with the PC-Lint-Plus options specific to linting the application. Here, you might include linting options for your specific compiler, as described in the "PC-Lint-Plus Manual", Chapter 2 "Installation and Configuration".
-
-
-
-@section lint_options Structure of PC-Lint-Plus Options for QP/C
-PC-Lint-Plus has several places where it reads its currently valid options:
-- From special PC-Lint-Plus option files (usually called `*.lnt`)
-- From the command line
-- From within the special lint-comments in the source code modules (not recommended)
-
-The QP/C source code and example application code has been "linted" only by means of the first alternative (option files) with possibility of adding options via command line. The third alternative--lint comments--is not used and Quantum Leaps does not recommend this alternative.
-
-@note
-The QP/C source code is completely free of lint comments, which are viewed as a contamination of the source code.
-
-The structure of the PC-Lint-Plus option files used for "linting" QP/C follows the <a href="http://www.gimpel.com" target="_blank" class="extern">Gimpel Software</a> guidelines for configuring PC-Lint-Plus (See Section 2 "Configuration" in the *PC-Lint-Plus Manual*). The design and grouping of the lint options also reflects the fact that static code analysis of a software framework, such as QP/C, has really two major aspects. First, the source code of the framework itself has to be analyzed. But even more important and helpful to the users of the framework is providing the infrastructure to effectively analyze the application-level code based on the framework. With this in mind, the PC-Lint-Plus options for static analysis of QP/C are divided into two groups, located in directories <span class="img folder">qpc/include</span> and <span class="img folder">qpc/ports/lint</span>. These two groups are for analyzing QP/C **applications** and QP/C **source code**, respectively.
-
-As shown in the PC-Lint-Plus "port" files description, the directory <span class="img folder">qpc/include</span>, contains the PC-Lint-Plus options for "linting" the application code along with all platform-independent QP/C header files required by the applications. This collocation of lint options with header files simplifies "linting", because specifying just `-iqpc/include` include directory to PC-Lint-Plus accomplishes both inclusion of QP/C header files and PC-Lint-Plus options.
-Note that the `qpc/include` directory contains all PC-Lint-Plus option files used in "linting" the code, including the standard MISRA-C:2012 `au-misr3.lnt` option file as well as Dan Saks' recommendations `au-ds.lnt`, which are copied from the PC-Lint-Plus distribution. This design freezes the lint options for which the compliance has been checked.
-
-
-
-@subsection lint_std_lnt The std.lnt option file
-According to the Gimpel Software *PC-Lint-Plus Configuration Guidelines*, the file `qpc/include/std.lnt` file, contains the top-level options, which Quantum Leaps recommends for all projects. These options include the formatting of the PC-Lint-Plus messages and making two passes to perform better cross-module analysis. However, the most important option is `-restore_at_end`, which has the effect of surrounding each source file with options `-save` and `-restore`. This precaution prevents options from "bleeding" from one file to another.
-
-<b>Top-level option file std.lnt</b>
-@include std.lnt
-
-
-
-@subsection lint_qpc_lnt  The qpc.lnt option file
-The most important file for "linting" QP/C applications is the **qpc.lnt** option file. This file handles all deviations from the MISRA-C:2012 rules, which might arise at the application-level code from the use of the QP/C framework. In other words, the **qpc.lnt** option file allows completely clean "linting" of the application-level code, as long as the application code does not violate any of the MISRA-C:2012 rules.
-
-At the same time, the **qpc.lnt** option file has been very carefully designed not to suppress any MISRA-C:2012 rule checking outside the very specific context of the QP/C API. In other words, the qpc.lnt option file still supports 100% of the MISRA-C:2012 rule checks that PC-Lint-Plus is capable of performing.
-
-@remarks
-For example, for reasons explained in Section 5.10 of the <a href="https://www.state-machine.com/doc/AN_QP-C_MISRA.pdf" target="_blank" class="extern">"QP/C MISRA Compliance Matrix"</a>, QP/C extensively uses function-like macros, which deviates from the MISRA-C:2012 advisory Rule 4.9 and which PC-Lint-Plus checks with the warning 9026. However, instead of suppressing this warning globally (with the -e9096 directive), the qpc.lnt option file suppresses warning 9096 only for the specific QP function-like macros that are visible to the application level. So specifically, the qpc.lnt file contains directives `-esym(9026, Q_TRAN, Q_SUPER, ...)`, which suppresses the warning only for the specified macros, but does not disable checking of any other macros in the application-level code.
-
-@next{arm-cm}
+@nav_next{arm-cm}
 */
 /*##########################################################################*/
 /*! @page arm-cr ARM Cortex-R
 
-@image html under_construction.jpg
+The QP/C/C++ ports and examples for ARM Cortex-R are described in the Quantum Leaps Application Note  @webref{doc/AN_QP_and_ARM-Cortex-R.pdf, QP and ARM Cortex-R}.
 
-@section arm-cr_qk Preemptive QK Kernel
-
-@includelineno ports/arm-cr/qk/gnu/qk_port.h
-
-@section arm-cr_qv Cooperative QV Kernel
+[![QP and ARM Cortex-R](img/AN.jpg)](https://www.state-machine.com/doc/AN_QP_and_ARM-Cortex-R.pdf)
+@caption{[Application Note: "QP and ARM Cortex-R"](https://www.state-machine.com/doc/AN_QP_and_ARM-Cortex-R.pdf)}
 
 @next{arm7-9}
 */
 /*##########################################################################*/
 /*! @page arm7-9 ARM7/ARM9
 
-@image html under_construction.jpg
+The QP/C/C++ ports and examples for ARM7/ARM9 are described in the Quantum Leaps Application Note  @webref{doc/AN_QP_and_ARM-Cortex-R.pdf, QP and ARM7/ARM9}.
 
-@section arm7-9_qk Preemptive QK Kernel
-
-@includelineno ports/arm7-9/qk/gnu/qk_port.s
-
-@section arm7-9_qv Cooperative QV Kernel
+[![QP and ARM Cortex-R](img/AN.jpg)](https://www.state-machine.com/doc/AN_QP_and_ARM7_ARM9-GNU.pdf)
+@caption{[Application Note: "QP and ARM7/ARM9"](https://www.state-machine.com/doc/AN_QP_and_ARM7_ARM9-GNU.pdf)}
 
 @next{msp430}
 */
 /*##########################################################################*/
 /*! @page msp430 MSP430
 
-@image html under_construction.jpg
+The QP/C/C++ ports and examples for MSP430 are described in the Quantum Leaps Development Kit @webref{doc/QDK_MSP430-CCS.pdf, QP and MSP430 with CCS} and  @webref{doc/QDK_MSP430-IAR.pdf, QP and MSP430 with IAR}.
 
-@section msp430_qk Preemptive QK Kernel
+[![QP and QP and MSP430 with CCS](img/AN.jpg)](https://www.state-machine.com/doc/QDK_MSP430-CCS.pdf)
+@caption{[Application Note: "QP and MSP430-CCS"](https://www.state-machine.com/doc/QDK_MSP430-CCS.pdf)}
 
-@section msp430_qv Cooperative QV Kernel
+[![QP and QP and MSP430 with IAR](img/AN.jpg)](https://www.state-machine.com/doc/QDK_MSP430-IAR.pdf)
+@caption{[Application Note: "QP and MSP430-IAR"](https://www.state-machine.com/doc/QDK_MSP430-IAR.pdf)}
 
 */

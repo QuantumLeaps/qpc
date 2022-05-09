@@ -28,7 +28,6 @@
 *
 * @file
 * @brief Application build time-stamp interface
-* @ingroup qs
 */
 #ifndef QSTAMP_H
 #define QSTAMP_H

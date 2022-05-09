@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QS/C port to a 32-bit CPU and a generic C99 compiler.
-* @ingroup qs
 */
 #ifndef QS_PORT_H
 #define QS_PORT_H

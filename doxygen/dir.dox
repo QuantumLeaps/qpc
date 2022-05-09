@@ -27,26 +27,26 @@ Typically, files in this directory need to be added to the application build, bu
 /*##########################################################################*/
 /*! @dir ../src/qv
 
-Platform-independent implementation of the @ref qv built-in kernel.
+Platform-independent implementation of the @ref srs_qv built-in kernel.
 
 @attention
-Files in this directory need to be included in the QP application build only if the application uses the @ref qv kernel.
+Files in this directory need to be included in the QP application build only if the application uses the @ref srs_qv kernel.
 */
 /*##########################################################################*/
 /*! @dir ../src/qk
 
-Platform-independent implementation of the @ref qk built-in kernel.
+Platform-independent implementation of the @ref srs_qk built-in kernel.
 
 @attention
-Files in this directory need to be included in the QP application build only if the application uses the @ref qk kernel.
+Files in this directory need to be included in the QP application build only if the application uses the @ref srs_qk kernel.
 */
 /*##########################################################################*/
 /*! @dir ../src/qxk
 
-Platform-independent implementation of the @ref qxk built-in kernel.
+Platform-independent implementation of the @ref srs_qxk built-in kernel.
 
 @attention
-Files in this directory need to be included in the QP application build only if the application uses the @ref qxk kernel.
+Files in this directory need to be included in the QP application build only if the application uses the @ref srs_qxk kernel.
 */
 /*##########################################################################*/
 /*! @dir ../src/qs

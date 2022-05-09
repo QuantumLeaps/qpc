@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QXK preemptive kernel semaphore functions
-* @ingroup qxk
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -50,7 +49,7 @@ Q_DEFINE_THIS_MODULE("qxk_sema")
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * Initializes a semaphore with the specified count and maximum count.
 * If the semaphore is used for resource sharing, both the initial count
 * and maximum count should be set to the number of identical resources
@@ -82,7 +81,7 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * When an extended thread calls QXSemaphore_wait() and the value of the
 * semaphore counter is greater than 0, QXSemaphore_wait() decrements the
 * semaphore counter and returns (true) to its caller. However, if the value
@@ -176,7 +175,7 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * This function checks if the semaphore counter is greater than 0,
 * in which case the counter is decremented.
 *
@@ -212,7 +211,7 @@ bool QXSemaphore_tryWait(QXSemaphore * const me) {
 
 /*==========================================================================*/
 /*!
-* @description
+* @details
 * If the semaphore counter value is 0 or more, it is incremented, and
 * this function returns to its caller. If the extended threads are waiting
 * for the semaphore to be signaled, QXSemaphore_signal() removes the highest-

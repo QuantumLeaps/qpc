@@ -19,20 +19,14 @@ obtaining QP/C bundled together like that is that you get all components,
 tools and examples ready to go.
 
 ### Getting Started Resources
+- ["QP/C Tutorial"][Tutorial]
+describes a series of progressively advanced QP/C example applications.
+
 - [Video: "Getting Started with QP Real-Time Embedded Frameworks"][Video]
 provides instructions on how to download, install, and get started with QP.
 
 - [AppNote: "Getting Started with QP Real-Time Embedded Frameworks"][AN]
 contains also a tutorial, in which you build a simple "Blinky" application.
-
-
-# Documentation
-The online HTML documention for the **latest** version of QP/C is located
-at: https://www.state-machine.com/qpc
-
-The offline HTML documentation for **this** particular version of QP/C
-is located in the sub-folder [html](html). To view the offline documentation,
-open the file [html/index.html](html/index.html) in your web browser.
 
 
 # About QP/C
@@ -104,7 +98,12 @@ you don't use any open source license and you do not violate your policy.
 
 
 # QP/C Documentation
-The **QP/C Manual** is located online at: https://www.state-machine.com/qpc
+The online HTML documention for the **latest** version of QP/C is located
+at: https://www.state-machine.com/qpc
+
+The offline HTML documentation for **this** particular version of QP/C
+is located in the sub-folder [html](html). To view the offline documentation,
+open the file [html/index.html](html/index.html) in your web browser.
 
 
 # How to Get Help?
@@ -125,4 +124,5 @@ The **QP/C Manual** is located online at: https://www.state-machine.com/qpc
    [Lic]: <https://www.state-machine.com/licensing>
    [Cust]: <https://www.state-machine.com/customers>
    [AN]: <https://www.state-machine.com/doc/AN_Getting_Started_with_QP.pdf>
+   [Tutorial]: <https://www.state-machine.com/qpc/gs_tut.html>
    [Video]: <https://youtu.be/O7ER6_VqIH0>

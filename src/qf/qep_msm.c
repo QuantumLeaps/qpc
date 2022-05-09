@@ -28,7 +28,6 @@
 *
 * @file
 * @brief ::QMsm implementation
-* @ingroup qep
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qep_port.h"     /* QEP port */
@@ -89,7 +88,7 @@ static struct QMState const l_msm_top_s = {
 /*==========================================================================*/
 /*!
 * @protected @memberof QMsm
-* @description
+* @details
 * Performs the first step of QMsm initialization by assigning the initial
 * pseudostate to the currently active state of the state machine.
 *
@@ -129,7 +128,7 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial) {
 /*==========================================================================*/
 /*!
 * @public @memberof QMsm
-* @description
+* @details
 * Executes the top-most initial transition in a MSM.
 *
 * @param[in,out] me  pointer (see @ref oop)
@@ -191,7 +190,7 @@ void QMsm_init_(QHsm * const me, void const * const e)
 /*==========================================================================*/
 /*!
 * @private @memberof QMsm
-* @description
+* @details
 * Dispatches an event for processing to a meta state machine (MSM).
 * The processing of an event represents one run-to-completion (RTC) step.
 *
@@ -403,7 +402,7 @@ QStateHandler QMsm_getStateHandler_(QHsm * const me) {
 /*==========================================================================*/
 /*!
 * @private @memberof QMsm
-* @description
+* @details
 * Helper function to execute transition sequence in a transition-action table.
 *
 * @param[in,out] me    pointer (see @ref oop)
@@ -491,7 +490,7 @@ static QState QMsm_execTatbl_(QHsm * const me,
 /*==========================================================================*/
 /*!
 * @private @memberof QMsm
-* @description
+* @details
 * Static helper function to exit the current state configuration to the
 * transition source, which in a hierarchical state machine might be a
 * superstate of the current state.
@@ -538,7 +537,7 @@ static void QMsm_exitToTranSource_(QHsm * const me, QMState const *cs,
 /*==========================================================================*/
 /*!
 * @private @memberof QMsm
-* @description
+* @details
 * Static helper function to execute the segment of transition to history
 * after entering the composite state and
 *
@@ -608,7 +607,7 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const *const hist)
 /*==========================================================================*/
 /*!
 * @public @memberof QMsm
-* @description
+* @details
 * Tests if a state machine derived from QMsm is-in a given state.
 *
 * @note
@@ -639,7 +638,7 @@ bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
 /*==========================================================================*/
 /*!
 * @private @memberof QMsm
-* @description
+* @details
 * Finds the child state of the given @c parent, such that this child state
 * is an ancestor of the currently active state. The main purpose of this
 * function is to support **shallow history** transitions in state machines

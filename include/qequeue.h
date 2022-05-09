@@ -28,7 +28,7 @@
 *
 * @file
 * @brief QP natvie, platform-independent, thread-safe event queue interface
-* @description
+* @details
 * This header file must be included in all QF ports that use native QF
 * event queue for active objects. Also, this file needs to be included
 * in the QP/C library when the application uses QActive_defer()/
@@ -36,7 +36,6 @@
 * thread-safe queues are used for communication between active objects
 * and non-framework entities, such as ISRs, device drivers, or legacy
 * code.
-* @ingroup qf
 */
 #ifndef QEQUEUE_H
 #define QEQUEUE_H
@@ -46,7 +45,7 @@
     /*! The size [bytes] of the ring-buffer counters used in the
     * native QF event queue implementation. Valid values: 1U, 2U, or 4U;
     * default 1U.
-    * @description
+    * @details
     * This macro can be defined in the QF port file (qf_port.h) to
     * configure the ::QEQueueCtr type. Here the macro is not defined so the
     * default of 1 byte is chosen.
@@ -57,7 +56,7 @@
 
     /*! The data type to store the ring-buffer counters based on
     * the macro #QF_EQUEUE_CTR_SIZE.
-    * @description
+    * @details
     * The dynamic range of this data type determines the maximum length
     * of the ring buffer managed by the native QF event queue.
     */
@@ -73,7 +72,7 @@
 /*==========================================================================*/
 
 /*! Native QF Event Queue
-* @description
+* @details
 * This class describes the native QF event queue, which can be used as
 * the event queue for active objects, or as a simple "raw" event queue for
 * thread-safe event passing among non-framework entities, such as ISRs,
@@ -117,7 +116,7 @@
 */
 typedef struct QEQueue {
     /*! pointer to event at the front of the queue.
-    * @description
+    * @details
     * All incoming and outgoing events pass through the frontEvt location.
     * When the queue is empty (which is most of the time), the extra
     * frontEvt location allows to bypass the ring buffer altogether,
@@ -145,7 +144,7 @@ typedef struct QEQueue {
     QEQueueCtr volatile nFree;
 
     /*! minimum number of free events ever in the ring buffer.
-    * @description
+    * @details
     * this attribute remembers the low-watermark of the ring buffer,
     * which provides a valuable information for sizing event queues.
     * @sa QF_getQueueMargin().
@@ -172,7 +171,7 @@ QEvt const *QEQueue_get(QEQueue * const me, uint_fast8_t const qs_id);
 
 /*! "raw" thread-safe QF event queue operation for obtaining the number
 * of free entries still available in the queue.
-* @description
+* @details
 * This operation needs to be used with caution because the number of free
 * entries can change unexpectedly. The main intent for using this operation
 * is in conjunction with event deferral. In this case the queue is accessed
@@ -189,7 +188,7 @@ static inline QEQueueCtr QEQueue_getNFree(QEQueue * const me) {
 
 /*! "raw" thread-safe QF event queue operation for obtaining the minimum
 * number of free entries ever in the queue (a.k.a. "low-watermark").
-* @description
+* @details
 * This operation needs to be used with caution because the "low-watermark"
 * can change unexpectedly. The main intent for using this operation is to
 * get an idea of queue usage to size the queue adequately.
@@ -204,7 +203,7 @@ static inline QEQueueCtr QEQueue_getNMin(QEQueue * const me) {
 
 /*! "raw" thread-safe QF event queue operation to find out if the queue
 * is empty.
-* @description
+* @details
 * This operation needs to be used with caution because the queue status
 * can change unexpectedly. The main intent for using this operation is in
 * conjunction with event deferral. In this case the queue is accessed only

@@ -1,7 +1,6 @@
 /**
 * @file
 * @brief QF/C port example for QK, generic C compiler.
-* @ingroup qk
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.2

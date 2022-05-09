@@ -32,7 +32,6 @@
 *
 * @file
 * @brief Internal (package scope) QF/C interface.
-* @ingroup qf
 */
 #ifndef QF_PKG_H
 #define QF_PKG_H
@@ -44,7 +43,7 @@
     /*! This is an internal macro for defining the critical section
     * status type. */
     /**
-    * @description
+    * @details
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -56,9 +55,9 @@
 
     /*! This is an internal macro for entering a critical section. */
     /**
-    * @description
+    * @details
     * The purpose of this macro is to enable writing the same code for the
-    * case whe6n critical section status type is defined and when it is not.
+    * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
     * invokes QF_CRIT_ENTRY() passing the key variable as the parameter.
     * Otherwise QF_CRIT_ENTRY() is invoked with a dummy parameter.
@@ -68,7 +67,7 @@
 
     /*! This is an internal macro for exiting a critical section. */
     /**
-    * @description
+    * @details
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -86,7 +85,7 @@
 
 /*==========================================================================*/
 
-/* Assertions inside the crticial section */
+/* Assertions inside the critical section */
 #ifdef Q_NASSERT /* Q_NASSERT defined--assertion checking disabled */
 
     #define Q_ASSERT_CRIT_(id_, test_)  ((void)0)
@@ -150,14 +149,14 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e);
 */
 extern QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE];
 
-/* The following flags and bitmasks are for the fields of the @c refCtr_
-* attribute of the QTimeEvt struct (inherited from QEvt). This attribute
-* is NOT used for reference counting in time events, because the @c poolId_
-* attribute is zero ("static events").
+/* The following bitmasks are for the fields of the @c refCtr_ attribute
+* of the QTimeEvt struct (inherited from QEvt). This attribute is NOT used
+* for reference counting in time events, because the @c poolId_ attribute
+* is zero ("immutable events").
 */
-#define TE_IS_LINKED      (1U << 7U)
-#define TE_WAS_DISARMED   (1U << 6U)
-#define TE_TICK_RATE      0x0FU
+#define QTE_IS_LINKED      (1U << 7U)
+#define QTE_WAS_DISARMED   (1U << 6U)
+#define QTE_TICK_RATE      0x0FU
 
 extern QF_EPOOL_TYPE_ QF_pool_[QF_MAX_EPOOL]; /*!< allocate event pools */
 extern uint_fast8_t QF_maxPool_;     /*!< # of initialized event pools */
@@ -184,7 +183,7 @@ typedef struct QFreeBlock {
 #define QF_PTR_AT_(base_, i_)   ((base_)[(i_)])
 
 /**
-* @description
+* @details
 * This macro is specifically and exclusively used for checking the range
 * of a block pointer returned to the pool. Such a check must rely on the
 * pointer arithmetic not compliant with the MISRA-C 2012 Rule 18.3(R).

@@ -1,7 +1,6 @@
 /**
 * @file
 * @brief QS/C port to a 16-bit CPU and generic C compiler.
-* @ingroup qs
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.2

@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QActive_defer() and QActive_recall() implementation.
-* @ingroup qf
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -46,7 +45,7 @@ Q_DEFINE_THIS_MODULE("qf_defer")
 /*==========================================================================*/
 /*!
 * @protected @memberof QActive
-* @description
+* @details
 * This function is part of the event deferral support. An active object
 * uses this function to defer an event @p e to the QF-supported native
 * event queue @p eq. QF correctly accounts for another outstanding
@@ -89,7 +88,7 @@ bool QActive_defer(QActive const * const me, QEQueue * const eq,
 /*==========================================================================*/
 /*!
 * @protected @memberof QActive
-* @description
+* @details
 * This function is part of the event deferral support. An active object
 * uses this function to recall a deferred event from a given QF
 * event queue. Recalling an event means that it is removed from the
@@ -165,7 +164,7 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
 /*==========================================================================*/
 /*!
 * @protected @memberof QActive
-* @description
+* @details
 * This function is part of the event deferral support. An active object
 * can use this function to flush a given QF event queue. The function makes
 * sure that the events are not leaked.

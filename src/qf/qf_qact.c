@@ -29,14 +29,12 @@
 * @file
 * @brief QActive_ctor() definition
 *
-* @description
+* @details
 * This file must remain separate from the rest to avoid pulling in the
 * "virtual" functions QHsm_init_() and QHsm_dispatch_() in case they
 * are not used by the application.
 *
 * @sa qf_qmact.c
-*
-* @ingroup qf
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -47,7 +45,7 @@
 /*==========================================================================*/
 /*!
 * @protected @memberof QActive
-* @description
+* @details
 * Performs the first step of active object initialization by assigning
 * the virtual pointer and calling the superclass constructor.
 *

@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QEP/C port, generic IAR compiler
-* @ingroup qep
 */
 #ifndef QEP_PORT_H
 #define QEP_PORT_H

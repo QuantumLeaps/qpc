@@ -15,7 +15,7 @@ The YouTube Video <a class="extern" target="_blank" href="https://youtu.be/O7ER6
 /*##########################################################################*/
 /*! @page gs_get Downloading &amp; Installing QP&trade;/C
 @tableofcontents
-@nav{gs,gs_over}
+@nav{gs,gs_tut}
 
 @section gs_bundle Downloading QP&trade;/C in QP&trade;-Bundle
 The most recommended way of obtaining QP&trade;/C&trade; is by downloading the @webref{#Downloads, <b>QP-bundle&trade;</b>}, which includes QP&trade;/C as well as other QP&trade; frameworks and also the @webref{products/qm, QM&trade; modeling tool} and the @webref{products/qtools, QTools&trade; collection}. The main advantage of obtaining QP&trade;/C bundled together like that is that you get all components, tools and examples ready to go.
@@ -23,20 +23,17 @@ The most recommended way of obtaining QP&trade;/C&trade; is by downloading the @
 [![QP-bundle Downloads](qp-bundle.png)](https://www.state-machine.com/#Downloads)
 
 @note
-<a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP&trade;/C on GitHub"><img style="float:right; clear:right;" src="img/github-corner.png"></a>
+<a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP&trade;/C on GitHub"><img style="float:right; clear:right;" src="img/logo_github.png"></a>
 If you are allergic to installers and GUIs or don't have administrator privileges you can also **download and install QP&trade;/C separately** from the <a class="extern" target="_blank" href="https://github.com/QuantumLeaps/qpc"><b>QP&trade;/C GitHub repository</b></a>, as described in the next section.
 
 
 @section gs_gh Downloading QP&trade;/C from GitHub
 Go to the <a class="extern" href="https://github.com/QuantumLeaps/qpc/releases" target="_blank">QP&trade;/C <strong>release</strong> page on GitHub</a>, and choose the QP&trade;/C version number you wish to download. You should select the latest QP&trade;/C version, unless you have a very specific reason to go with an older release.
 
-Inside the release directory (e.g., `6.9.3`), you need to choose the QP&trade;/C archive for your platform. QM&trade; is available for Windows (`qpc_<ver>-win32.zip`), Linux (`qpc_<ver>-linux64.zip`), and MacOS (`qm_<ver>-macx64.dmg`).
-
 ![QP&trade;/C downloads from GitHub](qpc_gh.jpg)
 
 
 @section gs_dir QP&trade;/C Installation Folder
-
 The following annotated directory tree lists the top-level directories provided in the standard QP&trade;/C distribution.
 
 <ul class="tag">
@@ -56,96 +53,19 @@ The following annotated directory tree lists the top-level directories provided 
   </ul>
 </ul>
 
+@attention
+The QP/C GitHub repository does not contain the `3rd_party` folder, which is needed to build the @ref exa "QP&trade;/C Examples". Therefore, it is highly **recommended** to download the latest [QP/C Release](https://github.com/QuantumLeaps/qpc/releases) as opposed to cloning the repo directly.
+
 @remark
-The standard QP&trade;/C distribution contains many @ref exa "Example Projects", which are specifically designed to help you learn to use QP&trade;/C and to serve you as starting points for your own projects.
+The standard QP&trade;/C distribution contains the `examples` folder with many @ref exa "Example Projects", which are specifically designed to help you learn to use QP&trade;/C and to serve you as starting points for your own projects.
 
-<br>
-@nav{gs,gs_over}
-*/
-/*##########################################################################*/
-/*! @page gs_over QP&trade;/C Overview
-@nav{gs_get,gs_tut}
-@tableofcontents
-
-This section gives a quick, high-level overview of the QP&trade; framework and its context of use. The main purpose is to provide the links to the more detailed information available in this QP&trade;/C Manual.
-
-@section gs_struct General System Structure
-The block diagram below illustrates the general system architecture based on the QP&trade;/C framework:
-
-![General system architecture based on QP&trade;/C](qp_comp.jpg)
-
-
-@note
-The following sections describe the system structure from top to bottom because this is the order most relevant for the development of **QP&trade; Applications**.
-
-
-@section gs_app QP&trade; Application
-The **QP&trade; Application** consists of event-driven @webref{active-object, Active Objects}. The application is not a part of QP&trade;, but rather is *derived* from the QP&trade; framework that supplies the @ref api "API" for building the application as well as runtime environment to execute it on an embedded target.
-
-@sa
-- @ref srs_app "Application Requirements"
-- @ref exa "Application Examples"
-
-
-@section gs_qep QEP State Machine Processor
-The QEP component provides services related to event-driven **State Machines**. This is the most relevant QP&trade; layer for the application developers, because they spend most of their time elaborating the state machines of their Active Objects.
-
-@sa
-- @ref srs_evt "Event Requirements"
-- @ref srs_sm  "State Machine Overview &amp; Requirements"
-- @ref sas_sm  "State Machine Architecture"
-- @ref sds_sm  "State Machine Design &amp; Implementation"
-
-
-@section gs_qf QF Active Object Framework
-The QF component provides services related to **Active Objects** like: asynchronous event passing, queuing of events, publish-subscribe, time events, deterministic event pools for mutable events, etc. These services form the core of the QP&trade; framework, which provides the Run-To-Completion (RTC) execution context for the Active Objects and their internal state machines. The application developers often use the Active Object services in the *actions* executed by the state machines.
-
-@sa
-- @ref srs_ao  "Active Object Overview &amp; Requirements"
-- @ref sas_ao  "Active Object Architecture"
-- @ref sds_ao  "Active Object Design &amp; Implementation"
-
-
-@section gs_kernel Real-Time Kernels/RTOS/GPOS
-The QP&trade; framework can run standalone with one of the provided built-in kernels or it can run on top of a traditional, 3rd-party RTOS, or on top of a general-purpose OS.
-
-
-@subsubsection gs_kernel-builtin Built-in Real-Time Kernels
-The QP&trade; framework contains a selection of built-in real-time kernels, such as:
-- the cooperative QV kernel (see @ref srs_qv_intro "QV Kernel Theory of Operation"),
-- the preemptive non-blocking QK kernel (see @ref srs_qk_intro "QK Kernel Theory of Operation"), and
-- the preemptive, dual-mode, blocking QXK kernel (see @ref srs_qxk_intro "QXK Kernel Theory of Operation").
-
-
-@subsection gs_kernel-rtos 3rd-Party RTOS Kernels
-QP&trade; can also work with many 3rd-party RTOSes, such as:
-- @ref embos "embOS (SEGGER)"
-- @ref freertos "FreeRTOS (AWS)"
-- @ref threadx "ThreadX (Microsoft)"
-- @ref ucos-ii "uC/OS-II (Silicon Labs)"
-
-
-@subsection gs_kernel-gpos General-Purpose Operating Systems
-Finally, QP&trade; can also work with general-purpose operating systems, such as:
-- @ref posix "POSIX (Linux, QNX, VxWorks, Integrity, etc.)"
-- @ref win32 "Windows".
-
-
-@section gs_qs QS Software Tracing
-The QS component provides special instrumentation inside QP that can produce detailed information from the execution of the QP Application. This information, produced in live system can be valuable for debugging, fine-tuning and testing of the QP Applications.
-
-@sa
-- @ref srs_qs "Software Tracing Overview &amp; Requirements"
-- @ref sas_qs "Software Tracing Architecture"
-- @ref sds_qs "Software Tracing Design &amp; Implementation"
-
-<br>
-@nav{gs_get,gs_tut}
+<div style="clear:both;"></div>
+@nav{gs,gs_tut}
 */
 /*##########################################################################*/
 /*! @page gs_tut QP&trade;/C Tutorial
 @tableofcontents
-@nav{gs_over,tut_blinky}
+@nav{gs_get,tut_blinky}
 
 This Tutorial describes how to use the QP/C&trade; real-time embedded framework in a series of progressively advancing examples. The first example ("Blinky") uses only one Active Object with a simple non-hierarchical state machine. The following example ("DPP") demonstrates multiple, communicating Active Objects. Finally, the last example ("Fly'n'Shoot" game) demonstrates all features the QP&trade; framework. It is highly recommended to study the simpler examples before the more advanced ones, as the basic information won't be repeated in the later examples.
 
@@ -170,7 +90,7 @@ By copying and re-naming an existing, working project, as opposed to creating a 
 from scratch, you inherit the correct compiler and linker options an other project settings, which will help you get started much faster.
 
 <br>
-@nav{gs_over,tut_blinky}
+@nav{gs_get,tut_blinky}
 */
 /*##########################################################################*/
 /*! @page tut_blinky Simple Blinky Application
@@ -198,6 +118,7 @@ The details of the Blinky application are describe in the Quantum Leaps Applicat
 
 [![Application Note: Getting Started with QP&trade;](AN-getting_started.jpg)](https://www.state-machine.com/doc/AN_Getting_Started_with_QP.pdf)
 
+<div style="clear:both;"></div>
 @nav{gs_tut,tut_dpp}
 */
 /*##########################################################################*/
@@ -224,11 +145,10 @@ The Dining Philosophers Problem (DPP) example is described in the @webref{doc/AN
 
 [![Application Note: Dining Philosophers Problem (DPP) Example](AN_DPP.jpg)](https://www.state-machine.com/doc/AN_Fly-n-Shoot.pdf)
 
-
 @note
 There is also a DPP variant that implements the "Philosophers" as passive "Orthogonal Components" of the "Table" active object. That DPP version is located in <span class="img folder">qpc/examples/examples/workstation/dpp-comp/</span>
 
-<br>
+<div style="clear:both;"></div>
 @nav{tut_blinky,tut_game}
 */
 /*##########################################################################*/
@@ -259,15 +179,15 @@ The "Fly 'n' Shoot" game example is described in the @webref{doc/AN_Fly-n-Shoot.
 
 [!["Fly'n'Shoot" game tutorial video](game-video.jpg)](https://youtu.be/h_u92uLssDo)
 
-<br>
+<div style="clear:both;"></div>
 @nav{tut_dpp,tut_low}
 */
 /*##########################################################################*/
 /*! @page tut_low Low-Power Example
 @tableofcontents
-@nav{tut_game,srs}
+@nav{tut_game,exa}
 
-The main principle of low-power design for software is to keep the hardware in the most appropriate low-power sleep mode for as long as possible. Most commonly, the software enters a low-power sleep mode from the **idle callback** (a.k.a. "idle hook"), which is called when the software has nothing left to do and is waiting for an interrupt to deliver more work. The QP/C and QP/C++ Real-Time Embedded Frameworks (RTEFs) support the *idle callback* in all of the built-in real-time kernels, such as the cooperative @ref qv "QV kernel", the preemptive non-blocking @ref qk "QK kernel" and the preemptive blocking @ref qxk "QXK kernel". Also, such an *idle callback* is provided in all 3rd-party traditional RTOS kernels that QP/C/C++ have been @ref ports_rtos "ported to".
+The main principle of low-power design for software is to keep the hardware in the most appropriate low-power sleep mode for as long as possible. Most commonly, the software enters a low-power sleep mode from the **idle callback** (a.k.a. "idle hook"), which is called when the software has nothing left to do and is waiting for an interrupt to deliver more work. The QP/C and QP/C++ Real-Time Embedded Frameworks (RTEFs) support the *idle callback* in all of the built-in real-time kernels, such as the cooperative @ref srs_qv "QV kernel", the preemptive non-blocking @ref srs_qk "QK kernel" and the preemptive blocking @ref srs_qxk "QXK kernel". Also, such an *idle callback* is provided in all 3rd-party traditional RTOS kernels that QP/C/C++ have been @ref ports_rtos "ported to".
 
 @remark
 Design for low-power is a broad subject that requires a holistic system approach to achieve a really long battery-powered operation. This example covers only certain *software-related* aspects of the problem.
@@ -297,7 +217,6 @@ For the reasons just mentioned, the QP&trade; Real-Time Embedded Frameworks don'
 The support for multiple static clock tick rates is much *simpler* than the "dynamic tick", and essentially does not increase the complexity of the kernel (because the same code for the single tick rate can handle other tick rates the same way). Also, multiple static tick rates require much simpler hardware timers, which can be clocked specifically to the desired frequency and don't need particularly wide dynamic range. For example, 16-bit timers or even 8-bit timers are completely adequate.
 
 Yet the *multiple clock rates* can deliver similar low-power operation for the system, while keeping the QP framework much simpler and easier to certify than "tickless" kernels. The rest of this example explains how to use the multiple static clock rates in QP/C/C++ and shows how to leverage this feature to achieve low-power software design.
-
 
 
 @section arm-cm_low_power_app The Low-Power Example Application
@@ -398,7 +317,6 @@ The **Idle** callback turns the **slow tick rate-0** off. The system enters the 
 The **Idle** line (Red-LED) goes down twice as fast as the changes in the state of the **Green-LED** or the **Blue-LED**. This is because the application uses timeouts of **2 clock ticks** for toggling these lines instead of just one clock tick, which then could be slower. This is not quite optimal for the energy dissipation (as the CPU is woken up twice as often as it needs to be), but it illustrates more accurately how the fixed clock rates work as well as the one-tick delay to enter the low-power sleep mode from the idle callback.
 
 
-
 @subsection arm-cm_low_power_sm State Machines
 The versions of this low-power example for the **QK** and **QV** kernels use two active objects **Blinky0** and **Blinky1**, which toggle the **Green-LED** at the slow tick rate 0, and the **Blue-LED** at the fast tick rate 1, respectively. The state machines of the Blinky0 and Blinky1 active objects are shown below:
 
@@ -415,11 +333,10 @@ Similarly, the **Blinky1** state machine, in the entry action to the "active" st
 <div style="clear:both;"></div>
 
 
-
 @subsection arm-cm_low_power_xt Extended Thread (QXK)
 The version of this low-power example for the **QXK** kernel uses one active object **Blinky0** (with the state machine shown above), but instead of the Blinky1 active object, the QXK version uses an eXtended thread (::QXThread) called **XBlinky1**, with the code shown below:
 
-@code{c}
+@code{.c}
     #include "qpc.h"
     #include "low_power.h"
     #include "bsp.h"
@@ -475,7 +392,7 @@ The version of this low-power example for the **QXK** kernel uses one active obj
 @subsection arm-cm_low_power_idle The Idle Callback (QK/QXK)
 The most important functionality in this low-power example is implemented in the **idle callback** located in the BSP (Board Support Package). The idle callback QK_onIdle() for the preemptive QK kernel and the idle callback QXK_onIdle() for the QXK kernel are almost identical and are explained in this section.
 
-@code{c}
+@code{.c}
 [0] void QXK_onIdle(void) {
 
 [1]     QF_INT_DISABLE();
@@ -541,7 +458,7 @@ The most important functionality in this low-power example is implemented in the
 @subsection arm-cm_low_power_idle-qv The Idle Callback (QV)
 The idle callback QV_onIdle() for the cooperative QV kernel is slightly different, because it is called with interrupts **disabled**. The following listing shows the complete QV_onIdle() callback, with the most important points explained in the section below:
 
-@code{c}
+@code{.c}
 [0] void QV_onIdle(void) { /* NOTE: called with interrupts DISABLED */
 
 [1]     if (((l_activeSet & (1U << SYSTICK_ACTIVE)) != 0U) /* rate-0 enabled? */
@@ -579,7 +496,7 @@ The idle callback QV_onIdle() for the cooperative QV kernel is slightly differen
   <dt>3</dt><dd> The QV_CPU_SLEEP() macro enters **low-power sleep mode** with interrupts still disabled. This port-specific macro is designed to re-anable interrupts **atomically** with entering the sleep mode.
   </dd>
 </dl>
-<div style="clear:both;"></div>
 
-@nav{tut_game,srs}
+<div style="clear:both;"></div>
+@nav{tut_game,exa}
 */

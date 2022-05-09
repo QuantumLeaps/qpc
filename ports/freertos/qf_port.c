@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QF/C port to FreeRTOS 10.x
-* @ingroup ports
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -357,7 +356,7 @@ void QF_tickXFromISR_(uint_fast8_t const tickRate,
         if (t->ctr == 0U) {
             prev->next = t->next;
             /* mark time event 't' as NOT linked */
-            t->super.refCtr_ &= (uint8_t)(~TE_IS_LINKED);
+            t->super.refCtr_ &= (uint8_t)(~QTE_IS_LINKED);
             /* do NOT advance the prev pointer */
             /* exit crit. section to reduce latency */
             taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptState);
@@ -378,7 +377,7 @@ void QF_tickXFromISR_(uint_fast8_t const tickRate,
                 else {
                     prev->next = t->next;
                     /* mark time event 't' as NOT linked */
-                    t->super.refCtr_ &= (uint8_t)(~TE_IS_LINKED);
+                    t->super.refCtr_ &= (uint8_t)(~QTE_IS_LINKED);
                     /* do NOT advance the prev pointer */
 
                     QS_BEGIN_NOCRIT_PRE_(QS_QF_TIMEEVT_AUTO_DISARM, act->prio)

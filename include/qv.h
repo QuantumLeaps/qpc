@@ -29,7 +29,6 @@
 * @file
 * @brief QV/C (cooperative "Vanilla" kernel) platform-independent
 * public interface
-* @ingroup qv
 */
 #ifndef QV_H
 #define QV_H
@@ -42,7 +41,7 @@
 #define QF_EQUEUE_TYPE      QEQueue
 
 /*! QV idle callback (customized in BSPs)
-* @description
+* @details
 * QV_onIdle() is called by the cooperative QV kernel (from QF_run()) when
 * the scheduler detects that no events are available for active objects
 * (the idle condition). This callback gives the application an opportunity

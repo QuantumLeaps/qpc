@@ -32,8 +32,6 @@
 * @note
 * this source file is only included in the application build when the native
 * QF active object queue is used (instead of a message queue of an RTOS).
-*
-* @ingroup qf
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -52,7 +50,7 @@ Q_DEFINE_THIS_MODULE("qf_actq")
 #ifdef Q_SPY
 /*!
 * @private @memberof QActive
-* @description
+* @details
 * Direct event posting is the simplest asynchronous communication method
 * available in QF.
 *
@@ -204,7 +202,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 /*==========================================================================*/
 /*!
 * @private @memberof QActive
-* @description
+* @details
 * posts an event to the event queue of the active object @p me using the
 * Last-In-First-Out (LIFO) policy.
 *
@@ -289,7 +287,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 /*==========================================================================*/
 /*!
 * @private @memberof QActive
-* @description
+* @details
 * The behavior of this function depends on the kernel/OS used in the QF port.
 * For built-in kernels (QV or QK) the function can be called only when
 * the queue is not empty, so it doesn't block. For a blocking kernel/OS
@@ -358,7 +356,7 @@ QEvt const *QActive_get_(QActive * const me) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QF
-* @description
+* @details
 * Queries the minimum of free ever present in the given event queue of
 * an active object with priority @p prio, since the active object
 * was started.
@@ -408,7 +406,7 @@ static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
 
 /*! Perform downcast to QTicker pointer. */
 /*!
-* @description
+* @details
 * This macro encapsulates the downcast to (QTicker *), which is used in
 * QTicker_init_() and QTicker_dispatch_(). Such casts violate MISRA-C 2012
 * Rule 11.3(req) "cast from pointer to object type to pointer to different

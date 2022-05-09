@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QF/C platform-independent public interface.
-* @ingroup qf
 */
 #ifndef QF_H
 #define QF_H
@@ -84,7 +83,7 @@ struct QEQueue; /* forward declaration */
 /*==========================================================================*/
 /*! Active Object base class (based on ::QHsm implementation)
 * @extends QHsm
-* @description
+* @details
 * Active objects in QP are encapsulated state machines (each embedding an
 * event queue and a thread) that communicate with one another asynchronously
 * by sending and receiving events. Within an active object, events are
@@ -97,6 +96,8 @@ struct QEQueue; /* forward declaration */
 * The resulting code is slower than in the ::QMsm style implementation
 * strategy.
 *
+* @tr{AQP212}
+*
 * @usage
 * The following example illustrates how to derive an active object from
 * ::QActive. Please note that the ::QActive member @c super is defined as the
@@ -108,7 +109,7 @@ typedef struct QActive {
 
 #ifdef QF_EQUEUE_TYPE
     /*! @private OS-dependent event-queue type.
-    * @description
+    * @details
     * The type of the queue depends on the underlying operating system or
     * a kernel. Many kernels support "message queues" that can be adapted
     * to deliver QF events to the active object. Alternatively, QF provides
@@ -123,7 +124,7 @@ typedef struct QActive {
 
 #ifdef QF_OS_OBJECT_TYPE
     /*! @private OS-dependent per-thread object.
-    * @description
+    * @details
     * This data might be used in various ways, depending on the QF port.
     * In some ports osObject is used to block the calling thread when
     * the native QF queue is empty. In other QF ports the OS-dependent
@@ -134,7 +135,7 @@ typedef struct QActive {
 
 #ifdef QF_THREAD_TYPE
     /*! @private OS-dependent representation of the thread of the AO.
-    * @description
+    * @details
     * This data might be used in various ways, depending on the QF port.
     * In some ports thread is used to store the thread handle. In other
     * ports thread can be the pointer to the Thread-Local-Storage (TLS).
@@ -186,7 +187,7 @@ typedef struct {
 
 /* QActive public operations... */
 /*! Polymorphically start an active object.
-* @description
+* @details
 * Starts execution of the AO and registers the AO with the framework.
 *
 * @param[in,out] me_      pointer (see @ref oop)
@@ -212,7 +213,7 @@ typedef struct {
 #ifdef Q_SPY
     /*! Polymorphically posts an event to an active object (FIFO)
     * with delivery guarantee.
-    * @description
+    * @details
     * This macro asserts if the queue overflows and cannot accept the event.
     *
     * @param[in,out] me_   pointer (see @ref oop)
@@ -240,7 +241,7 @@ typedef struct {
 
     /*! Polymorphically posts an event to an active object (FIFO)
     * without delivery guarantee.
-    * @description
+    * @details
     * This macro does not assert if the queue overflows and cannot accept
     * the event with the specified margin of free slots remaining.
     *
@@ -352,12 +353,10 @@ uint_fast16_t QActive_flushDeferred(QActive const * const me,
 */
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2);
 
-
 /*==========================================================================*/
-
 /*! QMActive active object base class (based on ::QMsm implementation)
-* @extends QActvie
-* @description
+* @extends QActive
+* @details
 * QMActive represents an active object that uses the ::QMsm style state
 * machine implementation strategy. This strategy requires the use of the
 * QM modeling tool to generate state machine code automatically, but the
@@ -368,7 +367,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2);
 * ::QMActive is not intended to be instantiated directly, but rather serves
 * as the base class for derivation of active objects in the application.
 *
-* @sa ::QActive
+* @tr{AQP214}
 *
 * @usage
 * The following example illustrates how to derive an active object from
@@ -393,16 +392,14 @@ typedef QActiveVtable QMActiveVtable;
 */
 void QMActive_ctor(QMActive * const me, QStateHandler initial);
 
-
 /*==========================================================================*/
-
 #if (QF_TIMEEVT_CTR_SIZE == 1U)
     typedef uint8_t QTimeEvtCtr;
 #elif (QF_TIMEEVT_CTR_SIZE == 2U)
 
     /*! type of the Time Event counter, which determines the dynamic
     * range of the time delays measured in clock ticks.
-    * @description
+    * @details
     * This typedef is configurable via the preprocessor switch
     * #QF_TIMEEVT_CTR_SIZE. The other possible values of this type are
     * as follows: @n
@@ -418,7 +415,7 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial);
 
 /*! Time Event class
 * @extends QEvt
-* @description
+* @details
 * Time events are special QF events equipped with the notion of time passage.
 * The basic usage model of the time events is as follows. An active object
 * allocates one or more ::QTimeEvt objects (provides the storage for them).
@@ -443,6 +440,8 @@ void QMActive_ctor(QMActive * const me, QStateHandler initial);
 *
 * @sa ::QTimeEvt for the description of the data members @n @ref oop
 *
+* @tr{AQP215}
+*
 * @note
 * QF manages the time events in the QF_TICK_X() macro, which must be called
 * periodically, from the clock tick ISR or from other periodic source.
@@ -464,7 +463,7 @@ typedef struct QTimeEvt {
     void * volatile act;
 
     /*! @private internal down-counter of the time event.
-    * @description
+    * @details
     * The down-counter is decremented by 1 in every QF_tickX_() invocation.
     * The time event fires (gets posted or published) when the down-counter
     * reaches zero.
@@ -473,7 +472,7 @@ typedef struct QTimeEvt {
 
     /*! @private interval for periodic time event
     * (zero for one-shot time event)
-    * @description
+    * @details
     * The value of the interval is re-loaded to the internal down-counter
     * when the time event expires, so that the time event keeps timing out
     * periodically.
@@ -515,11 +514,10 @@ bool QTimeEvt_wasDisarmed(QTimeEvt * const me);
 */
 QTimeEvtCtr QTimeEvt_currCtr(QTimeEvt const * const me);
 
-
 /*==========================================================================*/
 /* QF services. */
 /*!
-* @description
+* @details
 * This class groups together QF services. It has only static members and
 * should not be instantiated.
 */
@@ -528,7 +526,7 @@ typedef struct {
 } QF;
 
 /*! Subscriber-List structure
-* @description
+* @details
 * This data type represents a set of active objects that subscribe to
 * a given signal. The set is represented as a priority-set, where each
 * bit corresponds to the unique priority of an active object.
@@ -572,7 +570,7 @@ int_t QF_run(void);
 void QF_stop(void);
 
 /*! Startup QF callback.
-* @description
+* @details
 * The timeline for calling QF_onStartup() depends on the particular
 * QF port. In most cases, QF_onStartup() is called from QF_run(), right
 * before starting any multitasking kernel or the background loop.
@@ -581,7 +579,7 @@ void QF_stop(void);
 void QF_onStartup(void);
 
 /*! Cleanup QF callback.
-* @description
+* @details
 * QF_onCleanup() is called in some QF ports before QF returns to the
 * underlying operating system or RTOS.
 *
@@ -605,7 +603,7 @@ void QF_onCleanup(void);
                      void const * const sender, uint_fast8_t const qs_id);
 
     /*! Invoke the event publishing facility.
-    * @description
+    * @details
     * This macro is the recommended way of publishing events, because it
     * provides the vital information for software tracing and avoids any
     * overhead when the tracing is disabled.
@@ -643,7 +641,7 @@ void QF_onCleanup(void);
     void QF_tickX_(uint_fast8_t const tickRate, void const * const sender);
 
     /*! Invoke the system clock tick processing QF_tickX_().
-    * @description
+    * @details
     * This macro processes all armed ::QTimeEvt objects associated with
     * the tick rate @p tickRate_ .
     *
@@ -752,7 +750,7 @@ void QF_deleteRef_(void const * const evtRef);
 #else
 
     /*! Allocate a dynamic event.
-    * @description
+    * @details
     * The macro calls the internal QF function QF_newX_() with
     * margin == #QF_NO_MARGIN, which causes an assertion when the event
     * cannot be successfully allocated.
@@ -777,7 +775,7 @@ void QF_deleteRef_(void const * const evtRef);
                            QF_NO_MARGIN, (enum_t)(sig_)))
 
     /*! Allocate a dynamic event (non-asserting version).
-    * @description
+    * @details
     * This macro allocates a new event and sets the pointer @p e_, while
     * leaving at least @p margin_ of events still available in the pool
     *
@@ -809,7 +807,7 @@ void QF_deleteRef_(void const * const evtRef);
 #endif /* Q_EVT_CTOR */
 
 /*! Create a new reference of the current event `e`
-* @description
+* @details
 * The current event processed by an active object is available only for
 * the duration of the run-to-completion (RTC) step. After that step, the
 * current event is no longer available and the framework might recycle
@@ -831,7 +829,7 @@ void QF_deleteRef_(void const * const evtRef);
     ((evtRef_) = (evtT_ const *)QF_newRef_(e, (evtRef_)))
 
 /*! Delete the event reference
-* @description
+* @details
 * Every event reference created with the macro Q_NEW_REF() needs to be
 * eventually deleted by means of the macro Q_DELETE_REF() to avoid leaking
 * the event.
@@ -861,7 +859,7 @@ void QF_bzero(void * const start, uint_fast16_t len);
 
 #ifndef QF_CRIT_EXIT_NOP
     /*! No-operation for exiting a critical section
-    * @description
+    * @details
     * In some QF ports the critical section exit takes effect only on the
     * next machine instruction. If this next instruction is another entry
     * to a critical section, the critical section won't be really exited,
@@ -881,7 +879,7 @@ extern QActive *QF_active_[QF_MAX_ACTIVE + 1U];
 /*==========================================================================*/
 /*! "Ticker" Active Object class
 * @extends QActive
-* @description
+* @details
 * QTicker is an efficient active object specialized to process
 * QF system clock tick at a specified tick rate [0..#QF_MAX_TICK_RATE].
 * Placing system clock tick processing in an active object allows you

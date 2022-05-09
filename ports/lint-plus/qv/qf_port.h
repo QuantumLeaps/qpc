@@ -1,7 +1,6 @@
 /**
 * @file
 * @brief QF/C port example for QV, generic C compiler.
-* @ingroup qv
 * @cond
 ******************************************************************************
 * Last updated for version 6.8.2

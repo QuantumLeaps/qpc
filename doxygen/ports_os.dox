@@ -49,7 +49,7 @@ The standard QP/C distribution contains the POSIX port and @ref exa_os.
 /*##########################################################################*/
 /*! @page win32-qv Win32-QV (Windows with QV)
 
-<p>The QP/C/C++ ports and examples for Windows with single-thread (like the @ref qv "QV cooperative kernel") are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_QP_and_Win32.pdf"><strong>QP and Win32 (Windows)</strong></a>.
+<p>The QP/C/C++ ports and examples for Windows with single-thread (like the @ref srs_qv "QV cooperative kernel") are described in the Quantum Leaps Application Note <a class="extern" target="_blank" href="https://www.state-machine.com/doc/AN_QP_and_Win32.pdf"><strong>QP and Win32 (Windows)</strong></a>.
 </p>
 
 @htmlonly

@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QF/C dynamic event management
-* @ingroup qf
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -53,7 +52,7 @@ uint_fast8_t QF_maxPool_; /* number of initialized event pools */
 
 /*!
 * @public @memberof QEvt
-* @description
+* @details
 * Constructor for the ::QEvt class provided when the switch #Q_EVT_CTOR
 * is defined.
 *
@@ -73,7 +72,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig) {
 /*==========================================================================*/
 /*!
 * @static @public @memberof QF
-* @description
+* @details
 * This function initializes one event pool at a time and must be called
 * exactly once for each event pool before the pool can be used.
 *
@@ -133,7 +132,7 @@ void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
 /*==========================================================================*/
 /*!
 * @static @private @memberof QF
-* @description
+* @details
 * Allocates an event dynamically from one of the QF event pools.
 *
 * @param[in] evtSize the size (in bytes) of the event to allocate
@@ -217,7 +216,7 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
 /*==========================================================================*/
 /*!
 * @static @public @memberof QF
-* @description
+* @details
 * This function implements a simple garbage collector for the dynamic events.
 * Only dynamic events are candidates for recycling. (A dynamic event is one
 * that is allocated from an event pool, which is determined as non-zero
@@ -290,7 +289,7 @@ void QF_gc(QEvt const * const e) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QF
-* @description
+* @details
 * Creates and returns a new reference to the current event e
 *
 * @param[in] e       pointer to the current event
@@ -331,7 +330,7 @@ QEvt const *QF_newRef_(QEvt const * const e, void const * const evtRef) {
 /*==========================================================================*/
 /*!
 * @static @private @memberof QF
-* @description
+* @details
 * Deletes an existing reference to the event e
 *
 * @param[in] evtRef  the event reference
@@ -357,7 +356,7 @@ void QF_deleteRef_(void const * const evtRef) {
 /*==========================================================================*/
 /*!
 * @static @public @memberof QF
-* @description
+* @details
 * Obtain the block size of any registered event pools
 */
 uint_fast16_t QF_poolGetMaxBlockSize(void) {

@@ -1,7 +1,6 @@
 /**
 * @file
 * @brief QF/C port to embOS
-* @ingroup ports
 * @cond
 ******************************************************************************
 * Last updated for version 6.9.3
