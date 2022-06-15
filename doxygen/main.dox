@@ -35,10 +35,12 @@ The QP&trade;/C Real-Time Embedded Framework (RTEF) is a unique offering on the 
 
 
 @subsection over_oop Object Orientation
-Even though it is written in @ref misra "MISRA-compliant" ISO-C99, QP&trade;/C is fundamentally an **object-oriented** framework, which means that the framework itself and your applications derived from the framework are fundamentally composed of <a href="https://en.wikipedia.org/wiki/Class_(computer_programming)" target="_blank" class="extern">classes</a> and only classes can have @ref srs_sm "state machines" associated with them.
+Even though it is written in @ref misra "MISRA-compliant" ISO-C99, QP&trade;/C is fundamentally an **object-oriented** framework, which means that the framework itself and your applications derived from the framework are fundamentally composed of @ref sas_core "classes" and only classes can have @ref srs_sm "state machines" associated with them.
 
+@anchor oop
 @note
 If you program in C and object-oriented programming is new to you, please refer to the article and set of videos @webref{oop, "Object-Oriented Programming"}, which among others describes how you can implement the concepts of *classes*, *inheritance*, and *polymorphism* to portable ISO-C.
+@webref{oop, ![Object-Oriented Programming in C](an-oop_in_c.jpg)}
 
 
 @subsection over_hsms Hierarchical State Machines

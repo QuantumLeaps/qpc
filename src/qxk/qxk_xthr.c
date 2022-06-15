@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QXK preemptive kernel extended (blocking) thread functions
@@ -47,9 +47,9 @@
 
 Q_DEFINE_THIS_MODULE("qxk_xthr")
 
-/*! intertnal macro to encapsulate casting of pointers for MISRA deviations */
+/*! internal macro to encapsulate casting of pointers for MISRA deviations */
 /*!
-* @details
+* @description
 * This macro is specifically and exclusively used for downcasting pointers
 * to QActive to pointers to QXThread in situations when it is known
 * that such downcasting is correct.However, such pointer casting is not
@@ -79,28 +79,7 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par);
 
-/*==========================================================================*/
-/*!
-* @details
-* Performs the first step of QXThread initialization by assigning the
-* thread-handler function and the tick rate at which it will handle
-* the timeouts.
-*
-* @param[in,out] me       pointer (see @ref oop)
-* @param[in]     handler  the thread-handler function
-* @param[in]     tickRate the ticking rate for timeouts in this thread
-*                (see QXThread_delay() and QF_TICK_X())
-*
-* @note
-* Must be called only ONCE before QXTHREAD_START().
-*
-* @usage
-* The following example illustrates how to invoke QXThread_ctor() in the
-* main() function
-*
-* @include
-* qxk_thread_ctor.c
-*/
+/*..........................................................................*/
 void QXThread_ctor(QXThread * const me,
                    QXThreadHandler handler, uint_fast8_t tickRate)
 {
@@ -160,9 +139,11 @@ static void QXThread_dispatch_(QHsm * const me, QEvt const * const e,
     Q_ERROR_ID(120);
 }
 
-/*==========================================================================*/
-/*!
-* @details
+/*..........................................................................*/
+/*! start QXThread private implementation
+* @private @memberof QXThread
+*
+* @description
 * Starts execution of an extended thread and registers it with the framework.
 * The extended thread becomes ready-to-run immediately and is scheduled
 * if the QXK is already running.
@@ -233,10 +214,12 @@ static void QXThread_start_(QActive * const me, uint_fast8_t prio,
     QF_CRIT_X_();
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 #ifdef Q_SPY
-/*!
-* @details
+/*! post to the QXThread event queue private implementation
+* @private @memberof QXThread
+*
+* @description
 * Direct event posting is the simplest asynchronous communication method
 * available in QF. The following example illustrates how the Philo active
 * object posts directly the HUNGRY event to the Table active object.@n
@@ -408,9 +391,11 @@ static bool QXThread_post_(QActive * const me, QEvt const * const e,
     return status;
 }
 
-/*==========================================================================*/
-/*!
-* @details
+/*..........................................................................*/
+/*! post to the QXThread event queue (LIFO) private implementation
+* @private @memberof QXThread
+*
+* @description
 * Last-In-First-Out (LIFO) policy is not supported for extened threads.
 *
 * @param[in] me pointer (see @ref oop)
@@ -425,26 +410,7 @@ static void QXThread_postLIFO_(QActive * const me, QEvt const * const e) {
     Q_ERROR_ID(410);
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* The QXThread_queueGet() operation allows the calling extended thread to
-* receive QP events directly into its own built-in event queue from an ISR,
-* basic thread (AO), or another extended thread.
-*
-* If QXThread_queueGet() is called when no events are present in the
-* thread's private event queue, the operation blocks the current extended
-* thread until either an event is received, or a user-specified timeout
-* expires.
-*
-* @param[in]  nTicks    number of clock ticks (at the associated rate)
-*                       to wait for the event to arrive. The value of
-*                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
-*                       occur and the queue will block indefinitely.
-* @returns
-* A pointer to the event. If the pointer is not NULL, the event was delivered.
-* Otherwise the event pointer of NULL indicates that the queue has timed out.
-*/
+/*..........................................................................*/
 QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
     QF_CRIT_STAT_
     QF_CRIT_E_();
@@ -530,10 +496,12 @@ QEvt const *QXThread_queueGet(uint_fast16_t const nTicks) {
     return e;
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* Intenral implementation of blocking the given extended thread.
+/*..........................................................................*/
+/*! block QXThread private implementation
+* @private @memberof QXThread
+*
+* @description
+* Internal implementation of blocking the given extended thread.
 *
 * @note
 * Must be called from within a critical section
@@ -546,10 +514,12 @@ void QXThread_block_(QXThread const * const me) {
     (void)QXK_sched_();
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* Intenral implementation of un-blocking the given extended thread.
+/*..........................................................................*/
+/*! unblock QXThread private implementation
+* @private @memberof QXThread
+*
+* @description
+* Internal implementation of un-blocking the given extended thread.
 *
 * @note
 * must be called from within a critical section
@@ -563,10 +533,12 @@ void QXThread_unblock_(QXThread const * const me) {
     }
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* Intenral implementation of arming the private time event for a given
+/*..........................................................................*/
+/*! arm internal time event private implementation
+* @private @memberof QXThread
+*
+* @description
+* Internal implementation of arming the private time event for a given
 * timeout at a given system tick rate.
 *
 * @note
@@ -610,10 +582,12 @@ void QXThread_teArm_(QXThread * const me, QSignal sig,
     }
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* Intenral implementation of disarming the private time event.
+/*..........................................................................*/
+/*! disarm internal time event private implementation
+* @private @memberof QXThread
+*
+* @description
+* Internal implementation of disarming the private time event.
 *
 * @note
 * Must be called from within a critical section
@@ -632,20 +606,7 @@ bool QXThread_teDisarm_(QXThread * const me) {
     return wasArmed;
 }
 
-/*==========================================================================*/
-/*! delay (timed blocking of) the current thread (static, no me-ptr)
-* @details
-* Blocking delay for the number of clock tick at the associated tick rate.
-*
-* @param[in]  nTicks    number of clock ticks (at the associated rate)
-*                       to wait for the event to arrive.
-* @note
-* For the delay to work, the QF_TICK_X() macro needs to be called
-* periodicially at the associated clock tick rate.
-*
-* @sa QXThread_ctor()
-* @sa QF_TICK_X()
-*/
+/*..........................................................................*/
 bool QXThread_delay(uint_fast16_t const nTicks) {
     QF_CRIT_STAT_
     QF_CRIT_E_();
@@ -685,16 +646,7 @@ bool QXThread_delay(uint_fast16_t const nTicks) {
     return thr->timeEvt.super.sig == 0U;
 }
 
-/*==========================================================================*/
-/*! cancel the delay
-* @details
-* Cancel the blocking delay and cause return from the QXThread_delay()
-* function.
-*
-* @returns
-* "true" if the thread was actually blocked on QXThread_delay() and
-* "false" otherwise.
-*/
+/*..........................................................................*/
 bool QXThread_delayCancel(QXThread * const me) {
     QF_CRIT_STAT_
     QF_CRIT_E_();
@@ -712,9 +664,11 @@ bool QXThread_delayCancel(QXThread * const me) {
     return wasArmed;
 }
 
-/*==========================================================================*/
-/*!
-* @details
+/*..........................................................................*/
+/*! return from QXThread function private implementation
+* @private @memberof QXThread
+*
+* @description
 * Called when the extended-thread handler function returns.
 *
 * @note

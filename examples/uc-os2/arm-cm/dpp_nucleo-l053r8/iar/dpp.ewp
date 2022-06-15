@@ -337,7 +337,6 @@
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\uc-os2</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uC-OS2\Source</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv6-M\IAR</state>
@@ -1392,7 +1391,6 @@
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\uc-os2</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uC-OS2\Source</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv6-M\IAR</state>
@@ -2447,7 +2445,6 @@
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\uc-os2</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uC-OS2\Source</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv6-M\IAR</state>

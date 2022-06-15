@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief ::QActive native queue operations (based on ::QEQueue)
@@ -48,38 +48,6 @@ Q_DEFINE_THIS_MODULE("qf_actq")
 
 /*==========================================================================*/
 #ifdef Q_SPY
-/*!
-* @private @memberof QActive
-* @details
-* Direct event posting is the simplest asynchronous communication method
-* available in QF.
-*
-* @param[in,out] me     pointer (see @ref oop)
-* @param[in]     e      pointer to the event to be posted
-* @param[in]     margin number of required free slots in the queue after
-*                       posting the event. The special value #QF_NO_MARGIN
-*                       means that this function will assert if posting fails.
-* @param[in]     sender pointer to a sender object (used only for QS tracing)
-*
-* @returns
-* 'true' (success) if the posting succeeded (with the provided margin) and
-* 'false' (failure) when the posting fails.
-*
-* @note
-* The #QF_NO_MARGIN value of the @p margin parameter is special and denotes
-* situation when the post() operation is assumed to succeed (event delivery
-* guarantee). An assertion fires, when the event cannot be delivered in this
-* case.
-*
-* @attention
-* This function should be called only via the macro QACTIVE_POST()
-* or QACTIVE_POST_X().
-*
-* @usage
-* @include qf_post.c
-*
-* @sa QActive_post_(), QActive_postLIFO()
-*/
 bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
 #else
@@ -200,24 +168,6 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 }
 
 /*==========================================================================*/
-/*!
-* @private @memberof QActive
-* @details
-* posts an event to the event queue of the active object @p me using the
-* Last-In-First-Out (LIFO) policy.
-*
-* @note
-* The LIFO policy should be used only for self-posting and with caution,
-* because it alters order of events in the queue.
-*
-* @param[in] me pointer (see @ref oop)
-* @param[in] e  pointer to the event to post to the queue
-*
-* @attention
-* This function should be called only via the macro QACTIVE_POST_LIFO().
-*
-* @sa QActive_post_(), QACTIVE_POST(), QACTIVE_POST_X()
-*/
 void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 
     QF_CRIT_STAT_
@@ -285,28 +235,6 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 }
 
 /*==========================================================================*/
-/*!
-* @private @memberof QActive
-* @details
-* The behavior of this function depends on the kernel/OS used in the QF port.
-* For built-in kernels (QV or QK) the function can be called only when
-* the queue is not empty, so it doesn't block. For a blocking kernel/OS
-* the function can block and wait for delivery of an event.
-*
-* @param[in,out] me  pointer (see @ref oop)
-*
-* @returns
-* a pointer to the received event. The returned pointer is guaranteed to be
-* valid (can't be NULL).
-*
-* @note
-* This function is used internally by a QF port to extract events from
-* the event queue of an active object. This function depends on the event
-* queue implementation and is sometimes customized in the QF port
-* (file qf_port.h). Depending on the definition of the macro
-* QACTIVE_EQUEUE_WAIT_(), the function might block the calling thread when
-* no events are available.
-*/
 QEvt const *QActive_get_(QActive * const me) {
 
     QF_CRIT_STAT_
@@ -354,25 +282,6 @@ QEvt const *QActive_get_(QActive * const me) {
 }
 
 /*==========================================================================*/
-/*!
-* @static @private @memberof QF
-* @details
-* Queries the minimum of free ever present in the given event queue of
-* an active object with priority @p prio, since the active object
-* was started.
-*
-* @note
-* This function is available only when the native QF event queue
-* implementation is used. Requesting the queue minimum of an unused
-* priority level raises an assertion in the QF. (A priority level becomes
-* used in QF after the call to the QF_add_() function.)
-*
-* @param[in] prio  Priority of the active object, whose queue is queried
-*
-* @returns
-* the minimum of free ever present in the given event queue of an active
-* object with priority @p prio, since the active object was started.
-*/
 uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
 
     Q_REQUIRE_ID(400, (prio <= QF_MAX_ACTIVE)
@@ -406,7 +315,7 @@ static void QTicker_postLIFO_(QActive * const me, QEvt const * const e);
 
 /*! Perform downcast to QTicker pointer. */
 /*!
-* @details
+* @description
 * This macro encapsulates the downcast to (QTicker *), which is used in
 * QTicker_init_() and QTicker_dispatch_(). Such casts violate MISRA-C 2012
 * Rule 11.3(req) "cast from pointer to object type to pointer to different

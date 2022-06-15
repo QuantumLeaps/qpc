@@ -62,7 +62,7 @@
     /* provide typedefs so that qassert.h could be used "standalone"... */
 
     /*! typedef for assertions-ids and line numbers in assertions.
-    * @details
+    * @description
     * This typedef specifies integer type for exclusive use in assertions.
     * Use of this type, rather than plain 'int', is in compliance
     * with the MISRA-C 2012 Dir 4.6 (adv).
@@ -72,7 +72,7 @@
 #endif
 
     /*! Define the file name (with `__FILE__`) for assertions in this file
-    * @details
+    * @description
     * Macro to be placed at the top of each C/C++ module to define the
     * single instance of the file name string to be used in reporting
     * assertions in this module.
@@ -88,7 +88,7 @@
         static char const Q_this_module_[] = __FILE__;
 
     /*! Define the user-specified module name for assertions in this file.
-    * @details
+    * @description
     * Macro to be placed at the top of each C/C++ module to define the
     * single instance of the module name string to be used in reporting
     * assertions in this module. This macro takes the user-supplied parameter
@@ -103,7 +103,7 @@
         static char const Q_this_module_[] = name_;
 
     /*! General purpose assertion.
-    * @details
+    * @description
     * Makes sure the @p test_ parameter is TRUE. Calls the Q_onAssert()
     * callback if the @p test_ expression evaluates to FALSE. This
     * macro identifies the assertion location within the file by means
@@ -118,7 +118,7 @@
         ? (void)0 : Q_onAssert(&Q_this_module_[0], __LINE__))
 
     /*! General purpose assertion with user-specified assertion-id.
-    * @details
+    * @description
     * Makes sure the @p test_ parameter is TRUE. Calls the Q_onAssert()
     * callback if the @p test_ evaluates to FALSE. This assertion takes the
     * user-supplied parameter @p id_ to identify the location of this
@@ -137,7 +137,7 @@
 
     /*! General purpose assertion that __always__ evaluates the @p test_
     * expression.
-    * @details
+    * @description
     * Like the Q_ASSERT() macro, except it __always__ evaluates the @p test_
     * expression even when assertions are disabled with the #Q_NASSERT macro.
     * However, when the #Q_NASSERT macro is defined, the Q_onAssert()
@@ -151,7 +151,7 @@
 
     /*! General purpose assertion with user-specified assertion-id that
     * __always__ evaluates the @p test_ expression.
-    * @details
+    * @description
     * Like the Q_ASSERT_ID() macro, except it __always__ evaluates the
     * @p test_ expression even when assertions are disabled with the
     * #Q_NASSERT macro. However, when the #Q_NASSERT macro is defined, the
@@ -164,7 +164,7 @@
     #define Q_ALLEGE_ID(id_, test_) Q_ASSERT_ID((id_), (test_))
 
     /*! Assertion for a wrong path through the code.
-    * @details
+    * @description
     * Calls the Q_onAssert() callback if ever executed.
     *
     * @note Does noting if assertions are disabled with the #Q_NASSERT switch.
@@ -173,7 +173,7 @@
         Q_onAssert(&Q_this_module_[0], __LINE__)
 
     /*! Assertion with user-specified assertion-id for a wrong path
-    * @details
+    * @description
     * Calls the Q_onAssert() callback if ever executed. This assertion
     * takes the user-supplied parameter @p id_ to identify the location of
     * this assertion within the file. This avoids the volatility of using
@@ -200,7 +200,7 @@
 #endif /*  Q_NORETURN */
 
 /*! Callback function invoked in case of any assertion failure.
-* @details
+* @description
 * This is an application-specific callback function needs to be defined in
 * the application to perform the clean system shutdown and perhaps a reset.
 *
@@ -233,7 +233,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const location);
 #endif
 
 /*! Assertion for checking preconditions.
-* @details
+* @description
 * This macro is equivalent to #Q_ASSERT, except the name provides a better
 * documentation of the intention of this assertion.
 *
@@ -242,7 +242,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const location);
 #define Q_REQUIRE(test_)         Q_ASSERT(test_)
 
 /*! Assertion for checking preconditions with user-specified assertion-id.
-* @details
+* @description
 * Equivalent to #Q_ASSERT_ID, except the macro name provides a better
 * documentation of the intention of this assertion.
 *
@@ -252,7 +252,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const location);
 #define Q_REQUIRE_ID(id_, test_) Q_ASSERT_ID((id_), (test_))
 
 /*! Assertion for checking postconditions.
-* @details
+* @description
 * Equivalent to #Q_ASSERT, except the macro name provides a better
 * documentation of the intention of this assertion.
 *
@@ -261,7 +261,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const location);
 #define Q_ENSURE(test_) Q_ASSERT(test_)
 
 /*! Assertion for checking postconditions with user-specified assertion-id.
-* @details
+* @description
 * Equivalent to #Q_ASSERT_ID, except the name provides a better documentation
 * of the intention of this assertion.
 *
@@ -271,7 +271,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const location);
 #define Q_ENSURE_ID(id_, test_) Q_ASSERT_ID((id_), (test_))
 
 /*! Assertion for checking invariants.
-* @details
+* @description
 * Equivalent to #Q_ASSERT, except the macro name provides a better
 * documentation of the intention of this assertion.
 *
@@ -280,7 +280,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const location);
 #define Q_INVARIANT(test_) Q_ASSERT(test_)
 
 /*! Assertion for checking invariants with user-specified assertion-id.
-* @details
+* @description
 * Equivalent to #Q_ASSERT_ID, except the macro name provides a better
 * documentation of the intention of this assertion.
 *
@@ -290,7 +290,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const location);
 #define Q_INVARIANT_ID(id_, test_) Q_ASSERT_ID((id_), (test_))
 
 /*! Static (compile-time) assertion.
-* @details
+* @description
 * This type of assertion deliberately causes a compile-time error when
 * the @p test_ evaluates to FALSE. The macro exploits the fact that in C/C++
 * a dimension of an array cannot be negative. The compile-time assertion has

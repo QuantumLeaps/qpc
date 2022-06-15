@@ -33,7 +33,7 @@ QS is software tracing system that enables developers to monitor live QP applica
 @brief
 Cooperative Kernel
 
-@details
+@description
 QV is a simple **cooperative** kernel (previously called "Vanilla" kernel). This kernel executes active objects one at a time, with priority-based scheduling performed before processing of each event. Due to naturally short duration of event processing in state machines, the simple QV kernel is often adequate for many real-time systems.
 
 @note

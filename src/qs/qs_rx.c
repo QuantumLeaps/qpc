@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-15
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QS/C receive channel services
@@ -37,7 +37,7 @@
 Q_DEFINE_THIS_MODULE("qs_rx")
 
 /*==========================================================================*/
-QSrxPrivAttr QS_rxPriv_;  /* QS-RX private attributes */
+QSrx QS_rxPriv_;  /* QS-RX private attributes */
 
 /*==========================================================================*/
 #if (QS_OBJ_PTR_SIZE == 1U)
@@ -51,7 +51,7 @@ QSrxPrivAttr QS_rxPriv_;  /* QS-RX private attributes */
 #endif
 
 /*! @cond
-* Exlcude the following internals from the Doxygen documentation
+* Exclude the following internals from the Doxygen documentation
 * Extended-state variables used for parsing various QS-RX Records
 */
 typedef struct {
@@ -213,26 +213,6 @@ static void QS_rxPoke_(void);
 /*! @endcond */
 
 /*==========================================================================*/
-/*!
-* @details
-* This function should be called from QS_onStartup() to provide QS-RX with
-* the receive data buffer.
-*
-* @param[in]  sto[]   the address of the memory block
-* @param[in]  stoSize the size of this block [bytes]. The size of the
-*                     QS RX buffer cannot exceed 64KB.
-*
-* @note QS-RX can work with quite small data buffers, but you will start
-* losing data if the buffer is not drained fast enough in the idle task.
-*
-* @note If the data input rate exceeds the QS-RX processing rate, the data
-* will be lost, but the QS protocol will notice that:
-* (1) that the checksum in the incomplete QS records will fail; and
-* (2) the sequence counter in QS records will show discontinuities.
-*
-* The QS-RX channel will report any data errors by sending the
-* QS_RX_DATA_ERROR trace record.
-*/
 void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
     QS_rxPriv_.buf  = &sto[0];
     QS_rxPriv_.end  = (QSCtr)stoSize;
@@ -263,7 +243,7 @@ void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize) {
 #endif /* Q_UTEST */
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 /*! put one byte into the QS RX lock-free buffer */
 bool QS_RX_PUT(uint8_t const b) {
     QSCtr head = QS_rxPriv_.head + 1U;
@@ -280,15 +260,7 @@ bool QS_RX_PUT(uint8_t const b) {
     }
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* This function is intended to be called from the ISR that reads the QS-RX
-* bytes from the QSPY host application. The function returns the conservative
-* number of free bytes currently available in the buffer, assuming that
-* the head pointer is not being moved concurrently. The tail pointer might
-* be moving, meaning that bytes can be concurrently removed from the buffer.
-*/
+/*..........................................................................*/
 uint16_t QS_rxGetNfree(void) {
     QSCtr const head = QS_rxPriv_.head;
     if (head == QS_rxPriv_.tail) { /* buffer empty? */
@@ -302,22 +274,13 @@ uint16_t QS_rxGetNfree(void) {
     }
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* This function programmatically sets the "current object" in the Target.
-*/
+/*..........................................................................*/
 void QS_setCurrObj(uint8_t obj_kind, void *obj_ptr) {
     Q_REQUIRE_ID(100, obj_kind < Q_DIM(QS_rxPriv_.currObj));
     QS_rxPriv_.currObj[obj_kind] = obj_ptr;
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* This function programmatically generates the response to the query for
-* a "current object".
-*/
+/*..........................................................................*/
 void QS_queryCurrObj(uint8_t obj_kind) {
     if (QS_rxPriv_.currObj[obj_kind] != (void *)0) {
         QS_CRIT_STAT_
@@ -416,7 +379,7 @@ void QS_rxParse(void) {
     }
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 static void QS_rxParseData_(uint8_t b) {
     switch (l_rx.state) {
         case WAIT4_SEQ: {
@@ -856,7 +819,7 @@ static void QS_rxParseData_(uint8_t b) {
     }
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 static void QS_rxHandleGoodFrame_(uint8_t state) {
     uint8_t i;
     uint8_t *ptr;
@@ -1172,7 +1135,7 @@ static void QS_rxHandleGoodFrame_(uint8_t state) {
     }
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 static void QS_rxHandleBadFrame_(uint8_t state) {
     QS_rxReportError_(0x50); /* report error for all bad frames */
     switch (state) {
@@ -1188,7 +1151,7 @@ static void QS_rxHandleBadFrame_(uint8_t state) {
     }
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 static void QS_rxReportAck_(int8_t recId) {
     QS_CRIT_STAT_
     QS_CRIT_E_();
@@ -1200,7 +1163,7 @@ static void QS_rxReportAck_(int8_t recId) {
     QS_REC_DONE(); /* user callback (if defined) */
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 static void QS_rxReportError_(int8_t code) {
     QS_CRIT_STAT_
     QS_CRIT_E_();
@@ -1212,7 +1175,7 @@ static void QS_rxReportError_(int8_t code) {
     QS_REC_DONE(); /* user callback (if defined) */
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 static void QS_rxReportDone_(int8_t recId) {
     QS_CRIT_STAT_
     QS_CRIT_E_();
@@ -1225,7 +1188,7 @@ static void QS_rxReportDone_(int8_t recId) {
     QS_REC_DONE(); /* user callback (if defined) */
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 static void QS_rxPoke_(void) {
     uint8_t *ptr = (uint8_t *)QS_rxPriv_.currObj[AP_OBJ];
     ptr = &ptr[l_rx.var.poke.offs];
@@ -1252,19 +1215,7 @@ static void QS_rxPoke_(void) {
 /*==========================================================================*/
 #ifdef Q_UTEST
 
-/*==========================================================================*/
-/*!
-* @details
-* This function obtains the Test-Probe for a given API.
-*
-* @param[in]  api  pointer to the API function that requests its Test-Probe
-*
-* @returns Test-Probe data that has been received for the given API
-* from the Host (running qutest). For any ginve API, the function returns
-* the Test-Probe data in the same order as it was received from the Host.
-* If there is no Test-Probe for a ginve API, or no more Test-Probes for
-* a given API, the function returns zero.
-*/
+/*..........................................................................*/
 uint32_t QS_getTestProbe_(void (* const api)(void)) {
     uint32_t data = 0U;
     uint_fast8_t i;
@@ -1297,7 +1248,7 @@ uint32_t QS_getTestProbe_(void (* const api)(void)) {
     return data;
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 QSTimeCtr QS_onGetTime(void) {
     return (++l_testData.testTime);
 }

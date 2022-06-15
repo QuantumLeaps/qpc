@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief ::QEQueue implementation (QP native thread-safe queue)
@@ -42,25 +42,7 @@
 
 Q_DEFINE_THIS_MODULE("qf_qeq")
 
-/*==========================================================================*/
-/*!
-* @public @memberof QEQueue
-* @details
-* Initialize the event queue by giving it the storage for the ring buffer.
-*
-* @param[in,out] me   pointer (see @ref oop)
-* @param[in]     qSto an array of pointers to ::QEvt to sereve as the
-*                     ring buffer for the event queue
-* @param[in]     qLen the length of the @p qSto buffer (in ::QEvt pointers)
-*
-* @note The actual capacity of the queue is qLen + 1, because of the extra
-* location forntEvt.
-*
-* @note
-* This function is also used to initialize the event queues of active
-* objects in the built-int QV and QK kernels, as well as other
-* QP ports to OSes/RTOSes that do provide a suitable message queue.
-*/
+/*..........................................................................*/
 void QEQueue_init(QEQueue * const me, QEvt const * * const qSto,
                   uint_fast16_t const qLen)
 {
@@ -75,31 +57,7 @@ void QEQueue_init(QEQueue * const me, QEvt const * * const qSto,
     me->nMin     = me->nFree;
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QEQueue
-* @details
-* Post an event to the "raw" thread-safe event queue using the
-* First-In-First-Out (FIFO) order.
-*
-* @param[in,out] me     pointer (see @ref oop)
-* @param[in]     e      pointer to the event to be posted to the queue
-* @param[in]     margin number of required free slots in the queue after
-*                       posting the event. The special value #QF_NO_MARGIN
-*                       means that this function will assert if posting
-* @note
-* The #QF_NO_MARGIN value of the @p margin parameter is special and
-* denotes situation when the post() operation is assumed to succeed (event
-* delivery guarantee). An assertion fires, when the event cannot be
-* delivered in this case.
-*
-* @returns 'true' (success) when the posting succeeded with the provided
-* margin and 'false' (failure) when the posting fails.
-*
-* @note This function can be called from any task context or ISR context.
-*
-* @sa QEQueue_postLIFO(), QEQueue_get()
-*/
+/*..........................................................................*/
 bool QEQueue_post(QEQueue * const me, QEvt const * const e,
                   uint_fast16_t const margin, uint_fast8_t const qs_id)
 {
@@ -175,30 +133,7 @@ bool QEQueue_post(QEQueue * const me, QEvt const * const e,
     return status;
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QEQueue
-* @details
-* Post an event to the "raw" thread-safe event queue using the
-* Last-In-First-Out (LIFO) order.
-*
-* @param[in,out] me  pointer (see @ref oop)
-* @param[in]     e   pointer to the event to be posted to the queue
-*
-* @attention
-* The LIFO policy should be used only with great __caution__, because
-* it alters the order of events in the queue.
-*
-* @note
-* This function can be called from any task context or ISR context.
-*
-* @note
-* this function is used for the "raw" thread-safe queues and __not__
-* for the queues of active objects.
-*
-* @sa
-* QEQueue_post(), QEQueue_get(), QActive_defer()
-*/
+/*..........................................................................*/
 void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
                       uint_fast8_t const qs_id)
 {
@@ -245,26 +180,7 @@ void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
     QF_CRIT_X_();
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QEQueue
-* @details
-* Retrieves an event from the front of the "raw" thread-safe queue and
-* returns a pointer to this event to the caller.
-*
-* @param[in,out] me     pointer (see @ref oop)
-*
-* @returns
-* pointer to event at the front of the queue, if the queue is
-* not empty and NULL if the queue is empty.
-*
-* @note
-* this function is used for the "raw" thread-safe queues and __not__
-* for the queues of active objects.
-*
-* @sa
-* QEQueue_post(), QEQueue_postLIFO(), QActive_recall()
-*/
+/*..........................................................................*/
 QEvt const *QEQueue_get(QEQueue * const me, uint_fast8_t const qs_id) {
     (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
 

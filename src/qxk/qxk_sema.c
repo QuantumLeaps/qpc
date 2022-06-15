@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QXK preemptive kernel semaphore functions
@@ -47,27 +47,7 @@
 
 Q_DEFINE_THIS_MODULE("qxk_sema")
 
-/*==========================================================================*/
-/*!
-* @details
-* Initializes a semaphore with the specified count and maximum count.
-* If the semaphore is used for resource sharing, both the initial count
-* and maximum count should be set to the number of identical resources
-* guarded by the semaphore. If the semaphore is used as a signaling
-* mechanism, the initial count should set to 0 and maximum count to 1
-* (binary semaphore).
-*
-* @param[in,out] me     pointer (see @ref oop)
-* @param[in]     count  initial value of the semaphore counter
-* @param[in]     max_count  maximum value of the semaphore counter.
-*                The purpose of the max_count is to limit the counter
-*                so that the semaphore cannot unblock more times than
-*                the maximum.
-*
-* @note
-* QXSemaphore_init() must be called **before** the semaphore can be used
-* (signaled or waited on).
-*/
+/*..........................................................................*/
 void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
                       uint_fast16_t max_count)
 {
@@ -79,30 +59,7 @@ void QXSemaphore_init(QXSemaphore * const me, uint_fast16_t count,
     QPSet_setEmpty(&me->waitSet);
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* When an extended thread calls QXSemaphore_wait() and the value of the
-* semaphore counter is greater than 0, QXSemaphore_wait() decrements the
-* semaphore counter and returns (true) to its caller. However, if the value
-* of the semaphore counter is 0, the function places the calling thread in
-* the waiting list for the semaphore. The thread waits until the semaphore
-* is signaled by calling QXSemaphore_signal(), or the specified timeout
-* expires. If the semaphore is signaled before the timeout expires, QXK
-* resumes the highest-priority extended thread waiting for the semaphore.
-*
-* @param[in,out] me     pointer (see @ref oop)
-* @param[in]     nTicks number of clock ticks (at the associated rate)
-*                       to wait for the semaphore. The value of
-*                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
-*                       occur and the semaphore will wait indefinitely.
-*
-* @returns
-* 'true' if the semaphore has been signaled and 'false' if a timeout occured.
-*
-* @note
-* Multiple extended threads can wait for a given semahpre.
-*/
+/*..........................................................................*/
 bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
     QF_CRIT_STAT_
     QF_CRIT_E_();
@@ -173,21 +130,7 @@ bool QXSemaphore_wait(QXSemaphore * const me, uint_fast16_t const nTicks) {
     return signaled;
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* This function checks if the semaphore counter is greater than 0,
-* in which case the counter is decremented.
-*
-* @param[in,out] me     pointer (see @ref oop)
-*
-* @returns
-* 'true' if the semaphore has count available and 'false' NOT available.
-*
-* @note
-* This function can be called from any context, including ISRs and basic
-* threds (active objects).
-*/
+/*..........................................................................*/
 bool QXSemaphore_tryWait(QXSemaphore * const me) {
     /*! @pre the semaphore must be initialized */
     Q_REQUIRE_ID(300, me->max_count > 0U);
@@ -209,26 +152,7 @@ bool QXSemaphore_tryWait(QXSemaphore * const me) {
     return isAvailable;
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* If the semaphore counter value is 0 or more, it is incremented, and
-* this function returns to its caller. If the extended threads are waiting
-* for the semaphore to be signaled, QXSemaphore_signal() removes the highest-
-* priority thread waiting for the semaphore from the waiting list and makes
-* this thread ready-to-run. The QXK scheduler is then called to determine if
-* the awakened thread is now the highest-priority thread that is ready-to-run.
-*
-* @param[in,out] me     pointer (see @ref oop)
-*
-* @returns
-* 'true' when the semaphore signaled and 'false' when the semaphore count
-* exceeded the maximum.
-*
-* @note
-* A semaphore can be signaled from many places, including from ISRs, basic
-* threads (AOs), and extended threads.
-*/
+/*..........................................................................*/
 bool QXSemaphore_signal(QXSemaphore * const me) {
     /*! @pre the semaphore must be initialized */
     Q_REQUIRE_ID(400, me->max_count > 0U);

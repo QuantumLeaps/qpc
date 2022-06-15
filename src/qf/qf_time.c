@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QF/C time events and time management services
@@ -48,7 +48,7 @@ QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
 
 #ifdef Q_SPY
     /*! intertnal macro to encapsulate a MISRA deviation
-    * @details
+    * @description
     * This internal macro encapsulates the violation of MISRA-C 2012
     * Rule 11.5(A) "A conversion should not be performed from pointer to void
     * into pointer to object".
@@ -56,33 +56,8 @@ QTimeEvt QF_timeEvtHead_[QF_MAX_TICK_RATE]; /* heads of time event lists */
     #define QACTIVE_CAST_(ptr_) ((QActive *)(ptr_))
 #endif
 
-/*==========================================================================*/
+/*..........................................................................*/
 #ifdef Q_SPY
-/*!
-* @static @private @memberof QF
-* @details
-* This internal helper function processes all armed ::QTimeEvt objects
-* associated wit the tick rate @p tickRate .
-*
-* This function must be called periodically from a time-tick ISR or from
-* a task so that QF can manage the timeout events assigned to the given
-* system clock tick rate.
-*
-* @param[in] tickRate  system clock tick rate serviced in this call [1..15].
-* @param[in] sender    pointer to a sender object (used only for QS tracing)
-*
-* @note
-* this function should be called only via the macro QF_TICK_X()
-*
-* @note
-* the calls to QF_tickX_() with different @p tickRate parameter can preempt
-* each other. For example, higher clock tick rates might be serviced from
-* interrupts while others from tasks (active objects).
-*
-* @sa ::QTimeEvt.
-* @sa QF_tickX_()
-* @sa QF_TICK()
-*/
 void QF_tickX_(uint_fast8_t const tickRate, void const * const sender)
 #else
 void QF_tickX_(uint_fast8_t const tickRate)
@@ -184,21 +159,7 @@ void QF_tickX_(uint_fast8_t const tickRate)
     QF_CRIT_X_();
 }
 
-/*==========================================================================*/
-/*!
-* @static @public @memberof QF
-* @details
-* Find out if any time events are armed at the given clock tick rate.
-*
-* @param[in]  tickRate  system clock tick rate to find out about.
-*
-* @returns
-* 'true' if no time events are armed at the given tick rate and
-* 'false' otherwise.
-*
-* @note
-* This function should be called in critical section.
-*/
+/*..........................................................................*/
 bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate) {
 
     /*! @pre the tick rate must be in range */
@@ -217,25 +178,7 @@ bool QF_noTimeEvtsActiveX(uint_fast8_t const tickRate) {
     return inactive;
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QTimeEvt
-* @details
-* When creating a time event, you must commit it to a specific active object
-* @p act, tick rate @p tickRate and event signal @p sig. You cannot change
-* these attributes later.
-*
-* @param[in,out] me   pointer (see @ref oop)
-* @param[in]     act  pointer to the active object associated with this
-*                     time event. The time event will post itself to this AO.
-* @param[in]     sig  signal to associate with this time event.
-* @param[in]     tickRate systemclock tick rate to associate with this
-*                     time event in the range [0..15].
-*
-* @note You should call the constructor exactly once for every Time Event
-* object **before** arming the Time Event. The ideal place for initializing
-* the time event(s) associated with a given AO is the AO's constructor.
-*/
+/*..........................................................................*/
 void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
                     enum_t const sig, uint_fast8_t tickRate)
 {
@@ -267,37 +210,7 @@ void QTimeEvt_ctorX(QTimeEvt * const me, QActive * const act,
     me->super.refCtr_ = (uint8_t)tickRate;
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QTimeEvt
-* @details
-* Arms a time event to fire in a specified number of clock ticks and with
-* a specified interval. If the interval is zero, the time event is armed for
-* one shot ('one-shot' time event). When the timeout expires, the time event
-* gets directly posted (using the FIFO policy) into the event queue of the
-* host active object. After posting, a one-shot time event gets automatically
-* disarmed while a periodic time event (interval != 0) is automatically
-* re-armed.
-*
-* A time event can be disarmed at any time by calling QTimeEvt_disarm().
-* Also, a time event can be re-armed to fire in a different number of clock
-* ticks by calling the QTimeEvt_rearm().
-*
-* @param[in,out] me     pointer (see @ref oop)
-* @param[in]     nTicks number of clock ticks (at the associated rate)
-*                       to rearm the time event with.
-* @param[in]     interval interval (in clock ticks) for periodic time event.
-*
-* @attention
-* Arming an already armed time event is __not__ allowed and is considered
-* a programming error. The QP/C framework will assert if it detects an
-* attempt to arm an already armed time event.
-*
-* @usage
-* The following example shows how to arm a one-shot time event from a state
-* machine of an active object:
-* @include qf_state.c
-*/
+/*..........................................................................*/
 void QTimeEvt_armX(QTimeEvt * const me,
                    QTimeEvtCtr const nTicks, QTimeEvtCtr const interval)
 {
@@ -357,26 +270,7 @@ void QTimeEvt_armX(QTimeEvt * const me,
     QF_CRIT_X_();
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QTimeEvt
-* @details
-* Disarm the time event so it can be safely reused.
-*
-* @param[in,out] me     pointer (see @ref oop)
-*
-* @returns
-* 'true' if the time event was truly disarmed, that is, it was running.
-* The return of 'false' means that the time event was not truly disarmed,
-* because it was not running. The 'false' return is only possible for one-
-* shot time events that have been automatically disarmed upon expiration.
-* In this case the 'false' return means that the time event has already
-* been posted or published and should be expected in the active object's
-* state machine.
-*
-* @note
-* there is no harm in disarming an already disarmed time event
-*/
+/*..........................................................................*/
 bool QTimeEvt_disarm(QTimeEvt * const me) {
 #ifdef Q_SPY
     uint_fast8_t const qs_id = QACTIVE_CAST_(me->act)->prio;
@@ -419,28 +313,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
     return wasArmed;
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QTimeEvt
-* @details
-* Rearms a time event with a new number of clock ticks. This function can
-* be used to adjust the current period of a periodic time event or to
-* prevent a one-shot time event from expiring (e.g., a watchdog time event).
-* Rearming a periodic timer leaves the interval unchanged and is a convenient
-* method to adjust the phasing of a periodic time event.
-*
-* @param[in,out] me     pointer (see @ref oop)
-* @param[in]     nTicks number of clock ticks (at the associated rate)
-*                       to rearm the time event with.
-*
-* @returns
-* 'true' if the time event was running as it was re-armed. The 'false'
-* return means that the time event was not truly rearmed because it was
-* not running. The 'false' return is only possible for one-shot time events
-* that have been automatically disarmed upon expiration. In this case the
-* 'false' return means that the time event has already been posted or
-* published and should be expected in the active object's state machine.
-*/
+/*..........................................................................*/
 bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
     uint_fast8_t const tickRate
                        = (uint_fast8_t)me->super.refCtr_ & QTE_TICK_RATE;
@@ -504,52 +377,14 @@ bool QTimeEvt_rearm(QTimeEvt * const me, QTimeEvtCtr const nTicks) {
     return wasArmed;
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QTimeEvt
-* @details
-* Useful for checking whether a one-shot time event was disarmed in the
-* QTimeEvt_disarm() operation.
-*
-* @param[in,out] me   pointer (see @ref oop)
-*
-* @returns
-* 'true' if the time event was truly disarmed in the last QTimeEvt_disarm()
-* operation. The 'false' return means that the time event was not truly
-* disarmed, because it was not running at that time. The 'false' return is
-* only possible for one-shot time events that have been automatically disarmed
-* upon expiration. In this case the 'false' return means that the time event
-* has already been posted or published and should be expected in the active
-* object's event queue.
-*
-* @note
-* This function has a **side effect** of setting the "was disarmed" status,
-* which means that the second and subsequent times this function is called
-* the function will return 'true'.
-*/
+/*..........................................................................*/
 bool QTimeEvt_wasDisarmed(QTimeEvt * const me) {
     uint8_t const wasDisarmed = (me->super.refCtr_ & QTE_WAS_DISARMED);
-    me->super.refCtr_ |= QTE_WAS_DISARMED; /* set the flag */
+    me->super.refCtr_ |= QTE_WAS_DISARMED; /* mark as disarmed */
     return wasDisarmed != 0U;
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QTimeEvt
-* @details
-* Useful for checking how many clock ticks (at the tick rate associated
-* with the time event) remain until the time event expires.
-*
-* @param[in,out] me   pointer (see @ref oop)
-*
-* @returns
-* For an armed time event, the function returns the current value of the
-* down-counter of the given time event. If the time event is not armed,
-* the function returns 0.
-*
-* @note
-* The function is thread-safe.
-*/
+/*..........................................................................*/
 QTimeEvtCtr QTimeEvt_currCtr(QTimeEvt const * const me) {
     QF_CRIT_STAT_
     QF_CRIT_E_();

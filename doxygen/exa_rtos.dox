@@ -7,6 +7,7 @@ The main purpose of integrating QP/C with conventional RTOSes is to enable you t
 - @subpage exa_freertos (directory <span class="img folder">examples/freertos/</span>)
 - @subpage exa_threadx (directory <span class="img folder">examples/threadx/</span>)
 - @subpage exa_uc-os2 (directory <span class="img folder">examples/uc-os2/</span>)
+- @subpage exa_zephyr (directory <span class="img folder">examples/zephyr/</span>)
 
 @note
 You do **not** need to use a third-party RTOS just to achieve preemptive multitasking with QP/C. The framework contains a selection of built-in real-time kernels, such as the cooperative @ref srs_qv "QV kernel", the preemptive non-blocking @ref srs_qk "QK kernel", and the preemptive, dual-mode, blocking @ref srs_qxk "QXK kernel". Specifically, the QXK kernel has been designed specifically for mixing event-driven active objects with traditional **blocking code**, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
@@ -262,7 +263,6 @@ The sub-directory <span class="img folder">iar</span> contains the workspace and
 After you load the DPP example into the STM32F4-Discovery board, the application should start blinking the 4 on-board LEDs. You can press the User button (blue) to PAUSE the philosophers for as long as the button is depressed. The philosophers resume dining when you release the User button. (In the PAUSED state the Table active object stops granting permissions to eat, so eventually all philosophers end in the "hungry" state.)
 
 
-
 @section threadx_dpp_stm32f429-discovery_qs QS Software Tracing
 
 The DPP example for ThreadX on STM32F4-Discovery board provides the "Spy" build configuration, which outputs the QS (Quantum Spy) software tracing data through USART2. To get the data out of the board, you need to connect the TTL/RS232 converter as follows:
@@ -325,6 +325,129 @@ DPP example for STM32 L053R8 MCU (Cortex-M0+) and ARM-CLANG, GNU-ARM and IAR EWA
 
 @image html under_construction.jpg
 
-@next{exa_os examples}
+@next{exa_zephyr examples}
+*/
+
+/*##########################################################################*/
+/*! @page exa_zephyr Zephyr
+
+The QP/C examples for Zephyr are as follows:
+
+- @subpage zephyr_blinky
+- @subpage zephyr_dpp
+
+@next{zephyr_blinky}
+*/
+/*##########################################################################*/
+/*! @page zephyr_blinky Blinky
+
+Blinks an on-board LED once per second.
+
+The blinking is done by an Active Object (Blinky) with a state machine.
+
+@section zephyr_blinky-build Building and Running
+
+- Linux:
+Open a terminal in the blinky directory.
+
+@verbatim
+source ~/zephyrproject/zephyr/zephyr-env.sh
+
+west build -b <board>
+
+west flush
+@endverbatim
+
+@section zephyr_blinky-output Sample Output
+Once flashed to the board, the application also produces ASCII output to the serial terminal (if supported by the board):
+
+@verbatim
+*** Booting Zephyr OS build v2.6.0-rc2-88-g3d39f72a88b3  ***
+BSP_ledOff
+QF_onStartup
+BSP_ledOn
+BSP_ledOff
+BSP_ledOn
+BSP_ledOff
+@endverbatim
+
+@note
+The example has been tested with the following boards:
+
+![STM32-NUCLEO-L053R8 board](bd_NUCLEO-L053R8.jpg)
+<br>
+
+![STM32-NUCLEO-H743ZI board](bd_NUCLEO-H743ZI.jpg)
+
+@note
+The example should also work with most boards supported by Zephyr.
+
+@section zephyr_blinky-limits Limitations
+The simple Blinky example does not support the QS software tracing.
+
+@next{zephyr_dpp}
+*/
+/*##########################################################################*/
+/*! @page zephyr_dpp DPP
+
+DPP example with multiple active objects.
+
+@section zephyr_dpp-build Building and Running
+
+- Linux:
+Open a terminal in the dpp directory.
+
+@verbatim
+source ~/zephyrproject/zephyr/zephyr-env.sh
+
+west build -b <board>
+
+west flush
+@endverbatim
+
+@section zephyr_dpp-output Sample Output
+Once flashed to the board, the application also produces ASCII output to the serial terminal (if supported by the board):
+
+@verbatim
+*** Booting Zephyr OS build v2.6.0-rc2-88-g3d39f72a88b3  ***
+Philo[4]->thinking
+Philo[3]->eating
+Philo[1]->thinking
+Philo[0]->eating
+Philo[4]->hungry
+Philo[3]->thinking
+Philo[2]->eating
+Philo[1]->hungry
+Philo[0]->thinking
+Philo[4]->eating
+Philo[3]->hungry
+Philo[0]->hungry
+Philo[4]->thinking
+Philo[0]->eating
+Philo[2]->thinking
+Philo[3]->eating
+Philo[4]->hungry
+Philo[2]->hungry
+Philo[3]->thinking
+Philo[2]->eating
+Philo[0]->thinking
+@endverbatim
+
+@note
+The example has been tested with the following boards:
+
+![STM32-NUCLEO-L053R8 board](bd_NUCLEO-L053R8.jpg)
+<br>
+
+![STM32-NUCLEO-H743ZI board](bd_NUCLEO-H743ZI.jpg)
+
+@note
+The example should also work with most boards supported by Zephyr.
+
+@section zephyr_dpp-limits Limitations
+The DPP example currently does not support the QS software tracing,
+because implementation of the QS output over UART is board dependent. However, for a specific board, re-implementing the QS callbacks should be straightforward.
+
+@next{exa_os}
 */
 

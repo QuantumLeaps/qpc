@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-13
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief "QUIT" QP Unit Internal Test
@@ -33,7 +33,7 @@
 #define QUIT_H
 
 /* macro to check an expectation */
-#define EXPECT(cond_) ((cond_) \
+#define VERIFY(cond_) ((cond_) \
         ? (void)0 : QUIT_fail_(#cond_, &Q_this_module_[0], __LINE__))
 
 #ifdef __cplusplus

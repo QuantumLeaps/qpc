@@ -14,7 +14,6 @@ The YouTube Video <a class="extern" target="_blank" href="https://youtu.be/O7ER6
 */
 /*##########################################################################*/
 /*! @page gs_get Downloading &amp; Installing QP&trade;/C
-@tableofcontents
 @nav{gs,gs_tut}
 
 @section gs_bundle Downloading QP&trade;/C in QP&trade;-Bundle
@@ -64,7 +63,6 @@ The standard QP&trade;/C distribution contains the `examples` folder with many @
 */
 /*##########################################################################*/
 /*! @page gs_tut QP&trade;/C Tutorial
-@tableofcontents
 @nav{gs_get,tut_blinky}
 
 This Tutorial describes how to use the QP/C&trade; real-time embedded framework in a series of progressively advancing examples. The first example ("Blinky") uses only one Active Object with a simple non-hierarchical state machine. The following example ("DPP") demonstrates multiple, communicating Active Objects. Finally, the last example ("Fly'n'Shoot" game) demonstrates all features the QP&trade; framework. It is highly recommended to study the simpler examples before the more advanced ones, as the basic information won't be repeated in the later examples.
@@ -94,7 +92,6 @@ from scratch, you inherit the correct compiler and linker options an other proje
 */
 /*##########################################################################*/
 /*! @page tut_blinky Simple Blinky Application
-@tableofcontents
 @nav{gs_tut,tut_dpp}
 
 The ultra-simple Blinky example is the embedded systems' equivalent of the venerable <i>"Hello World!"</i> program, that is, the simplest possible working QP&trade; application that does "something". In the case of Blinky, this "something" is blinking an LED at the rate of 1Hz, where an LED turns on and remains on for 0.5 seconds on then turns off and remains off for 0.5 seconds.
@@ -123,7 +120,6 @@ The details of the Blinky application are describe in the Quantum Leaps Applicat
 */
 /*##########################################################################*/
 /*! @page tut_dpp Dining Philosophers Problem (DPP)
-@tableofcontents
 @nav{tut_blinky,tut_game}
 
 The Dining Philosophers Problem (DPP) example is an intermediate-level application with *multiple* active objects. It illustrates the following QP&trade; features, such as:
@@ -184,7 +180,6 @@ The "Fly 'n' Shoot" game example is described in the @webref{doc/AN_Fly-n-Shoot.
 */
 /*##########################################################################*/
 /*! @page tut_low Low-Power Example
-@tableofcontents
 @nav{tut_game,exa}
 
 The main principle of low-power design for software is to keep the hardware in the most appropriate low-power sleep mode for as long as possible. Most commonly, the software enters a low-power sleep mode from the **idle callback** (a.k.a. "idle hook"), which is called when the software has nothing left to do and is waiting for an interrupt to deliver more work. The QP/C and QP/C++ Real-Time Embedded Frameworks (RTEFs) support the *idle callback* in all of the built-in real-time kernels, such as the cooperative @ref srs_qv "QV kernel", the preemptive non-blocking @ref srs_qk "QK kernel" and the preemptive blocking @ref srs_qxk "QXK kernel". Also, such an *idle callback* is provided in all 3rd-party traditional RTOS kernels that QP/C/C++ have been @ref ports_rtos "ported to".

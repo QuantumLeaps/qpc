@@ -338,7 +338,6 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\efm32pg1b</state>
@@ -1392,7 +1391,6 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\efm32pg1b</state>
@@ -2446,7 +2444,6 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\efm32pg1b</state>
@@ -3399,7 +3396,6 @@
                             <state>$PROJ_DIR$\..</state>
                             <state>$PROJ_DIR$\..\..</state>
                             <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                            <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                             <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar</state>
                             <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                             <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\efm32pg1b</state>

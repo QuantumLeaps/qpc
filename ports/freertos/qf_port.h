@@ -1,46 +1,40 @@
-/**
-* @file
-* @brief QF/C port to FreeRTOS 10.x, ARM Cortex-M, IAR-ARM toolset
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-10
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2022-06-07
+* @version Last updated for: @ref qpc_7_0_1
+*
+* @file
+* @brief QF/C port to FreeRTOS 10.x
 */
 #ifndef QF_PORT_H
 #define QF_PORT_H
 
 /* FreeRTOS event queue and thread types */
-#define QF_EQUEUE_TYPE        QEQueue
+#define QF_EQUEUE_TYPE        QueueHandle_t
+#define QF_OS_OBJECT_TYPE     StaticQueue_t
 #define QF_THREAD_TYPE        StaticTask_t
 
 /* The maximum number of active objects in the application, see NOTE1 */
@@ -56,11 +50,12 @@
 #define QF_CRIT_EXIT(stat_)   taskEXIT_CRITICAL()
 
 #include "FreeRTOS.h"  /* FreeRTOS master include file, see NOTE4 */
-#include "task.h"      /* FreeRTOS task  management */
+#include "task.h"      /* FreeRTOS task management */
+#include "queue.h"     /* FreeRTOS queue management */
 
 #include "qep_port.h"  /* QEP port */
-#include "qequeue.h"   /* this QP port uses the native QF event queue */
-#include "qmpool.h"    /* this QP port uses the native QF memory pool */
+#include "qequeue.h"   /* QF event queue (for deferring events) */
+#include "qmpool.h"    /* QF memory pool (for event pools) */
 #include "qf.h"        /* QF platform-independent public interface */
 
 /* the "FromISR" versions of the QF APIs, see NOTE3 */
@@ -189,24 +184,28 @@ enum FreeRTOS_TaskAttrs {
 * interface used only inside QF, but not in applications
 */
 #ifdef QP_IMPL
-    /* FreeRTOS blocking for event queue implementation (task level) */
-    #define QACTIVE_EQUEUE_WAIT_(me_)                 \
-        while ((me_)->eQueue.frontEvt == (QEvt *)0) { \
-            QF_CRIT_X_();                          \
-            ulTaskNotifyTake(pdTRUE, portMAX_DELAY);  \
-            QF_CRIT_E_();                         \
-        }
+    #define FREERTOS_TASK_PRIO(qp_prio_) \
+        ((UBaseType_t)((qp_prio_) + tskIDLE_PRIORITY))
 
-    /* FreeRTOS signaling (unblocking) for event queue (task level) */
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) do {           \
-        QF_CRIT_X_();                               \
-        xTaskNotifyGive((TaskHandle_t)&(me_)->thread); \
-        QF_CRIT_E_();                              \
-    } while (false)
+    /* FreeRTOS scheduler locking for QF_publish_() (task context only) */
+    #define QF_SCHED_STAT_      \
+        UBaseType_t curr_prio;  \
+        TaskHandle_t curr_task;
+    #define QF_SCHED_LOCK_(prio_) do {                              \
+         curr_task = xTaskGetCurrentTaskHandle();                   \
+         curr_prio = uxTaskPriorityGet(curr_task);                  \
+         if (FREERTOS_TASK_PRIO(prio_) > curr_prio) {               \
+             vTaskPrioritySet(curr_task, FREERTOS_TASK_PRIO(prio_));\
+         }                                                          \
+         else {                                                     \
+             curr_prio = tskIDLE_PRIORITY;                          \
+         }                                                          \
+    } while (0)
 
-    #define QF_SCHED_STAT_
-    #define QF_SCHED_LOCK_(dummy) vTaskSuspendAll()
-    #define QF_SCHED_UNLOCK_()    xTaskResumeAll()
+    #define QF_SCHED_UNLOCK_()                                      \
+         if (curr_prio != tskIDLE_PRIORITY) {                       \
+             vTaskPrioritySet(curr_task, curr_prio);                \
+         } else ((void)0)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool
@@ -237,6 +236,11 @@ enum FreeRTOS_TaskAttrs {
 * provides the "FromISR" variants for QP functions and "FROM_ISR" variants
 * for QP macros to be used inside ISRs. ONLY THESE "FROM_ISR" VARIANTS
 * ARE ALLOWED INSIDE ISRs AND CALLING THE TASK-LEVEL APIs IS AN ERROR.
+*
+* NOTE4:
+* FreeRTOS does not support selective scheduler locking (up to the given
+* priority ceiling). Therefore, this port uses only the crude global
+* scheduler locking.
 */
 
 #endif /* QF_PORT_H */

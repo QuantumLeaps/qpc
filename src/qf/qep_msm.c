@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-31
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief ::QMsm implementation
@@ -47,6 +47,7 @@ Q_DEFINE_THIS_MODULE("qep_msm")
 /*! maximum depth of entry levels in a MSM for transition to history. */
 #define QMSM_MAX_ENTRY_DEPTH_  4
 
+/*! top-state object for QMsm */
 static struct QMState const l_msm_top_s = {
     (struct QMState *)0,
     Q_STATE_CAST(0),
@@ -86,31 +87,6 @@ static struct QMState const l_msm_top_s = {
 #endif /* Q_SPY */
 
 /*==========================================================================*/
-/*!
-* @protected @memberof QMsm
-* @details
-* Performs the first step of QMsm initialization by assigning the initial
-* pseudostate to the currently active state of the state machine.
-*
-* @param[in,out] me       pointer (see @ref oop)
-* @param[in]     initial  the top-most initial transition for the MSM.
-*
-* @note
-* Must be called only ONCE before QHSM_INIT().
-*
-* @note
-* QMsm inherits QHsm, so by the @ref oop convention it should call the
-* constructor of the superclass, i.e., QHsm_ctor(). However, this would pull
-* in the QHsmVtable, which in turn will pull in the code for QHsm_init_() and
-* QHsm_dispatch_() implemetations. To avoid this code size penalty, in case
-* ::QHsm is not used in a given project, the QMsm_ctor() performs direct
-* intitialization of the Vtable, which avoids pulling in the code for QMsm.
-*
-* @usage
-* The following example illustrates how to invoke QMsm_ctor() in the
-* "constructor" of a derived state machine:
-* @include qep_qmsm_ctor.c
-*/
 void QMsm_ctor(QMsm * const me, QStateHandler initial) {
     static struct QHsmVtable const vtable = { /* QHsm virtual table */
         &QMsm_init_,
@@ -125,19 +101,7 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial) {
     me->super.temp.fun  = initial;      /* the initial transition handler */
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QMsm
-* @details
-* Executes the top-most initial transition in a MSM.
-*
-* @param[in,out] me  pointer (see @ref oop)
-* @param[in]     e   pointer to an extra parameter (might be NULL)
-* @param[in]     qs_id QS-id of this state machine (for QS local filter)
-*
-* @note
-* Must be called only ONCE after the QMsm_ctor().
-*/
+/*..........................................................................*/
 #ifdef Q_SPY
 void QMsm_init_(QHsm * const me, void const * const e,
                 uint_fast8_t const qs_id)
@@ -187,21 +151,7 @@ void QMsm_init_(QHsm * const me, void const * const e)
     QS_END_PRE_()
 }
 
-/*==========================================================================*/
-/*!
-* @private @memberof QMsm
-* @details
-* Dispatches an event for processing to a meta state machine (MSM).
-* The processing of an event represents one run-to-completion (RTC) step.
-*
-* @param[in,out] me pointer (see @ref oop)
-* @param[in]     e  pointer to the event to be dispatched to the MSM
-* @param[in]     qs_id QS-id of this state machine (for QS local filter)
-*
-* @note
-* This function should be called only via the virtual table (see
-* QHSM_DISPATCH()) and should NOT be called directly in the applications.
-*/
+/*..........................................................................*/
 #ifdef Q_SPY
 void QMsm_dispatch_(QHsm * const me, QEvt const * const e,
                     uint_fast8_t const qs_id)
@@ -392,17 +342,18 @@ void QMsm_dispatch_(QHsm * const me, QEvt const * const e)
     }
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 #ifdef Q_SPY
 QStateHandler QMsm_getStateHandler_(QHsm * const me) {
     return me->state.obj->stateHandler;
 }
 #endif
 
-/*==========================================================================*/
-/*!
+/*..........................................................................*/
+/*! helper function to execute sequence of actions in transition-action table
 * @private @memberof QMsm
-* @details
+*
+* @description
 * Helper function to execute transition sequence in a transition-action table.
 *
 * @param[in,out] me    pointer (see @ref oop)
@@ -487,10 +438,11 @@ static QState QMsm_execTatbl_(QHsm * const me,
     return r;
 }
 
-/*==========================================================================*/
-/*!
+/*..........................................................................*/
+/*! helper function to exit to the explicit source of the transition.
+*
 * @private @memberof QMsm
-* @details
+* @description
 * Static helper function to exit the current state configuration to the
 * transition source, which in a hierarchical state machine might be a
 * superstate of the current state.
@@ -534,10 +486,11 @@ static void QMsm_exitToTranSource_(QHsm * const me, QMState const *cs,
     }
 }
 
-/*==========================================================================*/
-/*!
+/*..........................................................................*/
+/*! helper function to enter history (shallow or deep) in QMsm.
 * @private @memberof QMsm
-* @details
+*
+* @description
 * Static helper function to execute the segment of transition to history
 * after entering the composite state and
 *
@@ -605,21 +558,6 @@ static QState QMsm_enterHistory_(QHsm * const me, QMState const *const hist)
 }
 
 /*==========================================================================*/
-/*!
-* @public @memberof QMsm
-* @details
-* Tests if a state machine derived from QMsm is-in a given state.
-*
-* @note
-* For a MSM, to "be-in" a state means also to "be-in" a superstate of
-* of the state.
-*
-* @param[in] me    pointer (see @ref oop)
-* @param[in] state pointer to the QMState object that corresponds to the
-*                  tested state.
-* @returns
-* 'true' if the MSM "is in" the @p state and 'false' otherwise
-*/
 bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
     bool inState = false; /* assume that this MSM is not in 'state' */
 
@@ -635,25 +573,7 @@ bool QMsm_isInState(QMsm const * const me, QMState const * const state) {
     return inState;
 }
 
-/*==========================================================================*/
-/*!
-* @private @memberof QMsm
-* @details
-* Finds the child state of the given @c parent, such that this child state
-* is an ancestor of the currently active state. The main purpose of this
-* function is to support **shallow history** transitions in state machines
-* derived from QMsm.
-*
-* @param[in] me     pointer (see @ref oop)
-* @param[in] parent pointer to the state-handler object
-*
-* @returns
-* the child of a given @c parent state, which is an ancestor of
-* the currently active state. For the corner case when the currently active
-* state is the given @c parent state, function returns the @c parent state.
-*
-* @sa QMsm_childStateObj()
-*/
+/*..........................................................................*/
 QMState const *QMsm_childStateObj(QHsm const * const me,
                                   QMState const * const parent)
 {

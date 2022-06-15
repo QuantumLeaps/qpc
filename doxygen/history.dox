@@ -1,7 +1,27 @@
 /*! @page history Revision History
 
+@section qpc_7_0_1 Version 7.0.1, 2022-06-30 (planned)
+__Source Code Changes:__
+
+Moved package-scope header files qf_pkg.h, qs_pkg.h, and qxk_pkg.h from the `qpc/src` directory to `qpc/include`. This allows the build process to specify only the `qpc/include` directory to build applications and QP/C source code. Previously, the build process had to specify additionally `qpc/src`, but this is no longer needed.
+
+@note
+This change allowed all provided examples to be simplified by removing the `qpc/src` include directory from the various project files.
+
+
+__Added Ports/Examples:__
+- Added port to the @ref zephyr "Zephyr RTOS"
+- Added examples for the @ref exa_zephyr "Zephyr RTOS"
+- redesigned QP/C @ref freertos "port to FreeRTOS", see `qpc/ports/freertos`
+- slightly improved QP/C @ref threadx "port to ThreadX", see `qpc/ports/threadx`
+
+
+__Improved Documentation:__
+The Doxygen documentation has been re-structured and improved. Also the more attractive styling of the HTML has been applied.
+
+
 @section qpc_7_0_0 Version 7.0.0, 2022-04-30
-This QP/C release changes the QP/C implementation from C89 to C99 and also improves compliance of the QP/C source code with MISRA:C-2012 (a.k.a. MISRA3). Also, major focus of this release is the adaptation of the code and documentation to better support safety certification (see [QP Certification Pack](https://www.state-machine.com/products/qp#CERT))
+This QP/C release changes the QP/C implementation from C89 to C99 and also improves compliance of the QP/C source code with MISRA:C-2012 (a.k.a. MISRA3). Also, major focus of this release is the adaptation of the code and documentation to better support safety certification (see [QP Certification Pack](modules.html))
 
 __Modified QP/C source code:__
 - updated QP/C source code for C99
@@ -343,7 +363,6 @@ These "safe" functions are mapped to the best approximation of these services av
 
 
 @section qpc_6_8_0 Version 6.8.0, 2020-03-21
-
 __Source code changes:__
 
 - Fixed inconsistencies between QP API declarations in the `.h` files and definitions in the `.c` files, such as different parameter names in declarations and definitions (MISRA-C:2012).

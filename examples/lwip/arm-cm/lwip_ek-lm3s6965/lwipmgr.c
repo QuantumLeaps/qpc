@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: lwIP-Manager Active Object
-* Last updated for version 6.9.1
-* Last updated on  2020-09-11
+* Last updated for version 7.0.1
+* Last updated on  2022-06-06
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -45,8 +45,8 @@
 
 Q_DEFINE_THIS_FILE
 
-      /* the LwIP driver signal group must fit the actual number of signals */
-Q_ASSERT_COMPILE((LWIP_DRIVER_END - LWIP_DRIVER_GROUP) >= LWIP_MAX_OFFSET);
+/* the LwIP driver signal group must fit the actual number of signals */
+Q_ASSERT_STATIC((LWIP_DRIVER_END - LWIP_DRIVER_GROUP) >= LWIP_MAX_OFFSET);
 
 #define FLASH_USERREG0          (*(uint32_t const *)0x400FE1E0)
 #define FLASH_USERREG1          (*(uint32_t const *)0x400FE1E4)

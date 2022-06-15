@@ -50,7 +50,7 @@
 /*! This macro defines the type of the OS-Object used for blocking
 * the native ::QEQueue when the queue is empty */
 /**
-* @details
+* @description
 * This macro is used when ::QEQueue is used as the event-queue for AOs
 * but also the AO queue must *block* when the queue is empty.
 * In that case, #QF_OS_OBJECT_TYPE specifies the blocking mechanism.

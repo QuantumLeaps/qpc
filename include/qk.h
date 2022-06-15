@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-13
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QK/C (preemptive non-blocking kernel) platform-independent
@@ -49,7 +49,9 @@
 #define QF_THREAD_TYPE      void*
 
 /*==========================================================================*/
-/*! private attributes of the QK kernel */
+/*! @brief QK preemptive non-blocking kernel
+* @class QK
+*/
 typedef struct {
     uint8_t volatile actPrio;    /*!< prio of the active AO */
     uint8_t volatile nextPrio;   /*!< prio of the next AO to execute */
@@ -57,10 +59,12 @@ typedef struct {
     uint8_t volatile lockHolder; /*!< prio of the AO holding the lock */
     uint8_t volatile intNest;    /*!< ISR nesting level */
     QPSet readySet;              /*!< QK ready-set of AOs */
-} QK_PrivAttr;
+} QK;
 
-/*! global private attributes of the QK kernel */
-extern QK_PrivAttr QK_attr_;
+/*! global private attributes of the QK kernel
+* @static @private @memberof QK
+*/
+extern QK QK_attr_;
 
 /*==========================================================================*/
 #ifdef QK_ON_CONTEXT_SW
@@ -68,7 +72,9 @@ extern QK_PrivAttr QK_attr_;
     struct QActive; /* forward declaration */
 
     /*! QK context switch callback (customized in BSPs for QK)
-    * @details
+    * @static @public @memberof QK
+    *
+    * @description
     * This callback function provides a mechanism to perform additional
     * custom operations when QK switches context from one thread to
     * another.
@@ -91,7 +97,9 @@ extern QK_PrivAttr QK_attr_;
 #endif /* QK_ON_CONTEXT_SW */
 
 /*! QK idle callback (customized in BSPs for QK)
-* @details
+* @static @public @memberof QK
+*
+* @description
 * QK_onIdle() is called continuously by the QK idle loop. This callback
 * gives the application an opportunity to enter a power-saving CPU mode,
 * or perform some other idle processing.
@@ -105,11 +113,35 @@ extern QK_PrivAttr QK_attr_;
 void QK_onIdle(void);
 
 /*==========================================================================*/
-/*! QK scheduler finds the highest-priority thread ready to run */
+/*! QK scheduler finds the highest-priority thread ready to run
+* @static @private @memberof QK
+*
+* @description
+* The QK scheduler finds out the priority of the highest-priority AO
+* that (1) has events to process and (2) has priority that is above the
+* current priority.
+*
+* @returns
+* the 1-based priority of the the active object, or zero if no eligible
+* active object is ready to run.
+*
+* @attention
+* QK_sched_() must be always called with interrupts **disabled** and
+* returns with interrupts **disabled**.
+*/
 uint_fast8_t QK_sched_(void);
 
 /*! QK activator activates the next active object. The activated AO preempts
 * the currently executing AOs.
+* @static @private @memberof QK
+*
+* @description
+* QK_activate_() activates ready-to run AOs that are above the initial
+* active priority (QK_attr_.actPrio).
+*
+* @note
+* The activator might enable interrupts internally, but always returns with
+* interrupts **disabled**.
 */
 void QK_activate_(void);
 
@@ -119,10 +151,48 @@ void QK_activate_(void);
 /*! The scheduler lock status */
 typedef uint_fast16_t QSchedStatus;
 
-/*! QK Scheduler lock */
+/*! QK Scheduler lock
+* @static @public @memberof QK
+*
+* @description
+* This function locks the QK scheduler to the specified ceiling.
+*
+* @param[in]   ceiling    priority ceiling to which the QK scheduler
+*                         needs to be locked
+*
+* @returns
+* The previous QK Scheduler lock status, which is to be used to unlock
+* the scheduler by restoring its previous lock status in QK_schedUnlock().
+*
+* @note
+* QK_schedLock() must be always followed by the corresponding
+* QK_schedUnlock().
+*
+* @sa QK_schedUnlock()
+*
+* @usage
+* The following example shows how to lock and unlock the QK scheduler:
+* @include qk_lock.c
+*/
 QSchedStatus QK_schedLock(uint_fast8_t ceiling);
 
-/*! QK Scheduler unlock */
+/*! QK Scheduler unlock
+* @static @public @memberof QK
+*
+* @description
+* This function unlocks the QK scheduler to the previous status.
+*
+* @param[in]   stat       previous QK Scheduler lock status returned from
+*                         QK_schedLock()
+* @note
+* QK_schedUnlock() must always follow the corresponding QK_schedLock().
+*
+* @sa QK_schedLock()
+*
+* @usage
+* The following example shows how to lock and unlock the QK scheduler:
+* @include qk_lock.c
+*/
 void QK_schedUnlock(QSchedStatus stat);
 
 /*==========================================================================*/

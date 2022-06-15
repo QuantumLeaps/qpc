@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>__FPU_PRESENT</Define>
               <Undefine></Undefine>
-              <IncludePath>..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\uc-os2;..\..\..\..\..\3rd_party\uC-OS2\Source;..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv7-M\ARM;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
+              <IncludePath>..;..\..\..\..\..\include;..\..\..\..\..\ports\uc-os2;..\..\..\..\..\3rd_party\uC-OS2\Source;..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv7-M\ARM;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1064,7 +1064,7 @@
               <MiscControls></MiscControls>
               <Define>NDEBUG __FPU_PRESENT</Define>
               <Undefine></Undefine>
-              <IncludePath>..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\uc-os2;..\..\..\..\..\3rd_party\uC-OS2\Source;..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv7-M\ARM;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
+              <IncludePath>..;..\..\..\..\..\include;..\..\..\..\..\ports\uc-os2;..\..\..\..\..\3rd_party\uC-OS2\Source;..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv7-M\ARM;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1789,7 +1789,7 @@
               <MiscControls></MiscControls>
               <Define>Q_SPY __FPU_PRESENT</Define>
               <Undefine></Undefine>
-              <IncludePath>..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\uc-os2;..\..\..\..\..\3rd_party\uC-OS2\Source;..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv7-M\ARM;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
+              <IncludePath>..;..\..\..\..\..\include;..\..\..\..\..\ports\uc-os2;..\..\..\..\..\3rd_party\uC-OS2\Source;..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv7-M\ARM;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

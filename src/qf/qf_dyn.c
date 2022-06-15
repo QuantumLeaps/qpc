@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QF/C dynamic event management
@@ -47,18 +47,9 @@ Q_DEFINE_THIS_MODULE("qf_dyn")
 QF_EPOOL_TYPE_ QF_pool_[QF_MAX_EPOOL]; /* allocate the event pools */
 uint_fast8_t QF_maxPool_; /* number of initialized event pools */
 
-/*==========================================================================*/
+/*..........................................................................*/
 #ifdef Q_EVT_CTOR  /* Provide the constructor for the ::QEvt class? */
 
-/*!
-* @public @memberof QEvt
-* @details
-* Constructor for the ::QEvt class provided when the switch #Q_EVT_CTOR
-* is defined.
-*
-* @param[in,out] me   pointer (see @ref oop)
-* @param[in]     sig  signal to be assigned to the event
-*/
 QEvt *QEvt_ctor(QEvt * const me, enum_t const sig) {
     /*! @pre the me pointer must be valid */
     Q_REQUIRE_ID(100, me != (QEvt *)0);
@@ -68,42 +59,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig) {
 
 #endif /* Q_EVT_CTOR */
 
-
-/*==========================================================================*/
-/*!
-* @static @public @memberof QF
-* @details
-* This function initializes one event pool at a time and must be called
-* exactly once for each event pool before the pool can be used.
-*
-* @param[in] poolSto  pointer to the storage for the event pool
-* @param[in] poolSize size of the storage for the pool in bytes
-* @param[in] evtSize  the block-size of the pool in bytes, which determines
-*            the maximum size of events that can be allocated from the pool.
-*
-* @attention
-* You might initialize many event pools by making many consecutive calls
-* to the QF_poolInit() function. However, for the simplicity of the internal
-* implementation, you must initialize event pools in the **ascending order**
-* of the event size.
-*
-* Many RTOSes provide fixed block-size heaps, a.k.a. memory pools that can
-* be adapted for QF event pools. In case such support is missing, QF provides
-* a native QF event pool implementation. The macro #QF_EPOOL_TYPE_ determines
-* the type of event pool used by a particular QF port. See structure ::QMPool
-* for more information.
-*
-* @note The actual number of events available in the pool might be actually
-* less than (@p poolSize / @p evtSize) due to the internal alignment
-* of the blocks that the pool might perform. You can always check the
-* capacity of the pool by calling QF_getPoolMin().
-*
-* @note The dynamic allocation of events is optional, meaning that you
-* might choose not to use dynamic events. In that case calling QF_poolInit()
-* and using up memory for the memory blocks is unnecessary.
-*
-* @sa QF initialization example for QF_init()
-*/
+/*..........................................................................*/
 void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
                  uint_fast16_t const evtSize)
 {
@@ -129,34 +85,7 @@ void QF_poolInit(void * const poolSto, uint_fast32_t const poolSize,
 #endif /* Q_SPY*/
 }
 
-/*==========================================================================*/
-/*!
-* @static @private @memberof QF
-* @details
-* Allocates an event dynamically from one of the QF event pools.
-*
-* @param[in] evtSize the size (in bytes) of the event to allocate
-* @param[in] margin  the number of un-allocated events still available
-*                    in a given event pool after the allocation completes.
-*                    The special value #QF_NO_MARGIN means that this function
-*                    will assert if allocation fails.
-* @param[in] sig     the signal to be assigned to the allocated event
-*
-* @returns
-* pointer to the newly allocated event. This pointer can be NULL only if
-* margin != #QF_NO_MARGIN and the event cannot be allocated with the
-* specified margin still available in the given pool.
-*
-* @note
-* The internal QF function QF_newX_() raises an assertion when the
-* @p margin parameter is #QF_NO_MARGIN and allocation of the event turns
-* out to be impossible due to event pool depletion, or incorrect (too big)
-* size of the requested event.
-*
-* @note
-* The application code should not call this function directly.
-* The only allowed use is thorough the macros Q_NEW() or Q_NEW_X().
-*/
+/*..........................................................................*/
 QEvt *QF_newX_(uint_fast16_t const evtSize,
                uint_fast16_t const margin, enum_t const sig)
 {
@@ -213,31 +142,7 @@ QEvt *QF_newX_(uint_fast16_t const evtSize,
     return e; /* can't be NULL if we can't tolerate failed allocation */
 }
 
-/*==========================================================================*/
-/*!
-* @static @public @memberof QF
-* @details
-* This function implements a simple garbage collector for the dynamic events.
-* Only dynamic events are candidates for recycling. (A dynamic event is one
-* that is allocated from an event pool, which is determined as non-zero
-* e->poolId_ attribute.) Next, the function decrements the reference counter
-* of the event (e->refCtr_), and recycles the event only if the counter drops
-* to zero (meaning that no more references are outstanding for this event).
-* The dynamic event is recycled by returning it to the pool from which
-* it was originally allocated.
-*
-* @param[in]  e  pointer to the event to recycle
-*
-* @note
-* QF invokes the garbage collector at all appropriate contexts, when
-* an event can become garbage (automatic garbage collection), so the
-* application code should have no need to call QF_gc() directly. The QF_gc()
-* function is exposed only for special cases when your application sends
-* dynamic events to the "raw" thread-safe queues (see ::QEQueue). Such
-* queues are processed outside of QF and the automatic garbage collection
-* is **NOT** performed for these events. In this case you need to call
-* QF_gc() explicitly.
-*/
+/*..........................................................................*/
 void QF_gc(QEvt const * const e) {
 
     /* is it a dynamic event? */
@@ -286,22 +191,7 @@ void QF_gc(QEvt const * const e) {
     }
 }
 
-/*==========================================================================*/
-/*!
-* @static @private @memberof QF
-* @details
-* Creates and returns a new reference to the current event e
-*
-* @param[in] e       pointer to the current event
-* @param[in] evtRef  the event reference
-*
-* @returns
-* the newly created reference to the event `e`
-*
-* @note
-* The application code should not call this function directly.
-* The only allowed use is thorough the macro Q_NEW_REF().
-*/
+/*..........................................................................*/
 QEvt const *QF_newRef_(QEvt const * const e, void const * const evtRef) {
 
     /*! @pre the event must be dynamic and the provided event reference
@@ -327,18 +217,7 @@ QEvt const *QF_newRef_(QEvt const * const e, void const * const evtRef) {
     return e;
 }
 
-/*==========================================================================*/
-/*!
-* @static @private @memberof QF
-* @details
-* Deletes an existing reference to the event e
-*
-* @param[in] evtRef  the event reference
-*
-* @note
-* The application code should not call this function directly.
-* The only allowed use is thorough the macro Q_DELETE_REF().
-*/
+/*..........................................................................*/
 void QF_deleteRef_(void const * const evtRef) {
     QS_CRIT_STAT_
     QEvt const * const e = (QEvt const *)evtRef;
@@ -353,12 +232,7 @@ void QF_deleteRef_(void const * const evtRef) {
     QF_gc(e);
 }
 
-/*==========================================================================*/
-/*!
-* @static @public @memberof QF
-* @details
-* Obtain the block size of any registered event pools
-*/
+/*..........................................................................*/
 uint_fast16_t QF_poolGetMaxBlockSize(void) {
     return QF_EPOOL_EVENT_SIZE_(QF_pool_[QF_maxPool_ - 1U]);
 }

@@ -74,7 +74,7 @@ void QS_f32_fmt_(uint8_t format, float32_t f) {
 
 /**
 * @static @private @memberof QS
-* @details
+* @description
 * This function is only to be used through macros, never in the
 * client code directly.
 */

@@ -26,9 +26,9 @@
 * <www.state-machine.com>
 * <info@state-machine.com>
 ============================================================================*/
-/**
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+/*!
+* @date Last updated on: 2022-06-15
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief Internal (package scope) QF/C interface.
@@ -43,7 +43,7 @@
     /*! This is an internal macro for defining the critical section
     * status type. */
     /**
-    * @details
+    * @description
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -55,7 +55,7 @@
 
     /*! This is an internal macro for entering a critical section. */
     /**
-    * @details
+    * @description
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -67,7 +67,7 @@
 
     /*! This is an internal macro for exiting a critical section. */
     /**
-    * @details
+    * @description
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -114,7 +114,29 @@
 
 /* internal prototypes (should be used via vtable only) */
 
-/*! Prototype of the internal active object start implementation */
+/*! Prototype of the internal active object start implementation
+* @private @memberof QActive
+*
+* @description
+* Starts execution of the AO and registers the AO with the framework.
+* Also takes the top-most initial transition in the AO's state machine.
+* This initial transition is taken in the callee's thread of execution.
+*
+* @param[in,out] me      pointer (see @ref oop)
+* @param[in]     prio    priority at which to start the active object
+* @param[in]     qSto    pointer to the storage for the ring buffer of the
+*                        event queue (used only with the built-in ::QEQueue)
+* @param[in]     qLen    length of the event queue [events]
+* @param[in]     stkSto  pointer to the stack storage (must be NULL in QK)
+* @param[in]     stkSize stack size [bytes]
+* @param[in]     par     pointer to an extra parameter (might be NULL).
+*
+* @note This function should be called via the macro QACTIVE_START().
+*
+* @usage
+* The following example shows starting an AO when a per-task stack is needed:
+* @include qf_start.c
+*/
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
@@ -122,12 +144,64 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
 /*! Get an event from the event queue of an active object.
 * @private @memberof QActive
+*
+* @description
+* The behavior of this function depends on the kernel/OS used in the QF port.
+* For built-in kernels (QV or QK) the function can be called only when
+* the queue is not empty, so it doesn't block. For a blocking kernel/OS
+* the function can block and wait for delivery of an event.
+*
+* @param[in,out] me  pointer (see @ref oop)
+*
+* @returns
+* a pointer to the received event. The returned pointer is guaranteed to be
+* valid (can't be NULL).
+*
+* @note
+* This function is used internally by a QF port to extract events from
+* the event queue of an active object. This function depends on the event
+* queue implementation and is sometimes customized in the QF port
+* (file qf_port.h). Depending on the definition of the macro
+* QACTIVE_EQUEUE_WAIT_(), the function might block the calling thread when
+* no events are available.
 */
 QEvt const *QActive_get_(QActive *const me);
 
 #ifdef Q_SPY
     /*! Prototype of the internal active object post (FIFO) implementation.
     * @private @memberof QActive
+    *
+    * @description
+    * Direct event posting is the simplest asynchronous communication method
+    * available in QF.
+    *
+    * @param[in,out] me     pointer (see @ref oop)
+    * @param[in]     e      pointer to the event to be posted
+    * @param[in]     margin number of required free slots in the queue after
+    *                       posting the event. The special value #QF_NO_MARGIN
+    *                       means that this function will assert if
+    *                       posting fails.
+    * @param[in]     sender pointer to a sender object (used only for
+    *                       QS tracing)
+    *
+    * @returns
+    * 'true' (success) if the posting succeeded (with the provided margin) and
+    * 'false' (failure) when the posting fails.
+    *
+    * @note
+    * The #QF_NO_MARGIN value of the @p margin parameter is special and
+    * denotes situation when the post() operation is assumed to succeed
+    * (event deliveryguarantee). An assertion fires, when the event cannot
+    * be delivered in this case.
+    *
+    * @attention
+    * This function should be called only via the macro QACTIVE_POST()
+    * or QACTIVE_POST_X().
+    *
+    * @usage
+    * @include qf_post.c
+    *
+    * @sa QActive_post_(), QActive_postLIFO()
     */
     bool QActive_post_(QActive * const me, QEvt const * const e,
                        uint_fast16_t const margin,
@@ -139,6 +213,22 @@ QEvt const *QActive_get_(QActive *const me);
 
 /*! Prototype of the internal active object post LIFO implementation.
 * @private @memberof QActive
+*
+* @description
+* posts an event to the event queue of the active object @p me using the
+* Last-In-First-Out (LIFO) policy.
+*
+* @note
+* The LIFO policy should be used only for self-posting and with caution,
+* because it alters order of events in the queue.
+*
+* @param[in] me pointer (see @ref oop)
+* @param[in] e  pointer to the event to post to the queue
+*
+* @attention
+* This function should be called only via the macro QACTIVE_POST_LIFO().
+*
+* @sa QActive_post_(), QACTIVE_POST(), QACTIVE_POST_X()
 */
 void QActive_postLIFO_(QActive * const me, QEvt const * const e);
 
@@ -163,7 +253,7 @@ extern uint_fast8_t QF_maxPool_;     /*!< # of initialized event pools */
 extern QSubscrList *QF_subscrList_;  /*!< the subscriber list array */
 extern enum_t QF_maxPubSignal_;      /*!< the maximum published signal */
 
-/*! structure representing a free block in the Native QF Memory Pool. */
+/*! @brief structure representing a free block in the Native QF Memory Pool */
 typedef struct QFreeBlock {
     struct QFreeBlock * volatile next;
 } QFreeBlock;
@@ -183,7 +273,7 @@ typedef struct QFreeBlock {
 #define QF_PTR_AT_(base_, i_)   ((base_)[(i_)])
 
 /**
-* @details
+* @description
 * This macro is specifically and exclusively used for checking the range
 * of a block pointer returned to the pool. Such a check must rely on the
 * pointer arithmetic not compliant with the MISRA-C 2012 Rule 18.3(R).

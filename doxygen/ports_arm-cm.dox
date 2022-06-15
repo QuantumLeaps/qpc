@@ -1,6 +1,5 @@
 /*##########################################################################*/
 /*! @page arm-cm ARM Cortex-M
-@tableofcontents
 
 This section describes the QP&trade; ports to the ARM Cortex-M processor family (Cortex M0/M0+/M3/M4/M7/M33). Three main implementation options are covered: the @subpage arm-cm_qv "cooperative, priority-based QV kernel", the @subpage arm-cm_qk "preemptive, run-to-completion QK kernel", and the @subpage arm-cm_qxk "preemptive, dual-mode blocking QXK kernel". Additionally, the use of the VFP (floating point coprocessor) in the M4F/M7/M33 CPUs is explained as well. This document assumes QP version 7.x or higher.
 
@@ -205,7 +204,6 @@ All built-in kernels in QP are designed to take advantage of the lazy stacking f
 */
 /*##########################################################################*/
 /*! @page arm-cm_qv Cooperative QV Kernel
-@tableofcontents
 
 The non-preemptive, cooperative QV kernel executes active objects one at a time, with priority-based scheduling performed after run-to-completion (RTC) processing of each event. Due to naturally short duration of event processing in state machines, the simple QV kernel is often adequate for many real-time systems. (NOTE: Long RTC steps can be often broken into shorter pieces by means of the "Reminder" state pattern [@ref Reminder])
 
@@ -635,8 +633,6 @@ When a sleep mode is not used, the QV_onIdle() callback simply re-enables interr
 */
 /*##########################################################################*/
 /*! @page arm-cm_qk Preemptive Non-Blocking QK Kernel
-
-@tableofcontents
 
 <p>The @ref srs_qk "preemptive, non-blocking QK kernel" is specifically designed to execute non-blocking active objects. QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using the **single stack** (MSP on Cortex-M). This section explains how the @ref srs_qk "preemptive non-blocking QK kernel" works on ARM Cortex-M.
 </p>
@@ -1353,7 +1349,6 @@ In yet another test you could post an event to Philosopher active object rather 
 */
 /*##########################################################################*/
 /*! @page arm-cm_qxk Preemptive "Dual-Mode" QXK Kernel
-@tableofcontents
 
 This section describes how to use QP on ARM Cortex-M with the @ref srs_qxk "preemptive, dual-mode QXK real-time kernel", which combines the lightweight non-blocking @ref srs_qxk_basic "basic threads" of QK with traditional blocking @ref srs_qxk_extended "extended threads" found in conventional RTOS kernels. QXK provides all typical services of a conventional blocking RTOS, such as blocking time-delays, semaphores, mutextes, and message queues.
 

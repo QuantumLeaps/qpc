@@ -341,7 +341,6 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST\STM32H7xx/Include</state>
@@ -1399,7 +1398,6 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST\STM32H7xx/Include</state>
@@ -2457,7 +2455,6 @@
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qxk\iar</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST\STM32H7xx/Include</state>

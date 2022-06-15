@@ -1,5 +1,5 @@
 /*============================================================================
-* QS/C port to ARM Cortex-M, generic compiler
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -23,11 +23,14 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-04-09
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-12
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
-* @brief QS/C port to a 32-bit CPU and a generic C compiler.
+* @brief QS/C port to a 32-bit CPU and a generic C99 compiler.
+* @description
+* This is an example of a QP/C port with the documentation for the
+* configuration macros and includes.
 */
 #ifndef QS_PORT_H
 #define QS_PORT_H
@@ -42,13 +45,16 @@
 #define QS_FUN_PTR_SIZE  4
 
 /*==========================================================================*/
-/* NOTE: QS might be used with or without other QP components, in which case
-* the separate definitions of the macros QF_CRIT_STAT_TYPE, QF_CRIT_ENTRY,
-* and QF_CRIT_EXIT are needed. In this port QS is configured to be used with
-* the other QP component, by simply including "qf_port.h" *before* "qs.h".
+/* NOTE: QS might be used with or without other QP components, in which
+* case the separate definitions of the macros QF_CRIT_STAT_TYPE,
+* QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this port QS is configured
+* to be used with the other QP component, by simply including "qf_port.h"
+* *before* "qs.h".
 */
+#ifndef QF_PORT_H
 #include "qf_port.h" /* use QS with QF */
+#endif
+
 #include "qs.h"      /* QS platform-independent public interface */
 
 #endif /* QS_PORT_H */
-

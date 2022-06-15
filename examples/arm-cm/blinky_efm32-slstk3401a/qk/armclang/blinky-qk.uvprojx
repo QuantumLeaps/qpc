@@ -10,13 +10,13 @@
       <TargetName>blinky-dbg</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6130001::V6.13.1::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6160000::V6.16::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>EFM32PG1B200F256GM48</Device>
           <Vendor>Silicon Labs</Vendor>
-          <PackID>SiliconLabs.EFM32PG1B_DFP.5.5.0</PackID>
+          <PackID>SiliconLabs.GeckoPlatform_EFM32PG1B_DFP.4.0.0</PackID>
           <PackURL>https://www.silabs.com/documents/public/cmsis-packs/</PackURL>
           <Cpu>IRAM(0x20000000,0x00008000) IROM(0x00000000,0x00020000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>EFM32PG1B200F256GM48=1 __FPU_PRESENT</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -641,7 +641,7 @@
         <TargetCommonOption>
           <Device>EFM32PG1B200F256GM48</Device>
           <Vendor>Silicon Labs</Vendor>
-          <PackID>SiliconLabs.EFM32PG1B_DFP.5.5.0</PackID>
+          <PackID>SiliconLabs.GeckoPlatform_EFM32PG1B_DFP.4.0.0</PackID>
           <PackURL>https://www.silabs.com/documents/public/cmsis-packs/</PackURL>
           <Cpu>IRAM(0x20000000,0x00008000) IROM(0x00000000,0x00020000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -964,7 +964,7 @@
               <MiscControls></MiscControls>
               <Define>NDEBUG EFM32PG1B200F256GM48=1 __FPU_PRESENT</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1266,7 +1266,7 @@
         <TargetCommonOption>
           <Device>EFM32PG1B200F256GM48</Device>
           <Vendor>Silicon Labs</Vendor>
-          <PackID>SiliconLabs.EFM32PG1B_DFP.5.5.0</PackID>
+          <PackID>SiliconLabs.GeckoPlatform_EFM32PG1B_DFP.4.0.0</PackID>
           <PackURL>https://www.silabs.com/documents/public/cmsis-packs/</PackURL>
           <Cpu>IRAM(0x20000000,0x00008000) IROM(0x00000000,0x00020000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -1589,7 +1589,7 @@
               <MiscControls></MiscControls>
               <Define>Q_SPY EFM32PG1B200F256GM48=1 __FPU_PRESENT</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

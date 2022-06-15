@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on EK-TM4C123GXL, FreeRTOS kernel, GNU-ARM
-# Last Updated for Version: 7.0.0
-# Date of the Last Update:  2021-07-01
+# Last Updated for Version: 7.0.1
+# Date of the Last Update:  2022-06-13
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -85,7 +85,6 @@ VPATH = \
 INCLUDES  = \
 	-I.. \
 	-I$(QPC)/include \
-	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(FREERTOS)/Source/include \
 	-I$(FREERTOS)/Source/portable/GCC/ARM_CM4F \
@@ -118,7 +117,6 @@ QP_SRCS := \
 	qep_hsm.c \
 	qep_msm.c \
 	qf_act.c \
-	qf_actq.c \
 	qf_defer.c \
 	qf_dyn.c \
 	qf_mem.c \
@@ -130,8 +128,9 @@ QP_SRCS := \
 	qf_port.c
 
 RTOS_SRCS := \
-	list.c \
 	tasks.c \
+	queue.c \
+	list.c \
 	port.c
 
 QS_SRCS := \

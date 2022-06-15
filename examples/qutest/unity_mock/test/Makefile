@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST-QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 6.9.0
-# Last updated on  2020-08-01
+# Last updated for version 7.0.1
+# Last updated on  2022-05-23
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -129,7 +129,7 @@ endif
 # Typically you should not need to change anything below this line
 
 VPATH    += $(QPC)/src/qf $(QPC)/src/qs $(QP_PORT_DIR)
-INCLUDES += -I$(QPC)/include -I$(QPC)/src -I$(QP_PORT_DIR)
+INCLUDES += -I$(QPC)/include -I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
 # GNU toolset:

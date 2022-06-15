@@ -69,7 +69,7 @@ bool QXThread_teDisarm_(QXThread * const me);
 
 /*! intertnal macro to encapsulate casting of pointers for MISRA deviations */
 /**
-* @details
+* @description
 * This macro is specifically and exclusively used for casting pointers
 * that are never de-referenced, but only used for internal bookkeeping and
 * checking (via assertions) the correct operation of the QXK kernel.

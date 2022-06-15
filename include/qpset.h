@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-30
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-15
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QP native, platform-independent priority sets of 32 or 64 elements.
@@ -57,7 +57,10 @@
 #if (QF_MAX_ACTIVE <= 32U)
 
 /*==========================================================================*/
-/*! Priority Set of up to 32 elements
+/*! @brief Priority Set of up to 32 elements
+* @class QPSet
+*
+* @description
 * The priority set represents the set of active objects that are ready to
 * run and need to be considered by the scheduling algorithm. The set is
 * capable of storing up to 32 priority levels.
@@ -106,7 +109,10 @@ static inline uint_fast8_t QPSet_findMax(QPSet * const me) {
 #else /* QF_MAX_ACTIVE > 32U */
 
 /*==========================================================================*/
-/*! Priority Set of up to 64 elements
+/*! @brief Priority Set of up to 64 elements
+* @class QPSet
+*
+* @description
 * The priority set represents the set of active objects that are ready to
 * run and need to be considered by the scheduling algorithm. The set is
 * capable of storing up to 64 priority levels.

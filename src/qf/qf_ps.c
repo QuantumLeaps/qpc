@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief Publish-Subscribe services
@@ -42,7 +42,6 @@
 
 Q_DEFINE_THIS_MODULE("qf_ps")
 
-
 /*==========================================================================*/
 /* Package-scope objects */
 /*! @static @private @memberof QF */
@@ -51,36 +50,7 @@ QSubscrList *QF_subscrList_;
 /*! @static @private @memberof QF */
 enum_t QF_maxPubSignal_;
 
-/*==========================================================================*/
-/*!
-* @static @public @memberof QF
-* @details
-* This function initializes the publish-subscribe facilities of QF and must
-* be called exactly once before any subscriptions/publications occur in
-* the application.
-*
-* @param[in] subscrSto pointer to the array of subscriber lists
-* @param[in] maxSignal the dimension of the subscriber array and at
-*                      the same time the maximum signal that can be published
-*                      or subscribed.
-*
-* The array of subscriber-lists is indexed by signals and provides a mapping
-* between the signals and subscriber-lists. The subscriber-lists are bitmasks
-* of type ::QSubscrList, each bit in the bit mask corresponding to the unique
-* priority of an active object. The size of the ::QSubscrList bit mask
-* depends on the value of the #QF_MAX_ACTIVE macro.
-*
-* @note
-* The publish-subscribe facilities are optional, meaning that you might
-* choose not to use publish-subscribe. In that case calling QF_psInit()
-* and using up memory for the subscriber-lists is unnecessary.
-*
-* @sa ::QSubscrList
-*
-* @usage
-* The following example shows the typical initialization sequence of QF:
-* @include qf_main.c
-*/
+/*..........................................................................*/
 void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal) {
     QF_subscrList_   = subscrSto;
     QF_maxPubSignal_ = maxSignal;
@@ -92,27 +62,7 @@ void QF_psInit(QSubscrList * const subscrSto, enum_t const maxSignal) {
     QF_bzero(subscrSto, (uint_fast16_t)maxSignal * sizeof(QSubscrList));
 }
 
-/*==========================================================================*/
-/*!
-* @static @private @memberof QF
-* @details
-* This function posts (using the FIFO policy) the event @a e to **all**
-* active objects that have subscribed to the signal @a e->sig, which is
-* called _multicasting_. The multicasting performed in this function is
-* very efficient based on reference-counting inside the published event
-* ("zero-copy" event multicasting). This function is designed to be
-* callable from any part of the system, including ISRs, device drivers,
-* and active objects.
-*
-* @note
-* To avoid any unexpected re-ordering of events posted into AO queues,
-* the event multicasting is performed with scheduler __locked__. However,
-* the scheduler is locked only up to the priority level of the highest-
-* priority subscriber, so any AOs of even higher priority, which did not
-* subscribe to this event are _not_ affected.
-*
-* @attention this function should be called only via the macro QF_PUBLISH()
-*/
+/*..........................................................................*/
 #ifndef Q_SPY
 void QF_publish_(QEvt const * const e)
 #else
@@ -181,26 +131,7 @@ void QF_publish_(QEvt const * const e,
     QF_gc(e);
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QActive
-* @details
-* This function is part of the Publish-Subscribe event delivery mechanism
-* available in QF. Subscribing to an event means that the framework will
-* start posting all published events with a given signal @p sig to the
-* event queue of the active object @p me.
-*
-* @param[in,out] me  pointer (see @ref oop)
-* @param[in]     sig event signal to subscribe
-*
-* @usage
-* The following example shows how the Table active object subscribes
-* to three signals in the initial transition:
-* @include qf_subscribe.c
-*
-* @sa
-* QF_publish_(), QActive_unsubscribe(), and QActive_unsubscribeAll()
-*/
+/*..........................................................................*/
 void QActive_subscribe(QActive const * const me, enum_t const sig) {
     uint_fast8_t const p = (uint_fast8_t)me->prio;
 
@@ -224,32 +155,7 @@ void QActive_subscribe(QActive const * const me, enum_t const sig) {
     QF_CRIT_X_();
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QActive
-* @details
-* This function is part of the Publish-Subscribe event delivery mechanism
-* available in QF. Un-subscribing from an event means that the framework
-* will stop posting published events with a given signal @p sig to the
-* event queue of the active object @p me.
-*
-* @param[in] me  pointer (see @ref oop)
-* @param[in] sig event signal to unsubscribe
-*
-* @note
-* Due to the latency of event queues, an active object should NOT
-* assume that a given signal @p sig will never be dispatched to the
-* state machine of the active object after un-subscribing from that signal.
-* The event might be already in the queue, or just about to be posted
-* and the un-subscribe operation will not flush such events.
-*
-* @note
-* Un-subscribing from a signal that has never been subscribed in the
-* first place is considered an error and QF will raise an assertion.
-*
-* @sa
-* QF_publish_(), QActive_subscribe(), and QActive_unsubscribeAll()
-*/
+/*..........................................................................*/
 void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
     uint_fast8_t const p = (uint_fast8_t)me->prio;
 
@@ -276,30 +182,7 @@ void QActive_unsubscribe(QActive const * const me, enum_t const sig) {
     QF_CRIT_X_();
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QActive
-* @details
-* This function is part of the Publish-Subscribe event delivery mechanism
-* available in QF. Un-subscribing from all events means that the framework
-* will stop posting any published events to the event queue of the active
-* object @p me.
-*
-* @param[in] me  pointer (see @ref oop)
-*
-* @note
-* Due to the latency of event queues, an active object should NOT
-* assume that no events will ever be dispatched to the state machine of
-* the active object after un-subscribing from all events.
-* The events might be already in the queue, or just about to be posted
-* and the un-subscribe operation will not flush such events. Also, the
-* alternative event-delivery mechanisms, such as direct event posting or
-* time events, can be still delivered to the event queue of the active
-* object.
-*
-* @sa
-* QF_publish_(), QActive_subscribe(), and QActive_unsubscribe()
-*/
+/*..........................................................................*/
 void QActive_unsubscribeAll(QActive const * const me) {
     uint_fast8_t const p = (uint_fast8_t)me->prio;
 

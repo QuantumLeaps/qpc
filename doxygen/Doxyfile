@@ -1,17 +1,18 @@
-# Doxyfile 1.9.3
+# Doxyfile 1.9.4
 
-@INCLUDE = ../../ql-doxygen/Doxyfile-QL
+@INCLUDE = ../../ql-doxygen/ql-doxyfile
 
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = QP/C
-PROJECT_NUMBER         = 7.0.0
+PROJECT_NAME           = "QP/C"
+PROJECT_NUMBER         = 7.0.1
 PROJECT_BRIEF          = "Real-Time Embedded Framework"
-PROJECT_LOGO           = images/logo_ql.png
+PROJECT_LOGO           = ../../ql-doxygen/images/logo_ql.png
 OUTPUT_DIRECTORY       =
 CREATE_SUBDIRS         = NO
+CREATE_SUBDIRS_LEVEL   = 6
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
@@ -41,7 +42,7 @@ PYTHON_DOCSTRING       = YES
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 4
-OPTIMIZE_OUTPUT_FOR_C  = YES
+OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
 OPTIMIZE_OUTPUT_VHDL   = NO
@@ -116,6 +117,7 @@ WARN_IF_INCOMPLETE_DOC = YES
 WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            = "$file:$line: $text"
+WARN_LINE_FORMAT       = "at line $line of file $file"
 WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
@@ -222,18 +224,24 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = ../html
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = ../../ql-doxygen/header-awesome.html
-HTML_FOOTER            = ../../ql-doxygen/footer-awesome.html
+HTML_HEADER            = ../../ql-doxygen/ql-header-awesome.html
+HTML_FOOTER            = ../../ql-doxygen/ql-footer-awesome.html
 HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = ../../ql-doxygen/doxygen-awesome.css \
+                         ../../ql-doxygen/doxygen-awesome-sidebar-only.css \
+                         ../../ql-doxygen/doxygen-awesome-sidebar-only-darkmode-toggle.css \
                          ../../ql-doxygen/ql-awesome.css
+
 HTML_EXTRA_FILES       = ../../ql-doxygen/doxygen-awesome-darkmode-toggle.js \
-                         ../../ql-doxygen/preview.js
+                         ../../ql-doxygen/doxygen-awesome-fragment-copy-button.js \
+                         ../../ql-doxygen/doxygen-awesome-paragraph-link.js \
+                         ../../ql-doxygen/ql-preview.js
+
 HTML_COLORSTYLE_HUE    = 209
 HTML_COLORSTYLE_SAT    = 255
 HTML_COLORSTYLE_GAMMA  = 113
 HTML_TIMESTAMP         = NO
-HTML_DYNAMIC_MENUS     = NO
+HTML_DYNAMIC_MENUS     = YES
 HTML_DYNAMIC_SECTIONS  = NO
 HTML_INDEX_NUM_ENTRIES = 100
 GENERATE_DOCSET        = NO
@@ -259,11 +267,11 @@ QHP_SECT_FILTER_ATTRS  =
 QHG_LOCATION           =
 GENERATE_ECLIPSEHELP   = NO
 ECLIPSE_DOC_ID         = com.state-machine.qp
-DISABLE_INDEX          = YES
+DISABLE_INDEX          = NO
 GENERATE_TREEVIEW      = YES
 FULL_SIDEBAR           = NO
 ENUM_VALUES_PER_LINE   = 4
-TREEVIEW_WIDTH         = 300
+TREEVIEW_WIDTH         = 335
 EXT_LINKS_IN_WINDOW    = NO
 OBFUSCATE_EMAILS       = NO
 HTML_FORMULA_FORMAT    = png
@@ -297,15 +305,15 @@ PREDEFINED             = Q_SPY \
                          Q_UTEST \
                          QK_ON_CONTEXT_SW \
                          QXK_ON_CONTEXT_SW \
-                         QF_MAX_ACTIVE \
-                         QF_MAX_TICK_RATE \
-                         QF_MAX_EPOOL \
-                         QF_EVENT_SIZ_SIZE \
-                         QF_EQUEUE_CTR_SIZE \
-                         QF_MPOOL_SIZ_SIZE \
-                         QF_MPOOL_CTR_SIZE \
-                         QF_TIMEEVT_CTR_SIZE \
-                         QF_ACTIVE_STOP \
-                         QS_TIME_SIZE
+                         QF_MAX_ACTIVE=64U \
+                         QF_MAX_TICK_RATE=2U \
+                         QF_MAX_EPOOL=3U \
+                         QF_EVENT_SIZ_SIZE=2U \
+                         QF_EQUEUE_CTR_SIZE=2U \
+                         QF_MPOOL_SIZ_SIZE=2U \
+                         QF_MPOOL_CTR_SIZE=2U \
+                         QF_TIMEEVT_CTR_SIZE=4U \
+                         QF_ACTIVE_STOP=0 \
+                         QS_TIME_SIZE=4U
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES

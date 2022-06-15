@@ -20,6 +20,7 @@ system (RTOS). The currently supported 3rd-party RTOS kernels are:
 - @subpage freertos
 - @subpage threadx
 - @subpage uc-os2
+- @subpage zephyr
 - <a href="https://www.erika-enterprise.com" target="_blank" class="extern">OSEK/VDX RTOS ERIKA Enterprise</a>
 
 Combined with a conventional RTOS, QP/C takes full advantage of the multitasking capabilities of the RTOS by executing each active object in a separate RTOS task. The QP/C Platform Abstraction Layer (PAL) includes an abstract RTOS interface to enable integration between QP/C and the underlying RTOS. Specifically, the PAL allows adapting most message queue variants as event queues of active objects as well as most memory partitions as QP/C event pools.
@@ -42,7 +43,6 @@ The QP/C/C++ ports and examples for embOS are described in the Quantum Leaps App
 
 /*##########################################################################*/
 /*! @page freertos FreeRTOS
-@tableofcontents
 
 ![FreeRTOS](logo_freertos.png)
 
@@ -53,7 +53,7 @@ The QP-FreeRTOS port works as follows:
 
 - The QP port uses the [static memory allocation of FreeRTOS](https://freertos.org/Static_Vs_Dynamic_Memory_Allocation.html). This requires the FreeRTOS configuration to define the [configSUPPORT_STATIC_ALLOCATION](https://freertos.org/a00110.html#configSUPPORT_STATIC_ALLOCATION)
 
-- Each QP active object executes in a separate FreeRTOS task and requires a private stack space.
+- Each QP active object executes in a separate FreeRTOS task (`StaticTask_t`) and requires a private stack space.
 
 - The task-level critical section used in QF and QS is based on the FreeRTOS APIs `taskENTER_CRITICAL()`/`taskEXIT_CRITICAL()`.
 
@@ -65,9 +65,7 @@ The QP-FreeRTOS port works as follows:
 The design of FreeRTOS requires the use of special "FromISR" API inside ISRs, which imposes the requirement to also provide the "FromISR" variants of the QP APIs, such as `QACTIVE_POST_FROM_ISR()`, `QF_PUBLISH_FROM_ISR()`, etc. These "FromISR" QP APIs must be used inside ISRs instead of the task-level APIs (`QACTIVE_POST()`, `QF_PUBLISH()`, etc.) and conversely, they cannot be used inside tasks and active objects. Unfortunately, FreeRTOS provides no generic way to enforce the proper API use via assertions.
 
 
-- The QP port uses the native event queue (::QEQueue) for active object event queues and internally calls the FreeRTOS API `xTaskNotifyGive()` to notify an active object when an event is posted to its event queue.
-
-- The QP port internally calls the FreeRTOS API `ulTaskNotifyTake(pdTRUE, portMAX_DELAY)` to block an active object task when it waits for posting an event.
+- The QP port uses the FreeRTOS message queue (`StaticQueue_t`) for active object event queues.
 
 - The QP port uses the native QF memory pool (::QMPool) to implement event pools.
 
@@ -127,7 +125,7 @@ void UART0_IRQHandler(void) {
 @subsection freertos_hook Writing FreeRTOS Hooks Running in ISR Context
 FreeRTOS provides "hooks" that are user functions that execute in the ISR context (e.g., `vApplicationTickHook()`). Such ISR-level functions are closely related to ISRs and should also use exclusively only the "FromISR" APIs. Here is an example of the `vApplicationTickHook()`:
 
-@code{c}
+@code{.c}
 /* NOTE: only the "FromISR" API variants are allowed in vApplicationTickHook */
 void vApplicationTickHook(void) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -228,8 +226,8 @@ qpc/
 | | | +-qf_time.c
 | |
 | | +-qs/
-| | | +-qs.c        - included only in the Spy build configuration
-| | | +-qs_fp.c     - included only in the Spy build configuration
+| | | +-qs.c       - included only in the Spy build configuration
+| | | +-qs_fp.c    - included only in the Spy build configuration
 |
 +-ports
 | +-uc-os2
@@ -244,6 +242,82 @@ The QP/C/C++ ports and examples for uC-OS2 are described in the Quantum Leaps Ap
 
 [![QP and uC-OS2](img/AN.jpg)](https://www.state-machine.com/doc/AN_RTOS-uCOS2.pdf)
 @caption{[Application Note: QP and uC-OS2](https://www.state-machine.com/doc/AN_RTOS-uCOS2.pdf)}
+
+@next{zephyr}
+*/
+
+/*##########################################################################*/
+/*! @page zephyr Zephyr
+
+![Zephyr Project](logo_zephyr.jpg)
+
+@section zephyr_about About the QP Port to Zephyr
+This directory contains a generic platform-independent QP/C port to the [Zephyr RTOS](https://zephyrproject.org).
+
+Typically, you should not need to change the files in this directory to adapt the QP-Zephyr port on any CPU/Compiler to which Zephyr has been ported, because all the CPU and compiler specifics are handled by the Zephyr RTOS.
+
+
+The QP-Zephyr port works as follows:
+
+- The critical section used in this port is based on `k_spin_lock()/k_spin_unlock()` Zephyr API. This is the modern Zephyr critical section API, which is ready for SMP (symmetric multiprocessing).
+
+- Each QP active object executes in a separate Zephyr thread (`struct k_thread`) and requires a private stack space.
+
+@note
+As demonstrated in the @ref exa_zephyr "provided examples", the private stacks for active objects in this port must be allocated with the Zephyr `K_THREAD_STACK_DEFINE()` macro. Also, the stack size passed to QACTIVE_START() must be calculated with the Zephyr `K_THREAD_STACK_SIZEOF()` macro. Failure to use these macros can lead to memory corruption in the application.
+
+
+- The active object event queue is implemented with the Zephyr message queue (`struct k_msgq`).
+
+@note
+The Zephyr message queue currently supports only the FIFO policy and does NOT support the LIFO policy. For that reason, the QActive_postLIFO_() implementation in this port uses the FIFO policy. A feature request has been filed in the Zephyr project for adding the LIFO policy, so perhaps this can be improved, if the feature is added.
+
+
+- The QP port uses Zephyr scheduler locking (`k_sched_lock()/k_sched_unlock()`), which locks all threads indiscriminately. Currently Zephyr does not provide a selective scheduler locking.
+
+- The QP port uses the native QF memory pool (::QMPool) to implement event pools.
+
+- The QP port does not mandate any specific method to manage the QP time events, but the provided examples use the Zephyr timer (`struct k_timer`) to tick periodically and invoke QF_TICK_X().
+
+
+@subsection zephyr_build QP Source Files Needed in this QP Port
+It is important to note that **NOT** all QP source files should be included. Here is the list of QP source files needed:
+
+@verbatim
+qpc/
++-src/
+| | +-qf/
+| | | +-qep_hsm.c
+| | | +-qep_msm.c
+| | | +-qf_act.c
+| | | +-qf_actq.c  - NOT included (implemented in Zephyr)
+| | | +-qf_defer.c
+| | | +-qf_dyn.c
+| | | +-qf_mem.c
+| | | +-qf_ps.c
+| | | +-qf_qeq.c
+| | | +-qf_qmact.c
+| | | +-qf_time.c
+| |
+| | +-qs/
+| | | +-qs.c       - included only in the Spy build configuration
+| | | +-qs_fp.c    - included only in the Spy build configuration
+|
++-ports
+| +-zephyr
+| | +-qep_port.h
+| | +-qf_port.h
+| | +-qf_port.c    - implementation of the Zephyr port
+| | +-qs_port.h
+|
+@endverbatim
+
+@note
+Specifically, the QP source files qf_actq.c must **NOT** be included in the build, because this functionality is taken from Zephyr.
+
+
+@section zephyr_exa Examples for the Zephyr port
+The example projects for this port are located in @ref exa_zephyr "examples/zephyr".
 
 @next{ports_os}
 */

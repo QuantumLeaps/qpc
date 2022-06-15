@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QXMutex_init(), QXMutex_lock(), QXMutex_tryLock() and
@@ -48,38 +48,12 @@
 
 Q_DEFINE_THIS_MODULE("qxk_mutex")
 
-/*==========================================================================*/
-/*!
-* @details
-* Initialize the QXK priority ceiling mutex.
-*
-* @param[in,out] me      pointer (see @ref oop)
-* @param[in]     ceiling the ceiling-priotity of this mutex or zero
-*
-* @note
-* `ceiling == 0` means that the priority-ceiling protocol shall __not__
-* be used by this mutex. Such mutex will __not__ change (boost) the
-* priority of the holding thread.
-*
-* @note
-* `ceiling > 0` means that the priority-ceiling protocol shall be used
-* by this mutex. Such mutex __will__ boost the priority of the holding
-* thread to the `ceiling` level for as long as the thread holds this mutex.
-*
-* @attention
-* When the priority-ceiling protocol is used (`ceiling > 0`), the
-* `ceiling` priority must be unused by any other thread or mutex.
-* Also, the `ceiling` priority must be higher than priority of any thread
-* that uses this mutex.
-*
-* @usage
-* @include qxk_mutex.c
-*/
+/*..........................................................................*/
 void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling) {
     QF_CRIT_STAT_
     QF_CRIT_E_();
 
-    /*! @pre the celiling priority of the mutex must:
+    /*! @pre the ceiling priority of the mutex must:
     * - cannot exceed the maximum #QF_MAX_ACTIVE;
     * - the ceiling priority of the mutex must not be already in use;
     * (QF requires priority to be **unique**).
@@ -101,27 +75,7 @@ void QXMutex_init(QXMutex * const me, uint_fast8_t ceiling) {
     QF_CRIT_X_();
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* Lock the QXK priority ceiling mutex ::QXMutex.
-*
-* @param[in,out] me      pointer (see @ref oop)
-* @param[in]  nTicks    number of clock ticks (at the associated rate)
-*                       to wait for the semaphore. The value of
-*                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
-*                       occur and the semaphore will wait indefinitely.
-* @returns
-* 'true' if the mutex has been acquired and 'false' if a timeout occured.
-*
-* @note
-* The mutex locks are allowed to nest, meaning that the same extended thread
-* can lock the same mutex multiple times (< 255). However, each call to
-* QXMutex_lock() must be ballanced by the matching call to QXMutex_unlock().
-*
-* @usage
-* @include qxk_mutex.c
-*/
+/*..........................................................................*/
 bool QXMutex_lock(QXMutex * const me,
                   uint_fast16_t const nTicks)
 {
@@ -181,7 +135,7 @@ bool QXMutex_lock(QXMutex * const me,
         /* the nesting level must not exceed the dynamic range of uint8_t */
         Q_ASSERT_ID(220, me->lockNest < 0xFFU);
 
-        ++me->lockNest;
+        ++me->lockNest; /* lock one level */
     }
     else { /* the mutex is alredy locked by a different thread */
         /* the ceiling holder priority must be valid */
@@ -233,27 +187,7 @@ bool QXMutex_lock(QXMutex * const me,
     return locked;
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* Try to lock the QXK priority ceiling mutex ::QXMutex.
-*
-* @param[in,out] me      pointer (see @ref oop)
-*
-* @returns
-* 'true' if the mutex was successfully locked and 'false' if the mutex was
-* unavailable and was NOT locked.
-*
-* @note
-* This function **can** be called from both basic threads (active objects)
-* and extended threads.
-*
-* @note
-* The mutex locks are allowed to nest, meaning that the same extended thread
-* can lock the same mutex multiple times (<= 225). However, each successful
-* call to QXMutex_tryLock() must be ballanced by the matching call to
-* QXMutex_unlock().
-*/
+/*..........................................................................*/
 bool QXMutex_tryLock(QXMutex * const me) {
     QF_CRIT_STAT_
     QF_CRIT_E_();
@@ -307,7 +241,7 @@ bool QXMutex_tryLock(QXMutex * const me) {
         /* the nesting level must not exceed  the dynamic range of uint8_t */
         Q_ASSERT_ID(320, me->lockNest < 0xFFU);
 
-        ++me->lockNest;
+        ++me->lockNest; /* lock one level */
     }
     else { /* the mutex is alredy locked by a different thread */
         if (me->ceiling != 0U) {
@@ -322,26 +256,7 @@ bool QXMutex_tryLock(QXMutex * const me) {
     return curr != (QActive *)0;
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* Unlock the QXK priority ceiling mutex.
-*
-* @param[in,out] me      pointer (see @ref oop)
-*
-* @note
-* This function **can** be called from both basic threads (active objects)
-* and extended threads.
-*
-* @note
-* The mutex locks are allowed to nest, meaning that the same extended thread
-* can lock the same mutex multiple times (<= 225). However, each call to
-* QXMutex_lock() or a _successfull_ call to QXMutex_tryLock() must be
-* ballanced by the matching call to QXMutex_unlock().
-*
-* @usage
-* @include qxk_mutex.c
-*/
+/*..........................................................................*/
 void QXMutex_unlock(QXMutex * const me) {
     QF_CRIT_STAT_
     QF_CRIT_E_();
@@ -372,7 +287,7 @@ void QXMutex_unlock(QXMutex * const me) {
     if (me->lockNest == 1U) {
 
         if (me->ceiling != 0U) {
-            /* restore the holding thread's dynamic priority to the original */
+            /* restore the holding thread's dynamic prio to the original */
             QPSet_remove(&QXK_attr_.readySet, (uint_fast8_t)curr->dynPrio);
             curr->dynPrio = curr->prio;
             QPSet_insert(&QXK_attr_.readySet, (uint_fast8_t)curr->dynPrio);
@@ -449,7 +364,7 @@ void QXMutex_unlock(QXMutex * const me) {
         }
     }
     else { /* releasing the mutex */
-        --me->lockNest; /* release one level */
+        --me->lockNest; /* unlock one level */
     }
     QF_CRIT_X_();
 }

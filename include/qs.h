@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-15
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QS/C platform-independent public interface.
@@ -37,15 +37,45 @@
 #endif
 
 /*==========================================================================*/
-/*! QS pre-defined record types (TX channel)
-* @details
+/*! QS private data (the TX channel) */
+typedef uint_fast16_t QSCtr;  /*!< QS ring buffer counter and offset type */
+
+/*! @brief Software tracing facilities
+* @class QS
+*
+* @description
+* This class groups together QS services.
+*/
+typedef struct {
+    uint8_t glbFilter[16]; /*!< @private global on/off QS filter */
+    uint8_t locFilter[16]; /*!< @private local QS filters */
+    void const *locFilter_AP; /*!< @private  deprecated local QS filter */
+    uint8_t *buf;         /*!< @private pointer to the ring buffer */
+    QSCtr    end;         /*!< @private offset of the ring buffer end */
+    QSCtr volatile head;  /*!< @private offset of next inserted byte */
+    QSCtr volatile tail;  /*!< @private offset of next extracted byte */
+    QSCtr volatile used;  /*!< @private # bytes currently in the buffer */
+    uint8_t volatile seq; /*!< @private the record sequence number */
+    uint8_t volatile chksum; /*!< @private checksum of the current record */
+
+    uint8_t volatile critNest; /*!< @private critical section nesting level */
+} QS;
+
+/*! the only instance of the QS class
+* @static @private @memberof QS
+*/
+extern QS QS_priv_;
+
+/*! QS predefined record types (TX channel)
+*
+* @description
 * This enumeration specifies the record types used in the QP components.
 * You can specify your own record types starting from ::QS_USER offset.
 * Currently, the maximum of all records cannot exceed 125.
 *
 * @note
 * The QS records labeled as "not maskable" are always enabled and cannot
-* be turend off with the QS_GLB_FILTER() macro. Other QS trace records
+* be turned off with the QS_GLB_FILTER() macro. Other QS trace records
 * can be disabled by means of the "global filters"
 *
 * @sa QS_GLB_FILTER() macro
@@ -63,7 +93,7 @@ enum QSpyRecords {
     QS_QEP_TRAN,          /*!< a regular transition was taken */
     QS_QEP_IGNORED,       /*!< an event was ignored (silently discarded) */
     QS_QEP_DISPATCH,      /*!< an event was dispatched (begin of RTC step) */
-    QS_QEP_UNHANDLED,     /*!< an event was unhandled due to a guard */
+    QS_QEP_UNHANDLED,     /*!< an event was un-handled due to a guard */
 
     /* [10] Active Object (AO) records */
     QS_QF_ACTIVE_DEFER,   /*!< AO deferred an event */
@@ -200,14 +230,14 @@ enum QSpyIdGroups {
     QS_AP_IDS  = (0x80 + (enum_t)QS_AP_ID), /*!< Application-specific IDs */
 };
 
-/*! QSpy ID type for applying local filtering */
+/*! @brief QSpy ID type for applying local filtering */
 typedef struct { uint8_t prio; } QSpyId;
 
 #ifndef QS_TIME_SIZE
 
     /*! The size [bytes] of the QS time stamp. Valid values: 1U, 2U, or 4U;
     * default 4U.
-    * @details
+    * @description
     * This macro can be defined in the QS port file (qs_port.h) to
     * configure the ::QSTimeCtr type. Here the macro is not defined so the
     * default of 4 byte is chosen.
@@ -234,79 +264,158 @@ typedef struct { uint8_t prio; } QSpyId;
 #endif
 
 /*==========================================================================*/
-/*! QS software tracing facilities
-* @details
-* This class groups together QS services. It has only static members and
-* should not be instantiated.
-*/
-typedef struct {
-    uint8_t dummy;
-} QS;
-
 /*! Initialize the QS data buffer.
 * @static @public @memberof QS
+*
+* @description
+* This function should be called from QS_onStartup() to provide QS with
+* the data buffer. The first parameter @p sto[] is the address of the memory
+* block, and the second parameter @p stoSize is the size of this block
+* in bytes. Currently the size of the QS buffer cannot exceed 64KB.
+*
+* @note QS can work with quite small data buffers, but you will start losing
+* data if the buffer is too small for the bursts of tracing activity.
+* The right size of the buffer depends on the data production rate and
+* the data output rate. QS offers flexible filtering to reduce the data
+* production rate.
+*
+* @note If the data output rate cannot keep up with the production rate,
+* QS will start overwriting the older data with newer data. This is
+* consistent with the "last-is-best" QS policy. The record sequence counters
+* and check sums on each record allow the QSPY host uitiliy to easily detect
+* any data loss.
+*
+* @note
+* This function initializes all the internal QS variables, so that the
+* tracing can start correctly even if the startup code fails to clear
+* any uninitialized data (as is required by the C Standard).
 */
 void QS_initBuf(uint8_t sto[], uint_fast16_t stoSize);
 
 /*! Set/clear the global Filter for a given QS record or group of records.
 * @static @private @memberof QS
+*
+* @static @private @memberof QS
+* @description
+* This function sets up the global QS filter to enable or disable the
+* given QS record or a group of records @p rec.
+*
+* @param[in] filter  the QS record number or group to enable in the filter,
+*                 if positive or disable, if negative. The record numbers
+*                 must be from the enumeration ::QSpyRecords. The record
+*                 groups from enumeration ::QSpyRecordGroups.
+* @note
+* Filtering based on the record-type (global filter) is only the first layer
+* of filtering. The second layer is based on the object-id (local filter).
+* Both filter layers must be enabled for the QS record to be inserted into
+* the QS buffer.
 */
 void QS_glbFilter_(int_fast16_t const filter);
 
 /*! Set/clear the local Filter for a given object-id or group of object-ids.
 * @static @private @memberof QS
+*
+* @description
+* This function sets up the local QS filter to enable or disable the
+* given QS object-id or a group of object-ids @p qs_id.
+*
+* @param[in] filter  a bitmask of local filter-IDs or a local filter group.
+*
+* @note
+* Filtering based on the object-id (local filter) is the second layer of
+* filtering. The first layer is based on the QS record-type (gloabl filter).
+* Both filter layers must be enabled for the QS record to be inserted into
+* the QS buffer.
 */
 void QS_locFilter_(int_fast16_t const filter);
 
 /*! Mark the begin of a QS record @p rec
 * @static @private @memberof QS
+*
+* @description
+* This function must be called at the beginning of each QS record.
+* This function should be called indirectly through the macro QS_BEGIN_ID(),
+* or QS_BEGIN_NOCRIT(), depending if it's called in a normal code or from
+* a critical section.
 */
 void QS_beginRec_(uint_fast8_t rec);
 
 /*! Mark the end of a QS record @p rec
 * @static @private @memberof QS
+*
+* @description
+* This function must be called at the end of each QS record.
+* This function should be called indirectly through the macro QS_END(),
+* or QS_END_NOCRIT(), depending if it's called in a normal code or from
+* a critical section.
 */
 void QS_endRec_(void);
 
 /* unformatted (raw) data elements output ..................................*/
 /*! output raw uint8_t data element (without format information)
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macros, never in the
+* client code directly.
 */
 void QS_u8_raw_(uint8_t d);
 
 /*! output two raw uint8_t data elements (without format information)
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macros, never in the
+* client code directly.
 */
 void QS_2u8_raw_(uint8_t d1, uint8_t d2);
 
 /*! Output raw uint16_t data element (without format information)
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macros, never in the
+* client code directly.
 */
 void QS_u16_raw_(uint16_t d);
 
 /*! Output raw uint32_t data element (without format information)
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macros, never in the
+* client code directly.
 */
 void QS_u32_raw_(uint32_t d);
 
 /*! Output raw zero-terminated string element (without format information)
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macros, never in the
+* client code directly.
 */
 void QS_str_raw_(char const *str);
 
 /* formatted data elements output ..........................................*/
 /*! Output uint8_t data element with format information
 * @static @private @memberof QS
+*
+* @description
+* @note This function is only to be used through macros, never in the
+* client code directly.
 */
 void QS_u8_fmt_(uint8_t format, uint8_t d);
 
 /*! output uint16_t data element with format information
 * @static @private @memberof QS
+*
+* @description
+* This function is only to be used through macros, never in the
+* client code directly.
 */
 void QS_u16_fmt_(uint8_t format, uint16_t d);
 
 /*! Output uint32_t data element with format information
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macros, never in the
+* client code directly.
 */
 void QS_u32_fmt_(uint8_t format, uint32_t d);
 
@@ -322,11 +431,18 @@ void QS_f64_fmt_(uint8_t format, float64_t d);
 
 /*! Output obj pointer data element without format information
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macros, never in the
+* client code directly.
 */
+
 void QS_obj_raw_(void const * const obj);
 
 /*! Output zero-terminated ASCII string element with format information
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macros, never in the
+* client code directly.
 */
 void QS_str_fmt_(char const *str);
 
@@ -345,9 +461,18 @@ void QS_u64_raw_(uint64_t d);
 */
 void QS_u64_fmt_(uint8_t format, uint64_t d);
 
-/* QS buffer access *********************************************************/
+/* QS buffer access ========================================================*/
 /*! Byte-oriented interface to the QS data buffer.
 * @static @public @memberof QS
+*
+* @description
+* This function delivers one byte at a time from the QS data buffer.
+*
+* @returns the byte in the least-significant 8-bits of the 16-bit return
+* value if the byte is available. If no more data is available at the time,
+* the function returns ::QS_EOD (End-Of-Data).
+*
+* @note QS_getByte() is __not__ protected with a critical section.
 */
 uint16_t QS_getByte(void);
 
@@ -356,15 +481,35 @@ uint16_t QS_getByte(void);
 
 /*! Block-oriented interface to the QS data buffer.
 * @static @public @memberof QS
+*
+* @description
+* This function delivers a contiguous block of data from the QS data buffer.
+* The function returns the pointer to the beginning of the block, and writes
+* the number of bytes in the block to the location pointed to by @p pNbytes.
+* The parameter @p pNbytes is also used as input to provide the maximum size
+* of the data block that the caller can accept.
+*
+* @returns if data is available, the function returns pointer to the
+* contiguous block of data and sets the value pointed to by @p pNbytes
+* to the # available bytes. If data is available at the time the function is
+* called, the function returns NULL pointer and sets the value pointed to by
+* @p pNbytes to zero.
+*
+* @note Only the NULL return from QS_getBlock() indicates that the QS buffer
+* is empty at the time of the call. The non-NULL return often means that
+* the block is at the end of the buffer and you need to call QS_getBlock()
+* again to obtain the rest of the data that "wrapped around" to the
+* beginning of the QS data buffer.
+*
+* @note QS_getBlock() is NOT protected with a critical section.
 */
 uint8_t const *QS_getBlock(uint16_t *pNbytes);
-
 
 /* platform-specific callback functions, need to be implemented by clients */
 
 /*! Callback to startup the QS facility
 * @static @public @memberof QS
-* @details
+* @description
 * This is a platform-dependent "callback" function invoked through the macro
 * QS_INIT(). You need to implement this function in your application.
 * At a minimum, the function must configure the QS buffer by calling
@@ -383,7 +528,7 @@ uint8_t QS_onStartup(void const *arg);
 
 /*! Callback to cleanup the QS facility
 * @static @public @memberof QS
-* @details
+* @description
 * This is a platform-dependent "callback" function invoked through the macro
 * QS_EXIT(). You need to implement this function in your application.
 * The main purpose of this function is to close the QS output channel, if
@@ -393,7 +538,7 @@ void QS_onCleanup(void);
 
 /*! Callback to flush the QS trace data to the host
 * @static @public @memberof QS
-* @details
+* @description
 * This is a platform-dependent "callback" function to flush the QS trace
 * buffer to the host. The function typically busy-waits until all the data
 * in the buffer is sent to the host. This is acceptable only in the initial
@@ -403,7 +548,7 @@ void QS_onFlush(void);
 
 /*! Callback to obtain a timestamp for a QS record.
 * @static @public @memberof QS
-* @details
+* @description
 * This is a platform-dependent "callback" function invoked from the macro
 * QS_TIME_PRE_() to add the time stamp to a QS record.
 *
@@ -425,7 +570,7 @@ QSTimeCtr QS_onGetTime(void);
 /* Macros for adding QS instrumentation to the client code */
 
 /*! Initialize the QS facility.
-* @details
+* @description
 * This macro provides an indirection layer to invoke the QS initialization
 * routine if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
 * @sa QS_onStartup(), example of setting up a QS filter in QS_GLB_FILTER()
@@ -433,7 +578,7 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_INIT(arg_)           (QS_onStartup(arg_))
 
 /*! Cleanup the QS facility.
-* @details
+* @description
 * This macro provides an indirection layer to invoke the QS cleanup
 * routine if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
 * @sa QS_onCleanup()
@@ -441,7 +586,7 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_EXIT()               (QS_onCleanup())
 
 /*! Flush the QS trace data to the host.
-* @details
+* @description
 * This macro invokes the QS_flush() platform-dependent callback function
 * to flush the QS trace buffer to the host. The function typically
 * busy-waits until all the data in the buffer is sent to the host.
@@ -450,9 +595,13 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_FLUSH()   (QS_onFlush())
 
 /*! Global Filter for a given record type @p rec
-* @details
+* @description
 * This macro provides an indirection layer to call QS_glbFilter_()
 * if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
+*
+* @sa
+* - ::QSpyRecordGroups - QS record groups that can be used as @p rec_
+* - ::QSpyRecords - individual QS records that can be used as @p rec_
 *
 * The following example shows how to use QS filters:
 * @include qs_filter.c
@@ -460,9 +609,13 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_GLB_FILTER(rec_)  (QS_glbFilter_((int_fast16_t)(rec_)))
 
 /*! Local Filter for a given object-id @p qs_id
-* @details
+* @description
 * This macro provides an indirection layer to call QS_locFilter_()
 * if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
+*
+* @sa
+* - ::QSpyIdGroups - QS ID groups that can be used as @p qs_id_
+* - ::QSpyIdOffsets - QS ID offsets for @p qs_id_ (e.g., QS_AP_IDS + 5)
 *
 * The following example shows how to use QS filters:
 * @include qs_filter.c
@@ -470,7 +623,7 @@ QSTimeCtr QS_onGetTime(void);
 #define QS_LOC_FILTER(qs_id_)  (QS_locFilter_((int_fast16_t)(qs_id_)))
 
 /*==========================================================================*/
-/* Facilities for QS ciritical section */
+/* Facilities for QS critical section */
 
 /* QS-specific critical section */
 #ifdef QS_CRIT_ENTRY /* separate QS critical section defined? */
@@ -490,7 +643,7 @@ QSTimeCtr QS_onGetTime(void);
 #ifndef QF_CRIT_STAT_TYPE
     /*! This is an internal macro for defining the critical section
     * status type.
-    * @details
+    * @description
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -501,7 +654,7 @@ QSTimeCtr QS_onGetTime(void);
     #define QS_CRIT_STAT_
 
     /*! This is an internal macro for entering a critical section.
-    * @details
+    * @description
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -512,7 +665,7 @@ QSTimeCtr QS_onGetTime(void);
     #define QS_CRIT_E_()     QF_CRIT_ENTRY(dummy)
 
     /*! This is an internal macro for exiting a critical section.
-    * @details
+    * @description
     * The purpose of this macro is to enable writing the same code for the
     * case when critical section status type is defined and when it is not.
     * If the macro #QF_CRIT_STAT_TYPE is defined, this internal macro
@@ -587,7 +740,7 @@ QSTimeCtr QS_onGetTime(void);
     }
 
 /*! formats for application-specific data elements
-* @details
+* @description
 * QS uses this enumeration is used only internally for the formatted user
 * data elements.
 */
@@ -716,7 +869,8 @@ enum {
 /* Dictionary trace records */
 
 /*! Output signal dictionary record
-* @details
+*
+* @description
 * A signal dictionary record associates the numerical value of the signal
 * and the binary address of the state machine that consumes that signal
 * with the human-readable name of the signal.
@@ -759,7 +913,7 @@ enum {
     (QS_sig_dict_pre_((sig_), (obj_), #sig_))
 
 /*! Output object dictionary record
-* @details
+* @description
 * An object dictionary record associates the binary address of an object
 * in the target's memory with the human-readable name of the object.
 *
@@ -775,7 +929,7 @@ enum {
     (QS_obj_dict_pre_((obj_), #obj_))
 
 /*! Output object-array dictionary record
-* @details
+* @description
 * An object array dictionary record associates the binary address of the
 * object element in the target's memory with the human-readable name
 * of the object.
@@ -792,7 +946,7 @@ enum {
     (QS_obj_arr_dict_pre_((obj_), (idx_), #obj_))
 
 /*! Output function dictionary record
-* @details
+* @description
 * A function dictionary record associates the binary address of a function
 * in the target's memory with the human-readable name of the function.
 *
@@ -807,7 +961,7 @@ enum {
     (QS_fun_dict_pre_((void (*)(void))(fun_), #fun_))
 
 /*! Output user QS-record dictionary record
-* @details
+* @description
 * A user QS-record dictionary record associates the numerical value of a
 * user record with the human-readable identifier.
 */
@@ -816,18 +970,24 @@ enum {
 
 /*! Output predefined signal-dictionary record
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macro QS_SIG_DICTIONARY()
 */
 void QS_sig_dict_pre_(enum_t const sig, void const * const obj,
                       char const *name);
 
 /*! Output predefined object-dictionary record
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macro QS_OBJ_DICTIONARY()
 */
 void QS_obj_dict_pre_(void const * const obj,
                       char const *name);
 
 /*! Output predefined object-array dictionary record
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macro QS_OBJ_ARR_DICTIONARY()
 */
 void QS_obj_arr_dict_pre_(void const * const obj,
                           uint_fast16_t idx,
@@ -835,21 +995,27 @@ void QS_obj_arr_dict_pre_(void const * const obj,
 
 /*! Output predefined function-dictionary record
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macro QS_FUN_DICTIONARY()
 */
 void QS_fun_dict_pre_(void (* const fun)(void),
                       char const *name);
 
 /*! Output predefined user-dictionary record
 * @static @private @memberof QS
+*
+* @note This function is only to be used through macro QS_USR_DICTIONARY()
 */
 void QS_usr_dict_pre_(enum_t const rec,
                       char const * const name);
 
 /*==========================================================================*/
-/* Miscellaneous pre-formatted trace records used in applications */
+/* Miscellaneous predefined trace records used in applications */
 
-/*! Output the assertion failure trace record
-* @details
+/*! Output the predefined assertion failure trace record
+* @static @public @memberof QS
+*
+* @description
 * This trace record is intended to use from the Q_onAssert() callback.
 */
 void QS_ASSERTION(char const * const module,
@@ -880,9 +1046,6 @@ void QF_QS_ISR_EXIT(uint8_t const isrnest, uint8_t const prio);
 #define QF_QS_ACTION(act_)    (act_)
 
 /*==========================================================================*/
-/* QS private data (the TX channel) */
-typedef uint_fast16_t QSCtr;  /*!< QS ring buffer counter and offset type */
-
 /*! Kinds of objects used in QS. */
 enum QSpyObjKind {
     SM_OBJ,    /*!< state machine object */
@@ -898,54 +1061,69 @@ enum OSpyObjCombnation {
     SM_AO_OBJ = (enum_t)MAX_OBJ /*!< combination of SM and AO */
 };
 
-/*! Private QS attributes to keep track of the filters and the trace buffer */
-typedef struct {
-    uint8_t glbFilter[16]; /*!< global on/off QS filter */
-    uint8_t locFilter[16]; /*!< local QS filters */
-    void const *locFilter_AP; /*!< deprecated local QS filter */
-    uint8_t *buf;         /*!< pointer to the start of the ring buffer */
-    QSCtr    end;         /*!< offset of the end of the ring buffer */
-    QSCtr volatile head;  /*!< offset to where next byte will be inserted */
-    QSCtr volatile tail;  /*!< offset of where next byte will be extracted */
-    QSCtr volatile used;  /*!< number of bytes currently in the ring buffer */
-    uint8_t volatile seq; /*!< the record sequence number */
-    uint8_t volatile chksum; /*!< the checksum of the current record */
-
-    uint8_t volatile critNest; /*!< critical section nesting level */
-} QSPrivAttr;
-
-extern QSPrivAttr QS_priv_;
-
 /*==========================================================================*/
 /* QS receive channel */
 
 /*! Initialize the QS RX data buffer.
-* @static @public @memberof QS
+* @static @public @memberof QSrx
+*
+* @description
+* This function should be called from QS_onStartup() to provide QS-RX with
+* the receive data buffer.
+*
+* @param[in]  sto[]   the address of the memory block
+* @param[in]  stoSize the size of this block [bytes]. The size of the
+*                     QS RX buffer cannot exceed 64KB.
+*
+* @note QS-RX can work with quite small data buffers, but you will start
+* losing data if the buffer is not drained fast enough in the idle task.
+*
+* @note If the data input rate exceeds the QS-RX processing rate, the data
+* will be lost, but the QS protocol will notice that:
+* (1) that the checksum in the incomplete QS records will fail; and
+* (2) the sequence counter in QS records will show discontinuities.
+*
+* The QS-RX channel will report any data errors by sending the
+* QS_RX_DATA_ERROR trace record.
 */
 void QS_rxInitBuf(uint8_t sto[], uint16_t stoSize);
 
 /*! Parse all bytes present in the QS RX data buffer
-* @static @public @memberof QS
+* @static @public @memberof QSrx
 */
 void QS_rxParse(void);
 
 /*! Put one byte into the QS RX lock-free buffer
-* @static @public @memberof QS
+* @static @public @memberof QSrx
 */
 bool QS_RX_PUT(uint8_t const b);
 
 /*! Obtain the number of free bytes in the QS RX data buffer
-* @static @public @memberof QS
+* @static @public @memberof QSrx
+*
+* @description
+* This function is intended to be called from the ISR that reads the QS-RX
+* bytes from the QSPY host application. The function returns the conservative
+* number of free bytes currently available in the buffer, assuming that
+* the head pointer is not being moved concurrently. The tail pointer might
+* be moving, meaning that bytes can be concurrently removed from the buffer.
 */
 uint16_t QS_rxGetNfree(void);
 
 /*! Set the "current object" in the Target
 * @static @public @memberof QS
+*
+* @description
+* This function programmatically sets the "current object" in the Target.
 */
 void QS_setCurrObj(uint8_t obj_kind, void *obj_ptr);
 
 /*! Query the "current object" in the Target
 * @static @public @memberof QS
+*
+* @description
+* This function programmatically generates the response to the query for
+* a "current object".
 */
 void QS_queryCurrObj(uint8_t obj_kind);
 
@@ -961,12 +1139,16 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
                   uint32_t param2, uint32_t param3);
 
 /*! Macro to handle the QS output from the application
-* NOTE: if this macro is used, the application must define QS_output().
+*
+* @note
+* if this macro is used, the application must define QS_output().
 */
 #define QS_OUTPUT()   (QS_output())
 
 /*! Macro to handle the QS-RX input to the application
-* NOTE: if this macro is used, the application must define QS_rx_input().
+*
+* @note
+* if this macro is used, the application must define QS_rx_input().
 */
 #define QS_RX_INPUT() (QS_rx_input())
 
@@ -1009,6 +1191,18 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
 
     /*! QS internal function to get the Test-Probe for a given API
     * @static @public @memberof QS
+    *
+    * @description
+    * This function obtains the Test-Probe for a given API.
+    *
+    * @param[in]  api  pointer to the API function that requests
+    *                  its Test-Probe
+    *
+    * @returns Test-Probe data that has been received for the given API
+    * from the Host (running qutest). For any ginve API, the function returns
+    * the Test-Probe data in the same order as it was received from the Host.
+    * If there is no Test-Probe for a ginve API, or no more Test-Probes for
+    * a given API, the function returns zero.
     */
     uint32_t QS_getTestProbe_(void (* const api)(void));
 
@@ -1039,9 +1233,11 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
     /* interrupt nesting up-down counter */
     extern uint8_t volatile QF_intNest;
 
-    /*! QHsmDummy class
+    /*! @brief QHsmDummy class
+    * @class QHsmDummy
     * @extends QHsm
-    * @details
+    *
+    * @description
     * QHsmDummy is a test double for the role of "Orthogonal Components"
     * HSM objects in QUTest unit testing.
     */
@@ -1054,9 +1250,11 @@ void QS_onCommand(uint8_t cmdId,   uint32_t param1,
     */
     void QHsmDummy_ctor(QHsmDummy * const me);
 
-    /*! QActiveDummy Object class
+    /*! @brief QActiveDummy Object class
+    * @class QActiveDummy
     * @extends QActive
-    * @details
+    *
+    * @description
     * QActiveDummy is a test double for the role of collaborating active
     * objects in QUTest unit testing.
     */

@@ -37,7 +37,6 @@
 // include directories
 -i.                // QP/C port includes (see also qk/ and qv/)
 -i%QPC%/include    // QP/C public includes
--i%QPC%/src        // QP/C package-scope includes
 
 // standards
 // language standard...

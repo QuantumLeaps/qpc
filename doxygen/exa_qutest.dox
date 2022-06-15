@@ -1,7 +1,5 @@
 /*! @page exa_qutest Examples for QUTest Unit Testing Harness
 
-@tableofcontents
-
 <p>The examples in the <span class="img folder">qpc/examples/qutest</span> directory demonstrate how to test embedded code with the [<b>QUTest</b>](https://www.state-machine.com/qtools/qutest.html) unit testing harness. Currently, the following examples are provided:
 </p>
 

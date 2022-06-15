@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QActive_defer() and QActive_recall() implementation.
@@ -42,32 +42,7 @@
 
 Q_DEFINE_THIS_MODULE("qf_defer")
 
-/*==========================================================================*/
-/*!
-* @protected @memberof QActive
-* @details
-* This function is part of the event deferral support. An active object
-* uses this function to defer an event @p e to the QF-supported native
-* event queue @p eq. QF correctly accounts for another outstanding
-* reference to the event and will not recycle the event at the end of
-* the RTC step. Later, the active object might recall one event at a
-* time from the event queue.
-*
-* @param[in,out] me  pointer (see @ref oop)
-* @param[in]     eq  pointer to a "raw" thread-safe queue to recall
-*                    an event from.
-* @param[in]     e   pointer to the event to be deferred
-*
-* @returns
-* 'true' (success) when the event could be deferred and 'false' (failure)
-* if event deferral failed due to overflowing the queue.
-*
-* An active object can use multiple event queues to defer events of
-* different kinds.
-*
-* @sa
-* QActive_recall(), QEQueue, QActive_flushDeferred()
-*/
+/*..........................................................................*/
 bool QActive_defer(QActive const * const me, QEQueue * const eq,
                    QEvt const * const e)
 {
@@ -85,29 +60,7 @@ bool QActive_defer(QActive const * const me, QEQueue * const eq,
     return status;
 }
 
-/*==========================================================================*/
-/*!
-* @protected @memberof QActive
-* @details
-* This function is part of the event deferral support. An active object
-* uses this function to recall a deferred event from a given QF
-* event queue. Recalling an event means that it is removed from the
-* deferred event queue @p eq and posted (LIFO) to the event queue of
-* the active object.
-*
-* @param[in,out] me  pointer (see @ref oop)
-* @param[in]     eq  pointer to a "raw" thread-safe queue to recall
-*                    an event from.
-* @returns
-* 'true' if an event has been recalled and 'false' if not.
-*
-* @note
-* An active object can use multiple event queues to defer events of
-* different kinds.
-*
-* @sa
-* QActive_recall(), ::QEQueue, QACTIVE_POST_LIFO()
-*/
+/*..........................................................................*/
 bool QActive_recall(QActive * const me, QEQueue * const eq) {
     QEvt const * const e = QEQueue_get(eq, me->prio);
     bool recalled;
@@ -161,23 +114,7 @@ bool QActive_recall(QActive * const me, QEQueue * const eq) {
     return recalled;
 }
 
-/*==========================================================================*/
-/*!
-* @protected @memberof QActive
-* @details
-* This function is part of the event deferral support. An active object
-* can use this function to flush a given QF event queue. The function makes
-* sure that the events are not leaked.
-*
-* @param[in,out] me  pointer (see @ref oop)
-* @param[in]     eq  pointer to a "raw" thread-safe queue to flush.
-*
-* @returns
-* the number of events actually flushed from the queue.
-*
-* @sa
-* QActive_defer(), QActive_recall(), QEQueue
-*/
+/*..........................................................................*/
 uint_fast16_t QActive_flushDeferred(QActive const * const me,
                                     QEQueue * const eq)
 {

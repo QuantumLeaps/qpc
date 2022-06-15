@@ -28,7 +28,7 @@
 *
 * @file
 * @brief Application build time-stamp
-* @details
+* @description
 * This module needs to be re-compiled in every new software build. To achive
 * this, it is recommended to delete the object file (qstamp.o, or qstamp.obj)
 * in the build directory before each build. (Most development tools allow

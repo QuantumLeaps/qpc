@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief ::QHsm implementation
@@ -57,8 +57,9 @@ enum {
     QHSM_MAX_NEST_DEPTH_ = 6
 };
 
-/*!
-* @details
+/*! reserved event instances for internal use
+*
+* @description
 * Static, pre-allocated standard events that the QEP event processor sends
 * to state handler functions of QHsm-style state machine to execute entry
 * actions, exit actions, and initial transitions.
@@ -114,28 +115,6 @@ static inline QState QHsm_trig_(QHsm * const me,
 #endif /* Q_SPY */
 
 /*==========================================================================*/
-/*!
-* @protected @memberof QHsm
-* @details
-* Performs the first step of HSM initialization by assigning the initial
-* pseudostate to the currently active state of the state machine.
-*
-* @param[in,out] me      pointer (see @ref oop)
-* @param[in]     initial pointer to the top-most initial state-handler
-*                        function in the derived state machine
-*
-* @note Must be called only by the constructors of the derived state
-* machines.
-*
-* @note Must be called only ONCE before QHSM_INIT().
-*
-* @usage
-* The following example illustrates how to invoke QHsm_ctor() in the
-* "constructor" of a derived state machine:
-* @include qep_qhsm_ctor.c
-*
-* @tr{RQP103}
-*/
 void QHsm_ctor(QHsm * const me, QStateHandler initial) {
     static struct QHsmVtable const vtable = { /* QHsm virtual table */
         &QHsm_init_,
@@ -149,20 +128,7 @@ void QHsm_ctor(QHsm * const me, QStateHandler initial) {
     me->temp.fun  = initial;
 }
 
-/*==========================================================================*/
-/*!
-* @private @memberof QHsm
-* @details
-* Executes the top-most initial transition in a HSM.
-*
-* @param[in,out] me  pointer (see @ref oop)
-* @param[in]     e   pointer to an extra parameter (might be NULL)
-* @param[in]     qs_id QS-id of this state machine (for QS local filter)
-*
-* @note Must be called only ONCE after the QHsm_ctor().
-*
-* @tr{RQP103} @tr{RQP120I} @tr{RQP120D}
-*/
+/*..........................................................................*/
 #ifdef Q_SPY
 void QHsm_init_(QHsm * const me, void const * const e,
                 uint_fast8_t const qs_id)
@@ -240,48 +206,14 @@ void QHsm_init_(QHsm * const me, void const * const e)
     me->temp.fun  = t; /* mark the configuration as stable */
 }
 
-/*==========================================================================*/
-/*!
-* @protected @memberof QHsm
-* @details
-* QHsm_top() is the ultimate root of state hierarchy in all HSMs derived
-* from ::QHsm.
-*
-* @param[in] me pointer (see @ref oop)
-* @param[in] e  pointer to the event to be dispatched to the FSM
-*
-* @returns Always returns #Q_RET_IGNORED, which means that the top state
-*          ignores all events.
-*
-* @note The parameters to this state handler are not used. They are provided
-* for conformance with the state-handler function signature ::QStateHandler.
-*
-* @tr{RQP103} @tr{RQP120T}
-*/
+/*..........................................................................*/
 QState QHsm_top(void const * const me, QEvt const * const e) {
     (void)me; /* suppress the "unused parameter" compiler warning */
     (void)e;  /* suppress the "unused parameter" compiler warning */
     return (QState)Q_RET_IGNORED; /* the top state ignores all events */
 }
 
-/*==========================================================================*/
-/*!
-* @private @memberof QHsm
-* @details
-* Dispatches an event for processing to a hierarchical state machine (HSM).
-* The processing of an event represents one run-to-completion (RTC) step.
-*
-* @param[in,out] me pointer (see @ref oop)
-* @param[in]     e  pointer to the event to be dispatched to the HSM
-* @param[in]     qs_id QS-id of this state machine (for QS local filter)
-*
-* @note
-* This function should be called only via the virtual table (see
-* QHSM_DISPATCH()) and should NOT be called directly in the applications.
-*
-* @tr{RQP103}
-* @tr{RQP120A} @tr{RQP120B} @tr{RQP120C} @tr{RQP120D} @tr{RQP120E}
-*/
+/*..........................................................................*/
 #ifdef Q_SPY
 void QHsm_dispatch_(QHsm * const me, QEvt const * const e,
                     uint_fast8_t const qs_id)
@@ -325,6 +257,7 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e)
     } while (r == (QState)Q_RET_SUPER);
 
     /* regular transition taken? */
+    /*! @tr{RQP120E} */
     if (r >= (QState)Q_RET_TRAN) {
         QStateHandler path[QHSM_MAX_NEST_DEPTH_];
 
@@ -442,10 +375,10 @@ void QHsm_dispatch_(QHsm * const me, QEvt const * const e)
     me->temp.fun  = t; /* mark the configuration as stable */
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 /*!
 * @private @memberof QHsm
-* @details
+* @description
 * Static helper function to execute transition sequence in a hierarchical
 * state machine (HSM).
 *
@@ -599,31 +532,14 @@ static int_fast8_t QHsm_tran_(QHsm * const me,
     return ip;
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 #ifdef Q_SPY
 QStateHandler QHsm_getStateHandler_(QHsm * const me) {
     return me->state.fun;
 }
 #endif
 
-/*==========================================================================*/
-/*!
-* @public @memberof QHsm
-* @details
-* Tests if a state machine derived from QHsm is-in a given state.
-*
-* @note For a HSM, to "be in a state" means also to be in a superstate of
-* of the state.
-*
-* @param[in] me    pointer (see @ref oop)
-* @param[in] state pointer to the state-handler function to be tested
-*
-* @returns
-*'true' if the HSM "is in" the @p state and 'false' otherwise
-*
-* @tr{RQP103}
-* @tr{RQP120S}
-*/
+/*..........................................................................*/
 bool QHsm_isIn(QHsm * const me, QStateHandler const state) {
 
     /*! @pre the state configuration must be stable */
@@ -648,31 +564,7 @@ bool QHsm_isIn(QHsm * const me, QStateHandler const state) {
     return inState; /* return the status */
 }
 
-/*==========================================================================*/
-/*!
-* @public @memberof QHsm
-* @details
-* Finds the child state of the given @c parent, such that this child state
-* is an ancestor of the currently active state. The main purpose of this
-* function is to support **shallow history** transitions in state machines
-* derived from QHsm.
-*
-* @param[in] me     pointer (see @ref oop)
-* @param[in] parent pointer to the state-handler function
-*
-* @returns
-* the child of a given @c parent state, which is an ancestor of the current
-* active state. For the corner case when the currently active state is the
-* given @c parent state, function returns the @c parent state.
-*
-* @note
-* this function is designed to be called during state transitions, so it
-* does not necessarily start in a stable state configuration.
-* However, the function establishes stable state configuration upon exit.
-*
-* @tr{RQP103}
-* @tr{RQP120H}
-*/
+/*..........................................................................*/
 QStateHandler QHsm_childState(QHsm * const me,
                               QStateHandler const parent)
 {

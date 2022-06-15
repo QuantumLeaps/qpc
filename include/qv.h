@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QV/C (cooperative "Vanilla" kernel) platform-independent
@@ -38,10 +38,24 @@
 #include "qpset.h"    /* QV kernel uses the native QP priority set */
 
 /* QV event-queue used for AOs */
-#define QF_EQUEUE_TYPE      QEQueue
+#define QF_EQUEUE_TYPE  QEQueue
+
+/*! @brief The QV kernel class
+* @class QV
+*/
+typedef struct {
+    QPSet readySet; /*!< QV ready-set of AOs */
+} QV;
+
+/*! global private attributes of the QK kernel
+* @static @private @memberof QV
+*/
+extern QV QV_attr_;
 
 /*! QV idle callback (customized in BSPs)
-* @details
+* @static @public @memberof QV
+*
+* @description
 * QV_onIdle() is called by the cooperative QV kernel (from QF_run()) when
 * the scheduler detects that no events are available for active objects
 * (the idle condition). This callback gives the application an opportunity
@@ -80,7 +94,7 @@ void QV_onIdle(void);
         Q_ASSERT_ID(0, (me_)->eQueue.frontEvt != (QEvt *)0)
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-        QPSet_insert(&QV_readySet_, (uint_fast8_t)(me_)->prio)
+        QPSet_insert(&QV_attr_.readySet, (uint_fast8_t)(me_)->prio)
 
     /* native QF event pool operations */
     #define QF_EPOOL_TYPE_            QMPool
@@ -91,8 +105,6 @@ void QV_onIdle(void);
         ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qs_id_)))
     #define QF_EPOOL_PUT_(p_, e_, qs_id_) \
         (QMPool_put(&(p_), (e_), (qs_id_)))
-
-    extern QPSet QV_readySet_; /*!< QV ready-set of AOs */
 
 #endif /* QP_IMPL */
 

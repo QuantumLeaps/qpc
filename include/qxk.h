@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QXK/C (preemptive dual-mode kernel) platform-independent
@@ -58,7 +58,9 @@
 struct QActive; /* forward declaration */
 
 /*==========================================================================*/
-/*! attributes of the QXK kernel */
+/*! @brief The QXK kernel class
+* @class QXK
+*/
 typedef struct {
     struct QActive * volatile curr; /*!< current thread pointer (NULL=basic) */
     struct QActive * volatile next; /*!< next thread pointer to execute */
@@ -68,16 +70,20 @@ typedef struct {
     uint8_t volatile intNest;       /*!< ISR nesting level */
     struct QActive * idleThread;    /*!< pointer to the idle thread */
     QPSet readySet;                 /*!< ready-set of all threads */
-} QXK_PrivAttr;
+} QXK;
 
-/*! global attributes of the QXK kernel */
-extern QXK_PrivAttr QXK_attr_;
+/*! global attributes of the QXK kernel
+* @static @private @memberof QXK
+*/
+extern QXK QXK_attr_;
 
 /*==========================================================================*/
 #ifdef QXK_ON_CONTEXT_SW
 
     /*! QXK context switch callback (customized in BSPs for QXK)
-    * @details
+    * @static @public @memberof QXK
+    *
+    * @description
     * This callback function provides a mechanism to perform additional
     * custom operations when QXK switches context from one thread to
     * another.
@@ -100,7 +106,9 @@ extern QXK_PrivAttr QXK_attr_;
 #endif /* QXK_ON_CONTEXT_SW */
 
 /*! QXK idle callback (customized in BSPs for QXK)
-* @details
+* @static @public @memberof QXK
+*
+* @description
 * QXK_onIdle() is called continuously by the QXK idle thread. This callback
 * gives the application an opportunity to enter a power-saving CPU mode,
 * or perform some other idle processing.
@@ -112,30 +120,106 @@ extern QXK_PrivAttr QXK_attr_;
 void QXK_onIdle(void);
 
 /*==========================================================================*/
-/*! QXK scheduler finds the highest-priority thread ready to run */
+/*! QXK scheduler finds the highest-priority thread ready to run
+* @static @private @memberof QXK
+*
+* @description
+* The QXK scheduler finds the priority of the highest-priority thread
+* that is ready to run.
+*
+* @returns
+* the 1-based priority of the the thread (basic or extended) run next,
+* or zero if no eligible thread is found.
+*
+* @attention
+* QXK_sched_() must be always called with interrupts **disabled** and
+* returns with interrupts **disabled**.
+*/
 uint_fast8_t QXK_sched_(void);
 
 /*! QXK activator activates the next active object. The activated AO preempts
 * the currently executing AOs.
+* @static @private @memberof QXK
+*
+* @attention
+* QXK_activate_() must be always called with interrupts **disabled** and
+* returns with interrupts **disabled**.
+*
+* @note
+* The activate function might enable interrupts internally, but it always
+* returns with interrupts **disabled**.
 */
 void QXK_activate_(void);
 
 /*==========================================================================*/
-/*! return the currently executing active-object/thread */
+/*! obtain the currently executing active-object/thread
+* @static @public @memberof QXK
+*
+* @returns
+* pointer to the currently executing active-object/thread
+*/
 struct QActive *QXK_current(void);
 
 /*==========================================================================*/
-/*! QXK Scheduler locking */
-
 /*! The scheduler lock status */
 typedef uint_fast16_t QSchedStatus;
 
-/*! QXK Scheduler lock */
+/*! QXK Scheduler lock
+* @static @public @memberof QXK
+*
+* @description
+* This function locks the QXK scheduler to the specified ceiling.
+*
+* @param[in]   ceiling    priority ceiling to which the QXK scheduler
+*                         needs to be locked
+*
+* @returns
+* The previous QXK Scheduler lock status, which is to be used to unlock
+* the scheduler by restoring its previous lock status in QXK_schedUnlock().
+*
+* @note
+* A QXK scheduler can be locked from both basic threads (AOs) and
+* extended threads and the scheduler locks can nest.
+*
+* @note
+* QXK_schedLock() must be always followed by the corresponding
+* QXK_schedUnlock().
+*
+* @attention
+* QXK will fire an assertion if a thread holding the lock attempts
+* to block.
+*
+* @sa QXK_schedUnlock()
+*
+* @usage
+* The following example shows how to lock and unlock the QXK scheduler:
+* @include qxk_lock.c
+*/
 QSchedStatus QXK_schedLock(uint_fast8_t ceiling);
 
-/*! QXK Scheduler unlock */
+/*! QXK Scheduler unlock
+* @static @public @memberof QXK
+*
+* @description
+* This function unlocks the QXK scheduler to the previous status.
+*
+* @param[in]   stat       previous QXK Scheduler lock status returned from
+*                         QXK_schedLock()
+*
+* @note
+* A QXK scheduler can be locked from both basic threads (AOs) and
+* extended threads and the scheduler locks can nest.
+*
+* @note
+* QXK_schedUnlock() must always follow the corresponding QXK_schedLock().
+*
+* @sa QXK_schedLock()
+*
+* @usage
+* The following example shows how to lock and unlock the QXK scheduler:
+* @include qxk_lock.c
+*/
 void QXK_schedUnlock(QSchedStatus stat);
-
 
 /*==========================================================================*/
 /* interface used only inside QP implementation, but not in applications */

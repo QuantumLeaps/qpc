@@ -1,5 +1,4 @@
 /*! @page ports Ports
-@tableofcontents
 
 @section ports_gen General Comments
 The QP/C framework can be easily adapted to various operating systems, processor architectures, and compilers. Adapting the QP/C software is called porting and the QP/C framework has been designed from the ground up to make porting easy.
@@ -124,7 +123,6 @@ Because the QP distribution contains *all* ports, the number of sub-directories 
 */
 /*##########################################################################*/
 /*! @page ports_lint PC-Lint-Plus
-@tableofcontents
 
 ![PC-Lint Plus](logo_pclintplus.jpg)
 

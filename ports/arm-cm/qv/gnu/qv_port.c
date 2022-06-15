@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-04-09
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-05-13
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QV/C port to ARM Cortex-M, GNU-ARM toolset
@@ -103,13 +103,15 @@ void QV_init(void) {
     /* set exception priorities to QF_BASEPRI...
     * SCB_SYSPRI1: Usage-fault, Bus-fault, Memory-fault
     */
-    SCB_SYSPRI[1] |= (QF_BASEPRI << 16) | (QF_BASEPRI << 8) | QF_BASEPRI;
+    SCB_SYSPRI[1] = (SCB_SYSPRI[1]
+        | (QF_BASEPRI << 16) | (QF_BASEPRI << 8) | QF_BASEPRI);
 
     /* SCB_SYSPRI2: SVCall */
-    SCB_SYSPRI[2] |= (QF_BASEPRI << 24);
+    SCB_SYSPRI[2] = (SCB_SYSPRI[2] | (QF_BASEPRI << 24));
 
     /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
-    SCB_SYSPRI[3] |= (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI;
+    SCB_SYSPRI[3] = (SCB_SYSPRI[3]
+        | (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI);
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
     n = 8U + ((*SCnSCB_ICTR & 0x7U) << 3); /* (# NVIC_PRIO registers)/4 */

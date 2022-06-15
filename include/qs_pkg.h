@@ -26,9 +26,9 @@
 * <www.state-machine.com>
 * <info@state-machine.com>
 ============================================================================*/
-/**
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+/*!
+* @date Last updated on: 2022-06-15
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief Internal (package scope) QS/C interface.
@@ -39,7 +39,7 @@
 /*==========================================================================*/
 
 /*! QS received record types (RX channel)
-* @details
+* @description
 * This enumeration specifies the record types for the QS receive channel
 */
 enum QSpyRxRecords {
@@ -69,12 +69,12 @@ enum QSpyRxRecords {
 /*! Escape character of the QS output protocol */
 #define QS_ESC      (0x7DU)
 
-/*! The expected checksum value over an uncorrupted QS record */
+/*! The expected checksum value over a correct QS record */
 #define QS_GOOD_CHKSUM (0xFFU)
 
 /*! Escape modifier of the QS output protocol */
 /**
-* @details
+* @description
 * The escaped byte is XOR-ed with the escape modifier before it is inserted
 * into the QS buffer.
 */
@@ -86,8 +86,9 @@ enum QSpyRxRecords {
 void QS_target_info_pre_(uint8_t isReset);
 
 /*==========================================================================*/
-/*! Private QS-RX attributes to keep track of the current objects and
+/*! @brief Private QS-RX attributes to keep track of the current objects and
 * the lock-free RX buffer
+* @class QSrx
 */
 typedef struct {
     void     *currObj[MAX_OBJ]; /*!< current objects */
@@ -99,14 +100,17 @@ typedef struct {
     QPSet     readySet;   /*!< QUTEST ready-set of active objects */
     bool      inTestLoop; /*!< QUTEST event loop is running */
 #endif
-} QSrxPrivAttr;
+} QSrx;
 
-extern QSrxPrivAttr QS_rxPriv_; /* QS-RX private attributes */
+/*! the only instance of the QSrx class
+* @static @private @memberof QSrx
+*/
+extern QSrx QS_rxPriv_;
 
 /*==========================================================================*/
 /*! Internal QS macro to begin a predefined QS record with
-* entering critical section. */
-/**
+* entering critical section.
+*
 * @note This macro is intended to use only inside QP components and NOT
 * at the application level.
 * @sa QS_BEGIN_ID()
@@ -117,8 +121,8 @@ extern QSrxPrivAttr QS_rxPriv_; /* QS-RX private attributes */
         QS_beginRec_((uint_fast8_t)(rec_));
 
 /*!  Internal QS macro to end a predefined QS record with
-* exiting critical section. */
-/**
+* exiting critical section.
+*
 * @note This macro is intended to use only inside QP components and NOT
 * at the application level.
 * @sa QS_END()
@@ -129,8 +133,8 @@ extern QSrxPrivAttr QS_rxPriv_; /* QS-RX private attributes */
     }
 
 /*! Internal macro to begin a predefined QS record without
-* entering critical section. */
-/**
+* entering critical section.
+*
 * @note This macro is intended to use only inside QP components and NOT
 * at the application level.
 * @sa QS_BEGIN_NOCRIT()
@@ -140,8 +144,8 @@ extern QSrxPrivAttr QS_rxPriv_; /* QS-RX private attributes */
         QS_beginRec_((uint_fast8_t)(rec_));
 
 /*! Internal QS macro to end a predefined QS record without
-* exiting critical section. */
-/**
+* exiting critical section
+*
 * @note This macro is intended to use only inside QP components and NOT
 * at the application level. @sa #QS_END_NOCRIT
 */
@@ -209,7 +213,6 @@ extern QSrxPrivAttr QS_rxPriv_; /* QS-RX private attributes */
     #define QS_EQC_PRE_(ctr_)       QS_u32_raw_((uint32_t)(ctr_))
 #endif
 
-
 #if (!defined QF_EVENT_SIZ_SIZE || (QF_EVENT_SIZ_SIZE == 1U))
 
     /*! Internal QS macro to output an unformatted event size
@@ -223,7 +226,6 @@ extern QSrxPrivAttr QS_rxPriv_; /* QS-RX private attributes */
 #elif (QF_EVENT_SIZ_SIZE == 4U)
     #define QS_EVS_PRE_(size_)      QS_u32_raw_((uint32_t)(size_))
 #endif
-
 
 #if (!defined QF_MPOOL_SIZ_SIZE || (QF_MPOOL_SIZ_SIZE == 1U))
 
@@ -252,7 +254,6 @@ extern QSrxPrivAttr QS_rxPriv_; /* QS-RX private attributes */
 #elif (QF_MPOOL_CTR_SIZE == 4U)
     #define QS_MPC_PRE_(ctr_)       QS_u32_raw_((uint16_t)(ctr_))
 #endif
-
 
 #if (!defined QF_TIMEEVT_CTR_SIZE || (QF_TIMEEVT_CTR_SIZE == 1U))
 

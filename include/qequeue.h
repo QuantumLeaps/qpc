@@ -23,12 +23,12 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QP natvie, platform-independent, thread-safe event queue interface
-* @details
+* @description
 * This header file must be included in all QF ports that use native QF
 * event queue for active objects. Also, this file needs to be included
 * in the QP/C library when the application uses QActive_defer()/
@@ -45,7 +45,7 @@
     /*! The size [bytes] of the ring-buffer counters used in the
     * native QF event queue implementation. Valid values: 1U, 2U, or 4U;
     * default 1U.
-    * @details
+    * @description
     * This macro can be defined in the QF port file (qf_port.h) to
     * configure the ::QEQueueCtr type. Here the macro is not defined so the
     * default of 1 byte is chosen.
@@ -56,7 +56,7 @@
 
     /*! The data type to store the ring-buffer counters based on
     * the macro #QF_EQUEUE_CTR_SIZE.
-    * @details
+    * @description
     * The dynamic range of this data type determines the maximum length
     * of the ring buffer managed by the native QF event queue.
     */
@@ -71,33 +71,35 @@
 
 /*==========================================================================*/
 
-/*! Native QF Event Queue
-* @details
+/*! @brief Native QF Event Queue
+* @class QEQueue
+*
+* @description
 * This class describes the native QF event queue, which can be used as
 * the event queue for active objects, or as a simple "raw" event queue for
 * thread-safe event passing among non-framework entities, such as ISRs,
-* device drivers, or other third-party components.@n
-* @n
+* device drivers, or other third-party components.<br>
+*
 * The native QF event queue is configured by defining the macro
-* #QF_EQUEUE_TYPE as ::QEQueue in the specific QF port header file.@n
-* @n
+* #QF_EQUEUE_TYPE as ::QEQueue in the specific QF port header file.<br>
+* <br>
 * The ::QEQueue structure contains only data members for managing an event
 * queue, but does not contain the storage for the queue buffer, which must
-* be provided externally during the queue initialization.@n
-* @n
+* be provided externally during the queue initialization.<br>
+* <br>
 * The event queue can store only event pointers, not the whole events. The
 * internal implementation uses the standard ring-buffer plus one external
 * location that optimizes the queue operation for the most frequent case
-* of empty queue.@n
-* @n
+* of empty queue.<br>
+* <br>
 * The ::QEQueue structure is used with two sets of functions. One set is for
 * the active object event queue, which might need to block the active object
 * task when the event queue is empty and might need to unblock it when
 * events are posted to the queue. The interface for the native active object
 * event queue consists of the following functions: QActive_post(),
 * QActive_postLIFO(), and QActive_get_(). Additionally the function
-* QEQueue_init() is used to initialize the queue.@n
-* @n
+* QEQueue_init() is used to initialize the queue.<br>
+* <br>
 * The other set of functions, uses ::QEQueue as a simple "raw" event
 * queue to pass events between entities other than active objects, such as
 * ISRs. The "raw" event queue is not capable of blocking on the get()
@@ -107,7 +109,7 @@
 * QEQueue_postLIFO(), and QEQueue_get(). Additionally the function
 * QEQueue_init() is used to initialize the queue.
 *
-* @note Most event queue operations (both the active object queues and
+* <br>ote Most event queue operations (both the active object queues and
 * the "raw" queues) internally use  the QF critical section. You should be
 * careful not to invoke those operations from other critical sections when
 * nesting of critical sections is not supported.
@@ -116,14 +118,14 @@
 */
 typedef struct QEQueue {
     /*! pointer to event at the front of the queue.
-    * @details
+    * @description
     * All incoming and outgoing events pass through the frontEvt location.
     * When the queue is empty (which is most of the time), the extra
     * frontEvt location allows to bypass the ring buffer altogether,
     * greatly optimizing the performance of the queue. Only bursts of events
     * engage the ring buffer.
     *
-    * @note The additional role of this attribute is to indicate the empty
+    * <br>ote The additional role of this attribute is to indicate the empty
     * status of the queue. The queue is empty when frontEvt is NULL.
     */
     QEvt const * volatile frontEvt;
@@ -144,7 +146,7 @@ typedef struct QEQueue {
     QEQueueCtr volatile nFree;
 
     /*! minimum number of free events ever in the ring buffer.
-    * @details
+    * @description
     * this attribute remembers the low-watermark of the ring buffer,
     * which provides a valuable information for sizing event queues.
     * @sa QF_getQueueMargin().
@@ -154,24 +156,108 @@ typedef struct QEQueue {
 
 /* public class operations */
 
-/*! Initialize the native QF event queue */
+/*! Initialize the native QF event queue.
+* @public @memberof QEQueue
+*
+* @description
+* Initialize the event queue by giving it the storage for the ring buffer.
+*
+* @param[in,out] me   pointer (see @ref oop)
+* @param[in]     qSto an array of pointers to ::QEvt to sereve as the
+*                     ring buffer for the event queue
+* @param[in]     qLen the length of the @p qSto buffer (in ::QEvt pointers)
+*
+* @note The actual capacity of the queue is qLen + 1, because of the extra
+* location forntEvt.
+*
+* @note
+* This function is also used to initialize the event queues of active
+* objects in the built-int QV and QK kernels, as well as other
+* QP ports to OSes/RTOSes that do provide a suitable message queue.
+*/
 void QEQueue_init(QEQueue * const me,
                   QEvt const * * const qSto, uint_fast16_t const qLen);
 
-/*! Post an event to the "raw" thread-safe event queue (FIFO). */
+/*! Post an event to the "raw" thread-safe event queue (FIFO).
+* @public @memberof QEQueue
+*
+* @description
+* Post an event to the "raw" thread-safe event queue using the
+* First-In-First-Out (FIFO) order.
+*
+* @param[in,out] me     pointer (see @ref oop)
+* @param[in]     e      pointer to the event to be posted to the queue
+* @param[in]     margin number of required free slots in the queue after
+*                       posting the event. The special value #QF_NO_MARGIN
+*                       means that this function will assert if posting
+* @note
+* The #QF_NO_MARGIN value of the @p margin parameter is special and
+* denotes situation when the post() operation is assumed to succeed (event
+* delivery guarantee). An assertion fires, when the event cannot be
+* delivered in this case.
+*
+* @returns 'true' (success) when the posting succeeded with the provided
+* margin and 'false' (failure) when the posting fails.
+*
+* @note This function can be called from any task context or ISR context.
+*
+* @sa QEQueue_postLIFO(), QEQueue_get()
+*/
 bool QEQueue_post(QEQueue * const me, QEvt const * const e,
                   uint_fast16_t const margin, uint_fast8_t const qs_id);
 
-/*! Post an event to the "raw" thread-safe event queue (LIFO). */
+/*! Post an event to the "raw" thread-safe event queue (LIFO).
+* @public @memberof QEQueue
+*
+* @description
+* Post an event to the "raw" thread-safe event queue using the
+* Last-In-First-Out (LIFO) order.
+*
+* @param[in,out] me  pointer (see @ref oop)
+* @param[in]     e   pointer to the event to be posted to the queue
+*
+* @attention
+* The LIFO policy should be used only with great __caution__, because
+* it alters the order of events in the queue.
+*
+* @note
+* This function can be called from any task context or ISR context.
+*
+* @note
+* this function is used for the "raw" thread-safe queues and __not__
+* for the queues of active objects.
+*
+* @sa
+* QEQueue_post(), QEQueue_get(), QActive_defer()
+*/
 void QEQueue_postLIFO(QEQueue * const me, QEvt const * const e,
                       uint_fast8_t const qs_id);
 
-/*! Obtain an event from the "raw" thread-safe queue. */
+/*! Obtain an event from the "raw" thread-safe queue.
+* @public @memberof QEQueue
+*
+* @description
+* Retrieves an event from the front of the "raw" thread-safe queue and
+* returns a pointer to this event to the caller.
+*
+* @param[in,out] me     pointer (see @ref oop)
+*
+* @returns
+* pointer to event at the front of the queue, if the queue is
+* not empty and NULL if the queue is empty.
+*
+* @note
+* this function is used for the "raw" thread-safe queues and __not__
+* for the queues of active objects.
+*
+* @sa
+* QEQueue_post(), QEQueue_postLIFO(), QActive_recall()
+*/
 QEvt const *QEQueue_get(QEQueue * const me, uint_fast8_t const qs_id);
 
 /*! "raw" thread-safe QF event queue operation for obtaining the number
 * of free entries still available in the queue.
-* @details
+* @description
 * This operation needs to be used with caution because the number of free
 * entries can change unexpectedly. The main intent for using this operation
 * is in conjunction with event deferral. In this case the queue is accessed
@@ -188,7 +274,7 @@ static inline QEQueueCtr QEQueue_getNFree(QEQueue * const me) {
 
 /*! "raw" thread-safe QF event queue operation for obtaining the minimum
 * number of free entries ever in the queue (a.k.a. "low-watermark").
-* @details
+* @description
 * This operation needs to be used with caution because the "low-watermark"
 * can change unexpectedly. The main intent for using this operation is to
 * get an idea of queue usage to size the queue adequately.
@@ -203,7 +289,7 @@ static inline QEQueueCtr QEQueue_getNMin(QEQueue * const me) {
 
 /*! "raw" thread-safe QF event queue operation to find out if the queue
 * is empty.
-* @details
+* @description
 * This operation needs to be used with caution because the queue status
 * can change unexpectedly. The main intent for using this operation is in
 * conjunction with event deferral. In this case the queue is accessed only

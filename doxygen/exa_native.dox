@@ -130,8 +130,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 /*##########################################################################*/
 /*! @page arm-cm_blinky_ek-tm4c123gxl Blinky on EK-TM4C123GXL
 
-@tableofcontents
-
 <p>This example implements the @ref blinky "Blinky sample application" on the EK-TM4C123GLX board (ARM Cortex-M4F).
 </p>
 
@@ -192,8 +190,6 @@ The Windows emulation is a simple console application that produces the followin
 */
 /*##########################################################################*/
 /*! @page arm-cm_blinky_efm32-slstk3401a Blinky on EFM32-SLSTK3401A
-
-@tableofcontents
 
 <p>This example implements the @ref blinky "Blinky sample application" on the EFM32-SLSTK3401A board (ARM Cortex-M4F).
 </p>
@@ -259,8 +255,6 @@ The Windows emulation is a simple console application that produces the followin
 */
 /*##########################################################################*/
 /*! @page arm-cm_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
-
-@tableofcontents
 
 <p>This example implements the @ref dpp "Dining Philosophers Problem" sample application on the EK-TM4C123GLX board (ARM Cortex-M4F).
 </p>
@@ -356,8 +350,6 @@ The application also demonstrates <a href="https://www.state-machine.com/qtools/
 */
 /*##########################################################################*/
 /*! @page arm-cm_dpp_efm32-slstk3401a DPP on EFM32-SLSTK3401A
-
-@tableofcontents
 
 <p>This example implements the @ref dpp "Dining Philosophers Problem" sample application on the EFM32-SLSTK3401A board (ARM Cortex-M4F).
 </p>

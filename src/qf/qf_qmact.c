@@ -23,13 +23,13 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QMActive_ctor() definition
 *
-* @details
+* @description
 * This file must remain separate from the rest to avoid pulling in the
 * "virtual" functions QHsm_init_() and QHsm_dispatch_() in case they
 * are not used by the application.
@@ -49,20 +49,7 @@
 */
 #define QMSM_CAST_(ptr_) ((QMsm *)(ptr_))
 
-/*==========================================================================*/
-/*!
-* @protected @memberof QMActive
-* @details
-* Performs the first step of active object initialization by assigning
-* the virtual pointer and calling the superclass constructor.
-*
-* @param[in,out] me       pointer (see @ref oop)
-* @param[in]     initial  pointer to the event to be dispatched to the MSM
-*
-* @note  Must be called only ONCE before QMSM_INIT().
-*
-* @sa QHsm_ctor()
-*/
+/*..........................................................................*/
 void QMActive_ctor(QMActive * const me, QStateHandler initial) {
     static QMActiveVtable const vtable = { /* QMActive virtual table */
         { &QMsm_init_,

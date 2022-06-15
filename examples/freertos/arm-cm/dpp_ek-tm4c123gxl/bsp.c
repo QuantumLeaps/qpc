@@ -362,7 +362,6 @@ void QF_onStartup(void) {
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(UART0_IRQn,     0U); /* kernel unaware interrupt */
     NVIC_SetPriority(GPIOA_IRQn,     RTOS_AWARE_ISR_CMSIS_PRI);
     NVIC_SetPriority(SysTick_IRQn,   RTOS_AWARE_ISR_CMSIS_PRI + 1U);
     /* ... */
@@ -371,6 +370,7 @@ void QF_onStartup(void) {
     NVIC_EnableIRQ(GPIOA_IRQn);
 
 #ifdef Q_SPY
+    NVIC_SetPriority(UART0_IRQn, 0U); /* kernel unaware interrupt */
     NVIC_EnableIRQ(UART0_IRQn);  /* UART0 interrupt used for QS-RX */
 #endif
 }

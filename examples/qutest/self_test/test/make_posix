@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST; QP/C on POSIX *Target*
-# Last updated for version 6.8.3
-# Last updated on  2021-04-16
+# Last Updated for Version: 7.0.1
+# Date of the Last Update:  2022-05-23
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -121,7 +121,7 @@ LIBS += -lpthread
 # Typically you should not need to change anything below this line
 
 VPATH    += $(QPC)/src/qf $(QPC)/src/qs $(QP_PORT_DIR)
-INCLUDES += -I$(QPC)/include -I$(QPC)/src -I$(QP_PORT_DIR)
+INCLUDES += -I$(QPC)/include -I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
 # GNU toolset:

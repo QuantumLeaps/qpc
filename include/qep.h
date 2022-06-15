@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-09
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief Public QEP/C interface
@@ -39,16 +39,16 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION      700U
+#define QP_VERSION      701U
 
 /*! The current QP version number string of the form XX.Y.Z, where XX is
 * a 2-digit major version number, Y is a 1-digit minor version number,
 * and Z is a 1-digit release number.
 */
-#define QP_VERSION_STR  "7.0.0"
+#define QP_VERSION_STR  "7.0.1"
 
-/*! Encrypted  current QP release (7.0.0) and date (2022-01-31) */
-#define QP_RELEASE      0x7CCAAA13U
+/*! Encrypted  current QP release (7.0.1) and date (2022-06-30) */
+#define QP_RELEASE      0x7C7E85E2U
 
 /*==========================================================================*/
 /* typedefs for basic numerical types; MISRA-C 2012 Dir 4.6(A). */
@@ -87,7 +87,7 @@ extern char const QP_versionStr[7];
 #elif (Q_SIGNAL_SIZE == 2U)
     /*! The size (in bytes) of the signal of an event. Valid values:
     * 1U, 2U, or 4U; default 2U
-    * @details
+    * @description
     * This macro can be defined in the QEP port file (qep_port.h) to
     * configure the ::QSignal type. When the macro is not defined, the
     * default of 2 bytes is applied.
@@ -102,8 +102,10 @@ extern char const QP_versionStr[7];
 #endif
 
 /*==========================================================================*/
-/*! Event class
-* @details
+/*! @brief Event class
+* @class QEvt
+*
+* @description
 * ::QEvt represents events without parameters and serves as the base class
 * for derivation of events with parameters.
 *
@@ -137,6 +139,14 @@ typedef struct {
 
 /*! Custom event constructor
 * @public @memberof ::QEvt
+*
+* @description
+* Constructor for the ::QEvt class provided when the switch #Q_EVT_CTOR
+* is defined.
+*
+* @param[in,out] me   pointer (see @ref oop)
+* @param[in]     sig  signal to be assigned to the event
+*
 * @tr{RQP005}
 */
 QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
@@ -145,7 +155,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 
 /*==========================================================================*/
 /*! Perform downcast of an event onto a subclass of ::QEvt @p class_
-* @details
+* @description
 * ::QEvt represents events without parameters and serves as the base class
 * This macro encapsulates the downcast of ::QEvt pointers, which violates
 * MISRA-C 2012 Rule 11.3(R) "A cast shall not be performed between a
@@ -159,7 +169,7 @@ QEvt *QEvt_ctor(QEvt * const me, enum_t const sig);
 
 /*! Perform cast from unsigned integer pointer @p uintptr_ to pointer
 * of type @p type_.
-* @details
+* @description
 * This macro encapsulates the cast to (type_ *), which QP ports or
 * application might use to access embedded hardware registers.
 */
@@ -182,7 +192,7 @@ typedef QState (*QActionHandler)(void * const me);
 typedef void (*QXThreadHandler)(QXThread * const me);
 
 /*! Perform cast to ::QStateHandler.
-* @details
+* @description
 * This macro encapsulates the cast of a specific state handler function
 * pointer to ::QStateHandler, which violates MISRA:C-2012 Rule 11.1(req)
 * "Conversions shall not be performed between a pointer to function and
@@ -196,7 +206,7 @@ typedef void (*QXThreadHandler)(QXThread * const me);
 #define Q_STATE_CAST(handler_)  ((QStateHandler)(handler_))
 
 /*! Perform cast to ::QActionHandler.
-* @details
+* @description
 * This macro encapsulates the cast of a specific action handler function
 * pointer to ::QActionHandler, which violates MISRA:C-2012 Rule 11.1(R)
 * "Conversions shall not be performed between a pointer to function and
@@ -211,8 +221,8 @@ struct QMState;
 struct QHsmVtable;
 typedef struct QMTranActTable QMTranActTable;
 
-/*! Attribute of for the ::QHsm class (Hierarchical State Machine).
-* @details
+/*! @brief Attribute of for the ::QHsm class (Hierarchical State Machine).
+* @description
 * This union represents possible values stored in the 'state' and 'temp'
 * attributes of the ::QHsm class.
 */
@@ -225,8 +235,10 @@ union QHsmAttr {
 };
 
 /*==========================================================================*/
-/*! Hierarchical State Machine class
-* @details
+/*! @brief Hierarchical State Machine class
+* @class QHsm
+*
+* @description
 * ::QHsm represents a Hierarchical State Machine (HSM) with full support for
 * hierarchical nesting of states, entry/exit actions, initial transitions,
 * and transitions to history in any composite state. This class is designed
@@ -256,8 +268,9 @@ typedef struct {
     union QHsmAttr temp;  /*!< @private temporary: target/act-table, etc. */
 } QHsm;
 
-/*! Virtual table for the ::QHsm class. */
-/*! @tr{RQP102} */
+/*! @brief Virtual table for the ::QHsm class.
+* @tr{RQP102}
+*/
 struct QHsmVtable {
 #ifdef Q_SPY
     /*! Triggers the top-most initial transition in the HSM. */
@@ -300,6 +313,17 @@ struct QHsmVtable {
 
     /*! Implementation of the top-most initial tran. in ::QHsm subclass.
     * @private @memberof QHsm
+    *
+    * @description
+    * Executes the top-most initial transition in a HSM.
+    *
+    * @param[in,out] me  pointer (see @ref oop)
+    * @param[in]     e   pointer to an extra parameter (might be NULL)
+    * @param[in]     qs_id QS-id of this state machine (for QS local filter)
+    *
+    * @note Must be called only ONCE after the QHsm_ctor().
+    *
+    * @tr{RQP103} @tr{RQP120I} @tr{RQP120D}
     */
     void QHsm_init_(QHsm * const me, void const * const e,
                     uint_fast8_t const qs_id);
@@ -317,7 +341,7 @@ struct QHsmVtable {
 
 #ifdef Q_SPY
     /*! Polymorphically dispatches an event to a HSM
-    * @details
+    * @description
     * Processes one event at a time in Run-to-Completion fashion.
     *
     * @param[in,out] me_ pointer (see @ref oop)
@@ -332,6 +356,21 @@ struct QHsmVtable {
 
     /*! Implementation of dispatching events to a ::QHsm subclass
     * @private @memberof QHsm
+    *
+    * @description
+    * Dispatches an event for processing to a hierarchical state machine (HSM).
+    * The processing of an event represents one run-to-completion (RTC) step.
+    *
+    * @param[in,out] me pointer (see @ref oop)
+    * @param[in]     e  pointer to the event to be dispatched to the HSM
+    * @param[in]     qs_id QS-id of this state machine (for QS local filter)
+    *
+    * @note
+    * This function should be called only via the virtual table (see
+    * QHSM_DISPATCH()) and should NOT be called directly in the applications.
+    *
+    * @tr{RQP103}
+    * @tr{RQP120A} @tr{RQP120B} @tr{RQP120C} @tr{RQP120D} @tr{RQP120E}
     */
     void QHsm_dispatch_(QHsm * const me, QEvt const * const e,
                         uint_fast8_t const qs_id);
@@ -350,7 +389,7 @@ struct QHsmVtable {
 #endif /* Q_SPY */
 
 /*! Perform upcast from a subclass of ::QHsm to the base class ::QHsm
-* @details
+* @description
 * Upcasting from a subclass to superclass is a very frequent and __safe__
 * operation in object-oriented programming and object-oriented languages
 * (such as C++) perform such upcasting automatically. However, OOP is
@@ -376,10 +415,27 @@ static inline QStateHandler QHsm_state(QHsm * const me) {
 
 /*! Obtain the current active child state of a given parent in ::QHsm
 * @public @memberof QHsm
+* @description
+* Finds the child state of the given @c parent, such that this child state
+* is an ancestor of the currently active state. The main purpose of this
+* function is to support **shallow history** transitions in state machines
+* derived from QHsm.
+*
 * @param[in] me     pointer (see @ref oop)
-* @param[in] parent pointer to the parent state-handler
-* @returns the current active child state-handler of a given parent
-* @note this function is used in QM for auto-generating code for state history
+* @param[in] parent pointer to the state-handler function
+*
+* @returns
+* The child of a given @c parent state, which is an ancestor of the current
+* active state. For the corner case when the currently active state is the
+* given @c parent state, function returns the @c parent state.
+*
+* @note
+* This function is designed to be called during state transitions, so it
+* does not necessarily start in a stable state configuration.
+* However, the function establishes stable state configuration upon exit.
+*
+* @tr{RQP103}
+* @tr{RQP120H}
 */
 QStateHandler QHsm_childState(QHsm * const me,
                               QStateHandler const parent);
@@ -387,24 +443,76 @@ QStateHandler QHsm_childState(QHsm * const me,
 /*! Tests if a given state is part of the current active state
 * configuration in ::QHsm subclasses.
 * @public @memberof QHsm
+*
+* @description
+* Tests if a state machine derived from QHsm is-in a given state.
+*
+* @note For a HSM, to "be in a state" means also to be in a superstate of
+* of the state.
+*
+* @param[in] me    pointer (see @ref oop)
+* @param[in] state pointer to the state-handler function to be tested
+*
+* @returns
+*'true' if the HSM "is in" the @p state and 'false' otherwise
+*
+* @tr{RQP103}
+* @tr{RQP120S}
 */
 bool QHsm_isIn(QHsm * const me, QStateHandler const state);
 
 /* QHsm protected operations... */
 /*! Protected "constructor" of ::QHsm
 * @protected @memberof QHsm
+*
+* @description
+* Performs the first step of HSM initialization by assigning the initial
+* pseudostate to the currently active state of the state machine.
+*
+* @param[in,out] me      pointer (see @ref oop)
+* @param[in]     initial pointer to the top-most initial state-handler
+*                        function in the derived state machine
+*
+* @note Must be called only by the constructors of the derived state
+* machines.
+*
+* @note Must be called only ONCE before QHSM_INIT().
+*
+* @usage
+* The following example illustrates how to invoke QHsm_ctor() in the
+* "constructor" of a derived state machine:
+* @include qep_qhsm_ctor.c
+*
+* @tr{RQP103}
 */
 void QHsm_ctor(QHsm * const me, QStateHandler initial);
 
 /*! the top-state.
 * @protected @memberof QHsm
+*
+* @description
+* QHsm_top() is the ultimate root of state hierarchy in all HSMs derived
+* from ::QHsm.
+*
+* @param[in] me pointer (see @ref oop)
+* @param[in] e  pointer to the event to be dispatched to the FSM
+*
+* @returns Always returns #Q_RET_IGNORED, which means that the top state
+*          ignores all events.
+*
+* @note The parameters to this state handler are not used. They are provided
+* for conformance with the state-handler function signature ::QStateHandler.
+*
+* @tr{RQP103} @tr{RQP120T}
 */
 QState QHsm_top(void const * const me, QEvt const * const e);
 
 /*==========================================================================*/
-/*! QM State Machine implementation strategy
+/*! @brief QM State Machine implementation strategy
+* @class QMsm
+*
 * @extends QHsm
-* @details
+* @description
 * ::QMsm (QM State Machine) provides a more efficient state machine
 * implementation strategy than ::QHsm, but requires the use of the QM
 * modeling tool, but are the fastest and need the least run-time
@@ -426,8 +534,8 @@ typedef struct {
     QHsm super; /*!< @protected inherits ::QHsm */
 } QMsm;
 
-/*! State object for the ::QMsm class (QM State Machine).
-* @details
+/*! @brief State object for the ::QMsm class (QM State Machine).
+* @description
 * This class groups together the attributes of a ::QMsm state, such as the
 * parent state (state nesting), the associated state handler function and
 * the exit action handler function. These attributes are used inside the
@@ -448,7 +556,7 @@ struct QMState {
 };
 typedef struct QMState QMState;
 
-/*! Transition-Action Table for the Meta State Machine. */
+/*! @brief Transition-Action Table for the Meta State Machine. */
 struct QMTranActTable {
     struct QMState const *target;      /*!< @private */
     QActionHandler const act[1];       /*!< @private */
@@ -467,10 +575,22 @@ static inline QMState const *QMsm_stateObj(QHsm * const me) {
 
 /*! Obtain the current active child state of a given parent in ::QMsm
 * @public @memberof QMsm
+*
+* @description
+* Finds the child state of the given @c parent, such that this child state
+* is an ancestor of the currently active state. The main purpose of this
+* function is to support **shallow history** transitions in state machines
+* derived from QMsm.
+*
 * @param[in] me     pointer (see @ref oop)
-* @param[in] parent pointer to the parent state-object
-* @returns the current active child state-object of a given parent
-* @note this function is used in QM for auto-generating code for state history
+* @param[in] parent pointer to the state-handler object
+*
+* @returns
+* the child of a given @c parent state, which is an ancestor of
+* the currently active state. For the corner case when the currently active
+* state is the given @c parent state, function returns the @c parent state.
+*
+* @sa QMsm_childStateObj()
 */
 QMState const *QMsm_childStateObj(QHsm const * const me,
                                   QMState const * const parent);
@@ -478,12 +598,48 @@ QMState const *QMsm_childStateObj(QHsm const * const me,
 /*! Tests if a given state is part of the current active state
 * configuration in a MSM.
 * @public @memberof QMsm
+*
+* @description
+* Tests if a state machine derived from QMsm is-in a given state.
+*
+* @note
+* For a MSM, to "be-in" a state means also to "be-in" a superstate of
+* of the state.
+*
+* @param[in] me    pointer (see @ref oop)
+* @param[in] state pointer to the QMState object that corresponds to the
+*                  tested state.
+* @returns
+* 'true' if the MSM "is in" the @p state and 'false' otherwise
 */
 bool QMsm_isInState(QMsm const * const me, QMState const * const state);
 
 /* QMsm protected operations... */
 /*! Constructor of ::QMsm
 * @protected @memberof QMsm
+*
+* @description
+* Performs the first step of QMsm initialization by assigning the initial
+* pseudostate to the currently active state of the state machine.
+*
+* @param[in,out] me       pointer (see @ref oop)
+* @param[in]     initial  the top-most initial transition for the MSM.
+*
+* @note
+* Must be called only ONCE before QHSM_INIT().
+*
+* @note
+* QMsm inherits QHsm, so by the @ref oop convention it should call the
+* constructor of the superclass, i.e., QHsm_ctor(). However, this would pull
+* in the QHsmVtable, which in turn will pull in the code for QHsm_init_() and
+* QHsm_dispatch_() implementations. To avoid this code size penalty, in case
+* ::QHsm is not used in a given project, the QMsm_ctor() performs direct
+* initialization of the Vtable, which avoids pulling in the code for QMsm.
+*
+* @usage
+* The following example illustrates how to invoke QMsm_ctor() in the
+* "constructor" of a derived state machine:
+* @include qep_qmsm_ctor.c
 */
 void QMsm_ctor(QMsm * const me, QStateHandler initial);
 
@@ -492,6 +648,19 @@ void QMsm_ctor(QMsm * const me, QStateHandler initial);
 * @private @memberof QMsm
 */
 #ifdef Q_SPY
+/*! Take the top-most initial transition in QMsm.
+* @public @memberof QMsm
+*
+* @description
+* Executes the top-most initial transition in a MSM.
+*
+* @param[in,out] me  pointer (see @ref oop)
+* @param[in]     e   pointer to an extra parameter (might be NULL)
+* @param[in]     qs_id QS-id of this state machine (for QS local filter)
+*
+* @note
+* Must be called only ONCE after the QMsm_ctor().
+*/
 void QMsm_init_(QHsm * const me, void const * const e,
                 uint_fast8_t const qs_id);
 #else
@@ -502,6 +671,21 @@ void QMsm_init_(QHsm * const me, void const * const e);
 * @private @memberof QMsm
 */
 #ifdef Q_SPY
+/*! Dispatch event to QMsm.
+* @private @memberof QMsm
+*
+* @description
+* Dispatches an event for processing to a meta state machine (MSM).
+* The processing of an event represents one run-to-completion (RTC) step.
+*
+* @param[in,out] me pointer (see @ref oop)
+* @param[in]     e  pointer to the event to be dispatched to the MSM
+* @param[in]     qs_id QS-id of this state machine (for QS local filter)
+*
+* @note
+* This function should be called only via the virtual table (see
+* QHSM_DISPATCH()) and should NOT be called directly in the applications.
+*/
 void QMsm_dispatch_(QHsm * const me, QEvt const * const e,
                     uint_fast8_t const qs_id);
 #else

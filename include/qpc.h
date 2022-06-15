@@ -28,7 +28,7 @@
 *
 * @file
 * @brief QP/C public interface including backwards-compatibility layer
-* @details
+* @description
 * This header file must be included directly or indirectly
 * in all application modules (*.c files) that use QP/C.
 */
@@ -54,7 +54,7 @@ extern "C" {
 #ifndef QP_API_VERSION
 
 /*! Specifies the backwards compatibility with the QP/C API version.
-* @details
+* @description
 * For example, QP_API_VERSION==691 will cause generating the compatibility
 * layer with QP/C version 6.9.1 and newer, but not older than 6.9.1.
 * QP_API_VERSION==0 causes generation of the maximum currently supported

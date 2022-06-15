@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-14
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QK preemptive kernel implementation
@@ -47,20 +47,10 @@
 
 Q_DEFINE_THIS_MODULE("qk")
 
-/* Global-scope objects *****************************************************/
-QK_PrivAttr QK_attr_; /* private attributes of the QK kernel */
+/* Global-scope objects ====================================================*/
+QK QK_attr_; /* private attributes of the QK kernel */
 
-/*==========================================================================*/
-/*!
-* @details
-* Initializes QF and must be called exactly once before any other QF
-* function. Typically, QF_init() is called from main() even before
-* initializing the Board Support Package (BSP).
-*
-* @note QF_init() clears the internal QF variables, so that the framework
-* can start correctly even if the startup code fails to clear the
-* uninitialized data (as is required by the C Standard).
-*/
+/*..........................................................................*/
 void QF_init(void) {
     QF_maxPool_      = 0U;
     QF_subscrList_   = (QSubscrList *)0;
@@ -78,30 +68,14 @@ void QF_init(void) {
 #endif
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* This function stops the QF application. After calling this function,
-* QF attempts to gracefully stop the application. This graceful shutdown
-* might take some time to complete. The typical use of this function is
-* for terminating the QF application to return back to the operating
-* system or for handling fatal errors that require shutting down
-* (and possibly re-setting) the system.
-*
-* @attention
-* After calling QF_stop() the application must terminate and cannot
-* continue. In particular, QF_stop() is **not** intended to be followed
-* by a call to QF_init() to "resurrect" the application.
-*
-* @sa QF_onCleanup()
-*/
+/*..........................................................................*/
 void QF_stop(void) {
     QF_onCleanup(); /* application-specific cleanup callback */
     /* nothing else to do for the preemptive QK kernel */
 }
 
-/*==========================================================================*/
-/*! process all events posted during initialization */
+/*..........................................................................*/
+/*! helper function to process all events posted during initialization */
 static void initial_events(void); /* prototype */
 static void initial_events(void) {
     QK_attr_.lockPrio = 0U; /* scheduler unlocked */
@@ -112,15 +86,7 @@ static void initial_events(void) {
     }
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* QF_run() is typically called from your startup code after you initialize
-* the QF and start at least one active object with QACTIVE_START().
-*
-* @returns
-* In QK, the QF_run() does not return.
-*/
+/*..........................................................................*/
 int_t QF_run(void) {
     QF_INT_DISABLE();
     initial_events(); /* process all events posted during initialization */
@@ -141,28 +107,7 @@ int_t QF_run(void) {
 #endif
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* Starts execution of the AO and registers the AO with the framework.
-* Also takes the top-most initial transition in the AO's state machine.
-* This initial transition is taken in the callee's thread of execution.
-*
-* @param[in,out] me      pointer (see @ref oop)
-* @param[in]     prio    priority at which to start the active object
-* @param[in]     qSto    pointer to the storage for the ring buffer of the
-*                        event queue (used only with the built-in ::QEQueue)
-* @param[in]     qLen    length of the event queue [events]
-* @param[in]     stkSto  pointer to the stack storage (must be NULL in QK)
-* @param[in]     stkSize stack size [bytes]
-* @param[in]     par     pointer to an extra parameter (might be NULL).
-*
-* @note This function should be called via the macro QACTIVE_START().
-*
-* @usage
-* The following example shows starting an AO when a per-task stack is needed:
-* @include qf_start.c
-*/
+/*..........................................................................*/
 void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
@@ -195,28 +140,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QF_CRIT_X_();
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* This function locks the QK scheduler to the specified ceiling.
-*
-* @param[in]   ceiling    priority ceiling to which the QK scheduler
-*                         needs to be locked
-*
-* @returns
-* The previous QK Scheduler lock status, which is to be used to unlock
-* the scheduler by restoring its previous lock status in QK_schedUnlock().
-*
-* @note
-* QK_schedLock() must be always followed by the corresponding
-* QK_schedUnlock().
-*
-* @sa QK_schedUnlock()
-*
-* @usage
-* The following example shows how to lock and unlock the QK scheduler:
-* @include qk_lock.c
-*/
+/*..........................................................................*/
 QSchedStatus QK_schedLock(uint_fast8_t ceiling) {
     QF_CRIT_STAT_
     QF_CRIT_E_();
@@ -251,22 +175,7 @@ QSchedStatus QK_schedLock(uint_fast8_t ceiling) {
     return stat; /* return the status to be saved in a stack variable */
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* This function unlocks the QK scheduler to the previous status.
-*
-* @param[in]   stat       previous QK Scheduler lock status returned from
-*                         QK_schedLock()
-* @note
-* QK_schedUnlock() must always follow the corresponding QK_schedLock().
-*
-* @sa QK_schedLock()
-*
-* @usage
-* The following example shows how to lock and unlock the QK scheduler:
-* @include qk_lock.c
-*/
+/*..........................................................................*/
 void QK_schedUnlock(QSchedStatus stat) {
     /* has the scheduler been actually locked by the last QK_schedLock()? */
     if (stat != 0xFFU) {
@@ -301,21 +210,7 @@ void QK_schedUnlock(QSchedStatus stat) {
     }
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* The QK scheduler finds out the priority of the highest-priority AO
-* that (1) has events to process and (2) has priority that is above the
-* current priority.
-*
-* @returns
-* the 1-based priority of the the active object, or zero if no eligible
-* active object is ready to run.
-*
-* @attention
-* QK_sched_() must be always called with interrupts **disabled** and
-* returns with interrupts **disabled**.
-*/
+/*..........................................................................*/
 uint_fast8_t QK_sched_(void) {
     /* find the highest-prio AO with non-empty event queue */
     uint_fast8_t p = QPSet_findMax(&QK_attr_.readySet);
@@ -334,16 +229,7 @@ uint_fast8_t QK_sched_(void) {
     return p;
 }
 
-/*==========================================================================*/
-/*!
-* @details
-* QK_activate_() activates ready-to run AOs that are above the initial
-* active priority (QK_attr_.actPrio).
-*
-* @note
-* The activator might enable interrupts internally, but always returns with
-* interrupts **disabled**.
-*/
+/*..........................................................................*/
 void QK_activate_(void) {
     uint_fast8_t const pin = (uint_fast8_t)QK_attr_.actPrio;  /* save */
     uint_fast8_t p = (uint_fast8_t)QK_attr_.nextPrio; /* next prio to run */
