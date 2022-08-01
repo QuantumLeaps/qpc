@@ -1,14 +1,20 @@
 /*! @page gs Getting Started
-@nav{index,gs_get}
 
 The following sections describe how to get started with QP&trade;/C quickly:
 - @subpage gs_get
-- @subpage gs_over
 - @subpage gs_tut
 
 The YouTube Video <a class="extern" target="_blank" href="https://youtu.be/O7ER6_VqIH0"><strong>Getting Started with QP&trade; Frameworks</strong></a> provides instructions on how to download, install and get started with QP quickly.
 
 [![Video: Getting Started with QP&trade; Real-Time Embedded Framework](gs-video.jpg)](https://youtu.be/O7ER6_VqIH0)
+
+@note
+<a href="modules.html" title="QP Cert-Pack"><img src="cert-pack.png" style="float:right; margin:0 20px 20px 0;"></img></a>
+Information about the QP/C functionality, architecture, design, and other aspects is provided in the [Certification Package](modules.html):
+- @ref srs &mdash; QP/C functionality
+- @ref sas &mdash; QP/C architecture
+- @ref sds &mdash; QP/C design
+- @ref misra &mdash; QP/C compliance with MISRA-C
 
 @nav{index,gs_get}
 */

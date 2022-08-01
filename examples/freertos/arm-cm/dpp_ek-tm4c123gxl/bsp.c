@@ -144,7 +144,7 @@ void vApplicationTickHook(void) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     /* process time events for rate 0 */
-    QF_TICK_X_FROM_ISR(0U, &xHigherPriorityTaskWoken, &l_TickHook);
+    QTIMEEVT_TICK_FROM_ISR(0U, &xHigherPriorityTaskWoken, &l_TickHook);
 
 #ifdef Q_SPY
     {
@@ -165,8 +165,10 @@ void vApplicationTickHook(void) {
     tmp ^= buttons.depressed;     /* changed debounced depressed */
     if ((tmp & BTN_SW1) != 0U) {  /* debounced SW1 state changed? */
         if ((buttons.depressed & BTN_SW1) != 0U) { /* is SW1 depressed? */
-            /* demonstrate the ISR APIs: QF_PUBLISH_FROM_ISR and Q_NEW_FROM_ISR */
-            QF_PUBLISH_FROM_ISR(Q_NEW_FROM_ISR(QEvt, PAUSE_SIG),
+            /* demonstrate the "FromISR APIs:
+            * QACTIVE_PUBLISH_FROM_ISR() and Q_NEW_FROM_ISR()
+            */
+            QACTIVE_PUBLISH_FROM_ISR(Q_NEW_FROM_ISR(QEvt, PAUSE_SIG),
                                 &xHigherPriorityTaskWoken,
                                 &l_TickHook);
         }
@@ -192,7 +194,7 @@ void vApplicationIdleHook(void) {
     GPIOF->DATA_Bits[LED_BLUE] = 0U;     /* turn the Blue LED off */
     QF_INT_ENABLE();
 
-    /* Some flating point code is to exercise the VFP... */
+    /* Some floating point code is to exercise the VFP... */
     x = 1.73205F;
     x = x * 1.73205F;
 

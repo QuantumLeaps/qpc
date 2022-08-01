@@ -97,7 +97,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    /*QF_TICK_X(0U, &l_SysTick_Handler);*/ /* process time events for rate 0 */
+    /*QTIMEEVT_TICK_X(0U, &l_SysTick_Handler);*/ /* process time events for rate 0 */
     QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
@@ -113,11 +113,11 @@ void SysTick_Handler(void) {
     if ((tmp & (1U << PB0_PIN)) != 0U) {  /* debounced PB0 state changed? */
         if ((buttons.depressed & (1U << PB0_PIN)) != 0U) { /* PB0 depressed?*/
             static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
-            QF_PUBLISH(&pauseEvt, &l_SysTick_Handler);
+            QACTIVE_PUBLISH(&pauseEvt, &l_SysTick_Handler);
         }
         else {            /* the button is released */
             static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
-            QF_PUBLISH(&serveEvt, &l_SysTick_Handler);
+            QACTIVE_PUBLISH(&serveEvt, &l_SysTick_Handler);
         }
     }
 
@@ -131,7 +131,7 @@ void GPIO_EVEN_IRQHandler(void) { /* for testing, NOTE03 */
     QACTIVE_POST(AO_Table, Q_NEW(QEvt, TEST_SIG),
                  &l_GPIO_EVEN_IRQHandler);
 */
-    QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), /* for testing... */
+    QACTIVE_PUBLISH(Q_NEW(QEvt, TEST_SIG), /* for testing... */
                &l_GPIO_EVEN_IRQHandler);
 
     QXK_ISR_EXIT();  /* inform QXK about exiting an ISR */

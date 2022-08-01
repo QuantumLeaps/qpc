@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.1.3" links="1">
- <documentation>Simple &quot;Blinky&quot; model</documentation>
+<model version="5.2.1" links="1">
+ <documentation>Blinky example</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
  <!--${AOs}-->
@@ -13,6 +13,7 @@
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
    <!--${AOs::Blinky::SM}-->
    <statechart properties="0x03">
+    <documentation>Blinky state machine</documentation>
     <!--${AOs::Blinky::SM::initial}-->
     <initial target="../1">
      <action>(void)par; /* unused parameter */
@@ -63,6 +64,10 @@ BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
 
 Q_DEFINE_THIS_FILE
 
+#ifdef Q_SPY
+    #error Simple Blinky Application does not provide Spy build configuration
+#endif
+
 enum { BSP_TICKS_PER_SEC = 100 };
 
 void BSP_ledOff(void) {
@@ -78,7 +83,7 @@ void Q_onAssert(char const * const module, int loc) {
 void QF_onStartup(void) {}
 void QF_onCleanup(void) {}
 void QF_onClockTick(void) {
-    QF_TICK_X(0U, (void *)0);  /* perform the QF clock tick processing */
+    QTIMEEVT_TICK_X(0U, (void *)0);  /* clock tick processing */
 }
 
 enum BlinkySignals {
@@ -113,9 +118,7 @@ int main() {
 }
 
 /*================ ask QM to define the Blinky class ================*/
-$define ${AOs::Blinky}
-
-</text>
+$define ${AOs::Blinky}</text>
   </file>
  </directory>
 </model>

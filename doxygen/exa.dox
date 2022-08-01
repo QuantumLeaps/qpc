@@ -334,7 +334,6 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
 - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a> &nbsp; (Cortex-M3)
-- @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a> &nbsp; (ARM7TDMI)
 
 
 @subsection exa_ref_gnu-ccs GNU-ARM with TI CCS IDE
@@ -353,7 +352,6 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a> &nbsp; (Cortex-R4)
 - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a> &nbsp; (Cortex-R4)
 - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a> &nbsp; (Cortex-M3)
-- @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a> &nbsp; (ARM7TDMI)
 
 
 @subsection exa_ref_ccs-430 CCS for MSP430
@@ -369,7 +367,6 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 @section exa_ref_native Native Examples (by Processor)
 - @ref exa_arm-cm
 - @ref exa_arm-cr
-- @ref exa_arm7-9 ("classic ARM")
 - @ref exa_msp430 ("classic" MSP430 and "extended" MSP430x)
 
 
@@ -469,12 +466,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cr_dpp_launchxl2-tms57012 (QV, QK kernels; CCS-TI-ARM, IAR-EWARM toolchains)
 
 
-@subsection exa_ref_arm7-9 ARM7 Boards:
-@anchor AT91SAM7S-EK
-![AT91SAM7S-EK](bd_AT91SAM7S-EK.jpg)
-- @ref arm7-9_dpp_at91sam7s-ek (QV, QK kernels; IAR-EWARM toolchains)
-
-
 @subsection exa_ref_msp430 MSP430 Boards:
 @anchor MSP-EXP430F5529LP
 ![MSP-EXP430F5529LP](bd_MSP-EXP430F5529LP.jpg)
@@ -503,16 +494,12 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - ARM Cortex-R
     - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
     - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
-- ARM7 / ARM9
-    - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 
 - MSP430
     - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
     - @ref msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 
 @section exa_ref_vendor Examples by MCU Vendor
-- Atmel
-    - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 - NXP
     - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
 - Silicon Labs

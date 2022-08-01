@@ -1,15 +1,13 @@
 /*##########################################################################*/
-/*! @dir ../include
-
-Platform-independent QP&trade;/C API
+/*! @dir include
+@brief Platform-independent QP&trade;/C API
 
 @attention
 The QP&trade;/C <span class="img folder">include</span> directory needs to be added to the compiler's include path in the applications using QP&trade;/C.
 */
 /*##########################################################################*/
-/*! @dir ../src
-
-Platform-independent QP&trade;/C source code
+/*! @dir src
+@brief Platform-independent QP&trade;/C source code
 
 Files from this directory need to be added to the project, to build the QP&trade;/C framework from source code.
 
@@ -17,44 +15,34 @@ Files from this directory need to be added to the project, to build the QP&trade
 The QP&trade;/C <span class="img folder">src</span> directory needs to be added to the compiler's include path in the applications that build QP&trade;/C framework from sources (as opposed to using QP as a pre-built library).
 */
 /*##########################################################################*/
-/*! @dir ../src/qf
-
-Platform-independent implementation of the @ref qep and @ref qf components.
+/*! @dir src/qf
+@brief Platform-independent implementation of the @ref qep and @ref qf components.
 
 @note
 Typically, files in this directory need to be added to the application build, but some QP ports might not need all the files in this directory. For example, a QP port to a 3rd-party RTOS kernel might be using a message queue of the RTOS instead of the native QP event queue, in which case the file qf_actq.c would not be needed and should be excluded from the build.
 */
 /*##########################################################################*/
-/*! @dir ../src/qv
-
-Platform-independent implementation of the @ref srs_qv built-in kernel.
+/*! @dir src/qv
+@brief Platform-independent implementation of the @ref srs_qv built-in kernel.
 
 @attention
 Files in this directory need to be included in the QP application build only if the application uses the @ref srs_qv kernel.
 */
 /*##########################################################################*/
-/*! @dir ../src/qk
-
-Platform-independent implementation of the @ref srs_qk built-in kernel.
+/*! @dir src/qk
+@brief Platform-independent implementation of the @ref srs_qk built-in kernel.
 
 @attention
 Files in this directory need to be included in the QP application build only if the application uses the @ref srs_qk kernel.
 */
 /*##########################################################################*/
-/*! @dir ../src/qxk
-
-Platform-independent implementation of the @ref srs_qxk built-in kernel.
+/*! @dir src/qxk
+@brief Platform-independent implementation of the @ref srs_qxk built-in kernel.
 
 @attention
 Files in this directory need to be included in the QP application build only if the application uses the @ref srs_qxk kernel.
 */
 /*##########################################################################*/
-/*! @dir ../src/qs
-
-Platform-independent implementation of the @ref qs component (software tracing).
-*/
-/*##########################################################################*/
-/*! @dir ../3rd_party
-
-3rd-Party code used in the QP&trade;/C @ref ports "ports" and @ref exa "examples"
+/*! @dir src/qs
+@brief Platform-independent implementation of the @ref qs component (software tracing).
 */

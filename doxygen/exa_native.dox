@@ -34,7 +34,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="STM32 NUCLEO-H743ZI"></a>
 - @ref arm-cm_dpp_nucleo-l552ze <a class="preview board" href="bd_NUCLEO-L552ZE.jpg" title="STM32 NUCLEO-L552ZE Q"></a>
 - @ref arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
-- @ref arm-cm_low-power <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @ref tut_low <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
@@ -58,7 +58,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="STM32 NUCLEO-H743ZI"></a>
 - @ref arm-cm_dpp_nucleo-l552ze <a class="preview board" href="bd_NUCLEO-L552ZE.jpg" title="STM32 STM32 NUCLEO-L552ZE Q"></a>
-- @ref arm-cm_low-power <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @ref tut_low <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
 - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
@@ -77,7 +77,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
 - @ref arm-cm_dpp_nucleo-l552ze <a class="preview board" href="bd_NUCLEO-L552ZE.jpg" title="STM32 NUCLEO-L552ZE Q"></a>
 - @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="STM32 NUCLEO-H743ZI"></a>
-- @ref arm-cm_low-power <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @ref tut_low <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 
 */
 /*##########################################################################*/
@@ -97,7 +97,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @subpage arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="STM32 NUCLEO-H743ZI"></a>
 - @subpage arm-cm_dpp_nucleo-l552ze <a class="preview board" href="bd_NUCLEO-L552ZE.jpg" title="STM32 NUCLEO-L552ZE"></a>
 - @subpage arm-cm_game_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a>
-- @subpage arm-cm_low-power <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
+- @ref tut_low <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a>
 */
 /*##########################################################################*/
 /*! @page exa_arm-cr ARM Cortex-R

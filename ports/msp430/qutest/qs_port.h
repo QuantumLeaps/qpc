@@ -36,13 +36,13 @@
 #define QS_PORT_H
 
 /* QS time-stamp size in bytes */
-#define QS_TIME_SIZE     4
+#define QS_TIME_SIZE     4U
 
 /* object pointer size in bytes */
-#define QS_OBJ_PTR_SIZE  4
+#define QS_OBJ_PTR_SIZE  4U
 
 /* function pointer size in bytes */
-#define QS_FUN_PTR_SIZE  4
+#define QS_FUN_PTR_SIZE  4U
 
 /*==========================================================================*/
 /* NOTE: QS might be used with or without other QP components, in which

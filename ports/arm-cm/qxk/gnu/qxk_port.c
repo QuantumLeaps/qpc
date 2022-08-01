@@ -1,5 +1,5 @@
 /*============================================================================
-* QXK/C port to ARM Cortex-M, GNU-ARM
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -32,7 +32,7 @@
 /* This QXK port is part of the interanl QP implementation */
 #define QP_IMPL 1U
 #include "qf_port.h"
-#include "qxk_pkg.h"
+#include "qf_pkg.h"
 
 /* prototypes --------------------------------------------------------------*/
 void PendSV_Handler(void);
@@ -130,7 +130,7 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
     /* synthesize the ARM Cortex-M exception stack frame...*/
     *(--sp) = (1U << 24);    /* xPSR  (just the THUMB bit) */
     *(--sp) = (uint32_t)handler;         /* PC (the thread handler) */
-    *(--sp) = (uint32_t)&QXK_threadRet_; /* LR (return from thread) */
+    *(--sp) = (uint32_t)&QXK_threadExit_; /* LR (exit from thread) */
     *(--sp) = 0x0000000CU;   /* R12 */
     *(--sp) = 0x00000003U;   /* R3  */
     *(--sp) = 0x00000002U;   /* R2  */

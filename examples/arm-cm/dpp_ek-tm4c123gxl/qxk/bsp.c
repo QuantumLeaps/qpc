@@ -80,6 +80,7 @@ static uint32_t l_rnd; /* random seed */
 
 #endif
 
+
 /*..........................................................................*/
 void SysTick_Handler(void) {
     /* state of the button debouncing, see below */
@@ -99,7 +100,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
     QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); // post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
@@ -115,11 +116,11 @@ void SysTick_Handler(void) {
     if ((tmp & BTN_SW1) != 0U) {  /* debounced SW1 state changed? */
         if ((buttons.depressed & BTN_SW1) != 0U) { /* is SW1 depressed? */
             static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
-            QF_PUBLISH(&pauseEvt, &l_SysTick_Handler);
+            QACTIVE_PUBLISH(&pauseEvt, &l_SysTick_Handler);
         }
         else {            /* the button is released */
             static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
-            QF_PUBLISH(&serveEvt, &l_SysTick_Handler);
+            QACTIVE_PUBLISH(&serveEvt, &l_SysTick_Handler);
         }
     }
 
@@ -131,7 +132,7 @@ void GPIOPortA_IRQHandler(void) {
 
     //QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
     //             &l_GPIOPortA_IRQHandler);
-    QF_PUBLISH(Q_NEW(QEvt, TEST_SIG), /* for testing... */
+    QACTIVE_PUBLISH(Q_NEW(QEvt, TEST_SIG), /* for testing... */
                &l_GPIOPortA_IRQHandler);
 
     QXK_ISR_EXIT();  /* inform QXK about exiting an ISR */
@@ -456,7 +457,6 @@ void QS_onCommand(uint8_t cmdId,
         QS_U32(8, param2);
         QS_U32(8, param3);
     QS_END()
-
     if (cmdId == 10U) {
         Q_ERROR();
     }

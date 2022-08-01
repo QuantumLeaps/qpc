@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-07
+* @date Last updated on: 2022-07-30
 * @version Last updated for: @ref qpc_7_0_1
 *
 * @file
@@ -60,67 +60,61 @@
 
 /* the "FromISR" versions of the QF APIs, see NOTE3 */
 #ifdef Q_SPY
-    #define QACTIVE_POST_FROM_ISR(me_, e_, pxHigherPrioTaskWoken_, sender_) \
-        ((void)QActive_postFromISR_((me_), (e_), QF_NO_MARGIN,              \
-                                    (pxHigherPrioTaskWoken_), (sender_)))
 
-    #define QACTIVE_POST_X_FROM_ISR(me_, e_, margin_,                \
-                                    pxHigherPrioTaskWoken_, sender_) \
-        (QActive_postFromISR_((me_), (e_), (margin_),                \
-                              (pxHigherPrioTaskWoken_), (sender_)))
+#define QACTIVE_POST_FROM_ISR(me_, e_, pxHigherPrioTaskWoken_, sender_) \
+    ((void)QActive_postFromISR_((me_), (e_), QF_NO_MARGIN,              \
+                                (pxHigherPrioTaskWoken_), (sender_)))
 
-    #define QF_PUBLISH_FROM_ISR(e_, pxHigherPrioTaskWoken_, sender_) \
-        (QF_publishFromISR_((e_), (pxHigherPrioTaskWoken_),          \
-                            (void const *)(sender_)))
+#define QACTIVE_POST_X_FROM_ISR(me_, e_, margin_,                \
+                                pxHigherPrioTaskWoken_, sender_) \
+    (QActive_postFromISR_((me_), (e_), (margin_),                \
+                          (pxHigherPrioTaskWoken_), (sender_)))
 
-    #define QF_TICK_X_FROM_ISR(tickRate_, pxHigherPrioTaskWoken_, sender_) \
-        (QF_tickXFromISR_((tickRate_), (pxHigherPrioTaskWoken_), (sender_)))
+#define QACTIVE_PUBLISH_FROM_ISR(e_, pxHigherPrioTaskWoken_, sender_) \
+    (QActive_publishFromISR_((e_), (pxHigherPrioTaskWoken_),          \
+                        (void const *)(sender_)))
 
-    /* this function only to be used through macros QACTIVE_POST_FROM_ISR()
-    * and QACTIVE_POST_X_FROM_ISR().
-    */
-    bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
-                              uint_fast16_t const margin,
-                              BaseType_t * const pxHigherPriorityTaskWoken,
-                              void const * const sender);
+#define QTIMEEVT_TICK_FROM_ISR(tickRate_, pxHigherPrioTaskWoken_, sender_) \
+    (QTimeEvt_tickFromISR_((tickRate_), (pxHigherPrioTaskWoken_), (sender_)))
 
-    void QF_publishFromISR_(QEvt const * const e,
-                              BaseType_t * const pxHigherPriorityTaskWoken,
-                              void const * const sender);
+#else /* ndef Q_SPY */
 
-    void QF_tickXFromISR_(uint_fast8_t const tickRate,
-                              BaseType_t * const pxHigherPriorityTaskWoken,
-                              void const * const sender);
-#else
-    #define QACTIVE_POST_FROM_ISR(me_, e_, pxHigherPrioTaskWoken_, dummy) \
-        ((void)QActive_postFromISR_((me_), (e_), QF_NO_MARGIN,           \
-                                    (pxHigherPrioTaskWoken_)))
+#define QACTIVE_POST_FROM_ISR(me_, e_, pxHigherPrioTaskWoken_, dummy) \
+    ((void)QActive_postFromISR_((me_), (e_), QF_NO_MARGIN,              \
+                                (pxHigherPrioTaskWoken_), (void *)0))
 
-    #define QACTIVE_POST_X_FROM_ISR(me_, e_, margin_,               \
-                                    pxHigherPrioTaskWoken_,  dummy) \
-        (QActive_postFromISR_((me_), (e_), (margin_),               \
-                              (pxHigherPrioTaskWoken_)))
+#define QACTIVE_POST_X_FROM_ISR(me_, e_, margin_,                \
+                                pxHigherPrioTaskWoken_, dummy) \
+    (QActive_postFromISR_((me_), (e_), (margin_),                \
+                          (pxHigherPrioTaskWoken_), (void *)0))
 
-    #define QF_PUBLISH_FROM_ISR(e_, pxHigherPrioTaskWoken_, dummy) \
-        (QF_publishFromISR_((e_), (pxHigherPrioTaskWoken_)))
+#define QACTIVE_PUBLISH_FROM_ISR(e_, pxHigherPrioTaskWoken_, dummy) \
+    (QActive_publishFromISR_((e_), (pxHigherPrioTaskWoken_),          \
+                        (void *)0))
 
-    #define QF_TICK_X_FROM_ISR(tickRate_, pxHigherPrioTaskWoken_, dummy) \
-        (QF_tickXFromISR_((tickRate_), (pxHigherPrioTaskWoken_)))
+#define QTIMEEVT_TICK_FROM_ISR(tickRate_, pxHigherPrioTaskWoken_, dummy) \
+    (QTimeEvt_tickFromISR_((tickRate_), (pxHigherPrioTaskWoken_), (void *)0))
 
-    bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
-                              uint_fast16_t const margin,
-                              BaseType_t * const pxHigherPriorityTaskWoken);
+#endif /* Q_SPY */
 
-    void QF_publishFromISR_(QEvt const * const e,
-                              BaseType_t * const pxHigherPriorityTaskWoken);
+/* this function only to be used through macros QACTIVE_POST_FROM_ISR()
+* and QACTIVE_POST_X_FROM_ISR().
+*/
+bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
+                          uint_fast16_t const margin,
+                          BaseType_t * const pxHigherPriorityTaskWoken,
+                          void const * const sender);
 
-    void QF_tickXFromISR_(uint_fast8_t const tickRate,
-                              BaseType_t * const pxHigherPriorityTaskWoken);
+void QActive_publishFromISR_(QEvt const * const e,
+                          BaseType_t * const pxHigherPriorityTaskWoken,
+                          void const * const sender);
 
-#endif
+void QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
+                          BaseType_t * const pxHigherPriorityTaskWoken,
+                          void const * const sender);
 
 #define QF_TICK_FROM_ISR(pxHigherPrioTaskWoken_, sender_) \
-    QF_TICK_X_FROM_ISR(0U, pxHigherPrioTaskWoken_, sender_)
+    QTIMEEVT_TICK_FROM_ISR(0U, pxHigherPrioTaskWoken_, sender_)
 
 #ifdef Q_EVT_CTOR /* Shall the ctor for the ::QEvt class be provided? */
 

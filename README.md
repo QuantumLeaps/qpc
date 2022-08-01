@@ -88,7 +88,7 @@ products ranging from implantable medical devices to complex weapon systems.
 
 
 # QP/C Licensing
-QP/C is licensed under the increasingly popular [dual licensing model][Lic],
+QP/C is licensed under the sustainable [dual licensing model][Lic],
 in which both the open source software distribution mechanism and
 traditional closed source software distribution models are combined.
 

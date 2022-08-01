@@ -73,7 +73,7 @@ Q_DEFINE_THIS_FILE
 /* ISRs used in this project ===============================================*/
 QK_IRQ_BEGIN(rtiCompare0)
     rtiREG1->INTFLAG = 1U;    /* clear the interrutp source */
-    QF_TICK_X(0U, (void *)0); /* process time events for rate 0 */
+    QTIMEEVT_TICK_X(0U, (void *)0); /* process time events for rate 0 */
 QK_IRQ_END()
 
 /* BSP functions ===========================================================*/

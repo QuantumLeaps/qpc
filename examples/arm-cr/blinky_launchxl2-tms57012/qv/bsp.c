@@ -78,7 +78,7 @@
 */
 void rtiNotification(uint32 notification) {
     if (notification == rtiNOTIFICATION_COMPARE0) {
-        QF_TICK_X(0U, (void *)0); /* process time events for rate 0 */
+        QTIMEEVT_TICK_X(0U, (void *)0); /* process time events for rate 0 */
     }
 }
 

@@ -37,6 +37,7 @@ JLink*.*
 version-*
 
 3rd_party/
+cert-pack/
 html/
 test_priv/
 dbg/

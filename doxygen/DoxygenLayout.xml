@@ -4,7 +4,7 @@
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
     <tab type="pages" visible="yes" title="" intro=""/>
-    <tab type="modules" visible="yes" title="Certification Pack" intro="List of modules comprising the Certification Pack:"/>
+    <tab type="modules" visible="yes" title="Certification Pack" intro="List of modules comprising the QP/C Certification Pack:"/>
     <tab type="namespaces" visible="yes" title="">
       <tab type="namespacelist" visible="yes" title="" intro=""/>
       <tab type="namespacemembers" visible="yes" title="" intro=""/>

@@ -75,7 +75,7 @@
     __low_power_mode_off_on_exit(); /* see NOTE1 */
 #endif
 
-    QF_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
+    QTIMEEVT_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
 }
 
 

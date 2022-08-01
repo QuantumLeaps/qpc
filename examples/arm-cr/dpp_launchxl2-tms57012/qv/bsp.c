@@ -100,7 +100,7 @@ void rtiNotification(uint32 notification) {
         uint32_t tmp;
 
         rtiREG1->INTFLAG = 1U;    /* clear the interrutp source */
-        QF_TICK_X(0U, (void *)0); /* process time events for rate 0 */
+        QTIMEEVT_TICK_X(0U, (void *)0); /* process time events for rate 0 */
 
         /* Perform the debouncing of buttons. The algorithm for debouncing
         * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -115,11 +115,11 @@ void rtiNotification(uint32 notification) {
         if ((tmp & (1U << SWB_PIN)) != 0U) {  /* debounced SWB state changed? */
             if ((buttons.depressed & (1U << SWB_PIN)) != 0U) { /* SWB depressed?*/
                 static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
-                QF_PUBLISH(&pauseEvt, &l_rtiCompare0);
+                QACTIVE_PUBLISH(&pauseEvt, &l_rtiCompare0);
             }
             else {            /* the button is released */
                 static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
-                QF_PUBLISH(&serveEvt, &l_rtiCompare0);
+                QACTIVE_PUBLISH(&serveEvt, &l_rtiCompare0);
             }
         }
     }

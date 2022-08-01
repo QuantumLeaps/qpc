@@ -46,8 +46,8 @@
 void QS_output(void);    /* handle the QS output */
 void QS_rx_input(void);  /* handle the QS-RX input */
 
-/*****************************************************************************
-* NOTE: QS might be used with or without other QP components, in which
+/*==========================================================================*/
+/* NOTE: QS might be used with or without other QP components, in which
 * case the separate definitions of the macros QF_CRIT_STAT_TYPE,
 * QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this port QS is configured
 * to be used with the other QP component, by simply including "qf_port.h"
@@ -60,4 +60,3 @@ void QS_rx_input(void);  /* handle the QS-RX input */
 #include "qs.h"      /* QS platform-independent public interface */
 
 #endif /* QS_PORT_H  */
-

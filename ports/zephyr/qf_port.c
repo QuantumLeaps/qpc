@@ -96,7 +96,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     k_msgq_init(&me->eQueue, (char *)qSto, sizeof(QEvt *), (uint32_t)qLen);
 
     me->prio = prio;  /* save the QF priority */
-    QF_add_(me);      /* make QF aware of this active object */
+    QActive_register_(me);      /* make QF aware of this active object */
 
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */

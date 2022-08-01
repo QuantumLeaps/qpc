@@ -102,10 +102,10 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    //QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
     QACTIVE_POST(the_Ticker0, 0, 0); /* post a don't-care event to Ticker0 */
 
-    QF_PUBLISH(&tickEvt, &l_SysTick_Handler); /* publish to all subscribers */
+    QACTIVE_PUBLISH(&tickEvt, &l_SysTick_Handler); /* publish to all subscribers */
 
     {
         /* state of the button debouncing, see below */
@@ -129,7 +129,7 @@ void SysTick_Handler(void) {
        if ((tmp & (1U << PB0_PIN)) != 0U) {  /* debounced PB0 state changed? */
            if ((buttons.depressed & (1U << PB0_PIN)) != 0U) {/*PB0 depressed?*/
                static QEvt const trigEvt = { PLAYER_TRIGGER_SIG, 0U, 0U};
-               QF_PUBLISH(&trigEvt, &l_SysTick_Handler);
+               QACTIVE_PUBLISH(&trigEvt, &l_SysTick_Handler);
            }
        }
     }

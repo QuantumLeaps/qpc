@@ -75,7 +75,7 @@ static struct k_timer QF_tick_timer;
 /*..........................................................................*/
 static void QF_tick_function(struct k_timer *tid) {
     (void)tid; /* unused parameter */
-    QF_TICK_X(0U, &timerID);
+    QTIMEEVT_TICK_X(0U, &timerID);
 }
 /*..........................................................................*/
 void BSP_init(void) {

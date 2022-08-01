@@ -6,5 +6,6 @@
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 
-ENABLED_SECTIONS += CERT
+ENABLED_SECTIONS      += CERT
+HTML_OUTPUT            = ../cert-pack
 

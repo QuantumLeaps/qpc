@@ -75,14 +75,14 @@ enum {
 /* ISRs used in this project ===============================================*/
 void SysTick_Handler(void) {
     QK_ISR_ENTRY();   /* inform QK about entering an ISR */
-    QF_TICK_X(0U, (void *)0); /* process time events for rate 0 */
+    QTIMEEVT_TICK_X(0U, (void *)0); /* process time events for rate 0 */
     QK_ISR_EXIT();  /* inform QK about exiting an ISR */
 }
 /*..........................................................................*/
 void Timer0A_IRQHandler(void) {
     QK_ISR_ENTRY();   /* inform QK about entering an ISR */
     TIMER0->ICR |= (1U << 0); /* clear the Timer0 interrupt source */
-    QF_TICK_X(1U, (void *)0); /* process time events for rate 1 */
+    QTIMEEVT_TICK_X(1U, (void *)0); /* process time events for rate 1 */
     QK_ISR_EXIT();  /* inform QK about exiting an ISR */
 }
 /*..........................................................................*/
@@ -90,7 +90,7 @@ void GPIOPortF_IRQHandler(void) {
     QK_ISR_ENTRY();  /* inform QK about entering an ISR */
     if ((GPIOF->RIS & BTN_SW1) != 0U) { /* interrupt caused by SW1? */
         static QEvt const pressedEvt = { BTN_PRESSED_SIG, 0U, 0U};
-        QF_PUBLISH(&pressedEvt, (void *)0);
+        QACTIVE_PUBLISH(&pressedEvt, (void *)0);
     }
     GPIOF->ICR = 0xFFU; /* clear interrupt sources */
     QK_ISR_EXIT(); /* inform QK about exiting an ISR */

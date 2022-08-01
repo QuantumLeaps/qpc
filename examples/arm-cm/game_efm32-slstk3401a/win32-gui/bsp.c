@@ -86,7 +86,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg,
 /*..........................................................................*/
 static void playerTrigger(void) {
     static QEvt const fireEvt = { PLAYER_TRIGGER_SIG, 0U, 0U };
-    QF_PUBLISH(&fireEvt, (void*)0);
+    QACTIVE_PUBLISH(&fireEvt, (void*)0);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -99,8 +99,8 @@ void QF_onCleanup(void) {
 /*..........................................................................*/
 void QF_onClockTick(void) {
     static QEvt const tickEvt = { TIME_TICK_SIG, 0U, 0U };
-    QF_TICK_X(0U, &l_clock_tick);  /* process time events for rate 0 */
-    QF_PUBLISH(&tickEvt, &l_clock_tick); /* publish the tick event */
+    QTIMEEVT_TICK_X(0U, &l_clock_tick);  /* process time events for rate 0 */
+    QACTIVE_PUBLISH(&tickEvt, &l_clock_tick); /* publish the tick event */
 
     QS_RX_INPUT(); /* handle the QS-RX input */
     QS_OUTPUT();   /* handle the QS output */

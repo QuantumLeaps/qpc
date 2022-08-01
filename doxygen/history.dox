@@ -1,20 +1,35 @@
 /*! @page history Revision History
 
-@section qpc_7_0_1 Version 7.0.1, 2022-06-30 (planned)
-__Source Code Changes:__
+@section qpc_7_0_1 Version 7.0.1, 2022-07-31
+This release is the first one that contains the complete [QM model](https://www.state-machine.com/products/qm) of the QP/C framework (in the file `qpc/qpc.qm`). This model is then used to **generate all QP/C source code**:
+- `qpc/`
+  + @ref C:/qp-dev/qpc/include "include"
+  + @ref C:/qp-dev/qpc/src "src"
 
-Moved package-scope header files qf_pkg.h, qs_pkg.h, and qxk_pkg.h from the `qpc/src` directory to `qpc/include`. This allows the build process to specify only the `qpc/include` directory to build applications and QP/C source code. Previously, the build process had to specify additionally `qpc/src`, but this is no longer needed.
+The QM model of QP/C explicitly captures the *logical design* of the framework, which is then mapped to the preexisting [physical design](https://www.state-machine.com/qm/ce.html#ce_phys). The *logical design*, which consists of packages (some associated with namespaces), classes, types, and macros traces explicitly to the @ref sas "Software Architecture Specification (SAS)" and is easier to manipulate and refactor.
+
+__Source Code Changes:__
+- The whole QP/C source code is now generated from the `qpc.qm` model.
+- Refactored classes with only static members (QF, QV, QK, QXK, QS) into "namespaces".
+- Refactored:
+  + QF_TICK_X() -> QTIMEEVT_TICK() (see also QTimeEvt_tick_())
+  + QF_PUBLISH() -> QACTIVE_PUBLISH() (see also QActive_publish_())
+  + QF_psInit() -> QActive_psInit()
+
+@note
+The old APIs (QF_PUBLISH(), QF_TICK_X(), QF_psInit()) are still provided, but are tagged as [deprecated](deprecated.html).
+
+- Moved package-scope header files qf_pkg.h and qs_pkg.h from the `qpc/src` directory to `qpc/include`. This allows the build process to specify only the `qpc/include` directory to build applications and QP/C source code. Previously, the build process had to specify additionally `qpc/src`, but this is no longer needed.
 
 @note
 This change allowed all provided examples to be simplified by removing the `qpc/src` include directory from the various project files.
 
-
-__Added Ports/Examples:__
+__Ports/Examples:__
+- Removed port and examples for the older ARM7/ARM9
 - Added port to the @ref zephyr "Zephyr RTOS"
 - Added examples for the @ref exa_zephyr "Zephyr RTOS"
 - redesigned QP/C @ref freertos "port to FreeRTOS", see `qpc/ports/freertos`
 - slightly improved QP/C @ref threadx "port to ThreadX", see `qpc/ports/threadx`
-
 
 __Improved Documentation:__
 The Doxygen documentation has been re-structured and improved. Also the more attractive styling of the HTML has been applied.
@@ -1374,7 +1389,7 @@ Changes in detail:
 
 2. Removed class QFsm (which is now deprecated). Legacy state machines coded in the "QFsm-style" will continue to work, but will use the ::QHsm implementation internally. There is no longer any efficiency advantage in using the "QFsm-style" state machines.
 
-3. Applied a slight performance improvement to the ARM Cortex-M port to the QK preemptive kernel. The QK port now checks for ISR context by looking at the IPSR register, instead of incrementing and decrementing the `QK_intNest_` up-down counter.
+3. Applied a slight performance improvement to the ARM Cortex-M port to the QK preemptive kernel. The QK port now checks for ISR context by looking at the IPSR register, instead of incrementing and decrementing the `QF_intNest_` up-down counter.
 
 4. Updated @ref exa_arm-cm "ARM Cortex-M examples" and provided new examples for NXP mbed-LPC1768, and STM32 NUCLEO-L053R8, and NUCLEO-L152RE boards. All examples now use the latest CMSIS (V4.3.0). All ARM Cortex-M exampels are provided for the ARM-KEIL, GNU-ARM, and IAR-ARM toolsets.
 
@@ -2587,7 +2602,7 @@ tools in different directories than those chosen by Quantum Leaps.
 - modified the ARM Cortex-M3 examples for the new IAR EWARM 5.40.
 - modified slighlty the Calculator example to allow extensibility.
 - in the ARM Cortex-M3 port file qk_port.s added explicit testing of the
-QK_readySet_ set for empty condition. This test allows avoiding calling the QK
+QF_readySet_ set for empty condition. This test allows avoiding calling the QK
 scheduler and two contex-switches if the ready-set is empty.
 - in the game example moved setting up the QS filters from main.c to bsp.c.
 

@@ -99,7 +99,7 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
-    QF_TICK(&l_clock_tick); /* perform the QF clock tick processing */
+    QTIMEEVT_TICK_X(0U, &l_clock_tick); /* QF clock tick processing */
 }
 
 /*..........................................................................*/

@@ -1,40 +1,33 @@
-/**
-* @file
-* @brief QF/C port to POSIX API (single-threaded, like the QV kernel)
-* @cond
-******************************************************************************
-* Last updated for version 6.9.1
-* Last updated on  2020-09-08
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-******************************************************************************
-* @endcond
+============================================================================*/
+/*!
+* @date Last updated on: 2022-07-30
+* @version Last updated for: @ref qpc_7_0_1
+*
+* @file
+* @brief QF/C port to POSIX API (single-threaded, like the QV kernel)
 */
 #ifndef QF_PORT_H
 #define QF_PORT_H
@@ -103,7 +96,7 @@ int QF_consoleWaitForKey(void);
         Q_ASSERT((me_)->eQueue.frontEvt != (QEvt *)0)
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
-        QPSet_insert(&QV_readySet_, (me_)->prio); \
+        QPSet_insert(&QF_readySet_, (me_)->prio); \
         pthread_cond_signal(&QV_condVar_); \
     } while (false)
 
@@ -119,12 +112,11 @@ int QF_consoleWaitForKey(void);
 
     #include <pthread.h> /* POSIX-thread API */
 
-    extern QPSet QV_readySet_; /* QV-ready set of active objects */
     extern pthread_cond_t QV_condVar_; /* Cond.var. to signal events */
 
 #endif /* QP_IMPL */
 
-/****************************************************************************/
+/*==========================================================================*/
 /*
 * NOTE1:
 * QF, like all real-time frameworks, needs to execute certain sections of
@@ -156,4 +148,3 @@ int QF_consoleWaitForKey(void);
 */
 
 #endif /* QF_PORT_H */
-

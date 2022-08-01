@@ -1,5 +1,5 @@
 /*============================================================================
-* QXK/C port to ARM Cortex-M, GNU-ARM
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-05-02
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-07-27
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM compiler

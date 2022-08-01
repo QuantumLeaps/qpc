@@ -1,5 +1,5 @@
 /*============================================================================
-* QF/C port to uC-OS2, generic C99 compiler
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -82,7 +82,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     Q_ASSERT_ID(210, me->eQueue != (OS_EVENT *)0);
 
     me->prio = prio; /* save the QF priority */
-    QF_add_(me); /* make QF aware of this active object */
+    QActive_register_(me); /* make QF aware of this active object */
 
     QHSM_INIT(&me->super, par, me->prio); /* initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
@@ -147,13 +147,8 @@ static void task_function(void *pdata) { /* uC-OS2 task signature */
     }
 }
 /*..........................................................................*/
-#ifndef Q_SPY
-bool QActive_post_(QActive * const me, QEvt const * const e,
-                   uint_fast16_t const margin)
-#else
 bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
-#endif
 {
     QF_CRIT_STAT_
     QF_CRIT_E_();

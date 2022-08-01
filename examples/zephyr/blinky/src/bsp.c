@@ -25,7 +25,7 @@ static struct device const *dev_LED0;
 static struct k_timer QF_tick_timer;
 static void QF_tick_function(struct k_timer *tid) {
     (void)tid; /* unused parameter */
-    QF_TICK_X(0U, (void *)0);
+    QTIMEEVT_TICK_X(0U, (void *)0);
 }
 
 void BSP_init(void) {

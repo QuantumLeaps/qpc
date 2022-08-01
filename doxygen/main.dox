@@ -66,7 +66,7 @@ QP/C can also work with many traditional @ref exa_rtos "RTOSes" and @ref exa_os 
 
 
 @subsection over_trace Traceability
-QP&trade;/C offers unprecedented, bidirectional @ref trace "traceability" among all work artifacts, which gives teams full visibility from requirements through architecture, design, source code, tests, and back again.
+QP&trade;/C offers unprecedented, bidirectional @ref tr "traceability" among all work artifacts, which gives teams full visibility from requirements through architecture, design, source code, tests, and back again.
 
 
 @subsection over_popular Popularity &amp; Maturity

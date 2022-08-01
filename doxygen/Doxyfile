@@ -145,23 +145,9 @@ INPUT                  = main.dox \
                          ../../cert-pack/tr.dox \
                          metrics.dox \
                          dir.dox \
-                         macros.h \
-                         ../include/qpc.h \
-                         ../include/qep.h \
-                         ../include/qf.h \
-                         ../include/qequeue.h \
-                         ../include/qmpool.h \
-                         ../include/qpset.h \
-                         ../include/qv.h \
-                         ../include/qk.h \
-                         ../include/qxk.h \
-                         ../include/qxthread.h \
-                         ../include/qs.h \
+                         config.h \
                          ../include \
-                         ../src \
-                         ../ports/arm-cm/qv/gnu \
-                         ../ports/arm-cm/qk/gnu \
-                         ../ports/arm-cm/qxk/gnu
+                         ../src
 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.dox \
@@ -305,15 +291,15 @@ PREDEFINED             = Q_SPY \
                          Q_UTEST \
                          QK_ON_CONTEXT_SW \
                          QXK_ON_CONTEXT_SW \
-                         QF_MAX_ACTIVE=64U \
-                         QF_MAX_TICK_RATE=2U \
-                         QF_MAX_EPOOL=3U \
-                         QF_EVENT_SIZ_SIZE=2U \
-                         QF_EQUEUE_CTR_SIZE=2U \
-                         QF_MPOOL_SIZ_SIZE=2U \
-                         QF_MPOOL_CTR_SIZE=2U \
-                         QF_TIMEEVT_CTR_SIZE=4U \
+                         QF_MAX_ACTIVE=32 \
+                         QF_MAX_TICK_RATE=2 \
+                         QF_MAX_EPOOL=3 \
+                         QF_EVENT_SIZ_SIZE=2 \
+                         QF_EQUEUE_CTR_SIZE=2 \
+                         QF_MPOOL_SIZ_SIZE=2 \
+                         QF_MPOOL_CTR_SIZE=2 \
+                         QF_TIMEEVT_CTR_SIZE=4 \
                          QF_ACTIVE_STOP=0 \
-                         QS_TIME_SIZE=4U
+                         QS_TIME_SIZE=4
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES

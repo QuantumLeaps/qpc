@@ -10,7 +10,7 @@ static void __cdecl run(void *me) { /* the exact signature for _beginthread */
     } while (((QActive *)me)->prio > (uint8_t)0);
 
     QActive_unsubscribeAll((QActive *)me);  /* unsubscribe from all signals */
-    QF_remove_((QActive *)me); /* remove this object from any subscriptions */
+    QActive_unregister_((QActive *)me); /* un-register this active object */
 
     _endthread();    /* cleanup after the thead and close the thread handle */
 }

@@ -233,9 +233,9 @@ QXK is a small, preemptive, priority-based, dual-mode (run-to-completion/**block
 <br>
 @nav_next{deprecated}
 */
-/*##########################################################################*/
+##############################################################################
 /*! @page deprecated Deprecated APIs
 
-__The following QP/C APIs are now deprecated:__
+**The following QP/C APIs are now deprecated:**
 
 */

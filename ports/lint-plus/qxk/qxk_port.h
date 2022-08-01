@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-07-29
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QXK/C port example for a generic C99 compiler.
@@ -37,16 +37,7 @@
 
 /*==========================================================================*/
 
-/*! determination if the code executes in the ISR context
-* (used internally in QXK only)
-*/
-/*! determination if the code executes in the ISR context */
-/**
-* @note This is just an example of #QXK_ISR_CONTEXT_ (for ARM Cortex-M).
-* You need to define the macro appropriately for the CPU/compiler you're
-* using. Also, some QK ports will not define this macro, but instead might
-* test the interrupt nesting up-down counter (QXK_intNest_).
-*/
+/*! determination if the code executes in the ISR context (ARM Cortex-M) */
 #define QXK_ISR_CONTEXT_() (getSR() != 0U)
 
 /*! activate the context-switch callback */
@@ -59,17 +50,11 @@
 /*! Define the ISR entry sequence, if the compiler supports writing
 * interrupts in C.
 */
-/**
-* @note This is just an example of #QXK_ISR_ENTRY. You need to define
-* the macro appropriately for the CPU/compiler you're using. Also, some
-* QXK ports will not define this macro, but instead will provide ISR
-* skeleton code in assembly.
-*/
-#define QXK_ISR_ENTRY() do {                      \
-    QF_INT_DISABLE();                             \
-    ++QXK_intNest_;                               \
-    QF_QS_ISR_ENTRY(QXK_intNest_, QXK_currPrio_); \
-    QF_INT_ENABLE();                              \
+#define QXK_ISR_ENTRY() do {                     \
+    QF_INT_DISABLE();                            \
+    ++QF_intNest_;                               \
+    QF_QS_ISR_ENTRY(QF_intNest_, QXK_currPrio_); \
+    QF_INT_ENABLE();                             \
 } while (false)
 
 
@@ -81,13 +66,13 @@
 * appropriately for the CPU/compiler you're using. Also, some QXK ports will
 * not define this macro, but instead will provide ISR skeleton in assembly.
 */
-#define QXK_ISR_EXIT() do {   \
-    QF_INT_DISABLE();         \
-    --QXK_intNest_;           \
-    if (QXK_intNest_ == 0U) { \
-        QXK_sched_();         \
-    }                         \
-    QF_INT_ENABLE();          \
+#define QXK_ISR_EXIT() do {  \
+    QF_INT_DISABLE();        \
+    --QF_intNest_;           \
+    if (QF_intNest_ == 0U) { \
+        QXK_sched_();        \
+    }                        \
+    QF_INT_ENABLE();         \
 } while (false)
 
 uint32_t getSR(void);

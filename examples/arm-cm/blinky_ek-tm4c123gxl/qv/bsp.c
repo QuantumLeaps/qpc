@@ -61,7 +61,7 @@ void GPIOPortA_IRQHandler(void);
 
 /* ISRs used in this project ===============================================*/
 void SysTick_Handler(void) {
-    QF_TICK_X(0U, (void *)0); /* process time events for rate 0 */
+    QTIMEEVT_TICK_X(0U, (void *)0); /* process time events for rate 0 */
     QV_ARM_ERRATUM_838869();
 }
 

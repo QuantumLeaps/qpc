@@ -228,7 +228,7 @@ QState LwIPMgr_running(LwIPMgr *me, QEvt const *e) {
                           (int)(((ip_net) >> 16) & 0xFFU),
                           (int)(((ip_net) >> 8)  & 0xFFU),
                           (int)(ip_net           & 0xFFU));
-                QF_PUBLISH((QEvt *)te, &me->super);
+                QACTIVE_PUBLISH((QEvt *)te, &me->super);
             }
 
 #if LWIP_TCP
@@ -330,7 +330,7 @@ static char const *cgi_display(int index, int numParams,
         if (strstr(param[i], "text") != (char *)0) { /* param text found? */
             TextEvt *te = Q_NEW(TextEvt, DISPLAY_CGI_SIG);
             strncpy(te->text, value[i], Q_DIM(te->text));
-            QF_PUBLISH((QEvt *)te, AO_LwIPMgr);
+            QACTIVE_PUBLISH((QEvt *)te, AO_LwIPMgr);
             return "/thank_you.htm";
         }
     }
@@ -343,7 +343,7 @@ static void udp_rx_handler(void *arg, struct udp_pcb *upcb,
 {
     TextEvt *te = Q_NEW(TextEvt, DISPLAY_UDP_SIG);
     strncpy(te->text, (char *)p->payload, Q_DIM(te->text));
-    QF_PUBLISH((QEvt *)te, AO_LwIPMgr);
+    QACTIVE_PUBLISH((QEvt *)te, AO_LwIPMgr);
 
     udp_connect(upcb, addr, port); /* connect to the remote host */
     pbuf_free(p); /* don't leak the pbuf! */

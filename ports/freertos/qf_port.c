@@ -130,7 +130,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     Q_ASSERT_ID(210, me->eQueue != (QueueHandle_t)0);
 
     me->prio = prio;  /* save the QF priority */
-    QF_add_(me);      /* make QF aware of this active object */
+    QActive_register_(me);      /* make QF aware of this active object */
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 
@@ -166,13 +166,8 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 }
 
 /*==========================================================================*/
-#ifndef Q_SPY
-bool QActive_post_(QActive * const me, QEvt const * const e,
-                   uint_fast16_t const margin)
-#else
 bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
-#endif /* Q_SPY */
 {
     QF_CRIT_STAT_
     QF_CRIT_E_();
@@ -281,16 +276,10 @@ QEvt const *QActive_get_(QActive * const me) {
 
 /*==========================================================================*/
 /* The "FromISR" QP APIs for the FreeRTOS port... */
-#ifdef Q_SPY
 bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
                           uint_fast16_t const margin,
                           BaseType_t * const pxHigherPriorityTaskWoken,
                           void const * const sender)
-#else
-bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
-                          uint_fast16_t const margin,
-                          BaseType_t * const pxHigherPriorityTaskWoken)
-#endif
 {
     UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
 
@@ -356,17 +345,12 @@ bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
     return status;
 }
 /*..........................................................................*/
-#ifdef Q_SPY
-void QF_publishFromISR_(QEvt const * const e,
-                        BaseType_t * const pxHigherPriorityTaskWoken,
-                        void const * const sender)
-#else
-void QF_publishFromISR_(QEvt const * const e,
-                        BaseType_t * const pxHigherPriorityTaskWoken)
-#endif
+void QActive_publishFromISR_(QEvt const * const e,
+                             BaseType_t * const pxHigherPriorityTaskWoken,
+                             void const * const sender)
 {
     /** @pre the published signal must be within the configured range */
-    Q_REQUIRE_ID(500, e->sig < (QSignal)QF_maxPubSignal_);
+    Q_REQUIRE_ID(500, e->sig < (QSignal)QActive_maxPubSignal_);
 
     UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
 
@@ -390,7 +374,7 @@ void QF_publishFromISR_(QEvt const * const e,
     }
 
     /* make a local, modifiable copy of the subscriber list */
-    QPSet subscrList = QF_PTR_AT_(QF_subscrList_, e->sig);
+    QPSet subscrList = QActive_subscrList_[e->sig];
     portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
 
     if (QPSet_notEmpty(&subscrList)) { /* any subscribers? */
@@ -400,10 +384,10 @@ void QF_publishFromISR_(QEvt const * const e,
         /* no need to lock the scheduler in the ISR context */
         do { /* loop over all subscribers */
             /* the prio of the AO must be registered with the framework */
-            Q_ASSERT_ID(510, QF_active_[p] != (QActive *)0);
+            Q_ASSERT_ID(510, QActive_registry_[p] != (QActive *)0);
 
             /* QACTIVE_POST_FROM_ISR() asserts if the queue overflows */
-            QACTIVE_POST_FROM_ISR(QF_active_[p], e,
+            QACTIVE_POST_FROM_ISR(QActive_registry_[p], e,
                                   pxHigherPriorityTaskWoken, sender);
 
             QPSet_remove(&subscrList, p); /* remove the handled subscriber */
@@ -425,16 +409,11 @@ void QF_publishFromISR_(QEvt const * const e,
     QF_gcFromISR(e);
 }
 /*..........................................................................*/
-#ifdef Q_SPY
-void QF_tickXFromISR_(uint_fast8_t const tickRate,
+void QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
                       BaseType_t * const pxHigherPriorityTaskWoken,
                       void const * const sender)
-#else
-void QF_tickXFromISR_(uint_fast8_t const tickRate,
-                      BaseType_t * const pxHigherPriorityTaskWoken)
-#endif
 {
-    QTimeEvt *prev = &QF_timeEvtHead_[tickRate];
+    QTimeEvt *prev = &QTimeEvt_timeEvtHead_[tickRate];
     UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_TICK, 0U)
@@ -450,13 +429,13 @@ void QF_tickXFromISR_(uint_fast8_t const tickRate,
         /* end of the list? */
         if (t == (QTimeEvt *)0) {
 
-            /* any new time events armed since the last run of QF_tickX_()? */
-            if (QF_timeEvtHead_[tickRate].act != (void *)0) {
+            /* any new time events armed since the last QTimeEvt_tick_()? */
+            if (QTimeEvt_timeEvtHead_[tickRate].act != (void *)0) {
 
                 /* sanity check */
                 Q_ASSERT_ID(610, prev != (QTimeEvt *)0);
-                prev->next = (QTimeEvt *)QF_timeEvtHead_[tickRate].act;
-                QF_timeEvtHead_[tickRate].act = (void *)0;
+                prev->next = (QTimeEvt *)QTimeEvt_timeEvtHead_[tickRate].act;
+                QTimeEvt_timeEvtHead_[tickRate].act = (void *)0;
                 t = prev->next;  /* switch to the new list */
             }
             else {
@@ -533,7 +512,7 @@ QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
     /* find the pool index that fits the requested event size ... */
     uint_fast8_t idx;
     for (idx = 0U; idx < QF_maxPool_; ++idx) {
-        if (evtSize <= QF_EPOOL_EVENT_SIZE_(QF_pool_[idx])) {
+        if (evtSize <= QF_EPOOL_EVENT_SIZE_(QF_ePool_[idx])) {
             break;
         }
     }
@@ -542,23 +521,22 @@ QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
 
     /* get e -- platform-dependent */
 #ifdef Q_SPY
-    QEvt *e = QMPool_getFromISR(&QF_pool_[idx],
+    QEvt *e = QMPool_getFromISR(&QF_ePool_[idx],
                   ((margin != QF_NO_MARGIN) ? margin : 0U),
                   (uint_fast8_t)QS_EP_ID + idx + 1U);
 #else
-    QEvt *e = QMPool_getFromISR(&QF_pool_[idx],
+    QEvt *e = QMPool_getFromISR(&QF_ePool_[idx],
                       ((margin != QF_NO_MARGIN) ? margin : 0U), 0U);
 #endif
 
     /* was e allocated correctly? */
-    UBaseType_t uxSavedInterruptStatus;
     if (e != (QEvt *)0) {
         e->sig = (QSignal)sig;   /* set signal for this event */
         e->poolId_ = (uint8_t)(idx + 1U); /* store the pool ID */
         e->refCtr_ = 0U; /* set the reference counter to 0 */
 
 #ifdef Q_SPY
-        uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+        UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
         QS_BEGIN_PRE_(QS_QF_NEW, (uint_fast8_t)QS_EP_ID + e->poolId_)
             QS_TIME_PRE_();         /* timestamp */
             QS_EVS_PRE_(evtSize);   /* the size of the event */
@@ -573,7 +551,7 @@ QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
         Q_ASSERT_ID(720, margin != QF_NO_MARGIN);
 
 #ifdef Q_SPY
-        uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+        UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
         QS_BEGIN_PRE_(QS_QF_NEW_ATTEMPT, (uint_fast8_t)QS_EP_ID + idx + 1U)
             QS_TIME_PRE_();         /* timestamp */
             QS_EVS_PRE_(evtSize);   /* the size of the event */
@@ -621,10 +599,10 @@ void QF_gcFromISR(QEvt const * const e) {
 #ifdef Q_SPY
             /* cast 'const' away in (QEvt *)e is OK,
              * because it's a pool event */
-            QMPool_putFromISR(&QF_pool_[idx], (QEvt *)e,
+            QMPool_putFromISR(&QF_ePool_[idx], (QEvt *)e,
                               (uint_fast8_t)QS_EP_ID + e->poolId_);
 #else
-            QMPool_putFromISR(&QF_pool_[idx], (QEvt *)e, 0U);
+            QMPool_putFromISR(&QF_ePool_[idx], (QEvt *)e, 0U);
 #endif
         }
     }

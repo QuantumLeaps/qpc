@@ -1,4 +1,5 @@
 /*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -90,7 +91,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
         == TX_SUCCESS);
 
     me->prio = prio;  /* save the QF priority */
-    QF_add_(me);      /* make QF aware of this active object */
+    QActive_register_(me);      /* make QF aware of this active object */
 
     QHSM_INIT(&me->super, par, me->prio); /* initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
@@ -127,13 +128,8 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     }
 }
 /*..........................................................................*/
-#ifndef Q_SPY
-bool QActive_post_(QActive * const me, QEvt const * const e,
-                   uint_fast16_t const margin)
-#else
 bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
-#endif /* Q_SPY */
 {
     uint_fast16_t nFree;
     bool status;

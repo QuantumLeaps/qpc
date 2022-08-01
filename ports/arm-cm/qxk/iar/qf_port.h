@@ -1,5 +1,5 @@
 /*============================================================================
-* QF/C port to ARM Cortex-M, QXK, IAR
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-04-09
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-06-30
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QF/C port to Cortex-M, preemptive dual-mode QXK kernel, IAR-ARM
@@ -106,8 +106,6 @@
 #endif /* Cortex-M0/M0+/M1(v6-M, v6S-M) */
 
 #include "qxk_port.h"   /* QXK dual-mode kernel port */
-#include "qf.h"         /* QF platform-independent public interface */
-#include "qxthread.h"   /* QXK extended thread interface */
 
 /*****************************************************************************
 * NOTE1:
