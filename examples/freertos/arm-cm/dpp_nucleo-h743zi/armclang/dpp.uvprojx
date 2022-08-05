@@ -49,7 +49,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\dbg\</OutputDirectory>
-          <OutputName>dpp-qxk</OutputName>
+          <OutputName>dpp</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
@@ -82,7 +82,7 @@
           <AfterMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>fromelf --bin --output .\dbg\dpp-qxk.bin .\dbg\dpp-qxk.axf</UserProg1Name>
+            <UserProg1Name>fromelf --bin --output .\dbg\dpp.bin .\dbg\dpp.axf</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -754,7 +754,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\rel\</OutputDirectory>
-          <OutputName>dpp-qxk</OutputName>
+          <OutputName>dpp</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
@@ -787,7 +787,7 @@
           <AfterMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>fromelf --bin --output .\rel\dpp-qxk.bin .\rel\dpp-qxk.axf</UserProg1Name>
+            <UserProg1Name>fromelf --bin --output .\rel\dpp.bin .\rel\dpp.axf</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -1459,7 +1459,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\spy\</OutputDirectory>
-          <OutputName>dpp-qxk</OutputName>
+          <OutputName>dpp</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
@@ -1492,7 +1492,7 @@
           <AfterMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>fromelf --bin --output .\spy\dpp-qxk.bin .\spy\dpp-qxk.axf</UserProg1Name>
+            <UserProg1Name>fromelf --bin --output .\spy\dpp.bin .\spy\dpp.axf</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -2132,7 +2132,7 @@
   <LayerInfo>
     <Layers>
       <Layer>
-        <LayName>dpp-qxk</LayName>
+        <LayName>dpp</LayName>
         <LayPrjMark>1</LayPrjMark>
       </Layer>
     </Layers>
