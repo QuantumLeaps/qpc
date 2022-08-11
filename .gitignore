@@ -32,12 +32,11 @@
 *.Debug
 *.Release
 *.bak
-*.qlc
 JLink*.*
 version-*
 
-3rd_party/
 html/
+cert-pack/
 test_priv/
 dbg/
 rel/

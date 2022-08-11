@@ -408,7 +408,6 @@
                     <state>$PROJ_DIR$\.</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk</state>
                 </option>
                 <option>
@@ -1562,7 +1561,6 @@
                     <state>$PROJ_DIR$\.</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk</state>
                 </option>
                 <option>
@@ -2716,7 +2714,6 @@
                     <state>$PROJ_DIR$\.</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk</state>
                 </option>
                 <option>

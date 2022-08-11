@@ -58,7 +58,7 @@ void QF_onCleanup(void) {
 void QF_onClockTick(void) {
     int ch;
 
-    QF_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
+    QTIMEEVT_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
 
     ch = QF_consoleGetKey();
     if (ch != 0) { /* any key pressed? */

@@ -91,7 +91,7 @@ static uint32_t l_rnd;
 #endif
     QK_ISR_ENTRY();    /* inform QK about entering the ISR */
 
-    QF_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
+    QTIMEEVT_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
 
     QK_ISR_EXIT();     /* inform QK about exiting the ISR */
 

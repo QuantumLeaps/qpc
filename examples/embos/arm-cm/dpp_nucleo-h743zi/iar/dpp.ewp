@@ -341,7 +341,6 @@
                     <state>$PROJ_DIR$\SEGGER</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\embos</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\embOS-iar\Start\Inc</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
@@ -1401,7 +1400,6 @@
                     <state>$PROJ_DIR$\SEGGER</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\embos</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\embOS-iar\Start\Inc</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>
@@ -2462,7 +2460,6 @@
                     <state>$PROJ_DIR$\SEGGER</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\embos</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\embOS-iar\Start\Inc</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\CMSIS\Include</state>

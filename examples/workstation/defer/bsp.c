@@ -68,7 +68,7 @@ void QF_onCleanup(void) {
 /*..........................................................................*/
 void QF_onClockTick(void) {
     int key;
-    QF_TICK_X(0U, &l_QF_onClockTick); /* perform QF clock tick processing */
+    QTIMEEVT_TICK_X(0U, &l_QF_onClockTick); /* perform QF clock tick processing */
 
     QS_RX_INPUT(); /* handle the QS-RX input */
     QS_OUTPUT();   /* handle the QS output */

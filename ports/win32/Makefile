@@ -64,7 +64,6 @@ VPATH = \
 # list of all include directories needed by this project
 INCLUDES  = \
 	-I$(QPC)/include \
-	-I$(QPC)/src \
 	-I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------

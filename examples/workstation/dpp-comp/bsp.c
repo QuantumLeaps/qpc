@@ -132,7 +132,7 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
-    QF_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
+    QTIMEEVT_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
 
     QS_RX_INPUT(); /* handle the QS-RX input */
     QS_OUTPUT();   /* handle the QS output */
@@ -143,11 +143,11 @@ void QF_onClockTick(void) {
             break;
         }
         case 'p': {
-            QF_PUBLISH(Q_NEW(QEvt, PAUSE_SIG), &l_clock_tick);
+            QACTIVE_PUBLISH(Q_NEW(QEvt, PAUSE_SIG), &l_clock_tick);
             break;
         }
         case 's': {
-            QF_PUBLISH(Q_NEW(QEvt, SERVE_SIG), &l_clock_tick);
+            QACTIVE_PUBLISH(Q_NEW(QEvt, SERVE_SIG), &l_clock_tick);
             break;
         }
         default: {

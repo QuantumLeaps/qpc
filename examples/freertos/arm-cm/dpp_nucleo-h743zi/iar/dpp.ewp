@@ -339,7 +339,6 @@
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\freertos</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\FreeRTOS\Source\include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\FreeRTOS\Source\portable\IAR\ARM_CM7\r0p1</state>
@@ -1399,7 +1398,6 @@
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\freertos</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\FreeRTOS\Source\include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\FreeRTOS\Source\portable\IAR\ARM_CM7\r0p1</state>
@@ -2459,7 +2457,6 @@
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\src</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\ports\freertos</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\FreeRTOS\Source\include</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\3rd_party\FreeRTOS\Source\portable\IAR\ARM_CM7\r0p1</state>
@@ -3225,6 +3222,9 @@
             <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\FreeRTOS\Source\portable\IAR\ARM_CM7\r0p1\portmacro.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\FreeRTOS\Source\queue.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\..\..\..\..\3rd_party\FreeRTOS\Source\tasks.c</name>
         </file>
     </group>
@@ -3256,9 +3256,6 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_act.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_actq.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_defer.c</name>

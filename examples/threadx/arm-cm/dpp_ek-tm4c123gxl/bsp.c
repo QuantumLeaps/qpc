@@ -56,7 +56,7 @@ void UART0_IRQHandler(void);
 #define BTN_SW2     (1U << 0)
 
 static uint32_t l_rnd; /* random seed */
-static TX_TIMER l_tick_timer; /* ThreadX timer to call QF_TICK_X() */
+static TX_TIMER l_tick_timer; /* ThreadX timer to call QTIMEEVT_TICK_X() */
 
 #ifdef Q_SPY
     QSTimeCtr QS_tickTime_;
@@ -187,19 +187,19 @@ void BSP_terminate(int16_t result) {
 
 /* QF callbacks ============================================================*/
 static VOID timer_expiration(ULONG id) {
-    QF_TICK_X(id, &l_clock_tick); /* perform the QF clock tick processing */
+    QTIMEEVT_TICK_X(id, &l_clock_tick); /* perform the QF clock tick processing */
 }
 /*..........................................................................*/
 void QF_onStartup(void) {
     /*
     * NOTE:
     * This application uses the ThreadX timer to periodically call
-    * the QF_tickX_(0) function. Here, only the clock tick rate of 0
-    * is used, but other timers can be used to call QF_tickX_() for
+    * the QTimeEvt_tick_(0) function. Here, only the clock tick rate of 0
+    * is used, but other timers can be used to call QTimeEvt_tick_() for
     * other clock tick rates, if needed.
     *
     * The choice of a ThreadX timer is not the only option. Applications
-    * might choose to call QF_TICK_X() directly from timer interrupts
+    * might choose to call QTIMEEVT_TICK_X() directly from timer interrupts
     * or from active object(s).
     */
     Q_ALLEGE(tx_timer_create(&l_tick_timer, /* ThreadX timer object */

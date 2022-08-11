@@ -1,5 +1,5 @@
 /*============================================================================
-* QXK/C port to ARM Cortex-M, GNU-ARM
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-04-11
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-05-13
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM toolset
@@ -32,19 +32,21 @@
 /* This QXK port is part of the interanl QP implementation */
 #define QP_IMPL 1U
 #include "qf_port.h"
-#include "qxk_pkg.h"
+#include "qf_pkg.h"
 
 /* prototypes --------------------------------------------------------------*/
 void PendSV_Handler(void);
-#ifndef QXK_ARM_CM_USE_NMI
-    void SVC_Handler(void);
-#else
-    void NMI_Handler(void);
+#ifdef QXK_USE_IRQ_HANDLER          /* if use IRQ... */
+void QXK_USE_IRQ_HANDLER(void);
+#else                               /* use default (NMI) */
+void NMI_Handler(void);
 #endif
 
 #define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
-#define NVIC_IP      ((uint32_t volatile *)0xE000E400)
+#define NVIC_EN      ((uint32_t volatile *)0xE000E100)
+#define NVIC_IP      ((uint8_t  volatile *)0xE000E400)
+#define NVIC_PEND    0xE000E200
 #define NVIC_ICSR    0xE000ED04
 
 /* helper macros to "stringify" values */
@@ -74,30 +76,33 @@ void QXK_init(void) {
     /* set exception priorities to QF_BASEPRI...
     * SCB_SYSPRI1: Usage-fault, Bus-fault, Memory-fault
     */
-    SCB_SYSPRI[1] |= (QF_BASEPRI << 16U) | (QF_BASEPRI << 8U) | QF_BASEPRI;
+    SCB_SYSPRI[1] = (SCB_SYSPRI[1]
+        | (QF_BASEPRI << 16) | (QF_BASEPRI << 8) | QF_BASEPRI);
 
     /* SCB_SYSPRI2: SVCall */
-    SCB_SYSPRI[2] |= (QF_BASEPRI << 24U);
+    SCB_SYSPRI[2] = (SCB_SYSPRI[2] | (QF_BASEPRI << 24));
 
     /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
-    SCB_SYSPRI[3] |= (QF_BASEPRI << 24U) | (QF_BASEPRI << 16U) | QF_BASEPRI;
+    SCB_SYSPRI[3] = (SCB_SYSPRI[3]
+        | (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI);
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
-    uint32_t n = 8U + ((*SCnSCB_ICTR & 0x7U) << 3U); /*(# NVIC_PRIO regs)/4 */
-    do {
-        --n;
-        NVIC_IP[n] = (QF_BASEPRI << 24U) | (QF_BASEPRI << 16U)
-                     | (QF_BASEPRI << 8U) | QF_BASEPRI;
-    } while (n != 0U);
+    uint8_t nprio = (8U + ((*SCnSCB_ICTR & 0x7U) << 3U))*4;
+    for (uint8_t n = 0U; n < nprio; ++n) {
+        NVIC_IP[n] = QF_BASEPRI;
+    }
 
-#endif /* ARMv7-M and higher */
+#endif /* ARMv7-M or higher */
 
     /* SCB_SYSPRI3: PendSV set to priority 0xFF (lowest) */
-    SCB_SYSPRI[3] |= (0xFFU << 16U);
+    SCB_SYSPRI[3] = (SCB_SYSPRI[3] | (0xFFU << 16U));
 
-#ifndef QXK_ARM_CM_USE_NMI
-    /* SCB_SYSPRI2: SVCall */
-    SCB_SYSPRI[2] &= ~(0xFFU << 24U); /* prioiry 0 (highest) */
+#ifdef QXK_USE_IRQ_NUM
+    /* The QXK port is configured to use a given ARM Cortex-M IRQ #
+    * to return to thread mode (default is to use the NMI exception)
+    */
+    NVIC_IP[QXK_USE_IRQ_NUM] = 0U; /* priority 0 (highest) */
+    NVIC_EN[QXK_USE_IRQ_NUM / 32U] = (1U << (QXK_USE_IRQ_NUM % 32U));
 #endif
 }
 
@@ -125,7 +130,7 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
     /* synthesize the ARM Cortex-M exception stack frame...*/
     *(--sp) = (1U << 24);    /* xPSR  (just the THUMB bit) */
     *(--sp) = (uint32_t)handler;         /* PC (the thread handler) */
-    *(--sp) = (uint32_t)&QXK_threadRet_; /* LR (return from thread) */
+    *(--sp) = (uint32_t)&QXK_threadExit_; /* LR (exit from thread) */
     *(--sp) = 0x0000000CU;   /* R12 */
     *(--sp) = 0x00000003U;   /* R3  */
     *(--sp) = 0x00000002U;   /* R2  */
@@ -538,9 +543,13 @@ __asm volatile (
 #endif                              /* VFP available */
 #endif                              /* ARMv7-M or higher */
 
-#ifndef QXK_ARM_CM_USE_NMI          /* if use SVC... */
-    "  SVC     #0               \n" /* trigger SVC */
-#else                               /* use NMI */
+#ifdef QXK_USE_IRQ_NUM              /* if use IRQ... */
+    "  LDR     r0,=" STRINGIFY(NVIC_PEND + (QXK_USE_IRQ_NUM / 32)) "\n"
+    "  MOV     r1,#1            \n"
+    "  LSL     r1,r1,#" STRINGIFY(QXK_USE_IRQ_NUM % 32) "\n" /* r1 := IRQ bit */
+    "  STR     r1,[r0]          \n" /* pend the IRQ */
+    "  B       .                \n" /* wait for preemption by the IRQ */
+#else                               /* use the NMI */
     "  LDR     r0,=" STRINGIFY(NVIC_ICSR) "\n" /* Interrupt Control and State */
     "  MOV     r1,#1            \n"
     "  LSL     r1,r1,#31        \n" /* r1 := (1 << 31) (NMI bit) */
@@ -557,8 +566,8 @@ __asm volatile (
 * stack frame that must be at the top of the stack.
 */
 __attribute__ ((naked, optimize("-fno-stack-protector")))
-#ifndef QXK_ARM_CM_USE_NMI          /* if use SVC... */
-void SVC_Handler(void)
+#ifdef QXK_USE_IRQ_HANDLER          /* if use IRQ... */
+void QXK_USE_IRQ_HANDLER(void)
 #else                               /* use NMI */
 void NMI_Handler(void)
 #endif                              /* use NMI */

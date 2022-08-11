@@ -1,6 +1,5 @@
 /*! @page api API Reference
-
-@tableofcontents
+@nav_next{deprecated}
 
 @section api_qep QEP (Hierarchical State Machines)
 QEP is a universal, UML-compliant event processor that enables developers to code UML state machines in highly readable ANSI-C, in which every state machine element is mapped to code precisely, unambiguously, and exactly once (traceability). QEP fully supports hierarchical state nesting, which is the fundamental mechanism for reusing behavior across many states instead of repeating the same actions and transitions over and over again.
@@ -18,7 +17,7 @@ QEP is a universal, UML-compliant event processor that enables developers to cod
 - QMsm_ctor()
 - QMsm_isInState()
 - QMsm_stateObj()
-
+- Q_STATE_CAST()
 
 
 @section api_qf QF (Active Object Framework)
@@ -49,7 +48,7 @@ QF is a portable, event-driven, real-time framework for execution of active obje
 - QActive_unsubscribeAll()
 
 
-@subsection api_qf_evt Dynamic Events
+@subsection api_qf_evt Event Management
 - ::QEvt class
 - QF_poolInit()
 - Q_NEW()
@@ -57,6 +56,7 @@ QF is a portable, event-driven, real-time framework for execution of active obje
 - Q_NEW_REF()
 - Q_DELETE_REF()
 - QF_gc()
+- Q_EVT_CAST()
 
 
 @subsection api_qf_time Time Events
@@ -89,8 +89,7 @@ QF is a portable, event-driven, real-time framework for execution of active obje
 - QMPool_put()
 
 
-
-@section api_qs QS ("Quantum Spy" Software Tracing)
+@section api_qs QS (Software Tracing)
 QS is a software tracing system that enables developers to monitor live event-driven QP applications with minimal target system resources and without stopping or significantly slowing down the code. QS is an ideal tool for testing, troubleshooting, and optimizing QP applications. QS can even be used to support acceptance testing in product manufacturing.
 
 
@@ -121,6 +120,7 @@ QS is a software tracing system that enables developers to monitor live event-dr
 @subsection api_qs_dict QS Dictionaries
 - QS_SIG_DICTIONARY()
 - QS_OBJ_DICTIONARY()
+- QS_OBJ_ARR_DICTIONARY()
 - QS_FUN_DICTIONARY()
 - QS_USR_DICTIONARY()
 
@@ -156,8 +156,8 @@ Given the simplicity, portability, and low-resource consumption, the QV schedule
 - QV_CPU_SLEEP()
 
 
-@section api_qk QK (Preemptive Run-to-Completion Kernel)
-QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specifically for executing active objects. QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using the single stack. Active objects process their events in run-to-completion (RTC) fashion and remove themselves from the call stack, the same way as nested interrupts remove themselves from the stack upon completion. At the same time high-priority active objects can preempt lower-priority active objects, just like interrupts can preempt each other under a prioritized interrupt controller. QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis RMA) and can be used in hard real-time systems.
+@section api_qk QK (Preemptive RTC Kernel)
+QK is a tiny **preemptive**, run-to-completion (RTC) kernel designed specifically for executing active objects. QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using the single stack. Active objects process their events in run-to-completion (RTC) fashion and remove themselves from the call stack, the same way as nested interrupts remove themselves from the stack upon completion. At the same time high-priority active objects can preempt lower-priority active objects, just like interrupts can preempt each other under a prioritized interrupt controller. QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis RMA) and can be used in hard real-time systems.
 
 
 @subsection api_qk_ctrl Kernel Initialization and Control
@@ -173,9 +173,8 @@ QK is a tiny **preemptive**, priority-based, non-blocking kernel designed specif
 - QK_ISR_EXIT()
 
 
-@section api_qxk QXK (Preemptive Dual-Mode RTOS Kernel)
-QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that executes active objects like the @ref qk "QK kernel", but can also execute traditional __blocking__ threads (extended threads). In this respect, QXK behaves exactly as a conventional __RTOS__ (Real-Time Operating System). QXK has been designed specifically for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
-
+@section api_qxk QXK (Dual-Mode Kernel)
+QXK is a small, preemptive, priority-based, dual-mode (run-to-completion/**blocking**) kernel that executes active objects like the @ref srs_qk "QK kernel", but can also execute traditional __blocking__ threads (extended threads). In this respect, QXK behaves exactly as a conventional __RTOS__ (Real-Time Operating System). QXK has been designed specifically for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
 
 
 @subsection api_qxk_ctrl Kernel Initialization and Control
@@ -200,7 +199,8 @@ QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that e
 - QXThread_delay()
 - QXThread_delayCancel()
 - QXThread_queueGet()
-
+- QXK_current()
+- QXK_TLS()
 
 @subsection api_qxk_sema Semaphores
 - ::QXSemaphore class (Semaphore Control Block)
@@ -224,23 +224,18 @@ QXK is a small, preemptive, priority-based, dual-mode **blocking** kernel that e
 - QXThread_queueGet() - waiting (blocking) on message queue
 
 
-
 @subsection api_qxk_mem Memory Pools
 - ::QMPool class
 - QMPool_init()
 - QMPool_get()
 - QMPool_put()
 
-
-@subsection api_qxk_tls Thread-Local Storage
-- QXK_current()
-- QXK_TLS()
-
-@next{deprecated}
+<br>
+@nav_next{deprecated}
 */
-/*##########################################################################*/
+##############################################################################
 /*! @page deprecated Deprecated APIs
 
-__The following QP/C APIs are now deprecated:__
+**The following QP/C APIs are now deprecated:**
 
 */

@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\stm32f4-discovery; ..\..\..\..\..\3rd_party\stm32f4-discovery\inc</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\stm32f4-discovery; ..\..\..\..\..\3rd_party\stm32f4-discovery\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1019,7 +1019,7 @@
               <MiscControls></MiscControls>
               <Define>NDEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\stm32f4-discovery; ..\..\..\..\..\3rd_party\stm32f4-discovery\inc</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\stm32f4-discovery; ..\..\..\..\..\3rd_party\stm32f4-discovery\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1699,7 +1699,7 @@
               <MiscControls></MiscControls>
               <Define>Q_SPY</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\src;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\stm32f4-discovery; ..\..\..\..\..\3rd_party\stm32f4-discovery\inc</IncludePath>
+              <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include; ..\..\..\..\..\3rd_party\stm32f4-discovery; ..\..\..\..\..\3rd_party\stm32f4-discovery\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

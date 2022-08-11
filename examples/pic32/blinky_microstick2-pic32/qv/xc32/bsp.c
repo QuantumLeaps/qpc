@@ -66,7 +66,7 @@ Q_DEFINE_THIS_FILE
 void __ISR(_TIMER_2_VECTOR, IPL4SOFT) tickISR(void) {
     IFS0CLR = _IFS0_T2IF_MASK; /* clear the interrupt source */
 
-    QF_TICK_X(0U, (void *)0); /* handle armed time events at tick rate 0 */
+    QTIMEEVT_TICK_X(0U, (void *)0); /* handle armed time events at tick rate 0 */
 }
 /*..........................................................................*/
 /* for testing interrupt nesting and active object preemption */

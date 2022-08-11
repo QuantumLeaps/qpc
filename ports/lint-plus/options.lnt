@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2021-12-23
-//! @version Last updated for version: 7.0.0
+//! @date Last updated on: 2022-07-24
+//! @version Last updated for version: 7.0.1
 //!
 //! @file
 //! @brief PC-Lint-Plus option file for linting QP/C source code
@@ -37,7 +37,6 @@
 // include directories
 -i.                // QP/C port includes (see also qk/ and qv/)
 -i%QPC%/include    // QP/C public includes
--i%QPC%/src        // QP/C package-scope includes
 
 // standards
 // language standard...
@@ -67,6 +66,7 @@ qpc.lnt             // QP/C options
 -esym(9026,
  QEP_ENTER_,
  QEP_EXIT_,
+ QEP_TRIG_,
  QMSM_CAST_,
  QACTIVE_CAST_)
 
@@ -137,7 +137,7 @@ qpc.lnt             // QP/C options
 // M3-R11.5(A) conversion from pointer to void to other pointer type
 -efunc(9079,
  QMPool_init,
- QF_tickX_,
+ QTimeEvt_tick_,
  QTimeEvt_armX,
  QTimeEvt_rearm)
 

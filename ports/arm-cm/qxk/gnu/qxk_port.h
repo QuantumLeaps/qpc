@@ -1,5 +1,5 @@
 /*============================================================================
-* QXK/C port to ARM Cortex-M, GNU-ARM
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-04-09
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-07-27
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM compiler
@@ -69,8 +69,17 @@ static inline uint32_t QXK_get_IPSR(void) {
         __asm volatile ("dsb" ::: "memory")
 #endif /* ARMv6-M */
 
-/* Use NMI ARM Cortex-M exception to return to thread mode (default SVC) */
-//#define QXK_ARM_CM_USE_NMI 1
+/* Use a given ARM Cortex-M IRQ to return to thread mode (default NMI)
+*
+* NOTE:
+* If you need the NMI for other purposes, you can define the macros
+* QXK_USE_IRQ_NUM and QXK_USE_IRQ_HANDLER to use thus specified IRQ
+* instead of the NMI (the IRQ should not be used for anything else).
+* These two macros can be defined on the command line to the compiler
+* and are actually needed only to compile the qxk_port.c file.
+*/
+//#define QXK_USE_IRQ_NUM     25
+//#define QXK_USE_IRQ_HANDLER CRYPTO_IRQHandler
 
 /* initialization of the QXK kernel */
 #define QXK_INIT() QXK_init()

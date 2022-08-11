@@ -1,7 +1,5 @@
 /*! @page exa Examples
 
-@tableofcontents
-
 @section exa_gen General Comments
 The QP/C distribution contains many @subpage exa_ref "example projects" to demonstrate various QP/C features. Each example project is described on its own dedicated page that you can find using several criteria (see @ref exa_ref). The example projects have the following main goals:
 
@@ -13,7 +11,6 @@ The QP/C distribution contains many @subpage exa_ref "example projects" to demon
 
 @note
 It is highly recommended that you create your own projects by **copying and modifying** existing example projects rather than starting your QP/C projects from scratch.
-
 
 
 @subsection exa_code Example Code Structure
@@ -193,7 +190,7 @@ QP/C examples are located in sub-directories of the <span class="img folder">exa
   <li><span class="tag">A</span> @subpage exa_native "Native examples" are located in sub-directories named after the CPU architecture, such as <span class="img folder">arm-cm</span> for ARM Cortex-M. Under that directory, the sub-directories <span class="img folder">blinky_ek-tm4c123gxl</span> contain the specific example on the specified board, such as "Blinky" on the EK-TM4C123GXL board here. In the specific example folder, you find sub-folders for the @ref comp_qv "QV", @ref comp_qk "QK" and @ref comp_qxk "QXK" kernels, respectively.
   </li>
 
-  <li><span class="tag">B</span> @subpage exa_rtos "Examples for 3rd-party RTOS"/@ref exa_os "OS" are located in sub-directories named after the RTOS/OS, such as <span class="img folder">ucos-ii</span> for uCOS-II RTOS. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
+  <li><span class="tag">B</span> @subpage exa_rtos "Examples for 3rd-party RTOS"/@ref exa_os "OS" are located in sub-directories named after the RTOS/OS, such as <span class="img folder">uc-os2</span> for uc-os2 RTOS. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
   </li>
 
   <li><span class="tag">C</span> @subpage exa_mware "Examples for 3rd-party Middleware" are located in sub-directories named after the middleware, such as <span class="img folder">lwIP</span> for the lwIP TCP/IP stack. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
@@ -208,7 +205,6 @@ QP/C examples are located in sub-directories of the <span class="img folder">exa
 
 @note
 Because the QP distribution contains *all* examples, the number of sub-directories and files in the <span class="img folder">examples</span> folder may seem daunting. However, knowing the structure of the <span class="img folder">examples</span> folder, you can simply ignore or even delete the sub-directories that are not interesting to you.
-
 
 
 @subsection exa_sec_apps Example Applications
@@ -228,10 +224,8 @@ Beyond these basic applications for demonstrating and testing the various @ref p
 While some provided examples can run on your @ref exa_os "desktop computer", most embedded example projects require special hardware in form of @ref exa_sec_boards, which you need to acquire to be able to run the examples. The boards chosen for the examples are generally inexpensive and self-contained with no need for external hardware (such as external JTAG debuggers or power supplies).
 
 
-
 @subsection exa_sec_tools Development Tools
 Most provided examples require special embedded cross-development tools, such as embedded compilers, linkers, debuggers and IDEs, which you need to acquire independently from the QP/C distribution. Generally, the examples work with the free (size limited) evaluation versions of the commercial tools. The examples list the versions of tools they were developed and tested with. Please refer to the @ref exa_ref "cross-reference section" @ref exa_sec_tools to see which embedded toolchains are used.
-
 
 
 @subsection exa_sec_conf Build Configurations
@@ -249,13 +243,11 @@ QP examples @ref ports "QP ports" are provided in the following three **build co
 The different phases of embedded software life cycle pose different challenges. During the development and maintenance phase, for example, the emphasis is on the ease of debugging and verifying the correctness of the code, which require lower levels of optimization and special scaffolding code. In contrast, for releasing the code in the final product, the emphasis is on small memory footprint and CPU time efficiency, which require high-level of optimization and removal of any scaffolding code. To address these conflicting needs, the same source code is compiled into multiple **build configurations** that differ in the use of compiler options and activation of the scaffolding code.
 
 
-
 @subsection exa_sec_qm QM Models
 Many example projects contain code auto-generated by the <a class="extern" target="_blank" href="https://www.state-machine.com/qm"><strong>QM modeling tool</strong></a>. Such projects always contain the corresponding **QM model** file, which you can open in QM, modify, and re-generate the code.
 
 @note
 The auto-generated files are saved as **read-only**. This protects them from inadvertent modifications, which will get lost when the files are re-generated by QM (or QMC). All modifications to the auto-generated code should be done in the QM model, not in the code.
-
 
 
 @subsection exa_sec_3rd Third-Party Code
@@ -272,9 +264,7 @@ The Third-Party software components included in the <span class="img folder">3rd
 sub-folders.
 
 
-
 @subsection exa_own Creating your Own QP/C Projects
-
 Perhaps the most important fact of life to remember is that in embedded systems nothing works until everything works. This means that you should always start with a <strong>working system</strong> and gradually evolve it, changing one thing at a time and making sure that it keeps working every step of the way.
 
 Keeping this in mind, the provided QP/C application examples, such as the super-simple Blinky, or a bit more advanced @ref dpp or @ref game, allow you to get started with a working project rather than starting from scratch. You should also always try one of the provided example projects on the same evaluation board that it was designed for, before making any changes.
@@ -294,7 +284,6 @@ After copying the project folder, you still need to change the name of the proje
 By copying and re-naming an existing, working project, as opposed to creating a new one from scratch, you inherit the correct compiler and linker options an other project settings, which will help you get started much faster.
 
 
-
 @subsection exa_doc Next Steps and Further Reading About QP and QM
 
 To work with QP/C effectively, you need to learn a bit more about active objects and state machines. Below is a list of links to enable you to further your knowledge:
@@ -311,9 +300,6 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 /*##########################################################################*/
 /*! @page exa_ref Cross-Reference
 
-@tableofcontents
-
-
 @section exa_ref_kernel Native Examples (by Built-in Kernel)
 - @ref exa_qv
 - @ref exa_qk
@@ -321,11 +307,6 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 
 
 @section exa_ref_tool Native Examples (by Development Toolchain)
-@n
-
-
-@subsection exa_ref_arm-keil ARM-Keil Toolchain (ARM Compiler 5)
-- @ref arm-cm_blinky_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a> &nbsp; (Cortex-M4)
 
 
 @subsection exa_ref_arm-clang ARM-Clang Toolchain (ARM Compiler 6)
@@ -337,10 +318,8 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_NUCLEO-L152RE.jpg" title="NUCLEO-L152RE"></a> &nbsp; (Cortex-M3)
 - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
 - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Discovery.jpg" title="STM32F4-Discovery"></a>
-- @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
 - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_NUCLEO-L053R8.jpg" title="NUCLEO-L053R8"></a> &nbsp; (Cortex-M0+)
 - @ref arm-cm_dpp_efm32-slstk3401a <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
-- @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
 - @ref arm-cm_dpp_nucleo-h743zi <a class="preview board" href="bd_NUCLEO-H743ZI.jpg" title="NUCLEO-H743ZI"></a> &nbsp; (Cortex-M7)
 
 
@@ -354,14 +333,11 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_NUCLEO-L152RE.jpg" title="NUCLEO-L152RE"></a> &nbsp; (Cortex-M3)
 - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
 - @ref arm-cm_dpp_stm32f4-discovery <a class="preview board" href="bd_STM32F4-Disco.jpg" title="STM32F4-Discovery"></a>
-- @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
 - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a> &nbsp; (Cortex-M3)
-- @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a> &nbsp; (ARM7TDMI)
 
 
 @subsection exa_ref_gnu-ccs GNU-ARM with TI CCS IDE
 - @ref arm-cm_dpp_ek-tm4c123gxl <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL"></a> &nbsp; (Cortex-M4)
-
 
 
 @subsection exa_ref_iar-arm IAR EWARM
@@ -373,11 +349,9 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref arm-cm_dpp_nucleo-l053r8  <a class="preview board" href="bd_NUCLEO-L053R8.jpg" title="NUCLEO-L053R8"></a> &nbsp; (Cortex-M0+)
 - @ref arm-cm_dpp_nucleo-l152re  <a class="preview board" href="bd_NUCLEO-L152RE.jpg" title="NUCLEO-L152RE"></a> &nbsp; (Cortex-M3)
 - @ref arm-cm_game_efm32-slstk3401a  <a class="preview board" href="bd_EFM32-SLSTK3401A.jpg" title="EFM32-SLSTK3401A"></a> &nbsp; (Cortex-M4)
-- @ref arm-cm_dpp_stm32f746g-disco <a class="preview board" href="bd_STM32F746G-Disco.jpg" title="STM32F746G-Discovery"></a> &nbsp; (Cortex-M7)
 - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a> &nbsp; (Cortex-R4)
 - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a> &nbsp; (Cortex-R4)
 - @ref lwip_ek-lm3s6965 <a class="preview board" href="bd_EK-LM3S6965.jpg" title="EK-LM3S6965"></a> &nbsp; (Cortex-M3)
-- @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a> &nbsp; (ARM7TDMI)
 
 
 @subsection exa_ref_ccs-430 CCS for MSP430
@@ -393,7 +367,6 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 @section exa_ref_native Native Examples (by Processor)
 - @ref exa_arm-cm
 - @ref exa_arm-cr
-- @ref exa_arm7-9 ("classic ARM")
 - @ref exa_msp430 ("classic" MSP430 and "extended" MSP430x)
 
 
@@ -401,7 +374,7 @@ To work with QP/C effectively, you need to learn a bit more about active objects
 - @ref exa_embos (SEGGER)
 - @ref exa_freertos (Amazon Web Services)
 - @ref exa_threadx (Express Logic)
-- @ref exa_ucos-ii (Micrium/SiLabs)
+- @ref exa_uc-os2 (Micrium/SiLabs)
 
 
 @section exa_ref_os Examples for Workstations (Windows, Linux, MacOS)
@@ -417,7 +390,6 @@ The examples in the "workstation" directory are designed for workstations (runni
 @section exa_ref_mware Examples for Third-Party Middleware
 - @ref exa_lwip (open source, see http://lwip.wikia.com/wiki/LwIP_Wiki )
 - @ref exa_emwin (SEGGER, a.k.a. uC/GUI by Micrium)
-
 
 
 @section exa_ref_boards Examples by Development Board
@@ -437,7 +409,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref freertos_dpp_ek-tm4c123gxl  (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref freertos_dpp_nucleo-h743zi  (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref threadx_dpp_ek-tm4c123gxl  (ThreadX kernel; IAR-EWARM toolchain)
-- @ref ucos-ii_dpp_ek-tm4c123gxl  (uC/OS-II kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
+- @ref uc-os2_dpp_ek-tm4c123gxl  (uC/OS-II kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 
 
 @anchor EFM32-SLSTK3401A
@@ -447,11 +419,9 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref arm-cm_game_efm32-slstk3401a (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains; <a href="https://www.state-machine.com/qtools/qwin.html"><b>QWin-GUI emulation</b></a>)
 
 
-
 @anchor mbed-LPC1768
 ![mbed-LPC1768](bd_mbed-LPC1768.jpg)
 - @ref arm-cm_dpp_mbed-lpc1768 (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
-
 
 
 @anchor NUCLEO-L053R8
@@ -462,7 +432,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 @anchor NUCLEO-L152RE
 ![NUCLEO-L152RE](bd_NUCLEO-L152RE.jpg)
 - @ref arm-cm_dpp_nucleo-l152re (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
-- @ref ucos-ii_dpp_nucleo-l053r8 (uC/OS-II kernel; ARM-KEIL, IAR-EWARM toolchains)
+- @ref uc-os2_dpp_nucleo-l053r8 (uC/OS-II kernel; ARM-KEIL, IAR-EWARM toolchains)
 
 
 @anchor exa_EK-LM3S6965
@@ -483,12 +453,10 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - @ref threadx_dpp_stm32f429-discovery (ThreadX kernel; IAR-EWARM toolchain)
 
 
-
 @anchor STM32F746G-Discovery
 ![STM32F746G-Discovery](bd_STM32F746G-Disco.jpg)
 - @ref arm-cm_dpp_stm32f746g-disco (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref freertos_dpp_stm32f746g-disco (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
-
 
 
 @subsection exa_ref_arm-cr ARM Cortex-R Boards:
@@ -496,12 +464,6 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 ![LAUNCHXL2-TMS57012](bd_LAUNCHXL2-TMS57012.jpg)
 - @ref arm-cr_blinky_launchxl2-tms57012 (QV, QK kernels; CCS-TI-ARM, IAR-EWARM toolchains)
 - @ref arm-cr_dpp_launchxl2-tms57012 (QV, QK kernels; CCS-TI-ARM, IAR-EWARM toolchains)
-
-
-@subsection exa_ref_arm7-9 ARM7 Boards:
-@anchor AT91SAM7S-EK
-![AT91SAM7S-EK](bd_AT91SAM7S-EK.jpg)
-- @ref arm7-9_dpp_at91sam7s-ek (QV, QK kernels; IAR-EWARM toolchains)
 
 
 @subsection exa_ref_msp430 MSP430 Boards:
@@ -532,16 +494,12 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 - ARM Cortex-R
     - @ref arm-cr_blinky_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
     - @ref arm-cr_dpp_launchxl2-tms57012 <a class="preview board" href="bd_LAUNCHXL2-TMS57012.jpg" title="LAUNCHXL2-TMS57012"></a>
-- ARM7 / ARM9
-    - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 
 - MSP430
     - @ref msp430_blinky_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
     - @ref msp430_dpp_msp-exp430f5529lp <a class="preview board" href="bd_MSP-EXP430F5529LP.jpg" title="MSP-EXP430F5529LP"></a>
 
 @section exa_ref_vendor Examples by MCU Vendor
-- Atmel
-    - @ref arm7-9_dpp_at91sam7s-ek <a class="preview board" href="bd_AT91SAM7S-EK.jpg" title="AT91SAM7S-EK"></a>
 - NXP
     - @ref arm-cm_dpp_mbed-lpc1768  <a class="preview board" href="bd_mbed-LPC1768.jpg" title="mbed-LPC1768"></a>
 - Silicon Labs

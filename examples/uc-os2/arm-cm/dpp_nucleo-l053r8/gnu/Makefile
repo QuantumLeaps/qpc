@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on NUCLEO-L053R8, uC-OS2 kernel, GNU-ARM
-# Last Updated for Version: 7.0.0
-# Date of the Last Update:  2021-12-05
+# Last Updated for Version: 7.0.1
+# Date of the Last Update:  2022-05-23
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -81,7 +81,6 @@ VPATH = \
 INCLUDES  = \
 	-I.. \
 	-I$(QPC)/include \
-	-I$(QPC)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPC)/3rd_party/uC-OS2/Source \
 	-I$(QPC)/3rd_party/uC-OS2/Ports/ARM-Cortex-M/ARMv6-M/GNU \

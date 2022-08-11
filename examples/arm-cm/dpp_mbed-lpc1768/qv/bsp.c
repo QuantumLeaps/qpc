@@ -91,7 +91,7 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QF_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
 
     /* get state of the buttons */
     /* Perform the debouncing of buttons. The algorithm for debouncing
@@ -107,11 +107,11 @@ void SysTick_Handler(void) {
     if ((tmp & BTN_EXT) != 0U) {  /* debounced BTN_EXT state changed? */
         if ((buttons.depressed & BTN_EXT) != 0U) { /* is BTN_EXT depressed? */
             static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
-            QF_PUBLISH(&pauseEvt, &l_SysTick_Handler);
+            QACTIVE_PUBLISH(&pauseEvt, &l_SysTick_Handler);
         }
         else {            /* the button is released */
             static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
-            QF_PUBLISH(&serveEvt, &l_SysTick_Handler);
+            QACTIVE_PUBLISH(&serveEvt, &l_SysTick_Handler);
         }
     }
     QV_ARM_ERRATUM_838869();

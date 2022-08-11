@@ -28,7 +28,6 @@
 *
 * @file
 * @brief QEP/C port, GNU-ARM compiler
-* @ingroup qep
 */
 #ifndef QEP_PORT_H
 #define QEP_PORT_H

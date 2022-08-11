@@ -75,7 +75,7 @@ void QF_onCleanup(void) {
 }
 /*..........................................................................*/
 void QF_onClockTick(void) {
-    QF_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
+    QTIMEEVT_TICK_X(0U, &l_clock_tick); /* perform the QF clock tick processing */
     int key = QF_consoleGetKey();
     if (key != 0) { /* any key pressed? */
         BSP_onKeyboardInput((uint8_t)key);

@@ -49,15 +49,15 @@
 @set METRICS_INP=%QPC%\include %QPC%\src -x %QPC%\src\qs\*
 @set METRICS_OUT=metrics.dox
 
-@echo /** @page metrics Code Metrics > %METRICS_OUT%
+@echo /** @defgroup metrics Code Metrics> %METRICS_OUT%
 @echo.>> %METRICS_OUT%
-@echo @code{cpp} >> %METRICS_OUT%
-@echo                    Code Metrics >> %METRICS_OUT%
+@echo @code{.cpp}>> %METRICS_OUT%
+@echo                 QP/C Code Metrics >> %METRICS_OUT%
 
 %LIZARD% -m -L500 -a10 -C20 -V %METRICS_INP% >> %METRICS_OUT%
 
-@echo @endcode >> %METRICS_OUT%
-@echo */ >> %METRICS_OUT%
+@echo @endcode>> %METRICS_OUT%
+@echo */>> %METRICS_OUT%
 
 :: Generate Doxygen Documentation...
 if "%1"=="-CHM" (

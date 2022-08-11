@@ -117,7 +117,7 @@ void vApplicationTickHook(void) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     /* process time events for rate 0 */
-    QF_TICK_X_FROM_ISR(0U, &xHigherPriorityTaskWoken, &l_TickHook);
+    QTIMEEVT_TICK_FROM_ISR(0U, &xHigherPriorityTaskWoken, &l_TickHook);
 
 #ifdef Q_SPY
     {
@@ -138,8 +138,10 @@ void vApplicationTickHook(void) {
     tmp ^= buttons.depressed;     /* changed debounced depressed */
     if (tmp != 0U) {  /* debounced Key button state changed? */
         if (buttons.depressed != 0U) { /* PB0 depressed?*/
-            /* demonstrate the ISR APIs: QF_PUBLISH_FROM_ISR and Q_NEW_FROM_ISR */
-            QF_PUBLISH_FROM_ISR(Q_NEW_FROM_ISR(QEvt, PAUSE_SIG),
+            /* demonstrate the "FromISR APIs:
+            * QACTIVE_PUBLISH_FROM_ISR() and Q_NEW_FROM_ISR()
+            */
+            QACTIVE_PUBLISH_FROM_ISR(Q_NEW_FROM_ISR(QEvt, PAUSE_SIG),
                                 &xHigherPriorityTaskWoken,
                                 &l_TickHook);
         }

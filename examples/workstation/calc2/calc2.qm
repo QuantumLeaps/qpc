@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.1.0" links="1">
+<model version="5.2.1" links="1">
  <documentation>Improved model of the Calculator described in Chapter 4 of PSiCC2. Improvements include:
-
 - placing the &quot;negated1&quot; state inside &quot;operand1&quot; superstate
 - placing the &quot;negated2&quot; state inside &quot;operand2&quot; superstate
 - adding handling of operator precedence '*','/' before '+','-'</documentation>

@@ -1,4 +1,4 @@
-# Doxyfile 1.9.3
+# Doxyfile 1.9.4
 
 @INCLUDE = Doxyfile
 
@@ -8,8 +8,8 @@
 PROJECT_LOGO           = images/logo_ql-comp.png
 
 HTML_OUTPUT            = tmp
-HTML_HEADER            = ../../ql-doxygen/header.html
-HTML_FOOTER            = ../../ql-doxygen/footer.html
+HTML_HEADER            = ../../ql-doxygen/ql-header.html
+HTML_FOOTER            = ../../ql-doxygen/ql-footer.html
 HTML_EXTRA_STYLESHEET  = ../../ql-doxygen/ql.css
-HTML_EXTRA_FILES       = ../../ql-doxygen/preview.js
+HTML_EXTRA_FILES       = ../../ql-doxygen/ql-preview.js
 GENERATE_HTMLHELP      = YES

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.1.0" links="1">
- <documentation>Blinky model</documentation>
+<model version="5.2.1" links="1">
+ <documentation>Blinky example</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
  <!--${AOs}-->

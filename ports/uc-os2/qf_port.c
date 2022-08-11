@@ -1,5 +1,5 @@
 /*============================================================================
-* QF/C port to uC-OS2, generic C99 compiler
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -74,23 +74,21 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    INT8U p_ucos;
-    INT8U err;
      /* task name to be passed to OSTaskCreateExt() */
-    void *task_name = (void *)me->eQueue;
+    void * const task_name = (void *)me->eQueue;
 
     me->eQueue = OSQCreate((void **)qSto, qLen);  /* create uC-OS2 queue */
     /* the uC-OS2 queue must be created correctly */
     Q_ASSERT_ID(210, me->eQueue != (OS_EVENT *)0);
 
     me->prio = prio; /* save the QF priority */
-    QF_add_(me); /* make QF aware of this active object */
+    QActive_register_(me); /* make QF aware of this active object */
 
     QHSM_INIT(&me->super, par, me->prio); /* initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* map from QP to uC/OS priority */
-    p_ucos = (INT8U)(QF_MAX_ACTIVE - me->prio);
+    INT8U const p_ucos = (INT8U)(QF_MAX_ACTIVE - me->prio);
 
     /* create AO's task... */
     /*
@@ -99,7 +97,7 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     * stack memory. This is correct only for CPUs with downward-growing
     * stack, but must be changed for CPUs with upward-growing stack
     */
-    err = OSTaskCreateExt(&task_function, /* the task function */
+    INT8U const err = OSTaskCreateExt(&task_function, /* the task function */
              (void *)me,     /* the 'pdata' parameter */
 #if OS_STK_GROWTH
              &((OS_STK *)stkSto)[(stkSize/sizeof(OS_STK)) - 1], /* ptos */
@@ -149,22 +147,16 @@ static void task_function(void *pdata) { /* uC-OS2 task signature */
     }
 }
 /*..........................................................................*/
-#ifndef Q_SPY
-bool QActive_post_(QActive * const me, QEvt const * const e,
-                   uint_fast16_t const margin)
-#else
 bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
-#endif
 {
-    bool status;
-    uint_fast16_t nFree;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
 
-    nFree = (uint_fast16_t)(((OS_Q_DATA *)me->eQueue)->OSQSize
-                            - ((OS_Q_DATA *)me->eQueue)->OSNMsgs);
+    uint_fast16_t const nFree =
+        (uint_fast16_t)(((OS_Q_DATA *)me->eQueue)->OSQSize
+         - ((OS_Q_DATA *)me->eQueue)->OSNMsgs);
+    bool status;
     if (margin == QF_NO_MARGIN) {
         if (nFree > 0U) {
             status = true; /* can post */
@@ -248,11 +240,11 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 /*..........................................................................*/
 QEvt const *QActive_get_(QActive * const me) {
     INT8U err;
-    QS_CRIT_STAT_
     QEvt const *e = (QEvt *)OSQPend((OS_EVENT *)me->eQueue, 0U, &err);
 
     Q_ASSERT_ID(910, err == OS_ERR_NONE);
 
+    QS_CRIT_STAT_
     QS_BEGIN_PRE_(QS_QF_ACTIVE_GET, me->prio)
         QS_TIME_PRE_();             /* timestamp */
         QS_SIG_PRE_(e->sig);        /* the signal of this event */
