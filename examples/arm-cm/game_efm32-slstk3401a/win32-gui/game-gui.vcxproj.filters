@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="bsp.c" />
+    <ClCompile Include="..\main.c" />
+    <ClCompile Include="..\mine1.c" />
+    <ClCompile Include="..\mine2.c" />
+    <ClCompile Include="..\missile.c" />
+    <ClCompile Include="..\ship.c" />
+    <ClCompile Include="..\..\..\..\include\qstamp.c" />
+    <ClCompile Include="..\tunnel.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\bsp.h" />
+    <ClInclude Include="..\game.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Res\BTN_DWN.bmp">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\BTN_UP.bmp">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\eating.bmp">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\hungry.bmp">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="RES\ql.bmp">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\qp.ico">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\thinking.bmp">
+      <Filter>Res</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Res">
+      <UniqueIdentifier>{c8d4d732-dcf8-4466-ad8e-3f15ab6fe204}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\BOARD.bmp" />
+    <Image Include="Res\LCD.bmp" />
+    <Image Include="Res\led_off.bmp" />
+    <Image Include="Res\led_on.bmp" />
+    <Image Include="Res\seg.bmp" />
+    <Image Include="Res\seg0.bmp" />
+    <Image Include="Res\seg1.bmp" />
+    <Image Include="Res\seg2.bmp" />
+    <Image Include="Res\seg3.bmp" />
+    <Image Include="Res\seg4.bmp" />
+    <Image Include="Res\seg5.bmp" />
+    <Image Include="Res\seg6.bmp" />
+    <Image Include="Res\seg7.bmp" />
+    <Image Include="Res\seg8.bmp" />
+    <Image Include="Res\seg9.bmp" />
+  </ItemGroup>
+</Project>

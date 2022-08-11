@@ -1,0 +1,15 @@
+# Doxyfile 1.9.4
+
+@INCLUDE = Doxyfile
+
+#---------------------------------------------------------------------------
+# Configuration options related to the HTML output
+#---------------------------------------------------------------------------
+PROJECT_LOGO           = images/logo_ql-comp.png
+
+HTML_OUTPUT            = tmp
+HTML_HEADER            = ../../ql-doxygen/ql-header.html
+HTML_FOOTER            = ../../ql-doxygen/ql-footer.html
+HTML_EXTRA_STYLESHEET  = ../../ql-doxygen/ql.css
+HTML_EXTRA_FILES       = ../../ql-doxygen/ql-preview.js
+GENERATE_HTMLHELP      = YES

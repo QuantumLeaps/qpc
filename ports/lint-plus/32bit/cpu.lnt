@@ -1,0 +1,3 @@
+// Size Options for 32bit CPU (e.g., ARM Cortex-M)
+-si4 -sl4 -sll8 -ss2 -sw4 -sp4 -sf4 -sd8 -sld8
+

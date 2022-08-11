@@ -1,0 +1,6 @@
+// Size Options for 16bit CPU (e.g., MSP430)
+-si2 -sl4 -sll8 -ss2 -sw2 -sp2 -sf4 -sd8 -sld8
+
+// Alignment options for 16bit CPU
+-ai2 -al2 -all2 -as2 -af4 -ad8 -ald8
+

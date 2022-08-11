@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="QP_port">
+      <UniqueIdentifier>{553ace6f-efbf-49d9-be33-15209894492c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QP">
+      <UniqueIdentifier>{f23cedd0-0f13-4d39-b4f1-77eaa32e87fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QP_spy">
+      <UniqueIdentifier>{60f745f8-1607-4e49-a403-3fd81b6e4a8c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="qutest_port.c">
+      <Filter>QP_port</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qep_hsm.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qep_msm.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_act.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_defer.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_dyn.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_mem.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_ps.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_qact.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_qeq.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_qmact.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qs\qs.c">
+      <Filter>QP_spy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qs\qs_64bit.c">
+      <Filter>QP_spy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qs\qs_fp.c">
+      <Filter>QP_spy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qs\qs_rx.c">
+      <Filter>QP_spy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qs\qutest.c">
+      <Filter>QP_spy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_time.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\qf\qf_actq.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="qep_port.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
+    <ClInclude Include="qf_port.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

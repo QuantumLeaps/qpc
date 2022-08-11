@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="content-type" content="text/html;charset=ISO-8869-1">
+<TITLE>QP/lwIP integration</TITLE>
+<LINK href="style.css" type=text/css rel=Stylesheet>
+<LINK rel="icon" href="img/favicon.ico" type="image/x-icon" />
+</HEAD>
+
+<BODY>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border="0">
+  <TR>
+    <TD id=masthead noWrap align=left><A href="http://www.state-machine.com"><IMG
+      src="img/logo_ql.jpg"
+      title="Quantum Leaps - innovating embedded systems"
+      alt="Quantum Leaps - innovating embedded systems"
+      style="padding-bottom:5px;"></A>
+    </TD>
+    <TD width="100%"></TD>
+    <TD nowrap>
+    <B>Quantum Leaps, LLC</strong><br>
+    <A HREF="mailto:info@state-machine.com">info@state-machine.com</A><br>
+    <A HREF="http://www.state-machine.com">www.state-machine.com</A>
+    </TD>
+  </TR>
+  <TR>
+    <TD id="menu" colspan="3" noWrap align=left bgcolor="#000099" height="25">
+      <BIG>&nbsp;&nbsp;<B>HOME</B>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<A HREF="ssi_demo.shtm">SSI DEMO</A>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<A HREF="cgi_demo.htm">CGI DEMO</A>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<A HREF="udp_demo.htm">UDP DEMO</A></BIG>
+    </TD>
+  </TR>
+</TABLE>
+
+<!--  BEGIN_CONTENT -->
+<A NAME="About"></A>
+<H1>About This Website</H1>
+
+<A HREF="http://www.state-machine.com/lwip/AN_QP_and_lwIP.pdf" TARGET="_blank"><IMG SRC="img/AN_QP_and_lwIP.jpg" ALT="Application Note (1.4MB PDF)" align="right" hspace="10" vspace="5"></A>
+
+<P>This website was served by the lightweight TCP/IP stack called <strong>lwIP</strong> (version <strong>1.4.1</strong>) running on top of the <strong>QP&trade;</strong> state machine framework, which are both briefly described below.
+</P>
+<P>The example provides an HTTP server with simple <A HREF="ssi_demo.shtm">Server Side Include (SSI)</A> and <A HREF="cgi_demo.htm">Common Gateway Interface (CGI)</A>  capability, so that dynamic web pages can be served and the pages can send data or commands to the target. Internal file system for web pages and a utility (<CODE>qfsgen.exe</CODE>) for generating the HTML-files and images is also provided in the QP-lwIP example code.
+</P>
+<P>The lwIP code is initially configured in this example to use <strong>DHCP</strong> to obtain the IP address, so it assumes the presence of a DHCP server, such as a typical Ethernet router. By modifying the <CODE>lwipopts.h</CODE> header file, the application can also be configured to optain the IP address via <strong>AUTOIP</strong> (as described in RFC 3927), or to use a static IP address. The example also demonstrates <A HREF="udp_demo.htm">UDP</A>. A UDP test application (<CODE>qudp.exe</CODE>) for sending and receiving UDP packets (on Windows and Linux hosts) is provided in the QP-lwIP example code.
+</P>
+<P>Please refer to the Quantum Leaps Application Note: <A HREF="http://www.state-machine.com/lwip/AN_QP_and_lwIP.pdf" TARGET="_blank">"QP and lwIP TCP/IP Stack"</A> for more information. The Application Note in PDF is provided in the QP-lwIP example code.
+</P>
+
+<A NAME="Port"></A>
+<H1>About the QP-lwIP Integration</H1>
+
+<A HREF="http://www.state-machine.com/lwip" TARGET="_blank"><IMG SRC="img/logo_lwip_qp.jpg" ALT="QP-lwIP" align="left" hspace="10" vspace="5"></A>
+
+<P>The <strong>QP-lwIP</strong> integration has been carefully designed for <strong>hard real-time</strong> control-type applications, in which the TCP/IP stack is used to monitor and configure the device as well as to provide remote user interface (e.g., by means of a web browser). In particular, The <strong>lwIP</strong> stack, which is <strong>not preemptive</strong>, is strictly encapsulated inside a dedicated active object (LwIP-Manager), so no interrupt locking is necessary, which critical for low interrupt latency. Also, the Ethernet interrupt service routine (ISR) runs very fast and only signals the task level (the ISR does not perform lengthy copy operations at all). This means that hard-real-time processing can be done at the task level, especially when you use a preemptive QK kernel for executing your <strong>QP&trade;</strong> application.
+</P>
+<P>The <strong>QP-lwIP</strong> integration has been also carefully designed for <strong>portability</strong>. All hardware-specific code is clearly separated in the Ethernet/lwIP <strong>device driver</strong> with the clean interface to the rest of the application.
+</P>
+
+<A NAME="QP"></A>
+<H1>About QP State Machine Frameworks</H1>
+<A HREF="http://www.state-machine.com/products/QP_datasheet.pdf" TARGET="_blank"><IMG SRC="img/QP_datasheet.gif" ALT="QP datasheet (1.4MB PDF)" align="left" hspace="10" vspace="5"></A>
+
+<P><strong>QP&trade;</strong> is a family of very lightweight, <A HREF="http://www.state-machine.com/licensing/" target="_blank">open source</A>, state machine-based frameworks for embedded microprocessors, microcontrollers, and DSPs. <strong>QP</strong> enables developing well-structured embedded applications as a set of concurrently executing hierarchical state machines (UML statecharts). With <strong>QP</strong>, coding of modern state machines directly in C or C++ is a non-issue. No big design automation tools are needed.
+</P>
+
+<A HREF="http://www.state-machine.com/psicc2/" TARGET="_blank"><img alt="Practical UML Statecharts in C/C++, 2nd Ed." src="img/PSiCC2.gif" hspace="10" vspace="5" align="right"></A>
+
+<P>Current versions of <strong>QP</strong> are: QP/C&trade; and QP/C++&trade;, which require about 4KB of code and a few hundred bytes of RAM, and the ultra-lightweight QP-nano, which requires only 1-2KB of code and just several bytes of RAM.
+</P>
+<P><strong>QP</strong> can work with or without a traditional OS/RTOS. In the standalone configuration, <strong>QP</strong> can completely <strong>replace</strong> a traditional RTOS. <strong>QP</strong> includes a simple non-preemptive scheduler and a fully preemptive kernel (QK). The QP/C and QP/C++ frameworks can also work with a traditional OS/RTOS to take advantage of existing device drivers, communication stacks, and other middleware.
+</P>
+<P>All versions of <strong>QP</strong> are described in detail in the book <A HREF="http://www.state-machine.com/psicc2" target="_blank"><EM><I>Practical UML Statecharts in C/C++, Second Edition: Event-Driven Programming for Embedded Systems</I></EM></A> by Dr. Miro Samek, (ISBN: 978-0750687065). <strong>QP</strong> has a strong user community and has been applied worldwide by some of the largest
+<A HREF="http://www.state-machine.com/about/customers.php" target="_blank">companies</A> in their respective industries, such as: consumer electronics, telecommunications equipment, industrial automation, transportation systems, medical devices, national defense, and many more.
+</P>
+<P><strong>QP</strong> is licensed under the GPL version 2 open source license as well as under commercial closed-source licenses, which are expressly designed for users, who wish to retain the proprietary character of their code. More information about <strong>QP</strong> licensing can be found at <a href="http://www.state-machine.com/licensing" target="_blank">http://www.state-machine.com/licensing</a>.
+</P>
+
+<A NAME="lwIP"></A>
+<H1>About lwIP TCP/IP Stack</H1>
+
+<A href="http://www.sics.se" target="_blank"><IMG title="SICS" alt="SICS--home of lwIP" src="img/logo_sics.gif" ALIGN="right"></A>
+
+<P><strong>lwIP</strong> is a light-weight implementation of the TCP/IP protocol suite that was originally written by Adam Dunkels at the Computer and Networks Architectures (CNA) lab of the <A href="http://www.sics.se" target="_blank">Swedish Institute of Computer Science</A> but now is being actively developed by a team of developers distributed world-wide headed by Kieran Mansley.
+</P>
+<P><strong>lwIP</strong> is available under a BSD-style open source license in C source code format and can be downloaded from the development homepage at <A href="http://savannah.nongnu.org/projects/lwip" target="_blank">http://savannah.nongnu.org/projects/lwip</A>. The focus of the lwIP is to reduce the RAM usage while still having a full scale TCP/IP implementation. This makes lwIP suitable for use in embedded systems with tens of kilobytes of RAM and around 40 KB of code ROM.
+</P>
+<P>Since its release, <strong>lwIP</strong> has spurred a lot of interest and is today being used in many commercial products. lwIP has been ported to multiple platforms and operating systems and can be run either with or without an underlying OS. lwIP includes the following protocols and features:
+</P>
+<UL>
+<LI><strong>IP</strong> (Internet Protocol) including packet forwarding over multiple network interfaces</LI>
+<LI><strong>ICMP</strong> (Internet Control Message Protocol) for network maintenance and debugging</LI>
+<LI><strong>IGMP</strong> (Internet Group Management Protocol) for multicast traffic management</LI>
+<LI><strong>UDP</strong> (User Datagram Protocol) including experimental UDP-lite extensions</LI>
+<LI><strong>TCP</strong> (Transmission Control Protocol) with congestion control, RTT estimation and fast recovery/fast retransmit</LI>
+<LI><strong>Native event-driven API</strong> for enhanced performance (<strong>ideal</strong> for QP)</LI>
+<LI><strong>DNS</strong> (Domain names resolver</LI>
+<LI><strong>SNMP</strong> (Simple Network Management Protocol)</LI>
+<LI><strong>DHCP</strong> (Dynamic Host Configuration Protocol)</LI>
+<LI><strong>AUTOIP</strong> (for IPv4, conform with RFC 3927)</LI>
+<LI><strong>PPP</strong> (Point-to-Point Protocol)</LI>
+<LI><strong>ARP</strong> (Address Resolution Protocol) for Ethernet</LI>
+</UL>
+
+<div id="footer">
+<p>&copy; 2002-2011 Quantum Leaps - All Rights Reserved&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;103 Cobble Ridge Drive, Chapel Hill, NC 27516, USA<br />
+Toll-free: 866.450.LEAP&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Direct: 919.360.5668&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Fax: 919.869.2998&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="mailto:info@quantum-leaps.com">info@quantum-leaps.com</a></p>
+</div> <!-- id="footer" -->
+
+</BODY>
+</HTML>

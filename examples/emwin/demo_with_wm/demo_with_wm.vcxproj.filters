@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{39b51785-bb27-4d42-b439-073a1a9a910b}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{016d9e72-83bc-45de-a3be-7a1ddadcf0d0}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{e2b2644d-3a90-49b2-907a-2c90edbd53d5}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="emWin">
+      <UniqueIdentifier>{edb4bdd4-7822-4812-b677-b21cb00121b0}</UniqueIdentifier>
+      <Extensions>*.lib</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="bsp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="philo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sim_x.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="table.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="winmain.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Config\GUIConf.c">
+      <Filter>emWin</Filter>
+    </ClCompile>
+    <ClCompile Include="Config\LCDConf.c">
+      <Filter>emWin</Filter>
+    </ClCompile>
+    <ClCompile Include="Config\SIMConf.c">
+      <Filter>emWin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\include\qstamp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bsp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dpp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Config\GUIConf.h">
+      <Filter>emWin</Filter>
+    </ClInclude>
+    <ClInclude Include="Config\LCDConf.h">
+      <Filter>emWin</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="simulation.res">
+      <Filter>Resource Files</Filter>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\..\3rd_party\emWin\GUI\Library\GUI.lib">
+      <Filter>emWin</Filter>
+    </Library>
+    <Library Include="..\..\..\3rd_party\emWin\Simulation\GUISim.lib">
+      <Filter>emWin</Filter>
+    </Library>
+  </ItemGroup>
+</Project>

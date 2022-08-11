@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="content-type" content="text/html;charset=ISO-8869-1">
+<TITLE>QP/lwIP--UDP Demo</TITLE>
+<LINK href="style.css" type=text/css rel=Stylesheet>
+<LINK rel="icon" href="img/favicon.ico" type="image/x-icon" />
+</HEAD>
+
+<BODY>
+<A NAME="Top"></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border="0">
+  <TR>
+    <TD id=masthead noWrap align=left><A href="http://www.state-machine.com"><IMG
+      src="img/logo_ql.jpg"
+      title="Quantum Leaps - innovating embedded systems"
+      alt="Quantum Leaps - innovating embedded systems"
+      style="padding-bottom:5px;"></A>
+    </TD>
+    <TD width="100%"></TD>
+    <TD nowrap>
+    <B>Quantum Leaps, LLC</B><br>
+    <A HREF="mailto:info@state-machine.com">info@state-machine.com</A><br>
+    <A HREF="http://www.state-machine.com">www.state-machine.com</A>
+    </TD>
+  </TR>
+  <TR>
+    <TD id="menu" colspan="3" noWrap align=left bgcolor="#000099" height="25">
+      <BIG>&nbsp;&nbsp;<A HREF="index.htm">HOME</A>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<A HREF="ssi_demo.shtm">SSI DEMO</A>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<A HREF="cgi_demo.htm">CGI DEMO</A>&nbsp;&nbsp; |
+           &nbsp;&nbsp;<B>UDP DEMO</B></BIG>
+    </TD>
+  </TR>
+</TABLE>
+
+<!--  BEGIN_CONTENT -->
+<A NAME="Example"></A>
+<H1>UDP Example</H1>
+
+<A HREF="http://www.state-machine.com/lwip" TARGET="_blank"><IMG SRC="img/logo_lwip_qp.jpg" ALT="QP-lwIP" border="0" align="left" hspace="10" vspace="5"></A>
+
+<P>The example application opens a <strong>UDP</strong> connection at the port 777. Any UDP packets sent to that connection are interpreted as text to display on the LCD. The application responds back to the sender with a UDP packet that contains the original text plus the prepened sequence number. Obviously, the simple text format is used for simplicity. In real-life applications binary format could be more efficient.
+</P>
+
+<A HREF="http://www.state-machine.com/lwip/AN_QP_and_lwIP.pdf" TARGET="_blank"><IMG SRC="img/AN_QP_and_lwIP.jpg" ALT="Application Note (1.4MB PDF)" border="0" align="right" hspace="10" vspace="5"></A>
+
+<P>To facilitate testing of UDP connectivity, a simple console application called <CODE>qudp</CODE> for Windows or Linux hosts is provided in the <strong>QP-lwIP</strong> example code. The following listing shows an example output generated from the <CODE>qudp</CODE> applicaiton:
+
+<pre>
+C:\software\qpcpp\tools\qudp\win32\vc6>Debug\qudp 192.168.0.100
+qudp utility (c) Quantum Leaps, LLC, www.state-machine.com
+Opening and binding local socket at port=1777...ready
+Remote UDP connection: IP-address=192.168.0.100, port=777
+Type command(s); press Enter to send command, ESC to quit
+Hello
+Sending:  "Hello"
+Received: "Hello-1"
+How are
+Sending:  "How are"
+Received: "How are-2"
+you?
+Sending:  "you?"
+Received: "you?-3"
+Done.
+</pre>
+
+<P>Please refer to the Quantum Leaps Application Note: <A HREF="http://www.state-machine.com/lwip/AN_QP_and_lwIP.pdf" TARGET="_blank">"QP and lwIP TCP/IP Stack"</A> for more information. The Application Note in PDF is provided in the <strong>QP-lwIP</strong> example code.
+</P>
+<br />
+
+<div id="footer">
+<p>&copy; 2002-2011 Quantum Leaps - All Rights Reserved&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;103 Cobble Ridge Drive, Chapel Hill, NC 27516, USA<br />
+Toll-free: 866.450.LEAP&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Direct: 919.360.5668&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Fax: 919.869.2998&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="mailto:info@quantum-leaps.com">info@quantum-leaps.com</a></p>
+</div> <!-- id="footer" -->
+
+</BODY>
+</HTML>
