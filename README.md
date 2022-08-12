@@ -4,7 +4,7 @@
 View QP/C Revision History at: https://www.state-machine.com/qpc/history.html
 
 > **NOTE:** If you're interested in the latest QP/C version from GitHub,
-it is highly recommened that you clone this repo like that:
+it is recommened that you clone this repo like that:
 
 ```
 git clone https://github.com/QuantumLeaps/qpc --recurse-submodules --depth 1

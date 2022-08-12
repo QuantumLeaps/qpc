@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-07
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-08-12
+* @version Last updated for: @ref qpc_7_0_2
 *
 * @file
 * @brief QF/C port to Zephyr RTOS
@@ -55,7 +55,18 @@ void QF_init(void) {
 /*..........................................................................*/
 int_t QF_run(void) {
     QF_onStartup();
+#ifdef Q_SPY
+    // lower the priority of the main thread to the level of idle
+    k_thread_priority_set(k_current_get(),
+                          CONFIG_NUM_PREEMPT_PRIORITIES - 1);
+    /* perform QS work... */
+    while (true) {
+        QS_rxParse();   /* parse any QS-RX bytes */
+        QS_doOutput();  /* perform the QS-TX output */
+    }
+#else
     return 0; /* return from the main Zephyr thread */
+#endif
 }
 /*..........................................................................*/
 void QF_stop(void) {

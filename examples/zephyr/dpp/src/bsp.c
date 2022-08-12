@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-06
-* @version Last updated for version: 7.0.1
+* @date Last updated on: 2022-08-12
+* @version Last updated for: @ref qpc_7_0_2
 *
 * @file
 * @ingroup examples
@@ -68,7 +68,7 @@ static struct k_timer QF_tick_timer;
         PHILO_STAT = QS_USER,
         PAUSED_STAT,
         COMMAND_STAT,
-        CONTEXT_SW
+        TEST_MSG
     };
 
 #endif
@@ -97,19 +97,21 @@ void BSP_init(void) {
 
     /* object dictionaries... */
     QS_OBJ_DICTIONARY(AO_Table);
-    QS_OBJ_DICTIONARY(AO_Philo[0]);
-    QS_OBJ_DICTIONARY(AO_Philo[1]);
-    QS_OBJ_DICTIONARY(AO_Philo[2]);
-    QS_OBJ_DICTIONARY(AO_Philo[3]);
-    QS_OBJ_DICTIONARY(AO_Philo[4]);
+    for (int n = 0; n < N_PHILO; ++n) {
+        QS_OBJ_ARR_DICTIONARY(AO_Philo[n], n);
+    }
 
     QS_OBJ_DICTIONARY(&timerID);
     QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(PAUSED_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
+    QS_USR_DICTIONARY(TEST_MSG);
 
     /* setup the QS filters... */
-    QS_GLB_FILTER(QS_SM_RECORDS);
-    QS_GLB_FILTER(QS_UA_RECORDS);
+    QS_GLB_FILTER(QP::QS_SM_RECORDS); /* state machine records */
+    QS_GLB_FILTER(QP::QS_AO_RECORDS); /* active object records */
+    QS_GLB_FILTER(QP::QS_UA_RECORDS); /* all user records */
+    QS_GLB_FILTER(TEST_MSG);
 }
 /*..........................................................................*/
 void BSP_ledOn(void) {
@@ -171,11 +173,11 @@ void BSP_terminate(int16_t result) {
 /* QF callbacks ============================================================*/
 void QF_onStartup(void) {
     k_timer_start(&QF_tick_timer, K_MSEC(1), K_MSEC(1));
-    printk("QF_onStartup\n");
+    Q_PRINTK("QF_onStartup\n");
 }
 /*..........................................................................*/
 void QF_onCleanup(void) {
-    printk("QF_onCleanup\n");
+    Q_PRINTK("QF_onCleanup\n");
 }
 
 /*..........................................................................*/
@@ -194,15 +196,42 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
 
 /* QS callbacks ============================================================*/
 #ifdef Q_SPY
+
+#include <drivers/uart.h>
+
+/* select the Zephyr shell UART
+* NOTE: you can change this to other UART peripheral if desired
+*/
+static struct device const *uart_dev =
+     DEVICE_DT_GET(DT_CHOSEN(zephyr_shell_uart));
+
+/*..........................................................................*/
+static void uart_cb(const struct device *dev, void *user_data) {
+    if (!uart_irq_update(uart_dev)) {
+        return;
+    }
+
+    if (uart_irq_rx_ready(uart_dev)) {
+        uint8_t buf[32];
+        int n = uart_fifo_read(uart_dev, buf, sizeof(buf));
+        for (std::uint8_t const *p = buf; n > 0; --n, ++p) {
+            QS_RX_PUT(*p);
+        }
+    }
+}
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsTxBuf[1024]; /* buffer for QS-TX channel */
     static uint8_t qsRxBuf[256];  /* buffer for QS-RX channel */
 
+    Q_REQUIRE(uart_dev != (struct device *)0);
+
     QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
 
-    //TBD...
+    // configure interrupt and callback to receive data
+    uart_irq_callback_user_data_set(uart_dev, &uart_cb, (void *)0);
+    uart_irq_rx_enable(uart_dev);
 
     return 1U; /* return success */
 }
@@ -211,12 +240,32 @@ void QS_onCleanup(void) {
 }
 /*..........................................................................*/
 QSTimeCtr QS_onGetTime(void) {  /* NOTE: invoked with interrupts DISABLED */
-    //TBD...
-    return 0U;
+    return k_cycle_get_32();
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    //TBD...
+    uint16_t len = 0xFFFFU; /* to get as many bytes as available */
+    std::uint8_t const *buf;
+    while ((buf = QS_getBlock(&len)) != nullptr) { /* QS-TX data available? */
+        for (; len != 0U; --len, ++buf) {
+            uart_poll_out(uart_dev, *buf);
+        }
+        len = 0xFFFFU; /* to get as many bytes as available */
+    }
+}
+/*..........................................................................*/
+void QS_doOutput(void) {
+    uint16_t len = 0xFFFFU; /* big number to get all available bytes */
+
+    QS_CRIT_STAT_
+    QS_CRIT_E_();
+    uint8_t const *buf = QS_getBlock(&len);
+    QS_CRIT_X_();
+
+    /* transmit the bytes via the UART... */
+    for (; len != 0U; --len, ++buf) {
+        uart_poll_out(uart_dev, *buf);
+    }
 }
 /*..........................................................................*/
 /*! callback function to reset the target (to be implemented in the BSP) */
