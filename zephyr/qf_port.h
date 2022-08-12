@@ -56,7 +56,7 @@
 /* Zephyr spinlock for QF critical section */
 extern struct k_spinlock QF_spinlock;
 
-/* Q_PRINTK() macro to avoid conflicts with Zephyr's printk() */
+/* Q_PRINTK() macro to avoid conflicts with Zephyr's printk()
 * when Q_SPY configuation is used
 */
 #ifndef Q_SPY

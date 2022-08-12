@@ -108,9 +108,9 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(TEST_MSG);
 
     /* setup the QS filters... */
-    QS_GLB_FILTER(QP::QS_SM_RECORDS); /* state machine records */
-    QS_GLB_FILTER(QP::QS_AO_RECORDS); /* active object records */
-    QS_GLB_FILTER(QP::QS_UA_RECORDS); /* all user records */
+    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
+    QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
+    QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
     QS_GLB_FILTER(TEST_MSG);
 }
 /*..........................................................................*/
@@ -214,7 +214,7 @@ static void uart_cb(const struct device *dev, void *user_data) {
     if (uart_irq_rx_ready(uart_dev)) {
         uint8_t buf[32];
         int n = uart_fifo_read(uart_dev, buf, sizeof(buf));
-        for (std::uint8_t const *p = buf; n > 0; --n, ++p) {
+        for (uint8_t const *p = buf; n > 0; --n, ++p) {
             QS_RX_PUT(*p);
         }
     }
@@ -245,8 +245,8 @@ QSTimeCtr QS_onGetTime(void) {  /* NOTE: invoked with interrupts DISABLED */
 /*..........................................................................*/
 void QS_onFlush(void) {
     uint16_t len = 0xFFFFU; /* to get as many bytes as available */
-    std::uint8_t const *buf;
-    while ((buf = QS_getBlock(&len)) != nullptr) { /* QS-TX data available? */
+    uint8_t const *buf;
+    while ((buf = QS_getBlock(&len)) != (uint8_t*)0) {
         for (; len != 0U; --len, ++buf) {
             uart_poll_out(uart_dev, *buf);
         }
