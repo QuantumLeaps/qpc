@@ -18,18 +18,18 @@ target_include_directories(app PUBLIC
 )
 
 zephyr_library_sources(
- ${QPC_DIR}/src/qf/qep_hsm.cpp
- ${QPC_DIR}/src/qf/qep_msm.cpp
- ${QPC_DIR}/src/qf/qf_qact.cpp
- ${QPC_DIR}/src/qf/qf_defer.cpp
- ${QPC_DIR}/src/qf/qf_dyn.cpp
- ${QPC_DIR}/src/qf/qf_mem.cpp
- ${QPC_DIR}/src/qf/qf_ps.cpp
- ${QPC_DIR}/src/qf/qf_qact.cpp
- ${QPC_DIR}/src/qf/qf_qeq.cpp
- ${QPC_DIR}/src/qf/qf_qmact.cpp
- ${QPC_DIR}/src/qf/qf_time.cpp
- ${QPC_DIR}/zephyr/qf_port.cpp
+ ${QPC_DIR}/src/qf/qep_hsm.c
+ ${QPC_DIR}/src/qf/qep_msm.c
+ ${QPC_DIR}/src/qf/qf_qact.c
+ ${QPC_DIR}/src/qf/qf_defer.c
+ ${QPC_DIR}/src/qf/qf_dyn.c
+ ${QPC_DIR}/src/qf/qf_mem.c
+ ${QPC_DIR}/src/qf/qf_ps.c
+ ${QPC_DIR}/src/qf/qf_qact.c
+ ${QPC_DIR}/src/qf/qf_qeq.c
+ ${QPC_DIR}/src/qf/qf_qmact.c
+ ${QPC_DIR}/src/qf/qf_time.c
+ ${QPC_DIR}/zephyr/qf_port.c
 )
 
 # QSPY option...
@@ -39,12 +39,12 @@ target_compile_definitions(app PUBLIC Q_SPY)
 zephyr_library_compile_definitions(Q_SPY)
 
 zephyr_library_sources(
- ${QPC_DIR}/src/qs/qs.cpp
- ${QPC_DIR}/src/qs/qs_rx.cpp
- ${QPC_DIR}/src/qs/qs_fp.cpp
- ${QPC_DIR}/src/qs/qutest.cpp
- ${QPC_DIR}/src/qs/qs_64bit.cpp
- ${QPC_DIR}/include/qstamp.cpp
+ ${QPC_DIR}/src/qs/qs.c
+ ${QPC_DIR}/src/qs/qs_rx.c
+ ${QPC_DIR}/src/qs/qs_fp.c
+ ${QPC_DIR}/src/qs/qutest.c
+ ${QPC_DIR}/src/qs/qs_64bit.c
+ ${QPC_DIR}/include/qstamp.c
 )
 
 endif() # QSPY
