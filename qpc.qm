@@ -360,7 +360,7 @@ Contact information:
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */</documentation>
-   <code>701U</code>
+   <code>702U</code>
   </attribute>
   <attribute name="QP_VERSION_STR" type="char const *" visibility="0x03" properties="0x00">
    <documentation>/*! The current QP version as a zero terminated string literal.
@@ -370,11 +370,11 @@ Contact information:
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */</documentation>
-   <code>&quot;7.0.1&quot;</code>
+   <code>&quot;7.0.2&quot;</code>
   </attribute>
   <attribute name="QP_RELEASE" type="unint32_t" visibility="0x03" properties="0x00">
-   <documentation>/*! Encrypted  current QP release (7.0.1) and date (2022-06-30) */</documentation>
-   <code>0x7C7E85E2U</code>
+   <documentation>/*! Encrypted  current QP release (7.0.1) and date (2022-08-12) */</documentation>
+   <code>0x7C62C081U</code>
   </attribute>
   <attribute name="QP_versionStr[8]" type="char const" visibility="0x00" properties="0x00">
    <documentation>/*! the current QP version number string in ROM, based on #QP_VERSION_STR */</documentation>
@@ -11746,8 +11746,8 @@ $declare ${DbC}
   </file>
   <file name="qep.h">
    <text>/*!
-* @date Last updated on: 2022-07-27
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-08-12
+* @version Last updated for: @ref qpc_7_0_2
 *
 * @file
 * @brief QEP/C platform-independent public interface.
