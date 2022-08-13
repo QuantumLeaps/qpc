@@ -215,6 +215,8 @@
                 <option>
                     <name>CCDefines</name>
                     <state>QXK_ON_CONTEXT_SW</state>
+                    <state>QXK_USE_IRQ_HANDLER=LCD_IRQHandler</state>
+                    <state>QXK_USE_IRQ_NUM=30</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
