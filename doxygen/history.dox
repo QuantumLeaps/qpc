@@ -1,5 +1,30 @@
 /*! @page history Revision History
 
+@section qpc_7_0_2 Version 7.0.2, 2022-08-12
+
+__Bug Fixes:__
+- [bug#312 "Bug in QK and QXK 7.0.1"](https://sourceforge.net/p/qpc/bugs/312)
+
+__Ports__
+Modified QK and QXK ports to ARM Cortex-M
+- `qpc/ports/arm-cm/qk`
+- `qpc/ports/arm-cm/qxk`
+
+Modified Zephyr port
+- moved the port from the usual location in `qpc/ports/zephyr` up a level to `qpc/zephyr`. This was done to make QPC into an external [Zephyr module](https://docs.zephyrproject.org/latest/develop/modules.html), which has to comply with the Zephyr specification.
+
+
+__Examples (ARM Cortex-M):__
+- `qpc/examples/arm-cm/dpp_efm32-slstk3401a/qk` provided examples of configuring either NMI or IRQ for Cortex-M4 (ARMv7m)
+- `qpc/examples/arm-cm/dpp_efm32-slstk3401a/qxk` provided examples of configuring either NMI or IRQ for Cortex-M4 (ARMv7m)
+- `qpc/examples/arm-cm/dpp_nucleo-l053r8/qk` provided examples of configuring either NMI or IRQ for Cortex-M0+ (ARMv6m)
+- `qpc/examples/arm-cm/dpp_nucleo-l053r8/qk` provided examples of configuring either NMI or IRQ for Cortex-M0+ (ARMv6m)
+
+__Examples (Zephyr):__
+- `qpc/examples/zephyr/blinky` - modified to use the new Zephyr port
+- `qpc/examples/zephyr/dpp` - modified to use the new Zephyr port and to demonstrate QSPY software tracing.
+
+
 @section qpc_7_0_1 Version 7.0.1, 2022-07-31
 This release is the first one that contains the complete [QM model](https://www.state-machine.com/products/qm) of the QP/C framework (in the file `qpc/qpc.qm`). This model is then used to **generate all QP/C source code**:
 - `qpc/`
