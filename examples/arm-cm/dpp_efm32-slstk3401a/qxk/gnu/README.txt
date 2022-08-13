@@ -44,6 +44,24 @@ script (.ld file), which provides a template of the recommended GCC linker
 script for QP applications.
 
 
+Selecting QXK Exception
+=======================
+The QXK kernel needs a dedicated exception to return to the thread
+context after preemption by a basic thread. The default is to use
+the NMI exception for that purpose. However, in case NMI is needed
+for some other purpose, the QXK port allows you to select a any,
+otherwise unused IRQ for that purpose. To choose a given IRQ, you
+need to define the macros QXK_USE_IRQ_NUM and QXK_USE_IRQ_HANDLER.
+These macros can be provided on the command-line to the compiler.
+
+For example, for the EFM32 MCU, you might dedicate the IRQ
+"CRYPTO_IRQHandler" (see the vector table), with IRQ number 25,
+as follows:
+
+QXK_USE_IRQ_HANDLER=CRYPTO_IRQHandler
+QXK_USE_IRQ_NUM=25
+
+
 Startup Code
 ============
 The startup code for the EFM32PG1B200F256GM48 MCU used in this project

@@ -29,7 +29,7 @@
 * @file
 * @brief QXK/C port to ARM Cortex-M, IAR-ARM toolset
 */
-/* This QXK port is part of the interanl QP implementation */
+/* This QXK port is part of the internal QP implementation */
 #define QP_IMPL 1U
 #include "qf_port.h"
 #include "qf_pkg.h"

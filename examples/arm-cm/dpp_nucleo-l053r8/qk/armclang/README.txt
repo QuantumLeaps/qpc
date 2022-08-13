@@ -36,7 +36,7 @@ IRQ for that purpose. To choose a given IRQ, you need to define
 the macros QK_USE_IRQ_NUM and QK_USE_IRQ_HANDLER. These macros can
 be provided on the command-line to the compiler.
 
-For example, for the EFM32 CPU, you might dedicate the IRQ
+For example, for the STM32L053 MCU, you might dedicate the IRQ
 "CRYPTO_IRQHandler" (see the vector table), with IRQ number 25,
 as follows:
 
@@ -85,4 +85,3 @@ on the solder bridge configuration. Please see Chapter 5.7 "OSC clock" in
 the STM32 NUCLEO Boards User Manual (ST document UM1724) for more information.
 ***
 
-  
