@@ -201,8 +201,8 @@ enum QSpyPre {
     QS_QF_MPOOL_GET_ATTEMPT,  /*!< attempt to get a memory block failed */
 
     /* [48] reserved */
-    QS_RESERVED1,         /*!< reserved for future use */
-    QS_RESERVED2,         /*!< reserved for future use */
+    QS_MUTEX_LOCK,        /*!< @deprecated */
+    QS_MUTEX_UNLOCK,      /*!< @deprecated */
 
     /* [50] Scheduler (SC) records */
     QS_SCHED_LOCK,        /*!< scheduler was locked */

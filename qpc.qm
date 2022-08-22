@@ -6467,8 +6467,8 @@ QS_END_NOCRIT_PRE_()</code>
     QS_QF_MPOOL_GET_ATTEMPT,  /*!&lt; attempt to get a memory block failed */
 
     /* [48] reserved */
-    QS_RESERVED1,         /*!&lt; reserved for future use */
-    QS_RESERVED2,         /*!&lt; reserved for future use */
+    QS_MUTEX_LOCK,        /*!&lt; @deprecated */
+    QS_MUTEX_UNLOCK,      /*!&lt; @deprecated */
 
     /* [50] Scheduler (SC) records */
     QS_SCHED_LOCK,        /*!&lt; scheduler was locked */
