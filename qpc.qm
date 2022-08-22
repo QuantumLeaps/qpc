@@ -6526,6 +6526,8 @@ QS_END_NOCRIT_PRE_()</code>
     QS_TE_RECORDS,        /*!&lt; Time Events QS records */
     QS_QF_RECORDS,        /*!&lt; QF QS records */
     QS_SC_RECORDS,        /*!&lt; Scheduler QS records */
+    QS_SEM_RECORDS,       /*!&lt; Semaphore QS records */
+    QS_MTX_RECORDS,       /*!&lt; Mutex QS records */
     QS_U0_RECORDS,        /*!&lt; User Group 100-104 records */
     QS_U1_RECORDS,        /*!&lt; User Group 105-109 records */
     QS_U2_RECORDS,        /*!&lt; User Group 110-114 records */
@@ -6911,10 +6913,30 @@ switch (rec) {
         break;
     case QS_SC_RECORDS:
         if (isRemove) {
-            QS_priv_.glbFilter[6] &amp;= (uint8_t)(~0x7FU &amp; 0xFFU);
+            QS_priv_.glbFilter[6] &amp;= (uint8_t)(~0x7CU &amp; 0xFFU);
         }
         else {
-           QS_priv_.glbFilter[6] |= 0x7FU;
+            QS_priv_.glbFilter[6] |= 0x7CU;
+        }
+        break;
+    case QS_SEM_RECORDS:
+        if (isRemove) {
+            QS_priv_.glbFilter[8] &amp;= (uint8_t)(~0x80U &amp; 0xFFU);
+            QS_priv_.glbFilter[9] &amp;= (uint8_t)(~0x07U &amp; 0xFFU);
+        }
+        else {
+            QS_priv_.glbFilter[8] |= 0x80U;
+            QS_priv_.glbFilter[9] |= 0x07U;
+        }
+        break;
+    case QS_MTX_RECORDS:
+        if (isRemove) {
+            QS_priv_.glbFilter[9]  &amp;= (uint8_t)(~0xF8U &amp; 0xFFU);
+            QS_priv_.glbFilter[10] &amp;= (uint8_t)(~0x01U &amp; 0xFFU);
+        }
+        else {
+            QS_priv_.glbFilter[9]  |= 0xF8U;
+            QS_priv_.glbFilter[10] |= 0x01U;
         }
         break;
     case QS_U0_RECORDS:
@@ -10504,7 +10526,9 @@ QF_CRIT_E_();
 QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)me-&gt;prio);
 
 /* see if this thread needs to be scheduled in case QXK is running */
-(void)QXK_sched_();
+if (QXK_attr_.lockCeil &lt;= QF_MAX_ACTIVE) {
+    (void)QXK_sched_();
+}
 QF_CRIT_X_();</code>
    </operation>
    <operation name="post_" type="bool" visibility="0x01" properties="0x01">
@@ -10878,10 +10902,10 @@ QF_CRIT_X_();</code>
    <attribute name="waitSet" type="QPSet" visibility="0x02" properties="0x00">
     <documentation>/*! set of extended threads waiting on this semaphore */</documentation>
    </attribute>
-   <attribute name="count" type="uint16_t volatile" visibility="0x02" properties="0x00">
+   <attribute name="count" type="uint8_t volatile" visibility="0x02" properties="0x00">
     <documentation>/*! semaphore up-down counter */</documentation>
    </attribute>
-   <attribute name="max_count" type="uint16_t" visibility="0x02" properties="0x00">
+   <attribute name="max_count" type="uint8_t" visibility="0x02" properties="0x00">
     <documentation>/*! maximum value of the semaphore counter */</documentation>
    </attribute>
    <operation name="init" type="void" visibility="0x00" properties="0x00">
@@ -10907,13 +10931,13 @@ QF_CRIT_X_();</code>
 * QXSemaphore_init() must be called **before** the semaphore can be used
 * (signaled or waited on).
 */</documentation>
-    <parameter name="count" type="uint_fast16_t const"/>
-    <parameter name="max_count" type="uint_fast16_t const"/>
+    <parameter name="count" type="uint_fast8_t const"/>
+    <parameter name="max_count" type="uint_fast8_t const"/>
     <code>/*! @pre max_count must be greater than zero */
 Q_REQUIRE_ID(100, max_count &gt; 0U);
 
-me-&gt;count     = (uint16_t)count;
-me-&gt;max_count = (uint16_t)max_count;
+me-&gt;count     = (uint8_t)count;
+me-&gt;max_count = (uint8_t)max_count;
 QPSet_setEmpty(&amp;me-&gt;waitSet);</code>
    </operation>
    <operation name="wait" type="bool" visibility="0x00" properties="0x00">
@@ -10969,27 +10993,27 @@ if (me-&gt;count &gt; 0U) {
     QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, curr-&gt;super.prio)
         QS_TIME_PRE_();  /* timestamp */
         QS_OBJ_PRE_(me); /* this semaphore */
-        QS_U16_PRE_(me-&gt;count);
-        QS_U8_PRE_(curr-&gt;super.prio);
+        QS_2U8_PRE_(curr-&gt;super.prio,
+                    me-&gt;count);
     QS_END_NOCRIT_PRE_()
 }
 else {
     uint_fast8_t const p = (uint_fast8_t)curr-&gt;super.prio;
+    /* remove the curr prio from the ready set (will block)
+    * and insert to the waiting set on this semaphore
+    */
+    QPSet_remove(&amp;QF_readySet_, p);
+    QPSet_insert(&amp;me-&gt;waitSet,  p);
 
     /* remember the blocking object (this semaphore) */
     curr-&gt;super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
     QXThread_teArm_(curr, (enum_t)QXK_SEMA_SIG, nTicks);
 
-    /* remove this curr prio from the ready set (will block)
-    * and insert to the waiting set on this semaphore */
-    QPSet_insert(&amp;me-&gt;waitSet,  p); /* add to waiting-set */
-    QPSet_remove(&amp;QF_readySet_, p); /* remove from ready-set */
-
     QS_BEGIN_NOCRIT_PRE_(QS_SEM_BLOCK, curr-&gt;super.prio)
         QS_TIME_PRE_();  /* timestamp */
         QS_OBJ_PRE_(me); /* this semaphore */
-        QS_U16_PRE_(me-&gt;count);
-        QS_U8_PRE_(curr-&gt;super.prio);
+        QS_2U8_PRE_(curr-&gt;super.prio,
+                    me-&gt;count);
     QS_END_NOCRIT_PRE_()
 
     /* schedule the next thread if multitasking started */
@@ -11062,8 +11086,8 @@ if (me-&gt;count &gt; 0U) {
     QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, curr-&gt;prio)
         QS_TIME_PRE_();  /* timestamp */
         QS_OBJ_PRE_(me); /* this semaphore */
-        QS_U16_PRE_(me-&gt;count);
-        QS_U8_PRE_(curr-&gt;prio);
+        QS_2U8_PRE_(curr-&gt;prio,
+                    me-&gt;count);
     QS_END_NOCRIT_PRE_()
 }
 else { /* the semaphore is NOT available (would block) */
@@ -11072,8 +11096,8 @@ else { /* the semaphore is NOT available (would block) */
     QS_BEGIN_NOCRIT_PRE_(QS_SEM_BLOCK_ATTEMPT, curr-&gt;prio)
         QS_TIME_PRE_();  /* timestamp */
         QS_OBJ_PRE_(me); /* this semaphore */
-        QS_U16_PRE_(me-&gt;count);
-        QS_U8_PRE_(curr-&gt;prio);
+        QS_2U8_PRE_(curr-&gt;prio,
+                    me-&gt;count);
     QS_END_NOCRIT_PRE_()
 }
 QF_CRIT_X_();
@@ -11121,8 +11145,8 @@ if (me-&gt;count &lt; me-&gt;max_count) {
     QS_BEGIN_NOCRIT_PRE_(QS_SEM_SIGNAL, curr-&gt;prio)
         QS_TIME_PRE_();  /* timestamp */
         QS_OBJ_PRE_(me); /* this semaphore */
-        QS_U16_PRE_(me-&gt;count);
-        QS_U8_PRE_(curr-&gt;prio);
+        QS_2U8_PRE_(curr-&gt;prio,
+                    me-&gt;count);
     QS_END_NOCRIT_PRE_()
 
     if (QPSet_notEmpty(&amp;me-&gt;waitSet)) {
@@ -11151,8 +11175,8 @@ if (me-&gt;count &lt; me-&gt;max_count) {
         QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, thr-&gt;super.prio)
             QS_TIME_PRE_();  /* timestamp */
             QS_OBJ_PRE_(me); /* this semaphore */
-            QS_U16_PRE_(me-&gt;count);
-            QS_U8_PRE_(thr-&gt;super.prio);
+            QS_2U8_PRE_(thr-&gt;super.prio,
+                        me-&gt;count);
         QS_END_NOCRIT_PRE_()
 
         if (!QXK_ISR_CONTEXT_()) { /* not inside ISR? */
@@ -11297,12 +11321,11 @@ if (me-&gt;super.eQueue.nFree == 0U) {
     /*! @pre also: the newly locked mutex must have no holder yet */
     Q_REQUIRE_ID(202, me-&gt;super.thread == (void *)0);
 
-    /* set the new mutex holder to the curr thread */
-    me-&gt;super.thread = &amp;curr-&gt;super;
-
-    /* save the thread's prio/pthre in the mutex
+    /* set the new mutex holder to the curr thread and
+    * save the thread's prio/pthre in the mutex
     * NOTE: reuse the otherwise unused eQueue data member.
     */
+    me-&gt;super.thread = curr;
     me-&gt;super.eQueue.head = (QEQueueCtr)curr-&gt;super.prio;
     me-&gt;super.eQueue.tail = (QEQueueCtr)curr-&gt;super.pthre;
 
@@ -11320,18 +11343,18 @@ if (me-&gt;super.eQueue.nFree == 0U) {
         Q_ASSERT_ID(210, (curr-&gt;super.prio &lt; me-&gt;super.prio)
             &amp;&amp; (QActive_registry_[me-&gt;super.prio]== &amp;me-&gt;super));
 
-        /* remove the thread's original prio from the ready set */
-        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;super.prio);
+        /* remove the thread's original prio from the ready set
+        * and insert the mutex's prio into the ready set
+        */
+        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.eQueue.head);
+        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.prio);
 
-        /* set the thread's prio/pthre to that of the mutex */
+        /* put the thread into the AO registry in place of the mutex */
+        QActive_registry_[me-&gt;super.prio] = &amp;curr-&gt;super;
+
+        /* set thread's prio/pthre to that of the mutex */
         curr-&gt;super.prio  = me-&gt;super.prio;
         curr-&gt;super.pthre = me-&gt;super.pthre;
-
-        /* insert the thread's boosted prio into the ready set */
-        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;super.prio);
-
-        /* re-register the thread in place of the mutex */
-        QActive_registry_[me-&gt;super.prio] = &amp;curr-&gt;super;
     }
 }
 /* is the mutex locked by this thread already (nested locking)? */
@@ -11361,7 +11384,7 @@ else { /* the mutex is already locked by a different thread */
                          == QXK_PTR_CAST_(QActive *, me-&gt;super.thread));
     }
 
-    /* remove the curr thread's prio from the ready set
+    /* remove the curr thread's prio from the ready set (will block)
     * and insert it to the waiting set on this mutex
     */
     uint_fast8_t const p = (uint_fast8_t)curr-&gt;super.prio;
@@ -11451,14 +11474,13 @@ if (me-&gt;super.eQueue.nFree == 0U) {
     me-&gt;super.eQueue.nFree = 1U;  /* mutex lock nesting */
 
     /*! @pre also: the newly locked mutex must have no holder yet */
-    Q_REQUIRE_ID(202, me-&gt;super.thread == (void *)0);
+    Q_REQUIRE_ID(302, me-&gt;super.thread == (void *)0);
 
-    /* set the new mutex holder to the curr thread */
-    me-&gt;super.thread = curr;
-
-    /* save the thread's prio/pthre in the mutex
+    /* set the new mutex holder to the curr thread and
+    * save the thread's prio/pthre in the mutex
     * NOTE: reuse the otherwise unused eQueue data member.
     */
+    me-&gt;super.thread = curr;
     me-&gt;super.eQueue.head = (QEQueueCtr)curr-&gt;prio;
     me-&gt;super.eQueue.tail = (QEQueueCtr)curr-&gt;pthre;
 
@@ -11474,25 +11496,25 @@ if (me-&gt;super.eQueue.nFree == 0U) {
         * and the priority slot must be occupied by this mutex
         */
         Q_ASSERT_ID(210, (curr-&gt;prio &lt; me-&gt;super.prio)
-            &amp;&amp; (QActive_registry_[me-&gt;super.prio]== &amp;me-&gt;super));
+            &amp;&amp; (QActive_registry_[me-&gt;super.prio] == &amp;me-&gt;super));
 
-        /* remove the thread's original prio from the ready set */
-        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;prio);
+        /* remove the thread's original prio from the ready set
+        * and insert the mutex's prio into the ready set
+        */
+        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.eQueue.head);
+        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.prio);
 
-        /* set the thread's prio/pthre to that of the mutex */
+        /* put the thread into the AO registry in place of the mutex */
+        QActive_registry_[me-&gt;super.prio] = curr;
+
+        /* set thread's prio/pthre to that of the mutex */
         curr-&gt;prio  = me-&gt;super.prio;
         curr-&gt;pthre = me-&gt;super.pthre;
-
-        /* insert the thread's boosted prio into the ready set */
-        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;prio);
-
-        /* register the thread in place of the mutex */
-        QActive_registry_[me-&gt;super.prio] = curr;
     }
 }
 /* is the mutex locked by this thread already (nested locking)? */
 else if (me-&gt;super.thread == curr) {
-    /* the nesting level must not exceed  the dynamic range of uint8_t */
+    /* the nesting level must not exceed the specified limit */
     Q_ASSERT_ID(320, me-&gt;super.eQueue.nFree &lt; 0xFFU);
 
     ++me-&gt;super.eQueue.nFree; /* lock one more level */
@@ -11568,18 +11590,18 @@ if (me-&gt;super.eQueue.nFree == 1U) {
 
     if (me-&gt;super.prio != 0U) { /* priority-ceiling protocol used? */
 
-        /* remove the thread's boosted prio from the ready set */
-        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;prio);
-
         /* restore the holding thread's prio/pthre from the mutex */
         curr-&gt;prio  = (uint8_t)me-&gt;super.eQueue.head;
         curr-&gt;pthre = (uint8_t)me-&gt;super.eQueue.tail;
 
-        /* insert the thread's original prio into the ready set */
-        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;prio);
-
         /* put the mutex back into the AO registry */
         QActive_registry_[me-&gt;super.prio] = &amp;me-&gt;super;
+
+        /* remove the mutex' prio from the ready set
+        * and insert the original thread's priority
+        */
+        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.prio);
+        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.eQueue.head);
     }
 
     QS_BEGIN_NOCRIT_PRE_(QS_MTX_UNLOCK, curr-&gt;prio)
@@ -11594,8 +11616,11 @@ if (me-&gt;super.eQueue.nFree == 1U) {
         /* find the highest-priority thread waiting on this mutex */
         uint_fast8_t const p = QPSet_findMax(&amp;me-&gt;waitSet);
 
-        /* this thread is no longer waiting on the mutex */
-        QPSet_remove(&amp;me-&gt;waitSet, p);
+        /* remove this thread from waiting on the mutex
+        * and insert it into the ready set.
+        */
+        QPSet_remove(&amp;me-&gt;waitSet,  p);
+        QPSet_insert(&amp;QF_readySet_, p);
 
         QXThread * const thr =
             QXK_PTR_CAST_(QXThread*, QActive_registry_[p]);
@@ -11615,44 +11640,39 @@ if (me-&gt;super.eQueue.nFree == 1U) {
         /* disarm the internal time event */
         (void)QXThread_teDisarm_(thr);
 
-        /* make the thread the new mutex holder */
+        /* set the new mutex holder to the curr thread and
+        * save the thread's prio/pthre in the mutex
+        * NOTE: reuse the otherwise unused eQueue data member.
+        */
         me-&gt;super.thread = thr;
+        me-&gt;super.eQueue.head = (QEQueueCtr)thr-&gt;super.prio;
+        me-&gt;super.eQueue.tail = (QEQueueCtr)thr-&gt;super.pthre;
 
         QS_BEGIN_NOCRIT_PRE_(QS_MTX_LOCK, thr-&gt;super.prio)
             QS_TIME_PRE_();  /* timestamp */
             QS_OBJ_PRE_(me); /* this mutex */
-        QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
-                    (uint8_t)me-&gt;super.eQueue.nFree); /* nesting */
+            QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
+                        (uint8_t)me-&gt;super.eQueue.nFree); /* nesting */
         QS_END_NOCRIT_PRE_()
 
         if (me-&gt;super.prio != 0U) { /* priority-ceiling protocol used? */
             /* the holder priority must be lower than that of the mutex */
             Q_ASSERT_ID(410, thr-&gt;super.prio &lt; me-&gt;super.prio);
 
-            /* save the thread's prio/pthre in the mutex
-            * NOTE: reuse the otherwise unused eQueue data member.
-            */
-            me-&gt;super.eQueue.head = (QEQueueCtr)thr-&gt;super.prio;
-            me-&gt;super.eQueue.tail = (QEQueueCtr)thr-&gt;super.pthre;
-
-            /* set the thread's prio/pthre to that of the mutex */
-            thr-&gt;super.prio  = me-&gt;super.prio;
+            /* set thread's preemption-threshold to that of the mutex */
             thr-&gt;super.pthre = me-&gt;super.pthre;
 
-            /* register the thread in place of the mutex */
+            /* put the thread into AO registry in place of the mutex */
             QActive_registry_[me-&gt;super.prio] = &amp;thr-&gt;super;
         }
-
-        /* make the thread ready to run (at the mutex prio)
-        * and remove from the waiting list
-        */
-        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)thr-&gt;super.prio);
     }
     else { /* no threads are waiting for this mutex */
         me-&gt;super.eQueue.nFree = 0U; /* free up the nesting count */
 
         /* the mutex no longer held by any thread */
         me-&gt;super.thread = (void *)0;
+        me-&gt;super.eQueue.head = 0U;
+        me-&gt;super.eQueue.tail = 0U;
 
         if (me-&gt;super.prio != 0U) { /* priority-ceiling protocol used? */
             /* put the mutex back at the original mutex slot */

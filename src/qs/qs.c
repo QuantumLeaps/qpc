@@ -249,10 +249,30 @@ void QS_glbFilter_(int_fast16_t const filter) {
             break;
         case QS_SC_RECORDS:
             if (isRemove) {
-                QS_priv_.glbFilter[6] &= (uint8_t)(~0x7FU & 0xFFU);
+                QS_priv_.glbFilter[6] &= (uint8_t)(~0x7CU & 0xFFU);
             }
             else {
-               QS_priv_.glbFilter[6] |= 0x7FU;
+                QS_priv_.glbFilter[6] |= 0x7CU;
+            }
+            break;
+        case QS_SEM_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[8] &= (uint8_t)(~0x80U & 0xFFU);
+                QS_priv_.glbFilter[9] &= (uint8_t)(~0x07U & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[8] |= 0x80U;
+                QS_priv_.glbFilter[9] |= 0x07U;
+            }
+            break;
+        case QS_MTX_RECORDS:
+            if (isRemove) {
+                QS_priv_.glbFilter[9]  &= (uint8_t)(~0xF8U & 0xFFU);
+                QS_priv_.glbFilter[10] &= (uint8_t)(~0x01U & 0xFFU);
+            }
+            else {
+                QS_priv_.glbFilter[9]  |= 0xF8U;
+                QS_priv_.glbFilter[10] |= 0x01U;
             }
             break;
         case QS_U0_RECORDS:

@@ -71,14 +71,14 @@ Q_DEFINE_THIS_MODULE("qxk_sema")
 
 /*${QXK::QXSemaphore::init} ................................................*/
 void QXSemaphore_init(QXSemaphore * const me,
-    uint_fast16_t const count,
-    uint_fast16_t const max_count)
+    uint_fast8_t const count,
+    uint_fast8_t const max_count)
 {
     /*! @pre max_count must be greater than zero */
     Q_REQUIRE_ID(100, max_count > 0U);
 
-    me->count     = (uint16_t)count;
-    me->max_count = (uint16_t)max_count;
+    me->count     = (uint8_t)count;
+    me->max_count = (uint8_t)max_count;
     QPSet_setEmpty(&me->waitSet);
 }
 
@@ -112,27 +112,27 @@ bool QXSemaphore_wait(QXSemaphore * const me,
         QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, curr->super.prio)
             QS_TIME_PRE_();  /* timestamp */
             QS_OBJ_PRE_(me); /* this semaphore */
-            QS_U16_PRE_(me->count);
-            QS_U8_PRE_(curr->super.prio);
+            QS_2U8_PRE_(curr->super.prio,
+                        me->count);
         QS_END_NOCRIT_PRE_()
     }
     else {
         uint_fast8_t const p = (uint_fast8_t)curr->super.prio;
+        /* remove the curr prio from the ready set (will block)
+        * and insert to the waiting set on this semaphore
+        */
+        QPSet_remove(&QF_readySet_, p);
+        QPSet_insert(&me->waitSet,  p);
 
         /* remember the blocking object (this semaphore) */
         curr->super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
         QXThread_teArm_(curr, (enum_t)QXK_SEMA_SIG, nTicks);
 
-        /* remove this curr prio from the ready set (will block)
-        * and insert to the waiting set on this semaphore */
-        QPSet_insert(&me->waitSet,  p); /* add to waiting-set */
-        QPSet_remove(&QF_readySet_, p); /* remove from ready-set */
-
         QS_BEGIN_NOCRIT_PRE_(QS_SEM_BLOCK, curr->super.prio)
             QS_TIME_PRE_();  /* timestamp */
             QS_OBJ_PRE_(me); /* this semaphore */
-            QS_U16_PRE_(me->count);
-            QS_U8_PRE_(curr->super.prio);
+            QS_2U8_PRE_(curr->super.prio,
+                        me->count);
         QS_END_NOCRIT_PRE_()
 
         /* schedule the next thread if multitasking started */
@@ -191,8 +191,8 @@ bool QXSemaphore_tryWait(QXSemaphore * const me) {
         QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, curr->prio)
             QS_TIME_PRE_();  /* timestamp */
             QS_OBJ_PRE_(me); /* this semaphore */
-            QS_U16_PRE_(me->count);
-            QS_U8_PRE_(curr->prio);
+            QS_2U8_PRE_(curr->prio,
+                        me->count);
         QS_END_NOCRIT_PRE_()
     }
     else { /* the semaphore is NOT available (would block) */
@@ -201,8 +201,8 @@ bool QXSemaphore_tryWait(QXSemaphore * const me) {
         QS_BEGIN_NOCRIT_PRE_(QS_SEM_BLOCK_ATTEMPT, curr->prio)
             QS_TIME_PRE_();  /* timestamp */
             QS_OBJ_PRE_(me); /* this semaphore */
-            QS_U16_PRE_(me->count);
-            QS_U8_PRE_(curr->prio);
+            QS_2U8_PRE_(curr->prio,
+                        me->count);
         QS_END_NOCRIT_PRE_()
     }
     QF_CRIT_X_();
@@ -231,8 +231,8 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
         QS_BEGIN_NOCRIT_PRE_(QS_SEM_SIGNAL, curr->prio)
             QS_TIME_PRE_();  /* timestamp */
             QS_OBJ_PRE_(me); /* this semaphore */
-            QS_U16_PRE_(me->count);
-            QS_U8_PRE_(curr->prio);
+            QS_2U8_PRE_(curr->prio,
+                        me->count);
         QS_END_NOCRIT_PRE_()
 
         if (QPSet_notEmpty(&me->waitSet)) {
@@ -261,8 +261,8 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
             QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, thr->super.prio)
                 QS_TIME_PRE_();  /* timestamp */
                 QS_OBJ_PRE_(me); /* this semaphore */
-                QS_U16_PRE_(me->count);
-                QS_U8_PRE_(thr->super.prio);
+                QS_2U8_PRE_(thr->super.prio,
+                            me->count);
             QS_END_NOCRIT_PRE_()
 
             if (!QXK_ISR_CONTEXT_()) { /* not inside ISR? */

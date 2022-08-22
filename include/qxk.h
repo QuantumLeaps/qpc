@@ -576,10 +576,10 @@ typedef struct {
     QPSet waitSet;
 
     /*! semaphore up-down counter */
-    uint16_t volatile count;
+    uint8_t volatile count;
 
     /*! maximum value of the semaphore counter */
-    uint16_t max_count;
+    uint8_t max_count;
 } QXSemaphore;
 
 /* public: */
@@ -607,8 +607,8 @@ typedef struct {
 * (signaled or waited on).
 */
 void QXSemaphore_init(QXSemaphore * const me,
-    uint_fast16_t const count,
-    uint_fast16_t const max_count);
+    uint_fast8_t const count,
+    uint_fast8_t const max_count);
 
 /*! wait (block) on the semaphore
 * @public @memberof QXSemaphore

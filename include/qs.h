@@ -260,6 +260,8 @@ enum QSpyGroups {
     QS_TE_RECORDS,        /*!< Time Events QS records */
     QS_QF_RECORDS,        /*!< QF QS records */
     QS_SC_RECORDS,        /*!< Scheduler QS records */
+    QS_SEM_RECORDS,       /*!< Semaphore QS records */
+    QS_MTX_RECORDS,       /*!< Mutex QS records */
     QS_U0_RECORDS,        /*!< User Group 100-104 records */
     QS_U1_RECORDS,        /*!< User Group 105-109 records */
     QS_U2_RECORDS,        /*!< User Group 110-114 records */

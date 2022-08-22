@@ -314,7 +314,9 @@ void QXThread_start_(
     QPSet_insert(&QF_readySet_, (uint_fast8_t)me->prio);
 
     /* see if this thread needs to be scheduled in case QXK is running */
-    (void)QXK_sched_();
+    if (QXK_attr_.lockCeil <= QF_MAX_ACTIVE) {
+        (void)QXK_sched_();
+    }
     QF_CRIT_X_();
 }
 

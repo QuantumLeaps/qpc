@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last updated for version 6.7.0
-* Last updated on  2019-12-27
+* Last updated for version 7.1.0
+* Last updated on  2022-08-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -38,8 +38,8 @@
 /* local "extended" thread object ..........................................*/
 static QXThread l_test1;
 static QXThread l_test2;
-static QXMutex l_mutex;
 static QXSemaphore l_sema;
+static QXMutex l_mutex;
 
 /* Thread-Local Storage for the "extended" threads .........................*/
 typedef struct {
@@ -61,6 +61,8 @@ QXThread * const XT_Test2 = &l_test2;
 static void Thread1_run(QXThread * const me) {
 
     QS_OBJ_DICTIONARY(&l_test1);
+    QS_OBJ_DICTIONARY(&l_test1.timeEvt);
+    QS_OBJ_DICTIONARY(&l_mutex);
 
     me->super.thread = &l_tls1; /* initialize the TLS for Thread1 */
 
@@ -104,6 +106,8 @@ void Test1_ctor(void) {
 static void Thread2_run(QXThread * const me) {
 
     QS_OBJ_DICTIONARY(&l_test2);
+    QS_OBJ_DICTIONARY(&l_test2.timeEvt);
+    QS_OBJ_DICTIONARY(&l_sema);
 
     /* initialize the semaphore before using it
     * NOTE: the semaphore is initialized in the highest-priority thread
