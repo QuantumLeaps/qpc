@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-12
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-08-19
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
 * @brief QF/C port to Win32 API (single-threaded, like the QV kernel)
@@ -111,7 +111,7 @@ int_t QF_run(void) {
 
             /* perform the run-to-completion (RTS) step...
             * 1. retrieve the event from the AO's event queue, which by this
-            *    time must be non-empty and The "Vanialla" kernel asserts it.
+            *    time must be non-empty and The "Vanilla" kernel asserts it.
             * 2. dispatch the event to the AO's state machine.
             * 3. determine if event is garbage and collect it if so
             */
@@ -174,7 +174,7 @@ int QF_consoleWaitForKey(void) {
 }
 
 /* QActive functions =======================================================*/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -183,12 +183,13 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
 
     Q_REQUIRE_ID(600, (0U < prio) /* priority must be in range */
         && (prio <= QF_MAX_ACTIVE)
-        && (stkSto == (void *)0));    /* statck storage must NOT...
+        && (stkSto == (void *)0));    /* stack storage must NOT...
                                        * ... be provided */
 
+    me->prio = (uint8_t)(prio & 0xFFU);
+    QActive_register_(me); /* register this AO */
+
     QEQueue_init(&me->eQueue, qSto, qLen);
-    me->prio = prio; /* set QF priority of this AO before adding it to QF */
-    QActive_register_(me);     /* make QF aware of this AO */
 
     /* the top-most initial tran. (virtual) */
     QHSM_INIT(&me->super, par, me->prio);
@@ -235,7 +236,7 @@ static DWORD WINAPI ticker_thread(LPVOID arg) { /* for CreateThread() */
 
     while (l_isRunning) {
         Sleep(l_tickMsec); /* wait for the tick interval */
-        QF_onClockTick();  /* clock tick callback (must call QTIMEEVT_TICK_X()) */
+        QF_onClockTick();  /* callback (must call QTIMEEVT_TICK_X()) */
     }
 
     (void)arg; /* unused parameter */

@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qs_dummy.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
-*
-* @file
+/*! @file
 * @brief Dummy definitions of the QS macros that avoid code generation from
 * the QS instrumentation.
 */

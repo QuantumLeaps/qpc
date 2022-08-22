@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qf::qf_act.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-06-30
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @deprecated
 * Empty file kept only for backwards compatibility.
 * @sa qf_qact.c

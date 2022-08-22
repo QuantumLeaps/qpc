@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qf::qf_actq.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief ::QActive native queue operations (based on ::QEQueue)
 *
 * @note

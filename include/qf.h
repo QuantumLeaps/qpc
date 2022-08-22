@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qf.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-20
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QF/C platform-independent public interface.
 */
 #ifndef QF_H
@@ -275,19 +271,65 @@ static inline uint_fast8_t QPSet_findMax(QPSet const * const me) {
     #endif
 }
 
+/*${QF-types::QPrioSpec} ...................................................*/
+/*! Priority specification for Active Objects in QP
+*
+* @details
+* Active Object priorities in QP are integer numbers in the range
+* [1..#QF_MAX_ACTIVE], whereas the special priority number 0 is reserved
+* for the lowest-priority idle thread. The QP framework uses the *direct*
+* priority numbering, in which higher numerical values denote higher urgency.
+* For example, an AO with priority 32 has higher urgency than an AO with
+* priority 23.
+*
+* ::QPrioSpec allows an application developer to assign **two**
+* priorities to a given AO (see also Q_PRIO()):
+*
+* 1. The "QF-priority", which resides in the least-significant byte
+*    of the ::QPrioSpec data type. The "QF-priority" must be **unique**
+*    for each thread in the system and higher numerical values represent
+*    higher urgency (direct pirority numbering).
+*
+* 2. The second priority, which resides in the most-significant byte
+*    of the ::QPrioSpec data type. The second priority is specific to the
+*    underlying real-time kernel or operating system with the semantics
+*    determined by that kernel.
+*
+* @note
+* In the QP native preemptive kernels, like QK and QXK, the second component
+* of the ::QPrioSpec is used as the "preemption-threshold". It determines
+* the conditions under which a given thread can be *preempted* by other
+* threads. Specifically, a given thread can be preempted only by another
+* thread with a *higher* "preemption-threshold".
+*
+* ![QF-priority and preemption-threshold relations](qp-prio.png)
+*
+* For backwards-compatibility, ::QPrioSpec data type might contain only the
+* "QF-priority" component (and the "preemption-threshold" component left at
+* zero). In that case, the "preemption-threshold" will be assumed to be the
+* same as the "QF-priority". This corresponds exactly to the previous
+* semantics of AO priority.
+*
+* @note
+* When QP runs on top of 3rd-party kernels/RTOSes or general-purpose
+* operating systems, sthe second priority can have different meaning,
+* depending on the specific RTOS/GPOS used.
+*/
+typedef uint_fast16_t QPrioSpec;
+
+/*${QF-types::QSchedStatus} ................................................*/
+/*! The scheduler lock status used in some real-time kernels */
+typedef uint_fast16_t QSchedStatus;
+
 /*${QF-types::QSubscrList} .................................................*/
 /*! Subscriber List (for publish-subscribe)
 *
 * @details
-* This data type represents a set of active objects that subscribe to
+* This data type represents a set of Active Objects that subscribe to
 * a given signal. The set is represented as priority-set, where each
-* bit corresponds to the unique priority of an active object.
+* bit corresponds to the unique QF-priority of an AO (see ::QPrioSpec).
 */
 typedef QPSet QSubscrList;
-
-/*${QF-types::QSchedStatus} ................................................*/
-/*! The scheduler lock status */
-typedef uint_fast8_t QSchedStatus;
 /*$enddecl${QF-types} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*$declare${QF::QActive} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
@@ -371,17 +413,17 @@ typedef struct QActive {
 
 /* public: */
 
-    /*! QXK dynamic priority (1..#QF_MAX_ACTIVE) of AO/thread.
+    /*! QF priority (1..#QF_MAX_ACTIVE) of this AO.
     * @private @memberof QActive
-    */
-#ifdef QXK_H
-    uint8_t dynPrio;
-#endif /* def QXK_H */
-
-    /*! QF priority (1..#QF_MAX_ACTIVE) of this active object.
-    * @private @memberof QActive
+    * @sa ::QPrioSpec
     */
     uint8_t prio;
+
+    /*! preemption-threshold [1..#QF_MAX_ACTIVE] of this AO.
+    * @private @memberof QActive
+    * @sa ::QPrioSpec
+    */
+    uint8_t pthre;
 
 /* private: */
 } QActive;
@@ -403,13 +445,15 @@ void QActive_ctor(QActive * const me,
 * @details
 * Starts execution of the AO and registers the AO with the framework.
 *
-* @param[in] prio    priority at which to start the active object
+* @param[in] prio    QF priority of the AO and (optionally) preemption-
+*                    threshold of this AO (for some preemptive kernels).
+*                    See also ::QPrioSpec.
 * @param[in] qSto    pointer to the storage for the ring buffer of the
 *                    event queue
 * @param[in] qLen    length of the event queue [# ::QEvt* pointers]
-* @param[in] stkSto  pointer to the stack storage (might be nullptr)
+* @param[in] stkSto  pointer to the stack storage (might be NULL)
 * @param[in] stkSize stack size [bytes]
-* @param[in] par     pointer to an extra parameter (might be nullptr)
+* @param[in] par     pointer to an extra parameter (might be NULL)
 *
 * @usage
 * The following example shows starting an AO when a per-task stack
@@ -417,7 +461,7 @@ void QActive_ctor(QActive * const me,
 * @include qf_start.c
 */
 void QActive_start_(QActive * const me,
-    uint_fast8_t const prio,
+    QPrioSpec const prio,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -516,7 +560,7 @@ void QActive_postLIFO_(QActive * const me,
 *
 * @returns
 * A pointer to the received event. The returned pointer is guaranteed
-* to be valid (can't be nullptr).
+* to be valid (can't be NULL).
 *
 * @note
 * This function might be implemented differently in various QP/C++
@@ -732,17 +776,8 @@ uint_fast16_t QActive_flushDeferred(QActive const * const me,
 /*! Get the priority of the active object.
 * @public @memberof QActive
 */
-static inline uint_fast8_t QActive_getPrio(QActive const * const me) {
-    return (uint_fast8_t)me->prio;
-}
-
-/*! Set the priority of the active object
-* @public @memberof QActive
-*/
-static inline void QActive_setPrio(QActive * const me,
-    uint_fast8_t const prio)
-{
-    me->prio = (uint8_t)prio;
+static inline QPrioSpec QActive_getPrio(QActive const * const me) {
+    return (QPrioSpec)me->prio | (me->pthre << 8U);
 }
 
 /*! Generic setting of additional attributes (useful in QP ports)
@@ -850,7 +885,7 @@ typedef struct QActiveVtable {
     /*! @private virtual function to start the AO/thread
     * @sa QACTIVE_START()
     */
-    void (*start)(QActive * const me, uint_fast8_t prio,
+    void (*start)(QActive * const me, uint_fast16_t prio,
                   QEvt const * * const qSto, uint_fast16_t const qLen,
                   void * const stkSto, uint_fast16_t const stkSize,
                   void const * const par);
@@ -1729,6 +1764,10 @@ void QF_deleteRef_(void const * const evtRef);
 #define Q_NEW_REF(evtRef_, evtT_) \
     ((evtRef_) = (evtT_ const *)QF_newRef_(e, (evtRef_)))
 
+/*${QF-macros::Q_PRIO} .....................................................*/
+/*! Create a ::QPrioSpec object to specify priorty of AO */
+#define Q_PRIO(prio_, ceil_) ((QPrioSpec)((prio_) | ((ceil_) << 8U)))
+
 /*${QF-macros::Q_DELETE_REF} ...............................................*/
 /*! Delete the event reference
 *
@@ -1875,26 +1914,22 @@ void QF_deleteRef_(void const * const evtRef);
 
 /*${QF-macros::QACTIVE_PUBLISH} ............................................*/
 #ifdef Q_SPY
-/*! Invoke the event publishing facility QActive_publish_().
+/*! Publish an event to all subscriber Active Objects.
 *
 * @details
-* This macro is the recommended way of publishing events, because it
-* provides the vital information for software tracing and avoids any
-* overhead when the tracing is disabled.
+* If #Q_SPY is defined, this macro calls QActive_publish_() with
+* the `sender_` parameter to identify the publisher of the event.
+* Otherwise, `sender_` is not used.
 *
 * @param[in] e_      pointer to the posted event
-* @param[in] sender_ pointer to the sender object. This parameter is
-*          actually only used when QS software tracing is enabled
-*          (macro #Q_SPY is defined). When QS software tracing is
-*          disabled, the macro calls QF_publish_() without the
-*          @p sender_ parameter, so the overhead of passing this
-*          extra parameter is entirely avoided.
+* @param[in] sender_ pointer to the sender object (actually used
+*                    only when #Q_SPY is defined)
 *
 * @note
-* The pointer to the sender object is not necessarily a pointer
-* to an active object. In fact, if QF_PUBLISH() is called from an
+* The pointer to the `sender_` object is not necessarily a pointer
+* to an active object. In fact, if QACTIVE_PUBLISH() is called from an
 * interrupt or other context, you can create a unique object just to
-* unambiguously identify the publisher of the event.
+* unambiguously identify the sender of the event.
 *
 * @sa QActive_publish_()
 */
@@ -1958,8 +1993,7 @@ void QF_deleteRef_(void const * const evtRef);
 #define QF_TICK_X(tickRate_, sender_) QTIMEEVT_TICK_X((tickRate_), (sender_))
 
 /*${QF-macros::QF_TICK} ....................................................*/
-/*! Invoke the system clock tick processing
-* for tick rate 0
+/*! Invoke the system clock tick processing for tick rate 0
 *
 * @deprecated
 * superseded by QTIMEEVT_TICK()
@@ -1967,7 +2001,7 @@ void QF_deleteRef_(void const * const evtRef);
 #define QF_TICK(sender_) QTIMEEVT_TICK(sender_)
 
 /*${QF-macros::QF_PUBLISH} .................................................*/
-/*! Invoke the event publishing facility QActive_publish_().
+/*! Publish an event to all subscriber Active Objects.
 *
 * @deprecated
 * superseded by QACTIVE_PUBLISH()

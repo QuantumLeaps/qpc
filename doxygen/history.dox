@@ -1,7 +1,17 @@
 /*! @page history Revision History
 
-@section qpc_7_0_2 Version 7.0.2, 2022-08-12
+@section qpc_7_1_0 Version 7.1.0, 2022-08-30 (planned)
+This QP/C release introduces [<b>preemption-threshold scheduling</b> (PTS)](https://www.state-machine.com/doc/Ghattas07.pdf) for the preemptive QK and QXK kernels. Specifically, it is now possible to limit preemption of a given QActive/QXThread by giving it both the QF-priority and preemption-threshold.
 
+The following diagram shows the relationship between the "QF-priority" and "preemption-threshold" (see also ::QPrioSpec):
+
+![QF-priority and preemption-threshold relations](qp-prio.png)
+
+@note
+For backwards-compatibility, ::QPrioSpec data type might contain only the "QF-priority" component (and the "preemption-threshold" component left at zero). In that case, the "preemption-threshold" will be assumed to be the same as the "QF-priority". This corresponds exactly to the previous semantics of AO priority.
+
+
+@section qpc_7_0_2 Version 7.0.2, 2022-08-12
 __Bug Fixes:__
 - [bug#312 "Bug in QK and QXK 7.0.1"](https://sourceforge.net/p/qpc/bugs/312)
 

@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-08-19
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
 * @ingroup ports
@@ -48,7 +48,7 @@ static void task_function(void *pdata); /* uC-OS2 task signature */
 
 /*..........................................................................*/
 void QF_init(void) {
-    OSInit();        /* initialize uC-OS2 */
+    OSInit();  /* initialize uC-OS2 */
 }
 /*..........................................................................*/
 int_t QF_run(void) {
@@ -69,7 +69,7 @@ void QF_stop(void) {
 }
 
 /*..........................................................................*/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -81,8 +81,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     /* the uC-OS2 queue must be created correctly */
     Q_ASSERT_ID(210, me->eQueue != (OS_EVENT *)0);
 
-    me->prio = prio; /* save the QF priority */
-    QActive_register_(me); /* make QF aware of this active object */
+    me->prio  = (uint8_t)(prio & 0xFFU);
+    QActive_register_(me); /* register this AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */

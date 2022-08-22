@@ -106,6 +106,7 @@ static QState Table_initial(Table * const me, void const * const par) {
     QActive_subscribe(&me->super, DONE_SIG);
     QActive_subscribe(&me->super, PAUSE_SIG);
     QActive_subscribe(&me->super, SERVE_SIG);
+    QActive_subscribe(&me->super, EAT_SIG); //???
     QActive_subscribe(&me->super, TEST_SIG);
 
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
@@ -127,7 +128,7 @@ static QState Table_active(Table * const me, QEvt const * const e) {
     switch (e->sig) {
         /*${AOs::Table::SM::active::EAT} */
         case EAT_SIG: {
-            Q_ERROR_ID(60);
+            //???Q_ERROR_ID(60);
             status_ = Q_HANDLED();
             break;
         }

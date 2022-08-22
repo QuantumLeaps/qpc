@@ -305,7 +305,7 @@ Contact information:
 * be used instead of Q_ASSERT_STATIC().
 */</documentation>
    <parameter name="expr_" type="bool"/>
-   <code>extern int_t Q_static_assert_[(expr_) ? 1 : -1]</code>
+   <code>extern char Q_static_assert_[(expr_) ? 1 : -1]</code>
   </operation>
   <operation name="Q_ASSERT_COMPILE" type="void" visibility="0x03" properties="0x00">
    <documentation>/*! Static (compile-time) assertion.
@@ -352,30 +352,6 @@ Contact information:
   </operation>
  </package>
  <package name="version" stereotype="0x00">
-  <attribute name="QP_VERSION" type="unint32_t" visibility="0x03" properties="0x00">
-   <documentation>/*! The current QP version as an unsigned number
-*
-* @details
-* ::QP_VERSION is a decimal constant, where XX is a 1-digit or 2-digit
-* major version number, Y is a 1-digit minor version number, and Z is
-* a 1-digit release number.
-*/</documentation>
-   <code>702U</code>
-  </attribute>
-  <attribute name="QP_VERSION_STR" type="char const *" visibility="0x03" properties="0x00">
-   <documentation>/*! The current QP version as a zero terminated string literal.
-*
-* @details
-* ::QP_VERSION_STR is of the form &quot;XX.Y.Z&quot;, where XX is a 1-or 2-digit
-* major version number, Y is a 1-digit minor version number, and Z is
-* a 1-digit release number.
-*/</documentation>
-   <code>&quot;7.0.2&quot;</code>
-  </attribute>
-  <attribute name="QP_RELEASE" type="unint32_t" visibility="0x03" properties="0x00">
-   <documentation>/*! Encrypted  current QP release (7.0.1) and date (2022-08-12) */</documentation>
-   <code>0x7C62C081U</code>
-  </attribute>
   <attribute name="QP_versionStr[8]" type="char const" visibility="0x00" properties="0x00">
    <documentation>/*! the current QP version number string in ROM, based on #QP_VERSION_STR */</documentation>
    <code>= QP_VERSION_STR;</code>
@@ -2385,17 +2361,62 @@ return n + log2LUT[x];</code>
 #endif</code>
    </operation>
   </class>
+  <attribute name="QPrioSpec" type="typedef uint_fast16_t" visibility="0x04" properties="0x00">
+   <documentation>/*! Priority specification for Active Objects in QP
+*
+* @details
+* Active Object priorities in QP are integer numbers in the range
+* [1..#QF_MAX_ACTIVE], whereas the special priority number 0 is reserved
+* for the lowest-priority idle thread. The QP framework uses the *direct*
+* priority numbering, in which higher numerical values denote higher urgency.
+* For example, an AO with priority 32 has higher urgency than an AO with
+* priority 23.
+*
+* ::QPrioSpec allows an application developer to assign **two**
+* priorities to a given AO (see also Q_PRIO()):
+*
+* 1. The &quot;QF-priority&quot;, which resides in the least-significant byte
+*    of the ::QPrioSpec data type. The &quot;QF-priority&quot; must be **unique**
+*    for each thread in the system and higher numerical values represent
+*    higher urgency (direct pirority numbering).
+*
+* 2. The second priority, which resides in the most-significant byte
+*    of the ::QPrioSpec data type. The second priority is specific to the
+*    underlying real-time kernel or operating system with the semantics
+*    determined by that kernel.
+*
+* @note
+* In the QP native preemptive kernels, like QK and QXK, the second component
+* of the ::QPrioSpec is used as the &quot;preemption-threshold&quot;. It determines
+* the conditions under which a given thread can be *preempted* by other
+* threads. Specifically, a given thread can be preempted only by another
+* thread with a *higher* &quot;preemption-threshold&quot;.
+*
+* ![QF-priority and preemption-threshold relations](qp-prio.png)
+*
+* For backwards-compatibility, ::QPrioSpec data type might contain only the
+* &quot;QF-priority&quot; component (and the &quot;preemption-threshold&quot; component left at
+* zero). In that case, the &quot;preemption-threshold&quot; will be assumed to be the
+* same as the &quot;QF-priority&quot;. This corresponds exactly to the previous
+* semantics of AO priority.
+*
+* @note
+* When QP runs on top of 3rd-party kernels/RTOSes or general-purpose
+* operating systems, sthe second priority can have different meaning,
+* depending on the specific RTOS/GPOS used.
+*/</documentation>
+  </attribute>
+  <attribute name="QSchedStatus" type="typedef uint_fast16_t" visibility="0x04" properties="0x00">
+   <documentation>/*! The scheduler lock status used in some real-time kernels */</documentation>
+  </attribute>
   <attribute name="QSubscrList" type="typedef QPSet" visibility="0x04" properties="0x00">
    <documentation>/*! Subscriber List (for publish-subscribe)
 *
 * @details
-* This data type represents a set of active objects that subscribe to
+* This data type represents a set of Active Objects that subscribe to
 * a given signal. The set is represented as priority-set, where each
-* bit corresponds to the unique priority of an active object.
+* bit corresponds to the unique QF-priority of an AO (see ::QPrioSpec).
 */</documentation>
-  </attribute>
-  <attribute name="QSchedStatus" type="typedef uint_fast8_t" visibility="0x04" properties="0x00">
-   <documentation>/*! The scheduler lock status */</documentation>
   </attribute>
  </package>
  <package name="QF-macros" stereotype="0x02">
@@ -2537,6 +2558,12 @@ return n + log2LUT[x];</code>
    <parameter name="evtT_" type="&lt;event class&gt;"/>
    <code>\
     ((evtRef_) = (evtT_ const *)QF_newRef_(e, (evtRef_)))</code>
+  </operation>
+  <operation name="Q_PRIO" type="QPrioSpec" visibility="0x03" properties="0x00">
+   <documentation>/*! Create a ::QPrioSpec object to specify priorty of AO */</documentation>
+   <parameter name="prio_" type="uint8_t"/>
+   <parameter name="ceil_" type="uint8_t"/>
+   <code>((QPrioSpec)((prio_) | ((ceil_) &lt;&lt; 8U)))</code>
   </operation>
   <operation name="Q_DELETE_REF" type="void" visibility="0x03" properties="0x00">
    <documentation>/*! Delete the event reference
@@ -2700,31 +2727,27 @@ return n + log2LUT[x];</code>
         (me_), (e_)))</code>
   </operation>
   <operation name="QACTIVE_PUBLISH?def Q_SPY" type="void" visibility="0x03" properties="0x00">
-   <documentation>/*! Invoke the event publishing facility QActive_publish_().
+   <documentation>/*! Publish an event to all subscriber Active Objects.
 *
 * @details
-* This macro is the recommended way of publishing events, because it
-* provides the vital information for software tracing and avoids any
-* overhead when the tracing is disabled.
+* If #Q_SPY is defined, this macro calls QActive_publish_() with
+* the `sender_` parameter to identify the publisher of the event.
+* Otherwise, `sender_` is not used.
 *
 * @param[in] e_      pointer to the posted event
-* @param[in] sender_ pointer to the sender object. This parameter is
-*          actually only used when QS software tracing is enabled
-*          (macro #Q_SPY is defined). When QS software tracing is
-*          disabled, the macro calls QF_publish_() without the
-*          @p sender_ parameter, so the overhead of passing this
-*          extra parameter is entirely avoided.
+* @param[in] sender_ pointer to the sender object (actually used
+*                    only when #Q_SPY is defined)
 *
 * @note
-* The pointer to the sender object is not necessarily a pointer
-* to an active object. In fact, if QF_PUBLISH() is called from an
+* The pointer to the `sender_` object is not necessarily a pointer
+* to an active object. In fact, if QACTIVE_PUBLISH() is called from an
 * interrupt or other context, you can create a unique object just to
-* unambiguously identify the publisher of the event.
+* unambiguously identify the sender of the event.
 *
 * @sa QActive_publish_()
 */</documentation>
    <parameter name="e_" type="QEvt const *"/>
-   <parameter name="sender_" type="&lt;sender *&gt;"/>
+   <parameter name="sender_" type="&lt;void const *&gt;"/>
    <code>\
     (QActive_publish_((e_), (void const *)(sender_), (sender_)-&gt;prio))</code>
   </operation>
@@ -2787,8 +2810,7 @@ return n + log2LUT[x];</code>
    <code>QTIMEEVT_TICK_X((tickRate_), (sender_))</code>
   </operation>
   <operation name="QF_TICK" type="void" visibility="0x03" properties="0x00">
-   <documentation>/*! Invoke the system clock tick processing
-* for tick rate 0
+   <documentation>/*! Invoke the system clock tick processing for tick rate 0
 *
 * @deprecated
 * superseded by QTIMEEVT_TICK()
@@ -2797,13 +2819,13 @@ return n + log2LUT[x];</code>
    <code>QTIMEEVT_TICK(sender_)</code>
   </operation>
   <operation name="QF_PUBLISH" type="void" visibility="0x03" properties="0x00">
-   <documentation>/*! Invoke the event publishing facility QActive_publish_().
+   <documentation>/*! Publish an event to all subscriber Active Objects.
 *
 * @deprecated
 * superseded by QACTIVE_PUBLISH()
 */</documentation>
    <parameter name="e_" type="QEvt const *"/>
-   <parameter name="sender_" type="&lt;sender *&gt;"/>
+   <parameter name="sender_" type="&lt;void const *&gt;"/>
    <code>QACTIVE_PUBLISH((e_), (sender_))</code>
   </operation>
  </package>
@@ -2874,14 +2896,16 @@ return n + log2LUT[x];</code>
 * me-&gt;thread can be a pointer to the Thread-Local-Storage (TLS).
 */</documentation>
    </attribute>
-   <attribute name="dynPrio?def QXK_H" type="uint8_t" visibility="0x00" properties="0x00">
-    <documentation>/*! QXK dynamic priority (1..#QF_MAX_ACTIVE) of AO/thread.
+   <attribute name="prio" type="uint8_t" visibility="0x00" properties="0x00">
+    <documentation>/*! QF priority (1..#QF_MAX_ACTIVE) of this AO.
 * @private @memberof QActive
+* @sa ::QPrioSpec
 */</documentation>
    </attribute>
-   <attribute name="prio" type="uint8_t" visibility="0x00" properties="0x00">
-    <documentation>/*! QF priority (1..#QF_MAX_ACTIVE) of this active object.
+   <attribute name="pthre" type="uint8_t" visibility="0x00" properties="0x00">
+    <documentation>/*! preemption-threshold [1..#QF_MAX_ACTIVE] of this AO.
 * @private @memberof QActive
+* @sa ::QPrioSpec
 */</documentation>
    </attribute>
    <attribute name="active_[QF_MAX_ACTIVE + 1U]" type="QActive *" visibility="0x00" properties="0x01">
@@ -2937,20 +2961,22 @@ me-&gt;super.vptr = &amp;vtable.super; /* hook the vptr to QActive vtable */</co
 * @details
 * Starts execution of the AO and registers the AO with the framework.
 *
-* @param[in] prio    priority at which to start the active object
+* @param[in] prio    QF priority of the AO and (optionally) preemption-
+*                    threshold of this AO (for some preemptive kernels).
+*                    See also ::QPrioSpec.
 * @param[in] qSto    pointer to the storage for the ring buffer of the
 *                    event queue
 * @param[in] qLen    length of the event queue [# ::QEvt* pointers]
-* @param[in] stkSto  pointer to the stack storage (might be nullptr)
+* @param[in] stkSto  pointer to the stack storage (might be NULL)
 * @param[in] stkSize stack size [bytes]
-* @param[in] par     pointer to an extra parameter (might be nullptr)
+* @param[in] par     pointer to an extra parameter (might be NULL)
 *
 * @usage
 * The following example shows starting an AO when a per-task stack
 * is needed:
 * @include qf_start.c
 */</documentation>
-    <parameter name="prio" type="uint_fast8_t const"/>
+    <parameter name="prio" type="QPrioSpec const"/>
     <parameter name="qSto" type="QEvt const * * const"/>
     <parameter name="qLen" type="uint_fast16_t const"/>
     <parameter name="stkSto" type="void * const"/>
@@ -3218,7 +3244,7 @@ QF_CRIT_X_();</code>
 *
 * @returns
 * A pointer to the received event. The returned pointer is guaranteed
-* to be valid (can't be nullptr).
+* to be valid (can't be NULL).
 *
 * @note
 * This function might be implemented differently in various QP/C++
@@ -3500,20 +3526,22 @@ QF_CRIT_X_();
 if (QPSet_notEmpty(&amp;subscrList)) { /* any subscribers? */
     /* the highest-prio subscriber */;
     uint_fast8_t p = QPSet_findMax(&amp;subscrList);
+    QActive *a = QActive_registry_[p];
     QF_SCHED_STAT_
 
-    QF_SCHED_LOCK_(p); /* lock the scheduler up to prio 'p' */
+    QF_SCHED_LOCK_(a-&gt;pthre); /* lock the scheduler up to ceiling */
     do { /* loop over all subscribers */
         /* the prio of the AO must be registered with the framework */
-        Q_ASSERT_ID(210, QActive_registry_[p] != (QActive *)0);
+        Q_ASSERT_ID(210, a != (QActive *)0);
 
         /* QACTIVE_POST() asserts internally if the queue overflows */
-        QACTIVE_POST(QActive_registry_[p], e, sender);
+        QACTIVE_POST(a, e, sender);
 
         QPSet_remove(&amp;subscrList, p); /* remove the handled subscriber */
         if (QPSet_notEmpty(&amp;subscrList)) { /* still more subscribers? */
             /* highest-prio subscriber */
             p = QPSet_findMax(&amp;subscrList);
+            a = QActive_registry_[p];
         }
         else {
             p = 0U; /* no more subscribers */
@@ -3675,19 +3703,12 @@ for (QEvt const *e = QEQueue_get(eq, me-&gt;prio);
 }
 return n;</code>
    </operation>
-   <operation name="getPrio" type="uint_fast8_t" visibility="0x00" properties="0x02">
+   <operation name="getPrio" type="QPrioSpec" visibility="0x00" properties="0x02">
     <specifiers>const</specifiers>
     <documentation>/*! Get the priority of the active object.
 * @public @memberof QActive
 */</documentation>
-    <code>return (uint_fast8_t)me-&gt;prio;</code>
-   </operation>
-   <operation name="setPrio" type="void" visibility="0x00" properties="0x02">
-    <documentation>/*! Set the priority of the active object
-* @public @memberof QActive
-*/</documentation>
-    <parameter name="prio" type="uint_fast8_t const"/>
-    <code>me-&gt;prio = (uint8_t)prio;</code>
+    <code>return (QPrioSpec)me-&gt;prio | (me-&gt;pthre &lt;&lt; 8U);</code>
    </operation>
    <operation name="setAttr" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! Generic setting of additional attributes (useful in QP ports)
@@ -3717,19 +3738,43 @@ return n;</code>
 *
 * @sa QActive_unregister_()
 */</documentation>
-    <code>uint_fast8_t const p = (uint_fast8_t)me-&gt;prio;
+    <code>uint8_t const prio  = me-&gt;prio;
 
-/*! @pre the priority of the active object must not be zero and cannot
-* exceed the maximum #QF_MAX_ACTIVE. Also, the priority of the active
-* object must not be already in use. QF requires each active object to
+/*! @pre the priority of the AO must be in range. Also, the priority
+* must not be already in use. QF requires each active object to
 * have a **unique** priority.
 */
-Q_REQUIRE_ID(100, (0U &lt; p)
-                   &amp;&amp; (p &lt;= QF_MAX_ACTIVE)
-                   &amp;&amp; (QActive_registry_[p] == (QActive *)0));
+Q_REQUIRE_ID(100, (0U &lt; prio) &amp;&amp; (prio &lt;= QF_MAX_ACTIVE)
+                   &amp;&amp; (QActive_registry_[prio] == (QActive *)0));
+
+if (me-&gt;pthre == 0U) { /* preemption-threshold not defined? */
+    me-&gt;pthre = me-&gt;prio; /* apply the default */
+}
+uint8_t prev_ceil = me-&gt;pthre;
+uint8_t next_ceil = me-&gt;pthre;
+
+uint_fast8_t p;
+for (p = (uint_fast8_t)prio - 1U; p &gt; 0U; --p) {
+    if (QActive_registry_[p] != (QActive *)0) {
+        prev_ceil = QActive_registry_[p]-&gt;pthre;
+        break;
+    }
+}
+for (p = (uint_fast8_t)prio + 1U; p &lt;= QF_MAX_ACTIVE; ++p) {
+    if (QActive_registry_[p] != (QActive *)0) {
+        next_ceil = QActive_registry_[p]-&gt;pthre;
+        break;
+    }
+}
+
+/* @post The preemption threshold of the AO (me-&gt;pthre) must be
+* between the threshold of the previous AO and the next AO
+*/
+Q_ENSURE_ID(101, (prev_ceil &lt;= me-&gt;pthre)
+                  &amp;&amp; (me-&gt;pthre &lt;= next_ceil));
 QF_CRIT_STAT_
 QF_CRIT_E_();
-QActive_registry_[p] = me; /* register the active object at this priority */
+QActive_registry_[prio] = me; /* register the AO at this QF priority */
 QF_CRIT_X_();</code>
    </operation>
    <operation name="unregister_" type="void" visibility="0x01" properties="0x00">
@@ -3749,17 +3794,17 @@ QF_CRIT_X_();</code>
 *
 * @sa QActive_register_()
 */</documentation>
-    <code>uint_fast8_t const p = (uint_fast8_t)me-&gt;prio;
+    <code>uint_fast8_t const prio = (uint_fast8_t)me-&gt;prio;
 
 /*! @pre the priority of the active object must not be zero and cannot
 * exceed the maximum #QF_MAX_ACTIVE. Also, the priority of the active
 * object must be already registered with the framework.
 */
-Q_REQUIRE_ID(200, (0U &lt; p) &amp;&amp; (p &lt;= QF_MAX_ACTIVE)
-                   &amp;&amp; (QActive_registry_[p] == me));
+Q_REQUIRE_ID(200, (0U &lt; prio) &amp;&amp; (prio &lt;= QF_MAX_ACTIVE)
+                   &amp;&amp; (QActive_registry_[prio] == me));
 QF_CRIT_STAT_
 QF_CRIT_E_();
-QActive_registry_[p] = (QActive *)0; /* free-up the priority level */
+QActive_registry_[prio] = (QActive *)0; /* free-up the priority level */
 me-&gt;super.state.fun = Q_STATE_CAST(0); /* invalidate the state */
 QF_CRIT_X_();</code>
    </operation>
@@ -3789,7 +3834,7 @@ QF_CRIT_X_();</code>
     /*! @private virtual function to start the AO/thread
     * @sa QACTIVE_START()
     */
-    void (*start)(QActive * const me, uint_fast8_t prio,
+    void (*start)(QActive * const me, uint_fast16_t prio,
                   QEvt const * * const qSto, uint_fast16_t const qLen,
                   void * const stkSto, uint_fast16_t const stkSize,
                   void const * const par);
@@ -3861,14 +3906,15 @@ QF_CRIT_X_();</code>
     &amp;QActive_postLIFO_
 };
 
-/* clear the whole QActive object, so that the framework can start
+/* clear the whole QMActive object, so that the framework can start
 * correctly even if the startup code fails to clear the uninitialized
 * data (as is required by the C Standard).
 */
 QF_bzero(me, sizeof(*me));
 
 /*!
-* @note QMActive inherits QActive, so by the @ref oop convention
+* @note
+* ::QMActive inherits ::QActive, so by the @ref oop convention
 * it should call the constructor of the superclass, i.e., QActive_ctor().
 * However, this would pull in the QActiveVtable, which in turn will pull
 * in the code for QHsm_init_() and QHsm_dispatch_() implemetations,
@@ -5697,10 +5743,10 @@ if (e-&gt;poolId_ != 0U) {
 
         /* cast 'const' away, which is OK, because it's a pool event */
 #ifdef Q_SPY
-        QF_EPOOL_PUT_(QF_ePool_[idx], QF_EVT_CONST_CAST_(e),
+        QF_EPOOL_PUT_(QF_ePool_[idx], QF_CONST_CAST_(QEvt*, e),
                       (uint_fast8_t)QS_EP_ID + e-&gt;poolId_);
 #else
-        QF_EPOOL_PUT_(QF_ePool_[idx], QF_EVT_CONST_CAST_(e), 0U);
+        QF_EPOOL_PUT_(QF_ePool_[idx], QF_CONST_CAST_(QEvt*, e), 0U);
 #endif
     }
 }</code>
@@ -6318,17 +6364,17 @@ QS_END_NOCRIT_PRE_()</code>
   </operation>
  </package>
  <package name="QS" stereotype="0x05">
-  <attribute name="QSTimeCtr? (QS_TIME_SIZE == 4U) " type="typedef uint32_t" visibility="0x04" properties="0x00">
+  <attribute name="QSTimeCtr? (QS_TIME_SIZE == 4U)" type="typedef uint32_t" visibility="0x04" properties="0x00">
    <documentation>/*! QS time stamp type, which determines the dynamic range of QS time stamps */</documentation>
   </attribute>
-  <attribute name="QSTimeCtr? (QS_TIME_SIZE == 2U) " type="typedef uint16_t" visibility="0x04" properties="0x00"/>
-  <attribute name="QSTimeCtr? (QS_TIME_SIZE == 1U) " type="typedef uint8_t" visibility="0x04" properties="0x00"/>
-  <attribute name="QSFun? (QS_FUN_PTR_SIZE == 4U) " type="typedef uint32_t" visibility="0x04" properties="0x00">
+  <attribute name="QSTimeCtr? (QS_TIME_SIZE == 2U)" type="typedef uint16_t" visibility="0x04" properties="0x00"/>
+  <attribute name="QSTimeCtr? (QS_TIME_SIZE == 1U)" type="typedef uint8_t" visibility="0x04" properties="0x00"/>
+  <attribute name="QSFun? (QS_FUN_PTR_SIZE == 4U)" type="typedef uint32_t" visibility="0x04" properties="0x00">
    <documentation>/*! QS function pointer type (for serializing function pointers) */</documentation>
   </attribute>
-  <attribute name="QSFun? (QS_FUN_PTR_SIZE == 8U) " type="typedef uint64_t" visibility="0x04" properties="0x00"/>
-  <attribute name="QSFun? (QS_FUN_PTR_SIZE == 2U) " type="typedef uint16_t" visibility="0x04" properties="0x00"/>
-  <attribute name="QSFun? (QS_FUN_PTR_SIZE == 1U) " type="typedef uint8_t" visibility="0x04" properties="0x00"/>
+  <attribute name="QSFun? (QS_FUN_PTR_SIZE == 8U)" type="typedef uint64_t" visibility="0x04" properties="0x00"/>
+  <attribute name="QSFun? (QS_FUN_PTR_SIZE == 2U)" type="typedef uint16_t" visibility="0x04" properties="0x00"/>
+  <attribute name="QSFun? (QS_FUN_PTR_SIZE == 1U)" type="typedef uint8_t" visibility="0x04" properties="0x00"/>
   <attribute name="QSCtr" type="typedef uint_fast16_t" visibility="0x04" properties="0x00">
    <documentation>/*! QS ring buffer counter and offset type */</documentation>
   </attribute>
@@ -6420,9 +6466,11 @@ QS_END_NOCRIT_PRE_()</code>
     /* [47] Additional Memory Pool (MP) records */
     QS_QF_MPOOL_GET_ATTEMPT,  /*!&lt; attempt to get a memory block failed */
 
-    /* [48] Scheduler (SC) records */
-    QS_MUTEX_LOCK,        /*!&lt; a mutex was locked */
-    QS_MUTEX_UNLOCK,      /*!&lt; a mutex was unlocked */
+    /* [48] reserved */
+    QS_RESERVED1,         /*!&lt; reserved for future use */
+    QS_RESERVED2,         /*!&lt; reserved for future use */
+
+    /* [50] Scheduler (SC) records */
     QS_SCHED_LOCK,        /*!&lt; scheduler was locked */
     QS_SCHED_UNLOCK,      /*!&lt; scheduler was unlocked */
     QS_SCHED_NEXT,        /*!&lt; scheduler found next task to execute */
@@ -6449,7 +6497,22 @@ QS_END_NOCRIT_PRE_()</code>
     QS_ASSERT_FAIL,       /*!&lt; assertion failed in the code */
     QS_QF_RUN,            /*!&lt; QF_run() was entered */
 
-    QS_MAX,               /*!&lt; the number of reserved signals */
+    /* [71] Semaphore (SEM) records */
+    QS_SEM_TAKE,          /*!&lt; a semaphore was taken by a thread */
+    QS_SEM_BLOCK,         /*!&lt; a semaphore blocked a thread */
+    QS_SEM_SIGNAL,        /*!&lt; a semaphore was signaled*/
+    QS_SEM_BLOCK_ATTEMPT, /*!&lt; a semaphore blocked was attempted */
+
+    /* [75] Mutex (MTX) records */
+    QS_MTX_LOCK,          /*!&lt; a mutex was locked */
+    QS_MTX_BLOCK,         /*!&lt; a mutex blocked a thread */
+    QS_MTX_UNLOCK,        /*!&lt; a mutex was unlocked */
+    QS_MTX_LOCK_ATTEMPT,  /*!&lt; a mutex lock was attempted */
+    QS_MTX_BLOCK_ATTEMPT, /*!&lt; a mutex blocking was attempted */
+    QS_MTX_UNLOCK_ATTEMPT,/*!&lt; a mutex unlock was attempted */
+
+    /* [81] */
+    QS_PRE_MAX,           /*!&lt; the number of predefined signals */
 };</code>
   </attribute>
   <attribute name="QSpyGroups" type="enum" visibility="0x04" properties="0x00">
@@ -8036,8 +8099,10 @@ switch (state) {
         QS_onCommand(l_rx.var.cmd.cmdId, l_rx.var.cmd.param1,
                      l_rx.var.cmd.param2, l_rx.var.cmd.param3);
 #ifdef Q_UTEST
+#if Q_UTEST != 0
         QS_processTestEvts_(); /* process all events produced */
-#endif
+#endif  /* Q_UTEST != 0*/
+#endif  /* Q_UTEST */
         QS_rxReportDone_((int8_t)QS_RX_COMMAND);
         break;
     }
@@ -8045,10 +8110,12 @@ switch (state) {
         QS_rxReportAck_((int8_t)QS_RX_TICK);
 #ifdef Q_UTEST
         QTimeEvt_tick1_((uint_fast8_t)l_rx.var.tick.rate, &amp;QS_rxPriv_);
+#if Q_UTEST != 0
         QS_processTestEvts_(); /* process all events produced */
+#endif  /* Q_UTEST  != 0*/
 #else
         QTimeEvt_tick_((uint_fast8_t)l_rx.var.tick.rate, &amp;QS_rxPriv_);
-#endif
+#endif  /* Q_UTEST */
         QS_rxReportDone_((int8_t)QS_RX_TICK);
         break;
     }
@@ -8274,8 +8341,10 @@ switch (state) {
         }
         else {
 #ifdef Q_UTEST
+#if Q_UTEST != 0
             QS_processTestEvts_(); /* process all events produced */
-#endif
+#endif  /* Q_UTEST != 0 */
+#endif  /* Q_UTEST */
             QS_rxReportDone_((int8_t)QS_RX_EVENT);
         }
         break;
@@ -8322,8 +8391,7 @@ switch (state) {
         QS_rxReportError_(0x47);
         break;
     }
-}
-</code>
+}</code>
    </operation>
    <operation name="onReset" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! callback function to reset the Target (to be implemented in the BSP)
@@ -8380,34 +8448,6 @@ else {
    <attribute name="testData" type="struct QS_TestData" visibility="0x00" properties="0x00">
     <documentation>/*! QUTest data */</documentation>
    </attribute>
-   <operation name="processTestEvts_" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! internal function to process posted events during test
-* @static @private @memberof QS
-*/</documentation>
-    <code>QS_TEST_PROBE_DEF(&amp;QS_processTestEvts_)
-
-/* return immediately (do nothing) for Test Probe != 0 */
-QS_TEST_PROBE(return;)
-
-while (QPSet_notEmpty(&amp;QF_readySet_)) {
-    uint_fast8_t const p = QPSet_findMax(&amp;QF_readySet_);
-    QActive * const a = QActive_registry_[p];
-
-    /* perform the run-to-completion (RTC) step...
-    * 1. retrieve the event from the AO's event queue, which by this
-    *    time must be non-empty and The &quot;Vanialla&quot; kernel asserts it.
-    * 2. dispatch the event to the AO's state machine.
-    * 3. determine if event is garbage and collect it if so
-    */
-    QEvt const * const e = QActive_get_(a);
-    QHSM_DISPATCH(&amp;a-&gt;super, e, a-&gt;prio);
-    QF_gc(e);
-
-    if (a-&gt;eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
-        QPSet_remove(&amp;QF_readySet_, p);
-    }
-}</code>
-   </operation>
    <operation name="test_pause_" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! internal function to pause test and enter the test event loop
 * @static @private @memberof QS
@@ -8482,248 +8522,42 @@ return data;</code>
 */</documentation>
    </operation>
   </package>
-  <class name="QHsmDummy" superclass="QEP::QHsm">
-   <documentation>/*! @brief QHsmDummy class
-* @class QHsmDummy
-* @extends QHsm
-*
-* @details
-* ::QHsmDummy is a test double for the role of &quot;Orthogonal Components&quot;
-* HSM objects in QUTest unit testing.
-*/</documentation>
-   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Constructor of the QHsmDummy HSM class
-* @public @memberof QHsmDummy
-*/</documentation>
-    <code>static struct QHsmVtable const vtable = {  /* QHsm virtual table */
-    &amp;QHsmDummy_init_,
-    &amp;QHsmDummy_dispatch_
-#ifdef Q_SPY
-    ,&amp;QHsm_getStateHandler_
-#endif
-};
-/* superclass' ctor */
-QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(0));
-me-&gt;super.vptr = &amp;vtable;  /* hook the vptr */</code>
-   </operation>
-   <operation name="init_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! override for QHsm_init_()
-* @private @memberof QHsmDummy
-*/</documentation>
-    <parameter name="me" type="QHsm * const"/>
-    <parameter name="par" type="void const * const"/>
-    <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>Q_UNUSED_PAR(par);
-
-QS_CRIT_STAT_
-QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
-    QS_OBJ_PRE_(me);        /* this state machine object */
-    QS_FUN_PRE_(me-&gt;state.fun); /* the source state */
-    QS_FUN_PRE_(me-&gt;temp.fun);  /* the target of the initial transition */
-QS_END_PRE_()</code>
-   </operation>
-   <operation name="dispatch_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! override for QHsm_dispatch_()
-* @private @memberof QHsmDummy
-*/</documentation>
-    <parameter name="me" type="QHsm * const"/>
-    <parameter name="e" type="QEvt const * const"/>
-    <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>QS_CRIT_STAT_
-QS_BEGIN_PRE_(QS_QEP_DISPATCH, qs_id)
-    QS_TIME_PRE_();             /* time stamp */
-    QS_SIG_PRE_(e-&gt;sig);        /* the signal of the event */
-    QS_OBJ_PRE_(me);            /* this state machine object */
-    QS_FUN_PRE_(me-&gt;state.fun); /* the current state */
-QS_END_PRE_()</code>
-   </operation>
-  </class>
-  <class name="QActiveDummy" superclass="QF::QActive">
-   <documentation>/*! @brief QActiveDummy Object class
-* @class QActiveDummy
-* @extends QActive
-*
-* @details
-* QActiveDummy is a test double for the role of collaborating active
-* objects in QUTest unit testing.
-*/</documentation>
-   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Constructor of the QActiveDummy Active Object class
-* @public @memberof QActiveDummy
-*/</documentation>
-    <code>static QActiveVtable const vtable = {  /* QActive virtual table */
-    { &amp;QActiveDummy_init_,
-      &amp;QActiveDummy_dispatch_
-#ifdef Q_SPY
-      ,&amp;QHsm_getStateHandler_
-#endif
-    },
-    &amp;QActiveDummy_start_,
-    &amp;QActiveDummy_post_,
-    &amp;QActiveDummy_postLIFO_
-};
-/* superclass' ctor */
-QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(0));
-me-&gt;super.super.vptr = &amp;vtable.super;  /* hook the vptr */</code>
-   </operation>
-   <operation name="init_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! override for QHsm_init_()
-* @private @memberof QActiveDummy
-*/</documentation>
-    <parameter name="me" type="QHsm * const"/>
-    <parameter name="par" type="void const * const"/>
-    <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>(void)qs_id; /* unused parameter */
-
-QHsmDummy_init_(me, par, ((QActive const *)me)-&gt;prio);</code>
-   </operation>
-   <operation name="dispatch_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! override for QHsm_dispatch_()
-* @private @memberof QActiveDummy
-*/</documentation>
-    <parameter name="me" type="QHsm * const"/>
-    <parameter name="e" type="QEvt const * const"/>
-    <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>(void)qs_id; /* unused parameter */
-
-QHsmDummy_dispatch_(me, e, ((QActive const *)me)-&gt;prio);</code>
-   </operation>
-   <operation name="start_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! override for QActive_start_()
-* @private @memberof QActiveDummy
-*/</documentation>
-    <parameter name="me" type="QActive * const"/>
-    <parameter name="prio" type="uint_fast8_t const"/>
-    <parameter name="qSto" type="QEvt const * * const"/>
-    <parameter name="qLen" type="uint_fast16_t const"/>
-    <parameter name="stkSto" type="void * const"/>
-    <parameter name="stkSize" type="uint_fast16_t const"/>
-    <parameter name="par" type="void const * const"/>
-    <code>/* No special preconditions for checking parameters to allow starting
-* dummy AOs the exact same way as the real counterparts.
-*/
-(void)qSto;    /* unusuded parameter */
-(void)qLen;    /* unusuded parameter */
-(void)stkSto;  /* unusuded parameter */
-(void)stkSize; /* unusuded parameter */
-
-me-&gt;prio = (uint8_t)prio; /* set the current priority of the AO */
-
-QActive_register_(me); /* make QF aware of this active object */
-
-/* the top-most initial tran. (virtual) */
-QHSM_INIT(&amp;me-&gt;super, par, me-&gt;prio);
-//QS_FLUSH();</code>
-   </operation>
-   <operation name="post_" type="bool" visibility="0x00" properties="0x01">
-    <documentation>/*! override for QActive_post_()
-* @private @memberof QActiveDummy
-*/</documentation>
-    <parameter name="me" type="QActive * const"/>
-    <parameter name="e" type="QEvt const * const"/>
-    <parameter name="margin" type="uint_fast16_t const"/>
-    <parameter name="sender" type="void const * const"/>
-    <code>QS_TEST_PROBE_DEF(&amp;QActive_post_)
-
-/* test-probe#1 for faking queue overflow */
-bool status = true;
-QS_TEST_PROBE_ID(1,
-    status = false;
-    if (margin == QF_NO_MARGIN) {
-        /* fake assertion Mod=qf_actq,Loc=110 */
-        Q_onAssert(&quot;qf_actq&quot;, 110);
-    }
-)
-
-QF_CRIT_STAT_
-QF_CRIT_E_();
-
-/* is it a dynamic event? */
-if (e-&gt;poolId_ != 0U) {
-    QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
-}
-
-uint_fast8_t const rec = (status ? (uint_fast8_t)QS_QF_ACTIVE_POST
-                         : (uint_fast8_t)QS_QF_ACTIVE_POST_ATTEMPT);
-QS_BEGIN_NOCRIT_PRE_(rec, me-&gt;prio)
-    QS_TIME_PRE_();      /* timestamp */
-    QS_OBJ_PRE_(sender); /* the sender object */
-    QS_SIG_PRE_(e-&gt;sig); /* the signal of the event */
-    QS_OBJ_PRE_(me);     /* this active object */
-    QS_2U8_PRE_(e-&gt;poolId_, e-&gt;refCtr_); /* pool Id &amp; refCtr of the evt */
-    QS_EQC_PRE_(0U);     /* number of free entries */
-    QS_EQC_PRE_(margin); /* margin requested */
-QS_END_NOCRIT_PRE_()
-
-/* callback to examine the posted event under the same conditions
-* as producing the #QS_QF_ACTIVE_POST trace record, which are:
-* the local filter for this AO ('me-&gt;prio') is set
-*/
-if ((QS_priv_.locFilter[me-&gt;prio &gt;&gt; 3U]
-     &amp; (1U &lt;&lt; (me-&gt;prio &amp; 7U))) != 0U)
-{
-    QS_onTestPost(sender, me, e, status);
-}
-QF_CRIT_X_();
-
-/* recycle the event immediately, because it was not really posted */
-QF_gc(e);
-
-return status; /* the event is &quot;posted&quot; correctly */</code>
-   </operation>
-   <operation name="postLIFO_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! override for QActive_postLIFO_()
-* @private @memberof QActiveDummy
-*/</documentation>
-    <parameter name="me" type="QActive * const"/>
-    <parameter name="e" type="QEvt const * const"/>
-    <code>QS_TEST_PROBE_DEF(&amp;QActive_postLIFO_)
-
-/* test-probe#1 for faking queue overflow */
-QS_TEST_PROBE_ID(1,
-    /* fake assertion Mod=qf_actq,Loc=210 */
-    Q_onAssert(&quot;qf_actq&quot;, 210);
-)
-
-QF_CRIT_STAT_
-QF_CRIT_E_();
-
-/* is it a dynamic event? */
-if (e-&gt;poolId_ != 0U) {
-    QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
-}
-
-QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, me-&gt;prio)
-    QS_TIME_PRE_();      /* timestamp */
-    QS_SIG_PRE_(e-&gt;sig); /* the signal of this event */
-    QS_OBJ_PRE_(me);     /* this active object */
-    QS_2U8_PRE_(e-&gt;poolId_, e-&gt;refCtr_); /* pool Id &amp; refCtr of the evt */
-    QS_EQC_PRE_(0U);     /* number of free entries */
-    QS_EQC_PRE_(0U);     /* min number of free entries */
-QS_END_NOCRIT_PRE_()
-
-/* callback to examine the posted event under the same conditions
-* as producing the #QS_QF_ACTIVE_POST trace record, which are:
-* the local filter for this AO ('me-&gt;prio') is set
-*/
-if ((QS_priv_.locFilter[me-&gt;prio &gt;&gt; 3U]
-     &amp; (1U &lt;&lt; (me-&gt;prio &amp; 7U))) != 0U)
-{
-    QS_onTestPost((QActive *)0, me, e, true);
-}
-
-QF_CRIT_X_();
-
-/* recycle the event immediately, because it was not really posted */
-QF_gc(e);</code>
-   </operation>
-  </class>
   <attribute name="QUTEST_ON_POST" type="124" visibility="0x03" properties="0x00">
    <documentation>/*! record-ID for posting events */</documentation>
    <code>124</code>
   </attribute>
  </package>
  <package name="QUTest-stub" stereotype="0x05">
+  <package name="QS" stereotype="0x02" namespace="QS_">
+   <operation name="processTestEvts_" type="void" visibility="0x00" properties="0x00">
+    <documentation>/*! internal function to process posted events during test
+* @static @private @memberof QS
+*/</documentation>
+    <code>QS_TEST_PROBE_DEF(&amp;QS_processTestEvts_)
+
+/* return immediately (do nothing) for Test Probe != 0 */
+QS_TEST_PROBE(return;)
+
+while (QPSet_notEmpty(&amp;QF_readySet_)) {
+    uint_fast8_t const p = QPSet_findMax(&amp;QF_readySet_);
+    QActive * const a = QActive_registry_[p];
+
+    /* perform the run-to-completion (RTC) step...
+    * 1. retrieve the event from the AO's event queue, which by this
+    *    time must be non-empty and The &quot;Vanialla&quot; kernel asserts it.
+    * 2. dispatch the event to the AO's state machine.
+    * 3. determine if event is garbage and collect it if so
+    */
+    QEvt const * const e = QActive_get_(a);
+    QHSM_DISPATCH(&amp;a-&gt;super, e, a-&gt;prio);
+    QF_gc(e);
+
+    if (a-&gt;eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
+        QPSet_remove(&amp;QF_readySet_, p);
+    }
+}</code>
+   </operation>
+  </package>
   <package name="QF" stereotype="0x02" namespace="QF_">
    <operation name="init" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! QF initialization for QUTest */</documentation>
@@ -8760,19 +8594,13 @@ QS_onCleanup();  /* application cleanup */
 return 0; /* return no error */</code>
    </operation>
   </package>
-  <package name="QS" stereotype="0x02" namespace="QS_">
-   <operation name="onGetTime" type="QSTimeCtr" visibility="0x00" properties="0x00">
-    <documentation>/*! callback to provide time-stampe (QUTest customization) */</documentation>
-    <code>return (++QS_testData.testTime);</code>
-   </operation>
-  </package>
   <class name="QActive" superclass="QEP::QHsm">
    <documentation>/*! QActive active object class customization for QUTest */</documentation>
    <operation name="start_" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! QActive_start_() customization for QUTest
 * @public @memberof QActive
 */</documentation>
-    <parameter name="prio" type="uint_fast8_t const"/>
+    <parameter name="prio" type="QPrioSpec const"/>
     <parameter name="qSto" type="QEvt const * * const"/>
     <parameter name="qLen" type="uint_fast16_t const"/>
     <parameter name="stkSto" type="void * const"/>
@@ -8907,22 +8735,242 @@ QF_CRIT_X_();
 </code>
    </operation>
   </class>
-  <operation name="Q_onAssert" type="Q_NORETURN" visibility="0x00" properties="0x00">
-   <documentation>/*! Assertion handler customization for QUTest */</documentation>
-   <parameter name="module" type="char const *"/>
-   <parameter name="location" type="int_t"/>
-   <code>QS_BEGIN_NOCRIT_PRE_(QS_ASSERT_FAIL, 0U)
-    QS_TIME_PRE_();
-    QS_U16_PRE_(location);
-    QS_STR_PRE_((module != (char *)0) ? module : &quot;?&quot;);
+  <class name="QHsmDummy" superclass="QEP::QHsm">
+   <documentation>/*! @brief QHsmDummy class
+* @class QHsmDummy
+* @extends QHsm
+*
+* @details
+* ::QHsmDummy is a test double for the role of &quot;Orthogonal Components&quot;
+* HSM objects in QUTest unit testing.
+*/</documentation>
+   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
+    <documentation>/*! Constructor of the QHsmDummy HSM class
+* @public @memberof QHsmDummy
+*/</documentation>
+    <code>static struct QHsmVtable const vtable = {  /* QHsm virtual table */
+    &amp;QHsmDummy_init_,
+    &amp;QHsmDummy_dispatch_
+#ifdef Q_SPY
+    ,&amp;QHsm_getStateHandler_
+#endif
+};
+/* superclass' ctor */
+QHsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(0));
+me-&gt;super.vptr = &amp;vtable;  /* hook the vptr */</code>
+   </operation>
+   <operation name="init_" type="void" visibility="0x00" properties="0x01">
+    <documentation>/*! override for QHsm_init_()
+* @private @memberof QHsmDummy
+*/</documentation>
+    <parameter name="me" type="QHsm * const"/>
+    <parameter name="par" type="void const * const"/>
+    <parameter name="qs_id" type="uint_fast8_t const"/>
+    <code>Q_UNUSED_PAR(par);
+
+QS_CRIT_STAT_
+QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
+    QS_OBJ_PRE_(me);        /* this state machine object */
+    QS_FUN_PRE_(me-&gt;state.fun); /* the source state */
+    QS_FUN_PRE_(me-&gt;temp.fun);  /* the target of the initial transition */
+QS_END_PRE_()</code>
+   </operation>
+   <operation name="dispatch_" type="void" visibility="0x00" properties="0x01">
+    <documentation>/*! override for QHsm_dispatch_()
+* @private @memberof QHsmDummy
+*/</documentation>
+    <parameter name="me" type="QHsm * const"/>
+    <parameter name="e" type="QEvt const * const"/>
+    <parameter name="qs_id" type="uint_fast8_t const"/>
+    <code>QS_CRIT_STAT_
+QS_BEGIN_PRE_(QS_QEP_DISPATCH, qs_id)
+    QS_TIME_PRE_();             /* time stamp */
+    QS_SIG_PRE_(e-&gt;sig);        /* the signal of the event */
+    QS_OBJ_PRE_(me);            /* this state machine object */
+    QS_FUN_PRE_(me-&gt;state.fun); /* the current state */
+QS_END_PRE_()</code>
+   </operation>
+  </class>
+  <class name="QActiveDummy" superclass="QF::QActive">
+   <documentation>/*! @brief QActiveDummy Object class
+* @class QActiveDummy
+* @extends QActive
+*
+* @details
+* QActiveDummy is a test double for the role of collaborating active
+* objects in QUTest unit testing.
+*/</documentation>
+   <operation name="ctor" type="void" visibility="0x00" properties="0x00">
+    <documentation>/*! Constructor of the QActiveDummy Active Object class
+* @public @memberof QActiveDummy
+*/</documentation>
+    <code>static QActiveVtable const vtable = {  /* QActive virtual table */
+    { &amp;QActiveDummy_init_,
+      &amp;QActiveDummy_dispatch_
+#ifdef Q_SPY
+      ,&amp;QHsm_getStateHandler_
+#endif
+    },
+    &amp;QActiveDummy_start_,
+    &amp;QActiveDummy_post_,
+    &amp;QActiveDummy_postLIFO_
+};
+/* superclass' ctor */
+QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(0));
+me-&gt;super.super.vptr = &amp;vtable.super;  /* hook the vptr */</code>
+   </operation>
+   <operation name="init_" type="void" visibility="0x00" properties="0x01">
+    <documentation>/*! override for QHsm_init_()
+* @private @memberof QActiveDummy
+*/</documentation>
+    <parameter name="me" type="QHsm * const"/>
+    <parameter name="par" type="void const * const"/>
+    <parameter name="qs_id" type="uint_fast8_t const"/>
+    <code>(void)qs_id; /* unused parameter */
+
+QHsmDummy_init_(me, par, ((QActive const *)me)-&gt;prio);</code>
+   </operation>
+   <operation name="dispatch_" type="void" visibility="0x00" properties="0x01">
+    <documentation>/*! override for QHsm_dispatch_()
+* @private @memberof QActiveDummy
+*/</documentation>
+    <parameter name="me" type="QHsm * const"/>
+    <parameter name="e" type="QEvt const * const"/>
+    <parameter name="qs_id" type="uint_fast8_t const"/>
+    <code>(void)qs_id; /* unused parameter */
+
+QHsmDummy_dispatch_(me, e, ((QActive const *)me)-&gt;prio);</code>
+   </operation>
+   <operation name="start_" type="void" visibility="0x00" properties="0x01">
+    <documentation>/*! override for QActive_start_()
+* @private @memberof QActiveDummy
+*/</documentation>
+    <parameter name="me" type="QActive * const"/>
+    <parameter name="prio" type="QPrioSpec const"/>
+    <parameter name="qSto" type="QEvt const * * const"/>
+    <parameter name="qLen" type="uint_fast16_t const"/>
+    <parameter name="stkSto" type="void * const"/>
+    <parameter name="stkSize" type="uint_fast16_t const"/>
+    <parameter name="par" type="void const * const"/>
+    <code>/* No special preconditions for checking parameters to allow starting
+* dummy AOs the exact same way as the real counterparts.
+*/
+(void)qSto;    /* unusuded parameter */
+(void)qLen;    /* unusuded parameter */
+(void)stkSto;  /* unusuded parameter */
+(void)stkSize; /* unusuded parameter */
+
+me-&gt;prio = (uint8_t)prio; /* set the current priority of the AO */
+
+QActive_register_(me); /* make QF aware of this active object */
+
+/* the top-most initial tran. (virtual) */
+QHSM_INIT(&amp;me-&gt;super, par, me-&gt;prio);
+//QS_FLUSH();</code>
+   </operation>
+   <operation name="post_" type="bool" visibility="0x00" properties="0x01">
+    <documentation>/*! override for QActive_post_()
+* @private @memberof QActiveDummy
+*/</documentation>
+    <parameter name="me" type="QActive * const"/>
+    <parameter name="e" type="QEvt const * const"/>
+    <parameter name="margin" type="uint_fast16_t const"/>
+    <parameter name="sender" type="void const * const"/>
+    <code>QS_TEST_PROBE_DEF(&amp;QActive_post_)
+
+/* test-probe#1 for faking queue overflow */
+bool status = true;
+QS_TEST_PROBE_ID(1,
+    status = false;
+    if (margin == QF_NO_MARGIN) {
+        /* fake assertion Mod=qf_actq,Loc=110 */
+        Q_onAssert(&quot;qf_actq&quot;, 110);
+    }
+)
+
+QF_CRIT_STAT_
+QF_CRIT_E_();
+
+/* is it a dynamic event? */
+if (e-&gt;poolId_ != 0U) {
+    QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+}
+
+uint_fast8_t const rec = (status ? (uint_fast8_t)QS_QF_ACTIVE_POST
+                         : (uint_fast8_t)QS_QF_ACTIVE_POST_ATTEMPT);
+QS_BEGIN_NOCRIT_PRE_(rec, me-&gt;prio)
+    QS_TIME_PRE_();      /* timestamp */
+    QS_OBJ_PRE_(sender); /* the sender object */
+    QS_SIG_PRE_(e-&gt;sig); /* the signal of the event */
+    QS_OBJ_PRE_(me);     /* this active object */
+    QS_2U8_PRE_(e-&gt;poolId_, e-&gt;refCtr_); /* pool Id &amp; refCtr of the evt */
+    QS_EQC_PRE_(0U);     /* number of free entries */
+    QS_EQC_PRE_(margin); /* margin requested */
 QS_END_NOCRIT_PRE_()
 
-QS_onFlush(); /* flush the assertion record to the host */
-QS_onTestLoop(); /* loop to wait for commands (typically reset) */
-QS_onReset(); /* in case the QUTEST loop ever returns, reset manually */
-for (;;) { /* QS_onReset() should not return, but to ensure no-return */
-}</code>
-  </operation>
+/* callback to examine the posted event under the same conditions
+* as producing the #QS_QF_ACTIVE_POST trace record, which are:
+* the local filter for this AO ('me-&gt;prio') is set
+*/
+if ((QS_priv_.locFilter[me-&gt;prio &gt;&gt; 3U]
+     &amp; (1U &lt;&lt; (me-&gt;prio &amp; 7U))) != 0U)
+{
+    QS_onTestPost(sender, me, e, status);
+}
+QF_CRIT_X_();
+
+/* recycle the event immediately, because it was not really posted */
+QF_gc(e);
+
+return status; /* the event is &quot;posted&quot; correctly */</code>
+   </operation>
+   <operation name="postLIFO_" type="void" visibility="0x00" properties="0x01">
+    <documentation>/*! override for QActive_postLIFO_()
+* @private @memberof QActiveDummy
+*/</documentation>
+    <parameter name="me" type="QActive * const"/>
+    <parameter name="e" type="QEvt const * const"/>
+    <code>QS_TEST_PROBE_DEF(&amp;QActive_postLIFO_)
+
+/* test-probe#1 for faking queue overflow */
+QS_TEST_PROBE_ID(1,
+    /* fake assertion Mod=qf_actq,Loc=210 */
+    Q_onAssert(&quot;qf_actq&quot;, 210);
+)
+
+QF_CRIT_STAT_
+QF_CRIT_E_();
+
+/* is it a dynamic event? */
+if (e-&gt;poolId_ != 0U) {
+    QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+}
+
+QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, me-&gt;prio)
+    QS_TIME_PRE_();      /* timestamp */
+    QS_SIG_PRE_(e-&gt;sig); /* the signal of this event */
+    QS_OBJ_PRE_(me);     /* this active object */
+    QS_2U8_PRE_(e-&gt;poolId_, e-&gt;refCtr_); /* pool Id &amp; refCtr of the evt */
+    QS_EQC_PRE_(0U);     /* number of free entries */
+    QS_EQC_PRE_(0U);     /* min number of free entries */
+QS_END_NOCRIT_PRE_()
+
+/* callback to examine the posted event under the same conditions
+* as producing the #QS_QF_ACTIVE_POST trace record, which are:
+* the local filter for this AO ('me-&gt;prio') is set
+*/
+if ((QS_priv_.locFilter[me-&gt;prio &gt;&gt; 3U]
+     &amp; (1U &lt;&lt; (me-&gt;prio &amp; 7U))) != 0U)
+{
+    QS_onTestPost((QActive *)0, me, e, true);
+}
+
+QF_CRIT_X_();
+
+/* recycle the event immediately, because it was not really posted */
+QF_gc(e);</code>
+   </operation>
+  </class>
  </package>
  <package name="QV" stereotype="0x05">
   <package name="QV-base" stereotype="0x02" namespace="QV_">
@@ -9063,7 +9111,7 @@ return 0;
     <documentation>/*! Starts execution of an active object and registers the object
 * with the framework customized for QV
 */</documentation>
-    <parameter name="prio" type="uint_fast8_t const"/>
+    <parameter name="prio" type="QPrioSpec const"/>
     <parameter name="qSto" type="QEvt const * * const"/>
     <parameter name="qLen" type="uint_fast16_t const"/>
     <parameter name="stkSto" type="void * const"/>
@@ -9119,14 +9167,19 @@ QS_FLUSH(); /* flush the trace buffer to the host */</code>
 * @class QK
 */</documentation>
     <code>{
-    uint8_t volatile actPrio;    /*!&lt; prio of the active AO */
-    uint8_t volatile nextPrio;   /*!&lt; prio of the next AO to execute */
-    uint8_t volatile lockPrio;   /*!&lt; lock prio (0 == no-lock) */
-    uint8_t volatile lockHolder; /*!&lt; prio of the AO holding the lock */
+    uint8_t volatile actPrio;    /*!&lt; QF prio of the active AO */
+    uint8_t volatile nextPrio;   /*!&lt; QF prio of the next AO to execute */
+    uint8_t volatile actThre;    /*!&lt; active preemption-threshold */
+    uint8_t volatile lockCeil;   /*!&lt; lock preemption-ceiling (0==no-lock) */
+    uint8_t volatile lockHolder; /*!&lt; QF prio of the AO holding the lock */
 } QK;</code>
    </attribute>
    <attribute name="attr_" type="QK" visibility="0x00" properties="0x00">
     <documentation>/*! attributes of the QK kernel */</documentation>
+   </attribute>
+   <attribute name="idle_" type="QActive const" visibility="0x00" properties="0x00">
+    <documentation>/*! Idle AO in the QK kernel */</documentation>
+    <code>= { (struct QHsmVtable const *)0 };</code>
    </attribute>
    <operation name="activate_" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! QK activator activates the next active object. The activated AO preempts
@@ -9141,28 +9194,29 @@ QS_FLUSH(); /* flush the trace buffer to the host */</code>
 * The activator might enable interrupts internally, but always returns with
 * interrupts **disabled**.
 */</documentation>
-    <code>uint_fast8_t const pin = (uint_fast8_t)QK_attr_.actPrio;  /* save */
-uint_fast8_t p = (uint_fast8_t)QK_attr_.nextPrio; /* next prio to run */
-#if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
-uint_fast8_t pprev;
-#endif /* QK_ON_CONTEXT_SW || Q_SPY */
+    <code>uint8_t const prio_in = QK_attr_.actPrio; /* saved initial priority */
+uint_fast8_t p = QK_attr_.nextPrio; /* next prio to run */
+QK_attr_.nextPrio = 0U; /* clear for the next time */
 
 /* QK_attr_.actPrio and QK_attr_.nextPrio must be in range */
-Q_REQUIRE_ID(500, (pin &lt; QF_MAX_ACTIVE)
-                  &amp;&amp; (0U &lt; p) &amp;&amp; (p &lt; QF_MAX_ACTIVE));
+Q_REQUIRE_ID(500, (prio_in &lt;= QF_MAX_ACTIVE)
+                  &amp;&amp; (0U &lt; p) &amp;&amp; (p &lt;= QF_MAX_ACTIVE));
+
+uint8_t pthre = QActive_registry_[p]-&gt;pthre;
 
 #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
-pprev = pin;
+uint_fast8_t pprev = prio_in;
 #endif /* QK_ON_CONTEXT_SW || Q_SPY */
-
-QK_attr_.nextPrio = 0U; /* clear for the next time */
 
 /* loop until no more ready-to-run AOs of higher prio than the initial */
 QActive *a;
 do  {
     QEvt const *e;
     a = QActive_registry_[p]; /* obtain the pointer to the AO */
-    QK_attr_.actPrio = (uint8_t)p; /* this becomes the active prio */
+
+    /* set new active priority and preemption-ceiling */
+    QK_attr_.actPrio = (uint8_t)p;
+    QK_attr_.actThre = pthre;
 
     QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a-&gt;prio)
         QS_TIME_PRE_();     /* timestamp */
@@ -9180,7 +9234,7 @@ do  {
                         : (QActive *)0), a);
 #endif /* QK_ON_CONTEXT_SW */
 
-        pprev = p;     /* update previous priority */
+        pprev = p; /* update previous priority */
     }
 #endif /* QK_ON_CONTEXT_SW || Q_SPY */
 
@@ -9205,29 +9259,32 @@ do  {
 
     /* find new highest-prio AO ready to run... */
     p = QPSet_findMax(&amp;QF_readySet_);
+    pthre = QActive_registry_[p]-&gt;pthre;
 
-    /* is the new priority below the initial preemption threshold? */
-    if (p &lt;= pin) {
-        p = 0U;
+    /* is the new preemption-threshold below the initial? */
+    if (pthre &lt;= QActive_registry_[prio_in]-&gt;pthre) {
+        p = 0U; /* no preemption needed */
     }
-    else if (p &lt;= (uint_fast8_t)QK_attr_.lockPrio) {/* below lock prio? */
-        p = 0U; /* active object not eligible */
+    else if (pthre &lt;= QK_attr_.lockCeil) {
+        p = 0U; /* no preemption needed */
     }
     else {
         Q_ASSERT_ID(510, p &lt;= QF_MAX_ACTIVE);
     }
 } while (p != 0U);
 
-QK_attr_.actPrio = (uint8_t)pin; /* restore the active priority */
+/* restore the active priority and preemption-threshold */
+QK_attr_.actPrio = prio_in;
+QK_attr_.actThre = QActive_registry_[prio_in]-&gt;pthre;
 
 #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
-if (pin != 0U) { /* resuming an active object? */
-    a = QActive_registry_[pin]; /* the pointer to the preempted AO */
+if (prio_in != 0U) { /* resuming an active object? */
+    a = QActive_registry_[prio_in]; /* the pointer to the preempted AO */
 
     QS_BEGIN_NOCRIT_PRE_(QS_SCHED_RESUME, a-&gt;prio)
-        QS_TIME_PRE_();     /* timestamp */
-        QS_2U8_PRE_(pin,    /* priority of the resumed AO */
-                    pprev); /* previous priority */
+        QS_TIME_PRE_();      /* timestamp */
+        QS_2U8_PRE_(prio_in, /* priority of the resumed AO */
+                    pprev);  /* previous priority */
     QS_END_NOCRIT_PRE_()
 }
 else {  /* resuming priority==0 --&gt; idle */
@@ -9243,11 +9300,10 @@ else {  /* resuming priority==0 --&gt; idle */
 QK_onContextSw(QActive_registry_[pprev], a); /* context-switch callback */
 #endif /* QK_ON_CONTEXT_SW */
 
-#endif /* QK_ON_CONTEXT_SW || Q_SPY */
-</code>
+#endif /* QK_ON_CONTEXT_SW || Q_SPY */</code>
    </operation>
    <operation name="sched_" type="uint_fast8_t" visibility="0x00" properties="0x00">
-    <documentation>/*! QK scheduler finds the highest-priority thread ready to run
+    <documentation>/*! QK scheduler finds the highest-priority AO ready to run
 * @static @private @memberof QK
 *
 * @details
@@ -9256,8 +9312,8 @@ QK_onContextSw(QActive_registry_[pprev], a); /* context-switch callback */
 * current priority.
 *
 * @returns
-* the 1-based priority of the the active object, or zero if no eligible
-* active object is ready to run.
+* The QF priority of the the active object, or zero if no eligible
+* AO is ready to run.
 *
 * @attention
 * QK_sched_() must be always called with interrupts **disabled** and
@@ -9265,13 +9321,15 @@ QK_onContextSw(QActive_registry_[pprev], a); /* context-switch callback */
 */</documentation>
     <code>/* find the highest-prio AO with non-empty event queue */
 uint_fast8_t p = QPSet_findMax(&amp;QF_readySet_);
+uint8_t pthre = QActive_registry_[p]-&gt;pthre;
 
-/* is the highest-prio below the active priority? */
-if (p &lt;= (uint_fast8_t)QK_attr_.actPrio) {
-    p = 0U; /* no activation needed */
+/* is the AO's preemption-threshold not exceeding the active threshold? */
+if (pthre &lt;= QK_attr_.actThre) {
+    p = 0U; /* no preemption needed */
 }
-else if (p &lt;= (uint_fast8_t)QK_attr_.lockPrio) { /* below the lock prio?*/
-    p = 0U; /* no activation needed */
+/* AO's preemption-threshold not exceeding the lock preemption-ceiling? */
+else if (pthre &lt;= QK_attr_.lockCeil) {
+    p = 0U; /* no preemption needed */
 }
 else {
     Q_ASSERT_ID(410, p &lt;= QF_MAX_ACTIVE);
@@ -9285,8 +9343,8 @@ return p;</code>
 * @details
 * This function locks the QK scheduler to the specified ceiling.
 *
-* @param[in]   ceiling    priority ceiling to which the QK scheduler
-*                         needs to be locked
+* @param[in] ceiling  preemption ceiling to which the QK scheduler
+*                     needs to be locked
 *
 * @returns
 * The previous QK Scheduler lock status, which is to be used to unlock
@@ -9307,30 +9365,28 @@ return p;</code>
     <code>QF_CRIT_STAT_
 QF_CRIT_E_();
 
-/*! @pre The QK scheduler lock:
-* - cannot be called from an ISR;
-*/
+/*! @pre The QK scheduler lock cannot be called from an ISR */
 Q_REQUIRE_ID(600, !QK_ISR_CONTEXT_());
 
 /* first store the previous lock prio */
 QSchedStatus stat;
-if (QK_attr_.lockPrio &lt; ceiling) { /* raising lock prio? */
-    stat = ((QSchedStatus)QK_attr_.lockPrio &lt;&lt; 8U);
-    QK_attr_.lockPrio = (uint8_t)ceiling;
-
+if (ceiling &gt; QK_attr_.lockCeil) { /* raising the lock ceiling? */
     QS_BEGIN_NOCRIT_PRE_(QS_SCHED_LOCK, 0U)
         QS_TIME_PRE_();   /* timestamp */
-        QS_2U8_PRE_(stat, /* the previous lock prio */
-                    QK_attr_.lockPrio); /* the new lock prio */
+        /* the previous lock ceiling &amp; new lock ceiling */
+        QS_2U8_PRE_(QK_attr_.lockCeil, (uint8_t)ceiling);
     QS_END_NOCRIT_PRE_()
 
-    /* add the previous lock holder priority */
-    stat |= (QSchedStatus)QK_attr_.lockHolder;
+    /* previous status of the lock */
+    stat  = (QSchedStatus)QK_attr_.lockHolder;
+    stat |= (QSchedStatus)QK_attr_.lockCeil &lt;&lt; 8U;
 
+    /* new status of the lock */
     QK_attr_.lockHolder = QK_attr_.actPrio;
+    QK_attr_.lockCeil   = (uint8_t)ceiling;
 }
 else {
-   stat = 0xFFU;
+    stat = 0xFFU;
 }
 QF_CRIT_X_();
 
@@ -9357,31 +9413,31 @@ return stat; /* return the status to be saved in a stack variable */</code>
     <parameter name="stat" type="QSchedStatus const"/>
     <code>/* has the scheduler been actually locked by the last QK_schedLock()? */
 if (stat != 0xFFU) {
-    uint_fast8_t const lockPrio = (uint_fast8_t)QK_attr_.lockPrio;
-    uint_fast8_t const prevPrio = (uint_fast8_t)(stat &gt;&gt; 8U);
+    uint8_t const lockCeil = QK_attr_.lockCeil;
+    uint8_t const prevCeil = (uint8_t)(stat &gt;&gt; 8U);
     QF_CRIT_STAT_
     QF_CRIT_E_();
 
     /*! @pre The scheduler cannot be unlocked:
     * - from the ISR context; and
-    * - the current lock priority must be greater than the previous
+    * - the current lock ceiling must be greater than the previous
     */
     Q_REQUIRE_ID(700, (!QK_ISR_CONTEXT_())
-                      &amp;&amp; (lockPrio &gt; prevPrio));
+                      &amp;&amp; (lockCeil &gt; prevCeil));
 
     QS_BEGIN_NOCRIT_PRE_(QS_SCHED_UNLOCK, 0U)
         QS_TIME_PRE_(); /* timestamp */
-        QS_2U8_PRE_(lockPrio,  /* lock prio before unlocking */
-                    prevPrio); /* lock prio after unlocking */
+        QS_2U8_PRE_(lockCeil,  /* current lock ceiling (old) */
+                    prevCeil); /* previous lock ceiling (new) */
     QS_END_NOCRIT_PRE_()
 
-    /* restore the previous lock priority and lock holder */
-    QK_attr_.lockPrio   = (uint8_t)prevPrio;
+    /* restore the previous lock ceiling and lock holder */
+    QK_attr_.lockCeil   = prevCeil;
     QK_attr_.lockHolder = (uint8_t)(stat &amp; 0xFFU);
 
-    /* find the highest-prio thread ready to run */
-    if (QK_sched_() != 0U) { /* priority found? */
-        QK_activate_(); /* activate any unlocked basic threads */
+    /* find if any AOs should be run after unlocking the scheduler */
+    if (QK_sched_() != 0U) { /* preemption needed? */
+        QK_activate_(); /* activate any unlocked AOs */
     }
 
     QF_CRIT_X_();
@@ -9430,16 +9486,21 @@ if (stat != 0xFFU) {
   <package name="QF-cust" stereotype="0x02" namespace="QF_">
    <operation name="init" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! QF initialization for QK */</documentation>
-    <code>QF_maxPool_      = 0U;
+    <code>QF_maxPool_ = 0U;
 QActive_subscrList_   = (QSubscrList *)0;
 QActive_maxPubSignal_ = 0;
 
 QF_bzero(&amp;QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
 QF_bzero(&amp;QActive_registry_[0],     sizeof(QActive_registry_));
-QF_bzero(&amp;QK_attr_,           sizeof(QK_attr_));
+QF_bzero(&amp;QK_attr_,                 sizeof(QK_attr_));
 
+/* setup the QK scheduler as initially locked and not running */
 QK_attr_.actPrio  = 0U; /* priority of the QK idle loop */
-QK_attr_.lockPrio = QF_MAX_ACTIVE; /* scheduler locked */
+QK_attr_.actThre  = 0U; /* preemption-threshold of the QK idle loop */
+QK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
+
+/* register the QK idle thread, cast &quot;const&quot; away */
+QActive_registry_[0] = QF_CONST_CAST_(QActive*, &amp;QK_idle_);
 
 #ifdef QK_INIT
 QK_INIT(); /* port-specific initialization of the QK kernel */
@@ -9456,7 +9517,7 @@ QK_INIT(); /* port-specific initialization of the QK kernel */
    <operation name="run" type="int_t" visibility="0x00" properties="0x01">
     <documentation>/*! QF_run() customization for QK kernel */</documentation>
     <code>QF_INT_DISABLE();
-QK_attr_.lockPrio = 0U; /* scheduler unlocked */
+QK_attr_.lockCeil = 0U; /* scheduler unlocked */
 
 /* any active objects need to be scheduled before starting event loop? */
 if (QK_sched_() != 0U) {
@@ -9486,7 +9547,7 @@ return 0;
     <documentation>/*! Starts execution of an active object and registers the object
 * with the framework customized for QK
 */</documentation>
-    <parameter name="prio" type="uint_fast8_t const"/>
+    <parameter name="prio" type="QPrioSpec const"/>
     <parameter name="qSto" type="QEvt const * * const"/>
     <parameter name="qLen" type="uint_fast16_t const"/>
     <parameter name="stkSto" type="void * const"/>
@@ -9494,18 +9555,17 @@ return 0;
     <parameter name="par" type="void const * const"/>
     <code>Q_UNUSED_PAR(stkSize); /* unused in QK */
 
-/*! @pre AO cannot be started from an ISR, the priority must be in range
-* and the stack storage must not be provided, because the QK kernel does
-* not need per-AO stacks.
+/*! @pre AO cannot be started from an ISR and the stack storage must
+* NOT be provided because the QK kernel does not need per-AO stacks.
 */
 Q_REQUIRE_ID(300, (!QK_ISR_CONTEXT_())
-                  &amp;&amp; (0U &lt; prio) &amp;&amp; (prio &lt;= QF_MAX_ACTIVE)
                   &amp;&amp; (stkSto == (void *)0));
 
 QEQueue_init(&amp;me-&gt;eQueue, qSto, qLen); /* initialize the built-in queue */
 
-me-&gt;prio = (uint8_t)prio; /* set the QF priority of the AO */
-QActive_register_(me); /* make QF aware of this active object */
+me-&gt;prio  = (uint8_t)(prio &amp; 0xFFU); /* QF-priority of the AO */
+me-&gt;pthre = (uint8_t)(prio &gt;&gt; 8U);   /* preemption-ceiling of the AO */
+QActive_register_(me); /* make QF aware of this AO */
 
 QHSM_INIT(&amp;me-&gt;super, par, me-&gt;prio); /* top-most initial tran. */
 QS_FLUSH(); /* flush the trace buffer to the host */
@@ -9576,17 +9636,27 @@ QF_CRIT_X_();</code>
    <attribute name="Attr" type="typedef struct" visibility="0x04" properties="0x00">
     <documentation>/*! @brief The QXK kernel class
 * @class QXK
+*
+* @note
+* The order and alignment of the data members in this struct might
+* be important in QXK ports, where the members might be accessed
+* in assembly.
 */</documentation>
     <code>{
-    struct QActive * volatile curr; /*!&lt; current thread pointer (NULL=basic) */
-    struct QActive * volatile next; /*!&lt; next thread pointer to execute */
-    uint8_t volatile actPrio;       /*!&lt; prio of the active AO */
-    uint8_t volatile lockPrio;      /*!&lt; lock prio (0 == no-lock) */
-    uint8_t volatile lockHolder;    /*!&lt; prio of the lock holder */
+    struct QActive * volatile curr; /*!&lt; current thread (NULL=basic) */
+    struct QActive * volatile next; /*!&lt; next thread to run */
+    uint8_t volatile actPrio;    /*!&lt; prio of the active AO */
+    uint8_t volatile actThre;    /*!&lt; active preemption-threshold */
+    uint8_t volatile lockCeil;   /*!&lt; lock preemption-ceiling (0==no-lock) */
+    uint8_t volatile lockHolder; /*!&lt; prio of the lock holder */
 } QXK;</code>
    </attribute>
    <attribute name="attr_" type="QXK" visibility="0x00" properties="0x00">
     <documentation>/*! attributes of the QXK kernel */</documentation>
+   </attribute>
+   <attribute name="idle_" type="QActive const" visibility="0x00" properties="0x00">
+    <documentation>/*! Idle AO in the QXK kernel */</documentation>
+    <code>= { (struct QHsmVtable const *)0 };</code>
    </attribute>
    <attribute name="Timeouts" type="enum" visibility="0x04" properties="0x00">
     <documentation>/*! timeout signals for extended threads */</documentation>
@@ -9609,28 +9679,29 @@ QF_CRIT_X_();</code>
 * The activate function might enable interrupts internally, but it always
 * returns with interrupts **disabled**.
 */</documentation>
-    <code>uint_fast8_t const pin = (uint_fast8_t)QXK_attr_.actPrio;
+    <code>uint8_t const prio_in = QXK_attr_.actPrio;
 QActive *a = QXK_attr_.next; /* the next AO (basic-thread) to run */
+
+/*! @pre QXK_attr_.next must be valid */
+Q_REQUIRE_ID(700, (a != (QActive *)0) &amp;&amp; (prio_in &lt;= QF_MAX_ACTIVE));
 
 /* QXK Context switch callback defined or QS tracing enabled? */
 #if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
-uint_fast8_t pprev = pin;
+uint_fast8_t pprev = prio_in;
 #endif /* QXK_ON_CONTEXT_SW || Q_SPY */
 
-/*! @pre QXK_attr_.next must be valid */
-Q_REQUIRE_ID(700, (a != (QActive *)0) &amp;&amp; (pin &lt; QF_MAX_ACTIVE));
-
-/* dynamic priority of the next AO */
-uint_fast8_t p = (uint_fast8_t)a-&gt;dynPrio;
+uint_fast8_t p = a-&gt;prio; /* priority of the next AO */
+uint8_t pthre = QActive_registry_[p]-&gt;pthre; /* preemption-threshold */
 
 /* loop until no more ready-to-run AOs of higher prio than the initial */
 do  {
     a = QActive_registry_[p]; /* obtain the pointer to the AO */
-    QXK_attr_.actPrio = (uint8_t)p; /* this becomes the base prio */
+    QXK_attr_.actPrio = (uint8_t)p; /* the active prio */
+    QXK_attr_.actThre = pthre; /* the active preemption-threshold */
     QXK_attr_.next = (QActive *)0; /* clear the next AO */
 
     QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a-&gt;prio)
-        QS_TIME_PRE_();     /* timestamp */
+        QS_TIME_PRE_(); /* timestamp */
         /* next prio &amp; prev prio */
         QS_2U8_PRE_(p, pprev);
     QS_END_NOCRIT_PRE_()
@@ -9639,7 +9710,7 @@ do  {
     if (p != pprev) {  /* changing threads? */
 
 #ifdef QXK_ON_CONTEXT_SW
-        Q_ASSERT_ID(710, pprev &lt; QF_MAX_ACTIVE);
+        Q_ASSERT_ID(710, pprev &lt;= QF_MAX_ACTIVE);
 
         /* context-switch callback */
         QXK_onContextSw(((pprev != 0U) ? QActive_registry_[pprev]
@@ -9674,9 +9745,12 @@ do  {
     * current is a basic-thread path.
     */
     p = QPSet_findMax(&amp;QF_readySet_);
+    pthre = QActive_registry_[p]-&gt;pthre;
 
-    if (p &lt;= (uint_fast8_t)QXK_attr_.lockPrio) { /* below lock prio? */
-        p = (uint_fast8_t)QXK_attr_.lockHolder; /* thread holding lock */
+    /* is the new preemption-threshold below the initial? */
+    if (pthre &lt;= (uint_fast8_t)QXK_attr_.lockCeil) {
+        p = QXK_attr_.lockHolder; /* thread holding lock */
+        pthre = QActive_registry_[p]-&gt;pthre;
         if (p != 0U) {
             Q_ASSERT_ID(710, QPSet_hasElement(&amp;QF_readySet_, p));
         }
@@ -9688,12 +9762,12 @@ do  {
 
     /* is the next a basic thread? */
     if (a-&gt;osObject == (void *)0) {
-        if (p &gt; pin) {
+        if (pthre &gt; QActive_registry_[prio_in]-&gt;pthre) {
             QXK_attr_.next = a;
         }
         else {
             QXK_attr_.next = (QActive *)0;
-            p = 0U; /* no activation needed */
+            p = 0U; /* no preemption needed */
         }
     }
     else {  /* next is the extened thread */
@@ -9705,20 +9779,24 @@ do  {
         QS_END_NOCRIT_PRE_()
 
         QXK_attr_.next = a;
-        p = 0U; /* no activation needed */
+        p = 0U; /* no preemption needed */
+
+        /* but context switch to extended thread necessary */
         QXK_CONTEXT_SWITCH_();
     }
 } while (p != 0U); /* while activation needed */
 
-QXK_attr_.actPrio = (uint8_t)pin; /* restore the base prio */
+/* restore the active priority and preemption-threshold */
+QXK_attr_.actPrio = prio_in;
+QXK_attr_.actThre = QActive_registry_[prio_in]-&gt;pthre;
 
 #if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
-if (pin != 0U) { /* resuming an active object? */
-    a = QActive_registry_[pin]; /* the pointer to the preempted AO */
+if (prio_in != 0U) { /* resuming an active object? */
+    a = QActive_registry_[prio_in]; /* the pointer to the preempted AO */
 
     QS_BEGIN_NOCRIT_PRE_(QS_SCHED_RESUME, a-&gt;prio)
         QS_TIME_PRE_();  /* timestamp */
-        QS_2U8_PRE_(pin, pprev); /* resumed prio &amp; previous prio */
+        QS_2U8_PRE_(prio_in, pprev); /* resumed prio &amp; previous prio */
     QS_END_NOCRIT_PRE_()
 }
 else {  /* resuming priority==0 --&gt; idle */
@@ -9755,10 +9833,12 @@ QXK_onContextSw(QActive_registry_[pprev], a);
 */</documentation>
     <code>/* find the highest-prio thread ready to run */
 uint_fast8_t p = QPSet_findMax(&amp;QF_readySet_);
+uint8_t pthre = QActive_registry_[p]-&gt;pthre;
 
-if (p &lt;= (uint_fast8_t)QXK_attr_.lockPrio) { /* below the lock prio? */
-    /* dynamic priority of the thread holding the lock */
-    p = (uint_fast8_t)QActive_registry_[QXK_attr_.lockHolder]-&gt;dynPrio;
+if (pthre &lt;= QXK_attr_.lockCeil) {
+    /* priority of the thread holding the lock */
+    p = (uint_fast8_t)QActive_registry_[QXK_attr_.lockHolder]-&gt;prio;
+    pthre = QActive_registry_[p]-&gt;pthre;
     if (p != 0U) {
         Q_ASSERT_ID(610, QPSet_hasElement(&amp;QF_readySet_, p));
     }
@@ -9774,15 +9854,15 @@ if (QXK_attr_.curr == (QActive *)0) {
 
     /* is next a basic-thread? */
     if (next-&gt;osObject == (void *)0) {
-        if (p &gt; (uint_fast8_t)QXK_attr_.actPrio) {
+        if (pthre &gt; (uint_fast8_t)QXK_attr_.actThre) {
             QXK_attr_.next = next; /* set the next AO to activate */
         }
         else {
             QXK_attr_.next = (QActive *)0;
-            p = 0U; /* no activation needed */
+            p = 0U; /* no preemption needed */
         }
     }
-    else {  /* this is an extened-thread */
+    else {  /* this is an extended-thread */
 
         QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, next-&gt;prio)
             QS_TIME_PRE_();  /* timestamp */
@@ -9791,7 +9871,7 @@ if (QXK_attr_.curr == (QActive *)0) {
         QS_END_NOCRIT_PRE_()
 
         QXK_attr_.next = next;
-        p = 0U; /* no activation needed */
+        p = 0U; /* no preemption needed */
         QXK_CONTEXT_SWITCH_();
     }
 }
@@ -9807,12 +9887,12 @@ else { /* currently executing an extended-thread */
         QS_END_NOCRIT_PRE_()
 
         QXK_attr_.next = next;
-        p = 0U; /* no activation needed */
+        p = 0U; /* no preemption needed */
         QXK_CONTEXT_SWITCH_();
     }
     else { /* next is the same as the current */
         QXK_attr_.next = (QActive *)0; /* no need to context-switch */
-        p = 0U; /* no activation needed */
+        p = 0U; /* no preemption needed */
     }
 }
 return p;</code>
@@ -9824,12 +9904,13 @@ return p;</code>
 * @details
 * This function locks the QXK scheduler to the specified ceiling.
 *
-* @param[in]   ceiling    priority ceiling to which the QXK scheduler
-*                         needs to be locked
+* @param[in] ceiling  preemption ceiling to which the QXK scheduler
+*                     needs to be locked
 *
 * @returns
 * The previous QXK Scheduler lock status, which is to be used to unlock
-* the scheduler by restoring its previous lock status in QXK_schedUnlock().
+* the scheduler by restoring its previous lock status in
+* QXK_schedUnlock().
 *
 * @note
 * A QXK scheduler can be locked from both basic threads (AOs) and
@@ -9853,28 +9934,28 @@ return p;</code>
     <code>QF_CRIT_STAT_
 QF_CRIT_E_();
 
-/*! @pre The QXK scheduler lock:
-* - cannot be called from an ISR;
-*/
+/*! @pre The QXK scheduler lock cannot be called from an ISR */
 Q_REQUIRE_ID(400, !QXK_ISR_CONTEXT_());
 
-/* first store the previous lock prio if below the ceiling */
-QSchedStatus stat;
-if ((uint_fast8_t)QXK_attr_.lockPrio &lt; ceiling) {
-    stat = ((QSchedStatus)QXK_attr_.lockPrio &lt;&lt; 8U);
-    QXK_attr_.lockPrio = (uint8_t)ceiling;
+QSchedStatus stat; /* saved lock status to be returned */
 
+/* is the lock ceiling being raised? */
+if (ceiling &gt; (uint_fast8_t)QXK_attr_.lockCeil) {
     QS_BEGIN_NOCRIT_PRE_(QS_SCHED_LOCK, 0U)
         QS_TIME_PRE_(); /* timestamp */
-        /* the previous lock prio &amp; new lock prio */
-        QS_2U8_PRE_(stat, QXK_attr_.lockPrio);
+        /* the previous lock ceiling &amp; new lock ceiling */
+        QS_2U8_PRE_(QXK_attr_.lockCeil, (uint8_t)ceiling);
     QS_END_NOCRIT_PRE_()
 
-    /* add the previous lock holder priority */
-    stat |= (QSchedStatus)QXK_attr_.lockHolder;
+    /* previous status of the lock */
+    stat  = (QSchedStatus)QXK_attr_.lockHolder;
+    stat |= (QSchedStatus)QXK_attr_.lockCeil &lt;&lt; 8U;
+
+    /* new status of the lock */
     QXK_attr_.lockHolder = (QXK_attr_.curr != (QActive *)0)
                            ? QXK_attr_.curr-&gt;prio
                            : 0U;
+    QXK_attr_.lockCeil   = (uint8_t)ceiling;
 }
 else {
    stat = 0xFFU;
@@ -9909,8 +9990,8 @@ return stat; /* return the status to be saved in a stack variable */</code>
     <parameter name="stat" type="QSchedStatus const"/>
     <code>/* has the scheduler been actually locked by the last QXK_schedLock()? */
 if (stat != 0xFFU) {
-    uint_fast8_t const lockPrio = (uint_fast8_t)QXK_attr_.lockPrio;
-    uint_fast8_t const prevPrio = (uint_fast8_t)(stat &gt;&gt; 8U);
+    uint8_t const lockCeil = QXK_attr_.lockCeil;
+    uint8_t const prevCeil = (uint8_t)(stat &gt;&gt; 8U);
     QF_CRIT_STAT_
     QF_CRIT_E_();
 
@@ -9919,21 +10000,21 @@ if (stat != 0xFFU) {
     * - the current lock priority must be greater than the previous
     */
     Q_REQUIRE_ID(500, (!QXK_ISR_CONTEXT_())
-                      &amp;&amp; (lockPrio &gt; prevPrio));
+                      &amp;&amp; (lockCeil &gt; prevCeil));
 
     QS_BEGIN_NOCRIT_PRE_(QS_SCHED_UNLOCK, 0U)
         QS_TIME_PRE_(); /* timestamp */
         /* prio before unlocking &amp; prio after unlocking */
-        QS_2U8_PRE_(lockPrio, prevPrio);
+        QS_2U8_PRE_(lockCeil, prevCeil);
     QS_END_NOCRIT_PRE_()
 
     /* restore the previous lock priority and lock holder */
-    QXK_attr_.lockPrio   = (uint8_t)prevPrio;
+    QXK_attr_.lockCeil   = prevCeil;
     QXK_attr_.lockHolder = (uint8_t)(stat &amp; 0xFFU);
 
-    /* find the highest-prio thread ready to run */
-    if (QXK_sched_() != 0U) { /* priority found? */
-        QXK_activate_(); /* activate any unlocked basic threads */
+    /* find if any threads should be run after unlocking the scheduler */
+    if (QXK_sched_() != 0U) { /* preemption needed? */
+        QXK_activate_(); /* activate any unlocked threads */
     }
 
     QF_CRIT_X_();
@@ -9961,7 +10042,7 @@ if (stat != 0xFFU) {
 * pointer to the currently executing active-object/thread
 */</documentation>
     <code>/*! @pre the QXK kernel must be running */
-Q_REQUIRE_ID(800, QXK_attr_.lockPrio &lt;= QF_MAX_ACTIVE);
+Q_REQUIRE_ID(800, QXK_attr_.lockCeil &lt;= QF_MAX_ACTIVE);
 
 QF_CRIT_STAT_
 QF_CRIT_E_();
@@ -10013,21 +10094,21 @@ return curr;</code>
   <package name="QF-cust" stereotype="0x02" namespace="QF_">
    <operation name="init" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! QF initialization for QXK */</documentation>
-    <code>QF_maxPool_      = 0U;
+    <code>QF_maxPool_ = 0U;
 QActive_subscrList_   = (QSubscrList *)0;
 QActive_maxPubSignal_ = 0;
 
 QF_bzero(&amp;QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
 QF_bzero(&amp;QActive_registry_[0],     sizeof(QActive_registry_));
-QF_bzero(&amp;QXK_attr_,          sizeof(QXK_attr_));
-QF_bzero(&amp;QXThread_idle,      sizeof(QXThread_idle));
+QF_bzero(&amp;QXK_attr_,                sizeof(QXK_attr_));
 
 /* setup the QXK scheduler as initially locked and not running */
-QXK_attr_.lockPrio = (QF_MAX_ACTIVE + 1U);
+QXK_attr_.actPrio  = 0U; /* priority of the QK idle loop */
+QXK_attr_.actThre  = 0U; /* preemption-threshold of the QK idle loop */
+QXK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
 
-/* setup the QXK idle thread... */
-QActive_registry_[0] = &amp;QXThread_idle.super; /* register idle thread */
-QXK_attr_.actPrio = QXThread_idle.super.prio; /* set the base priority */
+/* register the QXK idle thread, cast &quot;const&quot; away */
+QActive_registry_[0] = QF_CONST_CAST_(QActive*, &amp;QXK_idle_);
 
 #ifdef QXK_INIT
 QXK_INIT(); /* port-specific initialization of the QXK kernel */
@@ -10044,7 +10125,7 @@ QXK_INIT(); /* port-specific initialization of the QXK kernel */
    <operation name="run" type="int_t" visibility="0x00" properties="0x01">
     <documentation>/*! QF_run() customization for QXK kernel */</documentation>
     <code>QF_INT_DISABLE();
-QXK_attr_.lockPrio = 0U; /* unlock the scheduler */
+QXK_attr_.lockCeil = 0U; /* unlock the scheduler */
 
 /* any active objects need to be scheduled before starting event loop? */
 if (QXK_sched_() != 0U) {
@@ -10091,7 +10172,9 @@ return 0;
    <attribute name="timeEvt" type="QTimeEvt" visibility="0x02" properties="0x00">
     <documentation>/*! time event to handle blocking timeouts */</documentation>
    </attribute>
-   <attribute name="idle" type="QXThread" visibility="0x00" properties="0x01"/>
+   <attribute name="dummy" type="QXThread const *" visibility="0x02" properties="0x01">
+    <documentation>/*! dummy static to force generation of &quot;struct QXThread&quot; */</documentation>
+   </attribute>
    <operation name="ctor" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! constructor of an extended-thread
 * @public @memberof QXThread
@@ -10268,7 +10351,7 @@ if (thr-&gt;super.eQueue.frontEvt == (QEvt *)0) {
         = QXK_PTR_CAST_(QMState const*, &amp;thr-&gt;super.eQueue);
 
     QXThread_teArm_(thr, (enum_t)QXK_QUEUE_SIG, nTicks);
-    QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)thr-&gt;super.dynPrio);
+    QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)thr-&gt;super.prio);
     (void)QXK_sched_();
     QF_CRIT_X_();
     QF_CRIT_EXIT_NOP(); /* BLOCK here */
@@ -10351,7 +10434,7 @@ Q_UNUSED_PAR(qs_id);
 Q_ERROR_ID(120);</code>
    </operation>
    <operation name="start_" type="void" visibility="0x01" properties="0x01">
-    <documentation>/*! start QXThread private implementation
+    <documentation>threshold/*! start QXThread private implementation
 * @private @memberof QXThread
 *
 * @details
@@ -10360,7 +10443,9 @@ Q_ERROR_ID(120);</code>
 * if the QXK is already running.
 *
 * @param[in,out] me      pointer (see @ref oop)
-* @param[in]     prio    priority at which to start the extended thread
+* @param[in]     prio    QF-priority of the thread and (optionally)
+*                        preemption-threshold of this extended thread.
+*                        See also ::QPrioSpec.
 * @param[in]     qSto    pointer to the storage for the ring buffer of the
 *                        event queue. This cold be NULL, if this extended
 *                        thread does not use the built-in event queue.
@@ -10378,7 +10463,7 @@ Q_ERROR_ID(120);</code>
 * @include qxk_start.c
 */</documentation>
     <parameter name="me" type="QActive * const"/>
-    <parameter name="prio" type="uint_fast8_t const"/>
+    <parameter name="prio" type="QPrioSpec const"/>
     <parameter name="qSto" type="QEvt const * * const"/>
     <parameter name="qLen" type="uint_fast16_t const"/>
     <parameter name="stkSto" type="void * const"/>
@@ -10388,12 +10473,10 @@ Q_ERROR_ID(120);</code>
 
 /*! @pre this function must:
 * - NOT be called from an ISR;
-* - the thread priority cannot exceed #QF_MAX_ACTIVE;
 * - the stack storage must be provided;
 * - the thread must be instantiated (see QXThread_ctor()).
 */
 Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
-    &amp;&amp; (prio &lt;= QF_MAX_ACTIVE)
     &amp;&amp; (stkSto != (void *)0) /* stack must be provided */
     &amp;&amp; (stkSize != 0U)
     &amp;&amp; (me-&gt;super.state.act == (QActionHandler)0));
@@ -10408,18 +10491,17 @@ if (qSto != (QEvt const **)0) {
 */
 QXK_stackInit_(me, me-&gt;super.temp.thr, stkSto, stkSize);
 
-me-&gt;prio    = (uint8_t)prio;
-me-&gt;dynPrio = (uint8_t)prio;
-
 /* the new thread is not blocked on any object */
 me-&gt;super.temp.obj = (QMState *)0;
 
-QActive_register_(me); /* make QF aware of this extended thread */
+me-&gt;prio  = (uint8_t)(prio &amp; 0xFFU); /* QF-priority of the thread */
+me-&gt;pthre = (uint8_t)(prio &gt;&gt; 8U);   /* preemption-threshold of the thread */
+QActive_register_(me); /* make QF aware of this thread */
 
 QF_CRIT_STAT_
 QF_CRIT_E_();
 /* extended-thread becomes ready immediately */
-QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)me-&gt;dynPrio);
+QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)me-&gt;prio);
 
 /* see if this thread needs to be scheduled in case QXK is running */
 (void)QXK_sched_();
@@ -10552,8 +10634,7 @@ else if (me-&gt;eQueue.end != 0U) {
                 == QXK_PTR_CAST_(QMState*, &amp;me-&gt;eQueue))
             {
                 (void)QXThread_teDisarm_(QXTHREAD_CAST_(me));
-                QPSet_insert(&amp;QF_readySet_,
-                             (uint_fast8_t)me-&gt;dynPrio);
+                QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)me-&gt;prio);
                 if (!QXK_ISR_CONTEXT_()) {
                     (void)QXK_sched_();
                 }
@@ -10596,8 +10677,7 @@ else { /* the queue is not available */
      Q_ERROR_ID(320); /* this extended thread cannot accept events */
 }
 
-return status;
-</code>
+return status;</code>
    </operation>
    <operation name="postLIFO_" type="void" visibility="0x01" properties="0x01">
     <documentation>/*! post to the QXThread event queue (LIFO) private implementation
@@ -10633,7 +10713,7 @@ Q_ERROR_ID(410);</code>
     <code>/*! @pre the thread holding the lock cannot block! */
 Q_REQUIRE_ID(600, (QXK_attr_.lockHolder != me-&gt;super.prio));
 
-QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.dynPrio);
+QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.prio);
 (void)QXK_sched_();</code>
    </operation>
    <operation name="unblock_" type="void" visibility="0x02" properties="0x00">
@@ -10647,7 +10727,7 @@ QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.dynPrio);
 * @note
 * must be called from within a critical section
 */</documentation>
-    <code>QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.dynPrio);
+    <code>QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)me-&gt;super.prio);
 if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
     &amp;&amp; (QActive_registry_[0] != (QActive *)0))  /* kernel started? */
 {
@@ -10740,7 +10820,7 @@ return wasArmed;</code>
     <documentation>/*! Starts execution of an active object and registers the object
 * with the framework customized for QXK
 */</documentation>
-    <parameter name="prio" type="uint_fast8_t const"/>
+    <parameter name="prio" type="QPrioSpec const"/>
     <parameter name="qSto" type="QEvt const * * const"/>
     <parameter name="qLen" type="uint_fast16_t const"/>
     <parameter name="stkSto" type="void * const"/>
@@ -10748,20 +10828,18 @@ return wasArmed;</code>
     <parameter name="par" type="void const * const"/>
     <code>/*! @pre AO cannot be started:
 * - from an ISR;
-* - the priority must be in range;
 * - the stack storage must NOT be provided (because the QK kernel does
 * not need per-AO stacks).
 */
 Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_())
-    &amp;&amp; (0U &lt; prio) &amp;&amp; (prio &lt;= QF_MAX_ACTIVE)
     &amp;&amp; (stkSto == (void *)0)
     &amp;&amp; (stkSize == 0U));
 
-QEQueue_init(&amp;me-&gt;eQueue, qSto, qLen); /* initialize the built-in queue */
-me-&gt;osObject = (void *)0; /* no private stack for AO */
-me-&gt;prio     = (uint8_t)prio;  /* set the current priority of the AO */
-me-&gt;dynPrio  = (uint8_t)prio;  /* set the dynamic priority of the AO */
-QActive_register_(me); /* make QF aware of this active object */
+QEQueue_init(&amp;me-&gt;eQueue, qSto, qLen);  /* initialize the built-in queue */
+me-&gt;osObject = (void *)0;               /* no private stack for the AO */
+me-&gt;prio     = (uint8_t)(prio &amp; 0xFFU); /* QF-priority of the AO */
+me-&gt;pthre    = (uint8_t)(prio &gt;&gt; 8U);   /* preemption-threshold of the AO */
+QActive_register_(me); /* register this AO */
 
 QHSM_INIT(&amp;me-&gt;super, par, me-&gt;prio); /* top-most initial tran. */
 QS_FLUSH(); /* flush the trace buffer to the host */
@@ -10887,9 +10965,16 @@ Q_REQUIRE_ID(201, QXK_attr_.lockHolder != curr-&gt;super.prio);
 bool signaled = true; /* assume that the semaphore will be signaled */
 if (me-&gt;count &gt; 0U) {
     --me-&gt;count; /* semaphore taken: decrement the count */
+
+    QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, curr-&gt;super.prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this semaphore */
+        QS_U16_PRE_(me-&gt;count);
+        QS_U8_PRE_(curr-&gt;super.prio);
+    QS_END_NOCRIT_PRE_()
 }
 else {
-    uint_fast8_t const p = (uint_fast8_t)curr-&gt;super.dynPrio;
+    uint_fast8_t const p = (uint_fast8_t)curr-&gt;super.prio;
 
     /* remember the blocking object (this semaphore) */
     curr-&gt;super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
@@ -10897,8 +10982,15 @@ else {
 
     /* remove this curr prio from the ready set (will block)
     * and insert to the waiting set on this semaphore */
-    QPSet_insert(&amp;me-&gt;waitSet,        p); /* add to waiting-set */
+    QPSet_insert(&amp;me-&gt;waitSet,  p); /* add to waiting-set */
     QPSet_remove(&amp;QF_readySet_, p); /* remove from ready-set */
+
+    QS_BEGIN_NOCRIT_PRE_(QS_SEM_BLOCK, curr-&gt;super.prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this semaphore */
+        QS_U16_PRE_(me-&gt;count);
+        QS_U8_PRE_(curr-&gt;super.prio);
+    QS_END_NOCRIT_PRE_()
 
     /* schedule the next thread if multitasking started */
     (void)QXK_sched_();
@@ -10950,20 +11042,39 @@ return signaled;</code>
 * This function can be called from any context, including ISRs and basic
 * threads (active objects).
 */</documentation>
-    <code>/*! @pre the semaphore must be initialized */
+    <code>QF_CRIT_STAT_
+QF_CRIT_E_();
+
+/*! @pre the semaphore must be initialized */
 Q_REQUIRE_ID(300, me-&gt;max_count &gt; 0U);
 
-QF_CRIT_STAT_
-QF_CRIT_E_();
+#ifdef Q_SPY
+/* volatile into temp. */
+QActive const * const curr = QXK_PTR_CAST_(QActive*, QXK_attr_.curr);
+#endif /* Q_SPY */
 
 bool isAvailable;
 /* is the semaphore available? */
 if (me-&gt;count &gt; 0U) {
     --me-&gt;count;
     isAvailable = true;
+
+    QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, curr-&gt;prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this semaphore */
+        QS_U16_PRE_(me-&gt;count);
+        QS_U8_PRE_(curr-&gt;prio);
+    QS_END_NOCRIT_PRE_()
 }
 else { /* the semaphore is NOT available (would block) */
     isAvailable = false;
+
+    QS_BEGIN_NOCRIT_PRE_(QS_SEM_BLOCK_ATTEMPT, curr-&gt;prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this semaphore */
+        QS_U16_PRE_(me-&gt;count);
+        QS_U8_PRE_(curr-&gt;prio);
+    QS_END_NOCRIT_PRE_()
 }
 QF_CRIT_X_();
 
@@ -11002,6 +11113,18 @@ if (me-&gt;count &lt; me-&gt;max_count) {
 
     ++me-&gt;count; /* increment the semaphore count */
 
+    #ifdef Q_SPY
+    /* volatile into temp. */
+    QActive const * const curr = QXK_PTR_CAST_(QActive*, QXK_attr_.curr);
+    #endif /* Q_SPY */
+
+    QS_BEGIN_NOCRIT_PRE_(QS_SEM_SIGNAL, curr-&gt;prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this semaphore */
+        QS_U16_PRE_(me-&gt;count);
+        QS_U8_PRE_(curr-&gt;prio);
+    QS_END_NOCRIT_PRE_()
+
     if (QPSet_notEmpty(&amp;me-&gt;waitSet)) {
         /* find the highest-priority thread waiting on this semaphore */
         uint_fast8_t const p = QPSet_findMax(&amp;me-&gt;waitSet);
@@ -11023,7 +11146,14 @@ if (me-&gt;count &lt; me-&gt;max_count) {
 
         /* make the thread ready to run and remove from the wait-list */
         QPSet_insert(&amp;QF_readySet_, p);
-        QPSet_remove(&amp;me-&gt;waitSet, p);
+        QPSet_remove(&amp;me-&gt;waitSet,  p);
+
+        QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, thr-&gt;super.prio)
+            QS_TIME_PRE_();  /* timestamp */
+            QS_OBJ_PRE_(me); /* this semaphore */
+            QS_U16_PRE_(me-&gt;count);
+            QS_U8_PRE_(thr-&gt;super.prio);
+        QS_END_NOCRIT_PRE_()
 
         if (!QXK_ISR_CONTEXT_()) { /* not inside ISR? */
             (void)QXK_sched_(); /* schedule the next thread */
@@ -11038,19 +11168,20 @@ QF_CRIT_X_();
 return signaled;</code>
    </operation>
   </class>
-  <class name="QXMutex">
+  <class name="QXMutex" superclass="QF::QActive">
    <documentation>/*! @brief Blocking Mutex the QXK preemptive kernel
 * @class QXMutex
+* @extends QActive
 *
 * @details
 * ::QXMutex is a blocking mutual exclusion mechanism that can also apply
-* the **priority ceiling protocol** to avoid unbounded priority inversion
+* the **priority-ceiling protocol** to avoid unbounded priority inversion
 * (if initialized with a non-zero ceiling priority, see QXMutex_init()).
 * In that case, ::QXMutex requires its own uinque QP priority level, which
 * cannot be used by any thread or any other ::QXMutex.
-* If initialized with zero ceiling priority, ::QXMutex does **not** use the
-* priority ceiling protocol and does not require a unique QP priority
-* (see QXMutex_init()).
+* If initialized with preemption-ceiling of zero, ::QXMutex does **not**
+* use the priority-ceiling protocol and does not require a unique QP
+* priority (see QXMutex_init()).
 * ::QXMutex is **recursive** (re-entrant), which means that it can be locked
 * multiple times (up to 255 levels) by the *same* thread without causing
 * deadlock.
@@ -11077,15 +11208,6 @@ return signaled;</code>
    <attribute name="waitSet" type="QPSet" visibility="0x02" properties="0x00">
     <documentation>/*! set of extended-threads waiting on this mutex */</documentation>
    </attribute>
-   <attribute name="lockNest" type="uint8_t volatile" visibility="0x02" properties="0x00">
-    <documentation>/*! lock-nesting up-down counter */</documentation>
-   </attribute>
-   <attribute name="holderPrio" type="uint8_t volatile" visibility="0x02" properties="0x00">
-    <documentation>/*! prio of the lock holder thread */</documentation>
-   </attribute>
-   <attribute name="ceiling" type="uint8_t" visibility="0x02" properties="0x00">
-    <documentation>/*! prioirty ceiling of this mutex */</documentation>
-   </attribute>
    <operation name="init" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! initialize the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
@@ -11093,18 +11215,21 @@ return signaled;</code>
 * @details
 * Initialize the QXK priority ceiling mutex.
 *
-* @param[in,out] me      pointer (see @ref oop)
-* @param[in]     ceiling the ceiling-priority of this mutex or zero
+* @param[in,out] me    pointer (see @ref oop)
+* @param[in]     prio  the QF-priority and optionally preemption-
+*                      threshold  of this mutex. This value might
+*                      also be zero. See also ::QPrioSpec
 *
 * @note
-* `ceiling == 0` means that the priority-ceiling protocol shall __not__
-* be used by this mutex. Such mutex will __not__ change (boost) the
+* `ceiling == 0` means that the priority-ceiling protocol shall **not**
+* be used by this mutex. Such mutex will **not** change (boost) the
 * priority of the holding thread.
 *
 * @note
-* `ceiling &gt; 0` means that the priority-ceiling protocol shall be used
-* by this mutex. Such mutex __will__ boost the priority of the holding
-* thread to the `ceiling` level for as long as the thread holds this mutex.
+* Conversely, `ceiling != 0` means that the priority-ceiling protocol
+* shall be used by this mutex. Such mutex **will__ boost the priority
+* of the holding thread to the `ceiling` level for as long as the
+* thread holds this mutex.
 *
 * @attention
 * When the priority-ceiling protocol is used (`ceiling &gt; 0`), the
@@ -11115,37 +11240,19 @@ return signaled;</code>
 * @usage
 * @include qxk_mutex.c
 */</documentation>
-    <parameter name="ceiling" type="uint_fast8_t const"/>
-    <code>QF_CRIT_STAT_
-QF_CRIT_E_();
+    <parameter name="prio" type="QPrioSpec const"/>
+    <code>QF_bzero((void *)me, sizeof(*me)); /* clear the mutex object */
 
-/*! @pre the ceiling priority of the mutex must:
-* - cannot exceed the maximum #QF_MAX_ACTIVE;
-* - the ceiling priority of the mutex must not be already in use;
-* (QF requires priority to be **unique**).
-*/
-Q_REQUIRE_ID(100,
-    (ceiling &lt;= QF_MAX_ACTIVE)
-    &amp;&amp; ((ceiling == 0U)
-        || (QActive_registry_[ceiling] == (QActive *)0)));
+me-&gt;super.prio    = (uint8_t)(prio &amp; 0xFFU); /* QF-priority */
+me-&gt;super.pthre   = (uint8_t)(prio &gt;&gt; 8U);   /* preemption-threshold */
 
-me-&gt;ceiling    = (uint8_t)ceiling;
-me-&gt;lockNest   = 0U;
-me-&gt;holderPrio = 0U;
-QF_bzero((void *)&amp;me-&gt;waitSet, sizeof(me-&gt;waitSet));
-
-if (ceiling != 0U) {
-    /* reserve the ceiling priority level for this mutex */
-    QActive_registry_[ceiling] = QXK_PTR_CAST_(QActive*, me);
-}
-QF_CRIT_X_();</code>
+if (me-&gt;super.prio &gt; 0U) {  /* priority-ceiling protocol used? */
+    QActive_register_(&amp;me-&gt;super); /* register this mutex at the slot */
+}</code>
    </operation>
    <operation name="lock" type="bool" visibility="0x00" properties="0x00">
     <documentation>/*! lock the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
-*
-* @details
-* Lock the QXK priority ceiling mutex ::QXMutex.
 *
 * @param[in,out] me     pointer (see @ref oop)
 * @param[in]  nTicks    number of clock ticks (at the associated rate)
@@ -11172,82 +11279,113 @@ QXThread * const curr = QXK_PTR_CAST_(QXThread*, QXK_attr_.curr);
 /*! @pre this function must:
 * - NOT be called from an ISR;
 * - be called from an extended thread;
-* - the ceiling priority must not be used; or if used
-*   - the thread priority must be below the ceiling of the mutex;
-* - the ceiling must be in range
+* - the mutex-priority must be in range
 * - the thread must NOT be already blocked on any object.
 */
 Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
     &amp;&amp; (curr != (QXThread *)0) /* current thread must be extended */
-    &amp;&amp; ((me-&gt;ceiling == 0U)
-        || (curr-&gt;super.prio &lt; me-&gt;ceiling)) /* below ceiling */
-    &amp;&amp; (me-&gt;ceiling &lt;= QF_MAX_ACTIVE) /* in range */
+    &amp;&amp; (me-&gt;super.prio &lt;= QF_MAX_ACTIVE)
     &amp;&amp; (curr-&gt;super.super.temp.obj == (QMState *)0)); /* not blocked */
 /*! @pre also: the thread must NOT be holding a scheduler lock. */
 Q_REQUIRE_ID(201, QXK_attr_.lockHolder != curr-&gt;super.prio);
 
 /* is the mutex available? */
 bool locked = true; /* assume that the mutex will be locked */
-if (me-&gt;lockNest == 0U) {
-    me-&gt;lockNest = 1U;
+if (me-&gt;super.eQueue.nFree == 0U) {
+    me-&gt;super.eQueue.nFree = 1U; /* mutex lock nesting */
 
-    if (me-&gt;ceiling != 0U) {
-        /* the priority slot must be occupied by this mutex */
-        Q_ASSERT_ID(210, QActive_registry_[me-&gt;ceiling]
-                         == QXK_PTR_CAST_(QActive*, me));
+    /*! @pre also: the newly locked mutex must have no holder yet */
+    Q_REQUIRE_ID(202, me-&gt;super.thread == (void *)0);
 
-        /* boost the dynamic priority of this thread to the ceiling */
-        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;super.dynPrio);
-        curr-&gt;super.dynPrio = me-&gt;ceiling;
-        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;super.dynPrio);
-        QActive_registry_[me-&gt;ceiling] = &amp;curr-&gt;super;
-    }
+    /* set the new mutex holder to the curr thread */
+    me-&gt;super.thread = &amp;curr-&gt;super;
 
-    /* make the curr thread the new mutex holder */
-    me-&gt;holderPrio = (uint8_t)curr-&gt;super.prio;
+    /* save the thread's prio/pthre in the mutex
+    * NOTE: reuse the otherwise unused eQueue data member.
+    */
+    me-&gt;super.eQueue.head = (QEQueueCtr)curr-&gt;super.prio;
+    me-&gt;super.eQueue.tail = (QEQueueCtr)curr-&gt;super.pthre;
 
-    QS_BEGIN_NOCRIT_PRE_(QS_MUTEX_LOCK, curr-&gt;super.prio)
+    QS_BEGIN_NOCRIT_PRE_(QS_MTX_LOCK, curr-&gt;super.prio)
         QS_TIME_PRE_();  /* timestamp */
-        QS_2U8_PRE_(curr-&gt;super.prio, /* the start prio */
-                    me-&gt;ceiling); /* current ceiling */
+        QS_OBJ_PRE_(me); /* this mutex */
+        QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
+                    (uint8_t)me-&gt;super.eQueue.nFree); /* nesting */
     QS_END_NOCRIT_PRE_()
+
+    if (me-&gt;super.prio != 0U) { /* priority-ceiling protocol used? */
+        /* the holder priority must be lower than that of the mutex
+        * and the priority slot must be occupied by this mutex
+        */
+        Q_ASSERT_ID(210, (curr-&gt;super.prio &lt; me-&gt;super.prio)
+            &amp;&amp; (QActive_registry_[me-&gt;super.prio]== &amp;me-&gt;super));
+
+        /* remove the thread's original prio from the ready set */
+        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;super.prio);
+
+        /* set the thread's prio/pthre to that of the mutex */
+        curr-&gt;super.prio  = me-&gt;super.prio;
+        curr-&gt;super.pthre = me-&gt;super.pthre;
+
+        /* insert the thread's boosted prio into the ready set */
+        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;super.prio);
+
+        /* re-register the thread in place of the mutex */
+        QActive_registry_[me-&gt;super.prio] = &amp;curr-&gt;super;
+    }
 }
 /* is the mutex locked by this thread already (nested locking)? */
-else if (me-&gt;holderPrio == curr-&gt;super.prio) {
+else if (me-&gt;super.thread == &amp;curr-&gt;super) {
 
-    /* the nesting level must not exceed the dynamic range of uint8_t */
-    Q_ASSERT_ID(220, me-&gt;lockNest &lt; 0xFFU);
+    /* the nesting level beyond the arbitrary but high limit
+    * most likely means cyclic or recursive locking of a mutex.
+    */
+    Q_ASSERT_ID(220, me-&gt;super.eQueue.nFree &lt; 0xFFU);
 
-    ++me-&gt;lockNest; /* lock one level */
+    ++me-&gt;super.eQueue.nFree; /* lock one more level */
+
+    QS_BEGIN_NOCRIT_PRE_(QS_MTX_LOCK, curr-&gt;super.prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this mutex */
+        QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
+                    (uint8_t)me-&gt;super.eQueue.nFree); /* nesting */
+    QS_END_NOCRIT_PRE_()
 }
 else { /* the mutex is already locked by a different thread */
-    /* the ceiling holder priority must be valid */
-    Q_ASSERT_ID(230, 0U &lt; me-&gt;holderPrio);
-    Q_ASSERT_ID(231, me-&gt;holderPrio &lt;= QF_MAX_ACTIVE);
+    /* the mutex holder must be valid */
+    Q_ASSERT_ID(230, me-&gt;super.thread != (void *)0);
 
-    if (me-&gt;ceiling != 0U) {
+    if (me-&gt;super.prio != 0U) { /* priority-ceiling protocol used? */
         /* the prio slot must be occupied by the thr. holding the mutex */
-        Q_ASSERT_ID(240, QActive_registry_[me-&gt;ceiling]
-                         == QActive_registry_[me-&gt;holderPrio]);
+        Q_ASSERT_ID(240, QActive_registry_[me-&gt;super.prio]
+                         == QXK_PTR_CAST_(QActive *, me-&gt;super.thread));
     }
 
-    /* remove the curr dynamic prio from the ready set (block)
+    /* remove the curr thread's prio from the ready set
     * and insert it to the waiting set on this mutex
     */
-    uint_fast8_t const p = (uint_fast8_t)curr-&gt;super.dynPrio;
+    uint_fast8_t const p = (uint_fast8_t)curr-&gt;super.prio;
     QPSet_remove(&amp;QF_readySet_, p);
-    QPSet_insert(&amp;me-&gt;waitSet,        p);
+    QPSet_insert(&amp;me-&gt;waitSet,  p);
 
-    /* store the blocking object (this mutex) */
+    /* set the blocking object (this mutex) */
     curr-&gt;super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
     QXThread_teArm_(curr, (enum_t)QXK_SEMA_SIG, nTicks);
+
+    QS_BEGIN_NOCRIT_PRE_(QS_MTX_BLOCK, curr-&gt;super.prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this mutex */
+        QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
+                    curr-&gt;super.prio); /* blocked thread prio */
+    QS_END_NOCRIT_PRE_()
 
     /* schedule the next thread if multitasking started */
     (void)QXK_sched_();
     QF_CRIT_X_();
     QF_CRIT_EXIT_NOP(); /* BLOCK here !!! */
 
-    QF_CRIT_E_();   /* AFTER unblocking... */
+    /* AFTER unblocking... */
+    QF_CRIT_E_();
     /* the blocking object must be this mutex */
     Q_ASSERT_ID(240, curr-&gt;super.super.temp.obj
                      == QXK_PTR_CAST_(QMState*, me));
@@ -11273,9 +11411,6 @@ return locked;</code>
     <documentation>/*! try to lock the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
 *
-* @details
-* Try to lock the QXK priority ceiling mutex ::QXMutex.
-*
 * @param[in,out] me      pointer (see @ref oop)
 *
 * @returns
@@ -11288,7 +11423,7 @@ return locked;</code>
 *
 * @note
 * The mutex locks are allowed to nest, meaning that the same extended thread
-* can lock the same mutex multiple times (&lt;= 225). However, each successful
+* can lock the same mutex multiple times (&lt;= 255). However, each successful
 * call to QXMutex_tryLock() must be balanced by the matching call to
 * QXMutex_unlock().
 */</documentation>
@@ -11303,55 +11438,86 @@ if (curr == (QActive *)0) { /* called from a basic thread? */
 /*! @pre this function must:
 * - NOT be called from an ISR;
 * - the calling thread must be valid;
-* - the ceiling must be not used; or
-*   - the thread priority must be below the ceiling of the mutex;
-* - the ceiling must be in range
+* - the mutex-priority must be in range
 */
 Q_REQUIRE_ID(300, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
     &amp;&amp; (curr != (QActive *)0) /* current thread must be valid */
-    &amp;&amp; ((me-&gt;ceiling == 0U) /* ceiling not used */
-        || (curr-&gt;prio &lt; me-&gt;ceiling)) /* below ceiling */
-    &amp;&amp; (me-&gt;ceiling &lt;= QF_MAX_ACTIVE));
+    &amp;&amp; (me-&gt;super.prio &lt;= QF_MAX_ACTIVE));
 /*! @pre also: the thread must NOT be holding a scheduler lock. */
 Q_REQUIRE_ID(301, QXK_attr_.lockHolder != curr-&gt;prio);
 
 /* is the mutex available? */
-if (me-&gt;lockNest == 0U) {
-    me-&gt;lockNest = 1U;
+if (me-&gt;super.eQueue.nFree == 0U) {
+    me-&gt;super.eQueue.nFree = 1U;  /* mutex lock nesting */
 
-    if (me-&gt;ceiling != 0U) {
-        /* the priority slot must be set to this mutex */
-        Q_ASSERT_ID(310, QActive_registry_[me-&gt;ceiling]
-                         == QXK_PTR_CAST_(QActive*, me));
+    /*! @pre also: the newly locked mutex must have no holder yet */
+    Q_REQUIRE_ID(202, me-&gt;super.thread == (void *)0);
 
-        /* boost the dynamic priority of this thread to the ceiling */
-        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;dynPrio);
-        curr-&gt;dynPrio = me-&gt;ceiling;
-        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;dynPrio);
-        QActive_registry_[me-&gt;ceiling] = curr;
-    }
+    /* set the new mutex holder to the curr thread */
+    me-&gt;super.thread = curr;
 
-    /* make curr thread the new mutex holder */
-    me-&gt;holderPrio = curr-&gt;prio;
+    /* save the thread's prio/pthre in the mutex
+    * NOTE: reuse the otherwise unused eQueue data member.
+    */
+    me-&gt;super.eQueue.head = (QEQueueCtr)curr-&gt;prio;
+    me-&gt;super.eQueue.tail = (QEQueueCtr)curr-&gt;pthre;
 
-    QS_BEGIN_NOCRIT_PRE_(QS_MUTEX_LOCK, curr-&gt;prio)
+    QS_BEGIN_NOCRIT_PRE_(QS_MTX_LOCK, curr-&gt;prio)
         QS_TIME_PRE_();  /* timestamp */
-        QS_2U8_PRE_(curr-&gt;prio, me-&gt;ceiling);
+        QS_OBJ_PRE_(me); /* this mutex */
+        QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
+                    (uint8_t)me-&gt;super.eQueue.nFree); /* nesting */
+    QS_END_NOCRIT_PRE_()
+
+    if (me-&gt;super.prio != 0U) { /* priority-ceiling protocol used? */
+        /* the holder priority must be lower than that of the mutex
+        * and the priority slot must be occupied by this mutex
+        */
+        Q_ASSERT_ID(210, (curr-&gt;prio &lt; me-&gt;super.prio)
+            &amp;&amp; (QActive_registry_[me-&gt;super.prio]== &amp;me-&gt;super));
+
+        /* remove the thread's original prio from the ready set */
+        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;prio);
+
+        /* set the thread's prio/pthre to that of the mutex */
+        curr-&gt;prio  = me-&gt;super.prio;
+        curr-&gt;pthre = me-&gt;super.pthre;
+
+        /* insert the thread's boosted prio into the ready set */
+        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;prio);
+
+        /* register the thread in place of the mutex */
+        QActive_registry_[me-&gt;super.prio] = curr;
+    }
+}
+/* is the mutex locked by this thread already (nested locking)? */
+else if (me-&gt;super.thread == curr) {
+    /* the nesting level must not exceed  the dynamic range of uint8_t */
+    Q_ASSERT_ID(320, me-&gt;super.eQueue.nFree &lt; 0xFFU);
+
+    ++me-&gt;super.eQueue.nFree; /* lock one more level */
+
+    QS_BEGIN_NOCRIT_PRE_(QS_MTX_LOCK, curr-&gt;prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this mutex */
+        QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
+                    (uint8_t)me-&gt;super.eQueue.nFree); /* nesting */
     QS_END_NOCRIT_PRE_()
 }
-/* is the mutex held by this thread already (nested locking)? */
-else if (me-&gt;holderPrio == curr-&gt;prio) {
-    /* the nesting level must not exceed  the dynamic range of uint8_t */
-    Q_ASSERT_ID(320, me-&gt;lockNest &lt; 0xFFU);
-
-    ++me-&gt;lockNest; /* lock one level */
-}
-else { /* the mutex is alredy locked by a different thread */
-    if (me-&gt;ceiling != 0U) {
-        /* the prio slot must be claimed by the mutex holder */
-        Q_ASSERT_ID(330, QActive_registry_[me-&gt;ceiling]
-                         == QActive_registry_[me-&gt;holderPrio]);
+else { /* the mutex is already locked by a different thread */
+    if (me-&gt;super.prio != 0U) {  /* priority-ceiling protocol used? */
+        /* the prio slot must be occupied by the thr. holding the mutex */
+        Q_ASSERT_ID(340, QActive_registry_[me-&gt;super.prio]
+                         == QXK_PTR_CAST_(QActive *, me-&gt;super.thread));
     }
+
+    QS_BEGIN_NOCRIT_PRE_(QS_MTX_BLOCK_ATTEMPT, curr-&gt;prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this mutex */
+        QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
+                    curr-&gt;prio); /* trying thread prio */
+    QS_END_NOCRIT_PRE_()
+
     curr = (QActive *)0; /* means that mutex is NOT available */
 }
 QF_CRIT_X_();
@@ -11362,9 +11528,6 @@ return curr != (QActive *)0;</code>
     <documentation>/*! unlock the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
 *!
-* @details
-* Unlock the QXK priority ceiling mutex.
-*
 * @param[in,out] me      pointer (see @ref oop)
 *
 * @note
@@ -11391,91 +11554,110 @@ if (curr == (QActive *)0) { /* called from a basic thread? */
 /*! @pre this function must:
 * - NOT be called from an ISR;
 * - the calling thread must be valid;
-* - the ceiling must not be used or
-*    - the current thread must have priority equal to the mutex ceiling.
-* - the ceiling must be in range
 */
 Q_REQUIRE_ID(400, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
-    &amp;&amp; (curr != (QActive *)0) /* current thread must be valid */
-    &amp;&amp; ((me-&gt;ceiling == 0U) /* ceiling not used OR... */
-        || (curr-&gt;dynPrio == me-&gt;ceiling)) /* curr at ceiling prio */
-    &amp;&amp; (me-&gt;ceiling &lt;= QF_MAX_ACTIVE));
+    &amp;&amp; (curr != (QActive *)0)); /* current thread must be valid */
+
 /*! @pre also: the mutex must be already locked at least once. */
-Q_REQUIRE_ID(401, me-&gt;lockNest &gt; 0U);
+Q_REQUIRE_ID(401, me-&gt;super.eQueue.nFree &gt; 0U);
 /*! @pre also: the mutex must be held by this thread. */
-Q_REQUIRE_ID(402, me-&gt;holderPrio == curr-&gt;prio);
+Q_REQUIRE_ID(402, me-&gt;super.thread == curr);
 
 /* is this the last nesting level? */
-if (me-&gt;lockNest == 1U) {
+if (me-&gt;super.eQueue.nFree == 1U) {
 
-    if (me-&gt;ceiling != 0U) {
-        /* restore the holding thread's dynamic prio to the original */
-        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;dynPrio);
-        curr-&gt;dynPrio = curr-&gt;prio;
-        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;dynPrio);
+    if (me-&gt;super.prio != 0U) { /* priority-ceiling protocol used? */
 
-        /* put the mutex at the priority ceiling slot */
-        QActive_registry_[me-&gt;ceiling] = QXK_PTR_CAST_(QActive*, me);
+        /* remove the thread's boosted prio from the ready set */
+        QPSet_remove(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;prio);
+
+        /* restore the holding thread's prio/pthre from the mutex */
+        curr-&gt;prio  = (uint8_t)me-&gt;super.eQueue.head;
+        curr-&gt;pthre = (uint8_t)me-&gt;super.eQueue.tail;
+
+        /* insert the thread's original prio into the ready set */
+        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)curr-&gt;prio);
+
+        /* put the mutex back into the AO registry */
+        QActive_registry_[me-&gt;super.prio] = &amp;me-&gt;super;
     }
 
-    /* the mutex no longer held by a thread */
-    me-&gt;holderPrio = 0U;
-
-    QS_BEGIN_NOCRIT_PRE_(QS_MUTEX_UNLOCK, curr-&gt;prio)
-        QS_TIME_PRE_();              /* timestamp */
-        /* start prio &amp; the mutex ceiling */
-        QS_2U8_PRE_(curr-&gt;prio, me-&gt;ceiling);
+    QS_BEGIN_NOCRIT_PRE_(QS_MTX_UNLOCK, curr-&gt;prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this mutex */
+        QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
+                    0U); /* nesting */
     QS_END_NOCRIT_PRE_()
 
-    /* are any other threads waiting for this mutex? */
+    /* are any other threads waiting on this mutex? */
     if (QPSet_notEmpty(&amp;me-&gt;waitSet)) {
         /* find the highest-priority thread waiting on this mutex */
         uint_fast8_t const p = QPSet_findMax(&amp;me-&gt;waitSet);
-        QXThread * const thr = QXK_PTR_CAST_(QXThread*, QActive_registry_[p]);
+
+        /* this thread is no longer waiting on the mutex */
+        QPSet_remove(&amp;me-&gt;waitSet, p);
+
+        QXThread * const thr =
+            QXK_PTR_CAST_(QXThread*, QActive_registry_[p]);
 
         /* the waiting thread must:
-        * - the ceiling must not be used; or if used
-        *   - the thread must have priority below the ceiling
         * - be registered in QF
-        * - have the dynamic priority the same as initial priority
+        * - have the priority corresponding to the registration
+        * - be an extended thread
         * - be blocked on this mutex
         */
-        Q_ASSERT_ID(410,
-            ((me-&gt;ceiling == 0U) || (p &lt; (uint_fast8_t)me-&gt;ceiling))
-            &amp;&amp; (thr != (QXThread *)0)
-            &amp;&amp; (thr-&gt;super.dynPrio == thr-&gt;super.prio)
+        Q_ASSERT_ID(410, (thr != (QXThread *)0)
+            &amp;&amp; (thr-&gt;super.prio == (uint8_t)p)
+            &amp;&amp; (thr-&gt;super.super.state.act == Q_ACTION_CAST(0))
             &amp;&amp; (thr-&gt;super.super.temp.obj
                 == QXK_PTR_CAST_(QMState*, me)));
 
         /* disarm the internal time event */
         (void)QXThread_teDisarm_(thr);
 
-        if (me-&gt;ceiling != 0U) {
-            /* boost the dynamic priority of this thread to the ceiling */
-            thr-&gt;super.dynPrio = me-&gt;ceiling;
-            QActive_registry_[me-&gt;ceiling] = &amp;thr-&gt;super;
+        /* make the thread the new mutex holder */
+        me-&gt;super.thread = thr;
+
+        QS_BEGIN_NOCRIT_PRE_(QS_MTX_LOCK, thr-&gt;super.prio)
+            QS_TIME_PRE_();  /* timestamp */
+            QS_OBJ_PRE_(me); /* this mutex */
+        QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
+                    (uint8_t)me-&gt;super.eQueue.nFree); /* nesting */
+        QS_END_NOCRIT_PRE_()
+
+        if (me-&gt;super.prio != 0U) { /* priority-ceiling protocol used? */
+            /* the holder priority must be lower than that of the mutex */
+            Q_ASSERT_ID(410, thr-&gt;super.prio &lt; me-&gt;super.prio);
+
+            /* save the thread's prio/pthre in the mutex
+            * NOTE: reuse the otherwise unused eQueue data member.
+            */
+            me-&gt;super.eQueue.head = (QEQueueCtr)thr-&gt;super.prio;
+            me-&gt;super.eQueue.tail = (QEQueueCtr)thr-&gt;super.pthre;
+
+            /* set the thread's prio/pthre to that of the mutex */
+            thr-&gt;super.prio  = me-&gt;super.prio;
+            thr-&gt;super.pthre = me-&gt;super.pthre;
+
+            /* register the thread in place of the mutex */
+            QActive_registry_[me-&gt;super.prio] = &amp;thr-&gt;super;
         }
 
-        /* make the thread the new mutex holder */
-        me-&gt;holderPrio = (uint8_t)thr-&gt;super.prio;
-
-        /* make the thread ready to run (at the ceiling prio)
-        * and remove from the waiting list */
-        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)thr-&gt;super.dynPrio);
-        QPSet_remove(&amp;me-&gt;waitSet, p);
-
-        QS_BEGIN_NOCRIT_PRE_(QS_MUTEX_LOCK, thr-&gt;super.prio)
-            QS_TIME_PRE_();  /* timestamp */
-            /* start priority &amp; ceiling priority */
-            QS_2U8_PRE_(thr-&gt;super.prio, me-&gt;ceiling);
-        QS_END_NOCRIT_PRE_()
+        /* make the thread ready to run (at the mutex prio)
+        * and remove from the waiting list
+        */
+        QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)thr-&gt;super.prio);
     }
     else { /* no threads are waiting for this mutex */
-        me-&gt;lockNest = 0U;
+        me-&gt;super.eQueue.nFree = 0U; /* free up the nesting count */
 
-        if (me-&gt;ceiling != 0U) {
-            /* put the mutex at the priority ceiling slot */
-            QActive_registry_[me-&gt;ceiling] = QXK_PTR_CAST_(QActive*, me);
+        /* the mutex no longer held by any thread */
+        me-&gt;super.thread = (void *)0;
+
+        if (me-&gt;super.prio != 0U) { /* priority-ceiling protocol used? */
+            /* put the mutex back at the original mutex slot */
+            QActive_registry_[me-&gt;super.prio] =
+                QXK_PTR_CAST_(QActive*, me);
         }
     }
 
@@ -11484,8 +11666,16 @@ if (me-&gt;lockNest == 1U) {
         QXK_activate_(); /* activate a basic thread */
     }
 }
-else { /* releasing the mutex */
-    --me-&gt;lockNest; /* unlock one level */
+else { /* releasing one level of nested mutex lock */
+    Q_ASSERT_ID(420, me-&gt;super.eQueue.nFree &gt; 0U);
+    --me-&gt;super.eQueue.nFree; /* unlock one level */
+
+    QS_BEGIN_NOCRIT_PRE_(QS_MTX_UNLOCK_ATTEMPT, curr-&gt;prio)
+        QS_TIME_PRE_();  /* timestamp */
+        QS_OBJ_PRE_(me); /* this mutex */
+        QS_2U8_PRE_((uint8_t)me-&gt;super.eQueue.head, /* holder prio */
+                    (uint8_t)me-&gt;super.eQueue.nFree); /* nesting */
+    QS_END_NOCRIT_PRE_()
 }
 QF_CRIT_X_();</code>
    </operation>
@@ -11613,7 +11803,7 @@ do { \
    <documentation>/*! QXK native event queue signaling */</documentation>
    <parameter name="me_" type="QActive *"/>
    <code>do { \
-    QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)(me_)-&gt;dynPrio); \
+    QPSet_insert(&amp;QF_readySet_, (uint_fast8_t)(me_)-&gt;prio); \
     if (!QXK_ISR_CONTEXT_()) { \
         if (QXK_sched_() != 0U) { \
             QXK_activate_(); \
@@ -11691,11 +11881,7 @@ QF_CRIT_X_();</code>
  </package>
  <directory name="include">
   <file name="qassert.h">
-   <text>/*!
-* @date Last updated on: 2022-05-23
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*!* @file
 * @brief Customizable and memory-efficient Design by Contract (DbC)
 * for embedded systems
 *
@@ -11745,11 +11931,7 @@ $declare ${DbC}
 #endif /* QASSERT_H */</text>
   </file>
   <file name="qep.h">
-   <text>/*!
-* @date Last updated on: 2022-08-12
-* @version Last updated for: @ref qpc_7_0_2
-*
-* @file
+   <text>/*! @file
 * @brief QEP/C platform-independent public interface.
 *
 * @tr{RQP001} @tr{RQP101}
@@ -11758,7 +11940,28 @@ $declare ${DbC}
 #define QEP_H
 
 /*==========================================================================*/
-$declare ${version}
+/*! The current QP version as an unsigned number
+*
+* @details
+* ::QP_VERSION is a decimal constant, where XX is a 1-digit or 2-digit
+* major version number, Y is a 1-digit minor version number, and Z is
+* a 1-digit release number.
+*/
+#define QP_VERSION 710U
+
+/*! The current QP version as a zero terminated string literal.
+*
+* @details
+* ::QP_VERSION_STR is of the form &quot;XX.Y.Z&quot;, where XX is a 1-or 2-digit
+* major version number, Y is a 1-digit minor version number, and Z is
+* a 1-digit release number.
+*/
+#define QP_VERSION_STR &quot;7.1.0&quot;
+
+/*! Encrypted  current QP release (7.1.0) and date (2022-08-30) */
+#define QP_RELEASE 0x7C600159U
+
+/*==========================================================================*/
 $declare ${glob-types}
 $declare ${QEP-config}
 
@@ -11766,16 +11969,13 @@ $declare ${QEP-config}
 $declare ${QEP}
 
 /*==========================================================================*/
+$declare ${version}
 $declare ${QEP-macros}
 
 #endif /* QEP_H */</text>
   </file>
   <file name="qf.h">
-   <text>/*!
-* @date Last updated on: 2022-07-20
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*! @file
 * @brief QF/C platform-independent public interface.
 */
 #ifndef QF_H
@@ -11802,11 +12002,7 @@ $declare ${QF-macros}
 #endif /* QF_H */</text>
   </file>
   <file name="qf_pkg.h">
-   <text>/*!
-* @date Last updated on: 2022-07-26
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*! @file
 * @brief Internal (package scope) QF/C interface.
 */
 #ifndef QF_PKG_H
@@ -11905,14 +12101,17 @@ typedef struct QFreeBlock {
 
 /* internal helper macros ***************************************************/
 
-/*! helper macro to cast const away from an event pointer @p e_ */
-#define QF_EVT_CONST_CAST_(e_)  ((QEvt *)(e_))
+/*! helper macro to cast const away from a pointer
+* @details
+* This macro encapsulates the deviation from the MISRA-C:2012 Rule 11.8(R)
+*/
+#define QF_CONST_CAST_(type_, ptr_)  ((type_)(ptr_))
 
 /*! increment the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_INC_(e_) (++QF_EVT_CONST_CAST_(e_)-&gt;refCtr_)
+#define QF_EVT_REF_CTR_INC_(e_) (++QF_CONST_CAST_(QEvt*, e_)-&gt;refCtr_)
 
 /*! decrement the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_DEC_(e_) (--QF_EVT_CONST_CAST_(e_)-&gt;refCtr_)
+#define QF_EVT_REF_CTR_DEC_(e_) (--QF_CONST_CAST_(QEvt*, e_)-&gt;refCtr_)
 
 /**
 * @details
@@ -11927,11 +12126,7 @@ typedef struct QFreeBlock {
 #endif /* QF_PKG_H */</text>
   </file>
   <file name="qequeue.h">
-   <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*! @file
 * @brief QP natvie, platform-independent, thread-safe event queue interface
 * @details
 * This header file must be included in all QF ports that use native QF
@@ -11980,11 +12175,7 @@ $declare ${QF::QEQueue}
 #endif /* QEQUEUE_H */</text>
   </file>
   <file name="qmpool.h">
-   <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*! @file
 * @brief QP native, platform-independent memory pool ::QMPool interface.
 */
 #ifndef QMPOOL_H
@@ -12052,11 +12243,7 @@ $declare ${QF::QMPool}
 #endif  /* QMPOOL_H */</text>
   </file>
   <file name="qv.h">
-   <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*! @file
 * @brief QV/C (cooperative &quot;Vanilla&quot; kernel) platform-independent
 * public interface
 */
@@ -12090,11 +12277,7 @@ $declare ${QF-QMPool-impl}
 #endif /* QV_H */</text>
   </file>
   <file name="qk.h">
-   <text>/*!
-* @date Last updated on: 2022-06-13
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*! @file
 * @brief QK/C (preemptive non-blocking kernel) platform-independent
 * public interface.
 */
@@ -12132,11 +12315,7 @@ $declare ${QF-QMPool-impl}
 #endif /* QK_H */</text>
   </file>
   <file name="qxk.h">
-   <text>/*!
-* @date Last updated on: 2022-07-27
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*! @file
 * @brief QXK/C (preemptive dual-mode kernel) platform-independent
 * public interface.
 */
@@ -12186,11 +12365,7 @@ $declare ${QF-QMPool-impl}
 #endif /* QXK_H */</text>
   </file>
   <file name="qs.h">
-   <text>/*!
-* @date Last updated on: 2022-07-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*! @file
 * @brief QS/C platform-independent public interface.
 */
 #ifndef QS_H
@@ -12278,7 +12453,18 @@ $declare ${QS-macros}
 
 $declare ${QUTest}
 
-/*! QS macro to define the Test-Probe for a given @p fun_ */
+/*--------------------------------------------------------------------------*/
+/* QP-stub for QUTest
+* NOTE: The QP-stub is needed for unit testing QP applications,
+* but might NOT be needed for testing QP itself.
+*/
+#if Q_UTEST != 0
+$declare ${QUTest-stub::QS}
+$declare ${QUTest-stub::QHsmDummy}
+$declare ${QUTest-stub::QActiveDummy}
+#endif /* Q_UTEST != 0 */
+
+/*! QS macro to define the Test-Probe for a given `fun_` */
 #define QS_TEST_PROBE_DEF(fun_) \
     uint32_t const qs_tp_ = QS_getTestProbe_((void (*)(void))(fun_));
 
@@ -12290,7 +12476,7 @@ $declare ${QUTest}
 #define QS_TEST_PROBE_ID(id_, code_) \
     if (qs_tp_ == (uint32_t)(id_)) { code_ }
 
-/*! QS macro to pause test execution and enter the test event loop */
+/*! QS macro to pause test execution and enter the test event-loop */
 #define QS_TEST_PAUSE()  (QS_test_pause_())
 
 #else /* Q_UTEST not defined */
@@ -12306,11 +12492,7 @@ $declare ${QUTest}
 #endif /* def QS_H */</text>
   </file>
   <file name="qs_dummy.h">
-   <text>/*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
-*
-* @file
+   <text>/*! @file
 * @brief Dummy definitions of the QS macros that avoid code generation from
 * the QS instrumentation.
 */
@@ -12400,11 +12582,7 @@ $declare ${QUTest}
 #endif /* QS_DUMMY_H */</text>
   </file>
   <file name="qs_pkg.h">
-   <text>/*!
-* @date Last updated on: 2022-07-29
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*! @file
 * @brief Internal (package scope) QS/C interface.
 */
 #ifndef QS_PKG_H
@@ -12639,11 +12817,7 @@ enum QSpyRxRecords {
 #endif  /* QS_PKG_H */</text>
   </file>
   <file name="qpc.h">
-   <text>/*!
-* @date Last updated on: 2022-07-22
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+   <text>/*! @file
 * @brief QP/C public interface including backwards-compatibility layer
 * @details
 * This header file must be included directly or indirectly
@@ -12804,11 +12978,7 @@ typedef QHsm        QFsm;
 #endif /* QPC_H */</text>
   </file>
   <file name="qstamp.h">
-   <text>/*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
-*
-* @file
+   <text>/*! @file
 * @brief Application build time-stamp interface
 */
 #ifndef QSTAMP_H
@@ -12820,11 +12990,7 @@ extern char const Q_BUILD_TIME[9];
 #endif /* QSTAMP_H */</text>
   </file>
   <file name="qstamp.c">
-   <text>/*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
-*
-* @file
+   <text>/*! @file
 * @brief Application build time-stamp
 * @details
 * This module needs to be re-compiled in every new software build. To achive
@@ -12846,11 +13012,7 @@ char const Q_BUILD_TIME[9] = __TIME__;</text>
  <directory name="src">
   <directory name="qf">
    <file name="qep_hsm.c">
-    <text>/*!
-* @date Last updated on: 2022-07-12
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief ::QHsm implementation
 *
 * @tr{RQP103} @tr{RQP104} @tr{RQP120} @tr{RQP130}
@@ -12926,11 +13088,7 @@ static QEvt const QEP_reservedEvt_[] = {
 $define ${QEP::QHsm}</text>
    </file>
    <file name="qep_msm.c">
-    <text>/*!
-* @date Last updated on: 2022-05-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief ::QMsm implementation
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -12963,11 +13121,7 @@ static struct QMState const l_msm_top_s = {
 $define ${QEP::QMsm}</text>
    </file>
    <file name="qf_act.c">
-    <text>/*!
-* @date Last updated on: 2022-06-30
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @deprecated
 * Empty file kept only for backwards compatibility.
 * @sa qf_qact.c
@@ -12976,11 +13130,7 @@ extern char const dummy; /* declaration */
 char const dummy = '\0'; /* definition */</text>
    </file>
    <file name="qf_actq.c">
-    <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief ::QActive native queue operations (based on ::QEQueue)
 *
 * @note
@@ -13021,11 +13171,7 @@ $define ${QF::QF-base::getQueueMin}
 $define ${QF::QTicker}</text>
    </file>
    <file name="qf_defer.c">
-    <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QActive_defer() and QActive_recall() implementation.
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13046,11 +13192,7 @@ $define ${QF::QActive::recall}
 $define ${QF::QActive::flushDeferred}</text>
    </file>
    <file name="qf_dyn.c">
-    <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QF/C dynamic event management
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13073,11 +13215,7 @@ $define ${QEP::QEvt}
 $define ${QF::QF-dyn}</text>
    </file>
    <file name="qf_mem.c">
-    <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief ::QMPool implementatin (Memory Pool)
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13096,11 +13234,7 @@ Q_DEFINE_THIS_MODULE(&quot;qf_mem&quot;)
 $define ${QF::QMPool}</text>
    </file>
    <file name="qf_qact.c">
-    <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QActive_ctor() definition
 *
 * @details
@@ -13131,11 +13265,7 @@ $define ${QF::QActive::unregister_}
 $define ${QF-types::QF_LOG2}</text>
    </file>
    <file name="qf_qmact.c">
-    <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QMActive_ctor() definition
 *
 * @details
@@ -13161,11 +13291,7 @@ $define ${QF-types::QF_LOG2}</text>
 $define ${QF::QMActive}</text>
    </file>
    <file name="qf_qeq.c">
-    <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief ::QEQueue implementation (QP native thread-safe queue)
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13184,11 +13310,7 @@ Q_DEFINE_THIS_MODULE(&quot;qf_qeq&quot;)
 $define ${QF::QEQueue}</text>
    </file>
    <file name="qf_ps.c">
-    <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief Publish-Subscribe services
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13215,11 +13337,7 @@ $define ${QF::QActive::unsubscribe}
 $define ${QF::QActive::unsubscribeAll}</text>
    </file>
    <file name="qf_time.c">
-    <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QF/C time events and time management services
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13250,11 +13368,7 @@ $define ${QF::QTimeEvt}</text>
   </directory>
   <directory name="qv">
    <file name="qv.c">
-    <text>/*!
-* @date Last updated on: 2022-07-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief Cooperative QV kernel, implementation of kernel-specific functions.
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13283,11 +13397,7 @@ $define ${QV::QActive}</text>
   </directory>
   <directory name="qk">
    <file name="qk.c">
-    <text>/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QK preemptive kernel implementation
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13316,11 +13426,7 @@ $define ${QK::QActive}</text>
   </directory>
   <directory name="qxk">
    <file name="qxk.c">
-    <text>/*!
-* @date Last updated on: 2022-07-27
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QXK preemptive dual-mode kernel core functions
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13349,11 +13455,7 @@ $define ${QXK::QActive}
 $define ${QXK-impl}</text>
    </file>
    <file name="qxk_mutex.c">
-    <text>/*!
-* @date Last updated on: 2022-07-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QXMutex_init(), QXMutex_lock(), QXMutex_tryLock() and
 * QXMutex_unlock() definitions.
 */
@@ -13379,11 +13481,7 @@ Q_DEFINE_THIS_MODULE(&quot;qxk_mutex&quot;)
 $define ${QXK::QXMutex}</text>
    </file>
    <file name="qxk_sema.c">
-    <text>/*!
-* @date Last updated on: 2022-07-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QXK preemptive kernel semaphore functions
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13408,11 +13506,7 @@ Q_DEFINE_THIS_MODULE(&quot;qxk_sema&quot;)
 $define ${QXK::QXSemaphore}</text>
    </file>
    <file name="qxk_xthr.c">
-    <text>/*!
-* @date Last updated on: 2022-07-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QXK preemptive kernel extended (blocking) thread functions
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13439,11 +13533,7 @@ $define ${QXK::QXThread}</text>
   </directory>
   <directory name="qs">
    <file name="qs.c">
-    <text>/*!
-* @date Last updated on: 2022-07-29
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QS software tracing services
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13454,15 +13544,16 @@ $define ${QXK::QXThread}</text>
 
 Q_DEFINE_THIS_MODULE(&quot;qs&quot;)
 
+/* ensure that the predefined records don't overlap the
+* user records (application-specific).
+*/
+Q_ASSERT_STATIC((enum_t)QS_PRE_MAX &lt;= (enum_t)QS_USER);
+
 /*==========================================================================*/
 $define ${QS::QS-tx}</text>
    </file>
    <file name="qs_64bit.c">
-    <text>/*!
-* @date Last updated on: 2022-07-29
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QS long-long (64-bit) output
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13472,11 +13563,7 @@ $define ${QS::QS-tx}</text>
 $define ${QS::QS-tx-64bit}</text>
    </file>
    <file name="qs_fp.c">
-    <text>/**
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
-*
-* @file
+    <text>/*! @file
 * @brief QS floating point output implementation
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -13486,11 +13573,7 @@ $define ${QS::QS-tx-64bit}</text>
 $define ${QS::QS-tx-fp}</text>
    </file>
    <file name="qs_rx.c">
-    <text>/*!
-* @date Last updated on: 2022-06-15
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+    <text>/*! @file
 * @brief QS/C receive channel services
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -14168,14 +14251,11 @@ static void QS_rxPoke_(void) {
 }</text>
    </file>
    <file name="qutest.c">
-    <text>/*!
-* @date Last updated on: 2022-07-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
-* @brief QF/C stub for QUTEST unit testing
+    <text>/*! @file
+* @brief QUTest unit testing harness
 */
-/* only build when Q_UTEST is defined */
+
+/* Include this content in the build only when Q_UTEST is defined */
 #ifdef Q_UTEST
 
 #define QP_IMPL       /* this is QP implementation */
@@ -14185,15 +14265,44 @@ static void QS_rxPoke_(void) {
 #include &quot;qs_port.h&quot;  /* include QS port */
 #include &quot;qs_pkg.h&quot;   /* QS facilities for pre-defined trace records */
 
-Q_DEFINE_THIS_MODULE(&quot;qutest&quot;)
-
 /*==========================================================================*/
 /* QUTest unit testing harness */
 $define ${QUTest}
 
+/*..........................................................................*/
+Q_NORETURN Q_onAssert(
+    char const * module,
+    int_t location)
+{
+    QS_BEGIN_NOCRIT_PRE_(QS_ASSERT_FAIL, 0U)
+        QS_TIME_PRE_();
+        QS_U16_PRE_(location);
+        QS_STR_PRE_((module != (char *)0) ? module : &quot;?&quot;);
+    QS_END_NOCRIT_PRE_()
+
+    QS_onFlush(); /* flush the assertion record to the host */
+    QS_onTestLoop(); /* loop to wait for commands (typically reset) */
+    QS_onReset(); /* in case the QUTEST loop ever returns, reset manually */
+    for (;;) { /* QS_onReset() should not return, but to ensure no-return */
+    }
+}
+/*..........................................................................*/
+QSTimeCtr QS_onGetTime(void) {
+    return (++QS_testData.testTime);
+}
+
 /*==========================================================================*/
-/* QF/C stub for QUTest */
+/* QP-stub for QUTest
+* NOTE: The QP-stub is needed for unit testing QP applications, but might
+* NOT be needed for testing QP itself. In that case, the build process
+* can define Q_UTEST=0 to exclude the QP-stub from the build.
+*/
+#if Q_UTEST != 0
+
+Q_DEFINE_THIS_MODULE(&quot;qutest&quot;)
+
 $define ${QUTest-stub}
+#endif /* Q_UTEST != 0 */
 
 #endif /* Q_UTEST */</text>
    </file>

@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qf::qf_defer.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QActive_defer() and QActive_recall() implementation.
 */
 #define QP_IMPL           /* this is QP implementation */

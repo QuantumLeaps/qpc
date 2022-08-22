@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qs_pkg.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-29
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief Internal (package scope) QS/C interface.
 */
 #ifndef QS_PKG_H

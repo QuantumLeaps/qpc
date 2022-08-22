@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qs::qs_fp.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/**
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
-*
-* @file
+/*! @file
 * @brief QS floating point output implementation
 */
 #define QP_IMPL           /* this is QP implementation */

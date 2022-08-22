@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qxk::qxk_sema.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QXK preemptive kernel semaphore functions
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -112,9 +108,16 @@ bool QXSemaphore_wait(QXSemaphore * const me,
     bool signaled = true; /* assume that the semaphore will be signaled */
     if (me->count > 0U) {
         --me->count; /* semaphore taken: decrement the count */
+
+        QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, curr->super.prio)
+            QS_TIME_PRE_();  /* timestamp */
+            QS_OBJ_PRE_(me); /* this semaphore */
+            QS_U16_PRE_(me->count);
+            QS_U8_PRE_(curr->super.prio);
+        QS_END_NOCRIT_PRE_()
     }
     else {
-        uint_fast8_t const p = (uint_fast8_t)curr->super.dynPrio;
+        uint_fast8_t const p = (uint_fast8_t)curr->super.prio;
 
         /* remember the blocking object (this semaphore) */
         curr->super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
@@ -122,8 +125,15 @@ bool QXSemaphore_wait(QXSemaphore * const me,
 
         /* remove this curr prio from the ready set (will block)
         * and insert to the waiting set on this semaphore */
-        QPSet_insert(&me->waitSet,        p); /* add to waiting-set */
+        QPSet_insert(&me->waitSet,  p); /* add to waiting-set */
         QPSet_remove(&QF_readySet_, p); /* remove from ready-set */
+
+        QS_BEGIN_NOCRIT_PRE_(QS_SEM_BLOCK, curr->super.prio)
+            QS_TIME_PRE_();  /* timestamp */
+            QS_OBJ_PRE_(me); /* this semaphore */
+            QS_U16_PRE_(me->count);
+            QS_U8_PRE_(curr->super.prio);
+        QS_END_NOCRIT_PRE_()
 
         /* schedule the next thread if multitasking started */
         (void)QXK_sched_();
@@ -161,20 +171,39 @@ bool QXSemaphore_wait(QXSemaphore * const me,
 
 /*${QXK::QXSemaphore::tryWait} .............................................*/
 bool QXSemaphore_tryWait(QXSemaphore * const me) {
+    QF_CRIT_STAT_
+    QF_CRIT_E_();
+
     /*! @pre the semaphore must be initialized */
     Q_REQUIRE_ID(300, me->max_count > 0U);
 
-    QF_CRIT_STAT_
-    QF_CRIT_E_();
+    #ifdef Q_SPY
+    /* volatile into temp. */
+    QActive const * const curr = QXK_PTR_CAST_(QActive*, QXK_attr_.curr);
+    #endif /* Q_SPY */
 
     bool isAvailable;
     /* is the semaphore available? */
     if (me->count > 0U) {
         --me->count;
         isAvailable = true;
+
+        QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, curr->prio)
+            QS_TIME_PRE_();  /* timestamp */
+            QS_OBJ_PRE_(me); /* this semaphore */
+            QS_U16_PRE_(me->count);
+            QS_U8_PRE_(curr->prio);
+        QS_END_NOCRIT_PRE_()
     }
     else { /* the semaphore is NOT available (would block) */
         isAvailable = false;
+
+        QS_BEGIN_NOCRIT_PRE_(QS_SEM_BLOCK_ATTEMPT, curr->prio)
+            QS_TIME_PRE_();  /* timestamp */
+            QS_OBJ_PRE_(me); /* this semaphore */
+            QS_U16_PRE_(me->count);
+            QS_U8_PRE_(curr->prio);
+        QS_END_NOCRIT_PRE_()
     }
     QF_CRIT_X_();
 
@@ -193,6 +222,18 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
     if (me->count < me->max_count) {
 
         ++me->count; /* increment the semaphore count */
+
+        #ifdef Q_SPY
+        /* volatile into temp. */
+        QActive const * const curr = QXK_PTR_CAST_(QActive*, QXK_attr_.curr);
+        #endif /* Q_SPY */
+
+        QS_BEGIN_NOCRIT_PRE_(QS_SEM_SIGNAL, curr->prio)
+            QS_TIME_PRE_();  /* timestamp */
+            QS_OBJ_PRE_(me); /* this semaphore */
+            QS_U16_PRE_(me->count);
+            QS_U8_PRE_(curr->prio);
+        QS_END_NOCRIT_PRE_()
 
         if (QPSet_notEmpty(&me->waitSet)) {
             /* find the highest-priority thread waiting on this semaphore */
@@ -215,7 +256,14 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
 
             /* make the thread ready to run and remove from the wait-list */
             QPSet_insert(&QF_readySet_, p);
-            QPSet_remove(&me->waitSet, p);
+            QPSet_remove(&me->waitSet,  p);
+
+            QS_BEGIN_NOCRIT_PRE_(QS_SEM_TAKE, thr->super.prio)
+                QS_TIME_PRE_();  /* timestamp */
+                QS_OBJ_PRE_(me); /* this semaphore */
+                QS_U16_PRE_(me->count);
+                QS_U8_PRE_(thr->super.prio);
+            QS_END_NOCRIT_PRE_()
 
             if (!QXK_ISR_CONTEXT_()) { /* not inside ISR? */
                 (void)QXK_sched_(); /* schedule the next thread */

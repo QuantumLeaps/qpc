@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qf_pkg.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-26
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief Internal (package scope) QF/C interface.
 */
 #ifndef QF_PKG_H
@@ -174,14 +170,17 @@ typedef struct QFreeBlock {
 
 /* internal helper macros ***************************************************/
 
-/*! helper macro to cast const away from an event pointer @p e_ */
-#define QF_EVT_CONST_CAST_(e_)  ((QEvt *)(e_))
+/*! helper macro to cast const away from a pointer
+* @details
+* This macro encapsulates the deviation from the MISRA-C:2012 Rule 11.8(R)
+*/
+#define QF_CONST_CAST_(type_, ptr_)  ((type_)(ptr_))
 
 /*! increment the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_INC_(e_) (++QF_EVT_CONST_CAST_(e_)->refCtr_)
+#define QF_EVT_REF_CTR_INC_(e_) (++QF_CONST_CAST_(QEvt*, e_)->refCtr_)
 
 /*! decrement the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_DEC_(e_) (--QF_EVT_CONST_CAST_(e_)->refCtr_)
+#define QF_EVT_REF_CTR_DEC_(e_) (--QF_CONST_CAST_(QEvt*, e_)->refCtr_)
 
 /**
 * @details

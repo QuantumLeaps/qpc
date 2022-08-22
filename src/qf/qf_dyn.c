@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qf::qf_dyn.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QF/C dynamic event management
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -217,10 +213,10 @@ void QF_gc(QEvt const * const e) {
 
             /* cast 'const' away, which is OK, because it's a pool event */
     #ifdef Q_SPY
-            QF_EPOOL_PUT_(QF_ePool_[idx], QF_EVT_CONST_CAST_(e),
+            QF_EPOOL_PUT_(QF_ePool_[idx], QF_CONST_CAST_(QEvt*, e),
                           (uint_fast8_t)QS_EP_ID + e->poolId_);
     #else
-            QF_EPOOL_PUT_(QF_ePool_[idx], QF_EVT_CONST_CAST_(e), 0U);
+            QF_EPOOL_PUT_(QF_ePool_[idx], QF_CONST_CAST_(QEvt*, e), 0U);
     #endif
         }
     }

@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qequeue.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QP natvie, platform-independent, thread-safe event queue interface
 * @details
 * This header file must be included in all QF ports that use native QF

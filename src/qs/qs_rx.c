@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qs::qs_rx.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-06-15
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QS/C receive channel services
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -393,8 +389,10 @@ void QS_rxHandleGoodFrame_(uint8_t const state) {
             QS_onCommand(l_rx.var.cmd.cmdId, l_rx.var.cmd.param1,
                          l_rx.var.cmd.param2, l_rx.var.cmd.param3);
     #ifdef Q_UTEST
+    #if Q_UTEST != 0
             QS_processTestEvts_(); /* process all events produced */
-    #endif
+    #endif  /* Q_UTEST != 0*/
+    #endif  /* Q_UTEST */
             QS_rxReportDone_((int8_t)QS_RX_COMMAND);
             break;
         }
@@ -402,10 +400,12 @@ void QS_rxHandleGoodFrame_(uint8_t const state) {
             QS_rxReportAck_((int8_t)QS_RX_TICK);
     #ifdef Q_UTEST
             QTimeEvt_tick1_((uint_fast8_t)l_rx.var.tick.rate, &QS_rxPriv_);
+    #if Q_UTEST != 0
             QS_processTestEvts_(); /* process all events produced */
+    #endif  /* Q_UTEST  != 0*/
     #else
             QTimeEvt_tick_((uint_fast8_t)l_rx.var.tick.rate, &QS_rxPriv_);
-    #endif
+    #endif  /* Q_UTEST */
             QS_rxReportDone_((int8_t)QS_RX_TICK);
             break;
         }
@@ -631,8 +631,10 @@ void QS_rxHandleGoodFrame_(uint8_t const state) {
             }
             else {
     #ifdef Q_UTEST
+    #if Q_UTEST != 0
                 QS_processTestEvts_(); /* process all events produced */
-    #endif
+    #endif  /* Q_UTEST != 0 */
+    #endif  /* Q_UTEST */
                 QS_rxReportDone_((int8_t)QS_RX_EVENT);
             }
             break;
@@ -680,7 +682,6 @@ void QS_rxHandleGoodFrame_(uint8_t const state) {
             break;
         }
     }
-
 }
 
 /*${QS::QS-rx::RX_PUT} .....................................................*/

@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qstamp.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
-*
-* @file
+/*! @file
 * @brief Application build time-stamp interface
 */
 #ifndef QSTAMP_H

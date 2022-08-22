@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qpc.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-22
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QP/C public interface including backwards-compatibility layer
 * @details
 * This header file must be included directly or indirectly

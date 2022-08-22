@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qf::qf_qact.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QActive_ctor() definition
 *
 * @details
@@ -129,19 +125,43 @@ void QActive_ctor(QActive * const me,
 
 /*${QF::QActive::register_} ................................................*/
 void QActive_register_(QActive * const me) {
-    uint_fast8_t const p = (uint_fast8_t)me->prio;
+    uint8_t const prio  = me->prio;
 
-    /*! @pre the priority of the active object must not be zero and cannot
-    * exceed the maximum #QF_MAX_ACTIVE. Also, the priority of the active
-    * object must not be already in use. QF requires each active object to
+    /*! @pre the priority of the AO must be in range. Also, the priority
+    * must not be already in use. QF requires each active object to
     * have a **unique** priority.
     */
-    Q_REQUIRE_ID(100, (0U < p)
-                       && (p <= QF_MAX_ACTIVE)
-                       && (QActive_registry_[p] == (QActive *)0));
+    Q_REQUIRE_ID(100, (0U < prio) && (prio <= QF_MAX_ACTIVE)
+                       && (QActive_registry_[prio] == (QActive *)0));
+
+    if (me->pthre == 0U) { /* preemption-threshold not defined? */
+        me->pthre = me->prio; /* apply the default */
+    }
+    uint8_t prev_ceil = me->pthre;
+    uint8_t next_ceil = me->pthre;
+
+    uint_fast8_t p;
+    for (p = (uint_fast8_t)prio - 1U; p > 0U; --p) {
+        if (QActive_registry_[p] != (QActive *)0) {
+            prev_ceil = QActive_registry_[p]->pthre;
+            break;
+        }
+    }
+    for (p = (uint_fast8_t)prio + 1U; p <= QF_MAX_ACTIVE; ++p) {
+        if (QActive_registry_[p] != (QActive *)0) {
+            next_ceil = QActive_registry_[p]->pthre;
+            break;
+        }
+    }
+
+    /* @post The preemption threshold of the AO (me->pthre) must be
+    * between the threshold of the previous AO and the next AO
+    */
+    Q_ENSURE_ID(101, (prev_ceil <= me->pthre)
+                      && (me->pthre <= next_ceil));
     QF_CRIT_STAT_
     QF_CRIT_E_();
-    QActive_registry_[p] = me; /* register the active object at this priority */
+    QActive_registry_[prio] = me; /* register the AO at this QF priority */
     QF_CRIT_X_();
 }
 /*$enddef${QF::QActive::register_} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
@@ -149,17 +169,17 @@ void QActive_register_(QActive * const me) {
 
 /*${QF::QActive::unregister_} ..............................................*/
 void QActive_unregister_(QActive * const me) {
-    uint_fast8_t const p = (uint_fast8_t)me->prio;
+    uint_fast8_t const prio = (uint_fast8_t)me->prio;
 
     /*! @pre the priority of the active object must not be zero and cannot
     * exceed the maximum #QF_MAX_ACTIVE. Also, the priority of the active
     * object must be already registered with the framework.
     */
-    Q_REQUIRE_ID(200, (0U < p) && (p <= QF_MAX_ACTIVE)
-                       && (QActive_registry_[p] == me));
+    Q_REQUIRE_ID(200, (0U < prio) && (prio <= QF_MAX_ACTIVE)
+                       && (QActive_registry_[prio] == me));
     QF_CRIT_STAT_
     QF_CRIT_E_();
-    QActive_registry_[p] = (QActive *)0; /* free-up the priority level */
+    QActive_registry_[prio] = (QActive *)0; /* free-up the priority level */
     me->super.state.fun = Q_STATE_CAST(0); /* invalidate the state */
     QF_CRIT_X_();
 }

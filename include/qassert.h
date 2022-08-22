@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qassert.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-05-23
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*!* @file
 * @brief Customizable and memory-efficient Design by Contract (DbC)
 * for embedded systems
 *
@@ -360,7 +356,7 @@ typedef int int_t;
 * older C standards. Newer C11 supports `_Static_assert()`, which should
 * be used instead of Q_ASSERT_STATIC().
 */
-#define Q_ASSERT_STATIC(expr_) extern int_t Q_static_assert_[(expr_) ? 1 : -1]
+#define Q_ASSERT_STATIC(expr_) extern char Q_static_assert_[(expr_) ? 1 : -1]
 
 /*${DbC::Q_ASSERT_COMPILE} .................................................*/
 /*! Static (compile-time) assertion.

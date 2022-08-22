@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qxk::qxk_xthr.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QXK preemptive kernel extended (blocking) thread functions
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -72,7 +68,7 @@ Q_DEFINE_THIS_MODULE("qxk_xthr")
 /*$define${QXK::QXThread} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${QXK::QXThread} .........................................................*/
-QXThread QXThread_idle;
+QXThread const * QXThread_dummy;
 
 /*${QXK::QXThread::ctor} ...................................................*/
 void QXThread_ctor(QXThread * const me,
@@ -186,7 +182,7 @@ QEvt const * QXThread_queueGet(uint_fast16_t const nTicks) {
             = QXK_PTR_CAST_(QMState const*, &thr->super.eQueue);
 
         QXThread_teArm_(thr, (enum_t)QXK_QUEUE_SIG, nTicks);
-        QPSet_remove(&QF_readySet_, (uint_fast8_t)thr->super.dynPrio);
+        QPSet_remove(&QF_readySet_, (uint_fast8_t)thr->super.prio);
         (void)QXK_sched_();
         QF_CRIT_X_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here */
@@ -276,7 +272,7 @@ void QXThread_dispatch_(
 /*${QXK::QXThread::start_} .................................................*/
 void QXThread_start_(
     QActive * const me,
-    uint_fast8_t const prio,
+    QPrioSpec const prio,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -287,12 +283,10 @@ void QXThread_start_(
 
     /*! @pre this function must:
     * - NOT be called from an ISR;
-    * - the thread priority cannot exceed #QF_MAX_ACTIVE;
     * - the stack storage must be provided;
     * - the thread must be instantiated (see QXThread_ctor()).
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
-        && (prio <= QF_MAX_ACTIVE)
         && (stkSto != (void *)0) /* stack must be provided */
         && (stkSize != 0U)
         && (me->super.state.act == (QActionHandler)0));
@@ -307,18 +301,17 @@ void QXThread_start_(
     */
     QXK_stackInit_(me, me->super.temp.thr, stkSto, stkSize);
 
-    me->prio    = (uint8_t)prio;
-    me->dynPrio = (uint8_t)prio;
-
     /* the new thread is not blocked on any object */
     me->super.temp.obj = (QMState *)0;
 
-    QActive_register_(me); /* make QF aware of this extended thread */
+    me->prio  = (uint8_t)(prio & 0xFFU); /* QF-priority of the thread */
+    me->pthre = (uint8_t)(prio >> 8U);   /* preemption-threshold of the thread */
+    QActive_register_(me); /* make QF aware of this thread */
 
     QF_CRIT_STAT_
     QF_CRIT_E_();
     /* extended-thread becomes ready immediately */
-    QPSet_insert(&QF_readySet_, (uint_fast8_t)me->dynPrio);
+    QPSet_insert(&QF_readySet_, (uint_fast8_t)me->prio);
 
     /* see if this thread needs to be scheduled in case QXK is running */
     (void)QXK_sched_();
@@ -415,8 +408,7 @@ bool QXThread_post_(
                     == QXK_PTR_CAST_(QMState*, &me->eQueue))
                 {
                     (void)QXThread_teDisarm_(QXTHREAD_CAST_(me));
-                    QPSet_insert(&QF_readySet_,
-                                 (uint_fast8_t)me->dynPrio);
+                    QPSet_insert(&QF_readySet_, (uint_fast8_t)me->prio);
                     if (!QXK_ISR_CONTEXT_()) {
                         (void)QXK_sched_();
                     }
@@ -460,7 +452,6 @@ bool QXThread_post_(
     }
 
     return status;
-
 }
 
 /*${QXK::QXThread::postLIFO_} ..............................................*/
@@ -479,13 +470,13 @@ void QXThread_block_(QXThread const * const me) {
     /*! @pre the thread holding the lock cannot block! */
     Q_REQUIRE_ID(600, (QXK_attr_.lockHolder != me->super.prio));
 
-    QPSet_remove(&QF_readySet_, (uint_fast8_t)me->super.dynPrio);
+    QPSet_remove(&QF_readySet_, (uint_fast8_t)me->super.prio);
     (void)QXK_sched_();
 }
 
 /*${QXK::QXThread::unblock_} ...............................................*/
 void QXThread_unblock_(QXThread const * const me) {
-    QPSet_insert(&QF_readySet_, (uint_fast8_t)me->super.dynPrio);
+    QPSet_insert(&QF_readySet_, (uint_fast8_t)me->super.prio);
     if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
         && (QActive_registry_[0] != (QActive *)0))  /* kernel started? */
     {

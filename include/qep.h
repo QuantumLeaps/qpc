@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qep.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-08-12
-* @version Last updated for: @ref qpc_7_0_2
-*
-* @file
+/*! @file
 * @brief QEP/C platform-independent public interface.
 *
 * @tr{RQP001} @tr{RQP101}
@@ -49,9 +45,6 @@
 #define QEP_H
 
 /*==========================================================================*/
-/*$declare${version} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-
-/*${version::QP_VERSION} ...................................................*/
 /*! The current QP version as an unsigned number
 *
 * @details
@@ -59,9 +52,8 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION 702U
+#define QP_VERSION 710U
 
-/*${version::QP_VERSION_STR} ...............................................*/
 /*! The current QP version as a zero terminated string literal.
 *
 * @details
@@ -69,16 +61,12 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION_STR "7.0.2"
+#define QP_VERSION_STR "7.1.0"
 
-/*${version::QP_RELEASE} ...................................................*/
-/*! Encrypted  current QP release (7.0.1) and date (2022-08-12) */
-#define QP_RELEASE 0x7C62C081U
+/*! Encrypted  current QP release (7.1.0) and date (2022-08-30) */
+#define QP_RELEASE 0x7C600159U
 
-/*${version::QP_versionStr[8]} .............................................*/
-/*! the current QP version number string in ROM, based on #QP_VERSION_STR */
-extern char const QP_versionStr[8];
-/*$enddecl${version} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*==========================================================================*/
 /*$declare${glob-types} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${glob-types::int_t} .....................................................*/
@@ -814,6 +802,12 @@ QState QMsm_enterHistory_(
 /*$enddecl${QEP} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 /*==========================================================================*/
+/*$declare${version} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+
+/*${version::QP_versionStr[8]} .............................................*/
+/*! the current QP version number string in ROM, based on #QP_VERSION_STR */
+extern char const QP_versionStr[8];
+/*$enddecl${version} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*$declare${QEP-macros} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${QEP-macros::QHSM_INIT} .................................................*/

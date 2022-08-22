@@ -73,6 +73,7 @@ static uint32_t l_rnd;      /* random seed */
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,
         PAUSED_STAT,
+        CONTEXT_SW,
         COMMAND_STAT
     };
 
@@ -97,8 +98,8 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    /*QTIMEEVT_TICK_X(0U, &l_SysTick_Handler);*/ /* process time events for rate 0 */
-    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
+    QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -202,15 +203,15 @@ void BSP_init(void) {
 
     QS_USR_DICTIONARY(PHILO_STAT);
     QS_USR_DICTIONARY(PAUSED_STAT);
+    QS_USR_DICTIONARY(CONTEXT_SW);
     QS_USR_DICTIONARY(COMMAND_STAT);
 
     /* setup the QS filters... */
-    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
-    QS_GLB_FILTER(QS_UA_RECORDS); /* all usedr records */
-    /*
-    QS_GLB_FILTER(QS_MUTEX_LOCK);
-    QS_GLB_FILTER(QS_MUTEX_UNLOCK);
-    */
+    //QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
+    //QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
+    //QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
+    QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
+    QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -309,6 +310,20 @@ void QF_onStartup(void) {
 /*..........................................................................*/
 void QF_onCleanup(void) {
 }
+/*..........................................................................*/
+#ifdef QXK_ON_CONTEXT_SW
+/* NOTE: the context-switch callback is called with interrupts DISABLED */
+void QXK_onContextSw(QActive *prev, QActive *next) {
+    (void)prev;
+    if (next != (QActive *)0) {
+        //_impure_ptr = next->thread; /* switch to next TLS */
+    }
+    QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
+        QS_OBJ(prev);
+        QS_OBJ(next);
+    QS_END_NOCRIT()
+}
+#endif /* QXK_ON_CONTEXT_SW */
 /*..........................................................................*/
 void QXK_onIdle(void) {
     float volatile x;

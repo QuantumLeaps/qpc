@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-13
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-08-19
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
 * @brief QF/C port to FreeRTOS 10.x
@@ -109,7 +109,7 @@ static void task_function(void *pvParameters) { /* FreeRTOS task signature */
     }
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me,QPrioSpec const prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -129,8 +129,9 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
             &me->osObject);              /* static queue buffer */
     Q_ASSERT_ID(210, me->eQueue != (QueueHandle_t)0);
 
-    me->prio = prio;  /* save the QF priority */
-    QActive_register_(me);      /* make QF aware of this active object */
+    me->prio = (uint8_t)(prio & 0xFFU);
+    QActive_register_(me); /* register this AO */
+
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 

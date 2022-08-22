@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qstamp.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
-*
-* @file
+/*! @file
 * @brief Application build time-stamp
 * @details
 * This module needs to be re-compiled in every new software build. To achive

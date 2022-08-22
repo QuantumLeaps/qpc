@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-13
-* @version Last updated for: @ref qpc_7_0_2
+* @date Last updated on: 2022-08-19
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
 * @brief QXK/C port to ARM Cortex-M, IAR-ARM toolset
@@ -33,6 +33,9 @@
 #define QP_IMPL 1U
 #include "qf_port.h"
 #include "qf_pkg.h"
+#include "qassert.h"
+
+#include <stddef.h> /* for offsetof() */
 
 /* prototypes --------------------------------------------------------------*/
 void PendSV_Handler(void);
@@ -48,10 +51,6 @@ void NMI_Handler(void);
 #define NVIC_IP      ((uint8_t  volatile *)0xE000E400)
 #define NVIC_PEND    0xE000E200
 #define NVIC_ICSR    0xE000ED04
-
-/* helper macros to "stringify" values */
-#define VAL(x) #x
-#define STRINGIFY(x) VAL(x)
 
 /*
 * Initialize the exception priorities and IRQ priorities to safe values.
@@ -160,41 +159,41 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
     }
 }
 
-/* NOTE: keep in synch with the QXK_Attr struct in "qxk.h" !!! */
+/* NOTE: keep in synch with struct QXK_Attr in "qxk.h" !!! */
 #define QXK_CURR       0
 #define QXK_NEXT       4
-#define QXK_ACT_PRIO   8
-#define QXK_IDLE_THR   12
+#define QXK_ACT_THRE   9
 
-/* NOTE: keep in synch with the QXK_Attr struct in "qxk.h" !!! */
-/*Q_ASSERT_COMPILE(QXK_CURR == offsetof(QXK_Attr, curr));*/
-/*Q_ASSERT_COMPILE(QXK_NEXT == offsetof(QXK_Attr, next));*/
-/*Q_ASSERT_COMPILE(QXK_ACT_PRIO == offsetof(QXK_Attr, actPrio));*/
+/* make sure that the offsets match the QXK declaration in "qxk.h" */
+Q_ASSERT_STATIC(QXK_CURR == offsetof(QXK, curr));
+Q_ASSERT_STATIC(QXK_NEXT == offsetof(QXK, next));
+Q_ASSERT_STATIC(QXK_ACT_THRE == offsetof(QXK, actThre));
 
-/* NOTE: keep in synch with the QActive struct in "qf.h/qxk.h" !!! */
-#define QACTIVE_OSOBJ    28
-#define QACTIVE_DYN_PRIO 36
+/* offsets within struct QActive; NOTE: keep in synch with "qf.h" !!! */
+#define QACTIVE_OSOBJ  28
+#define QACTIVE_PRIO   36
+#define QACTIVE_PTHRE  37
 
-/* NOTE: keep in synch with the QActive struct in "qf.h/qxk.h" !!! */
-/*Q_ASSERT_COMPILE(QACTIVE_OSOBJ == offsetof(QActive, osObject));*/
-/*Q_ASSERT_COMPILE(QACTIVE_DYN_PRIO == offsetof(QActive, dynPrio));*/
+/* make sure that the offsets match the QXK declaration in "qf.h" */
+Q_ASSERT_STATIC(QACTIVE_OSOBJ == offsetof(QActive, osObject));
+Q_ASSERT_STATIC(QACTIVE_PTHRE == offsetof(QActive, pthre));
+
+/* helper macros to "stringify" values */
+#define VAL(x) #x
+#define STRINGIFY(x) VAL(x)
 
 /*==========================================================================*/
-/* The PendSV_Handler exception handler is used for handling context switch
-* and asynchronous preemption in QXK. The use of the PendSV exception is
-* the recommended and most efficient method for performing context switches
-* with ARM Cortex-M.
+/* The PendSV_Handler exception handler is used for performing asynchronous
+* preemption in QXK. The use of the PendSV exception is the recommended and
+* most efficient method for performing context switches in ARM Cortex-M.
 *
-* The PendSV exception should have the lowest priority in the whole system
-* (0xFF, see QXK_init). All other exceptions and interrupts should have higher
-* priority. For example, for NVIC with 2 priority bits all interrupts and
-* exceptions must have numerical value of priority lower than 0xC0. In this
-* case the interrupt priority levels available to your applications are (in
-* the order from the lowest urgency to the highest urgency): 0x80, 0x40, 0x00.
+* The PendSV exception should have the lowest interrupt priority in the system
+* (0xFF, see QXK_init()). All other exceptions and interrupts should have
+* higher interrupt priority.
 *
 * Also, *all* "kernel aware" ISRs in the QXK application must call the
 * QXK_ISR_EXIT() macro, which triggers PendSV when it detects a need for
-* a context switch or asynchronous preemption.
+* asynchronous preemption.
 *
 * Due to tail-chaining and its lowest priority, the PendSV exception will be
 * entered immediately after the exit from the *last* nested interrupt (or
@@ -354,11 +353,11 @@ __asm volatile (
 #endif                              /* ARMv7-M or higher */
 
     "  MOV     r0,r12           \n" /* r0 := QXK_attr_.next */
-    "  MOVS    r2,#" STRINGIFY(QACTIVE_DYN_PRIO) "\n" /* r2 := offset of .dynPrio */
-    "  LDRB    r0,[r0,r2]       \n" /* r0 := QXK_attr_.next->dynPrio */
-    "  LDRB    r2,[r3,#" STRINGIFY(QXK_ACT_PRIO) "]\n" /* r2 := QXK_attr_.actPrio */
+    "  MOVS    r2,#" STRINGIFY(QACTIVE_PTHRE) "\n" /* r2 := offset of .pthre */
+    "  LDRB    r0,[r0,r2]       \n" /* r0 := QXK_attr_.next->prio */
+    "  LDRB    r2,[r3,#" STRINGIFY(QXK_ACT_THRE) "]\n" /* r2 := QXK_attr_.actThre */
     "  CMP     r2,r0            \n"
-    "  BCC     PendSV_activate  \n" /* if (next->dynPrio > topPrio) activate the next AO */
+    "  BCC     PendSV_activate  \n" /* if (next->pthre > actThre) activate the next AO */
 
     /* otherwise no activation needed... */
     "  MOVS    r0,#0            \n"
@@ -367,7 +366,7 @@ __asm volatile (
 #ifdef QXK_ON_CONTEXT_SW
     "  MOVS    r0,r1            \n" /* r0 := QXK_attr_.curr / basic */
     "  MOV     r1,r12           \n" /* r1 := QXK_attr_.next / basic */
-    "  LDR     r2,[r3,#" STRINGIFY(QXK_IDLE_THR) "]\n" /* r2 := idle thr ptr */
+    "  LDR     r2,=QXK_idle_    \n" /* r2 := QXK idle thr ptr */
     "  CMP     r1,r2            \n"
     "  BNE     PendSV_onContextSw1 \n" /* if (next != idle) call onContextSw */
     "  MOVS    r1,#0            \n" /* otherwise, next := NULL */
@@ -446,7 +445,7 @@ __asm volatile (
 #ifdef QXK_ON_CONTEXT_SW
     "  MOVS    r0,r1            \n" /* r0 := QXK_attr_.curr / basic */
     "  MOV     r1,r12           \n" /* r1 := QXK_attr_.next / basic */
-    "  LDR     r2,[r3,#" STRINGIFY(QXK_IDLE_THR) "]\n" /* r2 := idle thr ptr */
+    "  LDR     r2,=QXK_idle_    \n" /* r2 := QXK idle thr ptr */
     "  CMP     r0,r2            \n"
     "  BNE     PendSV_onContextSw2 \n" /* if (curr != idle) call onContextSw */
     "  MOVS    r0,#0            \n" /* otherwise, curr := NULL */

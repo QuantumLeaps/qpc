@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-08-19
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
 * @brief QF/C port to POSIX API (single-threaded, like QV kernel)
@@ -258,7 +258,7 @@ int QF_consoleWaitForKey(void) {
 }
 
 /****************************************************************************/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prio,
                   QEvt const * * const qSto, uint_fast16_t const qLen,
                   void * const stkSto, uint_fast16_t const stkSize,
                   void const * const par)
@@ -270,8 +270,9 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
         && (stkSto == (void *)0)); /* statck storage must NOT...
                                        * ... be provided */
     QEQueue_init(&me->eQueue, qSto, qLen);
-    me->prio = (uint8_t)prio;
-    QActive_register_(me); /* make QF aware of this active object */
+
+    me->prio = (uint8_t)(prio & 0xFFU);
+    QActive_register_(me); /* register this AO */
 
     /* the top-most initial tran. (virtual) */
     QHSM_INIT(&me->super, par, me->prio);

@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qk.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-06-13
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QK/C (preemptive non-blocking kernel) platform-independent
 * public interface.
 */
@@ -70,15 +66,20 @@
 * @class QK
 */
 typedef struct QK_Attr {
-    uint8_t volatile actPrio;    /*!< prio of the active AO */
-    uint8_t volatile nextPrio;   /*!< prio of the next AO to execute */
-    uint8_t volatile lockPrio;   /*!< lock prio (0 == no-lock) */
-    uint8_t volatile lockHolder; /*!< prio of the AO holding the lock */
+    uint8_t volatile actPrio;    /*!< QF prio of the active AO */
+    uint8_t volatile nextPrio;   /*!< QF prio of the next AO to execute */
+    uint8_t volatile actThre;    /*!< active preemption-threshold */
+    uint8_t volatile lockCeil;   /*!< lock preemption-ceiling (0==no-lock) */
+    uint8_t volatile lockHolder; /*!< QF prio of the AO holding the lock */
 } QK;
 
 /*${QK::QK-base::attr_} ....................................................*/
 /*! attributes of the QK kernel */
 extern QK QK_attr_;
+
+/*${QK::QK-base::idle_} ....................................................*/
+/*! Idle AO in the QK kernel */
+extern QActive const QK_idle_;
 
 /*${QK::QK-base::activate_} ................................................*/
 /*! QK activator activates the next active object. The activated AO preempts
@@ -96,7 +97,7 @@ extern QK QK_attr_;
 void QK_activate_(void);
 
 /*${QK::QK-base::sched_} ...................................................*/
-/*! QK scheduler finds the highest-priority thread ready to run
+/*! QK scheduler finds the highest-priority AO ready to run
 * @static @private @memberof QK
 *
 * @details
@@ -105,8 +106,8 @@ void QK_activate_(void);
 * current priority.
 *
 * @returns
-* the 1-based priority of the the active object, or zero if no eligible
-* active object is ready to run.
+* The QF priority of the the active object, or zero if no eligible
+* AO is ready to run.
 *
 * @attention
 * QK_sched_() must be always called with interrupts **disabled** and
@@ -120,8 +121,8 @@ uint_fast8_t QK_sched_(void);
 * @details
 * This function locks the QK scheduler to the specified ceiling.
 *
-* @param[in]   ceiling    priority ceiling to which the QK scheduler
-*                         needs to be locked
+* @param[in] ceiling  preemption ceiling to which the QK scheduler
+*                     needs to be locked
 *
 * @returns
 * The previous QK Scheduler lock status, which is to be used to unlock

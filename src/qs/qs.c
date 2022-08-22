@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qs::qs.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-29
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QS software tracing services
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -50,6 +46,11 @@
 #include "qassert.h"      /* QP embedded systems-friendly assertions */
 
 Q_DEFINE_THIS_MODULE("qs")
+
+/* ensure that the predefined records don't overlap the
+* user records (application-specific).
+*/
+Q_ASSERT_STATIC((enum_t)QS_PRE_MAX <= (enum_t)QS_USER);
 
 /*==========================================================================*/
 /*$skip${QP_VERSION} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/

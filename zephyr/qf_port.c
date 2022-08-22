@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-12
-* @version Last updated for: @ref qpc_7_0_2
+* @date Last updated on: 2022-08-16
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
 * @brief QF/C port to Zephyr RTOS
@@ -98,7 +98,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     me->thread.init_data      = (void *)attr2; /* temporarily save attr2 */
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -106,8 +106,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     /* initialize the Zephyr message queue */
     k_msgq_init(&me->eQueue, (char *)qSto, sizeof(QEvt *), (uint32_t)qLen);
 
-    me->prio = prio;  /* save the QF priority */
-    QActive_register_(me);      /* make QF aware of this active object */
+    me->prio  = (uint8_t)(prio & 0xFFU);
+    QActive_register_(me); /* register this AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */

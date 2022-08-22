@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qs::qs_64bit.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-29
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QS long-long (64-bit) output
 */
 #define QP_IMPL           /* this is QP implementation */

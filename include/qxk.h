@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qxk.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-27
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QXK/C (preemptive dual-mode kernel) platform-independent
 * public interface.
 */
@@ -75,18 +71,28 @@
 /*${QXK::QXK-base::Attr} ...................................................*/
 /*! @brief The QXK kernel class
 * @class QXK
+*
+* @note
+* The order and alignment of the data members in this struct might
+* be important in QXK ports, where the members might be accessed
+* in assembly.
 */
 typedef struct QXK_Attr {
-    struct QActive * volatile curr; /*!< current thread pointer (NULL=basic) */
-    struct QActive * volatile next; /*!< next thread pointer to execute */
-    uint8_t volatile actPrio;       /*!< prio of the active AO */
-    uint8_t volatile lockPrio;      /*!< lock prio (0 == no-lock) */
-    uint8_t volatile lockHolder;    /*!< prio of the lock holder */
+    struct QActive * volatile curr; /*!< current thread (NULL=basic) */
+    struct QActive * volatile next; /*!< next thread to run */
+    uint8_t volatile actPrio;    /*!< prio of the active AO */
+    uint8_t volatile actThre;    /*!< active preemption-threshold */
+    uint8_t volatile lockCeil;   /*!< lock preemption-ceiling (0==no-lock) */
+    uint8_t volatile lockHolder; /*!< prio of the lock holder */
 } QXK;
 
 /*${QXK::QXK-base::attr_} ..................................................*/
 /*! attributes of the QXK kernel */
 extern QXK QXK_attr_;
+
+/*${QXK::QXK-base::idle_} ..................................................*/
+/*! Idle AO in the QXK kernel */
+extern QActive const QXK_idle_;
 
 /*${QXK::QXK-base::Timeouts} ...............................................*/
 /*! timeout signals for extended threads */
@@ -136,12 +142,13 @@ uint_fast8_t QXK_sched_(void);
 * @details
 * This function locks the QXK scheduler to the specified ceiling.
 *
-* @param[in]   ceiling    priority ceiling to which the QXK scheduler
-*                         needs to be locked
+* @param[in] ceiling  preemption ceiling to which the QXK scheduler
+*                     needs to be locked
 *
 * @returns
 * The previous QXK Scheduler lock status, which is to be used to unlock
-* the scheduler by restoring its previous lock status in QXK_schedUnlock().
+* the scheduler by restoring its previous lock status in
+* QXK_schedUnlock().
 *
 * @note
 * A QXK scheduler can be locked from both basic threads (AOs) and
@@ -278,8 +285,6 @@ typedef struct QXThread {
 
     /*! time event to handle blocking timeouts */
     QTimeEvt timeEvt;
-
-/* public: */
 } QXThread;
 
 /* public: */
@@ -387,7 +392,9 @@ void QXThread_dispatch_(
 * if the QXK is already running.
 *
 * @param[in,out] me      pointer (see @ref oop)
-* @param[in]     prio    priority at which to start the extended thread
+* @param[in]     prio    QF-priority of the thread and (optionally)
+*                        preemption-threshold of this extended thread.
+*                        See also ::QPrioSpec.
 * @param[in]     qSto    pointer to the storage for the ring buffer of the
 *                        event queue. This cold be NULL, if this extended
 *                        thread does not use the built-in event queue.
@@ -406,7 +413,7 @@ void QXThread_dispatch_(
 */
 void QXThread_start_(
     QActive * const me,
-    uint_fast8_t const prio,
+    QPrioSpec const prio,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -522,7 +529,9 @@ void QXThread_teArm_(QXThread * const me,
 * Must be called from within a critical section
 */
 bool QXThread_teDisarm_(QXThread * const me);
-extern QXThread QXThread_idle;
+
+/*! dummy static to force generation of "struct QXThread" */
+extern QXThread const * QXThread_dummy;
 /*$enddecl${QXK::QXThread} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*$declare${QXK::QXThreadVtable} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
@@ -675,16 +684,17 @@ bool QXSemaphore_signal(QXSemaphore * const me);
 /*${QXK::QXMutex} ..........................................................*/
 /*! @brief Blocking Mutex the QXK preemptive kernel
 * @class QXMutex
+* @extends QActive
 *
 * @details
 * ::QXMutex is a blocking mutual exclusion mechanism that can also apply
-* the **priority ceiling protocol** to avoid unbounded priority inversion
+* the **priority-ceiling protocol** to avoid unbounded priority inversion
 * (if initialized with a non-zero ceiling priority, see QXMutex_init()).
 * In that case, ::QXMutex requires its own uinque QP priority level, which
 * cannot be used by any thread or any other ::QXMutex.
-* If initialized with zero ceiling priority, ::QXMutex does **not** use the
-* priority ceiling protocol and does not require a unique QP priority
-* (see QXMutex_init()).
+* If initialized with preemption-ceiling of zero, ::QXMutex does **not**
+* use the priority-ceiling protocol and does not require a unique QP
+* priority (see QXMutex_init()).
 * ::QXMutex is **recursive** (re-entrant), which means that it can be locked
 * multiple times (up to 255 levels) by the *same* thread without causing
 * deadlock.
@@ -709,19 +719,13 @@ bool QXSemaphore_signal(QXSemaphore * const me);
 * @include qxk_mutex.c
 */
 typedef struct {
+/* protected: */
+    QActive super;
+
 /* private: */
 
     /*! set of extended-threads waiting on this mutex */
     QPSet waitSet;
-
-    /*! lock-nesting up-down counter */
-    uint8_t volatile lockNest;
-
-    /*! prio of the lock holder thread */
-    uint8_t volatile holderPrio;
-
-    /*! prioirty ceiling of this mutex */
-    uint8_t ceiling;
 } QXMutex;
 
 /* public: */
@@ -732,18 +736,21 @@ typedef struct {
 * @details
 * Initialize the QXK priority ceiling mutex.
 *
-* @param[in,out] me      pointer (see @ref oop)
-* @param[in]     ceiling the ceiling-priority of this mutex or zero
+* @param[in,out] me    pointer (see @ref oop)
+* @param[in]     prio  the QF-priority and optionally preemption-
+*                      threshold  of this mutex. This value might
+*                      also be zero. See also ::QPrioSpec
 *
 * @note
-* `ceiling == 0` means that the priority-ceiling protocol shall __not__
-* be used by this mutex. Such mutex will __not__ change (boost) the
+* `ceiling == 0` means that the priority-ceiling protocol shall **not**
+* be used by this mutex. Such mutex will **not** change (boost) the
 * priority of the holding thread.
 *
 * @note
-* `ceiling > 0` means that the priority-ceiling protocol shall be used
-* by this mutex. Such mutex __will__ boost the priority of the holding
-* thread to the `ceiling` level for as long as the thread holds this mutex.
+* Conversely, `ceiling != 0` means that the priority-ceiling protocol
+* shall be used by this mutex. Such mutex **will__ boost the priority
+* of the holding thread to the `ceiling` level for as long as the
+* thread holds this mutex.
 *
 * @attention
 * When the priority-ceiling protocol is used (`ceiling > 0`), the
@@ -755,13 +762,10 @@ typedef struct {
 * @include qxk_mutex.c
 */
 void QXMutex_init(QXMutex * const me,
-    uint_fast8_t const ceiling);
+    QPrioSpec const prio);
 
 /*! lock the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
-*
-* @details
-* Lock the QXK priority ceiling mutex ::QXMutex.
 *
 * @param[in,out] me     pointer (see @ref oop)
 * @param[in]  nTicks    number of clock ticks (at the associated rate)
@@ -785,9 +789,6 @@ bool QXMutex_lock(QXMutex * const me,
 /*! try to lock the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
 *
-* @details
-* Try to lock the QXK priority ceiling mutex ::QXMutex.
-*
 * @param[in,out] me      pointer (see @ref oop)
 *
 * @returns
@@ -800,7 +801,7 @@ bool QXMutex_lock(QXMutex * const me,
 *
 * @note
 * The mutex locks are allowed to nest, meaning that the same extended thread
-* can lock the same mutex multiple times (<= 225). However, each successful
+* can lock the same mutex multiple times (<= 255). However, each successful
 * call to QXMutex_tryLock() must be balanced by the matching call to
 * QXMutex_unlock().
 */
@@ -809,9 +810,6 @@ bool QXMutex_tryLock(QXMutex * const me);
 /*! unlock the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
 *!
-* @details
-* Unlock the QXK priority ceiling mutex.
-*
 * @param[in,out] me      pointer (see @ref oop)
 *
 * @note
@@ -945,7 +943,7 @@ do { \
 /*${QXK-impl::QACTIVE_EQUEUE_SIGNAL_} ......................................*/
 /*! QXK native event queue signaling */
 #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
-    QPSet_insert(&QF_readySet_, (uint_fast8_t)(me_)->dynPrio); \
+    QPSet_insert(&QF_readySet_, (uint_fast8_t)(me_)->prio); \
     if (!QXK_ISR_CONTEXT_()) { \
         if (QXK_sched_() != 0U) { \
             QXK_activate_(); \

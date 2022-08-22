@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP/C on TM4C123, QUTEST, GNU-ARM
-# Last Updated for Version: 7.0.1
-# Date of the Last Update:  2022-05-23
+# Last Updated for Version: 7.1.0
+# Date of the Last Update:  2022-08-20
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -25,7 +25,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program. If not, see <www.gnu.org/licenses/>.
+# along with this program. If not, see <http://www.gnu.org/licenses>.
 #
 # Contact information:
 # <www.state-machine.com/licensing>
@@ -50,7 +50,7 @@
 #
 PROJECT := test_basic
 TARGET  := tm4c123
-TARGET_DIR := ..\..\target_tm4c123
+TARGET_DIR := ..\..\..\..\3rd_party\ek-tm4c123gxl\qutest
 
 #-----------------------------------------------------------------------------
 # project directories:
@@ -104,10 +104,10 @@ C_SRCS := \
 	startup_TM4C123GH6PM.c
 
 # C++ source files
-CPP_SRCS := 
+CPP_SRCS :=
 
 OUTPUT    := $(PROJECT)
-LD_SCRIPT := $(TARGET_DIR)/test.ld
+LD_SCRIPT := $(TARGET_DIR)\qutest.ld
 
 QP_SRCS := \
 	qep_hsm.c \
@@ -139,12 +139,10 @@ DEFINES   := -DTARGET_IS_TM4C123_RB1
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
-# ARM_ARCH:  [6 | 7] (NOTE: must match ARM_CPU!)
 # ARM_FPU:   [ | vfp]
 # FLOAT_ABI: [ | soft | softfp | hard]
 #
 ARM_CPU   := -mcpu=cortex-m4
-ARM_ARCH  := 7   # NOTE: must match the ARM_CPU!
 ARM_FPU   := -mfpu=vfp
 FLOAT_ABI := -mfloat-abi=softfp
 
@@ -252,6 +250,9 @@ endif
 $(TARGET_BIN) : $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 	$(FLASH) $@
+	@echo
+	@echo Reset the board MANUALLY!
+	@pause
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
@@ -259,9 +260,10 @@ $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 
 flash :
 	$(FLASH) $(TARGET_BIN)
+	@echo
+	@echo Reset the board MANUALLY!
 
 run : $(TARGET_BIN)
-	$(FLASH) -c $<
 	$(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
 
 $(BIN_DIR)/%.d : %.c

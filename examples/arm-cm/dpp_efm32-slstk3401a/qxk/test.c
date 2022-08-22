@@ -120,7 +120,8 @@ static void Thread2_run(QXThread * const me) {
     * before any thread runs.
     */
     //QXMutex_init(&l_mutex, 0U); /* priority-ceiling NOT used */
-    QXMutex_init(&l_mutex, N_PHILO + 6U); /*priority-ceiling protocol used*/
+    QXMutex_init(&l_mutex,
+                 Q_PRIO(N_PHILO + 6U, 5U));
 
     me->super.thread = &l_tls2; /* initialize the TLS for Thread2 */
 

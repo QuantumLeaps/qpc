@@ -7,7 +7,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QP/C"
-PROJECT_NUMBER         = 7.0.2
+PROJECT_NUMBER         = 7.1.0
 PROJECT_BRIEF          = "Real-Time Embedded Framework"
 PROJECT_LOGO           = ../../ql-doxygen/images/logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -289,8 +289,6 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = Q_SPY \
                          QP_IMPL \
                          Q_UTEST \
-                         QK_ON_CONTEXT_SW \
-                         QXK_ON_CONTEXT_SW \
                          QF_MAX_ACTIVE=32 \
                          QF_MAX_TICK_RATE=2 \
                          QF_MAX_EPOOL=3 \
@@ -300,6 +298,11 @@ PREDEFINED             = Q_SPY \
                          QF_MPOOL_CTR_SIZE=2 \
                          QF_TIMEEVT_CTR_SIZE=4 \
                          QF_ACTIVE_STOP=0 \
-                         QS_TIME_SIZE=4
+                         QS_TIME_SIZE=4 \
+                         QF_EQUEUE_TYPE=QEQueue \
+                         QF_OS_OBJECT_TYPE=void* \
+                         QF_THREAD_TYPE=void* \
+                         QK_ON_CONTEXT_SW \
+                         QXK_ON_CONTEXT_SW
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES

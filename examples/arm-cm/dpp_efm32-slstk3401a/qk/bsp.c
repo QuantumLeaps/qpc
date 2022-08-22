@@ -96,8 +96,8 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    //QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
-    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
+    QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -216,6 +216,7 @@ void BSP_init(void) {
     QS_SIG_DICTIONARY(HUNGRY_SIG,    (void *)0);
     QS_SIG_DICTIONARY(TIMEOUT_SIG,   (void *)0);
 
+    QS_OBJ_DICTIONARY(the_Ticker0);
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_OBJ_DICTIONARY(&l_GPIO_EVEN_IRQHandler);
 
@@ -223,9 +224,11 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(COMMAND_STAT);
 
     /* setup the QS filters... */
-    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
+    //QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
     //QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
-    QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
+    //QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
+    QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
+    QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {

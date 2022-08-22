@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on EMF32-SLSTK3401A, QXK kernel, GNU-ARM
-# Last Updated for Version: 7.0.1
-# Date of the Last Update:  2022-05-23
+# Last Updated for Version: 7.0.2
+# Date of the Last Update:  2022-08-18
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------

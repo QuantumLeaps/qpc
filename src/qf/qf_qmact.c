@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qf::qf_qmact.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QMActive_ctor() definition
 *
 * @details
@@ -90,14 +86,15 @@ void QMActive_ctor(QMActive * const me,
         &QActive_postLIFO_
     };
 
-    /* clear the whole QActive object, so that the framework can start
+    /* clear the whole QMActive object, so that the framework can start
     * correctly even if the startup code fails to clear the uninitialized
     * data (as is required by the C Standard).
     */
     QF_bzero(me, sizeof(*me));
 
     /*!
-    * @note QMActive inherits QActive, so by the @ref oop convention
+    * @note
+    * ::QMActive inherits ::QActive, so by the @ref oop convention
     * it should call the constructor of the superclass, i.e., QActive_ctor().
     * However, this would pull in the QActiveVtable, which in turn will pull
     * in the code for QHsm_init_() and QHsm_dispatch_() implemetations,

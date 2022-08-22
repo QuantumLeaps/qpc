@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-30
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-08-19
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
 * @brief QF/C port to POSIX API (multi-threaded)
@@ -134,7 +134,7 @@ int_t QF_run(void) {
 
     l_isRunning = true;
     while (l_isRunning) { /* the clock tick loop... */
-        QF_onClockTick(); /* clock tick callback (must call QTIMEEVT_TICK_X()) */
+        QF_onClockTick(); /* callback (must call QTIMEEVT_TICK_X()) */
 
         nanosleep(&l_tick, NULL); /* sleep for the number of ticks, NOTE05 */
     }
@@ -210,7 +210,7 @@ static void *thread_routine(void *arg) { /* the expected POSIX signature */
 }
 
 /****************************************************************************/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -226,8 +226,8 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
     QEQueue_init(&me->eQueue, qSto, qLen);
     pthread_cond_init(&me->osObject, NULL);
 
-    me->prio = (uint8_t)prio;
-    QActive_register_(me); /* make QF aware of this active object */
+    me->prio = (uint8_t)(prio & 0xFFU);
+    QActive_register_(me); /* register this AO */
 
     /* the top-most initial tran. (virtual) */
     QHSM_INIT(&me->super, par, me->prio);

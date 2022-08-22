@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qf::qf_ps.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-06-14
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief Publish-Subscribe services
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -131,20 +127,22 @@ void QActive_publish_(
     if (QPSet_notEmpty(&subscrList)) { /* any subscribers? */
         /* the highest-prio subscriber */;
         uint_fast8_t p = QPSet_findMax(&subscrList);
+        QActive *a = QActive_registry_[p];
         QF_SCHED_STAT_
 
-        QF_SCHED_LOCK_(p); /* lock the scheduler up to prio 'p' */
+        QF_SCHED_LOCK_(a->pthre); /* lock the scheduler up to ceiling */
         do { /* loop over all subscribers */
             /* the prio of the AO must be registered with the framework */
-            Q_ASSERT_ID(210, QActive_registry_[p] != (QActive *)0);
+            Q_ASSERT_ID(210, a != (QActive *)0);
 
             /* QACTIVE_POST() asserts internally if the queue overflows */
-            QACTIVE_POST(QActive_registry_[p], e, sender);
+            QACTIVE_POST(a, e, sender);
 
             QPSet_remove(&subscrList, p); /* remove the handled subscriber */
             if (QPSet_notEmpty(&subscrList)) { /* still more subscribers? */
                 /* highest-prio subscriber */
                 p = QPSet_findMax(&subscrList);
+                a = QActive_registry_[p];
             }
             else {
                 p = 0U; /* no more subscribers */

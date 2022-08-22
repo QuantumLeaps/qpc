@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${include::qs.h} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief QS/C platform-independent public interface.
 */
 #ifndef QS_H
@@ -77,40 +73,40 @@
 
 /*${QS::QSTimeCtr} .........................................................*/
 /*! QS time stamp type, which determines the dynamic range of QS time stamps */
-#if (QS_TIME_SIZE == 4U) 
+#if (QS_TIME_SIZE == 4U)
 typedef uint32_t QSTimeCtr;
-#endif /*  (QS_TIME_SIZE == 4U)  */
+#endif /*  (QS_TIME_SIZE == 4U) */
 
 /*${QS::QSTimeCtr} .........................................................*/
-#if (QS_TIME_SIZE == 2U) 
+#if (QS_TIME_SIZE == 2U)
 typedef uint16_t QSTimeCtr;
-#endif /*  (QS_TIME_SIZE == 2U)  */
+#endif /*  (QS_TIME_SIZE == 2U) */
 
 /*${QS::QSTimeCtr} .........................................................*/
-#if (QS_TIME_SIZE == 1U) 
+#if (QS_TIME_SIZE == 1U)
 typedef uint8_t QSTimeCtr;
-#endif /*  (QS_TIME_SIZE == 1U)  */
+#endif /*  (QS_TIME_SIZE == 1U) */
 
 /*${QS::QSFun} .............................................................*/
 /*! QS function pointer type (for serializing function pointers) */
-#if (QS_FUN_PTR_SIZE == 4U) 
+#if (QS_FUN_PTR_SIZE == 4U)
 typedef uint32_t QSFun;
-#endif /*  (QS_FUN_PTR_SIZE == 4U)  */
+#endif /*  (QS_FUN_PTR_SIZE == 4U) */
 
 /*${QS::QSFun} .............................................................*/
-#if (QS_FUN_PTR_SIZE == 8U) 
+#if (QS_FUN_PTR_SIZE == 8U)
 typedef uint64_t QSFun;
-#endif /*  (QS_FUN_PTR_SIZE == 8U)  */
+#endif /*  (QS_FUN_PTR_SIZE == 8U) */
 
 /*${QS::QSFun} .............................................................*/
-#if (QS_FUN_PTR_SIZE == 2U) 
+#if (QS_FUN_PTR_SIZE == 2U)
 typedef uint16_t QSFun;
-#endif /*  (QS_FUN_PTR_SIZE == 2U)  */
+#endif /*  (QS_FUN_PTR_SIZE == 2U) */
 
 /*${QS::QSFun} .............................................................*/
-#if (QS_FUN_PTR_SIZE == 1U) 
+#if (QS_FUN_PTR_SIZE == 1U)
 typedef uint8_t QSFun;
-#endif /*  (QS_FUN_PTR_SIZE == 1U)  */
+#endif /*  (QS_FUN_PTR_SIZE == 1U) */
 
 /*${QS::QSCtr} .............................................................*/
 /*! QS ring buffer counter and offset type */
@@ -204,9 +200,11 @@ enum QSpyPre {
     /* [47] Additional Memory Pool (MP) records */
     QS_QF_MPOOL_GET_ATTEMPT,  /*!< attempt to get a memory block failed */
 
-    /* [48] Scheduler (SC) records */
-    QS_MUTEX_LOCK,        /*!< a mutex was locked */
-    QS_MUTEX_UNLOCK,      /*!< a mutex was unlocked */
+    /* [48] reserved */
+    QS_RESERVED1,         /*!< reserved for future use */
+    QS_RESERVED2,         /*!< reserved for future use */
+
+    /* [50] Scheduler (SC) records */
     QS_SCHED_LOCK,        /*!< scheduler was locked */
     QS_SCHED_UNLOCK,      /*!< scheduler was unlocked */
     QS_SCHED_NEXT,        /*!< scheduler found next task to execute */
@@ -233,7 +231,22 @@ enum QSpyPre {
     QS_ASSERT_FAIL,       /*!< assertion failed in the code */
     QS_QF_RUN,            /*!< QF_run() was entered */
 
-    QS_MAX,               /*!< the number of reserved signals */
+    /* [71] Semaphore (SEM) records */
+    QS_SEM_TAKE,          /*!< a semaphore was taken by a thread */
+    QS_SEM_BLOCK,         /*!< a semaphore blocked a thread */
+    QS_SEM_SIGNAL,        /*!< a semaphore was signaled*/
+    QS_SEM_BLOCK_ATTEMPT, /*!< a semaphore blocked was attempted */
+
+    /* [75] Mutex (MTX) records */
+    QS_MTX_LOCK,          /*!< a mutex was locked */
+    QS_MTX_BLOCK,         /*!< a mutex blocked a thread */
+    QS_MTX_UNLOCK,        /*!< a mutex was unlocked */
+    QS_MTX_LOCK_ATTEMPT,  /*!< a mutex lock was attempted */
+    QS_MTX_BLOCK_ATTEMPT, /*!< a mutex blocking was attempted */
+    QS_MTX_UNLOCK_ATTEMPT,/*!< a mutex unlock was attempted */
+
+    /* [81] */
+    QS_PRE_MAX,           /*!< the number of predefined signals */
 };
 
 /*${QS::QSpyGroups} ........................................................*/
@@ -1414,12 +1427,6 @@ struct QS_TestData {
 /*! QUTest data */
 extern struct QS_TestData QS_testData;
 
-/*${QUTest::QS::processTestEvts_} ..........................................*/
-/*! internal function to process posted events during test
-* @static @private @memberof QS
-*/
-void QS_processTestEvts_(void);
-
 /*${QUTest::QS::test_pause_} ...............................................*/
 /*! internal function to pause test and enter the test event loop
 * @static @private @memberof QS
@@ -1466,7 +1473,28 @@ void QS_onTestPost(
 */
 void QS_onTestLoop(void);
 
-/*${QUTest::QHsmDummy} .....................................................*/
+/*${QUTest::QUTEST_ON_POST} ................................................*/
+/*! record-ID for posting events */
+#define QUTEST_ON_POST 124
+/*$enddecl${QUTest} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
+/*--------------------------------------------------------------------------*/
+/* QP-stub for QUTest
+* NOTE: The QP-stub is needed for unit testing QP applications,
+* but might NOT be needed for testing QP itself.
+*/
+#if Q_UTEST != 0
+/*$declare${QUTest-stub::QS} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+
+/*${QUTest-stub::QS::processTestEvts_} .....................................*/
+/*! internal function to process posted events during test
+* @static @private @memberof QS
+*/
+void QS_processTestEvts_(void);
+/*$enddecl${QUTest-stub::QS} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$declare${QUTest-stub::QHsmDummy} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+
+/*${QUTest-stub::QHsmDummy} ................................................*/
 /*! @brief QHsmDummy class
 * @class QHsmDummy
 * @extends QHsm
@@ -1502,8 +1530,10 @@ void QHsmDummy_dispatch_(
     QHsm * const me,
     QEvt const * const e,
     uint_fast8_t const qs_id);
+/*$enddecl${QUTest-stub::QHsmDummy} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$declare${QUTest-stub::QActiveDummy} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
-/*${QUTest::QActiveDummy} ..................................................*/
+/*${QUTest-stub::QActiveDummy} .............................................*/
 /*! @brief QActiveDummy Object class
 * @class QActiveDummy
 * @extends QActive
@@ -1545,7 +1575,7 @@ void QActiveDummy_dispatch_(
 */
 void QActiveDummy_start_(
     QActive * const me,
-    uint_fast8_t const prio,
+    QPrioSpec const prio,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -1567,13 +1597,10 @@ bool QActiveDummy_post_(
 void QActiveDummy_postLIFO_(
     QActive * const me,
     QEvt const * const e);
+/*$enddecl${QUTest-stub::QActiveDummy} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+#endif /* Q_UTEST != 0 */
 
-/*${QUTest::QUTEST_ON_POST} ................................................*/
-/*! record-ID for posting events */
-#define QUTEST_ON_POST 124
-/*$enddecl${QUTest} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-
-/*! QS macro to define the Test-Probe for a given @p fun_ */
+/*! QS macro to define the Test-Probe for a given `fun_` */
 #define QS_TEST_PROBE_DEF(fun_) \
     uint32_t const qs_tp_ = QS_getTestProbe_((void (*)(void))(fun_));
 
@@ -1585,7 +1612,7 @@ void QActiveDummy_postLIFO_(
 #define QS_TEST_PROBE_ID(id_, code_) \
     if (qs_tp_ == (uint32_t)(id_)) { code_ }
 
-/*! QS macro to pause test execution and enter the test event loop */
+/*! QS macro to pause test execution and enter the test event-loop */
 #define QS_TEST_PAUSE()  (QS_test_pause_())
 
 #else /* Q_UTEST not defined */

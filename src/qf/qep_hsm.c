@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qf::qep_hsm.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-12
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief ::QHsm implementation
 *
 * @tr{RQP103} @tr{RQP104} @tr{RQP120} @tr{RQP130}

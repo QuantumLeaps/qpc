@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qf::qep_msm.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-05-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief ::QMsm implementation
 */
 #define QP_IMPL           /* this is QP implementation */

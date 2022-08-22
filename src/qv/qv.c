@@ -36,11 +36,7 @@
 * <info@state-machine.com>
 */
 /*$endhead${src::qv::qv.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*!
-* @date Last updated on: 2022-07-24
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
+/*! @file
 * @brief Cooperative QV kernel, implementation of kernel-specific functions.
 */
 #define QP_IMPL           /* this is QP implementation */
@@ -178,7 +174,7 @@ int_t QF_run(void) {
 
 /*${QV::QActive::start_} ...................................................*/
 void QActive_start_(QActive * const me,
-    uint_fast8_t const prio,
+    QPrioSpec const prio,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
