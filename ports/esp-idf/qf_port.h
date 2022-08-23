@@ -23,16 +23,16 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-30
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-08-23
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
-* @brief QF/C port to FreeRTOS 10.x
+* @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
 */
 #ifndef QF_PORT_H
 #define QF_PORT_H
 
-/* FreeRTOS event queue and thread types */
+/* FreeRTOS-ESP32 event queue and thread types, see NOTE0 */
 #define QF_EQUEUE_TYPE        QueueHandle_t
 #define QF_OS_OBJECT_TYPE     StaticQueue_t
 #define QF_THREAD_TYPE        StaticTask_t
@@ -40,23 +40,26 @@
 /* The maximum number of active objects in the application, see NOTE1 */
 #define QF_MAX_ACTIVE         32U
 
-/* QF interrupt disabling/enabling (task level) */
-#define QF_INT_DISABLE()      taskDISABLE_INTERRUPTS()
-#define QF_INT_ENABLE()       taskENABLE_INTERRUPTS()
+/* QF interrupt disabling for FreeRTOS-ESP32 (task level), see NOTE2 */
+#define QF_INT_DISABLE()      portENTER_CRITICAL(&QF_esp32mux)
+#define QF_INT_ENABLE()       portEXIT_CRITICAL(&QF_esp32mux)
 
-/* QF critical section for FreeRTOS (task level), see NOTE2 */
+/* QF critical section for FreeRTOS-ESP32 (task level), see NOTE2 */
 /* #define QF_CRIT_STAT_TYPE not defined */
-#define QF_CRIT_ENTRY(stat_)  taskENTER_CRITICAL()
-#define QF_CRIT_EXIT(stat_)   taskEXIT_CRITICAL()
+#define QF_CRIT_ENTRY(dummy)  portENTER_CRITICAL(&QF_esp32mux)
+#define QF_CRIT_EXIT(dummy)   portEXIT_CRITICAL(&QF_esp32mux)
 
-#include "FreeRTOS.h"  /* FreeRTOS master include file, see NOTE3 */
-#include "task.h"      /* FreeRTOS task management */
-#include "queue.h"     /* FreeRTOS queue management */
+#include "freertos/FreeRTOS.h"  /* FreeRTOS master include file, see NOTE3 */
+#include "freertos/task.h"      /* FreeRTOS task management */
+#include "queue.h"              /* FreeRTOS queue management */
 
 #include "qep_port.h"  /* QEP port */
-#include "qequeue.h"   /* QF event queue (for deferring events) */
-#include "qmpool.h"    /* QF memory pool (for event pools) */
+#include "qequeue.h"   /* this QP port uses the native QF event queue */
+#include "qmpool.h"    /* this QP port uses the native QF memory pool */
 #include "qf.h"        /* QF platform-independent public interface */
+
+/* global spinlock "mutex" for all critical sections in QF (see NOTE4) */
+extern PRIVILEGED_DATA portMUX_TYPE QF_esp32mux;
 
 /* the "FromISR" versions of the QF APIs, see NOTE3 */
 #ifdef Q_SPY
@@ -100,16 +103,16 @@
 /* this function only to be used through macros QACTIVE_POST_FROM_ISR()
 * and QACTIVE_POST_X_FROM_ISR().
 */
-bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
+bool IRAM_ATTR QActive_postFromISR_(QActive * const me, QEvt const * const e,
                           uint_fast16_t const margin,
                           BaseType_t * const pxHigherPriorityTaskWoken,
                           void const * const sender);
 
-void QActive_publishFromISR_(QEvt const * const e,
+void IRAM_ATTR QActive_publishFromISR_(QEvt const * const e,
                           BaseType_t * const pxHigherPriorityTaskWoken,
                           void const * const sender);
 
-void QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
+void IRAM_ATTR QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
                           BaseType_t * const pxHigherPriorityTaskWoken,
                           void const * const sender);
 
@@ -169,14 +172,14 @@ enum FreeRTOS_TaskAttrs {
     void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName);
 #endif
 #if (configSUPPORT_STATIC_ALLOCATION > 0)
-    void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
-                                       StackType_t **ppxIdleTaskStackBuffer,
-                                       uint32_t *pulIdleTaskStackSize);
+    void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer,
+                                        StackType_t **ppxIdleTaskStackBuffer,
+                                        uint32_t *pulIdleTaskStackSize );
 #endif
 
-/*==========================================================================*/
-/* interface used only inside QF, but not in applications */
-
+/*****************************************************************************
+* interface used only inside QF, but not in applications
+*/
 #ifdef QP_IMPL
     #define FREERTOS_TASK_PRIO(qp_prio_) \
         ((UBaseType_t)((qp_prio_) + tskIDLE_PRIORITY))
@@ -213,8 +216,31 @@ enum FreeRTOS_TaskAttrs {
 
 #endif /* ifdef QP_IMPL */
 
-/*==========================================================================*/
-/* NOTE1:
+/*****************************************************************************
+* NOTE0:
+* This is the "experimental" port to the [Espressif ESP-IDF][1]
+* IoT Framework, which is loosely based on the [FreeRTOS kernel][2].
+*
+* "Experimental" means that the port has not been thouroughly tested at
+* Quantum Leaps and no working examples are provided.
+*
+* The [Espressif ESP-IDF][1] is based on a significantly changed version
+* of the FreeRTOS kernel developed by Espressif to support the ESP32
+* multi-core CPUs (see [ESP-IDF][1]).
+*
+* The Espressif version of FreeRTOS is __NOT__ compatible with the baseline
+* FreeRTOS and it needs to be treated as a separate RTOS kernel.
+* According to the comments in the Espressif source code, FreeRTOS-ESP-IDF
+* is based on FreeRTOS V8.2.0, but apparently FreeRTOS-ESP-IDF has been
+* updated with the newer features introduced to the original FreeRTOS in the
+* later versions. For example, FreeRTOS-ESP32 supports the "static allocation",
+* first introduced in baseline FreeRTOS V9.x. This QP port to FreeRTOS-ESP-IDF
+* takes advantage of the "static allocation".
+*
+* [1]: https://www.espressif.com/en/products/sdks/esp-idf
+* [2]: https://freertos.org
+*
+* NOTE1:
 * The maximum number of active objects QF_MAX_ACTIVE can be increased to 64,
 * inclusive, but it can be reduced to save some memory. Also, the number of
 * active objects cannot exceed the number of FreeRTOS task priorities,
@@ -230,7 +256,11 @@ enum FreeRTOS_TaskAttrs {
 * provides the "FromISR" variants for QP functions and "FROM_ISR" variants
 * for QP macros to be used inside ISRs. ONLY THESE "FROM_ISR" VARIANTS
 * ARE ALLOWED INSIDE ISRs AND CALLING THE TASK-LEVEL APIs IS AN ERROR.
+
+* NOTE4:
+* This QF port to FreeRTOS-ESP32 uses the FreeRTOS-ESP32 spin lock "mutex",
+* similar to the internal implementation of FreeRTOS-ESP32 (see tasks.c).
+* However, the QF port uses its own "mutex" object QF_esp32mux.
 */
 
 #endif /* QF_PORT_H */
-

@@ -23,11 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-19
+* @date Last updated on: 2022-98-23
 * @version Last updated for: @ref qpc_7_1_0
 *
 * @file
-* @brief QF/C port to FreeRTOS 10.x
+* @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -40,7 +40,11 @@
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
 
+#include "esp_log.h"
+#include "esp_freertos_hooks.h"
+
 Q_DEFINE_THIS_MODULE("qf_port")
+//static const char *TAG = "qf_port";
 
 #if ( configSUPPORT_STATIC_ALLOCATION == 0 )
     #error "This QP/C port to FreeRTOS requires configSUPPORT_STATIC_ALLOCATION "
@@ -50,8 +54,21 @@ Q_DEFINE_THIS_MODULE("qf_port")
     #error "FreeRTOS configMAX_PRIORITIES must not be less than QF_MAX_ACTIVE"
 #endif
 
+#if defined( CONFIG_QPC_PINNED_TO_CORE_0 )
+    #define QPC_CPU_NUM         PRO_CPU_NUM
+#elif defined( CONFIG_QPC_PINNED_TO_CORE_1 )
+    #define QPC_CPU_NUM         APP_CPU_NUM
+#else
+    /* Defaults to APP_CPU */
+    #define QPC_CPU_NUM         APP_CPU_NUM
+#endif
+
+/* Global objects ----------------------------------------------------------*/
+PRIVILEGED_DATA portMUX_TYPE QF_esp32mux = portMUX_INITIALIZER_UNLOCKED;
+
 /* Local objects -----------------------------------------------------------*/
 static void task_function(void *pvParameters); /* FreeRTOS task signature */
+int_t qf_run_active = 0;
 
 /* The following macro provides the number of free slots in the FreeRTOS
 * queue.
@@ -76,20 +93,15 @@ static void task_function(void *pvParameters); /* FreeRTOS task signature */
 
 /*==========================================================================*/
 void QF_init(void) {
-    /* empty for FreeRTOS */
+    esp_register_freertos_tick_hook_for_cpu(freertos_tick_hook, QPC_CPU_NUM);
 }
 /*..........................................................................*/
 int_t QF_run(void) {
-    QS_CRIT_STAT_
-
     QF_onStartup(); /* the startup callback (configure/enable interrupts) */
 
-    /* produce the QS_QF_RUN trace record */
-    QS_BEGIN_PRE_(QS_QF_RUN, 0U)
-    QS_END_PRE_()
-
-    vTaskStartScheduler(); /* start the FreeRTOS scheduler */
-    Q_ERROR_ID(110); /* the FreeRTOS scheduler should never return */
+    //vTaskStartScheduler(); /* start the FreeRTOS scheduler */
+    //Q_ERROR_ID(110); /* the FreeRTOS scheduler should never return */
+    qf_run_active = 100;
     return 0; /* dummy return to make the compiler happy */
 }
 /*..........................................................................*/
@@ -141,15 +153,16 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
                              : (char const *)"AO";
 
     /* statically create the FreeRTOS task for the AO */
-    Q_ALLEGE_ID(220,
-         (TaskHandle_t)0 != xTaskCreateStatic(
+     Q_ALLEGE_ID(220,
+         (TaskHandle_t)0 != xTaskCreateStaticPinnedToCore(
               &task_function,           /* the task function */
               taskName ,                /* the name of the task */
               stkSize/sizeof(portSTACK_TYPE), /* stack length */
               (void *)me,               /* the 'pvParameters' parameter */
               FREERTOS_TASK_PRIO(prio), /* FreeRTOS priority */
               (StackType_t *)stkSto,    /* stack storage */
-              &me->thread));            /* task buffer */
+              &me->thread,              /* task buffer */
+              QPC_CPU_NUM));            /* CPU number */
 }
 /*..........................................................................*/
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
@@ -167,7 +180,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 }
 
 /*==========================================================================*/
-bool QActive_post_(QActive * const me, QEvt const * const e,
+bool IRAM_ATTR QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
 {
     QF_CRIT_STAT_
@@ -234,7 +247,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     return status;
 }
 /*..........................................................................*/
-void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
+void IRAM_ATTR QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_STAT_
     QF_CRIT_E_();
 
@@ -277,12 +290,12 @@ QEvt const *QActive_get_(QActive * const me) {
 
 /*==========================================================================*/
 /* The "FromISR" QP APIs for the FreeRTOS port... */
-bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
+bool IRAM_ATTR QActive_postFromISR_(QActive * const me, QEvt const * const e,
                           uint_fast16_t const margin,
                           BaseType_t * const pxHigherPriorityTaskWoken,
                           void const * const sender)
 {
-    UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+    portENTER_CRITICAL_ISR(&QF_esp32mux);
 
     /* find out the number of free slots in the queue */
     uint_fast16_t const nFree = (uint_fast16_t)FREERTOS_QUEUE_GET_FREE(me);
@@ -320,7 +333,7 @@ bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
             QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
         }
 
-        portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+        portEXIT_CRITICAL_ISR(&QF_esp32mux);
 
         /* posting to the FreeRTOS message queue must succeed */
         Q_ALLEGE_ID(820,
@@ -340,7 +353,7 @@ bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
             QS_EQC_PRE_(margin); /* margin requested */
         QS_END_NOCRIT_PRE_()
 
-        portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+        portEXIT_CRITICAL_ISR(&QF_esp32mux);
 
         QF_gcFromISR(e); /* recycle the event to avoid a leak */
     }
@@ -348,14 +361,14 @@ bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
     return status;
 }
 /*..........................................................................*/
-void QActive_publishFromISR_(QEvt const * const e,
+void IRAM_ATTR QActive_publishFromISR_(QEvt const * const e,
                              BaseType_t * const pxHigherPriorityTaskWoken,
                              void const * const sender)
 {
     /** @pre the published signal must be within the configured range */
     Q_REQUIRE_ID(500, e->sig < (QSignal)QActive_maxPubSignal_);
 
-    UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+    portENTER_CRITICAL_ISR(&QF_esp32mux);
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_PUBLISH, 0U)
         QS_TIME_PRE_();          /* the timestamp */
@@ -378,7 +391,7 @@ void QActive_publishFromISR_(QEvt const * const e,
 
     /* make a local, modifiable copy of the subscriber list */
     QPSet subscrList = QActive_subscrList_[e->sig];
-    portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+    portEXIT_CRITICAL_ISR(&QF_esp32mux);
 
     if (QPSet_notEmpty(&subscrList)) { /* any subscribers? */
         /* the highest-prio subscriber */
@@ -412,13 +425,13 @@ void QActive_publishFromISR_(QEvt const * const e,
     QF_gcFromISR(e);
 }
 /*..........................................................................*/
-void QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
+void IRAM_ATTR QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
                       BaseType_t * const pxHigherPriorityTaskWoken,
                       void const * const sender)
 {
     QTimeEvt *prev = &QTimeEvt_timeEvtHead_[tickRate];
 
-    UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+    portENTER_CRITICAL_ISR(&QF_esp32mux);
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_TICK, 0U)
         ++prev->ctr;
@@ -454,7 +467,7 @@ void QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
             t->super.refCtr_ &= (uint8_t)(~QTE_IS_LINKED);
             /* do NOT advance the prev pointer */
             /* exit crit. section to reduce latency */
-            portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+            portEXIT_CRITICAL_ISR(&QF_esp32mux);
         }
         else {
             --t->ctr;
@@ -491,7 +504,7 @@ void QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
                 QS_END_NOCRIT_PRE_()
 
                 /* exit critical section before posting */
-                portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+                portEXIT_CRITICAL_ISR(&QF_esp32mux);
 
                 /* QACTIVE_POST_FROM_ISR() asserts if the queue overflows */
                 QACTIVE_POST_FROM_ISR(act, &t->super,
@@ -501,16 +514,16 @@ void QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
             else {
                 prev = t;         /* advance to this time event */
                 /* exit crit. section to reduce latency */
-                portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+                portEXIT_CRITICAL_ISR(&QF_esp32mux);
             }
         }
         /* re-enter crit. section to continue */
-        uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+        portENTER_CRITICAL_ISR(&QF_esp32mux);
     }
-    portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+    portEXIT_CRITICAL_ISR(&QF_esp32mux);
 }
 /*..........................................................................*/
-QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
+QEvt IRAM_ATTR *QF_newXFromISR_(uint_fast16_t const evtSize,
                       uint_fast16_t const margin, enum_t const sig)
 {
     /* find the pool index that fits the requested event size ... */
@@ -540,13 +553,13 @@ QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
         e->refCtr_ = 0U; /* set the reference counter to 0 */
 
 #ifdef Q_SPY
-        UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+        portENTER_CRITICAL_ISR(&QF_esp32mux);
         QS_BEGIN_PRE_(QS_QF_NEW, (uint_fast8_t)QS_EP_ID + e->poolId_)
             QS_TIME_PRE_();         /* timestamp */
             QS_EVS_PRE_(evtSize);   /* the size of the event */
             QS_SIG_PRE_(sig);       /* the signal of the event */
         QS_END_NOCRIT_PRE_()
-        portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+        portEXIT_CRITICAL_ISR(&QF_esp32mux);
 #endif /* Q_SPY */
     }
     /* event cannot be allocated */
@@ -555,23 +568,23 @@ QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
         Q_ASSERT_ID(720, margin != QF_NO_MARGIN);
 
 #ifdef Q_SPY
-        UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+        portENTER_CRITICAL_ISR(&QF_esp32mux);
         QS_BEGIN_PRE_(QS_QF_NEW_ATTEMPT, (uint_fast8_t)QS_EP_ID + idx + 1U)
             QS_TIME_PRE_();         /* timestamp */
             QS_EVS_PRE_(evtSize);   /* the size of the event */
             QS_SIG_PRE_(sig);       /* the signal of the event */
         QS_END_NOCRIT_PRE_()
-        portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+        portEXIT_CRITICAL_ISR(&QF_esp32mux);
 #endif /* Q_SPY */
     }
     return e; /* can't be NULL if we can't tolerate bad allocation */
 }
 /*..........................................................................*/
-void QF_gcFromISR(QEvt const * const e) {
+void IRAM_ATTR QF_gcFromISR(QEvt const * const e) {
 
     /* is it a dynamic event? */
     if (e->poolId_ != 0U) {
-        UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+        portENTER_CRITICAL_ISR(&QF_esp32mux);
 
         /* isn't this the last ref? */
         if (e->refCtr_ > 1U) {
@@ -583,7 +596,7 @@ void QF_gcFromISR(QEvt const * const e) {
                 QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_END_NOCRIT_PRE_()
 
-            portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+            portEXIT_CRITICAL_ISR(&QF_esp32mux);
         }
         /* this is the last reference to this event, recycle it */
         else {
@@ -595,7 +608,7 @@ void QF_gcFromISR(QEvt const * const e) {
                 QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_END_NOCRIT_PRE_()
 
-            portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+            portEXIT_CRITICAL_ISR(&QF_esp32mux);
 
             /* pool ID must be in range */
             Q_ASSERT_ID(810, idx < QF_maxPool_);
@@ -612,8 +625,8 @@ void QF_gcFromISR(QEvt const * const e) {
     }
 }
 /*..........................................................................*/
-void QMPool_putFromISR(QMPool * const me, void *b,
-                       uint_fast8_t const qs_id)
+void IRAM_ATTR QMPool_putFromISR(QMPool * const me, void *b,
+                                 uint_fast8_t const qs_id)
 {
     /** @pre # free blocks cannot exceed the total # blocks and
     * the block pointer must be from this pool.
@@ -623,7 +636,7 @@ void QMPool_putFromISR(QMPool * const me, void *b,
 
     (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
 
-    UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+    portENTER_CRITICAL_ISR(&QF_esp32mux);
 
     ((QFreeBlock *)b)->next = (QFreeBlock *)me->free_head;/* link into list */
     me->free_head = b;      /* set as new head of the free list */
@@ -635,7 +648,7 @@ void QMPool_putFromISR(QMPool * const me, void *b,
         QS_MPC_PRE_(me->nFree); /* # free blocks in the pool */
     QS_END_NOCRIT_PRE_()
 
-    portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+    portEXIT_CRITICAL_ISR(&QF_esp32mux);
 }
 /*..........................................................................*/
 void *QMPool_getFromISR(QMPool * const me, uint_fast16_t const margin,
@@ -643,17 +656,18 @@ void *QMPool_getFromISR(QMPool * const me, uint_fast16_t const margin,
 {
     (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
 
-    UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
+    portENTER_CRITICAL_ISR(&QF_esp32mux);
 
     /* have more free blocks than the requested margin? */
     QFreeBlock *fb;
     if (me->nFree > (QMPoolCtr)margin) {
+        void *fb_next;
         fb = (QFreeBlock *)me->free_head; /* get a free block */
 
         /* the pool has some free blocks, so a free block must be available */
         Q_ASSERT_ID(910, fb != (QFreeBlock *)0);
 
-        void *fb_next = fb->next; /* put volatile to a temporary to avoid UB */
+        fb_next = fb->next; /* put volatile to a temporary to avoid UB */
 
         /* is the pool becoming empty? */
         --me->nFree; /* one less free block */
@@ -699,7 +713,7 @@ void *QMPool_getFromISR(QMPool * const me, uint_fast16_t const margin,
             QS_MPC_PRE_(margin);    /* the requested margin */
         QS_END_NOCRIT_PRE_()
     }
-    portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
+    portEXIT_CRITICAL_ISR(&QF_esp32mux);
 
     return fb; /* return the pointer to memory block or NULL to the caller */
 }
