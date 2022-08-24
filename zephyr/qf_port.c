@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-16
+* @date Last updated on: 2022-08-24
 * @version Last updated for: @ref qpc_7_1_0
 *
 * @file
@@ -42,9 +42,6 @@
 
 Q_DEFINE_THIS_MODULE("qf_port")
 
-/* QF_MAX_ACTIVE cannot exceed the limit in QF */
-Q_ASSERT_STATIC(QF_MAX_ACTIVE <= 64);
-
 /*..........................................................................*/
 struct k_spinlock QF_spinlock;
 
@@ -56,9 +53,13 @@ void QF_init(void) {
 int_t QF_run(void) {
     QF_onStartup();
 #ifdef Q_SPY
-    // lower the priority of the main thread to the level of idle
+
+#if CONFIG_NUM_PREEMPT_PRIORITIES > 0
+    /* lower the priority of the main thread to the level of idle thread */
     k_thread_priority_set(k_current_get(),
                           CONFIG_NUM_PREEMPT_PRIORITIES - 1);
+#endif
+
     /* perform QS work... */
     while (true) {
         QS_rxParse();   /* parse any QS-RX bytes */
@@ -92,10 +93,15 @@ static void thread_entry(void *p1, void *p2, void *p3) {
 * set the options for the Zephyr thread (attr1) and thread name (attr2).
 * QActive_setAttr() needs to be called *before* QACTIVE_START() for the
 * given active object.
+*
+* In this Zephyr port the attributes will be used as follows (see also
+* Active_start_()):
+* - attr1 - will be used for thread options in k_thread_create()
+* - attr2 - will be used for thread name in k_thread_name_set()
 */
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
-    me->thread.base.order_key = attr1;         /* temporarily save attr1 */
-    me->thread.init_data      = (void *)attr2; /* temporarily save attr2 */
+    me->thread.base.order_key = attr1; /* will be used for thread options */
+    me->thread.init_data = (void *)attr2; /* will be used for thread name */
 }
 /*..........................................................................*/
 void QActive_start_(QActive * const me, QPrioSpec const prio,
@@ -115,15 +121,16 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
     /* Zephyr uses the reverse priority numbering than QP */
     int zprio = (int)QF_MAX_ACTIVE - (int)prio;
 
-    /* create an Zephyr thread for the AO... */
+    /* extract data temporarily saved in me->thread by QActive_setAttr() */
     uint32_t opt = me->thread.base.order_key;
 #ifdef CONFIG_THREAD_NAME
     char const *name = (char const *)me->thread.init_data;
 #endif
-    me->thread = (struct k_thread){}; /* clear the thread storage */
-#ifdef CONFIG_THREAD_NAME
-    k_thread_name_set(&me->thread, name);
-#endif
+
+    /* clear the Zephyr thread structure before creating the thread */
+    me->thread = (struct k_thread){};
+
+    /* create a Zephyr thread for the AO... */
     k_thread_create(&me->thread,
                     (k_thread_stack_t *)stkSto, stkSize,
                     &thread_entry,
@@ -133,6 +140,11 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
                     zprio,      /* Zephyr priority */
                     opt,        /* thread options */
                     K_NO_WAIT); /* start immediately */
+
+#ifdef CONFIG_THREAD_NAME
+    // set the Zephyr thread name, if configured
+    k_thread_name_set(&me->thread, name);
+#endif
 }
 /*..........................................................................*/
 bool QActive_post_(QActive * const me, QEvt const * const e,
