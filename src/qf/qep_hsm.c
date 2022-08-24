@@ -61,11 +61,11 @@ Q_DEFINE_THIS_MODULE("qep_hsm")
 #endif
 /*$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
-/*$define${version} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*$define${QEP::QP_versionStr[8]} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
-/*${version::QP_versionStr[8]} .............................................*/
+/*${QEP::QP_versionStr[8]} .................................................*/
 char const QP_versionStr[8] = QP_VERSION_STR;
-/*$enddef${version} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$enddef${QEP::QP_versionStr[8]} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 /*! internal QEP constants */
 enum {

@@ -120,6 +120,10 @@ typedef double float64_t;
 /*==========================================================================*/
 /*$declare${QEP} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
+/*${QEP::QP_versionStr[8]} .................................................*/
+/*! the current QP version number string in ROM, based on #QP_VERSION_STR */
+extern char const QP_versionStr[8];
+
 /*${QEP::QSignal} ..........................................................*/
 /*! ::QSignal represents the signal of an event
 *
@@ -802,12 +806,6 @@ QState QMsm_enterHistory_(
 /*$enddecl${QEP} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 /*==========================================================================*/
-/*$declare${version} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-
-/*${version::QP_versionStr[8]} .............................................*/
-/*! the current QP version number string in ROM, based on #QP_VERSION_STR */
-extern char const QP_versionStr[8];
-/*$enddecl${version} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*$declare${QEP-macros} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${QEP-macros::QHSM_INIT} .................................................*/

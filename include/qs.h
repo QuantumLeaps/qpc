@@ -200,7 +200,7 @@ enum QSpyPre {
     /* [47] Additional Memory Pool (MP) records */
     QS_QF_MPOOL_GET_ATTEMPT,  /*!< attempt to get a memory block failed */
 
-    /* [48] reserved */
+    /* [48] old Mutex records, deprecated in QP 7.1.0 */
     QS_MUTEX_LOCK,        /*!< @deprecated */
     QS_MUTEX_UNLOCK,      /*!< @deprecated */
 
@@ -234,7 +234,7 @@ enum QSpyPre {
     /* [71] Semaphore (SEM) records */
     QS_SEM_TAKE,          /*!< a semaphore was taken by a thread */
     QS_SEM_BLOCK,         /*!< a semaphore blocked a thread */
-    QS_SEM_SIGNAL,        /*!< a semaphore was signaled*/
+    QS_SEM_SIGNAL,        /*!< a semaphore was signaled */
     QS_SEM_BLOCK_ATTEMPT, /*!< a semaphore blocked was attempted */
 
     /* [75] Mutex (MTX) records */

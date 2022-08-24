@@ -23,19 +23,18 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-12
-* @version Last updated for: @ref qpc_7_0_2
+* @date Last updated on: 2022-08-24
+* @version Last updated for: Zephyr 3.1.99 and @ref qpc_7_1_0
 *
 * @file
-* @ingroup examples
-* @brief DPP example, NUCLEO-H743ZIE board, cooperative QV kernel
+* @brief BSP for Zephyr, DPP example
 */
 #include "qpc.h"
 #include "dpp.h"
 #include "bsp.h"
 
-#include <drivers/gpio.h>
-#include <sys/reboot.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/sys/reboot.h>
 /* other drivers, if necessary ... */
 
 Q_DEFINE_THIS_FILE
@@ -43,22 +42,11 @@ Q_DEFINE_THIS_FILE
 /* The devicetree node identifier for the "led0" alias. */
 #define LED0_NODE DT_ALIAS(led0)
 
-#if DT_NODE_HAS_STATUS(LED0_NODE, okay)
-#define LED0    DT_GPIO_LABEL(LED0_NODE, gpios)
-#define PIN     DT_GPIO_PIN(LED0_NODE, gpios)
-#define FLAGS   DT_GPIO_FLAGS(LED0_NODE, gpios)
-#else
-/* A build error here means your board isn't set up to blink an LED. */
-#error "Unsupported board: led0 devicetree alias is not defined"
-#define LED0    ""
-#define PIN     0
-#define FLAGS   0
-#endif
-
 /* Local-scope objects -----------------------------------------------------*/
-static uint32_t l_rnd; /* random seed */
-static struct device const *dev_LED0;
+static struct gpio_dt_spec const l_led0 = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 static struct k_timer QF_tick_timer;
+static uint32_t l_rnd; /* random seed */
+
 #ifdef Q_SPY
 
     /* QSpy source IDs */
@@ -80,10 +68,7 @@ static void QF_tick_function(struct k_timer *tid) {
 }
 /*..........................................................................*/
 void BSP_init(void) {
-    dev_LED0 = device_get_binding(LED0);
-    Q_ASSERT(dev_LED0 != NULL);
-
-    int ret = gpio_pin_configure(dev_LED0, PIN, GPIO_OUTPUT_ACTIVE | FLAGS);
+    int ret = gpio_pin_configure_dt(&l_led0, GPIO_OUTPUT_ACTIVE);
     Q_ASSERT(ret >= 0);
 
     k_timer_init(&QF_tick_timer, &QF_tick_function, NULL);
@@ -115,11 +100,11 @@ void BSP_init(void) {
 }
 /*..........................................................................*/
 void BSP_ledOn(void) {
-    gpio_pin_set(dev_LED0, PIN, true);
+    gpio_pin_set_dt(&l_led0, true);
 }
 /*..........................................................................*/
 void BSP_ledOff(void) {
-    gpio_pin_set(dev_LED0, PIN, false);
+    gpio_pin_set_dt(&l_led0, false);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -197,7 +182,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
 /* QS callbacks ============================================================*/
 #ifdef Q_SPY
 
-#include <drivers/uart.h>
+#include <zephyr/drivers/uart.h>
 
 /* select the Zephyr shell UART
 * NOTE: you can change this to other UART peripheral if desired

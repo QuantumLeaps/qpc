@@ -23,11 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-12
-* @version Last updated for: @ref qpc_7_0_2
+* @date Last updated on: 2022-08-24
+* @version Last updated for: Zephyr 3.1.99 and @ref qpc_7_1_0
 *
 * @file
-* @brief QF/C port to Zephyr RTOS
+* @brief QF/C port to Zephyr RTOS (v 3.1.99)
 */
 #ifndef QF_PORT_H
 #define QF_PORT_H
@@ -47,7 +47,7 @@
 #define QF_CRIT_ENTRY(key_)  ((key_) = k_spin_lock(&QF_spinlock))
 #define QF_CRIT_EXIT(key_)   (k_spin_unlock(&QF_spinlock, (key_)))
 
-#include <zephyr.h>    /* Zephyr API */
+#include <zephyr/zephyr.h> /* Zephyr API */
 #include "qep_port.h"  /* QEP port */
 #include "qequeue.h"   /* native QP event-queue for event deferral */
 #include "qmpool.h"    /* Zephyr port uses native QP memory-pool */

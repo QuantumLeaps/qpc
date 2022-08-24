@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-05
-* @version Last updated for version: 7.0.1
+* @date Last updated on: 2022-08-24
+* @version Last updated for: Zephyr 3.1.99 and @ref qpc_7_1_0
 *
 * @file
-* @ingroup examples
-* @brief DPP example
+* @brief main() for Zephyr, DPP example
 */
 #include "qpc.h"
 #include "dpp.h"
@@ -47,8 +46,8 @@ static QSubscrList subscrSto[MAX_PUB_SIG];
 static QF_MPOOL_EL(TableEvt) smlPoolSto[2*N_PHILO]; /* small pool */
 
 int main(void) {
-    QF_init();    /* initialize the framework and the underlying RT kernel */
-    BSP_init();   /* initialize the Board Support Package */
+    QF_init();  /* initialize the framework and the underlying RT kernel */
+    BSP_init(); /* initialize the Board Support Package */
 
     /* initialize publish-subscribe... */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
@@ -60,7 +59,7 @@ int main(void) {
     Philo_ctor(); /* instantiate all Philosopher active objects */
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
         QActive_setAttr(AO_Philo[n],
-            0,                       /* thread opions */
+            0,                       /* thread options */
             "Philo");                /* thread name */
         QACTIVE_START(AO_Philo[n],   /* AO to start */
             (uint_fast8_t)(n + 1),   /* QP priority of the AO */
@@ -72,7 +71,7 @@ int main(void) {
     }
     Table_ctor(); /* instantiate the Table active object */
     QActive_setAttr(AO_Table,
-        0,                           /* thread opions */
+        0,                           /* thread options */
         "Table");                    /* thread name */
     QACTIVE_START(AO_Table,          /* AO to start */
         (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
@@ -84,4 +83,3 @@ int main(void) {
 
     return QF_run(); /* run the QF application */
 }
-

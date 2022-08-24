@@ -24,10 +24,10 @@
 ============================================================================*/
 /*!
 * @date Last updated on: 2022-08-24
-* @version Last updated for: @ref qpc_7_1_0
+* @version Last updated for: Zephyr 3.1.99 and @ref qpc_7_1_0
 *
 * @file
-* @brief QF/C port to Zephyr RTOS
+* @brief QF/C port to Zephyr RTOS (v 3.1.99)
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -142,8 +142,10 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
                     K_NO_WAIT); /* start immediately */
 
 #ifdef CONFIG_THREAD_NAME
-    // set the Zephyr thread name, if configured
-    k_thread_name_set(&me->thread, name);
+    /* set the Zephyr thread name, if configured */
+    if (name != (char const *)0) {
+        k_thread_name_set(&me->thread, name);
+    }
 #endif
 }
 /*..........................................................................*/

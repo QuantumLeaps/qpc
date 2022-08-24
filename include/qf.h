@@ -160,6 +160,56 @@ typedef uint8_t QTimeEvtCtr;
 uint_fast8_t QF_LOG2(QPSetBits x);
 #endif /* ndef QF_LOG2 */
 
+/*${QF-types::QPrioSpec} ...................................................*/
+/*! Priority specification for Active Objects in QP
+*
+* @details
+* Active Object priorities in QP are integer numbers in the range
+* [1..#QF_MAX_ACTIVE], whereas the special priority number 0 is reserved
+* for the lowest-priority idle thread. The QP framework uses the *direct*
+* priority numbering, in which higher numerical values denote higher urgency.
+* For example, an AO with priority 32 has higher urgency than an AO with
+* priority 23.
+*
+* ::QPrioSpec allows an application developer to assign **two**
+* priorities to a given AO (see also Q_PRIO()):
+*
+* 1. The "QF-priority", which resides in the least-significant byte
+*    of the ::QPrioSpec data type. The "QF-priority" must be **unique**
+*    for each thread in the system and higher numerical values represent
+*    higher urgency (direct pirority numbering).
+*
+* 2. The second priority, which resides in the most-significant byte
+*    of the ::QPrioSpec data type. The second priority is specific to the
+*    underlying real-time kernel or operating system with the semantics
+*    determined by that kernel.
+*
+* @note
+* In the QP native preemptive kernels, like QK and QXK, the second component
+* of the ::QPrioSpec is used as the "preemption-threshold". It determines
+* the conditions under which a given thread can be *preempted* by other
+* threads. Specifically, a given thread can be preempted only by another
+* thread with a *higher* "preemption-threshold".
+*
+* ![QF-priority and preemption-threshold relations](qp-prio.png)
+*
+* For backwards-compatibility, ::QPrioSpec data type might contain only the
+* "QF-priority" component (and the "preemption-threshold" component left at
+* zero). In that case, the "preemption-threshold" will be assumed to be the
+* same as the "QF-priority". This corresponds exactly to the previous
+* semantics of AO priority.
+*
+* @note
+* When QP runs on top of 3rd-party kernels/RTOSes or general-purpose
+* operating systems, sthe second priority can have different meaning,
+* depending on the specific RTOS/GPOS used.
+*/
+typedef uint_fast16_t QPrioSpec;
+
+/*${QF-types::QSchedStatus} ................................................*/
+/*! The scheduler lock status used in some real-time kernels */
+typedef uint_fast16_t QSchedStatus;
+
 /*${QF-types::QPSet} .......................................................*/
 /*! @brief Priority Set of up to #QF_MAX_ACTIVE elements
 * @class QPSet
@@ -271,56 +321,6 @@ static inline uint_fast8_t QPSet_findMax(QPSet const * const me) {
     #endif
 }
 
-/*${QF-types::QPrioSpec} ...................................................*/
-/*! Priority specification for Active Objects in QP
-*
-* @details
-* Active Object priorities in QP are integer numbers in the range
-* [1..#QF_MAX_ACTIVE], whereas the special priority number 0 is reserved
-* for the lowest-priority idle thread. The QP framework uses the *direct*
-* priority numbering, in which higher numerical values denote higher urgency.
-* For example, an AO with priority 32 has higher urgency than an AO with
-* priority 23.
-*
-* ::QPrioSpec allows an application developer to assign **two**
-* priorities to a given AO (see also Q_PRIO()):
-*
-* 1. The "QF-priority", which resides in the least-significant byte
-*    of the ::QPrioSpec data type. The "QF-priority" must be **unique**
-*    for each thread in the system and higher numerical values represent
-*    higher urgency (direct pirority numbering).
-*
-* 2. The second priority, which resides in the most-significant byte
-*    of the ::QPrioSpec data type. The second priority is specific to the
-*    underlying real-time kernel or operating system with the semantics
-*    determined by that kernel.
-*
-* @note
-* In the QP native preemptive kernels, like QK and QXK, the second component
-* of the ::QPrioSpec is used as the "preemption-threshold". It determines
-* the conditions under which a given thread can be *preempted* by other
-* threads. Specifically, a given thread can be preempted only by another
-* thread with a *higher* "preemption-threshold".
-*
-* ![QF-priority and preemption-threshold relations](qp-prio.png)
-*
-* For backwards-compatibility, ::QPrioSpec data type might contain only the
-* "QF-priority" component (and the "preemption-threshold" component left at
-* zero). In that case, the "preemption-threshold" will be assumed to be the
-* same as the "QF-priority". This corresponds exactly to the previous
-* semantics of AO priority.
-*
-* @note
-* When QP runs on top of 3rd-party kernels/RTOSes or general-purpose
-* operating systems, sthe second priority can have different meaning,
-* depending on the specific RTOS/GPOS used.
-*/
-typedef uint_fast16_t QPrioSpec;
-
-/*${QF-types::QSchedStatus} ................................................*/
-/*! The scheduler lock status used in some real-time kernels */
-typedef uint_fast16_t QSchedStatus;
-
 /*${QF-types::QSubscrList} .................................................*/
 /*! Subscriber List (for publish-subscribe)
 *
@@ -413,7 +413,7 @@ typedef struct QActive {
 
 /* public: */
 
-    /*! QF priority (1..#QF_MAX_ACTIVE) of this AO.
+    /*! QF-priority [1..#QF_MAX_ACTIVE] of this AO.
     * @private @memberof QActive
     * @sa ::QPrioSpec
     */
@@ -1765,8 +1765,8 @@ void QF_deleteRef_(void const * const evtRef);
     ((evtRef_) = (evtT_ const *)QF_newRef_(e, (evtRef_)))
 
 /*${QF-macros::Q_PRIO} .....................................................*/
-/*! Create a ::QPrioSpec object to specify priorty of AO */
-#define Q_PRIO(prio_, ceil_) ((QPrioSpec)((prio_) | ((ceil_) << 8U)))
+/*! Create a ::QPrioSpec object to specify priorty of an AO or a thread */
+#define Q_PRIO(prio_, pthre_) ((QPrioSpec)((prio_) | ((pthre_) << 8U)))
 
 /*${QF-macros::Q_DELETE_REF} ...............................................*/
 /*! Delete the event reference
