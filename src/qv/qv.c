@@ -183,15 +183,16 @@ void QActive_start_(QActive * const me,
 {
     Q_UNUSED_PAR(stkSize);
 
-    /*! @pre The priority must be in range and the stack storage must not
-    * be provided, because the QV kernel does not need per-AO stacks.
+    /*! @pre Stack storage must not be provided because the QV kernel
+    * does not need per-AO stacks.
     */
-    Q_REQUIRE_ID(500, (0U < prio) && (prio <= QF_MAX_ACTIVE)
-                      && (stkSto == (void *)0));
+    Q_REQUIRE_ID(500, stkSto == (void *)0);
+
+    me->prio  = (uint8_t)(prio & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prio >> 8U);   /* preemption-ceiling of the AO */
+    QActive_register_(me); /* make QF aware of this AO */
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
-    me->prio = (uint8_t)prio; /* set the current priority of the AO */
-    QActive_register_(me); /* register this active object */
 
     QHSM_INIT(&me->super, par, me->prio); /* top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */

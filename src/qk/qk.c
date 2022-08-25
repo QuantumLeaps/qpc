@@ -349,14 +349,13 @@ void QActive_start_(QActive * const me,
     /*! @pre AO cannot be started from an ISR and the stack storage must
     * NOT be provided because the QK kernel does not need per-AO stacks.
     */
-    Q_REQUIRE_ID(300, (!QK_ISR_CONTEXT_())
-                      && (stkSto == (void *)0));
-
-    QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
+    Q_REQUIRE_ID(300, (!QK_ISR_CONTEXT_()) && (stkSto == (void *)0));
 
     me->prio  = (uint8_t)(prio & 0xFFU); /* QF-priority of the AO */
     me->pthre = (uint8_t)(prio >> 8U);   /* preemption-ceiling of the AO */
     QActive_register_(me); /* make QF aware of this AO */
+
+    QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
 
     QHSM_INIT(&me->super, par, me->prio); /* top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */

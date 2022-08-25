@@ -452,11 +452,12 @@ void QActive_start_(QActive * const me,
         && (stkSto == (void *)0)
         && (stkSize == 0U));
 
-    QEQueue_init(&me->eQueue, qSto, qLen);  /* initialize the built-in queue */
-    me->osObject = (void *)0;               /* no private stack for the AO */
     me->prio     = (uint8_t)(prio & 0xFFU); /* QF-priority of the AO */
     me->pthre    = (uint8_t)(prio >> 8U);   /* preemption-threshold of the AO */
     QActive_register_(me); /* register this AO */
+
+    QEQueue_init(&me->eQueue, qSto, qLen);  /* initialize the built-in queue */
+    me->osObject = (void *)0;               /* no private stack for the AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */

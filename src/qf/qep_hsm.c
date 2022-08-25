@@ -93,7 +93,7 @@ static QEvt const QEP_reservedEvt_[] = {
 #ifdef Q_SPY
     #define QEP_EXIT_(state_, qs_id_) do {                  \
         if ((*(state_))(me, &QEP_reservedEvt_[Q_EXIT_SIG])  \
-             == Q_RET_HANDLED) {                    \
+             == Q_RET_HANDLED) {                            \
             QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, (qs_id_))      \
                 QS_OBJ_PRE_(me);                            \
                 QS_FUN_PRE_(state_);                        \
@@ -103,7 +103,7 @@ static QEvt const QEP_reservedEvt_[] = {
 
     #define QEP_ENTER_(state_, qs_id_) do {                 \
         if ((*(state_))(me, &QEP_reservedEvt_[Q_ENTRY_SIG]) \
-             == Q_RET_HANDLED) {                    \
+             == Q_RET_HANDLED) {                            \
             QS_BEGIN_PRE_(QS_QEP_STATE_ENTRY, (qs_id_))     \
                 QS_OBJ_PRE_(me);                            \
                 QS_FUN_PRE_(state_);                        \

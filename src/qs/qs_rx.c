@@ -391,7 +391,7 @@ void QS_rxHandleGoodFrame_(uint8_t const state) {
     #ifdef Q_UTEST
     #if Q_UTEST != 0
             QS_processTestEvts_(); /* process all events produced */
-    #endif  /* Q_UTEST != 0*/
+    #endif  /* Q_UTEST != 0 */
     #endif  /* Q_UTEST */
             QS_rxReportDone_((int8_t)QS_RX_COMMAND);
             break;
@@ -402,7 +402,7 @@ void QS_rxHandleGoodFrame_(uint8_t const state) {
             QTimeEvt_tick1_((uint_fast8_t)l_rx.var.tick.rate, &QS_rxPriv_);
     #if Q_UTEST != 0
             QS_processTestEvts_(); /* process all events produced */
-    #endif  /* Q_UTEST  != 0*/
+    #endif  /* Q_UTEST != 0 */
     #else
             QTimeEvt_tick_((uint_fast8_t)l_rx.var.tick.rate, &QS_rxPriv_);
     #endif  /* Q_UTEST */

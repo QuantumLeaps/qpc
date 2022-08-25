@@ -214,16 +214,14 @@ void QActive_start_(QActive * const me,
     uint_fast16_t const stkSize,
     void const * const par)
 {
-    (void)stkSto;  /* unused parameter */
-    (void)stkSize; /* unused parameter */
+    Q_UNUSED_PAR(stkSto);
+    Q_UNUSED_PAR(stkSize);
 
-    /* priority must be in range */
-    Q_REQUIRE_ID(200, (0U < prio) && (prio <= QF_MAX_ACTIVE));
+    me->prio  = (uint8_t)(prio & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prio >> 8U);   /* preemption-ceiling of the AO */
+    QActive_register_(me); /* make QF aware of this active object */
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
-    me->prio = (uint8_t)prio; /* set the current priority of the AO */
-
-    QActive_register_(me); /* make QF aware of this active object */
 
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
 }

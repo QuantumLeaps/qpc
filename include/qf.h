@@ -885,7 +885,7 @@ typedef struct QActiveVtable {
     /*! @private virtual function to start the AO/thread
     * @sa QACTIVE_START()
     */
-    void (*start)(QActive * const me, uint_fast16_t prio,
+    void (*start)(QActive * const me, QPrioSpec prio,
                   QEvt const * * const qSto, uint_fast16_t const qLen,
                   void * const stkSto, uint_fast16_t const stkSize,
                   void const * const par);
