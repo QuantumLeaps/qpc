@@ -269,35 +269,3 @@ void QS_onCommand(uint8_t cmdId,
 }
 
 #endif /* Q_SPY */
-/*--------------------------------------------------------------------------*/
-
-/*****************************************************************************
-* NOTE1:
-* The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
-* ISR priority that is disabled by the QF framework. The value is suitable
-* for the NVIC_SetPriority() CMSIS function.
-*
-* Only ISRs prioritized at or below the QF_AWARE_ISR_CMSIS_PRI level (i.e.,
-* with the numerical values of priorities equal or higher than
-* QF_AWARE_ISR_CMSIS_PRI) are allowed to call the QK_ISR_ENTRY/QK_ISR_ENTRY
-* macros or any other QF services. These ISRs are "QF-aware".
-*
-* Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority
-* level (i.e., with the numerical values of priorities less than
-* QF_AWARE_ISR_CMSIS_PRI) are never disabled and are not aware of the kernel.
-* Such "QF-unaware" ISRs cannot call any QF services. The only mechanism
-* by which a "QF-unaware" ISR can communicate with the QF framework is by
-* triggering a "QF-aware" ISR, which can post/publish events.
-*
-* NOTE2:
-* The QV_onIdle() callback is called with interrupts disabled, because the
-* determination of the idle condition might change by any interrupt posting
-* an event. QV_onIdle() must internally enable interrupts, ideally
-* atomically with putting the CPU to the power-saving mode.
-*
-* NOTE3:
-* The User LED is used to visualize the idle loop activity. The brightness
-* of the LED is proportional to the frequency of invcations of the idle loop.
-* Please note that the LED is toggled with interrupts locked, so no interrupt
-* execution time contributes to the brightness of the User LED.
-*/

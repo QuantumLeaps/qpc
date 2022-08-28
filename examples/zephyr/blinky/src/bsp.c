@@ -36,6 +36,10 @@
 #include <zephyr/sys/reboot.h>
 /* other drivers, if necessary ... */
 
+#ifdef Q_SPY
+    #error Simple Blinky Application does not provide Spy build configuration
+#endif
+
 Q_DEFINE_THIS_FILE
 
 /* The devicetree node identifier for the "led0" alias. */
@@ -43,23 +47,25 @@ Q_DEFINE_THIS_FILE
 
 static struct gpio_dt_spec const l_led0 = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 static struct k_timer QF_tick_timer;
+
+/*..........................................................................*/
 static void QF_tick_function(struct k_timer *tid) {
     (void)tid; /* unused parameter */
     QTIMEEVT_TICK_X(0U, (void *)0);
 }
-
+/*..........................................................................*/
 void BSP_init(void) {
     int ret = gpio_pin_configure_dt(&l_led0, GPIO_OUTPUT_ACTIVE);
     Q_ASSERT(ret >= 0);
 
     k_timer_init(&QF_tick_timer, &QF_tick_function, NULL);
 }
-
+/*..........................................................................*/
 void BSP_ledOn(void) {
     printk("BSP_ledOn\n");
     gpio_pin_set_dt(&l_led0, true);
 }
-
+/*..........................................................................*/
 void BSP_ledOff(void) {
     printk("BSP_ledOff\n");
     gpio_pin_set_dt(&l_led0, false);
@@ -88,4 +94,3 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     sys_reboot(SYS_REBOOT_COLD); /* release build: reboot the system */
 #endif
 }
-

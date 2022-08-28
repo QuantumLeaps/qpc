@@ -272,7 +272,7 @@ void QXThread_dispatch_(
 /*${QXK::QXThread::start_} .................................................*/
 void QXThread_start_(
     QActive * const me,
-    QPrioSpec const prio,
+    QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -304,9 +304,9 @@ void QXThread_start_(
     /* the new thread is not blocked on any object */
     me->super.temp.obj = (QMState *)0;
 
-    me->prio  = (uint8_t)(prio & 0xFFU); /* QF-priority of the thread */
-    me->pthre = (uint8_t)(prio >> 8U);   /* preemption-threshold of the thread */
-    QActive_register_(me); /* make QF aware of this thread */
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    QActive_register_(me); /* make QF aware of this active object */
 
     QF_CRIT_STAT_
     QF_CRIT_E_();

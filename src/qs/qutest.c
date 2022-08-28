@@ -207,7 +207,7 @@ int_t QF_run(void) {
 
 /*${QUTest-stub::QActive::start_} ..........................................*/
 void QActive_start_(QActive * const me,
-    QPrioSpec const prio,
+    QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -217,8 +217,8 @@ void QActive_start_(QActive * const me,
     Q_UNUSED_PAR(stkSto);
     Q_UNUSED_PAR(stkSize);
 
-    me->prio  = (uint8_t)(prio & 0xFFU); /* QF-priority of the AO */
-    me->pthre = (uint8_t)(prio >> 8U);   /* preemption-ceiling of the AO */
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
     QActive_register_(me); /* make QF aware of this active object */
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
@@ -434,7 +434,7 @@ void QActiveDummy_dispatch_(
 /*${QUTest-stub::QActiveDummy::start_} .....................................*/
 void QActiveDummy_start_(
     QActive * const me,
-    QPrioSpec const prio,
+    QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -444,13 +444,13 @@ void QActiveDummy_start_(
     /* No special preconditions for checking parameters to allow starting
     * dummy AOs the exact same way as the real counterparts.
     */
-    (void)qSto;    /* unusuded parameter */
-    (void)qLen;    /* unusuded parameter */
-    (void)stkSto;  /* unusuded parameter */
-    (void)stkSize; /* unusuded parameter */
+    Q_UNUSED_PAR(qSto);
+    Q_UNUSED_PAR(qLen);
+    Q_UNUSED_PAR(stkSto);
+    Q_UNUSED_PAR(stkSize);
 
-    me->prio = (uint8_t)prio; /* set the current priority of the AO */
-
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
     QActive_register_(me); /* make QF aware of this active object */
 
     /* the top-most initial tran. (virtual) */

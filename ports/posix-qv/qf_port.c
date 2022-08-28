@@ -258,20 +258,18 @@ int QF_consoleWaitForKey(void) {
 }
 
 /****************************************************************************/
-void QActive_start_(QActive * const me, QPrioSpec const prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                   QEvt const * * const qSto, uint_fast16_t const qLen,
                   void * const stkSto, uint_fast16_t const stkSize,
                   void const * const par)
 {
     (void)stkSize; /* unused parameter in the POSIX port */
 
-    Q_REQUIRE_ID(600, (0U < prio)  /* priority...*/
-        && (prio <= QF_MAX_ACTIVE) /*... in range */
-        && (stkSto == (void *)0)); /* statck storage must NOT...
-                                       * ... be provided */
+    /* no external stack storage needed for this port */
+    Q_REQUIRE_ID(600, (stkSto == (void *)0));
     QEQueue_init(&me->eQueue, qSto, qLen);
 
-    me->prio = (uint8_t)(prio & 0xFFU);
+    me->prio = (uint8_t)(prioSpec & 0xFFU);
     QActive_register_(me); /* register this AO */
 
     /* the top-most initial tran. (virtual) */

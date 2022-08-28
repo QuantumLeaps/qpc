@@ -20,17 +20,21 @@ int main(void) {
 
     static QEvt const *l_philoQueueSto[N_PHILO][N_PHILO];
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
-        QACTIVE_START(AO_Philo[n], (uint8_t)(n + 1),
-                      l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
-                      (void *)0, 0U, (QEvt *)0);
+        QACTIVE_START(AO_Philo[n],
+        Q_PRIO(n + 1U, 1U), /* QF-priority/preemption-thre. */
+        l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
+        (void *)0, 0U,
+        (void *)0);
     }
 
     Table_ctor(); /* instantiate the Table active object */
 
     static QEvt const *l_tableQueueSto[N_PHILO];
-    QACTIVE_START(AO_Table, (uint8_t)(N_PHILO + 1),
-                  l_tableQueueSto, Q_DIM(l_tableQueueSto),
-                  (void *)0, 0U, (QEvt *)0);
+    QACTIVE_START(AO_Table,
+        Q_PRIO(N_PHILO + 1U, 2U), /* QF-priority/preemption-thre. */
+        l_tableQueueSto, Q_DIM(l_tableQueueSto),
+        (void *)0, 0U,
+        (void *)0);
 
     return QF_run(); /* run the QF application, QF_run() does not return  */
 }

@@ -70,141 +70,6 @@ Q_DEFINE_THIS_MODULE("qk")
 /*${QK::QK-base::attr_} ....................................................*/
 QK QK_attr_;
 
-/*${QK::QK-base::idle_} ....................................................*/
-QActive const QK_idle_ = { (struct QHsmVtable const *)0 };
-
-/*${QK::QK-base::activate_} ................................................*/
-void QK_activate_(void) {
-    uint8_t const prio_in = QK_attr_.actPrio; /* saved initial priority */
-    uint_fast8_t p = QK_attr_.nextPrio; /* next prio to run */
-    QK_attr_.nextPrio = 0U; /* clear for the next time */
-
-    /* QK_attr_.actPrio and QK_attr_.nextPrio must be in range */
-    Q_REQUIRE_ID(500, (prio_in <= QF_MAX_ACTIVE)
-                      && (0U < p) && (p <= QF_MAX_ACTIVE));
-
-    uint8_t pthre = QActive_registry_[p]->pthre;
-
-    #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
-    uint_fast8_t pprev = prio_in;
-    #endif /* QK_ON_CONTEXT_SW || Q_SPY */
-
-    /* loop until no more ready-to-run AOs of higher prio than the initial */
-    QActive *a;
-    do  {
-        QEvt const *e;
-        a = QActive_registry_[p]; /* obtain the pointer to the AO */
-
-        /* set new active priority and preemption-ceiling */
-        QK_attr_.actPrio = (uint8_t)p;
-        QK_attr_.actThre = pthre;
-
-        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a->prio)
-            QS_TIME_PRE_();     /* timestamp */
-            QS_2U8_PRE_(p,      /* priority of the scheduled AO */
-                        pprev); /* previous priority */
-        QS_END_NOCRIT_PRE_()
-
-    #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
-        if (p != pprev) {  /* changing threads? */
-
-    #ifdef QK_ON_CONTEXT_SW
-            /* context-switch callback*/
-            QK_onContextSw(((pprev != 0U)
-                            ? QActive_registry_[pprev]
-                            : (QActive *)0), a);
-    #endif /* QK_ON_CONTEXT_SW */
-
-            pprev = p; /* update previous priority */
-        }
-    #endif /* QK_ON_CONTEXT_SW || Q_SPY */
-
-        QF_INT_ENABLE(); /* unconditionally enable interrupts */
-
-        /* perform the run-to-completion (RTC) step...
-        * 1. retrieve the event from the AO's event queue, which by this
-        *    time must be non-empty and QActive_get_() asserts it.
-        * 2. dispatch the event to the AO's state machine.
-        * 3. determine if event is garbage and collect it if so
-        */
-        e = QActive_get_(a);
-        QHSM_DISPATCH(&a->super, e, a->prio);
-        QF_gc(e);
-
-        /* determine the next highest-priority AO ready to run... */
-        QF_INT_DISABLE(); /* unconditionally disable interrupts */
-
-        if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
-            QPSet_remove(&QF_readySet_, p);
-        }
-
-        /* find new highest-prio AO ready to run... */
-        p = QPSet_findMax(&QF_readySet_);
-        pthre = QActive_registry_[p]->pthre;
-
-        /* is the new preemption-threshold below the initial? */
-        if (pthre <= QActive_registry_[prio_in]->pthre) {
-            p = 0U; /* no preemption needed */
-        }
-        else if (pthre <= QK_attr_.lockCeil) {
-            p = 0U; /* no preemption needed */
-        }
-        else {
-            Q_ASSERT_ID(510, p <= QF_MAX_ACTIVE);
-        }
-    } while (p != 0U);
-
-    /* restore the active priority and preemption-threshold */
-    QK_attr_.actPrio = prio_in;
-    QK_attr_.actThre = QActive_registry_[prio_in]->pthre;
-
-    #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
-    if (prio_in != 0U) { /* resuming an active object? */
-        a = QActive_registry_[prio_in]; /* the pointer to the preempted AO */
-
-        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_RESUME, a->prio)
-            QS_TIME_PRE_();      /* timestamp */
-            QS_2U8_PRE_(prio_in, /* priority of the resumed AO */
-                        pprev);  /* previous priority */
-        QS_END_NOCRIT_PRE_()
-    }
-    else {  /* resuming priority==0 --> idle */
-        a = (QActive *)0; /* QK idle loop */
-
-        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, 0U)
-            QS_TIME_PRE_();     /* timestamp */
-            QS_U8_PRE_(pprev);  /* previous priority */
-        QS_END_NOCRIT_PRE_()
-    }
-
-    #ifdef QK_ON_CONTEXT_SW
-    QK_onContextSw(QActive_registry_[pprev], a); /* context-switch callback */
-    #endif /* QK_ON_CONTEXT_SW */
-
-    #endif /* QK_ON_CONTEXT_SW || Q_SPY */
-}
-
-/*${QK::QK-base::sched_} ...................................................*/
-uint_fast8_t QK_sched_(void) {
-    /* find the highest-prio AO with non-empty event queue */
-    uint_fast8_t p = QPSet_findMax(&QF_readySet_);
-    uint8_t pthre = QActive_registry_[p]->pthre;
-
-    /* is the AO's preemption-threshold not exceeding the active threshold? */
-    if (pthre <= QK_attr_.actThre) {
-        p = 0U; /* no preemption needed */
-    }
-    /* AO's preemption-threshold not exceeding the lock preemption-ceiling? */
-    else if (pthre <= QK_attr_.lockCeil) {
-        p = 0U; /* no preemption needed */
-    }
-    else {
-        Q_ASSERT_ID(410, p <= QF_MAX_ACTIVE);
-        QK_attr_.nextPrio = (uint8_t)p; /* next AO to run */
-    }
-    return p;
-}
-
 /*${QK::QK-base::schedLock} ................................................*/
 QSchedStatus QK_schedLock(uint_fast8_t const ceiling) {
     QF_CRIT_STAT_
@@ -290,9 +155,6 @@ void QF_init(void) {
     QK_attr_.actThre  = 0U; /* preemption-threshold of the QK idle loop */
     QK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
 
-    /* register the QK idle thread, cast "const" away */
-    QActive_registry_[0] = QF_CONST_CAST_(QActive*, &QK_idle_);
-
     #ifdef QK_INIT
     QK_INIT(); /* port-specific initialization of the QK kernel */
     #endif
@@ -316,7 +178,7 @@ int_t QF_run(void) {
 
     QF_onStartup(); /* application-specific startup callback */
 
-    /* produce the QS_QF_RUN trace record */
+    /* produce the QS_QF_RUN trace record (no nested critical section) */
     QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, 0U)
     QS_END_NOCRIT_PRE_()
 
@@ -337,7 +199,7 @@ int_t QF_run(void) {
 
 /*${QK::QActive::start_} ...................................................*/
 void QActive_start_(QActive * const me,
-    QPrioSpec const prio,
+    QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -351,9 +213,9 @@ void QActive_start_(QActive * const me,
     */
     Q_REQUIRE_ID(300, (!QK_ISR_CONTEXT_()) && (stkSto == (void *)0));
 
-    me->prio  = (uint8_t)(prio & 0xFFU); /* QF-priority of the AO */
-    me->pthre = (uint8_t)(prio >> 8U);   /* preemption-ceiling of the AO */
-    QActive_register_(me); /* make QF aware of this AO */
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    QActive_register_(me); /* make QF aware of this active object */
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
 
@@ -369,3 +231,136 @@ void QActive_start_(QActive * const me,
     QF_CRIT_X_();
 }
 /*$enddef${QK::QActive} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$define${QK::QK-extern-C} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+
+/*${QK::QK-extern-C::sched_} ...............................................*/
+uint_fast8_t QK_sched_(void) {
+    /* find the highest-prio AO with non-empty event queue */
+    uint_fast8_t p = QPSet_findMax(&QF_readySet_);
+    uint8_t const pthre = QActive_registry_[p]->pthre;
+
+    /* is the AO's preemption-threshold not exceeding the active threshold? */
+    if (pthre <= QK_attr_.actThre) {
+        p = 0U; /* no preemption needed */
+    }
+    /* AO's preemption-threshold not exceeding the lock preemption-ceiling? */
+    else if (pthre <= QK_attr_.lockCeil) {
+        p = 0U; /* no preemption needed */
+    }
+    else {
+        Q_ASSERT_ID(410, p <= QF_MAX_ACTIVE);
+        QK_attr_.nextPrio = (uint8_t)p; /* next AO to run */
+    }
+    return p;
+}
+
+/*${QK::QK-extern-C::activate_} ............................................*/
+void QK_activate_(void) {
+    uint8_t const prio_in = QK_attr_.actPrio; /* saved initial priority */
+    uint_fast8_t p = QK_attr_.nextPrio; /* next prio to run */
+    QK_attr_.nextPrio = 0U; /* clear for the next time */
+
+    /* QK_attr_.actPrio and QK_attr_.nextPrio must be in range */
+    Q_REQUIRE_ID(500, (prio_in <= QF_MAX_ACTIVE)
+                      && (0U < p) && (p <= QF_MAX_ACTIVE));
+
+    uint8_t pthre = QActive_registry_[p]->pthre;
+
+    #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
+    uint_fast8_t pprev = prio_in;
+    #endif /* QK_ON_CONTEXT_SW || Q_SPY */
+
+    /* loop until no more ready-to-run AOs of higher prio than the initial */
+    QActive *a;
+    do  {
+        a = QActive_registry_[p]; /* obtain the pointer to the AO */
+
+        /* set new active priority and preemption-ceiling */
+        QK_attr_.actPrio = (uint8_t)p;
+        QK_attr_.actThre = pthre;
+
+        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a->prio)
+            QS_TIME_PRE_();     /* timestamp */
+            QS_2U8_PRE_(p,      /* priority of the scheduled AO */
+                        pprev); /* previous priority */
+        QS_END_NOCRIT_PRE_()
+
+    #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
+        if (p != pprev) {  /* changing threads? */
+
+    #ifdef QK_ON_CONTEXT_SW
+            /* context-switch callback*/
+            QK_onContextSw(((pprev != 0U)
+                            ? QActive_registry_[pprev]
+                            : (QActive *)0), a);
+    #endif /* QK_ON_CONTEXT_SW */
+
+            pprev = p; /* update previous priority */
+        }
+    #endif /* QK_ON_CONTEXT_SW || Q_SPY */
+
+        QF_INT_ENABLE(); /* unconditionally enable interrupts */
+
+        /* perform the run-to-completion (RTC) step...
+        * 1. retrieve the event from the AO's event queue, which by this
+        *    time must be non-empty and QActive_get_() asserts it.
+        * 2. dispatch the event to the AO's state machine.
+        * 3. determine if event is garbage and collect it if so
+        */
+        QEvt const *e = QActive_get_(a);
+        QHSM_DISPATCH(&a->super, e, a->prio);
+        QF_gc(e);
+
+        /* determine the next highest-priority AO ready to run... */
+        QF_INT_DISABLE(); /* unconditionally disable interrupts */
+
+        if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
+            QPSet_remove(&QF_readySet_, p);
+        }
+
+        /* find new highest-prio AO ready to run... */
+        p = QPSet_findMax(&QF_readySet_);
+        pthre = QActive_registry_[p]->pthre;
+
+        /* is the new preemption-threshold below the initial? */
+        if (pthre <= QActive_registry_[prio_in]->pthre) {
+            p = 0U; /* no preemption needed */
+        }
+        else if (pthre <= QK_attr_.lockCeil) {
+            p = 0U; /* no preemption needed */
+        }
+        else {
+            Q_ASSERT_ID(510, p <= QF_MAX_ACTIVE);
+        }
+    } while (p != 0U);
+
+    /* restore the active priority and preemption-threshold */
+    QK_attr_.actPrio = prio_in;
+    QK_attr_.actThre = QActive_registry_[prio_in]->pthre;
+
+    #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
+    if (prio_in != 0U) { /* resuming an active object? */
+        a = QActive_registry_[prio_in]; /* the pointer to the preempted AO */
+
+        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_RESUME, a->prio)
+            QS_TIME_PRE_();      /* timestamp */
+            QS_2U8_PRE_(prio_in, /* priority of the resumed AO */
+                        pprev);  /* previous priority */
+        QS_END_NOCRIT_PRE_()
+    }
+    else {  /* resuming priority==0 --> idle */
+        a = (QActive *)0; /* QK idle loop */
+
+        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, 0U)
+            QS_TIME_PRE_();     /* timestamp */
+            QS_U8_PRE_(pprev);  /* previous priority */
+        QS_END_NOCRIT_PRE_()
+    }
+
+    #ifdef QK_ON_CONTEXT_SW
+    QK_onContextSw(QActive_registry_[pprev], a); /* context-switch callback */
+    #endif /* QK_ON_CONTEXT_SW */
+
+    #endif /* QK_ON_CONTEXT_SW || Q_SPY */
+}
+/*$enddef${QK::QK-extern-C} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/

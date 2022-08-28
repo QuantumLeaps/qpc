@@ -68,72 +68,20 @@
 /*==========================================================================*/
 /*$declare${QXK::QXK-base} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
-/*${QXK::QXK-base::Attr} ...................................................*/
-/*! @brief The QXK kernel class
-* @class QXK
-*
-* @note
-* The order and alignment of the data members in this struct might
-* be important in QXK ports, where the members might be accessed
-* in assembly.
-*/
-typedef struct QXK_Attr {
-    struct QActive * volatile curr; /*!< current thread (NULL=basic) */
-    struct QActive * volatile next; /*!< next thread to run */
-    uint8_t volatile actPrio;    /*!< prio of the active AO */
-    uint8_t volatile actThre;    /*!< active preemption-threshold */
-    uint8_t volatile lockCeil;   /*!< lock preemption-ceiling (0==no-lock) */
-    uint8_t volatile lockHolder; /*!< prio of the lock holder */
-} QXK;
-
-/*${QXK::QXK-base::attr_} ..................................................*/
-/*! attributes of the QXK kernel */
-extern QXK QXK_attr_;
-
-/*${QXK::QXK-base::idle_} ..................................................*/
-/*! Idle AO in the QXK kernel */
-extern QActive const QXK_idle_;
-
-/*${QXK::QXK-base::Timeouts} ...............................................*/
-/*! timeout signals for extended threads */
-enum QXK_Timeouts {
-    QXK_DELAY_SIG = Q_USER_SIG,
-    QXK_QUEUE_SIG,
-    QXK_SEMA_SIG
-};
-
-/*${QXK::QXK-base::activate_} ..............................................*/
-/*! QXK activator activates the next active object. The activated AO preempts
-* the currently executing AOs.
-* @static @private @memberof QXK
-*
-* @attention
-* QXK_activate_() must be always called with interrupts **disabled** and
-* returns with interrupts **disabled**.
-*
-* @note
-* The activate function might enable interrupts internally, but it always
-* returns with interrupts **disabled**.
-*/
-void QXK_activate_(void);
-
-/*${QXK::QXK-base::sched_} .................................................*/
-/*! QXK scheduler finds the highest-priority thread ready to run
-* @static @private @memberof QXK
+/*${QXK::QXK-base::onIdle} .................................................*/
+/*! QXK idle callback (customized in BSPs for QXK)
+* @static @public @memberof QXK
 *
 * @details
-* The QXK scheduler finds the priority of the highest-priority thread
-* that is ready to run.
+* QXK_onIdle() is called continuously by the QXK idle thread. This callback
+* gives the application an opportunity to enter a power-saving CPU mode,
+* or perform some other idle processing.
 *
-* @returns
-* the 1-based priority of the the thread (basic or extended) run next,
-* or zero if no eligible thread is found.
-*
-* @attention
-* QXK_sched_() must be always called with interrupts **disabled** and
-* returns with interrupts **disabled**.
+* @note
+* QXK_onIdle() is invoked with interrupts enabled and must also return with
+* interrupts enabled.
 */
-uint_fast8_t QXK_sched_(void);
+void QXK_onIdle(void);
 
 /*${QXK::QXK-base::schedLock} ..............................................*/
 /*! QXK Scheduler lock
@@ -195,22 +143,73 @@ QSchedStatus QXK_schedLock(uint_fast8_t const ceiling);
 */
 void QXK_schedUnlock(QSchedStatus const stat);
 
-/*${QXK::QXK-base::onIdle} .................................................*/
-/*! QXK idle callback (customized in BSPs for QXK)
-* @static @public @memberof QXK
-*
-* @details
-* QXK_onIdle() is called continuously by the QXK idle thread. This callback
-* gives the application an opportunity to enter a power-saving CPU mode,
-* or perform some other idle processing.
+/*${QXK::QXK-base::Timeouts} ...............................................*/
+/*! timeout signals for extended threads */
+enum QXK_Timeouts {
+    QXK_DELAY_SIG = Q_USER_SIG,
+    QXK_QUEUE_SIG,
+    QXK_SEMA_SIG,
+    QXK_MUTEX_SIG
+};
+/*$enddecl${QXK::QXK-base} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$declare${QXK::QXK-extern-C} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+
+/*${QXK::QXK-extern-C::Attr} ...............................................*/
+/*! @brief The QXK kernel class
+* @class QXK
 *
 * @note
-* QXK_onIdle() is invoked with interrupts enabled and must also return with
-* interrupts enabled.
+* The order and alignment of the data members in this struct might
+* be important in QXK ports, where the members might be accessed
+* in assembly.
 */
-void QXK_onIdle(void);
+typedef struct QXK_Attr {
+    struct QActive * volatile curr; /*!< current thread (NULL=basic) */
+    struct QActive * volatile next; /*!< next thread to run */
+    uint8_t volatile actPrio;    /*!< prio of the active AO */
+    uint8_t volatile actThre;    /*!< active preemption-threshold */
+    uint8_t volatile lockCeil;   /*!< lock preemption-ceiling (0==no-lock) */
+    uint8_t volatile lockHolder; /*!< prio of the lock holder */
+} QXK;
 
-/*${QXK::QXK-base::current} ................................................*/
+/*${QXK::QXK-extern-C::attr_} ..............................................*/
+/*! attributes of the QXK kernel */
+extern QXK QXK_attr_;
+
+/*${QXK::QXK-extern-C::activate_} ..........................................*/
+/*! QXK activator activates the next active object. The activated AO preempts
+* the currently executing AOs.
+* @static @private @memberof QXK
+*
+* @attention
+* QXK_activate_() must be always called with interrupts **disabled** and
+* returns with interrupts **disabled**.
+*
+* @note
+* The activate function might enable interrupts internally, but it always
+* returns with interrupts **disabled**.
+*/
+void QXK_activate_(void);
+
+/*${QXK::QXK-extern-C::sched_} .............................................*/
+/*! QXK scheduler finds the highest-priority thread ready to run
+* @static @private @memberof QXK
+*
+* @details
+* The QXK scheduler finds the priority of the highest-priority thread
+* that is ready to run.
+*
+* @returns
+* the 1-based priority of the the thread (basic or extended) run next,
+* or zero if no eligible thread is found.
+*
+* @attention
+* QXK_sched_() must be always called with interrupts **disabled** and
+* returns with interrupts **disabled**.
+*/
+uint_fast8_t QXK_sched_(void);
+
+/*${QXK::QXK-extern-C::current} ............................................*/
 /*! obtain the currently executing active-object/thread
 * @static @public @memberof QXK
 *
@@ -219,7 +218,15 @@ void QXK_onIdle(void);
 */
 QActive * QXK_current(void);
 
-/*${QXK::QXK-base::onContextSw} ............................................*/
+/*${QXK::QXK-extern-C::stackInit_} .........................................*/
+/*! initialize the private stack of a given AO */
+void QXK_stackInit_(
+    void * thr,
+     QXThreadHandler const handler,
+    void * const stkSto,
+    uint_fast16_t const stkSize);
+
+/*${QXK::QXK-extern-C::onContextSw} ........................................*/
 #ifdef QXK_ON_CONTEXT_SW
 /*! QXK context switch callback (customized in BSPs for QXK)
 * @static @public @memberof QXK
@@ -246,15 +253,7 @@ void QXK_onContextSw(
     QActive * prev,
     QActive * next);
 #endif /* def QXK_ON_CONTEXT_SW */
-
-/*${QXK::QXK-base::stackInit_} .............................................*/
-/*! initialize the private stack of a given AO */
-void QXK_stackInit_(
-    void * thr,
-     QXThreadHandler const handler,
-    void * const stkSto,
-    uint_fast16_t const stkSize);
-/*$enddecl${QXK::QXK-base} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$enddecl${QXK::QXK-extern-C} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*$declare${QXK::QXThread} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${QXK::QXThread} .........................................................*/
@@ -413,7 +412,7 @@ void QXThread_dispatch_(
 */
 void QXThread_start_(
     QActive * const me,
-    QPrioSpec const prio,
+    QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -557,12 +556,6 @@ typedef QActiveVtable QXThreadVtable;
 * the maximum count (see QXSemaphore_init()), which allows you to create
 * a binary semaphore (when the maximum count is 1) and
 * counting semaphore when the maximum count is > 1.
-*
-* @sa
-* - QXSemaphore_init()
-* - QXSemaphore_signal()
-* - QXSemaphore_wait()
-* - QXSemaphore_tryWait()
 *
 * @usage
 * The following example illustrates how to instantiate and use the semaphore
@@ -737,41 +730,39 @@ typedef struct {
 * Initialize the QXK priority ceiling mutex.
 *
 * @param[in,out] me    pointer (see @ref oop)
-* @param[in]     prio  the QF-priority and optionally preemption-
-*                      threshold  of this mutex. This value might
-*                      also be zero. See also ::QPrioSpec
-*
+* @param[in] prioSpec  the priority specification for the mutex
+*                      (See also ::QPrioSpec). This value might
+*                      also be zero.
 * @note
-* `ceiling == 0` means that the priority-ceiling protocol shall **not**
+* `prioSpec == 0` means that the priority-ceiling protocol shall **not**
 * be used by this mutex. Such mutex will **not** change (boost) the
-* priority of the holding thread.
+* priority of the holding threads.<br>
 *
-* @note
-* Conversely, `ceiling != 0` means that the priority-ceiling protocol
-* shall be used by this mutex. Such mutex **will__ boost the priority
-* of the holding thread to the `ceiling` level for as long as the
-* thread holds this mutex.
+* Conversely, `prioSpec != 0` means that the priority-ceiling protocol
+* shall be used by this mutex. Such mutex **will** temporarily boost
+* the priority and priority-threshold of the holding thread to the
+* priority specification in `prioSpec` (see ::QPrioSpec).
 *
 * @attention
-* When the priority-ceiling protocol is used (`ceiling > 0`), the
-* `ceiling` priority must be unused by any other thread or mutex.
-* Also, the `ceiling` priority must be higher than priority of any thread
-* that uses this mutex.
+* When the priority-ceiling protocol is used (`prioSpec != 0`), the
+* QF-priority specified in `prioSpec` must be unused by any other thread
+* or mutex. Also, the priority-threshold must be higher or equal to the
+* threshold of any thread that uses this mutex.
 *
 * @usage
 * @include qxk_mutex.c
 */
 void QXMutex_init(QXMutex * const me,
-    QPrioSpec const prio);
+    QPrioSpec const prioSpec);
 
 /*! lock the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
 *
-* @param[in,out] me     pointer (see @ref oop)
-* @param[in]  nTicks    number of clock ticks (at the associated rate)
-*                       to wait for the semaphore. The value of
-*                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
-*                       occur and the semaphore will wait indefinitely.
+* @param[in,out] me   pointer (see @ref oop)
+* @param[in]  nTicks  number of clock ticks (at the associated rate)
+*                     to wait for the mutex. The value of
+*                     QXTHREAD_NO_TIMEOUT indicates that no timeout will
+*                     occur and the mutex could block indefinitely.
 * @returns
 * 'true' if the mutex has been acquired and 'false' if a timeout occurred.
 *
@@ -835,24 +826,25 @@ void QXMutex_unlock(QXMutex * const me);
 * @details
 * Starts execution of the thread and registers the AO with the framework.
 *
-* @param[in,out] me_      pointer (see @ref oop)
-* @param[in]     prio_    priority at which to start the active object
-* @param[in]     qSto_    pointer to the storage for the ring buffer of the
-*                         event queue (used only with the built-in ::QEQueue)
-* @param[in]     qLen_    length of the event queue (in events)
-* @param[in]     stkSto_  pointer to the stack storage (used only when
-*                         per-AO stack is needed)
-* @param[in]     stkSize_ stack size (in bytes)
-* @param[in]     par_     pointer to the additional port-specific parameter(s)
-*                         (might be NULL).
+* @param[in,out] me_   pointer (see @ref oop)
+* @param[in] prioSpec_ priority specification at which to start the
+*                      extended thread (see ::QPrioSpec)
+* @param[in] qSto_     pointer to the storage for the ring buffer of the
+*                      event queue (used only with the built-in ::QEQueue)
+* @param[in] qLen_     length of the event queue (in events)
+* @param[in] stkSto_   pointer to the stack storage (used only when
+*                      per-AO stack is needed)
+* @param[in] stkSize_  stack size (in bytes)
+* @param[in] par_      pointer to the additional port-specific parameter(s)
+*                      (might be NULL).
 * @usage
 * @include qxk_start.c
 */
-#define QXTHREAD_START(me_, prio_, qSto_, qLen_, stkSto_, stkSize_, par_) \
+#define QXTHREAD_START(me_, prioSpec_, qSto_, qLen_, stkSto_, stkSize_, par_) \
 do { \
     Q_ASSERT((me_)->super.super.vptr); \
     ((*((QActiveVtable const *)((me_)->super.super.vptr))->start)( \
-        &(me_)->super, (prio_), (QEvt const **)(qSto_), (qLen_), \
+        &(me_)->super, (prioSpec_), (QEvt const **)(qSto_), (qLen_), \
         (stkSto_), (stkSize_), (par_))); \
 } while (false)
 
@@ -919,11 +911,11 @@ do { \
 
 /*${QXK-impl::QF_SCHED_LOCK_} ..............................................*/
 /*! QXK selective scheduler locking */
-#define QF_SCHED_LOCK_(prio_) do { \
+#define QF_SCHED_LOCK_(ceil_) do { \
     if (QXK_ISR_CONTEXT_()) { \
         lockStat_ = 0xFFU; \
     } else { \
-        lockStat_ = QXK_schedLock((prio_)); \
+        lockStat_ = QXK_schedLock((ceil_)); \
     } \
 } while (false)
 

@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-24
+* @date Last updated on: 2022-08-25
 * @version Last updated for: Zephyr 3.1.99 and @ref qpc_7_1_0
 *
 * @file
@@ -104,7 +104,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     me->thread.init_data = (void *)attr2; /* will be used for thread name */
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, QPrioSpec const prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -112,7 +112,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
     /* initialize the Zephyr message queue */
     k_msgq_init(&me->eQueue, (char *)qSto, sizeof(QEvt *), (uint32_t)qLen);
 
-    me->prio  = (uint8_t)(prio & 0xFFU);
+    me->prio  = (uint8_t)(prioSpec & 0xFFU);
     QActive_register_(me); /* register this AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
@@ -132,7 +132,8 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
 
     /* create a Zephyr thread for the AO... */
     k_thread_create(&me->thread,
-                    (k_thread_stack_t *)stkSto, stkSize,
+                    (k_thread_stack_t *)stkSto,
+                    (size_t)stkSize,
                     &thread_entry,
                     (void *)me, /* p1 */
                     (void *)0,  /* p2 */
@@ -142,22 +143,19 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
                     K_NO_WAIT); /* start immediately */
 
 #ifdef CONFIG_THREAD_NAME
-    /* set the Zephyr thread name, if configured */
-    if (name != (char const *)0) {
-        k_thread_name_set(&me->thread, name);
-    }
+    /* set the Zephyr thread name, if initialized, or the default name "AO" */
+    k_thread_name_set(&me->thread, (name != (char *)0) ? name : "AO");
 #endif
 }
 /*..........................................................................*/
 bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
 {
-    bool status;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
     uint_fast16_t nFree = (uint_fast16_t)k_msgq_num_free_get(&me->eQueue);
 
+    bool status;
     if (margin == QF_NO_MARGIN) {
         if (nFree > 0U) {
             status = true; /* can post */
@@ -193,7 +191,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QF_CRIT_X_();
 
         /* posting to the Zephyr message queue must succeed, see NOTE1 */
-        Q_ALLEGE_ID(520, k_msgq_put(&me->eQueue, (void *)&e, K_NO_WAIT) == 0);
+        Q_ALLEGE_ID(520,
+                    k_msgq_put(&me->eQueue, (void const *)&e, K_NO_WAIT)
+                     == 0);
     }
     else {
 
@@ -255,7 +255,3 @@ QEvt const *QActive_get_(QActive * const me) {
 
     return e;
 }
-
-
-/*============================================================================
-*/

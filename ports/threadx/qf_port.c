@@ -74,7 +74,7 @@ static void thread_function(ULONG thread_input) { /* ThreadX signature */
     }
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, QPrioSpec const prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -88,8 +88,8 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
             (ULONG)(qLen * sizeof(ULONG)))
         == TX_SUCCESS);
 
-    me->prio  = (uint8_t)(prio & 0xFFU);
-    me->pthre = (uint8_t)(prio >> 8U);
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority */
+    me->pthre = (uint8_t)(prioSpec >> 8U); /* preemption-threshold */
     QActive_register_(me); /* register this AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* initial tran. (virtual) */

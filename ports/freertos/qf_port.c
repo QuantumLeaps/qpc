@@ -109,14 +109,13 @@ static void task_function(void *pvParameters) { /* FreeRTOS task signature */
     }
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, QPrioSpec const prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    Q_REQUIRE_ID(200, (0U < prio)
-        && (prio <= QF_MAX_ACTIVE) /* in range */
-        && (qSto != (QEvt const **)0) /* queue storage must be provided */
+    Q_REQUIRE_ID(200,
+        (qSto != (QEvt const **)0) /* queue storage must be provided */
         && (qLen > 0U)             /* queue size must be provided */
         && (stkSto != (void *)0)   /* stack storage must be provided */
         && (stkSize > 0U));        /* stack size must be provided */
@@ -129,7 +128,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
             &me->osObject);              /* static queue buffer */
     Q_ASSERT_ID(210, me->eQueue != (QueueHandle_t)0);
 
-    me->prio = (uint8_t)(prio & 0xFFU);
+    me->prio = (uint8_t)(prioSpec & 0xFFU);
     QActive_register_(me); /* register this AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
@@ -147,7 +146,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
               taskName ,                /* the name of the task */
               stkSize/sizeof(portSTACK_TYPE), /* stack length */
               (void *)me,               /* the 'pvParameters' parameter */
-              FREERTOS_TASK_PRIO(prio), /* FreeRTOS priority */
+              FREERTOS_TASK_PRIO(me->prio), /* FreeRTOS priority */
               (StackType_t *)stkSto,    /* stack storage */
               &me->thread));            /* task buffer */
 }

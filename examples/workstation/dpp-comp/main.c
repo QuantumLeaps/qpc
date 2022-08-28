@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example for Windows
-* Last updated for version 6.4.0
-* Last updated on  2019-02-08
+* Last updated for version 7.1.0
+* Last updated on  2022-08-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     QACTIVE_START(AO_Table,             /* AO to start */
-                  (uint_fast8_t)1,      /* QP priority of the AO */
+                  Q_PRIO(2U, 1U),       /* QF-priority/preemption-thre. */
                   tableQueueSto,        /* event queue storage */
                   Q_DIM(tableQueueSto), /* queue length [events] */
                   (void *)0,            /* stack storage (not used) */

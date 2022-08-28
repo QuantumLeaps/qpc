@@ -133,16 +133,14 @@ void QF_setWin32Prio(QActive *act, int_t win32Prio) {
 }
 
 /* QActive functions =======================================================*/
-void QActive_start_(QActive * const me, QPrioSpec const prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    Q_REQUIRE_ID(800, (0U < prio) /* priority must be in range */
-                 && (prio <= QF_MAX_ACTIVE)
-                 && (stkSto == (void *)0));   /* stack storage must NOT...
-                                               * ... be provided */
-    me->prio = (uint8_t)(prio & 0xFFU);
+    /* no external AO-stack storage needed for this port */
+    Q_REQUIRE_ID(800, stkSto == (void *)0);
+    me->prio = (uint8_t)(prioSpec & 0xFFU);
     QActive_register_(me); /* register this AO */
 
     QEQueue_init(&me->eQueue, qSto, qLen);

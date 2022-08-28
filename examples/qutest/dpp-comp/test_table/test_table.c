@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     /* start the active objects... */
     Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,             /* AO to start */
-                  1U,                   /* QP priority of the AO */
+                  Q_PRIO(2U, 1U),       /* QF-priority/preemption-threshold */
                   tableQueueSto,        /* event queue storage */
                   Q_DIM(tableQueueSto), /* queue length [events] */
                   (void *)0,            /* stack storage (not used) */

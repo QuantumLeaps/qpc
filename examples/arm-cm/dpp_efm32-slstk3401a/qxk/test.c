@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
 * Last updated for version 7.1.0
-* Last updated on  2022-08-22
+* Last updated on  2022-08-28
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -125,7 +125,7 @@ static void Thread2_run(QXThread * const me) {
     */
     //QXMutex_init(&l_mutex, 0U); /* priority-ceiling NOT used */
     QXMutex_init(&l_mutex,
-                 Q_PRIO(N_PHILO + 6U, 5U));
+                 Q_PRIO(N_PHILO + 6U, 5U)); /* QF-priority/preemption-thre. */
 
     me->super.thread = &l_tls2; /* initialize the TLS for Thread2 */
 

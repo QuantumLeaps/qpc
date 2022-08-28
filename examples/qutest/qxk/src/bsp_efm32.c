@@ -209,8 +209,5 @@ void QTimeEvt_tick1_(
     *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 26U);
     QF_INT_ENABLE();
 }
-/*..........................................................................*/
-void QS_processTestEvts_(void) {
-}
 
 #endif /* Q_SPY */

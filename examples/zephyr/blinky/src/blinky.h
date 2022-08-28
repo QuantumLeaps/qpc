@@ -44,3 +44,4 @@ void Blinky_ctor(void);
 extern QActive * const AO_Blinky; /* opaque pointer */
 
 #endif /* BLINKY_H */
+

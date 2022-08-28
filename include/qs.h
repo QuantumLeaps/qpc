@@ -1577,7 +1577,7 @@ void QActiveDummy_dispatch_(
 */
 void QActiveDummy_start_(
     QActive * const me,
-    QPrioSpec const prio,
+    QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,

@@ -445,15 +445,13 @@ void QActive_ctor(QActive * const me,
 * @details
 * Starts execution of the AO and registers the AO with the framework.
 *
-* @param[in] prio    QF priority of the AO and (optionally) preemption-
-*                    threshold of this AO (for some preemptive kernels).
-*                    See also ::QPrioSpec.
-* @param[in] qSto    pointer to the storage for the ring buffer of the
-*                    event queue
-* @param[in] qLen    length of the event queue [# ::QEvt* pointers]
-* @param[in] stkSto  pointer to the stack storage (might be NULL)
-* @param[in] stkSize stack size [bytes]
-* @param[in] par     pointer to an extra parameter (might be NULL)
+* @param[in] prioSpec priority specification for the AO (See ::QPrioSpec)
+* @param[in] qSto     pointer to the storage for the ring buffer of the
+*                     event queue
+* @param[in] qLen     length of the event queue [# ::QEvt* pointers]
+* @param[in] stkSto   pointer to the stack storage (might be NULL)
+* @param[in] stkSize  stack size [bytes]
+* @param[in] par      pointer to an extra parameter (might be NULL)
 *
 * @usage
 * The following example shows starting an AO when a per-task stack
@@ -461,7 +459,7 @@ void QActive_ctor(QActive * const me,
 * @include qf_start.c
 */
 void QActive_start_(QActive * const me,
-    QPrioSpec const prio,
+    QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -1637,21 +1635,9 @@ void QF_deleteRef_(void const * const evtRef);
 */
 #define QF_NO_MARGIN ((uint_fast16_t)0xFFFFU)
 
-/*${QF-macros::QF_CRIT_EXIT_NOP} ...........................................*/
-#ifndef QF_CRIT_EXIT_NOP
-/*! No-operation for exiting a critical section
-*
-* @details
-* In some QF ports the critical section exit takes effect only on the
-* next machine instruction. If this next instruction is another entry
-* to a critical section, the critical section won't be really exited,
-* but rather the two adjecent critical sections would be merged.
-* The QF_CRIT_EXIT_NOP() macro contains minimal code required to
-* prevent such merging of critical sections in such merging of
-* critical sections in QF ports, in which it can occur.
-*/
-#define QF_CRIT_EXIT_NOP() ((void)0)
-#endif /* ndef QF_CRIT_EXIT_NOP */
+/*${QF-macros::Q_PRIO} .....................................................*/
+/*! Create a ::QPrioSpec object to specify priorty of an AO or a thread */
+#define Q_PRIO(prio_, pthre_) ((QPrioSpec)((prio_) | ((pthre_) << 8U)))
 
 /*${QF-macros::Q_NEW} ......................................................*/
 #ifndef Q_EVT_CTOR
@@ -1764,10 +1750,6 @@ void QF_deleteRef_(void const * const evtRef);
 #define Q_NEW_REF(evtRef_, evtT_) \
     ((evtRef_) = (evtT_ const *)QF_newRef_(e, (evtRef_)))
 
-/*${QF-macros::Q_PRIO} .....................................................*/
-/*! Create a ::QPrioSpec object to specify priorty of an AO or a thread */
-#define Q_PRIO(prio_, pthre_) ((QPrioSpec)((prio_) | ((pthre_) << 8U)))
-
 /*${QF-macros::Q_DELETE_REF} ...............................................*/
 /*! Delete the event reference
 *
@@ -1795,23 +1777,23 @@ void QF_deleteRef_(void const * const evtRef);
 * @details
 * Starts execution of the AO and registers the AO with the framework.
 *
-* @param[in,out] me_      pointer (see @ref oop)
-* @param[in]     prio_    priority at which to start the active object
-* @param[in]     qSto_    pointer to the storage for the ring buffer of the
-*                         event queue (used only with the built-in ::QEQueue)
-* @param[in]     qLen_    length of the event queue (in events)
-* @param[in]     stkSto_  pointer to the stack storage (used only when
-*                         per-AO stack is needed)
-* @param[in]     stkSize_ stack size (in bytes)
-* @param[in]     par_     pointer to the additional port-specific parameter(s)
-*                         (might be NULL).
+* @param[in,out] me_   pointer (see @ref oop)
+* @param[in] prioSpec_ priority specification for the Active Object
+* @param[in] qSto_     pointer to the storage for the ring buffer of the
+*                      event queue (used only with the built-in ::QEQueue)
+* @param[in] qLen_     length of the event queue (in events)
+* @param[in] stkSto_   pointer to the stack storage (used only when
+*                      per-AO stack is needed)
+* @param[in] stkSize_  stack size (in bytes)
+* @param[in] par_      pointer to the additional port-specific parameter(s)
+*                      (might be NULL).
 * @usage
 * @include qf_start.c
 */
-#define QACTIVE_START(me_, prio_, qSto_, qLen_, stkSto_, stkSize_, par_) do { \
+#define QACTIVE_START(me_, prioSpec_, qSto_, qLen_, stkSto_, stkSize_, par_) do { \
     Q_ASSERT((Q_HSM_UPCAST(me_))->vptr); \
     (*((QActiveVtable const *)((Q_HSM_UPCAST(me_))->vptr))->start)( \
-        (QActive *)(me_), (prio_), \
+        (QActive *)(me_), (prioSpec_), \
         (qSto_), (qLen_), (stkSto_), (stkSize_), (par_)); \
 } while (false)
 
@@ -1983,6 +1965,22 @@ void QF_deleteRef_(void const * const evtRef);
 * for tick rate 0
 */
 #define QTIMEEVT_TICK(sender_) QTIMEEVT_TICK_X(0U, (sender_))
+
+/*${QF-macros::QF_CRIT_EXIT_NOP} ...........................................*/
+#ifndef QF_CRIT_EXIT_NOP
+/*! No-operation for exiting a critical section
+*
+* @details
+* In some QF ports the critical section exit takes effect only on the
+* next machine instruction. If this next instruction is another entry
+* to a critical section, the critical section won't be really exited,
+* but rather the two adjecent critical sections would be merged.
+* The QF_CRIT_EXIT_NOP() macro contains minimal code required to
+* prevent such merging of critical sections in such merging of
+* critical sections in QF ports, in which it can occur.
+*/
+#define QF_CRIT_EXIT_NOP() ((void)0)
+#endif /* ndef QF_CRIT_EXIT_NOP */
 
 /*${QF-macros::QF_TICK_X} ..................................................*/
 /*! Invoke the system clock tick processing

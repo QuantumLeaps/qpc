@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-19
+* @date Last updated on: 2022-08-26
 * @version Last updated for: @ref qpc_7_1_0
 *
 * @file
@@ -159,7 +159,7 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
     }
 }
 
-/* NOTE: keep in synch with struct QXK_Attr in "qxk.h" !!! */
+/* NOTE: keep in synch with struct QXK_Attr in "qxk.hpp" !!! */
 #define QXK_CURR       0
 #define QXK_NEXT       4
 #define QXK_ACT_THRE   9
@@ -221,7 +221,7 @@ __asm volatile (
 #else                               /* ARMv7-M or higher */
     "  MOV     r0,#" STRINGIFY(QF_BASEPRI) "\n"
     "  CPSID   i                \n" /* selectively disable interrupts with BASEPRI */
-    "  MSR     BASEPRI,r0       \n" /* apply the workaround the Cortex-M7 erraturm */
+    "  MSR     BASEPRI,r0       \n" /* apply the workaround the Cortex-M7 erratum */
     "  CPSIE   i                \n" /* 837070, see SDEN-1068427. */
 #endif                              /* ARMv7-M or higher */
 
@@ -359,7 +359,7 @@ __asm volatile (
 
     "  MOV     r0,r12           \n" /* r0 := QXK_attr_.next */
     "  MOV     r2,#" STRINGIFY(QACTIVE_PTHRE) "\n" /* r2 := offset of .pthre */
-    "  LDRB    r0,[r0,r2]       \n" /* r0 := QXK_attr_.next->prio */
+    "  LDRB    r0,[r0,r2]       \n" /* r0 := QXK_attr_.next->pthre */
     "  LDRB    r2,[r3,#" STRINGIFY(QXK_ACT_THRE) "]\n" /* r2 := QXK_attr_.actThre */
     "  CMP     r2,r0            \n"
     "  BCC     PendSV_activate  \n" /* if (next->pthre > actThre) activate the next AO */
@@ -367,15 +367,11 @@ __asm volatile (
     /* otherwise no activation needed... */
     "  MOV     r0,#0            \n"
     "  STR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" /* QXK_attr_.next := 0 (clear the next) */
+    "  MOV     r12,r0           \n" /* also clear r12==QXK_attr_.next */
 
 #ifdef QXK_ON_CONTEXT_SW
     "  MOV     r0,r1            \n" /* r0 := QXK_attr_.curr / basic */
     "  MOV     r1,r12           \n" /* r1 := QXK_attr_.next / basic */
-    "  LDR     r2,=QXK_idle_    \n" /* r2 := QXK idle thr ptr */
-    "  CMP     r1,r2            \n"
-    "  BNE     PendSV_onContextSw1 \n" /* if (next != idle) call onContextSw */
-    "  MOVS    r1,#0            \n" /* otherwise, next := NULL */
-    "PendSV_onContextSw1:        \n"
     "  LDR     r2,=QXK_onContextSw \n"
     "  PUSH    {r1,lr}          \n" /* save the aligner + exception lr */
     "  BLX     r2               \n" /* call QXK_onContextSw() */
@@ -450,11 +446,6 @@ __asm volatile (
 #ifdef QXK_ON_CONTEXT_SW
     "  MOV     r0,r1            \n" /* r0 := QXK_attr_.curr / basic */
     "  MOV     r1,r12           \n" /* r1 := QXK_attr_.next / basic */
-    "  LDR     r2,=QXK_idle_    \n" /* r2 := QXK idle thr ptr */
-    "  CMP     r0,r2            \n"
-    "  BNE     PendSV_onContextSw2 \n" /* if (curr != idle) call onContextSw */
-    "  MOV     r0,#0            \n" /* otherwise, curr := NULL */
-    "PendSV_onContextSw2:       \n"
     "  LDR     r2,=QXK_onContextSw \n"
     "  PUSH    {r1,lr}          \n" /* save the aligner + exception lr */
     "  BLX     r2               \n" /* call QXK_onContextSw() */

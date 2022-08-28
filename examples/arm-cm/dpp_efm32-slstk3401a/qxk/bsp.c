@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EFM32-SLSTK3401A board, preemptive QXK kernel
-* Last updated for version 6.9.3
-* Last updated on  2021-03-03
+* Last updated for version 7.1.0
+* Last updated on  2022-08-28
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -207,9 +207,6 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(COMMAND_STAT);
 
     /* setup the QS filters... */
-    //QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
-    //QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
-    //QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
     QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
     QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */
 }
@@ -386,6 +383,8 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
 #ifdef Q_SPY
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
+    Q_UNUSED_PAR(arg);
+
     static uint8_t qsTxBuf[2*1024]; /* buffer for QS transmit channel */
     static uint8_t qsRxBuf[100];    /* buffer for QS receive channel */
     static USART_InitAsync_TypeDef init = {

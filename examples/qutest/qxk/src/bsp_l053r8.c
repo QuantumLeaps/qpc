@@ -1,5 +1,5 @@
 /*****************************************************************************
-* Product: BSP for system-testing QXK, EFM32-SLSTK3401A board
+* Product: BSP for system-testing QXK, NUCLEO-L053R8 board
 * Last updated for version 7.1.0
 * Last updated on  2022-08-21
 *
@@ -47,15 +47,12 @@ Q_DEFINE_THIS_FILE
 #define BTN_B1   (1U << 13)
 
 #ifdef Q_SPY
-    QSTimeCtr QS_tickTime_;
-    QSTimeCtr QS_tickPeriod_;
-
     /* QSpy source IDs */
     static QSpyId const l_SysTick_Handler = { 100U };
     static QSpyId const l_EXTI0_1_IRQHandler = { 101U };
 
     enum AppRecords { /* application-specific trace records */
-        CONTEXT_SW  = QS_USER,
+        CONTEXT_SW = QS_USER,
         COMMAND_STAT
     };
 
@@ -149,9 +146,9 @@ void QF_onStartup(void) {
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
+    NVIC_SetPriority(USART2_IRQn,    0); /* kernel UNAWARE interrupt */
     NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1);
     NVIC_SetPriority(EXTI0_1_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 2);
-    NVIC_SetPriority(USART2_IRQn,    0); /* kernel UNAWARE interrupt */
     /* ... */
 
     /* enable IRQs... */
@@ -200,9 +197,6 @@ void QTimeEvt_tick1_(
     /* TODO pend the SysTick */
     *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 26U);
     QF_INT_ENABLE();
-}
-/*..........................................................................*/
-void QS_processTestEvts_(void) {
 }
 
 #endif /* Q_SPY */

@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-19
+* @date Last updated on: 2022-08-25
 * @version Last updated for: @ref qpc_7_1_0
 *
 * @file
@@ -174,19 +174,17 @@ int QF_consoleWaitForKey(void) {
 }
 
 /* QActive functions =======================================================*/
-void QActive_start_(QActive * const me, QPrioSpec const prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    (void)stkSize;   /* unused parameter in the Win32-QV port */
+    Q_UNUSED_PAR(stkSize);
 
-    Q_REQUIRE_ID(600, (0U < prio) /* priority must be in range */
-        && (prio <= QF_MAX_ACTIVE)
-        && (stkSto == (void *)0));    /* stack storage must NOT...
-                                       * ... be provided */
+    /* no per-AO stack needed for this port */
+    Q_REQUIRE_ID(600, stkSto == (void *)0);
 
-    me->prio = (uint8_t)(prio & 0xFFU);
+    me->prio = (uint8_t)(prioSpec & 0xFFU);
     QActive_register_(me); /* register this AO */
 
     QEQueue_init(&me->eQueue, qSto, qLen);

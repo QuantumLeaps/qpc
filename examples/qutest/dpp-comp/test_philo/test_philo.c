@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     /* instantiate all dummy AOs... */
     QActiveDummy_ctor(&Table_inst);
     QACTIVE_START(&Table_inst,
-                  1U, /* QP priority of the dummy */
+                  Q_PRIO(2U, 1U), /* QF-priority/preemption-threshold */
                   (QEvt const **)0, 0U, (void *)0, 0U, (void *)0);
 
     return QF_run(); /* run the QF application */

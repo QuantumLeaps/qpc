@@ -77,44 +77,6 @@ typedef struct QK_Attr {
 /*! attributes of the QK kernel */
 extern QK QK_attr_;
 
-/*${QK::QK-base::idle_} ....................................................*/
-/*! Idle AO in the QK kernel */
-extern QActive const QK_idle_;
-
-/*${QK::QK-base::activate_} ................................................*/
-/*! QK activator activates the next active object. The activated AO preempts
-* the currently executing AOs.
-* @static @private @memberof QK
-*
-* @details
-* QK_activate_() activates ready-to run AOs that are above the initial
-* active priority (QK_attr_.actPrio).
-*
-* @note
-* The activator might enable interrupts internally, but always returns with
-* interrupts **disabled**.
-*/
-void QK_activate_(void);
-
-/*${QK::QK-base::sched_} ...................................................*/
-/*! QK scheduler finds the highest-priority AO ready to run
-* @static @private @memberof QK
-*
-* @details
-* The QK scheduler finds out the priority of the highest-priority AO
-* that (1) has events to process and (2) has priority that is above the
-* current priority.
-*
-* @returns
-* The QF priority of the the active object, or zero if no eligible
-* AO is ready to run.
-*
-* @attention
-* QK_sched_() must be always called with interrupts **disabled** and
-* returns with interrupts **disabled**.
-*/
-uint_fast8_t QK_sched_(void);
-
 /*${QK::QK-base::schedLock} ................................................*/
 /*! QK selective scheduler lock
 *
@@ -175,8 +137,44 @@ void QK_schedUnlock(QSchedStatus const stat);
 * interrupts enabled.
 */
 void QK_onIdle(void);
+/*$enddecl${QK::QK-base} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$declare${QK::QK-extern-C} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
-/*${QK::QK-base::onContextSw} ..............................................*/
+/*${QK::QK-extern-C::sched_} ...............................................*/
+/*! QK scheduler finds the highest-priority AO ready to run
+* @static @private @memberof QK
+*
+* @details
+* The QK scheduler finds out the priority of the highest-priority AO
+* that (1) has events to process and (2) has priority that is above the
+* current priority.
+*
+* @returns
+* The QF priority of the the active object, or zero if no eligible
+* AO is ready to run.
+*
+* @attention
+* QK_sched_() must be always called with interrupts **disabled** and
+* returns with interrupts **disabled**.
+*/
+uint_fast8_t QK_sched_(void);
+
+/*${QK::QK-extern-C::activate_} ............................................*/
+/*! QK activator activates the next active object. The activated AO preempts
+* the currently executing AOs.
+* @static @private @memberof QK
+*
+* @details
+* QK_activate_() activates ready-to run AOs that are above the initial
+* active priority (QK_attr_.actPrio).
+*
+* @note
+* The activator might enable interrupts internally, but always returns with
+* interrupts **disabled**.
+*/
+void QK_activate_(void);
+
+/*${QK::QK-extern-C::onContextSw} ..........................................*/
 #ifdef QK_ON_CONTEXT_SW
 /*! QK context switch callback (customized in BSPs for QK)
 * @static @public @memberof QK
@@ -203,7 +201,7 @@ void QK_onContextSw(
     QActive * prev,
     QActive * next);
 #endif /* def QK_ON_CONTEXT_SW */
-/*$enddecl${QK::QK-base} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$enddecl${QK::QK-extern-C} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 /*==========================================================================*/
 /* interface used only inside QF, but not in applications */
@@ -227,11 +225,11 @@ void QK_onContextSw(
 
 /*${QK-impl::QF_SCHED_LOCK_} ...............................................*/
 /*! QK selective scheduler locking */
-#define QF_SCHED_LOCK_(prio_) do { \
+#define QF_SCHED_LOCK_(ceil_) do { \
     if (QK_ISR_CONTEXT_()) { \
         lockStat_ = 0xFFU; \
     } else { \
-        lockStat_ = QK_schedLock((prio_)); \
+        lockStat_ = QK_schedLock((ceil_)); \
     } \
 } while (false)
 

@@ -72,15 +72,15 @@ Q_DEFINE_THIS_MODULE("qxk_mutex")
 
 /*${QXK::QXMutex::init} ....................................................*/
 void QXMutex_init(QXMutex * const me,
-    QPrioSpec const prio)
+    QPrioSpec const prioSpec)
 {
     QF_bzero((void *)me, sizeof(*me)); /* clear the mutex object */
 
-    me->super.prio    = (uint8_t)(prio & 0xFFU); /* QF-priority */
-    me->super.pthre   = (uint8_t)(prio >> 8U);   /* preemption-threshold */
+    me->super.prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority */
+    me->super.pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
 
-    if (me->super.prio > 0U) {  /* priority-ceiling protocol used? */
-        QActive_register_(&me->super); /* register this mutex at the slot */
+    if (prioSpec != 0U) {  /* priority-ceiling protocol used? */
+        QActive_register_(&me->super); /* register this mutex as AO */
     }
 }
 
@@ -134,7 +134,7 @@ bool QXMutex_lock(QXMutex * const me,
             * and the priority slot must be occupied by this mutex
             */
             Q_ASSERT_ID(210, (curr->super.prio < me->super.prio)
-                && (QActive_registry_[me->super.prio]== &me->super));
+                && (QActive_registry_[me->super.prio] == &me->super));
 
             /* remove the thread's original prio from the ready set
             * and insert the mutex's prio into the ready set
@@ -186,7 +186,7 @@ bool QXMutex_lock(QXMutex * const me,
 
         /* set the blocking object (this mutex) */
         curr->super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
-        QXThread_teArm_(curr, (enum_t)QXK_SEMA_SIG, nTicks);
+        QXThread_teArm_(curr, (enum_t)QXK_MUTEX_SIG, nTicks);
 
         QS_BEGIN_NOCRIT_PRE_(QS_MTX_BLOCK, curr->super.prio)
             QS_TIME_PRE_();  /* timestamp */

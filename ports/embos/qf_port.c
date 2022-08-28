@@ -99,7 +99,7 @@ static void thread_function(void *pVoid) { /* embOS signature */
     }
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, QPrioSpec const prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -110,7 +110,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
                 (OS_UINT)qLen,
                 (void *)&qSto[0]);
 
-    me->prio = (uint8_t)(prio & 0xFFU);
+    me->prio = (uint8_t)(prioSpec & 0xFFU);
     QActive_register_(me); /* register this AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */

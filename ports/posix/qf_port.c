@@ -210,7 +210,7 @@ static void *thread_routine(void *arg) { /* the expected POSIX signature */
 }
 
 /****************************************************************************/
-void QActive_start_(QActive * const me, QPrioSpec const prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -226,7 +226,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prio,
     QEQueue_init(&me->eQueue, qSto, qLen);
     pthread_cond_init(&me->osObject, NULL);
 
-    me->prio = (uint8_t)(prio & 0xFFU);
+    me->prio = (uint8_t)(prioSpec & 0xFFU);
     QActive_register_(me); /* register this AO */
 
     /* the top-most initial tran. (virtual) */

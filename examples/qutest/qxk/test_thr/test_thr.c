@@ -79,8 +79,8 @@ int main() {
     static void const *test1QueueSto[5];
     static uint64_t test1StackSto[64];
     Test1_ctor(); /* instantiate the Test1 extended thread */
-    QXTHREAD_START(&thr1,             /* Thread to start */
-                  Q_PRIO(1U, 1U),        /* QP priority of the thread */
+    QXTHREAD_START(&thr1,                /* thread to start */
+                  Q_PRIO(1U, 1U),        /* QF-priority/preemption-thre. */
                   test1QueueSto,         /* message queue storage */
                   Q_DIM(test1QueueSto),  /* message length [events] */
                   test1StackSto,         /* stack storage */

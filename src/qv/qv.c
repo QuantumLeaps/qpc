@@ -174,7 +174,7 @@ int_t QF_run(void) {
 
 /*${QV::QActive::start_} ...................................................*/
 void QActive_start_(QActive * const me,
-    QPrioSpec const prio,
+    QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
     void * const stkSto,
@@ -188,9 +188,9 @@ void QActive_start_(QActive * const me,
     */
     Q_REQUIRE_ID(500, stkSto == (void *)0);
 
-    me->prio  = (uint8_t)(prio & 0xFFU); /* QF-priority of the AO */
-    me->pthre = (uint8_t)(prio >> 8U);   /* preemption-ceiling of the AO */
-    QActive_register_(me); /* make QF aware of this AO */
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    QActive_register_(me); /* make QF aware of this active object */
 
     QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
 
