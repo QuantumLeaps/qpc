@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-19
+* @date Last updated on: 2022-08-29
 * @version Last updated for: @ref qpc_7_1_0
 *
 * @file
@@ -110,7 +110,8 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                 (OS_UINT)qLen,
                 (void *)&qSto[0]);
 
-    me->prio = (uint8_t)(prioSpec & 0xFFU);
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
     QActive_register_(me); /* register this AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
@@ -123,7 +124,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
 #elif
                     "AO",            /* a generic AO task name */
 #endif
-                    (OS_PRIO)prio, /* embOS uses the same numbering as QP */
+                    (OS_PRIO)me->prio,/* embOS uses the same numbering as QP*/
                     &thread_function,
                     (void OS_STACKPTR *)stkSto,
                     (OS_UINT)stkSize,

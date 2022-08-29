@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-98-23
+* @date Last updated on: 2022-08-29
 * @version Last updated for: @ref qpc_7_1_0
 *
 * @file
@@ -140,7 +140,8 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
             &me->osObject);        /* static queue buffer */
     Q_ASSERT_ID(210, me->eQueue != (QueueHandle_t)0);
 
-    me->prio = (uint8_t)(prioSpec & 0xFFU);
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
     QActive_register_(me); /* register this AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */

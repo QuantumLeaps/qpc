@@ -109,7 +109,8 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    me->prio  = (uint8_t)(prioSpec & 0xFFU);
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
     QActive_register_(me); /* register this AO */
 
     /* initialize the Zephyr message queue */
@@ -119,7 +120,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* Zephyr uses the reverse priority numbering than QP */
-    int zprio = (int)QF_MAX_ACTIVE - (int)prio;
+    int zprio = (int)QF_MAX_ACTIVE - (int)me->prio;
 
     /* extract data temporarily saved in me->thread by QActive_setAttr() */
     uint32_t opt = me->thread.base.order_key;

@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-19
+* @date Last updated on: 2022-08-29
 * @version Last updated for: @ref qpc_7_1_0
 *
 * @file
@@ -226,7 +226,8 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     QEQueue_init(&me->eQueue, qSto, qLen);
     pthread_cond_init(&me->osObject, NULL);
 
-    me->prio = (uint8_t)(prioSpec & 0xFFU);
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
     QActive_register_(me); /* register this AO */
 
     /* the top-most initial tran. (virtual) */
@@ -243,7 +244,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_DETACHED);
 
     /* priority of the p-thread, see NOTE04 */
-    param.sched_priority = prio
+    param.sched_priority = me->prio
                            + (sched_get_priority_max(SCHED_FIFO)
                               - QF_MAX_ACTIVE - 3U);
     pthread_attr_setschedparam(&attr, &param);
