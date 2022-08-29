@@ -227,6 +227,8 @@ QEvt const * QF_newRef_(
     QEvt const * const e,
     void const * const evtRef)
 {
+    Q_UNUSED_PAR(evtRef); /* in case Q_NASSERT is defined */
+
     /*! @pre the event must be dynamic and the provided event reference
     * must not be already in use */
     Q_REQUIRE_ID(500,

@@ -181,7 +181,8 @@ void QActive_start_(QActive * const me,
     uint_fast16_t const stkSize,
     void const * const par)
 {
-    Q_UNUSED_PAR(stkSize);
+    Q_UNUSED_PAR(stkSto);  /* not needed in QV */
+    Q_UNUSED_PAR(stkSize); /* not needed in QV */
 
     /*! @pre Stack storage must not be provided because the QV kernel
     * does not need per-AO stacks.
@@ -192,7 +193,7 @@ void QActive_start_(QActive * const me,
     me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
     QActive_register_(me); /* make QF aware of this active object */
 
-    QEQueue_init(&me->eQueue, qSto, qLen); /* initialize the built-in queue */
+    QEQueue_init(&me->eQueue, qSto, qLen); /* init the built-in queue */
 
     QHSM_INIT(&me->super, par, me->prio); /* top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */

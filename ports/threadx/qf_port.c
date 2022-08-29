@@ -95,10 +95,6 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     QHSM_INIT(&me->super, par, me->prio); /* initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
-    /* convert QF priority to the ThreadX priority */
-    UINT tx_prio  = QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - me->prio;
-    UINT tx_pthre = QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - me->pthre;
-
     Q_ALLEGE_ID(220,
         tx_thread_create(
             &me->thread, /* ThreadX thread control block */
@@ -107,8 +103,8 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
             (ULONG)me, /* thread parameter */
             stkSto,    /* stack start */
             stkSize,   /* stack size in bytes */
-            tx_prio,   /* ThreadX priority */
-            tx_pthre,  /* ThreadX preemption threshold */
+            QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - me->prio, /* ThreadX prio */
+            QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - me->pthre, /* preempt-thre */
             TX_NO_TIME_SLICE,
             TX_AUTO_START)
         == TX_SUCCESS);

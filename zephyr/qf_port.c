@@ -109,11 +109,11 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    /* initialize the Zephyr message queue */
-    k_msgq_init(&me->eQueue, (char *)qSto, sizeof(QEvt *), (uint32_t)qLen);
-
     me->prio  = (uint8_t)(prioSpec & 0xFFU);
     QActive_register_(me); /* register this AO */
+
+    /* initialize the Zephyr message queue */
+    k_msgq_init(&me->eQueue, (char *)qSto, sizeof(QEvt *), (uint32_t)qLen);
 
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */

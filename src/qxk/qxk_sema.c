@@ -153,14 +153,13 @@ bool QXSemaphore_wait(QXSemaphore * const me,
                 /* semaphore NOT taken: do NOT decrement the count */
             }
             else { /* semaphore was both signaled and timed out */
-                --me->count; /* semaphore signaled: decrement the count */
+                --me->count; /* semaphore taken: decrement the count */
             }
         }
         else { /* blocking did NOT time out */
             /* the thread must NOT be waiting on this semaphore */
             Q_ASSERT_ID(250,!QPSet_hasElement(&me->waitSet, p));
-
-            --me->count; /* semaphore signaled: decrement the count */
+            --me->count; /* semaphore taken: decrement the count */
         }
         curr->super.super.temp.obj = (QMState *)0; /* clear blocking obj. */
     }

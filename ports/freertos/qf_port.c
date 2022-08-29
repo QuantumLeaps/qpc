@@ -146,7 +146,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
               taskName ,                /* the name of the task */
               stkSize/sizeof(portSTACK_TYPE), /* stack length */
               (void *)me,               /* the 'pvParameters' parameter */
-              FREERTOS_TASK_PRIO(me->prio), /* FreeRTOS priority */
+              FREERTOS_TASK_PRIO(me->prio), /* also FreeRTOS priority */
               (StackType_t *)stkSto,    /* stack storage */
               &me->thread));            /* task buffer */
 }

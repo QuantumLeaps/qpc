@@ -210,26 +210,28 @@ void QActive_start_(QActive * const me,
     uint_fast16_t const stkSize,
     void const * const par)
 {
+    Q_UNUSED_PAR(stkSto);  /* not needed in QXK */
+    Q_UNUSED_PAR(stkSize); /* not needed in QXK */
+
     /*! @pre AO cannot be started:
     * - from an ISR;
-    * - the stack storage must NOT be provided (because the QK kernel does
-    * not need per-AO stacks).
+    * - the stack storage must NOT be provided (because the QK kernel
+    *   does not need per-AO stacks).
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_())
-        && (stkSto == (void *)0)
-        && (stkSize == 0U));
+                      && (stkSto == (void *)0));
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
     me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
     QActive_register_(me); /* make QF aware of this active object */
 
-    QEQueue_init(&me->eQueue, qSto, qLen);  /* initialize the built-in queue */
-    me->osObject = (void *)0;               /* no private stack for the AO */
+    QEQueue_init(&me->eQueue, qSto, qLen);  /* init the built-in queue */
+    me->osObject = (void *)0;  /* no private stack for the AO */
 
     QHSM_INIT(&me->super, par, me->prio); /* top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
-    /* see if this AO needs to be scheduled in case QXK is already running */
+    /* see if this AO needs to be scheduled if QXK is already running */
     QF_CRIT_STAT_
     QF_CRIT_E_();
     if (QXK_sched_() != 0U) { /* activation needed? */

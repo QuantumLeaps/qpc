@@ -134,6 +134,8 @@ void QActive_register_(QActive * const me) {
     Q_REQUIRE_ID(100, (0U < prio) && (prio <= QF_MAX_ACTIVE)
                        && (QActive_registry_[prio] == (QActive *)0));
 
+    #ifndef Q_NASSERT
+
     if (me->pthre == 0U) { /* preemption-threshold not defined? */
         me->pthre = me->prio; /* apply the default */
     }
@@ -159,6 +161,8 @@ void QActive_register_(QActive * const me) {
     */
     Q_ENSURE_ID(101, (prev_thre <= me->pthre)
                       && (me->pthre <= next_thre));
+    #endif // Q_NASSERT
+
     QF_CRIT_STAT_
     QF_CRIT_E_();
     QActive_registry_[prio] = me; /* register the AO at this QF priority */

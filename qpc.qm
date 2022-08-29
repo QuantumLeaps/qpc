@@ -4123,6 +4123,8 @@ return n;</code>
 Q_REQUIRE_ID(100, (0U &lt; prio) &amp;&amp; (prio &lt;= QF_MAX_ACTIVE)
                    &amp;&amp; (QActive_registry_[prio] == (QActive *)0));
 
+#ifndef Q_NASSERT
+
 if (me-&gt;pthre == 0U) { /* preemption-threshold not defined? */
     me-&gt;pthre = me-&gt;prio; /* apply the default */
 }
@@ -4148,6 +4150,8 @@ for (p = (uint_fast8_t)prio + 1U; p &lt;= QF_MAX_ACTIVE; ++p) {
 */
 Q_ENSURE_ID(101, (prev_thre &lt;= me-&gt;pthre)
                   &amp;&amp; (me-&gt;pthre &lt;= next_thre));
+#endif // Q_NASSERT
+
 QF_CRIT_STAT_
 QF_CRIT_E_();
 QActive_registry_[prio] = me; /* register the AO at this QF priority */
@@ -6277,7 +6281,9 @@ if (e-&gt;poolId_ != 0U) {
     <parameter name="e" type="QEvt const * const"/>
     <!--${QF::QF-dyn::newRef_::evtRef}-->
     <parameter name="evtRef" type="void const * const"/>
-    <code>/*! @pre the event must be dynamic and the provided event reference
+    <code>Q_UNUSED_PAR(evtRef); /* in case Q_NASSERT is defined */
+
+/*! @pre the event must be dynamic and the provided event reference
 * must not be already in use */
 Q_REQUIRE_ID(500,
     (e-&gt;poolId_ != 0U)
@@ -10022,7 +10028,8 @@ return 0;
     <parameter name="stkSize" type="uint_fast16_t const"/>
     <!--${QV::QActive::start_::par}-->
     <parameter name="par" type="void const * const"/>
-    <code>Q_UNUSED_PAR(stkSize);
+    <code>Q_UNUSED_PAR(stkSto);  /* not needed in QV */
+Q_UNUSED_PAR(stkSize); /* not needed in QV */
 
 /*! @pre Stack storage must not be provided because the QV kernel
 * does not need per-AO stacks.
@@ -10033,7 +10040,7 @@ me-&gt;prio  = (uint8_t)(prioSpec &amp; 0xFFU); /* QF-priority of the AO */
 me-&gt;pthre = (uint8_t)(prioSpec &gt;&gt; 8U);   /* preemption-threshold */
 QActive_register_(me); /* make QF aware of this active object */
 
-QEQueue_init(&amp;me-&gt;eQueue, qSto, qLen); /* initialize the built-in queue */
+QEQueue_init(&amp;me-&gt;eQueue, qSto, qLen); /* init the built-in queue */
 
 QHSM_INIT(&amp;me-&gt;super, par, me-&gt;prio); /* top-most initial tran. */
 QS_FLUSH(); /* flush the trace buffer to the host */</code>
@@ -10301,23 +10308,25 @@ return 0;
     <parameter name="stkSize" type="uint_fast16_t const"/>
     <!--${QK::QActive::start_::par}-->
     <parameter name="par" type="void const * const"/>
-    <code>Q_UNUSED_PAR(stkSize); /* unused in QK */
+    <code>Q_UNUSED_PAR(stkSto);  /* not needed in QK */
+Q_UNUSED_PAR(stkSize); /* not needed in QK */
 
 /*! @pre AO cannot be started from an ISR and the stack storage must
 * NOT be provided because the QK kernel does not need per-AO stacks.
 */
-Q_REQUIRE_ID(300, (!QK_ISR_CONTEXT_()) &amp;&amp; (stkSto == (void *)0));
+Q_REQUIRE_ID(300, (!QK_ISR_CONTEXT_())
+                  &amp;&amp; (stkSto == (void *)0));
 
 me-&gt;prio  = (uint8_t)(prioSpec &amp; 0xFFU); /* QF-priority of the AO */
 me-&gt;pthre = (uint8_t)(prioSpec &gt;&gt; 8U);   /* preemption-threshold */
 QActive_register_(me); /* make QF aware of this active object */
 
-QEQueue_init(&amp;me-&gt;eQueue, qSto, qLen); /* initialize the built-in queue */
+QEQueue_init(&amp;me-&gt;eQueue, qSto, qLen); /* init the built-in queue */
 
 QHSM_INIT(&amp;me-&gt;super, par, me-&gt;prio); /* top-most initial tran. */
 QS_FLUSH(); /* flush the trace buffer to the host */
 
-/* See if this AO needs to be scheduled in case QK is already running */
+/* See if this AO needs to be scheduled if QK is already running */
 QF_CRIT_STAT_
 QF_CRIT_E_();
 if (QK_sched_() != 0U) { /* activation needed? */
@@ -11525,26 +11534,28 @@ return wasArmed;</code>
     <parameter name="stkSize" type="uint_fast16_t const"/>
     <!--${QXK::QActive::start_::par}-->
     <parameter name="par" type="void const * const"/>
-    <code>/*! @pre AO cannot be started:
+    <code>Q_UNUSED_PAR(stkSto);  /* not needed in QXK */
+Q_UNUSED_PAR(stkSize); /* not needed in QXK */
+
+/*! @pre AO cannot be started:
 * - from an ISR;
-* - the stack storage must NOT be provided (because the QK kernel does
-* not need per-AO stacks).
+* - the stack storage must NOT be provided (because the QK kernel
+*   does not need per-AO stacks).
 */
 Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_())
-    &amp;&amp; (stkSto == (void *)0)
-    &amp;&amp; (stkSize == 0U));
+                  &amp;&amp; (stkSto == (void *)0));
 
 me-&gt;prio  = (uint8_t)(prioSpec &amp; 0xFFU); /* QF-priority of the AO */
 me-&gt;pthre = (uint8_t)(prioSpec &gt;&gt; 8U);   /* preemption-threshold */
 QActive_register_(me); /* make QF aware of this active object */
 
-QEQueue_init(&amp;me-&gt;eQueue, qSto, qLen);  /* initialize the built-in queue */
-me-&gt;osObject = (void *)0;               /* no private stack for the AO */
+QEQueue_init(&amp;me-&gt;eQueue, qSto, qLen);  /* init the built-in queue */
+me-&gt;osObject = (void *)0;  /* no private stack for the AO */
 
 QHSM_INIT(&amp;me-&gt;super, par, me-&gt;prio); /* top-most initial tran. */
 QS_FLUSH(); /* flush the trace buffer to the host */
 
-/* see if this AO needs to be scheduled in case QXK is already running */
+/* see if this AO needs to be scheduled if QXK is already running */
 QF_CRIT_STAT_
 QF_CRIT_E_();
 if (QXK_sched_() != 0U) { /* activation needed? */
@@ -11713,14 +11724,13 @@ else {
             /* semaphore NOT taken: do NOT decrement the count */
         }
         else { /* semaphore was both signaled and timed out */
-            --me-&gt;count; /* semaphore signaled: decrement the count */
+            --me-&gt;count; /* semaphore taken: decrement the count */
         }
     }
     else { /* blocking did NOT time out */
         /* the thread must NOT be waiting on this semaphore */
         Q_ASSERT_ID(250,!QPSet_hasElement(&amp;me-&gt;waitSet, p));
-
-        --me-&gt;count; /* semaphore signaled: decrement the count */
+        --me-&gt;count; /* semaphore taken: decrement the count */
     }
     curr-&gt;super.super.temp.obj = (QMState *)0; /* clear blocking obj. */
 }
