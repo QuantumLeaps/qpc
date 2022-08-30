@@ -40,9 +40,6 @@
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
 
-#include "esp_log.h"
-#include "esp_freertos_hooks.h"
-
 Q_DEFINE_THIS_MODULE("qf_port")
 //static const char *TAG = "qf_port";
 
@@ -54,21 +51,11 @@ Q_DEFINE_THIS_MODULE("qf_port")
     #error "FreeRTOS configMAX_PRIORITIES must not be less than QF_MAX_ACTIVE"
 #endif
 
-#if defined( CONFIG_QPC_PINNED_TO_CORE_0 )
-    #define QPC_CPU_NUM         PRO_CPU_NUM
-#elif defined( CONFIG_QPC_PINNED_TO_CORE_1 )
-    #define QPC_CPU_NUM         APP_CPU_NUM
-#else
-    /* Defaults to APP_CPU */
-    #define QPC_CPU_NUM         APP_CPU_NUM
-#endif
-
 /* Global objects ----------------------------------------------------------*/
 PRIVILEGED_DATA portMUX_TYPE QF_esp32mux = portMUX_INITIALIZER_UNLOCKED;
 
 /* Local objects -----------------------------------------------------------*/
 static void task_function(void *pvParameters); /* FreeRTOS task signature */
-int_t qf_run_active = 0;
 
 /* The following macro provides the number of free slots in the FreeRTOS
 * queue.
@@ -93,15 +80,12 @@ int_t qf_run_active = 0;
 
 /*==========================================================================*/
 void QF_init(void) {
-    esp_register_freertos_tick_hook_for_cpu(freertos_tick_hook, QPC_CPU_NUM);
+    /* empty for esp-idf */
 }
 /*..........................................................................*/
 int_t QF_run(void) {
     QF_onStartup(); /* the startup callback (configure/enable interrupts) */
 
-    //vTaskStartScheduler(); /* start the FreeRTOS scheduler */
-    //Q_ERROR_ID(110); /* the FreeRTOS scheduler should never return */
-    qf_run_active = 100;
     return 0; /* dummy return to make the compiler happy */
 }
 /*..........................................................................*/
