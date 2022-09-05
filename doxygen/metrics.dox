@@ -17,7 +17,7 @@
        6      3     56      1       9 QPSet_findMax@314-322@..\include\qf.h
        3      1     27      1       3 QActive_getPrio@777-779@..\include\qf.h
        6      1     20      2       6 QF_psInit@1401-1406@..\include\qf.h
-      14      3     67      1      14 QS_rxPut@825-838@..\include\qs.h
+      14      3     67      1      14 QS_rxPut@823-836@..\include\qs.h
        5      1     20      1      20 Q_DEFINE_THIS_MODULE@54-73@..\src\qf\qep_hsm.c
       18      3     99      2      24 QHsm_isIn@128-151@..\src\qf\qep_hsm.c
        3      1     19      1       3 QHsm_state@154-156@..\src\qf\qep_hsm.c
@@ -84,46 +84,46 @@
       69      7    380      2     110 QTimeEvt_tick_@299-408@..\src\qf\qf_time.c
       14      3     75      1      16 QTimeEvt_noActive@411-426@..\src\qf\qf_time.c
       21      2    112      1      31 QK_schedLock@74-104@..\src\qk\qk.c
-      21      4    118      1      33 QK_schedUnlock@107-139@..\src\qk\qk.c
+      21      4    119      1      33 QK_schedUnlock@107-139@..\src\qk\qk.c
       12      2     87      1      18 QF_init@144-161@..\src\qk\qk.c
        3      1     10      1       4 QF_stop@164-167@..\src\qk\qk.c
-      15      4     61      1      25 QF_run@170-194@..\src\qk\qk.c
-      25      3    156      7      34 QActive_start_@201-234@..\src\qk\qk.c
-      15      3     79      1      19 QK_sched_@239-257@..\src\qk\qk.c
-      63     15    374      1     108 QK_activate_@260-367@..\src\qk\qk.c
+      15      4     62      1      25 QF_run@170-194@..\src\qk\qk.c
+      25      3    157      7      34 QActive_start_@201-234@..\src\qk\qk.c
+      14      3     70      1      18 QK_sched_@239-256@..\src\qk\qk.c
+      82     20    455      1     132 QK_activate_@259-390@..\src\qk\qk.c
        9      2     64      1      13 QF_init@73-85@..\src\qv\qv.c
        3      1     10      1       4 QF_stop@88-91@..\src\qv\qv.c
       39      9    197      1      76 QF_run@94-169@..\src\qv\qv.c
       18      1    124      7      25 QActive_start_@176-200@..\src\qv\qv.c
       23      3    131      1      34 QXK_schedLock@71-104@..\src\qxk\qxk.c
-      20      4    118      1      33 QXK_schedUnlock@107-139@..\src\qxk\qxk.c
+      20      4    120      1      33 QXK_schedUnlock@107-139@..\src\qxk\qxk.c
       14      2    116      1      22 QF_init@144-165@..\src\qxk\qxk.c
        3      1     10      1       4 QF_stop@168-171@..\src\qxk\qxk.c
-      15      4     61      1      25 QF_run@174-198@..\src\qxk\qxk.c
-      26      3    166      7      37 QActive_start_@205-241@..\src\qxk\qxk.c
-      79     16    497      1     135 QXK_activate_@249-383@..\src\qxk\qxk.c
-      57      9    318      1      76 QXK_sched_@386-461@..\src\qxk\qxk.c
-      12      2     72      1      18 QXK_current@464-481@..\src\qxk\qxk.c
-      13      2    104      1      23 QXK_threadExit_@487-509@..\src\qxk\qxk.c
+      15      4     63      1      25 QF_run@174-198@..\src\qxk\qxk.c
+      26      3    168      7      37 QActive_start_@205-241@..\src\qxk\qxk.c
+      74     12    403      1      99 QXK_sched_@249-347@..\src\qxk\qxk.c
+     104     23    613      1     167 QXK_activate_@350-516@..\src\qxk\qxk.c
+      12      2     72      1      18 QXK_current@519-536@..\src\qxk\qxk.c
+      13      2    105      1      23 QXK_threadExit_@542-564@..\src\qxk\qxk.c
       10      2     74      2      12 QXMutex_init@74-85@..\src\qxk\qxk_mutex.c
-      81     11    724      2     138 QXMutex_lock@88-225@..\src\qxk\qxk_mutex.c
+      81     11    725      2     138 QXMutex_lock@88-225@..\src\qxk\qxk_mutex.c
       59      9    502      1      97 QXMutex_tryLock@228-324@..\src\qxk\qxk_mutex.c
-      78     12    670      1     135 QXMutex_unlock@327-461@..\src\qxk\qxk_mutex.c
+      78     12    672      1     135 QXMutex_unlock@327-461@..\src\qxk\qxk_mutex.c
        9      1     51      3      11 QXSemaphore_init@73-83@..\src\qxk\qxk_sema.c
-      57      7    389      2      84 QXSemaphore_wait@86-169@..\src\qxk\qxk_sema.c
+      57      7    390      2      84 QXSemaphore_wait@86-169@..\src\qxk\qxk_sema.c
       28      3    139      1      39 QXSemaphore_tryWait@172-210@..\src\qxk\qxk_sema.c
-      42      7    275      1      66 QXSemaphore_signal@213-278@..\src\qxk\qxk_sema.c
+      42      7    276      1      66 QXSemaphore_signal@213-278@..\src\qxk\qxk_sema.c
       21      2    113      3      26 QXThread_ctor@74-99@..\src\qxk\qxk_xthr.c
       21      4    195      1      38 QXThread_delay@102-139@..\src\qxk\qxk_xthr.c
       14      2     68      1      16 QXThread_delayCancel@142-157@..\src\qxk\qxk_xthr.c
-      58      7    493      1      85 QXThread_queueGet@160-244@..\src\qxk\qxk_xthr.c
+      58      7    494      1      85 QXThread_queueGet@160-244@..\src\qxk\qxk_xthr.c
       10      1     39      3      11 QXThread_init_@247-257@..\src\qxk\qxk_xthr.c
       10      1     39      3      11 QXThread_dispatch_@260-270@..\src\qxk\qxk_xthr.c
-      30      6    214      7      49 QXThread_start_@273-321@..\src\qxk\qxk_xthr.c
-     100     13    527      4     134 QXThread_post_@324-457@..\src\qxk\qxk_xthr.c
+      30      6    215      7      49 QXThread_start_@273-321@..\src\qxk\qxk_xthr.c
+     100     13    528      4     134 QXThread_post_@324-457@..\src\qxk\qxk_xthr.c
        8      1     30      2       9 QXThread_postLIFO_@460-468@..\src\qxk\qxk_xthr.c
-       5      1     49      1       7 QXThread_block_@471-477@..\src\qxk\qxk_xthr.c
-       8      3     56      1       8 QXThread_unblock_@480-487@..\src\qxk\qxk_xthr.c
+       5      1     50      1       7 QXThread_block_@471-477@..\src\qxk\qxk_xthr.c
+       8      3     57      1       8 QXThread_unblock_@480-487@..\src\qxk\qxk_xthr.c
       20      3    157      3      39 QXThread_teArm_@490-528@..\src\qxk\qxk_xthr.c
       11      2     46      1      13 QXThread_teDisarm_@531-543@..\src\qxk\qxk_xthr.c
 33 file analyzed.
@@ -157,18 +157,22 @@ NLOC    Avg.NLOC  AvgCCN  Avg.token  function_cnt    file
     152      36.2     4.8      201.0         4     ..\src\qf\qf_qeq.c
      18      16.0     2.0       79.0         1     ..\src\qf\qf_qmact.c
     218      26.2     4.1      156.0         8     ..\src\qf\qf_time.c
-    183      21.9     4.2      124.6         8     ..\src\qk\qk.c
+    201      24.1     4.9      134.0         8     ..\src\qk\qk.c
      76      17.2     3.2       98.8         4     ..\src\qv\qv.c
-    270      26.2     4.6      159.3        10     ..\src\qxk\qxk.c
-    235      57.0     8.5      492.5         4     ..\src\qxk\qxk_mutex.c
-    143      34.0     4.5      213.5         4     ..\src\qxk\qxk_sema.c
-    324      24.3     3.5      155.8        13     ..\src\qxk\qxk_xthr.c
+    312      30.4     5.6      180.1        10     ..\src\qxk\qxk.c
+    235      57.0     8.5      493.2         4     ..\src\qxk\qxk_mutex.c
+    143      34.0     4.5      214.0         4     ..\src\qxk\qxk_sema.c
+    324      24.3     3.5      156.2        13     ..\src\qxk\qxk_xthr.c
 
-=============================================================================================================
-No thresholds exceeded (cyclomatic_complexity > 20 or length > 500 or nloc > 1000000 or parameter_count > 10)
+=========================================================================================================
+!!!! Warnings (cyclomatic_complexity > 20 or length > 500 or nloc > 1000000 or parameter_count > 10) !!!!
+================================================
+  NLOC    CCN   token  PARAM  length  location
+------------------------------------------------
+     104     23    613      1     167 QXK_activate_@350-516@..\src\qxk\qxk.c
 ==========================================================================================
 Total nloc   Avg.NLOC  AvgCCN  Avg.token   Fun Cnt  Warning cnt   Fun Rt   nloc Rt
 ------------------------------------------------------------------------------------------
-      4003      24.9     4.1      153.5      121            0      0.00    0.00
+      4063      25.4     4.2      156.0      121            1      0.01    0.03
 @endcode
 */

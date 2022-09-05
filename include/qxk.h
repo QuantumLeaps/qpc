@@ -176,21 +176,6 @@ typedef struct QXK_Attr {
 /*! attributes of the QXK kernel */
 extern QXK QXK_attr_;
 
-/*${QXK::QXK-extern-C::activate_} ..........................................*/
-/*! QXK activator activates the next active object. The activated AO preempts
-* the currently executing AOs.
-* @static @private @memberof QXK
-*
-* @attention
-* QXK_activate_() must be always called with interrupts **disabled** and
-* returns with interrupts **disabled**.
-*
-* @note
-* The activate function might enable interrupts internally, but it always
-* returns with interrupts **disabled**.
-*/
-void QXK_activate_(void);
-
 /*${QXK::QXK-extern-C::sched_} .............................................*/
 /*! QXK scheduler finds the highest-priority thread ready to run
 * @static @private @memberof QXK
@@ -199,6 +184,9 @@ void QXK_activate_(void);
 * The QXK scheduler finds the priority of the highest-priority thread
 * that is ready to run.
 *
+* @param[in]   asynch     flag conveying the type of scheduling:
+*                         != 0 for asynchronous scheduling and
+*                         == 0 for synchronous scheduling
 * @returns
 * the 1-based priority of the the thread (basic or extended) run next,
 * or zero if no eligible thread is found.
@@ -207,7 +195,25 @@ void QXK_activate_(void);
 * QXK_sched_() must be always called with interrupts **disabled** and
 * returns with interrupts **disabled**.
 */
-uint_fast8_t QXK_sched_(void);
+uint_fast8_t QXK_sched_(uint_fast8_t const asynch);
+
+/*${QXK::QXK-extern-C::activate_} ..........................................*/
+/*! QXK activator activates the next active object. The activated AO
+* preempts the currently executing AOs.
+* @static @private @memberof QXK
+*
+* @details
+* QXK_activate_() activates ready-to run AOs that are above the initial
+* active priority (QXK_attr_.actPrio).
+*
+* @param[in]   asynch     flag conveying the type of activation:
+*                         != 0 for asynchronous activation and
+*                         == 0 for synchronous activation
+* @attention
+* QXK_activate_() must be always called with interrupts **disabled** and
+* returns with interrupts **disabled**.
+*/
+void QXK_activate_(uint_fast8_t const asynch);
 
 /*${QXK::QXK-extern-C::current} ............................................*/
 /*! obtain the currently executing active-object/thread
@@ -937,8 +943,8 @@ do { \
 #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
     QPSet_insert(&QF_readySet_, (uint_fast8_t)(me_)->prio); \
     if (!QXK_ISR_CONTEXT_()) { \
-        if (QXK_sched_() != 0U) { \
-            QXK_activate_(); \
+        if (QXK_sched_(0U) != 0U) { \
+            QXK_activate_(0U); \
         } \
     } \
 } while (false)

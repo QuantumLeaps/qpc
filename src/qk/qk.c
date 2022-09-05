@@ -131,7 +131,7 @@ void QK_schedUnlock(QSchedStatus const stat) {
 
         /* find if any AOs should be run after unlocking the scheduler */
         if (QK_sched_() != 0U) { /* preemption needed? */
-            QK_activate_(); /* activate any unlocked AOs */
+            QK_activate_(0U); /* activate any unlocked AOs */
         }
 
         QF_CRIT_X_();
@@ -173,7 +173,7 @@ int_t QF_run(void) {
 
     /* any active objects need to be scheduled before starting event loop? */
     if (QK_sched_() != 0U) {
-        QK_activate_(); /* activate AOs to process all events posted so far */
+        QK_activate_(0U); /* activate AOs to process events posted so far */
     }
 
     QF_onStartup(); /* application-specific startup callback */
@@ -228,7 +228,7 @@ void QActive_start_(QActive * const me,
     QF_CRIT_STAT_
     QF_CRIT_E_();
     if (QK_sched_() != 0U) { /* activation needed? */
-        QK_activate_();
+        QK_activate_(0U);
     }
     QF_CRIT_X_();
 }
@@ -250,14 +250,15 @@ uint_fast8_t QK_sched_(void) {
         p = 0U; /* no preemption needed */
     }
     else {
-        Q_ASSERT_ID(410, p <= QF_MAX_ACTIVE);
         QK_attr_.nextPrio = (uint8_t)p; /* next AO to run */
     }
     return p;
 }
 
 /*${QK::QK-extern-C::activate_} ............................................*/
-void QK_activate_(void) {
+void QK_activate_(uint_fast8_t const asynch) {
+    Q_UNUSED_PAR(asynch); /* unused when Q_SPY not defined */
+
     uint8_t const prio_in = QK_attr_.actPrio; /* saved initial priority */
     uint_fast8_t p = QK_attr_.nextPrio; /* next prio to run */
     QK_attr_.nextPrio = 0U; /* clear for the next time */
@@ -281,11 +282,22 @@ void QK_activate_(void) {
         QK_attr_.actPrio = (uint8_t)p;
         QK_attr_.actThre = pthre;
 
-        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a->prio)
-            QS_TIME_PRE_();     /* timestamp */
-            QS_2U8_PRE_(p,      /* priority of the scheduled AO */
-                        pprev); /* previous priority */
-        QS_END_NOCRIT_PRE_()
+    #ifdef Q_SPY
+        if ((asynch != 0U) && (pprev == prio_in)) {
+            QS_BEGIN_NOCRIT_PRE_(QS_SCHED_PREEMPT, a->prio)
+                QS_TIME_PRE_();     /* timestamp */
+                QS_2U8_PRE_(p,      /* priority of the scheduled AO */
+                            pprev); /* previous priority */
+            QS_END_NOCRIT_PRE_()
+        }
+        else {
+            QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a->prio)
+                QS_TIME_PRE_();     /* timestamp */
+                QS_2U8_PRE_(p,      /* priority of the scheduled AO */
+                            pprev); /* previous priority */
+            QS_END_NOCRIT_PRE_()
+        }
+    #endif /* Q_SPY */
 
     #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
         if (p != pprev) {  /* changing threads? */
@@ -344,11 +356,22 @@ void QK_activate_(void) {
     if (prio_in != 0U) { /* resuming an active object? */
         a = QActive_registry_[prio_in]; /* the pointer to the preempted AO */
 
-        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_RESUME, a->prio)
-            QS_TIME_PRE_();      /* timestamp */
-            QS_2U8_PRE_(prio_in, /* priority of the resumed AO */
-                        pprev);  /* previous priority */
-        QS_END_NOCRIT_PRE_()
+    #ifdef Q_SPY
+        if (asynch != 0U) {
+            QS_BEGIN_NOCRIT_PRE_(QS_SCHED_RESTORE, a->prio)
+                QS_TIME_PRE_();      /* timestamp */
+                QS_2U8_PRE_(prio_in, /* priority of the resumed AO */
+                            pprev);  /* previous priority */
+            QS_END_NOCRIT_PRE_()
+        }
+        else {
+            QS_BEGIN_NOCRIT_PRE_(QS_SCHED_RESUME, a->prio)
+                QS_TIME_PRE_();      /* timestamp */
+                QS_2U8_PRE_(prio_in, /* priority of the resumed AO */
+                            pprev);  /* previous priority */
+            QS_END_NOCRIT_PRE_()
+        }
+    #endif /* Q_SPY */
     }
     else {  /* resuming priority==0 --> idle */
         a = (QActive *)0; /* QK idle loop */

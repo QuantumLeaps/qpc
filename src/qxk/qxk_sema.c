@@ -136,7 +136,7 @@ bool QXSemaphore_wait(QXSemaphore * const me,
         QS_END_NOCRIT_PRE_()
 
         /* schedule the next thread if multitasking started */
-        (void)QXK_sched_();
+        (void)QXK_sched_(0U); /* synchronously activate other theads */
         QF_CRIT_X_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here !!! */
 
@@ -265,7 +265,7 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
             QS_END_NOCRIT_PRE_()
 
             if (!QXK_ISR_CONTEXT_()) { /* not inside ISR? */
-                (void)QXK_sched_(); /* schedule the next thread */
+                (void)QXK_sched_(0U); /* synchronously schedule next thread */
             }
         }
     }

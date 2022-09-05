@@ -44,7 +44,7 @@
 #define QF_MAX_TICK_RATE     2U
 
 /* Activate the QF QActive_stop() API */
-#define QF_ACTIVE_STOP        1
+#define QF_ACTIVE_STOP       1
 
 /* various QF object sizes configuration for this port */
 #define QF_EVENT_SIZ_SIZE    4U

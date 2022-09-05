@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: BSP for system-testing QXK, NUCLEO-L053R8 board
-* Last updated for version 7.1.0
-* Last updated on  2022-08-21
+* Product: BSP for system-testing QK kernel, NUCLEO-L053R8 board
+* Last updated for version 7.1.1
+* Last updated on  2022-09-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -49,7 +49,7 @@ Q_DEFINE_THIS_FILE
 #ifdef Q_SPY
     /* QSpy source IDs */
     static QSpyId const l_SysTick_Handler = { 100U };
-    static QSpyId const l_EXTI0_1_IRQHandler = { 101U };
+    static QSpyId const l_test_ISR = { 101U };
 
     enum AppRecords { /* application-specific trace records */
         CONTEXT_SW = QS_USER,
@@ -58,28 +58,27 @@ Q_DEFINE_THIS_FILE
 
 #endif
 
-/* ISRs used in the application ==========================================*/
-void SysTick_Handler(void);
-void EXTI0_1_IRQHandler(void);
-void USART2_IRQHandler(void);
-
 /*..........................................................................*/
+void SysTick_Handler(void); /* prototype */
 void SysTick_Handler(void) {
-    QXK_ISR_ENTRY();  /* inform QXK about entering an ISR */
+    QK_ISR_ENTRY(); /* inform QK kernel about entering an ISR */
 
     /* process time events for rate 0 */
     QTIMEEVT_TICK_X(0U, &l_SysTick_Handler);
     //QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler);
 
-    QXK_ISR_EXIT(); /* inform QXK about exiting an ISR */
+    QK_ISR_EXIT();  /* inform QK kernel about exiting an ISR */
 }
 /*..........................................................................*/
-/* interrupt handler for testing preemptions in QXK */
-void EXTI0_1_IRQHandler(void) {
-    QXK_ISR_ENTRY(); /* inform QXK about entering an ISR */
-    //static QEvt const testEvt = { TEST_SIG, 0U, 0U };
-    //???QXTHREAD_POST_X(XT_Test2, &testEvt, 0U, (void *)0);
-    QXK_ISR_EXIT();  /* inform QXK about exiting an ISR */
+void EXTI0_1_IRQHandler(void); /* prototype */
+void EXTI0_1_IRQHandler(void) { /* for testing, NOTE03 */
+    QK_ISR_ENTRY(); /* inform QK kernel about entering an ISR */
+
+    /* for testing... */
+    static QEvt const tste = { TEST_SIG, 0U, 0U };
+    QACTIVE_PUBLISH(&tste, &l_test_ISR);
+
+    QK_ISR_EXIT();  /* inform QK kernel about exiting an ISR */
 }
 
 /*..........................................................................*/
@@ -112,23 +111,23 @@ void BSP_init(void) {
     if (QS_INIT((void *)0) == 0) { /* initialize the QS software tracing */
         Q_ERROR();
     }
-    /* global signals */
-    QS_SIG_DICTIONARY(TEST_SIG,      (void *)0);
-    QS_SIG_DICTIONARY(TIMEOUT_SIG,   (void *)0);
-
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
-    QS_OBJ_DICTIONARY(&l_EXTI0_1_IRQHandler);
+    QS_OBJ_DICTIONARY(&l_test_ISR);
 
     QS_USR_DICTIONARY(CONTEXT_SW);
     QS_USR_DICTIONARY(COMMAND_STAT);
 }
 /*..........................................................................*/
 void BSP_ledOn(void) {
-    GPIOA->BSRR |= (LED_LD2);        /* turn LED2 on  */
+    GPIOA->BSRR |= (LED_LD2); /* turn LED2 on  */
 }
 /*..........................................................................*/
 void BSP_ledOff(void) {
-    GPIOA->BSRR |= (LED_LD2 << 16);  /* turn LED2 off */
+    GPIOA->BSRR |= (LED_LD2 << 16); /* turn LED2 off */
+}
+/*..........................................................................*/
+void BSP_trigISR(void) {
+    NVIC_SetPendingIRQ(EXTI0_1_IRQn);
 }
 /*..........................................................................*/
 void BSP_terminate(int16_t result) {
@@ -140,15 +139,18 @@ void QF_onStartup(void) {
     /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
     //SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
-    /* set priorities of ALL ISRs used in the system, see NOTE00
+    /* assign all priority bits for preemption-prio. and none to sub-prio. */
+    NVIC_SetPriorityGrouping(0U);
+
+    /* set priorities of ALL ISRs used in the system, see NOTE1
     *
     * !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(USART2_IRQn,    0); /* kernel UNAWARE interrupt */
-    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1);
-    NVIC_SetPriority(EXTI0_1_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 2);
+    NVIC_SetPriority(USART2_IRQn,  0U); /* kernel UNAWARE interrupt */
+    NVIC_SetPriority(SysTick_IRQn, QF_AWARE_ISR_CMSIS_PRI + 0U);
+    NVIC_SetPriority(EXTI0_1_IRQn, QF_AWARE_ISR_CMSIS_PRI + 1U);
     /* ... */
 
     /* enable IRQs... */
@@ -158,21 +160,17 @@ void QF_onStartup(void) {
 void QF_onCleanup(void) {
 }
 /*..........................................................................*/
-#ifdef QXK_ON_CONTEXT_SW
+#ifdef QK_ON_CONTEXT_SW
 /* NOTE: the context-switch callback is called with interrupts DISABLED */
-void QXK_onContextSw(QActive *prev, QActive *next) {
-    (void)prev;
-    if (next != (QActive *)0) {
-        //_impure_ptr = next->thread; /* switch to next TLS */
-    }
+void QK_onContextSw(QActive *prev, QActive *next) {
     QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
         QS_OBJ(prev);
         QS_OBJ(next);
     QS_END_NOCRIT()
 }
-#endif /* QXK_ON_CONTEXT_SW */
+#endif /* QK_ON_CONTEXT_SW */
 /*..........................................................................*/
-void QXK_onIdle(void) {
+void QK_onIdle(void) {
 #ifdef Q_SPY
     QS_rxParse();  /* parse all the received bytes */
     QS_doOutput();
@@ -200,3 +198,4 @@ void QTimeEvt_tick1_(
 }
 
 #endif /* Q_SPY */
+

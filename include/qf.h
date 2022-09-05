@@ -86,10 +86,10 @@
 
 /*${QF-config::QF_TIMEEVT_CTR_SIZE} ........................................*/
 /*! Size of the QTimeEvt counter (configurable value in qf_port.hpp)
-* Valid values: 1U, 2U, or 4U; default 2U
+* Valid values: 1U, 2U, or 4U; default 4U
 */
 #ifndef QF_TIMEEVT_CTR_SIZE
-#define QF_TIMEEVT_CTR_SIZE 2U
+#define QF_TIMEEVT_CTR_SIZE 4U
 #endif /* ndef QF_TIMEEVT_CTR_SIZE */
 
 /*${QF-config::QF_TIMEEVT_CTR_SIZE defined inco~} ..........................*/

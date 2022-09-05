@@ -195,21 +195,19 @@ enum QSpyPre {
     QS_QF_ACTIVE_POST_ATTEMPT,/*!< attempt to post an evt to AO failed */
 
     /* [46] Additional Event Queue (EQ) records */
-    QS_QF_EQUEUE_POST_ATTEMPT,/*!< attempt to post an evt to QEQueue failed */
+    QS_QF_EQUEUE_POST_ATTEMPT,/*!< attempt to post evt to QEQueue failed */
 
     /* [47] Additional Memory Pool (MP) records */
     QS_QF_MPOOL_GET_ATTEMPT,  /*!< attempt to get a memory block failed */
 
-    /* [48] old Mutex records, deprecated in QP 7.1.0 */
-    QS_MUTEX_LOCK,        /*!< @deprecated */
-    QS_MUTEX_UNLOCK,      /*!< @deprecated */
-
-    /* [50] Scheduler (SC) records */
+    /* [48] Scheduler (SC) records */
+    QS_SCHED_PREEMPT,     /*!< scheduler asynchronously preempted a task */
+    QS_SCHED_RESTORE,     /*!< scheduler restored preempted task */
     QS_SCHED_LOCK,        /*!< scheduler was locked */
     QS_SCHED_UNLOCK,      /*!< scheduler was unlocked */
-    QS_SCHED_NEXT,        /*!< scheduler found next task to execute */
-    QS_SCHED_IDLE,        /*!< scheduler became idle */
-    QS_SCHED_RESUME,      /*!< scheduler resumed previous task (not idle) */
+    QS_SCHED_NEXT,        /*!< scheduler started new task */
+    QS_SCHED_IDLE,        /*!< scheduler restored the idle task */
+    QS_SCHED_RESUME,      /*!< scheduler resumed a task */
 
     /* [55] Additional QEP records */
     QS_QEP_TRAN_HIST,     /*!< a tran to history was taken */

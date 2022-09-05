@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-05-02
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-09-04
+* @version Last updated for: @ref qpc_7_1_1
 *
 * @file
 * @brief QXK/C port to ARM Cortex-M, IAR-ARM compiler
@@ -44,7 +44,7 @@
 
 #define QXK_ISR_EXIT()  do {   \
     QF_INT_DISABLE();          \
-    if (QXK_sched_() != 0U) {  \
+    if (QXK_sched_(1U) != 0U) {\
         QXK_CONTEXT_SWITCH_(); \
     }                          \
     QF_INT_ENABLE();           \

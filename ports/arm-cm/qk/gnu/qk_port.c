@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-13
-* @version Last updated for: @ref qpc_7_0_2
+* @date Last updated on: 2022-09-04
+* @version Last updated for: @ref qpc_7_1_1
 *
 * @file
 * @brief QK/C port to ARM Cortex-M, GNU-ARM toolset
@@ -175,6 +175,11 @@ __asm volatile (
     "  SUB     sp,sp,#8*4       \n" /* reserve space for exception stack frame */
     "  ADD     r0,sp,#5*4       \n" /* r0 := 5 registers below the SP */
     "  STM     r0!,{r1-r3}      \n" /* save xpsr,pc,lr */
+
+#ifdef Q_SPY
+    "  MOV     r0,#1            \n" /* set the parameter 'asynch` */
+    "  STR     r0,[sp]          \n" /* for call QK_activate_(asynch == 1) */
+#endif /* Q_SPY */
 
     "  MOV     r0,#6            \n"
     "  MVN     r0,r0            \n" /* r0 := ~6 == 0xFFFFFFF9 */

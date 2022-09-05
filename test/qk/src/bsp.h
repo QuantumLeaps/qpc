@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: BSP for system-testing QXK
-* Last updated for version 7.1.0
-* Last updated on  2022-08-20
+* Last updated for version 7.1.1
+* Last updated on  2022-09-04
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -41,13 +41,16 @@ void BSP_terminate(int16_t result);
 void BSP_wait4PB1(void);
 void BSP_ledOn(void);
 void BSP_ledOff(void);
+void BSP_trigISR(void);
 
 enum TestSignals {
     TEST_SIG = Q_USER_SIG,
     MAX_PUB_SIG,    /* the last published signal */
 
     TIMEOUT_SIG,
+    TRIG_SIG,
     MAX_SIG         /* the last signal */
 };
 
 #endif /* BSP_H */
+

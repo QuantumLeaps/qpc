@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-26
-* @version Last updated for: @ref qpc_7_1_0
+* @date Last updated on: 2022-09-04
+* @version Last updated for: @ref qpc_7_1_1
 *
 * @file
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM toolset
@@ -159,7 +159,7 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
     }
 }
 
-/* NOTE: keep in synch with struct QXK_Attr in "qxk.hpp" !!! */
+/* NOTE: keep in synch with struct QXK_Attr in "qxk.h" !!! */
 #define QXK_CURR       0
 #define QXK_NEXT       4
 #define QXK_ACT_THRE   9
@@ -274,6 +274,11 @@ __asm volatile (
     "  SUB     sp,sp,#(8*4)     \n" /* reserve space for exception stack frame */
     "  ADD     r0,sp,#(5*4)     \n" /* r0 := 5 registers below the top of stack */
     "  STM     r0!,{r1-r3}      \n" /* save xpsr,pc,lr */
+
+#ifdef Q_SPY
+    "  MOV     r0,#1            \n" /* set the parameter 'asynch` */
+    "  STR     r0,[sp]          \n" /* for call QK_activate_(asynch == 1) */
+#endif /* Q_SPY */
 
     "  MOV     r0,#6            \n"
     "  MVN     r0,r0            \n" /* r0 := ~6 == 0xFFFFFFF9 */

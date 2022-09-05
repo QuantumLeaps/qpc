@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-29
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-09-03
+* @version Last updated for: @ref qpc_7_1_1
 *
 * @file
 * @brief QK/C port example for a generic C compiler.
@@ -71,7 +71,7 @@
     --QF_intNest_;               \
     if (QF_intNest_ == 0U) {     \
         if (QK_sched_() != 0U) { \
-            QK_activate_();      \
+            QK_activate_(1U);    \
         }                        \
     }                            \
     QF_INT_ENABLE();             \

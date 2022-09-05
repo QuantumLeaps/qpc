@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-30
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-09-03
+* @version Last updated for: @ref qpc_7_1_1
 *
 * @file
 * @brief QK/C port, preemptive QK kernel, MPLAB-X XC32 compiler
@@ -50,7 +50,7 @@ void QK_isr_(void) { /* NOTE2 */
 
     QF_INT_DISABLE();
     _mtc0(_CP0_STATUS, _CP0_STATUS_SELECT, 0U); /* drop IPL to 0 */
-    QK_activate_();  /* execute higher priority active ojbect */
+    QK_activate_(1U); /* execute higher priority active object */
     _mtc0(_CP0_STATUS, _CP0_STATUS_SELECT, 1U << 10); /*restore IPL to 1 */
     QF_INT_ENABLE();
 }

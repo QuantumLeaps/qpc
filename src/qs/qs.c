@@ -249,10 +249,10 @@ void QS_glbFilter_(int_fast16_t const filter) {
             break;
         case QS_SC_RECORDS:
             if (isRemove) {
-                QS_priv_.glbFilter[6] &= (uint8_t)(~0x7CU & 0xFFU);
+                QS_priv_.glbFilter[6] &= (uint8_t)(~0x7FU & 0xFFU);
             }
             else {
-                QS_priv_.glbFilter[6] |= 0x7CU;
+                QS_priv_.glbFilter[6] |= 0x7FU;
             }
             break;
         case QS_SEM_RECORDS:

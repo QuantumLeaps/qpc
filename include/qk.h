@@ -168,11 +168,14 @@ uint_fast8_t QK_sched_(void);
 * QK_activate_() activates ready-to run AOs that are above the initial
 * active priority (QK_attr_.actPrio).
 *
-* @note
-* The activator might enable interrupts internally, but always returns with
-* interrupts **disabled**.
+* @param[in]   asynch     flag conveying the type of activation:
+*                         != 0 for asynchronous activation and
+*                         == 0 for synchronous activation
+* @attention
+* QK_activate_() must be always called with interrupts **disabled** and
+* returns with interrupts **disabled**.
 */
-void QK_activate_(void);
+void QK_activate_(uint_fast8_t const asynch);
 
 /*${QK::QK-extern-C::onContextSw} ..........................................*/
 #ifdef QK_ON_CONTEXT_SW
@@ -252,7 +255,7 @@ void QK_onContextSw(
     QPSet_insert(&QF_readySet_, (uint_fast8_t)(me_)->prio); \
     if (!QK_ISR_CONTEXT_()) { \
         if (QK_sched_() != 0U) { \
-            QK_activate_(); \
+            QK_activate_(0U); \
         } \
     } \
 } while (false)

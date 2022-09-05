@@ -63,6 +63,9 @@ int main() {
     /* dictionaries */
     QS_OBJ_DICTIONARY(&thr1);
     QS_OBJ_DICTIONARY(&thr1.timeEvt);
+    QS_SIG_DICTIONARY(TEST_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(TRIG_SIG,    (void *)0);
+    QS_SIG_DICTIONARY(TIMEOUT_SIG, (void *)0);
 
     /* setup the QS filters... */
     QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
@@ -101,11 +104,6 @@ void QS_onTestTeardown(void) {
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    (void)cmdId;
-    (void)param1;
-    (void)param2;
-    (void)param3;
-
     switch (cmdId) {
        case 0U: {
            break;
@@ -128,7 +126,5 @@ void QS_onTestEvt(QEvt *e) {
 void QS_onTestPost(void const *sender, QActive *recipient,
                    QEvt const *e, bool status)
 {
-    (void)sender;
-    (void)status;
 }
 

@@ -183,7 +183,7 @@ QEvt const * QXThread_queueGet(uint_fast16_t const nTicks) {
 
         QXThread_teArm_(thr, (enum_t)QXK_QUEUE_SIG, nTicks);
         QPSet_remove(&QF_readySet_, (uint_fast8_t)thr->super.prio);
-        (void)QXK_sched_();
+        (void)QXK_sched_(0U); /* synchronously schedule other threads */
         QF_CRIT_X_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here */
 
@@ -315,7 +315,7 @@ void QXThread_start_(
 
     /* see if this thread needs to be scheduled in case QXK is running */
     if (QXK_attr_.lockCeil <= QF_MAX_ACTIVE) {
-        (void)QXK_sched_();
+        (void)QXK_sched_(0U); /* synchronously schedule other threads */
     }
     QF_CRIT_X_();
 }
@@ -412,7 +412,7 @@ bool QXThread_post_(
                     (void)QXThread_teDisarm_(QXTHREAD_CAST_(me));
                     QPSet_insert(&QF_readySet_, (uint_fast8_t)me->prio);
                     if (!QXK_ISR_CONTEXT_()) {
-                        (void)QXK_sched_();
+                        (void)QXK_sched_(0U); /* syncrhonous schedule */
                     }
                 }
             }
@@ -473,7 +473,7 @@ void QXThread_block_(QXThread const * const me) {
     Q_REQUIRE_ID(600, (QXK_attr_.lockHolder != me->super.prio));
 
     QPSet_remove(&QF_readySet_, (uint_fast8_t)me->super.prio);
-    (void)QXK_sched_();
+    (void)QXK_sched_(0U); /* synchronously schedule other threads */
 }
 
 /*${QXK::QXThread::unblock_} ...............................................*/
@@ -482,7 +482,7 @@ void QXThread_unblock_(QXThread const * const me) {
     if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
         && (QActive_registry_[0] != (QActive *)0))  /* kernel started? */
     {
-        (void)QXK_sched_();
+        (void)QXK_sched_(0U); /* synchronously schedule other threads */
     }
 }
 

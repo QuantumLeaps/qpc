@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for SYSTEM-Level tests of QP/C on EMF32, GNU-ARM
-# Last Updated for Version: 7.1.0
-# Date of the Last Update:  2022-08-21
+# Last Updated for Version: 7.1.1
+# Date of the Last Update:  2022-09-05
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -45,21 +45,21 @@
 #    https://github.com/QuantumLeaps/qtools
 #
 
+# location of the QP/C framework (if not provided in an env. variable)
+ifeq ($(QPC),)
+QPC := ../../..
+endif
+
 #-----------------------------------------------------------------------------
 # project name, target name, target directory:
 #
-PROJECT := test_thr
+PROJECT := test_xthr
 TARGET  := efm32
-TARGET_DIR := ..\..\..\..\3rd_party\efm32pg1b\qutest
+TARGET_DIR := $(QPC)/3rd_party/efm32pg1b/qutest
 
 #-----------------------------------------------------------------------------
 # project directories:
 #
-
-# location of the QP/C framework (if not provided in an env. variable)
-ifeq ($(QPC),)
-QPC := ../../../..
-endif
 
 # QP port used in this project
 QP_PORT_DIR := $(QPC)/ports/arm-cm/qxk/gnu
@@ -73,20 +73,20 @@ endif
 # list of all source directories used by this project
 VPATH := . \
 	../src \
-	$(TARGET_DIR) \
 	$(QPC)/src/qf \
 	$(QPC)/src/qxk \
 	$(QPC)/src/qs \
 	$(QP_PORT_DIR) \
+	$(TARGET_DIR) \
 	$(QPC)/3rd_party/efm32pg1b \
 	$(QPC)/3rd_party/efm32pg1b/gnu
 
 # list of all include directories needed by this project
 INCLUDES  = -I. \
 	-I../src \
-	-I$(TARGET_DIR) \
 	-I$(QPC)/include \
 	-I$(QP_PORT_DIR) \
+	-I$(TARGET_DIR) \
 	-I$(QPC)/3rd_party/CMSIS/Include \
 	-I$(QPC)/3rd_party/efm32pg1b
 
@@ -99,7 +99,7 @@ ASM_SRCS :=
 
 # C source files
 C_SRCS := \
-	test_thr.c \
+	test_xthr.c \
 	bsp_efm32.c \
 	startup_efm32pg1b.c \
 	system_efm32pg1b.c \
@@ -112,7 +112,7 @@ C_SRCS := \
 CPP_SRCS :=
 
 OUTPUT    := $(PROJECT)
-LD_SCRIPT := $(TARGET_DIR)\qutest.ld
+LD_SCRIPT := $(TARGET_DIR)/qutest.ld
 
 QP_SRCS := \
 	qep_hsm.c \
@@ -177,10 +177,9 @@ BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
 #-----------------------------------------------------------------------------
 # FLASH tool (NOTE: Requires the JLINK utility)
-# see $(TARGET_DIR)\flash.bat
-#
+# NOTE: subsitution of '/' to '\' is necessary to run the batch file
 
-FLASH := $(TARGET_DIR)\flash.bat
+FLASH := $(subst /,\,$(TARGET_DIR)/flash.bat)
 
 ##############################################################################
 # Typically you should not need to change anything below this line
@@ -307,6 +306,7 @@ clean :
 
 show :
 	@echo PROJECT      = $(PROJECT)
+	@echo MAKECMDGOALS = $(MAKECMDGOALS)
 	@echo TESTS        = $(TESTS)
 	@echo TARGET_ELF   = $(TARGET_ELF)
 	@echo CONF         = $(CONF)
@@ -325,5 +325,6 @@ show :
 	@echo QTOOLS       = $(QTOOLS)
 	@echo HOST         = $(HOST)
 	@echo QUTEST       = $(QUTEST)
+	@echo FLASH        = $(FLASH)
 	@echo TESTS        = $(TESTS)
 
