@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-19
-* @version Last updated for: @ref qpc_7_1_0
+* @date Last updated on: 2022-08-29
+* @version Last updated for: @ref qpc_7_1_1
 *
 * @file
 * @brief QF/C port to FreeRTOS 10.x
@@ -135,7 +135,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 
-    /* task name provided by the user in QF_setTaskName() or default name */
+    /* task name provided by the user in QActive_setAttr() or default name */
     char const *taskName = (me->thread.pxDummy1 != (void *)0)
                              ? (char const *)me->thread.pxDummy1
                              : (char const *)"AO";

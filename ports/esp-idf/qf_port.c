@@ -24,7 +24,7 @@
 ============================================================================*/
 /*!
 * @date Last updated on: 2022-08-29
-* @version Last updated for: @ref qpc_7_1_0
+* @version Last updated for: @ref qpc_7_1_1
 *
 * @file
 * @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
@@ -131,7 +131,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 
-    /* task name provided by the user in QF_setTaskName() or default name */
+    /* task name provided by the user in QActive_setAttr() or default name */
     char const *taskName = (me->thread.pxDummy1 != (void *)0)
                              ? (char const *)me->thread.pxDummy1
                              : (char const *)"AO";
