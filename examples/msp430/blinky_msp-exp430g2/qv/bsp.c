@@ -1,5 +1,5 @@
 /*****************************************************************************
-* Product: "Blinky" on MSP-EXP430F5529LP, cooperative QV kernel
+* Product: Blinky on MSP-EXP430G2, cooperative QV kernel
 * Last updated for version 7.1.1
 * Last updated on  2022-09-09
 *
@@ -35,14 +35,10 @@
 #include "blinky.h"
 #include "bsp.h"
 
-#include <msp430f5529.h>  /* MSP430 variant used */
+#include <msp430g2553.h>  /* MSP430 variant used */
 /* add other drivers if necessary... */
 
 //Q_DEFINE_THIS_FILE
-
-#ifdef Q_SPY
-#error Simple Blinky Application does not provide Spy build configuration
-#endif
 
 /* Local-scope objects -----------------------------------------------------*/
 /* 1MHz clock setting, see BSP_init() */
@@ -50,85 +46,72 @@
 #define BSP_SMCLK   1000000U
 
 #define LED1        (1U << 0)
-#define LED2        (1U << 7)
-
-#define BTN_S1      (1U << 1)
-
+#define LED2        (1U << 6)
 
 /* ISRs used in this project ===============================================*/
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
-    __interrupt void TIMER0_A0_ISR (void); /* prototype */
+    __interrupt void TIMER0_A0_ISR(void); /* prototype */
     #pragma vector=TIMER0_A0_VECTOR
     __interrupt void TIMER0_A0_ISR(void)
 #elif defined(__GNUC__)
-    __attribute__ ((interrupt(TIMER0_A0_VECTOR)))
-    void TIMER0_A0_ISR (void)
+    void __attribute__ ((interrupt(TIMER0_A0_VECTOR))) TIMER0_A0_ISR (void)
 #else
     #error Compiler not supported!
 #endif
 {
+    TACTL &= ~TAIFG;   /* clear the interrupt pending flag */
 #ifdef NDEBUG
     __low_power_mode_off_on_exit(); /* see NOTE1 */
 #endif
 
-    QTIMEEVT_TICK_X(0U, (void *)0);  /* process all time events at rate 0 */
+    QTIMEEVT_TICK_X(0U, 0); /* time events for rate 0 */
 }
-
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
     WDTCTL = WDTPW | WDTHOLD; /* stop watchdog timer */
 
-    /* leave the MCK and SMCLK at default DCO setting */
+    /* configure the Basic Clock Module */
+    DCOCTL = 0;             // Select lowest DCOx and MODx settings
+    BCSCTL1 = CALBC1_1MHZ;  // Set DCO
+    DCOCTL = CALDCO_1MHZ;
 
-    P1DIR |= LED1;  /* set LED1 pin to output  */
-    P4DIR |= LED2;  /* set LED2 pin to output  */
+    P1DIR |= (LED1 | LED2);  /* set LED1 and LED2 pins to output  */
 }
 /*..........................................................................*/
 void BSP_ledOff(void) {
-    P1OUT &= ~LED1; /* turn LED1 off */
+    P1OUT &= ~LED1;        /* turn LED1 off */
 }
 /*..........................................................................*/
 void BSP_ledOn(void) {
-    P1OUT |= LED1;  /* turn LED1 on */
+    P1OUT |= LED1;         /* turn LED1 on */
 }
-
 
 /* QF callbacks ============================================================*/
 void QF_onStartup(void) {
-    TA0CCTL0 = CCIE;                          // CCR0 interrupt enabled
-    TA0CCR0 = BSP_MCK / BSP_TICKS_PER_SEC;
-    TA0CTL = TASSEL_2 + MC_1 + TACLR;         // SMCLK, upmode, clear TAR
-}
-/*..........................................................................*/
-void QF_onCleanup(void) {
+    TACTL  = (ID_3 | TASSEL_2 | MC_1);  /* SMCLK, /8 divider, upmode */
+    TACCR0 = (((BSP_SMCLK / 8U) + BSP_TICKS_PER_SEC/2U) / BSP_TICKS_PER_SEC);
+    CCTL0 = CCIE;  /* CCR0 interrupt enabled */
 }
 /*..........................................................................*/
 void QV_onIdle(void) { /* NOTE: called with interrutps DISABLED, see NOTE1 */
     /* toggle LED2 on and then off, see NOTE2 */
-    P4OUT |=  LED2;        /* turn LED2 on */
-    P4OUT &= ~LED2;        /* turn LED2 off */
+    P1OUT |=  LED2;        /* turn LED2 on */
+    P1OUT &= ~LED2;        /* turn LED2 off */
 
 #ifdef NDEBUG
     /* Put the CPU and peripherals to the low-power mode.
     * you might need to customize the clock management for your application,
     * see the datasheet for your particular MSP430 MCU.
     */
-    __low_power_mode_1(); /* enter LPM1; also ENABLES interrupts */
+    __low_power_mode_1(); /* Enter LPM1; also ENABLES interrupts */
 #else
     QF_INT_ENABLE(); /* just enable interrupts */
 #endif
 }
-
 /*..........................................................................*/
 Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
-    /*
-    * NOTE: add here your application-specific error handling
-    */
-    (void)module;
-    (void)loc;
-    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
-
+    /* implement the error-handling policy for your application!!! */
     QF_INT_DISABLE(); /* disable all interrupts */
 
     /* cause the reset of the CPU... */
@@ -147,7 +130,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
 *
 * NOTE2:
 * One of the LEDs is used to visualize the idle loop activity. The brightness
-* of the LED is proportional to the frequency of invcations of the idle loop.
+* of the LED is proportional to the frequency of invocations of the idle loop.
 * Please note that the LED is toggled with interrupts locked, so no interrupt
 * execution time contributes to the brightness of the User LED.
 */

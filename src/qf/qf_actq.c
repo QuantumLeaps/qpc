@@ -180,7 +180,9 @@ bool QActive_post_(QActive * const me,
 
         QF_CRIT_X_();
 
+    #if (QF_MAX_EPOOL > 0U)
         QF_gc(e); /* recycle the event to avoid a leak */
+    #endif
     }
 
     return status;

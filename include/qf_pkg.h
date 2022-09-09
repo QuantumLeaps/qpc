@@ -45,19 +45,21 @@
 /*==========================================================================*/
 /*$declare${QF::QF-pkg} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
+/*${QF::QF-pkg::ePool_[QF_MAX_EPOOL]} ......................................*/
+/*! array of event pools managed by QF */
+#if (QF_MAX_EPOOL > 0U)
+extern QF_EPOOL_TYPE_ QF_ePool_[QF_MAX_EPOOL];
+#endif /*  (QF_MAX_EPOOL > 0U) */
+
+/*${QF::QF-pkg::maxPool_} ..................................................*/
+/*! number of initialized event pools */
+extern uint_fast8_t QF_maxPool_;
+
 /*${QF::QF-pkg::readySet_} .................................................*/
 /*! "Ready-set" of all threads used in the built-in kernels
 * @static @private @memberof QF
 */
 extern QPSet QF_readySet_;
-
-/*${QF::QF-pkg::ePool_[QF_MAX_EPOOL]} ......................................*/
-/*! array of event pools managed by QF */
-extern QF_EPOOL_TYPE_ QF_ePool_[QF_MAX_EPOOL];
-
-/*${QF::QF-pkg::maxPool_} ..................................................*/
-/*! number of initialized event pools */
-extern uint_fast8_t QF_maxPool_;
 
 /*${QF::QF-pkg::bzero} .....................................................*/
 /*! Clear a specified region of memory to zero.

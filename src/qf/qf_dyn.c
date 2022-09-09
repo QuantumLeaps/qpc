@@ -50,6 +50,8 @@
     #include "qs_dummy.h" /* disable the QS software tracing */
 #endif /* Q_SPY */
 
+#if (QF_MAX_EPOOL > 0U)  /* dynamic events configured? */
+
 Q_DEFINE_THIS_MODULE("qf_dyn")
 
 //============================================================================
@@ -60,11 +62,23 @@ Q_DEFINE_THIS_MODULE("qf_dyn")
 #endif
 /*$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
+/*$define${QF::QF-pkg::maxPool_} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+
+/*${QF::QF-pkg::maxPool_} ..................................................*/
+uint_fast8_t QF_maxPool_;
+/*$enddef${QF::QF-pkg::maxPool_} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$define${QF::QF-pkg::ePool_[QF_MAX_EPOOL]} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+
+/*${QF::QF-pkg::ePool_[QF_MAX_EPOOL]} ......................................*/
+#if (QF_MAX_EPOOL > 0U)
+QF_EPOOL_TYPE_ QF_ePool_[QF_MAX_EPOOL];
+#endif /*  (QF_MAX_EPOOL > 0U) */
+/*$enddef${QF::QF-pkg::ePool_[QF_MAX_EPOOL]} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+//============================================================================
 /*$define${QEP::QEvt} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${QEP::QEvt} .............................................................*/
 /*$enddef${QEP::QEvt} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-
 //============================================================================
 /*$define${QF::QF-dyn} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
@@ -264,6 +278,10 @@ void QF_deleteRef_(void const * const evtRef) {
         QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
     QS_END_PRE_()
 
+    #if (QF_MAX_EPOOL > 0U)
     QF_gc(e);
+    #endif
 }
 /*$enddef${QF::QF-dyn} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
+#endif /* (QF_MAX_EPOOL > 0U) dynamic events configured */

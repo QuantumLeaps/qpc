@@ -149,8 +149,10 @@ uint_fast16_t QActive_flushDeferred(QActive const * const me,
          e != (QEvt *)0;
          e = QEQueue_get(eq, me->prio))
     {
-        QF_gc(e); /* garbage collect */
         ++n; /* count the flushed event */
+    #if (QF_MAX_EPOOL > 0U)
+        QF_gc(e); /* garbage collect */
+    #endif
     }
     return n;
 }

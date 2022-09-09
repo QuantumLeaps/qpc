@@ -142,17 +142,16 @@ void QXK_schedUnlock(QSchedStatus const stat) {
 
 /*${QXK::QF-cust::init} ....................................................*/
 void QF_init(void) {
+    #if (QF_MAX_EPOOL > 0U)
     QF_maxPool_ = 0U;
-    QActive_subscrList_   = (QSubscrList *)0;
-    QActive_maxPubSignal_ = 0;
+    #endif
 
     QF_bzero(&QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
     QF_bzero(&QActive_registry_[0],     sizeof(QActive_registry_));
+    QF_bzero(&QF_readySet_,             sizeof(QF_readySet_));
     QF_bzero(&QXK_attr_,                sizeof(QXK_attr_));
 
     /* setup the QXK scheduler as initially locked and not running */
-    QXK_attr_.actPrio  = 0U; /* priority of the QK idle loop */
-    QXK_attr_.actThre  = 0U; /* preemption-threshold of the QK idle loop */
     QXK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
 
     /* register the QXK idle AO object, cast "const" away */
@@ -411,7 +410,9 @@ void QXK_activate_(uint_fast8_t const asynch) {
         */
         QEvt const * const e = QActive_get_(a);
         QHSM_DISPATCH(&a->super, e, a->prio);
+    #if (QF_MAX_EPOOL > 0U)
         QF_gc(e);
+    #endif
 
         QF_INT_DISABLE(); /* unconditionally disable interrupts */
 

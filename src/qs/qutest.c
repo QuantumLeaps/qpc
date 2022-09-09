@@ -158,8 +158,9 @@ void QS_processTestEvts_(void) {
         */
         QEvt const * const e = QActive_get_(a);
         QHSM_DISPATCH(&a->super, e, a->prio);
+    #if (QF_MAX_EPOOL > 0U)
         QF_gc(e);
-
+    #endif
         if (a->eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
             QPSet_remove(&QF_readySet_, p);
         }
@@ -174,8 +175,6 @@ void QF_init(void) {
     */
     QF_maxPool_ = 0U;
     QF_intNest_ = 0U;
-    QActive_subscrList_   = (QSubscrList *)0;
-    QActive_maxPubSignal_ = 0;
 
     QF_bzero(&QActive_registry_[0], sizeof(QActive_registry_));
     QF_bzero(&QF_readySet_,         sizeof(QF_readySet_));
@@ -509,7 +508,9 @@ bool QActiveDummy_post_(
     QF_CRIT_X_();
 
     /* recycle the event immediately, because it was not really posted */
+    #if (QF_MAX_EPOOL > 0U)
     QF_gc(e);
+    #endif
 
     return status; /* the event is "posted" correctly */
 }
@@ -557,7 +558,9 @@ void QActiveDummy_postLIFO_(
     QF_CRIT_X_();
 
     /* recycle the event immediately, because it was not really posted */
+    #if (QF_MAX_EPOOL > 0U)
     QF_gc(e);
+    #endif
 }
 /*$enddef${QUTest-stub} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 #endif /* Q_UTEST != 0 */

@@ -155,7 +155,10 @@ void QActive_publish_(
     * and recycles the event if the counter drops to zero. This covers both
     * cases when the event was published with or without any subscribers.
     */
-    QF_gc(e);
+    #if (QF_MAX_EPOOL > 0U)
+    QF_gc(e); /* recycle the event to avoid a leak */
+    #endif
+
 }
 /*$enddef${QF::QActive::publish_} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*$define${QF::QActive::subscribe} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/

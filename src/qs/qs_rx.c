@@ -622,10 +622,11 @@ void QS_rxHandleGoodFrame_(uint8_t const state) {
                 i = 0x81U;  /* failure status, recycle needed */
             }
 
+    #if (QF_MAX_EPOOL > 0U)
             if ((i & 0x01U) != 0U) { /* recycle needed? */
                 QF_gc(l_rx.var.evt.e);
             }
-
+    #endif
             if ((i & 0x80U) != 0U) { /* failure? */
                 QS_rxReportError_((int8_t)QS_RX_EVENT);
             }
@@ -1147,7 +1148,9 @@ static void QS_rxHandleBadFrame_(uint8_t state) {
     switch (state) {
         case WAIT4_EVT_FRAME: {
             Q_ASSERT_ID(910, l_rx.var.evt.e != (QEvt *)0);
+#if (QF_MAX_EPOOL > 0U)
             QF_gc(l_rx.var.evt.e); /* don't leak an allocated event */
+#endif
             break;
         }
         default: {

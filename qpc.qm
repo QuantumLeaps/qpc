@@ -2389,7 +2389,7 @@ return r;</code>
  <package name="QF-config" stereotype="0x02">
   <!--${QF-config::QF_MAX_ACTIVE}-->
   <attribute name="QF_MAX_ACTIVE?ndef QF_MAX_ACTIVE" type="unsigned" visibility="0x03" properties="0x00">
-   <documentation>/*! Maximum number of active objects (configurable value in qf_port.hpp)
+   <documentation>/*! Maximum number of active objects (configurable value in qf_port.h)
 * Valid values: [1U..64U]; default 32U
 */</documentation>
    <code>32U</code>
@@ -2398,7 +2398,7 @@ return r;</code>
   <attribute name="QF_MAX_ACTIVE exceeds the maximum of 64U? (QF_MAX_ACTIVE &gt; 64U)" type="#error" visibility="0x04" properties="0x00"/>
   <!--${QF-config::QF_MAX_TICK_RATE}-->
   <attribute name="QF_MAX_TICK_RATE?ndef QF_MAX_TICK_RATE" type="unsigned" visibility="0x03" properties="0x00">
-   <documentation>/*! Maximum number of clock rates (configurable value in qf_port.hpp)
+   <documentation>/*! Maximum number of clock rates (configurable value in qf_port.h)
 * Valid values: [0U..15U]; default 1U
 */</documentation>
    <code>1U</code>
@@ -2407,8 +2407,12 @@ return r;</code>
   <attribute name="QF_MAX_TICK_RATE exceeds the maximum of 15U? (QF_MAX_TICK_RATE &gt; 15U)" type="#error" visibility="0x04" properties="0x00"/>
   <!--${QF-config::QF_MAX_EPOOL}-->
   <attribute name="QF_MAX_EPOOL?ndef QF_MAX_EPOOL" type="unsigned" visibility="0x03" properties="0x00">
-   <documentation>/*! Maximum number of event pools (configurable value in qf_port.hpp)
-* Valid values: [1U..15U]; default 3U
+   <documentation>/*! Maximum number of event pools (configurable value in qf_port.h)
+* Valid values: [0U..15U]; default 3U
+*
+* @note
+* #QF_MAX_EPOOL set to zero means that dynamic events are NOT configured
+* and should not be used in the application.
 */</documentation>
    <code>3U</code>
   </attribute>
@@ -2416,7 +2420,7 @@ return r;</code>
   <attribute name="QF_MAX_EPOOL exceeds the maximum of 15U? (QF_MAX_EPOOL &gt; 15U)" type="#error" visibility="0x04" properties="0x00"/>
   <!--${QF-config::QF_TIMEEVT_CTR_SIZE}-->
   <attribute name="QF_TIMEEVT_CTR_SIZE?ndef QF_TIMEEVT_CTR_SIZE" type="unsigned" visibility="0x03" properties="0x00">
-   <documentation>/*! Size of the QTimeEvt counter (configurable value in qf_port.hpp)
+   <documentation>/*! Size of the QTimeEvt counter (configurable value in qf_port.h)
 * Valid values: 1U, 2U, or 4U; default 4U
 */</documentation>
    <code>4U</code>
@@ -2425,7 +2429,7 @@ return r;</code>
   <attribute name="QF_TIMEEVT_CTR_SIZE defined incorrectly, expected 1U, 2U, or 4U? (QF_TIMEEVT_CTR_SIZE != 1U) &amp;&amp; (QF_TIMEEVT_CTR_SIZE != 2U) &amp;&amp; (QF_TIMEEVT_CTR_SIZE != 4U)" type="#error" visibility="0x04" properties="0x00"/>
   <!--${QF-config::QF_EVENT_SIZ_SIZE}-->
   <attribute name="QF_EVENT_SIZ_SIZE?ndef QF_EVENT_SIZ_SIZE" type="unsigned" visibility="0x03" properties="0x00">
-   <documentation>/*! Size of the event-size (configurable value in qf_port.hpp)
+   <documentation>/*! Size of the event-size (configurable value in qf_port.h)
 * Valid values: 1U, 2U, or 4U; default 2U
 */</documentation>
    <code>2U</code>
@@ -2935,7 +2939,7 @@ return n + log2LUT[x];</code>
   </operation>
   <!--${QF-macros::QACTIVE_POST_X}-->
   <operation name="QACTIVE_POST_X?def Q_SPY" type="void" visibility="0x03" properties="0x00">
-   <documentation>/*! Invoke the direct event posting facility QActive::post_()
+   <documentation>/*! Invoke the direct event posting facility QActive_post_()
 * without delivery guarantee
 *
 * @details
@@ -3487,7 +3491,9 @@ else { /* cannot post the event */
 
     QF_CRIT_X_();
 
+#if (QF_MAX_EPOOL &gt; 0U)
     QF_gc(e); /* recycle the event to avoid a leak */
+#endif
 }
 
 return status;</code>
@@ -3916,7 +3922,10 @@ if (QPSet_notEmpty(&amp;subscrList)) { /* any subscribers? */
 * and recycles the event if the counter drops to zero. This covers both
 * cases when the event was published with or without any subscribers.
 */
-QF_gc(e);</code>
+#if (QF_MAX_EPOOL &gt; 0U)
+QF_gc(e); /* recycle the event to avoid a leak */
+#endif
+</code>
    </operation>
    <!--${QF::QActive::defer}-->
    <operation name="defer" type="bool" visibility="0x01" properties="0x00">
@@ -4067,8 +4076,10 @@ for (QEvt const *e = QEQueue_get(eq, me-&gt;prio);
      e != (QEvt *)0;
      e = QEQueue_get(eq, me-&gt;prio))
 {
-    QF_gc(e); /* garbage collect */
     ++n; /* count the flushed event */
+#if (QF_MAX_EPOOL &gt; 0U)
+    QF_gc(e); /* garbage collect */
+#endif
 }
 return n;</code>
    </operation>
@@ -6331,24 +6342,26 @@ QS_BEGIN_PRE_(QS_QF_DELETE_REF,
     QS_2U8_PRE_(e-&gt;poolId_, e-&gt;refCtr_); /* pool Id &amp; ref Count */
 QS_END_PRE_()
 
-QF_gc(e);</code>
+#if (QF_MAX_EPOOL &gt; 0U)
+QF_gc(e);
+#endif</code>
    </operation>
   </package>
   <!--${QF::QF-pkg}-->
   <package name="QF-pkg" stereotype="0x02" namespace="QF_">
-   <!--${QF::QF-pkg::readySet_}-->
-   <attribute name="readySet_" type="QPSet" visibility="0x00" properties="0x01">
-    <documentation>/*! &quot;Ready-set&quot; of all threads used in the built-in kernels
-* @static @private @memberof QF
-*/</documentation>
-   </attribute>
    <!--${QF::QF-pkg::ePool_[QF_MAX_EPOOL]}-->
-   <attribute name="ePool_[QF_MAX_EPOOL]" type="QF_EPOOL_TYPE_" visibility="0x00" properties="0x00">
+   <attribute name="ePool_[QF_MAX_EPOOL]? (QF_MAX_EPOOL &gt; 0U)" type="QF_EPOOL_TYPE_" visibility="0x00" properties="0x00">
     <documentation>/*! array of event pools managed by QF */</documentation>
    </attribute>
    <!--${QF::QF-pkg::maxPool_}-->
    <attribute name="maxPool_" type="uint_fast8_t" visibility="0x00" properties="0x00">
     <documentation>/*! number of initialized event pools */</documentation>
+   </attribute>
+   <!--${QF::QF-pkg::readySet_}-->
+   <attribute name="readySet_" type="QPSet" visibility="0x00" properties="0x01">
+    <documentation>/*! &quot;Ready-set&quot; of all threads used in the built-in kernels
+* @static @private @memberof QF
+*/</documentation>
    </attribute>
    <!--${QF::QF-pkg::bzero}-->
    <operation name="bzero" type="void" visibility="0x00" properties="0x01">
@@ -9144,10 +9157,11 @@ switch (state) {
             i = 0x81U;  /* failure status, recycle needed */
         }
 
+#if (QF_MAX_EPOOL &gt; 0U)
         if ((i &amp; 0x01U) != 0U) { /* recycle needed? */
             QF_gc(l_rx.var.evt.e);
         }
-
+#endif
         if ((i &amp; 0x80U) != 0U) { /* failure? */
             QS_rxReportError_((int8_t)QS_RX_EVENT);
         }
@@ -9392,8 +9406,9 @@ while (QPSet_notEmpty(&amp;QF_readySet_)) {
     */
     QEvt const * const e = QActive_get_(a);
     QHSM_DISPATCH(&amp;a-&gt;super, e, a-&gt;prio);
+#if (QF_MAX_EPOOL &gt; 0U)
     QF_gc(e);
-
+#endif
     if (a-&gt;eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
         QPSet_remove(&amp;QF_readySet_, p);
     }
@@ -9411,8 +9426,6 @@ while (QPSet_notEmpty(&amp;QF_readySet_)) {
 */
 QF_maxPool_ = 0U;
 QF_intNest_ = 0U;
-QActive_subscrList_   = (QSubscrList *)0;
-QActive_maxPubSignal_ = 0;
 
 QF_bzero(&amp;QActive_registry_[0], sizeof(QActive_registry_));
 QF_bzero(&amp;QF_readySet_,         sizeof(QF_readySet_));</code>
@@ -9810,7 +9823,9 @@ if ((QS_priv_.locFilter[me-&gt;prio &gt;&gt; 3U]
 QF_CRIT_X_();
 
 /* recycle the event immediately, because it was not really posted */
+#if (QF_MAX_EPOOL &gt; 0U)
 QF_gc(e);
+#endif
 
 return status; /* the event is &quot;posted&quot; correctly */</code>
    </operation>
@@ -9861,7 +9876,9 @@ if ((QS_priv_.locFilter[me-&gt;prio &gt;&gt; 3U]
 QF_CRIT_X_();
 
 /* recycle the event immediately, because it was not really posted */
-QF_gc(e);</code>
+#if (QF_MAX_EPOOL &gt; 0U)
+QF_gc(e);
+#endif</code>
    </operation>
   </class>
  </package>
@@ -9906,9 +9923,9 @@ QF_gc(e);</code>
    <!--${QV::QF-cust::init}-->
    <operation name="init" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! QF initialization for QV */</documentation>
-    <code>QF_maxPool_ = 0U;
-QActive_subscrList_   = (QSubscrList *)0;
-QActive_maxPubSignal_ = 0;
+    <code>#if (QF_MAX_EPOOL &gt; 0U)
+QF_maxPool_ = 0U;
+#endif
 
 QF_bzero(&amp;QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
 QF_bzero(&amp;QActive_registry_[0],     sizeof(QActive_registry_));
@@ -9969,8 +9986,9 @@ for (;;) {
         */
         QEvt const * const e = QActive_get_(a);
         QHSM_DISPATCH(&amp;a-&gt;super, e, a-&gt;prio);
+#if (QF_MAX_EPOOL &gt; 0U)
         QF_gc(e);
-
+#endif
         QF_INT_DISABLE();
 
         if (a-&gt;eQueue.frontEvt == (QEvt *)0) { /* empty queue? */
@@ -10232,17 +10250,16 @@ if (stat != 0xFFU) {
    <!--${QK::QF-cust::init}-->
    <operation name="init" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! QF initialization for QK */</documentation>
-    <code>QF_maxPool_ = 0U;
-QActive_subscrList_   = (QSubscrList *)0;
-QActive_maxPubSignal_ = 0;
+    <code>#if (QF_MAX_EPOOL &gt; 0U)
+QF_maxPool_ = 0U;
+#endif
 
 QF_bzero(&amp;QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
 QF_bzero(&amp;QActive_registry_[0],     sizeof(QActive_registry_));
+QF_bzero(&amp;QF_readySet_,             sizeof(QF_readySet_));
 QF_bzero(&amp;QK_attr_,                 sizeof(QK_attr_));
 
 /* setup the QK scheduler as initially locked and not running */
-QK_attr_.actPrio  = 0U; /* priority of the QK idle loop */
-QK_attr_.actThre  = 0U; /* preemption-threshold of the QK idle loop */
 QK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
 
 #ifdef QK_INIT
@@ -10455,7 +10472,9 @@ do  {
     */
     QEvt const *e = QActive_get_(a);
     QHSM_DISPATCH(&amp;a-&gt;super, e, a-&gt;prio);
+#if (QF_MAX_EPOOL &gt; 0U)
     QF_gc(e);
+#endif
 
     /* determine the next highest-priority AO ready to run... */
     QF_INT_DISABLE(); /* unconditionally disable interrupts */
@@ -10773,17 +10792,16 @@ if (stat != 0xFFU) {
    <!--${QXK::QF-cust::init}-->
    <operation name="init" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! QF initialization for QXK */</documentation>
-    <code>QF_maxPool_ = 0U;
-QActive_subscrList_   = (QSubscrList *)0;
-QActive_maxPubSignal_ = 0;
+    <code>#if (QF_MAX_EPOOL &gt; 0U)
+QF_maxPool_ = 0U;
+#endif
 
 QF_bzero(&amp;QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
 QF_bzero(&amp;QActive_registry_[0],     sizeof(QActive_registry_));
+QF_bzero(&amp;QF_readySet_,             sizeof(QF_readySet_));
 QF_bzero(&amp;QXK_attr_,                sizeof(QXK_attr_));
 
 /* setup the QXK scheduler as initially locked and not running */
-QXK_attr_.actPrio  = 0U; /* priority of the QK idle loop */
-QXK_attr_.actThre  = 0U; /* preemption-threshold of the QK idle loop */
 QXK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
 
 /* register the QXK idle AO object, cast &quot;const&quot; away */
@@ -11384,11 +11402,15 @@ else if (me-&gt;eQueue.end != 0U) {
 
         QF_CRIT_X_();
 
+#if (QF_MAX_EPOOL &gt; 0U)
         QF_gc(e); /* recycle the event to avoid a leak */
+#endif
     }
 }
 else { /* the queue is not available */
+#if (QF_MAX_EPOOL &gt; 0U)
      QF_gc(e); /* make sure the event is not leaked */
+#endif
      status = false;
      Q_ERROR_ID(320); /* this extended thread cannot accept events */
 }
@@ -12650,7 +12672,9 @@ do  {
     */
     QEvt const * const e = QActive_get_(a);
     QHSM_DISPATCH(&amp;a-&gt;super, e, a-&gt;prio);
+#if (QF_MAX_EPOOL &gt; 0U)
     QF_gc(e);
+#endif
 
     QF_INT_DISABLE(); /* unconditionally disable interrupts */
 
@@ -14402,13 +14426,19 @@ $define ${QF::QActive::flushDeferred}</text>
     #include &quot;qs_dummy.h&quot; /* disable the QS software tracing */
 #endif /* Q_SPY */
 
+#if (QF_MAX_EPOOL &gt; 0U)  /* dynamic events configured? */
+
 Q_DEFINE_THIS_MODULE(&quot;qf_dyn&quot;)
 
 //============================================================================
-$define ${QEP::QEvt}
-
+$define ${QF::QF-pkg::maxPool_}
+$define ${QF::QF-pkg::ePool_[QF_MAX_EPOOL]}
 //============================================================================
-$define ${QF::QF-dyn}</text>
+$define ${QEP::QEvt}
+//============================================================================
+$define ${QF::QF-dyn}
+
+#endif /* (QF_MAX_EPOOL &gt; 0U) dynamic events configured */</text>
    </file>
    <!--${src::qf::qf_mem.c}-->
    <file name="qf_mem.c">
@@ -14452,7 +14482,8 @@ Q_DEFINE_THIS_MODULE(&quot;qf_qact&quot;)
 //============================================================================
 $define ${QF::QActive::registry_[QF_MAX_ACTIVE + 1U]}
 $define ${QF::QF-base::intNest_}
-$define ${QF::QF-pkg}
+$define ${QF::QF-pkg::readySet_}
+$define ${QF::QF-pkg::bzero}
 
 //============================================================================
 $define ${QF::QActive::ctor}
@@ -15397,7 +15428,9 @@ static void QS_rxHandleBadFrame_(uint8_t state) {
     switch (state) {
         case WAIT4_EVT_FRAME: {
             Q_ASSERT_ID(910, l_rx.var.evt.e != (QEvt *)0);
+#if (QF_MAX_EPOOL &gt; 0U)
             QF_gc(l_rx.var.evt.e); /* don't leak an allocated event */
+#endif
             break;
         }
         default: {

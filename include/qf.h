@@ -46,7 +46,7 @@
 /*$declare${QF-config} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${QF-config::QF_MAX_ACTIVE} ..............................................*/
-/*! Maximum number of active objects (configurable value in qf_port.hpp)
+/*! Maximum number of active objects (configurable value in qf_port.h)
 * Valid values: [1U..64U]; default 32U
 */
 #ifndef QF_MAX_ACTIVE
@@ -59,7 +59,7 @@
 #endif /*  (QF_MAX_ACTIVE > 64U) */
 
 /*${QF-config::QF_MAX_TICK_RATE} ...........................................*/
-/*! Maximum number of clock rates (configurable value in qf_port.hpp)
+/*! Maximum number of clock rates (configurable value in qf_port.h)
 * Valid values: [0U..15U]; default 1U
 */
 #ifndef QF_MAX_TICK_RATE
@@ -72,8 +72,12 @@
 #endif /*  (QF_MAX_TICK_RATE > 15U) */
 
 /*${QF-config::QF_MAX_EPOOL} ...............................................*/
-/*! Maximum number of event pools (configurable value in qf_port.hpp)
-* Valid values: [1U..15U]; default 3U
+/*! Maximum number of event pools (configurable value in qf_port.h)
+* Valid values: [0U..15U]; default 3U
+*
+* @note
+* #QF_MAX_EPOOL set to zero means that dynamic events are NOT configured
+* and should not be used in the application.
 */
 #ifndef QF_MAX_EPOOL
 #define QF_MAX_EPOOL 3U
@@ -85,7 +89,7 @@
 #endif /*  (QF_MAX_EPOOL > 15U) */
 
 /*${QF-config::QF_TIMEEVT_CTR_SIZE} ........................................*/
-/*! Size of the QTimeEvt counter (configurable value in qf_port.hpp)
+/*! Size of the QTimeEvt counter (configurable value in qf_port.h)
 * Valid values: 1U, 2U, or 4U; default 4U
 */
 #ifndef QF_TIMEEVT_CTR_SIZE
@@ -98,7 +102,7 @@
 #endif /*  (QF_TIMEEVT_CTR_SIZE != 1U) && (QF_TIMEEVT_CTR_SIZE != 2U) && (QF_TIMEEVT_CTR_SIZE != 4U) */
 
 /*${QF-config::QF_EVENT_SIZ_SIZE} ..........................................*/
-/*! Size of the event-size (configurable value in qf_port.hpp)
+/*! Size of the event-size (configurable value in qf_port.h)
 * Valid values: 1U, 2U, or 4U; default 2U
 */
 #ifndef QF_EVENT_SIZ_SIZE
@@ -1836,7 +1840,7 @@ void QF_deleteRef_(void const * const evtRef);
 
 /*${QF-macros::QACTIVE_POST_X} .............................................*/
 #ifdef Q_SPY
-/*! Invoke the direct event posting facility QActive::post_()
+/*! Invoke the direct event posting facility QActive_post_()
 * without delivery guarantee
 *
 * @details

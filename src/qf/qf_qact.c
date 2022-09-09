@@ -69,16 +69,12 @@ QActive * QActive_registry_[QF_MAX_ACTIVE + 1U];
 /*${QF::QF-base::intNest_} .................................................*/
 uint_fast8_t QF_intNest_;
 /*$enddef${QF::QF-base::intNest_} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-/*$define${QF::QF-pkg} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+/*$define${QF::QF-pkg::readySet_} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${QF::QF-pkg::readySet_} .................................................*/
 QPSet QF_readySet_;
-
-/*${QF::QF-pkg::ePool_[QF_MAX_EPOOL]} ......................................*/
-QF_EPOOL_TYPE_ QF_ePool_[QF_MAX_EPOOL];
-
-/*${QF::QF-pkg::maxPool_} ..................................................*/
-uint_fast8_t QF_maxPool_;
+/*$enddef${QF::QF-pkg::readySet_} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$define${QF::QF-pkg::bzero} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${QF::QF-pkg::bzero} .....................................................*/
 void QF_bzero(
@@ -91,7 +87,7 @@ void QF_bzero(
         ++ptr;
     }
 }
-/*$enddef${QF::QF-pkg} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+/*$enddef${QF::QF-pkg::bzero} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 //============================================================================
 /*$define${QF::QActive::ctor} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
