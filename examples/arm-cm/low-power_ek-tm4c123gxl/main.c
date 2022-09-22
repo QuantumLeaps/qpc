@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Blinky Low-Power" example
-* Last updated for version 6.4.0
-* Last updated on  2019-02-23
+* Last updated for version 7.1.1
+* Last updated on  2022-09-21
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -42,11 +42,11 @@ int main() {
     static QSubscrList subscrSto[MAX_PUB_SIG];
 
     static QEvt const *l_blinky0QSto[10];  /* queue storage for Blinky0 */
-#ifdef QXK_H /* QXK kernel? */
+#ifdef QP_INC_QXK_H_ /* QXK kernel? */
     static uint32_t const *l_xblinky1Stack[64]; /* stack for XBlinky1 */
 #else
     static QEvt const *l_blinky1QSto[10]; /* queue storage for Blinky1 */
-#endif
+#endif /* QP_INC_QXK_H_ */
 
     QF_init();  /* initialize the framework and the underlying RT kernel */
     BSP_init(); /* initialize the Board Support Package */
@@ -66,7 +66,7 @@ int main() {
                   0U,             /* stack size [bytes] (not used in QK) */
                   (QEvt *)0);     /* initial event (or 0) */
 
-#ifdef QXK_H /* QXK kernel? */
+#ifdef QP_INC_QXK_H_ /* QXK kernel? */
     QXSemaphore_init(&XSEM_sw1, 0U, 1U); /* signaling binary semaphore */
     XBlinky1_ctor();
     QXTHREAD_START(&XT_Blinky1,   /* extended thread pointer */
@@ -85,7 +85,7 @@ int main() {
                   (void *)0,      /* stack storage (not used in QK) */
                   0U,             /* stack size [bytes] (not used in QK) */
                   (QEvt *)0);     /* initial event (or 0) */
-#endif
+#endif /* QP_INC_QXK_H_ */
 
     return QF_run(); /* run the QF application */
 }

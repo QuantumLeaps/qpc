@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.2.1" links="1">
+<model version="5.2.2" links="1">
  <documentation>QP/C Real-Time Embedded Framework (RTEF)
 The model is used to generate the whole QP/C source code.
 
@@ -28,16 +28,6 @@ Contact information:
  <framework name="qpc" license="LICENSES/LicenseRef-QL-dual.qlc"/>
  <!--${DbC}-->
  <package name="DbC" stereotype="0x05">
-  <!--${DbC::int_t}-->
-  <attribute name="int_t?ndef QP_VERSION" type="typedef int" visibility="0x04" properties="0x00">
-   <documentation>/*! typedef for assertions-ids and line numbers in assertions.
-*
-* @details
-* This typedef specifies integer type for exclusive use in assertions.
-* Use of this type, rather than plain 'int', is in compliance
-* with the MISRA-C 2012 Dir 4.6 (adv).
-*/</documentation>
-  </attribute>
   <!--${DbC::Q_NORETURN}-->
   <attribute name="Q_NORETURN?ndef Q_NORETURN" type="void" visibility="0x03" properties="0x00">
    <documentation>/*! no-return function specifier */</documentation>
@@ -365,6 +355,16 @@ Contact information:
    <parameter name="expr_" type="bool"/>
    <code>Q_ASSERT_STATIC(expr_)</code>
   </operation>
+  <!--${DbC::int_t}-->
+  <attribute name="int_t?ndef QP_VERSION" type="typedef int" visibility="0x04" properties="0x00">
+   <documentation>/*! typedef for assertions-ids and line numbers in assertions.
+*
+* @details
+* This typedef specifies integer type for exclusive use in assertions.
+* Use of this type, rather than plain 'int', is in compliance
+* with the MISRA-C 2012 Dir 4.6 (adv).
+*/</documentation>
+  </attribute>
   <!--${DbC::Q_onAssert}-->
   <operation name="Q_onAssert" type="Q_NORETURN" visibility="0x00" properties="0x00">
    <documentation>/*! Callback function invoked in case of an assertion failure.
@@ -401,6 +401,17 @@ Contact information:
    <parameter name="module" type="char const *"/>
    <!--${DbC::Q_onAssert::location}-->
    <parameter name="location" type="int_t"/>
+  </operation>
+  <!--${DbC::Q_DIM}-->
+  <operation name="Q_DIM?ndef QP_VERSION" type="unsigned" visibility="0x03" properties="0x00">
+   <documentation>/*! Helper macro to calculate static dimension of a 1-dim `array_`
+*
+* @param array_ 1-dimensional array
+* @returns the length of the array (number of elements it can hold)
+*/</documentation>
+   <!--${DbC::Q_DIM::array_}-->
+   <parameter name="array_" type="1-dimensional array"/>
+   <code>(sizeof(array_) / sizeof((array_)[0U]))</code>
   </operation>
  </package>
  <!--${glob-types}-->
@@ -13091,32 +13102,11 @@ QF_CRIT_X_();</code>
 * __especially__ in the production code. Instead, the assertion handler
 * Q_onAssert() should be very carefully designed and tested.
 */
-#ifndef QASSERT_H
-#define QASSERT_H
+#ifndef QP_INC_QASSERT_H_
+#define QP_INC_QASSERT_H_
 
 #ifdef __cplusplus
     extern &quot;C&quot; {
-#endif
-
-#ifndef QP_VERSION /* is quassert.h used outside QP? */
-
-    /* provide facilities so that qassert.h could be used &quot;standalone&quot;... */
-
-    /*! Alias for assertions-ids and line numbers in assertions.
-    *
-    * @details
-    * This typedef specifies integer type in compliance with the
-    * MISRA-C 2012 Dir 4.6 (adv).
-    */
-    typedef int int_t;
-
-    /*! Helper macro to calculate static dimension of a 1-dim `array_`
-    *
-    * @param array_ 1-dimensional array
-    * @returns the length of the array (number of elements it can hold)
-    */
-    #define Q_DIM(array_) (sizeof(array_) / sizeof((array_)[0U]))
-
 #endif
 
 $declare ${DbC}
@@ -13125,7 +13115,7 @@ $declare ${DbC}
     }
 #endif
 
-#endif /* QASSERT_H */</text>
+#endif /* QP_INC_QASSERT_H_ */</text>
   </file>
   <!--${include::qep.h}-->
   <file name="qep.h">
@@ -13134,8 +13124,8 @@ $declare ${DbC}
 *
 * @tr{RQP001} @tr{RQP101}
 */
-#ifndef QEP_H
-#define QEP_H
+#ifndef QP_INC_QEP_H_
+#define QP_INC_QEP_H_
 
 /*==========================================================================*/
 /*! The current QP version as an unsigned number
@@ -13169,15 +13159,15 @@ $declare ${QEP}
 /*==========================================================================*/
 $declare ${QEP-macros}
 
-#endif /* QEP_H */</text>
+#endif /* QP_INC_QEP_H_ */</text>
   </file>
   <!--${include::qf.h}-->
   <file name="qf.h">
    <text>/*! @file
 * @brief QF/C platform-independent public interface.
 */
-#ifndef QF_H
-#define QF_H
+#ifndef QP_INC_QF_H_
+#define QP_INC_QF_H_
 
 /*==========================================================================*/
 $declare ${QF-config}
@@ -13197,15 +13187,15 @@ $declare ${QF::QF-dyn}
 /*==========================================================================*/
 $declare ${QF-macros}
 
-#endif /* QF_H */</text>
+#endif /* QP_INC_QF_H_ */</text>
   </file>
   <!--${include::qf_pkg.h}-->
   <file name="qf_pkg.h">
    <text>/*! @file
 * @brief Internal (package scope) QF/C interface.
 */
-#ifndef QF_PKG_H
-#define QF_PKG_H
+#ifndef QP_INC_QF_PKG_H_
+#define QP_INC_QF_PKG_H_
 
 /*==========================================================================*/
 $declare ${QF::QF-pkg}
@@ -13322,7 +13312,7 @@ typedef struct QFreeBlock {
 */
 #define QF_PTR_RANGE_(x_, min_, max_)  (((min_) &lt;= (x_)) &amp;&amp; ((x_) &lt;= (max_)))
 
-#endif /* QF_PKG_H */</text>
+#endif /* QP_INC_QF_PKG_H_ */</text>
   </file>
   <!--${include::qequeue.h}-->
   <file name="qequeue.h">
@@ -13337,8 +13327,8 @@ typedef struct QFreeBlock {
 * and non-framework entities, such as ISRs, device drivers, or legacy
 * code.
 */
-#ifndef QEQUEUE_H
-#define QEQUEUE_H
+#ifndef QP_INC_QEQUEUE_H_
+#define QP_INC_QEQUEUE_H_
 
 #ifndef QF_EQUEUE_CTR_SIZE
 
@@ -13372,15 +13362,15 @@ typedef struct QFreeBlock {
 /*==========================================================================*/
 $declare ${QF::QEQueue}
 
-#endif /* QEQUEUE_H */</text>
+#endif /* QP_INC_QEQUEUE_H_ */</text>
   </file>
   <!--${include::qmpool.h}-->
   <file name="qmpool.h">
    <text>/*! @file
 * @brief QP native, platform-independent memory pool ::QMPool interface.
 */
-#ifndef QMPOOL_H
-#define QMPOOL_H
+#ifndef QP_INC_QMPOOL_H_
+#define QP_INC_QMPOOL_H_
 
 /*==========================================================================*/
 #ifndef QF_MPOOL_SIZ_SIZE
@@ -13441,7 +13431,7 @@ $declare ${QF::QEQueue}
 /*==========================================================================*/
 $declare ${QF::QMPool}
 
-#endif  /* QMPOOL_H */</text>
+#endif  /* QP_INC_QMPOOL_H_ */</text>
   </file>
   <!--${include::qv.h}-->
   <file name="qv.h">
@@ -13449,8 +13439,8 @@ $declare ${QF::QMPool}
 * @brief QV/C (cooperative &quot;Vanilla&quot; kernel) platform-independent
 * public interface
 */
-#ifndef QV_H
-#define QV_H
+#ifndef QP_INC_QV_H_
+#define QP_INC_QV_H_
 
 /*==========================================================================*/
 /* QF customization for QV -- data members of the QActive class... */
@@ -13476,7 +13466,7 @@ $declare ${QV-impl}
 $declare ${QF-QMPool-impl}
 #endif /* QP_IMPL */
 
-#endif /* QV_H */</text>
+#endif /* QP_INC_QV_H_ */</text>
   </file>
   <!--${include::qk.h}-->
   <file name="qk.h">
@@ -13484,8 +13474,8 @@ $declare ${QF-QMPool-impl}
 * @brief QK/C (preemptive non-blocking kernel) platform-independent
 * public interface.
 */
-#ifndef QK_H
-#define QK_H
+#ifndef QP_INC_QK_H_
+#define QP_INC_QK_H_
 
 /*==========================================================================*/
 /* QF configuration for QK -- data members of the QActive class... */
@@ -13516,7 +13506,7 @@ $declare ${QK-impl}
 $declare ${QF-QMPool-impl}
 #endif /* QP_IMPL */
 
-#endif /* QK_H */</text>
+#endif /* QP_INC_QK_H_ */</text>
   </file>
   <!--${include::qxk.h}-->
   <file name="qxk.h">
@@ -13524,8 +13514,8 @@ $declare ${QF-QMPool-impl}
 * @brief QXK/C (preemptive dual-mode kernel) platform-independent
 * public interface.
 */
-#ifndef QXK_H
-#define QXK_H
+#ifndef QP_INC_QXK_H_
+#define QP_INC_QXK_H_
 
 /*==========================================================================*/
 /* QF configuration for QXK -- data members of the QActive class... */
@@ -13568,15 +13558,15 @@ $declare ${QXK-impl}
 $declare ${QF-QMPool-impl}
 #endif /* QP_IMPL */
 
-#endif /* QXK_H */</text>
+#endif /* QP_INC_QXK_H_ */</text>
   </file>
   <!--${include::qs.h}-->
   <file name="qs.h">
    <text>/*! @file
 * @brief QS/C platform-independent public interface.
 */
-#ifndef QS_H
-#define QS_H
+#ifndef QP_INC_QS_H_
+#define QP_INC_QS_H_
 
 #ifndef Q_SPY
     #error &quot;Q_SPY must be defined to include qs.h&quot;
@@ -13696,7 +13686,7 @@ $declare ${QUTest-stub::QActiveDummy}
 
 #endif /* Q_UTEST */
 
-#endif /* def QS_H */</text>
+#endif /* def QP_INC_QS_H_ */</text>
   </file>
   <!--${include::qs_dummy.h}-->
   <file name="qs_dummy.h">
@@ -13704,8 +13694,8 @@ $declare ${QUTest-stub::QActiveDummy}
 * @brief Dummy definitions of the QS macros that avoid code generation from
 * the QS instrumentation.
 */
-#ifndef QS_DUMMY_H
-#define QS_DUMMY_H
+#ifndef QP_INC_QS_DUMMY_H_
+#define QP_INC_QS_DUMMY_H_
 
 #ifdef Q_SPY
     #error &quot;Q_SPY must NOT be defined to include qs_dummy.h&quot;
@@ -13787,15 +13777,15 @@ $declare ${QUTest-stub::QActiveDummy}
     #define QF_QS_ACTION(act_)          ((void)0)
 #endif /* QP_IMPL */
 
-#endif /* QS_DUMMY_H */</text>
+#endif /* QP_INC_QS_DUMMY_H_ */</text>
   </file>
   <!--${include::qs_pkg.h}-->
   <file name="qs_pkg.h">
    <text>/*! @file
 * @brief Internal (package scope) QS/C interface.
 */
-#ifndef QS_PKG_H
-#define QS_PKG_H
+#ifndef QP_INC_QS_PKG_H_
+#define QP_INC_QS_PKG_H_
 
 /*==========================================================================*/
 
@@ -14023,7 +14013,7 @@ enum QSpyRxRecords {
         ++QS_priv_.used;                             \
     }
 
-#endif  /* QS_PKG_H */</text>
+#endif  /* QP_INC_QS_PKG_H_ */</text>
   </file>
   <!--${include::qpc.h}-->
   <file name="qpc.h">
@@ -14033,8 +14023,8 @@ enum QSpyRxRecords {
 * This header file must be included directly or indirectly
 * in all application modules (*.c files) that use QP/C.
 */
-#ifndef QPC_H
-#define QPC_H
+#ifndef QP_INC_QPC_H_
+#define QP_INC_QPC_H_
 
 #ifdef __cplusplus
 extern &quot;C&quot; {
@@ -14185,20 +14175,20 @@ typedef QHsm        QFsm;
 }
 #endif
 
-#endif /* QPC_H */</text>
+#endif /* QP_INC_QPC_H_ */</text>
   </file>
   <!--${include::qstamp.h}-->
   <file name="qstamp.h">
    <text>/*! @file
 * @brief Application build time-stamp interface
 */
-#ifndef QSTAMP_H
-#define QSTAMP_H
+#ifndef QP_INC_QSTAMP_H_
+#define QP_INC_QSTAMP_H_
 
 extern char const Q_BUILD_DATE[12];
 extern char const Q_BUILD_TIME[9];
 
-#endif /* QSTAMP_H */</text>
+#endif /* QP_INC_QSTAMP_H_ */</text>
   </file>
   <!--${include::qstamp.c}-->
   <file name="qstamp.c">
@@ -14618,9 +14608,9 @@ $define ${QF::QTimeEvt}</text>
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef QV_H
+#ifndef QP_INC_QV_H_
     #error &quot;Source file included in a project NOT based on the QV kernel&quot;
-#endif /* QV_H */
+#endif /* QP_INC_QV_H_ */
 
 Q_DEFINE_THIS_MODULE(&quot;qv&quot;)
 
@@ -14649,9 +14639,9 @@ $define ${QV::QActive}</text>
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef QK_H
+#ifndef QP_INC_QK_H_
     #error &quot;Source file included in a project NOT based on the QK kernel&quot;
-#endif /* QK_H */
+#endif /* QP_INC_QK_H_ */
 
 Q_DEFINE_THIS_MODULE(&quot;qk&quot;)
 
@@ -14681,9 +14671,9 @@ $define ${QK::QK-extern-C}</text>
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef QXK_H
+#ifndef QP_INC_QXK_H_
     #error &quot;Source file included in a project NOT based on the QXK kernel&quot;
-#endif /* QXK_H */
+#endif /* QP_INC_QXK_H_ */
 
 Q_DEFINE_THIS_MODULE(&quot;qxk&quot;)
 
@@ -14713,9 +14703,9 @@ $define ${QXK-impl}</text>
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef QXK_H
+#ifndef QP_INC_QXK_H_
     #error &quot;Source file included in a project NOT based on the QXK kernel&quot;
-#endif /* QXK_H */
+#endif /* QP_INC_QXK_H_ */
 
 Q_DEFINE_THIS_MODULE(&quot;qxk_mutex&quot;)
 
@@ -14739,9 +14729,9 @@ $define ${QXK::QXMutex}</text>
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef QXK_H
+#ifndef QP_INC_QXK_H_
     #error &quot;Source file included in a project NOT based on the QXK kernel&quot;
-#endif /* QXK_H */
+#endif /* QP_INC_QXK_H_ */
 
 Q_DEFINE_THIS_MODULE(&quot;qxk_sema&quot;)
 
@@ -14765,9 +14755,9 @@ $define ${QXK::QXSemaphore}</text>
 #endif /* Q_SPY */
 
 /* protection against including this source file in a wrong project */
-#ifndef QXK_H
+#ifndef QP_INC_QXK_H_
     #error &quot;Source file included in a project NOT based on the QXK kernel&quot;
-#endif /* QXK_H */
+#endif /* QP_INC_QXK_H_ */
 
 Q_DEFINE_THIS_MODULE(&quot;qxk_xthr&quot;)
 

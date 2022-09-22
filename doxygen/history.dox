@@ -7,7 +7,7 @@ This release improves @ref srs_qs "software tracing" of the scheduler activity i
 The QP framework "knows" the type of preemption (synchronous/asynchronous) and this information is now provided in the software trace to the user.
 
 
-Additionally, the default for #QF_TIMEEVT_CTR_SIZE has been increased from 2 to 4 bytes. This increases the dynamic range for QTimeEvt counters to 32-bits.
+Additionally, the default for #QF_TIMEEVT_CTR_SIZE has been increased from 2 to 4 bytes. This increases the default dynamic range for QTimeEvt counters to 32-bits.
 
 __Source__
 - Added new pre-defined QS trace records:
@@ -20,6 +20,7 @@ __Source__
 - Added parameter `asynch` to QXK_sched_(). This parameter is used to indicate the type of preemption and is set to 1 for asynchronous preemption and 0 for synchronous. This parameter is used in the #Q_SPY configuration only.
 - changed all calls to QXK_sched_() and QXK_activate_() to add the `asynch` parameter, whereas all cases of synchronous preemption call QXK_sched_(0U)/XK_activate_(0U), while cases for asynchronous preemption call QXK_sched_(1U)/XK_activate_(1U);
 - increased default for #QF_TIMEEVT_CTR_SIZE 4
+- changed inclusion guards in the QP/C header files (e.g. `QF_H` -> `QP_INC_QF_H_`) for compliance with the updated Quantum Leaps coding standard and to make the names more unique.
 
 __Ports__
 - All QK ports have been updated to set the `asynch` parameter for calling QK_activate_()

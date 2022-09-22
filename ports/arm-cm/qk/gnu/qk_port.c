@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-09-04
+* @date Last updated on: 2022-09-20
 * @version Last updated for: @ref qpc_7_1_1
 *
 * @file
@@ -216,15 +216,13 @@ __asm volatile (
     "  BICS    r0,r0,#4         \n" /* r0 := r0 & ~4 (FPCA bit) */
     "  MSR     CONTROL,r0       \n" /* CONTROL := r0 (clear CONTROL[2] FPCA bit) */
     "  ISB                      \n" /* ISB after MSR CONTROL (ARM AN321,Sect.4.16) */
-#endif                              /* VFP available */
+#endif                  /*--------- VFP available */
 
-#ifndef QK_USE_IRQ_NUM  /*--------- IRQ NOT defined, used NMI by default */
+#ifndef QK_USE_IRQ_NUM  /*--------- IRQ NOT defined, use NMI by default */
     "  LDR     r0,=" STRINGIFY(NVIC_ICSR) "\n" /* Interrupt Control and State */
     "  MOV     r1,#1            \n"
     "  LSL     r1,r1,#31        \n" /* r1 := (1 << 31) (NMI bit) */
     "  STR     r1,[r0]          \n" /* ICSR[31] := 1 (pend NMI) */
-
-    /* NOTE! interrupts are still disabled when NMI is used */
 
 #else                   /*--------- use the selected IRQ */
     "  LDR     r0,=" STRINGIFY(NVIC_PEND + (QK_USE_IRQ_NUM / 32)) "\n"
@@ -233,14 +231,15 @@ __asm volatile (
     "  STR     r1,[r0]          \n" /* pend the IRQ */
 
     /* now enable interrupts so that pended IRQ can be entered */
-#if (__ARM_ARCH == 6)               /* if ARMv6-M... */
+#if (__ARM_ARCH == 6)   /*--------- if ARMv6-M... */
     "  CPSIE   i                \n" /* enable interrupts (clear PRIMASK) */
-#else                               /* ARMv7-M and higher */
+#else                   /*--------- ARMv7-M and higher */
     "  MOV     r0,#0            \n"
     "  MSR     BASEPRI,r0       \n" /* enable interrupts (clear BASEPRI) */
 #endif                  /*--------- ARMv7-M and higher */
 #endif                  /*--------- use IRQ */
 
+    /* NOTE! interrupts are still disabled when NMI is used */
     "  B       .                \n" /* wait for preemption by NMI/IRQ */
     );
 }
@@ -252,7 +251,9 @@ __asm volatile (
 * stack frame that must be at the top of the stack.
 */
 __attribute__ ((naked))
-#ifndef QK_USE_IRQ_NUM  /*--------- IRQ NOT defined, used NMI by default */
+#ifndef QK_USE_IRQ_NUM  /*--------- IRQ NOT defined, use NMI by default */
+
+/* NOTE: The NMI_Handler() is entered with interrupts still disabled! */
 void NMI_Handler(void) {
 __asm volatile (
     /* enable interrupts */
@@ -264,7 +265,9 @@ __asm volatile (
 #endif                  /*--------- ARMv7-M and higher */
 );
 
-#else                   /* use the selected IRQ */
+#else                   /*--------- use the selected IRQ */
+
+/* NOTE: The IRQ Handler is entered with interrupts enabled */
 void QK_USE_IRQ_HANDLER(void) {
 #endif                  /*--------- use IRQ */
 __asm volatile (

@@ -72,7 +72,7 @@ void SysTick_Handler(void) { /* system clock tick ISR -- kernel aware */
     static struct ButtonsDebouncing {
         uint32_t depressed;
         uint32_t previous;
-    } buttons = { ~0U, ~0U };
+    } buttons = { 0U, 0U };
     uint32_t current;
     uint32_t tmp;
 
