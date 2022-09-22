@@ -1,6 +1,6 @@
 /*! @page history Revision History
 
-@section qpc_7_1_1 Version 7.1.1, 2022-09-30 (planned)
+@section qpc_7_1_1 Version 7.1.1, 2022-09-30
 This release improves @ref srs_qs "software tracing" of the scheduler activity in the preemptive @ref srs_qk "QK" and @ref srs_qxk "QXK" kernels.
 
 @note
