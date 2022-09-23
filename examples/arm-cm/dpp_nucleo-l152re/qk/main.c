@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last updated for version 7.1.0
-* Last updated on  2022-08-28
+* Last updated for version 7.1.1
+* Last updated on  2022-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -68,7 +68,7 @@ int main() {
     /* start the active objects... */
     for (n = 0U; n < N_PHILO; ++n) {
         QACTIVE_START(AO_Philo[n], /* AO to start */
-            Q_PRIO(n + 1U, 1U),    /* QF-priority/preemption-thre. */
+            Q_PRIO(n + 1U, N_PHILO), /* QF-prio/pre-thre. */
             philoQueueSto[n],      /* event queue storage */
             Q_DIM(philoQueueSto[n]), /* queue length [events] */
             (void *)0,             /* stack storage (not used) */
@@ -76,7 +76,7 @@ int main() {
             (void *)0);            /* initialization param */
     }
     QACTIVE_START(AO_Table,        /* AO to start */
-        Q_PRIO(N_PHILO + 1U, 2U),  /* QF-priority/preemption-thre. */
+        N_PHILO + 1U,              /* QF-prio/pre-thre. */
         tableQueueSto,             /* event queue storage */
         Q_DIM(tableQueueSto),      /* queue length [events] */
         (void *)0,                 /* stack storage (not used) */
@@ -85,4 +85,3 @@ int main() {
 
     return QF_run(); /* run the QF application */
 }
-

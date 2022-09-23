@@ -1,7 +1,7 @@
 /*============================================================================
 * Product: System test fixture for QXK on the EFM32 target
-* Last updated for version 7.1.0
-* Last updated on  2022-08-20
+* Last updated for version 7.1.1
+* Last updated on  2022-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -83,7 +83,7 @@ int main() {
     static uint64_t test1StackSto[64];
     Test1_ctor(); /* instantiate the Test1 extended thread */
     QXTHREAD_START(&thr1,                /* thread to start */
-                  Q_PRIO(1U, 1U),        /* QF-priority/preemption-thre. */
+                  1U,                    /* QF-priority/preemption-thre. */
                   test1QueueSto,         /* message queue storage */
                   Q_DIM(test1QueueSto),  /* message length [events] */
                   test1StackSto,         /* stack storage */

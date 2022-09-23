@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Blinky example
-* Last updated for version 7.1.0
-* Last updated on  2022-08-28
+* Last updated for version 7.1.1
+* Last updated on  2022-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -45,7 +45,7 @@ int main() {
     Blinky_ctor();
     static QEvt const *blinkyeQueueSto[2];
     QACTIVE_START(AO_Blinky,       /* AO to start */
-        Q_PRIO(1U, 1U),            /* QF-priority/preemption-thre. */
+        1U,                        /* QF-priority/preemption-thre. */
         blinkyeQueueSto,           /* event queue storage */
         Q_DIM(blinkyeQueueSto),    /* queue length [events] */
         (void *)0,                 /* stack storage (not used) */
@@ -54,4 +54,3 @@ int main() {
 
     return QF_run(); /* run the QF application */
 }
-

@@ -15,24 +15,24 @@ int main() {
 
     /* start the active objects (basic threads)... */
     Table_ctor(); /* instantiate the Table AO */
-    QACTIVE_START(AO_Table,    /* AO to start */
-        Q_PRIO(n + 1U, 1U),    /* QF-priority/preemption-thre. */
-        tableQueueSto,         /* event queue storage */
-        Q_DIM(tableQueueSto),  /* queue length [events] */
-        tableStackSto,         /* stack storage */
-        sizeof(tableStackSto), /* stack size [bytes] */
-        (void *)0);            /* initialization param */
+    QACTIVE_START(AO_Table,      /* AO to start */
+        Q_PRIO(n + 1U, N_PHILO), /* QF-priority/preemption-threshold */
+        tableQueueSto,           /* event queue storage */
+        Q_DIM(tableQueueSto),    /* queue length [events] */
+        tableStackSto,           /* stack storage */
+        sizeof(tableStackSto),   /* stack size [bytes] */
+        (void *)0);              /* initialization param */
     . . .
 
     /* start the extended-threads... */
     Test_ctor();  /* instantiate the Test extended thread */
-    QXTHREAD_START(XT_Test,    /* Thread to start */
-        Q_PRIO(10U, 2U),       /* QF-priority/preemption-thre. */
-        testQueueSto,          /* message queue storage */
-        Q_DIM(testQueueSto),   /* message length [events] */
-        testStackSto,          /* stack storage */
-        sizeof(testStackSto),  /* stack size [bytes] */
-        (void *)0);            /* initialization param */
+    QXTHREAD_START(XT_Test,      /* Thread to start */
+        10U,                     /* QF-priority/preemption-threshold */
+        testQueueSto,            /* message queue storage */
+        Q_DIM(testQueueSto),     /* message length [events] */
+        testStackSto,            /* stack storage */
+        sizeof(testStackSto),    /* stack size [bytes] */
+        (void *)0);              /* initialization param */
 
     return QF_run(); /* run the QF application */
 }

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last updated for version 7.1.0
-* Last updated on  2022-08-31
+* Last updated for version 7.1.1
+* Last updated on  2022-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -57,13 +57,13 @@ int main() {
     /* initialize event pools... */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
-    QACTIVE_START(the_Ticker0, Q_PRIO(1U, 1U), 0, 0, 0, 0, 0);
+    QACTIVE_START(the_Ticker0, 1U, 0, 0, 0, 0, 0);
 
     /* start the active objects... */
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
         Philo_ctor(n); /* instantiate Philo[n] AO */
         QACTIVE_START(AO_Philo[n],   /* AO to start */
-            Q_PRIO((n + 2U), 1U),    /* QF-priority/preemption-threshold */
+            Q_PRIO(n + 2U, N_PHILO + 1U),/* QF-prio/pre-thre. */
             philoQueueSto[n],        /* event queue storage */
             Q_DIM(philoQueueSto[n]), /* queue length [events] */
             (void *)0,               /* stack storage (not used) */
@@ -73,7 +73,7 @@ int main() {
 
     Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,          /* AO to start */
-        Q_PRIO((N_PHILO + 2U), 2U),  /* QF-priority/preemption-threshold */
+        N_PHILO + 2U,                /* QF-prio/pre-thre. */
         tableQueueSto,               /* event queue storage */
         Q_DIM(tableQueueSto),        /* queue length [events] */
         (void *)0,                   /* stack storage (not used) */
@@ -82,4 +82,3 @@ int main() {
 
     return QF_run(); /* run the QF application */
 }
-

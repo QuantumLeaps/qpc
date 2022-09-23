@@ -183,27 +183,28 @@ uint_fast8_t QF_LOG2(QPSetBits x);
 *    for each thread in the system and higher numerical values represent
 *    higher urgency (direct pirority numbering).
 *
-* 2. The second priority, which resides in the most-significant byte
-*    of the ::QPrioSpec data type. The second priority is specific to the
-*    underlying real-time kernel or operating system with the semantics
-*    determined by that kernel.
+* 2. The "preemption-threshold" priority, which resides in the most-
+*    significant byte of the ::QPrioSpec data type. The second priority
+*    cannot be lower than the "QF-priority", but does NOT need to be
+*    unuque.
 *
-* @note
-* In the QP native preemptive kernels, like QK and QXK, the second component
-* of the ::QPrioSpec is used as the "preemption-threshold". It determines
-* the conditions under which a given thread can be *preempted* by other
-* threads. Specifically, a given thread can be preempted only by another
-* thread with a *higher* "preemption-threshold".
+* In the QP native preemptive kernels, like QK and QXK, the "preemption-
+* threshold" priority is used as to implement the "preemption-threshold
+* scheduling" (PTS). It determines the conditions under which a given
+* thread can be *preempted* by other threads. Specifically, a given
+* thread can be preempted only by another thread with a *higher*
+* priority than the "preemption-threshold" of the original thread.
 *
 * ![QF-priority and preemption-threshold relations](qp-prio.png)
 *
-* For backwards-compatibility, ::QPrioSpec data type might contain only the
-* "QF-priority" component (and the "preemption-threshold" component left at
-* zero). In that case, the "preemption-threshold" will be assumed to be the
-* same as the "QF-priority". This corresponds exactly to the previous
-* semantics of AO priority.
-*
 * @note
+* For backwards-compatibility, ::QPrioSpec data type might contain only
+* the "QF-priority" component (and the "preemption-threshold" component
+* left at zero). In that case, the "preemption-threshold" will be assumed
+* to be the same as the "QF-priority". This corresponds exactly to the
+* previous semantics of AO priority.
+*
+* @remark
 * When QP runs on top of 3rd-party kernels/RTOSes or general-purpose
 * operating systems, sthe second priority can have different meaning,
 * depending on the specific RTOS/GPOS used.

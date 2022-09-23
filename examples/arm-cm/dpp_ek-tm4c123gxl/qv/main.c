@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last updated for version 7.1.0
-* Last updated on  2022-08-28
+* Last updated for version 7.1.2
+* Last updated on  2022-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -65,7 +65,7 @@ int main() {
     Philo_ctor(); /* instantiate all Philosopher active objects */
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
         QACTIVE_START(AO_Philo[n], /* AO to start */
-            Q_PRIO((n + 2), 2U),   /* QF-priority/preemption-thre. */
+            Q_PRIO(n + 2U, N_PHILO + 1U), /* QF-prio/pre-thre. */
             philoQueueSto[n],      /* event queue storage */
             Q_DIM(philoQueueSto[n]), /* queue length [events] */
             (void *)0,             /* stack storage (not used) */
@@ -75,7 +75,7 @@ int main() {
 
     Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,        /* AO to start */
-        Q_PRIO((N_PHILO + 2), 3U), /* QF-priority/preemption-thre. */
+        N_PHILO + 2U,              /* QF-prio/pre-thre. */
         tableQueueSto,             /* event queue storage */
         Q_DIM(tableQueueSto),      /* queue length [events] */
         (void *)0,                 /* stack storage (not used) */

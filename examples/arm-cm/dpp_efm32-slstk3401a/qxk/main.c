@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example extened for QXK
-* Last updated for version 7.1.0
-* Last updated on  2022-08-16
+* Last updated for version 7.1.1
+* Last updated on  2022-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -65,7 +65,7 @@ int main() {
     /* start the extended thread */
     Test1_ctor(); /* instantiate the Test1 extended thread */
     QXTHREAD_START(XT_Test1,            /* Thread to start */
-                  Q_PRIO(1U, 1U),       /* QF-priority/preemption-thre. */
+                  1U,                   /* QF-prio/pre-thre. */
                   test1QueueSto,        /* message queue storage */
                   Q_DIM(test1QueueSto), /* message length [events] */
                   test1StackSto,        /* stack storage */
@@ -78,7 +78,7 @@ int main() {
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
         Philo_ctor(n); /* instantiate Philo[n] AO */
         QACTIVE_START(AO_Philo[n],       /* AO to start */
-                      Q_PRIO(n + 3U, 3U),/* QF-priority/preemption-thre. */
+                      Q_PRIO(n + 3U, N_PHILO + 2U),/* QF-prio/pre-thre. */
                       philoQueueSto[n],  /* event queue storage */
                       Q_DIM(philoQueueSto[n]), /* queue length [events] */
                       (void *)0,         /* stack storage (not used) */
@@ -89,14 +89,14 @@ int main() {
     /* example of prioritizing the Ticker0 active object */
     QTicker_ctor(&l_ticker0, 0U); /* ticker AO for tick rate 0 */
     QACTIVE_START(the_Ticker0,
-                  Q_PRIO(N_PHILO + 3U, 4U),/* QF-priority/preemption-thre. */
+                  N_PHILO + 3U,   /* QF-prio/pre-thre. */
                   0, 0U, 0, 0U, (void *)0);
 
     /* NOTE: leave priority (N_PHILO + 4) free for mutex */
 
     Test2_ctor(); /* instantiate the Test2 extended thread */
     QXTHREAD_START(XT_Test2,             /* Thread to start */
-                  Q_PRIO(N_PHILO + 5U, 5U),/* QF-priority/preemption-thre. */
+                  N_PHILO + 5U,          /* QF-prio/pre-thre. */
                   test2QueueSto,         /* message queue storage */
                   Q_DIM(test2QueueSto),  /* message length [events] */
                   test2StackSto,         /* stack storage */
@@ -107,7 +107,7 @@ int main() {
 
     Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,              /* AO to start */
-                  Q_PRIO(N_PHILO + 7U, 7U),/* QF-priority/preemption-thre. */
+                  N_PHILO + 7U,          /* QF-prio/pre-thre. */
                   tableQueueSto,         /* event queue storage */
                   Q_DIM(tableQueueSto),  /* queue length [events] */
                   (void *)0,             /* stack storage (not used) */

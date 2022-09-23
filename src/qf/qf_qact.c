@@ -121,47 +121,50 @@ void QActive_ctor(QActive * const me,
 
 /*${QF::QActive::register_} ................................................*/
 void QActive_register_(QActive * const me) {
-    uint8_t const prio  = me->prio;
-
-    /*! @pre the priority of the AO must be in range. Also, the priority
-    * must not be already in use. QF requires each active object to
-    * have a **unique** priority.
-    */
-    Q_REQUIRE_ID(100, (0U < prio) && (prio <= QF_MAX_ACTIVE)
-                       && (QActive_registry_[prio] == (QActive *)0));
-
-    #ifndef Q_NASSERT
-
     if (me->pthre == 0U) { /* preemption-threshold not defined? */
         me->pthre = me->prio; /* apply the default */
     }
+
+    #ifndef Q_NASSERT
+
+    /*! @pre
+    * 1. the "QF-priority" of the AO must be in range
+    * 2. the "QF-priority" must not be already in use (unique priority)
+    * 3. the "QF-priority" must not exceed the "preemption-threshold"
+    */
+    Q_REQUIRE_ID(100, (0U < me->prio) && (me->prio <= QF_MAX_ACTIVE)
+                      && (QActive_registry_[me->prio] == (QActive *)0)
+                      && (me->prio <= me->pthre));
+
     uint8_t prev_thre = me->pthre;
     uint8_t next_thre = me->pthre;
-
     uint_fast8_t p;
-    for (p = (uint_fast8_t)prio - 1U; p > 0U; --p) {
+
+    for (p = (uint_fast8_t)me->prio - 1U; p > 0U; --p) {
         if (QActive_registry_[p] != (QActive *)0) {
             prev_thre = QActive_registry_[p]->pthre;
             break;
         }
     }
-    for (p = (uint_fast8_t)prio + 1U; p <= QF_MAX_ACTIVE; ++p) {
+    for (p = (uint_fast8_t)me->prio + 1U; p <= QF_MAX_ACTIVE; ++p) {
         if (QActive_registry_[p] != (QActive *)0) {
             next_thre = QActive_registry_[p]->pthre;
             break;
         }
     }
 
-    /*! @post The preemption threshold of the AO (me->pthre) must be
-    * between the threshold of the previous AO and the next AO
+    /*! @post
+    * 1. the preceding pre-thre must not exceed the preemption-threshold
+    * 2. the preemption-threshold must not exceed the next pre-thre
     */
-    Q_ENSURE_ID(101, (prev_thre <= me->pthre)
-                      && (me->pthre <= next_thre));
+    Q_ENSURE_ID(110, (prev_thre <= me->pthre) && (me->pthre <= next_thre));
+
     #endif // Q_NASSERT
 
     QF_CRIT_STAT_
     QF_CRIT_E_();
-    QActive_registry_[prio] = me; /* register the AO at this QF priority */
+    /* register the AO at the "QF-priority" */
+    QActive_registry_[me->prio] = me;
     QF_CRIT_X_();
 }
 /*$enddef${QF::QActive::register_} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/

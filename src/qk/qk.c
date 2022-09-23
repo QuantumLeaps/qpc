@@ -96,7 +96,7 @@ QSchedStatus QK_schedLock(uint_fast8_t const ceiling) {
         QK_attr_.lockCeil   = (uint8_t)ceiling;
     }
     else {
-        stat = 0xFFU;
+        stat = 0xFFU; /* scheduler not locked */
     }
     QF_CRIT_X_();
 
@@ -238,14 +238,13 @@ void QActive_start_(QActive * const me,
 uint_fast8_t QK_sched_(void) {
     /* find the highest-prio AO with non-empty event queue */
     uint_fast8_t p = QPSet_findMax(&QF_readySet_);
-    uint8_t const pthre = QActive_registry_[p]->pthre;
 
-    /* is the AO's preemption-threshold not exceeding the active threshold? */
-    if (pthre <= QK_attr_.actThre) {
+    /* is the AO's priority below the active preemption-threshold? */
+    if (p <= QK_attr_.actThre) {
         p = 0U; /* no preemption needed */
     }
-    /* AO's preemption-threshold not exceeding the lock preemption-ceiling? */
-    else if (pthre <= QK_attr_.lockCeil) {
+    /* is the AO's priority below the lock preemption-ceiling? */
+    else if (p <= QK_attr_.lockCeil) {
         p = 0U; /* no preemption needed */
     }
     else {
@@ -266,8 +265,6 @@ void QK_activate_(uint_fast8_t const asynch) {
     Q_REQUIRE_ID(500, (prio_in <= QF_MAX_ACTIVE)
                       && (0U < p) && (p <= QF_MAX_ACTIVE));
 
-    uint8_t pthre = QActive_registry_[p]->pthre;
-
     #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
     uint_fast8_t pprev = prio_in;
     #endif /* QK_ON_CONTEXT_SW || Q_SPY */
@@ -279,7 +276,7 @@ void QK_activate_(uint_fast8_t const asynch) {
 
         /* set new active priority and preemption-ceiling */
         QK_attr_.actPrio = (uint8_t)p;
-        QK_attr_.actThre = pthre;
+        QK_attr_.actThre = QActive_registry_[p]->pthre;
 
     #ifdef Q_SPY
         if ((asynch != 0U) && (pprev == prio_in)) {
@@ -335,13 +332,13 @@ void QK_activate_(uint_fast8_t const asynch) {
 
         /* find new highest-prio AO ready to run... */
         p = QPSet_findMax(&QF_readySet_);
-        pthre = QActive_registry_[p]->pthre;
 
-        /* is the new preemption-threshold below the initial? */
-        if (pthre <= QActive_registry_[prio_in]->pthre) {
+        /* is the new priority below the initial preemption-threshold? */
+        if (p <= (uint_fast8_t)QActive_registry_[prio_in]->pthre) {
             p = 0U; /* no preemption needed */
         }
-        else if (pthre <= QK_attr_.lockCeil) {
+        /* is the AO's priority below the lock preemption-ceiling? */
+        else if (p <= (uint_fast8_t)QK_attr_.lockCeil) {
             p = 0U; /* no preemption needed */
         }
         else {

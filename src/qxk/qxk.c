@@ -96,7 +96,7 @@ QSchedStatus QXK_schedLock(uint_fast8_t const ceiling) {
         QXK_attr_.lockCeil   = (uint8_t)ceiling;
     }
     else {
-       stat = 0xFFU;
+       stat = 0xFFU; /* scheduler not locked */
     }
     QF_CRIT_X_();
 
@@ -250,12 +250,10 @@ uint_fast8_t QXK_sched_(uint_fast8_t const asynch) {
 
     /* find the highest-prio thread ready to run */
     uint_fast8_t p = QPSet_findMax(&QF_readySet_);
-    uint8_t pthre = QActive_registry_[p]->pthre;
 
-    if (pthre <= QXK_attr_.lockCeil) {
+    if (p <= QXK_attr_.lockCeil) {
         /* priority of the thread holding the lock */
         p = (uint_fast8_t)QActive_registry_[QXK_attr_.lockHolder]->prio;
-        pthre = QActive_registry_[p]->pthre;
         if (p != 0U) {
             Q_ASSERT_ID(610, QPSet_hasElement(&QF_readySet_, p));
         }
@@ -271,7 +269,8 @@ uint_fast8_t QXK_sched_(uint_fast8_t const asynch) {
 
         /* is next a basic-thread? */
         if (next->osObject == (void *)0) {
-            if (pthre > QXK_attr_.actThre) {
+            /* is the new priority above the actvie pre-thre? */
+            if (p > QXK_attr_.actThre) {
                 QXK_attr_.next = next; /* set the next AO to activate */
             }
             else {
@@ -279,7 +278,7 @@ uint_fast8_t QXK_sched_(uint_fast8_t const asynch) {
                 p = 0U; /* no preemption needed */
             }
         }
-        else {  /* this is an extended-thread */
+        else {  /* the next thread is extended */
 
     #ifdef Q_SPY
             if (asynch != 0U) {
@@ -362,13 +361,12 @@ void QXK_activate_(uint_fast8_t const asynch) {
 
     /* priority and preemption-threshold of the next AO */
     uint_fast8_t p = (uint_fast8_t)a->prio;
-    uint8_t pthre = QActive_registry_[p]->pthre;
 
     /* loop until no more ready-to-run AOs of higher prio than the initial */
     do  {
         a = QActive_registry_[p]; /* obtain the pointer to the AO */
         QXK_attr_.actPrio = (uint8_t)p; /* new active prio */
-        QXK_attr_.actThre = pthre; /* new active preemption-threshold */
+        QXK_attr_.actThre = QActive_registry_[p]->pthre; /* new pthre */
         QXK_attr_.next = (QActive *)0; /* clear the next AO */
 
     #ifdef Q_SPY
@@ -420,22 +418,16 @@ void QXK_activate_(uint_fast8_t const asynch) {
             QPSet_remove(&QF_readySet_, p);
         }
 
-        /* find new highest-prio AO ready to run...
-        * NOTE: this part must match the QXK_sched_(),
-        * current is a basic-thread path.
-        */
+        /* find new highest-prio AO ready to run... */
         p = QPSet_findMax(&QF_readySet_);
         a = QActive_registry_[p];
 
         /* the AO must be registered in QF */
         Q_ASSERT_ID(720, a != (QActive *)0);
 
-        pthre = a->pthre;
-
-        /* is the new preemption-threshold below the initial? */
-        if (pthre <= (uint_fast8_t)QXK_attr_.lockCeil) {
+        /* is the new priority below the lock ceiling? */
+        if (p <= (uint_fast8_t)QXK_attr_.lockCeil) {
             p = QXK_attr_.lockHolder; /* thread holding lock */
-            pthre = QActive_registry_[p]->pthre;
             if (p != 0U) {
                 Q_ASSERT_ID(710, QPSet_hasElement(&QF_readySet_, p));
             }
@@ -443,7 +435,8 @@ void QXK_activate_(uint_fast8_t const asynch) {
 
         /* is the next a basic thread? */
         if (a->osObject == (void *)0) {
-            if (pthre > QActive_registry_[prio_in]->pthre) {
+            /* is the new priority above the initial pre-thre? */
+            if (p > QActive_registry_[prio_in]->pthre) {
                 QXK_attr_.next = a;
             }
             else {
@@ -474,7 +467,7 @@ void QXK_activate_(uint_fast8_t const asynch) {
             /* but context switch to extended thread necessary */
             QXK_CONTEXT_SWITCH_();
         }
-    } while (p != 0U); /* while activation needed */
+    } while (p != 0U); /* while preemption needed */
 
     /* restore the active priority and preemption-threshold */
     QXK_attr_.actPrio = prio_in;

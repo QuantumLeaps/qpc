@@ -37,7 +37,7 @@ expect("@timestamp Trg-Done QS_RX_EVENT")
 test("preemption-threshold (scheduler only)")
 current_obj(OBJ_AP, "pspec")
 poke(0, 2, pack("<HHHH",
-    Q_PRIO(1,1), Q_PRIO(2,1), Q_PRIO(3,1), Q_PRIO(4,2)))
+    Q_PRIO(1,3), Q_PRIO(2,3), Q_PRIO(3,3), Q_PRIO(4,4)))
 continue_test()
 expect_run()
 #----

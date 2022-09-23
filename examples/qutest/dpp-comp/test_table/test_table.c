@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: QUTEST fixture for the DPP components
-* Last updated for: @ref qpc_7_0_0
-* Last updated on  2022-02-16
+* Last updated for version 7.1.1
+* Last updated on  2022-09-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     /* start the active objects... */
     Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,             /* AO to start */
-                  Q_PRIO(2U, 1U),       /* QF-priority/preemption-threshold */
+                  1U,                   /* QF-priority/preemption-threshold */
                   tableQueueSto,        /* event queue storage */
                   Q_DIM(tableQueueSto), /* queue length [events] */
                   (void *)0,            /* stack storage (not used) */
