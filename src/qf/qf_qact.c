@@ -157,7 +157,7 @@ void QActive_register_(QActive * const me) {
     * 1. the preceding pre-thre must not exceed the preemption-threshold
     * 2. the preemption-threshold must not exceed the next pre-thre
     */
-    Q_ENSURE_ID(110, (prev_thre <= me->pthre) && (me->pthre <= next_thre));
+    Q_ENSURE_ID(101, (prev_thre <= me->pthre) && (me->pthre <= next_thre));
 
     #endif // Q_NASSERT
 

@@ -81,7 +81,7 @@ void QTimeEvt_ctorX(QTimeEvt * const me,
     uint_fast8_t const tickRate)
 {
     /*! @pre The signal must be valid and the tick rate in range */
-    Q_REQUIRE_ID(300, (sig >= (enum_t)Q_USER_SIG)
+    Q_REQUIRE_ID(300, (sig != 0)
         && (tickRate < QF_MAX_TICK_RATE));
 
     me->next      = (QTimeEvt *)0;

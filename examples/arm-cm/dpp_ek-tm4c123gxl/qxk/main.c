@@ -1,6 +1,6 @@
 /*****************************************************************************
 * Product: DPP example extened for QXK
-* Last updated for version 7.1.1
+* Last updated for version 7.1.2
 * Last updated on  2022-09-22
 *
 *                    Q u a n t u m  L e a P s
@@ -78,7 +78,7 @@ int main() {
     Philo_ctor(); /* instantiate all Philo AOs */
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
         QACTIVE_START(AO_Philo[n],       /* AO to start */
-                      Q_PRIO(n + 3U, N_PHILO + 2U),/* QF-prio/pre-thre. */
+                      n + 3U,            /* QF-prio/pre-thre. */
                       philoQueueSto[n],  /* event queue storage */
                       Q_DIM(philoQueueSto[n]), /* queue length [events] */
                       (void *)0,         /* stack storage (not used) */

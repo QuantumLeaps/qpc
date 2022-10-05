@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-09-04
+* @date Last updated on: 2022-09-25
 * @version Last updated for: @ref qpc_7_1_1
 *
 * @file
@@ -51,7 +51,7 @@ static inline uint32_t QXK_get_IPSR(void) {
 
 #define QXK_ISR_EXIT()  do {   \
     QF_INT_DISABLE();          \
-    if (QXK_sched_(1U) != 0U) {\
+    if (QXK_sched_() != 0U) {  \
         QXK_CONTEXT_SWITCH_(); \
     }                          \
     QF_INT_ENABLE();           \

@@ -35,7 +35,6 @@
 *.bak
 .qpc
 version-*
-JLink*.*
 
 html/
 cert-pack/
@@ -48,7 +47,6 @@ build_rel/
 build_spy/
 settings/
 .settings/
-targetConfigs/
 
 Debug/
 Release/

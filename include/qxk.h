@@ -146,10 +146,8 @@ void QXK_schedUnlock(QSchedStatus const stat);
 /*${QXK::QXK-base::Timeouts} ...............................................*/
 /*! timeout signals for extended threads */
 enum QXK_Timeouts {
-    QXK_DELAY_SIG = Q_USER_SIG,
-    QXK_QUEUE_SIG,
-    QXK_SEMA_SIG,
-    QXK_MUTEX_SIG
+    QXK_DELAY_SIG = 1,
+    QXK_TIMEOUT_SIG
 };
 /*$enddecl${QXK::QXK-base} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*$declare${QXK::QXK-extern-C} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
@@ -166,10 +164,10 @@ enum QXK_Timeouts {
 typedef struct QXK_Attr {
     struct QActive * volatile curr; /*!< current thread (NULL=basic) */
     struct QActive * volatile next; /*!< next thread to run */
-    uint8_t volatile actPrio;    /*!< prio of the active AO */
-    uint8_t volatile actThre;    /*!< active preemption-threshold */
-    uint8_t volatile lockCeil;   /*!< lock preemption-ceiling (0==no-lock) */
-    uint8_t volatile lockHolder; /*!< prio of the lock holder */
+    struct QActive * volatile prev; /*!< previous thread */
+    uint8_t volatile actPrio;       /*!< QF-prio of the active AO */
+    uint8_t volatile lockCeil;      /*!< lock-ceiling (0==no-lock) */
+    uint8_t volatile lockHolder;    /*!< prio of the lock holder */
 } QXK;
 
 /*${QXK::QXK-extern-C::attr_} ..............................................*/
@@ -184,9 +182,6 @@ extern QXK QXK_attr_;
 * The QXK scheduler finds the priority of the highest-priority thread
 * that is ready to run.
 *
-* @param[in]   asynch     flag conveying the type of scheduling:
-*                         != 0 for asynchronous scheduling and
-*                         == 0 for synchronous scheduling
 * @returns
 * the 1-based priority of the the thread (basic or extended) run next,
 * or zero if no eligible thread is found.
@@ -195,7 +190,7 @@ extern QXK QXK_attr_;
 * QXK_sched_() must be always called with interrupts **disabled** and
 * returns with interrupts **disabled**.
 */
-uint_fast8_t QXK_sched_(uint_fast8_t const asynch);
+uint_fast8_t QXK_sched_(void);
 
 /*${QXK::QXK-extern-C::activate_} ..........................................*/
 /*! QXK activator activates the next active object. The activated AO
@@ -206,14 +201,11 @@ uint_fast8_t QXK_sched_(uint_fast8_t const asynch);
 * QXK_activate_() activates ready-to run AOs that are above the initial
 * active priority (QXK_attr_.actPrio).
 *
-* @param[in]   asynch     flag conveying the type of activation:
-*                         != 0 for asynchronous activation and
-*                         == 0 for synchronous activation
 * @attention
 * QXK_activate_() must be always called with interrupts **disabled** and
 * returns with interrupts **disabled**.
 */
-void QXK_activate_(uint_fast8_t const asynch);
+void QXK_activate_(void);
 
 /*${QXK::QXK-extern-C::current} ............................................*/
 /*! obtain the currently executing active-object/thread
@@ -225,12 +217,30 @@ void QXK_activate_(uint_fast8_t const asynch);
 QActive * QXK_current(void);
 
 /*${QXK::QXK-extern-C::stackInit_} .........................................*/
-/*! initialize the private stack of a given AO */
+/*! initialize the private stack of a given AO (defined in QXK port) */
 void QXK_stackInit_(
     void * thr,
      QXThreadHandler const handler,
     void * const stkSto,
     uint_fast16_t const stkSize);
+
+/*${QXK::QXK-extern-C::contextSw} ..........................................*/
+#if defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW)
+/*! QXK context switch management
+* @static @public @memberof QXK
+*
+* @details
+* This function performs software tracing (if #Q_SPY is defined)
+* and calls QXK_onContextSw() (if #QXK_ON_CONTEXT_SW is defined)
+*
+* @param[in] next  pointer to the next thread (NULL for basic-thread)
+*
+* @attention
+* QXK_contextSw() is invoked with interrupts **disabled** and must also
+* return with interrupts **disabled**.
+*/
+void QXK_contextSw(QActive * const next);
+#endif /*  defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW) */
 
 /*${QXK::QXK-extern-C::onContextSw} ........................................*/
 #ifdef QXK_ON_CONTEXT_SW
@@ -242,10 +252,9 @@ void QXK_stackInit_(
 * custom operations when QXK switches context from one thread to
 * another.
 *
-* @param[in] prev   pointer to the previous thread (active object)
-*                   (prev==0 means that @p prev was the QXK idle thread)
-* @param[in] next   pointer to the next thread (active object)
-*                   (next==0) means that @p next is the QXK idle thread)
+* @param[in] prev   pointer to the previous thread (NULL for idle thead)
+* @param[in] next   pointer to the next thread (NULL for idle thead)
+*
 * @attention
 * QXK_onContextSw() is invoked with interrupts **disabled** and must also
 * return with interrupts **disabled**.
@@ -364,10 +373,10 @@ bool QXThread_delayCancel(QXThread * const me);
 * thread until either an event is received, or a user-specified timeout
 * expires.
 *
-* @param[in]  nTicks    number of clock ticks (at the associated rate)
-*                       to wait for the event to arrive. The value of
-*                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
-*                       occur and the queue will block indefinitely.
+* @param[in]  nTicks number of clock ticks (at the associated rate)
+*                    to wait for the event to arrive. The value of
+*                    ::QXTHREAD_NO_TIMEOUT indicates that no timeout will
+*                    occur and the queue will block indefinitely.
 * @returns
 * A pointer to the event. If the pointer is not NULL, the event was delivered.
 * Otherwise the event pointer of NULL indicates that the queue has timed out.
@@ -397,9 +406,8 @@ void QXThread_dispatch_(
 * if the QXK is already running.
 *
 * @param[in,out] me      pointer (see @ref oop)
-* @param[in]     prio    QF-priority of the thread and (optionally)
-*                        preemption-threshold of this extended thread.
-*                        See also ::QPrioSpec.
+* @param[in]     prio    QF-priority of the thread, but no preemption-
+*                        threshold. See also ::QPrioSpec.
 * @param[in]     qSto    pointer to the storage for the ring buffer of the
 *                        event queue. This cold be NULL, if this extended
 *                        thread does not use the built-in event queue.
@@ -410,10 +418,14 @@ void QXThread_dispatch_(
 * @param[in]     par     pointer to an extra parameter (might be NULL).
 *
 * @note
-* Should be called via the macro QXTHREAD_START().
+* Currently, extended trheads in QXK do NOT support preemption-threshold.
+* The `prio` must NOT provide preemption-threshold and this function
+* will assert it in the precondition.
 *
 * @usage
-* The following example shows starting an extended thread:
+* QXThread_start_() should NOT be called directly, only via the macro
+* QXTHREAD_START(). The following example shows starting an extended
+* thread:
 * @include qxk_start.c
 */
 void QXThread_start_(
@@ -625,11 +637,12 @@ void QXSemaphore_init(QXSemaphore * const me,
 * @param[in,out] me     pointer (see @ref oop)
 * @param[in]     nTicks number of clock ticks (at the associated rate)
 *                       to wait for the semaphore. The value of
-*                       QXTHREAD_NO_TIMEOUT indicates that no timeout will
+*                       ::QXTHREAD_NO_TIMEOUT indicates that no timeout will
 *                       occur and the semaphore will wait indefinitely.
 *
 * @returns
-* 'true' if the semaphore has been signaled and 'false' if a timeout occurred.
+* 'true' if the semaphore has been signaled and 'false' if a timeout
+* occurred.
 *
 * @note
 * Multiple extended threads can wait for a given semaphore.
@@ -767,7 +780,7 @@ void QXMutex_init(QXMutex * const me,
 * @param[in,out] me   pointer (see @ref oop)
 * @param[in]  nTicks  number of clock ticks (at the associated rate)
 *                     to wait for the mutex. The value of
-*                     QXTHREAD_NO_TIMEOUT indicates that no timeout will
+*                     ::QXTHREAD_NO_TIMEOUT indicates that no timeout will
 *                     occur and the mutex could block indefinitely.
 * @returns
 * 'true' if the mutex has been acquired and 'false' if a timeout occurred.
@@ -943,8 +956,8 @@ do { \
 #define QACTIVE_EQUEUE_SIGNAL_(me_) do { \
     QPSet_insert(&QF_readySet_, (uint_fast8_t)(me_)->prio); \
     if (!QXK_ISR_CONTEXT_()) { \
-        if (QXK_sched_(0U) != 0U) { \
-            QXK_activate_(0U); \
+        if (QXK_sched_() != 0U) { \
+            QXK_activate_(); \
         } \
     } \
 } while (false)

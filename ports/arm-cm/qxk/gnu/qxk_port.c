@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-09-20
-* @version Last updated for: @ref qpc_7_1_1
+* @date Last updated on: 2022-10-04
+* @version Last updated for: @ref qpc_7_1_2
 *
 * @file
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM toolset
@@ -162,21 +162,20 @@ void QXK_stackInit_(void *thr, QXThreadHandler const handler,
 /* NOTE: keep in synch with struct QXK_Attr in "qxk.h" !!! */
 #define QXK_CURR       0
 #define QXK_NEXT       4
-#define QXK_ACT_THRE   9
+#define QXK_ACT_PRIO   12
 
 /* make sure that the offsets match the QXK declaration in "qxk.h" */
 Q_ASSERT_STATIC(QXK_CURR == offsetof(QXK, curr));
 Q_ASSERT_STATIC(QXK_NEXT == offsetof(QXK, next));
-Q_ASSERT_STATIC(QXK_ACT_THRE == offsetof(QXK, actThre));
+Q_ASSERT_STATIC(QXK_ACT_PRIO == offsetof(QXK, actPrio));
 
 /* offsets within struct QActive; NOTE: keep in synch with "qf.h" !!! */
 #define QACTIVE_OSOBJ  28
 #define QACTIVE_PRIO   36
-#define QACTIVE_PTHRE  37
 
 /* make sure that the offsets match the QXK declaration in "qf.h" */
 Q_ASSERT_STATIC(QACTIVE_OSOBJ == offsetof(QActive, osObject));
-Q_ASSERT_STATIC(QACTIVE_PTHRE == offsetof(QActive, pthre));
+Q_ASSERT_STATIC(QACTIVE_PRIO  == offsetof(QActive, prio));
 
 /* helper macros to "stringify" values */
 #define VAL(x) #x
@@ -275,11 +274,6 @@ __asm volatile (
     "  ADD     r0,sp,#(5*4)     \n" /* r0 := 5 registers below the top of stack */
     "  STM     r0!,{r1-r3}      \n" /* save xpsr,pc,lr */
 
-#ifdef Q_SPY
-    "  MOV     r0,#1            \n" /* set the parameter 'asynch` */
-    "  STR     r0,[sp]          \n" /* for call QK_activate_(asynch == 1) */
-#endif /* Q_SPY */
-
     "  MOV     r0,#6            \n"
     "  MVN     r0,r0            \n" /* r0 := ~6 == 0xFFFFFFF9 */
 #if (__ARM_ARCH != 6)               /* ARMv7-M or higher */
@@ -330,9 +324,9 @@ __asm volatile (
     * r12 -> QXK_attr_.next / basic-thread
     */
     "PendSV_restore_ao:         \n"
-    "  MOV     r0,#0            \n"
-    "  STR     r0,[r3,#" STRINGIFY(QXK_CURR) "]\n" /* QXK_attr_.curr := 0 */
-    /* don't clear QXK_attr_.next, as it might be needed for AO activation */
+    /* don NOT clear QXK_attr_.curr or QXK_attr_.next,
+    *  as they might be needed for AO activation
+    */
 
 #if (__ARM_ARCH == 6)               /* if ARMv6-M... */
     "  MOV     r0,sp            \n" /* r0 := top of stack */
@@ -363,26 +357,25 @@ __asm volatile (
 #endif                              /* ARMv7-M or higher */
 
     "  MOV     r0,r12           \n" /* r0 := QXK_attr_.next */
-    "  MOV     r2,#" STRINGIFY(QACTIVE_PTHRE) "\n" /* r2 := offset of .pthre */
-    "  LDRB    r0,[r0,r2]       \n" /* r0 := QXK_attr_.next->pthre */
-    "  LDRB    r2,[r3,#" STRINGIFY(QXK_ACT_THRE) "]\n" /* r2 := QXK_attr_.actThre */
+    "  MOV     r2,#" STRINGIFY(QACTIVE_PRIO) "\n" /* r2 := offset of .prio */
+    "  LDRB    r0,[r0,r2]       \n" /* r0 := QXK_attr_.next->prio */
+    "  LDRB    r2,[r3,#" STRINGIFY(QXK_ACT_PRIO) "]\n" /* r2 := QXK_attr_.actPrio */
     "  CMP     r2,r0            \n"
-    "  BCC     PendSV_activate  \n" /* if (next->pthre > actThre) activate the next AO */
+    "  BCC     PendSV_activate  \n" /* if (next->prio > actPrio) activate the next AO */
 
     /* otherwise no activation needed... */
     "  MOV     r0,#0            \n"
-    "  STR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" /* QXK_attr_.next := 0 (clear the next) */
-    "  MOV     r12,r0           \n" /* also clear r12==QXK_attr_.next */
+    "  STR     r0,[r3,#" STRINGIFY(QXK_CURR) "]\n" /* QXK_attr_.curr := 0 */
+    "  STR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" /* QXK_attr_.next := 0 */
 
-#ifdef QXK_ON_CONTEXT_SW
-    "  MOV     r0,r1            \n" /* r0 := QXK_attr_.curr / basic */
-    "  MOV     r1,r12           \n" /* r1 := QXK_attr_.next / basic */
-    "  LDR     r2,=QXK_onContextSw \n"
-    "  PUSH    {r1,lr}          \n" /* save the aligner + exception lr */
-    "  BLX     r2               \n" /* call QXK_onContextSw() */
-    "  POP     {r1,r2}          \n" /* restore the aligner + lr into r2 */
-    "  MOV     lr,r2            \n" /* restore the exception lr */
-#endif /* QXK_ON_CONTEXT_SW */
+#if defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW)
+    "  MOV     r0,#0            \n" /* r0 := 0 (next is basic) */
+    "  PUSH    {r3,lr}          \n" /* save QXK_attr_ + exception lr */
+    "  LDR     r3,=QXK_contextSw \n"
+    "  BLX     r3               \n" /* call QXK_contextSw() */
+    "  POP     {r0,r1}          \n" /* restore the aligner + lr into r1 */
+    "  MOV     lr,r1            \n" /* restore the exception lr */
+#endif /* defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW) */
 
     /* re-enable interrupts and return from PendSV */
     "PendSV_return:             \n"
@@ -397,7 +390,7 @@ __asm volatile (
     "  BX      lr               \n" /* return to the preempted AO-thread */
 
     /*-------------------------------------------------------------------------
-    * Saving extended-thread before crossing to AO-thread
+    * Saving extended-thread
     * expected register contents:
     * r0  -> QXK_attr_.next / basic-thread
     * r1  -> QXK_attr_.curr / basic-thread
@@ -439,7 +432,7 @@ __asm volatile (
     /* otherwise continue to restoring next extended-thread... */
 
     /*-------------------------------------------------------------------------
-    * Restoring extended-thread after crossing from AO-thread
+    * Restoring extended-thread
     * expected register contents:
     * r0  -> QXK_attr_.next / basic-thread
     * r1  -> QXK_attr_.curr / basic-thread
@@ -448,20 +441,19 @@ __asm volatile (
     * r12 -> QXK_attr_.next / basic-thread
     */
     "PendSV_restore_ex:         \n"
-#ifdef QXK_ON_CONTEXT_SW
-    "  MOV     r0,r1            \n" /* r0 := QXK_attr_.curr / basic */
-    "  MOV     r1,r12           \n" /* r1 := QXK_attr_.next / basic */
-    "  LDR     r2,=QXK_onContextSw \n"
-    "  PUSH    {r1,lr}          \n" /* save the aligner + exception lr */
-    "  BLX     r2               \n" /* call QXK_onContextSw() */
-    "  POP     {r1,r2}          \n" /* restore the aligner + lr into r2 */
-    "  MOV     lr,r2            \n" /* restore the exception lr */
+#if defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW)
+    "  MOV     r0,r12           \n" /* r0 := next */
+    "  PUSH    {r3,lr}          \n" /* save QXK_attr_ + exception lr */
+    "  LDR     r3,=QXK_contextSw \n"
+    "  BLX     r3               \n" /* call QXK_contextSw() */
+    "  POP     {r0,r1}          \n" /* restore the aligner + lr into r1 */
+    "  MOV     lr,r1            \n" /* restore the exception lr */
+    "  MOV     r3,r0            \n" /* restore the saved QXK_attr_ in r3 */
 
     /* restore the AAPCS-clobbered registers after a functin call...  */
-    "  LDR     r3,=QXK_attr_    \n"
     "  LDR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" /* r0 := QXK_attr_.next */
     "  LDR     r2,[r0,#" STRINGIFY(QACTIVE_OSOBJ) "]\n" /* r2 := QXK_attr_.curr->osObject */
-#endif /* QXK_ON_CONTEXT_SW */
+#endif /* defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW) */
 
     "  STR     r0,[r3,#" STRINGIFY(QXK_CURR) "]\n" /* QXK_attr_.curr := r0 (QXK_attr_.next) */
     "  MOV     r0,#0            \n"
@@ -536,7 +528,7 @@ __asm volatile (
     "  ISB                      \n" /* ISB after MSR CONTROL (ARM AN321,Sect.4.16) */
 #endif                  /*--------- VFP available */
 
-#ifndef QXK_USE_IRQ_NUM /*--------- IRQ NOT defined, used NMI by default */
+#ifndef QXK_USE_IRQ_NUM /*--------- IRQ NOT defined, use NMI by default */
     "  LDR     r0,=" STRINGIFY(NVIC_ICSR) "\n" /* Interrupt Control and State */
     "  MOV     r1,#1            \n"
     "  LSL     r1,r1,#31        \n" /* r1 := (1 << 31) (NMI bit) */
@@ -646,4 +638,3 @@ __asm volatile (
 }
 
 #endif /* ARMv6-M */
-

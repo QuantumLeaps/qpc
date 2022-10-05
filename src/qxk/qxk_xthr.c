@@ -181,9 +181,9 @@ QEvt const * QXThread_queueGet(uint_fast16_t const nTicks) {
         thr->super.super.temp.obj
             = QXK_PTR_CAST_(QMState const*, &thr->super.eQueue);
 
-        QXThread_teArm_(thr, (enum_t)QXK_QUEUE_SIG, nTicks);
+        QXThread_teArm_(thr, (enum_t)QXK_TIMEOUT_SIG, nTicks);
         QPSet_remove(&QF_readySet_, (uint_fast8_t)thr->super.prio);
-        (void)QXK_sched_(0U); /* synchronously schedule other threads */
+        (void)QXK_sched_(); /* schedule other threads */
         QF_CRIT_X_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here */
 
@@ -284,12 +284,15 @@ void QXThread_start_(
     /*! @pre this function must:
     * - NOT be called from an ISR;
     * - the stack storage must be provided;
-    * - the thread must be instantiated (see QXThread_ctor()).
+    * - the thread must be instantiated (see QXThread_ctor())
+    * - preemption-threshold is NOT provided (because QXK kernel
+    *   does not support preemption-threshold scheduling)
     */
     Q_REQUIRE_ID(200, (!QXK_ISR_CONTEXT_()) /* don't call from an ISR! */
         && (stkSto != (void *)0) /* stack must be provided */
         && (stkSize != 0U)
-        && (me->super.state.act == (QActionHandler)0));
+        && (me->super.state.act == (QActionHandler)0)
+        && ((prioSpec & 0xFF00U) == 0U));
 
     /* is storage for the queue buffer provided? */
     if (qSto != (QEvt const **)0) {
@@ -305,7 +308,7 @@ void QXThread_start_(
     me->super.temp.obj = (QMState *)0;
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
-    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    me->pthre = 0U; /* preemption-threshold NOT used */
     QActive_register_(me); /* make QF aware of this active object */
 
     QF_CRIT_STAT_
@@ -315,7 +318,7 @@ void QXThread_start_(
 
     /* see if this thread needs to be scheduled in case QXK is running */
     if (QXK_attr_.lockCeil <= QF_MAX_ACTIVE) {
-        (void)QXK_sched_(0U); /* synchronously schedule other threads */
+        (void)QXK_sched_(); /* schedule other threads */
     }
     QF_CRIT_X_();
 }
@@ -412,7 +415,7 @@ bool QXThread_post_(
                     (void)QXThread_teDisarm_(QXTHREAD_CAST_(me));
                     QPSet_insert(&QF_readySet_, (uint_fast8_t)me->prio);
                     if (!QXK_ISR_CONTEXT_()) {
-                        (void)QXK_sched_(0U); /* syncrhonous schedule */
+                        (void)QXK_sched_(); /* schedule other threads */
                     }
                 }
             }
@@ -477,7 +480,7 @@ void QXThread_block_(QXThread const * const me) {
     Q_REQUIRE_ID(600, (QXK_attr_.lockHolder != me->super.prio));
 
     QPSet_remove(&QF_readySet_, (uint_fast8_t)me->super.prio);
-    (void)QXK_sched_(0U); /* synchronously schedule other threads */
+    (void)QXK_sched_(); /* schedule other threads */
 }
 
 /*${QXK::QXThread::unblock_} ...............................................*/
@@ -486,7 +489,7 @@ void QXThread_unblock_(QXThread const * const me) {
     if ((!QXK_ISR_CONTEXT_()) /* not inside ISR? */
         && (QActive_registry_[0] != (QActive *)0))  /* kernel started? */
     {
-        (void)QXK_sched_(0U); /* synchronously schedule other threads */
+        (void)QXK_sched_(); /* schedule other threads */
     }
 }
 

@@ -150,8 +150,8 @@ void QK_onIdle(void);
 * current priority.
 *
 * @returns
-* The QF priority of the the active object, or zero if no eligible
-* AO is ready to run.
+* The QF priority of the next active object to activate, or zero
+* if no activation of AO is needed.
 *
 * @attention
 * QK_sched_() must be always called with interrupts **disabled** and
@@ -166,16 +166,13 @@ uint_fast8_t QK_sched_(void);
 *
 * @details
 * QK_activate_() activates ready-to run AOs that are above the initial
-* active priority (QK_attr_.actPrio).
+* preemption-threshold.
 *
-* @param[in]   asynch     flag conveying the type of activation:
-*                         != 0 for asynchronous activation and
-*                         == 0 for synchronous activation
 * @attention
 * QK_activate_() must be always called with interrupts **disabled** and
 * returns with interrupts **disabled**.
 */
-void QK_activate_(uint_fast8_t const asynch);
+void QK_activate_(void);
 
 /*${QK::QK-extern-C::onContextSw} ..........................................*/
 #ifdef QK_ON_CONTEXT_SW
@@ -255,7 +252,7 @@ void QK_onContextSw(
     QPSet_insert(&QF_readySet_, (uint_fast8_t)(me_)->prio); \
     if (!QK_ISR_CONTEXT_()) { \
         if (QK_sched_() != 0U) { \
-            QK_activate_(0U); \
+            QK_activate_(); \
         } \
     } \
 } while (false)

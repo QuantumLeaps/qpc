@@ -186,7 +186,7 @@ bool QXMutex_lock(QXMutex * const me,
 
         /* set the blocking object (this mutex) */
         curr->super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
-        QXThread_teArm_(curr, (enum_t)QXK_MUTEX_SIG, nTicks);
+        QXThread_teArm_(curr, (enum_t)QXK_TIMEOUT_SIG, nTicks);
 
         QS_BEGIN_NOCRIT_PRE_(QS_MTX_BLOCK, curr->super.prio)
             QS_TIME_PRE_();  /* timestamp */
@@ -196,7 +196,7 @@ bool QXMutex_lock(QXMutex * const me,
         QS_END_NOCRIT_PRE_()
 
         /* schedule the next thread if multitasking started */
-        (void)QXK_sched_(0U); /* synchronous schedule */
+        (void)QXK_sched_(); /* schedule other threads */
         QF_CRIT_X_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here !!! */
 
@@ -442,8 +442,8 @@ void QXMutex_unlock(QXMutex * const me) {
         }
 
         /* schedule the next thread if multitasking started */
-        if (QXK_sched_(0U) != 0U) { /* synchronous preemption needed? */
-            QXK_activate_(0U); /* activate a basic thread */
+        if (QXK_sched_() != 0U) { /* activation needed? */
+            QXK_activate_(); /* synchronously activate basic-thred(s) */
         }
     }
     else { /* releasing one level of nested mutex lock */

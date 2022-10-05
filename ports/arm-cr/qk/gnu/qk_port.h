@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-09-03
-* @version Last updated for: @ref qpc_7_1_1
+* @date Last updated on: 2022-10-02
+* @version Last updated for: @ref qpc_7_1_2
 *
 * @file
 * @brief QK/C port to ARM Cortex-R, GNU-ARM toolset
@@ -72,7 +72,7 @@
     } --QF_intNest_;                  \
     if (QF_intNest_ == 0U) {          \
         if (QK_sched_() != 0U) {      \
-            QK_activate_(1U);         \
+            QK_activate_();           \
         }                             \
     }                                 \
     __asm volatile (" POP {R3, LR}\n" \
@@ -90,7 +90,7 @@
     } --QF_intNest_;                 \
     if (QF_intNest_ == 0U) {         \
         if (QK_sched_() != 0U) {     \
-            QK_activate_(1U);        \
+            QK_activate_();          \
         }                            \
     }                                \
     __asm volatile (" POP {R3, LR}\n"     \

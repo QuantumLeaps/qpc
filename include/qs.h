@@ -207,7 +207,7 @@ enum QSpyPre {
     QS_SCHED_UNLOCK,      /*!< scheduler was unlocked */
     QS_SCHED_NEXT,        /*!< scheduler started new task */
     QS_SCHED_IDLE,        /*!< scheduler restored the idle task */
-    QS_SCHED_RESUME,      /*!< scheduler resumed a task */
+    QS_SCHED_RESUME,      /*!< scheduler resumed a (blocked) task */
 
     /* [55] Additional QEP records */
     QS_QEP_TRAN_HIST,     /*!< a tran to history was taken */

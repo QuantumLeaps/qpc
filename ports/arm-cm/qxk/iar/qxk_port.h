@@ -23,7 +23,7 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-09-04
+* @date Last updated on: 2022-09-25
 * @version Last updated for: @ref qpc_7_1_1
 *
 * @file
@@ -35,7 +35,7 @@
 /* determination if the code executes in the ISR context */
 #define QXK_ISR_CONTEXT_() (__get_IPSR() != 0U)
 
-/* trigger the PendSV exception to pefrom the context switch */
+/* trigger the PendSV exception to perform the context switch */
 #define QXK_CONTEXT_SWITCH_()  \
     *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28U)
 
@@ -44,7 +44,7 @@
 
 #define QXK_ISR_EXIT()  do {   \
     QF_INT_DISABLE();          \
-    if (QXK_sched_(1U) != 0U) {\
+    if (QXK_sched_() != 0U) {  \
         QXK_CONTEXT_SWITCH_(); \
     }                          \
     QF_INT_ENABLE();           \

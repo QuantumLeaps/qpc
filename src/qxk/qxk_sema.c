@@ -126,7 +126,7 @@ bool QXSemaphore_wait(QXSemaphore * const me,
 
         /* remember the blocking object (this semaphore) */
         curr->super.super.temp.obj = QXK_PTR_CAST_(QMState*, me);
-        QXThread_teArm_(curr, (enum_t)QXK_SEMA_SIG, nTicks);
+        QXThread_teArm_(curr, (enum_t)QXK_TIMEOUT_SIG, nTicks);
 
         QS_BEGIN_NOCRIT_PRE_(QS_SEM_BLOCK, curr->super.prio)
             QS_TIME_PRE_();  /* timestamp */
@@ -136,7 +136,7 @@ bool QXSemaphore_wait(QXSemaphore * const me,
         QS_END_NOCRIT_PRE_()
 
         /* schedule the next thread if multitasking started */
-        (void)QXK_sched_(0U); /* synchronously activate other theads */
+        (void)QXK_sched_(); /* schedule other theads */
         QF_CRIT_X_();
         QF_CRIT_EXIT_NOP(); /* BLOCK here !!! */
 
@@ -265,7 +265,7 @@ bool QXSemaphore_signal(QXSemaphore * const me) {
             QS_END_NOCRIT_PRE_()
 
             if (!QXK_ISR_CONTEXT_()) { /* not inside ISR? */
-                (void)QXK_sched_(0U); /* synchronously schedule next thread */
+                (void)QXK_sched_(); /* schedule other threads */
             }
         }
     }

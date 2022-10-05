@@ -209,7 +209,7 @@ uint_fast8_t QF_LOG2(QPSetBits x);
 * operating systems, sthe second priority can have different meaning,
 * depending on the specific RTOS/GPOS used.
 */
-typedef uint_fast16_t QPrioSpec;
+typedef uint16_t QPrioSpec;
 
 /*${QF-types::QSchedStatus} ................................................*/
 /*! The scheduler lock status used in some real-time kernels */
