@@ -58,10 +58,6 @@
 Q_DEFINE_THIS_MODULE("qxk")
 
 /*==========================================================================*/
-/*! QXK idle thread object */
-static QActive const QXK_idle = { (struct QHsmVtable const *)0 };
-
-/*==========================================================================*/
 /*$skip${QP_VERSION} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 /* Check for the minimum required QP version */
 #if (QP_VERSION < 690U) || (QP_VERSION != ((QP_RELEASE^4294967295U) % 0x3E8U))
@@ -159,7 +155,8 @@ void QF_init(void) {
     QXK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
 
     /* register the QXK idle AO object, cast "const" away */
-    QActive_registry_[0] = QF_CONST_CAST_(QActive*, &QXK_idle);
+    static QActive const idle_ao = { (struct QHsmVtable const *)0 };
+    QActive_registry_[0] = QF_CONST_CAST_(QActive*, &idle_ao);
 
     #ifdef QXK_INIT
     QXK_INIT(); /* port-specific initialization of the QXK kernel */
@@ -190,9 +187,6 @@ int_t QF_run(void) {
     QS_END_NOCRIT_PRE_()
 
     QF_INT_ENABLE();
-
-    /* produce the object dictionary for the QXK idle thread */
-    QS_OBJ_DICTIONARY(&QXK_idle);
 
     /* the QXK idle loop... */
     for (;;) {
@@ -244,8 +238,10 @@ void QActive_start_(QActive * const me,
     /* see if this AO needs to be scheduled if QXK is already running */
     QF_CRIT_STAT_
     QF_CRIT_E_();
-    if (QXK_sched_() != 0U) { /* activation needed? */
-        QXK_activate_(); /* synchronously activate basic-thred(s) */
+    if (QXK_attr_.lockCeil <= QF_MAX_ACTIVE) { /* scheduler running? */
+        if (QXK_sched_() != 0U) { /* activation needed? */
+            QXK_activate_(); /* synchronously activate basic-thred(s) */
+        }
     }
     QF_CRIT_X_();
 }
@@ -265,11 +261,12 @@ uint_fast8_t QXK_sched_(void) {
     else {
         /* find the highest-prio thread ready to run */
         p = QPSet_findMax(&QF_readySet_);
-        if (p < QXK_attr_.lockCeil) {
+        if (p <= QXK_attr_.lockCeil) {
             /* priority of the thread holding the lock */
             p = (uint_fast8_t)QActive_registry_[QXK_attr_.lockHolder]->prio;
-            Q_ASSERT_ID(610, p != 0U);
-            Q_ASSERT_ID(611, QPSet_hasElement(&QF_readySet_, p));
+            if (p != 0U) {
+                Q_ASSERT_ID(610, QPSet_hasElement(&QF_readySet_, p));
+            }
         }
     }
     QActive const * const curr = QXK_attr_.curr;
@@ -286,8 +283,8 @@ uint_fast8_t QXK_sched_(void) {
             QXK_attr_.next = next; /* set the next AO to activate */
 
             if (next->osObject != (void *)0) { /* is next extended? */
-                p = 0U; /* no activation needed */
                 QXK_CONTEXT_SWITCH_();
+                p = 0U; /* no activation needed */
             }
         }
         else { /* below the pre-thre */
@@ -298,15 +295,8 @@ uint_fast8_t QXK_sched_(void) {
     else { /* currently executing an extended-thread */
         /* is the current thread different from the next? */
         if (curr != next) {
-            /* is current still ready-to-run? (not blocked) */
-            if (QPSet_hasElement(&QF_readySet_, curr->prio)) {
-                QXK_attr_.next = next;
-                QXK_CONTEXT_SWITCH_();
-            }
-            else { /* current is not ready-to-run (is blocked) */
-                QXK_attr_.next = next;
-                QXK_CONTEXT_SWITCH_();
-            }
+            QXK_attr_.next = next;
+            QXK_CONTEXT_SWITCH_();
         }
         else { /* current is the same as next */
             QXK_attr_.next = (QActive *)0; /* no need to context-switch */
@@ -322,8 +312,7 @@ void QXK_activate_(void) {
     QActive *next = QXK_attr_.next; /* the next AO (basic-thread) to run */
 
     /*! @pre QXK_attr_.next must be valid and the prio must be in range */
-    Q_REQUIRE_ID(700, (next != (QActive *)0)
-                      && (prio_in <= QF_MAX_ACTIVE));
+    Q_REQUIRE_ID(700, (next != (QActive *)0) && (prio_in <= QF_MAX_ACTIVE));
 
     /* QXK Context switch callback defined or QS tracing enabled? */
     #if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
@@ -368,10 +357,11 @@ void QXK_activate_(void) {
         Q_ASSERT_ID(710, next != (QActive *)0);
 
         /* is the next priority below the lock-ceiling? */
-        if (p < (uint_fast8_t)QXK_attr_.lockCeil) {
+        if (p <= (uint_fast8_t)QXK_attr_.lockCeil) {
             p = QXK_attr_.lockHolder; /* thread holding lock */
-            Q_ASSERT_ID(710, p != 0U);
-            Q_ASSERT_ID(711, QPSet_hasElement(&QF_readySet_, p));
+            if (p != 0U) {
+                Q_ASSERT_ID(720, QPSet_hasElement(&QF_readySet_, p));
+            }
         }
 
         /* is the next a basic thread? */

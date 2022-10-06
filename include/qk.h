@@ -150,7 +150,7 @@ void QK_onIdle(void);
 * current priority.
 *
 * @returns
-* The QF priority of the next active object to activate, or zero
+* The QF-priority of the next active object to activate, or zero
 * if no activation of AO is needed.
 *
 * @attention

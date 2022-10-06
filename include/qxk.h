@@ -762,12 +762,6 @@ typedef struct {
 * the priority and priority-threshold of the holding thread to the
 * priority specification in `prioSpec` (see ::QPrioSpec).
 *
-* @attention
-* When the priority-ceiling protocol is used (`prioSpec != 0`), the
-* QF-priority specified in `prioSpec` must be unused by any other thread
-* or mutex. Also, the priority-threshold must be higher or equal to the
-* threshold of any thread that uses this mutex.
-*
 * @usage
 * @include qxk_mutex.c
 */

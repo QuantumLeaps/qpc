@@ -74,10 +74,11 @@ Q_DEFINE_THIS_MODULE("qxk_mutex")
 void QXMutex_init(QXMutex * const me,
     QPrioSpec const prioSpec)
 {
-    QF_bzero((void *)me, sizeof(*me)); /* clear the mutex object */
+    /*! @pre preemption-threshold must not be used */
+    Q_REQUIRE_ID(100, (prioSpec & 0xFF00U) == 0U);
 
     me->super.prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority */
-    me->super.pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    me->super.pthre = 0U;   /* preemption-threshold (not used) */
 
     if (prioSpec != 0U) {  /* priority-ceiling protocol used? */
         QActive_register_(&me->super); /* register this mutex as AO */

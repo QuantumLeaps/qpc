@@ -121,8 +121,8 @@ void QK_schedUnlock(QSchedStatus const stat) {
 
         QS_BEGIN_NOCRIT_PRE_(QS_SCHED_UNLOCK, 0U)
             QS_TIME_PRE_(); /* timestamp */
-            QS_2U8_PRE_(lockCeil,  /* current lock ceiling (old) */
-                        prevCeil); /* previous lock ceiling (new) */
+            // current lock ceiling (old), previous lock ceiling (new) */
+            QS_2U8_PRE_(lockCeil, prevCeil);
         QS_END_NOCRIT_PRE_()
 
         /* restore the previous lock ceiling and lock holder */
@@ -310,7 +310,7 @@ void QK_activate_(void) {
         * 2. dispatch the event to the AO's state machine.
         * 3. determine if event is garbage and collect it if so
         */
-        QEvt const *e = QActive_get_(a);
+        QEvt const * const e = QActive_get_(a);
         QHSM_DISPATCH(&a->super, e, a->prio);
     #if (QF_MAX_EPOOL > 0U)
         QF_gc(e);
@@ -345,12 +345,12 @@ void QK_activate_(void) {
 
     #if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
     if (prio_in != 0U) { /* resuming an active object? */
-        a = QActive_registry_[prio_in]; /* the pointer to the preempted AO */
+        a = QActive_registry_[prio_in]; /* pointer to the preempted AO */
 
         QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a->prio)
-            QS_TIME_PRE_();      /* timestamp */
-            QS_2U8_PRE_(prio_in, /* priority of the resumed AO */
-                        pprev);  /* previous priority */
+            QS_TIME_PRE_();     /* timestamp */
+            /* priority of the resumed AO, previous priority */
+            QS_2U8_PRE_(prio_in, pprev);
         QS_END_NOCRIT_PRE_()
     }
     else {  /* resuming priority==0 --> idle */
@@ -363,7 +363,7 @@ void QK_activate_(void) {
     }
 
     #ifdef QK_ON_CONTEXT_SW
-    QK_onContextSw(QActive_registry_[pprev], a); /* context-switch callback */
+    QK_onContextSw(QActive_registry_[pprev], a);
     #endif /* QK_ON_CONTEXT_SW */
 
     #endif /* QK_ON_CONTEXT_SW || Q_SPY */
