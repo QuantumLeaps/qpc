@@ -323,19 +323,24 @@ void QK_activate_(void) {
             QPSet_remove(&QF_readySet_, p);
         }
 
-        /* find new highest-prio AO ready to run... */
-        p = QPSet_findMax(&QF_readySet_);
-
-        /* is the new priority below the initial preemption-threshold? */
-        if (p <= (uint_fast8_t)QActive_registry_[prio_in]->pthre) {
-            p = 0U; /* no preemption needed */
-        }
-        /* is the AO's priority below the lock preemption-ceiling? */
-        else if (p <= (uint_fast8_t)QK_attr_.lockCeil) {
-            p = 0U; /* no preemption needed */
+        if (QPSet_isEmpty(&QF_readySet_)) {
+            p = 0U; /* no activation needed */
         }
         else {
-            Q_ASSERT_ID(510, p <= QF_MAX_ACTIVE);
+            /* find new highest-prio AO ready to run... */
+            p = QPSet_findMax(&QF_readySet_);
+
+            /* is the new priority below the initial preemption-threshold? */
+            if (p <= (uint_fast8_t)QActive_registry_[prio_in]->pthre) {
+                p = 0U; /* no activation needed */
+            }
+            /* is the AO's priority below the lock preemption-ceiling? */
+            else if (p <= (uint_fast8_t)QK_attr_.lockCeil) {
+                p = 0U; /* no activation needed */
+            }
+            else {
+                Q_ASSERT_ID(510, p <= QF_MAX_ACTIVE);
+            }
         }
     } while (p != 0U);
 

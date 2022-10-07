@@ -206,6 +206,8 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(CONTEXT_SW);
     QS_USR_DICTIONARY(COMMAND_STAT);
 
+    QS_FUN_DICTIONARY(&QHsm_top);
+
     /* setup the QS filters... */
     QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
     QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */

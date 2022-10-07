@@ -10483,19 +10483,24 @@ do  {
         QPSet_remove(&amp;QF_readySet_, p);
     }
 
-    /* find new highest-prio AO ready to run... */
-    p = QPSet_findMax(&amp;QF_readySet_);
-
-    /* is the new priority below the initial preemption-threshold? */
-    if (p &lt;= (uint_fast8_t)QActive_registry_[prio_in]-&gt;pthre) {
-        p = 0U; /* no preemption needed */
-    }
-    /* is the AO's priority below the lock preemption-ceiling? */
-    else if (p &lt;= (uint_fast8_t)QK_attr_.lockCeil) {
-        p = 0U; /* no preemption needed */
+    if (QPSet_isEmpty(&amp;QF_readySet_)) {
+        p = 0U; /* no activation needed */
     }
     else {
-        Q_ASSERT_ID(510, p &lt;= QF_MAX_ACTIVE);
+        /* find new highest-prio AO ready to run... */
+        p = QPSet_findMax(&amp;QF_readySet_);
+
+        /* is the new priority below the initial preemption-threshold? */
+        if (p &lt;= (uint_fast8_t)QActive_registry_[prio_in]-&gt;pthre) {
+            p = 0U; /* no activation needed */
+        }
+        /* is the AO's priority below the lock preemption-ceiling? */
+        else if (p &lt;= (uint_fast8_t)QK_attr_.lockCeil) {
+            p = 0U; /* no activation needed */
+        }
+        else {
+            Q_ASSERT_ID(510, p &lt;= QF_MAX_ACTIVE);
+        }
     }
 } while (p != 0U);
 
@@ -10827,6 +10832,9 @@ QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, 0U)
 QS_END_NOCRIT_PRE_()
 
 QF_INT_ENABLE();
+
+QS_SIG_DICTIONARY(QXK_DELAY_SIG,   (void *)0);
+QS_SIG_DICTIONARY(QXK_TIMEOUT_SIG, (void *)0);
 
 /* the QXK idle loop... */
 for (;;) {
@@ -12590,41 +12598,48 @@ do  {
         QPSet_remove(&amp;QF_readySet_, p);
     }
 
-    /* find new highest-prio AO ready to run... */
-    p = QPSet_findMax(&amp;QF_readySet_);
-    next = QActive_registry_[p];
-
-    /* next thread must be registered in QF */
-    Q_ASSERT_ID(710, next != (QActive *)0);
-
-    /* is the next priority below the lock-ceiling? */
-    if (p &lt;= (uint_fast8_t)QXK_attr_.lockCeil) {
-        p = QXK_attr_.lockHolder; /* thread holding lock */
-        if (p != 0U) {
-            Q_ASSERT_ID(720, QPSet_hasElement(&amp;QF_readySet_, p));
-        }
+    if (QPSet_isEmpty(&amp;QF_readySet_)) {
+        QXK_attr_.next = (QActive *)0;
+        next = QActive_registry_[0];
+        p = 0U; /* no activation needed */
     }
+    else {
+        /* find new highest-prio AO ready to run... */
+        p = QPSet_findMax(&amp;QF_readySet_);
+        next = QActive_registry_[p];
 
-    /* is the next a basic thread? */
-    if (next-&gt;osObject == (void *)0) {
-        /* is the next priority above the initial priority? */
-        if (p &gt; QActive_registry_[prio_in]-&gt;prio) {
-#if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
-            if (p != QXK_attr_.actPrio) {  /* changing threads? */
-                QXK_contextSw(next);
+        /* next thread must be registered in QF */
+        Q_ASSERT_ID(710, next != (QActive *)0);
+
+        /* is the next priority below the lock-ceiling? */
+        if (p &lt;= (uint_fast8_t)QXK_attr_.lockCeil) {
+            p = QXK_attr_.lockHolder; /* thread holding lock */
+            if (p != 0U) {
+                Q_ASSERT_ID(720, QPSet_hasElement(&amp;QF_readySet_, p));
             }
-#endif /* QXK_ON_CONTEXT_SW || Q_SPY */
-            QXK_attr_.next = next;
         }
-        else {
-            QXK_attr_.next = (QActive *)0;
+
+        /* is the next a basic thread? */
+        if (next-&gt;osObject == (void *)0) {
+            /* is the next priority above the initial priority? */
+            if (p &gt; QActive_registry_[prio_in]-&gt;prio) {
+#if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
+                if (p != QXK_attr_.actPrio) {  /* changing threads? */
+                    QXK_contextSw(next);
+                }
+#endif /* QXK_ON_CONTEXT_SW || Q_SPY */
+                QXK_attr_.next = next;
+            }
+            else {
+                QXK_attr_.next = (QActive *)0;
+                p = 0U; /* no activation needed */
+            }
+        }
+        else {  /* next is the extended-thread */
+            QXK_attr_.next = next;
+            QXK_CONTEXT_SWITCH_();
             p = 0U; /* no activation needed */
         }
-    }
-    else {  /* next is the extended-thread */
-        QXK_attr_.next = next;
-        QXK_CONTEXT_SWITCH_();
-        p = 0U; /* no activation needed */
     }
 } while (p != 0U); /* while activation needed */
 
@@ -12693,10 +12708,10 @@ return curr;</code>
 */</documentation>
     <!--${QXK::QXK-extern-C::contextSw::next}-->
     <parameter name="next" type="QActive * const"/>
-    <code>uint8_t prev_prio = (QXK_attr_.prev != (QActive *)0)
+    <code>uint8_t const prev_prio = (QXK_attr_.prev != (QActive *)0)
                     ? QXK_attr_.prev-&gt;prio
                     : 0U;
-uint8_t next_prio = (next != (QActive *)0)
+uint8_t const next_prio = (next != (QActive *)0)
                     ? next-&gt;prio
                     : QXK_attr_.actPrio;
 

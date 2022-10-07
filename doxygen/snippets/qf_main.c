@@ -1,4 +1,6 @@
 #include "qpc.h"
+#include "dpp.h"
+#include "bsp.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -21,10 +23,12 @@ int main(void) {
     static QEvt const *l_philoQueueSto[N_PHILO][N_PHILO];
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
         QACTIVE_START(AO_Philo[n],
-        Q_PRIO(n + 1U, N_PHILO), /* QF-priority/preemption-threshold */
-        l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
-        (void *)0, 0U,
-        (void *)0);
+        Q_PRIO(n + 1U, N_PHILO),  /* QF-priority/preemption-threshold */
+        l_philoQueueSto[n],       /* event queue storage */
+        Q_DIM(l_philoQueueSto[n]),/* event queue length [events] */
+        (void *)0,                /* stack storage (not used) */
+        0U,                       /* stack size [bytes] (not used) */
+        (void *)0);               /* initialization parameter (not used) */
     }
 
     Table_ctor(); /* instantiate the Table active object */
