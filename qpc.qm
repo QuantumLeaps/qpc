@@ -7009,9 +7009,7 @@ if (QS_GLB_CHECK_(rec_) &amp;&amp; QS_LOC_CHECK_(qs_id_)) { \
   </operation>
   <!--${QS-macros::QF_QS_ISR_ENTRY}-->
   <operation name="QF_QS_ISR_ENTRY" type="void" visibility="0x00" properties="0x00">
-   <documentation>/*! Output the interrupt entry record *//*! Output the ISR entry
-* @static @public @memberof QS
-*/</documentation>
+   <documentation>/*! Output the interrupt entry record *//*! Output the ISR entry */</documentation>
    <!--${QS-macros::QF_QS_ISR_ENTRY::isrnest}-->
    <parameter name="isrnest" type="uint_fast8_t const"/>
    <!--${QS-macros::QF_QS_ISR_ENTRY::prio_}-->
@@ -7023,9 +7021,7 @@ QS_END_NOCRIT_PRE_()</code>
   </operation>
   <!--${QS-macros::QF_QS_ISR_EXIT}-->
   <operation name="QF_QS_ISR_EXIT" type="void" visibility="0x00" properties="0x00">
-   <documentation>/*! Output the ISR exit
-* @static @public @memberof QS
-*/</documentation>
+   <documentation>/*! Output the ISR exit trace record */</documentation>
    <!--${QS-macros::QF_QS_ISR_EXIT::isrnest}-->
    <parameter name="isrnest" type="uint_fast8_t"/>
    <!--${QS-macros::QF_QS_ISR_EXIT::prio}-->
@@ -7361,8 +7357,7 @@ QS_END_NOCRIT_PRE_()</code>
    </attribute>
    <!--${QS::QS-tx::initBuf}-->
    <operation name="initBuf" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! Initialize the QS data buffer
-* @static @private @memberof QS
+    <documentation>/*! Initialize the QS-TX data buffer
 *
 * @details
 * This function should be called from QS_onStartup() to provide
@@ -7416,8 +7411,7 @@ QS_target_info_pre_(0xFFU); /* send Reset and Target info */
    </operation>
    <!--${QS::QS-tx::getByte}-->
    <operation name="getByte" type="uint16_t" visibility="0x00" properties="0x00">
-    <documentation>/*! Byte-oriented interface to the QS data buffer
-* @static @private @memberof QS
+    <documentation>/*! Byte-oriented interface to the QS-TX data buffer
 *
 * @details
 * This function delivers one byte at a time from the QS data buffer.
@@ -7449,8 +7443,7 @@ return ret; /* return the byte or EOD */</code>
    </operation>
    <!--${QS::QS-tx::getBlock}-->
    <operation name="getBlock" type="uint8_t const *" visibility="0x00" properties="0x00">
-    <documentation>/*! Block-oriented interface to the QS data buffer
-* @static @private @memberof QS
+    <documentation>/*! Block-oriented interface to the QS-TX data buffer
 *
 * @details
 * This function delivers a contiguous block of data from the QS data
@@ -7513,7 +7506,6 @@ return buf;</code>
    <operation name="glbFilter_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Set/clear the global Filter for a given QS record
 *  or a group of records
-* @static @private @memberof QS
 *
 * @details
 * This function sets up the QS filter to enable record types specified
@@ -7736,7 +7728,6 @@ switch (rec) {
    <operation name="locFilter_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Set/clear the local Filter for a given object-id
 *  or a group of object-ids
-* @static @private @memberof QS
 *
 * @details
 * This function sets up the local QS filter to enable or disable the
@@ -7811,14 +7802,11 @@ QS_priv_.locFilter[0] |= 0x01U; /* leave QS_ID == 0 always on */</code>
    </operation>
    <!--${QS::QS-tx::doOutput}-->
    <operation name="doOutput" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Perform the QS-TX output (implemented in some QS ports)
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! Perform the QS-TX output (implemented in some QS ports) */</documentation>
    </operation>
    <!--${QS::QS-tx::beginRec_}-->
    <operation name="beginRec_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! Mark the begin of a QS record @p rec
-* @static @private @memberof QS
+    <documentation>/*! Mark the begin of a QS record `rec`
 *
 * @details
 * This function must be called at the beginning of each QS record.
@@ -7849,7 +7837,6 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx::endRec_}-->
    <operation name="endRec_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Mark the end of a QS record `rec`
-* @static @private @memberof QS
 *
 * @details
 * This function must be called at the end of each QS record.
@@ -7886,9 +7873,7 @@ if (QS_priv_.used &gt; end) {
    </operation>
    <!--${QS::QS-tx::u8_raw_}-->
    <operation name="u8_raw_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! output uint8_t data element without format information
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! output uint8_t data element without format information */</documentation>
     <!--${QS::QS-tx::u8_raw_::d}-->
     <parameter name="d" type="uint8_t const"/>
     <code>uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
@@ -7904,9 +7889,7 @@ QS_priv_.chksum = chksum;  /* save the checksum */</code>
    </operation>
    <!--${QS::QS-tx::2u8_raw_}-->
    <operation name="2u8_raw_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! output two uint8_t data elements without format information
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! output two uint8_t data elements without format information */</documentation>
     <!--${QS::QS-tx::2u8_raw_::d1}-->
     <parameter name="d1" type="uint8_t const"/>
     <!--${QS::QS-tx::2u8_raw_::d2}-->
@@ -7925,9 +7908,7 @@ QS_priv_.chksum = chksum;  /* save the checksum */</code>
    </operation>
    <!--${QS::QS-tx::u16_raw_}-->
    <operation name="u16_raw_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! output uint16_t data element without format information
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! output uint16_t data element without format information */</documentation>
     <!--${QS::QS-tx::u16_raw_::d}-->
     <parameter name="d" type="uint16_t"/>
     <code>uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
@@ -7947,9 +7928,7 @@ QS_priv_.chksum = chksum;  /* save the checksum */</code>
    </operation>
    <!--${QS::QS-tx::u32_raw_}-->
    <operation name="u32_raw_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! output uint32_t data element without format information
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! output uint32_t data element without format information */</documentation>
     <!--${QS::QS-tx::u32_raw_::d}-->
     <parameter name="d" type="uint32_t"/>
     <code>uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
@@ -7970,7 +7949,6 @@ QS_priv_.chksum = chksum;  /* save the checksum */</code>
    <!--${QS::QS-tx::obj_raw_}-->
    <operation name="obj_raw_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output obj pointer data element without format information
-* @static @private @memberof QS
 *
 * @note This function is only to be used through macros, never in the
 * client code directly.
@@ -7993,7 +7971,6 @@ QS_priv_.chksum = chksum;  /* save the checksum */</code>
    <!--${QS::QS-tx::str_raw_}-->
    <operation name="str_raw_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output raw zero-terminated string element (without format information)
-* @static @private @memberof QS
 *
 * @note This function is only to be used through macros, never in the
 * client code directly.
@@ -8021,7 +7998,6 @@ QS_priv_.used   = used;   /* save # of used buffer space */</code>
    <!--${QS::QS-tx::u8_fmt_}-->
    <operation name="u8_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output uint8_t data element with format information
-* @static @private @memberof QS
 *
 * @details
 * @note This function is only to be used through macros, never in the
@@ -8047,7 +8023,6 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx::u16_fmt_}-->
    <operation name="u16_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! output uint16_t data element with format information
-* @static @private @memberof QS
 *
 * @details
 * This function is only to be used through macros, never in the
@@ -8076,7 +8051,6 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx::u32_fmt_}-->
    <operation name="u32_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output uint32_t data element with format information
-* @static @private @memberof QS
 *
 * @note This function is only to be used through macros, never in the
 * client code directly.
@@ -8105,9 +8079,7 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    </operation>
    <!--${QS::QS-tx::str_fmt_}-->
    <operation name="str_fmt_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! Output formatted zero-terminated ASCII string to the QS record
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! Output formatted zero-terminated ASCII string to the QS record */</documentation>
     <!--${QS::QS-tx::str_fmt_::str}-->
     <parameter name="str" type="char const *"/>
     <code>uint8_t chksum = QS_priv_.chksum;
@@ -8133,9 +8105,7 @@ QS_priv_.used   = used;    /* save # of used buffer space */</code>
    </operation>
    <!--${QS::QS-tx::mem_fmt_}-->
    <operation name="mem_fmt_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! Output formatted memory block of up to 255 bytes to the QS record
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! Output formatted memory block of up to 255 bytes to the QS record */</documentation>
     <!--${QS::QS-tx::mem_fmt_::blk}-->
     <parameter name="blk" type="uint8_t const *"/>
     <!--${QS::QS-tx::mem_fmt_::size}-->
@@ -8164,7 +8134,6 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx::sig_dict_pre_}-->
    <operation name="sig_dict_pre_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output predefined signal-dictionary record
-* @static @private @memberof QS
 *
 * @note This function is only to be used through macro QS_SIG_DICTIONARY()
 */</documentation>
@@ -8188,7 +8157,6 @@ QS_onFlush();</code>
    <!--${QS::QS-tx::obj_dict_pre_}-->
    <operation name="obj_dict_pre_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output predefined object-dictionary record
-* @static @private @memberof QS
 *
 * @note This function is only to be used through macro QS_OBJ_DICTIONARY()
 */</documentation>
@@ -8209,7 +8177,6 @@ QS_onFlush();</code>
    <!--${QS::QS-tx::obj_arr_dict_pre_}-->
    <operation name="obj_arr_dict_pre_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output predefined object-array dictionary record
-* @static @private @memberof QS
 *
 * @note This function is only to be used through macro QS_OBJ_ARR_DICTIONARY()
 */</documentation>
@@ -8276,7 +8243,6 @@ QS_onFlush();</code>
    <!--${QS::QS-tx::fun_dict_pre_}-->
    <operation name="fun_dict_pre_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output predefined function-dictionary record
-* @static @private @memberof QS
 *
 * @note This function is only to be used through macro QS_FUN_DICTIONARY()
 */</documentation>
@@ -8297,7 +8263,6 @@ QS_onFlush();</code>
    <!--${QS::QS-tx::usr_dict_pre_}-->
    <operation name="usr_dict_pre_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output predefined user-dictionary record
-* @static @private @memberof QS
 *
 * @note This function is only to be used through macro QS_USR_DICTIONARY()
 */</documentation>
@@ -8318,7 +8283,6 @@ QS_onFlush();</code>
    <!--${QS::QS-tx::ASSERTION}-->
    <operation name="ASSERTION" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output the predefined assertion failure trace record
-* @static @public @memberof QS
 *
 * @details
 * This trace record is intended to use from the Q_onAssert() callback.
@@ -8342,9 +8306,7 @@ QS_onCleanup();</code>
    </operation>
    <!--${QS::QS-tx::target_info_pre_}-->
    <operation name="target_info_pre_" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Helper function to output the predefined Target-info trace record.
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! Helper function to output the predefined Target-info trace record. */</documentation>
     <!--${QS::QS-tx::target_info_pre_::isReset}-->
     <parameter name="isReset" type="uint8_t const"/>
     <code>static uint8_t const ZERO = (uint8_t)'0';
@@ -8455,9 +8417,7 @@ QS_endRec_();</code>
    </operation>
    <!--${QS::QS-tx::onStartup}-->
    <operation name="onStartup" type="uint8_t" visibility="0x00" properties="0x00">
-    <documentation>/*! Callback to startup the QS facility
-* @static @public @memberof QS
-*/</documentation>
+    <documentation>/*! Callback to startup the QS facility */</documentation>
     <!--${QS::QS-tx::onStartup::arg}-->
     <parameter name="arg" type="void const *"/>
    </operation>
@@ -8478,9 +8438,7 @@ QS_endRec_();</code>
   <package name="QS-tx-64bit" stereotype="0x02" namespace="QS_">
    <!--${QS::QS-tx-64bit::u64_raw_}-->
    <operation name="u64_raw_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! Output uint64_t data element without format information
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! Output uint64_t data element without format information */</documentation>
     <!--${QS::QS-tx-64bit::u64_raw_::d}-->
     <parameter name="d" type="uint64_t"/>
     <code>uint8_t chksum      = QS_priv_.chksum;
@@ -8502,7 +8460,7 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx-64bit::u64_fmt_}-->
    <operation name="u64_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output uint64_t data element with format information
-* @static @private @memberof QS
+*
 * @sa QS_U64(), QS_I64()
 */</documentation>
     <!--${QS::QS-tx-64bit::u64_fmt_::format}-->
@@ -8534,7 +8492,7 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx-fp::f32_fmt_}-->
    <operation name="f32_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output 32-bit floating point data element with format information
-* @static @private @memberof QS
+*
 * @sa QS_F32()
 */</documentation>
     <!--${QS::QS-tx-fp::f32_fmt_::format}-->
@@ -8568,7 +8526,7 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx-fp::f64_fmt_}-->
    <operation name="f64_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output 64-bit floating point data element with format information
-* @static @private @memberof QS
+*
 * @sa QS_F64()
 */</documentation>
     <!--${QS::QS-tx-fp::f64_fmt_::format}-->
@@ -8676,8 +8634,7 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    </attribute>
    <!--${QS::QS-rx::rxInitBuf}-->
    <operation name="rxInitBuf" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Initialize the QS RX data buffer
-* @static @private @memberof QS
+    <documentation>/*! Initialize the QS-RX data buffer
 *
 * @details
 * This function should be called from QS::onStartup() to provide QS-RX
@@ -8735,9 +8692,7 @@ QS_testData.testTime = 0U;
    </operation>
    <!--${QS::QS-rx::rxPut}-->
    <operation name="rxPut" type="bool" visibility="0x00" properties="0x02">
-    <documentation>/*! Put one byte into the QS RX lock-free buffer
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! Put one byte into the QS-RX lock-free buffer */</documentation>
     <!--${QS::QS-rx::rxPut::b}-->
     <parameter name="b" type="uint8_t const"/>
     <code>QSCtr head = QS_rxPriv_.head + 1U;
@@ -8755,8 +8710,7 @@ else {
    </operation>
    <!--${QS::QS-rx::rxGetNfree}-->
    <operation name="rxGetNfree" type="uint16_t" visibility="0x00" properties="0x00">
-    <documentation>/*! Obtain the number of free bytes in the QS RX data buffer
-* @static @private @memberof QS
+    <documentation>/*! Obtain the number of free bytes in the QS-RX data buffer
 *
 * @details
 * This function is intended to be called from the ISR that reads the
@@ -8779,14 +8733,11 @@ else {
    </operation>
    <!--${QS::QS-rx::doInput}-->
    <operation name="doInput" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Perform the QS-RX input (implemented in some QS ports)
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! Perform the QS-RX input (implemented in some QS ports) */</documentation>
    </operation>
    <!--${QS::QS-rx::setCurrObj}-->
    <operation name="setCurrObj" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! Set the &quot;current object&quot; in the Target
-* @static @private @memberof QS
 *
 * @details
 * This function sets the &quot;current object&quot; in the Target.
@@ -8801,7 +8752,6 @@ QS_rxPriv_.currObj[obj_kind] = obj_ptr;</code>
    <!--${QS::QS-rx::queryCurrObj}-->
    <operation name="queryCurrObj" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! Query the &quot;current object&quot; in the Target
-* @static @public @memberof QS
 *
 * @details
 * This function programmatically generates the response to the query for
@@ -8862,9 +8812,7 @@ else {
    </operation>
    <!--${QS::QS-rx::rxParse}-->
    <operation name="rxParse" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Parse all bytes present in the QS RX data buffer
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! Parse all bytes present in the QS-RX data buffer */</documentation>
     <code>QSCtr tail = QS_rxPriv_.tail;
 while (QS_rxPriv_.head != tail) { /* QS-RX buffer NOT empty? */
     uint8_t b = QS_rxPriv_.buf[tail];
@@ -8909,9 +8857,7 @@ while (QS_rxPriv_.head != tail) { /* QS-RX buffer NOT empty? */
    </operation>
    <!--${QS::QS-rx::rxHandleGoodFrame_}-->
    <operation name="rxHandleGoodFrame_" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! internal function to handle incoming (QS-RX) packet
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! internal function to handle incoming (QS-RX) packet */</documentation>
     <!--${QS::QS-rx::rxHandleGoodFram~::state}-->
     <parameter name="state" type="uint8_t const"/>
     <code>uint8_t i;
@@ -9236,15 +9182,11 @@ switch (state) {
    </operation>
    <!--${QS::QS-rx::onReset}-->
    <operation name="onReset" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! callback function to reset the Target (to be implemented in the BSP)
-* @static @public @memberof QS
-*/</documentation>
+    <documentation>/*! callback function to reset the Target (to be implemented in the BSP) */</documentation>
    </operation>
    <!--${QS::QS-rx::onCommand}-->
    <operation name="onCommand" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Callback function to execute user commands (to be implemented in BSP)
-* @static @public @memberof QS
-*/</documentation>
+    <documentation>/*! Callback function to execute user commands (to be implemented in BSP) */</documentation>
     <!--${QS::QS-rx::onCommand::cmdId}-->
     <parameter name="cmdId" type="uint8_t"/>
     <!--${QS::QS-rx::onCommand::param1}-->
@@ -9256,9 +9198,7 @@ switch (state) {
    </operation>
    <!--${QS::QS-rx::RX_PUT}-->
    <operation name="RX_PUT" type="bool" visibility="0x00" properties="0x00">
-    <documentation>/*! Put one byte into the QS RX lock-free buffer
-* @static @public @memberof QSrx
-*/</documentation>
+    <documentation>/*! Put one byte into the QS RX lock-free buffer */</documentation>
     <!--${QS::QS-rx::RX_PUT::b}-->
     <parameter name="b" type="uint8_t const"/>
     <code>QSCtr head = QS_rxPriv_.head + 1U;
@@ -9304,18 +9244,14 @@ else {
    </attribute>
    <!--${QUTest::QS::test_pause_}-->
    <operation name="test_pause_" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! internal function to pause test and enter the test event loop
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! internal function to pause test and enter the test event loop */</documentation>
     <code>QS_beginRec_((uint_fast8_t)QS_TEST_PAUSED);
 QS_endRec_();
 QS_onTestLoop();</code>
    </operation>
    <!--${QUTest::QS::getTestProbe_}-->
    <operation name="getTestProbe_" type="uint32_t" visibility="0x00" properties="0x00">
-    <documentation>/*! get the test probe data for the given API
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! get the test probe data for the given API */</documentation>
     <!--${QUTest::QS::getTestProbe_::api}-->
     <parameter name="api" type="QSpyFunPtr"/>
     <code>uint32_t data = 0U;
@@ -9350,29 +9286,21 @@ return data;</code>
    </operation>
    <!--${QUTest::QS::onTestSetup}-->
    <operation name="onTestSetup" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! callback to setup a unit test inside the Target
-* @static @public @memberof QS
-*/</documentation>
+    <documentation>/*! callback to setup a unit test inside the Target */</documentation>
    </operation>
    <!--${QUTest::QS::onTestTeardown}-->
    <operation name="onTestTeardown" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! callback to teardown after a unit test inside the Target
-* @static @public @memberof QS
-*/</documentation>
+    <documentation>/*! callback to teardown after a unit test inside the Target */</documentation>
    </operation>
    <!--${QUTest::QS::onTestEvt}-->
    <operation name="onTestEvt" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! callback to &quot;massage&quot; the test event before dispatching/posting it
-* @static @public @memberof QS
-*/</documentation>
+    <documentation>/*! callback to &quot;massage&quot; the test event before dispatching/posting it */</documentation>
     <!--${QUTest::QS::onTestEvt::e}-->
     <parameter name="e" type="QEvt *"/>
    </operation>
    <!--${QUTest::QS::onTestPost}-->
    <operation name="onTestPost" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! callback to examine an event that is about to be posted
-* @static @public @memberof QS
-*/</documentation>
+    <documentation>/*! callback to examine an event that is about to be posted */</documentation>
     <!--${QUTest::QS::onTestPost::sender}-->
     <parameter name="sender" type="void const *"/>
     <!--${QUTest::QS::onTestPost::recipient}-->
@@ -9384,9 +9312,7 @@ return data;</code>
    </operation>
    <!--${QUTest::QS::onTestLoop}-->
    <operation name="onTestLoop" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! callback to run the test loop
-* @static @public @memberof QS
-*/</documentation>
+    <documentation>/*! callback to run the test loop */</documentation>
    </operation>
   </package>
   <!--${QUTest::QUTEST_ON_POST}-->
@@ -9401,9 +9327,7 @@ return data;</code>
   <package name="QS" stereotype="0x02" namespace="QS_">
    <!--${QUTest-stub::QS::processTestEvts_}-->
    <operation name="processTestEvts_" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! internal function to process posted events during test
-* @static @private @memberof QS
-*/</documentation>
+    <documentation>/*! internal function to process posted events during test */</documentation>
     <code>QS_TEST_PROBE_DEF(&amp;QS_processTestEvts_)
 
 /* return immediately (do nothing) for Test Probe != 0 */
