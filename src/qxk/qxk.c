@@ -432,9 +432,12 @@ QActive * QXK_current(void) {
 /*${QXK::QXK-extern-C::contextSw} ..........................................*/
 #if defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW)
 void QXK_contextSw(QActive * const next) {
+    #ifdef Q_SPY
     uint8_t const prev_prio = (QXK_attr_.prev != (QActive *)0)
                         ? QXK_attr_.prev->prio
                         : 0U;
+    #endif /* Q_SPY */
+
     uint8_t const next_prio = (next != (QActive *)0)
                         ? next->prio
                         : QXK_attr_.actPrio;

@@ -12632,9 +12632,12 @@ return curr;</code>
 */</documentation>
     <!--${QXK::QXK-extern-C::contextSw::next}-->
     <parameter name="next" type="QActive * const"/>
-    <code>uint8_t const prev_prio = (QXK_attr_.prev != (QActive *)0)
+    <code>#ifdef Q_SPY
+uint8_t const prev_prio = (QXK_attr_.prev != (QActive *)0)
                     ? QXK_attr_.prev-&gt;prio
                     : 0U;
+#endif /* Q_SPY */
+
 uint8_t const next_prio = (next != (QActive *)0)
                     ? next-&gt;prio
                     : QXK_attr_.actPrio;
