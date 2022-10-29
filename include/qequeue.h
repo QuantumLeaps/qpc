@@ -191,9 +191,9 @@ typedef struct {
 * Initialize the event queue by giving it the storage for the ring buffer.
 *
 * @param[in,out] me   pointer (see @ref oop)
-* @param[in]     qSto an array of pointers to ::QEvt to sereve as the
+* @param[in] qSto     an array of pointers to ::QEvt to sereve as the
 *                     ring buffer for the event queue
-* @param[in]     qLen the length of the @p qSto buffer (in ::QEvt pointers)
+* @param[in] qLen     the length of the `qSto` buffer (in ::QEvt pointers)
 *
 * @note The actual capacity of the queue is qLen + 1, because of the extra
 * location forntEvt.
@@ -204,7 +204,7 @@ typedef struct {
 * QP ports to OSes/RTOSes that do provide a suitable message queue.
 */
 void QEQueue_init(QEQueue * const me,
-    QEvt const * qSto[],
+    QEvt const ** const qSto,
     uint_fast16_t const qLen);
 
 /*! Post an event to the "raw" thread-safe event queue (FIFO).
@@ -220,7 +220,7 @@ void QEQueue_init(QEQueue * const me,
 *                       posting the event. The special value #QF_NO_MARGIN
 *                       means that this function will assert if posting
 * @note
-* The #QF_NO_MARGIN value of the @p margin parameter is special and
+* The #QF_NO_MARGIN value of the `margin` parameter is special and
 * denotes situation when the post() operation is assumed to succeed (event
 * delivery guarantee). An assertion fires, when the event cannot be
 * delivered in this case.

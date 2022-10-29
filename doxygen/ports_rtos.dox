@@ -35,7 +35,8 @@ Combined with a conventional RTOS, QP/C takes full advantage of the multitasking
 
 The QP/C/C++ ports and examples for embOS are described in the Quantum Leaps Application Note @webref{doc/AN_RTOS-embOS.pdf, QP and embOS}.
 
-[![Application Note: QP and embOS](img/AN.jpg)](https://www.state-machine.com/doc/AN_RTOS-embOS.pdf)
+@image html  AN-QL.png "Application Note: QP and embOS"
+@image latex AN-QL.png "Application Note: QP and embOS"
 @caption{[Application Note: "QP and embOS"](https://www.state-machine.com/doc/AN_RTOS-embOS.pdf)}
 
 @next{freertos}
@@ -89,13 +90,13 @@ Here is an example of a regular "kernel-aware" ISR (note the use of the `FromISR
 void GPIOPortA_IRQHandler(void) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-    /* for testing... */
+    /* for testing~~~ */
     QACTIVE_POST_FROM_ISR(AO_Table,
         Q_NEW_FROM_ISR(QEvt, MAX_PUB_SIG),
         &xHigherPriorityTaskWoken,
         &l_GPIOPortA_IRQHandler);
 
-    /* the usual end of FreeRTOS ISR... */
+    /* the usual end of FreeRTOS ISR~~~ */
     portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 }
 @endcode
@@ -172,7 +173,8 @@ int main() {
 
 The QP/C/C++ ports and examples for ThreadX (now Azure RTOS) are described in the Quantum Leaps Application Note  @webref{doc/AN_RTOS-ThreadX.pdf, QP and ThreadX}.
 
-[![Application Note: QP and ThreadX](img/AN.jpg)](https://www.state-machine.com/doc/AN_RTOS-ThreadX.pdf)
+@image html  AN-QL.png "Application Note: QP and ThreadX"
+@image latex AN-QL.png "Application Note: QP and ThreadX"
 @caption{[Application Note: "QP and ThreadX"](https://www.state-machine.com/doc/AN_RTOS-ThreadX.pdf)}
 
 @next{uc-os2}
@@ -209,38 +211,39 @@ However, this port can also be used as a library, in which case you need to buil
 @subsection uc-os2_build QP Source Files Needed in this QP Port
 Whether you use this QP port as source files or as a library, it is important to note that not all QP source files should be included. Here is the list of QP source files needed:
 
-@verbatim
+@code{.c}
 qpc/
 +-src/
 | | +-qf/
 | | | +-qep_hsm.c
 | | | +-qep_msm.c
 | | | +-qf_act.c
-| | | +-qf_actq.c  - NOT included (implemented in uC-OS2)
+| | | +-qf_actq.c  // NOT included (implemented in uC-OS2)
 | | | +-qf_defer.c
 | | | +-qf_dyn.c
-| | | +-qf_mem.c   - NOT included (implemented in uC-OS2)
+| | | +-qf_mem.c   // NOT included (implemented in uC-OS2)
 | | | +-qf_ps.c
 | | | +-qf_qeq.c
 | | | +-qf_qmact.c
 | | | +-qf_time.c
 | |
 | | +-qs/
-| | | +-qs.c       - included only in the Spy build configuration
-| | | +-qs_fp.c    - included only in the Spy build configuration
+| | | +-qs.c       // included only in the Spy build configuration
+| | | +-qs_fp.c    // included only in the Spy build configuration
 |
 +-ports
 | +-uc-os2
 | | +-qf_port.c
 |
-@endverbatim
+@endcode
 
 @note
 Specifically, the QP source files qf_actq.c and qf_mem.c must **NOT** be included in the build, because this functionality is taken from uC-OS2.
 
 The QP/C/C++ ports and examples for uC-OS2 are described in the Quantum Leaps Application Note @webref{doc/AN_RTOS-uCOS2.pdf, QP and uC-OS2}.
 
-[![QP and uC-OS2](img/AN.jpg)](https://www.state-machine.com/doc/AN_RTOS-uCOS2.pdf)
+@image html  AN-QL.png "Application Note: QP and uC-OS2"
+@image latex AN-QL.png "Application Note: QP and uC-OS2"
 @caption{[Application Note: QP and uC-OS2](https://www.state-machine.com/doc/AN_RTOS-uCOS2.pdf)}
 
 @next{zephyr}

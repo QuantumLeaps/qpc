@@ -54,8 +54,8 @@
 
 /*${QS::QS-tx-fp::f32_fmt_} ................................................*/
 void QS_f32_fmt_(
-    uint8_t format,
-    float32_t d)
+    uint8_t const format,
+    float32_t const d)
 {
     union F32Rep {
         float32_t f;
@@ -84,8 +84,8 @@ void QS_f32_fmt_(
 
 /*${QS::QS-tx-fp::f64_fmt_} ................................................*/
 void QS_f64_fmt_(
-    uint8_t format,
-    float64_t d)
+    uint8_t const format,
+    float64_t const d)
 {
     union F64Rep {
         float64_t d;

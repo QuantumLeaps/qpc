@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-29
-* @version Last updated for: @ref qpc_7_1_1
+* @date Last updated on: 2022-10-18
+* @version Last updated for: @ref qpc_7_1_3
 *
 * @file
 * @brief QF/C port to FreeRTOS 10.x
@@ -43,11 +43,11 @@
 Q_DEFINE_THIS_MODULE("qf_port")
 
 #if ( configSUPPORT_STATIC_ALLOCATION == 0 )
-    #error "This QP/C port to FreeRTOS requires configSUPPORT_STATIC_ALLOCATION "
+#error "This QP/C port to FreeRTOS requires configSUPPORT_STATIC_ALLOCATION "
 #endif
 
 #if ( configMAX_PRIORITIES < QF_MAX_ACTIVE )
-    #error "FreeRTOS configMAX_PRIORITIES must not be less than QF_MAX_ACTIVE"
+#error "FreeRTOS configMAX_PRIORITIES must not be less than QF_MAX_ACTIVE"
 #endif
 
 /* Local objects -----------------------------------------------------------*/
@@ -206,7 +206,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QS_END_NOCRIT_PRE_()
 
         if (e->poolId_ != 0U) { /* is it a pool event? */
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+            QEvt_refCtr_inc_(e); /* increment the reference counter */
         }
 
         QF_CRIT_X_();
@@ -248,7 +248,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QS_END_NOCRIT_PRE_()
 
     if (e->poolId_ != 0U) { /* is it a pool event? */
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     QF_CRIT_X_();
@@ -317,7 +317,7 @@ bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
         QS_END_NOCRIT_PRE_()
 
         if (e->poolId_ != 0U) { /* is it a pool event? */
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+            QEvt_refCtr_inc_(e); /* increment the reference counter */
         }
 
         portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
@@ -373,7 +373,7 @@ void QActive_publishFromISR_(QEvt const * const e,
         * recycles the event if the counter drops to zero. This covers the
         * case when the event was published without any subscribers.
         */
-        QF_EVT_REF_CTR_INC_(e);
+        QEvt_refCtr_inc_(e);
     }
 
     /* make a local, modifiable copy of the subscriber list */
@@ -575,7 +575,7 @@ void QF_gcFromISR(QEvt const * const e) {
 
         /* isn't this the last ref? */
         if (e->refCtr_ > 1U) {
-            QF_EVT_REF_CTR_DEC_(e); /* decrements the ref counter */
+            QEvt_refCtr_dec_(e); /* decrements the ref counter */
 
             QS_BEGIN_NOCRIT_PRE_(QS_QF_GC_ATTEMPT, (uint_fast8_t)e->poolId_)
                 QS_TIME_PRE_();      /* timestamp */
@@ -619,7 +619,7 @@ void QMPool_putFromISR(QMPool * const me, void *b,
     * the block pointer must be from this pool.
     */
     Q_REQUIRE_ID(900, (me->nFree < me->nTot)
-                      && QF_PTR_RANGE_(b, me->start, me->end));
+                      && (me->start <= b) && (b <= me->end));
 
     (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
 
@@ -670,7 +670,8 @@ void *QMPool_getFromISR(QMPool * const me, uint_fast16_t const margin,
             * when the client code writes past the memory block, thus
             * corrupting the next block.
             */
-            Q_ASSERT_ID(930, QF_PTR_RANGE_(fb_next, me->start, me->end));
+            Q_ASSERT_ID(930, (me->start <= fb_next)
+                             && (fb_next <= me->end));
 
             /* is the number of free blocks the new minimum so far? */
             if (me->nMin > me->nFree) {

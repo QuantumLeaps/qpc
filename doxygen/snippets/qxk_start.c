@@ -7,13 +7,13 @@ int main() {
     QF_init();    /* initialize the framework */
     BSP_init();   /* initialize the Board Support Package */
 
-    /* initialize publish-subscribe... */
+    /* initialize publish-subscribe~~~ */
     QF_psInit(subscrSto, Q_DIM(subscrSto));
 
-    /* initialize event pools... */
+    /* initialize event pools~~~ */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
-    /* start the active objects (basic threads)... */
+    /* start the active objects (basic threads)~~~ */
     Table_ctor(); /* instantiate the Table AO */
     QACTIVE_START(AO_Table,      /* AO to start */
         n + 1U,                  /* QF-priority */
@@ -24,7 +24,7 @@ int main() {
         (void *)0);              /* initialization param */
     . . .
 
-    /* start the extended-threads... */
+    /* start the extended-threads~~~ */
     Test_ctor();  /* instantiate the Test extended thread */
     QXTHREAD_START(XT_Test,      /* Thread to start */
         10U,                     /* QF-priority */

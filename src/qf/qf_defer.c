@@ -110,7 +110,7 @@ bool QActive_recall(QActive * const me,
             /* we need to decrement the reference counter once, to account
             * for removing the event from the deferred event queue.
             */
-            QF_EVT_REF_CTR_DEC_(e); /* decrement the reference counter */
+            QEvt_refCtr_dec_(e); /* decrement the reference counter */
         }
 
         QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_RECALL, me->prio)

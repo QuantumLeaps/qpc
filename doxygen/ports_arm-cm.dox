@@ -7,44 +7,42 @@ This section describes the QP&trade; ports to the ARM Cortex-M processor family 
 To focus the discussion, this section references the **GNU-ARM toolchain**, the <a class="preview board" href="bd_EK-TM4C123GXL.jpg" title="EK-TM4C123GXL">EK-TM4C123GXL</a> (ARM Cortex-M4F) and the Eclipse-based IDE (CCS from Texas Instruments). However, the general implementation strategy applies equally to all toolchains for ARM Cortex-M, such as **ARM-KEIL**, **IAR EWARM**, **GNU-ARM** and **TI-ARM**, which are all supported as well. The QP code downloads contain also examples for other boards, such as STM32 Nucleo, NXP mbed-1768, SilLabs Gecko and others.
 
 
-
 @section arm-cm_files Directories and Files
 The QP ports to ARM Cortex-M are available in the standard QP distribution. Specifically, the ARM Cortex-M ports are placed in the following directories:
 
-@verbatim
-qpc/ports/arm-cm    - QP/C ports to ARM Cortex-M
-├───qk              - QP/C ports to QK preemptive kernel
-│   ├───armclang    - ports for ARM-CLANG (LLVM)
-│   │   ├───qep_port.h  - QEP port
-│   │   ├───qf_port.h   - QF ports
-│   │   ├───qk_port.h   - QK ports
-│   │   └───qk_port.c   - QK port implementation
-│   ├───gnu         - ports for GNU-ARM
-│   │   └───...
-│   └───iar         - ports for IAR EWARM
-│   │   └───...
-├───qutest          - QP/C ports to QUTest testing harness
-├───qv              - QP/C ports to QV cooperative kernel
-│   ├───armclang    - ports for ARM-CLANG (LLVM)
-│   │   ├───qep_port.h  - QEP port
-│   │   ├───qf_port.h   - QF ports
-│   │   ├───qk_port.h   - QK ports
-│   │   └───qk_port.c   - QK port implementation
-│   ├───gnu         - ports for GNU-ARM
-│   │   └───...
-│   └───iar         - ports for IAR EWARM
-│   │   └───...
-└───qxk
-│   ├───armclang    - ports for ARM-CLANG (LLVM)
-│   │   ├───qep_port.h  - QEP port
-│   │   ├───qf_port.h   - QF ports
-│   │   ├───qk_port.h   - QK ports
-│   │   └───qk_port.c   - QK port implementation
-│   ├───gnu         - ports for GNU-ARM
-│   │   └───...
-│   └───iar         - ports for IAR EWARM
-│   │   └───...
-@endverbatim
+@code{.c}
+qpc/ports/arm-cm    // QP/C ports to ARM Cortex-M
++---qk              // QP/C ports to QK preemptive kernel
+|   +---armclang    // ports for ARM-CLANG (LLVM)
+|   |       qep_port.h  // QEP port
+|   |       qf_port.h   // QF ports
+|   |       qk_port.h   // QK ports
+|   |       qk_port.c   // QK port implementation
+|   +---gnu         // ports for GNU-ARM
+|   |       ~ ~ ~
+|   +---iar         // ports for IAR EWARM
+|   |       ~ ~ ~
++---qv              // QP/C ports to QV cooperative kernel
+|   +---armclang    // ports for ARM-CLANG (LLVM)
+|   |       qep_port.h  // QEP port
+|   |       qf_port.h   // QF ports
+|   |       qk_port.h   // QK ports
+|   |       qk_port.c   // QK port implementation
+|   +---gnu         // ports for GNU-ARM
+|   |       ~ ~ ~
+|   +---iar         // ports for IAR EWARM
+|   |       ~ ~ ~
++---qxk
+|   +---armclang    // ports for ARM-CLANG (LLVM)
+|   |       qep_port.h  // QEP port
+|   |       qf_port.h   // QF ports
+|   |       qk_port.h   // QK ports
+|   |       qk_port.c   // QK port implementation
+|   +---gnu         // ports for GNU-ARM
+|   |       ~ ~ ~
+|   +---iar         // ports for IAR EWARM
+|   |       ~ ~ ~
+@endcode
 
 
 @section arm-cm_int Interrupts in the QP Ports to ARM Cortex-M
@@ -90,8 +88,7 @@ The priority scheme passed to `NVIC_SetPriority()` is different again than the v
 @subsection arm-cm_int-assign Assigning Interrupt Priorities
 The @ref exa_arm-cm "example projects" included in the QP distribution the recommended way of assigning interrupt priorities in your applications. The initialization consist of two steps: (1) you enumerate the "kernel-unaware" and "kernel-aware" interrupt priorities, and (2) you assign the priorities by calling the `NVIC_SetPriority()` CMSIS function. The following snippet of code illustrates these steps with the explanation section following immediately after the code.
 
-@anchor arm-cm_int-assign-code
-<b>Listing: Assigning the interrupt priorities (see file bsp.c in the example projects)</b>
+@caption{Listing: Assigning the interrupt priorities (see file bsp.c in the example projects)}
 @code{.c}
     /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
@@ -136,44 +133,31 @@ The @ref exa_arm-cm "example projects" included in the QP distribution the recom
     }
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-The enumeration @c KernelUnawareISRs lists the priority numbers for the "kernel-unaware" interrupts. These priorities start with zero (highest possible). The priorities are suitable as the argument for the @c NVC_SetPriority() CMSIS function.
-<br>
-> <b>NOTE:</b> The NVIC allows you to assign the same priority level to multiple interrupts, so you can have more ISRs than priority levels running as "kernel-unaware" or "kernel-aware" interrupts.
+`[1]` The enumeration @c KernelUnawareISRs lists the priority numbers for the "kernel-unaware" interrupts. These priorities start with zero (highest possible). The priorities are suitable as the argument for the @c NVC_SetPriority() CMSIS function.
 
-  </dd>
-  <dt>2</dt><dd>
-The last value in the enumeration MAX_KERNEL_UNAWARE_CMSIS_PRI keeps track of the maximum priority used for a "kernel-unaware" interrupt.
-  </dd>
-  <dt>3</dt><dd>
-The compile-time assertion ensures that the "kernel-unaware" interrupt priorities do not overlap the "kernel-aware" interrupts, which start at QF_AWARE_ISR_CMSIS_PRI.
-  </dd>
-  <dt>4</dt><dd>
-The enumeration KernelAwareISRs lists the priority numbers for the "kernel-aware" interrupts.
-  </dd>
-  <dt>5</dt><dd>
-The "kernel-aware" interrupt priorities start with the QF_AWARE_ISR_CMSIS_PRI offset, which is provided in the qf_port.h header file.
-  </dd>
-  <dt>6</dt><dd>
-The last value in the enumeration MAX_KERNEL_AWARE_CMSIS_PRI keeps track of the maximum priority used for a "kernel-aware" interrupt.
-  </dd>
-  <dt>7</dt><dd>
-The compile-time assertion ensures that the "kernel-aware" interrupt priorities do not overlap the lowest priority level reserved for the PendSV exception.
-  </dd>
-  <dt>8</dt><dd>
-The QF_onStartup() callback function is where you set up the interrupts.
-  </dd>
-  <dt>9</dt><dd>
-This call to the CMIS function `NVIC_SetPriorityGrouping()` assigns all the priority bits to be preempt priority bits, leaving no priority bits as subpriority bits to preserve the direct relationship between the interrupt priorities and the ISR preemption rules. This is the default configuration out of reset for the ARM Cortex-M3/M4 cores, but it can be changed by some vendor-supplied startup code. To avoid any surprises, the call to `NVIC_SetPriorityGrouping(0U)` is recommended.
-  </dd>
-  <dt>10-11</dt><dd>
-The interrupt priories fall all interrupts ("kernel-unaware" and "kernel-aware" alike) are set explicitly by calls to the CMSIS function `NVIC_SetPriority()`.
-  </dd>
-  <dt>12</dt><dd>
-All used IRQ interrupts need to be explicitly enabled by calling the CMSIS function.
-   </dd>
-</dl>
+@note
+The NVIC allows you to assign the same priority level to multiple interrupts, so you can have more ISRs than priority levels running as "kernel-unaware" or "kernel-aware" interrupts.
+
+
+`[2]` The last value in the enumeration MAX_KERNEL_UNAWARE_CMSIS_PRI keeps track of the maximum priority used for a "kernel-unaware" interrupt.
+
+`[3]` The compile-time assertion ensures that the "kernel-unaware" interrupt priorities do not overlap the "kernel-aware" interrupts, which start at QF_AWARE_ISR_CMSIS_PRI.
+
+`[4]` The enumeration KernelAwareISRs lists the priority numbers for the "kernel-aware" interrupts.
+
+`[5]` The "kernel-aware" interrupt priorities start with the QF_AWARE_ISR_CMSIS_PRI offset, which is provided in the qf_port.h header file.
+
+`[6]` The last value in the enumeration MAX_KERNEL_AWARE_CMSIS_PRI keeps track of the maximum priority used for a "kernel-aware" interrupt.
+
+`[7]` The compile-time assertion ensures that the "kernel-aware" interrupt priorities do not overlap the lowest priority level reserved for the PendSV exception.
+
+`[8]` The QF_onStartup() callback function is where you set up the interrupts.
+
+`[9]` This call to the CMIS function `NVIC_SetPriorityGrouping()` assigns all the priority bits to be preempt priority bits, leaving no priority bits as subpriority bits to preserve the direct relationship between the interrupt priorities and the ISR preemption rules. This is the default configuration out of reset for the ARM Cortex-M3/M4 cores, but it can be changed by some vendor-supplied startup code. To avoid any surprises, the call to `NVIC_SetPriorityGrouping(0U)` is recommended.
+
+`[10]` The interrupt priories fall all interrupts ("kernel-unaware" and "kernel-aware" alike) are set explicitly by calls to the CMSIS function `NVIC_SetPriority()`.
+
+`[11]` All used IRQ interrupts need to be explicitly enabled by calling the CMSIS function.
 
 
 @subsection arm-cm_int-fpu Interrupts and the FPU (ARMv7M or higher architectures)
@@ -222,8 +206,9 @@ The cooperative QV kernel works essentially as the traditional foreground-backgr
 3. QV uses only the Main Stack Pointer. The Process Stack Pointer is not used and is not initialized.
 
 4. ARM Cortex-M enters interrupt context without disabling interrupts (without setting the PRIMASK bit or the BASEPRI register). Generally, you should not disable interrupts inside your ISRs. In particular, the QP services QF_PUBLISH(), QF_TICK_X(), and QACTIVE_POST() should be called with **interrupts enabled**, to avoid nesting of critical sections.
-<br>
-> <b>NOTE:</b> If you don't wish an interrupt to be preempted by another interrupt, you can always prioritize that interrupt in the NVIC to a higher level (use a lower numerical value of priority).
+
+@note
+If you don't wish an interrupt to be preempted by another interrupt, you can always prioritize that interrupt in the NVIC to a higher level (use a lower numerical value of priority).
 
 5. The `QF_init()` function calls the function `QV_init()` to set the interrupt priority of all IRQs available in the MCU to the safe value of @ref QF_BASEPRI "QF_BASEPRI" (for ARM-v7 architecture).
 
@@ -232,7 +217,7 @@ The cooperative QV kernel works essentially as the traditional foreground-backgr
 The QEP header file for the ARM Cortex-M port is located in <span class="img file_h">`/ports/arm-cm/qv/gnu/qep_port.h`</span>. The following shows the @c qep_port.h header file for ARM Cortex-M/GNU. The GNU-ARM compiler is a standard C99 compiler, so it simply includes the @c <stdint.h> header file that defines the platform-specific exact-with integer types.
 
 @anchor arm-cm_qv_qep_port-code
-<b>Listing: The qep_port.h header file for ARM Cortex-M</b>
+@caption{Listing: The qep_port.h header file for ARM Cortex-M}
 @code{c}
      #include <stdint.h>  /* Exact-width types. WG14/N843 C99 Standard */
      #include <stdbool.h> /* Boolean type.      WG14/N843 C99 Standard */
@@ -252,7 +237,7 @@ The ARM Cortex-M allows you to use the simplest "unconditional interrupt disabli
 The following listing shows the `qf_port.h` header file for ARM Cortex-M with the GNU-ARM toolchain. Other toolchains use slightly different conditional compilation macros to select the Cortex-M variants, but implement the same policies.
 
 @anchor arm-cm_qf_port_h-code
-<b>Listing: The qf_port.h header file for ARM Cortex-M</b>
+@caption{Listing: The qf_port.h header file for ARM Cortex-M}
 @code{.c}
      /* The maximum number of active objects in the application, see NOTE1 */
  [1] #define QF_MAX_ACTIVE           32
@@ -319,99 +304,84 @@ The following listing shows the `qf_port.h` header file for ARM Cortex-M with th
      #include "qf.h"       /* QF platform-independent public interface */
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-The #QF_MAX_ACTIVE specifies the maximum number of active object priorities in the application. You always need to provide this constant. Here, #QF_MAX_ACTIVE is set to 32, but it can be increased up to the maximum limit of 63 active object priorities in the system.
-<br>
-> <b>NOTE:</b> The `qf_port.h` header file does not change the default settings for all the rest of various object sizes inside QF. Please refer to Chapter 8 of [PSiCC2] for discussion of all configurable QF parameters.
 
-  </dd>
-  <dt>2</dt><dd>
-The macro `QF_MAX_TICK_RATE` specifies the maximum number of clock tick rates for QP time events. If you do not need to specify this limit, in which case the default of a single clock rate will be chosen.
-  </dd>
-  <dt>3</dt><dd>
-As described in the previous @ref arm-cm_int "Section", the interrupt disabling policy for the ARMv6-M architecture (Cortex-M0/M0+) is different than the policy for the ARMv7-M. In GNU-ARM, the macro `__ARM_ARCH` is defined as 6 for the ARMv6-M architecture (Cortex-M0/M0+), and 7 for ARMv7-M (Cortex-M3/M4/M4F).
-<br>
-> <b>NOTE:</b> The `__ARM_ARCH` macro is specific to the GNU-ARM compiler. Other compilers for ARM Cortex-M provide different macros to detect the CPU type.
+`[1]` The #QF_MAX_ACTIVE specifies the maximum number of active object priorities in the application. You always need to provide this constant. Here, #QF_MAX_ACTIVE is set to 32, but it can be increased up to the maximum limit of 63 active object priorities in the system.
 
-  </dd>
-  <dt>4-5</dt><dd>
-For the ARMv6-M architecture, the interrupt disabling policy uses the PRIMASK register to disable interrupts globally. The @c QF_INT_DISABLE() macro resolves in this case to the inline assembly instruction "CPSD i", which sets the PRIMASK. The @c QF_INT_ENABLE() macro resolves to the inline assembly instruction "CPSE i", which clears the PRIMASK.
-  </dd>
-  <dt>6</dt><dd>
-The #QF_CRIT_STAT_TYPE is <b>NOT</b> defined, meaning that the critical section uses the simple policy of "unconditional interrupt disablin".
-<br>
-> <b>NOTE:</b> The "unconditional interrupt disabling" policy precludes nesting of critical sections, but this is not needed for ARM Cortex-M, because this CPU never disables interrupts, even when handling exceptions/interrupts.
+@note
+The `qf_port.h` header file does not change the default settings for all the rest of various object sizes inside QF. Please refer to Chapter 8 of [PSiCC2] for discussion of all configurable QF parameters.
 
-  </dd>
-  <dt>7</dt><dd>
-The QF_CRIT_ENTRY() enters a critical section. Interrupts are disabled by setting the PRIMASK register.
-  </dd>
-  <dt>8</dt><dd>
-The QF_CRIT_EXIT() macro leaves the critical section. Interrupts are unconditionally re-enabled by clearing the PRIMASK register.
-  </dd>
-  <dt>9</dt><dd>
-For the ARMv6-M architecture, the `QF_AWARE_ISR_CMSIS_PRI` priority level is defined as zero, meaning that all interrupts are "kernel-aware", because all interrupt priorities are disabled by the kernel.
-  </dd>
-  <dt>10</dt><dd>
-The `QF_LOG2()` macro is defined as a call to the function `QF_qlog2()` ("quick log-base-2 logarithm"). This function is coded in hand-optimized assembly, which always takes only 14 CPU cycles to execute (see also label [23]).
-<br>
-> <b>NOTE:</b> ARM Cortex-M0/M0+ does NOT implement the `CLZ` instruction. Therefore the log-base-2 calculation cannot be accelerated in hardware, as it is for ARM Cortex-M3 and higher.
 
-  </dd>
-  <dt>11</dt><dd>
-For the ARMv7-M (Cortex-M3/M4/M4F) architecture...
-  </dd>
-  <dt>12</dt><dd>
-The `QF_PRIMASK_DISABLE()` macro resolves to the inline assembly instruction `CPSD i`, which sets the PRIMASK.
-  </dd>
-  <dt>13</dt><dd>
-The `QF_PRIMASK_ENABLE()` macro resolves to the inline assembly instruction `CPSE i`, which clears the PRIMASK.
-  </dd>
-  <dt>14</dt><dd>
-Interrupts are disabled by setting the BASEPRI register to the value defined in the `QF_BASEPRI` macro (see label [19]). This setting of the BASEPRI instruction `msr BASEPRI,...` is surrounded by setting and clearing the PRIMASK register, as a workaround a hardware problem in ARMv7M or higher architectures core r0p1:
-<br>
-> <b>NOTE:</b> The selective disabling of "QF-aware" interrupts with the BASEPRI register has a problem on ARMv7M or higher architectures core r0p1 (see [@ref ARM-EPM-064408], Erratum 837070). The workaround recommended by ARM is to surround `MSR BASEPRI,...` with the `CPSID i`/`CPSIE i` pair, which is implemented in the QF_INT_DISABLE() macro. This workaround works also for Cortex-M3/M4 cores.
+`[2]` The macro `QF_MAX_TICK_RATE` specifies the maximum number of clock tick rates for QP time events. If you do not need to specify this limit, in which case the default of a single clock rate will be chosen.
 
-  </dd>
-  <dt>15</dt><dd>
-The `QF_INT_ENABLE()` macro sets the BASEPRI register to zero, which disables BASEPRI interrupt masking.
-<br>
-> <b>NOTE:</b> this method can never disable interrupt of priority 0 (highest).
-  </dd>
+`[3]` As described in the previous @ref arm-cm_int "Section", the interrupt disabling policy for the ARMv6-M architecture (Cortex-M0/M0+) is different than the policy for the ARMv7-M. In GNU-ARM, the macro `__ARM_ARCH` is defined as 6 for the ARMv6-M architecture (Cortex-M0/M0+), and 7 for ARMv7-M (Cortex-M3/M4/M4F).
 
-  <dt>16</dt><dd>
-The #QF_CRIT_STAT_TYPE is <b>NOT</b> defined, meaning that the critical section uses the simple policy of "unconditional interrupt disabling".
-<br>
-> <b>NOTE:</b> The "unconditional interrupt disabling" policy precludes nesting of critical sections, but this is not needed for ARM Cortex-M, because this CPU never disables interrupts, even when handling exceptions/interrupts.
+@note
+The `__ARM_ARCH` macro is specific to the GNU-ARM compiler. Other compilers for ARM Cortex-M provide different macros to detect the CPU type.
 
-  </dd>
-  <dt>17</dt><dd>
-The QF_CRIT_ENTRY() enters a critical section. Interrupts are disabled with the macro `QF_INT_DISABLE()` defined at label [12].
-  </dd>
-  <dt>18</dt><dd>
-The QF_CRIT_EXIT() macro leaves the critical section. Interrupts are unconditionally re-enabled with the macro `QF_INT_ENABLE()` defined at label [13].
-  </dd>
-  <dt>19</dt><dd>
-@anchor QF_BASEPRI
+
+`[4-5]` For the ARMv6-M architecture, the interrupt disabling policy uses the PRIMASK register to disable interrupts globally. The @c QF_INT_DISABLE() macro resolves in this case to the inline assembly instruction "CPSD i", which sets the PRIMASK. The @c QF_INT_ENABLE() macro resolves to the inline assembly instruction "CPSE i", which clears the PRIMASK.
+
+`[6]` The #QF_CRIT_STAT_TYPE is **NOT** defined, meaning that the critical section uses the simple policy of "unconditional interrupt disablin".
+
+@note
+The "unconditional interrupt disabling" policy precludes nesting of critical sections, but this is not needed for ARM Cortex-M, because this CPU never disables interrupts, even when handling exceptions/interrupts.
+
+
+`[7]` The QF_CRIT_ENTRY() enters a critical section. Interrupts are disabled by setting the PRIMASK register.
+
+`[8]` The QF_CRIT_EXIT() macro leaves the critical section. Interrupts are unconditionally re-enabled by clearing the PRIMASK register.
+
+`[9]` For the ARMv6-M architecture, the `QF_AWARE_ISR_CMSIS_PRI` priority level is defined as zero, meaning that all interrupts are "kernel-aware", because all interrupt priorities are disabled by the kernel.
+
+`[10]` The `QF_LOG2()` macro is defined as a call to the function `QF_qlog2()` ("quick log-base-2 logarithm"). This function is coded in hand-optimized assembly, which always takes only 14 CPU cycles to execute (see also label [23]).
+
+@note
+ARM Cortex-M0/M0+ does NOT implement the `CLZ` instruction. Therefore the log-base-2 calculation cannot be accelerated in hardware, as it is for ARM Cortex-M3 and higher.
+
+
+`[11]` For the ARMv7-M (Cortex-M3/M4/M4F) architecture...
+
+`[12]` The `QF_PRIMASK_DISABLE()` macro resolves to the inline assembly instruction `CPSD i`, which sets the PRIMASK.
+
+`[13]` The `QF_PRIMASK_ENABLE()` macro resolves to the inline assembly instruction `CPSE i`, which clears the PRIMASK.
+
+`[14]` Interrupts are disabled by setting the BASEPRI register to the value defined in the `QF_BASEPRI` macro (see label `[19]`). This setting of the BASEPRI instruction `msr BASEPRI,...` is surrounded by setting and clearing the PRIMASK register, as a workaround a hardware problem in ARMv7M or higher architectures core r0p1:
+
+@note
+The selective disabling of "QF-aware" interrupts with the BASEPRI register has a problem on ARMv7M or higher architectures core r0p1 (see [@ref ARM-EPM-064408], Erratum 837070). The workaround recommended by ARM is to surround `MSR BASEPRI,...` with the `CPSID i`/`CPSIE i` pair, which is implemented in the QF_INT_DISABLE() macro. This workaround works also for Cortex-M3/M4 cores.
+
+
+`[15]` The `QF_INT_ENABLE()` macro sets the BASEPRI register to zero, which disables BASEPRI interrupt masking.
+
+@note
+This method can never disable interrupt of priority 0 (highest).
+
+
+`[16]` The #QF_CRIT_STAT_TYPE is **NOT** defined, meaning that the critical section uses the simple policy of "unconditional interrupt disabling".
+
+@note
+The "unconditional interrupt disabling" policy precludes nesting of critical sections, but this is not needed for ARM Cortex-M, because this CPU never disables interrupts, even when handling exceptions/interrupts.
+
+
+`[17]` The QF_CRIT_ENTRY() enters a critical section. Interrupts are disabled with the macro `QF_INT_DISABLE()` defined at label [12].
+
+`[18]` The QF_CRIT_EXIT() macro leaves the critical section. Interrupts are unconditionally re-enabled with the macro `QF_INT_ENABLE()` defined at label [13].
+
+ @anchor QF_BASEPRI
+`[19]`
 The `QF_BASEPRI` value is defined such that it is the lowest priority for the minimum number of 3 priority-bits that the ARMv7M or higher architectures architecture must provide. This partitions the interrupts as "kernel-unaware" and "kernel-aware" interrupts, as shown in section @ref arm-cm_int-assign.
-  </dd>
-  <dt>20</dt><dd>
-For the ARMv7-M architecture, the `QF_AWARE_ISR_CMSIS_PRI` priority level suitable for the CMSIS function `NVIC_SetPriority()` is determined by the `QF_BASEPRI` value.
-  </dd>
-  <dt>21</dt><dd>
-The macro `QF_LOG2()` is defined to take advantage of the CLZ instruction (Count Leading Zeroes), which is available in the ARMv7-M architecture.
-<br>
-> <b>NOTE:</b> The `__builtin_cls()` intrinsic function is specific to the GNU-ARM compiler. Other compilers for ARM Cortex-M use different function names for this intrinsic function.
 
-  </dd>
-  <dt>22</dt><dd>
-The macro @c QF_CRIT_EXIT_NOP() provides the protection against merging two critical sections occurring back-to-back in the QP code.
-  </dd>
-  <dt>23</dt><dd>
-For ARMv6 architecture, the prototype of the quick, hand-optimized log-base-2 function is provided (see also label [10]).
-  </dd>
-</dl>
+`[20]` For the ARMv7-M architecture, the `QF_AWARE_ISR_CMSIS_PRI` priority level suitable for the CMSIS function `NVIC_SetPriority()` is determined by the `QF_BASEPRI` value.
+
+`[21]` The macro `QF_LOG2()` is defined to take advantage of the CLZ instruction (Count Leading Zeroes), which is available in the ARMv7-M architecture.
+
+@note
+The `__builtin_cls()` intrinsic function is specific to the GNU-ARM compiler. Other compilers for ARM Cortex-M use different function names for this intrinsic function.
+
+
+`[22]` The macro @c QF_CRIT_EXIT_NOP() provides the protection against merging two critical sections occurring back-to-back in the QP code.
+
+`[23]` For ARMv6 architecture, the prototype of the quick, hand-optimized log-base-2 function is provided (see also label [10]).
 
 
 @section arm-cm_qv_port_h The qv_port.h Header File
@@ -422,7 +392,7 @@ To avoid race conditions between interrupts waking up active objects and going t
 
 
 @anchor arm-cm_qv_port_h-code
-<b>Listing: The qv_port.h header file for ARM Cortex-M</b>
+@caption{Listing: The qv_port.h header file for ARM Cortex-M}
 @code{.c}
      #ifdef ARM_ARCH_V6M /* Cortex-M0/M0+/M1 ? */
 
@@ -448,24 +418,19 @@ To avoid race conditions between interrupts waking up active objects and going t
      #include "qv.h" /* QV platform-independent public interface */
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-For the ARMv6-M architecture, the macro `QV_CPU_SLEEP()` stops the CPU with the WFI instruction (Wait For Interrupt). After the CPU is woken up by an interrupt, interrupts are re-enabled with the PRIMASK.
-  </dd>
-  <dt>2</dt><dd>
-For the ARMv7-M architecture, the macro `QV_CPU_SLEEP()` first disables interrupts by setting the PRIMASK, then clears the BASEPRI to enable all "kernel-aware" interrupts and only then stops the CPU with the WFI instruction (Wait For Interrupt). After the CPU is woken up by an interrupt, interrupts are re-enabled with the PRIMASK. This sequence is necessary, because the ARMv7M or higher architectures cannot be woken up by any interrupt blocked by the BASEPRI register.
-  </dd>
-  <dt>2</dt><dd>
-The macro `QV_INIT()` is defined as a call to the `QV_init()` function, which means that this function will be called from `QF_init()`. The `QV_init()` function initializes all available IRQ priorities in the MCU to the safe value of @ref QF_BASEPRI "QF_BASEPRI".
-  </dd>
-</dl>
+
+`[1]` For the ARMv6-M architecture, the macro `QV_CPU_SLEEP()` stops the CPU with the WFI instruction (Wait For Interrupt). After the CPU is woken up by an interrupt, interrupts are re-enabled with the PRIMASK.
+
+`[2]` For the ARMv7-M architecture, the macro `QV_CPU_SLEEP()` first disables interrupts by setting the PRIMASK, then clears the BASEPRI to enable all "kernel-aware" interrupts and only then stops the CPU with the WFI instruction (Wait For Interrupt). After the CPU is woken up by an interrupt, interrupts are re-enabled with the PRIMASK. This sequence is necessary, because the ARMv7M or higher architectures cannot be woken up by any interrupt blocked by the BASEPRI register.
+
+`[3]` The macro `QV_INIT()` is defined as a call to the `QV_init()` function, which means that this function will be called from `QF_init()`. The `QV_init()` function initializes all available IRQ priorities in the MCU to the safe value of @ref QF_BASEPRI "QF_BASEPRI".
 
 
 @section arm-cm_qv_port_c The qv_port.c Implementation File
 The QV implementation file for the ARM Cortex-M port is located in <span class="img file_c">/ports/arm-cm/qv/gnu/qf_port.c</span>. This file defines the function `QV_init()`, which for the ARMv7-M architecture sets the interrupt priorities of all IRQs to the safe value @ref QF_BASEPRI "QF_BASEPRI".
 
 @anchor arm-cm_qv_port_c-code
-<b>Listing: The qv_port.c header file for ARM Cortex-M</b>
+@caption{Listing: The qv_port.c header file for ARM Cortex-M}
 @code{c}
      #include "qf_port.h"
 
@@ -501,26 +466,18 @@ The QV implementation file for the ARM Cortex-M port is located in <span class="
      #endif /* NOT Cortex-M0/M0+/M1 */
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-For the ARMv7-M architecture (Cortex-M3/M4/M7)...
-  </dd>
-  <dt>2</dt><dd>
-The exception priorities for User-Fault, Bus-Fault, and Mem-Fault are set to the value @ref QF_BASEPRI "QF_BASEPRI".
-  </dd>
-  <dt>3</dt><dd>
-The exception priority for SVCCall is set to the value @ref QF_BASEPRI "QF_BASEPRI".
-  </dd>
-  <dt>4</dt><dd>
-The exception priority for SysTick, PendSV, and Debug is set to the value @ref QF_BASEPRI "QF_BASEPRI".
-  </dd>
-  <dt>5</dt><dd>
-The number of implemented IRQs is read from the @c SCnSCB_ICTR register
-  </dd>
-  <dt>6</dt><dd>
-The interrupt priority of all implemented IRQs is set to the safe value @ref QF_BASEPRI "QF_BASEPRI" in a loop.
-  </dd>
-</dl>
+
+`[1]` For the ARMv7-M architecture (Cortex-M3/M4/M7)...
+
+`[2]` The exception priorities for User-Fault, Bus-Fault, and Mem-Fault are set to the value @ref QF_BASEPRI "QF_BASEPRI".
+
+`[3]` The exception priority for SVCCall is set to the value @ref QF_BASEPRI "QF_BASEPRI".
+
+`[4]` The exception priority for SysTick, PendSV, and Debug is set to the value @ref QF_BASEPRI "QF_BASEPRI".
+
+`[5]` The number of implemented IRQs is read from the @c SCnSCB_ICTR register
+
+`[6]` The interrupt priority of all implemented IRQs is set to the safe value @ref QF_BASEPRI "QF_BASEPRI" in a loop.
 
 
 @section arm-cm_qv-isr Writing ISRs for QV
@@ -535,7 +492,7 @@ Typically, ISRs are application-specific (with the main purpose to produce event
 The following listing shows an example of the SysTick_Handler() ISR (from the DPP example application). This ISR calls the QF_TICK_X() macro to perform QF time-event management.
 
 @anchor arm-cm_qv-isr-code
-<b>Listing: An ISR header for QV</b>
+@caption{Listing: An ISR header for QV}
 @code{c}
      void SysTick_Handler(void) __attribute__((__interrupt__));
      void SysTick_Handler(void) {
@@ -599,9 +556,8 @@ The idle callback QV_onIdle() must be invoked with interrupts disabled, because 
 Because QV_onIdle() must enable interrupts internally, the signature of the function depends on the interrupt locking policy. In case of the simple "unconditional interrupt locking and unlocking" policy, which is used in this ARM Cortex-M port, the QV_onIdle() takes no parameters. Listing 6 shows an example implementation of QV_onIdle() for the TM4C MCU. Other ARM Cortex-M embedded microcontrollers (e.g., NXP’s LPC1114/1343) handle the power-saving mode very similarly.
 
 @anchor arm-cm_qv_onidle-code
-<b>Listing: QV_onIdle() for ARM Cortex-M</b>
+@caption{Listing: QV_onIdle() for ARM Cortex-M}
 @code{c}
-
  [1] void QV_onIdle(void) { /* entered with interrupts DISABLED, see NOTE01 */
          ~ ~ ~
  [2] #if defined NDEBUG
@@ -611,23 +567,16 @@ Because QV_onIdle() must enable interrupts internally, the signature of the func
  [4]     QF_INT_ENABLE(); /* just enable interrupts */
      #endif
      }
-
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-The cooperative QV kernel calls the QV_onIdle() callback with interrupts disabled, to avoid race condition with interrupts that can post events to active objects and thus invalidate the idle condition.
-  <li>
-  <dt>2</dt><dd>
-The sleep mode is used only in the non-debug configuration, because sleep mode stops CPU clock, which can interfere with debugging.
-  <li>
-  <dt>3</dt><dd>
-The macro QV_CPU_SLEEP() is used to put the CPU to the low-power sleep mode safely. The macro QV_CPU_SLEEP() is defined in the qv_port.h header file for the QV kernel and depends on the interrupt disabling policy used.
-  <li>
-  <dt>4</dt><dd>
-When a sleep mode is not used, the QV_onIdle() callback simply re-enables interrupts.
-  </dd>
-</dl>
+`[1]` The cooperative QV kernel calls the QV_onIdle() callback with interrupts disabled, to avoid race condition with interrupts that can post events to active objects and thus invalidate the idle condition.
+
+`[2]` The sleep mode is used only in the non-debug configuration, because sleep mode stops CPU clock, which can interfere with debugging.
+
+`[3]` The macro QV_CPU_SLEEP() is used to put the CPU to the low-power sleep mode safely. The macro QV_CPU_SLEEP() is defined in the qv_port.h header file for the QV kernel and depends on the interrupt disabling policy used.
+
+`[4]` When a sleep mode is not used, the QV_onIdle() callback simply re-enables interrupts.
+
 
 @next{arm-cm_qk}
 */
@@ -644,82 +593,73 @@ In a QK port, the only components requiring platform-specific porting are QF and
 @section arm-cm_qk-synopsis Synopsis of the QK Port on ARM Cortex-M
 The ARM Cortex-M architecture is designed primarily for the traditional real-time kernels that use multiple per-thread stacks. Therefore, implementation of the non-blocking, single-stack kernel like QK is a bit more involved on Cortex-M than other CPUs and works as follows:
 
-1. The ARM Cortex-M processor executes the QK application code (active objects) in the Privileged Thread mode, which is exactly the mode entered out of reset. The exceptions (including all interrupts) are always processed in the Privileged Handler mode.
+- The ARM Cortex-M processor executes the QK application code (active objects) in the Privileged Thread mode, which is exactly the mode entered out of reset. The exceptions (including all interrupts) are always processed in the Privileged Handler mode.
 
-2. QK uses only the Main Stack Pointer (QK is a single stack kernel). The Process Stack Pointer is not used and is not initialized.
+- QK uses only the Main Stack Pointer (QK is a single stack kernel). The Process Stack Pointer is not used and is not initialized.
 
-3. ARM Cortex-M enters interrupt context without disabling interrupts (without setting the PRIMASK bit or the BASEPRI register). Generally, you should not disable interrupts inside your ISRs. In particular, the QP services QF_PUBLISH(), QF_TICK_X(), and QACTIVE_POST() should be called with interrupts enabled, to avoid nesting of critical sections. (NOTE: If you don’t wish an interrupt to be preempted by another interrupt, you can always prioritize that interrupt in the NVIC to a higher level -- use a lower numerical value of priority).
+- ARM Cortex-M enters interrupt context without disabling interrupts (without setting the PRIMASK bit or the BASEPRI register). Generally, you should not disable interrupts inside your ISRs. In particular, the QP services QF_PUBLISH(), QF_TICK_X(), and QACTIVE_POST() should be called with interrupts enabled, to avoid nesting of critical sections. (NOTE: If you don’t wish an interrupt to be preempted by another interrupt, you can always prioritize that interrupt in the NVIC to a higher level -- use a lower numerical value of priority).
 
-4. The QK port uses the PendSV exception (number 14) to perform asynchronous preemption (see Chapter 10 in @webref{psicc2, PSiCC2}). The startup code must initialize the Interrupt Vector Table with the addresses of @c PendSV_Handler() exception handler.
-<br>
-> <b>NOTE:</b> QK uses only the CMSIS-compliant exception and interrupt names, such as `PendSV_Handler`
+- The QK port uses the PendSV exception (number 14) to perform asynchronous preemption (see Chapter 10 in @webref{psicc2, PSiCC2}). The startup code must initialize the Interrupt Vector Table with the addresses of @c PendSV_Handler() exception handler.
 
-5. The QK port uses the NMI exception (number 2) or any unused IRQ interrupt to *return* to the preempted thread (see Chapter 10 in @webref{psicc2, PSiCC2}). The startup code must initialize the Interrupt Vector Table with the addresses of `NMI_Handler()` and `<IRQ-name>__IRQHandler()` exception handlers.
-<br>
-> <b>NOTE:</b> In case the NMI exception is needed for something else, the QK allows the developers to configure any otherwise unused IRQ to be used instead. This is accomplished by the pair of macros: `QK_USE_IRQ_NUM` and `QK_USE_IRQ_HANDLER`.
-<br>
-> <b>NOTE:</b> The QK port specifically does **not** use the SVC exception (Supervisor Call). This makes the QK ports compatible with various "hypervisors" (such as mbed uVisor or Nordic SoftDevice), which use the SVC exception.
+@note
+QK uses only the CMSIS-compliant exception and interrupt names, such as `PendSV_Handler`
 
-6. The QF_init() function calls the function QK_init() to set the priority of the PendSV exception to the lowest level in the whole system (0xFF). The function QK_init() additionally sets the interrupt priority of all IRQs available in the MCU to the safe value of @ref QF_BASEPRI "QF_BASEPRI" (for ARM-v7 architecture).
+- The QK port uses the NMI exception (number 2) or any unused IRQ interrupt to *return* to the preempted thread (see Chapter 10 in @webref{psicc2, PSiCC2}). The startup code must initialize the Interrupt Vector Table with the addresses of `NMI_Handler()` and `<IRQ-name>__IRQHandler()` exception handlers.
 
-7. It is strongly recommended that you do not assign the lowest priority (0xFF) to any interrupt in your application. With 3 MSB-bits of priority, this leaves the following 7 priority levels for you (listed from the lowest to the highest urgency): 0xC0, 0xA0, 0x80, 0x60, 0x40, 0x20, and 0x00 (the highest priority).
+@note
+In case the NMI exception is needed for something else, the QK allows the developers to configure any otherwise unused IRQ to be used instead. This is accomplished by the pair of macros: `QK_USE_IRQ_NUM` and `QK_USE_IRQ_HANDLER`.
 
-8. Before returning, every "kernel aware" ISR must check whether an active object has been activated that has a higher priority than the currently running active object. If this is the case, the ISR must set the PensSV pending flag in the NVIC. All this is accomplished in the macro QK_ISR_EXIT(), which must be called just before exiting every ISRs.
+@note
+The QK port specifically does **not** use the SVC exception (Supervisor Call). This makes the QK ports compatible with various "hypervisors" (such as mbed uVisor or Nordic SoftDevice), which use the SVC exception.
 
-9. In ARM Cortex-M the whole prioritization of interrupts, including the PendSV exception, is performed entirely by the NVIC. Because the PendSV has the lowest priority in the system, the NVIC tail-chains to the PendSV exception only after exiting the last nested interrupt.
+- The QF_init() function calls the function QK_init() to set the priority of the PendSV exception to the lowest level in the whole system (0xFF). The function QK_init() additionally sets the interrupt priority of all IRQs available in the MCU to the safe value of @ref QF_BASEPRI "QF_BASEPRI" (for ARM-v7 architecture).
 
-10. The pushing of the 8 registers comprising the ARM Cortex-M interrupt stack frame upon entry to the to the preempted thread (NMI or IRQ) is wasteful in a single-stack kernel, but is necessary to perform full interrupt return to the preempted context through the exception return.
+- It is strongly recommended that you do not assign the lowest priority (0xFF) to any interrupt in your application. With 3 MSB-bits of priority, this leaves the following 7 priority levels for you (listed from the lowest to the highest urgency): 0xC0, 0xA0, 0x80, 0x60, 0x40, 0x20, and 0x00 (the highest priority).
+
+- Before returning, every "kernel aware" ISR must check whether an active object has been activated that has a higher priority than the currently running active object. If this is the case, the ISR must set the PensSV pending flag in the NVIC. All this is accomplished in the macro QK_ISR_EXIT(), which must be called just before exiting every ISRs.
+
+- In ARM Cortex-M the whole prioritization of interrupts, including the PendSV exception, is performed entirely by the NVIC. Because the PendSV has the lowest priority in the system, the NVIC tail-chains to the PendSV exception only after exiting the last nested interrupt.
+
+- The pushing of the 8 registers comprising the ARM Cortex-M interrupt stack frame upon entry to the to the preempted thread (NMI or IRQ) is wasteful in a single-stack kernel, but is necessary to perform full interrupt return to the preempted context through the exception return.
 
 
 @subsection arm-cm_qk-preempt Preemption Scenarios in QK on ARM Cortex-M
-@anchor arm-cm_qk-arm-cm-fig
-![Several preemption scenarios in QK](qk_arm-cm.gif)
 
-<dl class="tag">
-  <dt>0</dt><dd>
-The timeline begins with the QK executing the idle loop.
-  </dd>
-  <dt>1</dt><dd>
-At some point an interrupt occurs and the CPU immediately suspends the idle loop, pushes the interrupt stack frame to the Main Stack and starts executing the ISR.
-  </dd>
-  <dt>2</dt><dd>
-The ISR performs its work, and in QK always must call the QK_ISR_EXIT() macro, which calls the QK scheduler (QK_sched()) to determine if there is a higher-priority AO to run. If so, the macro sets the pending flag for the PendSV exception in the NVIC. The priority of the PendSV exception is configured to be the lowest of all exceptions (0xFF), so the ISR continues executing and PendSV exception remains pending. At the ISR return, the ARM Cortex-M CPU performs tail-chaining to the pending PendSV exception.
-  </dd>
-  <dt>3</dt><dd>
-The PendSV exception synthesize an exception stack frame to return to the QK "activator" (QK_activate_()) to run this new thread.
-> <b>NOTE:</b> The QK activator must run in the thread context, while PendSV executes in the exception context. The change of the context is accomplished by returning from the PendSV exception directly to the QK "activator".
+@anchor arm-cm_qk-arm-cm-fig
+
+@image html  qk_arm-cm.png "Several preemption scenarios in QK"
+@image latex qk_arm-cm.png "Several preemption scenarios in QK"
+
+`[0]` The timeline begins with the QK executing the idle loop.
+
+`[1]` At some point an interrupt occurs and the CPU immediately suspends the idle loop, pushes the interrupt stack frame to the Main Stack and starts executing the ISR.
+
+`[2]` The ISR performs its work, and in QK always must call the QK_ISR_EXIT() macro, which calls the QK scheduler (QK_sched()) to determine if there is a higher-priority AO to run. If so, the macro sets the pending flag for the PendSV exception in the NVIC. The priority of the PendSV exception is configured to be the lowest of all exceptions (0xFF), so the ISR continues executing and PendSV exception remains pending. At the ISR return, the ARM Cortex-M CPU performs tail-chaining to the pending PendSV exception.
+
+`[3]` The PendSV exception synthesize an exception stack frame to return to the QK "activator" (QK_activate_()) to run this new thread.
+
+@note
+The QK activator must run in the thread context, while PendSV executes in the exception context. The change of the context is accomplished by returning from the PendSV exception directly to the QK "activator".
 
 To return directly to the QK activator, PendSV synthesizes an exception stack frame, which contains the exception return address set to QK_activate_(). The QK activator activates the Low-priority thread (discovered by the QK scheduler QK_sched()). The QK activator enables interrupts and launches the Low-priority thread, which is simply a C-function call in QK. The Low-priority thread (active object) starts running.
-  </dd>
-  <dt>4</dt><dd>
-Some time later a low-priority interrupt occurs. The Low-priority thread is suspended and the CPU pushes the interrupt stack frame to the Main Stack and starts executing the ISR.
-  </dd>
-  <dt>5</dt><dd>
-Before the Low-priority ISR completes, it too gets preempted by a High-priority ISR. The CPU pushes another interrupt stack frame and starts executing the High-priority ISR.
-  </dd>
-  <dt>6</dt><dd>
-The High-priority ISR sets the pending flag for the PendSV exception by means of the QK_ISR_EXIT() macro. When the High-priority ISR returns, the NVIC does not tail-chain to the PendSV exception, because a higher-priority ISR than PendSV is still active. The NVIC performs an exception return to the preempted Low-priority interrupt, which finally completes.
-  </dd>
-  <dt>7</dt><dd>
-Upon the exit from the Low-priority ISR, it too sets the pending flag for the PendSV exception by means of the QK_ISR_EXIT() macro. The PendSV is already pended from the High-priority interrupt, so pending is again is redundant, but it is not an error. At the ISR return, the ARM Cortex-M CPU performs tail-chaining to the pending PendSV exception.
-  </dd>
-  <dt>8</dt><dd>
-The PendSV exception synthesizes an interrupt stack frame to return to the QK activator. The QK activator detects that the High-priority thread is ready to run and launches the High-priority thread (normal C-function call). The High-priority thread runs to completion and returns to the activator.
-  </dd>
-  <dt>9</dt><dd>
-The QK activator does not find any more higher-priority threads to execute and needs to return to the preempted thread. The only way to restore the interrupted context in ARM Cortex-M is through the interrupt return, but the thread is executing outside of the interrupt context (in fact, threads are executing in the Privileged Thread mode). The thread enters the Handler mode by pending the NMI or IRQ exception.
-  </dd>
-  <dt>10</dt><dd>
-The only job of the NMI or IRQ exception is to discard its own interrupt stack frame, re-enable interrupts, and return using the interrupt stack frame that has been on the stack from the moment of thread preemption.
-  </dd>
-  <dt>11</dt><dd>
-The Low-priority thread, which has been preempted all that time, resumes and finally runs to completion and returns to the QK activator. The QK activaotr does not find any more threads to launch and causes the NMI or IRQ exception to return to the preempted thread.
-  </dd>
-  <dt>12</dt><dd>
-The NMI or IRQ exception discards its own interrupt stack frame and returns using the interrupt stack frame from the preempted thread context
-  </dd>
-</dl>
-<div style="clear:both;"></div>
+
+`[4]` Some time later a low-priority interrupt occurs. The Low-priority thread is suspended and the CPU pushes the interrupt stack frame to the Main Stack and starts executing the ISR.
+
+`[5]` Before the Low-priority ISR completes, it too gets preempted by a High-priority ISR. The CPU pushes another interrupt stack frame and starts executing the High-priority ISR.
+
+`[6]` The High-priority ISR sets the pending flag for the PendSV exception by means of the QK_ISR_EXIT() macro. When the High-priority ISR returns, the NVIC does not tail-chain to the PendSV exception, because a higher-priority ISR than PendSV is still active. The NVIC performs an exception return to the preempted Low-priority interrupt, which finally completes.
+
+`[7]` Upon the exit from the Low-priority ISR, it too sets the pending flag for the PendSV exception by means of the QK_ISR_EXIT() macro. The PendSV is already pended from the High-priority interrupt, so pending is again is redundant, but it is not an error. At the ISR return, the ARM Cortex-M CPU performs tail-chaining to the pending PendSV exception.
+
+`[8]` The PendSV exception synthesizes an interrupt stack frame to return to the QK activator. The QK activator detects that the High-priority thread is ready to run and launches the High-priority thread (normal C-function call). The High-priority thread runs to completion and returns to the activator.
+
+`[9]` The QK activator does not find any more higher-priority threads to execute and needs to return to the preempted thread. The only way to restore the interrupted context in ARM Cortex-M is through the interrupt return, but the thread is executing outside of the interrupt context (in fact, threads are executing in the Privileged Thread mode). The thread enters the Handler mode by pending the NMI or IRQ exception.
+
+`[10]` The only job of the NMI or IRQ exception is to discard its own interrupt stack frame, re-enable interrupts, and return using the interrupt stack frame that has been on the stack from the moment of thread preemption.
+
+`[11]` The Low-priority thread, which has been preempted all that time, resumes and finally runs to completion and returns to the QK activator. The QK activaotr does not find any more threads to launch and causes the NMI or IRQ exception to return to the preempted thread.
+
+`[12]` The NMI or IRQ exception discards its own interrupt stack frame and returns using the interrupt stack frame from the preempted thread context
 
 
 @section arm-cm_qk-qf_port The qf_port.h Header File
@@ -730,8 +670,8 @@ As any preemptive kernel, QK needs to be notified about entering the interrupt c
 
 
 @anchor arm-cm_qk_port-code
-<b>Listing: qk_port.h header file for ARM Cortex-M</b>
-@code{c}
+@caption{Listing: qk_port.h header file for ARM Cortex-M}
+@code{.c}
      /* determination if the code executes in the ISR context */
  [1] #define QK_ISR_CONTEXT_() (QK_get_IPSR() != (uint32_t)0)
 
@@ -760,36 +700,27 @@ As any preemptive kernel, QK needs to be notified about entering the interrupt c
      #include "qk.h" /* QK platform-independent public interface */
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-The macro @c QK_ISR_CONTEXT() returns true when the code executes in the ISR context and false otherwise. The macro takes advantage of the ARM Cortex-M register IPSR, which is non-zero when the CPU executes an exception (or interrupt) and is zero when the CPU is executing thread code.
-> <b>NOTE:</b> QK needs to distinguish between ISR and thread contexts, because threads need to perform synchronous context switch (when a higher-priority thread becomes ready to run), while ISRs should not do that.
+`[1]` The macro @c QK_ISR_CONTEXT() returns true when the code executes in the ISR context and false otherwise. The macro takes advantage of the ARM Cortex-M register IPSR, which is non-zero when the CPU executes an exception (or interrupt) and is zero when the CPU is executing thread code.
 
-  </dd>
-  <dt>2</dt><dd>
-The inline function @c QK_get_IPSR() obtains the IPSR register and returns it to the caller. This function is defined explicitly for the GNU-ARM toolchain, but many other toolchains provide this function as an intrinsic, built-in facility.
-  </dd>
-  <dt>3</dt><dd>
-The @c QK_ISR_ENTRY() macro notifies QK about entering an ISR. The macro is empty, because the determination of the ISR vs thread context is performed independently in the @c QK_ISR_CONTEXT() macro (see above).
-  </dd>
-  <dt>4</dt><dd>
-The @c QK_ISR_EXIT() macro notifies QK about exiting an ISR.
-  </dd>
-  <dt>5</dt><dd>
-Interrupts are disabled before calling QK scheduler.
-  </dd>
-  <dt>6</dt><dd>
-The QK scheduler is called to find out whether an active object of a higher priority than the current one needs activation. The @c QK_sched_() function returns non zero value if this is the case.
-  </dd>
-  <dt>7</dt><dd>
-If asynchronous preemption becomes necessary, the code sets the PENDSV Pend bit(28) in the ICSR register (Interrupt Control and State Register). The register is mapped at address 0xE000ED04 in all ARM Cortex-M cores.
-  </dd>
-  <dt>8</dt><dd>
-The interrupts are re-enabled after they have been disabled in step [5].
-> <b>NOTE:</b> Because the priority of the PendSV exception is the lowest of all interrupts, it is actually triggered only after all nested interrupts exit. The PendSV exception is then entered through the efficient **tail-chaining** process, which eliminates the restoring and re-entering the interrupt context.
+@note
+QK needs to distinguish between ISR and thread contexts, because threads need to perform synchronous context switch (when a higher-priority thread becomes ready to run), while ISRs should not do that.
 
-  </dd>
-</dl>
+`[2]` The inline function @c QK_get_IPSR() obtains the IPSR register and returns it to the caller. This function is defined explicitly for the GNU-ARM toolchain, but many other toolchains provide this function as an intrinsic, built-in facility.
+
+`[3]` The @c QK_ISR_ENTRY() macro notifies QK about entering an ISR. The macro is empty, because the determination of the ISR vs thread context is performed independently in the @c QK_ISR_CONTEXT() macro (see above).
+
+`[4]` The QK_ISR_EXIT() macro notifies QK about exiting an ISR.
+
+`[5]` Interrupts are disabled before calling QK scheduler.
+
+`[6]` The QK scheduler is called to find out whether an active object of a higher priority than the current one needs activation. The QK_sched_() function returns non zero value if this is the case.
+
+`[7]` If asynchronous preemption becomes necessary, the code sets the PENDSV Pend bit(28) in the ICSR register (Interrupt Control and State Register). The register is mapped at address 0xE000ED04 in all ARM Cortex-M cores.
+
+`[8]` The interrupts are re-enabled after they have been disabled in step `[5]`.
+
+@note
+Because the priority of the PendSV exception is the lowest of all interrupts, it is actually triggered only after all nested interrupts exit. The PendSV exception is then entered through the efficient **tail-chaining** process, which eliminates the restoring and re-entering the interrupt context.
 
 
 @section arm-cm_qk-qk_impl QK Port Implementation for ARM Cortex-M
@@ -800,7 +731,7 @@ The single assembly module `qk_port.s` contains common code for all Cortex-M var
 
 
 @subsection arm-cm_qk_port-asm_init QK_init() Implementation
-<b>Listing: QK_init() function in qk_port.c file</b>
+@caption{Listing: QK_init() function in qk_port.c file}
 @code{.c}
  [1] void QK_init(void) {
  [2] #if (__ARM_ARCH != 6) /* NOT Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
@@ -836,45 +767,34 @@ The single assembly module `qk_port.s` contains common code for all Cortex-M var
      }
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-The QK_init() function is called from QF_init() to perform initialization specific to the QK kernel.
-  </dd>
-  <dt>2</dt><dd>
-If the ARM Architecture is NOT v6 (Cortex-M0/M0+), that is for ARMv7M or higher architectures, the function initializes the exception priorities of PendSV and NMI as well as interrupt priorities of all IRQs available in a given MCU. (NOTE: for Cortex-M0/M0+, this initialization is not needed, as the CPU does not support the BASEPRI register and the only way to disable interrupts is via the PRIMASK register. In this case, all interrupts are "kernel-aware" and there is no need to initialize interrupt priorities to a safe value.
-  </dd>
-  <dt>3</dt><dd>
-Exception priorities of Usage-fault, Bus-fault, and Memory-fault are set to @ref QF_BASEPRI "QF_BASEPRI".
-  </dd>
-  <dt>4</dt><dd>
-Exception priorities of SVCall is set to @ref QF_BASEPRI "QF_BASEPRI".
-  </dd>
-  <dt>5</dt><dd>
-Exception priorities of SysTick, PendSV and Debug are set to @ref QF_BASEPRI "QF_BASEPRI".
-<br>
-> <b>NOTE:</b> the exception priority of PedSV is later changed to 0xFF in step [8]
 
-  </dd>
-  <dt>6</dt><dd>
-The number of implemented interrupts is extraced fom SCnSCB_ICTR register.
-  </dd>
-  <dt>7</dt><dd>
-Exception priorities of all implemented interrupts are set to @ref QF_BASEPRI "QF_BASEPRI".
-  </dd>
-  <dt>8</dt><dd>
-Exception priority of PendSV is set to 0xFF, which is the lowest interrupt priority in the system.
-  </dd>
-  <dt>9</dt><dd>
-In case a regular IRQ is configured for returning to the thread mode, the priority of the IRQ is set to zero (highest).
-  </dd>
-  <dt>10</dt><dd>
-In case a regular IRQ is configured for returning to the thread mode, the IRQ is enabled in the NVIC.
-  </dd>
-</dl>
+`[1]` The QK_init() function is called from QF_init() to perform initialization specific to the QK kernel.
+
+`[2]` If the ARM Architecture is NOT v6 (Cortex-M0/M0+), that is for ARMv7M or higher architectures, the function initializes the exception priorities of PendSV and NMI as well as interrupt priorities of all IRQs available in a given MCU. (NOTE: for Cortex-M0/M0+, this initialization is not needed, as the CPU does not support the BASEPRI register and the only way to disable interrupts is via the PRIMASK register. In this case, all interrupts are "kernel-aware" and there is no need to initialize interrupt priorities to a safe value.
+
+`[3]` Exception priorities of Usage-fault, Bus-fault, and Memory-fault are set to @ref QF_BASEPRI "QF_BASEPRI".
+
+`[4]` Exception priorities of SVCall is set to @ref QF_BASEPRI "QF_BASEPRI".
+
+`[5]` Exception priorities of SysTick, PendSV and Debug are set to @ref QF_BASEPRI "QF_BASEPRI".
+
+@note
+The exception priority of PedSV is later changed to 0xFF in step [8]
+
+
+`[6]` The number of implemented interrupts is extraced fom SCnSCB_ICTR register.
+
+`[7]` Exception priorities of all implemented interrupts are set to @ref QF_BASEPRI "QF_BASEPRI".
+
+`[8]` Exception priority of PendSV is set to 0xFF, which is the lowest interrupt priority in the system.
+
+`[9]` In case a regular IRQ is configured for returning to the thread mode, the priority of the IRQ is set to zero (highest).
+
+`[10]` In case a regular IRQ is configured for returning to the thread mode, the IRQ is enabled in the NVIC.
 
 
 @subsection arm-cm_qk_port-asm_pendsv PendSV_Handler() Implementation
-<b>Listing: PendSV_Handler() and Thread_ret() functions in qk_port.c file</b>
+@caption{Listing: PendSV_Handler() and Thread_ret() functions in qk_port.c file}
 @code{.c}
  [1] __attribute__ ((naked))
  [2] void PendSV_Handler(void) {
@@ -963,79 +883,69 @@ In case a regular IRQ is configured for returning to the thread mode, the IRQ is
      }
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-Attribute `naked` means that the GNU-ARM compiler won't generate any entry/exit code for this function.
-  </dd>
-  <dt>2</dt><dd>
-`PendSV_Handler` is a CMSIS-complinat name of the PendSV exception handler. The `PendSV_Handler` exception is always entered via tail-chaining from the last nested interrupt.
-  </dd>
-  <dt>3</dt><dd>
-Entire body of this function will be defined in this one inline-assembly instruction.
-  </dd>
-  <dt>4,5,6</dt><dd>
-Before interrupts are disabled, the following constants are loaded into registers: address of ICSR into r3 and (1<<27) into r1.
-  </dd>
-  <li>For the ARMv6-M architecture (Cortex-M0/M0+)...
-  </dd>
-  <dt>7</dt><dd>
-Interrupts are globally disabled by setting PRIMASK (see Section 3)
-  </dd>
-  <li>Otherwise, for the ARMv7-M architecture (Cortex-M3/4/7) and when the `__ARM_FP` macro is defined...
-> <b>NOTE:</b> The symbol `__ARM_FP` is defined by the GNU-ARM compiler when the compile options indicate that the ARM FPU is used.
 
-  </dd>
-  <dt>8</dt><dd>
-The lr register (EXC_RETURN) is pushed to the stack along with r0, to keep the stack aligned at 8-byte boundary.
-> <b>NOTE:</b> In the presence of the FPU (ARMv7M or higher architectures), the EXC_RETURN[4] bit carries the information about the stack frame format used, whereas EXC_RETURN[4] ==0 means that the stack contains room for the S0-S15 and FPSCR registers in addition to the usual R0-R3,R12,LR,PC,xPSR registers. This information must be preserved, in order to properly return from the exception at the end.
+`[1]` Attribute `naked` means that the GNU-ARM compiler won't generate any entry/exit code for this function.
 
-  </dd>
-  <dt>9</dt><dd>
-For the ARMv7-M architecture (Cortex-M3/M4), interrupts are selectively disabled by setting the BASEPRI register.
-> <b>NOTE:</b> The value moved to BASEPRI must be identical to the @ref QF_BASEPRI "QF_BASEPRI" macro defined in `qf_port.h`.
+`[2]` `PendSV_Handler` is a CMSIS-complinat name of the PendSV exception handler. The `PendSV_Handler` exception is always entered via tail-chaining from the last nested interrupt.
 
-  </dd>
-  <dt>10</dt><dd>
-Before setting the BASEPRI register, interrupts are disabled with the PRIMASK register, which is the recommended workaround for the Cortex-M7 r0p1 hardware bug, as described in the ARM Ltd. [@ref ARM-EPM-064408], Erratum 837070.
-  </dd>
-  <dt>11</dt><dd>
-The BASEPRI register is set to the @ref QF_BASEPRI "QF_BASEPRI" value.
-  </dd>
-  <dt>12</dt><dd>
-After setting the BASEPRI register, interrupts are re-anabed with the PRIMASK register, which is the recommended workaround for the Cortex-M7 r0p1 hardware bug, as described in the ARM Ltd. [@ref ARM-EPM-064408], Erratum 837070.
-  </dd>
-  <dt>13</dt><dd>
-The PendSV exception is **explicitly** un-pended.
-> <b>NOTE:</b> The PendSV exception handler can be preempted by an interrupt, which might pend PendSV exception again. This would trigger PendSV incorrectly again immediately after calling QK activator.
+`[3]` Entire body of this function will be defined in this one inline-assembly instruction.
 
-  </dd>
+`[4-5]` Before interrupts are disabled, the following constants are loaded into registers: address of ICSR into r3 and (1<<27) into r1.
 
-  <dt>14-23</dt><dd>This code fabricates an exception stack frame, to perform an exception-return to the QK activator without destroying the original exception stack frame of the PendSV exception. This is necessary to preserve the context of the preempted code.
-  </dd>
-  <dt>14</dt><dd>
-The value (1 << 24) is synthesized in r3 from the value (1 << 27) already available in r1. This value is going to be stacked and later restored to xPSR register (only the T bit set).
-  </dd>
-  <dt>15</dt><dd>
-The address of the QK activator function `QK_activate_()` is loaded into r2. This will be pushed to the stack as the PC register value.
-  </dd>
-  <dt>16</dt><dd>
-The address of the QK activator function `QK_activate_()` in r2 is adjusted to be half-word aligned instead of being an odd THUMB address.
-> <b>NOTE:</b> This is necessary, because the value will be loaded directly to the PC, which cannot accept odd values.
+For the ARMv6-M architecture (Cortex-M0/M0+)...
 
-  </dd>
-  <dt>17</dt><dd>
-The address of the `Thread_ret()` function is loaded into r1. This will be pushed to the stack as the lr register value.
-> <b>NOTE:</b> The address of the @c Thread_ret label must be a THUMB address, that is, the least-significant bit of this address must be set (this address must be odd number). This is essential for the correct return of the QK activator with setting the THUMB bit in the PSR. Without the LS-bit set, the ARM Cortex-M CPU will clear the T bit in the PSR and cause the Hard Fault. The GNU-ARM assembler/linker will synthesize the correct THUMB address of the svc_ret label only if this label is declared with the `.type Thread_ret , %function`  attribute (see step [23]).
+`[7]` Interrupts are globally disabled by setting PRIMASK (see Section 3)
 
-  </dd>
-  <dt>18</dt><dd>
-The stack pointer is adjusted to leave room for 8 registers.
-  </dd>
-  <dt>19</dt><dd>
-The top of stack, adjusted by 5 registers, (r0, r1, r2, r3, and r12) is stored to r0.
-  </dd>
-  <dt>20</dt><dd>
-The values of xpsr, pc, and lr prepared in r3, r2, and r1, respectively, are pushed on the top of stack (now in r0). This operation completes the synthesis of the exception stack frame. After this step the stack looks as follows:
+Otherwise, for the ARMv7-M architecture (Cortex-M3/4/7) and when the `__ARM_FP` macro is defined...
+
+@note
+The symbol `__ARM_FP` is defined by the GNU-ARM compiler when the compile options indicate that the ARM FPU is used.
+
+
+`[8]` The lr register (EXC_RETURN) is pushed to the stack along with r0, to keep the stack aligned at 8-byte boundary.
+
+@note
+In the presence of the FPU (ARMv7M or higher architectures), the EXC_RETURN[4] bit carries the information about the stack frame format used, whereas EXC_RETURN[4] ==0 means that the stack contains room for the S0-S15 and FPSCR registers in addition to the usual R0-R3,R12,LR,PC,xPSR registers. This information must be preserved, in order to properly return from the exception at the end.
+
+
+`[9]` For the ARMv7-M architecture (Cortex-M3/M4), interrupts are selectively disabled by setting the BASEPRI register.
+
+@note
+The value moved to BASEPRI must be identical to the @ref QF_BASEPRI "QF_BASEPRI" macro defined in `qf_port.h`.
+
+
+`[10]` Before setting the BASEPRI register, interrupts are disabled with the PRIMASK register, which is the recommended workaround for the Cortex-M7 r0p1 hardware bug, as described in the ARM Ltd. [@ref ARM-EPM-064408], Erratum 837070.
+
+`[11]` The BASEPRI register is set to the @ref QF_BASEPRI "QF_BASEPRI" value.
+
+`[12]` After setting the BASEPRI register, interrupts are re-anabed with the PRIMASK register, which is the recommended workaround for the Cortex-M7 r0p1 hardware bug, as described in the ARM Ltd. [@ref ARM-EPM-064408], Erratum 837070.
+
+`[13]` The PendSV exception is **explicitly** un-pended.
+
+@note
+The PendSV exception handler can be preempted by an interrupt, which might pend PendSV exception again. This would trigger PendSV incorrectly again immediately after calling QK activator without destroying the original exception stack frame of the PendSV exception. This is necessary to preserve the context of the preempted code.
+
+`[14]` The value (1 << 24) is synthesized in r3 from the value (1 << 27) already available in r1. This value is going to be stacked and later restored to xPSR register (only the T bit set).
+
+`[15]` The address of the QK activator function `QK_activate_()` is loaded into r2. This will be pushed to the stack as the PC register value.
+
+`[16]` The address of the QK activator function `QK_activate_()` in r2 is adjusted to be half-word aligned instead of being an odd THUMB address.
+
+@note
+This is necessary, because the value will be loaded directly to the PC, which cannot accept odd values.
+
+
+`[17]` The address of the `Thread_ret()` function is loaded into r1. This will be pushed to the stack as the lr register value.
+
+@note
+The address of the @c Thread_ret label must be a THUMB address, that is, the least-significant bit of this address must be set (this address must be odd number). This is essential for the correct return of the QK activator with setting the THUMB bit in the PSR. Without the LS-bit set, the ARM Cortex-M CPU will clear the T bit in the PSR and cause the Hard Fault. The GNU-ARM assembler/linker will synthesize the correct THUMB address of the svc_ret label only if this label is declared with the `.type Thread_ret , %function`  attribute (see step [23]).
+
+
+`[18]` The stack pointer is adjusted to leave room for 8 registers.
+
+`[19]` The top of stack, adjusted by 5 registers, (r0, r1, r2, r3, and r12) is stored to r0.
+
+`[20]` The values of xpsr, pc, and lr prepared in r3, r2, and r1, respectively, are pushed on the top of stack (now in r0). This operation completes the synthesis of the exception stack frame. After this step the stack looks as follows:
 <pre>
 Hi memory
            (optionally S0-S15, FPSCR), if EXC_RETURN[4]==0
@@ -1059,39 +969,41 @@ old SP --> "aligner"  (pushed in step [7] if FPU is present)
     SP --> r0   don't care
 Low memory
 </pre>
-  </dd>
-  <dt>21-22</dt><dd>
-The special exception-return value 0xFFFFFFF9 is synthesized in r0 (two instructions are used to make the code compatible with Cortex-M0, which has no barrel shifter).
-> <b>NOTE:</b> the r0 register is used instead of lr because the Cortex-M0 instruction set cannot manipulate the higher-registers (r9-r15).
-> <b>NOTE:</b> The exception-return value is consistent with the synthesized stack-frame with the lr[4] bit set to 1, which means that the FPU registers are not included in this stack frame.
 
-  </dd>
-  <dt>23</dt><dd>
-PendSV exception returns using the special value of the r0 register of 0xFFFFFFF9 (return to Privileged Thread mode using the Main Stack pointer). The synthesized stack frame causes actually a function call to QK_sched_ function in C.
-> <b>NOTE:</b> The return from the PendSV exception just executed switches the ARM Cortex-M core to the Privileged Thread mode. The QK_sched_ function internally re-enables interrupts before launching any thread, so the threads always run in the Thread mode with interrupts enabled and can be preempted by interrupts of any priority.
-> <b>NOTE:</b> In the presence of the FPU, the exception-return to the QK activator does not change any of the FPU status bit, such as CONTROL.FPCA or LSPACT.
+`[21]` The special exception-return value 0xFFFFFFF9 is synthesized in r0 (two instructions are used to make the code compatible with Cortex-M0, which has no barrel shifter).
 
-  </dd>
-  <dt>24</dt><dd>
-The @c Thread_ret function is the place, where the QK activator `QK_activate_()` returns to, because this return address is pushed to the stack in step [16]. Please note that the address of the @c Thread_ret label must be a THUMB address.
-  </dd>
-  <dt>25-28</dt><dd>
-If the FPU is present, the read-modify-write code clears the CONTROL[2] bit [2]. This bit, called CONTROL.FPCA (Floating Point Active), would cause generating the FPU-type stack frame, which you want to avoid in this case (because the NMI exception will certainly not use the FPU).
-> <b>NOTE:</b> Clearing the CONTROL.FPCA bit occurs with interrupts disabled, so it is protected from a context switch.
+@note
+the r0 register is used instead of lr because the Cortex-M0 instruction set cannot manipulate the higher-registers (r9-r15).
 
-  </dd>
-  <dt>28-32</dt><dd>
-The asynchronous NMI exception is triggered by setting ICSR[31]. The job of this exception is to put the CPU into the exception mode and correctly return to the thread level.
-  </dd>
-  <dt>33</dt><dd>
-This endless loop should not be reached, because the NMI exception should preempt the code immediately after step [31]
-  </dd>
-</dl>
+@note
+The exception-return value is consistent with the synthesized stack-frame with the lr[4] bit set to 1, which means that the FPU registers are not included in this stack frame.
+
+
+`[23]` PendSV exception returns using the special value of the r0 register of 0xFFFFFFF9 (return to Privileged Thread mode using the Main Stack pointer). The synthesized stack frame causes actually a function call to QK_sched_ function in C.
+
+@note
+The return from the PendSV exception just executed switches the ARM Cortex-M core to the Privileged Thread mode. The QK_sched_ function internally re-enables interrupts before launching any thread, so the threads always run in the Thread mode with interrupts enabled and can be preempted by interrupts of any priority.
+
+@note
+In the presence of the FPU, the exception-return to the QK activator does not change any of the FPU status bit, such as CONTROL.FPCA or LSPACT.
+
+
+`[24]` The @c Thread_ret function is the place, where the QK activator `QK_activate_()` returns to, because this return address is pushed to the stack in step [16]. Please note that the address of the @c Thread_ret label must be a THUMB address.
+
+`[25]` If the FPU is present, the read-modify-write code clears the CONTROL[2] bit [2]. This bit, called CONTROL.FPCA (Floating Point Active), would cause generating the FPU-type stack frame, which you want to avoid in this case (because the NMI exception will certainly not use the FPU).
+
+@note
+Clearing the CONTROL.FPCA bit occurs with interrupts disabled, so it is protected from a context switch.
+
+
+`[28-32]` The asynchronous NMI exception is triggered by setting ICSR[31]. The job of this exception is to put the CPU into the exception mode and correctly return to the thread level.
+
+`[33]` This endless loop should not be reached, because the NMI exception should preempt the code immediately after step `[31]`
 
 
 @subsection arm-cm_qk_port-asm_nmi NMI_Handler() Implementation
 
-<b>Listing: NMI_Handler() function in qk_port.c file</b>
+@caption{Listing: NMI_Handler() function in qk_port.c file}
 @code{.c}
      __attribute__ ((naked))
  [1] void NMI_Handler(void) {
@@ -1115,9 +1027,8 @@ This endless loop should not be reached, because the NMI exception should preemp
      }
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-The @c NMI_Handler is the CMSIS-compliant name of the NMI exception handler. This exception is triggered after returning from the QK activator in step [31] of the previous listing. The job of NMI is to discard its own stack frame and cause the exception-return to the original preempted thread context. The stack contents just after entering NMI is shown below:
+
+`[1]` The @c NMI_Handler is the CMSIS-compliant name of the NMI exception handler. This exception is triggered after returning from the QK activator in step [31] of the previous listing. The job of NMI is to discard its own stack frame and cause the exception-return to the original preempted thread context. The stack contents just after entering NMI is shown below:
 <pre>
 Hi memory
            (optionally S0-S15, FPSCR), if EXC_RETURN[4]==0
@@ -1141,29 +1052,23 @@ old SP --> EXC_RETURN (pushed in PendSV [7] if FPU is present)
     SP --> r0   don't care
 Low memory
 </pre>
-  </dd>
-  <dt>2</dt><dd>
-The stack pointer is adjusted to un-stack the 8 registers of the interrupt stack frame corresponding to the NMI exception itself. This moves the stack pointer from the "old SP" to "SP" in the picture above, which "uncovers" the original exception stack frame left by the PendSV exception.
-  </dd>
-  <dt>3</dt><dd>
-For ARMv6-M, interrupts are enabled by clearing the PRIMASK.
-  </dd>
-  <dt>4</dt><dd>
-For ARMv6-M, The NMI exception returns to the preempted thread using the standard EXC_RETURN, which is in lr.
-  </dd>
-  <dt>5-6</dt><dd>
-For the ARMv7-M, interrupts are enabled by writing 0 into the BASEPRI register.
-  </dd>
-  <dt>7</dt><dd>
-If the FPU is used, the EXC_RETURN and the "stack aligner" saved in PendSV step [7] are popped from the stack into r0 and pc, respectively. Updating the pc causes the return from PendSV.
-  </dd>
-  <dt>8</dt><dd>
-Otherwise, NMI returns to the preempted thread using the standard EXC_RETURN, which is in lr.
-  </dd>
-</dl>
+
+`[2]` The stack pointer is adjusted to un-stack the 8 registers of the interrupt stack frame corresponding to the NMI exception itself. This moves the stack pointer from the "old SP" to "SP" in the picture above, which "uncovers" the original exception stack frame left by the PendSV exception.
+
+`[3]` For ARMv6-M, interrupts are enabled by clearing the PRIMASK.
+
+`[4]` For ARMv6-M, The NMI exception returns to the preempted thread using the standard EXC_RETURN, which is in lr.
+
+`[5-6]` For the ARMv7-M, interrupts are enabled by writing 0 into the BASEPRI register.
+
+`[7]` If the FPU is used, the EXC_RETURN and the "stack aligner" saved in PendSV step [7] are popped from the stack into r0 and pc, respectively. Updating the pc causes the return from PendSV.
+
+`[8]` Otherwise, NMI returns to the preempted thread using the standard EXC_RETURN, which is in lr.
 
 @anchor qk_stack-detail
-![Detailed stack allocation in QK for ARM Cortex-M](qk_stack-detail.gif)
+
+@image html  qk_stack-detail.png "Detailed stack allocation in QK for ARM Cortex-M"
+@image latex qk_stack-detail.png "Detailed stack allocation in QK for ARM Cortex-M"
 
 
 @section arm-cm_qk-isr Writing ISRs for QK
@@ -1178,7 +1083,7 @@ Typically, ISRs are application-specific (with the main purpose to produce event
 The following listing shows an example of the `SysTick_Handler()` ISR (from the DPP example application). This ISR calls the `QF_TICK_X()` macro to perform QF time-event management.
 
 @anchor arm-cm_qk-isr-code
-<b>Listing: An ISR header for QK</b>
+@caption{Listing: An ISR header for QK}
 @code{.c}
      void SysTick_Handler(void) __attribute__((__interrupt__));
      void SysTick_Handler(void) {
@@ -1191,20 +1096,17 @@ The following listing shows an example of the `SysTick_Handler()` ISR (from the 
      }
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-Every ISR for QK must call `QK_ISR_ENTRY()` before calling any QP API
-  </dd>
-  <dt>2</dt><dd>
-Every ISR for QK must call `QK_ISR_EXIT()` right before exiting to let the QK kernel schedule an asynchronous preemption, if necessary.
-  </dd>
-</dl>
+
+`[1]` Every ISR for QK must call `QK_ISR_ENTRY()` before calling any QP API
+
+`[2]` Every ISR for QK must call `QK_ISR_EXIT()` right before exiting to let the QK kernel schedule an asynchronous preemption, if necessary.
 
 @note
 The QK port to ARM Cortex-M complies with the requirement of the ARM-EABI to preserve stack pointer alignment at **8-byte boundary**. Also, all QP examples for ARM Cortex-M comply with the CMSIS naming convention for all exception handlers and IRQ handlers.
 
 
-@section arm-cm_qk-fpu Using the FPU in the QK Port (ARMv7M or higher architectures) If you have the Cortex-M4F CPU and your application uses the hardware FPU, it should be enabled because it is turned off out of reset. The CMSIS-compliant way of turning the FPU on looks as follows:
+@section arm-cm_qk-fpu Using the FPU in the QK Port (ARMv7M or higher architectures)
+If you have the Cortex-M4F CPU and your application uses the hardware FPU, it should be enabled because it is turned off out of reset. The CMSIS-compliant way of turning the FPU on looks as follows:
 
 @verbatim
     SCB->CPACR |= (0xFU << 20);
@@ -1220,7 +1122,7 @@ Depending on wheter or not you use the FPU in your ISRs, the "Vanilla" QP port a
 If you use the FPU only at a single thread (active object) and none of your ISRs use the FPU, you can setup the FPU not to use the automatic state preservation and not to use the lazy stacking feature as follows:
 
 @verbatim
-    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
+FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
 @endverbatim
 
 With this setting, the Cortex-M4F processor handles the ISRs in the exact-same way as Cortex-M0-M3, that is, only the standard interrupt frame with R0-R3,R12,LR,PC,xPSR is used. This scheme is the fastest and incurs no additional CPU cycles to save and restore the FPU registers.
@@ -1232,7 +1134,9 @@ This FPU setting will lead to FPU errors, if more than one thread or any of the 
 @subsection arm-cm_qk-fpu_nthreadd FPU used in more than one thread only or the ISR
 If you use the FPU in more than one of the threads (active objects) or in any of your ISRs, you should setup the FPU to use the automatic state preservation and the lazy stacking feature as follows:
 
-    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
+@verbatim
+FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
+@endverbatim
 
 This is actually the default setting of the hardware FPU and is recommended for the QK port, because it is safer in view of code evolution. Future changes to the application can easily introduce FPU use in multiple active objects, which would be unsafe if the FPU context was not preserved automatically.
 
@@ -1246,7 +1150,7 @@ QK can very easily detect the situation when no events are available, in which c
 The THUMB-2 instruction set used exclusively in ARM Cortex-M provides a special instruction WFI (Wait-for-Interrupt) for stopping the CPU clock, as described in the "ARMv7-M Reference Manual" [ARM 06a]. The following listing shows the `QK_onIdle()` callback that puts ARM Cortex-M into a low-power mode.
 
 @anchor arm-cm_qk_onidle-code
-<b>Listing: QV_onIdle() for ARM Cortex-M</b>
+@caption{Listing: QV_onIdle() for ARM Cortex-M}
 @code{c}
 
  [1] void QK_onIdle(void) {
@@ -1261,17 +1165,11 @@ The THUMB-2 instruction set used exclusively in ARM Cortex-M provides a special 
      }
 @endcode
 
-<dl class="tag">
-  <dt>1</dt><dd>
-The preemptive QK kernel calls the `QK_onIdle()` callback with interrupts enabled.
-  </dd>
-  <dt>2</dt><dd>
-The sleep mode is used only in the non-debug configuration, because sleep mode stops CPU clock, which can interfere with debugging.
-  </dd>
-  <dt>3</dt><dd>
-The `WFI` instruction is generated using inline assembly.
-  </dd>
-</dl>
+`[1]` The preemptive QK kernel calls the `QK_onIdle()` callback with interrupts enabled.
+
+`[2]` The sleep mode is used only in the non-debug configuration, because sleep mode stops CPU clock, which can interfere with debugging.
+
+`[3]` The `WFI` instruction is generated using inline assembly.
 
 
 @section arm-cm_qk-testing Testing QK Preemption Scenarios
@@ -1328,11 +1226,8 @@ The pass criteria of this test are as follows:
 In order to test the FPU (ARMv7M or higher architectures), the Board Support Package (BSP) for the Cortex-M4F EK-TM4C123GXL board uses the FPU in the following contexts:
 
 - In the idle loop via the `QK_onIdle()` callback (QP priority 0)
-
 - In the thread level via the `BSP_random()` function called from all five Philo active objects (QP priorities 1-5).
-
 - In the thread level via the `BSP_displayPhiloStat()` function called from the Table active object (QP priorty 6)
-
 - In the ISR level via the `SysTick_Handler()` ISR (priority above all threads)
 
 To test the FPU, you could step through the code in the debugger and verify that the expected FPU-type exception stack frame is used and that the FPU registers are saved and restored by the "lazy stacking feature" when the FPU is actually used.
@@ -1361,32 +1256,38 @@ If you are currently using QP on top of a conventional 3rd-party RTOS, consider 
 @section arm-cm_qxk-synopsis Synopsis of the QXK Port on ARM Cortex-M
 The preemptive, blocking QXK kernel works on ARM Cortex-M as follows:
 
-1. The ARM Cortex-M processor executes application code in the Privileged Thread mode, which is exactly the mode entered out of reset. The exceptions (including all interrupts) are always processed in the Privileged Handler mode.
+- The ARM Cortex-M processor executes application code in the Privileged Thread mode, which is exactly the mode entered out of reset. The exceptions (including all interrupts) are always processed in the Privileged Handler mode.
 
-2. QXK uses the Main Stack Pointer (MSP) for @ref srs_qxk_basic "basic threads", interrupts and exceptions (such as the PendSV exception). The MSP is also used for the QXK idle thread (which is a non-blocking basic thread).
+- QXK uses the Main Stack Pointer (MSP) for @ref srs_qxk_basic "basic threads", interrupts and exceptions (such as the PendSV exception). The MSP is also used for the QXK idle thread (which is a non-blocking basic thread).
 
-3. QXK uses the Process Stack Pointer (PSP) for handling @ref srs_qxk_extended "extended threads". Each extended thread must provide a private stack space to be associated with the PSP.
+- QXK uses the Process Stack Pointer (PSP) for handling @ref srs_qxk_extended "extended threads". Each extended thread must provide a private stack space to be associated with the PSP.
 
-4. The QXK port uses the @c PendSV (exception number 14) and the NMI or the IRQ exception (number 2) to perform context switch. The application code (your code) must initialize the Interrupt Vector Table with the addresses of the `PendSV_Handler` and `NMI_Handler` exception handlers.
-<br>
-> <b>NOTE:</b> QXK uses only the CMSIS-compliant exception and interrupt names, such as `PendSV_Handler`, `NMI_Handler`, etc.@n
-> <b>NOTE:</b> The QXK port specifically does **not** use the SVC exception (Supervisor Call). This makes the QXK ports compatible with various "hypervisors" (such as mbed uVisor or Nordic SoftDevice), which use the SVC exception.
+- The QXK port uses the @c PendSV (exception number 14) and the NMI or the IRQ exception (number 2) to perform context switch. The application code (your code) must initialize the Interrupt Vector Table with the addresses of the `PendSV_Handler` and `NMI_Handler` exception handlers.
 
-5. You need to explicitly **assign priorities of the all interrupts** used in your application, as described in @ref arm-cm_int.
-<br>
-> <b>NOTE:</b> For ARMv7M or higher architectures (M3/M4/M7/M33...), the QXK initialization code (executed from the QF initialization) initializes all interrupt priorities to the safe value maskable with the BASEPRI register. However, this is just a safety precaution not to leave the interrupts kernel-unaware, which they are out of reset. It is highly recommended to set the priorities of all interrupts explicitly in the application-level code.
+@note
+QXK uses only the CMSIS-compliant exception and interrupt names, such as `PendSV_Handler`, `NMI_Handler`, etc.@n
 
-6. It is strongly recommended that you do not assign the lowest NVIC priority (0xFF) to any interrupt in your application, because it is used by the PendSV handler. For example, with 3 bits of priority implemented in the NVIC, this leaves the following 7 priority levels for you (listed from the lowest to the highest urgency): 0xC0, 0xA0, 0x80, 0x60, 0x40, 0x20, and 0x00 (the highest priority).
-<br>
-> <b>NOTE:</b> The prioritization of interrupts, including the PendSV exception, is performed entirely by the NVIC. Because the PendSV has the lowest priority in the system, the NVIC tail-chains to the PendSV exception only after exiting the last nested interrupt.
+@note
+The QXK port specifically does **not** use the SVC exception (Supervisor Call). This makes the QXK ports compatible with various "hypervisors" (such as mbed uVisor or Nordic SoftDevice), which use the SVC exception.
 
-7. ISRs are written as regular C functions, but they need to call QXK_ISR_ENTRY() before using any QF services, and they must call QXK_ISR_EXIT() after using any of the QF services.
+- You need to explicitly **assign priorities of the all interrupts** used in your application, as described in @ref arm-cm_int.
 
-8. ARM Cortex-M enters interrupt context without disabling interrupts. Generally, you should not disable interrupts inside your ISRs. In particular, the QF services (such as QF_PUBLISH(), QF_TICK_X(), and QACTIVE_POST()) should be called with interrupts enabled, to avoid nesting of critical sections.
-<br>
-> <b>NOTE:</b> If you don't wish an interrupt to be preempted by another interrupt, you can always prioritize that interrupt in the NVIC to a higher or equal level as other interrupts (use a lower numerical value of priority).
+@note
+For ARMv7M or higher architectures (M3/M4/M7/M33...), the QXK initialization code (executed from the QF initialization) initializes all interrupt priorities to the safe value maskable with the BASEPRI register. However, this is just a safety precaution not to leave the interrupts kernel-unaware, which they are out of reset. It is highly recommended to set the priorities of all interrupts explicitly in the application-level code.
 
-9. In compliance with the ARM Application Procedure Call Standard (AAPCS), the QXK kernel always preserves the 8-byte alignment of the stack (both MSP and PSP).
+- It is strongly recommended that you do not assign the lowest NVIC priority (0xFF) to any interrupt in your application, because it is used by the PendSV handler. For example, with 3 bits of priority implemented in the NVIC, this leaves the following 7 priority levels for you (listed from the lowest to the highest urgency): 0xC0, 0xA0, 0x80, 0x60, 0x40, 0x20, and 0x00 (the highest priority).
+
+@note
+The prioritization of interrupts, including the PendSV exception, is performed entirely by the NVIC. Because the PendSV has the lowest priority in the system, the NVIC tail-chains to the PendSV exception only after exiting the last nested interrupt.
+
+- ISRs are written as regular C functions, but they need to call QXK_ISR_ENTRY() before using any QF services, and they must call QXK_ISR_EXIT() after using any of the QF services.
+
+- ARM Cortex-M enters interrupt context without disabling interrupts. Generally, you should not disable interrupts inside your ISRs. In particular, the QF services (such as QF_PUBLISH(), QF_TICK_X(), and QACTIVE_POST()) should be called with interrupts enabled, to avoid nesting of critical sections.
+
+@note
+If you don't wish an interrupt to be preempted by another interrupt, you can always prioritize that interrupt in the NVIC to a higher or equal level as other interrupts (use a lower numerical value of priority).
+
+- In compliance with the ARM Application Procedure Call Standard (AAPCS), the QXK kernel always preserves the 8-byte alignment of the stack (both MSP and PSP).
 
 
 @subsection arm-com_qxk_vfp Using the VFP

@@ -72,7 +72,7 @@ void QS_test_pause_(void) {
 }
 
 /*${QUTest::QS::getTestProbe_} .............................................*/
-uint32_t QS_getTestProbe_(QSpyFunPtr api) {
+uint32_t QS_getTestProbe_(QSpyFunPtr const api) {
     uint32_t data = 0U;
     uint_fast8_t i;
     for (i = 0U; i < QS_testData.tpNum; ++i) {
@@ -481,7 +481,7 @@ bool QActiveDummy_post_(
 
     /* is it a dynamic event? */
     if (e->poolId_ != 0U) {
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     uint_fast8_t const rec = (status ? (uint_fast8_t)QS_QF_ACTIVE_POST
@@ -533,7 +533,7 @@ void QActiveDummy_postLIFO_(
 
     /* is it a dynamic event? */
     if (e->poolId_ != 0U) {
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, me->prio)

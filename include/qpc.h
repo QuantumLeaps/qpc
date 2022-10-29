@@ -112,7 +112,7 @@ typedef char char_t;
 
 #ifdef Q_SPY
 
-/*! @deprecated local Filter for a generic application object @p obj_. */
+/*! @deprecated local Filter for a generic application object `obj_`. */
 #define QS_FILTER_AP_OBJ(obj_)  (QS_priv_.locFilter_AP = (obj_))
 
 /*! @deprecated begin of a user QS record, instead use QS_BEGIN_ID() */

@@ -156,7 +156,7 @@ void QF_init(void) {
 
     /* register the QXK idle AO object, cast "const" away */
     static QActive const idle_ao = { (struct QHsmVtable const *)0 };
-    QActive_registry_[0] = QF_CONST_CAST_(QActive*, &idle_ao);
+    QActive_registry_[0] = (QActive* )&idle_ao;
 
     #ifdef QXK_INIT
     QXK_INIT(); /* port-specific initialization of the QXK kernel */

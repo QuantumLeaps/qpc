@@ -185,9 +185,9 @@ void QK_activate_(void);
 * another.
 *
 * @param[in] prev   pointer to the previous thread (active object)
-*                   (prev==0 means that @p prev was the QK idle loop)
+*                   (prev==0 means that `prev` was the QK idle loop)
 * @param[in] next   pointer to the next thread (active object)
-*                   (next==0) means that @p next is the QK idle loop)
+*                   (next==0) means that `next` is the QK idle loop)
 * @attention
 * QK_onContextSw() is invoked with interrupts **disabled** and must also
 * return with interrupts **disabled**.

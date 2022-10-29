@@ -145,13 +145,18 @@ void * QMPool_get(QMPool * const me,
             me->nMin = 0U; /* remember that the pool got empty */
         }
         else {
-            /* pool is not empty, so the next free block must be in range
+            /*! @invariant
+            * The pool is not empty, so the next free-block pointer,
+            * so the next free block must be in range.
             *
-            * NOTE: the next free block pointer can fall out of range
+            * @tr{PQP18_3}
+            */
+            /* NOTE: The next free block pointer can fall out of range
             * when the client code writes past the memory block, thus
             * corrupting the next block.
             */
-            Q_ASSERT_CRIT_(330, QF_PTR_RANGE_(fb_next, me->start, me->end));
+            Q_ASSERT_CRIT_(330,
+                (me->start <= fb_next) && (fb_next <= me->end));
 
             /* is the number of free blocks the new minimum so far? */
             if (me->nMin > me->nFree) {
@@ -191,11 +196,11 @@ void QMPool_put(QMPool * const me,
 {
     Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
 
-    /*! @pre # free blocks cannot exceed the total # blocks and
-    * the block pointer must be from this pool.
+    /*! @pre number of free blocks cannot exceed the total # blocks and
+    * the block pointer must be in range for this pool.
     */
     Q_REQUIRE_ID(200, (me->nFree < me->nTot)
-                      && QF_PTR_RANGE_(b, me->start, me->end));
+                      && (me->start <= b) && (b <= me->end));
 
     QF_CRIT_STAT_
     QF_CRIT_E_();

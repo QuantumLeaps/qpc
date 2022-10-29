@@ -22,7 +22,9 @@
 
 The QP/C/C++ ports and examples for ARM Cortex-R are described in the Quantum Leaps Application Note  @webref{doc/AN_QP_and_ARM-Cortex-R.pdf, QP and ARM Cortex-R}.
 
-[![QP and ARM Cortex-R](img/AN.jpg)](https://www.state-machine.com/doc/AN_QP_and_ARM-Cortex-R.pdf)
+
+@image html  AN-QL.png "QP and ARM Cortex-R"
+@image latex AN-QL.png "QP and ARM Cortex-R"
 @caption{[Application Note: "QP and ARM Cortex-R"](https://www.state-machine.com/doc/AN_QP_and_ARM-Cortex-R.pdf)}
 
 @next{arm7-9}
@@ -32,7 +34,8 @@ The QP/C/C++ ports and examples for ARM Cortex-R are described in the Quantum Le
 
 The QP/C/C++ ports and examples for ARM7/ARM9 are described in the Quantum Leaps Application Note  @webref{doc/AN_QP_and_ARM-Cortex-R.pdf, QP and ARM7/ARM9}.
 
-[![QP and ARM Cortex-R](img/AN.jpg)](https://www.state-machine.com/doc/AN_QP_and_ARM7_ARM9-GNU.pdf)
+@image html  AN-QL.png "QP and ARM7/ARM9"
+@image latex AN-QL.png "QP and ARM7/ARM9"
 @caption{[Application Note: "QP and ARM7/ARM9"](https://www.state-machine.com/doc/AN_QP_and_ARM7_ARM9-GNU.pdf)}
 
 @next{msp430}
@@ -42,10 +45,11 @@ The QP/C/C++ ports and examples for ARM7/ARM9 are described in the Quantum Leaps
 
 The QP/C/C++ ports and examples for MSP430 are described in the Quantum Leaps Development Kit @webref{doc/QDK_MSP430-CCS.pdf, QP and MSP430 with CCS} and  @webref{doc/QDK_MSP430-IAR.pdf, QP and MSP430 with IAR}.
 
-[![QP and QP and MSP430 with CCS](img/AN.jpg)](https://www.state-machine.com/doc/QDK_MSP430-CCS.pdf)
+@image html  AN-QL.png "QP/C and QP/C++ and MSP430 with CCS"
+@image latex AN-QL.png "QP/C and QP/C++ and MSP430 with CCS"
 @caption{[Application Note: "QP and MSP430-CCS"](https://www.state-machine.com/doc/QDK_MSP430-CCS.pdf)}
 
-[![QP and QP and MSP430 with IAR](img/AN.jpg)](https://www.state-machine.com/doc/QDK_MSP430-IAR.pdf)
+@image html  AN-QL.png "QP/C and QP/C++ and MSP430 with IAR"
+@image latex AN-QL.png "QP/C and QP/C++ and MSP430 with IAR"
 @caption{[Application Note: "QP and MSP430-IAR"](https://www.state-machine.com/doc/QDK_MSP430-IAR.pdf)}
-
 */

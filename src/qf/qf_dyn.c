@@ -205,7 +205,7 @@ void QF_gc(QEvt const * const e) {
                 QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
             QS_END_NOCRIT_PRE_()
 
-            QF_EVT_REF_CTR_DEC_(e); /* decrement the ref counter */
+            QEvt_refCtr_dec_(e); /* decrement the ref counter */
 
             QF_CRIT_X_();
         }
@@ -227,10 +227,10 @@ void QF_gc(QEvt const * const e) {
 
             /* cast 'const' away, which is OK, because it's a pool event */
     #ifdef Q_SPY
-            QF_EPOOL_PUT_(QF_ePool_[idx], QF_CONST_CAST_(QEvt*, e),
+            QF_EPOOL_PUT_(QF_ePool_[idx], (QEvt *)e,
                           (uint_fast8_t)QS_EP_ID + e->poolId_);
     #else
-            QF_EPOOL_PUT_(QF_ePool_[idx], QF_CONST_CAST_(QEvt*, e), 0U);
+            QF_EPOOL_PUT_(QF_ePool_[idx], (QEvt *)e, 0U);
     #endif
         }
     }
@@ -252,7 +252,7 @@ QEvt const * QF_newRef_(
     QF_CRIT_STAT_
     QF_CRIT_E_();
 
-    QF_EVT_REF_CTR_INC_(e); /* increments the ref counter */
+    QEvt_refCtr_inc_(e); /* increments the ref counter */
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_NEW_REF,
                          (uint_fast8_t)QS_EP_ID + e->poolId_)

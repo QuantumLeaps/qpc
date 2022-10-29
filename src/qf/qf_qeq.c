@@ -65,7 +65,7 @@ Q_DEFINE_THIS_MODULE("qf_qeq")
 
 /*${QF::QEQueue::init} .....................................................*/
 void QEQueue_init(QEQueue * const me,
-    QEvt const * qSto[],
+    QEvt const ** const qSto,
     uint_fast16_t const qLen)
 {
     me->frontEvt = (QEvt *)0; /* no events in the queue */
@@ -101,7 +101,7 @@ bool QEQueue_post(QEQueue * const me,
     {
         /* is it a dynamic event? */
         if (e->poolId_ != 0U) {
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+            QEvt_refCtr_inc_(e); /* increment the reference counter */
         }
 
         --nFree; /* one free entry just used up */
@@ -173,7 +173,7 @@ void QEQueue_postLIFO(QEQueue * const me,
 
     /* is it a dynamic event? */
     if (e->poolId_ != 0U) {
-        QF_EVT_REF_CTR_INC_(e);  /* increment the reference counter */
+        QEvt_refCtr_inc_(e);  /* increment the reference counter */
     }
 
     --nFree;  /* one free entry just used up */

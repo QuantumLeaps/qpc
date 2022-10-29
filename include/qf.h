@@ -609,7 +609,7 @@ void QActive_subscribe(QActive const * const me,
 *
 * @note
 * Due to the latency of event queues, an active object should NOT
-* assume that a given signal @p sig will never be dispatched to the
+* assume that a given signal `sig` will never be dispatched to the
 * state machine of the active object after un-subscribing from that
 * signal. The event might be already in the queue, or just about to
 * be posted and the un-subscribe operation will not flush such events.
@@ -705,8 +705,8 @@ void QActive_publish_(
 *
 * @details
 * This function is part of the event deferral support. An active object
-* uses this function to defer an event @p e to the QF-supported native
-* event queue @p eq. QF correctly accounts for another outstanding
+* uses this function to defer an event `e` to the QF-supported native
+* event queue `eq`. QF correctly accounts for another outstanding
 * reference to the event and will not recycle the event at the end of
 * the RTC step. Later, the active object might recall one event at a
 * time from the event queue.
@@ -736,7 +736,7 @@ bool QActive_defer(QActive const * const me,
 * This function is part of the event deferral support. An active object
 * uses this function to recall a deferred event from a given QF
 * event queue. Recalling an event means that it is removed from the
-* deferred event queue @p eq and posted (LIFO) to the event queue of
+* deferred event queue `eq` and posted (LIFO) to the event queue of
 * the active object.
 *
 * @param[in]  eq  pointer to a "raw" thread-safe queue to recall
@@ -1061,14 +1061,14 @@ typedef struct QTimeEvt {
 *
 * @details
 * When creating a time event, you must commit it to a specific active object
-* @p act, tick rate @p tickRate and event signal @p sig. You cannot change
+* `act`, tick rate `tickRate` and event signal `sig`. You cannot change
 * these attributes later.
 *
 * @param[in,out] me   pointer (see @ref oop)
-* @param[in]     act  pointer to the active object associated with this
+* @param[in] act      pointer to the active object associated with this
 *                     time event. The time event will post itself to this AO.
-* @param[in]     sig  signal to associate with this time event.
-* @param[in]     tickRate system clock tick rate to associate with this
+* @param[in] sig      signal to associate with this time event.
+* @param[in] tickRate system clock tick rate to associate with this
 *                     time event in the range [0..15].
 *
 * @note You should call the constructor exactly once for every Time Event
@@ -1211,7 +1211,7 @@ QTimeEvtCtr QTimeEvt_currCtr(QTimeEvt const * const me);
 *
 * @details
 * This internal helper function processes all armed ::QTimeEvt objects
-* associated wit the tick rate @p tickRate .
+* associated wit the tick rate `tickRate`.
 *
 * This function must be called periodically from a time-tick ISR or from
 * a task so that QF can manage the timeout events assigned to the given
@@ -1224,7 +1224,7 @@ QTimeEvtCtr QTimeEvt_currCtr(QTimeEvt const * const me);
 * this function should be called only via the macro QTIMEEVT_TICK_X()
 *
 * @note
-* the calls to QTimeEvt_tick_() with different @p tickRate parameter can
+* the calls to QTimeEvt_tick_() with different `tickRate` parameter can
 * preempt each other. For example, higher clock tick rates might be
 * serviced from interrupts while others from tasks (active objects).
 *
@@ -1417,7 +1417,7 @@ static inline void QF_psInit(
 *
 * @details
 * Queries the minimum of free ever present in the given event queue of
-* an active object with priority @p prio, since the active object
+* an active object with priority `prio`, since the active object
 * was started.
 *
 * @note
@@ -1430,7 +1430,7 @@ static inline void QF_psInit(
 *
 * @returns
 * the minimum of free ever present in the given event queue of an active
-* object with priority @p prio, since the active object was started.
+* object with priority `prio`, since the active object was started.
 */
 uint_fast16_t QF_getQueueMin(uint_fast8_t const prio);
 
@@ -1491,7 +1491,7 @@ void QF_onCleanup(void);
 * for more information.
 *
 * @note The actual number of events available in the pool might be actually
-* less than (@p poolSize / @p evtSize) due to the internal alignment
+* less than (`poolSize` / `evtSize`) due to the internal alignment
 * of the blocks that the pool might perform. You can always check the
 * capacity of the pool by calling QF_getPoolMin().
 *
@@ -1553,7 +1553,7 @@ uint_fast16_t QF_getPoolMin(uint_fast8_t const poolId);
 *
 * @note
 * The internal QF function QF_newX_() raises an assertion when the
-* @p margin parameter is #QF_NO_MARGIN and allocation of the event turns
+* `margin` parameter is #QF_NO_MARGIN and allocation of the event turns
 * out to be impossible due to event pool depletion, or incorrect (too big)
 * size of the requested event.
 *
@@ -1688,8 +1688,8 @@ void QF_deleteRef_(void const * const evtRef);
 /*! Non-asserting allocate a dynamic event (case when ::QEvt is a POD).
 *
 * @details
-* This macro allocates a new event and sets the pointer @p e_, while
-* leaving at least @p margin_ of events still available in the pool
+* This macro allocates a new event and sets the pointer `e_`, while
+* leaving at least `margin_` of events still available in the pool
 *
 * @param[out] e_     pointer to the newly allocated event
 * @param[in] evtT_   event type (class name) of the event to allocate
@@ -1699,8 +1699,8 @@ void QF_deleteRef_(void const * const evtRef);
 *                    failure in case event allocation fails.
 * @param[in] sig_    signal to assign to the newly allocated event
 *
-* @returns an event pointer cast to the type @p evtT_ or NULL if the
-* event cannot be allocated with the specified @p margin.
+* @returns an event pointer cast to the type `evtT_` or NULL if the
+* event cannot be allocated with the specified `margin`.
 *
 * @note
 * If #Q_EVT_CTOR is defined, the Q_NEW_X() macro becomes variadic and
@@ -1814,7 +1814,7 @@ void QF_deleteRef_(void const * const evtRef);
 * @param[in] sender_ pointer to the sender object.
 *
 * @note
-* The @p sendedr_ parameter is actually only used when QS tracing
+* The `sendedr_` parameter is actually only used when QS tracing
 * is enabled (macro #Q_SPY is defined). When QS software tracing is
 * disenabled, the QACTIVE_POST() macro does not pass the `sender_`
 * parameter, so the overhead of passing this extra parameter is entirely
@@ -1862,9 +1862,9 @@ void QF_deleteRef_(void const * const evtRef);
 * the queue.
 *
 * @note
-* The @p sender_ parameter is actually only used when QS tracing
+* The `sender_` parameter is actually only used when QS tracing
 * is enabled (macro #Q_SPY is defined). When QS software tracing is
-* disabled, the POST_X() macro does not pass the @p sender_ parameter,
+* disabled, the POST_X() macro does not pass the `sender_` parameter,
 * so the overhead of passing this extra parameter is entirely avoided.
 *
 * @note

@@ -1,8 +1,7 @@
 /*##########################################################################*/
 /*! @page exa_native Native Examples (Built-in Kernels)
 
-<p>The QP/C framework contains real-time kernels (@ref comp_qv and @ref comp_qk), so it can run natively ("bare-metal") on single-chip microcontrollers, completely replacing a traditional RTOS. Click on the following links to see examples for the specified built-in kernels:
-</p>
+The QP/C framework contains real-time kernels (@ref comp_qv and @ref comp_qk), so it can run natively ("bare-metal") on single-chip microcontrollers, completely replacing a traditional RTOS. Click on the following links to see examples for the specified built-in kernels:
 
 - @subpage exa_qv
 - @subpage exa_qk
@@ -130,11 +129,10 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 /*##########################################################################*/
 /*! @page arm-cm_blinky_ek-tm4c123gxl Blinky on EK-TM4C123GXL
 
-<p>This example implements the @ref blinky "Blinky sample application" on the EK-TM4C123GLX board (ARM Cortex-M4F).
-</p>
+This example implements the @ref blinky "Blinky sample application" on the EK-TM4C123GLX board (ARM Cortex-M4F).
 
-@image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
-
+@image html  bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL"
+@image latex bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL"
 
 The Blinky example is located in the directory <span class="img folder">qpc/examples/arm-cm/blinky_ek-tm4c123gxl</span>, which is organized as follows:
 
@@ -178,23 +176,25 @@ The Blinky example is located in the directory <span class="img folder">qpc/exam
 @section arm-cm_blinky_ek-tm4c123gxl_run Running the Example
 Once programmed into the board, the example blinks the on-board LED about once a second.
 
-@image html blinky_ek-tm4c123gxl.gif Blinky on EK-TM4C123GLX (TivaC LaunchPad)
+@image html  blinky_ek-tm4c123gxl.gif "Blinky on EK-TM4C123GLX (TivaC LaunchPad)"
+@image latex blinky_ek-tm4c123gxl.jpg "Blinky on EK-TM4C123GLX (TivaC LaunchPad)"
 
 
 @section arm-cm_blinky_ek-tm4c123gxl_win Windows Emulation
 The Windows emulation is a simple console application that produces the following output:
 
-@image html blinky_win32.png Blinky emulation running in a Windows console
+@image html  blinky_win32.png "Blinky emulation running in a Windows console"
+@image latex blinky_win32.png "Blinky emulation running in a Windows console"
 
 @next{arm-cm_blinky_efm32-slstk3401a}
 */
 /*##########################################################################*/
 /*! @page arm-cm_blinky_efm32-slstk3401a Blinky on EFM32-SLSTK3401A
 
-<p>This example implements the @ref blinky "Blinky sample application" on the EFM32-SLSTK3401A board (ARM Cortex-M4F).
-</p>
+This example implements the @ref blinky "Blinky sample application" on the EFM32-SLSTK3401A board (ARM Cortex-M4F).
 
-@image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
+@image html  bd_EFM32-SLSTK3401A.jpg "EFM32-SLSTK3401A"
+@image latex bd_EFM32-SLSTK3401A.jpg "EFM32-SLSTK3401A"
 
 The Blinky example is located in the directory <span class="img folder">qpc/examples/arm-cm/blinky_efm32-slstk3401a</span>, which is organized as follows:
 
@@ -228,7 +228,6 @@ The Blinky example is located in the directory <span class="img folder">qpc/exam
 @endcode
 
 
-
 @section arm-cm_blinky_efm32-slstk3401a_feat Features Demonstrated
 - cooperative QV kernel
   + with ARM-KEIL toolchain
@@ -249,17 +248,18 @@ Once programmed into the board, the example blinks the on-board LED about once a
 @section arm-cm_blinky_efm32-slstk3401a_win Windows Emulation
 The Windows emulation is a simple console application that produces the following output:
 
-@image html blinky_win32.png Blinky emulation running in a Windows console
+@image html  blinky_win32.png "Blinky emulation running in a Windows console"
+@image latex blinky_win32.png "Blinky emulation running in a Windows console"
 
 @next{arm-cm_dpp_ek-tm4c123gxl}
 */
 /*##########################################################################*/
 /*! @page arm-cm_dpp_ek-tm4c123gxl DPP on EK-TM4C123GXL
 
-<p>This example implements the @ref dpp "Dining Philosophers Problem" sample application on the EK-TM4C123GLX board (ARM Cortex-M4F).
-</p>
+This example implements the @ref dpp "Dining Philosophers Problem" sample application on the EK-TM4C123GLX board (ARM Cortex-M4F).
 
-@image html bd_EK-TM4C123GXL.jpg EK-TM4C123GXL board
+@image html  bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL"
+@image latex bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL"
 
 The DPP example is located in the directory <span class="img folder">qpc/examples/arm-cm/dpp_ek-tm4c123gxl</span>, which is organized as follows:
 
@@ -354,7 +354,8 @@ The application also demonstrates <a href="https://www.state-machine.com/qtools/
 <p>This example implements the @ref dpp "Dining Philosophers Problem" sample application on the EFM32-SLSTK3401A board (ARM Cortex-M4F).
 </p>
 
-@image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
+@image html  bd_EFM32-SLSTK3401A.jpg "EFM32-SLSTK3401A"
+@image latex bd_EFM32-SLSTK3401A.jpg "EFM32-SLSTK3401A"
 
 The DPP example is located in the directory <span class="img folder">qpc/examples/arm-cm/dpp_efm32-slstk3401a</span> and includes versions for @ref srs_qv "cooperative QV kernel", the  @ref srs_qk "preemptive QK kernel", and the @ref srs_qxk "preemptive dual mode QXK RTOS kernel"  each provided for the ARM-KEIL, GNU-ARM, and IAR-ARM. The following annotated directory listing describes the contents of the example folder:
 
@@ -424,7 +425,6 @@ The DPP example is located in the directory <span class="img folder">qpc/example
 Once programmed into the board, the example rapidly toggles the LED1 from the idle loop (LED1 glows) and toggles LED0 as the Philosophers change their state. Additionally, you can depress and hold the BTN0 button (left) to PAUSE the application (Table transitions into the "paused" state). Releasing the BTN0 button causes transition back to the "serving" state.
 
 
-
 @section arm-cm_dpp_efm32-slstk3401a_spy QP/Spy Software Tracing
 The application also demonstrates <a href="https://www.state-machine.com/qtools/qpspy.html" target="_blank" class="extern">QP/Spy</a> software tracing output and input. To exercise this feature, you need to build and upload the Spy build configuration into the board.
 
@@ -432,20 +432,23 @@ The application also demonstrates <a href="https://www.state-machine.com/qtools/
 /*##########################################################################*/
 /*! @page arm-cm_dpp_mbed-lpc1768 DPP on mbed-LPC1768
 
-@image html bd_mbed-LPC1768.jpg mbed-LPC1768 board
+@image html  bd_mbed-LPC1768.jpg "mbed-LPC1768"
+@image latex bd_mbed-LPC1768.jpg "mbed-LPC1768"
 
 Dining Philosophers Problem (DPP) example for  NXP LPC1768 MCU (Cortex-M3) with GNU-ARM toolchain.
 
-@image html mbed-LPC1768_button.jpg Adding External Button to mbed-LPC1768
-@n
-@n
+@image html  mbed-LPC1768_button.jpg "Adding External Button to mbed-LPC1768"
+@image latex mbed-LPC1768_button.jpg "Adding External Button to mbed-LPC1768"
+
+<br>
 @image html under_construction.jpg
 */
 
 /*##########################################################################*/
 /*! @page arm-cm_dpp_nucleo-l053r8 DPP on STM32 NUCLEO-L053R8
 
-@image html bd_NUCLEO-L053R8.jpg NUCLEO-L053R8 board
+@image html  bd_NUCLEO-L053R8.jpg "NUCLEO-L053R8"
+@image latex bd_NUCLEO-L053R8.jpg "NUCLEO-L053R8"
 
 @ref dpp "Dining Philosophers Problem (DPP)" example for STM32 NUCLEO-L053R8 MCU (Cortex-M0+).
 
@@ -464,7 +467,8 @@ Features:
 /*##########################################################################*/
 /*! @page arm-cm_dpp_nucleo-l152re DPP on STM32 NUCLEO-L152RE
 
-@image html bd_NUCLEO-L152RE.jpg NUCLEO-L152RE board
+@image html  bd_NUCLEO-L152RE.jpg "NUCLEO-L152RE"
+@image latex bd_NUCLEO-L152RE.jpg "NUCLEO-L152RE"
 
 @ref dpp "Dining Philosophers Problem (DPP)" example for STM32 NUCLEO-L152RE MCU (Cortex-M3).
 
@@ -532,7 +536,8 @@ The actual COM port number might be different on your Windows machine. Please ch
 /*##########################################################################*/
 /*! @page arm-cm_dpp_nucleo-h743zi DPP on STM32 NUCLEO-H743ZI
 
-![STM32 NUCLEO-H743ZI](bd_NUCLEO-H743ZI.jpg)
+@image html  bd_NUCLEO-H743ZI.jpg "STM32 NUCLEO-H743ZI"
+@image latex bd_NUCLEO-H743ZI.jpg "STM32 NUCLEO-H743ZI"
 
 @ref dpp "Dining Philosophers Problem (DPP)" example for STM32 NUCLEO-H743ZI MCU (Cortex-M7).
 
@@ -552,7 +557,8 @@ Features:
 /*##########################################################################*/
 /*! @page arm-cm_dpp_nucleo-l552ze DPP on STM32 NUCLEO-L552ZE Q
 
-![STM32 NUCLEO-L552ZE Q](bd_NUCLEO-L552ZE.jpg)
+@image html  bd_NUCLEO-L552ZE.jpg "STM32 NUCLEO-L552ZE Q"
+@image latex bd_NUCLEO-L552ZE.jpg "STM32 NUCLEO-L552ZE Q"
 
 @ref dpp "Dining Philosophers Problem (DPP)" example for STM32 NUCLEO-L552ZE Q (Cortex-M33).
 
@@ -572,20 +578,23 @@ Features:
 /*##########################################################################*/
 /*! @page arm-cm_game_efm32-slstk3401a "Fly 'n' Shoot" Game on EFM32-SLSTK3401A
 
-@image html bd_EFM32-SLSTK3401A.jpg EFM32-SLSTK3401A board
+@image html  bd_EFM32-SLSTK3401A.jpg "EFM32-SLSTK3401A board"
+@image latex bd_EFM32-SLSTK3401A.jpg "EFM32-SLSTK3401A board"
 
 "Fly 'n' Shoot" game example for Silicon Labs Pearl Gecko MCU (Cortex-M4F), ARM (MDK-ARM), GNU-ARM, IAR EWARM toolchains.
 
-@image html game_win32.jpg Game emulation running in Windows GUI
-@n
-@n
+@image html  qwin_ani.gif    "Fly 'n' Shoot game running on Windows"
+@image latex qwin_static.jpg "Fly 'n' Shoot game running on Windows"
+
+<br>
 @image html under_construction.jpg
 */
 
 /*##########################################################################*/
 /*! @page arm-cr_blinky_launchxl2-tms57012 Blinky on LAUNCHXL2-TMS57012
 
-@image html bd_LAUNCHXL2-TMS57012.jpg LAUNCHXL2-TMS57012
+@image html  bd_LAUNCHXL2-TMS57012.jpg "LAUNCHXL2-TMS57012"
+@image latex bd_LAUNCHXL2-TMS57012.jpg "LAUNCHXL2-TMS57012"
 
 @ref blinky "Blinky" example for LAUNCHXL2-TMS57012 MCU (Cortex-R, Hercules) with IAR-ARM and TI toolchains.
 
@@ -594,7 +603,8 @@ Features:
 /*##########################################################################*/
 /*! @page arm-cr_dpp_launchxl2-tms57012 DPP on LAUNCHXL2-TMS57012
 
-@image html bd_LAUNCHXL2-TMS57012.jpg LAUNCHXL2-TMS57012
+@image html  bd_LAUNCHXL2-TMS57012.jpg "LAUNCHXL2-TMS57012"
+@image latex bd_LAUNCHXL2-TMS57012.jpg "LAUNCHXL2-TMS57012"
 
 Dining Philosophers Problem (DPP) example for LAUNCHXL2-TMS57012 MCU (Cortex-R, Hercules) with IAR-ARM and TI toolchains.
 
@@ -604,7 +614,8 @@ Dining Philosophers Problem (DPP) example for LAUNCHXL2-TMS57012 MCU (Cortex-R, 
 /*##########################################################################*/
 /*! @page arm7-9_dpp_at91sam7s-ek DPP on AT91SAM7S-EK
 
-@image html bd_AT91SAM7S-EK.jpg AT91SAM7S-EK board
+@image html  bd_AT91SAM7S-EK.jpg "AT91SAM7S-EK"
+@image latex bd_AT91SAM7S-EK.jpg "AT91SAM7S-EK"
 
 Dining Philosophers Problem (DPP) example for Atmel AT91SAM7S MCU (ARM7) with GNU-ARM toolchain.
 
@@ -613,7 +624,8 @@ Dining Philosophers Problem (DPP) example for Atmel AT91SAM7S MCU (ARM7) with GN
 /*##########################################################################*/
 /*! @page msp430_blinky_msp-exp430f5529lp Blinky on MSP-EXP430F5529LP
 
-@image html bd_MSP-EXP430F5529LP.jpg MSP-EXP430F5529LP board
+@image html  bd_MSP-EXP430F5529LP.jpg "MSP-EXP430F5529LP"
+@image latex bd_MSP-EXP430F5529LP.jpg "MSP-EXP430F5529LP"
 
 Simple Blinky example for MSP-EXP430F5529LP with CCS-430 and IAR-430 toolchains. The application blinks the LED1 (P1.0) once per second. The LED2 is rapidly toggled from the idle callback, which results in a "glow" with intensity proportional to the frequency of calling the idle callback.
 
@@ -625,7 +637,8 @@ The simple Blinky application does NOT support the Spy build configuration. Plea
 /*##########################################################################*/
 /*! @page msp430_dpp_msp-exp430f5529lp DPP on MSP-EXP430F5529LP
 
-@image html bd_MSP-EXP430F5529LP.jpg MSP-EXP430F5529LP board
+@image html  bd_MSP-EXP430F5529LP.jpg "MSP-EXP430F5529LP"
+@image latex bd_MSP-EXP430F5529LP.jpg "MSP-EXP430F5529LP"
 
 DPP example for MSP-EXP430F5529LP with CCS-430 and IAR-430 toolchains. The application blinks the LED1 (P1.0) when a Philosopher gets a permission to "eat". The LED2 is rapidly toggled from the idle callback, which results in a "glow" with intensity proportional to the frequency of calling the idle callback.
 

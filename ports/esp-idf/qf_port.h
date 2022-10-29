@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-23
-* @version Last updated for: @ref qpc_7_1_0
+* @date Last updated on: 2022-10-19
+* @version Last updated for: @ref qpc_7_1_3
 *
 * @file
 * @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
@@ -38,7 +38,7 @@
 #define QF_THREAD_TYPE        StaticTask_t
 
 /* The maximum number of active objects in the application, see NOTE1 */
-#define QF_MAX_ACTIVE         32U
+#define QF_MAX_ACTIVE         configMAX_PRIORITIES
 
 /* QF interrupt disabling for FreeRTOS-ESP32 (task level), see NOTE2 */
 #define QF_INT_DISABLE()      portENTER_CRITICAL(&QF_esp32mux)
@@ -250,10 +250,11 @@ enum FreeRTOS_TaskAttrs {
 * [2]: https://freertos.org
 *
 * NOTE1:
-* The maximum number of active objects QF_MAX_ACTIVE can be increased to 64,
-* inclusive, but it can be reduced to save some memory. Also, the number of
-* active objects cannot exceed the number of FreeRTOS task priorities,
-* because each QP active object requires a unique priority level.
+* The maximum number of active objects QF_MAX_ACTIVE cannot exceed the number
+* of FreeRTOS priorities (configMAX_PRIORITIES) because each QP active object
+* requires a unique priority level. This port assumes that configMAX_PRIORITIES
+* is below the QP limit of 64, inclusive (QP framework will assert if
+* QF_MAX_ACTIVE exceeds the limit of 64).
 *
 * NOTE2:
 * The critical section definition applies only to the FreeRTOS "task level"

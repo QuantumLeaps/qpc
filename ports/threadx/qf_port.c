@@ -163,7 +163,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QS_END_NOCRIT_PRE_()
 
         if (e->poolId_ != 0U) { /* is it a pool event? */
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+            QEvt_refCtr_inc_(e); /* increment the reference counter */
         }
 
         QF_CRIT_X_();
@@ -205,7 +205,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QS_END_NOCRIT_PRE_()
 
     if (e->poolId_ != 0U) { /* is it a pool event? */
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     QF_CRIT_X_();

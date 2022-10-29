@@ -30,7 +30,14 @@ Contact information:
  <package name="DbC" stereotype="0x05">
   <!--${DbC::Q_NORETURN}-->
   <attribute name="Q_NORETURN?ndef Q_NORETURN" type="void" visibility="0x03" properties="0x00">
-   <documentation>/*! no-return function specifier */</documentation>
+   <documentation>/*! No-return function specifier for the Q_onAssert() callback function.
+*
+* The `Q_NORETURN` macro is supposed to be defined in the QP/C port
+* (file `qep_port.h`). If such definition is NOT porvided, the default
+* definition assumes only `void` type returned from Q_onAssert().
+*
+* @tr{PQA01_4}
+*/</documentation>
    <code>void</code>
   </attribute>
   <!--${DbC::Q_DEFINE_THIS_FILE}-->
@@ -63,7 +70,7 @@ Contact information:
 * Macro to be placed at the top of each C/C++ module to define the
 * single instance of the module name string to be used in reporting
 * assertions in this module. This macro takes the user-supplied parameter
-* @p name_ instead of `__FILE__` to precisely control the name of the
+* `name_` instead of `__FILE__` to precisely control the name of the
 * module.
 *
 * @param[in] name_ string constant representing the module name
@@ -89,7 +96,7 @@ Contact information:
 * @details
 * Makes sure the `test_` parameter is TRUE. Calls the Q_onAssert()
 * callback if the `test_` evaluates to FALSE. This assertion takes the
-* user-supplied parameter @p id_ to identify the location of this
+* user-supplied parameter `id_` to identify the location of this
 * assertion within the file. This avoids the volatility of using line
 * numbers, which change whenever a line of code is added or removed
 * upstream from the assertion.
@@ -391,6 +398,8 @@ Contact information:
 * It is typically a **bad idea** to implement Q_onAssert() as an endless
 * loop that ties up the CPU. During debuggin, Q_onAssert() is an ideal
 * place to put a breakpoint.
+*
+* @tr{PQA01_4}
 *
 * Called by the following: Q_ASSERT_ID(), Q_ERROR_ID(), Q_REQUIRE_ID(),
 * Q_ENSURE_ID(), Q_INVARIANT_ID() and Q_ALLEGE_ID() as well as:
@@ -903,7 +912,7 @@ Contact information:
   <!--${QEP::QSignal}-->
   <attribute name="QSignal? (Q_SIGNAL_SIZE == 1U)" type="typedef uint8_t" visibility="0x04" properties="0x00"/>
   <!--${QEP::QSignal}-->
-  <attribute name="QSignal? (Q_SIGNAL_SIZE == 4U)" type="typedef uint16_t" visibility="0x04" properties="0x00"/>
+  <attribute name="QSignal? (Q_SIGNAL_SIZE == 4U)" type="typedef uint32_t" visibility="0x04" properties="0x00"/>
   <!--${QEP::QEvt}-->
   <class name="QEvt">
    <documentation>/*! @brief Event class
@@ -1075,7 +1084,8 @@ Contact information:
 * implementation strategy.
 */</documentation>
    <code>{
-    Q_ENTRY_SIG = 1, /*!&lt; signal for coding entry actions */
+    Q_EMPTY_SIG,     /*!&lt; signal to execute the default case */
+    Q_ENTRY_SIG,     /*!&lt; signal for coding entry actions */
     Q_EXIT_SIG,      /*!&lt; signal for coding exit actions */
     Q_INIT_SIG,      /*!&lt; signal for coding initial transitions */
     Q_USER_SIG       /*!&lt; offset for the user signals (QP Application) */
@@ -1146,7 +1156,7 @@ Contact information:
 * @param[in] state pointer to the state-handler function to be tested
 *
 * @returns
-*'true' if the HSM &quot;is in&quot; the @p state and 'false' otherwise
+*'true' if the HSM &quot;is in&quot; the `state` and 'false' otherwise
 *
 * @tr{RQP103}
 * @tr{RQP120S}
@@ -1167,7 +1177,7 @@ do {
         r = Q_RET_IGNORED; /* break out of the loop */
     }
     else {
-        r = QEP_TRIG_(me-&gt;temp.fun, QEP_EMPTY_SIG_);
+        r = QHsm_reservedEvt_(me, me-&gt;temp.fun, Q_EMPTY_SIG);
     }
 } while (r != Q_RET_IGNORED); /* QHsm_top() state not reached */
 me-&gt;temp.fun = me-&gt;state.fun; /* restore the stable state configuration */
@@ -1175,7 +1185,7 @@ me-&gt;temp.fun = me-&gt;state.fun; /* restore the stable state configuration */
 return inState; /* return the status */</code>
    </operation>
    <!--${QEP::QHsm::state}-->
-   <operation name="state" type="QStateHandler" visibility="0x00" properties="0x00">
+   <operation name="state" type="QStateHandler" visibility="0x00" properties="0x02">
     <documentation>/*! Obtain the current active state from a HSM (read only).
 * @public @memberof QHsm
 *
@@ -1186,7 +1196,7 @@ return inState; /* return the status */</code>
 * @note
 * This function is used in QM for auto-generating code for state history.
 */</documentation>
-    <code>return Q_STATE_CAST(me-&gt;state.fun);</code>
+    <code>return me-&gt;state.fun;</code>
    </operation>
    <!--${QEP::QHsm::childState}-->
    <operation name="childState" type="QStateHandler" visibility="0x00" properties="0x00">
@@ -1231,7 +1241,7 @@ do {
     }
     else {
         child = me-&gt;temp.fun;
-        r = QEP_TRIG_(me-&gt;temp.fun, QEP_EMPTY_SIG_);
+        r = QHsm_reservedEvt_(me, me-&gt;temp.fun, Q_EMPTY_SIG);
     }
 } while (r != Q_RET_IGNORED); /* QHsm_top() state not reached */
 me-&gt;temp.fun = me-&gt;state.fun; /* establish stable state configuration */
@@ -1240,7 +1250,7 @@ me-&gt;temp.fun = me-&gt;state.fun; /* establish stable state configuration */
 Q_ENSURE_ID(810, isFound);
 
 #ifdef Q_NASSERT
-(void)isFound; /* avoid compiler warning about unused variable */
+Q_UNUSED_PAR(isFound);
 #endif
 
 return child; /* return the child */</code>
@@ -1271,7 +1281,7 @@ return child; /* return the child */</code>
 * @tr{RQP103}
 */</documentation>
     <!--${QEP::QHsm::ctor::initial}-->
-    <parameter name="initial" type="QStateHandler"/>
+    <parameter name="initial" type="QStateHandler const"/>
     <code>static struct QHsmVtable const vtable = { /* QHsm virtual table */
     &amp;QHsm_init_,
     &amp;QHsm_dispatch_
@@ -1332,7 +1342,7 @@ return Q_RET_IGNORED; /* the top state ignores all events */</code>
     <!--${QEP::QHsm::init_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
     <code>#ifndef Q_SPY
-(void)qs_id; /* unused parameter */
+Q_UNUSED_PAR(qs_id);
 #endif
 
 QStateHandler t = me-&gt;state.fun;
@@ -1353,8 +1363,8 @@ Q_ASSERT_ID(210, r == Q_RET_TRAN);
 
 QS_CRIT_STAT_
 QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
-    QS_OBJ_PRE_(me);           /* this state machine object */
-    QS_FUN_PRE_(t);            /* the source state */
+    QS_OBJ_PRE_(me); /* this state machine object */
+    QS_FUN_PRE_(t);  /* the source state */
     QS_FUN_PRE_(me-&gt;temp.fun); /* the target of the initial transition */
 QS_END_PRE_()
 
@@ -1364,30 +1374,30 @@ do {
     int_fast8_t ip = 0; /* tran entry path index */
 
     path[0] = me-&gt;temp.fun;
-    (void)QEP_TRIG_(me-&gt;temp.fun, QEP_EMPTY_SIG_);
+    (void)QHsm_reservedEvt_(me, me-&gt;temp.fun, Q_EMPTY_SIG);
     while (me-&gt;temp.fun != t) {
         ++ip;
         Q_ASSERT_ID(220, ip &lt; QHSM_MAX_NEST_DEPTH_);
         path[ip] = me-&gt;temp.fun;
-        (void)QEP_TRIG_(me-&gt;temp.fun, QEP_EMPTY_SIG_);
+        (void)QHsm_reservedEvt_(me, me-&gt;temp.fun, Q_EMPTY_SIG);
     }
     me-&gt;temp.fun = path[0];
 
     /* nested initial transition, drill into the target hierarchy... */
     do {
-        QEP_ENTER_(path[ip], qs_id); /* enter path[ip] */
+        QHsm_state_entry_(me, path[ip], qs_id); /* enter path[ip] */
         --ip;
     } while (ip &gt;= 0);
 
     t = path[0]; /* current state becomes the new source */
 
-    r = QEP_TRIG_(t, Q_INIT_SIG); /* execute initial transition */
+    r = QHsm_reservedEvt_(me, t, Q_INIT_SIG); /* execute initial transition */
 
 #ifdef Q_SPY
     if (r == Q_RET_TRAN) {
         QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
-            QS_OBJ_PRE_(me);           /* this state machine object */
-            QS_FUN_PRE_(t);            /* the source state */
+            QS_OBJ_PRE_(me); /* this state machine object */
+            QS_FUN_PRE_(t);  /* the source state */
             QS_FUN_PRE_(me-&gt;temp.fun); /* target of the initial tran. */
         QS_END_PRE_()
     }
@@ -1396,9 +1406,9 @@ do {
 } while (r == Q_RET_TRAN);
 
 QS_BEGIN_PRE_(QS_QEP_INIT_TRAN, qs_id)
-    QS_TIME_PRE_();    /* time stamp */
-    QS_OBJ_PRE_(me);   /* this state machine object */
-    QS_FUN_PRE_(t);    /* the new active state */
+    QS_TIME_PRE_();  /* time stamp */
+    QS_OBJ_PRE_(me); /* this state machine object */
+    QS_FUN_PRE_(t);  /* the new active state */
 QS_END_PRE_()
 
 me-&gt;state.fun = t; /* change the current active state */
@@ -1440,10 +1450,10 @@ Q_REQUIRE_ID(400, (t != Q_STATE_CAST(0))
                    &amp;&amp; (t == me-&gt;temp.fun));
 
 QS_BEGIN_PRE_(QS_QEP_DISPATCH, qs_id)
-    QS_TIME_PRE_();         /* time stamp */
-    QS_SIG_PRE_(e-&gt;sig);    /* the signal of the event */
-    QS_OBJ_PRE_(me);        /* this state machine object */
-    QS_FUN_PRE_(t);         /* the current state */
+    QS_TIME_PRE_();      /* time stamp */
+    QS_SIG_PRE_(e-&gt;sig); /* the signal of the event */
+    QS_OBJ_PRE_(me);     /* this state machine object */
+    QS_FUN_PRE_(t);      /* the current state */
 QS_END_PRE_()
 
 QStateHandler s;
@@ -1461,7 +1471,7 @@ do {
             QS_FUN_PRE_(s);      /* the current state */
         QS_END_PRE_()
 
-        r = QEP_TRIG_(s, QEP_EMPTY_SIG_); /* find superstate of s */
+        r = QHsm_reservedEvt_(me, s, Q_EMPTY_SIG); /* find superstate of s */
     }
 } while (r == Q_RET_SUPER);
 
@@ -1477,14 +1487,10 @@ if (r &gt;= Q_RET_TRAN) {
     /* exit current state to transition source s... */
     /*! @tr{RQP120C} */
     for (; t != s; t = me-&gt;temp.fun) {
-        if (QEP_TRIG_(t, Q_EXIT_SIG) == Q_RET_HANDLED) {
-            QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, qs_id)
-                QS_OBJ_PRE_(me);  /* this state machine object */
-                QS_FUN_PRE_(t);   /* the exited state */
-            QS_END_PRE_()
-
+        /* exit from t handled? */
+        if (QHsm_state_exit_(me, t, qs_id)) {
             /* find superstate of t */
-            (void)QEP_TRIG_(t, QEP_EMPTY_SIG_);
+            (void)QHsm_reservedEvt_(me, t, Q_EMPTY_SIG);
         }
     }
 
@@ -1493,9 +1499,9 @@ if (r &gt;= Q_RET_TRAN) {
 #ifdef Q_SPY
     if (r == Q_RET_TRAN_HIST) {
         QS_BEGIN_PRE_(QS_QEP_TRAN_HIST, qs_id)
-            QS_OBJ_PRE_(me);      /* this state machine object */
-            QS_FUN_PRE_(t);       /* the source of the transition */
-            QS_FUN_PRE_(path[0]); /* the target of the tran. to history */
+            QS_OBJ_PRE_(me); /* this state machine object */
+            QS_FUN_PRE_(t);  /* the source of the transition */
+            QS_FUN_PRE_(path[0]); /* the target of tran. to history */
         QS_END_PRE_()
     }
 #endif /* Q_SPY */
@@ -1503,7 +1509,7 @@ if (r &gt;= Q_RET_TRAN) {
     /* execute state entry actions in the desired order... */
     /*! @tr{RQP120B} */
     for (; ip &gt;= 0; --ip) {
-        QEP_ENTER_(path[ip], qs_id);  /* enter path[ip] */
+        QHsm_state_entry_(me, path[ip], qs_id);  /* enter path[ip] */
     }
 
     t = path[0];      /* stick the target into register */
@@ -1511,25 +1517,25 @@ if (r &gt;= Q_RET_TRAN) {
 
     /* while nested initial transition... */
     /*! @tr{RQP120I} */
-    while (QEP_TRIG_(t, Q_INIT_SIG) == Q_RET_TRAN) {
+    while (QHsm_reservedEvt_(me, t, Q_INIT_SIG) == Q_RET_TRAN) {
 
         QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
-            QS_OBJ_PRE_(me);           /* this state machine object */
-            QS_FUN_PRE_(t);            /* the source (pseudo)state */
-            QS_FUN_PRE_(me-&gt;temp.fun); /* the target of the transition */
+            QS_OBJ_PRE_(me); /* this state machine object */
+            QS_FUN_PRE_(t);  /* the source (pseudo)state */
+            QS_FUN_PRE_(me-&gt;temp.fun); /* the target of the tran. */
         QS_END_PRE_()
 
         ip = 0;
         path[0] = me-&gt;temp.fun;
 
         /* find superstate */
-        (void)QEP_TRIG_(me-&gt;temp.fun, QEP_EMPTY_SIG_);
+        (void)QHsm_reservedEvt_(me, me-&gt;temp.fun, Q_EMPTY_SIG);
 
         while (me-&gt;temp.fun != t) {
             ++ip;
             path[ip] = me-&gt;temp.fun;
             /* find superstate */
-            (void)QEP_TRIG_(me-&gt;temp.fun, QEP_EMPTY_SIG_);
+            (void)QHsm_reservedEvt_(me, me-&gt;temp.fun, Q_EMPTY_SIG);
         }
         me-&gt;temp.fun = path[0];
 
@@ -1538,7 +1544,7 @@ if (r &gt;= Q_RET_TRAN) {
 
         /* retrace the entry path in reverse (correct) order... */
         do {
-            QEP_ENTER_(path[ip], qs_id); /* enter path[ip] */
+            QHsm_state_entry_(me, path[ip], qs_id); /* enter path[ip] */
             --ip;
         } while (ip &gt;= 0);
 
@@ -1546,11 +1552,11 @@ if (r &gt;= Q_RET_TRAN) {
     }
 
     QS_BEGIN_PRE_(QS_QEP_TRAN, qs_id)
-        QS_TIME_PRE_();          /* time stamp */
-        QS_SIG_PRE_(e-&gt;sig);     /* the signal of the event */
-        QS_OBJ_PRE_(me);         /* this state machine object */
-        QS_FUN_PRE_(s);          /* the source of the transition */
-        QS_FUN_PRE_(t);          /* the new active state */
+        QS_TIME_PRE_();      /* time stamp */
+        QS_SIG_PRE_(e-&gt;sig); /* the signal of the event */
+        QS_OBJ_PRE_(me);     /* this state machine object */
+        QS_FUN_PRE_(s);      /* the source of the transition */
+        QS_FUN_PRE_(t);      /* the new active state */
     QS_END_PRE_()
 }
 
@@ -1558,19 +1564,19 @@ if (r &gt;= Q_RET_TRAN) {
 else if (r == Q_RET_HANDLED) {
 
     QS_BEGIN_PRE_(QS_QEP_INTERN_TRAN, qs_id)
-        QS_TIME_PRE_();          /* time stamp */
-        QS_SIG_PRE_(e-&gt;sig);     /* the signal of the event */
-        QS_OBJ_PRE_(me);         /* this state machine object */
-        QS_FUN_PRE_(s);          /* the source state */
+        QS_TIME_PRE_();      /* time stamp */
+        QS_SIG_PRE_(e-&gt;sig); /* the signal of the event */
+        QS_OBJ_PRE_(me);     /* this state machine object */
+        QS_FUN_PRE_(s);      /* the source state */
     QS_END_PRE_()
 
 }
 else {
 
     QS_BEGIN_PRE_(QS_QEP_IGNORED, qs_id)
-        QS_TIME_PRE_();          /* time stamp */
-        QS_SIG_PRE_(e-&gt;sig);     /* the signal of the event */
-        QS_OBJ_PRE_(me);         /* this state machine object */
+        QS_TIME_PRE_();      /* time stamp */
+        QS_SIG_PRE_(e-&gt;sig); /* the signal of the event */
+        QS_OBJ_PRE_(me);     /* this state machine object */
         QS_FUN_PRE_(me-&gt;state.fun); /* the current state */
     QS_END_PRE_()
 
@@ -1595,16 +1601,16 @@ me-&gt;temp.fun  = t; /* mark the configuration as stable */</code>
 *
 * @param[in,out] path array of pointers to state-handler functions
 *                     to execute the entry actions
-* @param[in]     qs_id QS-id of this state machine (for QS local filter)
+* @param[in] qs_id    QS-id of this state machine (for QS local filter)
 *
 * @returns
-* the depth of the entry path stored in the @p path parameter.
+* the depth of the entry path stored in the `path` parameter.
 *
 * @tr{RQP103}
 * @tr{RQP120E} @tr{RQP120F}
 */</documentation>
-    <!--${QEP::QHsm::tran_::path[QHSM_MAX_NEST_DEPTH_]}-->
-    <parameter name="path[QHSM_MAX_NEST_DEPTH_]" type="QStateHandler"/>
+    <!--${QEP::QHsm::tran_::path}-->
+    <parameter name="path" type="QStateHandler * const"/>
     <!--${QEP::QHsm::tran_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
     <code>Q_UNUSED_PAR(qs_id); // unused when Q_SPY undefined
@@ -1612,16 +1618,15 @@ me-&gt;temp.fun  = t; /* mark the configuration as stable */</code>
 int_fast8_t ip = -1; /* transition entry path index */
 QStateHandler t = path[0];
 QStateHandler const s = path[2];
-QS_CRIT_STAT_
 
 /* (a) check source==target (transition to self)... */
 if (s == t) {
-    QEP_EXIT_(s, qs_id); /* exit the source */
+    (void)QHsm_state_exit_(me, s, qs_id); /* exit source */
     ip = 0; /* enter the target */
 }
 else {
     /* find superstate of target */
-    (void)QEP_TRIG_(t, QEP_EMPTY_SIG_);
+    (void)QHsm_reservedEvt_(me, t, Q_EMPTY_SIG);
 
     t = me-&gt;temp.fun;
 
@@ -1631,17 +1636,17 @@ else {
     }
     else {
         /* find superstate of src */
-        (void)QEP_TRIG_(s, QEP_EMPTY_SIG_);
+        (void)QHsm_reservedEvt_(me, s, Q_EMPTY_SIG);
 
         /* (c) check source-&gt;super==target-&gt;super... */
         if (me-&gt;temp.fun == t) {
-            QEP_EXIT_(s, qs_id); /* exit the source */
+            (void)QHsm_state_exit_(me, s, qs_id); /* exit source */
             ip = 0; /* enter the target */
         }
         else {
             /* (d) check source-&gt;super==target... */
             if (me-&gt;temp.fun == path[0]) {
-                QEP_EXIT_(s, qs_id); /* exit the source */
+                (void)QHsm_state_exit_(me, s, qs_id); /* exit source */
             }
             else {
                 /* (e) check rest of source==target-&gt;super-&gt;super..
@@ -1653,7 +1658,7 @@ else {
                 t = me-&gt;temp.fun; /* save source-&gt;super */
 
                 /* find target-&gt;super-&gt;super... */
-                QState r = QEP_TRIG_(path[1], QEP_EMPTY_SIG_);
+                QState r = QHsm_reservedEvt_(me, path[1], Q_EMPTY_SIG);
                 while (r == Q_RET_SUPER) {
                     ++ip;
                     path[ip] = me-&gt;temp.fun; /* store the entry path */
@@ -1666,9 +1671,10 @@ else {
                         --ip; /* do not enter the source */
                         r = Q_RET_HANDLED; /* terminate loop */
                     }
-                     /* it is not the source, keep going up */
+                    /* it is not the source, keep going up */
                     else {
-                        r = QEP_TRIG_(me-&gt;temp.fun, QEP_EMPTY_SIG_);
+                        r = QHsm_reservedEvt_(me, me-&gt;temp.fun,
+                                              Q_EMPTY_SIG);
                     }
                 }
 
@@ -1678,7 +1684,8 @@ else {
                     /* entry path must not overflow */
                     Q_ASSERT_ID(520, ip &lt; QHSM_MAX_NEST_DEPTH_);
 
-                    QEP_EXIT_(s, qs_id); /* exit the source */
+                    /* exit source */
+                    (void)QHsm_state_exit_(me, s, qs_id);
 
                     /* (f) check the rest of source-&gt;super
                     *                  == target-&gt;super-&gt;super...
@@ -1703,16 +1710,10 @@ else {
                         */
                         r = Q_RET_IGNORED; /* keep looping */
                         do {
-                            /* exit t unhandled? */
-                            if (QEP_TRIG_(t, Q_EXIT_SIG)
-                                == Q_RET_HANDLED)
-                            {
-                                QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, qs_id)
-                                    QS_OBJ_PRE_(me);
-                                    QS_FUN_PRE_(t);
-                                QS_END_PRE_()
-
-                                (void)QEP_TRIG_(t, QEP_EMPTY_SIG_);
+                            /* exit from t handled? */
+                            if (QHsm_state_exit_(me, t, qs_id)) {
+                                /* find superstate of t */
+                                (void)QHsm_reservedEvt_(me, t, Q_EMPTY_SIG);
                             }
                             t = me-&gt;temp.fun; /* set to super of t */
                             iq = ip;
@@ -1737,6 +1738,68 @@ else {
     }
 }
 return ip;</code>
+   </operation>
+   <!--${QEP::QHsm::state_entry_}-->
+   <operation name="state_entry_" type="void" visibility="0x02" properties="0x00">
+    <documentation>/*! Helper function to execute entry into a given state in a
+* hierarchical state machine (HSM).
+* @private @memberof QHsm
+*
+* @param[in] state   state handler function
+* @param[in] qs_id   QS-id of this state machine (for QS local filter)
+*/</documentation>
+    <!--${QEP::QHsm::state_entry_::state}-->
+    <parameter name="state" type="QStateHandler const"/>
+    <!--${QEP::QHsm::state_entry_::qs_id}-->
+    <parameter name="qs_id" type="uint_fast8_t const"/>
+    <code>#ifdef Q_SPY
+if ((*state)(me, &amp;l_reservedEvt_[Q_ENTRY_SIG]) == Q_RET_HANDLED) {
+    QS_CRIT_STAT_
+    QS_BEGIN_PRE_(QS_QEP_STATE_ENTRY, qs_id)
+        QS_OBJ_PRE_(me);
+        QS_FUN_PRE_(state);
+    QS_END_PRE_()
+}
+#else
+Q_UNUSED_PAR(qs_id);
+(void)(*state)(me, &amp;l_reservedEvt_[Q_ENTRY_SIG]);
+#endif /* Q_SPY */</code>
+   </operation>
+   <!--${QEP::QHsm::state_exit_}-->
+   <operation name="state_exit_" type="bool" visibility="0x02" properties="0x00">
+    <documentation>/*! Helper function to execute exit from a given state in a
+* hierarchical state machine (HSM).
+* @private @memberof QHsm
+*
+* @param[in] state   state handler function
+* @param[in] qs_id   QS-id of this state machine (for QS local filter)
+*
+* @returns
+* 'true' if the exit action has been found in the state and
+* 'flase' otherwise.
+*/</documentation>
+    <!--${QEP::QHsm::state_exit_::state}-->
+    <parameter name="state" type="QStateHandler const"/>
+    <!--${QEP::QHsm::state_exit_::qs_id}-->
+    <parameter name="qs_id" type="uint_fast8_t const"/>
+    <code>#ifdef Q_SPY
+bool isHandled;
+if ((*state)(me, &amp;l_reservedEvt_[Q_EXIT_SIG]) == Q_RET_HANDLED) {
+    QS_CRIT_STAT_
+    QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, qs_id)
+        QS_OBJ_PRE_(me);
+        QS_FUN_PRE_(state);
+    QS_END_PRE_()
+    isHandled = true;
+}
+else {
+    isHandled = false;
+}
+return isHandled;
+#else
+Q_UNUSED_PAR(qs_id);
+return (*state)(me, &amp;l_reservedEvt_[Q_EXIT_SIG]) == Q_RET_HANDLED;
+#endif /* Q_SPY */</code>
    </operation>
   </class>
   <!--${QEP::QHsmVtable}-->
@@ -1803,7 +1866,7 @@ return ip;</code>
 * @param[in] state pointer to the QMState object that corresponds to the
 *                  tested state.
 * @returns
-* 'true' if the MSM &quot;is in&quot; the @p state and 'false' otherwise
+* 'true' if the MSM &quot;is in&quot; the `state` and 'false' otherwise
 */</documentation>
     <!--${QEP::QMsm::isInState::state}-->
     <parameter name="state" type="QMState const * const"/>
@@ -1915,7 +1978,7 @@ return child; /* return the child */</code>
 * @include qep_qmsm_ctor.c
 */</documentation>
     <!--${QEP::QMsm::ctor::initial}-->
-    <parameter name="initial" type="QStateHandler"/>
+    <parameter name="initial" type="QStateHandler const"/>
     <code>static struct QHsmVtable const vtable = { /* QHsm virtual table */
     &amp;QMsm_init_,
     &amp;QMsm_dispatch_
@@ -2207,7 +2270,7 @@ else {
     <!--${QEP::QMsm::execTatbl_::me}-->
     <parameter name="me" type="QHsm * const"/>
     <!--${QEP::QMsm::execTatbl_::tatbl}-->
-    <parameter name="tatbl" type="QMTranActTable const *"/>
+    <parameter name="tatbl" type="QMTranActTable const * const"/>
     <!--${QEP::QMsm::execTatbl_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
     <code>Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
@@ -2291,9 +2354,9 @@ return r;</code>
     <!--${QEP::QMsm::exitToTranSource~::me}-->
     <parameter name="me" type="QHsm * const"/>
     <!--${QEP::QMsm::exitToTranSource~::cs}-->
-    <parameter name="cs" type="QMState const *"/>
+    <parameter name="cs" type="QMState const * const"/>
     <!--${QEP::QMsm::exitToTranSource~::ts}-->
-    <parameter name="ts" type="QMState const *"/>
+    <parameter name="ts" type="QMState const * const"/>
     <!--${QEP::QMsm::exitToTranSource~::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
     <code>Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
@@ -2749,8 +2812,8 @@ return n + log2LUT[x];</code>
    <documentation>/*! Non-asserting allocate a dynamic event (case when ::QEvt is a POD).
 *
 * @details
-* This macro allocates a new event and sets the pointer @p e_, while
-* leaving at least @p margin_ of events still available in the pool
+* This macro allocates a new event and sets the pointer `e_`, while
+* leaving at least `margin_` of events still available in the pool
 *
 * @param[out] e_     pointer to the newly allocated event
 * @param[in] evtT_   event type (class name) of the event to allocate
@@ -2760,8 +2823,8 @@ return n + log2LUT[x];</code>
 *                    failure in case event allocation fails.
 * @param[in] sig_    signal to assign to the newly allocated event
 *
-* @returns an event pointer cast to the type @p evtT_ or NULL if the
-* event cannot be allocated with the specified @p margin.
+* @returns an event pointer cast to the type `evtT_` or NULL if the
+* event cannot be allocated with the specified `margin`.
 *
 * @note
 * If #Q_EVT_CTOR is defined, the Q_NEW_X() macro becomes variadic and
@@ -2914,7 +2977,7 @@ return n + log2LUT[x];</code>
 * @param[in] sender_ pointer to the sender object.
 *
 * @note
-* The @p sendedr_ parameter is actually only used when QS tracing
+* The `sendedr_` parameter is actually only used when QS tracing
 * is enabled (macro #Q_SPY is defined). When QS software tracing is
 * disenabled, the QACTIVE_POST() macro does not pass the `sender_`
 * parameter, so the overhead of passing this extra parameter is entirely
@@ -2972,9 +3035,9 @@ return n + log2LUT[x];</code>
 * the queue.
 *
 * @note
-* The @p sender_ parameter is actually only used when QS tracing
+* The `sender_` parameter is actually only used when QS tracing
 * is enabled (macro #Q_SPY is defined). When QS software tracing is
-* disabled, the POST_X() macro does not pass the @p sender_ parameter,
+* disabled, the POST_X() macro does not pass the `sender_` parameter,
 * so the overhead of passing this extra parameter is entirely avoided.
 *
 * @note
@@ -3429,7 +3492,7 @@ else {
 
 /* is it a dynamic event? */
 if (e-&gt;poolId_ != 0U) {
-    QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+    QEvt_refCtr_inc_(e); /* increment the reference counter */
 }
 
 if (status) { /* can post the event? */
@@ -3550,7 +3613,7 @@ Q_ASSERT_CRIT_(210, nFree != 0U);
 
 /* is it a dynamic event? */
 if (e-&gt;poolId_ != 0U) {
-    QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+    QEvt_refCtr_inc_(e); /* increment the reference counter */
 }
 
 --nFree; /* one free entry just used up */
@@ -3723,7 +3786,7 @@ QF_CRIT_X_();</code>
 *
 * @note
 * Due to the latency of event queues, an active object should NOT
-* assume that a given signal @p sig will never be dispatched to the
+* assume that a given signal `sig` will never be dispatched to the
 * state machine of the active object after un-subscribing from that
 * signal. The event might be already in the queue, or just about to
 * be posted and the un-subscribe operation will not flush such events.
@@ -3896,7 +3959,7 @@ if (e-&gt;poolId_ != 0U) {
     * recycles the event if the counter drops to zero. This covers the
     * case when the event was published without any subscribers.
     */
-    QF_EVT_REF_CTR_INC_(e);
+    QEvt_refCtr_inc_(e);
 }
 
 /* make a local, modifiable copy of the subscriber list */
@@ -3947,8 +4010,8 @@ QF_gc(e); /* recycle the event to avoid a leak */
 *
 * @details
 * This function is part of the event deferral support. An active object
-* uses this function to defer an event @p e to the QF-supported native
-* event queue @p eq. QF correctly accounts for another outstanding
+* uses this function to defer an event `e` to the QF-supported native
+* event queue `eq`. QF correctly accounts for another outstanding
 * reference to the event and will not recycle the event at the end of
 * the RTC step. Later, the active object might recall one event at a
 * time from the event queue.
@@ -3993,7 +4056,7 @@ return status;</code>
 * This function is part of the event deferral support. An active object
 * uses this function to recall a deferred event from a given QF
 * event queue. Recalling an event means that it is removed from the
-* deferred event queue @p eq and posted (LIFO) to the event queue of
+* deferred event queue `eq` and posted (LIFO) to the event queue of
 * the active object.
 *
 * @param[in]  eq  pointer to a &quot;raw&quot; thread-safe queue to recall
@@ -4035,7 +4098,7 @@ if (e != (QEvt *)0) {
         /* we need to decrement the reference counter once, to account
         * for removing the event from the deferred event queue.
         */
-        QF_EVT_REF_CTR_DEC_(e); /* decrement the reference counter */
+        QEvt_refCtr_dec_(e); /* decrement the reference counter */
     }
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_RECALL, me-&gt;prio)
@@ -4446,14 +4509,14 @@ me-&gt;super.super.vptr = &amp;vtable.super; /* hook vptr to QMActive vtable */<
 *
 * @details
 * When creating a time event, you must commit it to a specific active object
-* @p act, tick rate @p tickRate and event signal @p sig. You cannot change
+* `act`, tick rate `tickRate` and event signal `sig`. You cannot change
 * these attributes later.
 *
 * @param[in,out] me   pointer (see @ref oop)
-* @param[in]     act  pointer to the active object associated with this
+* @param[in] act      pointer to the active object associated with this
 *                     time event. The time event will post itself to this AO.
-* @param[in]     sig  signal to associate with this time event.
-* @param[in]     tickRate system clock tick rate to associate with this
+* @param[in] sig      signal to associate with this time event.
+* @param[in] tickRate system clock tick rate to associate with this
 *                     time event in the range [0..15].
 *
 * @note You should call the constructor exactly once for every Time Event
@@ -4797,7 +4860,7 @@ return ret;</code>
 *
 * @details
 * This internal helper function processes all armed ::QTimeEvt objects
-* associated wit the tick rate @p tickRate .
+* associated wit the tick rate `tickRate`.
 *
 * This function must be called periodically from a time-tick ISR or from
 * a task so that QF can manage the timeout events assigned to the given
@@ -4810,7 +4873,7 @@ return ret;</code>
 * this function should be called only via the macro QTIMEEVT_TICK_X()
 *
 * @note
-* the calls to QTimeEvt_tick_() with different @p tickRate parameter can
+* the calls to QTimeEvt_tick_() with different `tickRate` parameter can
 * preempt each other. For example, higher clock tick rates might be
 * serviced from interrupts while others from tasks (active objects).
 *
@@ -5226,9 +5289,9 @@ Q_ERROR_ID(900);</code>
 * Initialize the event queue by giving it the storage for the ring buffer.
 *
 * @param[in,out] me   pointer (see @ref oop)
-* @param[in]     qSto an array of pointers to ::QEvt to sereve as the
+* @param[in] qSto     an array of pointers to ::QEvt to sereve as the
 *                     ring buffer for the event queue
-* @param[in]     qLen the length of the @p qSto buffer (in ::QEvt pointers)
+* @param[in] qLen     the length of the `qSto` buffer (in ::QEvt pointers)
 *
 * @note The actual capacity of the queue is qLen + 1, because of the extra
 * location forntEvt.
@@ -5238,8 +5301,8 @@ Q_ERROR_ID(900);</code>
 * objects in the built-int QV and QK kernels, as well as other
 * QP ports to OSes/RTOSes that do provide a suitable message queue.
 */</documentation>
-    <!--${QF::QEQueue::init::qSto[]}-->
-    <parameter name="qSto[]" type="QEvt const *"/>
+    <!--${QF::QEQueue::init::qSto}-->
+    <parameter name="qSto" type="QEvt const ** const"/>
     <!--${QF::QEQueue::init::qLen}-->
     <parameter name="qLen" type="uint_fast16_t const"/>
     <code>me-&gt;frontEvt = (QEvt *)0; /* no events in the queue */
@@ -5267,7 +5330,7 @@ me-&gt;nMin     = me-&gt;nFree;</code>
 *                       posting the event. The special value #QF_NO_MARGIN
 *                       means that this function will assert if posting
 * @note
-* The #QF_NO_MARGIN value of the @p margin parameter is special and
+* The #QF_NO_MARGIN value of the `margin` parameter is special and
 * denotes situation when the post() operation is assumed to succeed (event
 * delivery guarantee). An assertion fires, when the event cannot be
 * delivered in this case.
@@ -5301,7 +5364,7 @@ if (((margin == QF_NO_MARGIN) &amp;&amp; (nFree &gt; 0U))
 {
     /* is it a dynamic event? */
     if (e-&gt;poolId_ != 0U) {
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     --nFree; /* one free entry just used up */
@@ -5397,7 +5460,7 @@ Q_REQUIRE_CRIT_(300, nFree != 0U);
 
 /* is it a dynamic event? */
 if (e-&gt;poolId_ != 0U) {
-    QF_EVT_REF_CTR_INC_(e);  /* increment the reference counter */
+    QEvt_refCtr_inc_(e);  /* increment the reference counter */
 }
 
 --nFree;  /* one free entry just used up */
@@ -5642,16 +5705,16 @@ return e;</code>
 * @param[in]     blockSize fixed-size of the memory blocks in bytes
 *
 * @attention
-* The caller of QMPool::init() must make sure that the @p poolSto
+* The caller of QMPool::init() must make sure that the `poolSto`
 * pointer is properly **aligned**. In particular, it must be possible to
-* efficiently store a pointer at the location pointed to by @p poolSto.
+* efficiently store a pointer at the location pointed to by `poolSto`.
 * Internally, the QMPool_init() function rounds up the block size
-* @p blockSize so that it can fit an integer number of pointers.
+* `blockSize` so that it can fit an integer number of pointers.
 * This is done to achieve proper alignment of the blocks within the pool.
 *
 * @note
 * Due to the rounding of block size the actual capacity of the pool might
-* be less than (@p poolSize / @p blockSize). You can check the capacity
+* be less than (`poolSize` / `blockSize`). You can check the capacity
 * of the pool by calling the QF_getPoolMin() function.
 *
 * @note
@@ -5738,7 +5801,7 @@ me-&gt;end   = fb;              /* the last block in this pool */</code>
 * This function can be called from any task level or ISR level.
 *
 * @note
-* The memory pool @p me must be initialized before any events can
+* The memory pool `me` must be initialized before any events can
 * be requested from it. Also, the QMPool_get() function uses internally a
 * QF critical section, so you should be careful not to call it from within
 * a critical section when nesting of critical section is not supported.
@@ -5782,13 +5845,18 @@ if (me-&gt;nFree &gt; (QMPoolCtr)margin) {
         me-&gt;nMin = 0U; /* remember that the pool got empty */
     }
     else {
-        /* pool is not empty, so the next free block must be in range
+        /*! @invariant
+        * The pool is not empty, so the next free-block pointer,
+        * so the next free block must be in range.
         *
-        * NOTE: the next free block pointer can fall out of range
+        * @tr{PQP18_3}
+        */
+        /* NOTE: The next free block pointer can fall out of range
         * when the client code writes past the memory block, thus
         * corrupting the next block.
         */
-        Q_ASSERT_CRIT_(330, QF_PTR_RANGE_(fb_next, me-&gt;start, me-&gt;end));
+        Q_ASSERT_CRIT_(330,
+            (me-&gt;start &lt;= fb_next) &amp;&amp; (fb_next &lt;= me-&gt;end));
 
         /* is the number of free blocks the new minimum so far? */
         if (me-&gt;nMin &gt; me-&gt;nFree) {
@@ -5851,11 +5919,11 @@ return fb;  /* return the block or NULL pointer to the caller */</code>
     <parameter name="qs_id" type="uint_fast8_t const"/>
     <code>Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
 
-/*! @pre # free blocks cannot exceed the total # blocks and
-* the block pointer must be from this pool.
+/*! @pre number of free blocks cannot exceed the total # blocks and
+* the block pointer must be in range for this pool.
 */
 Q_REQUIRE_ID(200, (me-&gt;nFree &lt; me-&gt;nTot)
-                  &amp;&amp; QF_PTR_RANGE_(b, me-&gt;start, me-&gt;end));
+                  &amp;&amp; (me-&gt;start &lt;= b) &amp;&amp; (b &lt;= me-&gt;end));
 
 QF_CRIT_STAT_
 QF_CRIT_E_();
@@ -5961,7 +6029,7 @@ QF_CRIT_X_();</code>
 *
 * @details
 * Queries the minimum of free ever present in the given event queue of
-* an active object with priority @p prio, since the active object
+* an active object with priority `prio`, since the active object
 * was started.
 *
 * @note
@@ -5974,7 +6042,7 @@ QF_CRIT_X_();</code>
 *
 * @returns
 * the minimum of free ever present in the given event queue of an active
-* object with priority @p prio, since the active object was started.
+* object with priority `prio`, since the active object was started.
 */</documentation>
     <!--${QF::QF-base::getQueueMin::prio}-->
     <parameter name="prio" type="uint_fast8_t const"/>
@@ -6047,7 +6115,7 @@ return min;</code>
 * for more information.
 *
 * @note The actual number of events available in the pool might be actually
-* less than (@p poolSize / @p evtSize) due to the internal alignment
+* less than (`poolSize` / `evtSize`) due to the internal alignment
 * of the blocks that the pool might perform. You can always check the
 * capacity of the pool by calling QF_getPoolMin().
 *
@@ -6145,7 +6213,7 @@ return min;</code>
 *
 * @note
 * The internal QF function QF_newX_() raises an assertion when the
-* @p margin parameter is #QF_NO_MARGIN and allocation of the event turns
+* `margin` parameter is #QF_NO_MARGIN and allocation of the event turns
 * out to be impossible due to event pool depletion, or incorrect (too big)
 * size of the requested event.
 *
@@ -6255,7 +6323,7 @@ if (e-&gt;poolId_ != 0U) {
             QS_2U8_PRE_(e-&gt;poolId_, e-&gt;refCtr_); /* pool Id &amp; ref Count */
         QS_END_NOCRIT_PRE_()
 
-        QF_EVT_REF_CTR_DEC_(e); /* decrement the ref counter */
+        QEvt_refCtr_dec_(e); /* decrement the ref counter */
 
         QF_CRIT_X_();
     }
@@ -6277,10 +6345,10 @@ if (e-&gt;poolId_ != 0U) {
 
         /* cast 'const' away, which is OK, because it's a pool event */
 #ifdef Q_SPY
-        QF_EPOOL_PUT_(QF_ePool_[idx], QF_CONST_CAST_(QEvt*, e),
+        QF_EPOOL_PUT_(QF_ePool_[idx], (QEvt *)e,
                       (uint_fast8_t)QS_EP_ID + e-&gt;poolId_);
 #else
-        QF_EPOOL_PUT_(QF_ePool_[idx], QF_CONST_CAST_(QEvt*, e), 0U);
+        QF_EPOOL_PUT_(QF_ePool_[idx], (QEvt *)e, 0U);
 #endif
     }
 }</code>
@@ -6318,7 +6386,7 @@ Q_REQUIRE_ID(500,
 QF_CRIT_STAT_
 QF_CRIT_E_();
 
-QF_EVT_REF_CTR_INC_(e); /* increments the ref counter */
+QEvt_refCtr_inc_(e); /* increments the ref counter */
 
 QS_BEGIN_NOCRIT_PRE_(QS_QF_NEW_REF,
                      (uint_fast8_t)QS_EP_ID + e-&gt;poolId_)
@@ -7066,6 +7134,7 @@ QS_END_NOCRIT_PRE_()</code>
   <!--${QS::QSpyPre}-->
   <attribute name="QSpyPre" type="enum" visibility="0x04" properties="0x00">
    <documentation>/*! QS pre-defined record types (TX channel)
+* @static @public @memberof QS_tx
 *
 * @details
 * This enumeration specifies the record types used in the QP components.
@@ -7201,7 +7270,9 @@ QS_END_NOCRIT_PRE_()</code>
   </attribute>
   <!--${QS::QSpyGroups}-->
   <attribute name="QSpyGroups" type="enum" visibility="0x04" properties="0x00">
-   <documentation>/*! QS record groups for QS_GLB_FILTER() */</documentation>
+   <documentation>/*! QS record groups for QS_GLB_FILTER()
+* @static @public @memberof QS_tx
+*/</documentation>
    <code>{
     QS_ALL_RECORDS = 0xF0,/*!&lt; all maskable QS records */
     QS_SM_RECORDS,        /*!&lt; State Machine QS records */
@@ -7223,7 +7294,9 @@ QS_END_NOCRIT_PRE_()</code>
   </attribute>
   <!--${QS::QSpyUserOffsets}-->
   <attribute name="QSpyUserOffsets" type="enum" visibility="0x04" properties="0x00">
-   <documentation>/*! QS user record group offsets for QS_GLB_FILTER() */</documentation>
+   <documentation>/*! QS user record group offsets for QS_GLB_FILTER()
+* @static @public @memberof QS_tx
+*/</documentation>
    <code>{
     QS_USER  = 100,   /*!&lt; the first record available to QS users */
     QS_USER0 = (enum_t)QS_USER,      /*!&lt; offset for User Group 0 */
@@ -7235,7 +7308,9 @@ QS_END_NOCRIT_PRE_()</code>
   </attribute>
   <!--${QS::QSpyIdOffsets}-->
   <attribute name="QSpyIdOffsets" type="enum" visibility="0x04" properties="0x00">
-   <documentation>/*! QS ID offsets for QS_LOC_FILTER() */</documentation>
+   <documentation>/*! QS ID offsets for QS_LOC_FILTER()
+* @static @public @memberof QS_tx
+*/</documentation>
    <code>{
     QS_AO_ID = 0,  /*!&lt; offset for AO priorities */
     QS_EP_ID = 64, /*!&lt; offset for event-pool IDs */
@@ -7245,7 +7320,9 @@ QS_END_NOCRIT_PRE_()</code>
   </attribute>
   <!--${QS::QSpyIdGroups}-->
   <attribute name="QSpyIdGroups" type="enum" visibility="0x04" properties="0x00">
-   <documentation>/*! QS ID groups for QS_LOC_FILTER() */</documentation>
+   <documentation>/*! QS ID groups for QS_LOC_FILTER()
+* @static @public @memberof QS_tx
+*/</documentation>
    <code>{
     QS_ALL_IDS = 0xF0,                      /*!&lt; all QS IDs */
     QS_AO_IDS  = (0x80 + (enum_t)QS_AO_ID), /*!&lt; AO IDs (priorities) */
@@ -7256,19 +7333,24 @@ QS_END_NOCRIT_PRE_()</code>
   </attribute>
   <!--${QS::QSpyFunPtr}-->
   <attribute name="QSpyFunPtr" type="typedef void (*" visibility="0x04" properties="0x01">
-   <documentation>/*! function pointer type for QS_fun_dict_pre_() */</documentation>
+   <documentation>/*! function pointer type for QS_fun_dict_pre_()
+* @static @private @memberof QS_tx
+*/</documentation>
    <code>)(void);</code>
   </attribute>
   <!--${QS::QS_EOD}-->
   <attribute name="QS_EOD" type="constexpr uint16_t" visibility="0x03" properties="0x00">
    <documentation>/*! Constant representing End-Of-Data condition returned from the
 * QS_getByte() function.
+* @static @public @memberof QS_tx
 */</documentation>
    <code>((uint16_t)0xFFFFU)</code>
   </attribute>
   <!--${QS::QSpyId}-->
   <attribute name="QSpyId" type="typedef struct { uint8_t prio; }" visibility="0x04" properties="0x00">
-   <documentation>/*! @brief QS ID type for applying local filtering */</documentation>
+   <documentation>/*! @brief QS ID type for applying local filtering
+* @static @public @memberof QS_tx
+*/</documentation>
   </attribute>
   <!--${QS::QS-tx}-->
   <package name="QS-tx" stereotype="0x02" namespace="QS_">
@@ -7358,15 +7440,19 @@ QS_END_NOCRIT_PRE_()</code>
    <!--${QS::QS-tx::initBuf}-->
    <operation name="initBuf" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Initialize the QS-TX data buffer
+* @static @public @memberof QS_tx
 *
 * @details
 * This function should be called from QS_onStartup() to provide
-* QS with the data buffer. The first argument `sto[]` is the address
+* QS with the data buffer. The first argument `sto` is the address
 * of the memory block, and the second argument `stoSize` is the size
 * of this block [in bytes]. Currently the size of the QS buffer cannot
 * exceed 64KB.
 *
-* @note
+* @param[in] sto     pointer to the storage for the transmit buffer
+* @param[in] stoSize size in [bytes] of the storage buffer
+*
+* @remark
 * QS can work with quite small data buffers, but you will start losing
 * data if the buffer is too small for the bursts of tracing activity.
 * The right size of the buffer depends on the data production rate and
@@ -7412,6 +7498,7 @@ QS_target_info_pre_(0xFFU); /* send Reset and Target info */
    <!--${QS::QS-tx::getByte}-->
    <operation name="getByte" type="uint16_t" visibility="0x00" properties="0x00">
     <documentation>/*! Byte-oriented interface to the QS-TX data buffer
+* @static @public @memberof QS_tx
 *
 * @details
 * This function delivers one byte at a time from the QS data buffer.
@@ -7444,6 +7531,7 @@ return ret; /* return the byte or EOD */</code>
    <!--${QS::QS-tx::getBlock}-->
    <operation name="getBlock" type="uint8_t const *" visibility="0x00" properties="0x00">
     <documentation>/*! Block-oriented interface to the QS-TX data buffer
+* @static @public @memberof QS_tx
 *
 * @details
 * This function delivers a contiguous block of data from the QS data
@@ -7453,6 +7541,11 @@ return ret; /* return the byte or EOD */</code>
 * input to provide the maximum size of the data block that the caller
 * can accept.
 *
+* @param[in,out] pNbytes  pointer to the number of bytes to send.
+*                On input, `pNbytes` specifies the maximum number
+*                of bytes that the function can provide.
+*                On output, `pNbytes` contains the actual number
+*                of bytes available.
 * @returns
 * if data is available, the function returns pointer to the
 * contiguous block of data and sets the value pointed to by `pNbytes`
@@ -7504,8 +7597,9 @@ return buf;</code>
    </operation>
    <!--${QS::QS-tx::glbFilter_}-->
    <operation name="glbFilter_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! Set/clear the global Filter for a given QS record
-*  or a group of records
+    <documentation>/*! Set/clear the global Filter for a given QS record or a group
+* of records
+* @static @public @memberof QS_tx
 *
 * @details
 * This function sets up the QS filter to enable record types specified
@@ -7728,6 +7822,7 @@ switch (rec) {
    <operation name="locFilter_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Set/clear the local Filter for a given object-id
 *  or a group of object-ids
+* @static @public @memberof QS_tx
 *
 * @details
 * This function sets up the local QS filter to enable or disable the
@@ -7802,11 +7897,14 @@ QS_priv_.locFilter[0] |= 0x01U; /* leave QS_ID == 0 always on */</code>
    </operation>
    <!--${QS::QS-tx::doOutput}-->
    <operation name="doOutput" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Perform the QS-TX output (implemented in some QS ports) */</documentation>
+    <documentation>/*! Perform the QS-TX output (implemented in some QS ports)
+* @static @public @memberof QS_tx
+*/</documentation>
    </operation>
    <!--${QS::QS-tx::beginRec_}-->
    <operation name="beginRec_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Mark the begin of a QS record `rec`
+* @static @private @memberof QS_tx
 *
 * @details
 * This function must be called at the beginning of each QS record.
@@ -7837,6 +7935,7 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx::endRec_}-->
    <operation name="endRec_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Mark the end of a QS record `rec`
+* @static @private @memberof QS_tx
 *
 * @details
 * This function must be called at the end of each QS record.
@@ -7873,7 +7972,9 @@ if (QS_priv_.used &gt; end) {
    </operation>
    <!--${QS::QS-tx::u8_raw_}-->
    <operation name="u8_raw_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! output uint8_t data element without format information */</documentation>
+    <documentation>/*! output uint8_t data element without format information
+* @static @private @memberof QS_tx
+*/</documentation>
     <!--${QS::QS-tx::u8_raw_::d}-->
     <parameter name="d" type="uint8_t const"/>
     <code>uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
@@ -7889,7 +7990,9 @@ QS_priv_.chksum = chksum;  /* save the checksum */</code>
    </operation>
    <!--${QS::QS-tx::2u8_raw_}-->
    <operation name="2u8_raw_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! output two uint8_t data elements without format information */</documentation>
+    <documentation>/*! output two uint8_t data elements without format information
+* @static @private @memberof QS_tx
+*/</documentation>
     <!--${QS::QS-tx::2u8_raw_::d1}-->
     <parameter name="d1" type="uint8_t const"/>
     <!--${QS::QS-tx::2u8_raw_::d2}-->
@@ -7908,9 +8011,11 @@ QS_priv_.chksum = chksum;  /* save the checksum */</code>
    </operation>
    <!--${QS::QS-tx::u16_raw_}-->
    <operation name="u16_raw_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! output uint16_t data element without format information */</documentation>
+    <documentation>/*! output uint16_t data element without format information
+* @static @private @memberof QS_tx
+*/</documentation>
     <!--${QS::QS-tx::u16_raw_::d}-->
-    <parameter name="d" type="uint16_t"/>
+    <parameter name="d" type="uint16_t const"/>
     <code>uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
 uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
 QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -7928,9 +8033,11 @@ QS_priv_.chksum = chksum;  /* save the checksum */</code>
    </operation>
    <!--${QS::QS-tx::u32_raw_}-->
    <operation name="u32_raw_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! output uint32_t data element without format information */</documentation>
+    <documentation>/*! output uint32_t data element without format information
+* @static @private @memberof QS_tx
+*/</documentation>
     <!--${QS::QS-tx::u32_raw_::d}-->
-    <parameter name="d" type="uint32_t"/>
+    <parameter name="d" type="uint32_t const"/>
     <code>uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
 uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
 QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -7949,6 +8056,7 @@ QS_priv_.chksum = chksum;  /* save the checksum */</code>
    <!--${QS::QS-tx::obj_raw_}-->
    <operation name="obj_raw_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output obj pointer data element without format information
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macros, never in the
 * client code directly.
@@ -7971,12 +8079,13 @@ QS_priv_.chksum = chksum;  /* save the checksum */</code>
    <!--${QS::QS-tx::str_raw_}-->
    <operation name="str_raw_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output raw zero-terminated string element (without format information)
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */</documentation>
     <!--${QS::QS-tx::str_raw_::str}-->
-    <parameter name="str" type="char const *"/>
+    <parameter name="str" type="char const * const"/>
     <code>uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
 uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
 QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -7998,6 +8107,7 @@ QS_priv_.used   = used;   /* save # of used buffer space */</code>
    <!--${QS::QS-tx::u8_fmt_}-->
    <operation name="u8_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output uint8_t data element with format information
+* @static @private @memberof QS_tx
 *
 * @details
 * @note This function is only to be used through macros, never in the
@@ -8023,15 +8133,16 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx::u16_fmt_}-->
    <operation name="u16_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! output uint16_t data element with format information
+* @static @private @memberof QS_tx
 *
 * @details
 * This function is only to be used through macros, never in the
 * client code directly.
 */</documentation>
     <!--${QS::QS-tx::u16_fmt_::format}-->
-    <parameter name="format" type="uint8_t"/>
+    <parameter name="format" type="uint8_t const"/>
     <!--${QS::QS-tx::u16_fmt_::d}-->
-    <parameter name="d" type="uint16_t"/>
+    <parameter name="d" type="uint16_t const"/>
     <code>uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
 uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
 QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -8051,14 +8162,15 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx::u32_fmt_}-->
    <operation name="u32_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output uint32_t data element with format information
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */</documentation>
     <!--${QS::QS-tx::u32_fmt_::format}-->
-    <parameter name="format" type="uint8_t"/>
+    <parameter name="format" type="uint8_t const"/>
     <!--${QS::QS-tx::u32_fmt_::d}-->
-    <parameter name="d" type="uint32_t"/>
+    <parameter name="d" type="uint32_t const"/>
     <code>uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
 uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
 QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -8079,9 +8191,11 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    </operation>
    <!--${QS::QS-tx::str_fmt_}-->
    <operation name="str_fmt_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! Output formatted zero-terminated ASCII string to the QS record */</documentation>
+    <documentation>/*! Output formatted zero-terminated ASCII string to the QS record
+* @static @private @memberof QS_tx
+*/</documentation>
     <!--${QS::QS-tx::str_fmt_::str}-->
-    <parameter name="str" type="char const *"/>
+    <parameter name="str" type="char const * const"/>
     <code>uint8_t chksum = QS_priv_.chksum;
 uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
 QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -8105,11 +8219,13 @@ QS_priv_.used   = used;    /* save # of used buffer space */</code>
    </operation>
    <!--${QS::QS-tx::mem_fmt_}-->
    <operation name="mem_fmt_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! Output formatted memory block of up to 255 bytes to the QS record */</documentation>
+    <documentation>/*! Output formatted memory block of up to 255 bytes to the QS record
+* @static @private @memberof QS_tx
+*/</documentation>
     <!--${QS::QS-tx::mem_fmt_::blk}-->
-    <parameter name="blk" type="uint8_t const *"/>
+    <parameter name="blk" type="uint8_t const * const"/>
     <!--${QS::QS-tx::mem_fmt_::size}-->
-    <parameter name="size" type="uint8_t"/>
+    <parameter name="size" type="uint8_t const"/>
     <code>uint8_t chksum = QS_priv_.chksum;
 uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
 QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -8134,6 +8250,7 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx::sig_dict_pre_}-->
    <operation name="sig_dict_pre_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output predefined signal-dictionary record
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macro QS_SIG_DICTIONARY()
 */</documentation>
@@ -8157,6 +8274,7 @@ QS_onFlush();</code>
    <!--${QS::QS-tx::obj_dict_pre_}-->
    <operation name="obj_dict_pre_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output predefined object-dictionary record
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macro QS_OBJ_DICTIONARY()
 */</documentation>
@@ -8177,6 +8295,7 @@ QS_onFlush();</code>
    <!--${QS::QS-tx::obj_arr_dict_pre_}-->
    <operation name="obj_arr_dict_pre_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output predefined object-array dictionary record
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macro QS_OBJ_ARR_DICTIONARY()
 */</documentation>
@@ -8243,11 +8362,12 @@ QS_onFlush();</code>
    <!--${QS::QS-tx::fun_dict_pre_}-->
    <operation name="fun_dict_pre_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output predefined function-dictionary record
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macro QS_FUN_DICTIONARY()
 */</documentation>
     <!--${QS::QS-tx::fun_dict_pre_::fun}-->
-    <parameter name="fun" type="QSpyFunPtr"/>
+    <parameter name="fun" type="QSpyFunPtr const"/>
     <!--${QS::QS-tx::fun_dict_pre_::name}-->
     <parameter name="name" type="char const * const"/>
     <code>QS_CRIT_STAT_
@@ -8263,6 +8383,7 @@ QS_onFlush();</code>
    <!--${QS::QS-tx::usr_dict_pre_}-->
    <operation name="usr_dict_pre_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output predefined user-dictionary record
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macro QS_USR_DICTIONARY()
 */</documentation>
@@ -8283,6 +8404,7 @@ QS_onFlush();</code>
    <!--${QS::QS-tx::ASSERTION}-->
    <operation name="ASSERTION" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output the predefined assertion failure trace record
+* @static @public @memberof QS_tx
 *
 * @details
 * This trace record is intended to use from the Q_onAssert() callback.
@@ -8306,7 +8428,9 @@ QS_onCleanup();</code>
    </operation>
    <!--${QS::QS-tx::target_info_pre_}-->
    <operation name="target_info_pre_" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Helper function to output the predefined Target-info trace record. */</documentation>
+    <documentation>/*! Helper function to output the predefined Target-info trace record
+* @static @private @memberof QS_tx
+*/</documentation>
     <!--${QS::QS-tx::target_info_pre_::isReset}-->
     <parameter name="isReset" type="uint8_t const"/>
     <code>static uint8_t const ZERO = (uint8_t)'0';
@@ -8417,28 +8541,38 @@ QS_endRec_();</code>
    </operation>
    <!--${QS::QS-tx::onStartup}-->
    <operation name="onStartup" type="uint8_t" visibility="0x00" properties="0x00">
-    <documentation>/*! Callback to startup the QS facility */</documentation>
+    <documentation>/*! Callback to startup the QS facility
+* @static @public @memberof QS_tx
+*/</documentation>
     <!--${QS::QS-tx::onStartup::arg}-->
     <parameter name="arg" type="void const *"/>
    </operation>
    <!--${QS::QS-tx::onCleanup}-->
    <operation name="onCleanup" type="void" visibility="0x00" properties="0x00">
-    <documentation>* Callback to cleanup the QS facility</documentation>
+    <documentation>/*! Callback to cleanup the QS facility
+* @static @public @memberof QS_tx
+*/</documentation>
    </operation>
    <!--${QS::QS-tx::onFlush}-->
    <operation name="onFlush" type="void" visibility="0x00" properties="0x00">
-    <documentation>* Callback to flush the QS trace data to the host</documentation>
+    <documentation>/*! Callback to flush the QS trace data to the host
+* @static @public @memberof QS_tx
+*/</documentation>
    </operation>
    <!--${QS::QS-tx::onGetTime}-->
    <operation name="onGetTime" type="QSTimeCtr" visibility="0x00" properties="0x00">
-    <documentation>* Callback to obtain a timestamp for a QS record</documentation>
+    <documentation>/*! Callback to obtain a timestamp for a QS record
+* @static @public @memberof QS_tx
+*/</documentation>
    </operation>
   </package>
   <!--${QS::QS-tx-64bit}-->
   <package name="QS-tx-64bit" stereotype="0x02" namespace="QS_">
    <!--${QS::QS-tx-64bit::u64_raw_}-->
    <operation name="u64_raw_" type="void" visibility="0x00" properties="0x01">
-    <documentation>/*! Output uint64_t data element without format information */</documentation>
+    <documentation>/*! Output uint64_t data element without format information
+* @static @private @memberof QS_tx
+*/</documentation>
     <!--${QS::QS-tx-64bit::u64_raw_::d}-->
     <parameter name="d" type="uint64_t"/>
     <code>uint8_t chksum      = QS_priv_.chksum;
@@ -8460,6 +8594,7 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx-64bit::u64_fmt_}-->
    <operation name="u64_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output uint64_t data element with format information
+* @static @private @memberof QS_tx
 *
 * @sa QS_U64(), QS_I64()
 */</documentation>
@@ -8492,13 +8627,14 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx-fp::f32_fmt_}-->
    <operation name="f32_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output 32-bit floating point data element with format information
+* @static @private @memberof QS_tx
 *
 * @sa QS_F32()
 */</documentation>
     <!--${QS::QS-tx-fp::f32_fmt_::format}-->
-    <parameter name="format" type="uint8_t"/>
+    <parameter name="format" type="uint8_t const"/>
     <!--${QS::QS-tx-fp::f32_fmt_::d}-->
-    <parameter name="d" type="float32_t"/>
+    <parameter name="d" type="float32_t const"/>
     <code>union F32Rep {
     float32_t f;
     uint32_t  u;
@@ -8526,13 +8662,14 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-tx-fp::f64_fmt_}-->
    <operation name="f64_fmt_" type="void" visibility="0x00" properties="0x01">
     <documentation>/*! Output 64-bit floating point data element with format information
+* @static @private @memberof QS_tx
 *
 * @sa QS_F64()
 */</documentation>
     <!--${QS::QS-tx-fp::f64_fmt_::format}-->
-    <parameter name="format" type="uint8_t"/>
+    <parameter name="format" type="uint8_t const"/>
     <!--${QS::QS-tx-fp::f64_fmt_::d}-->
-    <parameter name="d" type="float64_t"/>
+    <parameter name="d" type="float64_t const"/>
     <code>union F64Rep {
     float64_t d;
     uint32_t  u[2];
@@ -8610,11 +8747,15 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    </class>
    <!--${QS::QS-rx::rxPriv_}-->
    <attribute name="rxPriv_" type="QS_rx" visibility="0x00" properties="0x01">
-    <documentation>/*! the only instance of the QS-RX object (Singleton) */</documentation>
+    <documentation>/*! the only instance of the QS-RX object (Singleton)
+* @static @private @memberof QS_rx
+*/</documentation>
    </attribute>
    <!--${QS::QS-rx::QSpyObjKind}-->
    <attribute name="QSpyObjKind" type="enum" visibility="0x04" properties="0x01">
-    <documentation>/*! Kinds of objects used in QS_setCurrObj() and QS_queryCurrObj() */</documentation>
+    <documentation>/*! Kinds of objects used in QS_setCurrObj() and QS_queryCurrObj()
+* @static @public @memberof QS_rx
+*/</documentation>
     <code>{
     SM_OBJ,    /*!&lt; state machine object */
     AO_OBJ,    /*!&lt; active object */
@@ -8627,7 +8768,9 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    </attribute>
    <!--${QS::QS-rx::OSpyObjCombnation}-->
    <attribute name="OSpyObjCombnation" type="enum" visibility="0x04" properties="0x01">
-    <documentation>/*! Object combinations for QS_setCurrObj() and QS_queryCurrObj() */</documentation>
+    <documentation>/*! Object combinations for QS_setCurrObj() and QS_queryCurrObj()
+* @static @public @memberof QS_rx
+*/</documentation>
     <code>{
     SM_AO_OBJ = (enum_t)MAX_OBJ /*!&lt; combination of SM and AO */
 };</code>
@@ -8635,14 +8778,15 @@ QS_priv_.chksum = chksum; /* save the checksum */</code>
    <!--${QS::QS-rx::rxInitBuf}-->
    <operation name="rxInitBuf" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! Initialize the QS-RX data buffer
+* @static @public @memberof QS_rx
 *
 * @details
 * This function should be called from QS::onStartup() to provide QS-RX
 * with the receive data buffer.
 *
-* @param[in]  sto[]   the address of the memory block
+* @param[in]  sto     pointer to the memory block for input buffer
 * @param[in]  stoSize the size of this block [bytes]. The size of the
-*                     QS RX buffer cannot exceed 64KB.
+*                     QS-RX buffer cannot exceed 64KB.
 *
 * @note
 * QS-RX can work with quite small data buffers, but you will start
@@ -8692,7 +8836,9 @@ QS_testData.testTime = 0U;
    </operation>
    <!--${QS::QS-rx::rxPut}-->
    <operation name="rxPut" type="bool" visibility="0x00" properties="0x02">
-    <documentation>/*! Put one byte into the QS-RX lock-free buffer */</documentation>
+    <documentation>/*! Put one byte into the QS-RX lock-free buffer
+* @static @public @memberof QS_rx
+*/</documentation>
     <!--${QS::QS-rx::rxPut::b}-->
     <parameter name="b" type="uint8_t const"/>
     <code>QSCtr head = QS_rxPriv_.head + 1U;
@@ -8711,6 +8857,7 @@ else {
    <!--${QS::QS-rx::rxGetNfree}-->
    <operation name="rxGetNfree" type="uint16_t" visibility="0x00" properties="0x00">
     <documentation>/*! Obtain the number of free bytes in the QS-RX data buffer
+* @static @public @memberof QS_rx
 *
 * @details
 * This function is intended to be called from the ISR that reads the
@@ -8733,32 +8880,36 @@ else {
    </operation>
    <!--${QS::QS-rx::doInput}-->
    <operation name="doInput" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Perform the QS-RX input (implemented in some QS ports) */</documentation>
+    <documentation>/*! Perform the QS-RX input (implemented in some QS ports)
+* @static @public @memberof QS_rx
+*/</documentation>
    </operation>
    <!--${QS::QS-rx::setCurrObj}-->
    <operation name="setCurrObj" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! Set the &quot;current object&quot; in the Target
+* @static @public @memberof QS_rx
 *
 * @details
 * This function sets the &quot;current object&quot; in the Target.
 */</documentation>
     <!--${QS::QS-rx::setCurrObj::obj_kind}-->
-    <parameter name="obj_kind" type="uint8_t"/>
+    <parameter name="obj_kind" type="uint8_t const"/>
     <!--${QS::QS-rx::setCurrObj::obj_ptr}-->
-    <parameter name="obj_ptr" type="void *"/>
+    <parameter name="obj_ptr" type="void * const"/>
     <code>Q_REQUIRE_ID(100, obj_kind &lt; Q_DIM(QS_rxPriv_.currObj));
 QS_rxPriv_.currObj[obj_kind] = obj_ptr;</code>
    </operation>
    <!--${QS::QS-rx::queryCurrObj}-->
    <operation name="queryCurrObj" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! Query the &quot;current object&quot; in the Target
+* @static @public @memberof QS_rx
 *
 * @details
 * This function programmatically generates the response to the query for
 * a &quot;current object&quot;.
 */</documentation>
     <!--${QS::QS-rx::queryCurrObj::obj_kind}-->
-    <parameter name="obj_kind" type="uint8_t"/>
+    <parameter name="obj_kind" type="uint8_t const"/>
     <code>if (QS_rxPriv_.currObj[obj_kind] != (void *)0) {
     QS_CRIT_STAT_
     QS_CRIT_E_();
@@ -8812,7 +8963,9 @@ else {
    </operation>
    <!--${QS::QS-rx::rxParse}-->
    <operation name="rxParse" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Parse all bytes present in the QS-RX data buffer */</documentation>
+    <documentation>/*! Parse all bytes present in the QS-RX data buffer
+* @static @public @memberof QS_rx
+*/</documentation>
     <code>QSCtr tail = QS_rxPriv_.tail;
 while (QS_rxPriv_.head != tail) { /* QS-RX buffer NOT empty? */
     uint8_t b = QS_rxPriv_.buf[tail];
@@ -8857,7 +9010,9 @@ while (QS_rxPriv_.head != tail) { /* QS-RX buffer NOT empty? */
    </operation>
    <!--${QS::QS-rx::rxHandleGoodFrame_}-->
    <operation name="rxHandleGoodFrame_" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! internal function to handle incoming (QS-RX) packet */</documentation>
+    <documentation>/*! internal function to handle incoming (QS-RX) packet
+* @static @private @memberof QS_rx
+*/</documentation>
     <!--${QS::QS-rx::rxHandleGoodFram~::state}-->
     <parameter name="state" type="uint8_t const"/>
     <code>uint8_t i;
@@ -9182,11 +9337,15 @@ switch (state) {
    </operation>
    <!--${QS::QS-rx::onReset}-->
    <operation name="onReset" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! callback function to reset the Target (to be implemented in the BSP) */</documentation>
+    <documentation>/*! callback function to reset the Target (to be implemented in the BSP)
+* @static @public @memberof QS_rx
+*/</documentation>
    </operation>
    <!--${QS::QS-rx::onCommand}-->
    <operation name="onCommand" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! Callback function to execute user commands (to be implemented in BSP) */</documentation>
+    <documentation>/*! Callback function to execute user commands (to be implemented in BSP)
+* @static @public @memberof QS_rx
+*/</documentation>
     <!--${QS::QS-rx::onCommand::cmdId}-->
     <parameter name="cmdId" type="uint8_t"/>
     <!--${QS::QS-rx::onCommand::param1}-->
@@ -9198,7 +9357,9 @@ switch (state) {
    </operation>
    <!--${QS::QS-rx::RX_PUT}-->
    <operation name="RX_PUT" type="bool" visibility="0x00" properties="0x00">
-    <documentation>/*! Put one byte into the QS RX lock-free buffer */</documentation>
+    <documentation>/*! Put one byte into the QS RX lock-free buffer
+* @static @public @memberof QS_rx
+*/</documentation>
     <!--${QS::QS-rx::RX_PUT::b}-->
     <parameter name="b" type="uint8_t const"/>
     <code>QSCtr head = QS_rxPriv_.head + 1U;
@@ -9253,7 +9414,7 @@ QS_onTestLoop();</code>
    <operation name="getTestProbe_" type="uint32_t" visibility="0x00" properties="0x00">
     <documentation>/*! get the test probe data for the given API */</documentation>
     <!--${QUTest::QS::getTestProbe_::api}-->
-    <parameter name="api" type="QSpyFunPtr"/>
+    <parameter name="api" type="QSpyFunPtr const"/>
     <code>uint32_t data = 0U;
 uint_fast8_t i;
 for (i = 0U; i &lt; QS_testData.tpNum; ++i) {
@@ -9735,7 +9896,7 @@ QF_CRIT_E_();
 
 /* is it a dynamic event? */
 if (e-&gt;poolId_ != 0U) {
-    QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+    QEvt_refCtr_inc_(e); /* increment the reference counter */
 }
 
 uint_fast8_t const rec = (status ? (uint_fast8_t)QS_QF_ACTIVE_POST
@@ -9790,7 +9951,7 @@ QF_CRIT_E_();
 
 /* is it a dynamic event? */
 if (e-&gt;poolId_ != 0U) {
-    QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+    QEvt_refCtr_inc_(e); /* increment the reference counter */
 }
 
 QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, me-&gt;prio)
@@ -10468,9 +10629,9 @@ QK_onContextSw(QActive_registry_[pprev], a);
 * another.
 *
 * @param[in] prev   pointer to the previous thread (active object)
-*                   (prev==0 means that @p prev was the QK idle loop)
+*                   (prev==0 means that `prev` was the QK idle loop)
 * @param[in] next   pointer to the next thread (active object)
-*                   (next==0) means that @p next is the QK idle loop)
+*                   (next==0) means that `next` is the QK idle loop)
 * @attention
 * QK_onContextSw() is invoked with interrupts **disabled** and must also
 * return with interrupts **disabled**.
@@ -10722,7 +10883,7 @@ QXK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
 
 /* register the QXK idle AO object, cast &quot;const&quot; away */
 static QActive const idle_ao = { (struct QHsmVtable const *)0 };
-QActive_registry_[0] = QF_CONST_CAST_(QActive*, &amp;idle_ao);
+QActive_registry_[0] = (QActive* )&amp;idle_ao;
 
 #ifdef QXK_INIT
 QXK_INIT(); /* port-specific initialization of the QXK kernel */
@@ -11171,9 +11332,9 @@ QF_CRIT_X_();</code>
 * @details
 * Direct event posting is the simplest asynchronous communication method
 * available in QF. The following example illustrates how the Philo active
-* object posts directly the HUNGRY event to the Table active object.@n
-* @n
-* The parameter @p margin specifies the minimum number of free slots in
+* object posts directly the HUNGRY event to the Table active object.
+* &lt;br&gt;
+* The parameter `margin` specifies the minimum number of free slots in
 * the queue that must be available for posting to succeed. The function
 * returns 1 (success) if the posting succeeded (with the provided margin)
 * and 0 (failure) when the posting fails.
@@ -11193,14 +11354,14 @@ QF_CRIT_X_();</code>
 * Should be called only via the macro QXTHREAD_POST_X().
 *
 * @note
-* The #QF_NO_MARGIN value of the @p margin parameter is special and
+* The #QF_NO_MARGIN value of the `margin` parameter is special and
 * denotes situation when the post() operation is assumed to succeed
 * (event delivery guarantee). An assertion fires, when the event cannot
 * be delivered in this case.
 *
 * @note
 * For compatibility with the V-table from the superclass ::QActive, the
-* me-pointer is typed as pointing to QActive. However, the @p me pointer
+* me-pointer is typed as pointing to QActive. However, the `me` pointer
 * here actually points to the QXThread subclass. Therefore the downcast
 * (QXThread *)me is always correct.
 */</documentation>
@@ -11265,7 +11426,7 @@ else if (me-&gt;eQueue.end != 0U) {
 
     /* is it a dynamic event? */
     if (e-&gt;poolId_ != 0U) {
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     if (status) { /* can post the event? */
@@ -12764,9 +12925,9 @@ do { \
 * to insufficient margin of free slots available in the queue.
 *
 * @note
-* The @p sender_ parameter is actually only used when QS tracing is enabled
+* The `sender_` parameter is actually only used when QS tracing is enabled
 * (macro #Q_SPY is defined). When QS software tracing is disabled, the
-* QXTHREAD_POST_X() macro does not pass the @p sender_ argument, so the
+* QXTHREAD_POST_X() macro does not pass the `sender_` parameter, so the
 * overhead of passing this extra argument is entirely avoided.
 *
 * @note
@@ -12974,7 +13135,7 @@ $declare ${DbC}
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION 712U
+#define QP_VERSION 713U
 
 /*! The current QP version as a zero terminated string literal.
 *
@@ -12983,10 +13144,10 @@ $declare ${DbC}
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION_STR &quot;7.1.2&quot;
+#define QP_VERSION_STR &quot;7.1.3&quot;
 
-/*! Encrypted  current QP release (7.1.2) and date (2022-10-07) */
-#define QP_RELEASE 0x7C44FF47U
+/*! Encrypted  current QP release (7.1.3) and date (2022-11-11) */
+#define QP_RELEASE 0x7C3520C6U
 
 /*==========================================================================*/
 $declare ${glob-types}
@@ -13127,29 +13288,25 @@ typedef struct QFreeBlock {
     struct QFreeBlock * volatile next;
 } QFreeBlock;
 
-/* internal helper macros ***************************************************/
+/* internal helper macros ==================================================*/
 
-/*! helper macro to cast const away from a pointer
-* @details
-* This macro encapsulates the deviation from the MISRA-C:2012 Rule 11.8(R)
+/*! increment the refCtr of a const event (requires casting `const` away)
+* @private @memberof QEvt
+*
+* @tr{PQP11_8}
 */
-#define QF_CONST_CAST_(type_, ptr_)  ((type_)(ptr_))
+static inline void QEvt_refCtr_inc_(QEvt const *me) {
+    ++((QEvt *)me)-&gt;refCtr_;
+}
 
-/*! increment the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_INC_(e_) (++QF_CONST_CAST_(QEvt*, e_)-&gt;refCtr_)
-
-/*! decrement the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_DEC_(e_) (--QF_CONST_CAST_(QEvt*, e_)-&gt;refCtr_)
-
-/**
-* @details
-* This macro is specifically and exclusively used for checking the range
-* of a block pointer returned to the pool. Such a check must rely on the
-* pointer arithmetic not compliant with the MISRA-C 2012 Rule 18.3(R).
-* Defining a specific macro for this purpose allows to selectively disable
-* the warnings for this particular case.
+/*! decrement the refCtr of a const event (requires casting `const` away)
+* @private @memberof QEvt
+*
+* @tr{PQP11_8}
 */
-#define QF_PTR_RANGE_(x_, min_, max_)  (((min_) &lt;= (x_)) &amp;&amp; ((x_) &lt;= (max_)))
+static inline void QEvt_refCtr_dec_(QEvt const *me) {
+    --((QEvt *)me)-&gt;refCtr_;
+}
 
 #endif /* QP_INC_QF_PKG_H_ */</text>
   </file>
@@ -13932,7 +14089,7 @@ typedef char char_t;
 
 #ifdef Q_SPY
 
-/*! @deprecated local Filter for a generic application object @p obj_. */
+/*! @deprecated local Filter for a generic application object `obj_`. */
 #define QS_FILTER_AP_OBJ(obj_)  (QS_priv_.locFilter_AP = (obj_))
 
 /*! @deprecated begin of a user QS record, instead use QS_BEGIN_ID() */
@@ -14029,26 +14186,6 @@ extern char const Q_BUILD_TIME[9];
 
 #endif /* QP_INC_QSTAMP_H_ */</text>
   </file>
-  <!--${include::qstamp.c}-->
-  <file name="qstamp.c">
-   <text>/*! @file
-* @brief Application build time-stamp
-* @details
-* This module needs to be re-compiled in every new software build. To achive
-* this, it is recommended to delete the object file (qstamp.o, or qstamp.obj)
-* in the build directory before each build. (Most development tools allow
-* you to specify a pre-build command, which is the ideal place to delete
-* the qstamp object file.)
-*/
-
-#include &quot;qstamp.h&quot;
-
-/*! the calendar date of the last translation of the form: &quot;Mmm dd yyyy&quot; */
-char const Q_BUILD_DATE[12] = __DATE__;
-
-/*! the time of the last translation of the form: &quot;hh:mm:ss&quot; */
-char const Q_BUILD_TIME[9] = __TIME__;</text>
-  </file>
  </directory>
  <!--${src}-->
  <directory name="src">
@@ -14076,58 +14213,33 @@ Q_DEFINE_THIS_MODULE(&quot;qep_hsm&quot;)
 /*==========================================================================*/
 $define ${QEP::QP_versionStr[8]}
 
-/*! internal QEP constants */
-enum {
-    QEP_EMPTY_SIG_ = 0, /*!&lt; reserved empty signal for internal use only */
-};
-
 /*! Immutable events corresponding to the reserved signals.
 *
 * @details
-* Static, pre-allocated standard events that the QEP event processor sends
+* Static, immutable reserved events that the QEP event processor sends
 * to state handler functions of QHsm-style state machine to execute entry
 * actions, exit actions, and initial transitions.
 */
-static QEvt const QEP_reservedEvt_[] = {
-    { (QSignal)QEP_EMPTY_SIG_, 0U, 0U },
-    { (QSignal)Q_ENTRY_SIG,    0U, 0U },
-    { (QSignal)Q_EXIT_SIG,     0U, 0U },
-    { (QSignal)Q_INIT_SIG,     0U, 0U }
+static QEvt const l_reservedEvt_[] = {
+    { (QSignal)Q_EMPTY_SIG, 0U, 0U },
+    { (QSignal)Q_ENTRY_SIG, 0U, 0U },
+    { (QSignal)Q_EXIT_SIG,  0U, 0U },
+    { (QSignal)Q_INIT_SIG,  0U, 0U }
 };
 
-/*! helper macro to trigger internal event in an HSM */
-#define QEP_TRIG_(state_, sig_) \
-    ((*(state_))(me, &amp;QEP_reservedEvt_[sig_]))
-
-#ifdef Q_SPY
-    #define QEP_EXIT_(state_, qs_id_) do {                  \
-        if ((*(state_))(me, &amp;QEP_reservedEvt_[Q_EXIT_SIG])  \
-             == Q_RET_HANDLED) {                            \
-            QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, (qs_id_))      \
-                QS_OBJ_PRE_(me);                            \
-                QS_FUN_PRE_(state_);                        \
-            QS_END_PRE_()                                   \
-        }                                                   \
-    } while (false)
-
-    #define QEP_ENTER_(state_, qs_id_) do {                 \
-        if ((*(state_))(me, &amp;QEP_reservedEvt_[Q_ENTRY_SIG]) \
-             == Q_RET_HANDLED) {                            \
-            QS_BEGIN_PRE_(QS_QEP_STATE_ENTRY, (qs_id_))     \
-                QS_OBJ_PRE_(me);                            \
-                QS_FUN_PRE_(state_);                        \
-            QS_END_PRE_()                                   \
-        }                                                   \
-    } while (false)
-
-#else
-    #define QEP_EXIT_(state_, dummy_) \
-        ((void)(*(state_))(me, &amp;QEP_reservedEvt_[Q_EXIT_SIG]))
-
-    #define QEP_ENTER_(state_, dummy_) \
-        ((void)(*(state_))(me, &amp;QEP_reservedEvt_[Q_ENTRY_SIG]))
-
-#endif /* Q_SPY */
+/*! helper function to trigger reserved event in an QHsm
+* @private @memberof QHsm
+*
+* @param[in] state state handler function
+* @param[in] sig   reserved signal to trigger
+*/
+static inline QState QHsm_reservedEvt_(
+    QHsm * const me,
+    QStateHandler const state,
+    enum QReservedSig const sig)
+{
+    return (*state)(me, &amp;l_reservedEvt_[sig]);
+}
 
 $define ${QEP::QHsm}</text>
    </file>
@@ -14795,12 +14907,12 @@ enum {
 };
 
 /* static helper functions... */
-static void QS_rxParseData_(uint8_t b);
-//static void QS_rxHandleGoodFrame_(uint8_t state);
-static void QS_rxHandleBadFrame_(uint8_t state);
-static void QS_rxReportAck_(int8_t recId);
-static void QS_rxReportError_(int8_t code);
-static void QS_rxReportDone_(int8_t recId);
+static void QS_rxParseData_(uint8_t const b);
+//static void QS_rxHandleGoodFrame_(uint8_t const state);
+static void QS_rxHandleBadFrame_(uint8_t const state);
+static void QS_rxReportAck_(int8_t const recId);
+static void QS_rxReportError_(int8_t const code);
+static void QS_rxReportDone_(int8_t const recId);
 static void QS_rxPoke_(void);
 
 /*! Internal QS-RX macro to encapsulate transition in the QS-RX FSM */
@@ -14812,7 +14924,7 @@ static void QS_rxPoke_(void);
 $define ${QS::QS-rx}
 
 /*==========================================================================*/
-static void QS_rxParseData_(uint8_t b) {
+static void QS_rxParseData_(uint8_t const b) {
     switch (l_rx.state) {
         case WAIT4_SEQ: {
             ++l_rx.seq;
@@ -15252,7 +15364,7 @@ static void QS_rxParseData_(uint8_t b) {
 }
 
 /*..........................................................................*/
-static void QS_rxHandleBadFrame_(uint8_t state) {
+static void QS_rxHandleBadFrame_(uint8_t const state) {
     QS_rxReportError_(0x50); /* report error for all bad frames */
     switch (state) {
         case WAIT4_EVT_FRAME: {
@@ -15270,7 +15382,7 @@ static void QS_rxHandleBadFrame_(uint8_t state) {
 }
 
 /*..........................................................................*/
-static void QS_rxReportAck_(int8_t recId) {
+static void QS_rxReportAck_(int8_t const recId) {
     QS_CRIT_STAT_
     QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_RX_STATUS);
@@ -15282,7 +15394,7 @@ static void QS_rxReportAck_(int8_t recId) {
 }
 
 /*..........................................................................*/
-static void QS_rxReportError_(int8_t code) {
+static void QS_rxReportError_(int8_t const code) {
     QS_CRIT_STAT_
     QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_RX_STATUS);
@@ -15294,7 +15406,7 @@ static void QS_rxReportError_(int8_t code) {
 }
 
 /*..........................................................................*/
-static void QS_rxReportDone_(int8_t recId) {
+static void QS_rxReportDone_(int8_t const recId) {
     QS_CRIT_STAT_
     QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_TARGET_DONE);
@@ -15386,6 +15498,26 @@ $define ${QUTest-stub}
 #endif /* Q_UTEST != 0 */
 
 #endif /* Q_UTEST */</text>
+   </file>
+   <!--${src::qs::qstamp.c}-->
+   <file name="qstamp.c">
+    <text>/*! @file
+* @brief Application build time-stamp
+* @details
+* This module needs to be re-compiled in every new software build. To achive
+* this, it is recommended to delete the object file (qstamp.o, or qstamp.obj)
+* in the build directory before each build. (Most development tools allow
+* you to specify a pre-build command, which is the ideal place to delete
+* the qstamp object file.)
+*/
+
+#include &quot;qstamp.h&quot;
+
+/*! the calendar date of the last translation of the form: &quot;Mmm dd yyyy&quot; */
+char const Q_BUILD_DATE[12] = __DATE__;
+
+/*! the time of the last translation of the form: &quot;hh:mm:ss&quot; */
+char const Q_BUILD_TIME[9] = __TIME__;</text>
    </file>
   </directory>
  </directory>

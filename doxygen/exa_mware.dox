@@ -17,18 +17,15 @@
 
 lwIP example for Texas Instruments EK-LM3S6965 (Cortex-M3) with GNU-ARM and IAR-ARM toolsets.
 
-@image html bd_EK-LM3S6965_lwip.jpg QP-lwIP on EK-LM3S6965
-@n@n
+@image html  bd_EK-LM3S6965_lwip.jpg "QP-lwIP on EK-LM3S6965"
+@image latex bd_EK-LM3S6965_lwip.jpg "QP-lwIP on EK-LM3S6965"
+<br>
 
 @section lwip_AN Application Note: QP and lwIP TCP/IP Stack
 The [Application Note](https://www.state-machine.com/doc/AN_QP_and_lwIP.pdf) describes how to use the lightweight TCP/IP stack called lwIP with the QP real-time embedded frameworks.
 
-[![Application Note: QP and lwIP TCP/IP](AN-QL.png)](https://www.state-machine.com/doc/AN_QP_and_lwIP.pdf)
-@htmlonly
-<div class="caption">
-Application Note: QP and lwIP TCP/IP Stack
-</div>
-@endhtmlonly
+@image html  AN-QL.png "Application Note: QP and lwIP TCP/IP"
+@image latex AN-QL.png "Application Note: QP and lwIP TCP/IP"
 
 @next{ exa_emwin}
 */
@@ -36,10 +33,10 @@ Application Note: QP and lwIP TCP/IP Stack
 /*##########################################################################*/
 /*! @page exa_emwin emWin Embedded GUI
 
-<p>The <a href="https://www.state-machine.com/doc/AN_QP_emWin.pdf" target="_blank" class="extern"><strong>Application Note "QP and emWin Embedded GUI"</strong></a> describes how to use QP&trade; with the <a href="https://www.segger.com/emwin.html" target="_blank" class="extern">emWin&trade; Embedded GUI from SEGGER</a> and also <a href="https://www.micrium.com/rtos/gui/" target="_blank" class="extern">&micro;C/GUI from Micrium</a>, which technically are the same products.
-</p>
+The <a href="https://www.state-machine.com/doc/AN_QP_emWin.pdf" target="_blank" class="extern"><strong>Application Note "QP and emWin Embedded GUI"</strong></a> describes how to use QP&trade; with the <a href="https://www.segger.com/emwin.html" target="_blank" class="extern">emWin&trade; Embedded GUI from SEGGER</a> and also <a href="https://www.micrium.com/rtos/gui/" target="_blank" class="extern">&micro;C/GUI from Micrium</a>, which technically are the same products.
 
-@image html emWin_demo.jpg QP-emWin demo (DPP) running on Windows
+@image html  emWin_demo.jpg "QP-emWin demo (DPP) running on Windows"
+@image latex emWin_demo.jpg "QP-emWin demo (DPP) running on Windows"
 
 
 To demonstrate the working examples, this Application Note uses the emWin Simulation on Windows, which is available for a <a href="https://www.segger.com/downloads/emwin" target="_blank" class="extern">free download from the SEGGER</a> (requires registration). You need only a Windows-based PC to execute the examples provided in this Application Note. Additionally, you'd need Microsoft Visual Studio 2013 (could be the free Express Edition) or higher to re-build and debug the provided examples.

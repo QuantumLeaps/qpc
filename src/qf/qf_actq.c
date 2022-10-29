@@ -106,7 +106,7 @@ bool QActive_post_(QActive * const me,
 
     /* is it a dynamic event? */
     if (e->poolId_ != 0U) {
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     if (status) { /* can post the event? */
@@ -209,7 +209,7 @@ void QActive_postLIFO_(QActive * const me,
 
     /* is it a dynamic event? */
     if (e->poolId_ != 0U) {
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     --nFree; /* one free entry just used up */

@@ -170,28 +170,24 @@ typedef struct QFreeBlock {
     struct QFreeBlock * volatile next;
 } QFreeBlock;
 
-/* internal helper macros ***************************************************/
+/* internal helper macros ==================================================*/
 
-/*! helper macro to cast const away from a pointer
-* @details
-* This macro encapsulates the deviation from the MISRA-C:2012 Rule 11.8(R)
+/*! increment the refCtr of a const event (requires casting `const` away)
+* @private @memberof QEvt
+*
+* @tr{PQP11_8}
 */
-#define QF_CONST_CAST_(type_, ptr_)  ((type_)(ptr_))
+static inline void QEvt_refCtr_inc_(QEvt const *me) {
+    ++((QEvt *)me)->refCtr_;
+}
 
-/*! increment the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_INC_(e_) (++QF_CONST_CAST_(QEvt*, e_)->refCtr_)
-
-/*! decrement the refCtr of an event @p e_ casting const away */
-#define QF_EVT_REF_CTR_DEC_(e_) (--QF_CONST_CAST_(QEvt*, e_)->refCtr_)
-
-/**
-* @details
-* This macro is specifically and exclusively used for checking the range
-* of a block pointer returned to the pool. Such a check must rely on the
-* pointer arithmetic not compliant with the MISRA-C 2012 Rule 18.3(R).
-* Defining a specific macro for this purpose allows to selectively disable
-* the warnings for this particular case.
+/*! decrement the refCtr of a const event (requires casting `const` away)
+* @private @memberof QEvt
+*
+* @tr{PQP11_8}
 */
-#define QF_PTR_RANGE_(x_, min_, max_)  (((min_) <= (x_)) && ((x_) <= (max_)))
+static inline void QEvt_refCtr_dec_(QEvt const *me) {
+    --((QEvt *)me)->refCtr_;
+}
 
 #endif /* QP_INC_QF_PKG_H_ */

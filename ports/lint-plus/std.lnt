@@ -22,28 +22,26 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2021-12-23
-//! @version Last updated for version: 7.0.0
+//! @date Last updated on: 2022-10-12
+//! @version Last updated for version: 7.1.3
 //!
 //! @file
 //! @brief PC-Lint-Plus standard option file
 //! @ingroup lint
 
 // message formatting options...
--hF1             // output: a single line
-+ffn             // use full path names
-//-"format=%(\q%f\q %l %C%) %t %n: %m"
-//-width(0,0)     // do not break lines
+-hF1            // output: a single line
++ffn            // use full path names
 -width(120,4)   // break lines after 99 characters with 4 characters indent
 +flm            // make sure no foreign includes change the format
 
-+rw(inline, entry)
+-std=c99        // apply the C99 language standard
 
 -zero(99)       // don't stop because of warnings
 -passes(2)      // make two passes (for better error messages)
 -restore_at_end // don't let -e<nn> options bleed to other files
--summary()      // produce a summary of all produced messages
+-summary()      // output a summary of all produced messages
 
-// globally supress the following warning:
+// globally suppress the following warnings:
 -e546           // explicitly taking address of function
 -e717           // monocarpic do-while used to group statements

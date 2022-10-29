@@ -183,16 +183,16 @@ typedef struct {
 * @param[in]     blockSize fixed-size of the memory blocks in bytes
 *
 * @attention
-* The caller of QMPool::init() must make sure that the @p poolSto
+* The caller of QMPool::init() must make sure that the `poolSto`
 * pointer is properly **aligned**. In particular, it must be possible to
-* efficiently store a pointer at the location pointed to by @p poolSto.
+* efficiently store a pointer at the location pointed to by `poolSto`.
 * Internally, the QMPool_init() function rounds up the block size
-* @p blockSize so that it can fit an integer number of pointers.
+* `blockSize` so that it can fit an integer number of pointers.
 * This is done to achieve proper alignment of the blocks within the pool.
 *
 * @note
 * Due to the rounding of block size the actual capacity of the pool might
-* be less than (@p poolSize / @p blockSize). You can check the capacity
+* be less than (`poolSize` / `blockSize`). You can check the capacity
 * of the pool by calling the QF_getPoolMin() function.
 *
 * @note
@@ -231,7 +231,7 @@ void QMPool_init(QMPool * const me,
 * This function can be called from any task level or ISR level.
 *
 * @note
-* The memory pool @p me must be initialized before any events can
+* The memory pool `me` must be initialized before any events can
 * be requested from it. Also, the QMPool_get() function uses internally a
 * QF critical section, so you should be careful not to call it from within
 * a critical section when nesting of critical section is not supported.

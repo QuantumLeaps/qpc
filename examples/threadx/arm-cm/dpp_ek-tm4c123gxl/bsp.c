@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, ThreadX kernel
-* Last updated for: @ref qpc_7_0_0
-* Last updated on  2021-12-03
+* Last updated for version 7.1.3
+* Last updated on  2022-10-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -35,32 +35,32 @@
 #include "dpp.h"
 #include "bsp.h"
 
-#include "TM4C123GH6PM.h"  /* the device specific header (TI) */
-#include "rom.h"           /* the built-in ROM functions (TI) */
-#include "sysctl.h"        /* system control driver (TI) */
-#include "gpio.h"          /* GPIO driver (TI) */
+#include "TM4C123GH6PM.h"        /* the device specific header (TI) */
+#include "rom.h"                 /* the built-in ROM functions (TI) */
+#include "sysctl.h"              /* system control driver (TI) */
+#include "gpio.h"                /* GPIO driver (TI) */
 /* add other drivers if necessary... */
 
-Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE  /* define the name of this file for assertions */
 
-
-/* ISRs defined in this BSP ------------------------------------------------*/
+/* prototypes of ISRs defined in this BSP ----------------------------------*/
 void UART0_IRQHandler(void);
 
 /* Local-scope objects -----------------------------------------------------*/
 #define LED_RED     (1U << 1)
-#define LED_BLUE    (1U << 2)
 #define LED_GREEN   (1U << 3)
+#define LED_BLUE    (1U << 2)
 
 #define BTN_SW1     (1U << 4)
 #define BTN_SW2     (1U << 0)
 
-static uint32_t l_rnd; /* random seed */
+static uint32_t l_rnd;  /* random seed */
 static TX_TIMER l_tick_timer; /* ThreadX timer to call QTIMEEVT_TICK_X() */
 
 #ifdef Q_SPY
-    QSTimeCtr QS_tickTime_;
-    QSTimeCtr QS_tickPeriod_;
+
+    /* QSpy source IDs */
+    static QSpyId const l_clock_tick = { QS_AP_ID };
 
     #define UART_BAUD_RATE      115200U
     #define UART_FR_TXFE        (1U << 7)
@@ -69,11 +69,10 @@ static TX_TIMER l_tick_timer; /* ThreadX timer to call QTIMEEVT_TICK_X() */
 
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,
+        PAUSED_STAT,
         COMMAND_STAT
     };
 
-    /* QSpy source IDs */
-    static QSpyId const l_clock_tick = { QS_AP_ID };
 #endif
 
 /* ISRs used in the application ==========================================*/
@@ -114,13 +113,13 @@ void BSP_init(void) {
     SYSCTL->RCGCGPIO |= (1U << 5); /* enable Run mode for GPIOF */
 
     /* configure the LEDs and push buttons */
-    GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE);/* set direction: output */
+    GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE); /* set as output */
     GPIOF->DEN |= (LED_RED | LED_GREEN | LED_BLUE); /* digital enable */
     GPIOF->DATA_Bits[LED_RED]   = 0U; /* turn the LED off */
     GPIOF->DATA_Bits[LED_GREEN] = 0U; /* turn the LED off */
     GPIOF->DATA_Bits[LED_BLUE]  = 0U; /* turn the LED off */
 
-    /* configure the Buttons */
+    /* configure the User Switches */
     GPIOF->DIR &= ~(BTN_SW1 | BTN_SW2); /*  set direction: input */
     ROM_GPIOPadConfigSet(GPIOF_BASE, (BTN_SW1 | BTN_SW2),
                          GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
@@ -128,19 +127,21 @@ void BSP_init(void) {
     /* seed the random number generator */
     BSP_randomSeed(1234U);
 
-    if (QS_INIT((void *)0) == 0U) { /* initialize the QS software tracing */
+    /* initialize the QS software tracing... */
+    if (QS_INIT((void *)0) == 0U) {
         Q_ERROR();
     }
+    QS_OBJ_DICTIONARY(&l_clock_tick);
     QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(PAUSED_STAT);
     QS_USR_DICTIONARY(COMMAND_STAT);
 
     /* setup the QS filters... */
-    QS_GLB_FILTER(QS_ALL_RECORDS);
-    QS_GLB_FILTER(-QS_QF_TICK);
+    QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
+    QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
-    GPIOF->DATA_Bits[LED_RED]   = ((stat[0] == 'h') ? LED_RED   : 0U);
     GPIOF->DATA_Bits[LED_GREEN] = ((stat[0] == 'e') ? LED_GREEN : 0U);
 
     QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
@@ -150,12 +151,14 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    GPIOF->DATA_Bits[LED_RED] = ((paused != 0U) ? LED_RED : 0U);
+    GPIOF->DATA_Bits[LED_BLUE] = ((paused != 0U) ? LED_BLUE : 0U);
+
+    QS_BEGIN_ID(PAUSED_STAT, 0U) /* app-specific record */
+        QS_U8(1, paused);  /* Paused status */
+    QS_END()
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
-    uint32_t rnd;
-
     /* Some flating point code is to exercise the VFP... */
     float volatile x = 3.1415926F;
     x = x + 2.7182818F;
@@ -163,10 +166,9 @@ uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
-    rnd = l_rnd * (3U*7U*11U*13U*23U);
-    l_rnd = rnd; /* set for the next time */
+    l_rnd = l_rnd * (3U*7U*11U*13U*23U);
 
-    return (rnd >> 8);
+    return l_rnd >> 8;
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
@@ -242,10 +244,10 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
 #ifndef NDEBUG
-    /* for debugging, hang on in an endless loop toggling the RED LED... */
-    while (GPIOF->DATA_Bits[BTN_SW1] != 0) {
-        GPIOF->DATA = LED_RED;
-        GPIOF->DATA = 0U;
+    /* light up all LEDs */
+    GPIOF->DATA_Bits[LED_GREEN | LED_RED | LED_BLUE] = 0xFFU;
+    /* for debugging, hang on in an endless loop... */
+    for (;;) {
     }
 #endif
 
@@ -282,7 +284,6 @@ static void idle_thread_fun(ULONG thread_input) { /* see NOTE1 */
 uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsTxBuf[2*1024]; /* buffer for QS transmit channel */
     static uint8_t qsRxBuf[100];    /* buffer for QS receive channel */
-    uint32_t tmp;
 
     QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
@@ -292,7 +293,7 @@ uint8_t QS_onStartup(void const *arg) {
     SYSCTL->RCGCGPIO |= (1U << 0); /* enable Run mode for GPIOA */
 
     /* configure UART0 pins for UART operation */
-    tmp = (1U << 0) | (1U << 1);
+    uint32_t tmp = (1U << 0) | (1U << 1);
     GPIOA->DIR   &= ~tmp;
     GPIOA->SLR   &= ~tmp;
     GPIOA->ODR   &= ~tmp;
@@ -319,8 +320,14 @@ uint8_t QS_onStartup(void const *arg) {
     UART0->IFLS |= (0x2U << 2);    /* interrupt on RX FIFO half-full */
     /* NOTE: do not enable the UART0 interrupt yet. Wait till QF_onStartup() */
 
-    QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
-    QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
+    /* configure TIMER5 to produce QS time stamp */
+    SYSCTL->RCGCTIMER |= (1U << 5);  /* enable run mode for Timer5 */
+    TIMER5->CTL  = 0U;               /* disable Timer1 output */
+    TIMER5->CFG  = 0x0U;             /* 32-bit configuration */
+    TIMER5->TAMR = (1U << 4) | 0x02; /* up-counting periodic mode */
+    TIMER5->TAILR= 0xFFFFFFFFU;      /* timer interval */
+    TIMER5->ICR  = 0x1U;             /* TimerA timeout flag bit clears*/
+    TIMER5->CTL |= (1U << 0);        /* enable TimerA module */
 
     return 1U; /* return success */
 }
@@ -329,33 +336,29 @@ void QS_onCleanup(void) {
 }
 /*..........................................................................*/
 QSTimeCtr QS_onGetTime(void) {  /* NOTE: invoked with interrupts DISABLED */
-    if ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0) { /* not set? */
-        return QS_tickTime_ - (QSTimeCtr)SysTick->VAL;
-    }
-    else { /* the rollover occured, but the SysTick_ISR did not run yet */
-        return QS_tickTime_ + QS_tickPeriod_ - (QSTimeCtr)SysTick->VAL;
-    }
+    return TIMER5->TAV;
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t fifo = UART_TXFIFO_DEPTH; /* Tx FIFO depth */
-    uint8_t const *block;
-    QF_CRIT_STAT_TYPE intStat;
+    while (true) {
+        /* try to get next byte to transmit */
+        QF_CRIT_STAT_TYPE intStat;
 
-    QF_CRIT_ENTRY(intStat);
-    while ((block = QS_getBlock(&fifo)) != (uint8_t *)0) {
-        QF_CRIT_EXIT(intStat);
-        /* busy-wait as long as TX FIFO has data to transmit */
-        while ((UART0->FR & UART_FR_TXFE) == 0) {
-        }
-
-        while (fifo-- != 0) {    /* any bytes in the block? */
-            UART0->DR = *block++; /* put into the TX FIFO */
-        }
-        fifo = UART_TXFIFO_DEPTH; /* re-load the Tx FIFO depth */
         QF_CRIT_ENTRY(intStat);
+        uint16_t b = QS_getByte();
+        QF_CRIT_EXIT(intStat);
+
+        if (b != QS_EOD) { /* NOT end-of-data */
+            /* busy-wait as long as TX FIFO has data to transmit */
+            while ((UART0->FR & UART_FR_TXFE) == 0) {
+            }
+            /* place the byte in the UART DR register */
+            UART0->DR = b;
+        }
+        else {
+            break; /* break out of the loop */
+        }
     }
-    QF_CRIT_EXIT(intStat);
 }
 /*..........................................................................*/
 /*! callback function to reset the target (to be implemented in the BSP) */
@@ -367,11 +370,6 @@ void QS_onReset(void) {
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    (void)cmdId;
-    (void)param1;
-    (void)param2;
-    (void)param3;
-
     QS_BEGIN_ID(COMMAND_STAT, 0U) /* app-specific record */
         QS_U8(2, cmdId);
         QS_U32(8, param1);
@@ -383,7 +381,7 @@ void QS_onCommand(uint8_t cmdId,
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 
-/*****************************************************************************
+/*============================================================================
 * NOTE1:
 * ThreadX apparently does not have a concpet of an "idle" thread, but
 * it can be emulated by a regular, but NON-BLOCKING ThreadX thread of

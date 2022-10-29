@@ -1,8 +1,13 @@
 /*! @mainpage Overview
-@image html qp_banner.jpg
+
+@image html  qp_banner.jpg
+@image latex qp_banner.jpg
 
 @remark
+@htmlonly
 <a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP/C on GitHub"><img class="right" src="img/logo_github.png"></a>
+@endhtmlonly
+@image{inline} latex logo_github.png
 To check what's new in QP&trade;/C, please see @ref history "QP/C Revision History". You can also get the latest **QP&trade;/C code**, with the recent enhancements and bug fixes, from the <a class="extern" target="_blank" href="https://github.com/QuantumLeaps/qpc"><strong>GitHub QP&trade;/C repository</strong></a>.
 <div style="clear:both"></div>
 
@@ -38,8 +43,10 @@ Even though it is written in @ref misra "MISRA-compliant" ISO-C99, QP&trade;/C i
 @anchor oop
 @remark
 If you program in C and object-oriented programming is new to you, please refer to the article and set of videos @webref{oop, "Object-Oriented Programming"}, which among others describes how you can implement the concepts of *classes*, *inheritance*, and *polymorphism* to portable ISO-C.<br>
-<br>
+@htmlonly
 <a target="_blank" href="https://www.state-machine.com/oop" title="OOP in C"><img src="oop-in-C.jpg"></img></a>
+@endhtmlonly
+@image latex oop-in-C.jpg width=3in
 
 
 @subsection over_hsms Hierarchical State Machines
@@ -53,12 +60,8 @@ The QP&trade;/C framework can run on @ref exa_native "bare-metal single-chip mic
 @subsection over_eff Size and Efficiency
 Even though QP&trade;/C offers much higher level of abstraction than a traditional RTOS, it typically outperforms equivalent traditional RTOS applications both in RAM/ROM footprint and in CPU efficiency. The specific measurements and results are reported in the following @webref{doc/AN_QP_Performance.pdf, Application Note: "QP Performance Tests and Results"}:
 
-[![Application Note: "QP Performance Tests and Results"](an-qp_performance.png)](https://www.state-machine.com/doc/AN_QP_Performance.pdf)
-
-
-@subsection over_simple Simplicity
-The QP Framework is simple to get started, simple to use and simple to build. The numerous provided @ref exa "examples" come with projects for typical embedded toolchains (e.g., GNU, ARM, IAR, etc.). The framework does not impose any proprietary build or configuring procedures or tooling, just simple makefiles and native projects for the demonstrated toolchains. While these are possibly inadequate for really complex projects, experience shows that bigger teams have their own DevOps (e.g., CI/CD) and imposing a particular process is typically counterproductive.
-
+@image html  an-qp_performance.png "QP Performance Tests and Results"
+@image latex an-qp_performance.png "QP Performance Tests and Results" width=2in
 
 @subsection over_inter Interoperability
 QP/C can also work with many traditional @ref exa_rtos "Real-Time Operating Systems (RTOSes)" and @ref exa_os "general-purpose operating systems (GPOSes)" (such as Linux (POSIX) and Windows).
@@ -79,10 +82,11 @@ The QP&trade; real-time embedded frameworks address high-reliability application
 @subsection over_psicc2 Books
 The two editions of the book, @webref{psicc2, <strong>Practical Statecharts in C/C++</strong>} provide a detailed design study of the QP&trade; frameworks and explain the related concepts.
 
-[![Practical UML Statecharts in C/C++, 2nd Edition](psicc2.jpg)](https://www.state-machine.com/psicc2)
+@image html  psicc2.jpg "Practical UML Statecharts in C/C++, 2nd Edition"
+@image latex psicc2.jpg "Practical UML Statecharts in C/C++, 2nd Edition" width=2in
 
-<br>
-[![Practical Statecharts in C/C++, 1nd Edition](psicc1.jpg)](https://www.state-machine.com/psicc)
+@image html  psicc1.jpg "Practical Statecharts in C/C++, 1nd Edition"
+@image latex psicc1.jpg "Practical Statecharts in C/C++, 1nd Edition" width=3in
 
 
 @section over_licensing How is it licensed?

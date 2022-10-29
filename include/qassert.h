@@ -59,7 +59,14 @@
 /*$declare${DbC} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${DbC::Q_NORETURN} .......................................................*/
-/*! no-return function specifier */
+/*! No-return function specifier for the Q_onAssert() callback function.
+*
+* The `Q_NORETURN` macro is supposed to be defined in the QP/C port
+* (file `qep_port.h`). If such definition is NOT porvided, the default
+* definition assumes only `void` type returned from Q_onAssert().
+*
+* @tr{PQA01_4}
+*/
 #ifndef Q_NORETURN
 #define Q_NORETURN void
 #endif /* ndef Q_NORETURN */
@@ -93,7 +100,7 @@
 * Macro to be placed at the top of each C/C++ module to define the
 * single instance of the module name string to be used in reporting
 * assertions in this module. This macro takes the user-supplied parameter
-* @p name_ instead of `__FILE__` to precisely control the name of the
+* `name_` instead of `__FILE__` to precisely control the name of the
 * module.
 *
 * @param[in] name_ string constant representing the module name
@@ -118,7 +125,7 @@
 * @details
 * Makes sure the `test_` parameter is TRUE. Calls the Q_onAssert()
 * callback if the `test_` evaluates to FALSE. This assertion takes the
-* user-supplied parameter @p id_ to identify the location of this
+* user-supplied parameter `id_` to identify the location of this
 * assertion within the file. This avoids the volatility of using line
 * numbers, which change whenever a line of code is added or removed
 * upstream from the assertion.
@@ -370,6 +377,8 @@ typedef int int_t;
 * It is typically a **bad idea** to implement Q_onAssert() as an endless
 * loop that ties up the CPU. During debuggin, Q_onAssert() is an ideal
 * place to put a breakpoint.
+*
+* @tr{PQA01_4}
 *
 * Called by the following: Q_ASSERT_ID(), Q_ERROR_ID(), Q_REQUIRE_ID(),
 * Q_ENSURE_ID(), Q_INVARIANT_ID() and Q_ALLEGE_ID() as well as:

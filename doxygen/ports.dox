@@ -19,102 +19,42 @@ Starting with QP/C release 5.4.0, **all** available ports are bundled into the Q
 
 All ports are located in sub-directories of the <span class="img folder">ports</span> top-level folder, with the hierarchical organization outlined below:
 
-<ul class="tag">
-  <li><span class="img folder">ports/</span>
-  </li>
-  <ul class="tag">
-    <li><span class="img folder">arm-cm/</span> &mdash; Native ports for ARM-Cortex-M (bare-metal) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="tag">A</span>
-    </li>
-    <ul class="tag">
-      <li><span class="img folder">qk/</span> &mdash; Port to the @ref srs_qk "preemptive QK kernel"
-      </li>
-      <ul class="tag">
-        <li><span class="img folder">arm</span> &mdash; Port to ARM-KEIL toolset
-        </li>
-        <li><span class="img folder">gnu</span> &mdash; Port to GNU toolset
-        </li>
-        <li><span class="img folder">iar</span> &mdash; Port to IAR toolset
-        </li>
-        <li><span class="img folder">ti</span> &mdash; Port to TI/CCS toolset
-        </li>
-      </ul>
-      <li><span class="img folder">qv/</span> &mdash; Port to the @ref srs_qv "cooperative QV kernel"
-      </li>
-      <ul class="tag">
-        <li><span class="img folder">arm</span> &mdash; Port to ARM-KEIL toolset
-        </li>
-        <li><span class="img folder">gnu</span> &mdash; Port to GNU toolset
-        </li>
-        <li><span class="img folder">iar</span> &mdash; Port to IAR toolset
-        </li>
-        <li><span class="img folder">ti</span> &mdash; Port to TI/CCS toolset
-        </li>
-      </ul>
-      <li><span class="img folder">qxk/</span> &mdash; Port to the @ref srs_qxk "blocing QXK kernel"
-      </li>
-      <ul class="tag">
-        <li><span class="img folder">arm</span> &mdash; Port to ARM-KEIL toolset
-        </li>
-        <li><span class="img folder">gnu</span> &mdash; Port to GNU toolset
-        </li>
-        <li><span class="img folder">iar</span> &mdash; Port to IAR toolset
-        </li>
-      </ul>
-    </ul>
+<br>
+@code{.c}
+qpc/                     // QP/C installation directory
++---ports/               // ports directory
+|   |
+|  [1]--arm-cm/          // ports for ARM Cortex-M
+|   |   +---qk/              // ports for preemptive QK kernel
+|   |   |   +---armclang/    // port with ARM-Clang (Compiler Version 6) toolchain
+|   |   |   +---gnu/         // port with GNU-ARM toolchain
+|   |   |   +---iar/         // port with IAR toolchain
+|   |   +---qv/      // ports for cooperative QV kernel
+|   |   \---qxk/     // ports for dual-mode QXK kernel
+|   |
+|  [2]--freertos/        // ports for FreeRTOS (3rd-party RTOS)
+|   |
+|  [3]--win32/           // port to Win32 (multithreaded)
+|   |   +---Debug/             // Debug build configuration for VC++ toolset
+|   |   +---Release/           // Release build configuration for VC++ toolset
+|   |   +---QSpy/              // Spy build configuration for VC++ toolset
+|   |   +---dbg/               // Debug build configuration for GNU toolset
+|   |   +---rel/               // Release build configuration for GNU toolset
+|   |   \---spy/               // Spy build configuration for GNU toolset
+|   |
+|  [4]--win32-qv/        // port to Win32 (single-threaded)
+|   |
+|  [5]--posix/           // port to POSIX (multithreaded)
+|   |
+|  [6]--posix-qv/        // port to POSIX (single-threaded)
+@endcode
 
-    <li><span class="img folder">uc-os2/</span> &mdash; Port to uc-os2 (3rd-party RTOS) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="tag">B</span>
-    </li>
-    <ul class="tag">
-      <li><span class="img folder">arm-cm</span> &mdash; Port to ARM-Cortex-M
-      </li>
-      <ul class="tag">
-        <li><span class="img folder">arm</span> &mdash; build with ARM toolset
-        </li>
-        <li><span class="img folder">iar</span> &mdash; build with IAR toolset
-        </li>
-      </ul>
-    </ul>
+`[1]`  **Native Ports** are located in sub-directories named after the CPU architecture, such as <span class="img folder">arm-cm</span> for ARM Cortex-M. Under that directory, the sub-directories <span class="img folder">qk</span> and <span class="img folder">qv</span> contain ports for the @ref comp_qk "QK" and @ref comp_qv "QV" kernels, respectively.
 
-    <li><span class="img folder">win32/</span> &mdash; Port to Win32 (Windows) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="tag">C</span>
-    </li>
-    <ul class="tag">
-      <li><span class="img folder">Debug/</span> &mdash; Debug build configuration for VC++ toolset
-      </li>
-      <li><span class="img folder">dbg/</span> &mdash; Debug build configuration for MinGW toolset
-      </li>
-      <li><span class="img folder">Release/</span> &mdash; Release build configuration for VC++ toolset
-      </li>
-      <li><span class="img folder">rel/</span> &mdash; Release build configuration for MinGW toolset
-      </li>
-      <li><span class="img folder">QSpy/</span> &mdash; Spy build configuration for VC++ toolset
-      </li>
-      <li><span class="img folder">spy/</span> &mdash; Spy build configuration for MinGW toolset
-      </li>
-    </ul>
+`[2]`  **Ports for 3rd-party RTOS** are located in sub-directories named after the RTOS, such as <span class="img folder">uc-os2</span> for uc-os2 RTOS. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
 
-    <li><span class="img folder">posix/</span> &mdash; Port to POSIX (e.g., Linux) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="tag">C</span>
-    </li>
-    <ul class="tag">
-      <li><span class="img folder">dbg/</span> &mdash; Debug build configuration for GNU toolset
-      </li>
-      <li><span class="img folder">rel/</span> &mdash; Release build configuration for GNU toolset
-      </li>
-      <li><span class="img folder">spy/</span> &mdash; Spy build configuration for GNU toolset
-      </li>
-    </ul>
-  </ul>
-</ul>
+`[3]`  **Ports for 3rd-party OS** are located in sub-directories named after the OS, such as <span class="img folder">win32</span> for the Win32 API (Windows OS). (NOTE: The builds for desktop operating systems, such as Windows or Linux contain the pre-build QP libraries for the Debug, Release, and Spy build configurations).
 
-<ul class="tag">
-  <li><span class="tag">A</span> **Native Ports** are located in sub-directories named after the CPU architecture, such as <span class="img folder">arm-cm</span> for ARM Cortex-M. Under that directory, the sub-directories <span class="img folder">qk</span> and <span class="img folder">qv</span> contain ports for the @ref comp_qk "QK" and @ref comp_qv "QV" kernels, respectively.
-  </li>
-
-  <li><span class="tag">B</span> **Ports for 3rd-party RTOS** are located in sub-directories named after the RTOS, such as <span class="img folder">uc-os2</span> for uc-os2 RTOS. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
-  </li>
-
-  <li><span class="tag">C</span> **Ports for 3rd-party OS** are located in sub-directories named after the OS, such as <span class="img folder">win32</span> for the Win32 API (Windows OS). (NOTE: The builds for desktop operating systems, such as Windows or Linux contain the pre-build QP libraries for the Debug, Release, and Spy build configurations).
-  </li>
-</ul>
 
 @note
 Because the QP distribution contains *all* ports, the number of sub-directories and files in the <span class="img folder">ports</span> folder may seem daunting. However, knowing the structure of the <span class="img folder">ports</span> folder, you can simply **delete** the sub-directories that are not interesting to you.
@@ -124,46 +64,51 @@ Because the QP distribution contains *all* ports, the number of sub-directories 
 /*##########################################################################*/
 /*! @page ports_lint PC-Lint-Plus
 
-![PC-Lint Plus](logo_pclintplus.jpg)
+@image html  pc-lint-plus.png "PC-Lint Plus"
+@image latex pc-lint-plus.png "PC-Lint Plus" width=2in
 
-The QP/C distribution contains a "port" to <a href="https://www.gimpel.com" target="_blank" class="extern"><b>PC-Lint-Plus</b></a> static analysis tool from <a href="https://www.gimpel.com" target="_blank" class="extern">Gimpel Software (now Vector)</a>, which is a static analysis tool for C and C++ with one of the longest track records and best value of the money in the industry. The "PC-Lint-Plus port" allows you to statically analyze the QP/C source code and facilitates static analysis of your **application code** based on QP/C.
+The QP/C distribution contains a "port" to <a href="https://pclintplus.com" target="_blank" class="extern"><b>PC-Lint-Plus</b></a> static analysis tool from <a href="https://www.vector.com" target="_blank" class="extern">Vector</a>, which is a static analysis tool for C and C++ with one of the longest track records and best value of the money in the industry. The "PC-Lint-Plus port" allows you to statically analyze the QP/C source code and facilitates static analysis of your **application code** based on QP/C.
 
 The QP/C "port" to PC-Lint-Plus is located in the directory <span class="img folder">qpc/ports/lint-plus</span> and includes also lint configuration files, as well as an example of "linting" application code in the directory <span class="img folder">qpc/examples/arm-cm/dpp_ek-tm4c123gxl/lint-plus</span>. The following listing describes the most important files in these three directories.
 
-@code{.x}
- qpc\                  - QP/C installation directory
-  +-ports/           - QP/C ports directory
-  | +-lint-plus/     - QP/C "port" to PC-Lint-Plus
-  | |  +-16bit/      - QP/C++ "port" to 16-bit CPUs
-  | | |  +-cpu.lnt   - Lint options for a 16-bit CPU
-  | | |  +-stdint.h  - Standard exact-width integers for a 16-bit CPU
-  | |  +-32bit/      - QP/C++ "port" to 32-bit CPUs
-  | | |  +-cpu.lnt   - Lint options for a 32-bit CPU
-  | | |  +-stdint.h  - Standard exact-width integers for a 32-bit CPU
-  | | +-qk/          - QP/C port with the QK kernel
-  | | +-qv/          - QP/C port with the QV kernel
-  | | +-qxk/         - QP/C port with the QXK kernel
-  | | +-au-ds.lnt    - Dan Saks recommendations
-  | | +-au-misra3.lnt      - MISRA-C:2012 compliance checks
-  | | +-au-misra3-amd1.lnt - MISRA-C:2012-Amendment-1 additional checks
-  | | +-qpc.lnt      - PC-Lint-Plus options for QP/C applications
-  | | +-std.lnt      - Standard PC-Lint-Plus settings recommended by Quantum Leaps
-  | | +-lin.bat      - Batch file to invoke PC-Lint-Plus to run analysis of QP/C code
-  | | +-options.lnt  - PC/Lint-Plus options for "linting" QP/C source code
-  | | +-lint_qf.log  - PC/Lint-Plus output for the QEP/QF components of QP/C
-  | | +-lint_qs.log  - PC/Lint-Plus output for the QS  component of QP/C
-  | | +-lint_qv.log  - PC/Lint-Plus output for the QV  component of QP/C
-  | | +-lint_qk.log  - PC/Lint-Plus output for the QK  component of QP/C
-  | | +-lint_qxk.log - PC/Lint-Plus output for the QXK component of QP/C
-  | | +-qep_port.h   - QEP component "port" to a "generic C compiler"
-  | | +-stdbool.h    - Standard Boolean type and constants for a "generic C compiler"
-  |
-  +-examples\        - QP/C examples directory (application)
-  | +-arm-cm\        - QP/C examples for ARM Cortex-M
-  | | +-dpp_ek-tm4c123gxl\ - DPP example on the EK-TM4C123GLX board
-  | | | +-lint-plus\ - directory for linting the application
-  | | | | +-lin.bat  - Batch to run PC-Lint-Plus analysis of application code
-  | | | | +-options.lnt - PC-Lint-Plus options for "linting" of application code
+<br>
+@code{.c}
+qpc/                     // QP/C installation directory
++---ports/               // ports directory
+|   +---lint-plus/       // "port" to PC-Lint-Plus
+|   |   +---16bit/       // "port" to 16-bit CPUs
+|   |   |    +-cpu.lnt   // Lint options for a 16-bit CPU
+|   |   |    \-stdint.h  // Standard exact-width integers for a 16-bit CPU
+|   |   +---32bit/       // "port" to 16-bit CPUs
+|   |   |    +-cpu.lnt   // Lint options for a 32-bit CPU
+|   |   |    \-stdint.h  // Standard exact-width integers for a 32-bit CPU
+|   |   +---qk/          // port with the QK kernel
+|   |   +---qv/          // port with the QV kernel
+|   |   +---qxk/         // port with the QXK kernel
+|   |
+|   |       au-ds.lnt    // Dan Saks recommendations
+|   |       au-misra3.lnt    // MISRA-C:2012 compliance checks
+|   |       au-misra3-amd1.lnt // MISRA-C:2012-Amendment-1 additional checks
+|   |       au-misra3-amd2.lnt // MISRA-C:2012-Amendment-2 additional checks
+|   |       qpc.lnt      // PC-Lint-Plus options for applications
+|   |       std.lnt      // Standard PC-Lint-Plus settings recommended by Quantum Leaps
+|   |       lin.bat      // Batch file to invoke PC-Lint-Plus to run analysis of QP/C code
+|   |       options.lnt  // PC/Lint-Plus options for "linting" QP/C source code
+|   |       lint_qf.log  // PC/Lint-Plus output for the QEP/QF components of QP/C
+|   |       lint_qs.log  // PC/Lint-Plus output for the QS  component of QP/C
+|   |       lint_qv.log  // PC/Lint-Plus output for the QV  component of QP/C
+|   |       lint_qk.log  // PC/Lint-Plus output for the QK  component of QP/C
+|   |       lint_qxk.log // PC/Lint-Plus output for the QXK component of QP/C
+|   |       qep_port.h   // QEP component "port" to a "generic C compiler"
+|   |       stdbool.h    // Standard Boolean type and constants for a "generic C compiler"
+|
++---examples/            // examples directory (application)
+|   +---arm-cm/          // examples for ARM Cortex-M
+|   |   +---dpp_ek-tm4c123gxl/ // DPP example on the EK-TM4C123GLX board
+|   |   |   +---lint-plus/  // directory for linting the application
+|   |   |
+|   |   |       lin.bat  // Batch to run PC-Lint-Plus analysis of application code
+|   |   |       options.lnt // PC-Lint-Plus options for "linting" of application code
 @endcode
 
 

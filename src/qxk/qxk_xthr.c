@@ -383,7 +383,7 @@ bool QXThread_post_(
 
         /* is it a dynamic event? */
         if (e->poolId_ != 0U) {
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+            QEvt_refCtr_inc_(e); /* increment the reference counter */
         }
 
         if (status) { /* can post the event? */

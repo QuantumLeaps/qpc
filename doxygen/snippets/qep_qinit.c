@@ -1,4 +1,4 @@
-/* initial pseudostate of the Bomb FSM ....................................*/
+/* initial pseudostate of the Bomb FSM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 QState Bomb_initial(Bomb * const me, QEvt const * const e) {
     Q_REQUIRE(e != (QEvt *)0); /* initialization event expected */
     Bomb_updateState(me, "top-INIT");
@@ -8,7 +8,7 @@ QState Bomb_initial(Bomb * const me, QEvt const * const e) {
     return Q_TRAN(&Bomb_setting); /* <--- initial transition */
 }
 
-/* state handler function for the Calc HSM ................................*/
+/* state handler function for the Calc HSM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..*/
 QState Calc_on(Calc * const me, QEvt const * const e) {
     QState status;
     switch (e->sig) {

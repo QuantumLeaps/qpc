@@ -52,7 +52,7 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION 712U
+#define QP_VERSION 713U
 
 /*! The current QP version as a zero terminated string literal.
 *
@@ -61,10 +61,10 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION_STR "7.1.2"
+#define QP_VERSION_STR "7.1.3"
 
-/*! Encrypted  current QP release (7.1.2) and date (2022-10-07) */
-#define QP_RELEASE 0x7C44FF47U
+/*! Encrypted  current QP release (7.1.3) and date (2022-11-11) */
+#define QP_RELEASE 0x7C3520C6U
 
 /*==========================================================================*/
 /*$declare${glob-types} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
@@ -146,7 +146,7 @@ typedef uint8_t QSignal;
 
 /*${QEP::QSignal} ..........................................................*/
 #if (Q_SIGNAL_SIZE == 4U)
-typedef uint16_t QSignal;
+typedef uint32_t QSignal;
 #endif /*  (Q_SIGNAL_SIZE == 4U) */
 
 /*${QEP::QEvt} .............................................................*/
@@ -314,7 +314,8 @@ enum { QHSM_MAX_NEST_DEPTH_ = 6};
 * implementation strategy.
 */
 enum QReservedSig {
-    Q_ENTRY_SIG = 1, /*!< signal for coding entry actions */
+    Q_EMPTY_SIG,     /*!< signal to execute the default case */
+    Q_ENTRY_SIG,     /*!< signal for coding entry actions */
     Q_EXIT_SIG,      /*!< signal for coding exit actions */
     Q_INIT_SIG,      /*!< signal for coding initial transitions */
     Q_USER_SIG       /*!< offset for the user signals (QP Application) */
@@ -387,7 +388,7 @@ typedef struct {
 * @param[in] state pointer to the state-handler function to be tested
 *
 * @returns
-*'true' if the HSM "is in" the @p state and 'false' otherwise
+*'true' if the HSM "is in" the `state` and 'false' otherwise
 *
 * @tr{RQP103}
 * @tr{RQP120S}
@@ -405,7 +406,9 @@ bool QHsm_isIn(QHsm * const me,
 * @note
 * This function is used in QM for auto-generating code for state history.
 */
-QStateHandler QHsm_state(QHsm * const me);
+static inline QStateHandler QHsm_state(QHsm * const me) {
+    return me->state.fun;
+}
 
 /*! Obtain the current active child state of a given parent in ::QHsm
 * @public @memberof QHsm
@@ -461,7 +464,7 @@ QStateHandler QHsm_childState(QHsm * const me,
 * @tr{RQP103}
 */
 void QHsm_ctor(QHsm * const me,
-    QStateHandler initial);
+    QStateHandler const initial);
 
 /*! The top-state of QHsm.
 * @protected @memberof QHsm
@@ -540,16 +543,42 @@ QStateHandler QHsm_getStateHandler_(QHsm * const me);
 *
 * @param[in,out] path array of pointers to state-handler functions
 *                     to execute the entry actions
-* @param[in]     qs_id QS-id of this state machine (for QS local filter)
+* @param[in] qs_id    QS-id of this state machine (for QS local filter)
 *
 * @returns
-* the depth of the entry path stored in the @p path parameter.
+* the depth of the entry path stored in the `path` parameter.
 *
 * @tr{RQP103}
 * @tr{RQP120E} @tr{RQP120F}
 */
 int_fast8_t QHsm_tran_(QHsm * const me,
-    QStateHandler path[QHSM_MAX_NEST_DEPTH_],
+    QStateHandler * const path,
+    uint_fast8_t const qs_id);
+
+/*! Helper function to execute entry into a given state in a
+* hierarchical state machine (HSM).
+* @private @memberof QHsm
+*
+* @param[in] state   state handler function
+* @param[in] qs_id   QS-id of this state machine (for QS local filter)
+*/
+void QHsm_state_entry_(QHsm * const me,
+    QStateHandler const state,
+    uint_fast8_t const qs_id);
+
+/*! Helper function to execute exit from a given state in a
+* hierarchical state machine (HSM).
+* @private @memberof QHsm
+*
+* @param[in] state   state handler function
+* @param[in] qs_id   QS-id of this state machine (for QS local filter)
+*
+* @returns
+* 'true' if the exit action has been found in the state and
+* 'flase' otherwise.
+*/
+bool QHsm_state_exit_(QHsm * const me,
+    QStateHandler const state,
     uint_fast8_t const qs_id);
 
 /*${QEP::QHsmVtable} .......................................................*/
@@ -618,7 +647,7 @@ typedef struct {
 * @param[in] state pointer to the QMState object that corresponds to the
 *                  tested state.
 * @returns
-* 'true' if the MSM "is in" the @p state and 'false' otherwise
+* 'true' if the MSM "is in" the `state` and 'false' otherwise
 */
 bool QMsm_isInState(QMsm const * const me,
     QMState const * const state);
@@ -687,7 +716,7 @@ QMState const * QMsm_childStateObj(
 * @include qep_qmsm_ctor.c
 */
 void QMsm_ctor(QMsm * const me,
-    QStateHandler initial);
+    QStateHandler const initial);
 
 /* public: */
 
@@ -762,7 +791,7 @@ QStateHandler QMsm_getStateHandler_(QHsm * const me);
 */
 QState QMsm_execTatbl_(
     QHsm * const me,
-    QMTranActTable const * tatbl,
+    QMTranActTable const * const tatbl,
     uint_fast8_t const qs_id);
 
 /*! Exit the current state up to the explicit transition source
@@ -780,8 +809,8 @@ QState QMsm_execTatbl_(
 */
 void QMsm_exitToTranSource_(
     QHsm * const me,
-    QMState const * cs,
-    QMState const * ts,
+    QMState const * const cs,
+    QMState const * const ts,
     uint_fast8_t const qs_id);
 
 /*! Enter history of a composite state

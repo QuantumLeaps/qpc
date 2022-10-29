@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: DPP example, EK-TM4C123GXL board, preemptive QXK kernel
-* Last updated for version 7.1.0
-* Last updated on  2022-08-28
+* Product: DPP example, EK-TM4C123GXL board, dual-mode QXK kernel
+* Last updated for version 7.1.3
+* Last updated on  2022-10-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -56,12 +56,9 @@ void UART0_IRQHandler(void);
 #define BTN_SW1     (1U << 4)
 #define BTN_SW2     (1U << 0)
 
-static uint32_t l_rnd; /* random seed */
+static uint32_t l_rnd;  /* random seed */
 
 #ifdef Q_SPY
-
-    QSTimeCtr QS_tickTime_;
-    QSTimeCtr QS_tickPeriod_;
 
     /* QSpy source IDs */
     static QSpyId const l_SysTick_Handler = { 0U };
@@ -83,32 +80,23 @@ static uint32_t l_rnd; /* random seed */
 
 /*..........................................................................*/
 void SysTick_Handler(void) {
-    /* state of the button debouncing, see below */
-    static struct ButtonsDebouncing {
-        uint32_t depressed;
-        uint32_t previous;
-    } buttons = { 0U, 0U };
-    uint32_t current;
-    uint32_t tmp;
+    QXK_ISR_ENTRY();   /* inform QXK about entering an ISR */
 
-    QXK_ISR_ENTRY();  /* inform QXK about entering an ISR */
-
-#ifdef Q_SPY
-    {
-        tmp = SysTick->CTRL; /* clear SysTick_CTRL_COUNTFLAG */
-        QS_tickTime_ += QS_tickPeriod_; /* account for the clock rollover */
-    }
-#endif
-
-    QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
-    //QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); // post to Ticker0 */
+    /* process time events for clock rate 0 */
+    QTIMEEVT_TICK_X(0U, &l_SysTick_Handler);
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
     * and Michael Barr, page 71.
     */
-    current = ~GPIOF->DATA_Bits[BTN_SW1 | BTN_SW2]; /* read SW1 and SW2 */
-    tmp = buttons.depressed; /* save the debounced depressed buttons */
+    /* state of the button debouncing, see below */
+    static struct ButtonsDebouncing {
+        uint32_t depressed;
+        uint32_t previous;
+    } buttons = { 0U, 0U };
+
+    uint32_t current = ~GPIOF->DATA_Bits[BTN_SW1 | BTN_SW2]; /* read SW1 & SW2 */
+    uint32_t tmp = buttons.depressed; /* save debounced depressed buttons */
     buttons.depressed |= (buttons.previous & current); /* set depressed */
     buttons.depressed &= (buttons.previous | current); /* clear released */
     buttons.previous   = current; /* update the history */
@@ -124,14 +112,12 @@ void SysTick_Handler(void) {
         }
     }
 
-    QXK_ISR_EXIT(); /* inform QXK about exiting an ISR */
+    QXK_ISR_EXIT();   /* inform QXK about exiting an ISR */
 }
 /*..........................................................................*/
 void GPIOPortA_IRQHandler(void) {
     QXK_ISR_ENTRY(); /* inform QXK about entering an ISR */
 
-    //QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */
-    //             &l_GPIOPortA_IRQHandler);
     QACTIVE_PUBLISH(Q_NEW(QEvt, TEST_SIG), /* for testing... */
                &l_GPIOPortA_IRQHandler);
 
@@ -161,12 +147,37 @@ void UART0_IRQHandler(void) {}
 
 /*..........................................................................*/
 void BSP_init(void) {
-    /* NOTE: SystemInit() has been already called from the startup code
+    /* NOTE: SystemInit() already called from the startup code
     *  but SystemCoreClock needs to be updated
     */
     SystemCoreClockUpdate();
 
-    /* NOTE: The VFP (hardware Floating Point) unit is configured by QXK */
+    /* NOTE: The VFP (hardware Floating Point) unit
+    * by choosing one of the options...
+    */
+#if 1
+    /* OPTION 1:
+    * Use the automatic FPU state preservation and the FPU lazy stacking.
+    *
+    * NOTE:
+    * Use the following setting when FPU is used in more than one task or
+    * in any ISRs. This setting is the safest and recommended, but requires
+    * extra stack space and CPU cycles.
+    */
+    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
+#else
+    /* OPTION 2:
+    * Do NOT to use the automatic FPU state preservation and
+    * do NOT to use the FPU lazy stacking.
+    *
+    * NOTE:
+    * Use the following setting when FPU is used in ONE task only and not
+    * in any ISR. This setting is very efficient, but if more than one task
+    * (or ISR) start using the FPU, this can lead to corruption of the
+    * FPU registers. This option should be used with CAUTION.
+    */
+    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
+#endif
 
     /* enable clock for to the peripherals used by this application... */
     SYSCTL->RCGCGPIO |= (1U << 5); /* enable Run mode for GPIOF */
@@ -201,11 +212,7 @@ void BSP_init(void) {
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
-    (void)n; /* unused parameter */
-    GPIOF->DATA_Bits[LED_GREEN] =
-         ((stat[0] == 'e')   /* Is Philo[n] eating? */
-         ? 0xFFU             /* turn the LED1 on  */
-         : 0U);              /* turn the LED1 off */
+    GPIOF->DATA_Bits[LED_GREEN] = ((stat[0] == 'e') ? LED_GREEN : 0U);
 
     QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);  /* Philosopher number */
@@ -214,17 +221,14 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
+    GPIOF->DATA_Bits[LED_BLUE] = ((paused != 0U) ? LED_BLUE : 0U);
+
     if (paused != 0U) {
-        static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
-
-        GPIOF->DATA_Bits[LED_GREEN] = 0xFFU;
-
         /* for testing the extended threads... */
         QXThread_delayCancel(XT_Test2); /* make sure Test2 is not delayed */
+
+        static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
         QACTIVE_POST_X(&XT_Test2->super, &pauseEvt, 1U, (void *)0);
-    }
-    else {
-        GPIOF->DATA_Bits[LED_GREEN] = 0x0U;
     }
 
     QS_BEGIN_ID(PAUSED_STAT, 0U) /* app-specific record */
@@ -233,26 +237,21 @@ void BSP_displayPaused(uint8_t paused) {
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
-    uint32_t rnd = 0x100;
-    QSchedStatus lockStat;
-    QSchedStatus lockStat1;
-
     /* Some flating point code is to exercise the VFP... */
     float volatile x = 3.1415926F;
     x = x + 2.7182818F;
 
-    lockStat = QXK_schedLock(N_PHILO); /* lock scheduler around shared seed */
-
+    /* lock scheduler around shared seed */
+    QSchedStatus lockStat = QXK_schedLock(N_PHILO);
+    QSchedStatus lockStat1 = QXK_schedLock(N_PHILO + 1U); /* nested lock */
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
-    rnd = l_rnd * (3U*7U*11U*13U*23U);
-    lockStat1 = QXK_schedLock(N_PHILO + 1); /* nested lock */
-    l_rnd = rnd; /* set for the next time */
+    l_rnd = l_rnd * (3U*7U*11U*13U*23U);
     QXK_schedUnlock(lockStat1); /* unlock the scheduler */
     QXK_schedUnlock(lockStat); /* unlock the scheduler */
 
-    return (rnd >> 8);
+    return l_rnd >> 8;
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
@@ -304,7 +303,6 @@ void QF_onCleanup(void) {
 #ifdef QXK_ON_CONTEXT_SW
 /* NOTE: the context-switch callback is called with interrupts DISABLED */
 void QXK_onContextSw(QActive *prev, QActive *next) {
-    (void)prev;
     if (next != (QActive *)0) {
         //_impure_ptr = next->thread; /* switch to next TLS */
     }
@@ -316,8 +314,6 @@ void QXK_onContextSw(QActive *prev, QActive *next) {
 #endif /* QXK_ON_CONTEXT_SW */
 /*..........................................................................*/
 void QXK_onIdle(void) {
-    float volatile x;
-
     /* toggle the User LED on and then off, see NOTE2 */
     QF_INT_DISABLE();
     GPIOF->DATA_Bits[LED_BLUE] = 0xFFU;  /* turn the Blue LED on  */
@@ -325,7 +321,7 @@ void QXK_onIdle(void) {
     QF_INT_ENABLE();
 
     /* Some flating point code is to exercise the VFP... */
-    x = 1.73205F;
+    float volatile x = 1.73205F;
     x = x * 1.73205F;
 
 #ifdef Q_SPY
@@ -333,14 +329,14 @@ void QXK_onIdle(void) {
 
     if ((UART0->FR & UART_FR_TXFE) != 0U) {  /* TX done? */
         uint16_t fifo = UART_TXFIFO_DEPTH;   /* max bytes we can accept */
-        uint8_t const *block;
 
         QF_INT_DISABLE();
-        block = QS_getBlock(&fifo);  /* try to get next block to transmit */
+        /* try to get next contiguous block to transmit */
+        uint8_t const *block = QS_getBlock(&fifo);
         QF_INT_ENABLE();
 
-        while (fifo-- != 0) {  /* any bytes in the block? */
-            UART0->DR = *block++;  /* put into the FIFO */
+        while (fifo-- != 0) {     /* any bytes in the block? */
+            UART0->DR = *block++; /* put into the FIFO */
         }
     }
 #elif defined NDEBUG
@@ -417,8 +413,14 @@ uint8_t QS_onStartup(void const *arg) {
     UART0->IFLS |= (0x2U << 2);    /* interrupt on RX FIFO half-full */
     /* NOTE: do not enable the UART0 interrupt yet. Wait till QF_onStartup() */
 
-    QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
-    QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
+    /* configure TIMER5 to produce QS time stamp */
+    SYSCTL->RCGCTIMER |= (1U << 5);  /* enable run mode for Timer5 */
+    TIMER5->CTL  = 0U;               /* disable Timer1 output */
+    TIMER5->CFG  = 0x0U;             /* 32-bit configuration */
+    TIMER5->TAMR = (1U << 4) | 0x02; /* up-counting periodic mode */
+    TIMER5->TAILR= 0xFFFFFFFFU;      /* timer interval */
+    TIMER5->ICR  = 0x1U;             /* TimerA timeout flag bit clears*/
+    TIMER5->CTL |= (1U << 0);        /* enable TimerA module */
 
     return 1U; /* return success */
 }
@@ -427,26 +429,26 @@ void QS_onCleanup(void) {
 }
 /*..........................................................................*/
 QSTimeCtr QS_onGetTime(void) {  /* NOTE: invoked with interrupts DISABLED */
-    if ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0) { /* not set? */
-        return QS_tickTime_ - (QSTimeCtr)SysTick->VAL;
-    }
-    else { /* the rollover occured, but the SysTick_ISR did not run yet */
-        return QS_tickTime_ + QS_tickPeriod_ - (QSTimeCtr)SysTick->VAL;
-    }
+    return TIMER5->TAV;
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t fifo = UART_TXFIFO_DEPTH; /* Tx FIFO depth */
-    uint8_t const *block;
-    while ((block = QS_getBlock(&fifo)) != (uint8_t *)0) {
-        /* busy-wait as long as TX FIFO has data to transmit */
-        while ((UART0->FR & UART_FR_TXFE) == 0) {
-        }
+    while (true) {
+        /* try to get next byte to transmit */
+        QF_INT_DISABLE();
+        uint16_t b = QS_getByte();
+        QF_INT_ENABLE();
 
-        while (fifo-- != 0U) {    /* any bytes in the block? */
-            UART0->DR = *block++; /* put into the TX FIFO */
+        if (b != QS_EOD) { /* NOT end-of-data */
+            /* busy-wait as long as TX FIFO has data to transmit */
+            while ((UART0->FR & UART_FR_TXFE) == 0) {
+            }
+            /* place the byte in the UART DR register */
+            UART0->DR = b;
         }
-        fifo = UART_TXFIFO_DEPTH; /* re-load the Tx FIFO depth */
+        else {
+            break; /* break out of the loop */
+        }
     }
 }
 /*..........................................................................*/
@@ -459,30 +461,18 @@ void QS_onReset(void) {
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    void assert_failed(char const *module, int loc);
-    (void)cmdId;
-    (void)param1;
-    (void)param2;
-    (void)param3;
     QS_BEGIN_ID(COMMAND_STAT, 0U) /* app-specific record */
         QS_U8(2, cmdId);
         QS_U32(8, param1);
         QS_U32(8, param2);
         QS_U32(8, param3);
     QS_END()
-
-    if (cmdId == 10U) {
-        Q_ERROR();
-    }
-    else if (cmdId == 11U) {
-        assert_failed("QS_onCommand", 123);
-    }
 }
 
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 
-/*****************************************************************************
+/*============================================================================
 * NOTE1:
 * The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
 * ISR priority that is disabled by the QF framework. The value is suitable

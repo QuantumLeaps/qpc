@@ -512,7 +512,7 @@ This release brings also the following changes:
 
 - removed "//" (double slash) from all comments for compliance with
   the MISRA-C:2012 required Rule 3.1. (The "//" sequence was used in the URLs, such as
-  "http://...").
+  "http://~~~").
 - converted inclusion guards in header files to uppercase as per coding convention for macros.
 - replaced "vtbl" with "vtable" in QP/C source code
 - changed the type of the last parameter in QHsm_init_() and QHSM_INIT() from "QEvt const *"
@@ -527,7 +527,7 @@ This release brings also the following changes:
 __Bug Fixes:__
 
 - [bug#241 "QUTest produces superfluous Trg-Done QS_RX_EVENT after publish"](https://sourceforge.net/p/qpc/bugs/241).
-- [bug#242 "QUTest fails to process events posted/​published from user commands"](https://sourceforge.net/p/qpc/bugs/242).
+- [bug#242 "QUTest fails to process events posted/published from user commands"](https://sourceforge.net/p/qpc/bugs/242).
 
 Also, this release extends the `Makefiles` in the `qpc\examples\qutest` directory to provide the `debug` target. Specificall, the `qpc\examples\qutest\blinky` example has been extended with projects to `build/debug` this example with Visual C++ (on the host) and with ARM-KEIL on embedded target (EK-TM4C123).
 
@@ -765,7 +765,7 @@ This release fixes two bugs found in the QXK kernel:
 - [bug#186](https://sourceforge.net/p/qpc/bugs/186) "QXK: Extended thread context switch causes assertion in PendSV_Handler"
 
 Additionally, this release includes a fix for the bug found in ARM Cortex-M0 port with the GNU-ARM compiler:
-- [bug#189](https://sourceforge.net/p/qpc/bugs/184) "QS_END() leaves all interrupts disabled w/​ GNU ARM"
+- [bug#189](https://sourceforge.net/p/qpc/bugs/184) "QS_END() leaves all interrupts disabled with GNU-ARM"
 
 This specific problem observed in QSpy turned out to be caused by a bug in the GNU-ARM compiler itself. This problem affected the ARMv6-M architecture (Cortex-M0/M0+/M1) and manifested itself in generation of incorrect code for the QP critical section at certain gcc optimization levels (such as -O). This bug was first discovered and filed as [bug#184](https://sourceforge.net/p/qpc/bugs/184). The bug affected the GNU-ARM ports to all built-in kernels @ref srs_qv "QV", @ref srs_qk "QK", and @ref srs_qxk "QXK".
 
@@ -860,12 +860,12 @@ it can be used only with ::QXThread pointers and not ::QActive pointers.
 
 @note
 The change of QXTHREAD_START() has impact on existing QXK applications,
-because the calls like `QXTHREAD_START(&XT_Test1->super ...)` need to be
-changed to `QXTHREAD_START(XT_Test1 ...)`, where XT_Test1 is a pointer
+because the calls like `QXTHREAD_START(&XT_Test1->super ~~~)` need to be
+changed to `QXTHREAD_START(XT_Test1 ~~~)`, where XT_Test1 is a pointer
 to `::QXThread *`.
 
 This release fixes the following bugs:
-- <a href="https://sourceforge.net/p/qpc/bugs/178/" class="extern">bug#178</a> "GNU-ARM compiler reports "Error: unaligned opcodes..." in startup code for QP/C/C++/nano examples". The bug fix entails modifying the startup code for the GNU-ARM compiler in the `3rd_party` directory. Specifically, the proper alignment directives have been added to the inline assembly in the exception handlers.
+- <a href="https://sourceforge.net/p/qpc/bugs/178/" class="extern">bug#178</a> "GNU-ARM compiler reports "Error: unaligned opcodes~~~" in startup code for QP/C/C++/nano examples". The bug fix entails modifying the startup code for the GNU-ARM compiler in the `3rd_party` directory. Specifically, the proper alignment directives have been added to the inline assembly in the exception handlers.
 - <a href="https://sourceforge.net/p/qpc/bugs/179/" class="extern">bug#179</a> "Assertion ID 210 fires when signaling on a QXK semaphore"
 
 This release fixes the naming problem of the startup code for the
@@ -1944,7 +1944,7 @@ QMActive and QActvie (polymorphism).
     - renamed and re-implemented the QF_tick() function as the
       "extended" QF_tickX() function with the argument 'tickRate' for
       processing time events allocated to different clock rates. The
-      application must call QF_tickX(0), QF_tickX(1), ... at the
+      application must call QF_tickX(0), QF_tickX(1), ~~~ at the
       specified tick rates from ISRs or *tasks*.
     - added an "extended" time event constructor QTimeEvt_ctorX(), which
       assigns a time event to a specific tick rate as well as specific

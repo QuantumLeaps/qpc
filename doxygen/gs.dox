@@ -4,9 +4,10 @@ The following sections describe how to get started with QP&trade;/C quickly:
 - @subpage gs_get
 - @subpage gs_tut
 
-The YouTube Video <a class="extern" target="_blank" href="https://youtu.be/O7ER6_VqIH0"><strong>Getting Started with QP&trade; Frameworks</strong></a> provides instructions on how to download, install and get started with QP quickly.
+The YouTube Video <a class="extern" target="_blank" href="https://youtu.be/O7ER6_VqIH0">Getting Started with QP&trade; Frameworks</a> provides instructions on how to download, install and get started with QP quickly.
 
-[![Video: Getting Started with QP&trade; Real-Time Embedded Framework](gs-video.jpg)](https://youtu.be/O7ER6_VqIH0)
+@image html  gs-video.jpg "Video: Getting Started with QP&trade; Real-Time Embedded Framework"
+@image latex gs-video.jpg "Video: Getting Started with QP&trade; Real-Time Embedded Framework"
 
 @note
 <a href="modules.html" title="QP Cert-Pack"><img src="cert-pack.png" style="float:right; margin:0 20px 20px 0;"></img></a>
@@ -25,7 +26,8 @@ Information about the QP/C functionality, architecture, design, and other aspect
 @section gs_bundle Downloading QP&trade;/C in QP&trade;-Bundle
 The most recommended way of obtaining QP&trade;/C&trade; is by downloading the @webref{#Downloads, <b>QP-bundle&trade;</b>}, which includes QP&trade;/C as well as other QP&trade; frameworks and also the @webref{products/qm, QM&trade; modeling tool} and the @webref{products/qtools, QTools&trade; collection}. The main advantage of obtaining QP&trade;/C bundled together like that is that you get all components, tools and examples ready to go.
 
-[![QP-bundle Downloads](qp-bundle.png)](https://www.state-machine.com/#Downloads)
+@image html  qp-bundle.png "QP-bundle Downloads"
+@image latex qp-bundle.png "QP-bundle Downloads"
 
 @note
 <a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP&trade;/C on GitHub"><img style="float:right; clear:right;" src="img/logo_github.png"></a>
@@ -87,7 +89,7 @@ Keeping this in mind, the provided @ref exa "QP&trade;/C application examples", 
 
 Only after convincing yourself that the example project works "as is", you can think about creating your own projects. At this point, the easiest and recommended way is to copy the existing working example project folder (such as the Blinky example) and rename it.
 
-After copying the project folder, you still need to change the name of the project/workspace. The easiest and safest way to do this is to open the project/workspace in the corresponding IDE and use the Save As... option to save the project under a different name. (You can do this also with the @webref{products/qm, QM model file}, which you can open in QM and "Save As" a different model.)
+After copying the project folder, you still need to change the name of the project/workspace. The easiest and safest way to do this is to open the project/workspace in the corresponding IDE and use the Save As~~~ option to save the project under a different name. (You can do this also with the @webref{products/qm, QM model file}, which you can open in QM and "Save As" a different model.)
 
 @note
 By copying and re-naming an existing, working project, as opposed to creating a new one
@@ -102,7 +104,8 @@ from scratch, you inherit the correct compiler and linker options an other proje
 
 The ultra-simple Blinky example is the embedded systems' equivalent of the venerable <i>"Hello World!"</i> program, that is, the simplest possible working QP&trade; application that does "something". In the case of Blinky, this "something" is blinking an LED at the rate of 1Hz, where an LED turns on and remains on for 0.5 seconds on then turns off and remains off for 0.5 seconds.
 
-![Blinky on EK-TM4C123GLX (TivaC LaunchPad)](blinky_ek-tm4c123gxl.gif)
+@image html  blinky_ek-tm4c123gxl.gif "Blinky on EK-TM4C123GLX (TivaC LaunchPad)"
+@image latex blinky_ek-tm4c123gxl.jpg "Blinky on EK-TM4C123GLX (TivaC LaunchPad)"
 
 @note
 The Blinky example is provided for other supported boards as well, not just TivaC LaunchPad. Please look for examples named <span class="img folder">dpp_<board-name></span> in the @ref exa "qpc/examples/examples" directory (e.g., `qpc/examples/arm-cm/blinky_ek-tm4c123gxl` for the EK-TM4C123GXL board (TivaC LaunchPad)).
@@ -119,9 +122,10 @@ The ultra-simple Blinky application, which  consists of just one active object n
 
 The details of the Blinky application are describe in the Quantum Leaps Application Note @webref{doc/AN_Getting_Started_with_QP.pdf, Getting Started with QP&trade; Real-Time Embedded Frameworks}.
 
-[![Application Note: Getting Started with QP&trade;](AN-getting_started.jpg)](https://www.state-machine.com/doc/AN_Getting_Started_with_QP.pdf)
+@image html  AN-getting_started.jpg "Application Note: Getting Started with QP&trade;"
+@image latex AN-getting_started.jpg "Application Note: Getting Started with QP&trade;"
 
-<div style="clear:both;"></div>
+<br>
 @nav{gs_tut,tut_dpp}
 */
 /*##########################################################################*/
@@ -145,7 +149,8 @@ The DPP example is provided for most supported boards as well as in the command-
 
 The Dining Philosophers Problem (DPP) example is described in the @webref{doc/AN_DPP.pdf, Application Note: Dining Philosophers Problem (DPP) Example}.
 
-[![Application Note: Dining Philosophers Problem (DPP) Example](AN_DPP.jpg)](https://www.state-machine.com/doc/AN_DPP.pdf)
+@image html  AN_DPP.jpg "Application Note: Dining Philosophers Problem (DPP) Example"
+@image latex AN_DPP.jpg "Application Note: Dining Philosophers Problem (DPP) Example"
 
 @note
 There is also a DPP variant that implements the "Philosophers" as passive "Orthogonal Components" of the "Table" active object. That DPP version is located in <span class="img folder">qpc/examples/examples/workstation/dpp-comp/</span>
@@ -171,17 +176,20 @@ The "Fly 'n' shoot" game example is a moderately advanced  application of a vint
 - publish-subscribe event delivery;
 - developing of embedded software on Windows (see also @webref{qtools/qwin.html,QWin&trade; GUI Prototyping Toolkit})
 
-!["Fly 'n' Shoot" game running on Windows](qwin_ani.gif)
+@image html  qwin_ani.gif    "Fly 'n' Shoot game running on Windows"
+@image latex qwin_static.jpg "Fly 'n' Shoot game running on Windows"
 
-The "Fly 'n' Shoot" game example is described in the @webref{doc/AN_Fly-n-Shoot.pdf, Application Note: Fly 'n' Shoot Game Example}.
-
-
-[![Application Note: Fly 'n' Shoot Game Example](AN-game.jpg)](https://www.state-machine.com/doc/AN_Fly-n-Shoot.pdf)
+The "Fly 'n' Shoot" game example is described in the @webref{doc/AN_Fly-n-Shoot.pdf,Application Note: Fly 'n' Shoot Game Example}.
 
 
-[!["Fly'n'Shoot" game tutorial video](game-video.jpg)](https://youtu.be/h_u92uLssDo)
+@image html  AN-game.jpg "Application Note: Fly 'n' Shoot Game Example"
+@image latex AN-game.jpg "Application Note: Fly 'n' Shoot Game Example"
+<br>
 
-<div style="clear:both;"></div>
+@image html  game-video.jpg "Fly'n'Shoot game tutorial video"
+@image latex game-video.jpg "Fly'n'Shoot game tutorial video"
+
+<br>
 @nav{tut_dpp,tut_low}
 */
 /*##########################################################################*/
@@ -201,7 +209,9 @@ interrupt that occurs at a predetermined rate, typically between 10Hz and 1000Hz
 
 While the system clock tick is very useful, it also has the unfortunate side effect of taking the processor out of a low power state as many as 1000 times per second regardless if real work needs to be done or not. This effect can have a significant negative impact on the power efficiency of the system.
 
-![Additional power dissipation caused by the system clock tick](exa_low-power_tick.gif)
+
+@image html  exa_low-power_tick.png "Additional power dissipation caused by the system clock tick"
+@image latex exa_low-power_tick.png "Additional power dissipation caused by the system clock tick"
 
 
 @subsection arm-cm_low_power_tickless The "Tickless Mode"
@@ -349,14 +359,14 @@ The version of this low-power example for the **QXK** kernel uses one active obj
     QXThread XT_Blinky1;
     QXSemaphore XSEM_sw1;
 
-    /*..........................................................................*/
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..*/
     void XBlinky1_ctor(void) {
         QXThread_ctor(&XT_Blinky1,
                       &XBlinky1_run, /* thread routine */
                       1U); /* associate the thread with tick rate-1 */
     }
 
-    /*..........................................................................*/
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..*/
     static void XBlinky1_run(QXThread * const me) {
         bool isActive = false;
 
@@ -425,7 +435,7 @@ The most important functionality in this low-power example is implemented in the
   </dd>
   <dt>1</dt><dd> Interrupts are disabled to access the shared bitmask `l_activeSet`, which stores the information about active clock rates and peripherals. This bitmask is shared between the idle callback and the application-level threads.
   </dd>
-  <dt>2</dt><dd> If the SYSTICK timer is active (source of the tick-0 rate)...
+  <dt>2</dt><dd> If the SYSTICK timer is active (source of the tick-0 rate)~~~
   </dd>
   <dt>3</dt><dd> The `QF_noTimeEvtsActiveX(0)` function is called to check whether no time events are active at the clock rate-0.
 

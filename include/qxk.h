@@ -443,9 +443,9 @@ void QXThread_start_(
 * @details
 * Direct event posting is the simplest asynchronous communication method
 * available in QF. The following example illustrates how the Philo active
-* object posts directly the HUNGRY event to the Table active object.@n
-* @n
-* The parameter @p margin specifies the minimum number of free slots in
+* object posts directly the HUNGRY event to the Table active object.
+* <br>
+* The parameter `margin` specifies the minimum number of free slots in
 * the queue that must be available for posting to succeed. The function
 * returns 1 (success) if the posting succeeded (with the provided margin)
 * and 0 (failure) when the posting fails.
@@ -465,14 +465,14 @@ void QXThread_start_(
 * Should be called only via the macro QXTHREAD_POST_X().
 *
 * @note
-* The #QF_NO_MARGIN value of the @p margin parameter is special and
+* The #QF_NO_MARGIN value of the `margin` parameter is special and
 * denotes situation when the post() operation is assumed to succeed
 * (event delivery guarantee). An assertion fires, when the event cannot
 * be delivered in this case.
 *
 * @note
 * For compatibility with the V-table from the superclass ::QActive, the
-* me-pointer is typed as pointing to QActive. However, the @p me pointer
+* me-pointer is typed as pointing to QActive. However, the `me` pointer
 * here actually points to the QXThread subclass. Therefore the downcast
 * (QXThread *)me is always correct.
 */
@@ -884,9 +884,9 @@ do { \
 * to insufficient margin of free slots available in the queue.
 *
 * @note
-* The @p sender_ parameter is actually only used when QS tracing is enabled
+* The `sender_` parameter is actually only used when QS tracing is enabled
 * (macro #Q_SPY is defined). When QS software tracing is disabled, the
-* QXTHREAD_POST_X() macro does not pass the @p sender_ argument, so the
+* QXTHREAD_POST_X() macro does not pass the `sender_` parameter, so the
 * overhead of passing this extra argument is entirely avoided.
 *
 * @note

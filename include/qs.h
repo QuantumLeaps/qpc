@@ -114,6 +114,7 @@ typedef uint_fast16_t QSCtr;
 
 /*${QS::QSpyPre} ...........................................................*/
 /*! QS pre-defined record types (TX channel)
+* @static @public @memberof QS_tx
 *
 * @details
 * This enumeration specifies the record types used in the QP components.
@@ -248,7 +249,9 @@ enum QSpyPre {
 };
 
 /*${QS::QSpyGroups} ........................................................*/
-/*! QS record groups for QS_GLB_FILTER() */
+/*! QS record groups for QS_GLB_FILTER()
+* @static @public @memberof QS_tx
+*/
 enum QSpyGroups {
     QS_ALL_RECORDS = 0xF0,/*!< all maskable QS records */
     QS_SM_RECORDS,        /*!< State Machine QS records */
@@ -269,7 +272,9 @@ enum QSpyGroups {
 };
 
 /*${QS::QSpyUserOffsets} ...................................................*/
-/*! QS user record group offsets for QS_GLB_FILTER() */
+/*! QS user record group offsets for QS_GLB_FILTER()
+* @static @public @memberof QS_tx
+*/
 enum QSpyUserOffsets {
     QS_USER  = 100,   /*!< the first record available to QS users */
     QS_USER0 = (enum_t)QS_USER,      /*!< offset for User Group 0 */
@@ -280,7 +285,9 @@ enum QSpyUserOffsets {
 };
 
 /*${QS::QSpyIdOffsets} .....................................................*/
-/*! QS ID offsets for QS_LOC_FILTER() */
+/*! QS ID offsets for QS_LOC_FILTER()
+* @static @public @memberof QS_tx
+*/
 enum QSpyIdOffsets {
     QS_AO_ID = 0,  /*!< offset for AO priorities */
     QS_EP_ID = 64, /*!< offset for event-pool IDs */
@@ -289,7 +296,9 @@ enum QSpyIdOffsets {
 };
 
 /*${QS::QSpyIdGroups} ......................................................*/
-/*! QS ID groups for QS_LOC_FILTER() */
+/*! QS ID groups for QS_LOC_FILTER()
+* @static @public @memberof QS_tx
+*/
 enum QSpyIdGroups {
     QS_ALL_IDS = 0xF0,                      /*!< all QS IDs */
     QS_AO_IDS  = (0x80 + (enum_t)QS_AO_ID), /*!< AO IDs (priorities) */
@@ -299,17 +308,22 @@ enum QSpyIdGroups {
 };
 
 /*${QS::QSpyFunPtr} ........................................................*/
-/*! function pointer type for QS_fun_dict_pre_() */
+/*! function pointer type for QS_fun_dict_pre_()
+* @static @private @memberof QS_tx
+*/
 typedef void (* QSpyFunPtr )(void);
 
 /*${QS::QS_EOD} ............................................................*/
 /*! Constant representing End-Of-Data condition returned from the
 * QS_getByte() function.
+* @static @public @memberof QS_tx
 */
 #define QS_EOD ((uint16_t)0xFFFFU)
 
 /*${QS::QSpyId} ............................................................*/
-/*! @brief QS ID type for applying local filtering */
+/*! @brief QS ID type for applying local filtering
+* @static @public @memberof QS_tx
+*/
 typedef struct { uint8_t prio; } QSpyId;
 
 /*${QS::QS-tx::tx} .........................................................*/
@@ -387,15 +401,19 @@ extern QS_tx QS_priv_;
 
 /*${QS::QS-tx::initBuf} ....................................................*/
 /*! Initialize the QS-TX data buffer
+* @static @public @memberof QS_tx
 *
 * @details
 * This function should be called from QS_onStartup() to provide
-* QS with the data buffer. The first argument `sto[]` is the address
+* QS with the data buffer. The first argument `sto` is the address
 * of the memory block, and the second argument `stoSize` is the size
 * of this block [in bytes]. Currently the size of the QS buffer cannot
 * exceed 64KB.
 *
-* @note
+* @param[in] sto     pointer to the storage for the transmit buffer
+* @param[in] stoSize size in [bytes] of the storage buffer
+*
+* @remark
 * QS can work with quite small data buffers, but you will start losing
 * data if the buffer is too small for the bursts of tracing activity.
 * The right size of the buffer depends on the data production rate and
@@ -415,6 +433,7 @@ void QS_initBuf(
 
 /*${QS::QS-tx::getByte} ....................................................*/
 /*! Byte-oriented interface to the QS-TX data buffer
+* @static @public @memberof QS_tx
 *
 * @details
 * This function delivers one byte at a time from the QS data buffer.
@@ -431,6 +450,7 @@ uint16_t QS_getByte(void);
 
 /*${QS::QS-tx::getBlock} ...................................................*/
 /*! Block-oriented interface to the QS-TX data buffer
+* @static @public @memberof QS_tx
 *
 * @details
 * This function delivers a contiguous block of data from the QS data
@@ -440,6 +460,11 @@ uint16_t QS_getByte(void);
 * input to provide the maximum size of the data block that the caller
 * can accept.
 *
+* @param[in,out] pNbytes  pointer to the number of bytes to send.
+*                On input, `pNbytes` specifies the maximum number
+*                of bytes that the function can provide.
+*                On output, `pNbytes` contains the actual number
+*                of bytes available.
 * @returns
 * if data is available, the function returns pointer to the
 * contiguous block of data and sets the value pointed to by `pNbytes`
@@ -459,8 +484,9 @@ uint16_t QS_getByte(void);
 uint8_t const * QS_getBlock(uint16_t * const pNbytes);
 
 /*${QS::QS-tx::glbFilter_} .................................................*/
-/*! Set/clear the global Filter for a given QS record
-*  or a group of records
+/*! Set/clear the global Filter for a given QS record or a group
+* of records
+* @static @public @memberof QS_tx
 *
 * @details
 * This function sets up the QS filter to enable record types specified
@@ -484,6 +510,7 @@ void QS_glbFilter_(int_fast16_t const filter);
 /*${QS::QS-tx::locFilter_} .................................................*/
 /*! Set/clear the local Filter for a given object-id
 *  or a group of object-ids
+* @static @public @memberof QS_tx
 *
 * @details
 * This function sets up the local QS filter to enable or disable the
@@ -505,11 +532,14 @@ void QS_glbFilter_(int_fast16_t const filter);
 void QS_locFilter_(int_fast16_t const filter);
 
 /*${QS::QS-tx::doOutput} ...................................................*/
-/*! Perform the QS-TX output (implemented in some QS ports) */
+/*! Perform the QS-TX output (implemented in some QS ports)
+* @static @public @memberof QS_tx
+*/
 void QS_doOutput(void);
 
 /*${QS::QS-tx::beginRec_} ..................................................*/
 /*! Mark the begin of a QS record `rec`
+* @static @private @memberof QS_tx
 *
 * @details
 * This function must be called at the beginning of each QS record.
@@ -521,6 +551,7 @@ void QS_beginRec_(uint_fast8_t const rec);
 
 /*${QS::QS-tx::endRec_} ....................................................*/
 /*! Mark the end of a QS record `rec`
+* @static @private @memberof QS_tx
 *
 * @details
 * This function must be called at the end of each QS record.
@@ -531,25 +562,34 @@ void QS_beginRec_(uint_fast8_t const rec);
 void QS_endRec_(void);
 
 /*${QS::QS-tx::u8_raw_} ....................................................*/
-/*! output uint8_t data element without format information */
+/*! output uint8_t data element without format information
+* @static @private @memberof QS_tx
+*/
 void QS_u8_raw_(uint8_t const d);
 
 /*${QS::QS-tx::2u8_raw_} ...................................................*/
-/*! output two uint8_t data elements without format information */
+/*! output two uint8_t data elements without format information
+* @static @private @memberof QS_tx
+*/
 void QS_2u8_raw_(
     uint8_t const d1,
     uint8_t const d2);
 
 /*${QS::QS-tx::u16_raw_} ...................................................*/
-/*! output uint16_t data element without format information */
-void QS_u16_raw_(uint16_t d);
+/*! output uint16_t data element without format information
+* @static @private @memberof QS_tx
+*/
+void QS_u16_raw_(uint16_t const d);
 
 /*${QS::QS-tx::u32_raw_} ...................................................*/
-/*! output uint32_t data element without format information */
-void QS_u32_raw_(uint32_t d);
+/*! output uint32_t data element without format information
+* @static @private @memberof QS_tx
+*/
+void QS_u32_raw_(uint32_t const d);
 
 /*${QS::QS-tx::obj_raw_} ...................................................*/
 /*! Output obj pointer data element without format information
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macros, never in the
 * client code directly.
@@ -558,14 +598,16 @@ void QS_obj_raw_(void const * const obj);
 
 /*${QS::QS-tx::str_raw_} ...................................................*/
 /*! Output raw zero-terminated string element (without format information)
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
-void QS_str_raw_(char const * str);
+void QS_str_raw_(char const * const str);
 
 /*${QS::QS-tx::u8_fmt_} ....................................................*/
 /*! Output uint8_t data element with format information
+* @static @private @memberof QS_tx
 *
 * @details
 * @note This function is only to be used through macros, never in the
@@ -577,37 +619,44 @@ void QS_u8_fmt_(
 
 /*${QS::QS-tx::u16_fmt_} ...................................................*/
 /*! output uint16_t data element with format information
+* @static @private @memberof QS_tx
 *
 * @details
 * This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_u16_fmt_(
-    uint8_t format,
-    uint16_t d);
+    uint8_t const format,
+    uint16_t const d);
 
 /*${QS::QS-tx::u32_fmt_} ...................................................*/
 /*! Output uint32_t data element with format information
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macros, never in the
 * client code directly.
 */
 void QS_u32_fmt_(
-    uint8_t format,
-    uint32_t d);
+    uint8_t const format,
+    uint32_t const d);
 
 /*${QS::QS-tx::str_fmt_} ...................................................*/
-/*! Output formatted zero-terminated ASCII string to the QS record */
-void QS_str_fmt_(char const * str);
+/*! Output formatted zero-terminated ASCII string to the QS record
+* @static @private @memberof QS_tx
+*/
+void QS_str_fmt_(char const * const str);
 
 /*${QS::QS-tx::mem_fmt_} ...................................................*/
-/*! Output formatted memory block of up to 255 bytes to the QS record */
+/*! Output formatted memory block of up to 255 bytes to the QS record
+* @static @private @memberof QS_tx
+*/
 void QS_mem_fmt_(
-    uint8_t const * blk,
-    uint8_t size);
+    uint8_t const * const blk,
+    uint8_t const size);
 
 /*${QS::QS-tx::sig_dict_pre_} ..............................................*/
 /*! Output predefined signal-dictionary record
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macro QS_SIG_DICTIONARY()
 */
@@ -618,6 +667,7 @@ void QS_sig_dict_pre_(
 
 /*${QS::QS-tx::obj_dict_pre_} ..............................................*/
 /*! Output predefined object-dictionary record
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macro QS_OBJ_DICTIONARY()
 */
@@ -627,6 +677,7 @@ void QS_obj_dict_pre_(
 
 /*${QS::QS-tx::obj_arr_dict_pre_} ..........................................*/
 /*! Output predefined object-array dictionary record
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macro QS_OBJ_ARR_DICTIONARY()
 */
@@ -637,15 +688,17 @@ void QS_obj_arr_dict_pre_(
 
 /*${QS::QS-tx::fun_dict_pre_} ..............................................*/
 /*! Output predefined function-dictionary record
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macro QS_FUN_DICTIONARY()
 */
 void QS_fun_dict_pre_(
-    QSpyFunPtr fun,
+    QSpyFunPtr const fun,
     char const * const name);
 
 /*${QS::QS-tx::usr_dict_pre_} ..............................................*/
 /*! Output predefined user-dictionary record
+* @static @private @memberof QS_tx
 *
 * @note This function is only to be used through macro QS_USR_DICTIONARY()
 */
@@ -655,6 +708,7 @@ void QS_usr_dict_pre_(
 
 /*${QS::QS-tx::ASSERTION} ..................................................*/
 /*! Output the predefined assertion failure trace record
+* @static @public @memberof QS_tx
 *
 * @details
 * This trace record is intended to use from the Q_onAssert() callback.
@@ -665,28 +719,44 @@ void QS_ASSERTION(
     uint32_t const delay);
 
 /*${QS::QS-tx::target_info_pre_} ...........................................*/
-/*! Helper function to output the predefined Target-info trace record. */
+/*! Helper function to output the predefined Target-info trace record
+* @static @private @memberof QS_tx
+*/
 void QS_target_info_pre_(uint8_t const isReset);
 
 /*${QS::QS-tx::onStartup} ..................................................*/
-/*! Callback to startup the QS facility */
+/*! Callback to startup the QS facility
+* @static @public @memberof QS_tx
+*/
 uint8_t QS_onStartup(void const * arg);
 
 /*${QS::QS-tx::onCleanup} ..................................................*/
+/*! Callback to cleanup the QS facility
+* @static @public @memberof QS_tx
+*/
 void QS_onCleanup(void);
 
 /*${QS::QS-tx::onFlush} ....................................................*/
+/*! Callback to flush the QS trace data to the host
+* @static @public @memberof QS_tx
+*/
 void QS_onFlush(void);
 
 /*${QS::QS-tx::onGetTime} ..................................................*/
+/*! Callback to obtain a timestamp for a QS record
+* @static @public @memberof QS_tx
+*/
 QSTimeCtr QS_onGetTime(void);
 
 /*${QS::QS-tx-64bit::u64_raw_} .............................................*/
-/*! Output uint64_t data element without format information */
+/*! Output uint64_t data element without format information
+* @static @private @memberof QS_tx
+*/
 void QS_u64_raw_(uint64_t d);
 
 /*${QS::QS-tx-64bit::u64_fmt_} .............................................*/
 /*! Output uint64_t data element with format information
+* @static @private @memberof QS_tx
 *
 * @sa QS_U64(), QS_I64()
 */
@@ -696,21 +766,23 @@ void QS_u64_fmt_(
 
 /*${QS::QS-tx-fp::f32_fmt_} ................................................*/
 /*! Output 32-bit floating point data element with format information
+* @static @private @memberof QS_tx
 *
 * @sa QS_F32()
 */
 void QS_f32_fmt_(
-    uint8_t format,
-    float32_t d);
+    uint8_t const format,
+    float32_t const d);
 
 /*${QS::QS-tx-fp::f64_fmt_} ................................................*/
 /*! Output 64-bit floating point data element with format information
+* @static @private @memberof QS_tx
 *
 * @sa QS_F64()
 */
 void QS_f64_fmt_(
-    uint8_t format,
-    float64_t d);
+    uint8_t const format,
+    float64_t const d);
 
 /*${QS::QS-rx::rx} .........................................................*/
 /*! @brief QS software tracing parameters for QS input (QS-RX) */
@@ -727,11 +799,15 @@ typedef struct {
 } QS_rx;
 
 /*${QS::QS-rx::rxPriv_} ....................................................*/
-/*! the only instance of the QS-RX object (Singleton) */
+/*! the only instance of the QS-RX object (Singleton)
+* @static @private @memberof QS_rx
+*/
 extern QS_rx QS_rxPriv_;
 
 /*${QS::QS-rx::QSpyObjKind} ................................................*/
-/*! Kinds of objects used in QS_setCurrObj() and QS_queryCurrObj() */
+/*! Kinds of objects used in QS_setCurrObj() and QS_queryCurrObj()
+* @static @public @memberof QS_rx
+*/
 enum QS_QSpyObjKind {
     SM_OBJ,    /*!< state machine object */
     AO_OBJ,    /*!< active object */
@@ -743,21 +819,24 @@ enum QS_QSpyObjKind {
 };
 
 /*${QS::QS-rx::OSpyObjCombnation} ..........................................*/
-/*! Object combinations for QS_setCurrObj() and QS_queryCurrObj() */
+/*! Object combinations for QS_setCurrObj() and QS_queryCurrObj()
+* @static @public @memberof QS_rx
+*/
 enum QS_OSpyObjCombnation {
     SM_AO_OBJ = (enum_t)MAX_OBJ /*!< combination of SM and AO */
 };
 
 /*${QS::QS-rx::rxInitBuf} ..................................................*/
 /*! Initialize the QS-RX data buffer
+* @static @public @memberof QS_rx
 *
 * @details
 * This function should be called from QS::onStartup() to provide QS-RX
 * with the receive data buffer.
 *
-* @param[in]  sto[]   the address of the memory block
+* @param[in]  sto     pointer to the memory block for input buffer
 * @param[in]  stoSize the size of this block [bytes]. The size of the
-*                     QS RX buffer cannot exceed 64KB.
+*                     QS-RX buffer cannot exceed 64KB.
 *
 * @note
 * QS-RX can work with quite small data buffers, but you will start
@@ -778,7 +857,9 @@ void QS_rxInitBuf(
     uint16_t const stoSize);
 
 /*${QS::QS-rx::rxPut} ......................................................*/
-/*! Put one byte into the QS-RX lock-free buffer */
+/*! Put one byte into the QS-RX lock-free buffer
+* @static @public @memberof QS_rx
+*/
 static inline bool QS_rxPut(uint8_t const b) {
     QSCtr head = QS_rxPriv_.head + 1U;
     if (head == QS_rxPriv_.end) {
@@ -796,6 +877,7 @@ static inline bool QS_rxPut(uint8_t const b) {
 
 /*${QS::QS-rx::rxGetNfree} .................................................*/
 /*! Obtain the number of free bytes in the QS-RX data buffer
+* @static @public @memberof QS_rx
 *
 * @details
 * This function is intended to be called from the ISR that reads the
@@ -808,42 +890,54 @@ static inline bool QS_rxPut(uint8_t const b) {
 uint16_t QS_rxGetNfree(void);
 
 /*${QS::QS-rx::doInput} ....................................................*/
-/*! Perform the QS-RX input (implemented in some QS ports) */
+/*! Perform the QS-RX input (implemented in some QS ports)
+* @static @public @memberof QS_rx
+*/
 void QS_doInput(void);
 
 /*${QS::QS-rx::setCurrObj} .................................................*/
 /*! Set the "current object" in the Target
+* @static @public @memberof QS_rx
 *
 * @details
 * This function sets the "current object" in the Target.
 */
 void QS_setCurrObj(
-    uint8_t obj_kind,
-    void * obj_ptr);
+    uint8_t const obj_kind,
+    void * const obj_ptr);
 
 /*${QS::QS-rx::queryCurrObj} ...............................................*/
 /*! Query the "current object" in the Target
+* @static @public @memberof QS_rx
 *
 * @details
 * This function programmatically generates the response to the query for
 * a "current object".
 */
-void QS_queryCurrObj(uint8_t obj_kind);
+void QS_queryCurrObj(uint8_t const obj_kind);
 
 /*${QS::QS-rx::rxParse} ....................................................*/
-/*! Parse all bytes present in the QS-RX data buffer */
+/*! Parse all bytes present in the QS-RX data buffer
+* @static @public @memberof QS_rx
+*/
 void QS_rxParse(void);
 
 /*${QS::QS-rx::rxHandleGoodFrame_} .........................................*/
-/*! internal function to handle incoming (QS-RX) packet */
+/*! internal function to handle incoming (QS-RX) packet
+* @static @private @memberof QS_rx
+*/
 void QS_rxHandleGoodFrame_(uint8_t const state);
 
 /*${QS::QS-rx::onReset} ....................................................*/
-/*! callback function to reset the Target (to be implemented in the BSP) */
+/*! callback function to reset the Target (to be implemented in the BSP)
+* @static @public @memberof QS_rx
+*/
 void QS_onReset(void);
 
 /*${QS::QS-rx::onCommand} ..................................................*/
-/*! Callback function to execute user commands (to be implemented in BSP) */
+/*! Callback function to execute user commands (to be implemented in BSP)
+* @static @public @memberof QS_rx
+*/
 void QS_onCommand(
     uint8_t cmdId,
     uint32_t param1,
@@ -851,7 +945,9 @@ void QS_onCommand(
     uint32_t param3);
 
 /*${QS::QS-rx::RX_PUT} .....................................................*/
-/*! Put one byte into the QS RX lock-free buffer */
+/*! Put one byte into the QS RX lock-free buffer
+* @static @public @memberof QS_rx
+*/
 bool QS_RX_PUT(uint8_t const b);
 /*$enddecl${QS} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
@@ -1375,7 +1471,7 @@ void QS_test_pause_(void);
 
 /*${QUTest::QS::getTestProbe_} .............................................*/
 /*! get the test probe data for the given API */
-uint32_t QS_getTestProbe_(QSpyFunPtr api);
+uint32_t QS_getTestProbe_(QSpyFunPtr const api);
 
 /*${QUTest::QS::onTestSetup} ...............................................*/
 /*! callback to setup a unit test inside the Target */

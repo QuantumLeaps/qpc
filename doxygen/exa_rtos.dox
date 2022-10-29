@@ -341,22 +341,62 @@ The QP/C examples for Zephyr are as follows:
 /*##########################################################################*/
 /*! @page zephyr_blinky Blinky
 
-Blinks an on-board LED once per second.
+The "Blinky" example blinks an on-board LED once per second. The blinking is done by an Active Object (Blinky) with a state machine. The example directory contains the following files:
 
-The blinking is done by an Active Object (Blinky) with a state machine.
+@verbatim
+<qpc>/examples/zephyr/blinky
+ |
+ +-src/                - project sources
+ | |
+ | +-bsp.h
+ | +-bsp.c
+ | +-blinky.h
+ | +-blinky.c
+ | +-main.c
+ |
+ +-CMakeLists.txt       - project files
+ +-prj.conf             - project config
+ +-README.md
+@endverbatim
+
 
 @section zephyr_blinky-build Building and Running
 
 - Linux:
-Open a terminal in the blinky directory.
 
 @verbatim
-source ~/zephyrproject/zephyr/zephyr-env.sh
+[1] cd <qpc>/examples/zephyr/blinky
 
-west build -b <board>
+[2] source ~/zephyrproject/zephyr/zephyr-env.sh
 
-west flush
+[3]  west build -b <board>
+[3a] west build -b nucleo_h743zi
+[3b] west build -b nucleo_l053r8
+~~~
+
+[4] west flush
 @endverbatim
+
+`[1]` Open a terminal in the Blinky example directory.<br>
+`[2]` If Zephyr project is not in your path, you might need to source the `zephyr-env.sh` shell script.<br>
+`[3]` build the example project, where `<board>` is any of the boards supported by Zepyr. The example has been tested with the following boards:<br>
+`[3a]` nucleo_h743zi (ARM Cortex-M7)<br>
+`[3b]` nucleo_l053r8 (ARM Cortex-M0+)<br>
+`[4]` flash the board
+
+@remark
+The example has been tested with the following boards:
+
+![STM32-NUCLEO-L053R8 board](bd_NUCLEO-L053R8.jpg)
+
+<br>
+
+![STM32-NUCLEO-H743ZI board](bd_NUCLEO-H743ZI.jpg)
+
+
+@note
+The example should also work with most boards supported by Zephyr.
+
 
 @section zephyr_blinky-output Sample Output
 Once flashed to the board, the application also produces ASCII output to the serial terminal (if supported by the board):
@@ -371,17 +411,6 @@ BSP_ledOn
 BSP_ledOff
 @endverbatim
 
-@note
-The example has been tested with the following boards:
-
-![STM32-NUCLEO-L053R8 board](bd_NUCLEO-L053R8.jpg)
-<br>
-
-![STM32-NUCLEO-H743ZI board](bd_NUCLEO-H743ZI.jpg)
-
-@note
-The example should also work with most boards supported by Zephyr.
-
 @section zephyr_blinky-limits Limitations
 The simple Blinky example does not support the QS software tracing.
 
@@ -392,18 +421,60 @@ The simple Blinky example does not support the QS software tracing.
 
 DPP example with multiple active objects.
 
+@verbatim
+<qpc>/examples/zephyr/dpp
+ |
+ +-src/                - project sources
+ | |
+ | +-bsp.h
+ | +-bsp.c
+ | +-dpp.h
+ | +-philo.c
+ | +-table.c
+ | +-main.c
+ |
+ +-CMakeLists.txt       - project files
+ +-prj.conf             - project config
+ +-README.md
+@endverbatim
+
 @section zephyr_dpp-build Building and Running
 
 - Linux:
-Open a terminal in the dpp directory.
 
 @verbatim
-source ~/zephyrproject/zephyr/zephyr-env.sh
+[1] cd <qpc>/examples/zephyr/dpp
 
-west build -b <board>
+[2] source ~/zephyrproject/zephyr/zephyr-env.sh
 
-west flush
+[3]  west build -b <board>
+[3a] west build -b nucleo_h743zi
+[3b] west build -b nucleo_l053r8
+~~~
+
+[4] west flush
 @endverbatim
+
+`[1]` Open a terminal in the DPP example directory.<br>
+`[2]` If Zephyr project is not in your path, you might need to source the `zephyr-env.sh` shell script.<br>
+`[3]` build the example project, where `<board>` is any of the boards supported by Zepyr. The example has been tested with the following boards:<br>
+`[3a]` nucleo_h743zi (ARM Cortex-M7)<br>
+`[3b]` nucleo_l053r8 (ARM Cortex-M0+)<br>
+`[4]` flash the board
+
+@remark
+The example has been tested with the following boards:
+
+![STM32-NUCLEO-L053R8 board](bd_NUCLEO-L053R8.jpg)
+
+<br>
+
+![STM32-NUCLEO-H743ZI board](bd_NUCLEO-H743ZI.jpg)
+
+
+@note
+The example should also work with most boards supported by Zephyr.
+
 
 @section zephyr_dpp-output Sample Output
 Once flashed to the board, the application also produces ASCII output to the serial terminal (if supported by the board):
@@ -433,20 +504,118 @@ Philo[2]->eating
 Philo[0]->thinking
 @endverbatim
 
+
+@section zephyr_dpp-qpspy Using the QP/SPY Software Tracing
+The @ref zephyr "QP/C Zephyr port" supports the
+[QSPY Software Tracing](https://www.state-machine.com/qtools/qpspy.html)
+option and will add the appropriate macros and files to build the "QSPY"
+configuration.
+
+If you wish to enable "QSPY" you can provide the option "QSPY"
+in the command-line for the build. For example:
+
+@verbatim
+west build -b nucleo_h743zi -- -DQSPY=ON
+@endverbatim
+
 @note
-The example has been tested with the following boards:
+The QP/Spy software tracing uses the Zephyr's console UART. This means that the Zephyr `printk()` facility cannot be used while QP/Spy is configured.
 
-![STM32-NUCLEO-L053R8 board](bd_NUCLEO-L053R8.jpg)
-<br>
 
-![STM32-NUCLEO-H743ZI board](bd_NUCLEO-H743ZI.jpg)
+If yo have built the example with QP/Spy, you might want to watch the QP/Spy output.
+
+
+@section zephyr_dpp-qspy The QSPY Host Utility
+To receive the QP/Spy software tracing output you need to run a special [qspy host application](https://www.state-machine.com/qtools/qspy.html).
 
 @note
-The example should also work with most boards supported by Zephyr.
+You might need to build the `qspy` host utility on your Linux machine. The QSPY utility is available in
+[QTools collection](https://github.com/QuantumLeaps/qtools/tree/master/qspy).
 
-@section zephyr_dpp-limits Limitations
-The DPP example currently does not support the QS software tracing,
-because implementation of the QS output over UART is board dependent. However, for a specific board, re-implementing the QS callbacks should be straightforward.
+
+To launch the `qspy` host utility, open a separate terminal and run
+@verbatim
+qspy -c <serial-port>
+```
+specific example:
+```
+qspy -c /dev/ttyACM0
+@endverbatim
+
+
+@subsection @section zephyr_dpp-qs-output QSPY Output Example
+After resetting the board, you should see output similar to the following:
+@verbatim
+########## Trg-RST  QP-Ver=701,Build=220810_150847
+           Obj-Dict 0x20003154->QS_RX
+           Obj-Dict 0x20000680->AO_Table
+           Obj-Dict 0x20000180->AO_Philo[0]
+           Obj-Dict 0x20000280->AO_Philo[1]
+           Obj-Dict 0x20000380->AO_Philo[2]
+           Obj-Dict 0x20000480->AO_Philo[3]
+           Obj-Dict 0x20000580->AO_Philo[4]
+           Obj-Dict 0x0000A52C->timerID
+           Usr-Dict 00000100->PHILO_STAT
+           Usr-Dict 00000101->PAUSED_STAT
+           Usr-Dict 00000102->COMMAND_STAT
+           Usr-Dict 00000103->CONTEXT_SW
+           Obj-Dict 0x20003054->EvtPool1
+           Obj-Dict 0x20000180->Philo_inst[0]
+           Obj-Dict 0x2000026C->Philo_inst[0].m_timeEvt
+           Obj-Dict 0x20000280->Philo_inst[1]
+           Obj-Dict 0x2000036C->Philo_inst[1].m_timeEvt
+           Obj-Dict 0x20000380->Philo_inst[2]
+           Obj-Dict 0x2000046C->Philo_inst[2].m_timeEvt
+           Obj-Dict 0x20000480->Philo_inst[3]
+           Obj-Dict 0x2000056C->Philo_inst[3].m_timeEvt
+           Obj-Dict 0x20000580->Philo_inst[4]
+           Obj-Dict 0x2000066C->Philo_inst[4].m_timeEvt
+           Fun-Dict 0x00008929->Philo_initial
+           Fun-Dict 0x0000890F->Philo_thinking
+           Fun-Dict 0x00008917->Philo_hungry
+           Fun-Dict 0x0000891F->Philo_eating
+           Sig-Dict 00000004,Obj=0x00000000->TIMEOUT_SIG
+0000000327 AO-Subsc Obj=Philo_inst[0],Sig=00000005,Obj=0x20000180
+0000000327 AO-Subsc Obj=Philo_inst[0],Sig=00000009,Obj=0x20000180
+===RTC===> St-Init  Obj=Philo_inst[0],State=0x00009B1B->Philo_thinking
+===RTC===> St-Entry Obj=Philo_inst[0],State=Philo_thinking
+0000000328 Init===> Obj=Philo_inst[0],State=Philo_thinking
+0000000334 AO-Subsc Obj=Philo_inst[1],Sig=00000005,Obj=0x20000280
+0000000334 AO-Subsc Obj=Philo_inst[1],Sig=00000009,Obj=0x20000280
+===RTC===> St-Init  Obj=Philo_inst[1],State=0x00009B1B->Philo_thinking
+===RTC===> St-Entry Obj=Philo_inst[1],State=Philo_thinking
+0000000334 Init===> Obj=Philo_inst[1],State=Philo_thinking
+0000000340 AO-Subsc Obj=Philo_inst[2],Sig=00000005,Obj=0x20000380
+0000000340 AO-Subsc Obj=Philo_inst[2],Sig=00000009,Obj=0x20000380
+===RTC===> St-Init  Obj=Philo_inst[2],State=0x00009B1B->Philo_thinking
+===RTC===> St-Entry Obj=Philo_inst[2],State=Philo_thinking
+0000000340 Init===> Obj=Philo_inst[2],State=Philo_thinking
+0000000346 AO-Subsc Obj=Philo_inst[3],Sig=00000005,Obj=0x20000480
+0000000346 AO-Subsc Obj=Philo_inst[3],Sig=00000009,Obj=0x20000480
+===RTC===> St-Init  Obj=Philo_inst[3],State=0x00009B1B->Philo_thinking
+===RTC===> St-Entry Obj=Philo_inst[3],State=Philo_thinking
+0000000346 Init===> Obj=Philo_inst[3],State=Philo_thinking
+0000000352 AO-Subsc Obj=Philo_inst[4],Sig=00000005,Obj=0x20000580
+0000000352 AO-Subsc Obj=Philo_inst[4],Sig=00000009,Obj=0x20000580
+===RTC===> St-Init  Obj=Philo_inst[4],State=0x00009B1B->Philo_thinking
+===RTC===> St-Entry Obj=Philo_inst[4],State=Philo_thinking
+0000000352 Init===> Obj=Philo_inst[4],State=Philo_thinking
+           Obj-Dict 0x20000680->Table::inst
+           Sig-Dict 00000006,Obj=0x00000000->DONE_SIG
+           Sig-Dict 00000005,Obj=0x00000000->EAT_SIG
+           Sig-Dict 00000007,Obj=0x00000000->PAUSE_SIG
+           Sig-Dict 00000008,Obj=0x00000000->SERVE_SIG
+           Sig-Dict 00000009,Obj=0x00000000->TEST_SIG
+           Sig-Dict 00000011,Obj=0x20000680->HUNGRY_SIG
+0000000370 AO-Subsc Obj=Table::inst,Sig=DONE_SIG
+0000000370 AO-Subsc Obj=Table::inst,Sig=PAUSE_SIG
+0000000370 AO-Subsc Obj=Table::inst,Sig=SERVE_SIG
+0000000371 AO-Subsc Obj=Table::inst,Sig=TEST_SIG
+0000000371 PHILO_STAT 0 thinking
+0000000371 PHILO_STAT 1 thinking
+0000000371 PHILO_STAT 2 thinking
+0000000371 PHILO_STAT 3 thinking
+@endverbatim
 
 @next{exa_os}
 */

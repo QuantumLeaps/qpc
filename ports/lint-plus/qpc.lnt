@@ -22,11 +22,11 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2022-08-18
-//! @version Last updated for version: 7.1.0
+//! @date Last updated on: 2022-10-13
+//! @version Last updated for version: 7.1.3
 //!
 //! @file
-//! @brief PC-Lint-Plus option file for linting QP/C __Applications__
+//! @brief PC-Lint-Plus option file for linting **QP/C Applications**
 
 // M3-D4.8(A) complete definition is unnecessary in this translation unit
 -efile(9045,
@@ -46,7 +46,8 @@
 // give Q_onAssert() the semantics of "no return"
 -sem(Q_onAssert, r_no)
 
-// M3-R1.4(R) keyword '_Noreturn' is deprecated
+// M3-R1.4(R1.4) keyword '_Noreturn' is deprecated
+// @tr{PQA01_4}
 -emacro(586,
  Q_NORETURN)
 

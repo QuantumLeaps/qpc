@@ -133,7 +133,7 @@ QMState const * QMsm_childStateObj(
 
 /*${QEP::QMsm::ctor} .......................................................*/
 void QMsm_ctor(QMsm * const me,
-    QStateHandler initial)
+    QStateHandler const initial)
 {
     static struct QHsmVtable const vtable = { /* QHsm virtual table */
         &QMsm_init_,
@@ -375,7 +375,7 @@ QStateHandler QMsm_getStateHandler_(QHsm * const me) {
 /*${QEP::QMsm::execTatbl_} .................................................*/
 QState QMsm_execTatbl_(
     QHsm * const me,
-    QMTranActTable const * tatbl,
+    QMTranActTable const * const tatbl,
     uint_fast8_t const qs_id)
 {
     Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
@@ -445,8 +445,8 @@ QState QMsm_execTatbl_(
 /*${QEP::QMsm::exitToTranSource_} ..........................................*/
 void QMsm_exitToTranSource_(
     QHsm * const me,
-    QMState const * cs,
-    QMState const * ts,
+    QMState const * const cs,
+    QMState const * const ts,
     uint_fast8_t const qs_id)
 {
     Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */

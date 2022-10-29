@@ -180,12 +180,12 @@ enum {
 };
 
 /* static helper functions... */
-static void QS_rxParseData_(uint8_t b);
-//static void QS_rxHandleGoodFrame_(uint8_t state);
-static void QS_rxHandleBadFrame_(uint8_t state);
-static void QS_rxReportAck_(int8_t recId);
-static void QS_rxReportError_(int8_t code);
-static void QS_rxReportDone_(int8_t recId);
+static void QS_rxParseData_(uint8_t const b);
+//static void QS_rxHandleGoodFrame_(uint8_t const state);
+static void QS_rxHandleBadFrame_(uint8_t const state);
+static void QS_rxReportAck_(int8_t const recId);
+static void QS_rxReportError_(int8_t const code);
+static void QS_rxReportDone_(int8_t const recId);
 static void QS_rxPoke_(void);
 
 /*! Internal QS-RX macro to encapsulate transition in the QS-RX FSM */
@@ -256,15 +256,15 @@ uint16_t QS_rxGetNfree(void) {
 
 /*${QS::QS-rx::setCurrObj} .................................................*/
 void QS_setCurrObj(
-    uint8_t obj_kind,
-    void * obj_ptr)
+    uint8_t const obj_kind,
+    void * const obj_ptr)
 {
     Q_REQUIRE_ID(100, obj_kind < Q_DIM(QS_rxPriv_.currObj));
     QS_rxPriv_.currObj[obj_kind] = obj_ptr;
 }
 
 /*${QS::QS-rx::queryCurrObj} ...............................................*/
-void QS_queryCurrObj(uint8_t obj_kind) {
+void QS_queryCurrObj(uint8_t const obj_kind) {
     if (QS_rxPriv_.currObj[obj_kind] != (void *)0) {
         QS_CRIT_STAT_
         QS_CRIT_E_();
@@ -703,7 +703,7 @@ bool QS_RX_PUT(uint8_t const b) {
 /*$enddef${QS::QS-rx} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 /*==========================================================================*/
-static void QS_rxParseData_(uint8_t b) {
+static void QS_rxParseData_(uint8_t const b) {
     switch (l_rx.state) {
         case WAIT4_SEQ: {
             ++l_rx.seq;
@@ -1143,7 +1143,7 @@ static void QS_rxParseData_(uint8_t b) {
 }
 
 /*..........................................................................*/
-static void QS_rxHandleBadFrame_(uint8_t state) {
+static void QS_rxHandleBadFrame_(uint8_t const state) {
     QS_rxReportError_(0x50); /* report error for all bad frames */
     switch (state) {
         case WAIT4_EVT_FRAME: {
@@ -1161,7 +1161,7 @@ static void QS_rxHandleBadFrame_(uint8_t state) {
 }
 
 /*..........................................................................*/
-static void QS_rxReportAck_(int8_t recId) {
+static void QS_rxReportAck_(int8_t const recId) {
     QS_CRIT_STAT_
     QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_RX_STATUS);
@@ -1173,7 +1173,7 @@ static void QS_rxReportAck_(int8_t recId) {
 }
 
 /*..........................................................................*/
-static void QS_rxReportError_(int8_t code) {
+static void QS_rxReportError_(int8_t const code) {
     QS_CRIT_STAT_
     QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_RX_STATUS);
@@ -1185,7 +1185,7 @@ static void QS_rxReportError_(int8_t code) {
 }
 
 /*..........................................................................*/
-static void QS_rxReportDone_(int8_t recId) {
+static void QS_rxReportDone_(int8_t const recId) {
     QS_CRIT_STAT_
     QS_CRIT_E_();
     QS_beginRec_((uint_fast8_t)QS_TARGET_DONE);

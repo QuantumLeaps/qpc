@@ -40,11 +40,11 @@ QV is a simple **cooperative** kernel (previously called "Vanilla" kernel). This
 The QV scheduler is described in Section 6.3.7 of the book ["Practical UML Statecharts in C/C++, 2nd Ed" (PSiCC2)](https://www.state-machine.com/psicc2/).
 
 
-
 @section qv_overview QV Overview
 The QV scheduler is engaged after every RTC step of any active object to choose the next active object to execute. The QV scheduler always chooses the highest-priority active object that has any events in its event queue. The QV scheduler then extracts the next event from this queue and dispatches it to the state machine associated with the active object. The state machine runs to completion, after which the QV scheduler runs and the cycle repeats.
 
-![QV scheduler operation](qv.gif)
+@image html  qv.png "QV scheduler operation"
+@image latex qv.png "QV scheduler operation"
 
 Please note that because the state machines always return to the QV scheduler after each RTC step, a single stack can be used to process all state machines (memory-friendly architecture).
 
@@ -63,12 +63,10 @@ Sometimes it is not practical to break up long RTC steps, and consequently the t
 @brief
 Preemptive Run-To-Completion (Non-Blocking) Kernel
 
-<p>The preemptive, non-blocking QK kernel is specifically designed to execute non-blocking active objects (see also [[PSiCC2](https://www.state-machine.com/psicc2/), Chapter 10]). QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using **single stack**. Active objects process their events in run-to-completion (RTC) fashion and remove themselves from the call stack, the same way as nested interrupts remove themselves from the stack upon completion. At the same time high-priority active objects can **preempt** lower-priority active objects, just like interrupts can preempt each other under a prioritized interrupt controller. <span class="highlight">QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis RMA) and can be used in hard real-time systems</span>.
-</p>
+The preemptive, non-blocking QK kernel is specifically designed to execute non-blocking active objects (see also [[PSiCC2](https://www.state-machine.com/psicc2/), Chapter 10]). QK runs active objects in the same way as prioritized interrupt controller (such as NVIC in ARM Cortex-M) runs interrupts using **single stack**. Active objects process their events in run-to-completion (RTC) fashion and remove themselves from the call stack, the same way as nested interrupts remove themselves from the stack upon completion. At the same time high-priority active objects can **preempt** lower-priority active objects, just like interrupts can preempt each other under a prioritized interrupt controller. <span class="highlight">QK meets all the requirement of the Rate Monotonic Scheduling (a.k.a. Rate Monotonic Analysis RMA) and can be used in hard real-time systems</span>.
 
 @note
 The non-blocking, run-to-completion, preemptive threads are known in the literature as "basic threads" (OSEK/AUTOSAR terminology), sometimes also called "fibers" (e.g., Q-Kernel) or "software interrupts" (e.g., TI-RTOS).
-
 
 
 @section qk_overview QK Overview
@@ -76,26 +74,21 @@ The preemptive, run-to-completion (RTC) QK kernel breaks entirely with the endle
 
 As a fully preemptive multithreading kernel, QK must ensure that at all times the CPU executes the highest-priority thread (active object) that is ready to run. Fortunately, only two scenarios can lead to readying a higher-priority thread:
 
-<ul class="tag">
-  <li><span class="tag">1</span>
-When a lower-priority thread posts an event to a higher-priority thread, the kernel must immediately suspend the execution of the lower-priority thread and start the higher-priority thread. This type of preemption is called <b>synchronous preemption</b> because it happens synchronously with posting an event to the thread's event queue.
-> NOTE: The stack usage shown in the bottom panel displays stack growing down (towards lower addresses), as it is the case in ARM Cortex-M.
-  </li>
-</ul>
+`[1]` When a lower-priority thread posts an event to a higher-priority thread, the kernel must immediately suspend the execution of the lower-priority thread and start the higher-priority thread. This type of preemption is called <b>synchronous preemption</b> because it happens synchronously with posting an event to the thread's event queue.
 
-@anchor qk-synch-fig
-@image html qk_synch.gif "Synchronous Preemption in QK"
+@note
+The stack usage shown in the bottom panel displays stack growing down (towards lower addresses), as it is the case in ARM Cortex-M.
 
-<ul class="tag">
-  <li><span class="tag">2</span>
-When an interrupt posts an event to a higher-priority thread than the interrupted thread, upon completion of the ISR the kernel must start execution of the higher-priority thread instead of resuming the lower-priority thread. This type of preemption is called <b>asynchronous preemption</b> because it can happen asynchronously, any time interrupts are not explicitly disabled.
-> NOTE: The stack usage during asynchronous preemption on ARM Cortex-M is slightly simplified in the diagram below. A more detailed stack usage diagram is discussed later in the section explaining the @ref arm-cm_qk_port-asm_pendsv "Detailed stack allocation in QK for ARM Cortex-M".
-  </li>
-</ul>
+@image{anchor:qk-synch-fig} html  qk_synch.png "Synchronous Preemption in QK"
+@image{anchor:qk-synch-fig} latex qk_synch.png "Synchronous Preemption in QK"
 
-@anchor qk-asynch-fig
-@image html qk_asynch.gif "Asynchronous Preemption in QK"
+`[2]` When an interrupt posts an event to a higher-priority thread than the interrupted thread, upon completion of the ISR the kernel must start execution of the higher-priority thread instead of resuming the lower-priority thread. This type of preemption is called <b>asynchronous preemption</b> because it can happen asynchronously, any time interrupts are not explicitly disabled.
 
+@note
+The stack usage during asynchronous preemption on ARM Cortex-M is slightly simplified in the diagram below. A more detailed stack usage diagram is discussed later in the section explaining the @ref arm-cm_qk_port-asm_pendsv "Detailed stack allocation in QK for ARM Cortex-M".
+
+@image{anchor:qk-asynch-fig} html  qk_asynch.png "Asynchronous Preemption in QK"
+@image{anchor:qk-asynch-fig} latex qk_asynch.png "Asynchronous Preemption in QK"
 
 @note
 A traditional RTOS kernel does not distinguish between the synchronous and asynchronous preemptions and makes all preemptions look like the more stack-intensive asynchronous preemptions. In contrast, a RTC kernel can implement synchronous preemption as a simple function call (to QK_activate_()), which is much more efficient than a full context-switch.
@@ -148,21 +141,16 @@ QXK is a unique dual-mode kernel on the market that supports interleaving the pr
 @section qxk_classes Classes in QXK
 The figure below shows the main classes introduced in the QXK kernel and their relation to the classes of the QP framework.
 
-@image html qxk_classes.gif "Classes of the QXK dual-mode kernel"
+@image html  qxk_classes.png "Classes of the QXK dual-mode kernel"
+@image latex qxk_classes.png "Classes of the QXK dual-mode kernel"
 
-<ul class="tag">
-  <li><span class="tag">0</span> The abstract ::QActive class represents active objects in QP. This class contains the @c thread object of the underlying kernel (QXK thread-control-block in this case) as well as the event queue and the unique priority of the active object.
-  </li>
+`[0]` The abstract ::QActive class represents active objects in QP. This class contains the @c thread object of the underlying kernel (QXK thread-control-block in this case) as well as the event queue and the unique priority of the active object.
 
-  <li><span class="tag">1</span> The ::QXThread class represents the extended (blocking) threads of the QXK kernel. It inherits ::QActive, so that extended-threads can be treated as active objects internally in the framework. However, the extended-threads **do not implement state machines**. Instead, the data fields used for storing the current state in active objects are re-used to store the private stack of the extended-thread. The ::QXThread class also contains the @c timeEvt object (see ::QTimeEvt) for generating timeouts when the extended-thread is blocked.
-  </li>
+`[1]` The ::QXThread class represents the extended (blocking) threads of the QXK kernel. It inherits ::QActive, so that extended-threads can be treated as active objects internally in the framework. However, the extended-threads **do not implement state machines**. Instead, the data fields used for storing the current state in active objects are re-used to store the private stack of the extended-thread. The ::QXThread class also contains the @c timeEvt object (see ::QTimeEvt) for generating timeouts when the extended-thread is blocked.
 
-  <li><span class="tag">2</span> The ::QXMutex class represents the **priority-ceiling mutex** of the QXK kernel. The mutex can block and can be used only in the extended-threads (in case they share resources that need to be protected). The mutex is recursive, meaning that it can be locked multiple times from the same extended thread (but it needs to be unlocked equal number of times).
-  </li>
+`[2]` The ::QXMutex class represents the **priority-ceiling mutex** of the QXK kernel. The mutex can block and can be used only in the extended-threads (in case they share resources that need to be protected). The mutex is recursive, meaning that it can be locked multiple times from the same extended thread (but it needs to be unlocked equal number of times).
 
-  <li><span class="tag">3</span> The ::QXSemaphore class represents the **counting semaphore** of the QXK kernel. The semaphore can be waited on only in the extended-threads and the QXK kernel would assert if an active object thread would attempt to wait on a semaphore. On the other hand, a semaphore can be signaled from anywhere in the code, including active objects and ISRs.
-  </li>
-</ul>
+`[3]` The ::QXSemaphore class represents the **counting semaphore** of the QXK kernel. The semaphore can be waited on only in the extended-threads and the QXK kernel would assert if an active object thread would attempt to wait on a semaphore. On the other hand, a semaphore can be signaled from anywhere in the code, including active objects and ISRs.
 
 @note
 The main takeaway from the QXK class diagram is QXK's **optimal, tight integration** with the QP framework. The QXK kernel reuses all mechanisms already provided in QP, thus avoiding any code duplication, inefficient layers of indirection, and additional licensing costs, which are inevitable when using @ref ports_rtos "3rd-party RTOS kernels" to run QP applications.

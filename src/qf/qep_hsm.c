@@ -67,58 +67,33 @@ Q_DEFINE_THIS_MODULE("qep_hsm")
 char const QP_versionStr[8] = QP_VERSION_STR;
 /*$enddef${QEP::QP_versionStr[8]} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
-/*! internal QEP constants */
-enum {
-    QEP_EMPTY_SIG_ = 0, /*!< reserved empty signal for internal use only */
-};
-
 /*! Immutable events corresponding to the reserved signals.
 *
 * @details
-* Static, pre-allocated standard events that the QEP event processor sends
+* Static, immutable reserved events that the QEP event processor sends
 * to state handler functions of QHsm-style state machine to execute entry
 * actions, exit actions, and initial transitions.
 */
-static QEvt const QEP_reservedEvt_[] = {
-    { (QSignal)QEP_EMPTY_SIG_, 0U, 0U },
-    { (QSignal)Q_ENTRY_SIG,    0U, 0U },
-    { (QSignal)Q_EXIT_SIG,     0U, 0U },
-    { (QSignal)Q_INIT_SIG,     0U, 0U }
+static QEvt const l_reservedEvt_[] = {
+    { (QSignal)Q_EMPTY_SIG, 0U, 0U },
+    { (QSignal)Q_ENTRY_SIG, 0U, 0U },
+    { (QSignal)Q_EXIT_SIG,  0U, 0U },
+    { (QSignal)Q_INIT_SIG,  0U, 0U }
 };
 
-/*! helper macro to trigger internal event in an HSM */
-#define QEP_TRIG_(state_, sig_) \
-    ((*(state_))(me, &QEP_reservedEvt_[sig_]))
-
-#ifdef Q_SPY
-    #define QEP_EXIT_(state_, qs_id_) do {                  \
-        if ((*(state_))(me, &QEP_reservedEvt_[Q_EXIT_SIG])  \
-             == Q_RET_HANDLED) {                            \
-            QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, (qs_id_))      \
-                QS_OBJ_PRE_(me);                            \
-                QS_FUN_PRE_(state_);                        \
-            QS_END_PRE_()                                   \
-        }                                                   \
-    } while (false)
-
-    #define QEP_ENTER_(state_, qs_id_) do {                 \
-        if ((*(state_))(me, &QEP_reservedEvt_[Q_ENTRY_SIG]) \
-             == Q_RET_HANDLED) {                            \
-            QS_BEGIN_PRE_(QS_QEP_STATE_ENTRY, (qs_id_))     \
-                QS_OBJ_PRE_(me);                            \
-                QS_FUN_PRE_(state_);                        \
-            QS_END_PRE_()                                   \
-        }                                                   \
-    } while (false)
-
-#else
-    #define QEP_EXIT_(state_, dummy_) \
-        ((void)(*(state_))(me, &QEP_reservedEvt_[Q_EXIT_SIG]))
-
-    #define QEP_ENTER_(state_, dummy_) \
-        ((void)(*(state_))(me, &QEP_reservedEvt_[Q_ENTRY_SIG]))
-
-#endif /* Q_SPY */
+/*! helper function to trigger reserved event in an QHsm
+* @private @memberof QHsm
+*
+* @param[in] state state handler function
+* @param[in] sig   reserved signal to trigger
+*/
+static inline QState QHsm_reservedEvt_(
+    QHsm * const me,
+    QStateHandler const state,
+    enum QReservedSig const sig)
+{
+    return (*state)(me, &l_reservedEvt_[sig]);
+}
 
 /*$define${QEP::QHsm} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
@@ -142,17 +117,12 @@ bool QHsm_isIn(QHsm * const me,
             r = Q_RET_IGNORED; /* break out of the loop */
         }
         else {
-            r = QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
+            r = QHsm_reservedEvt_(me, me->temp.fun, Q_EMPTY_SIG);
         }
     } while (r != Q_RET_IGNORED); /* QHsm_top() state not reached */
     me->temp.fun = me->state.fun; /* restore the stable state configuration */
 
     return inState; /* return the status */
-}
-
-/*${QEP::QHsm::state} ......................................................*/
-QStateHandler QHsm_state(QHsm * const me) {
-    return Q_STATE_CAST(me->state.fun);
 }
 
 /*${QEP::QHsm::childState} .................................................*/
@@ -173,7 +143,7 @@ QStateHandler QHsm_childState(QHsm * const me,
         }
         else {
             child = me->temp.fun;
-            r = QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
+            r = QHsm_reservedEvt_(me, me->temp.fun, Q_EMPTY_SIG);
         }
     } while (r != Q_RET_IGNORED); /* QHsm_top() state not reached */
     me->temp.fun = me->state.fun; /* establish stable state configuration */
@@ -182,7 +152,7 @@ QStateHandler QHsm_childState(QHsm * const me,
     Q_ENSURE_ID(810, isFound);
 
     #ifdef Q_NASSERT
-    (void)isFound; /* avoid compiler warning about unused variable */
+    Q_UNUSED_PAR(isFound);
     #endif
 
     return child; /* return the child */
@@ -190,7 +160,7 @@ QStateHandler QHsm_childState(QHsm * const me,
 
 /*${QEP::QHsm::ctor} .......................................................*/
 void QHsm_ctor(QHsm * const me,
-    QStateHandler initial)
+    QStateHandler const initial)
 {
     static struct QHsmVtable const vtable = { /* QHsm virtual table */
         &QHsm_init_,
@@ -219,7 +189,7 @@ void QHsm_init_(QHsm * const me,
     uint_fast8_t const qs_id)
 {
     #ifndef Q_SPY
-    (void)qs_id; /* unused parameter */
+    Q_UNUSED_PAR(qs_id);
     #endif
 
     QStateHandler t = me->state.fun;
@@ -240,8 +210,8 @@ void QHsm_init_(QHsm * const me,
 
     QS_CRIT_STAT_
     QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
-        QS_OBJ_PRE_(me);           /* this state machine object */
-        QS_FUN_PRE_(t);            /* the source state */
+        QS_OBJ_PRE_(me); /* this state machine object */
+        QS_FUN_PRE_(t);  /* the source state */
         QS_FUN_PRE_(me->temp.fun); /* the target of the initial transition */
     QS_END_PRE_()
 
@@ -251,30 +221,30 @@ void QHsm_init_(QHsm * const me,
         int_fast8_t ip = 0; /* tran entry path index */
 
         path[0] = me->temp.fun;
-        (void)QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
+        (void)QHsm_reservedEvt_(me, me->temp.fun, Q_EMPTY_SIG);
         while (me->temp.fun != t) {
             ++ip;
             Q_ASSERT_ID(220, ip < QHSM_MAX_NEST_DEPTH_);
             path[ip] = me->temp.fun;
-            (void)QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
+            (void)QHsm_reservedEvt_(me, me->temp.fun, Q_EMPTY_SIG);
         }
         me->temp.fun = path[0];
 
         /* nested initial transition, drill into the target hierarchy... */
         do {
-            QEP_ENTER_(path[ip], qs_id); /* enter path[ip] */
+            QHsm_state_entry_(me, path[ip], qs_id); /* enter path[ip] */
             --ip;
         } while (ip >= 0);
 
         t = path[0]; /* current state becomes the new source */
 
-        r = QEP_TRIG_(t, Q_INIT_SIG); /* execute initial transition */
+        r = QHsm_reservedEvt_(me, t, Q_INIT_SIG); /* execute initial transition */
 
     #ifdef Q_SPY
         if (r == Q_RET_TRAN) {
             QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
-                QS_OBJ_PRE_(me);           /* this state machine object */
-                QS_FUN_PRE_(t);            /* the source state */
+                QS_OBJ_PRE_(me); /* this state machine object */
+                QS_FUN_PRE_(t);  /* the source state */
                 QS_FUN_PRE_(me->temp.fun); /* target of the initial tran. */
             QS_END_PRE_()
         }
@@ -283,9 +253,9 @@ void QHsm_init_(QHsm * const me,
     } while (r == Q_RET_TRAN);
 
     QS_BEGIN_PRE_(QS_QEP_INIT_TRAN, qs_id)
-        QS_TIME_PRE_();    /* time stamp */
-        QS_OBJ_PRE_(me);   /* this state machine object */
-        QS_FUN_PRE_(t);    /* the new active state */
+        QS_TIME_PRE_();  /* time stamp */
+        QS_OBJ_PRE_(me); /* this state machine object */
+        QS_FUN_PRE_(t);  /* the new active state */
     QS_END_PRE_()
 
     me->state.fun = t; /* change the current active state */
@@ -309,10 +279,10 @@ void QHsm_dispatch_(QHsm * const me,
                        && (t == me->temp.fun));
 
     QS_BEGIN_PRE_(QS_QEP_DISPATCH, qs_id)
-        QS_TIME_PRE_();         /* time stamp */
-        QS_SIG_PRE_(e->sig);    /* the signal of the event */
-        QS_OBJ_PRE_(me);        /* this state machine object */
-        QS_FUN_PRE_(t);         /* the current state */
+        QS_TIME_PRE_();      /* time stamp */
+        QS_SIG_PRE_(e->sig); /* the signal of the event */
+        QS_OBJ_PRE_(me);     /* this state machine object */
+        QS_FUN_PRE_(t);      /* the current state */
     QS_END_PRE_()
 
     QStateHandler s;
@@ -330,7 +300,7 @@ void QHsm_dispatch_(QHsm * const me,
                 QS_FUN_PRE_(s);      /* the current state */
             QS_END_PRE_()
 
-            r = QEP_TRIG_(s, QEP_EMPTY_SIG_); /* find superstate of s */
+            r = QHsm_reservedEvt_(me, s, Q_EMPTY_SIG); /* find superstate of s */
         }
     } while (r == Q_RET_SUPER);
 
@@ -346,14 +316,10 @@ void QHsm_dispatch_(QHsm * const me,
         /* exit current state to transition source s... */
         /*! @tr{RQP120C} */
         for (; t != s; t = me->temp.fun) {
-            if (QEP_TRIG_(t, Q_EXIT_SIG) == Q_RET_HANDLED) {
-                QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, qs_id)
-                    QS_OBJ_PRE_(me);  /* this state machine object */
-                    QS_FUN_PRE_(t);   /* the exited state */
-                QS_END_PRE_()
-
+            /* exit from t handled? */
+            if (QHsm_state_exit_(me, t, qs_id)) {
                 /* find superstate of t */
-                (void)QEP_TRIG_(t, QEP_EMPTY_SIG_);
+                (void)QHsm_reservedEvt_(me, t, Q_EMPTY_SIG);
             }
         }
 
@@ -362,9 +328,9 @@ void QHsm_dispatch_(QHsm * const me,
     #ifdef Q_SPY
         if (r == Q_RET_TRAN_HIST) {
             QS_BEGIN_PRE_(QS_QEP_TRAN_HIST, qs_id)
-                QS_OBJ_PRE_(me);      /* this state machine object */
-                QS_FUN_PRE_(t);       /* the source of the transition */
-                QS_FUN_PRE_(path[0]); /* the target of the tran. to history */
+                QS_OBJ_PRE_(me); /* this state machine object */
+                QS_FUN_PRE_(t);  /* the source of the transition */
+                QS_FUN_PRE_(path[0]); /* the target of tran. to history */
             QS_END_PRE_()
         }
     #endif /* Q_SPY */
@@ -372,7 +338,7 @@ void QHsm_dispatch_(QHsm * const me,
         /* execute state entry actions in the desired order... */
         /*! @tr{RQP120B} */
         for (; ip >= 0; --ip) {
-            QEP_ENTER_(path[ip], qs_id);  /* enter path[ip] */
+            QHsm_state_entry_(me, path[ip], qs_id);  /* enter path[ip] */
         }
 
         t = path[0];      /* stick the target into register */
@@ -380,25 +346,25 @@ void QHsm_dispatch_(QHsm * const me,
 
         /* while nested initial transition... */
         /*! @tr{RQP120I} */
-        while (QEP_TRIG_(t, Q_INIT_SIG) == Q_RET_TRAN) {
+        while (QHsm_reservedEvt_(me, t, Q_INIT_SIG) == Q_RET_TRAN) {
 
             QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
-                QS_OBJ_PRE_(me);           /* this state machine object */
-                QS_FUN_PRE_(t);            /* the source (pseudo)state */
-                QS_FUN_PRE_(me->temp.fun); /* the target of the transition */
+                QS_OBJ_PRE_(me); /* this state machine object */
+                QS_FUN_PRE_(t);  /* the source (pseudo)state */
+                QS_FUN_PRE_(me->temp.fun); /* the target of the tran. */
             QS_END_PRE_()
 
             ip = 0;
             path[0] = me->temp.fun;
 
             /* find superstate */
-            (void)QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
+            (void)QHsm_reservedEvt_(me, me->temp.fun, Q_EMPTY_SIG);
 
             while (me->temp.fun != t) {
                 ++ip;
                 path[ip] = me->temp.fun;
                 /* find superstate */
-                (void)QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
+                (void)QHsm_reservedEvt_(me, me->temp.fun, Q_EMPTY_SIG);
             }
             me->temp.fun = path[0];
 
@@ -407,7 +373,7 @@ void QHsm_dispatch_(QHsm * const me,
 
             /* retrace the entry path in reverse (correct) order... */
             do {
-                QEP_ENTER_(path[ip], qs_id); /* enter path[ip] */
+                QHsm_state_entry_(me, path[ip], qs_id); /* enter path[ip] */
                 --ip;
             } while (ip >= 0);
 
@@ -415,11 +381,11 @@ void QHsm_dispatch_(QHsm * const me,
         }
 
         QS_BEGIN_PRE_(QS_QEP_TRAN, qs_id)
-            QS_TIME_PRE_();          /* time stamp */
-            QS_SIG_PRE_(e->sig);     /* the signal of the event */
-            QS_OBJ_PRE_(me);         /* this state machine object */
-            QS_FUN_PRE_(s);          /* the source of the transition */
-            QS_FUN_PRE_(t);          /* the new active state */
+            QS_TIME_PRE_();      /* time stamp */
+            QS_SIG_PRE_(e->sig); /* the signal of the event */
+            QS_OBJ_PRE_(me);     /* this state machine object */
+            QS_FUN_PRE_(s);      /* the source of the transition */
+            QS_FUN_PRE_(t);      /* the new active state */
         QS_END_PRE_()
     }
 
@@ -427,19 +393,19 @@ void QHsm_dispatch_(QHsm * const me,
     else if (r == Q_RET_HANDLED) {
 
         QS_BEGIN_PRE_(QS_QEP_INTERN_TRAN, qs_id)
-            QS_TIME_PRE_();          /* time stamp */
-            QS_SIG_PRE_(e->sig);     /* the signal of the event */
-            QS_OBJ_PRE_(me);         /* this state machine object */
-            QS_FUN_PRE_(s);          /* the source state */
+            QS_TIME_PRE_();      /* time stamp */
+            QS_SIG_PRE_(e->sig); /* the signal of the event */
+            QS_OBJ_PRE_(me);     /* this state machine object */
+            QS_FUN_PRE_(s);      /* the source state */
         QS_END_PRE_()
 
     }
     else {
 
         QS_BEGIN_PRE_(QS_QEP_IGNORED, qs_id)
-            QS_TIME_PRE_();          /* time stamp */
-            QS_SIG_PRE_(e->sig);     /* the signal of the event */
-            QS_OBJ_PRE_(me);         /* this state machine object */
+            QS_TIME_PRE_();      /* time stamp */
+            QS_SIG_PRE_(e->sig); /* the signal of the event */
+            QS_OBJ_PRE_(me);     /* this state machine object */
             QS_FUN_PRE_(me->state.fun); /* the current state */
         QS_END_PRE_()
 
@@ -459,7 +425,7 @@ QStateHandler QHsm_getStateHandler_(QHsm * const me) {
 
 /*${QEP::QHsm::tran_} ......................................................*/
 int_fast8_t QHsm_tran_(QHsm * const me,
-    QStateHandler path[QHSM_MAX_NEST_DEPTH_],
+    QStateHandler * const path,
     uint_fast8_t const qs_id)
 {
     Q_UNUSED_PAR(qs_id); // unused when Q_SPY undefined
@@ -467,16 +433,15 @@ int_fast8_t QHsm_tran_(QHsm * const me,
     int_fast8_t ip = -1; /* transition entry path index */
     QStateHandler t = path[0];
     QStateHandler const s = path[2];
-    QS_CRIT_STAT_
 
     /* (a) check source==target (transition to self)... */
     if (s == t) {
-        QEP_EXIT_(s, qs_id); /* exit the source */
+        (void)QHsm_state_exit_(me, s, qs_id); /* exit source */
         ip = 0; /* enter the target */
     }
     else {
         /* find superstate of target */
-        (void)QEP_TRIG_(t, QEP_EMPTY_SIG_);
+        (void)QHsm_reservedEvt_(me, t, Q_EMPTY_SIG);
 
         t = me->temp.fun;
 
@@ -486,17 +451,17 @@ int_fast8_t QHsm_tran_(QHsm * const me,
         }
         else {
             /* find superstate of src */
-            (void)QEP_TRIG_(s, QEP_EMPTY_SIG_);
+            (void)QHsm_reservedEvt_(me, s, Q_EMPTY_SIG);
 
             /* (c) check source->super==target->super... */
             if (me->temp.fun == t) {
-                QEP_EXIT_(s, qs_id); /* exit the source */
+                (void)QHsm_state_exit_(me, s, qs_id); /* exit source */
                 ip = 0; /* enter the target */
             }
             else {
                 /* (d) check source->super==target... */
                 if (me->temp.fun == path[0]) {
-                    QEP_EXIT_(s, qs_id); /* exit the source */
+                    (void)QHsm_state_exit_(me, s, qs_id); /* exit source */
                 }
                 else {
                     /* (e) check rest of source==target->super->super..
@@ -508,7 +473,7 @@ int_fast8_t QHsm_tran_(QHsm * const me,
                     t = me->temp.fun; /* save source->super */
 
                     /* find target->super->super... */
-                    QState r = QEP_TRIG_(path[1], QEP_EMPTY_SIG_);
+                    QState r = QHsm_reservedEvt_(me, path[1], Q_EMPTY_SIG);
                     while (r == Q_RET_SUPER) {
                         ++ip;
                         path[ip] = me->temp.fun; /* store the entry path */
@@ -521,9 +486,10 @@ int_fast8_t QHsm_tran_(QHsm * const me,
                             --ip; /* do not enter the source */
                             r = Q_RET_HANDLED; /* terminate loop */
                         }
-                         /* it is not the source, keep going up */
+                        /* it is not the source, keep going up */
                         else {
-                            r = QEP_TRIG_(me->temp.fun, QEP_EMPTY_SIG_);
+                            r = QHsm_reservedEvt_(me, me->temp.fun,
+                                                  Q_EMPTY_SIG);
                         }
                     }
 
@@ -533,7 +499,8 @@ int_fast8_t QHsm_tran_(QHsm * const me,
                         /* entry path must not overflow */
                         Q_ASSERT_ID(520, ip < QHSM_MAX_NEST_DEPTH_);
 
-                        QEP_EXIT_(s, qs_id); /* exit the source */
+                        /* exit source */
+                        (void)QHsm_state_exit_(me, s, qs_id);
 
                         /* (f) check the rest of source->super
                         *                  == target->super->super...
@@ -558,16 +525,10 @@ int_fast8_t QHsm_tran_(QHsm * const me,
                             */
                             r = Q_RET_IGNORED; /* keep looping */
                             do {
-                                /* exit t unhandled? */
-                                if (QEP_TRIG_(t, Q_EXIT_SIG)
-                                    == Q_RET_HANDLED)
-                                {
-                                    QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, qs_id)
-                                        QS_OBJ_PRE_(me);
-                                        QS_FUN_PRE_(t);
-                                    QS_END_PRE_()
-
-                                    (void)QEP_TRIG_(t, QEP_EMPTY_SIG_);
+                                /* exit from t handled? */
+                                if (QHsm_state_exit_(me, t, qs_id)) {
+                                    /* find superstate of t */
+                                    (void)QHsm_reservedEvt_(me, t, Q_EMPTY_SIG);
                                 }
                                 t = me->temp.fun; /* set to super of t */
                                 iq = ip;
@@ -592,5 +553,49 @@ int_fast8_t QHsm_tran_(QHsm * const me,
         }
     }
     return ip;
+}
+
+/*${QEP::QHsm::state_entry_} ...............................................*/
+void QHsm_state_entry_(QHsm * const me,
+    QStateHandler const state,
+    uint_fast8_t const qs_id)
+{
+    #ifdef Q_SPY
+    if ((*state)(me, &l_reservedEvt_[Q_ENTRY_SIG]) == Q_RET_HANDLED) {
+        QS_CRIT_STAT_
+        QS_BEGIN_PRE_(QS_QEP_STATE_ENTRY, qs_id)
+            QS_OBJ_PRE_(me);
+            QS_FUN_PRE_(state);
+        QS_END_PRE_()
+    }
+    #else
+    Q_UNUSED_PAR(qs_id);
+    (void)(*state)(me, &l_reservedEvt_[Q_ENTRY_SIG]);
+    #endif /* Q_SPY */
+}
+
+/*${QEP::QHsm::state_exit_} ................................................*/
+bool QHsm_state_exit_(QHsm * const me,
+    QStateHandler const state,
+    uint_fast8_t const qs_id)
+{
+    #ifdef Q_SPY
+    bool isHandled;
+    if ((*state)(me, &l_reservedEvt_[Q_EXIT_SIG]) == Q_RET_HANDLED) {
+        QS_CRIT_STAT_
+        QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, qs_id)
+            QS_OBJ_PRE_(me);
+            QS_FUN_PRE_(state);
+        QS_END_PRE_()
+        isHandled = true;
+    }
+    else {
+        isHandled = false;
+    }
+    return isHandled;
+    #else
+    Q_UNUSED_PAR(qs_id);
+    return (*state)(me, &l_reservedEvt_[Q_EXIT_SIG]) == Q_RET_HANDLED;
+    #endif /* Q_SPY */
 }
 /*$enddef${QEP::QHsm} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/

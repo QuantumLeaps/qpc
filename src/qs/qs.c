@@ -489,7 +489,7 @@ void QS_2u8_raw_(
 }
 
 /*${QS::QS-tx::u16_raw_} ...................................................*/
-void QS_u16_raw_(uint16_t d) {
+void QS_u16_raw_(uint16_t const d) {
     uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
     uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
     QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -507,7 +507,7 @@ void QS_u16_raw_(uint16_t d) {
 }
 
 /*${QS::QS-tx::u32_raw_} ...................................................*/
-void QS_u32_raw_(uint32_t d) {
+void QS_u32_raw_(uint32_t const d) {
     uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
     uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
     QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -540,7 +540,7 @@ void QS_obj_raw_(void const * const obj) {
 }
 
 /*${QS::QS-tx::str_raw_} ...................................................*/
-void QS_str_raw_(char const * str) {
+void QS_str_raw_(char const * const str) {
     uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
     uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
     QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -581,8 +581,8 @@ void QS_u8_fmt_(
 
 /*${QS::QS-tx::u16_fmt_} ...................................................*/
 void QS_u16_fmt_(
-    uint8_t format,
-    uint16_t d)
+    uint8_t const format,
+    uint16_t const d)
 {
     uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
     uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
@@ -603,8 +603,8 @@ void QS_u16_fmt_(
 
 /*${QS::QS-tx::u32_fmt_} ...................................................*/
 void QS_u32_fmt_(
-    uint8_t format,
-    uint32_t d)
+    uint8_t const format,
+    uint32_t const d)
 {
     uint8_t chksum = QS_priv_.chksum;    /* put in a temporary (register) */
     uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
@@ -626,7 +626,7 @@ void QS_u32_fmt_(
 }
 
 /*${QS::QS-tx::str_fmt_} ...................................................*/
-void QS_str_fmt_(char const * str) {
+void QS_str_fmt_(char const * const str) {
     uint8_t chksum = QS_priv_.chksum;
     uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
     QSCtr head          = QS_priv_.head; /* put in a temporary (register) */
@@ -651,8 +651,8 @@ void QS_str_fmt_(char const * str) {
 
 /*${QS::QS-tx::mem_fmt_} ...................................................*/
 void QS_mem_fmt_(
-    uint8_t const * blk,
-    uint8_t size)
+    uint8_t const * const blk,
+    uint8_t const size)
 {
     uint8_t chksum = QS_priv_.chksum;
     uint8_t * const buf = QS_priv_.buf;  /* put in a temporary (register) */
@@ -773,7 +773,7 @@ void QS_obj_arr_dict_pre_(
 
 /*${QS::QS-tx::fun_dict_pre_} ..............................................*/
 void QS_fun_dict_pre_(
-    QSpyFunPtr fun,
+    QSpyFunPtr const fun,
     char const * const name)
 {
     QS_CRIT_STAT_

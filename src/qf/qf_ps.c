@@ -117,7 +117,7 @@ void QActive_publish_(
         * recycles the event if the counter drops to zero. This covers the
         * case when the event was published without any subscribers.
         */
-        QF_EVT_REF_CTR_INC_(e);
+        QEvt_refCtr_inc_(e);
     }
 
     /* make a local, modifiable copy of the subscriber list */

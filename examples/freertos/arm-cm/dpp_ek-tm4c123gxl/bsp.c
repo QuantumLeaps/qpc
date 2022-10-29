@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, FreeRTOS kernel
-* Last updated for version 6.9.1
-* Last updated on  2020-10-06
+* Last updated for version 7.1.3
+* Last updated on  2022-10-18
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -59,9 +59,6 @@ Q_DEFINE_THIS_FILE  /* define the name of this file for assertions */
 static uint32_t l_rnd; // random seed
 
 #ifdef Q_SPY
-
-    QSTimeCtr QS_tickTime_;
-    QSTimeCtr QS_tickPeriod_;
 
     /* QS identifiers for non-QP sources of events */
     static uint8_t const l_TickHook = 0U;
@@ -134,31 +131,22 @@ void UART0_IRQHandler(void) {
 /* Application hooks used in this project ==================================*/
 /* NOTE: only the "FromISR" API variants are allowed in vApplicationTickHook */
 void vApplicationTickHook(void) {
-    /* state of the button debouncing, see below */
-    static struct ButtonsDebouncing {
-        uint32_t depressed;
-        uint32_t previous;
-    } buttons = { 0U, 0U };
-    uint32_t current;
-    uint32_t tmp;
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     /* process time events for rate 0 */
     QTIMEEVT_TICK_FROM_ISR(0U, &xHigherPriorityTaskWoken, &l_TickHook);
 
-#ifdef Q_SPY
-    {
-        tmp = SysTick->CTRL; /* clear SysTick_CTRL_COUNTFLAG */
-        QS_tickTime_ += QS_tickPeriod_; /* account for the clock rollover */
-    }
-#endif
-
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
     * and Michael Barr, page 71.
     */
-    current = ~GPIOF->DATA_Bits[BTN_SW1 | BTN_SW2]; /* read SW1 and SW2 */
-    tmp = buttons.depressed; /* save the debounced depressed buttons */
+    /* state of the button debouncing, see below */
+    static struct ButtonsDebouncing {
+        uint32_t depressed;
+        uint32_t previous;
+    } buttons = { 0U, 0U };
+    uint32_t current = ~GPIOF->DATA_Bits[BTN_SW1 | BTN_SW2]; /* read SW1&SW2 */
+    uint32_t tmp = buttons.depressed; /* save debounced depressed buttons */
     buttons.depressed |= (buttons.previous & current); /* set depressed */
     buttons.depressed &= (buttons.previous | current); /* clear released */
     buttons.previous   = current; /* update the history */
@@ -186,8 +174,6 @@ void vApplicationTickHook(void) {
 }
 /*..........................................................................*/
 void vApplicationIdleHook(void) {
-    float volatile x;
-
     /* toggle the User LED on and then off, see NOTE01 */
     QF_INT_DISABLE();
     GPIOF->DATA_Bits[LED_BLUE] = 0xFFU;  /* turn the Blue LED on  */
@@ -195,7 +181,7 @@ void vApplicationIdleHook(void) {
     QF_INT_ENABLE();
 
     /* Some floating point code is to exercise the VFP... */
-    x = 1.73205F;
+    float volatile x = 1.73205F;
     x = x * 1.73205F;
 
 #ifdef Q_SPY
@@ -295,16 +281,12 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(COMMAND_STAT);
 
     /* setup the QS filters... */
-    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
-    QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
-    QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
+    QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
+    QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
-    GPIOF->DATA_Bits[LED_GREEN] =
-         ((stat[0] == 'e')   /* Is Philo[n] eating? */
-         ? 0xFFU             /* turn the LED1 on  */
-         : 0U);              /* turn the LED1 off */
+    GPIOF->DATA_Bits[LED_GREEN] = ((stat[0] == 'e') ? LED_GREEN : 0U);
 
     QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);  /* Philosopher number */
@@ -313,7 +295,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    GPIOF->DATA_Bits[LED_GREEN] = ((paused != 0U) ? 0xFFU : 0U);
+    GPIOF->DATA_Bits[LED_BLUE] = ((paused != 0U) ? LED_BLUE : 0U);
 
     QS_BEGIN_ID(PAUSED_STAT, 0U) /* app-specific record */
         QS_U8(1, paused);  /* Paused status */
@@ -321,25 +303,18 @@ void BSP_displayPaused(uint8_t paused) {
 }
 /*..........................................................................*/
 uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
-    uint32_t rnd;
-
-    /* exercise the FPU with some floating point computations */
-    /* NOTE: this code can be only called from a task that created with
-    * the option OS_TASK_OPT_SAVE_FP.
-    */
-    float volatile x;
-    x = 3.1415926F;
+    /* Some flating point code is to exercise the VFP... */
+    float volatile x = 3.1415926F;
     x = x + 2.7182818F;
 
     vTaskSuspendAll(); /* lock FreeRTOS scheduler */
     /* "Super-Duper" Linear Congruential Generator (LCG)
     * LCG(2^32, 3*7*11*13*23, 0, seed)
     */
-    rnd = l_rnd * (3U*7U*11U*13U*23U);
-    l_rnd = rnd; /* set for the next time */
+    l_rnd = l_rnd * (3U*7U*11U*13U*23U);
     xTaskResumeAll(); /* unlock the FreeRTOS scheduler */
 
-    return (rnd >> 8);
+    return l_rnd >> 8;
 }
 /*..........................................................................*/
 void BSP_randomSeed(uint32_t seed) {
@@ -364,15 +339,15 @@ void QF_onStartup(void) {
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(GPIOA_IRQn,     RTOS_AWARE_ISR_CMSIS_PRI);
-    NVIC_SetPriority(SysTick_IRQn,   RTOS_AWARE_ISR_CMSIS_PRI + 1U);
+    NVIC_SetPriority(UART0_IRQn,   0U); /* kernel unaware interrupt */
+    NVIC_SetPriority(GPIOA_IRQn,   RTOS_AWARE_ISR_CMSIS_PRI);
+    NVIC_SetPriority(SysTick_IRQn, RTOS_AWARE_ISR_CMSIS_PRI + 1U);
     /* ... */
 
     /* enable IRQs... */
     NVIC_EnableIRQ(GPIOA_IRQn);
 
 #ifdef Q_SPY
-    NVIC_SetPriority(UART0_IRQn, 0U); /* kernel unaware interrupt */
     NVIC_EnableIRQ(UART0_IRQn);  /* UART0 interrupt used for QS-RX */
 #endif
 }
@@ -392,10 +367,8 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
 #ifndef NDEBUG
     /* light up all LEDs */
     GPIOF->DATA_Bits[LED_GREEN | LED_RED | LED_BLUE] = 0xFFU;
-    /* for debugging, hang on in an endless loop toggling the RED LED... */
-    while (GPIOF->DATA_Bits[BTN_SW1] != 0) {
-        GPIOF->DATA = LED_RED;
-        GPIOF->DATA = 0U;
+    /* for debugging, hang on in an endless loop... */
+    for (;;) {
     }
 #endif
 
@@ -406,9 +379,10 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
 #ifdef Q_SPY
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
+    Q_UNUSED_PAR(arg);
+
     static uint8_t qsTxBuf[2*1024]; /* buffer for QS-TX channel */
     static uint8_t qsRxBuf[100];    /* buffer for QS-RX channel */
-    uint32_t tmp;
 
     QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
@@ -418,7 +392,7 @@ uint8_t QS_onStartup(void const *arg) {
     SYSCTL->RCGCGPIO |= (1U << 0); /* enable Run mode for GPIOA */
 
     /* configure UART0 pins for UART operation */
-    tmp = (1U << 0) | (1U << 1);
+    uint32_t tmp = (1U << 0) | (1U << 1);
     GPIOA->DIR   &= ~tmp;
     GPIOA->SLR   &= ~tmp;
     GPIOA->ODR   &= ~tmp;
@@ -445,8 +419,14 @@ uint8_t QS_onStartup(void const *arg) {
     UART0->IFLS |= (0x2U << 2);    /* interrupt on RX FIFO half-full */
     /* NOTE: do not enable the UART0 interrupt yet. Wait till QF_onStartup() */
 
-    QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
-    QS_tickTime_ = QS_tickPeriod_; /* to start the timestamp at zero */
+    /* configure TIMER5 to produce QS time stamp */
+    SYSCTL->RCGCTIMER |= (1U << 5);  /* enable run mode for Timer5 */
+    TIMER5->CTL  = 0U;               /* disable Timer1 output */
+    TIMER5->CFG  = 0x0U;             /* 32-bit configuration */
+    TIMER5->TAMR = (1U << 4) | 0x02; /* up-counting periodic mode */
+    TIMER5->TAILR= 0xFFFFFFFFU;      /* timer interval */
+    TIMER5->ICR  = 0x1U;             /* TimerA timeout flag bit clears*/
+    TIMER5->CTL |= (1U << 0);        /* enable TimerA module */
 
     return 1U; /* return success */
 }
@@ -455,26 +435,26 @@ void QS_onCleanup(void) {
 }
 /*..........................................................................*/
 QSTimeCtr QS_onGetTime(void) {  /* NOTE: invoked with interrupts DISABLED */
-    if ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0) { /* not set? */
-        return QS_tickTime_ - (QSTimeCtr)SysTick->VAL;
-    }
-    else { /* the rollover occured, but the SysTick_ISR did not run yet */
-        return QS_tickTime_ + QS_tickPeriod_ - (QSTimeCtr)SysTick->VAL;
-    }
+    return TIMER5->TAV;
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t fifo = UART_TXFIFO_DEPTH; /* Tx FIFO depth */
-    uint8_t const *block;
-    while ((block = QS_getBlock(&fifo)) != (uint8_t *)0) {
-        /* busy-wait as long as TX FIFO has data to transmit */
-        while ((UART0->FR & UART_FR_TXFE) == 0) {
-        }
+    while (true) {
+        /* try to get next byte to transmit */
+        QF_INT_DISABLE();
+        uint16_t b = QS_getByte();
+        QF_INT_ENABLE();
 
-        while (fifo-- != 0U) {    /* any bytes in the block? */
-            UART0->DR = *block++; /* put into the TX FIFO */
+        if (b != QS_EOD) { /* NOT end-of-data */
+            /* busy-wait as long as TX FIFO has data to transmit */
+            while ((UART0->FR & UART_FR_TXFE) == 0) {
+            }
+            /* place the byte in the UART DR register */
+            UART0->DR = b;
         }
-        fifo = UART_TXFIFO_DEPTH; /* re-load the Tx FIFO depth */
+        else {
+            break; /* break out of the loop */
+        }
     }
 }
 /*..........................................................................*/
@@ -487,24 +467,12 @@ void QS_onReset(void) {
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    (void)cmdId;
-    (void)param1;
-    (void)param2;
-    (void)param3;
-
-    QS_BEGIN_ID(COMMAND_STAT, 0U)/* app-specific record */
+    QS_BEGIN_ID(COMMAND_STAT, 0U) /* app-specific record */
         QS_U8(2, cmdId);
         QS_U32(8, param1);
         QS_U32(8, param2);
         QS_U32(8, param3);
     QS_END()
-
-    if (cmdId == 10U) {
-        Q_ERROR(); /* for testing of assertion failure */
-    }
-    else if (cmdId == 11U) {
-        assert_failed("QS_onCommand", 123);
-    }
 }
 
 #endif /* Q_SPY */
