@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-29
-* @version Last updated for: @ref qpc_7_1_0
+* @date Last updated on: 2022-07-30
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QF/C port to embOS
@@ -99,7 +99,7 @@ static void thread_function(void *pVoid) { /* embOS signature */
     }
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
+void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -110,10 +110,8 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                 (OS_UINT)qLen,
                 (void *)&qSto[0]);
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
-    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
-    QActive_register_(me); /* register this AO */
-
+    me->prio = prio;  /* save the QF priority */
+    QActive_register_(me);      /* make QF aware of this active object */
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
@@ -124,7 +122,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
 #elif
                     "AO",            /* a generic AO task name */
 #endif
-                    (OS_PRIO)me->prio,/* embOS uses the same numbering as QP*/
+                    (OS_PRIO)prio, /* embOS uses the same numbering as QP */
                     &thread_function,
                     (void OS_STACKPTR *)stkSto,
                     (OS_UINT)stkSize,

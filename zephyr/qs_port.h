@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-25
-* @version Last updated for: Zephyr 3.1.99 and @ref qpc_7_1_0
+* @date Last updated on: 2022-06-12
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QS/C port to a 32-bit CPU and a generic C99 compiler.
@@ -58,4 +58,3 @@
 #include "qs.h"      /* QS platform-independent public interface */
 
 #endif /* QS_PORT_H */
-

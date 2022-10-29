@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-19
-* @version Last updated for: @ref qpc_7_1_0
+* @date Last updated on: 2022-06-12
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QF/C, port to ThreadX
@@ -74,11 +74,13 @@ static void thread_function(ULONG thread_input) { /* ThreadX signature */
     }
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
+void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
+    UINT tx_prio; /* ThreadX priority corresponding to the QF priority prio */
+
     /* allege that the ThreadX queue is created successfully */
     Q_ALLEGE_ID(210,
         tx_queue_create(&me->eQueue,
@@ -88,12 +90,14 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
             (ULONG)(qLen * sizeof(ULONG)))
         == TX_SUCCESS);
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority */
-    me->pthre = (uint8_t)(prioSpec >> 8U); /* preemption-threshold */
-    QActive_register_(me); /* register this AO */
+    me->prio = prio;  /* save the QF priority */
+    QActive_register_(me);      /* make QF aware of this active object */
 
     QHSM_INIT(&me->super, par, me->prio); /* initial tran. (virtual) */
     QS_FLUSH(); /* flush the trace buffer to the host */
+
+    /* convert QF priority to the ThreadX priority */
+    tx_prio = QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - prio;
 
     Q_ALLEGE_ID(220,
         tx_thread_create(
@@ -103,8 +107,8 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
             (ULONG)me, /* thread parameter */
             stkSto,    /* stack start */
             stkSize,   /* stack size in bytes */
-            QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - me->prio, /* ThreadX prio */
-            QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - me->pthre, /* preempt-thre */
+            tx_prio,   /* ThreadX priority */
+            tx_prio,   /* preemption threshold disabled (same as priority) */
             TX_NO_TIME_SLICE,
             TX_AUTO_START)
         == TX_SUCCESS);

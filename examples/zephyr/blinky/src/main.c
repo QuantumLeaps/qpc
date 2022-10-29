@@ -1,34 +1,36 @@
-/*============================================================================
-* QP/C Real-Time Embedded Framework (RTEF)
+/*****************************************************************************
+* Product: "Blinky" example
+* Last updated for version 7.0.1
+* Last updated on  2022-06-04
+*
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
+*
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+* This program is open source software: you can redistribute it and/or
+* modify it under the terms of the GNU General Public License as published
+* by the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
 *
-* This software is dual-licensed under the terms of the open source GNU
-* General Public License version 3 (or any later version), or alternatively,
-* under the terms of one of the closed source Quantum Leaps commercial
-* licenses.
+* Alternatively, this program may be distributed and modified under the
+* terms of Quantum Leaps commercial licenses, which expressly supersede
+* the GNU General Public License and are specifically designed for
+* licensees interested in retaining the proprietary status of their code.
 *
-* The terms of the open source GNU General Public License version 3
-* can be found at: <www.gnu.org/licenses/gpl-3.0>
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
 *
-* The terms of the closed source Quantum Leaps commercial licenses
-* can be found at: <www.state-machine.com/licensing>
-*
-* Redistributions in source code must retain this top-level comment block.
-* Plagiarizing this software to sidestep the license obligations is illegal.
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
-============================================================================*/
-/*!
-* @date Last updated on: 2022-08-24
-* @version Last updated for: Zephyr 3.1.99 and @ref qpc_7_1_0
-*
-* @file
-* @brief main() for Zephyr, Blinky example
-*/
+*****************************************************************************/
 #include "qpc.h"
 #include "blinky.h"
 #include "bsp.h"
@@ -50,12 +52,12 @@ int main() {
     /* instantiate and start the active objects... */
     Blinky_ctor();
     QActive_setAttr(AO_Blinky,
-                    0,            /* thread options */
+                    0,            /* thread opions */
                     "Blinky");    /* thread name */
     QACTIVE_START(AO_Blinky,      /* AO pointer to start */
                   1U,             /* unique QP priority of the AO */
                   l_blinkyQSto,   /* storage for the AO's queue */
-                  Q_DIM(l_blinkyQSto), /* length of the queue [entries] */
+                  Q_DIM(l_blinkyQSto), /* lenght of the queue [entries] */
                   (void *)l_blinkyStack, /* stack storage */
                   K_THREAD_STACK_SIZEOF(l_blinkyStack), /* stack size [bytes] */
                   (void *)0);     /* initial event (or 0) */

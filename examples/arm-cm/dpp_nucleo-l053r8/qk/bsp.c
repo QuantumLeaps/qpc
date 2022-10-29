@@ -54,12 +54,10 @@ static uint32_t l_rnd;  /* random seed */
     QSTimeCtr QS_tickPeriod_;
 
     /* QSpy source IDs */
-    static QSpyId const l_SysTick_Handler    = { 0U };
-    static QSpyId const l_EXTI0_1_IRQHandler = { 0U };
+    static QSpyId const l_SysTick_Handler = { 0U };
 
     enum AppRecords { /* application-specific trace records */
-        PHILO_STAT = QS_USER,
-        CONTEXT_SW,
+        PHILO_STAT = QS_USER
     };
 
 #endif
@@ -75,7 +73,7 @@ void SysTick_Handler(void) {   /* system clock tick ISR */
     static struct ButtonsDebouncing {
         uint32_t depressed;
         uint32_t previous;
-    } buttons = { 0U, 0U };
+    } buttons = { ~0U, ~0U };
     uint32_t current;
     uint32_t tmp;
 
@@ -169,13 +167,11 @@ void BSP_init(void) {
         Q_ERROR();
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
-    QS_OBJ_DICTIONARY(&l_EXTI0_1_IRQHandler);
     QS_USR_DICTIONARY(PHILO_STAT);
-    QS_USR_DICTIONARY(CONTEXT_SW);
 
     /* setup the QS filters... */
-    QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
-    QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */
+    QS_GLB_FILTER(QS_SM_RECORDS);
+    QS_GLB_FILTER(QS_UA_RECORDS);
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -262,10 +258,10 @@ void QF_onCleanup(void) {
 #ifdef QK_ON_CONTEXT_SW
 /* NOTE: the context-switch callback is called with interrupts DISABLED */
 void QK_onContextSw(QActive *prev, QActive *next) {
-    QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
-        QS_OBJ(prev);
-        QS_OBJ(next);
-    QS_END_NOCRIT()
+    (void)prev;
+    if (next != (QActive *)0) {
+        //_impure_ptr = next->thread; /* switch to next TLS */
+    }
 }
 #endif /* QK_ON_CONTEXT_SW */
 /*..........................................................................*/

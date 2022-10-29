@@ -41,7 +41,7 @@ MEMORY { /* memory map of Tiva TM4C123GH6PM */
 }
 
 /* The size of the stack used by the application. NOTE: you need to adjust  */
-STACK_SIZE = 2048;
+STACK_SIZE = 1024;
 
 /* The size of the heap used by the application. NOTE: you need to adjust   */
 HEAP_SIZE = 0;

@@ -1,8 +1,8 @@
 ::============================================================================
 :: Batch file to program the flash of EK-TM4C123GXL
-::
+:: 
 :: NOTE: requires the LMFlash programmer (included in QTools for Windows)
-::
+:: 
 @echo off
 setlocal
 

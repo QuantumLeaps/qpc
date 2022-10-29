@@ -15,24 +15,24 @@ int main() {
 
     /* start the active objects (basic threads)... */
     Table_ctor(); /* instantiate the Table AO */
-    QACTIVE_START(AO_Table,      /* AO to start */
-        n + 1U,                  /* QF-priority */
-        tableQueueSto,           /* event queue storage */
-        Q_DIM(tableQueueSto),    /* queue length [events] */
-        tableStackSto,           /* stack storage */
-        sizeof(tableStackSto),   /* stack size [bytes] */
-        (void *)0);              /* initialization param */
+    QACTIVE_START(AO_Table,              /* AO to start */
+                  N_PHILO + 2U,          /* QP priority of the AO */
+                  tableQueueSto,         /* event queue storage */
+                  Q_DIM(tableQueueSto),  /* queue length [events] */
+                  tableStackSto,         /* stack storage */
+                  sizeof(tableStackSto), /* stack size [bytes] */
+                  (void *)0);            /* initialization param */
     . . .
 
     /* start the extended-threads... */
     Test_ctor();  /* instantiate the Test extended thread */
-    QXTHREAD_START(XT_Test,      /* Thread to start */
-        10U,                     /* QF-priority */
-        testQueueSto,            /* message queue storage */
-        Q_DIM(testQueueSto),     /* message length [events] */
-        testStackSto,            /* stack storage */
-        sizeof(testStackSto),    /* stack size [bytes] */
-        (void *)0);              /* initialization param */
+    QXTHREAD_START(XT_Test,              /* Thread to start */
+                  10U,                   /* QP priority of the thread */
+                  testQueueSto,          /* message queue storage */
+                  Q_DIM(testQueueSto),   /* message length [events] */
+                  testStackSto,          /* stack storage */
+                  sizeof(testStackSto),  /* stack size [bytes] */
+                  (void *)0);            /* initialization param */
 
     return QF_run(); /* run the QF application */
 }

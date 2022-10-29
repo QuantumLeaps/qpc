@@ -1,11 +1,13 @@
-# Doxyfile 1.9.5
+# Doxyfile 1.9.4
+
+@INCLUDE = ../../ql-doxygen/ql-doxyfile
 
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = QP/C
-PROJECT_NUMBER         = 7.1.2
+PROJECT_NAME           = "QP/C"
+PROJECT_NUMBER         = 7.0.1
 PROJECT_BRIEF          = "Real-Time Embedded Framework"
 PROJECT_LOGO           = ../../ql-doxygen/images/logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -40,17 +42,6 @@ PYTHON_DOCSTRING       = YES
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 4
-ALIASES                = "nav{2}=<span class=\"prev_button\">@ref \1</span><span class=\"next_button\">@ref \2</span>" \
-                         "nav_prev{1}=<span class=\"prev_button\">@ref \1</span>" \
-                         "nav_next{1}=<span class=\"next_button\">@ref \1</span>" \
-                         "next{1}=<span class=\"next_button\">@ref \1</span>" \
-                         "description=@par Description" \
-                         "usage=@par Usage" \
-                         "hint=@par Hint" \
-                         "label{1}=<div class=\"label\">\1</div>" \
-                         "caption{1}=<div class=\"caption\" align=\"center\">\1</div>" \
-                         "webref{2}=<a class=\"extern\" target=\"_blank\" href=\"https://www.state-machine.com/\1\">\2</a>" \
-                         "tr{1}=@xrefitem tr \"Traceability\" \"\" traces to: @ref \1"
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
@@ -156,10 +147,9 @@ INPUT                  = main.dox \
                          dir.dox \
                          config.h \
                          ../include \
-                         ../src \
-                         ../ports/lint-plus/qpc.lnt
+                         ../src
+
 INPUT_ENCODING         = UTF-8
-INPUT_FILE_ENCODING    =
 FILE_PATTERNS          = *.dox \
                          *.h \
                          *.hpp \
@@ -168,9 +158,11 @@ FILE_PATTERNS          = *.dox \
                          *.s \
                          *.asm \
                          *.lnt
+
 RECURSIVE              = YES
 EXCLUDE                = ../include/qs_dummy.h \
                          ../include/quit.h
+
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        = QP_IMPL
@@ -180,6 +172,7 @@ EXAMPLE_PATH           = snippets \
                          ../ports \
                          ../ports/lint-plus \
                          ../examples
+
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             = images \
@@ -190,13 +183,12 @@ FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
 FILTER_SOURCE_PATTERNS =
 USE_MDFILE_AS_MAINPAGE =
-FORTRAN_COMMENT_AFTER  = 72
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
 #---------------------------------------------------------------------------
 SOURCE_BROWSER         = YES
 INLINE_SOURCES         = NO
-STRIP_CODE_COMMENTS    = NO
+STRIP_CODE_COMMENTS    = YES
 REFERENCED_BY_RELATION = NO
 REFERENCES_RELATION    = NO
 REFERENCES_LINK_SOURCE = YES
@@ -225,11 +217,12 @@ HTML_EXTRA_STYLESHEET  = ../../ql-doxygen/doxygen-awesome.css \
                          ../../ql-doxygen/doxygen-awesome-sidebar-only.css \
                          ../../ql-doxygen/doxygen-awesome-sidebar-only-darkmode-toggle.css \
                          ../../ql-doxygen/ql-awesome.css
+
 HTML_EXTRA_FILES       = ../../ql-doxygen/doxygen-awesome-darkmode-toggle.js \
                          ../../ql-doxygen/doxygen-awesome-fragment-copy-button.js \
                          ../../ql-doxygen/doxygen-awesome-paragraph-link.js \
                          ../../ql-doxygen/ql-preview.js
-HTML_COLORSTYLE        = AUTO_LIGHT
+
 HTML_COLORSTYLE_HUE    = 209
 HTML_COLORSTYLE_SAT    = 255
 HTML_COLORSTYLE_GAMMA  = 113
@@ -269,6 +262,7 @@ EXT_LINKS_IN_WINDOW    = NO
 OBFUSCATE_EMAILS       = NO
 HTML_FORMULA_FORMAT    = png
 FORMULA_FONTSIZE       = 10
+FORMULA_TRANSPARENT    = YES
 FORMULA_MACROFILE      =
 USE_MATHJAX            = NO
 MATHJAX_VERSION        = MathJax_2
@@ -284,68 +278,6 @@ SEARCHDATA_FILE        = searchdata.xml
 EXTERNAL_SEARCH_ID     = QPC
 EXTRA_SEARCH_MAPPINGS  =
 #---------------------------------------------------------------------------
-# Configuration options related to the LaTeX output
-#---------------------------------------------------------------------------
-GENERATE_LATEX         = NO
-LATEX_OUTPUT           = latex
-LATEX_CMD_NAME         = latex
-MAKEINDEX_CMD_NAME     = makeindex
-LATEX_MAKEINDEX_CMD    = makeindex
-COMPACT_LATEX          = NO
-PAPER_TYPE             = letter
-EXTRA_PACKAGES         =
-LATEX_HEADER           =
-LATEX_FOOTER           =
-LATEX_EXTRA_STYLESHEET =
-LATEX_EXTRA_FILES      =
-PDF_HYPERLINKS         = YES
-USE_PDFLATEX           = YES
-LATEX_BATCHMODE        = NO
-LATEX_HIDE_INDICES     = NO
-LATEX_BIB_STYLE        = plain
-LATEX_TIMESTAMP        = NO
-LATEX_EMOJI_DIRECTORY  =
-#---------------------------------------------------------------------------
-# Configuration options related to the RTF output
-#---------------------------------------------------------------------------
-GENERATE_RTF           = NO
-RTF_OUTPUT             = rtf
-COMPACT_RTF            = NO
-RTF_HYPERLINKS         = NO
-RTF_STYLESHEET_FILE    =
-RTF_EXTENSIONS_FILE    =
-#---------------------------------------------------------------------------
-# Configuration options related to the man page output
-#---------------------------------------------------------------------------
-GENERATE_MAN           = NO
-MAN_OUTPUT             = man
-MAN_EXTENSION          = .3
-MAN_SUBDIR             =
-MAN_LINKS              = NO
-#---------------------------------------------------------------------------
-# Configuration options related to the XML output
-#---------------------------------------------------------------------------
-GENERATE_XML           = NO
-XML_OUTPUT             = xml
-XML_PROGRAMLISTING     = YES
-XML_NS_MEMB_FILE_SCOPE = NO
-#---------------------------------------------------------------------------
-# Configuration options related to the DOCBOOK output
-#---------------------------------------------------------------------------
-GENERATE_DOCBOOK       = NO
-DOCBOOK_OUTPUT         = docbook
-#---------------------------------------------------------------------------
-# Configuration options for the AutoGen Definitions output
-#---------------------------------------------------------------------------
-GENERATE_AUTOGEN_DEF   = NO
-#---------------------------------------------------------------------------
-# Configuration options related to the Perl module output
-#---------------------------------------------------------------------------
-GENERATE_PERLMOD       = NO
-PERLMOD_LATEX          = NO
-PERLMOD_PRETTY         = YES
-PERLMOD_MAKEVAR_PREFIX =
-#---------------------------------------------------------------------------
 # Configuration options related to the preprocessor
 #---------------------------------------------------------------------------
 ENABLE_PREPROCESSING   = YES
@@ -357,6 +289,8 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = Q_SPY \
                          QP_IMPL \
                          Q_UTEST \
+                         QK_ON_CONTEXT_SW \
+                         QXK_ON_CONTEXT_SW \
                          QF_MAX_ACTIVE=32 \
                          QF_MAX_TICK_RATE=2 \
                          QF_MAX_EPOOL=3 \
@@ -366,59 +300,6 @@ PREDEFINED             = Q_SPY \
                          QF_MPOOL_CTR_SIZE=2 \
                          QF_TIMEEVT_CTR_SIZE=4 \
                          QF_ACTIVE_STOP=0 \
-                         QS_TIME_SIZE=4 \
-                         QF_EQUEUE_TYPE=QEQueue \
-                         QF_OS_OBJECT_TYPE=void* \
-                         QF_THREAD_TYPE=void* \
-                         QK_ON_CONTEXT_SW \
-                         QXK_ON_CONTEXT_SW
+                         QS_TIME_SIZE=4
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
-#---------------------------------------------------------------------------
-# Configuration options related to external references
-#---------------------------------------------------------------------------
-TAGFILES               =
-GENERATE_TAGFILE       =
-ALLEXTERNALS           = NO
-EXTERNAL_GROUPS        = YES
-EXTERNAL_PAGES         = YES
-#---------------------------------------------------------------------------
-# Configuration options related to the dot tool
-#---------------------------------------------------------------------------
-DIA_PATH               =
-HIDE_UNDOC_RELATIONS   = YES
-HAVE_DOT               = NO
-DOT_NUM_THREADS        = 0
-DOT_COMMON_ATTR        = "fontname=Helvetica,fontsize=10"
-DOT_EDGE_ATTR          = "labelfontname=Helvetica,labelfontsize=10"
-DOT_NODE_ATTR          = "shape=box,height=0.2,width=0.4"
-DOT_FONTPATH           =
-CLASS_GRAPH            = YES
-COLLABORATION_GRAPH    = NO
-GROUP_GRAPHS           = YES
-UML_LOOK               = YES
-UML_LIMIT_NUM_FIELDS   = 10
-DOT_UML_DETAILS        = NO
-DOT_WRAP_THRESHOLD     = 17
-TEMPLATE_RELATIONS     = NO
-INCLUDE_GRAPH          = YES
-INCLUDED_BY_GRAPH      = YES
-CALL_GRAPH             = NO
-CALLER_GRAPH           = NO
-GRAPHICAL_HIERARCHY    = YES
-DIRECTORY_GRAPH        = YES
-DIR_GRAPH_MAX_DEPTH    = 1
-DOT_IMAGE_FORMAT       = png
-INTERACTIVE_SVG        = NO
-DOT_PATH               = C:/tools/graphviz/bin
-DOTFILE_DIRS           =
-MSCFILE_DIRS           =
-DIAFILE_DIRS           =
-PLANTUML_JAR_PATH      =
-PLANTUML_CFG_FILE      =
-PLANTUML_INCLUDE_PATH  =
-DOT_GRAPH_MAX_NODES    = 50
-MAX_DOT_GRAPH_DEPTH    = 0
-DOT_MULTI_TARGETS      = NO
-GENERATE_LEGEND        = YES
-DOT_CLEANUP            = YES

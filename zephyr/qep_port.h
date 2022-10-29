@@ -38,4 +38,3 @@
 #include "qep.h"     /* QEP platform-independent public interface */
 
 #endif /* QEP_PORT_H */
-

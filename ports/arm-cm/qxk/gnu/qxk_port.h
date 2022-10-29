@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-09-25
-* @version Last updated for: @ref qpc_7_1_1
+* @date Last updated on: 2022-07-27
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM compiler

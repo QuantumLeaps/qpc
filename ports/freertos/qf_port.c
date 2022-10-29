@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-29
-* @version Last updated for: @ref qpc_7_1_1
+* @date Last updated on: 2022-06-13
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QF/C port to FreeRTOS 10.x
@@ -82,7 +82,7 @@ void QF_init(void) {
 int_t QF_run(void) {
     QS_CRIT_STAT_
 
-    QF_onStartup(); /* the startup callback (configure/enable interrupts) */
+    QF_onStartup();  /* the startup callback (configure/enable interrupts) */
 
     /* produce the QS_QF_RUN trace record */
     QS_BEGIN_PRE_(QS_QF_RUN, 0U)
@@ -109,13 +109,14 @@ static void task_function(void *pvParameters) { /* FreeRTOS task signature */
     }
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
+void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    Q_REQUIRE_ID(200,
-        (qSto != (QEvt const **)0) /* queue storage must be provided */
+    Q_REQUIRE_ID(200, (0U < prio)
+        && (prio <= QF_MAX_ACTIVE) /* in range */
+        && (qSto != (QEvt const **)0) /* queue storage must be provided */
         && (qLen > 0U)             /* queue size must be provided */
         && (stkSto != (void *)0)   /* stack storage must be provided */
         && (stkSize > 0U));        /* stack size must be provided */
@@ -128,14 +129,12 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
             &me->osObject);              /* static queue buffer */
     Q_ASSERT_ID(210, me->eQueue != (QueueHandle_t)0);
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
-    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
-    QActive_register_(me); /* register this AO */
-
+    me->prio = prio;  /* save the QF priority */
+    QActive_register_(me);      /* make QF aware of this active object */
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the QS trace buffer to the host */
 
-    /* task name provided by the user in QActive_setAttr() or default name */
+    /* task name provided by the user in QF_setTaskName() or default name */
     char const *taskName = (me->thread.pxDummy1 != (void *)0)
                              ? (char const *)me->thread.pxDummy1
                              : (char const *)"AO";
@@ -147,7 +146,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
               taskName ,                /* the name of the task */
               stkSize/sizeof(portSTACK_TYPE), /* stack length */
               (void *)me,               /* the 'pvParameters' parameter */
-              FREERTOS_TASK_PRIO(me->prio), /* FreeRTOS priority */
+              FREERTOS_TASK_PRIO(prio), /* FreeRTOS priority */
               (StackType_t *)stkSto,    /* stack storage */
               &me->thread));            /* task buffer */
 }
@@ -341,9 +340,7 @@ bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
         QS_END_NOCRIT_PRE_()
 
         portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedInterruptStatus);
-
-        QF_gcFromISR(e); /* recycle the event to avoid a leak */
-    }
+   }
 
     return status;
 }
@@ -417,7 +414,6 @@ void QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
                       void const * const sender)
 {
     QTimeEvt *prev = &QTimeEvt_timeEvtHead_[tickRate];
-
     UBaseType_t uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_TICK, 0U)
@@ -612,9 +608,7 @@ void QF_gcFromISR(QEvt const * const e) {
     }
 }
 /*..........................................................................*/
-void QMPool_putFromISR(QMPool * const me, void *b,
-                       uint_fast8_t const qs_id)
-{
+void QMPool_putFromISR(QMPool * const me, void *b, uint_fast8_t const qs_id) {
     /** @pre # free blocks cannot exceed the total # blocks and
     * the block pointer must be from this pool.
     */
@@ -639,7 +633,7 @@ void QMPool_putFromISR(QMPool * const me, void *b,
 }
 /*..........................................................................*/
 void *QMPool_getFromISR(QMPool * const me, uint_fast16_t const margin,
-                        uint_fast8_t const qs_id)
+                 uint_fast8_t const qs_id)
 {
     (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
 
@@ -648,12 +642,13 @@ void *QMPool_getFromISR(QMPool * const me, uint_fast16_t const margin,
     /* have more free blocks than the requested margin? */
     QFreeBlock *fb;
     if (me->nFree > (QMPoolCtr)margin) {
+        void *fb_next;
         fb = (QFreeBlock *)me->free_head; /* get a free block */
 
         /* the pool has some free blocks, so a free block must be available */
         Q_ASSERT_ID(910, fb != (QFreeBlock *)0);
 
-        void *fb_next = fb->next; /* put volatile to a temporary to avoid UB */
+        fb_next = fb->next; /* put volatile to a temporary to avoid UB */
 
         /* is the pool becoming empty? */
         --me->nFree; /* one less free block */

@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-09-05
-* @version Last updated for: @ref qpc_7_1_1
+* @date Last updated on: 2022-07-30
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QF/C port to MSP430, QUTEST, generic C99 compiler
@@ -39,12 +39,6 @@
 
 /* The maximum number of active objects in the application, see NOTE01 */
 #define QF_MAX_ACTIVE        8U
-
-#define QF_EVENT_SIZ_SIZE    1U
-#define QF_EQUEUE_CTR_SIZE   1U
-#define QF_MPOOL_SIZ_SIZE    1U
-#define QF_MPOOL_CTR_SIZE    1U
-#define QF_TIMEEVT_CTR_SIZE  2U
 
 /* QF interrupt disable/enable */
 #define QF_INT_DISABLE()     (++QF_intNest_)

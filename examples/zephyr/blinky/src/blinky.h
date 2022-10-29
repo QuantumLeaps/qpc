@@ -1,34 +1,36 @@
-/*============================================================================
-* QP/C Real-Time Embedded Framework (RTEF)
-* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+/*****************************************************************************
+* Product: simple "Blinky" example
+* Last Updated for Version: 5.4.0
+* Date of the Last Update:  2015-03-07
 *
-* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+*                    Q u a n t u m     L e a P s
+*                    ---------------------------
+*                    innovating embedded systems
 *
-* This software is dual-licensed under the terms of the open source GNU
-* General Public License version 3 (or any later version), or alternatively,
-* under the terms of one of the closed source Quantum Leaps commercial
-* licenses.
+* Copyright (C) 2005 Quantum Leaps, LLC. state-machine.com.
 *
-* The terms of the open source GNU General Public License version 3
-* can be found at: <www.gnu.org/licenses/gpl-3.0>
+* This program is open source software: you can redistribute it and/or
+* modify it under the terms of the GNU General Public License as published
+* by the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
 *
-* The terms of the closed source Quantum Leaps commercial licenses
-* can be found at: <www.state-machine.com/licensing>
+* Alternatively, this program may be distributed and modified under the
+* terms of Quantum Leaps commercial licenses, which expressly supersede
+* the GNU General Public License and are specifically designed for
+* licensees interested in retaining the proprietary status of their code.
 *
-* Redistributions in source code must retain this top-level comment block.
-* Plagiarizing this software to sidestep the license obligations is illegal.
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* <www.state-machine.com>
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
-============================================================================*/
-/*!
-* @date Last updated on: 2022-08-24
-* @version Last updated for: Zephyr 3.1.99 and @ref qpc_7_1_0
-*
-* @file
-* @brief Blinky example
-*/
+*****************************************************************************/
 #ifndef BLINKY_H
 #define BLINKY_H
 
@@ -44,4 +46,3 @@ void Blinky_ctor(void);
 extern QActive * const AO_Blinky; /* opaque pointer */
 
 #endif /* BLINKY_H */
-

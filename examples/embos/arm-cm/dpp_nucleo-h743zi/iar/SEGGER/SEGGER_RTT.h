@@ -28,7 +28,7 @@
 ---------------------------END-OF-HEADER------------------------------
 File    : SEGGER_RTT.h
 Purpose : Implementation of SEGGER real-time transfer which allows
-          real-time communication on targets which support debugger
+          real-time communication on targets which support debugger 
           memory accesses while the CPU is running.
 Revision: $Rev: 20869 $
 ----------------------------------------------------------------------
@@ -51,11 +51,11 @@ Revision: $Rev: 20869 $
   #elif (defined __CROSSWORKS_ARM)              // Rowley Crossworks
     #define _CC_HAS_RTT_ASM_SUPPORT 1
   #elif (defined __ARMCC_VERSION)               // ARM compiler
-        #if (__ARMCC_VERSION >= 6000000)                        // ARM compiler V6.0 and later is clang based
+		#if (__ARMCC_VERSION >= 6000000)						// ARM compiler V6.0 and later is clang based
       #define _CC_HAS_RTT_ASM_SUPPORT 1
-        #else
+		#else
       #define _CC_HAS_RTT_ASM_SUPPORT 0
-        #endif
+		#endif
   #elif (defined __GNUC__)                      // GCC
     #define _CC_HAS_RTT_ASM_SUPPORT 1
   #elif (defined __clang__)                     // Clang compiler

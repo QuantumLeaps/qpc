@@ -20,6 +20,7 @@ target_include_directories(app PUBLIC
 zephyr_library_sources(
  ${QPC_DIR}/src/qf/qep_hsm.c
  ${QPC_DIR}/src/qf/qep_msm.c
+ ${QPC_DIR}/src/qf/qf_act.c
  ${QPC_DIR}/src/qf/qf_qact.c
  ${QPC_DIR}/src/qf/qf_defer.c
  ${QPC_DIR}/src/qf/qf_dyn.c
@@ -32,8 +33,7 @@ zephyr_library_sources(
  ${QPC_DIR}/zephyr/qf_port.c
 )
 
-# QSPY option...
-if(QSPY)
+if(CONFIG_QSPY)
 
 target_compile_definitions(app PUBLIC Q_SPY)
 zephyr_library_compile_definitions(Q_SPY)
@@ -47,6 +47,6 @@ zephyr_library_sources(
  ${QPC_DIR}/include/qstamp.c
 )
 
-endif() # QSPY
+endif() # CONFIG_QSPY
 
-endif() # CONFIG_QPC
+endif() # CONFIG_QPCPP

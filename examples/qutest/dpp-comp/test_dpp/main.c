@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example
-* Last updated for version 7.1.1
-* Last updated on  2022-09-22
+* Last updated for: @ref qpc_7_0_0
+* Last updated on  2022-02-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
     Table_ctor(); /* explicit constructor or the Table AO */
     QACTIVE_START(AO_Table,             /* AO to start */
-                  1U,                   /* QF-priority/preemption-thre. */
+                  1U,                   /* QP priority of the AO */
                   tableQueueSto,        /* event queue storage */
                   Q_DIM(tableQueueSto), /* queue length [events] */
                   (void *)0,            /* stack storage (not used) */

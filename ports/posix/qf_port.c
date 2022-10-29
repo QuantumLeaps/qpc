@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-29
-* @version Last updated for: @ref qpc_7_1_0
+* @date Last updated on: 2022-07-30
+* @version Last updated for: @ref qpc_7_0_1
 *
 * @file
 * @brief QF/C port to POSIX API (multi-threaded)
@@ -134,7 +134,7 @@ int_t QF_run(void) {
 
     l_isRunning = true;
     while (l_isRunning) { /* the clock tick loop... */
-        QF_onClockTick(); /* callback (must call QTIMEEVT_TICK_X()) */
+        QF_onClockTick(); /* clock tick callback (must call QTIMEEVT_TICK_X()) */
 
         nanosleep(&l_tick, NULL); /* sleep for the number of ticks, NOTE05 */
     }
@@ -210,7 +210,7 @@ static void *thread_routine(void *arg) { /* the expected POSIX signature */
 }
 
 /****************************************************************************/
-void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
+void QActive_start_(QActive * const me, uint_fast8_t prio,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
@@ -226,9 +226,8 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     QEQueue_init(&me->eQueue, qSto, qLen);
     pthread_cond_init(&me->osObject, NULL);
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
-    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
-    QActive_register_(me); /* register this AO */
+    me->prio = (uint8_t)prio;
+    QActive_register_(me); /* make QF aware of this active object */
 
     /* the top-most initial tran. (virtual) */
     QHSM_INIT(&me->super, par, me->prio);
@@ -244,7 +243,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_DETACHED);
 
     /* priority of the p-thread, see NOTE04 */
-    param.sched_priority = me->prio
+    param.sched_priority = prio
                            + (sched_get_priority_max(SCHED_FIFO)
                               - QF_MAX_ACTIVE - 3U);
     pthread_attr_setschedparam(&attr, &param);

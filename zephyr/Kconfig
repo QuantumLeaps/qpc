@@ -9,6 +9,12 @@ menuconfig QPC
 
 if QPC
 
+config QSPY
+    bool "QSPY Tracing"
+    default n
+    help
+      Enables the QSPY Tracing for QP
+
 module = QPC
 module-str = QPC
 

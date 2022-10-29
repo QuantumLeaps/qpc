@@ -37,22 +37,11 @@ for ARM Cortex-M projects, due to the support for the hardware FPU
 ***
 
 
-Selecting QK Exception
+The TRUEStudio Project
 ======================
-The QK kernel needs a dedicated exception to return to the thread
-context after preemption. The default is to use the NMI exception
-for that purpose. However, in case NMI is needed for some other
-purpose, the QK port allows you to select a any, otherwise unused
-IRQ for that purpose. To choose a given IRQ, you need to define
-the macros QK_USE_IRQ_NUM and QK_USE_IRQ_HANDLER. These macros can
-be provided on the command-line to the compiler.
-
-For example, for the STM32L053 CPU, you might dedicate the IRQ
-"CRYPTO_IRQHandler" (see the vector table), with IRQ number 25,
-as follows:
-
-QK_USE_IRQ_HANDLER=LCD_IRQHandler
-QK_USE_IRQ_NUM=30
+The project file for the Atollic TRUEStudio-STM32 is provided and can be
+directly imported into the TRUEStudio Eclipse-based IDE. All three build
+configurations are supported (Debug, Release and Spy).
 
 
 Adjusting Stack and Heap Sizes

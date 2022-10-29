@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-09-25
-* @version Last updated for: @ref qpc_7_1_1
+* @date Last updated on: 2022-05-02
+* @version Last updated for: @ref qpc_7_0_0
 *
 * @file
 * @brief QXK/C port to ARM Cortex-M, IAR-ARM compiler
@@ -35,7 +35,7 @@
 /* determination if the code executes in the ISR context */
 #define QXK_ISR_CONTEXT_() (__get_IPSR() != 0U)
 
-/* trigger the PendSV exception to perform the context switch */
+/* trigger the PendSV exception to pefrom the context switch */
 #define QXK_CONTEXT_SWITCH_()  \
     *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28U)
 

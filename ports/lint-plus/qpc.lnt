@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2022-08-18
-//! @version Last updated for version: 7.1.0
+//! @date Last updated on: 2021-12-31
+//! @version Last updated for version: 7.0.0
 //!
 //! @file
 //! @brief PC-Lint-Plus option file for linting QP/C __Applications__
@@ -191,7 +191,6 @@
  QF_INT_ENABLE,
  QF_CRIT_ENTRY,
  QF_CRIT_EXIT,
- Q_PRIO,
  QF_LOG2,
  Q_NEW,
  Q_NEW_X,

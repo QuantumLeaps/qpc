@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, preemptive QXK kernel
-* Last updated for version 7.1.0
-* Last updated on  2022-08-28
+* Last updated for version 6.9.3
+* Last updated on  2021-03-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -75,11 +75,11 @@ static uint32_t l_rnd; /* random seed */
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,
         PAUSED_STAT,
-        CONTEXT_SW,
         COMMAND_STAT
     };
 
 #endif
+
 
 /*..........................................................................*/
 void SysTick_Handler(void) {
@@ -87,7 +87,7 @@ void SysTick_Handler(void) {
     static struct ButtonsDebouncing {
         uint32_t depressed;
         uint32_t previous;
-    } buttons = { 0U, 0U };
+    } buttons = { ~0U, ~0U };
     uint32_t current;
     uint32_t tmp;
 
@@ -100,8 +100,8 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
-    //QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); // post to Ticker0 */
+    //QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); // post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -196,8 +196,9 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(COMMAND_STAT);
 
     /* setup the QS filters... */
-    QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
-    QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */
+    QS_GLB_FILTER(QS_SM_RECORDS); /* state machine records */
+    QS_GLB_FILTER(QS_AO_RECORDS); /* active object records */
+    QS_GLB_FILTER(QS_UA_RECORDS); /* all user records */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -285,9 +286,9 @@ void QF_onStartup(void) {
     * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     */
-    NVIC_SetPriority(UART0_IRQn,   0U); /* kernel unaware interrupt */
-    NVIC_SetPriority(GPIOA_IRQn,   QF_AWARE_ISR_CMSIS_PRI);
-    NVIC_SetPriority(SysTick_IRQn, QF_AWARE_ISR_CMSIS_PRI + 1U);
+    NVIC_SetPriority(UART0_IRQn,     0U); /* kernel unaware interrupt */
+    NVIC_SetPriority(GPIOA_IRQn,     QF_AWARE_ISR_CMSIS_PRI);
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
     /* ... */
 
     /* enable IRQs... */
@@ -300,20 +301,6 @@ void QF_onStartup(void) {
 /*..........................................................................*/
 void QF_onCleanup(void) {
 }
-/*..........................................................................*/
-#ifdef QXK_ON_CONTEXT_SW
-/* NOTE: the context-switch callback is called with interrupts DISABLED */
-void QXK_onContextSw(QActive *prev, QActive *next) {
-    (void)prev;
-    if (next != (QActive *)0) {
-        //_impure_ptr = next->thread; /* switch to next TLS */
-    }
-    QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
-        QS_OBJ(prev);
-        QS_OBJ(next);
-    QS_END_NOCRIT()
-}
-#endif /* QXK_ON_CONTEXT_SW */
 /*..........................................................................*/
 void QXK_onIdle(void) {
     float volatile x;
@@ -367,16 +354,16 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     /* for debugging, hang on in an endless loop... */
     for (;;) {
     }
-#endif
-
+#else
     NVIC_SystemReset();
+#endif
 }
 
 /* QS callbacks ============================================================*/
 #ifdef Q_SPY
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
-    Q_UNUSED_PAR(arg);
+    (void)arg; /* unused parameter */
 
     static uint8_t qsTxBuf[2*1024]; /* buffer for QS transmit channel */
     static uint8_t qsRxBuf[100];    /* buffer for QS receive channel */
@@ -470,7 +457,6 @@ void QS_onCommand(uint8_t cmdId,
         QS_U32(8, param2);
         QS_U32(8, param3);
     QS_END()
-
     if (cmdId == 10U) {
         Q_ERROR();
     }

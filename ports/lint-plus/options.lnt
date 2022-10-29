@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2022-08-19
-//! @version Last updated for version: 7.1.0
+//! @date Last updated on: 2022-07-24
+//! @version Last updated for version: 7.0.1
 //!
 //! @file
 //! @brief PC-Lint-Plus option file for linting QP/C source code
@@ -77,7 +77,7 @@ qpc.lnt             // QP/C options
 
 // M3-D4.9(A) function-like macro
 -esym(9026,
- QF_CONST_CAST_,
+ QF_EVT_CONST_CAST_,
  QF_EVT_REF_CTR_INC_,
  QF_EVT_REF_CTR_DEC_,
  QF_PTR_AT_,
@@ -108,7 +108,9 @@ qpc.lnt             // QP/C options
 
 // M3-R11.8(R) cast drops const qualifier
 -emacro(9005,
- QF_CONST_CAST_)
+ QF_EVT_REF_CTR_INC_,
+ QF_EVT_REF_CTR_DEC_,
+ QF_EPOOL_PUT_)
 
 // M3-D11.5(A) conversion from pointer to void to other pointer type
 -efunc(9079,

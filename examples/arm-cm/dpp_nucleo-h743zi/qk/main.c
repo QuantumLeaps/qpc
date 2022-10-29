@@ -1,36 +1,34 @@
-/*****************************************************************************
-* Product: DPP example
-* Last updated for version 7.1.1
-* Last updated on  2022-09-22
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-*****************************************************************************/
+============================================================================*/
+/*!
+* @date Last updated on: 2022-02-25
+* @version Last updated for: @ref qpc_7_0_0
+*
+* @file
+* @brief DPP example
+*/
 #include "qpc.h"
 #include "dpp.h"
 #include "bsp.h"
@@ -56,22 +54,22 @@ int main() {
     /* start the active objects... */
     Philo_ctor(); /* instantiate all Philosopher active objects */
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
-        QACTIVE_START(AO_Philo[n], /* AO to start */
-            Q_PRIO(n + 1U, N_PHILO), /* QF-prio/pre-thre. */
-            philoQueueSto[n],      /* event queue storage */
-            Q_DIM(philoQueueSto[n]), /* queue length [events] */
-            (void *)0,             /* stack storage (not used) */
-            0U,                    /* size of the stack [bytes] */
-            (void *)0);            /* initialization param */
+        QACTIVE_START(AO_Philo[n],           /* AO to start */
+                      n + 1U,                /* QP priority of the AO */
+                      philoQueueSto[n],      /* event queue storage */
+                      Q_DIM(philoQueueSto[n]), /* queue length [events] */
+                      (void *)0,             /* stack storage (not used) */
+                      0U,                    /* size of the stack [bytes] */
+                      (QEvt *)0);            /* initialization event */
     }
     Table_ctor(); /* instantiate the Table active object */
-    QACTIVE_START(AO_Table,        /* AO to start */
-        N_PHILO + 1U,              /* QF-prio/pre-thre. */
-        tableQueueSto,             /* event queue storage */
-        Q_DIM(tableQueueSto),      /* queue length [events] */
-        (void *)0,                 /* stack storage (not used) */
-        0U,                        /* size of the stack [bytes] */
-        (void *)0);                /* initialization param */
+    QACTIVE_START(AO_Table,                  /* AO to start */
+                  N_PHILO + 1U,              /* QP priority of the AO */
+                  tableQueueSto,             /* event queue storage */
+                  Q_DIM(tableQueueSto),      /* queue length [events] */
+                  (void *)0,                 /* stack storage (not used) */
+                  0U,                        /* size of the stack [bytes] */
+                  (QEvt *)0);                /* initialization event */
 
     return QF_run(); /* run the QF application */
 }

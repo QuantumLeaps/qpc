@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Blinky" on MSP-EXP430F5529LP, preemptive QK kernel
-* Last updated for version 7.1.1
-* Last updated on  2022-09-09
+* Last updated for version 6.3.7
+* Last updated on  2018-11-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -41,7 +41,7 @@
 Q_DEFINE_THIS_FILE
 
 #ifdef Q_SPY
-#error Simple Blinky Application does not provide Spy build configuration
+    #error Simple Blinky Application does not provide Spy build configuration
 #endif
 
 /* Local-scope objects -----------------------------------------------------*/
@@ -57,14 +57,14 @@ Q_DEFINE_THIS_FILE
 
 /* ISRs used in this project ===============================================*/
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
-    __interrupt void TIMER0_A0_ISR(void); /* prototype */
+    __interrupt void TIMER0_A0_ISR (void); /* prototype */
     #pragma vector=TIMER0_A0_VECTOR
     __interrupt void TIMER0_A0_ISR(void)
 #elif defined(__GNUC__)
     __attribute__ ((interrupt(TIMER0_A0_VECTOR)))
-    void TIMER0_A0_ISR(void)
+    void TIMER0_A0_ISR (void)
 #else
-    #error MSP430 compiler not supported!
+    #error Compiler not supported!
 #endif
 {
     QK_ISR_ENTRY();    /* inform QK about entering the ISR */
@@ -74,7 +74,7 @@ Q_DEFINE_THIS_FILE
     QK_ISR_EXIT();     /* inform QK about exiting the ISR */
 
 #ifdef NDEBUG
-    __low_power_mode_off_on_exit(); /* see NOTE1 */
+    __low_power_mode_off_on_exit(); /* turn the low-power mode OFF, NOTE1 */
 #endif
 }
 
@@ -133,12 +133,8 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     (void)loc;
     QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
 
-    QF_INT_DISABLE(); /* disable all interrupts */
-
-    /* cause the reset of the CPU... */
-    WDTCTL = WDTPW | WDTHOLD;
-    __asm("    push &0xFFFE");
-    /* return from function does the reset */
+    /* write invalid password to WDT: cause a password-validation RESET */
+    WDTCTL = 0xDEAD;
 }
 
 /*****************************************************************************

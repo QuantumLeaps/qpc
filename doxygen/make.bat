@@ -44,9 +44,6 @@
 
 :: HTML outut directory ......................................................
 @set HTML_OUT=%QPC%\html
-if "%1"=="-CERT" (
-    @set HTML_OUT=%QPC%\cert-pack
-)
 
 :: Generate metrics.dox file...
 @set METRICS_INP=%QPC%\include %QPC%\src -x %QPC%\src\qs\*

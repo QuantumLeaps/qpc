@@ -1,74 +1,52 @@
-/*============================================================================
-* QP/C Real-Time Embedded Framework (RTEF)
-* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
-*
-* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
-*
-* This software is dual-licensed under the terms of the open source GNU
-* General Public License version 3 (or any later version), or alternatively,
-* under the terms of one of the closed source Quantum Leaps commercial
-* licenses.
-*
-* The terms of the open source GNU General Public License version 3
-* can be found at: <www.gnu.org/licenses/gpl-3.0>
-*
-* The terms of the closed source Quantum Leaps commercial licenses
-* can be found at: <www.state-machine.com/licensing>
-*
-* Redistributions in source code must retain this top-level comment block.
-* Plagiarizing this software to sidestep the license obligations is illegal.
-*
-* Contact information:
-* <www.state-machine.com>
-* <info@state-machine.com>
-============================================================================*/
-/*!
-* @date Last updated on: 2022-08-24
-* @version Last updated for: Zephyr 3.1.99 and @ref qpc_7_1_0
-*
-* @file
-* @brief BSP for Zephyr, Blinky example
-*/
 #include "qpc.h"
 #include "bsp.h"
 
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/sys/reboot.h>
+#include <drivers/gpio.h>
+#include <sys/reboot.h>
 /* other drivers, if necessary ... */
-
-#ifdef Q_SPY
-    #error Simple Blinky Application does not provide Spy build configuration
-#endif
 
 Q_DEFINE_THIS_FILE
 
 /* The devicetree node identifier for the "led0" alias. */
 #define LED0_NODE DT_ALIAS(led0)
 
-static struct gpio_dt_spec const l_led0 = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
-static struct k_timer QF_tick_timer;
+#if DT_NODE_HAS_STATUS(LED0_NODE, okay)
+#define LED0    DT_GPIO_LABEL(LED0_NODE, gpios)
+#define PIN     DT_GPIO_PIN(LED0_NODE, gpios)
+#define FLAGS   DT_GPIO_FLAGS(LED0_NODE, gpios)
+#else
+/* A build error here means your board isn't set up to blink an LED. */
+#error "Unsupported board: led0 devicetree alias is not defined"
+#define LED0    ""
+#define PIN     0
+#define FLAGS   0
+#endif
 
-/*..........................................................................*/
+static struct device const *dev_LED0;
+static struct k_timer QF_tick_timer;
 static void QF_tick_function(struct k_timer *tid) {
     (void)tid; /* unused parameter */
     QTIMEEVT_TICK_X(0U, (void *)0);
 }
-/*..........................................................................*/
+
 void BSP_init(void) {
-    int ret = gpio_pin_configure_dt(&l_led0, GPIO_OUTPUT_ACTIVE);
+    dev_LED0 = device_get_binding(LED0);
+    Q_ASSERT(dev_LED0 != NULL);
+
+    int ret = gpio_pin_configure(dev_LED0, PIN, GPIO_OUTPUT_ACTIVE | FLAGS);
     Q_ASSERT(ret >= 0);
 
     k_timer_init(&QF_tick_timer, &QF_tick_function, NULL);
 }
-/*..........................................................................*/
+
 void BSP_ledOn(void) {
     printk("BSP_ledOn\n");
-    gpio_pin_set_dt(&l_led0, true);
+    gpio_pin_set(dev_LED0, PIN, true);
 }
-/*..........................................................................*/
+
 void BSP_ledOff(void) {
     printk("BSP_ledOff\n");
-    gpio_pin_set_dt(&l_led0, false);
+    gpio_pin_set(dev_LED0, PIN, false);
 }
 
 /* QF callbacks ============================================================*/
@@ -94,3 +72,4 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
     sys_reboot(SYS_REBOOT_COLD); /* release build: reboot the system */
 #endif
 }
+

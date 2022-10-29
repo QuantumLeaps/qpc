@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.2.2" links="1">
+<model version="5.2.1" links="1">
  <documentation>Low-Power example with multiple clock rates</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -229,7 +229,7 @@ enum BlinkySignals {
 $declare${AOs::AO_Blinky0}
 $declare${AOs::Blinky0_ctor}
 
-#ifdef QP_INC_QXK_H_ /* QXK kernel? */
+#ifdef QXK_H /* QXK kernel? */
 
 void XBlinky1_ctor(void);
 extern QXThread XT_Blinky1;

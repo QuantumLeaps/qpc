@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Purpose: Fixture for QUTEST
-* Last updated for version 7.1.1
-* Last updated on  2022-09-22
+* Last Updated for Version: 6.3.6
+* Date of the Last Update:  2018-10-03
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     /* start the active objects... */
     Blinky_ctor();
     QACTIVE_START(AO_Blinky,
-                  2U, /* QF-priority/preemption-threshold */
+                  1U,
                   blinkyQSto, Q_DIM(blinkyQSto),
                   (void *)0, 0U, (void *)0);
 

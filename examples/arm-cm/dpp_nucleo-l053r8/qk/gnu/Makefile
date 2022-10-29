@@ -45,7 +45,8 @@
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    https://github.com/QuantumLeaps/qtools
+#    https://sourceforge.net/projects/qpc/files/QTools/
+#
 
 #-----------------------------------------------------------------------------
 # project name
@@ -133,7 +134,6 @@ LIBS      :=
 
 # defines
 DEFINES   := \
-	-DQK_ON_CONTEXT_SW \
 	-DQK_USE_IRQ_NUM=30 \
 	-DQK_USE_IRQ_HANDLER=LCD_IRQHandler
 

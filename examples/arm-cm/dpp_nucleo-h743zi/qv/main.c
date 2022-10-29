@@ -55,7 +55,7 @@ int main() {
     Philo_ctor(); /* instantiate all Philosopher active objects */
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
         QACTIVE_START(AO_Philo[n],           /* AO to start */
-                      n + 1U,                /* QP priority of the AO */
+                      (uint_fast8_t)(n + 1), /* QP priority of the AO */
                       philoQueueSto[n],      /* event queue storage */
                       Q_DIM(philoQueueSto[n]), /* queue length [events] */
                       (void *)0,             /* stack storage (not used) */
@@ -64,7 +64,7 @@ int main() {
     }
     Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,                  /* AO to start */
-                  N_PHILO + 1U,              /* QP priority of the AO */
+                  (uint_fast8_t)(N_PHILO + 1), /* QP priority of the AO */
                   tableQueueSto,             /* event queue storage */
                   Q_DIM(tableQueueSto),      /* queue length [events] */
                   (void *)0,                 /* stack storage (not used) */
