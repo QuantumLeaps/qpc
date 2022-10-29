@@ -137,7 +137,8 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DQXK_ON_CONTEXT_SW \
+DEFINES   := \
+    -DQXK_ON_CONTEXT_SW \
 	-DQXK_USE_IRQ_NUM=30 \
 	-DQXK_USE_IRQ_HANDLER=LCD_IRQHandler
 

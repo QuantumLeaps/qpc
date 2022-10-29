@@ -215,6 +215,8 @@
                 <option>
                     <name>CCDefines</name>
                     <state>EFM32PG1B200F256GM48</state>
+                    <state>QK_USE_IRQ_HANDLER=CRYPTO_IRQHandler</state>
+                    <state>QK_USE_IRQ_NUM=25</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -1122,7 +1124,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>7.60.1.11206</state>
+                    <state>9.10.2.39304</state>
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
@@ -1146,7 +1148,7 @@
                 </option>
                 <option>
                     <name>RTConfigPath2</name>
-                    <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Normal.h</state>
+                    <state>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</state>
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
@@ -1232,7 +1234,7 @@
                 </option>
                 <option>
                     <name>DSPExtension</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>TrustZone</name>

@@ -1,5 +1,84 @@
 /*! @page history Revision History
 
+@section qpc_7_1_2 Version 7.1.2, 2022-10-07
+This release improves preemption-threshold scheduling (PTS) in @ref srs_qk "QK" kernel, especially the generation of the software tracing information about the scheduler activity. Also, PTS has been removed from the @ref srs_qxk "QXK" kernel because of the inherent complexity of that kernel.
+
+Additionally, the default for #QF_TIMEEVT_CTR_SIZE has been increased from 2 to 4 bytes. This increases the default dynamic range for QTimeEvt counters to 32-bits.
+
+__Source__
+- Modified QK_sched_() and QK_activate_()
+- Modified QXK_sched_() and QXK_activate_()
+- Added QXK_contextSw() to handle context switching (generation of software tracing information and invoking of the QXK_onContextSw() callback, if configured
+- increased default for #QF_TIMEEVT_CTR_SIZE 4
+- changed inclusion guards in the QP/C header files (e.g. `QF_H` -> `QP_INC_QF_H_`) for compliance with the updated Quantum Leaps coding standard and to make the names more unique.
+
+__Ports__
+- Modified QXK ports (assembly) to call QXK_contextSw()
+- Added port to RISC-V with the cooperative @ref srs_qvk "QV" kernel
+
+__Testing__
+- Added new directory `qpc/test/` for **system**-level testing of QP/C itself.
+- Added new tests for QK: `qpc/test/qk`
+- Added new tests for QXK: `qpc/test/qutest/qxk`
+
+@note
+The `qpc/test/` directory is planned to contain a growing number of system-level tests, which are based on QUTest, but *without* the QP-stub. The tests take advantage of the new QUTest configuration, where the QP-stub is NOT included (because the actual QP framework is linked). This configuration is activated by defining macro `Q_UTEST=0`.
+
+@attention
+Most tests provided in the `qpc/test/` directory run only on embedded targets and cannot run on the host machine.
+
+
+@section qpc_7_1_0 Version 7.1.0, 2022-08-30
+This QP/C release introduces [<b>preemption-threshold scheduling</b> (PTS)](https://www.state-machine.com/doc/Ghattas07.pdf) for the preemptive QK and QXK kernels. Specifically, it is now possible to limit preemption of a given QActive/QXThread by giving it both the QF-priority and preemption-threshold.
+
+The following diagram shows the relationship between the "QF-priority" and "preemption-threshold" (see also ::QPrioSpec):
+
+![QF-priority and preemption-threshold relations](qp-prio.png)
+
+@note
+For backwards-compatibility, ::QPrioSpec data type might contain only the "QF-priority" component (and the "preemption-threshold" component left at zero). In that case, the "preemption-threshold" will be assumed to be the same as the "QF-priority". This corresponds exactly to the previous semantics of AO priority.
+
+__Source__
+- modified the QP/C code for preemption-threshold
+- improved QS tracing of Scheduler activities in QK and QXK
+- improved implementation of QXSemaphore and QXMutex in QXK
+
+__Ports__
+- Modified QK and QXK ports to ARM Cortex-M for preemption-threshold and for handling the context-switch callback
+- Updated Zephyr port and examples for Zephyr 3.1.99
+
+__Examples__
+- Added Q_PRIO() macro for setting QF-priority and preemption-threshold to various examples (in calls to QACTIVE_START())
+- increased size of the main stack in most examples from 1024 to 2048 bytes. This is to prevent stack overflow that was observed with the lower limit.
+
+__Testing__
+- modified QUTest to also allow testing of the QP framework itself.
+
+
+@section qpc_7_0_2 Version 7.0.2, 2022-08-12
+__Bug Fixes:__
+- [bug#312 "Bug in QK and QXK 7.0.1"](https://sourceforge.net/p/qpc/bugs/312)
+
+__Ports__
+Modified QK and QXK ports to ARM Cortex-M
+- `qpc/ports/arm-cm/qk`
+- `qpc/ports/arm-cm/qxk`
+
+Modified Zephyr port
+- moved the port from the usual location in `qpc/ports/zephyr` up a level to `qpc/zephyr`. This was done to make QPC into an external [Zephyr module](https://docs.zephyrproject.org/latest/develop/modules.html), which has to comply with the Zephyr specification.
+
+
+__Examples (ARM Cortex-M):__
+- `qpc/examples/arm-cm/dpp_efm32-slstk3401a/qk` provided examples of configuring either NMI or IRQ for Cortex-M4 (ARMv7m)
+- `qpc/examples/arm-cm/dpp_efm32-slstk3401a/qxk` provided examples of configuring either NMI or IRQ for Cortex-M4 (ARMv7m)
+- `qpc/examples/arm-cm/dpp_nucleo-l053r8/qk` provided examples of configuring either NMI or IRQ for Cortex-M0+ (ARMv6m)
+- `qpc/examples/arm-cm/dpp_nucleo-l053r8/qk` provided examples of configuring either NMI or IRQ for Cortex-M0+ (ARMv6m)
+
+__Examples (Zephyr):__
+- `qpc/examples/zephyr/blinky` - modified to use the new Zephyr port
+- `qpc/examples/zephyr/dpp` - modified to use the new Zephyr port and to demonstrate QSPY software tracing.
+
+
 @section qpc_7_0_1 Version 7.0.1, 2022-07-31
 This release is the first one that contains the complete [QM model](https://www.state-machine.com/products/qm) of the QP/C framework (in the file `qpc/qpc.qm`). This model is then used to **generate all QP/C source code**:
 - `qpc/`

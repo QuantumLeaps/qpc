@@ -23,11 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-07
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-08-25
+* @version Last updated for: Zephyr 3.1.99 and @ref qpc_7_1_0
 *
 * @file
-* @brief QF/C port to Zephyr RTOS
+* @brief QF/C port to Zephyr RTOS (v 3.1.99)
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */
@@ -42,9 +42,6 @@
 
 Q_DEFINE_THIS_MODULE("qf_port")
 
-/* QF_MAX_ACTIVE cannot exceed the limit in QF */
-Q_ASSERT_STATIC(QF_MAX_ACTIVE <= 64);
-
 /*..........................................................................*/
 struct k_spinlock QF_spinlock;
 
@@ -55,7 +52,22 @@ void QF_init(void) {
 /*..........................................................................*/
 int_t QF_run(void) {
     QF_onStartup();
+#ifdef Q_SPY
+
+#if CONFIG_NUM_PREEMPT_PRIORITIES > 0
+    /* lower the priority of the main thread to the level of idle thread */
+    k_thread_priority_set(k_current_get(),
+                          CONFIG_NUM_PREEMPT_PRIORITIES - 1);
+#endif
+
+    /* perform QS work... */
+    while (true) {
+        QS_rxParse();   /* parse any QS-RX bytes */
+        QS_doOutput();  /* perform the QS-TX output */
+    }
+#else
     return 0; /* return from the main Zephyr thread */
+#endif
 }
 /*..........................................................................*/
 void QF_stop(void) {
@@ -81,40 +93,48 @@ static void thread_entry(void *p1, void *p2, void *p3) {
 * set the options for the Zephyr thread (attr1) and thread name (attr2).
 * QActive_setAttr() needs to be called *before* QACTIVE_START() for the
 * given active object.
+*
+* In this Zephyr port the attributes will be used as follows (see also
+* Active_start_()):
+* - attr1 - will be used for thread options in k_thread_create()
+* - attr2 - will be used for thread name in k_thread_name_set()
 */
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
-    me->thread.base.order_key = attr1;         /* temporarily save attr1 */
-    me->thread.init_data      = (void *)attr2; /* temporarily save attr2 */
+    me->thread.base.order_key = attr1; /* will be used for thread options */
+    me->thread.init_data = (void *)attr2; /* will be used for thread name */
 }
 /*..........................................................................*/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    QActive_register_(me); /* register this AO */
+
     /* initialize the Zephyr message queue */
     k_msgq_init(&me->eQueue, (char *)qSto, sizeof(QEvt *), (uint32_t)qLen);
-
-    me->prio = prio;  /* save the QF priority */
-    QActive_register_(me);      /* make QF aware of this active object */
 
     QHSM_INIT(&me->super, par, me->prio); /* the top-most initial tran. */
     QS_FLUSH(); /* flush the trace buffer to the host */
 
     /* Zephyr uses the reverse priority numbering than QP */
-    int zprio = (int)QF_MAX_ACTIVE - (int)prio;
+    int zprio = (int)QF_MAX_ACTIVE - (int)me->prio;
 
-    /* create an Zephyr thread for the AO... */
+    /* extract data temporarily saved in me->thread by QActive_setAttr() */
     uint32_t opt = me->thread.base.order_key;
 #ifdef CONFIG_THREAD_NAME
     char const *name = (char const *)me->thread.init_data;
 #endif
-    me->thread = (struct k_thread){}; /* clear the thread storage */
-#ifdef CONFIG_THREAD_NAME
-    k_thread_name_set(&me->thread, name);
-#endif
+
+    /* clear the Zephyr thread structure before creating the thread */
+    me->thread = (struct k_thread){};
+
+    /* create a Zephyr thread for the AO... */
     k_thread_create(&me->thread,
-                    (k_thread_stack_t *)stkSto, stkSize,
+                    (k_thread_stack_t *)stkSto,
+                    (size_t)stkSize,
                     &thread_entry,
                     (void *)me, /* p1 */
                     (void *)0,  /* p2 */
@@ -122,17 +142,21 @@ void QActive_start_(QActive * const me, uint_fast8_t prio,
                     zprio,      /* Zephyr priority */
                     opt,        /* thread options */
                     K_NO_WAIT); /* start immediately */
+
+#ifdef CONFIG_THREAD_NAME
+    /* set the Zephyr thread name, if initialized, or the default name "AO" */
+    k_thread_name_set(&me->thread, (name != (char *)0) ? name : "AO");
+#endif
 }
 /*..........................................................................*/
 bool QActive_post_(QActive * const me, QEvt const * const e,
                    uint_fast16_t const margin, void const * const sender)
 {
-    bool status;
     QF_CRIT_STAT_
-
     QF_CRIT_E_();
     uint_fast16_t nFree = (uint_fast16_t)k_msgq_num_free_get(&me->eQueue);
 
+    bool status;
     if (margin == QF_NO_MARGIN) {
         if (nFree > 0U) {
             status = true; /* can post */
@@ -168,7 +192,9 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QF_CRIT_X_();
 
         /* posting to the Zephyr message queue must succeed, see NOTE1 */
-        Q_ALLEGE_ID(520, k_msgq_put(&me->eQueue, (void *)&e, K_NO_WAIT) == 0);
+        Q_ALLEGE_ID(520,
+                    k_msgq_put(&me->eQueue, (void const *)&e, K_NO_WAIT)
+                     == 0);
     }
     else {
 
@@ -230,7 +256,3 @@ QEvt const *QActive_get_(QActive * const me) {
 
     return e;
 }
-
-
-/*============================================================================
-*/

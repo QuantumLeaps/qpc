@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP/C on EMF32, QUTEST, GNU-ARM
-# Last Updated for Version: 7.0.1
-# Date of the Last Update:  2022-05-23
+# Last Updated for Version: 7.1.0
+# Date of the Last Update:  2022-08-20
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -50,7 +50,7 @@
 #
 PROJECT := test_dpp
 TARGET  := efm32
-TARGET_DIR := ..\..\target_efm32
+TARGET_DIR := ..\..\..\..\3rd_party\efm32pg1b\qutest
 
 #-----------------------------------------------------------------------------
 # project directories:
@@ -114,7 +114,7 @@ C_SRCS := \
 CPP_SRCS :=
 
 OUTPUT    := $(PROJECT)
-LD_SCRIPT := $(TARGET_DIR)/test.ld
+LD_SCRIPT := $(TARGET_DIR)\qutest.ld
 
 QP_SRCS := \
 	qep_hsm.c \
@@ -254,6 +254,7 @@ endif
 
 $(TARGET_BIN) : $(TARGET_ELF)
 	$(BIN) -O binary $< $@
+	$(FLASH) $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
@@ -263,7 +264,6 @@ flash :
 	$(FLASH) $(TARGET_BIN)
 
 run : $(TARGET_BIN)
-	$(FLASH) $<
 	$(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
 
 $(BIN_DIR)/%.d : %.c

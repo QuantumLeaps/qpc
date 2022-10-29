@@ -214,8 +214,8 @@
                 </option>
                 <option>
                     <name>CCDefines</name>
-                    <state>QK_USE_IRQ_NUM=30</state>
                     <state>QK_USE_IRQ_HANDLER=LCD_IRQHandler</state>
+                    <state>QK_USE_IRQ_NUM=30</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>

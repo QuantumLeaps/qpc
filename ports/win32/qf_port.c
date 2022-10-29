@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-30
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-08-29
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
 * @brief QF/C port to Win32 API
@@ -133,17 +133,17 @@ void QF_setWin32Prio(QActive *act, int_t win32Prio) {
 }
 
 /* QActive functions =======================================================*/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
                     void const * const par)
 {
-    Q_REQUIRE_ID(800, (0U < prio) /* priority must be in range */
-                 && (prio <= QF_MAX_ACTIVE)
-                 && (stkSto == (void *)0));   /* statck storage must NOT...
-                                               * ... be provided */
-    me->prio = prio; /* set QF priority of this AO before adding it to QF */
-    QActive_register_(me);     /* make QF aware of this active object */
+    /* no external AO-stack storage needed for this port */
+    Q_REQUIRE_ID(800, stkSto == (void *)0);
+
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    QActive_register_(me); /* register this AO */
 
     QEQueue_init(&me->eQueue, qSto, qLen);
 

@@ -49,7 +49,7 @@
 #define QF_CRIT_ENTRY(stat_)  taskENTER_CRITICAL()
 #define QF_CRIT_EXIT(stat_)   taskEXIT_CRITICAL()
 
-#include "FreeRTOS.h"  /* FreeRTOS master include file, see NOTE4 */
+#include "FreeRTOS.h"  /* FreeRTOS master include file, see NOTE3 */
 #include "task.h"      /* FreeRTOS task management */
 #include "queue.h"     /* FreeRTOS queue management */
 
@@ -169,14 +169,14 @@ enum FreeRTOS_TaskAttrs {
     void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName);
 #endif
 #if (configSUPPORT_STATIC_ALLOCATION > 0)
-    void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer,
-                                        StackType_t **ppxIdleTaskStackBuffer,
-                                        uint32_t *pulIdleTaskStackSize );
+    void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
+                                       StackType_t **ppxIdleTaskStackBuffer,
+                                       uint32_t *pulIdleTaskStackSize);
 #endif
 
-/*****************************************************************************
-* interface used only inside QF, but not in applications
-*/
+/*==========================================================================*/
+/* interface used only inside QF, but not in applications */
+
 #ifdef QP_IMPL
     #define FREERTOS_TASK_PRIO(qp_prio_) \
         ((UBaseType_t)((qp_prio_) + tskIDLE_PRIORITY))
@@ -213,8 +213,8 @@ enum FreeRTOS_TaskAttrs {
 
 #endif /* ifdef QP_IMPL */
 
-/*****************************************************************************
-* NOTE1:
+/*==========================================================================*/
+/* NOTE1:
 * The maximum number of active objects QF_MAX_ACTIVE can be increased to 64,
 * inclusive, but it can be reduced to save some memory. Also, the number of
 * active objects cannot exceed the number of FreeRTOS task priorities,
@@ -230,11 +230,7 @@ enum FreeRTOS_TaskAttrs {
 * provides the "FromISR" variants for QP functions and "FROM_ISR" variants
 * for QP macros to be used inside ISRs. ONLY THESE "FROM_ISR" VARIANTS
 * ARE ALLOWED INSIDE ISRs AND CALLING THE TASK-LEVEL APIs IS AN ERROR.
-*
-* NOTE4:
-* FreeRTOS does not support selective scheduler locking (up to the given
-* priority ceiling). Therefore, this port uses only the crude global
-* scheduler locking.
 */
 
 #endif /* QF_PORT_H */
+
