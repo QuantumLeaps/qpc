@@ -355,7 +355,7 @@
             <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=16</Define>
+              <Define>Stack_Size=2048 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -1040,7 +1040,7 @@
             <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=16</Define>
+              <Define>Stack_Size=2048 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -1725,7 +1725,7 @@
             <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Stack_Size=1024 Heap_Size=16</Define>
+              <Define>Stack_Size=2048 Heap_Size=16</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>

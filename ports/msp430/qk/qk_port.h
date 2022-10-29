@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-30
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-10-02
+* @version Last updated for: @ref qpc_7_1_2
 *
 * @file
 * @brief QK/C port port to MSP430

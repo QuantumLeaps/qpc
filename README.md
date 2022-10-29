@@ -3,12 +3,15 @@
 # What's New?
 View QP/C Revision History at: https://www.state-machine.com/qpc/history.html
 
->**NOTE:** If you're interested in the latest QP/C version from Git,
-it is highly recommened that you download the latest
-[QP/C Release](https://github.com/QuantumLeaps/qpc/releases)
-as opposed to cloning the repo directy. This is because the `3rd_party`
-directory needed to build the examples is no longer provided in the
-`qpc` repository (and is provided in the QP/C release).
+> **NOTE:** If you're interested in the latest QP/C version from GitHub,
+it is recommened that you clone this repo like that:
+
+```
+git clone https://github.com/QuantumLeaps/qpc --recurse-submodules --depth 1
+```
+
+Alternatively, you can also download the latest
+[QP/C Release](https://github.com/QuantumLeaps/qpc/releases).
 
 
 # Getting Started with QP/C

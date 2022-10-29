@@ -34,7 +34,7 @@ The [QP/Spy software tracing](https://www.state-machine.com/qtools/qpspy.html)
 is supported in this example and can be enabled by providing the command-line
 option `-DQSPY=ON` to the build process:
 
-Specific example 
+Specific example
 ```
 west build -b nucleo_h743zi -- -DQSPY=ON
 ```

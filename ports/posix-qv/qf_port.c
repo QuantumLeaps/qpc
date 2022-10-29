@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-08-29
+* @version Last updated for: @ref qpc_7_1_0
 *
 * @file
 * @brief QF/C port to POSIX API (single-threaded, like QV kernel)
@@ -258,20 +258,20 @@ int QF_consoleWaitForKey(void) {
 }
 
 /****************************************************************************/
-void QActive_start_(QActive * const me, uint_fast8_t prio,
+void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                   QEvt const * * const qSto, uint_fast16_t const qLen,
                   void * const stkSto, uint_fast16_t const stkSize,
                   void const * const par)
 {
     (void)stkSize; /* unused parameter in the POSIX port */
 
-    Q_REQUIRE_ID(600, (0U < prio)  /* priority...*/
-        && (prio <= QF_MAX_ACTIVE) /*... in range */
-        && (stkSto == (void *)0)); /* statck storage must NOT...
-                                       * ... be provided */
+    /* no external stack storage needed for this port */
+    Q_REQUIRE_ID(600, (stkSto == (void *)0));
     QEQueue_init(&me->eQueue, qSto, qLen);
-    me->prio = (uint8_t)prio;
-    QActive_register_(me); /* make QF aware of this active object */
+
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); /* QF-priority of the AO */
+    me->pthre = (uint8_t)(prioSpec >> 8U);   /* preemption-threshold */
+    QActive_register_(me); /* register this AO */
 
     /* the top-most initial tran. (virtual) */
     QHSM_INIT(&me->super, par, me->prio);

@@ -2,26 +2,21 @@
 @image html qp_banner.jpg
 
 @remark
-<a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP/C on GitHub"><img style="float:right; clear:right;" src="img/logo_github.png"></a>
+<a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP/C on GitHub"><img class="right" src="img/logo_github.png"></a>
 To check what's new in QP&trade;/C, please see @ref history "QP/C Revision History". You can also get the latest **QP&trade;/C code**, with the recent enhancements and bug fixes, from the <a class="extern" target="_blank" href="https://github.com/QuantumLeaps/qpc"><strong>GitHub QP&trade;/C repository</strong></a>.
 <div style="clear:both"></div>
 
 
 @section over_about What is it?
-<b>QP&trade;/C Real-Time Embedded Framework (RTEF)</b> is a lightweight implementation of the @webref{active-object, Active Object model of computation} specifically tailored for real-time embedded (RTE) systems. QP is both a software infrastructure for building applications consisting of Active Objects (actors) and a runtime environment for executing the Active Objects in a deterministic fashion. Additionally, QP Framework supports @webref{fsm#HSM, Hierarchical State Machines} with which to specify the behavior of Active Objects @ref srs_ref "[ROOM:94], [UML 2.5],[Sutter:10]".
-
-@note
-<a href="https://www.state-machine.com/products/qp#CERT" title="QP Cert-Pack"><img src="cert-pack.png" style="float:right; margin:0 20px 0 20px;"></img></a>
-The @webref{products/qp#CERT,QP Certification Pack} provides:
-- @ref srs "Software Requirements Specification" with a good @ref srs_over "overview" of the QP/C Framework
-- @ref sas "Software Architecture Specification" with concise description of QP/C @ref sas_core "architecture"
-- @ref sds "Software Design Specification" with detailed description of the QP/C @ref sds "design".
+<b>QP&trade;/C Real-Time Embedded Framework (RTEF)</b> is a lightweight implementation of the @webref{active-object, Active Object model of computation} specifically tailored for real-time embedded (RTE) systems. QP is both a *software infrastructure* for building applications consisting of active objects (actors) and a *runtime environment* for executing the active objects in a deterministic fashion. Additionally, QP Framework supports @webref{fsm#HSM, Hierarchical State Machines} with which to specify the behavior of Active Objects @ref srs_ref "[ROOM:94], [UML 2.5],[Sutter:10]". You can think of the QP/C RTEF as a modern, truly *event-driven* real-time operating system (RTOS).
 
 
 @section over_goals What does it do?
 The main objectives of the QP/C RTEF are:
 
-- to provide a modern, event-driven model of concurrency based on the best practices of concurrent programming @ref srs_ref "[ROOM:94], [Cummings:10], [Sutter:10]", collectively known as the @webref{active-object, Active Object (Actor) model of computation}, which is inherently *safer* than the traditional "shared-state concurrency, mutual-exclusion, and blocking" approach based on a conventional Real-Time Operating System (RTOS);
+- to provide a modern, event-driven model of concurrency based on the best practices of concurrent programming  collectively known as the @webref{active-object, Active Object (Actor) model of computation}, which is inherently *safer* than the traditional "shared-state concurrency, mutual-exclusion, and blocking" approach based on a conventional Real-Time Operating System (RTOS);
+
+- to provide an efficient, @ref tr "bidirectionally traceable" implementation of @webref{fsm#HSM, Hierarchical State Machines} for specifying the internal behavior of Active Objects;
 
 - to provide a *higher-level of abstraction* closer to the problem domain than the "naked" RTOS threads;
 
@@ -31,16 +26,20 @@ The main objectives of the QP/C RTEF are:
 
 
 @section over_special What's special about it?
-The QP&trade;/C Real-Time Embedded Framework (RTEF) is a unique offering on the embedded software market. It provides a modern, reusable **architecture** of embedded applications, which combines object-orientation with the particular model of concurrency, known as @webref{active-object, <strong>active objects</strong>} (actors). This architecture is generally **safer**, more responsive and easier to understand than "free threading" with a traditional Real-Time Operating System (RTOS). It also provides sufficiently high level of abstraction and the right abstractions to effectively apply modeling and code generation to deeply embedded systems.
+The QP&trade;/C Real-Time Embedded Framework (RTEF) provides a modern, reusable **architecture** of embedded applications, which combines the model of concurrency, known as @webref{active-object, <strong>active objects</strong>} (actors) with @webref{fsm#HSM, Hierarchical State Machines}. This architecture is generally **safer**, more responsive and easier to understand than "free threading" with a traditional Real-Time Operating System (RTOS). It also provides sufficiently high level of abstraction and the *right* abstractions to effectively apply modeling and code generation to deeply embedded systems.
+
+@note
+The most unique aspect of the QP&trade;/C RTEF is its @ref over_eff "tiny size and efficiency" suitable for embedded  microcontrollers, such as MCUs based on ARM Cortex-M.
 
 
 @subsection over_oop Object Orientation
 Even though it is written in @ref misra "MISRA-compliant" ISO-C99, QP&trade;/C is fundamentally an **object-oriented** framework, which means that the framework itself and your applications derived from the framework are fundamentally composed of @ref sas_core "classes" and only classes can have @ref srs_sm "state machines" associated with them.
 
 @anchor oop
-@note
-If you program in C and object-oriented programming is new to you, please refer to the article and set of videos @webref{oop, "Object-Oriented Programming"}, which among others describes how you can implement the concepts of *classes*, *inheritance*, and *polymorphism* to portable ISO-C.
-@webref{oop, ![Object-Oriented Programming in C](an-oop_in_c.jpg)}
+@remark
+If you program in C and object-oriented programming is new to you, please refer to the article and set of videos @webref{oop, "Object-Oriented Programming"}, which among others describes how you can implement the concepts of *classes*, *inheritance*, and *polymorphism* to portable ISO-C.<br>
+<br>
+<a target="_blank" href="https://www.state-machine.com/oop" title="OOP in C"><img src="oop-in-C.jpg"></img></a>
 
 
 @subsection over_hsms Hierarchical State Machines
@@ -51,8 +50,8 @@ The behavior of active objects is specified in QP&trade;/C by means of @webref{f
 The QP&trade;/C framework can run on @ref exa_native "bare-metal single-chip microcontrollers", completely replacing a traditional RTOS. The framework contains a selection of built-in real-time kernels, such as the cooperative @ref srs_qv "QV kernel", the preemptive non-blocking @ref srs_qk "QK kernel", and the preemptive, dual-mode, blocking @ref srs_qxk "QXK kernel". The QXK kernel <span class="highlight">provides all the features you might expect from a traditional <strong>RTOS kernel</strong></span> and has been specifically designed for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software. @ref ports_native "Native QP ports" and ready-to-use @ref exa_native "examples" are provided for major @ref exa_ref_mcu "CPU families".
 
 
-@subsection over_eff Efficiency
-Even though QP&trade;/C offers much higher level of abstraction than a traditional RTOS, it typically outperforms equivalent traditional RTOS offerings both in RAM/ROM footprint and in CPU efficiency. The specific measurements and results are reported in the following @webref{doc/AN_QP_Performance.pdf, Application Note: "QP Performance Tests and Results"}:
+@subsection over_eff Size and Efficiency
+Even though QP&trade;/C offers much higher level of abstraction than a traditional RTOS, it typically outperforms equivalent traditional RTOS applications both in RAM/ROM footprint and in CPU efficiency. The specific measurements and results are reported in the following @webref{doc/AN_QP_Performance.pdf, Application Note: "QP Performance Tests and Results"}:
 
 [![Application Note: "QP Performance Tests and Results"](an-qp_performance.png)](https://www.state-machine.com/doc/AN_QP_Performance.pdf)
 
@@ -62,7 +61,7 @@ The QP Framework is simple to get started, simple to use and simple to build. Th
 
 
 @subsection over_inter Interoperability
-QP/C can also work with many traditional @ref exa_rtos "RTOSes" and @ref exa_os "general-purpose OSes" (such as Linux and Windows).
+QP/C can also work with many traditional @ref exa_rtos "Real-Time Operating Systems (RTOSes)" and @ref exa_os "general-purpose operating systems (GPOSes)" (such as Linux (POSIX) and Windows).
 
 
 @subsection over_trace Traceability

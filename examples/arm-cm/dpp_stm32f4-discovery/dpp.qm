@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.2.1" links="1">
+<model version="5.2.2" links="1">
  <documentation>Dining Philosopher Problem example</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -417,12 +417,12 @@ $declare(AOs::AO_Philo[N_PHILO])
 $declare(AOs::Table_ctor)
 $declare(AOs::AO_Table)
 
-#ifdef QXK_H
+#ifdef QP_INC_QXK_H_
     void Test1_ctor(void);
     extern QXThread * const XT_Test1;
     void Test2_ctor(void);
     extern QXThread * const XT_Test2;
-#endif /* QXK_H */
+#endif /* QP_INC_QXK_H_ */
 
 #endif /* DPP_H */
 </text>

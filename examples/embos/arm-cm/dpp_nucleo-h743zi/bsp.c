@@ -74,7 +74,7 @@ static void tick_handler(void) {  /* signature of embOS tick hook routine */
     static struct ButtonsDebouncing {
         uint32_t depressed;
         uint32_t previous;
-    } buttons = { ~0U, ~0U };
+    } buttons = { 0U, 0U };
     uint32_t current;
     uint32_t tmp;
     static uint_fast8_t ctr = 1U;

@@ -44,7 +44,7 @@ MEMORY {                                      /* memory map of mbed-LPC1768 */
 }
 
 /* The size of the stack used by the application. NOTE: you need to adjust  */
-STACK_SIZE = 1024;
+STACK_SIZE = 2048;
 
 /* The size of the heap used by the application. NOTE: you need to adjust   */
 HEAP_SIZE = 0;

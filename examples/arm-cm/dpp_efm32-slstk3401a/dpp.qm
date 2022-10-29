@@ -23,7 +23,7 @@
    <statechart properties="0x01">
     <!--${AOs::Philo::SM::initial}-->
     <initial target="../1">
-     <action>(void)par; /* unused parameter */
+     <action>Q_UNUSED_PAR(par);
 
 static bool registered = false;
 if (!registered) {
@@ -34,16 +34,10 @@ if (!registered) {
     QS_FUN_DICTIONARY(&amp;Philo_hungry);
     QS_FUN_DICTIONARY(&amp;Philo_eating);
 
-    QS_OBJ_DICTIONARY(&amp;Philo_inst[0]);
-    QS_OBJ_DICTIONARY(&amp;Philo_inst[0].timeEvt);
-    QS_OBJ_DICTIONARY(&amp;Philo_inst[1]);
-    QS_OBJ_DICTIONARY(&amp;Philo_inst[1].timeEvt);
-    QS_OBJ_DICTIONARY(&amp;Philo_inst[2]);
-    QS_OBJ_DICTIONARY(&amp;Philo_inst[2].timeEvt);
-    QS_OBJ_DICTIONARY(&amp;Philo_inst[3]);
-    QS_OBJ_DICTIONARY(&amp;Philo_inst[3].timeEvt);
-    QS_OBJ_DICTIONARY(&amp;Philo_inst[4]);
-    QS_OBJ_DICTIONARY(&amp;Philo_inst[4].timeEvt);
+    for (uint8_t n = 0U; n &lt; N_PHILO; ++n) {
+        QS_OBJ_ARR_DICTIONARY(&amp;Philo_inst[n], n);
+        QS_OBJ_ARR_DICTIONARY(&amp;Philo_inst[n].timeEvt, n);
+    }
 }
 
 QActive_subscribe(&amp;me-&gt;super, EAT_SIG);
@@ -155,6 +149,7 @@ QS_OBJ_DICTIONARY(&amp;Table_inst);
 QActive_subscribe(&amp;me-&gt;super, DONE_SIG);
 QActive_subscribe(&amp;me-&gt;super, PAUSE_SIG);
 QActive_subscribe(&amp;me-&gt;super, SERVE_SIG);
+QActive_subscribe(&amp;me-&gt;super, EAT_SIG); //???
 QActive_subscribe(&amp;me-&gt;super, TEST_SIG);
 
 for (uint8_t n = 0U; n &lt; N_PHILO; ++n) {
@@ -170,7 +165,7 @@ for (uint8_t n = 0U; n &lt; N_PHILO; ++n) {
     <state name="active">
      <!--${AOs::Table::SM::active::EAT}-->
      <tran trig="EAT">
-      <action>Q_ERROR_ID(60);</action>
+      <action>//???Q_ERROR_ID(60);</action>
       <tran_glyph conn="2,15,3,-1,14">
        <action box="0,-2,17,4"/>
       </tran_glyph>
@@ -399,12 +394,12 @@ $declare${AOs::AO_Table}
 $declare${AOs::Philo_ctor}
 $declare${AOs::AO_Philo[N_PHILO]}
 
-#ifdef QXK_H
+#ifdef QP_INC_QXK_H_
     void Test1_ctor(void);
     extern QXThread * const XT_Test1;
     void Test2_ctor(void);
     extern QXThread * const XT_Test2;
-#endif /* QXK_H */
+#endif /* QP_INC_QXK_H_ */
 
 #endif /* DPP_H */
 </text>
