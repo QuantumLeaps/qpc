@@ -1,7 +1,7 @@
 # QPC Zephyr module
 # SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 
-zephyr_library()
+zephyr_library_named(qpc)
 
 if(CONFIG_QPC)
 
