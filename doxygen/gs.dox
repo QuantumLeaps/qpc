@@ -7,7 +7,7 @@ The following sections describe how to get started with QP&trade;/C quickly:
 The YouTube Video <a class="extern" target="_blank" href="https://youtu.be/O7ER6_VqIH0">Getting Started with QP&trade; Frameworks</a> provides instructions on how to download, install and get started with QP quickly.
 
 @image html  gs-video.jpg "Video: Getting Started with QP&trade; Real-Time Embedded Framework"
-@image latex gs-video.jpg "Video: Getting Started with QP&trade; Real-Time Embedded Framework"
+@image latex gs-video.jpg "Video: Getting Started with QP&trade; Real-Time Embedded Framework" width=5in
 
 @note
 <a href="modules.html" title="QP Cert-Pack"><img src="cert-pack.png" style="float:right; margin:0 20px 20px 0;"></img></a>
@@ -27,7 +27,7 @@ Information about the QP/C functionality, architecture, design, and other aspect
 The most recommended way of obtaining QP&trade;/C&trade; is by downloading the @webref{#Downloads, <b>QP-bundle&trade;</b>}, which includes QP&trade;/C as well as other QP&trade; frameworks and also the @webref{products/qm, QM&trade; modeling tool} and the @webref{products/qtools, QTools&trade; collection}. The main advantage of obtaining QP&trade;/C bundled together like that is that you get all components, tools and examples ready to go.
 
 @image html  qp-bundle.png "QP-bundle Downloads"
-@image latex qp-bundle.png "QP-bundle Downloads"
+@image latex qp-bundle.png "QP-bundle Downloads" width=1.75in
 
 @note
 <a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP&trade;/C on GitHub"><img style="float:right; clear:right;" src="img/logo_github.png"></a>
@@ -37,7 +37,8 @@ If you are allergic to installers and GUIs or don't have administrator privilege
 @section gs_gh Downloading QP&trade;/C from GitHub
 Go to the <a class="extern" href="https://github.com/QuantumLeaps/qpc/releases" target="_blank">QP&trade;/C <strong>release</strong> page on GitHub</a>, and choose the QP&trade;/C version number you wish to download. You should select the latest QP&trade;/C version, unless you have a very specific reason to go with an older release.
 
-![QP&trade;/C downloads from GitHub](qpc_gh.jpg)
+@image html  qpc_gh.jpg "QP&trade;/C downloads from GitHub"
+@image latex qpc_gh.jpg "QP&trade;/C downloads from GitHub" width=6.5in
 
 
 @section gs_dir QP&trade;/C Installation Folder
@@ -105,7 +106,7 @@ from scratch, you inherit the correct compiler and linker options an other proje
 The ultra-simple Blinky example is the embedded systems' equivalent of the venerable <i>"Hello World!"</i> program, that is, the simplest possible working QP&trade; application that does "something". In the case of Blinky, this "something" is blinking an LED at the rate of 1Hz, where an LED turns on and remains on for 0.5 seconds on then turns off and remains off for 0.5 seconds.
 
 @image html  blinky_ek-tm4c123gxl.gif "Blinky on EK-TM4C123GLX (TivaC LaunchPad)"
-@image latex blinky_ek-tm4c123gxl.jpg "Blinky on EK-TM4C123GLX (TivaC LaunchPad)"
+@image latex blinky_ek-tm4c123gxl.jpg "Blinky on EK-TM4C123GLX (TivaC LaunchPad)" width=1.5in
 
 @note
 The Blinky example is provided for other supported boards as well, not just TivaC LaunchPad. Please look for examples named <span class="img folder">dpp_<board-name></span> in the @ref exa "qpc/examples/examples" directory (e.g., `qpc/examples/arm-cm/blinky_ek-tm4c123gxl` for the EK-TM4C123GXL board (TivaC LaunchPad)).
@@ -123,7 +124,7 @@ The ultra-simple Blinky application, which  consists of just one active object n
 The details of the Blinky application are describe in the Quantum Leaps Application Note @webref{doc/AN_Getting_Started_with_QP.pdf, Getting Started with QP&trade; Real-Time Embedded Frameworks}.
 
 @image html  AN-getting_started.jpg "Application Note: Getting Started with QP&trade;"
-@image latex AN-getting_started.jpg "Application Note: Getting Started with QP&trade;"
+@image latex AN-getting_started.jpg "Application Note: Getting Started with QP&trade;" width=2in
 
 <br>
 @nav{gs_tut,tut_dpp}
@@ -150,7 +151,7 @@ The DPP example is provided for most supported boards as well as in the command-
 The Dining Philosophers Problem (DPP) example is described in the @webref{doc/AN_DPP.pdf, Application Note: Dining Philosophers Problem (DPP) Example}.
 
 @image html  AN_DPP.jpg "Application Note: Dining Philosophers Problem (DPP) Example"
-@image latex AN_DPP.jpg "Application Note: Dining Philosophers Problem (DPP) Example"
+@image latex AN_DPP.jpg "Application Note: Dining Philosophers Problem (DPP) Example" width=2in
 
 @note
 There is also a DPP variant that implements the "Philosophers" as passive "Orthogonal Components" of the "Table" active object. That DPP version is located in <span class="img folder">qpc/examples/examples/workstation/dpp-comp/</span>
@@ -164,7 +165,8 @@ There is also a DPP variant that implements the "Philosophers" as passive "Ortho
 
 The "Fly 'n' shoot" game example is a moderately advanced  application of a vintage computer game. It requires a LCD screen and push-buttons on the board.
 
-![EFM32 Pearl-Gecko board](bd_EFM32-SLSTK3401A.jpg)
+@image html  bd_EFM32-SLSTK3401A.jpg "EFM32 Pearl-Gecko"
+@image latex bd_EFM32-SLSTK3401A.jpg "EFM32 Pearl-Geckob" width=4.75in
 
 "Fly 'n' shoot" game and illustrates the following QP&trade; features, such as:
 
@@ -177,17 +179,17 @@ The "Fly 'n' shoot" game example is a moderately advanced  application of a vint
 - developing of embedded software on Windows (see also @webref{qtools/qwin.html,QWin&trade; GUI Prototyping Toolkit})
 
 @image html  qwin_ani.gif    "Fly 'n' Shoot game running on Windows"
-@image latex qwin_static.jpg "Fly 'n' Shoot game running on Windows"
+@image latex qwin_static.jpg "Fly 'n' Shoot game running on Windows" width=6in
 
 The "Fly 'n' Shoot" game example is described in the @webref{doc/AN_Fly-n-Shoot.pdf,Application Note: Fly 'n' Shoot Game Example}.
 
 
 @image html  AN-game.jpg "Application Note: Fly 'n' Shoot Game Example"
-@image latex AN-game.jpg "Application Note: Fly 'n' Shoot Game Example"
+@image latex AN-game.jpg "Application Note: Fly 'n' Shoot Game Example" width=2in
 <br>
 
 @image html  game-video.jpg "Fly'n'Shoot game tutorial video"
-@image latex game-video.jpg "Fly'n'Shoot game tutorial video"
+@image latex game-video.jpg "Fly'n'Shoot game tutorial video" width=5in
 
 <br>
 @nav{tut_dpp,tut_low}
@@ -211,7 +213,7 @@ While the system clock tick is very useful, it also has the unfortunate side eff
 
 
 @image html  exa_low-power_tick.png "Additional power dissipation caused by the system clock tick"
-@image latex exa_low-power_tick.png "Additional power dissipation caused by the system clock tick"
+@image latex exa_low-power_tick.png "Additional power dissipation caused by the system clock tick" width=6.5in
 
 
 @subsection arm-cm_low_power_tickless The "Tickless Mode"
@@ -269,8 +271,8 @@ The low-power example is located in QP/C and QP/C++ distributions, in the direct
 @note
 To focus the discussion, this example uses the **EK-TM4C123GXL** evaluation board (a.k.a. TivaC LaunchPad) with Cortex-M4 MCU. However, the general demonstrated principles apply to most modern microcontrollers.
 
-<br>
-![EK-TM4C123GXL evaluation board](bd_EK-TM4C123GXL_pins.jpg)
+@image html  bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL (TivaC LaunchPad)"
+@image latex bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL (TivaC LaunchPad)" width=2.75in
 
 @subsection arm-cm_low_power_behave Behavior
 The the low-power example illustrates the use of two clock tick rates to toggle the LEDs available on the EK-TM4C123GXL board. After the application code is loaded to the board, the **Green-LED** starts blinking once per two seconds (a second on and a second off), while the **Red-LED** lights up and stays on. If no buttons on the board are pressed, the **Green-LED** stops blinking after 4 times. The **Red-LED** shows the **idle** condition, where the system is in a sleep mode.
@@ -303,26 +305,18 @@ The behavior just described is designed for the slow human interaction with the 
 
 The following logic analyzer trace shows the behavior of the low-power application at the faster time scale. The explanation section immediately following the tarce explains the most interesting points:
 
-![low-power application after pressing the SW1 button](exa_low-power_sig.png)
+@image html  exa_low-power_sig.png "low-power application after pressing the SW1 button"
+@image latex exa_low-power_sig.png "low-power application after pressing the SW1 button"
 
-<dl class="tag">
-  <dt>0</dt><dd>
-The plot shows the logic-analyzer traces of the following signals (from the top): **SW1** button (active low), **Blinky1** (Blue-LED), **Blinky0** (Green-LED) and **Idle** (Red-LED). The Idle callback turns the **Red-LED** on when the system enters the low-power sleep mode and it turns the **Red-LED** off when the system is active.
-  </dd>
-  <dt>1</dt><dd>
-At this time the **SW1** button is depressed, which triggers an interrupt that activates both the slow and the fast clock tick rates. The clock tick interrupts trigger toggling of the **Blinky0** (Green-LED) at the slower tick rate-0 and **Blinky1** (Blue-LED) at the faster tick rate-1.
-  </dd>
-  <dt>2</dt><dd>
-The **Blinky1** (Blue-LED) stops toggling after 13 cycles. At this point also the **Idle** callback turns the **fast tick rate-1** off.
-  </dd>
-  <dt>3</dt><dd>
-The **Blinky0** (Green-LED) stops toggling after 4 cycles.
-  </dd>
-  <dt>4</dt><dd>
-The **Idle** callback turns the **slow tick rate-0** off. The system enters the low-power sleep mode without any clock ticks running and remains in this state until the **SW1** button is pressed again.
-  </dd>
-</dl>
-<div style="clear:both;"></div>
+`[0]` The plot shows the logic-analyzer traces of the following signals (from the top): **SW1** button (active low), **Blinky1** (Blue-LED), **Blinky0** (Green-LED) and **Idle** (Red-LED). The Idle callback turns the **Red-LED** on when the system enters the low-power sleep mode and it turns the **Red-LED** off when the system is active.
+
+`[1]` At this time the **SW1** button is depressed, which triggers an interrupt that activates both the slow and the fast clock tick rates. The clock tick interrupts trigger toggling of the **Blinky0** (Green-LED) at the slower tick rate-0 and **Blinky1** (Blue-LED) at the faster tick rate-1.
+
+`[2]` The **Blinky1** (Blue-LED) stops toggling after 13 cycles. At this point also the **Idle** callback turns the **fast tick rate-1** off.
+
+`[3]` The **Blinky0** (Green-LED) stops toggling after 4 cycles.
+
+`[4]` The **Idle** callback turns the **slow tick rate-0** off. The system enters the low-power sleep mode without any clock ticks running and remains in this state until the **SW1** button is pressed again.
 
 @note
 The **Idle** line (Red-LED) goes down twice as fast as the changes in the state of the **Green-LED** or the **Blue-LED**. This is because the application uses timeouts of **2 clock ticks** for toggling these lines instead of just one clock tick, which then could be slower. This is not quite optimal for the energy dissipation (as the CPU is woken up twice as often as it needs to be), but it illustrates more accurately how the fixed clock rates work as well as the one-tick delay to enter the low-power sleep mode from the idle callback.
@@ -331,7 +325,8 @@ The **Idle** line (Red-LED) goes down twice as fast as the changes in the state 
 @subsection arm-cm_low_power_sm State Machines
 The versions of this low-power example for the **QK** and **QV** kernels use two active objects **Blinky0** and **Blinky1**, which toggle the **Green-LED** at the slow tick rate 0, and the **Blue-LED** at the fast tick rate 1, respectively. The state machines of the Blinky0 and Blinky1 active objects are shown below:
 
-![state machines Blinky0 and Blinky1 active objects](exa_low-power_sm.png)
+@image html  exa_low-power_sm.png "state machines Blinky0 and Blinky1 active objects"
+@image latex exa_low-power_sm.png "state machines Blinky0 and Blinky1 active objects"
 
 <dl class="tag">
   <dt>0</dt><dd>

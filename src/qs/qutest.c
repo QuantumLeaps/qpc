@@ -174,6 +174,7 @@ void QF_init(void) {
     * data (as is required by the C Standard).
     */
     QF_maxPool_ = 0U;
+    QF_intLock_ = 0U;
     QF_intNest_ = 0U;
 
     QF_bzero(&QActive_registry_[0], sizeof(QActive_registry_));

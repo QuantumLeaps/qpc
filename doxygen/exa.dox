@@ -30,7 +30,7 @@ qpc/                     // QP/C installation directory
 |   |   |   |   |   +---spy/   // spy build configuration (QP/Spy tracing enabled)
 |   |   |   |   +---gnu/       // build with GNU-ARM toolchain
 |   |   |   |   +---iar/       // build with IAR toolchain
-|   |   |   |   +--- ~ ~ ~     // source code independent from the toolchain
+|   |   |   |       ~ ~ ~      // source files independent from the toolchain
 |   |   |   +---qv/      // version for cooperative QV kernel
 |   |   |   \---qxk/     // version for dual-mode QXK kernel
 |   |
@@ -64,15 +64,20 @@ qpc/                     // QP/C installation directory
 |   |   +--- ~ ~ ~       // other examples from the PSiCC2 book
 @endcode
 
-`[1]` @subpage exa_native "Native examples" are located in sub-directories named after the CPU architecture, such as <span class="img folder">arm-cm</span> for ARM Cortex-M. Under that directory, the sub-directories <span class="img folder">blinky_ek-tm4c123gxl</span> contain the specific example on the specified board, such as "Blinky" on the EK-TM4C123GXL board here. In the specific example folder, you find sub-folders for the @ref comp_qv "QV", @ref comp_qk "QK" and @ref comp_qxk "QXK" kernels, respectively.
+`[1]` @subpage exa_native "Native examples"
+are located in sub-directories named after the CPU architecture, such as <span class="img folder">arm-cm</span> for ARM Cortex-M. Under that directory, the sub-directories <span class="img folder">blinky_ek-tm4c123gxl</span> contain the specific example on the specified board, such as "Blinky" on the EK-TM4C123GXL board here. In the specific example folder, you find sub-folders for the @ref comp_qv "QV", @ref comp_qk "QK" and @ref comp_qxk "QXK" kernels, respectively.
 
-`[2]` @subpage exa_rtos "Examples for 3rd-party RTOS"/@ref exa_os "OS" are located in sub-directories named after the RTOS/OS, such as <span class="img folder">uc-os2</span> for uc-os2 RTOS. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
+`[2]` @subpage exa_rtos "Examples for 3rd-party RTOS"
+are located in sub-directories named after the RTOS/OS, such as <span class="img folder">freertos</span> for uc-os2 RTOS. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
 
-`[3]` @subpage exa_mware "Examples for 3rd-party Middleware" are located in sub-directories named after the middleware, such as <span class="img folder">lwIP</span> for the lwIP TCP/IP stack. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
+`[3]` @subpage exa_mware "Examples for 3rd-party Middleware"
+are located in sub-directories named after the middleware, such as <span class="img folder">lwIP</span> for the lwIP TCP/IP stack. Under that directory, the sub-directories, such as <span class="img folder">arm-cm</span>, contain examples for the specified CPU architecture, such as ARM Cortex-M here.
 
-`[4]` @subpage exa_qutest "Examples for QUTest" illustrate unit testing of embedded event-driven code. <span class="highlight"><b>NOTE:</b> Examples in this directory can run on all types of workstations (Windows, Linux, MacOS), as well as embedded targets.</span>
+`[4]` @subpage exa_qutest "Examples for QUTest"
+illustrate unit testing of embedded event-driven code. <span class="highlight"><b>NOTE:</b> Examples in this directory can run on all types of workstations (Windows, Linux, MacOS), as well as embedded targets.</span>
 
-`[5]` @subpage exa_os "Examples for Workstations" provide console-based examples described in the [PSiCC2](/psicc2) book, which you can try directly on your workstation without any embedded hardware. <span class="highlight"><b>NOTE:</b> Examples in this directory can also be used on the <b>embedded</b> versions of the desktop operating systems, such as embedded-Linux and Windows-embedded.</span>
+`[5]` @subpage exa_os "Examples for Workstations"
+General-Purpose OS (GPOS) examples described in the [PSiCC2](/psicc2) book, which you can try directly on your workstation without any embedded hardware. <span class="highlight"><b>NOTE:</b> Examples in this directory can also be used on the <b>embedded</b> versions of the desktop operating systems, such as embedded-Linux and Windows-embedded.</span>
 
 
 @note
@@ -274,7 +279,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 @subsection exa_ref_arm-cm ARM Cortex-M Boards
 
 @image{anchor:EK-TM4C123GXL} html  bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL (TivaC LaunchPad)"
-@image{anchor:EK-TM4C123GXL} latex bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL (TivaC LaunchPad)"
+@image{anchor:EK-TM4C123GXL} latex bd_EK-TM4C123GXL.jpg "EK-TM4C123GXL (TivaC LaunchPad)" width=2.75in
 
 - @ref arm-cm_blinky_ek-tm4c123gxl (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref arm-cm_dpp_ek-tm4c123gxl (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
@@ -286,7 +291,7 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 
 
 @image{anchor:EFM32-SLSTK3401A} html  bd_EFM32-SLSTK3401A.jpg "EFM32-SLSTK3401A"
-@image{anchor:EFM32-SLSTK3401A} latex bd_EFM32-SLSTK3401A.jpg "EFM32-SLSTK3401A"
+@image{anchor:EFM32-SLSTK3401A} latex bd_EFM32-SLSTK3401A.jpg "EFM32-SLSTK3401A" width=4.75in
 
 - @ref arm-cm_blinky_efm32-slstk3401a (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref arm-cm_dpp_efm32-slstk3401a (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
@@ -294,55 +299,70 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 
 
 @anchor mbed-LPC1768
-![mbed-LPC1768](bd_mbed-LPC1768.jpg)
+
+@image html  bd_mbed-LPC1768.jpg "mbed-LPC1768"
+@image latex bd_mbed-LPC1768.jpg "mbed-LPC1768" width=2.75in
 - @ref arm-cm_dpp_mbed-lpc1768 (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 
-
 @anchor NUCLEO-L053R8
-![NUCLEO-L053R8](bd_NUCLEO-L053R8.jpg)
+
+@image html  bd_NUCLEO-L053R8.jpg "NUCLEO-L053R8"
+@image latex bd_NUCLEO-L053R8.jpg "NUCLEO-L053R8" width=3.10in
 - @ref arm-cm_dpp_nucleo-l053r8 (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 
-
 @anchor NUCLEO-L152RE
-![NUCLEO-L152RE](bd_NUCLEO-L152RE.jpg)
+
+@image html  bd_NUCLEO-L152RE.jpg "NUCLEO-L152RE"
+@image latex bd_NUCLEO-L152RE.jpg "NUCLEO-L152RE" width=3in
 - @ref arm-cm_dpp_nucleo-l152re (QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref uc-os2_dpp_nucleo-l053r8 (uC/OS-II kernel; ARM-KEIL, IAR-EWARM toolchains)
 
-
 @anchor exa_EK-LM3S6965
-![EK-LM3S6965](bd_EK-LM3S6965.jpg)
+
+@image html  bd_EK-LM3S6965.jpg "EK-LM3S6965"
+@image latex bd_EK-LM3S6965.jpg "EK-LM3S6965" width=3in
 - @ref lwip_ek-lm3s6965 (**LwIP TCP/IP**; QV, QK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 
 
 @anchor NUCLEO-H743ZI
-![NUCLEO-H743ZI](bd_NUCLEO-H743ZI.jpg)
+
+@image html  bd_NUCLEO-H743ZI.jpg "NUCLEO-H743ZI"
+@image latex bd_NUCLEO-H743ZI.jpg "NUCLEO-H743ZI" width=4.75in
 - @ref arm-cm_dpp_nucleo-h743zi (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref freertos_dpp_nucleo-h743zi (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 
 
 @anchor STM32F4-Discovery
-![STM32F4-Discovery](bd_STM32F4-Discovery.jpg)
+
+@image html  bd_STM32F4-Disco.jpg "STM32F4-Discovery"
+@image latex bd_STM32F4-Disco.jpg "STM32F4-Discovery" width=3.1in
 - @ref arm-cm_dpp_stm32f4-discovery (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref embos_dpp_stm32f429-discovery (embOS kernel; IAR-EWARM toolchain)
 - @ref threadx_dpp_stm32f429-discovery (ThreadX kernel; IAR-EWARM toolchain)
 
 
 @anchor STM32F746G-Discovery
-![STM32F746G-Discovery](bd_STM32F746G-Disco.jpg)
+
+@image html  bd_STM32F746G-Disco.jpg "STM32F746G-Discovery"
+@image latex bd_STM32F746G-Disco.jpg "STM32F746G-Discovery" width=4.75in
 - @ref arm-cm_dpp_stm32f746g-disco (QV, QK, QXK kernels; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 - @ref freertos_dpp_stm32f746g-disco (FreeRTOS kernel; ARM-KEIL, GNU-ARM, IAR-EWARM toolchains)
 
 
 @subsection exa_ref_arm-cr ARM Cortex-R Boards:
 @anchor LAUNCHXL2-TMS57012
-![LAUNCHXL2-TMS57012](bd_LAUNCHXL2-TMS57012.jpg)
+
+@image html  bd_LAUNCHXL2-TMS57012.jpg "LAUNCHXL2-TMS57012"
+@image latex bd_LAUNCHXL2-TMS57012.jpg "LAUNCHXL2-TMS57012" width=4.75in
 - @ref arm-cr_blinky_launchxl2-tms57012 (QV, QK kernels; CCS-TI-ARM, IAR-EWARM toolchains)
 - @ref arm-cr_dpp_launchxl2-tms57012 (QV, QK kernels; CCS-TI-ARM, IAR-EWARM toolchains)
 
 
 @subsection exa_ref_msp430 MSP430 Boards:
 @anchor MSP-EXP430F5529LP
-![MSP-EXP430F5529LP](bd_MSP-EXP430F5529LP.jpg)
+
+@image html  bd_MSP-EXP430F5529LP.jpg "MSP-EXP430F5529LP"
+@image latex bd_MSP-EXP430F5529LP.jpg "MSP-EXP430F5529LP" width=3.5in
 - @ref msp430_blinky_msp-exp430f5529lp (QV, QK kernels; CCS=430, IAR-EW430 toolchains)
 - @ref msp430_dpp_msp-exp430f5529lp (QV, QK kernels; CCS=430, IAR-EW430 toolchains)
 

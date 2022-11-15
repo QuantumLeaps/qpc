@@ -28,7 +28,6 @@
 @echo usage:
 @echo make
 @echo make -CHM
-@echo make -CERT
 @echo make -LATEX
 
 :: tools (adjust to your system)---------------------------------------------
@@ -53,17 +52,11 @@ IF "%1"=="-CERT" (
 
 :: Generate metrics.dox file-------------------------------------------------
 @set METRICS_INP=%QP%\include %QP%\src -x %QP%\src\qs\*
-@set METRICS_OUT=metrics.dox
+@set METRICS_OUT=gen\metrics.txt
 
-@echo /** @defgroup metrics Code Metrics> %METRICS_OUT%
-@echo.>> %METRICS_OUT%
-@echo @code{.cpp}>> %METRICS_OUT%
-@echo                 Code Metrics >> %METRICS_OUT%
-
+@echo @code{.c}> %METRICS_OUT%
 %METRICS% %METRICS_INP% >> %METRICS_OUT%
-
 @echo @endcode>> %METRICS_OUT%
-@echo */>> %METRICS_OUT%
 
 :: Generate Doxygen Documentation -------------------------------------------
 if "%1"=="-CHM" (
@@ -95,9 +88,8 @@ if "%1"=="-CHM" (
     @echo Adding custom files...
     xcopy img %LATEX_OUT%\img\
 
-    @echo TODO...
-    @echo cd ..\latex
-    @echo make.bat
+    @cd %LATEX_OUT%
+    @call make.bat
 
 ) else (
 

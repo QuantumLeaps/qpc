@@ -1,7 +1,4 @@
-/** @defgroup metrics Code Metrics
-
-@code{.cpp}
-                Code Metrics
+@code{.c}
 ================================================
   NLOC    CCN   token  PARAM  length  location
 ------------------------------------------------
@@ -176,4 +173,3 @@ Total nloc   Avg.NLOC  AvgCCN  Avg.token   Fun Cnt  Warning cnt   Fun Rt   nloc 
 ------------------------------------------------------------------------------------------
       4033      24.1     4.2      148.9      126            0      0.00    0.00
 @endcode
-*/

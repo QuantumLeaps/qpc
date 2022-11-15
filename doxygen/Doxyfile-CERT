@@ -1,8 +1,0 @@
-# Doxyfile 1.9.5
-
-@INCLUDE = Doxyfile
-
-ENABLED_SECTIONS      += CERT LATEX
-GENERATE_LATEX         = YES
-HTML_OUTPUT            = ../cert-pack
-LATEX_OUTPUT           = ../cert-latex

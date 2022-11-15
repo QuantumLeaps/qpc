@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-09-05
-* @version Last updated for: @ref qpc_7_1_1
+* @date Last updated on: 2022-11-11
+* @version Last updated for: @ref qpc_7_1_3
 *
 * @file
 * @brief QF/C port to MSP430, QUTEST, generic C99 compiler
@@ -47,8 +47,8 @@
 #define QF_TIMEEVT_CTR_SIZE  2U
 
 /* QF interrupt disable/enable */
-#define QF_INT_DISABLE()     (++QF_intNest_)
-#define QF_INT_ENABLE()      (--QF_intNest_)
+#define QF_INT_DISABLE()     (++QF_intLock_)
+#define QF_INT_ENABLE()      (--QF_intLock_)
 
 /* QF critical section */
 /* QF_CRIT_STAT_TYPE not defined */

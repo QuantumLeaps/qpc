@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <setjmp.h>
-#include "unity.h"
 #include "cmock.h"
 #include "MockLed.h"
 
@@ -36,10 +35,19 @@ extern jmp_buf AbortFrame;
 void MockLed_Verify(void)
 {
   UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  UNITY_SET_DETAIL(CMockString_Led_on);
-  UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.Led_on_CallInstance, cmock_line, CMockStringCalledLess);
-  UNITY_SET_DETAIL(CMockString_Led_off);
-  UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.Led_off_CallInstance, cmock_line, CMockStringCalledLess);
+  CMOCK_MEM_INDEX_TYPE call_instance;
+  call_instance = Mock.Led_on_CallInstance;
+  if (CMOCK_GUTS_NONE != call_instance)
+  {
+    UNITY_SET_DETAIL(CMockString_Led_on);
+    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+  }
+  call_instance = Mock.Led_off_CallInstance;
+  if (CMOCK_GUTS_NONE != call_instance)
+  {
+    UNITY_SET_DETAIL(CMockString_Led_off);
+    UNITY_TEST_FAIL(cmock_line, CMockStringCalledLess);
+  }
 }
 
 void MockLed_Init(void)
@@ -70,6 +78,7 @@ uint32_t Led_on(uint8_t index)
   return cmock_call_instance->ReturnVal;
 }
 
+void CMockExpectParameters_Led_on(CMOCK_Led_on_CALL_INSTANCE* cmock_call_instance, uint8_t index);
 void CMockExpectParameters_Led_on(CMOCK_Led_on_CALL_INSTANCE* cmock_call_instance, uint8_t index)
 {
   cmock_call_instance->Expected_index = index;
@@ -85,7 +94,6 @@ void Led_on_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, uint8_t index, uint
   cmock_call_instance->LineNumber = cmock_line;
   CMockExpectParameters_Led_on(cmock_call_instance, index);
   cmock_call_instance->ReturnVal = cmock_to_return;
-  UNITY_CLR_DETAILS();
 }
 
 void Led_off(uint8_t index)
@@ -104,6 +112,7 @@ void Led_off(uint8_t index)
   UNITY_CLR_DETAILS();
 }
 
+void CMockExpectParameters_Led_off(CMOCK_Led_off_CALL_INSTANCE* cmock_call_instance, uint8_t index);
 void CMockExpectParameters_Led_off(CMOCK_Led_off_CALL_INSTANCE* cmock_call_instance, uint8_t index)
 {
   cmock_call_instance->Expected_index = index;
@@ -118,6 +127,5 @@ void Led_off_CMockExpect(UNITY_LINE_TYPE cmock_line, uint8_t index)
   Mock.Led_off_CallInstance = CMock_Guts_MemChain(Mock.Led_off_CallInstance, cmock_guts_index);
   cmock_call_instance->LineNumber = cmock_line;
   CMockExpectParameters_Led_off(cmock_call_instance, index);
-  UNITY_CLR_DETAILS();
 }
 

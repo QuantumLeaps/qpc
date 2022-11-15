@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example for Windows
-* Last updated for version 7.1.2
-* Last updated on  2022-10-06
+* Last updated for version 7.1.3
+* Last updated on  2022-11-14
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -48,9 +48,6 @@ int main() {
     static QSubscrList subscrSto[MAX_PUB_SIG];
     uint8_t n;
 
-    Philo_ctor(); /* instantiate all Philosopher active objects */
-    Table_ctor(); /* instantiate the Table active object */
-
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init();   /* initialize the Board Support Package */
 
@@ -70,6 +67,7 @@ int main() {
 
     /* start the active objects... */
     for (n = 0U; n < N_PHILO; ++n) {
+        Philo_ctor(n); /* instantiate all Philosopher active object */
         QACTIVE_START(AO_Philo[n], /* AO to start */
             n + 1U,                /* QF-priority */
             philoQueueSto[n],      /* event queue storage */
@@ -78,6 +76,8 @@ int main() {
             0U,                    /* size of the stack [bytes] */
             (void *)0);            /* initialization param */
     }
+
+    Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,        /* AO to start */
         N_PHILO + 1U,              /* QF-priority */
         tableQueueSto,             /* event queue storage */

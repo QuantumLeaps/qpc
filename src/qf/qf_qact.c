@@ -64,10 +64,15 @@ Q_DEFINE_THIS_MODULE("qf_qact")
 /*$define${QF::QActive::registry_[QF_MAX_ACTIVE + 1U]} vvvvvvvvvvvvvvvvvvvvv*/
 QActive * QActive_registry_[QF_MAX_ACTIVE + 1U];
 /*$enddef${QF::QActive::registry_[QF_MAX_ACTIVE + 1U]} ^^^^^^^^^^^^^^^^^^^^^*/
+/*$define${QF::QF-base::intLock_} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
+
+/*${QF::QF-base::intLock_} .................................................*/
+uint_fast8_t volatile QF_intLock_;
+/*$enddef${QF::QF-base::intLock_} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*$define${QF::QF-base::intNest_} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
 /*${QF::QF-base::intNest_} .................................................*/
-uint_fast8_t QF_intNest_;
+uint_fast8_t volatile QF_intNest_;
 /*$enddef${QF::QF-base::intNest_} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 /*$define${QF::QF-pkg::readySet_} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 

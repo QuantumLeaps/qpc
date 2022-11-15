@@ -5951,9 +5951,15 @@ QF_CRIT_X_();</code>
     uint8_t dummy; /*&lt; dummy attribute */
 } QF;</code>
    </attribute>
+   <!--${QF::QF-base::intLock_}-->
+   <attribute name="intLock_" type="uint_fast8_t volatile" visibility="0x00" properties="0x01">
+    <documentation>/*! Interrupt lock up-down counter (used in some QF ports )
+* @static @private @memberof QF
+*/</documentation>
+   </attribute>
    <!--${QF::QF-base::intNest_}-->
-   <attribute name="intNest_" type="uint_fast8_t" visibility="0x00" properties="0x01">
-    <documentation>/*! Interrupt nesting up-down counter (used in QF ports )
+   <attribute name="intNest_" type="uint_fast8_t volatile" visibility="0x00" properties="0x01">
+    <documentation>/*! Interrupt nesting up-down counter (used in some QF ports )
 * @static @private @memberof QF
 */</documentation>
    </attribute>
@@ -9525,6 +9531,7 @@ while (QPSet_notEmpty(&amp;QF_readySet_)) {
 * data (as is required by the C Standard).
 */
 QF_maxPool_ = 0U;
+QF_intLock_ = 0U;
 QF_intNest_ = 0U;
 
 QF_bzero(&amp;QActive_registry_[0], sizeof(QActive_registry_));
@@ -10361,6 +10368,10 @@ QF_bzero(&amp;QK_attr_,                 sizeof(QK_attr_));
 
 /* setup the QK scheduler as initially locked and not running */
 QK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
+
+/* register the QK idle AO object, cast &quot;const&quot; away */
+static QActive const idle_ao = { (struct QHsmVtable const *)0 };
+QActive_registry_[0] = (QActive* )&amp;idle_ao;
 
 #ifdef QK_INIT
 QK_INIT(); /* port-specific initialization of the QK kernel */
@@ -14422,6 +14433,7 @@ Q_DEFINE_THIS_MODULE(&quot;qf_qact&quot;)
 
 //============================================================================
 $define ${QF::QActive::registry_[QF_MAX_ACTIVE + 1U]}
+$define ${QF::QF-base::intLock_}
 $define ${QF::QF-base::intNest_}
 $define ${QF::QF-pkg::readySet_}
 $define ${QF::QF-pkg::bzero}

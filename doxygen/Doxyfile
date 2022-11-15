@@ -7,7 +7,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = QP/C
-PROJECT_NUMBER         = 7.1.2
+PROJECT_NUMBER         = 7.1.3
 PROJECT_BRIEF          = "Real-Time Embedded Framework"
 PROJECT_LOGO           = ../../ql-doxygen/images/logo_ql.png
 OUTPUT_DIRECTORY       =
@@ -124,6 +124,13 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = main.dox \
                          gs.dox \
+                         ../../cert-pack/cert-pack.dox \
+                         ../../cert-pack/srs.dox \
+                         ../../cert-pack/sas.dox \
+                         ../../cert-pack/sds.dox \
+                         ../../cert-pack/sds_sm-c.dox \
+                         ../../cert-pack/misra.dox \
+                         ../../cert-pack/metrics.dox \
                          exa.dox \
                          exa_native.dox \
                          exa_rtos.dox \
@@ -138,13 +145,6 @@ INPUT                  = main.dox \
                          api.dox \
                          history.dox \
                          ../../ql-doxygen/help.dox \
-                         ../../cert-pack/srs.dox \
-                         ../../cert-pack/sas.dox \
-                         ../../cert-pack/sds.dox \
-                         ../../cert-pack/sds_sm-c.dox \
-                         ../../cert-pack/misra.dox \
-                         ../../cert-pack/tr.dox \
-                         metrics.dox \
                          dir.dox \
                          config.h \
                          ../include \
@@ -168,7 +168,8 @@ EXCLUDE                = ../include/qs_dummy.h \
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        = QP_IMPL
-EXAMPLE_PATH           = snippets \
+EXAMPLE_PATH           = gen \
+                         snippets \
                          ../include \
                          ../src \
                          ../ports \

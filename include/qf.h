@@ -1340,11 +1340,17 @@ typedef struct QF_Attr {
     uint8_t dummy; /*< dummy attribute */
 } QF;
 
-/*${QF::QF-base::intNest_} .................................................*/
-/*! Interrupt nesting up-down counter (used in QF ports )
+/*${QF::QF-base::intLock_} .................................................*/
+/*! Interrupt lock up-down counter (used in some QF ports )
 * @static @private @memberof QF
 */
-extern uint_fast8_t QF_intNest_;
+extern uint_fast8_t volatile QF_intLock_;
+
+/*${QF::QF-base::intNest_} .................................................*/
+/*! Interrupt nesting up-down counter (used in some QF ports )
+* @static @private @memberof QF
+*/
+extern uint_fast8_t volatile QF_intNest_;
 
 /*${QF::QF-base::init} .....................................................*/
 /*! QF initialization

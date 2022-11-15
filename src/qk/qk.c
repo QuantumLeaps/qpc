@@ -154,6 +154,10 @@ void QF_init(void) {
     /* setup the QK scheduler as initially locked and not running */
     QK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
 
+    /* register the QK idle AO object, cast "const" away */
+    static QActive const idle_ao = { (struct QHsmVtable const *)0 };
+    QActive_registry_[0] = (QActive* )&idle_ao;
+
     #ifdef QK_INIT
     QK_INIT(); /* port-specific initialization of the QK kernel */
     #endif

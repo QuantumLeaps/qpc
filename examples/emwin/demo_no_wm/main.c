@@ -53,10 +53,6 @@ static union SmallEvent {
 
 /*..........................................................................*/
 void MainTask(void) {
-    uint8_t n;
-
-    Philo_ctor(); /* instantiate all Philosopher active objects */
-    Table_ctor(); /* instantiate the Table active object */
 
     BSP_init();   /* initialize the Board Support Package */
 
@@ -77,12 +73,15 @@ void MainTask(void) {
     /* initialize event pools... */
     QF_poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
 
-    for (n = 0; n < N_PHILO; ++n) { /* start the active objects... */
-        QACTIVE_START(AO_Philo[n], (uint8_t)(n + 1),
+    Philo_ctor(); /* instantiate all Philosopher active objects */
+    for (uint8_t n = 0U; n < N_PHILO; ++n) { /* start the active objects... */
+        QACTIVE_START(AO_Philo[n], (n + 1U),
                       l_philoQueueSto[n], Q_DIM(l_philoQueueSto[n]),
                       (void *)0, 1024, (QEvt *)0); /* 1K of stack */
     }
-    QACTIVE_START(AO_Table, (uint8_t)(N_PHILO + 1),
+
+    Table_ctor(); /* instantiate the Table active object */
+    QACTIVE_START(AO_Table, (N_PHILO + 1U),
                   l_tableQueueSto, Q_DIM(l_tableQueueSto),
                   (void *)0, 1024, (QEvt *)0); /* 1K of stack */
 

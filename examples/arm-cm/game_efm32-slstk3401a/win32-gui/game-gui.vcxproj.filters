@@ -7,13 +7,72 @@
     <ClCompile Include="..\mine2.c" />
     <ClCompile Include="..\missile.c" />
     <ClCompile Include="..\ship.c" />
-    <ClCompile Include="..\..\..\..\include\qstamp.c" />
     <ClCompile Include="..\tunnel.c" />
+    <ClCompile Include="..\..\..\..\ports\win32-qv\qf_port.c">
+      <Filter>QP_port</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\ports\win32-qv\qs_port.c">
+      <Filter>QP_port</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\ports\win32-qv\qwin_gui.c">
+      <Filter>QP_port</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qep_hsm.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qep_msm.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qf_act.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qf_actq.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qf_defer.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qf_dyn.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qf_mem.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qf_ps.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qf_qact.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qf_qeq.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qf_qmact.c">
+      <Filter>QP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\qf\qf_time.c">
+      <Filter>QP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\bsp.h" />
     <ClInclude Include="..\game.h" />
+    <ClInclude Include="..\..\..\..\ports\win32-qv\qep_port.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\ports\win32-qv\qf_port.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\ports\win32-qv\qs_port.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\ports\win32-qv\qwin_gui.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\ports\win32-qv\safe_std.h">
+      <Filter>QP_port</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\BTN_DWN.bmp">
@@ -37,10 +96,19 @@
     <None Include="Res\thinking.bmp">
       <Filter>Res</Filter>
     </None>
+    <None Include="..\..\..\..\ports\win32-qv\README.md">
+      <Filter>QP_port</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Res">
       <UniqueIdentifier>{c8d4d732-dcf8-4466-ad8e-3f15ab6fe204}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QP_port">
+      <UniqueIdentifier>{5b184ec8-85d9-4583-bff6-29b8c5c60aa5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QP">
+      <UniqueIdentifier>{a31088a4-bd4d-4386-a7ab-8d963b57e867}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

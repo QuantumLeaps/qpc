@@ -312,7 +312,8 @@ You can hover the mouse cursor over the <span class="board"></span>&nbsp;&nbsp; 
 
 DPP example for Texas Instruments TivaC123GXL MCU (Cortex-M4F) and ARM-CLANG, GNU-ARM and IAR EWARM toolsets.
 
-@image html under_construction.jpg
+@image html  under-constr.png
+@image latex under-constr.png width=0.93in
 
 @next{uc-os2_dpp_nucleo-l053r8 examples}
 */
@@ -323,7 +324,8 @@ DPP example for Texas Instruments TivaC123GXL MCU (Cortex-M4F) and ARM-CLANG, GN
 
 DPP example for STM32 L053R8 MCU (Cortex-M0+) and ARM-CLANG, GNU-ARM and IAR EWARM toolsets.
 
-@image html under_construction.jpg
+@image html  under-constr.png
+@image latex under-constr.png width=0.93in
 
 @next{exa_zephyr examples}
 */

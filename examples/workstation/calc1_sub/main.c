@@ -40,7 +40,7 @@
 Q_DEFINE_THIS_FILE
 
 /*..........................................................................*/
-int main() {
+int main(void) {
 
     QF_init();
     QF_onStartup();

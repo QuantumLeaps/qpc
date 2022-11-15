@@ -47,7 +47,7 @@ Q_DEFINE_THIS_FILE
 
 /*..........................................................................*/
 static void simHardKey(int keyIndex, int keyState) {
-    static const QEvt keyEvt[] = {
+    static QEvt const keyEvt[] = {
         { KEY_UP_REL_SIG,       0 }, /* hardkey UP released */
         { KEY_UP_PRESS_SIG,     0 }, /* hardkey UP pressed */
         { KEY_RIGHT_REL_SIG,    0 }, /* hardkey RIGHT released */

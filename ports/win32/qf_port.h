@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-30
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-11-03
+* @version Last updated for: @ref qpc_7_1_3
 *
 * @file
 * @brief QF/C port to Win32 API (multi-threaded)
@@ -86,7 +86,7 @@ void QF_onClockTick(void);
 #ifdef QWIN_GUI
     /* replace main() with main_gui() as the entry point to a GUI app. */
     #define main() main_gui()
-    int_t main_gui(); /* prototype of the GUI application entry point */
+    int_t main_gui(void); /* prototype of the GUI application entry point */
 #endif
 
 /* abstractions for console access... */
