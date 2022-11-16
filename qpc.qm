@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.2.2" links="1">
+<model version="5.2.3" links="1">
  <documentation>QP/C Real-Time Embedded Framework (RTEF)
 The model is used to generate the whole QP/C source code.
 
@@ -10369,9 +10369,11 @@ QF_bzero(&amp;QK_attr_,                 sizeof(QK_attr_));
 /* setup the QK scheduler as initially locked and not running */
 QK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
 
-/* register the QK idle AO object, cast &quot;const&quot; away */
+/* QK idle AO object (const in ROM) */
 static QActive const idle_ao = { (struct QHsmVtable const *)0 };
-QActive_registry_[0] = (QActive* )&amp;idle_ao;
+
+/* register the idle AO object (cast 'const' away) */
+QActive_registry_[0] = QF_CONST_CAST_(QActive*, &amp;idle_ao);
 
 #ifdef QK_INIT
 QK_INIT(); /* port-specific initialization of the QK kernel */
@@ -10892,9 +10894,11 @@ QF_bzero(&amp;QXK_attr_,                sizeof(QXK_attr_));
 /* setup the QXK scheduler as initially locked and not running */
 QXK_attr_.lockCeil = (QF_MAX_ACTIVE + 1U); /* scheduler locked */
 
-/* register the QXK idle AO object, cast &quot;const&quot; away */
+/* QXK idle AO object (const in ROM) */
 static QActive const idle_ao = { (struct QHsmVtable const *)0 };
-QActive_registry_[0] = (QActive* )&amp;idle_ao;
+
+/* register the idle AO object (cast 'const' away) */
+QActive_registry_[0] = QF_CONST_CAST_(QActive*, &amp;idle_ao);
 
 #ifdef QXK_INIT
 QXK_INIT(); /* port-specific initialization of the QXK kernel */
@@ -13157,8 +13161,8 @@ $declare ${DbC}
 */
 #define QP_VERSION_STR &quot;7.1.3&quot;
 
-/*! Encrypted  current QP release (7.1.3) and date (2022-11-11) */
-#define QP_RELEASE 0x7C3520C6U
+/*! Encrypted  current QP release (7.1.3) and date (2022-11-18) */
+#define QP_RELEASE 0x7C340F56U
 
 /*==========================================================================*/
 $declare ${glob-types}

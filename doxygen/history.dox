@@ -1,5 +1,28 @@
 /*! @page history Revision History
 
+@section qpc_7_1_3 Version 7.1.3, 2022-11-18
+
+__Bug Fixes:__
+- This release fixes [bug#317](https://sourceforge.net/p/qpc/bugs/317) in QK kernel
+
+__Source__
+- The file `qstamp.c` has been copied from the `include/` folder to `src/qs/`. This makes it easier to build SPY configuration. (The file `qstamp.c` has been left in the `include/` folder for backwards compatibility).
+
+__Ports__
+- This release removes the QP libraries from the **Windows** ports
+- `CMakeLists.txt` file in the zephyr port has been modified to use `zephyr_library_named(qpc)` instead of `zephyr_library()`
+
+__Examples__
+- This release changes all examples for **Windows** (Makefiles for GCC and project files for Visual Studio) to build the QP framework from sources rather than using QP libraries. This slightly extends the first build of the application, but avoids any problems with library incompatibilities (e.g., 32-bit/64-bit compilers used to build the application vs. the QP libraries).
+- updated examples for MSP430
+
+__Documentation__
+- Modified the `doxygen/` folder for generation of QM Manual in LaTeX (enables generation of PDF)
+
+__Licensing__
+- This release removes the `QM-EVAL-QPC.qlc` file from the `LICENSES` folder. This "QM License Certificate" is no longer needed for QM 5.2.3, where "QM License Certificates" are no longer needed for generating QMsm-style state machines.
+
+
 @section qpc_7_1_2 Version 7.1.2, 2022-10-07
 This release improves preemption-threshold scheduling (PTS) in @ref srs_qk "QK" kernel, especially the generation of the software tracing information about the scheduler activity. Also, PTS has been removed from the @ref srs_qxk "QXK" kernel because of the inherent complexity of that kernel.
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.2.1" links="1">
+<model version="5.2.3" links="1">
  <documentation>The improved Calculator model with QMsm state machine implementation strategy and Sub-Machines.</documentation>
  <!--${qpc}-->
- <framework name="qpc" license="../../../LICENSES/QM-EVAL-QPC.qlc"/>
+ <framework name="qpc"/>
  <!--${Events}-->
  <package name="Events" stereotype="0x01">
   <!--${Events::CalcEvt}-->
