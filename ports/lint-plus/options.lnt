@@ -116,7 +116,8 @@ qpc.lnt             // QP/C options
 
 // M3-R11.8(R) cast drops const qualifier
 -efunc(9005,
- QF_gc)
+ QF_gc,
+ QF_init)
 
 // M3-D11.5(A) conversion from pointer to void to other pointer type
 -efunc(9079,

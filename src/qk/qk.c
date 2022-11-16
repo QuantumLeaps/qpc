@@ -158,7 +158,7 @@ void QF_init(void) {
     static QActive const idle_ao = { (struct QHsmVtable const *)0 };
 
     /* register the idle AO object (cast 'const' away) */
-    QActive_registry_[0] = QF_CONST_CAST_(QActive*, &idle_ao);
+    QActive_registry_[0] = (QActive *)&idle_ao;
 
     #ifdef QK_INIT
     QK_INIT(); /* port-specific initialization of the QK kernel */

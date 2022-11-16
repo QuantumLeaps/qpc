@@ -1,6 +1,6 @@
 @code{.c}
 ================================================
-  NLOC    CCN   token  PARAM  length  location  
+  NLOC    CCN   token  PARAM  length  location
 ------------------------------------------------
        3      1     16      1       3 QHsm_state@409-411@..\include\qep.h
        3      1     15      1       3 QEQueue_getNFree@306-308@..\include\qequeue.h
@@ -86,7 +86,7 @@
       14      3     75      1      16 QTimeEvt_noActive@411-426@..\src\qf\qf_time.c
       21      2    112      1      31 QK_schedLock@74-104@..\src\qk\qk.c
       20      4    118      1      33 QK_schedUnlock@107-139@..\src\qk\qk.c
-      11      3    103      1      23 QF_init@144-166@..\src\qk\qk.c
+      11      3    101      1      23 QF_init@144-166@..\src\qk\qk.c
        3      1     10      1       4 QF_stop@169-172@..\src\qk\qk.c
       15      4     61      1      25 QF_run@175-199@..\src\qk\qk.c
       25      3    156      7      34 QActive_start_@206-239@..\src\qk\qk.c
@@ -98,7 +98,7 @@
       18      1    124      7      25 QActive_start_@177-201@..\src\qv\qv.c
       23      3    131      1      34 QXK_schedLock@71-104@..\src\qxk\qxk.c
       20      4    118      1      33 QXK_schedUnlock@107-139@..\src\qxk\qxk.c
-      11      3    103      1      23 QF_init@144-166@..\src\qxk\qxk.c
+      11      3    101      1      23 QF_init@144-166@..\src\qxk\qxk.c
        3      1     10      1       4 QF_stop@169-172@..\src\qxk\qxk.c
       18      4     92      1      30 QF_run@175-204@..\src\qxk\qxk.c
       29      5    178      7      42 QActive_start_@211-252@..\src\qxk\qxk.c
@@ -159,9 +159,9 @@ NLOC    Avg.NLOC  AvgCCN  Avg.token  function_cnt    file
     152      36.2     4.8      200.8         4     ..\src\qf\qf_qeq.c
      18      16.0     2.0       79.0         1     ..\src\qf\qf_qmact.c
     218      26.2     4.1      155.6         8     ..\src\qf\qf_time.c
-    187      22.4     4.8      127.8         8     ..\src\qk\qk.c
+    187      22.4     4.8      127.5         8     ..\src\qk\qk.c
      74      16.8     3.8       95.8         4     ..\src\qv\qv.c
-    261      23.0     5.0      140.3        11     ..\src\qxk\qxk.c
+    261      23.0     5.0      140.1        11     ..\src\qxk\qxk.c
     235      57.0     8.5      490.0         4     ..\src\qxk\qxk_mutex.c
     143      34.0     4.5      213.5         4     ..\src\qxk\qxk_sema.c
     325      24.4     3.8      156.0        13     ..\src\qxk\qxk_xthr.c
