@@ -57,11 +57,11 @@ PROJECT := test_blinky
 
 # list of all source directories used by this project
 VPATH := . \
-    ../src
+	../src
 
 # list of all include directories needed by this project
 INCLUDES := -I. \
-    -I../src
+	-I../src
 
 # location of the QP/C framework (if not provided in an env. variable)
 ifeq ($(QPC),)
@@ -79,9 +79,9 @@ endif
 
 # C source files...
 C_SRCS := \
-    bsp.c \
-    blinky.c \
-    test_blinky.c
+	bsp.c \
+	blinky.c \
+	test_blinky.c
 
 # C++ source files...
 CPP_SRCS :=
@@ -96,24 +96,24 @@ DEFINES  :=
 # add QP/C framework:
 #
 C_SRCS += \
-    qep_hsm.c \
-    qep_msm.c \
-    qf_act.c \
-    qf_actq.c \
-    qf_defer.c \
-    qf_dyn.c \
-    qf_mem.c \
-    qf_ps.c \
-    qf_qact.c \
-    qf_qeq.c \
-    qf_qmact.c \
-    qf_time.c \
-    qs.c \
-    qs_64bit.c \
-    qs_rx.c \
-    qs_fp.c \
-    qutest.c \
-    qutest_port.c
+	qep_hsm.c \
+	qep_msm.c \
+	qf_act.c \
+	qf_actq.c \
+	qf_defer.c \
+	qf_dyn.c \
+	qf_mem.c \
+	qf_ps.c \
+	qf_qact.c \
+	qf_qeq.c \
+	qf_qmact.c \
+	qf_time.c \
+	qs.c \
+	qs_64bit.c \
+	qs_rx.c \
+	qs_fp.c \
+	qutest.c \
+	qutest_port.c
 
 
 ifeq ($(OS),Windows_NT)
@@ -161,17 +161,17 @@ TESTS  := *.py
 # basic utilities (depends on the OS this Makefile runs on):
 #
 ifeq ($(OS),Windows_NT)
-    MKDIR      := mkdir
-    RM         := rm
-    TARGET_EXT := .exe
+	MKDIR      := mkdir
+	RM         := rm
+	TARGET_EXT := .exe
 else ifeq ($(OSTYPE),cygwin)
-    MKDIR      := mkdir -p
-    RM         := rm -f
-    TARGET_EXT := .exe
+	MKDIR      := mkdir -p
+	RM         := rm -f
+	TARGET_EXT := .exe
 else
-    MKDIR      := mkdir -p
-    RM         := rm -f
-    TARGET_EXT :=
+	MKDIR      := mkdir -p
+	RM         := rm -f
+	TARGET_EXT :=
 endif
 
 #-----------------------------------------------------------------------------
@@ -180,20 +180,20 @@ endif
 BIN_DIR := build
 
 CFLAGS  := -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
-    $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
+	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
 CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
-    -fno-rtti -fno-exceptions \
-    $(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
+	-fno-rtti -fno-exceptions \
+	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
 ifndef GCC_OLD
-    LINKFLAGS := -no-pie
+	LINKFLAGS := -no-pie
 endif
 
 ifdef GCOV
-    CFLAGS    += -fprofile-arcs -ftest-coverage
-    CPPFLAGS  += -fprofile-arcs -ftest-coverage
-    LINKFLAGS += -lgcov --coverage
+	CFLAGS    += -fprofile-arcs -ftest-coverage
+	CPPFLAGS  += -fprofile-arcs -ftest-coverage
+	LINKFLAGS += -lgcov --coverage
 endif
 
 #-----------------------------------------------------------------------------
@@ -220,23 +220,23 @@ all : $(TARGET_EXE) run
 endif
 
 $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-    $(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
-    $(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
+	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_EXE)
-    $(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+	$(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
 
 $(BIN_DIR)/%.d : %.cpp
-    $(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
+	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
 
 $(BIN_DIR)/%.d : %.c
-    $(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
+	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
 
 $(BIN_DIR)/%.o : %.c
-    $(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 $(BIN_DIR)/%.o : %.cpp
-    $(CPP) $(CPPFLAGS) $< -o $@
+	$(CPP) $(CPPFLAGS) $< -o $@
 
 # create BIN_DIR and include dependencies only if needed
 ifneq ($(MAKECMDGOALS),clean)
@@ -251,27 +251,27 @@ endif
 endif
 
 debug :
-    $(QUTEST) $(TESTS) DEBUG $(HOST)
+	$(QUTEST) $(TESTS) DEBUG $(HOST)
 
 clean :
-    -$(RM) $(BIN_DIR)/*.*
+	-$(RM) $(BIN_DIR)/*.*
 
 show :
-    @echo PROJECT      = $(PROJECT)
-    @echo TARGET_EXE   = $(TARGET_EXE)
-    @echo VPATH        = $(VPATH)
-    @echo C_SRCS       = $(C_SRCS)
-    @echo CPP_SRCS     = $(CPP_SRCS)
-    @echo C_DEPS_EXT   = $(C_DEPS_EXT)
-    @echo C_OBJS_EXT   = $(C_OBJS_EXT)
-    @echo C_DEPS_EXT   = $(C_DEPS_EXT)
-    @echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
-    @echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
-    @echo LIB_DIRS     = $(LIB_DIRS)
-    @echo LIBS         = $(LIBS)
-    @echo DEFINES      = $(DEFINES)
-    @echo QTOOLS       = $(QTOOLS)
-    @echo HOST         = $(HOST)
-    @echo QUTEST       = $(QUTEST)
-    @echo TESTS        = $(TESTS)
+	@echo PROJECT      = $(PROJECT)
+	@echo TARGET_EXE   = $(TARGET_EXE)
+	@echo VPATH        = $(VPATH)
+	@echo C_SRCS       = $(C_SRCS)
+	@echo CPP_SRCS     = $(CPP_SRCS)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
+	@echo C_OBJS_EXT   = $(C_OBJS_EXT)
+	@echo C_DEPS_EXT   = $(C_DEPS_EXT)
+	@echo CPP_DEPS_EXT = $(CPP_DEPS_EXT)
+	@echo CPP_OBJS_EXT = $(CPP_OBJS_EXT)
+	@echo LIB_DIRS     = $(LIB_DIRS)
+	@echo LIBS         = $(LIBS)
+	@echo DEFINES      = $(DEFINES)
+	@echo QTOOLS       = $(QTOOLS)
+	@echo HOST         = $(HOST)
+	@echo QUTEST       = $(QUTEST)
+	@echo TESTS        = $(TESTS)
 

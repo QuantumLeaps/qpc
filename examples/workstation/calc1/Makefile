@@ -79,8 +79,8 @@ C_SRCS := \
 # C++ source files...
 CPP_SRCS :=
 
-LIB_DIRS  :=
-LIBS      :=
+LIB_DIRS :=
+LIBS     :=
 
 # defines...
 # QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
@@ -143,7 +143,7 @@ endif
 #============================================================================
 # Typically you should not need to change anything below this line
 
-VPATH    += $(QPC)/src/qf $(QPC)/src/qs $(QP_PORT_DIR)
+VPATH    += $(QPC)/src/qf $(QP_PORT_DIR)
 INCLUDES += -I$(QPC)/include -I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------

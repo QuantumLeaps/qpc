@@ -142,7 +142,7 @@ endif
 #============================================================================
 # Typically you should not need to change anything below this line
 
-VPATH    += $(QPC)/src/qf $(QPC)/src/qs $(QP_PORT_DIR)
+VPATH    += $(QPC)/src/qf $(QP_PORT_DIR)
 INCLUDES += -I$(QPC)/include -I$(QP_PORT_DIR)
 
 #-----------------------------------------------------------------------------
@@ -287,5 +287,4 @@ show :
 	@echo LIB_DIRS     = $(LIB_DIRS)
 	@echo LIBS         = $(LIBS)
 	@echo DEFINES      = $(DEFINES)
-
 

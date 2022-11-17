@@ -1,18 +1,18 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *        Solutions for real time microcontroller applications        *
 **********************************************************************
 *                                                                    *
-*        (c) 1996 - 2011  SEGGER Microcontroller GmbH & Co. KG       *
+*        (c) 1996 - 2022  SEGGER Microcontroller GmbH                *
 *                                                                    *
 *        Internet: www.segger.com    Support:  support@segger.com    *
 *                                                                    *
 **********************************************************************
 
-** emWin V5.08 - Graphical user interface for embedded applications **
+** emWin V6.28 - Graphical user interface for embedded applications **
 emWin is protected by international copyright laws.   Knowledge of the
 source code may not be used to write a similar product.  This file may
-only be used in accordance with a license and should not be re-
+only  be used  in accordance  with  a license  and should  not be  re-
 distributed in any way. We appreciate your understanding and fairness.
 ----------------------------------------------------------------------
 File        : GUIConf.c
@@ -31,11 +31,7 @@ Purpose     : Display controller initialization
 //
 // Define the available number of bytes available for the GUI
 //
-#define GUI_NUMBYTES  0x400000
-//
-// Define the average block size
-//
-#define GUI_BLOCKSIZE 0x80
+#define GUI_NUMBYTES  0x280000
 
 /*********************************************************************
 *
@@ -60,7 +56,6 @@ void GUI_X_Config(void) {
   // Assign memory to emWin
   //
   GUI_ALLOC_AssignMemory(aMemory, GUI_NUMBYTES);
-  GUI_ALLOC_SetAvBlockSize(GUI_BLOCKSIZE);
 }
 
 /*************************** End of file ****************************/

@@ -1,7 +1,7 @@
 /*****************************************************************************
-* Product: DPP examplefor SEGGER emWin (version 6.10), Win32 simulation
-* Last updated for version 6.8.0
-* Last updated on  2020-01-22
+* Product: BSP for SEGGER emWin (version 6.28), Win32 simulation
+* Last updated for version 7.1.3
+* Last updated on  2022-11-16
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -36,7 +36,7 @@
 #include "bsp.h"
 
 #include "GUI.h"
-#include "GUI_SIM.h"
+#include "LCD_SIM.h"
 #include "WM.h"      /* emWin Windows Manager */
 #include "DIALOG.h"
 
