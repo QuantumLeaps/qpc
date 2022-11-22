@@ -25,27 +25,35 @@ system (RTOS). The currently supported 3rd-party RTOS kernels are:
 
 Combined with a conventional RTOS, QP/C takes full advantage of the multitasking capabilities of the RTOS by executing each active object in a separate RTOS task. The QP/C Platform Abstraction Layer (PAL) includes an abstract RTOS interface to enable integration between QP/C and the underlying RTOS. Specifically, the PAL allows adapting most message queue variants as event queues of active objects as well as most memory partitions as QP/C event pools.
 
-@next{embos}
+@ifnot LATEX
+@nav_next{embos}
+@endif
 */
 
 /*##########################################################################*/
 /*! @page embos embOS
 
-![SEGGER embOS](logo_embos.png)
+@image html  logo_embos.png
+@image latex logo_embos.png width=1.5in
+@caption{SEGGER embOS}
 
 The QP/C/C++ ports and examples for embOS are described in the Quantum Leaps Application Note @webref{doc/AN_RTOS-embOS.pdf, QP and embOS}.
 
-@image html  AN-QL.png "Application Note: QP and embOS"
-@image latex AN-QL.png "Application Note: QP and embOS"
+@image html  AN-QL.png
+@image latex AN-QL.png width=2.0in
 @caption{[Application Note: "QP and embOS"](https://www.state-machine.com/doc/AN_RTOS-embOS.pdf)}
 
-@next{freertos}
+@ifnot LATEX
+@nav_next{freertos}
+@endif
 */
 
 /*##########################################################################*/
 /*! @page freertos FreeRTOS
 
-![FreeRTOS](logo_freertos.png)
+@image html  logo_freertos.png
+@image latex logo_freertos.png width=2.5in
+@caption{FreeRTOS}
 
 @section freertos_about About the QP Port to FreeRTOS
 The <span class="img folder">ports/freertos/</span> directory contains a generic platform-independent QP/C port to <a href="https://freertos.org" target="_blank" class="extern">FreeRTOS kernel</a> (version 10). The provided QP port to FreeRTOS has been designed *generically* to rely exclusively on the existing FreeRTOS API. This means that the port should run without changes on any CPU/compiler platform supported by FreeRTOS.
@@ -164,26 +172,34 @@ int main() {
 }
 @endcode
 
-@next{threadx}
+@ifnot LATEX
+@nav_next{threadx}
+@endif
 */
 /*##########################################################################*/
 /*! @page threadx ThreadX
 
-![ThreadX](logo_threadx.jpg)
+@image html  logo_threadx.jpg
+@image latex logo_threadx.jpg width=3.0in
+@caption{ThreadX (Azure RTOS)}
 
 The QP/C/C++ ports and examples for ThreadX (now Azure RTOS) are described in the Quantum Leaps Application Note  @webref{doc/AN_RTOS-ThreadX.pdf, QP and ThreadX}.
 
-@image html  AN-QL.png "Application Note: QP and ThreadX"
-@image latex AN-QL.png "Application Note: QP and ThreadX"
+@image html  AN-QL.png
+@image latex AN-QL.png width=2.0in
 @caption{[Application Note: "QP and ThreadX"](https://www.state-machine.com/doc/AN_RTOS-ThreadX.pdf)}
 
-@next{uc-os2}
+@ifnot LATEX
+@nav_next{uc-os2}
+@endif
 */
 
 /*##########################################################################*/
 /*! @page uc-os2 uC-OS2
 
-![uC-OS2](logo_uc-os2.jpg)
+@image html  logo_uc-os2.jpg
+@image latex logo_uc-os2.jpg width=2.0in
+@caption{uC-OS2}
 
 @section uc-os2_about About the QP Port to uC-OS2
 This directory contains a generic platform-independent QP/C port to uC-OS2 V2.92.
@@ -242,17 +258,22 @@ Specifically, the QP source files qf_actq.c and qf_mem.c must **NOT** be include
 
 The QP/C/C++ ports and examples for uC-OS2 are described in the Quantum Leaps Application Note @webref{doc/AN_RTOS-uCOS2.pdf, QP and uC-OS2}.
 
-@image html  AN-QL.png "Application Note: QP and uC-OS2"
-@image latex AN-QL.png "Application Note: QP and uC-OS2"
+@image html  AN-QL.png
+@image latex AN-QL.png width=2.0in
 @caption{[Application Note: QP and uC-OS2](https://www.state-machine.com/doc/AN_RTOS-uCOS2.pdf)}
 
-@next{zephyr}
+@ifnot LATEX
+@nav_next{zephyr}
+@endif
 */
 
 /*##########################################################################*/
 /*! @page zephyr Zephyr
 
-![Zephyr Project](logo_zephyr.jpg)
+@image html  logo_zephyr.jpg
+@image latex logo_zephyr.jpg width=2.0in
+@caption{Zephyr Project}
+
 
 @section zephyr_about About the QP Port to Zephyr
 This directory contains a generic platform-independent QP/C port to the [Zephyr RTOS](https://zephyrproject.org).
@@ -322,5 +343,7 @@ Specifically, the QP source files qf_actq.c must **NOT** be included in the buil
 @section zephyr_exa Examples for the Zephyr port
 The example projects for this port are located in @ref exa_zephyr "examples/zephyr".
 
-@next{ports_os}
+@ifnot LATEX
+@nav_next{ports_os}
+@endif
 */

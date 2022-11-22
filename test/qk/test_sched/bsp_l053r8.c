@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: BSP for system-testing QK kernel, NUCLEO-L053R8 board
-* Last updated for version 7.1.2
-* Last updated on  2022-10-03
+* Last updated for version 7.1.3
+* Last updated on  2022-11-20
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -61,28 +61,34 @@ Q_DEFINE_THIS_FILE
 /*..........................................................................*/
 void SysTick_Handler(void); /* prototype */
 void SysTick_Handler(void) {
-    QXK_ISR_ENTRY(); /* inform QXK kernel about entering an ISR */
+    QK_ISR_ENTRY(); /* inform QXK kernel about entering an ISR */
 
     /* process time events for rate 0 */
     QTIMEEVT_TICK_X(0U, &l_SysTick_Handler);
     //QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler);
 
-    QXK_ISR_EXIT();  /* inform QXK kernel about exiting an ISR */
+    QK_ISR_EXIT();  /* inform QXK kernel about exiting an ISR */
 }
 /*..........................................................................*/
 void EXTI0_1_IRQHandler(void); /* prototype */
 void EXTI0_1_IRQHandler(void) { /* for testing, NOTE03 */
-    QXK_ISR_ENTRY(); /* inform QXK kernel about entering an ISR */
+    QK_ISR_ENTRY(); /* inform QXK kernel about entering an ISR */
 
     /* for testing... */
     static QEvt const t1 = { TEST1_SIG, 0U, 0U };
     QACTIVE_PUBLISH(&t1, &l_test_ISR);
 
-    QXK_ISR_EXIT();  /* inform QXK kernel about exiting an ISR */
+    QK_ISR_EXIT();  /* inform QXK kernel about exiting an ISR */
 }
 
 /*..........................................................................*/
 void BSP_init(void) {
+    /* setup the MPU to detect NULL-pointer dereferencing */
+    //MPU->CTRL = 0U; /* disable the MPU */
+    //MPU->RBAR = (0x0U | 1U << 4 | 1U);
+    //MPU->RASR = ((0x6U << 24) | (0x2U << 16) | (5 << 1) | 1U);
+    //MPU->CTRL = 1U; /* enable the MPU */
+
     /* NOTE: SystemInit() has been already called from the startup code
     *  but SystemCoreClock needs to be updated
     */
@@ -166,17 +172,17 @@ void QF_onStartup(void) {
 void QF_onCleanup(void) {
 }
 /*..........................................................................*/
-#ifdef QXK_ON_CONTEXT_SW
+#ifdef QK_ON_CONTEXT_SW
 /* NOTE: the context-switch callback is called with interrupts DISABLED */
-void QXK_onContextSw(QActive *prev, QActive *next) {
+void QK_onContextSw(QActive *prev, QActive *next) {
     QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
         QS_OBJ(prev);
         QS_OBJ(next);
     QS_END_NOCRIT()
 }
-#endif /* QXK_ON_CONTEXT_SW */
+#endif /* QK_ON_CONTEXT_SW */
 /*..........................................................................*/
-void QXK_onIdle(void) {
+void QK_onIdle(void) {
 #ifdef Q_SPY
     QS_rxParse();  /* parse all the received bytes */
     QS_doOutput();

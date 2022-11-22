@@ -55,7 +55,9 @@ Given the simplicity, portability, and low-resource consumption, the QV schedule
 @remarks
 Sometimes it is not practical to break up long RTC steps, and consequently the thread-level response of the simple @ref srs_qv "QV kernel" might be too slow. In this cases you need to use a *preemptive* kernel. The big advantage of preemptive kernel is that it effectively decouples high-priority thread from low-priority threads in the time domain. The timeliness of execution of high-priority thread is almost independent on the low-priority threads. But of course there is no such thing as a free lunch. Preemptive kernels open the whole new class of problems related to race conditions. So you need to be very careful about sharing any resources.
 
-@next{qk}
+@ifnot LATEX
+@nav_next{qk}
+@endif
 */
 /*##########################################################################*/
 /*! @defgroup qk QK
@@ -79,21 +81,29 @@ As a fully preemptive multithreading kernel, QK must ensure that at all times th
 @note
 The stack usage shown in the bottom panel displays stack growing down (towards lower addresses), as it is the case in ARM Cortex-M.
 
-@image{anchor:qk-synch-fig} html  qk_synch.png "Synchronous Preemption in QK"
-@image{anchor:qk-synch-fig} latex qk_synch.png "Synchronous Preemption in QK"
+@anchor qk-synch-fig
+@image html  qk_synch.png
+@image latex qk_synch.png width=5.0in
+@caption{Synchronous Preemption in QK}
 
 `[2]` When an interrupt posts an event to a higher-priority thread than the interrupted thread, upon completion of the ISR the kernel must start execution of the higher-priority thread instead of resuming the lower-priority thread. This type of preemption is called <b>asynchronous preemption</b> because it can happen asynchronously, any time interrupts are not explicitly disabled.
 
 @note
 The stack usage during asynchronous preemption on ARM Cortex-M is slightly simplified in the diagram below. A more detailed stack usage diagram is discussed later in the section explaining the @ref arm-cm_qk_port-asm_pendsv "Detailed stack allocation in QK for ARM Cortex-M".
 
-@image{anchor:qk-asynch-fig} html  qk_asynch.png "Asynchronous Preemption in QK"
-@image{anchor:qk-asynch-fig} latex qk_asynch.png "Asynchronous Preemption in QK"
+
+@anchor qk-asynch-fig
+@image html  qk_asynch.png
+@image latex qk_asynch.png width=5.0in
+@caption{Asynchronous Preemption in QK}
+
 
 @note
 A traditional RTOS kernel does not distinguish between the synchronous and asynchronous preemptions and makes all preemptions look like the more stack-intensive asynchronous preemptions. In contrast, a RTC kernel can implement synchronous preemption as a simple function call (to QK_activate_()), which is much more efficient than a full context-switch.
 
-@next{qxk}
+@ifnot LATEX
+@nav_next{qxk}
+@endif
 */
 /*##########################################################################*/
 /*! @defgroup qxk QXK

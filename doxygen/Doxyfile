@@ -131,6 +131,7 @@ INPUT                  = main.dox \
                          ../../cert-pack/sds_sm-c.dox \
                          ../../cert-pack/misra.dox \
                          ../../cert-pack/metrics.dox \
+                         history.dox \
                          exa.dox \
                          exa_native.dox \
                          exa_rtos.dox \
@@ -143,7 +144,6 @@ INPUT                  = main.dox \
                          ports_rtos.dox \
                          ports_os.dox \
                          api.dox \
-                         history.dox \
                          ../../ql-doxygen/help.dox \
                          dir.dox \
                          config.h \

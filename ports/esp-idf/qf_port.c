@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-29
-* @version Last updated for: @ref qpc_7_1_1
+* @date Last updated on: 2022-11-22
+* @version Last updated for: @ref qpc_7_1_3
 *
 * @file
 * @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
@@ -203,7 +203,7 @@ bool IRAM_ATTR QActive_post_(QActive * const me, QEvt const * const e,
         QS_END_NOCRIT_PRE_()
 
         if (e->poolId_ != 0U) { /* is it a pool event? */
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+            QEvt_refCtr_inc_(e); /* increment the reference counter */
         }
 
         QF_CRIT_X_();
@@ -245,7 +245,7 @@ void IRAM_ATTR QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QS_END_NOCRIT_PRE_()
 
     if (e->poolId_ != 0U) { /* is it a pool event? */
-        QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+        QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
     QF_CRIT_X_();
@@ -314,7 +314,7 @@ bool IRAM_ATTR QActive_postFromISR_(QActive * const me, QEvt const * const e,
         QS_END_NOCRIT_PRE_()
 
         if (e->poolId_ != 0U) { /* is it a pool event? */
-            QF_EVT_REF_CTR_INC_(e); /* increment the reference counter */
+            QEvt_refCtr_inc_(e); /* increment the reference counter */
         }
 
         portEXIT_CRITICAL_ISR(&QF_esp32mux);
@@ -370,7 +370,7 @@ void IRAM_ATTR QActive_publishFromISR_(QEvt const * const e,
         * recycles the event if the counter drops to zero. This covers the
         * case when the event was published without any subscribers.
         */
-        QF_EVT_REF_CTR_INC_(e);
+        QEvt_refCtr_inc_(e);
     }
 
     /* make a local, modifiable copy of the subscriber list */
@@ -572,7 +572,7 @@ void IRAM_ATTR QF_gcFromISR(QEvt const * const e) {
 
         /* isn't this the last ref? */
         if (e->refCtr_ > 1U) {
-            QF_EVT_REF_CTR_DEC_(e); /* decrements the ref counter */
+            QEvt_refCtr_dec_(e); /* decrement the reference counter */
 
             QS_BEGIN_NOCRIT_PRE_(QS_QF_GC_ATTEMPT, (uint_fast8_t)e->poolId_)
                 QS_TIME_PRE_();      /* timestamp */

@@ -118,7 +118,9 @@ Typically, you start testing on your host computer. Before building/running the 
 
 Next, you open another terminal window, change directory to the <span class="img folder">test_~~~</span> folder of interest, and type `make`. This will build the application and run the tests (Python), as shown in the screen shot below:
 
-![Testing on the host (Python)](qutest_py.png)
+@image html  qutest_py.png
+@image latex qutest_py.png width=6.5in
+@caption{Testing on the host (Python)}
 
 
 @subsection exa_qutest_target Embedded Targets
@@ -128,8 +130,11 @@ To test the code on an embedded board, you need to connect the board to the host
 
 Next, you open another terminal window, change directory to the <span class="img folder">test_~~~</span> folder of interest, and type `make -f make_tm4c123`. This will build the application and run the tests (Python), as shown in the screen shot below:
 
-![Testing on the TM4C123 embedded target (Python)](qutest_tm4c123_py.png)
+@image html  qutest_tm4c123_py.png
+@image latex qutest_tm4c123_py.png width=6.5in
+@caption{Testing on the TM4C123 embedded target (Python)}
 
-
-@next{exa_os}
+@ifnot LATEX
+@nav_next{exa_os}
+@endif
 */

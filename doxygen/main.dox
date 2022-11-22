@@ -1,7 +1,7 @@
 /*! @mainpage Overview
 
 @image html  qp_banner.jpg
-@image latex qp_banner.jpg
+@image latex qp_banner.jpg width=6.5in
 
 @ifnot LATEX
 @remark
@@ -132,6 +132,7 @@ The features of this online help and tips for using it are described in Section 
 - Quantum Leaps on GitHub: <a class="extern" target="_blank" href="https://github.com/QuantumLeaps">github.com/QuantumLeaps</a>
 - e-mail: <a class="extern" target="_blank" href="mailto:info@state-machine.com">info@state-machine.com</a>
 
-<br>
-@next{gs}
+@ifnot LATEX
+@nav_next{gs}
+@endif
 */

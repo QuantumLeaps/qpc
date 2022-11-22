@@ -1,5 +1,7 @@
 /*! @page api API Reference
+@ifnot LATEX
 @nav_next{deprecated}
+@endif
 
 @section api_qep QEP (Hierarchical State Machines)
 QEP is a universal, UML-compliant event processor that enables developers to code UML state machines in highly readable ANSI-C, in which every state machine element is mapped to code precisely, unambiguously, and exactly once (traceability). QEP fully supports hierarchical state nesting, which is the fundamental mechanism for reusing behavior across many states instead of repeating the same actions and transitions over and over again.
@@ -230,8 +232,9 @@ QXK is a small, preemptive, priority-based, dual-mode (run-to-completion/**block
 - QMPool_get()
 - QMPool_put()
 
-<br>
+@ifnot LATEX
 @nav_next{deprecated}
+@endif
 */
 ##############################################################################
 /*! @page deprecated Deprecated APIs

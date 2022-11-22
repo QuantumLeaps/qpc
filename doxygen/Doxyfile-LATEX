@@ -2,7 +2,39 @@
 
 @INCLUDE = Doxyfile
 
-GENERATE_HTML          = NO
+#---------------------------------------------------------------------------
+# Configuration options related to the input files
+#---------------------------------------------------------------------------
+INPUT                  = main.dox \
+                         gs.dox \
+                         ../../cert-pack/cert-pack.dox \
+                         ../../cert-pack/srs.dox \
+                         ../../cert-pack/sas.dox \
+                         ../../cert-pack/sds.dox \
+                         ../../cert-pack/sds_sm-c.dox \
+                         ../../cert-pack/misra.dox \
+                         ../../cert-pack/metrics.dox \
+                         history.dox \
+                         exa.dox \
+                         exa_native.dox \
+                         exa_rtos.dox \
+                         exa_os.dox \
+                         exa_qutest.dox \
+                         exa_mware.dox \
+                         ports.dox \
+                         ports_native.dox \
+                         ports_arm-cm.dox \
+                         ports_rtos.dox \
+                         ports_os.dox \
+                         api.dox \
+                         dir.dox \
+                         config.h \
+                         ../include \
+                         ../src \
+                         ../ports/lint-plus/std.lnt \
+                         ../ports/lint-plus/qpc.lnt \
+                         ../ports/lint-plus/options.lnt
+
 GENERATE_LATEX         = YES
 ENABLED_SECTIONS      += LATEX
 

@@ -62,12 +62,18 @@ Only "kernel-aware" interrupts are allowed to call QP services. "Kernel-unaware"
 
 As illustrated in the figures below, the number of interrupt priority bits actually available is implementation dependent, meaning that the various ARM Cortex-M silicon vendors can provide different number of priority bits, varying from just 3 bits (which is the minimum for ARMv7-M architecture) up to 8 bits. For example, the TI Tiva-C microcontrollers implement only 3 priority bits (see figure below).
 
-![Kernel-aware and Kernel-unaware interrupts with 3 priority bits](arm-cm_int3bit.png)
+
+@image html  arm-cm_int3bit.png
+@image latex arm-cm_int3bit.png width=5.0in
+@caption{Kernel-aware and Kernel-unaware interrupts with 3 priority bits)}
 
 
 On the other hand, the STM32 MCUs implement 4 priority bits (see figure below). The CMSIS standard provides the macro **NVIC_PRIO_BITS**, which specifies the number of NVIC priority bits defined in a given ARM Cortex-M implementation.
 
-![Kernel-aware and Kernel-unaware interrupts with 4 priority bits](arm-cm_int4bit.png)
+@image html  arm-cm_int4bit.png
+@image latex arm-cm_int4bit.png width=5.0in
+@caption{Kernel-aware and Kernel-unaware interrupts with 4 priority bits](arm-cm_int4bit.png}
+
 
 Another important fact to note is that the ARM Cortex-M core stores the interrupt priority values in the *most significant bits* of its eight bit interrupt priority registers inside the NVIC (Nested Vectored Interrupt Controller). For example, if an implementation of a ARM Cortex-M microcontroller only implements three priority bits, then these three bits are shifted to occupy bits five, six and seven respectively. The unimplemented bits can be written as zero or one and always read as zero.
 
@@ -184,7 +190,9 @@ All built-in kernels in QP are designed to take advantage of the lazy stacking f
 @anchor Reminder
 - **[Reminder]** <a href="https://www.state-machine.com/doc/Pattern_Reminder.pdf" target="_blank" class="extern">"Reminder State Pattern"</a>
 
-@next{arm-cm_qv}
+@ifnot LATEX
+@nav_next{arm-cm_qv}
+@endif
 */
 /*##########################################################################*/
 /*! @page arm-cm_qv Cooperative QV Kernel
@@ -578,7 +586,9 @@ Because QV_onIdle() must enable interrupts internally, the signature of the func
 `[4]` When a sleep mode is not used, the QV_onIdle() callback simply re-enables interrupts.
 
 
-@next{arm-cm_qk}
+@ifnot LATEX
+@nav_next{arm-cm_qk}
+@endif
 */
 /*##########################################################################*/
 /*! @page arm-cm_qk Preemptive Non-Blocking QK Kernel
@@ -627,8 +637,9 @@ The QK port specifically does **not** use the SVC exception (Supervisor Call). T
 
 @anchor arm-cm_qk-arm-cm-fig
 
-@image html  qk_arm-cm.png "Several preemption scenarios in QK"
-@image latex qk_arm-cm.png "Several preemption scenarios in QK"
+@image html  qk_arm-cm.png
+@image latex qk_arm-cm.png width=5.0in
+@caption{Several preemption scenarios in QK}
 
 `[0]` The timeline begins with the QK executing the idle loop.
 
@@ -1067,8 +1078,9 @@ Low memory
 
 @anchor qk_stack-detail
 
-@image html  qk_stack-detail.png "Detailed stack allocation in QK for ARM Cortex-M"
-@image latex qk_stack-detail.png "Detailed stack allocation in QK for ARM Cortex-M"
+@image html  qk_stack-detail.png
+@image latex qk_stack-detail.png width=6.0in
+@caption{Detailed stack allocation in QK for ARM Cortex-M}
 
 
 @section arm-cm_qk-isr Writing ISRs for QK
@@ -1240,7 +1252,9 @@ Other interesting tests that you can perform include changing priority of the GP
 
 In yet another test you could post an event to Philosopher active object rather than Table active object from the `GPIOPortA_IRQHandler()` function to verify that the QK activator will not preempt the Philosopher thread by itself. Rather the next event will be queued and the Philosopher thread will process the queued event only after completing the current event processing.
 
-@next{arm-cm_qxk}
+@ifnot LATEX
+@nav_next{arm-cm_qxk}
+@endif
 */
 /*##########################################################################*/
 /*! @page arm-cm_qxk Preemptive "Dual-Mode" QXK Kernel

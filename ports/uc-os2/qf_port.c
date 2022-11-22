@@ -153,22 +153,21 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 {
     QF_CRIT_STAT_
     QF_CRIT_E_();
-
     uint_fast16_t const nFree =
         (uint_fast16_t)(((OS_Q_DATA *)me->eQueue)->OSQSize
          - ((OS_Q_DATA *)me->eQueue)->OSNMsgs);
     bool status;
     if (margin == QF_NO_MARGIN) {
         if (nFree > 0U) {
-            status = true; /* can post */
+            status = true;   /* can post */
         }
         else {
-            status = false; /* cannot post */
+            status = false;  /* cannot post */
             Q_ERROR_ID(710); /* must be able to post the event */
         }
     }
     else if (nFree > (QEQueueCtr)margin) {
-        status = true; /* can post */
+        status = true;  /* can post */
     }
     else {
         status = false; /* cannot post */
@@ -177,16 +176,16 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     if (status) { /* can post the event? */
 
         QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST, me->prio)
-            QS_TIME_PRE_();         /* timestamp */
-            QS_OBJ_PRE_(sender);    /* the sender object */
-            QS_SIG_PRE_(e->sig);    /* the signal of the event */
-            QS_OBJ_PRE_(me);        /* this active object (recipient) */
+            QS_TIME_PRE_();      /* timestamp */
+            QS_OBJ_PRE_(sender); /* the sender object */
+            QS_SIG_PRE_(e->sig); /* the signal of the event */
+            QS_OBJ_PRE_(me);     /* this active object (recipient) */
             QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_EQC_PRE_(nFree);     /* # free entries */
-            QS_EQC_PRE_(0U);        /* min # free entries (unknown) */
+            QS_EQC_PRE_(nFree);  /* # free entries */
+            QS_EQC_PRE_(0U);     /* min # free entries (unknown) */
         QS_END_NOCRIT_PRE_()
 
-        if (e->poolId_ != 0U) { /* is it a pool event? */
+        if (e->poolId_ != 0U) {  /* is it a pool event? */
             QEvt_refCtr_inc_(e); /* increment the reference counter */
         }
 
@@ -199,13 +198,13 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     else {
 
         QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_ATTEMPT, me->prio)
-            QS_TIME_PRE_();         /* timestamp */
-            QS_OBJ_PRE_(sender);    /* the sender object */
-            QS_SIG_PRE_(e->sig);    /* the signal of the event */
-            QS_OBJ_PRE_(me);        /* this active object (recipient) */
+            QS_TIME_PRE_();      /* timestamp */
+            QS_OBJ_PRE_(sender); /* the sender object */
+            QS_SIG_PRE_(e->sig); /* the signal of the event */
+            QS_OBJ_PRE_(me);     /* this active object (recipient) */
             QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
-            QS_EQC_PRE_(nFree);     /* # free entries available */
-            QS_EQC_PRE_(margin);    /* margin requested */
+            QS_EQC_PRE_(nFree);  /* # free entries available */
+            QS_EQC_PRE_(margin); /* margin requested */
         QS_END_NOCRIT_PRE_()
 
         QF_CRIT_X_();
@@ -219,16 +218,16 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_E_();
 
     QS_BEGIN_NOCRIT_PRE_(QS_QF_ACTIVE_POST_LIFO, me->prio)
-        QS_TIME_PRE_();             /* timestamp */
-        QS_SIG_PRE_(e->sig);        /* the signal of this event */
-        QS_OBJ_PRE_(me);            /* this active object */
+        QS_TIME_PRE_();      /* timestamp */
+        QS_SIG_PRE_(e->sig); /* the signal of this event */
+        QS_OBJ_PRE_(me);     /* this active object */
         QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
         QS_EQC_PRE_(((OS_Q *)me->eQueue)->OSQSize
                      - ((OS_Q *)me->eQueue)->OSQEntries); /* # free entries */
-        QS_EQC_PRE_(0U);            /* min # free entries (unknown) */
+        QS_EQC_PRE_(0U);     /* min # free entries (unknown) */
     QS_END_NOCRIT_PRE_()
 
-    if (e->poolId_ != 0U) { /* is it a pool event? */
+    if (e->poolId_ != 0U) {  /* is it a pool event? */
         QEvt_refCtr_inc_(e); /* increment the reference counter */
     }
 
@@ -247,9 +246,9 @@ QEvt const *QActive_get_(QActive * const me) {
 
     QS_CRIT_STAT_
     QS_BEGIN_PRE_(QS_QF_ACTIVE_GET, me->prio)
-        QS_TIME_PRE_();             /* timestamp */
-        QS_SIG_PRE_(e->sig);        /* the signal of this event */
-        QS_OBJ_PRE_(me);            /* this active object */
+        QS_TIME_PRE_();      /* timestamp */
+        QS_SIG_PRE_(e->sig); /* the signal of this event */
+        QS_OBJ_PRE_(me);     /* this active object */
         QS_2U8_PRE_(e->poolId_, e->refCtr_); /* pool Id & ref Count */
         QS_EQC_PRE_(((OS_Q *)me->eQueue)->OSQSize
                     - ((OS_Q *)me->eQueue)->OSQEntries); /* # free entries */

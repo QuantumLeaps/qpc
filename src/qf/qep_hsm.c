@@ -267,7 +267,9 @@ void QHsm_dispatch_(QHsm * const me,
     QEvt const * const e,
     uint_fast8_t const qs_id)
 {
-    Q_UNUSED_PAR(qs_id); /* unused when Q_SPY undefined */
+    #ifndef Q_SPY
+    Q_UNUSED_PAR(qs_id);
+    #endif
 
     QStateHandler t = me->state.fun;
     QS_CRIT_STAT_
@@ -428,7 +430,9 @@ int_fast8_t QHsm_tran_(QHsm * const me,
     QStateHandler * const path,
     uint_fast8_t const qs_id)
 {
-    Q_UNUSED_PAR(qs_id); // unused when Q_SPY undefined
+    #ifndef Q_SPY
+    Q_UNUSED_PAR(qs_id);
+    #endif
 
     int_fast8_t ip = -1; /* transition entry path index */
     QStateHandler t = path[0];

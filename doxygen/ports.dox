@@ -59,7 +59,9 @@ qpc/                     // QP/C installation directory
 @note
 Because the QP distribution contains *all* ports, the number of sub-directories and files in the <span class="img folder">ports</span> folder may seem daunting. However, knowing the structure of the <span class="img folder">ports</span> folder, you can simply **delete** the sub-directories that are not interesting to you.
 
+@ifnot LATEX
 @nav_next{ports_lint}
+@endif
 */
 /*##########################################################################*/
 /*! @page ports_lint PC-Lint-Plus
@@ -167,5 +169,7 @@ At the same time, the **qpc.lnt** option file has been very carefully designed n
 @remarks
 For example, for reasons explained in Section 5.10 of the <a href="https://www.state-machine.com/doc/AN_QP-C_MISRA.pdf" target="_blank" class="extern">"QP/C MISRA Compliance Matrix"</a>, QP/C extensively uses function-like macros, which deviates from the MISRA-C:2012 advisory Rule 4.9 and which PC-Lint-Plus checks with the warning 9026. However, instead of suppressing this warning globally (with the -e9096 directive), the qpc.lnt option file suppresses warning 9096 only for the specific QP function-like macros that are visible to the application level. So specifically, the qpc.lnt file contains directives `-esym(9026, Q_TRAN, Q_SUPER, ...)`, which suppresses the warning only for the specified macros, but does not disable checking of any other macros in the application-level code.
 
+@ifnot LATEX
 @nav_next{ports_native}
+@endif
 */

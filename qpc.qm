@@ -1438,7 +1438,9 @@ me-&gt;temp.fun  = t; /* mark the configuration as stable */</code>
     <parameter name="e" type="QEvt const * const"/>
     <!--${QEP::QHsm::dispatch_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>Q_UNUSED_PAR(qs_id); /* unused when Q_SPY undefined */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(qs_id);
+#endif
 
 QStateHandler t = me-&gt;state.fun;
 QS_CRIT_STAT_
@@ -1613,7 +1615,9 @@ me-&gt;temp.fun  = t; /* mark the configuration as stable */</code>
     <parameter name="path" type="QStateHandler * const"/>
     <!--${QEP::QHsm::tran_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>Q_UNUSED_PAR(qs_id); // unused when Q_SPY undefined
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(qs_id);
+#endif
 
 int_fast8_t ip = -1; /* transition entry path index */
 QStateHandler t = path[0];

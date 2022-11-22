@@ -15,41 +15,46 @@
     - @ref msp430_qv (TI-CCS, IAR toolchains)
     - @ref msp430_qk (TI-CCS, IAR toolchains)
 
+@ifnot LATEX
 @nav_next{arm-cm}
+@endif
 */
 /*##########################################################################*/
 /*! @page arm-cr ARM Cortex-R
 
 The QP/C/C++ ports and examples for ARM Cortex-R are described in the Quantum Leaps Application Note  @webref{doc/AN_QP_and_ARM-Cortex-R.pdf, QP and ARM Cortex-R}.
 
-
-@image html  AN-QL.png "QP and ARM Cortex-R"
-@image latex AN-QL.png "QP and ARM Cortex-R"
+@image html  AN-QL.png
+@image latex AN-QL.png width=2.0in
 @caption{[Application Note: "QP and ARM Cortex-R"](https://www.state-machine.com/doc/AN_QP_and_ARM-Cortex-R.pdf)}
 
-@next{arm7-9}
+@ifnot LATEX
+@nav_next{arm7-9}
+@endif
 */
 /*##########################################################################*/
 /*! @page arm7-9 ARM7/ARM9
 
 The QP/C/C++ ports and examples for ARM7/ARM9 are described in the Quantum Leaps Application Note  @webref{doc/AN_QP_and_ARM-Cortex-R.pdf, QP and ARM7/ARM9}.
 
-@image html  AN-QL.png "QP and ARM7/ARM9"
-@image latex AN-QL.png "QP and ARM7/ARM9"
+@image html  AN-QL.png
+@image latex AN-QL.png width=2.0in
 @caption{[Application Note: "QP and ARM7/ARM9"](https://www.state-machine.com/doc/AN_QP_and_ARM7_ARM9-GNU.pdf)}
 
-@next{msp430}
+@ifnot LATEX
+@nav_next{msp430}
+@endif
 */
 /*##########################################################################*/
 /*! @page msp430 MSP430
 
 The QP/C/C++ ports and examples for MSP430 are described in the Quantum Leaps Development Kit @webref{doc/QDK_MSP430-CCS.pdf, QP and MSP430 with CCS} and  @webref{doc/QDK_MSP430-IAR.pdf, QP and MSP430 with IAR}.
 
-@image html  AN-QL.png "QP/C and QP/C++ and MSP430 with CCS"
-@image latex AN-QL.png "QP/C and QP/C++ and MSP430 with CCS"
+@image html  AN-QL.png
+@image latex AN-QL.png width=2.0in
 @caption{[Application Note: "QP and MSP430-CCS"](https://www.state-machine.com/doc/QDK_MSP430-CCS.pdf)}
 
-@image html  AN-QL.png "QP/C and QP/C++ and MSP430 with IAR"
-@image latex AN-QL.png "QP/C and QP/C++ and MSP430 with IAR"
+@image html  AN-QL.png
+@image latex AN-QL.png width=2.0in
 @caption{[Application Note: "QP and MSP430-IAR"](https://www.state-machine.com/doc/QDK_MSP430-IAR.pdf)}
 */
